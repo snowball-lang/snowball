@@ -8,4 +8,14 @@ namespace snowball {
     Compiler::Compiler(std::string p_code, const char* p_path) { _code = p_code                 ; _path = std::string(p_path) ; }
     Compiler::Compiler(const char* p_code, const char* p_path) { _code = std::string(p_code)    ; _path = std::string(p_path) ; }
 
+
+    void initialize() {
+        _initialized = true;
+    }
+
+    void compile() {
+        if (!_initialized) {
+            // TODO: error
+        }
+    }
 }

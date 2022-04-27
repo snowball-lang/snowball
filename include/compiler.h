@@ -14,11 +14,16 @@ namespace snowball {
             Compiler(std::string p_code, const char* p_path);
             Compiler(const char* p_code, const char* p_path);
 
+            void initialize();
+            void compile();
+
             ~Compiler() {};
 
         private:
             std::string _code;
             std::string _path;
+
+            bool _initialized = false;
     };
 }
 
