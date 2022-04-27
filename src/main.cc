@@ -1,5 +1,8 @@
 
+#include "snowball.h"
 #include <string>
+
+using namespace snowball;
 
 int main(int argc, char** argv) {
 
