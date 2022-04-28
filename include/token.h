@@ -1,6 +1,7 @@
 
 #include <string>
 #include <vector>
+#include <utility>
 
 #ifndef __SNOWBALL_TOKEN_H_
 #define __SNOWBALL_TOKEN_H_
@@ -192,6 +193,7 @@ namespace snowball {
         Token() {}
         Token(TokenType p_type) { type = p_type; }
 
+
         std::string to_string() const {
             switch (type) {
 
@@ -304,7 +306,7 @@ namespace snowball {
             // TODO: throw error: missed enum in switch case
         }
 
-        std::vector<int, int> get_pos() const {  return std::vector<int, int>(line, col);  }
+        std::pair<int, int> get_pos() const { return std::pair<int, int>(std::make_pair(line, col)); }
         uint32_t get_width() const { return (uint32_t)to_string().size(); }
     };
 }
