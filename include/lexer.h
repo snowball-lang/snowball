@@ -1,4 +1,5 @@
 
+#include "logger.h"
 #include "source_info.h"
 
 #ifndef __SNOWBALL_LEXER_H_
@@ -14,6 +15,9 @@ namespace snowball {
             void tokenize();
 
             ~Lexer() {};
+
+        private:
+            SourceInfo* _source_info;
 
     };
 }

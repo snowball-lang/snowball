@@ -1,5 +1,7 @@
 
+#include "lexer.h"
 #include "compiler.h"
+
 #include <string>
 
 namespace snowball {
@@ -20,7 +22,8 @@ namespace snowball {
             // TODO: error
         }
 
-
+        _lexer = new Lexer(_source_info);
+        _lexer->tokenize();
     }
 
     void Compiler::create_source_info() {

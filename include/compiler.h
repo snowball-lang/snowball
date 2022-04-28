@@ -25,8 +25,9 @@ namespace snowball {
             std::string _path;
 
             SourceInfo* _source_info;
-
             bool _initialized = false;
+
+            Lexer* _lexer;
 
             // methods
             void create_source_info();
