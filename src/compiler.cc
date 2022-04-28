@@ -9,6 +9,9 @@ namespace snowball {
     Compiler::Compiler(const char* p_code, const char* p_path) { _code = std::string(p_code)    ; _path = std::string(p_path) ; }
 
     void Compiler::initialize() {
+
+        create_source_info();
+
         _initialized = true;
     }
 
@@ -17,6 +20,10 @@ namespace snowball {
             // TODO: error
         }
 
-        
+    }
+
+    void Compiler::create_source_info() {
+        SourceInfo* source_info = new SourceInfo(_code, _path);
+        _source_info = source_info;
     }
 }

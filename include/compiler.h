@@ -1,5 +1,6 @@
 
 #include <string>
+#include "source_info.h"
 
 #ifndef __SNOWBALL_COMPILER_H_
 #define __SNOWBALL_COMPILER_H_
@@ -23,7 +24,12 @@ namespace snowball {
             std::string _code;
             std::string _path;
 
+            SourceInfo* _source_info;
+
             bool _initialized = false;
+
+            // methods
+            void create_source_info();
     };
 }
 
