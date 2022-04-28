@@ -8,7 +8,7 @@ namespace snowball {
     }
 
     void Lexer::tokenize() {
-        Logger::verbose("hello");
+        std::string code = _source_info->get_code();
     }
 
 }
