@@ -16,5 +16,7 @@ namespace snowball {
         if (!_initialized) {
             // TODO: error
         }
+
+        
     }
 }
