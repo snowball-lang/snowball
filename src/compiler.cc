@@ -20,6 +20,7 @@ namespace snowball {
             // TODO: error
         }
 
+
     }
 
     void Compiler::create_source_info() {
