@@ -23,6 +23,7 @@ namespace snowball {
             // methods
             void handle_eof();
             void tokenize_char();
+            void consume(TokenType p_tk, int p_eat_size = 1);
 
             // vars
             SourceInfo* _source_info;

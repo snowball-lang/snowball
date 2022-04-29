@@ -1,12 +1,17 @@
 
+#include "logger.h"
+#include "source_info.h"
+
 #include <string>
 #include <exception>
+#include <stdexcept>
 
 #ifndef __SNOWBALL_ERRORS_H_
 #define __SNOWBALL_ERRORS_H_
 
 namespace snowball {
     enum Error {
+        UNEXPECTED_EOF,
 
         BUG,
         TODO
@@ -14,16 +19,33 @@ namespace snowball {
 
     const char* get_error(Error code);
 
-    class SNError : public std::exception {
-        SNError(Error code, std::string err);
-        SNError(Error code, const char* err);
+    class SNError  {
+        public:
+            SNError(Error code, std::string err) { error = code; message = err; };
+            SNError(Error code, const char* err) { error = code; message = std::string(err); };
 
-        std::string get_error();
-        std::string get_message();
+            virtual void print_error() {
+                Logger::error("SN error");
+            };
 
-        void print_error();
+            virtual ~SNError() {};
 
-        ~SNError() {};
+            Error error;
+            std::string message;
+
+    };
+
+    class LexerError : public SNError {
+        public:
+
+            LexerError(Error code, std::string err, SourceInfo *&source_info) : SNError(code, err) {  };
+            LexerError(Error code, const char* err, SourceInfo *&source_info) : SNError(code, err) {  };
+
+            virtual void print_error() {
+                Logger::error(message);
+            };
+
+            virtual ~LexerError() {};
     };
 }
 
