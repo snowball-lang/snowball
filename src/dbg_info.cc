@@ -11,11 +11,9 @@ namespace snowball {
         : pos(p_pos), line((uint32_t)p_pos.first), width(p_width), source_info(p_source_info) {
 
         uint64_t cur_line = 1;
-        std::stringstream ss_src(((const std::string&)source_info->get_source()).c_str());
+        const std::string& source = source_info->get_source();
 
-        char c;
-        while (ss_src >> c) {
-            printf("L: %c\n", c);
+        for(auto c : source) {
             if (c == '\n') {
                 if (cur_line >= line + 2) break;
                 cur_line++;

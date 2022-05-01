@@ -8,7 +8,7 @@ using namespace snowball;
 int main(int argc, char** argv) {
 
     // TODO: get code from FILE or REPL
-    std::string code = "/*\nhe";
+    std::string code = "/*";
 
     try {
         Compiler* compiler = new Compiler(code, "<stdin>");
