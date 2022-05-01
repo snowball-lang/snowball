@@ -5,11 +5,10 @@
 
 #include <string>
 
-#define LEXER_ERROR(m_error, m_msg) throw SNError(m_error, std::string(m_msg));
 #define GET_CHAR(m_off) (                     \
-    ((size_t)char_ptr + m_off >= _source_info->get_code().size()) \
+    ((size_t)char_ptr + m_off >= _source_info->get_source().size()) \
         ? '\0'                                \
-        : _source_info->get_code()[(size_t)char_ptr + m_off]      \
+        : _source_info->get_source()[(size_t)char_ptr + m_off]      \
     )
 #define EAT_CHAR(m_num)      \
     {                        \
@@ -28,7 +27,7 @@ namespace snowball {
     }
 
     void Lexer::tokenize() {
-        std::string code = _source_info->get_code();
+        std::string code = _source_info->get_source();
 
         while (char_ptr < (int)code.size()) {
             tokenize_char();
@@ -73,7 +72,7 @@ namespace snowball {
 							EAT_CHAR(2);
 							break;
 						} else if (GET_CHAR(0) == 0) {
-							LEXER_ERROR(Error::UNEXPECTED_EOF, "");
+							lexer_error(Error::UNEXPECTED_EOF, "Found an unexpected EOF while parsing a comment", 1);
 						} else if (GET_CHAR(0) == '\n') {
 							EAT_LINE();
 						} else {
@@ -119,4 +118,8 @@ namespace snowball {
         EAT_CHAR(p_eat_size);
     }
 
+    void Lexer::lexer_error(Error m_error, std::string m_msg, int char_length) {
+        DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, std::pair<int, int>(cur_line, cur_col), char_length);
+        throw LexerError(m_error, std::string(m_msg), dbg_info);
+    }
 }

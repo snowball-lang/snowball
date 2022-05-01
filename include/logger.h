@@ -21,6 +21,8 @@ namespace snowball {
         static void verbose (std::string message);
         static void success (std::string message);
 
+        static std::string format(const char* p_format, ...);
+
     };
 }
 

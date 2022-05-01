@@ -9,7 +9,7 @@ INC_PATH := include
 CC := g++
 CCFLAGS := -Wall -Wextra -Wfatal-errors -fpermissive -I$(INC_PATH)
 DBGFLAGS :=
-CCOBJFLAGS := $(CCFLAGS) -c
+CCOBJFLAGS := $(CCFLAGS) -c -g
 
 # compile macros
 TARGET_NAME := snowball

@@ -8,5 +8,7 @@ namespace snowball {
         __RET_ERROR_IF_CODE(Error::BUG,               "BUG")
         __RET_ERROR_IF_CODE(Error::TODO,              "TODO")
         __RET_ERROR_IF_CODE(Error::UNEXPECTED_EOF,    "Unexpected EOF")
+
+        return "";
     }
 }

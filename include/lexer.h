@@ -1,5 +1,6 @@
 
 #include "token.h"
+#include "errors.h"
 #include "logger.h"
 #include "source_info.h"
 
@@ -24,6 +25,7 @@ namespace snowball {
             void handle_eof();
             void tokenize_char();
             void consume(TokenType p_tk, int p_eat_size = 1);
+            void lexer_error(Error m_error, std::string m_msg, int char_length);
 
             // vars
             SourceInfo* _source_info;

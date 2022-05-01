@@ -14,7 +14,7 @@ namespace snowball {
                 _path = p_path;
             };
 
-            std::string get_code() { return _code; };
+            std::string get_source() { return _code; };
             std::string get_path() { return _path; };
 
             ~SourceInfo() {};
