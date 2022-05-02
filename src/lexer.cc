@@ -291,6 +291,9 @@ namespace snowball {
 								EAT_CHAR(1);
 							}
 						} break;
+
+						default:
+							lexer_error(Error::BUG, Logger::format("Unreachable number mode \"%i\"", mode), num.size());
 					}
 
 					// "1." parsed as 1.0 which should be error.
