@@ -259,7 +259,6 @@ namespace snowball {
                     tk.line = cur_line;
                     tk.col = cur_col - (int)sizeof(num);
                     tk.value = num;
-					Logger::verbose(num);
 					if (mode == FLOAT){
                         tk.type = TokenType::VALUE_FLOAT;}
 					else{
@@ -269,6 +268,40 @@ namespace snowball {
                     break;
 				}
 				// identifier
+				if (IS_TEXT(GET_CHAR(0))) {
+					std::string identifier(1, GET_CHAR(0));
+					EAT_CHAR(1);
+					while (IS_TEXT(GET_CHAR(0)) || IS_NUM(GET_CHAR(0))) {
+						identifier += GET_CHAR(0);
+						EAT_CHAR(1);
+					}
+
+					Token tk;
+					tk.type = TokenType::IDENTIFIER;
+					tk.value = identifier; // method name may be builtin func
+					tk.col = cur_col - (int)identifier.size();
+					tk.line = cur_line;
+
+					if (identifier == "true" || identifier == "false") {
+						tk.type = TokenType::VALUE_BOOL;
+					} else if (identifier == "null") {
+						tk.type = TokenType::VALUE_NULL;
+					} else if (identifier == "and") {
+						tk.type = TokenType::OP_AND;
+					} else if (identifier == "and") {
+						tk.type = TokenType::OP_AND;
+					} else if (identifier == "or") {
+						tk.type = TokenType::OP_OR;
+					} else if (identifier == "not") {
+						tk.type = TokenType::OP_NOT;
+					}
+
+					_tokens.push_back(tk);
+					EAT_CHAR(identifier.size());
+
+					break;
+				}
+
 
 				if (GET_CHAR(0) == '.') {
 					consume(TokenType::SYM_DOT);
