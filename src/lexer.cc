@@ -326,19 +326,32 @@ namespace snowball {
 					tk.col = cur_col - (int)identifier.size();
 					tk.line = cur_line;
 
-					if (identifier == "true" || identifier == "false") {
-						tk.type = TokenType::VALUE_BOOL;
-					} else if (identifier == "null") {
-						tk.type = TokenType::VALUE_NULL;
-					} else if (identifier == "and") {
-						tk.type = TokenType::OP_AND;
-					} else if (identifier == "and") {
-						tk.type = TokenType::OP_AND;
-					} else if (identifier == "or") {
-						tk.type = TokenType::OP_OR;
-					} else if (identifier == "not") {
-						tk.type = TokenType::OP_NOT;
-					}
+					if (identifier == "null") { tk.type = TokenType::VALUE_NULL; 								}
+					else if (identifier == "or")   { tk.type = TokenType::OP_OR;  					 	  		}
+					else if (identifier == "and")  { tk.type = TokenType::OP_AND; 						  		}
+					else if (identifier == "and")  { tk.type = TokenType::OP_AND; 						  		}
+					else if (identifier == "not")  { tk.type = TokenType::OP_NOT; 						  		}
+
+					else if (identifier == "if")	   { tk.type = TokenType::KWORD_IF;							}
+					else if (identifier == "var")	   { tk.type = TokenType::KWORD_VAR;						}
+					else if (identifier == "for")	   { tk.type = TokenType::KWORD_FOR;						}
+					else if (identifier == "enum")	   { tk.type = TokenType::KWORD_ENUM;						}
+					else if (identifier == "this")	   { tk.type = TokenType::KWORD_THIS;						}
+					else if (identifier == "case")	   { tk.type = TokenType::KWORD_CASE;						}
+					else if (identifier == "func")	   { tk.type = TokenType::KWORD_FUNC;						}
+					else if (identifier == "else")	   { tk.type = TokenType::KWORD_ELSE;						}
+					else if (identifier == "class")	   { tk.type = TokenType::KWORD_CLASS;						}
+					else if (identifier == "const")	   { tk.type = TokenType::KWORD_CONST;						}
+					else if (identifier == "while")	   { tk.type = TokenType::KWORD_WHILE;						}
+					else if (identifier == "super")	   { tk.type = TokenType::KWORD_SUPER;						}
+					else if (identifier == "switch")   { tk.type = TokenType::KWORD_SWITCH;						}
+					else if (identifier == "static")   { tk.type = TokenType::KWORD_STATIC;						}
+					else if (identifier == "import")   { tk.type = TokenType::KWORD_IMPORT;						}
+					else if (identifier == "return")   { tk.type = TokenType::KWORD_RETURN;						}
+					else if (identifier == "default")  { tk.type = TokenType::KWORD_DEFAULT;					}
+					else if (identifier == "continue") { tk.type = TokenType::KWORD_CONTINUE;					}
+
+					else if (identifier == "true" || identifier == "false") { tk.type = TokenType::VALUE_BOOL;	}
 
 					_tokens.push_back(tk);
 					EAT_CHAR(identifier.size());
