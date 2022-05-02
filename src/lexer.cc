@@ -191,6 +191,48 @@ namespace snowball {
 				break;
 			}
 
+			case '"': {
+				EAT_CHAR(1);
+				std::string str;
+				while (GET_CHAR(0) != '"') {
+					if (GET_CHAR(0) == '\\') {
+						char c = GET_CHAR(1);
+
+						switch (c) {
+							case 0:
+								lexer_error(Error::UNEXPECTED_EOF, "unexpected EOF while parsing a String scape.");
+								break;
+							case '\\': str += '\\'; EAT_CHAR(2); break;
+							case '\'': str += '\''; EAT_CHAR(2); break;
+							case 't':  str += '\t'; EAT_CHAR(2); break;
+							case 'n':  str += '\n'; EAT_CHAR(2); break;
+							case '"':  str += '"';  EAT_CHAR(2); break;
+							case 'r':  str += '\r'; EAT_CHAR(2); break;
+							case '\n': EAT_CHAR(1); EAT_LINE(); break;
+							default:
+								lexer_error(Error::SYNTAX_ERROR, "invalid escape character", 2);
+						}
+					} else if (GET_CHAR(0) == 0) {
+						lexer_error(Error::UNEXPECTED_EOF, "unexpected EOF while parsing String.");
+						break;
+					} else {
+						str += GET_CHAR(0);
+						if (GET_CHAR(0) == '\n') { EAT_LINE(); }
+						else { EAT_CHAR(1); }
+					}
+				}
+				EAT_CHAR(1);
+
+				Token tk;
+				tk.type = TokenType::VALUE_STRING;
+				tk.value = str; // method name may be builtin func
+				tk.col = cur_col - (int)str.size();
+				tk.line = cur_line;
+				_tokens.push_back(tk);
+
+				break;
+			}
+
             default:
 				// TODO: 1.2e3 => is a valid float number
 
@@ -254,7 +296,6 @@ namespace snowball {
 					// "1." parsed as 1.0 which should be error.
 					if (num[num.size()-1] == '.') lexer_error(Error::SYNTAX_ERROR, "invalid numeric value.");
 
-
                     Token tk;
                     tk.line = cur_line;
                     tk.col = cur_col - (int)sizeof(num);
@@ -308,7 +349,7 @@ namespace snowball {
 					break;
 				}
 
-                break;
+				lexer_error(Error::SYNTAX_ERROR, Logger::format("unknown character '%c' in parsing.", GET_CHAR(0)), 1);
             }
     }
 
