@@ -1,4 +1,5 @@
 
+#include <stdint.h>
 
 #ifndef __SNOWBALL_NODE_H_
 #define __SNOWBALL_NODE_H_

@@ -4,6 +4,7 @@
 #include "errors.h"
 
 #include <string>
+#include <vector>
 
 #define GET_CHAR(m_off) (                     \
     ((size_t)char_ptr + m_off >= _source_info->get_source().size()) \
@@ -398,4 +399,8 @@ namespace snowball {
         DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, std::pair<int, int>(cur_line, cur_col), char_length);
         throw LexerError(m_error, std::string(m_msg), dbg_info);
     }
+
+	std::vector<Token> Lexer::get_tokens() {
+		return _tokens;
+	}
 }

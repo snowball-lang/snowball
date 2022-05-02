@@ -1,5 +1,8 @@
 
 #include <string>
+
+#include "lexer.h"
+#include "parser.h"
 #include "source_info.h"
 
 #ifndef __SNOWBALL_COMPILER_H_
@@ -28,6 +31,7 @@ namespace snowball {
             bool _initialized = false;
 
             Lexer* _lexer;
+            Parser* _parser;
 
             // methods
             void create_source_info();
