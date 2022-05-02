@@ -12,6 +12,7 @@
 
 namespace snowball {
     enum Error {
+        SYNTAX_ERROR,
         UNEXPECTED_EOF,
 
         BUG,

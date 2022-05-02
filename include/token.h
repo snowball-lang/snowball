@@ -35,6 +35,7 @@ namespace snowball {
 
         // Literal values
         VALUE_NUMBER,
+        VALUE_FLOAT,
         VALUE_NULL,
         VALUE_BOOL,
         VALUE_STRING,
@@ -288,6 +289,7 @@ namespace snowball {
                 case TokenType::VALUE_NULL:         return "null";
 
                 case TokenType::VALUE_NUMBER:
+                case TokenType::VALUE_FLOAT:
                 case TokenType::VALUE_BOOL:
                     return value;
 
