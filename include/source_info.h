@@ -10,6 +10,7 @@ namespace snowball {
 
         public:
             SourceInfo(std::string p_code = "", std::string p_path = "<anonimus>") {
+                p_code.push_back('\0'); // Just in case.
                 _code = p_code;
                 _path = p_path;
             };

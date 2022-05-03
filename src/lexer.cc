@@ -229,7 +229,7 @@ namespace snowball {
 				tk.value = str; // method name may be builtin func
 				tk.col = cur_col - (int)str.size();
 				tk.line = cur_line;
-				_tokens.push_back(tk);
+				tokens.emplace_back(tk);
 
 				break;
 			}
@@ -252,7 +252,7 @@ namespace snowball {
                     tk.line = cur_line;
                     tk.col = cur_col - (int)sizeof(float_str);
                     tk.value = float_val;
-                    _tokens.push_back(tk);
+                    tokens.emplace_back(tk);
 					break;
 				}
 
@@ -309,7 +309,7 @@ namespace snowball {
 					else{
 	                    tk.type = TokenType::VALUE_NUMBER;}
 
-                    _tokens.push_back(tk);
+                    tokens.emplace_back(tk);
                     break;
 				}
 				// identifier
@@ -322,7 +322,6 @@ namespace snowball {
 					}
 
 					Token tk;
-					tk.type = TokenType::IDENTIFIER;
 					tk.value = identifier; // method name may be builtin func
 					tk.col = cur_col - (int)identifier.size();
 					tk.line = cur_line;
@@ -353,8 +352,11 @@ namespace snowball {
 					else if (identifier == "continue") { tk.type = TokenType::KWORD_CONTINUE;					}
 
 					else if (identifier == "true" || identifier == "false") { tk.type = TokenType::VALUE_BOOL;	}
+					else {
+						tk.type = TokenType::IDENTIFIER;
+					}
 
-					_tokens.push_back(tk);
+					tokens.emplace_back(tk);
 					EAT_CHAR(identifier.size());
 
 					break;
@@ -382,7 +384,7 @@ namespace snowball {
         tk.col = cur_col;
 
         // Add token to the list of tokens
-        _tokens.push_back(tk);
+        tokens.emplace_back(tk);
         EAT_CHAR(1);
     }
 
@@ -391,7 +393,7 @@ namespace snowball {
         tk.type = p_tk;
         tk.line = cur_line;
         tk.col = cur_col;
-        _tokens.push_back(tk);
+        tokens.emplace_back(tk);
         EAT_CHAR(p_eat_size);
     }
 
@@ -399,8 +401,4 @@ namespace snowball {
         DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, std::pair<int, int>(cur_line, cur_col), char_length);
         throw LexerError(m_error, std::string(m_msg), dbg_info);
     }
-
-	std::vector<Token> Lexer::get_tokens() {
-		return _tokens;
-	}
 }

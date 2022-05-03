@@ -17,7 +17,7 @@ namespace snowball {
             Lexer(SourceInfo* p_source_info);
 
             void tokenize();
-            std::vector<Token> get_tokens();
+            std::vector<Token> tokens;
 
             ~Lexer() {};
 
@@ -35,7 +35,6 @@ namespace snowball {
             int cur_col = 1;
 
             int char_ptr = 0;
-            std::vector<Token> _tokens;
     };
 }
 

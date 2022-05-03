@@ -25,7 +25,7 @@ namespace snowball {
         _lexer = new Lexer(_source_info);
         _lexer->tokenize();
 
-        _parser = new Parser(_lexer);
+        _parser = new Parser(_lexer, _source_info);
         _parser->parse();
     }
 

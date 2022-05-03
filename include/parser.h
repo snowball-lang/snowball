@@ -9,14 +9,24 @@ namespace snowball {
     class Parser {
 
         public:
-            Parser(Lexer* p_lexer) : _lexer(p_lexer) { _current_token = _lexer->get_tokens().begin(); };
+            Parser(Lexer* p_lexer, SourceInfo* p_source_info) : _lexer(p_lexer) {
+                _tokens = _lexer->tokens;
+                _source_info = p_source_info;
+                _current_token = _tokens[__token_possition];
+            };
+
             void parse();
 
             ~Parser() {};
 
         private:
+            void next_token(int p_offset = 0);
+
             Lexer* _lexer;
-            std::vector<Token>::iterator _current_token;
+            Token _current_token;
+            SourceInfo* _source_info;
+            int __token_possition = 0;
+            std::vector<Token> _tokens;
     };
 
 }
