@@ -1,4 +1,5 @@
 
+#include "nodes.h"
 #include "errors.h"
 #include "parser.h"
 #include <string>
@@ -13,12 +14,32 @@ namespace snowball {
                 case TokenType::_EOF:
                     return;
 
+                case TokenType::KWORD_FUNC: {
+                    FunctionNode function = _parse_function();
+                    _functions.push_back(function);
+                }
+
+                case TokenType::SYM_SEMI_COLLON:
+			    case TokenType::VALUE_STRING:
+                case TokenType::VALUE_BOOL:
+                case TokenType::VALUE_NUMBER:
+                case TokenType::VALUE_FLOAT:
+                    break;
+
                 default:
                     break;
             }
 
             next_token();
         }
+    }
+
+    // Parse methods
+    FunctionNode Parser::_parse_function() {
+        FunctionNode func;
+
+        func.name = "test";
+        return func;
     }
 
     // Private

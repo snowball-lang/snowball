@@ -1,4 +1,5 @@
 
+#include <string>
 #include <stdint.h>
 
 #ifndef __SNOWBALL_NODE_H_
@@ -37,7 +38,9 @@ namespace snowball {
         Node* parent_node;
     };
 
-
+	struct FunctionNode : public Node {
+		std::string name;
+	};
 }
 
 #endif // __SNOWBALL_NODE_H_
