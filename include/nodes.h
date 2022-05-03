@@ -35,11 +35,15 @@ namespace snowball {
 		};
         Type type = Type::UNKNOWN;
         uint32_t width = 1; // width of the node ^^^^ (dbg).
-        Node* parent_node;
+        // Node* parent_node; // TODO
     };
 
 	struct FunctionNode : public Node {
 		std::string name;
+		Type type = Type::FUNCTION;
+
+		FunctionNode() {};
+		~FunctionNode() {};
 	};
 }
 

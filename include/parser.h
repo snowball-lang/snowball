@@ -2,6 +2,8 @@
 #include "nodes.h"
 #include "lexer.h"
 
+#include <memory>
+
 #ifndef __SNOWBALL_PARSER_H_
 #define __SNOWBALL_PARSER_H_
 
@@ -22,9 +24,11 @@ namespace snowball {
 
         private:
             void next_token(int p_offset = 0);
+            Token peek(int p_offset = 0, bool p_safe = false);
+            void _parser_error(Error type, std::string msg);
 
             // Parser methods
-            FunctionNode _parse_function();
+            std::unique_ptr<FunctionNode> _parse_function();
 
             // Variables
             Lexer* _lexer;
@@ -35,7 +39,7 @@ namespace snowball {
 
             std::vector<Token> _tokens;
 
-            std::vector<FunctionNode> _functions;
+            std::vector<std::unique_ptr<FunctionNode>> _functions;
     };
 
 }

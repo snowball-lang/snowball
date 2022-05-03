@@ -47,6 +47,10 @@ namespace snowball {
         while (char_ptr < (int)code.size()) {
             tokenize_char();
         }
+
+		if ((*tokens.end()).type != TokenType::_EOF) {
+			handle_eof(false);
+		}
     }
 
     void Lexer::tokenize_char() {
@@ -373,7 +377,7 @@ namespace snowball {
     }
 
 
-    void Lexer::handle_eof() {
+    void Lexer::handle_eof(bool p_consume) {
         // Declare a new Token
         Token tk;
 
@@ -385,7 +389,10 @@ namespace snowball {
 
         // Add token to the list of tokens
         tokens.emplace_back(tk);
-        EAT_CHAR(1);
+
+		if (p_consume) {
+	        EAT_CHAR(1);
+		}
     }
 
     void Lexer::consume(TokenType p_tk, int p_eat_size) {
