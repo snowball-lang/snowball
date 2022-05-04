@@ -1,5 +1,5 @@
 
-#include "dbg_info.h"
+#include "snowball/dbg_info.h"
 
 #include <string>
 #include <sstream>

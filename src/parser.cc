@@ -1,7 +1,7 @@
 
-#include "nodes.h"
-#include "errors.h"
-#include "parser.h"
+#include "snowball/nodes.h"
+#include "snowball/errors.h"
+#include "snowball/parser.h"
 
 #include <string>
 #include <memory>

@@ -1,5 +1,5 @@
 
-#include "logger.h"
+#include "snowball/logger.h"
 
 #include <string>
 #include <cstdarg>

@@ -34,3 +34,9 @@
 bin/
 debug/
 obj/
+
+Makefile
+snowball
+cmake_install.cmake
+CMakeCache.txt
+CMakeFiles/

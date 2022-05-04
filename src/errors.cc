@@ -1,5 +1,5 @@
 
-#include "errors.h"
+#include "snowball/errors.h"
 
 #define __RET_ERROR_IF_CODE(x, err) if (code == x) return err;
 

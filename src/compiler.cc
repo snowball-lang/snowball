@@ -1,7 +1,7 @@
 
-#include "lexer.h"
-#include "lexer.h"
-#include "compiler.h"
+#include "snowball/lexer.h"
+#include "snowball/lexer.h"
+#include "snowball/compiler.h"
 
 #include <string>
 

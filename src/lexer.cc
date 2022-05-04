@@ -1,7 +1,7 @@
 
-#include "lexer.h"
-#include "token.h"
-#include "errors.h"
+#include "snowball/lexer.h"
+#include "snowball/token.h"
+#include "snowball/errors.h"
 
 #include <string>
 #include <vector>
