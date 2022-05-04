@@ -361,7 +361,6 @@ namespace snowball {
 					}
 
 					tokens.emplace_back(tk);
-					EAT_CHAR(identifier.size());
 
 					break;
 				}
