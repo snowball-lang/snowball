@@ -73,7 +73,7 @@ namespace snowball {
                 break;
 
             default:
-                UNEXPECTED_TOK(Logger::format("a %sleft curly bracket%s or a %sleft parenthesys%s", BLU, RESET, BLU, RESET).c_str())
+                UNEXPECTED_TOK(Logger::format("a %sleft curly bracket%s or a %sleft parenthesis%s", BLU, RESET, BLU, RESET).c_str())
                 break;
         }
 
