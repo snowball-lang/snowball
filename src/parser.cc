@@ -1,5 +1,6 @@
 
 #include "snowball/nodes.h"
+#include "snowball/colors.h"
 #include "snowball/errors.h"
 #include "snowball/parser.h"
 
@@ -8,7 +9,9 @@
 #include <assert.h>
 
 #define ASSERT(x) assert(x);
+
 #define PARSER_ERROR(err, msg) _parser_error(err, msg);
+#define UNEXPECTED_TOK(expectation) PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Expected an %s, got %s%s%s", expectation, RED, _current_token.to_string().c_str(), RESET));
 
 namespace snowball {
 
@@ -56,7 +59,22 @@ namespace snowball {
             func->name = _current_token.to_string();
         } else {
             // TODO: maybe, anonimus functions?
-            PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Expected an identifier, got \"%s\"", _current_token.to_string().c_str()))
+            UNEXPECTED_TOK("an identifier")
+        }
+
+        next_token();
+
+        switch (_current_token.type)
+        {
+            case TokenType::BRACKET_LPARENT:
+                break;
+
+            case TokenType::BRACKET_LCURLY:
+                break;
+
+            default:
+                UNEXPECTED_TOK(Logger::format("a %sleft curly bracket%s or a %sleft parenthesys%s", BLU, RESET, BLU, RESET).c_str())
+                break;
         }
 
         return func;
