@@ -8,11 +8,7 @@
     <a href=""><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="">Website</a>
-    ·
-    <a href="">Report Bug</a>
-    ·
-    <a href="">Request Feature</a>
+    <a href="">Website</a> ·<a href="">Report Bug</a>·<a href="">Request Feature</a>
 </p>
 
 <hr>
