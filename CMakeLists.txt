@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
 project(snowball)
 
+find_package(LLVM REQUIRED CONFIG)
+add_definitions(${LLVM_DEFINITIONS})
+
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+
 set(CMAKE_CXX_STANDARD 14)
 file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/*.hpp)
 file(GLOB_RECURSE PROJECT_SOURCES src/*.cc src/*.c)
@@ -12,9 +18,24 @@ set (PROJECT_FILES
   ${PROJECT_SOURCES}
   ${PROJECT_CMAKE_UTILS}
   ${PROJECT_MISC}
-  ${PROJECT_EXPORT_HPP})
+  ${PROJECT_EXPORT_HPP}
+  ${LLVM_INCLUDE_DIRS})
 
-find_package(LLVM REQUIRED CONFIG)
+# Map llvm components
+llvm_map_components_to_libnames(llvm_libs
+    Analysis
+    Core
+    ExecutionEngine
+    InstCombine
+    Object
+    OrcJIT
+    # RuntimeOyld
+    ScalarOpts
+    Support
+    native
+)
+
+
 
 ##################################################    Targets     ##################################################
 add_executable(snowball ${PROJECT_FILES})
@@ -41,18 +62,4 @@ generate_export_header(${PROJECT_NAME}
   EXPORT_FILE_NAME     ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/export.hpp
   EXPORT_MACRO_NAME    ${PROJECT_NAME_UPPER}_EXPORT
   STATIC_DEFINE        ${PROJECT_NAME_UPPER}_STATIC
-)
-
-# import llvm and header files
-llvm_map_components_to_libnames(llvm_libs
-    Analysis
-    Core
-    ExecutionEngine
-    InstCombine
-    Object
-    OrcJIT
-    # RuntimeOyld
-    ScalarOpts
-    Support
-    native
 )

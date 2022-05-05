@@ -9,7 +9,7 @@
 #  ifndef SNOWBALL_EXPORT
 #    ifdef snowball_EXPORTS
         /* We are building this library */
-#      define SNOWBALL_EXPORT 
+#      define SNOWBALL_EXPORT
 #    else
         /* We are using this library */
 #      define SNOWBALL_EXPORT 

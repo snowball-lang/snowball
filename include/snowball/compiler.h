@@ -1,9 +1,12 @@
 
 #include <string>
 
+
 #include "lexer.h"
 #include "parser.h"
 #include "source_info.h"
+
+#include "llvm/IR/Module.h"
 
 #ifndef __SNOWBALL_COMPILER_H_
 #define __SNOWBALL_COMPILER_H_
@@ -24,6 +27,11 @@ namespace snowball {
             ~Compiler() {};
 
         private:
+            // llvm
+            std::unique_ptr<llvm::Module> _module;
+            llvm::LLVMContext _global_context;
+
+            // variables
             std::string _code;
             std::string _path;
 
