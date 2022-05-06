@@ -52,7 +52,6 @@ namespace snowball {
         _parser->parse();
 
         _module->print(llvm::errs(),nullptr,false,true);
-
         _module.reset();
     }
 

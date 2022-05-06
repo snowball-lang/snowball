@@ -45,6 +45,7 @@ namespace snowball {
 
     // Parse methods
     std::unique_ptr<FunctionNode> Parser::_parse_function() {
+        PARSER_ERROR(Error::TODO, "Functions are not yet supported.")
         auto func = std::make_unique<FunctionNode>();
 
         // Assert if the token is the "func" keyword
@@ -63,6 +64,7 @@ namespace snowball {
         }
 
         next_token();
+
 
         switch (_current_token.type)
         {
