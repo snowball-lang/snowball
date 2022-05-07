@@ -11,5 +11,6 @@
 #include "compiler.h"
 #include "dbg_info.h"
 #include "source_info.h"
+#include "enviroment/scopes.h"
 
 #endif // __SNOWBALL_H_

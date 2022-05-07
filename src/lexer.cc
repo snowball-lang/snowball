@@ -333,7 +333,6 @@ namespace snowball {
 					if (identifier == "null") { tk.type = TokenType::VALUE_NULL; 								}
 					else if (identifier == "or")       { tk.type = TokenType::OP_OR; 							}
 					else if (identifier == "and")      { tk.type = TokenType::OP_AND; 						  	}
-					else if (identifier == "and")      { tk.type = TokenType::OP_AND; 						  	}
 					else if (identifier == "not")  	   { tk.type = TokenType::OP_NOT; 						  	}
 
 					else if (identifier == "if")	   { tk.type = TokenType::KWORD_IF;							}
@@ -361,7 +360,6 @@ namespace snowball {
 					}
 
 					tokens.emplace_back(tk);
-
 					break;
 				}
 
