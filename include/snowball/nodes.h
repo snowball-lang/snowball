@@ -45,6 +45,16 @@ namespace snowball {
 		FunctionNode() {};
 		~FunctionNode() {};
 	};
+
+	struct VarNode : public Node {
+		std::string name;
+		Type type = Type::VAR;
+
+		Node expr;
+
+		VarNode() {};
+		~VarNode() {};
+	};
 }
 
 #endif // __SNOWBALL_NODE_H_

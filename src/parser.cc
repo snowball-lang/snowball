@@ -28,6 +28,10 @@ namespace snowball {
                     break;
                 }
 
+                case TokenType::KWORD_VAR: {
+
+                }
+
                 case TokenType::SYM_SEMI_COLLON:
 			    case TokenType::VALUE_STRING:
                 case TokenType::VALUE_BOOL:
@@ -36,6 +40,7 @@ namespace snowball {
                     break;
 
                 default:
+                    PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Unexpected token found: %s%s%s", BLU, _current_token.to_string().c_str(), RESET))
                     break;
             }
 
@@ -44,6 +49,9 @@ namespace snowball {
     }
 
     // Parse methods
+
+    std::unique_ptr<Var
+
     std::unique_ptr<FunctionNode> Parser::_parse_function() {
         PARSER_ERROR(Error::TODO, "Functions are not yet supported.")
         auto func = std::make_unique<FunctionNode>();
