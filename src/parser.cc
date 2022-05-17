@@ -50,8 +50,6 @@ namespace snowball {
 
     // Parse methods
 
-    std::unique_ptr<Var
-
     std::unique_ptr<FunctionNode> Parser::_parse_function() {
         PARSER_ERROR(Error::TODO, "Functions are not yet supported.")
         auto func = std::make_unique<FunctionNode>();
