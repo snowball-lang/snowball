@@ -29,6 +29,7 @@ namespace snowball {
 
             // Parser methods
             std::unique_ptr<FunctionNode> _parse_function();
+            std::unique_ptr<VarNode> _parse_variable();
 
             // Variables
             Lexer* _lexer;

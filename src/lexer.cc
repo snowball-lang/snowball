@@ -330,7 +330,7 @@ namespace snowball {
 					tk.col = cur_col - (int)identifier.size();
 					tk.line = cur_line;
 
-					if (identifier == "null") { tk.type = TokenType::VALUE_NULL; 								}
+					if (identifier == "null") 		   { tk.type = TokenType::VALUE_NULL;						}
 					else if (identifier == "or")       { tk.type = TokenType::OP_OR; 							}
 					else if (identifier == "and")      { tk.type = TokenType::OP_AND; 						  	}
 					else if (identifier == "not")  	   { tk.type = TokenType::OP_NOT; 						  	}
@@ -353,6 +353,7 @@ namespace snowball {
 					else if (identifier == "return")   { tk.type = TokenType::KWORD_RETURN;						}
 					else if (identifier == "default")  { tk.type = TokenType::KWORD_DEFAULT;					}
 					else if (identifier == "continue") { tk.type = TokenType::KWORD_CONTINUE;					}
+					else if (identifier == "undefined"){ tk.type = TokenType::VALUE_UNDEFINED;					}
 
 					else if (identifier == "true" || identifier == "false") { tk.type = TokenType::VALUE_BOOL;	}
 					else {

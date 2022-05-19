@@ -34,6 +34,7 @@ namespace snowball {
         BUILTIN_TYPE,
 
         // Literal values
+        VALUE_UNDEFINED,
         VALUE_NUMBER,
         VALUE_FLOAT,
         VALUE_NULL,
@@ -287,6 +288,7 @@ namespace snowball {
 
                 // Literal values
                 case TokenType::VALUE_NULL:         return "null";
+                case TokenType::VALUE_UNDEFINED:    return "undefined";
 
                 case TokenType::VALUE_NUMBER:
                 case TokenType::VALUE_FLOAT:
