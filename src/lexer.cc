@@ -36,23 +36,52 @@
 ( (c == '_') || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') )
 
 
+
 namespace snowball {
+	/*=======================================
+   	 * Lexer constructor. used to set some
+	 * variables to the Lexer class.
+	 *
+	 * @params: SourceInfo* p_source_info
+	 *=======================================*/
     Lexer::Lexer(SourceInfo* p_source_info) {
         _source_info = p_source_info;
     }
 
+	/*=======================================
+   	 * Convert the source code into an array
+	 * of tokens.
+	 *=======================================*/
     void Lexer::tokenize() {
         std::string code = _source_info->get_source();
 
+		// Iterate every character of the source code
+		// and tokenize that char. Tokenizing it will
+		// mean that respective Token for the current
+		// char will also be added to the Token array
         while (char_ptr < (int)code.size()) {
             tokenize_char();
         }
 
+		// For some reason, sometimes the tokenizer
+		// does not detect the end of the source code.
+		// that is why we add a Token with _EOF type to
+		// the Token array (for later use in the parser)
 		if ((*tokens.end()).type != TokenType::_EOF) {
+
+			// add "false" as a param for "p_consume"
+			// so that the lexer does not "consume"
 			handle_eof(false);
 		}
     }
 
+	/*=======================================
+   	 * Tokenize the current character and add
+	 * it to the Token's array
+	 *
+	 * note: this is called after each
+	 * 	iteration of Lexer::tokenize()
+	 *=======================================*/
     void Lexer::tokenize_char() {
         switch (GET_CHAR(0))
         {
@@ -74,9 +103,11 @@ namespace snowball {
 			{
 				if (GET_CHAR(1) == '/') { // comment
 
+					// Skip characters until we encounter _EOF or NEW_LINE
 					while (GET_CHAR(0) != '\n' && GET_CHAR(0) != 0 ) {
 						EAT_CHAR(1);
 					}
+
 					if (GET_CHAR(0) == '\n') {
 						EAT_LINE();
 					} else if (GET_CHAR(0) == 0) {
@@ -374,7 +405,11 @@ namespace snowball {
             }
     }
 
-
+	/*=======================================
+   	 * Add Token to the array with type _EOF
+	 * and consume that token if "p_consume"
+	 * is set to true.
+	 *=======================================*/
     void Lexer::handle_eof(bool p_consume) {
         // Declare a new Token
         Token tk;
@@ -393,6 +428,11 @@ namespace snowball {
 		}
     }
 
+	/*=======================================
+   	 * Create a new token and add it to the
+	 * Token array. We will also consume that
+	 * character.
+	 *=======================================*/
     void Lexer::consume(TokenType p_tk, int p_eat_size) {
         Token tk;
         tk.type = p_tk;
@@ -402,6 +442,10 @@ namespace snowball {
         EAT_CHAR(p_eat_size);
     }
 
+	/*=======================================
+   	 * Used to create a new Debug Source Info
+	 * and throw a new LexerError.
+	 *=======================================*/
     void Lexer::lexer_error(Error m_error, std::string m_msg, int char_length) {
         DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, std::pair<int, int>(cur_line, cur_col), char_length);
         throw LexerError(m_error, std::string(m_msg), dbg_info);
