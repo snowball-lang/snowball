@@ -5,6 +5,11 @@
 #ifndef __SNOWBALL_LOGGER_H_
 #define __SNOWBALL_LOGGER_H_
 
+#define VSNPRINTF_BUFF_SIZE 8192
+
+// TODO: check if debug is ON
+#define DUMP(varname) fprintf(stderr, "%s (%s) = %i\n", #varname, typeid(varname).name(), varname);
+
 namespace snowball {
 
     class Logger {

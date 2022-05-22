@@ -183,7 +183,6 @@ namespace snowball {
         */
         _EOF,              // End of file. This already exists in <stdio.h>
         UNKNOWN,           // Other
-        _TK_MAX_,          // Max token
     };
 
     struct Token {
@@ -300,8 +299,7 @@ namespace snowball {
 
                 // Other
                 case TokenType::UNKNOWN: return "<unknown>";
-                case TokenType::_EOF:    return "<eof>";
-                case TokenType::_TK_MAX_: return "<_TK_MAX_>";
+                case TokenType::_EOF:    return "<EOF>";
 
                 default:
                     return "<BUG>";

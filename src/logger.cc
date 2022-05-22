@@ -4,8 +4,6 @@
 #include <string>
 #include <cstdarg>
 
-#define VSNPRINTF_BUFF_SIZE 8192
-
 namespace snowball {
     void Logger::log(std::string message)     { printf("%s\n", message.c_str());                           }
     void Logger::rlog(std::string message)    { printf("%s\n", message.c_str());                           }
