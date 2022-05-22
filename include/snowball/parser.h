@@ -31,6 +31,7 @@ namespace snowball {
             std::unique_ptr<FunctionNode> _parse_function();
             std::unique_ptr<VarNode> _parse_variable();
             void _parse_expression();
+            std::unique_ptr<Node> _build_op_tree(std::vector<Node> expressions);
 
             // Variables
             Lexer* _lexer;

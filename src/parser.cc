@@ -105,15 +105,11 @@ namespace snowball {
                 case TokenType::OP_MINUS:
                 case TokenType::OP_BIT_NOT:
 
-                    if (_current_token.type == TokenType::OP_NOT)     expressions.push_back(BinaryOp(BinaryOp::OpType::OP_NOT))     ;
-                    if (_current_token.type == TokenType::OP_PLUS)    expressions.push_back(BinaryOp(BinaryOp::OpType::OP_PLUS))    ;
-                    if (_current_token.type == TokenType::OP_MINUS)   expressions.push_back(BinaryOp(BinaryOp::OpType::OP_MINUS))   ;
-                    if (_current_token.type == TokenType::OP_BIT_NOT) expressions.push_back(BinaryOp(BinaryOp::OpType::OP_BIT_NOT)) ;
+                    if (_current_token.type == TokenType::OP_NOT)     expressions.push_back(BinaryOp(OpType::OP_NOT))     ;
+                    if (_current_token.type == TokenType::OP_PLUS)    expressions.push_back(BinaryOp(OpType::OP_PLUS))    ;
+                    if (_current_token.type == TokenType::OP_MINUS)   expressions.push_back(BinaryOp(OpType::OP_MINUS))   ;
+                    if (_current_token.type == TokenType::OP_BIT_NOT) expressions.push_back(BinaryOp(OpType::OP_BIT_NOT)) ;
 
-                    break;
-
-                case TokenType::_EOF:
-                case TokenType::SYM_SEMI_COLLON:
                     break;
 
                 default:
@@ -122,11 +118,11 @@ namespace snowball {
 
             Token tk = peek(0, true);
 
-            BinaryOp::OpType op;
+            OpType op;
             bool valid = true;
 
             switch (tk.type) {
-            #define OP_CASE(m_op) case TokenType::m_op: op = BinaryOp::OpType::m_op; break;
+            #define OP_CASE(m_op) case TokenType::m_op: op = OpType::m_op; break;
                 OP_CASE(OP_EQ);
                 OP_CASE(OP_EQEQ);
                 OP_CASE(OP_PLUS);
@@ -174,9 +170,148 @@ namespace snowball {
 
         }
 
-        for(int i = 0; i < expressions.size(); i++) {
-            DUMP(expressions.at(i).type)
+        std::unique_ptr<Node> op_tree = _build_op_tree(expressions);
+    }
+
+    std::unique_ptr<Node> Parser::_build_op_tree(std::vector<Node> expressions) {
+        ASSERT(expressions.size() > 0)
+
+        while (expressions.size() > 1) {
+
+            int next_op = -1;
+            int min_precedence = 0xFFFFF;
+            bool unary = false;
+
+            for (int i = 0; i < (int)expressions.size(); i++) {
+                if (!(expressions[i].type == Node::Type::OPERATOR)) {
+                    continue;
+                }
+
+                int precedence = -1;
+                switch (expressions[i].op_type) {
+                    case OpType::OP_NOT:
+                    case OpType::OP_BIT_NOT:
+                    case OpType::OP_POSITIVE:
+                    case OpType::OP_NEGATIVE:
+                        min_precedence = 0;
+                        break;
+
+                    case OpType::OP_MUL:
+                    case OpType::OP_DIV:
+                    case OpType::OP_MOD:
+                        min_precedence = 1;
+                        break;
+
+                    case OpType::OP_PLUS:
+                    case OpType::OP_MINUS:
+                        min_precedence = 2;
+                        break;
+
+                    case OpType::OP_BIT_LSHIFT:
+                    case OpType::OP_BIT_RSHIFT:
+                        min_precedence = 3;
+                        break;
+
+                    case OpType::OP_LT:
+                    case OpType::OP_LTEQ:
+                    case OpType::OP_GT:
+                    case OpType::OP_GTEQ:
+                        min_precedence = 4;
+                        break;
+
+                    case OpType::OP_EQEQ:
+                    case OpType::OP_NOTEQ:
+                        min_precedence = 5;
+                        break;
+
+                    case OpType::OP_BIT_AND:
+                        min_precedence = 6;
+                        break;
+
+                    case OpType::OP_BIT_XOR:
+                        min_precedence = 7;
+                        break;
+
+                    case OpType::OP_BIT_OR:
+                        min_precedence = 8;
+                        break;
+
+                    case OpType::OP_AND:
+                        min_precedence = 9;
+                        break;
+
+                    case OpType::OP_OR:
+                        min_precedence = 10;
+                        break;
+
+                    case OpType::OP_EQ:
+                    case OpType::OP_PLUSEQ:
+                    case OpType::OP_MINUSEQ:
+                    case OpType::OP_MULEQ:
+                    case OpType::OP_DIVEQ:
+                    case OpType::OP_MOD_EQ:
+                    case OpType::OP_BIT_LSHIFT_EQ:
+                    case OpType::OP_BIT_RSHIFT_EQ:
+                    case OpType::OP_BIT_AND_EQ:
+                    case OpType::OP_BIT_XOR_EQ:
+                    case OpType::OP_BIT_OR_EQ:
+                        min_precedence = 11;
+                        break;
+
+                    case OpType::NONE:
+                        min_precedence = -1;
+                        break;
+                }
+
+                if (precedence < min_precedence) {
+                    min_precedence = precedence;
+                    next_op = i;
+                    OpType op = expressions[i].op_type;
+                    unary = (
+                        op == OpType::OP_NOT      ||
+                        op == OpType::OP_BIT_NOT  ||
+                        op == OpType::OP_POSITIVE ||
+                        op == OpType::OP_NEGATIVE );
+                }
+            }
+
+            ASSERT(next_op >= 0);
+
+            if (unary) {
+
+                // TODO
+
+            } else {
+                ASSERT(next_op >= 1 && next_op < (int)expressions.size() - 1)
+                ASSERT((!(expressions[(size_t)next_op - 1].type == Node::Type::OPERATOR)) && (!(expressions[(size_t)next_op + 1].type == Node::Type::OPERATOR)));
+
+                BinaryOp op_node = BinaryOp((expressions[(size_t)next_op]));
+
+                if (expressions[(size_t)next_op - 1].type == Node::Type::OPERATOR) {
+                    if (BinaryOp::is_assignment(expressions[(size_t)next_op - 1])) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "unexpected assignment.")
+                    }
+                }
+
+                if (expressions[(size_t)next_op + 1].type == Node::Type::OPERATOR) {
+                    if (BinaryOp::is_assignment(expressions[(size_t)next_op - 1])) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "unexpected assignment.")
+                    }
+                }
+
+                op_node.exprs.push_back(expressions[(size_t)next_op - 1]);
+                op_node.exprs.push_back(expressions[(size_t)next_op + 1]);
+
+                expressions.erase(expressions.begin() + (next_op - 1));
+                expressions.insert((expressions.begin() + (next_op - 1)), op_node);
+
+                expressions.erase(expressions.begin() + next_op);
+                expressions.erase(expressions.begin() + next_op);
+            }
         }
+
+        ASSERT(expressions[0].type == Node::Type::OPERATOR);
+        return std::make_unique<Node>(expressions[0]);
     }
 
     std::unique_ptr<FunctionNode> Parser::_parse_function() {
