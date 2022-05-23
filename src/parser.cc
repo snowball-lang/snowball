@@ -78,13 +78,68 @@ namespace snowball {
         }
 
         // TODO: get return value
-        _parse_expression();
+        std::unique_ptr<Node> expr = _parse_expression();
 
         return var;
     }
 
+    std::unique_ptr<FunctionNode> Parser::_parse_function() {
+        PARSER_ERROR(Error::TODO, "Functions are not yet supported.")
+
+        // Assert if the token is the "func" keyword
+        // and consume it.
+        ASSERT(_current_token.type == TokenType::KWORD_FUNC)
+
+        auto func = std::make_unique<FunctionNode>();
+        next_token();
+
+        // Find function's name
+        ASSERT_TOKEN(_current_token, TokenType::IDENTIFIER, "an identifier")
+        func->name = _current_token.to_string();
+
+        next_token();
+        switch (_current_token.type)
+        {
+            case TokenType::BRACKET_LPARENT:
+                break;
+
+            case TokenType::BRACKET_LCURLY:
+                break;
+
+            default:
+                UNEXPECTED_TOK(Logger::format("a %sleft curly bracket%s or a %sleft parenthesis%s", BLU, RESET, BLU, RESET).c_str())
+                break;
+        }
+
+        return func;
+    }
+
+    // Private
+    void Parser::next_token(int p_offset) {
+        try {
+            __token_possition++;
+            _current_token = _tokens.at(__token_possition);
+        } catch (std::out_of_range& _) {
+            PARSER_ERROR(Error::BUG, "Index error")
+        }
+    }
+
+    Token Parser::peek(int p_offset, bool p_safe) {
+        Token tmp = { TokenType::_EOF };
+        if ((__token_possition + 1) + p_offset < 0 || (__token_possition + 1) + p_offset >= (int)_tokens.size()) {
+            if (p_safe) return tmp;
+            else PARSER_ERROR(Error::BUG, "Parser::peek() index out of bounds");
+        }
+        return _tokens.at((__token_possition + 1) + p_offset);
+    }
+
+    void Parser::_parser_error(Error type, std::string msg) {
+        DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, std::pair<int, int>(_current_token.line, _current_token.col), _current_token.to_string().size());
+        throw ParserError(type, msg, dbg_info);
+    }
+
     // TODO: return std::unique_ptr<Node>
-    void Parser::_parse_expression() {
+    std::unique_ptr<Node> Parser::_parse_expression() {
         std::vector<Node> expressions;
 
         while (true) {
@@ -105,10 +160,10 @@ namespace snowball {
                 case TokenType::OP_MINUS:
                 case TokenType::OP_BIT_NOT:
 
-                    if (_current_token.type == TokenType::OP_NOT)     expressions.push_back(BinaryOp(OpType::OP_NOT))     ;
-                    if (_current_token.type == TokenType::OP_PLUS)    expressions.push_back(BinaryOp(OpType::OP_PLUS))    ;
-                    if (_current_token.type == TokenType::OP_MINUS)   expressions.push_back(BinaryOp(OpType::OP_MINUS))   ;
-                    if (_current_token.type == TokenType::OP_BIT_NOT) expressions.push_back(BinaryOp(OpType::OP_BIT_NOT)) ;
+                    if (_current_token.type == TokenType::OP_NOT)     expressions.push_back(BinaryOp(OpType::OP_NOT))      ;
+                    if (_current_token.type == TokenType::OP_PLUS)    expressions.push_back(BinaryOp(OpType::OP_POSITIVE)) ;
+                    if (_current_token.type == TokenType::OP_MINUS)   expressions.push_back(BinaryOp(OpType::OP_NEGATIVE)) ;
+                    if (_current_token.type == TokenType::OP_BIT_NOT) expressions.push_back(BinaryOp(OpType::OP_BIT_NOT))  ;
 
                     break;
 
@@ -170,12 +225,12 @@ namespace snowball {
 
         }
 
-        std::unique_ptr<Node> op_tree = _build_op_tree(expressions);
+        Node op_tree = _build_op_tree(expressions);
+        return std::make_unique<Node>(op_tree);
     }
 
-    std::unique_ptr<Node> Parser::_build_op_tree(std::vector<Node> expressions) {
+    Node Parser::_build_op_tree(std::vector<Node> &expressions) {
         ASSERT(expressions.size() > 0)
-
         while (expressions.size() > 1) {
 
             int next_op = -1;
@@ -272,6 +327,7 @@ namespace snowball {
                         op == OpType::OP_BIT_NOT  ||
                         op == OpType::OP_POSITIVE ||
                         op == OpType::OP_NEGATIVE );
+                    // break;
                 }
             }
 
@@ -279,13 +335,29 @@ namespace snowball {
 
             if (unary) {
 
-                // TODO
+                int next_expr = next_op;
+                while (expressions[next_expr].type == Node::Type::OPERATOR) {
+                    if (++next_expr == expressions.size()) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected an expression.");
+                    }
+                }
 
+                for (int i = next_expr - 1; i >= next_op; i--) {
+                    Node op_node = BinaryOp(expressions[(size_t)i]);
+
+                    op_node.exprs.push_back(expressions[(size_t)i + 1]);
+                    expressions.erase(expressions.begin() + i + 1);
+
+                    expressions.erase(expressions.begin() + i);
+                    expressions.insert(expressions.begin(), op_node);
+
+                }
             } else {
-                ASSERT(next_op >= 1 && next_op < (int)expressions.size() - 1)
-                ASSERT((!(expressions[(size_t)next_op - 1].type == Node::Type::OPERATOR)) && (!(expressions[(size_t)next_op + 1].type == Node::Type::OPERATOR)));
 
-                BinaryOp op_node = BinaryOp((expressions[(size_t)next_op]));
+                // ASSERT(next_op >= 1 && next_op < (int)expressions.size() - 1)
+                // ASSERT((!(expressions[(size_t)next_op - 1].type == Node::Type::OPERATOR)) && (!(expressions[(size_t)next_op + 1].type == Node::Type::OPERATOR)));
+
+                BinaryOp op_node = BinaryOp(expressions[(size_t)next_op + 1]);
 
                 if (expressions[(size_t)next_op - 1].type == Node::Type::OPERATOR) {
                     if (BinaryOp::is_assignment(expressions[(size_t)next_op - 1])) {
@@ -302,70 +374,20 @@ namespace snowball {
                 op_node.exprs.push_back(expressions[(size_t)next_op - 1]);
                 op_node.exprs.push_back(expressions[(size_t)next_op + 1]);
 
-                expressions.erase(expressions.begin() + (next_op - 1));
+                expressions.erase(expressions.begin() + (next_op));
                 expressions.insert((expressions.begin() + (next_op - 1)), op_node);
 
                 expressions.erase(expressions.begin() + next_op);
                 expressions.erase(expressions.begin() + next_op);
             }
-        }
 
+            // for (auto expr : expressions) {
+            //     DUMP(expr.type)
+            // }
+
+        }
+        
         ASSERT(expressions[0].type == Node::Type::OPERATOR);
-        return std::make_unique<Node>(expressions[0]);
-    }
-
-    std::unique_ptr<FunctionNode> Parser::_parse_function() {
-        PARSER_ERROR(Error::TODO, "Functions are not yet supported.")
-
-        // Assert if the token is the "func" keyword
-        // and consume it.
-        ASSERT(_current_token.type == TokenType::KWORD_FUNC)
-
-        auto func = std::make_unique<FunctionNode>();
-        next_token();
-
-        // Find function's name
-        ASSERT_TOKEN(_current_token, TokenType::IDENTIFIER, "an identifier")
-        func->name = _current_token.to_string();
-
-        next_token();
-        switch (_current_token.type)
-        {
-            case TokenType::BRACKET_LPARENT:
-                break;
-
-            case TokenType::BRACKET_LCURLY:
-                break;
-
-            default:
-                UNEXPECTED_TOK(Logger::format("a %sleft curly bracket%s or a %sleft parenthesis%s", BLU, RESET, BLU, RESET).c_str())
-                break;
-        }
-
-        return func;
-    }
-
-    // Private
-    void Parser::next_token(int p_offset) {
-        try {
-            __token_possition++;
-            _current_token = _tokens.at(__token_possition);
-        } catch (std::out_of_range& _) {
-            PARSER_ERROR(Error::BUG, "Index error")
-        }
-    }
-
-    Token Parser::peek(int p_offset, bool p_safe) {
-        Token tmp = { TokenType::_EOF };
-        if ((__token_possition + 1) + p_offset < 0 || (__token_possition + 1) + p_offset >= (int)_tokens.size()) {
-            if (p_safe) return tmp;
-            else PARSER_ERROR(Error::BUG, "Parser::peek() index out of bounds");
-        }
-        return _tokens.at((__token_possition + 1) + p_offset);
-    }
-
-    void Parser::_parser_error(Error type, std::string msg) {
-        DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, std::pair<int, int>(_current_token.line, _current_token.col), _current_token.to_string().size());
-        throw ParserError(type, msg, dbg_info);
+        return expressions[0];
     }
 }

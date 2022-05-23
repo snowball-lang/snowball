@@ -82,13 +82,13 @@ namespace snowball {
         // Node* parent_node; // TODO
 
 		// all fields from here are used as a "fill" for child classes
-		OpType op_type = OpType::NONE;
-		std::vector<Node> exprs;
+		OpType op_type = OpType::NONE; // Used for operator Nodes
+		std::vector<Node> exprs; // Operator nodes (first = Left, second = Right). Variables (first = expr)
 
-		std::string name;
-		std::string value;
+		std::string name; // Names for variables, functions and classes
+		std::string value; // Values for constant values
 
-		TokenType const_type;
+		TokenType const_type; // Const values' type
     };
 
 	struct FunctionNode : public Node {
@@ -102,12 +102,11 @@ namespace snowball {
 	};
 
 	struct VarNode : public Node {
-		std::string name;
-		Node expr;
 
 		VarNode() {
 			type = Type::VAR;
 		};
+
 		~VarNode() {};
 	};
 

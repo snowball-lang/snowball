@@ -28,10 +28,10 @@ namespace snowball {
             void _parser_error(Error type, std::string msg);
 
             // Parser methods
-            std::unique_ptr<FunctionNode> _parse_function();
+            std::unique_ptr<Node> _parse_expression();
             std::unique_ptr<VarNode> _parse_variable();
-            void _parse_expression();
-            std::unique_ptr<Node> _build_op_tree(std::vector<Node> expressions);
+            std::unique_ptr<FunctionNode> _parse_function();
+            Node _build_op_tree(std::vector<Node> &expressions);
 
             // Variables
             Lexer* _lexer;
