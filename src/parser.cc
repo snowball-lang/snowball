@@ -380,13 +380,8 @@ namespace snowball {
                 expressions.erase(expressions.begin() + next_op);
                 expressions.erase(expressions.begin() + next_op);
             }
-
-            // for (auto expr : expressions) {
-            //     DUMP(expr.type)
-            // }
-
         }
-        
+
         ASSERT(expressions[0].type == Node::Type::OPERATOR);
         return expressions[0];
     }

@@ -41,8 +41,6 @@ namespace snowball {
             int __token_possition = 0;
 
             std::vector<Token> _tokens;
-
-            std::vector<std::unique_ptr<FunctionNode>> _functions;
     };
 
 }

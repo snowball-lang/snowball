@@ -4,9 +4,11 @@
 
 #include "lexer.h"
 #include "parser.h"
+#include "generator.h"
 #include "source_info.h"
 
-#include "llvm/IR/Module.h"
+#include <llvm/IR/Module.h>
+#include <llvm/IR/IRBuilder.h>
 
 #ifndef __SNOWBALL_COMPILER_H_
 #define __SNOWBALL_COMPILER_H_
@@ -30,6 +32,7 @@ namespace snowball {
             // llvm
             std::unique_ptr<llvm::Module> _module;
             llvm::LLVMContext _global_context;
+            std::unique_ptr<llvm::IRBuilder<>> _builder;
 
             // variables
             std::string _code;
@@ -40,9 +43,11 @@ namespace snowball {
 
             Lexer* _lexer;
             Parser* _parser;
+            Generator* _generator;
 
             // methods
             void create_source_info();
+            std::string prepare_module_name();
     };
 }
 

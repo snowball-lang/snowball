@@ -55,6 +55,7 @@
         "bitset": "cpp",
         "map": "cpp",
         "shared_mutex": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "regex": "cpp"
     }
 }
