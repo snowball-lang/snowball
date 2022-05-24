@@ -32,7 +32,6 @@ namespace snowball {
 
                 case TokenType::KWORD_FUNC: {
                     std::unique_ptr<FunctionNode> function = _parse_function();
-                    _functions.emplace_back(std::move(function));
                     break;
                 }
 
