@@ -5,6 +5,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "generator.h"
+#include "enviroment.h"
 #include "source_info.h"
 
 #include <llvm/IR/Module.h>
@@ -44,6 +45,8 @@ namespace snowball {
             Lexer* _lexer;
             Parser* _parser;
             Generator* _generator;
+
+            Enviroment* _enviroment;
 
             // methods
             void create_source_info();
