@@ -24,6 +24,9 @@ namespace snowball {
             Parser* _parser;
             SourceInfo* _source_info;
             Enviroment* _enviroment;
+
+            // methods
+            void generate_variable(Node p_node);
     };
 
 }

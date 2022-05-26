@@ -1,4 +1,5 @@
 
+#include "snowball/nodes.h"
 #include "snowball/errors.h"
 #include "snowball/generator.h"
 
@@ -9,9 +10,10 @@ namespace snowball {
         for (auto node : nodes) {
             switch (node.type)
             {
-                // case Node::Type::VAR:
-                //     printf("HELLO\n");
-                //     break;
+                case Node::Type::VAR: {
+                    generate_variable(node);
+                    break;
+                };
 
                 default:
                     DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, node.pos, node.width);
@@ -20,5 +22,9 @@ namespace snowball {
                     break;
             }
         }
+    }
+
+    void Generator::generate_variable(Node p_node) {
+        
     }
 }
