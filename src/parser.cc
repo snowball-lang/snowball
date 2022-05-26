@@ -36,7 +36,8 @@ namespace snowball {
                 }
 
                 case TokenType::KWORD_VAR: {
-                    std::unique_ptr<VarNode> var = _parse_variable();
+                    VarNode var = _parse_variable();
+                    _nodes.push_back(var);
                     break;
                 }
 
@@ -59,14 +60,14 @@ namespace snowball {
 
     // Parse methods
 
-    std::unique_ptr<VarNode> Parser::_parse_variable() {
+    VarNode Parser::_parse_variable() {
         ASSERT(_current_token.type == TokenType::KWORD_VAR)
         next_token();
 
-        auto var = std::make_unique<VarNode>();
+        auto var = VarNode();
         ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "variable")
 
-        var->name = _current_token.to_string();
+        var.name = _current_token.to_string();
         next_token();
 
         ASSERT_TOKEN_EOF(_current_token, TokenType::OP_EQ, "=", "variable")
@@ -77,7 +78,7 @@ namespace snowball {
         }
 
         // TODO: get return value
-        std::unique_ptr<Node> expr = _parse_expression();
+        Node expr = _parse_expression();
 
         return var;
     }
@@ -138,7 +139,7 @@ namespace snowball {
     }
 
     // TODO: return std::unique_ptr<Node>
-    std::unique_ptr<Node> Parser::_parse_expression() {
+    Node Parser::_parse_expression() {
         std::vector<Node> expressions;
 
         while (true) {
@@ -225,7 +226,7 @@ namespace snowball {
         }
 
         Node op_tree = _build_op_tree(expressions);
-        return std::make_unique<Node>(op_tree);
+        return op_tree;
     }
 
     Node Parser::_build_op_tree(std::vector<Node> &expressions) {

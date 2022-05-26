@@ -5,11 +5,14 @@
 #include "nodes.h"
 #include "token.h"
 #include "lexer.h"
+#include "scopes.h"
 #include "parser.h"
 #include "logger.h"
 #include "errors.h"
-#include "compiler.h"
 #include "dbg_info.h"
+#include "compiler.h"
+#include "generator.h"
+#include "enviroment.h"
 #include "source_info.h"
 
 #endif // __SNOWBALL_H_

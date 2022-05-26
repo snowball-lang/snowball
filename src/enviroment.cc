@@ -1,9 +1,9 @@
 
-#include "scopes.h"
-#include "enviroment.h"
+#include "snowball/scopes.h"
+#include "snowball/enviroment.h"
 
 namespace snowball {
     Enviroment::Enviroment() {
-        _scopes.push_back(Scope(ScopeType::));
+        // _scopes.push_back(Scope());
     }
 }

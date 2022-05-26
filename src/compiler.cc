@@ -19,6 +19,7 @@
 
 #include "snowball/lexer.h"
 #include "snowball/compiler.h"
+#include "snowball/generator.h"
 
 #include <regex>
 #include <string>
@@ -46,6 +47,7 @@ namespace snowball {
         llvm::verifyModule(*_module);
 
         _builder = std::make_unique<llvm::IRBuilder<>>(_global_context);
+        _enviroment = new Enviroment();
 
         _initialized = true;
     }
@@ -61,7 +63,8 @@ namespace snowball {
         _parser = new Parser(_lexer, _source_info);
         _parser->parse();
 
-        _generator = new Generator(_parser, _source_info);
+        _generator = new Generator(_parser, _enviroment, _source_info);
+        _generator->generate();
 
         _module->print(llvm::errs(),nullptr,false,true);
         _module.reset();

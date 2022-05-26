@@ -20,6 +20,8 @@ namespace snowball {
 
             void parse();
 
+            std::vector<Node> nodes() { return _nodes; }
+
             ~Parser() {};
 
         private:
@@ -28,8 +30,8 @@ namespace snowball {
             void _parser_error(Error type, std::string msg);
 
             // Parser methods
-            std::unique_ptr<Node> _parse_expression();
-            std::unique_ptr<VarNode> _parse_variable();
+            Node _parse_expression();
+            VarNode _parse_variable();
             std::unique_ptr<FunctionNode> _parse_function();
             Node _build_op_tree(std::vector<Node> &expressions);
 
@@ -40,6 +42,7 @@ namespace snowball {
             SourceInfo* _source_info;
             int __token_possition = 0;
 
+            std::vector<Node> _nodes;
             std::vector<Token> _tokens;
     };
 
