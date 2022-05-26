@@ -79,6 +79,8 @@ namespace snowball {
 		};
 
         Type type = Type::UNKNOWN;
+
+		std::pair<int, int> pos;
         uint32_t width = 1; // width of the node ^^^^ (dbg).
 
         // Node* parent_node; // TODO

@@ -9,6 +9,7 @@
 
 #include <string>
 #include <memory>
+#include <utility>
 
 #include <assert.h>
 
@@ -36,7 +37,15 @@ namespace snowball {
                 }
 
                 case TokenType::KWORD_VAR: {
+                    int _width = _current_token.col;
+                    std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
+
                     VarNode var = _parse_variable();
+                    _width = _width - _current_token.col;
+
+                    var.pos = _pos;
+                    var.width = (uint32_t)_width;
+
                     _nodes.push_back(var);
                     break;
                 }
@@ -138,7 +147,6 @@ namespace snowball {
         throw ParserError(type, msg, dbg_info);
     }
 
-    // TODO: return std::unique_ptr<Node>
     Node Parser::_parse_expression() {
         std::vector<Node> expressions;
 

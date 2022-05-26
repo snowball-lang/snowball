@@ -39,7 +39,7 @@ namespace snowball {
             cur_col++;
             if (cur_col == pos.second) {
                 for (uint32_t i = 0; i < width; i++) {
-                    ss_pos << '^';
+                    ss_pos << '~';
                 }
                 done = true;
                 break;
