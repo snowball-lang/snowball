@@ -3,6 +3,8 @@
 #include "snowball/errors.h"
 #include "snowball/generator.h"
 
+#include "llvm/IR/Type.h"
+
 namespace snowball {
     void Generator::generate() {
         std::vector<Node> nodes = _parser->nodes();
@@ -25,6 +27,19 @@ namespace snowball {
     }
 
     void Generator::generate_variable(Node p_node) {
-        
+        Node expr = p_node.exprs.at(0);
+
+        // TODO: reference -> https://github.com/lijiansong/clang-llvm-tutorial/blob/master/kaleidoscope/functional_programming_language/functional.cpp#L975
+        // const alloca = _builder.CreateAlloca(
+        //     getLLVMType(type, this.generator),
+        //     nullptr,
+        //     p_node.name
+        // );
+
+        // _builder.createStore(
+        //     initializer,
+        //     alloca as llvm.Value,
+        //     undefined
+        // );
     }
 }

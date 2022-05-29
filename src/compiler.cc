@@ -63,7 +63,7 @@ namespace snowball {
         _parser = new Parser(_lexer, _source_info);
         _parser->parse();
 
-        _generator = new Generator(_parser, _enviroment, _source_info);
+        _generator = new Generator(_parser, _enviroment, _source_info, std::move(_builder));
         _generator->generate();
 
         _module->print(llvm::errs(),nullptr,false,true);

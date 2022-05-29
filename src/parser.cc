@@ -46,6 +46,7 @@ namespace snowball {
                     var.pos = _pos;
                     var.width = (uint32_t)_width;
 
+
                     _nodes.push_back(var);
                     break;
                 }
@@ -86,8 +87,8 @@ namespace snowball {
             PARSER_ERROR(Error::UNEXPECTED_EOF, "Found an unexpected EOF while parsing variable's statement");
         }
 
-        // TODO: get return value
         Node expr = _parse_expression();
+        var.exprs.push_back(expr);
 
         return var;
     }

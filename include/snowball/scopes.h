@@ -1,6 +1,7 @@
 
 #include <map>
 #include <string>
+#include <experimental/optional>
 
 #include "llvm/IR/Value.h"
 
@@ -15,11 +16,16 @@ namespace snowball {
 
         public:
             Scope() {};
+            Scope(std::string p_scope_name, ScopeValue p_scope_value);
+
+            ScopeValue get(std::string p_name);
+            void set(std::string p_name, ScopeValue p_value);
+            std::experimental::optional<ScopeValue> get_optional(std::string p_name);
+
             ~Scope() {};
 
         private:
 
-            std::string _name;
             std::map<std::string, ScopeValue> _data;
 
     };
