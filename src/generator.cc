@@ -1,9 +1,12 @@
 
+#include "snowball/types.h"
 #include "snowball/nodes.h"
+#include "snowball/token.h"
 #include "snowball/errors.h"
 #include "snowball/generator.h"
 
-#include "llvm/IR/Type.h"
+#include <llvm/IR/Type.h>
+#include <llvm/IR/IRBuilder.h>
 
 namespace snowball {
     void Generator::generate() {
@@ -12,10 +15,10 @@ namespace snowball {
         for (auto node : nodes) {
             switch (node.type)
             {
-                case Node::Type::VAR: {
-                    generate_variable(node);
+                case Node::Type::CONST_VALUE: {
+                    generate_cont_value(node);
                     break;
-                };
+                }
 
                 default:
                     DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, node.pos, node.width);
@@ -26,20 +29,19 @@ namespace snowball {
         }
     }
 
-    void Generator::generate_variable(Node p_node) {
-        Node expr = p_node.exprs.at(0);
+    void Generator::generate_cont_value(Node p_node) {
+        switch (p_node.const_type)
+        {
+            case TokenType::VALUE_NUMBER: {
+                llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
 
-        // TODO: reference -> https://github.com/lijiansong/clang-llvm-tutorial/blob/master/kaleidoscope/functional_programming_language/functional.cpp#L975
-        // const alloca = _builder.CreateAlloca(
-        //     getLLVMType(type, this.generator),
-        //     nullptr,
-        //     p_node.name
-        // );
+                llvm::Constant * num = llvm::ConstantInt::get(i64, (uint64_t)std::stoi(p_node.value));
+                _builder.CreateCall(_buildin_types.sn_number_class, num);
+                break;
+            }
 
-        // _builder.createStore(
-        //     initializer,
-        //     alloca as llvm.Value,
-        //     undefined
-        // );
+            default:
+                throw SNError(Error::TODO, Logger::format("Const Value with type %s%i%s%s is not yet supported", BCYN, p_node.const_type, RESET, BOLD));
+        }
     }
 }

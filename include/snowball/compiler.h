@@ -3,6 +3,7 @@
 
 
 #include "lexer.h"
+#include "types.h"
 #include "parser.h"
 #include "generator.h"
 #include "enviroment.h"
@@ -33,7 +34,7 @@ namespace snowball {
             // llvm
             std::unique_ptr<llvm::Module> _module;
             llvm::LLVMContext _global_context;
-            std::unique_ptr<llvm::IRBuilder<>> _builder;
+            llvm::IRBuilder<> _builder;
 
             // variables
             std::string _code;
@@ -47,8 +48,10 @@ namespace snowball {
             Generator* _generator;
 
             Enviroment* _enviroment;
+            SnowballBuildinTypes _buildin_types;
 
             // methods
+            void link_std_classes();
             void create_source_info();
             std::string prepare_module_name();
     };

@@ -55,6 +55,8 @@ namespace snowball {
     void Lexer::tokenize() {
         std::string code = _source_info->get_source();
 
+		if ((int)code.size() == 0)return;
+
 		// Iterate every character of the source code
 		// and tokenize that char. Tokenizing it will
 		// mean that respective Token for the current
@@ -262,7 +264,7 @@ namespace snowball {
 				Token tk;
 				tk.type = TokenType::VALUE_STRING;
 				tk.value = str; // method name may be builtin func
-				tk.col = cur_col - (int)str.size();
+				tk.col = cur_col - ((int)str.size() + (2 /* speech marks */));
 				tk.line = cur_line;
 				tokens.emplace_back(tk);
 

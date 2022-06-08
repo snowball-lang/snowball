@@ -51,13 +51,27 @@ namespace snowball {
                     break;
                 }
 
-                case TokenType::VALUE_UNDEFINED:
                 case TokenType::SYM_SEMI_COLLON:
-			    case TokenType::VALUE_STRING:
-                case TokenType::VALUE_NUMBER:
-                case TokenType::VALUE_FLOAT:
-                case TokenType::VALUE_BOOL:
                     break;
+
+                case TokenType::VALUE_BOOL:
+                case TokenType::VALUE_NULL:
+                case TokenType::VALUE_FLOAT:
+                case TokenType::VALUE_NUMBER:
+                case TokenType::VALUE_STRING:
+                case TokenType::VALUE_UNDEFINED: {
+                    int _width = _current_token.col;
+                    std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
+
+                    Node value = _parse_expression(); // Type: ConstantValue
+                    _width = _width - _current_token.col;
+
+                    value.pos = _pos;
+                    value.width = (uint32_t)_width;
+
+                    _nodes.push_back(value);
+                    break;
+                }
 
                 default:
                     PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Unexpected token found: %s%s%s", BLU, _current_token.to_string().c_str(), RESET))
@@ -154,7 +168,6 @@ namespace snowball {
         while (true) {
             switch (_current_token.type)
             {
-                case TokenType::IDENTIFIER:
                 case TokenType::VALUE_BOOL:
                 case TokenType::VALUE_NULL:
                 case TokenType::VALUE_FLOAT:
@@ -240,6 +253,7 @@ namespace snowball {
 
     Node Parser::_build_op_tree(std::vector<Node> &expressions) {
         ASSERT(expressions.size() > 0)
+
         while (expressions.size() > 1) {
 
             int next_op = -1;
@@ -391,7 +405,6 @@ namespace snowball {
             }
         }
 
-        ASSERT(expressions[0].type == Node::Type::OPERATOR);
         return expressions[0];
     }
 }

@@ -34,7 +34,7 @@ llvm_map_components_to_libnames(llvm_libs
     native
 )
 
-
+execute_process(COMMAND "llvm-config --cxxflags --ldflags --libs" OUTPUT_VARIABLE CMAKE_CXX_FLAGS)
 
 ##################################################    Targets     ##################################################
 add_executable(snowball ${PROJECT_FILES})

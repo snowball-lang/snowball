@@ -2,6 +2,7 @@
 #ifndef __SNOWBALL_H_
 #define __SNOWBALL_H_
 
+#include "types.h"
 #include "nodes.h"
 #include "token.h"
 #include "lexer.h"

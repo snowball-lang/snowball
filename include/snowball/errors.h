@@ -84,9 +84,9 @@ namespace snowball {
             Logger::elog(Logger::format("%s   |%s", BBLU, RESET));
 
             if (cb_dbg_info->line - 1 >= 1) // first line may not be available to log
-            Logger::elog(Logger::format("%s%2i | %s%s",           BBLU, cb_dbg_info->line - 1, RESET, cb_dbg_info->line_before.c_str()));
+                Logger::elog(Logger::format("%s%2i | %s%s", BBLU, cb_dbg_info->line - 1, RESET, cb_dbg_info->line_before.c_str()));
             Logger::elog(Logger::format("%s%2i | %s%s/%s %s\n   %s|%s %s|_%s%s%s%s", BBLU, cb_dbg_info->line, RESET, BRED, RESET, cb_dbg_info->line_str.c_str(), BBLU, RESET, BRED, RESET, BRED, cb_dbg_info->get_pos_str().c_str(), RESET));
-            Logger::elog(Logger::format("%s%2i | %s%s",           BBLU, cb_dbg_info->line + 1, RESET,  cb_dbg_info->line_after.c_str()));
+            Logger::elog(Logger::format("%s%2i | %s%s", BBLU, cb_dbg_info->line + 1, RESET,  cb_dbg_info->line_after.c_str()));
         };
 
         virtual ~ParserError() {};
@@ -112,8 +112,8 @@ namespace snowball {
                 WHT));
             Logger::elog(Logger::format("%s   |%s", BBLU, RESET));
 
-            if (cb_dbg_info->line - 1 >= 1) // first line may not be available to log
-            Logger::elog(Logger::format("%s%2i | %s%s",           BBLU, cb_dbg_info->line - 1, RESET, cb_dbg_info->line_before.c_str()));
+            if ((cb_dbg_info->line - 1) >= 1) // first line may not be available to log
+                Logger::elog(Logger::format("%s%2i | %s%s",           BBLU, cb_dbg_info->line - 1, RESET, cb_dbg_info->line_before.c_str()));
             Logger::elog(Logger::format("%s%2i | %s%s/%s %s\n   %s|%s %s|_%s%s%s%s", BBLU, cb_dbg_info->line, RESET, BYEL, RESET, cb_dbg_info->line_str.c_str(), BBLU, RESET, BYEL, RESET, BYEL, cb_dbg_info->get_pos_str().c_str(), RESET));
             Logger::elog(Logger::format("%s%2i | %s%s",           BBLU, cb_dbg_info->line + 1, RESET,  cb_dbg_info->line_after.c_str()));
         };
