@@ -1,4 +1,5 @@
 
+#include <bits/c++config.h>
 #include <llvm/IR/Mangler.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/IR/Verifier.h>
@@ -106,10 +107,16 @@ namespace snowball {
             printf("\n\n------------------\n");
 
             // TODO: move to Compiler::execute()
-            llvm::ExecutionEngine *executionEngine = llvm::EngineBuilder(std::move(_module)).setErrorStr(&llvm_error).setEngineKind(llvm::EngineKind::JIT).create();
+            llvm::ExecutionEngine *executionEngine = llvm::EngineBuilder(std::move(_module))
+                                                    .setErrorStr(&llvm_error)
+                                                    .setEngineKind(llvm::EngineKind::JIT)
+                                                    .create();
 
             if (!llvm_error.empty())
                 throw SNError(Error::LLVM_INTERNAL, llvm_error);
+
+            // TODO: move into a function
+            executionEngine->addGlobalMapping(_buildin_types.sn_number_class, reinterpret_cast<snowball::Number*>(&sn_create_number));
 
             llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef("main"));
             auto result = executionEngine->runFunction(main_fn, {});
@@ -129,7 +136,7 @@ cleanup:
         llvm::Type* nt = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
 
         auto sn_number_prototype = llvm::FunctionType::get(i8p, std::vector<llvm::Type *> { nt }, false);
-        auto sn_number_fn = llvm::Function::Create(sn_number_prototype, llvm::Function::ExternalLinkage, "create_number", _module.get());
+        auto sn_number_fn = llvm::Function::Create(sn_number_prototype, llvm::Function::ExternalLinkage, "sn_create_number", _module.get());
         llvm::verifyFunction(*sn_number_fn, &message_stream);
 
         if (!llvm_error.empty())

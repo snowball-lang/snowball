@@ -1,5 +1,6 @@
 
 #include <stdint.h>
+#include "../export.hpp"
 
 #ifndef SN_NUMBER_NUMBER_EXPORT_H
 #define SN_NUMBER_NUMBER_EXPORT_H
@@ -14,8 +15,6 @@ namespace snowball {
     };
 }
 
-extern "C" {
-    snowball::Number* create_number(uint64_t n);
-}
+extern "C" DLLEXPORT snowball::Number* sn_create_number(uint64_t n);
 
 #endif // SN_NUMBER_NUMBER_EXPORT_H

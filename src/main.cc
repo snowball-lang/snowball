@@ -4,6 +4,7 @@
 #include <string>
 #include <exception>
 #include <stdexcept>
+
 using namespace snowball;
 
 int main(int argc, char** argv) {
