@@ -16,6 +16,8 @@ namespace snowball {
         UNEXPECTED_EOF,
         WARNING,
 
+        LLVM_INTERNAL,
+
         BUG,
         TODO
     };

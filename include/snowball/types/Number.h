@@ -7,10 +7,10 @@
 namespace snowball {
     class Number {
         public:
-            Number(int p_number) : number_ptr(p_number) {};
+            Number(uint64_t p_number) : number_ptr(p_number) {};
 
         private:
-            int number_ptr;
+            uint64_t number_ptr;
     };
 }
 

@@ -7,8 +7,8 @@ add_definitions(${LLVM_DEFINITIONS})
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 set(CMAKE_CXX_STANDARD 14)
-file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/*.hpp)
-file(GLOB_RECURSE PROJECT_SOURCES src/*.cc src/*.c)
+file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/types/*.h include/*.hpp)
+file(GLOB_RECURSE PROJECT_SOURCES src/*.cc src/types/*.cc src/*.c)
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
 file(GLOB_RECURSE PROJECT_MISC *.md *.txt)
 set (PROJECT_EXPORT_HPP include/${PROJECT_NAME}/export.hpp)
@@ -32,9 +32,11 @@ llvm_map_components_to_libnames(llvm_libs
     ScalarOpts
     Support
     native
+    MC
+    mcjit
 )
 
-execute_process(COMMAND "llvm-config --cxxflags --ldflags --libs" OUTPUT_VARIABLE CMAKE_CXX_FLAGS)
+message( "COMPILE_DEFINITIONS: ${DirDefs}" )
 
 ##################################################    Targets     ##################################################
 add_executable(snowball ${PROJECT_FILES})

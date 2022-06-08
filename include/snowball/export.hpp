@@ -17,7 +17,7 @@
 #  endif
 
 #  ifndef SNOWBALL_NO_EXPORT
-#    define SNOWBALL_NO_EXPORT 
+#    define SNOWBALL_NO_EXPORT
 #  endif
 #endif
 

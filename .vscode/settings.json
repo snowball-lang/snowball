@@ -57,6 +57,7 @@
         "shared_mutex": "cpp",
         "variant": "cpp",
         "regex": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "future": "cpp"
     }
 }

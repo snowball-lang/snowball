@@ -1,5 +1,5 @@
 
-
+#include <llvm/IR/Mangler.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/IR/Verifier.h>
 #include <llvm/IR/IRPrintingPasses.h>
@@ -17,13 +17,20 @@
 #include <llvm/Support/FormattedStream.h>
 #include <llvm/Support/MathExtras.h>
 
-#include <llvm/ExecutionEngine/ExecutionEngine.h>
+#include <llvm/Target/TargetMachine.h>
+
+#include <llvm/ExecutionEngine/MCJIT.h>
+#include <llvm/ExecutionEngine/JITSymbol.h>
+
 #include <llvm/ExecutionEngine/GenericValue.h>
+#include <llvm/ExecutionEngine/ExecutionEngine.h>
 
 #include "snowball/types.h"
 #include "snowball/lexer.h"
 #include "snowball/compiler.h"
 #include "snowball/generator.h"
+
+#include "snowball/types/Number.h"
 
 #include <regex>
 #include <string>
@@ -53,7 +60,6 @@ namespace snowball {
         create_source_info();
 
         _module = std::make_unique<llvm::Module>(prepare_module_name(), _global_context);;
-        llvm::verifyModule(*_module);
 
         _enviroment = new Enviroment();
 
@@ -73,34 +79,61 @@ namespace snowball {
             // TODO: error
         }
 
-        _lexer = new Lexer(_source_info);
-        _lexer->tokenize();
+        /* ignore_goto_errors() */ {
+            std::string llvm_error;
 
-        if (_lexer->tokens.size() == 0) {
-            goto cleanup;
-            return;
+            _lexer = new Lexer(_source_info);
+            _lexer->tokenize();
+
+            if (_lexer->tokens.size() != 0) {
+                _parser = new Parser(_lexer, _source_info);
+                _parser->parse();
+
+                _generator = new Generator(_parser, _enviroment, _source_info, std::move(_builder), _buildin_types);
+                _generator->generate();
+            }
+
+            _builder.CreateRet(llvm::ConstantInt::get( llvm::Type::getInt32Ty( _global_context ), 0 ));
+
+            std::string module_error;
+            llvm::raw_string_ostream module_stream(module_error);
+            llvm::verifyModule(*_module, &module_stream);
+
+            if (!module_error.empty())
+                throw SNError(Error::LLVM_INTERNAL, module_error);
+
+            _module->print(llvm::outs(), nullptr);
+            printf("\n\n------------------\n");
+
+            // TODO: move to Compiler::execute()
+            llvm::ExecutionEngine *executionEngine = llvm::EngineBuilder(std::move(_module)).setErrorStr(&llvm_error).setEngineKind(llvm::EngineKind::JIT).create();
+
+            if (!llvm_error.empty())
+                throw SNError(Error::LLVM_INTERNAL, llvm_error);
+
+            llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef("main"));
+            auto result = executionEngine->runFunction(main_fn, {});
         }
-
-        _parser = new Parser(_lexer, _source_info);
-        _parser->parse();
-
-        _generator = new Generator(_parser, _enviroment, _source_info, std::move(_builder), _buildin_types);
-        _generator->generate();
 
         goto cleanup;
 
 cleanup:
-        _builder.CreateRet(llvm::ConstantInt::get( llvm::Type::getInt32Ty( _global_context ), 0 ));
-
-        _module->print(llvm::errs(),nullptr,false,true);
         _module.reset();
     }
 
     void Compiler::link_std_classes() {
-        llvm::PointerType* i8p = _builder.getInt8PtrTy();
+        std::string llvm_error;
+        llvm::raw_string_ostream message_stream(llvm_error);
 
-        auto sn_number_prototype = llvm::FunctionType::get(i8p, std::vector<llvm::Type *> { i8p }, false);
+        llvm::PointerType* i8p = _builder.getInt8PtrTy();
+        llvm::Type* nt = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
+
+        auto sn_number_prototype = llvm::FunctionType::get(i8p, std::vector<llvm::Type *> { nt }, false);
         auto sn_number_fn = llvm::Function::Create(sn_number_prototype, llvm::Function::ExternalLinkage, "create_number", _module.get());
+        llvm::verifyFunction(*sn_number_fn, &message_stream);
+
+        if (!llvm_error.empty())
+            throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
         _buildin_types = {
             .sn_number_class = sn_number_fn

@@ -16,4 +16,8 @@
 #include "enviroment.h"
 #include "source_info.h"
 
+// Types
+#include "types/Number.h"
+
+
 #endif // __SNOWBALL_H_
