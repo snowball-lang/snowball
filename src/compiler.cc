@@ -90,7 +90,7 @@ namespace snowball {
         goto cleanup;
 
 cleanup:
-        // _builder.CreateRet(llvm::ConstantInt::get( llvm::Type::getInt32Ty( _global_context ), 0 ));
+        _builder.CreateRet(llvm::ConstantInt::get( llvm::Type::getInt32Ty( _global_context ), 0 ));
 
         _module->print(llvm::errs(),nullptr,false,true);
         _module.reset();
