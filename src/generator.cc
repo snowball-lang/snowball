@@ -7,6 +7,7 @@
 
 #include <llvm/IR/Type.h>
 #include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/Instructions.h>
 
 namespace snowball {
     void Generator::generate() {
@@ -20,6 +21,11 @@ namespace snowball {
                     break;
                 }
 
+                case Node::Type::VAR: {
+                    generate_variable_decl(node);
+                    break;
+                }
+
                 default:
                     DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, node.pos, node.width);
                     Warning warn = Warning(Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, node.type, RESET, BOLD), dbg_info);
@@ -27,6 +33,15 @@ namespace snowball {
                     break;
             }
         }
+    }
+
+    llvm::Value* Generator::generate_variable_decl(Node p_node) {
+        // TODO: check if variable is global
+
+        llvm::Value* value = generate_cont_value(p_node.exprs.at(0));
+        auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, p_node.name );
+
+        return _builder.CreateStore (value, alloca, /*isVolatile=*/false);
     }
 
     llvm::Value* Generator::generate_cont_value(Node p_node) {
