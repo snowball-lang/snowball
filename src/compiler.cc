@@ -1,5 +1,4 @@
 
-#include <bits/c++config.h>
 #include <llvm/IR/Mangler.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/IR/Verifier.h>

@@ -33,8 +33,6 @@ namespace snowball {
     enum ScopeType {
         SCOPE,
         LLVM,
-
-        OTHER
     };
 
     struct ScopeValue {

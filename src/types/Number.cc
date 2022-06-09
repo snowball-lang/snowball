@@ -5,6 +5,6 @@
 #include <stdio.h>
 #include <stdint.h>
 
-extern "C" DLLEXPORT snowball::Number* sn_sn_create_number(uint64_t n){
+extern "C" DLLEXPORT snowball::Number* sn_create_number(uint64_t n){
     return new snowball::Number(n);
 }

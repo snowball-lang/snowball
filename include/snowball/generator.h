@@ -31,7 +31,7 @@ namespace snowball {
             SnowballBuildinTypes _buildin_types;
 
             // methods
-            void generate_cont_value(Node p_node);
+            llvm::Value* generate_cont_value(Node p_node);
     };
 }
 

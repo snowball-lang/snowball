@@ -29,15 +29,14 @@ namespace snowball {
         }
     }
 
-    void Generator::generate_cont_value(Node p_node) {
+    llvm::Value* Generator::generate_cont_value(Node p_node) {
         switch (p_node.const_type)
         {
             case TokenType::VALUE_NUMBER: {
                 llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
 
                 llvm::Constant * num = llvm::ConstantInt::get(i64, (uint64_t)std::stoi(p_node.value));
-                _builder.CreateCall(_buildin_types.sn_number_class, num);
-                break;
+                return _builder.CreateCall(_buildin_types.sn_number_class, num);
             }
 
             default:
