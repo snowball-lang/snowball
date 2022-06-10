@@ -61,7 +61,7 @@ namespace snowball {
 
         _module = std::make_unique<llvm::Module>(prepare_module_name(), _global_context);;
 
-        _enviroment = new Enviroment();
+        _enviroment = new Enviroment(_source_info);
 
         link_std_classes();
 
@@ -84,7 +84,10 @@ namespace snowball {
                 _parser->parse();
 
                 _generator = new Generator(_parser, _enviroment, _source_info, std::move(_builder), _module.get(), _buildin_types);
-                _generator->generate(_parser->nodes());
+
+                for (auto node : _parser->nodes()) {
+                    _generator->generate(node);
+                }
             }
 
             std::string module_error;

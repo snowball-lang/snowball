@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 #include "token.h"
-#include "enviroment.h"
 #include "llvm/IR/Value.h"
 
 #ifndef __SNOWBALL_NODE_H_
@@ -108,6 +107,15 @@ namespace snowball {
 		};
 
 		~VarNode() {};
+	};
+
+	struct BlockNode : public Node {
+
+		BlockNode() {
+			type = Type::BLOCK;
+		};
+
+		~BlockNode() {};
 	};
 
 	struct ConstantValue : public Node {

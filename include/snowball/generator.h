@@ -1,6 +1,7 @@
 
 #include "types.h"
 #include "parser.h"
+#include "enviroment.h"
 #include "source_info.h"
 
 #include <memory>
@@ -30,7 +31,7 @@ namespace snowball {
                 _source_info = p_source_info;
             };
 
-            llvm::Value* generate(std::vector<Node> p_nodes);
+            llvm::Value* generate(Node p_node);
 
             ~Generator() {};
 

@@ -124,19 +124,20 @@ namespace snowball {
         next_token();
         // TODO: check for args
 
-        std::vector<Node> stmts = _parse_block();
+        BlockNode body = _parse_block();
         // if (_current_token.type == TokenType::BRACKET_RCURLY) {
         //     next_token();
         // } else {
         //     UNEXPECTED_TOK("a '}'")
         // }
 
-        func.exprs = stmts;
+        func.exprs.push_back(body);
         return func;
     }
 
-    std::vector<Node> Parser::_parse_block(std::vector<TokenType> p_termination) {
+    BlockNode Parser::_parse_block(std::vector<TokenType> p_termination) {
         std::vector<Node> stmts;
+        BlockNode b_node;
 
         while (true) {
 
@@ -169,7 +170,8 @@ namespace snowball {
                 default: {
                     for (TokenType termination : p_termination) {
                         if (tk.type == termination) {
-                            return stmts;
+                            b_node.exprs = stmts;
+                            return b_node;
                         }
                     }
 
@@ -178,7 +180,8 @@ namespace snowball {
             }
         }
 
-        return stmts;
+        b_node.exprs = stmts;
+        return b_node;
     }
 
     // Private

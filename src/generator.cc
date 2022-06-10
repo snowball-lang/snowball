@@ -11,32 +11,32 @@
 #include <llvm/IR/Instructions.h>
 
 namespace snowball {
-    llvm::Value* Generator::generate(std::vector<Node> p_nodes) {
-        for (auto node : p_nodes) {
-            switch (node.type)
-            {
-                case Node::Type::CONST_VALUE: {
-                    return generate_cont_value(node);
-                }
-
-                case Node::Type::VAR: {
-                    return generate_variable_decl(node);
-                }
-
-                case Node::Type::FUNCTION: {
-                    return generate_function(node);
-                }
-
-                default:
-                    DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, node.pos, node.width);
-                    throw Warning(Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, node.type, RESET, BOLD), dbg_info);
+    llvm::Value* Generator::generate(Node p_node) {
+        switch (p_node.type)
+        {
+            case Node::Type::CONST_VALUE: {
+                return generate_cont_value(p_node);
             }
+
+            case Node::Type::VAR: {
+                return generate_variable_decl(p_node);
+            }
+
+            case Node::Type::FUNCTION: {
+                return generate_function(p_node);
+            }
+
+            default:
+                DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node.pos, p_node.width);
+                throw Warning(Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, p_node.type, RESET, BOLD), dbg_info);
         }
     }
 
     llvm::Value* Generator::generate_function(Node p_node) {
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
+
+        
 
         auto retType = _builder.getVoidTy();
         auto prototype = llvm::FunctionType::get(retType, false);
@@ -45,7 +45,9 @@ namespace snowball {
         llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder.getContext(), "body", function);
         _builder.SetInsertPoint(body);
 
-        generate(p_node.exprs);
+        for (auto expr : p_node.exprs.at(0).exprs) {
+            generate(expr);
+        }
 
         if (body->size() == 0 || !body->back().isTerminator()) {
             _builder.CreateRet(nullptr);
@@ -63,7 +65,7 @@ namespace snowball {
         // TODO: add it to the enviroment
 
         // We asume that the variable only has 1 expression
-        llvm::Value* value = generate(p_node.exprs);
+        llvm::Value* value = generate(p_node.exprs.at(0));
         auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, p_node.name );
 
         return _builder.CreateStore (value, alloca, /*isVolatile=*/false);

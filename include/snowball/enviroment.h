@@ -1,6 +1,7 @@
 
 #include <vector>
 #include "scopes.h"
+#include "source_info.h"
 
 #ifndef __SNOWBALL_ENVIROMENT_H_
 #define __SNOWBALL_ENVIROMENT_H_
@@ -12,13 +13,18 @@ namespace snowball {
     class Enviroment {
 
         public:
-            Enviroment();
+            Enviroment(SourceInfo* p_source_info);
 
             Scope global_scope();
+            Scope current_scope();
+
+            Scope create_scope(std::string p_name);
+            void delete_scope();
 
             ~Enviroment() {};
 
         private:
+            SourceInfo* _source_info;
             std::vector<Scope> _scopes;
 
     };

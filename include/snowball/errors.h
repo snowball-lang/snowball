@@ -13,6 +13,7 @@
 namespace snowball {
     enum Error {
         SYNTAX_ERROR,
+        UNDEFINED_VARIABLE,
         UNEXPECTED_EOF,
         WARNING,
 
@@ -121,6 +122,35 @@ namespace snowball {
         };
 
         virtual ~Warning() {};
+
+    private:
+        DBGSourceInfo *cb_dbg_info;
+    };
+
+    class CompilerError : public SNError {
+    public:
+
+        CompilerError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info)
+            : SNError(code, err) {
+                cb_dbg_info = p_cb_dbg_info;
+            };
+
+        virtual void print_error() const {
+            Logger::error(Logger::format("(%s%s%s) %s%s%s", RED, get_error(error), RESET, BOLD, message.c_str(), RESET));
+            Logger::elog(Logger::format("  %s-->%s %s:[%i:%i]", BBLU, RESET,
+                cb_dbg_info->source_info->get_path().c_str(),
+                cb_dbg_info->line,
+                cb_dbg_info->pos.second,
+                WHT));
+            Logger::elog(Logger::format("%s   |%s", BBLU, RESET));
+
+            if (cb_dbg_info->line - 1 >= 1) // first line may not be available to log
+                Logger::elog(Logger::format("%s%2i | %s%s", BBLU, cb_dbg_info->line - 1, RESET, cb_dbg_info->line_before.c_str()));
+            Logger::elog(Logger::format("%s%2i | %s%s/%s %s\n   %s|%s %s|_%s%s%s%s", BBLU, cb_dbg_info->line, RESET, BRED, RESET, cb_dbg_info->line_str.c_str(), BBLU, RESET, BRED, RESET, BRED, cb_dbg_info->get_pos_str().c_str(), RESET));
+            Logger::elog(Logger::format("%s%2i | %s%s", BBLU, cb_dbg_info->line + 1, RESET,  cb_dbg_info->line_after.c_str()));
+        };
+
+        virtual ~CompilerError() {};
 
     private:
         DBGSourceInfo *cb_dbg_info;

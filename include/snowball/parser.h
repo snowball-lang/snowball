@@ -33,7 +33,7 @@ namespace snowball {
             Node _parse_expression();
             VarNode _parse_variable();
             FunctionNode _parse_function();
-            std::vector<Node> _parse_block(std::vector<TokenType> p_termination = { TokenType::BRACKET_RCURLY } );
+            BlockNode _parse_block(std::vector<TokenType> p_termination = { TokenType::BRACKET_RCURLY } );
             Node _build_op_tree(std::vector<Node> &expressions);
 
             // Variables

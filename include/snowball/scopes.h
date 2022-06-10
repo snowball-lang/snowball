@@ -3,6 +3,9 @@
 #include <string>
 #include <experimental/optional>
 
+#include "snowball/nodes.h"
+#include "snowball/source_info.h"
+
 #include "llvm/IR/Value.h"
 
 #ifndef __SNOWBALL_ENVIROMENT_SCOPES_H_
@@ -16,9 +19,9 @@ namespace snowball {
 
         public:
             Scope() {};
-            Scope(std::string p_scope_name, ScopeValue p_scope_value);
+            Scope(std::string p_scope_name, SourceInfo* p_source_info);
 
-            ScopeValue get(std::string p_name);
+            ScopeValue get(std::string p_name, Node p_node);
             void set(std::string p_name, ScopeValue p_value);
             std::experimental::optional<ScopeValue> get_optional(std::string p_name);
 
@@ -26,6 +29,8 @@ namespace snowball {
 
         private:
 
+            std::string _scope_name;
+            SourceInfo* _source_info;
             std::map<std::string, ScopeValue> _data;
 
     };
