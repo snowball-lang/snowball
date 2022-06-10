@@ -83,11 +83,9 @@ namespace snowball {
 		std::pair<int, int> pos;
         uint32_t width = 1; // width of the node ^^^^ (dbg).
 
-        // Node* parent_node; // TODO
-
 		// all fields from here are used as a "fill" for child classes
 		OpType op_type = OpType::NONE; // Used for operator Nodes
-		std::vector<Node> exprs; // Operator nodes (first = Left, second = Right). Variables (first = expr)
+		std::vector<Node> exprs; // Operator nodes (first = Left, second = Right). Variables (first = expr). function blocks
 
 		std::string name; // Names for variables, functions and classes
 		std::string value; // Values for constant values

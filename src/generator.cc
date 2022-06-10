@@ -6,39 +6,64 @@
 #include "snowball/generator.h"
 
 #include <llvm/IR/Type.h>
+#include <llvm/IR/Verifier.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Instructions.h>
 
 namespace snowball {
-    void Generator::generate() {
-        std::vector<Node> nodes = _parser->nodes();
-
-        for (auto node : nodes) {
+    llvm::Value* Generator::generate(std::vector<Node> p_nodes) {
+        for (auto node : p_nodes) {
             switch (node.type)
             {
                 case Node::Type::CONST_VALUE: {
-                    generate_cont_value(node);
-                    break;
+                    return generate_cont_value(node);
                 }
 
                 case Node::Type::VAR: {
-                    generate_variable_decl(node);
-                    break;
+                    return generate_variable_decl(node);
+                }
+
+                case Node::Type::FUNCTION: {
+                    return generate_function(node);
                 }
 
                 default:
                     DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, node.pos, node.width);
-                    Warning warn = Warning(Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, node.type, RESET, BOLD), dbg_info);
-                    warn.print_error();
-                    break;
+                    throw Warning(Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, node.type, RESET, BOLD), dbg_info);
             }
         }
     }
 
+    llvm::Value* Generator::generate_function(Node p_node) {
+        std::string llvm_error;
+        llvm::raw_string_ostream message_stream(llvm_error);
+
+        auto retType = _builder.getVoidTy();
+        auto prototype = llvm::FunctionType::get(retType, false);
+        llvm::Function *function = llvm::Function::Create(prototype, llvm::Function::ExternalLinkage, p_node.name, _module);
+
+        llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder.getContext(), "body", function);
+        _builder.SetInsertPoint(body);
+
+        generate(p_node.exprs);
+
+        if (body->size() == 0 || !body->back().isTerminator()) {
+            _builder.CreateRet(nullptr);
+        }
+
+        llvm::verifyFunction(*function, &message_stream);
+        if (!llvm_error.empty())
+            throw SNError(Error::LLVM_INTERNAL, llvm_error);
+
+        return function;
+    }
+
     llvm::Value* Generator::generate_variable_decl(Node p_node) {
         // TODO: check if variable is global
+        // TODO: add it to the enviroment
 
-        llvm::Value* value = generate_cont_value(p_node.exprs.at(0));
+        // We asume that the variable only has 1 expression
+        llvm::Value* value = generate(p_node.exprs);
         auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, p_node.name );
 
         return _builder.CreateStore (value, alloca, /*isVolatile=*/false);

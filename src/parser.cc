@@ -32,7 +32,8 @@ namespace snowball {
                     return;
 
                 case TokenType::KWORD_FUNC: {
-                    std::unique_ptr<FunctionNode> function = _parse_function();
+                    FunctionNode function = _parse_function();
+                    _nodes.push_back(function);
                     break;
                 }
 
@@ -45,7 +46,6 @@ namespace snowball {
 
                     var.pos = _pos;
                     var.width = (uint32_t)_width;
-
 
                     _nodes.push_back(var);
                     break;
@@ -107,35 +107,78 @@ namespace snowball {
         return var;
     }
 
-    std::unique_ptr<FunctionNode> Parser::_parse_function() {
-        PARSER_ERROR(Error::TODO, "Functions are not yet supported.")
+    FunctionNode Parser::_parse_function() {
+        // PARSER_ERROR(Error::TODO, "Functions are not yet supported.")
 
         // Assert if the token is the "func" keyword
         // and consume it.
         ASSERT(_current_token.type == TokenType::KWORD_FUNC)
 
-        auto func = std::make_unique<FunctionNode>();
+        FunctionNode func = FunctionNode();
         next_token();
 
         // Find function's name
         ASSERT_TOKEN(_current_token, TokenType::IDENTIFIER, "an identifier")
-        func->name = _current_token.to_string();
+        func.name = _current_token.to_string();
 
         next_token();
-        switch (_current_token.type)
-        {
-            case TokenType::BRACKET_LPARENT:
-                break;
+        // TODO: check for args
 
-            case TokenType::BRACKET_LCURLY:
-                break;
+        std::vector<Node> stmts = _parse_block();
+        // if (_current_token.type == TokenType::BRACKET_RCURLY) {
+        //     next_token();
+        // } else {
+        //     UNEXPECTED_TOK("a '}'")
+        // }
 
-            default:
-                UNEXPECTED_TOK(Logger::format("a %sleft curly bracket%s or a %sleft parenthesis%s", BLU, RESET, BLU, RESET).c_str())
-                break;
+        func.exprs = stmts;
+        return func;
+    }
+
+    std::vector<Node> Parser::_parse_block(std::vector<TokenType> p_termination) {
+        std::vector<Node> stmts;
+
+        while (true) {
+
+            next_token();
+            Token tk = _current_token;
+
+            switch (tk.type)
+            {
+                case TokenType::_EOF: {
+                    PARSER_ERROR(Error::UNEXPECTED_EOF, "Found an unexpected EOF while parsing a block");
+                    break;
+                }
+
+
+                case TokenType::KWORD_VAR: {
+                    int _width = _current_token.col;
+                    std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
+
+                    VarNode var = _parse_variable();
+                    _width = _width - _current_token.col;
+
+                    var.pos = _pos;
+                    var.width = (uint32_t)_width;
+
+
+                    stmts.push_back(var);
+                    break;
+                }
+
+                default: {
+                    for (TokenType termination : p_termination) {
+                        if (tk.type == termination) {
+                            return stmts;
+                        }
+                    }
+
+                    PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("%s%s%s not allowed inside blocks", BLU, _current_token.to_string().c_str(), RESET))
+                }
+            }
         }
 
-        return func;
+        return stmts;
     }
 
     // Private

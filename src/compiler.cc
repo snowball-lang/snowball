@@ -63,12 +63,6 @@ namespace snowball {
 
         _enviroment = new Enviroment();
 
-        auto i32 = _builder.getInt32Ty();
-        auto prototype = llvm::FunctionType::get(i32, false);
-        llvm::Function *main_fn = llvm::Function::Create(prototype, llvm::Function::ExternalLinkage, "main", _module.get());
-        llvm::BasicBlock *body = llvm::BasicBlock::Create(_global_context, "body", main_fn);
-        _builder.SetInsertPoint(body);
-
         link_std_classes();
 
         _initialized = true;
@@ -89,11 +83,9 @@ namespace snowball {
                 _parser = new Parser(_lexer, _source_info);
                 _parser->parse();
 
-                _generator = new Generator(_parser, _enviroment, _source_info, std::move(_builder), _buildin_types);
-                _generator->generate();
+                _generator = new Generator(_parser, _enviroment, _source_info, std::move(_builder), _module.get(), _buildin_types);
+                _generator->generate(_parser->nodes());
             }
-
-            _builder.CreateRet(llvm::ConstantInt::get( llvm::Type::getInt32Ty( _global_context ), 0 ));
 
             std::string module_error;
             llvm::raw_string_ostream module_stream(module_error);
