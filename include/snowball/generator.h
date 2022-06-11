@@ -45,7 +45,7 @@ namespace snowball {
 
             // methods
             llvm::Value* generate_function(Node p_node);
-            llvm::Value* generate_cont_value(Node p_node);
+            llvm::Value* generate_const_value(Node p_node);
             llvm::Value* generate_variable_decl(Node p_node);
     };
 }

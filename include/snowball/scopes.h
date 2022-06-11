@@ -23,7 +23,7 @@ namespace snowball {
 
             ScopeValue get(std::string p_name, Node p_node);
             void set(std::string p_name, ScopeValue p_value);
-            std::experimental::optional<ScopeValue> get_optional(std::string p_name);
+            bool item_exists(std::string p_name);
 
             ~Scope() {};
 

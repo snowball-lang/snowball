@@ -104,6 +104,10 @@ namespace snowball {
         Node expr = _parse_expression();
         var.exprs.push_back(expr);
 
+        if (_current_token.type == TokenType::SYM_SEMI_COLLON) {
+            next_token();
+        }
+
         return var;
     }
 

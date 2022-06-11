@@ -16,6 +16,7 @@ namespace snowball {
         UNDEFINED_VARIABLE,
         UNEXPECTED_EOF,
         WARNING,
+        VARIABLE_ERROR,
 
         LLVM_INTERNAL,
 

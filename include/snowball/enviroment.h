@@ -1,5 +1,7 @@
 
 #include <vector>
+
+#include "nodes.h"
 #include "scopes.h"
 #include "source_info.h"
 
@@ -15,18 +17,18 @@ namespace snowball {
         public:
             Enviroment(SourceInfo* p_source_info);
 
-            Scope global_scope();
-            Scope current_scope();
+            Scope* global_scope();
+            Scope* current_scope();
 
-            Scope create_scope(std::string p_name);
+            Scope* create_scope(std::string p_name);
             void delete_scope();
 
             ~Enviroment() {};
 
         private:
             SourceInfo* _source_info;
-            std::vector<Scope> _scopes;
-
+            std::vector<Scope*> _scopes;
+            ScopeValue get(std::string name, Node p_node);
     };
 
 }

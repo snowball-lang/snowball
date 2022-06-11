@@ -1,0 +1,655 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "snowball"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"target_link_libraries",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 42,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 50,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 44,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g   -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS"
+				},
+				{
+					"fragment" : "-DSNOWBALL_STATIC"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 3,
+					"path" : "/usr/lib/llvm-10/include"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/home/mauro/work/snowball/include"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/home/mauro/work/snowball/build"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/home/mauro/work/snowball/source"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					1
+				],
+				"standard" : "14"
+			},
+			"sourceIndexes" : 
+			[
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29
+			]
+		}
+	],
+	"id" : "snowball::@6890427a1f51a3e7e1df",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-g",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMAnalysis.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMCore.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMExecutionEngine.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMInstCombine.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMObject.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMOrcJIT.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMScalarOpts.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMSupport.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMMC.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMMCJIT.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMX86CodeGen.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMX86AsmParser.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMX86Desc.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMX86Disassembler.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMX86Info.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMX86Utils.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMJITLink.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMOrcError.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMPasses.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMipo.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMInstrumentation.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMVectorize.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMIRReader.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMAsmParser.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMLinker.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMExecutionEngine.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMRuntimeDyld.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMAsmPrinter.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMDebugInfoDWARF.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMCFGuard.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMGlobalISel.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMSelectionDAG.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMCodeGen.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMScalarOpts.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMInstCombine.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMAggressiveInstCombine.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMTarget.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMTransformUtils.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMBitWriter.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMAnalysis.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMProfileData.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMObject.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMBitReader.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMCore.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMRemarks.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMBitstreamReader.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMTextAPI.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMMCParser.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMMCDisassembler.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMMC.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMBinaryFormat.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMDebugInfoCodeView.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMDebugInfoMSF.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMSupport.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lz",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lrt",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-ldl",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-ltinfo",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lpthread",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lm",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/usr/lib/llvm-10/lib/libLLVMDemangle.a",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "snowball",
+	"nameOnDisk" : "snowball",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16
+			]
+		},
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29
+			]
+		},
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				30,
+				31,
+				32,
+				33,
+				34,
+				35,
+				36
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/colors.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/compiler.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/dbg_info.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/enviroment.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/errors.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/export.hpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/generator.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/lexer.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/logger.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/nodes.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/parser.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/scopes.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/snowball.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/source_info.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/token.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/types.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "include/snowball/types/Number.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/colors.cc",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/compiler.cc",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/dbg_info.cc",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/enviroment.cc",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/errors.cc",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/generator.cc",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/lexer.cc",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/logger.cc",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/main.cc",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/parser.cc",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/scopes.cc",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/types.cc",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/types/Number.cc",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CMakeCache.txt",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CMakeFiles/TargetDirectories.txt",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CMakeFiles/snowball.dir/link.txt",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CMakeLists.txt",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "README.md",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "libs/system/README.md",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "/usr/lib/llvm-10/include",
+			"sourceGroupIndex" : 2
+		}
+	],
+	"type" : "EXECUTABLE"
+}

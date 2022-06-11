@@ -10,12 +10,14 @@
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Instructions.h>
 
+#include <optional>
+
 namespace snowball {
     llvm::Value* Generator::generate(Node p_node) {
         switch (p_node.type)
         {
             case Node::Type::CONST_VALUE: {
-                return generate_cont_value(p_node);
+                return generate_const_value(p_node);
             }
 
             case Node::Type::VAR: {
@@ -36,7 +38,7 @@ namespace snowball {
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
 
-        
+        _enviroment->create_scope(p_node.name);
 
         auto retType = _builder.getVoidTy();
         auto prototype = llvm::FunctionType::get(retType, false);
@@ -57,6 +59,7 @@ namespace snowball {
         if (!llvm_error.empty())
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
+        _enviroment->delete_scope();
         return function;
     }
 
@@ -64,14 +67,28 @@ namespace snowball {
         // TODO: check if variable is global
         // TODO: add it to the enviroment
 
+        DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node.pos, p_node.width);
+        Scope* scope = _enviroment->current_scope();
+
+        bool _value = scope->item_exists(p_node.name);
+        DUMP(_value)
+        if (_value) {
+            throw CompilerError(Error::VARIABLE_ERROR, Logger::format("'%s' has already been declared", p_node.name.c_str()), dbg_info);
+        }
+
         // We asume that the variable only has 1 expression
         llvm::Value* value = generate(p_node.exprs.at(0));
         auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, p_node.name );
 
+        ScopeValue scope_value;
+        scope_value.type = ScopeType::LLVM;
+        scope_value.llvm_value = value;
+
+        scope->set(p_node.name, scope_value);
         return _builder.CreateStore (value, alloca, /*isVolatile=*/false);
     }
 
-    llvm::Value* Generator::generate_cont_value(Node p_node) {
+    llvm::Value* Generator::generate_const_value(Node p_node) {
         switch (p_node.const_type)
         {
             case TokenType::VALUE_NUMBER: {
