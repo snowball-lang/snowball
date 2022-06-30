@@ -22,7 +22,7 @@ namespace snowball {
     };
 }
 
-extern "C" DLLEXPORT snowball::Number* Number_create(uint64_t n);
+extern "C" DLLEXPORT snowball::Number* Number__new(uint64_t n);
 extern "C" DLLEXPORT snowball::Number* Number__sum(snowball::Number* number, uint64_t s);
 
 #endif // SN_NUMBER_NUMBER_EXPORT_H

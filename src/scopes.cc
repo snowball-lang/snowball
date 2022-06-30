@@ -10,12 +10,12 @@ namespace snowball {
         : _source_info(p_source_info), _scope_name(p_scope_name) {}
 
     bool Scope::item_exists(std::string p_name) {
-        std::map<std::string, ScopeValue>::iterator _it = this->_data.find(p_name);
+        std::map<std::string, ScopeValue*>::iterator _it = this->_data.find(p_name);
 
         return !(this->_data.find(p_name) == this->_data.end());
     }
 
-    ScopeValue Scope::get(std::string p_name, Node p_node) {
+    ScopeValue* Scope::get(std::string p_name, Node p_node) {
 
         bool _value = item_exists(p_name);
 
@@ -28,8 +28,8 @@ namespace snowball {
     }
 
 
-    void Scope::set(std::string p_name, ScopeValue p_value) {
-        this->_data.insert ( std::pair<std::string,ScopeValue>(p_name, p_value) );
+    void Scope::set(std::string p_name, ScopeValue* p_value) {
+        this->_data.insert ( std::pair<std::string,ScopeValue*>(p_name, p_value) );
     }
 
 }

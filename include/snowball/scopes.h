@@ -6,7 +6,7 @@
 #include "snowball/nodes.h"
 #include "snowball/source_info.h"
 
-#include "llvm/IR/Value.h"
+#include <llvm/IR/Value.h>
 
 #ifndef __SNOWBALL_ENVIROMENT_SCOPES_H_
 #define __SNOWBALL_ENVIROMENT_SCOPES_H_
@@ -21,8 +21,8 @@ namespace snowball {
             Scope() {};
             Scope(std::string p_scope_name, SourceInfo* p_source_info);
 
-            ScopeValue get(std::string p_name, Node p_node);
-            void set(std::string p_name, ScopeValue p_value);
+            ScopeValue* get(std::string p_name, Node p_node);
+            void set(std::string p_name, ScopeValue* p_value);
             bool item_exists(std::string p_name);
 
             ~Scope() {};
@@ -31,7 +31,7 @@ namespace snowball {
 
             std::string _scope_name;
             SourceInfo* _source_info;
-            std::map<std::string, ScopeValue> _data;
+            std::map<std::string, ScopeValue*> _data;
 
     };
 
@@ -45,6 +45,16 @@ namespace snowball {
 
         llvm::Value* llvm_value;
         Scope* scope_value;
+
+        ScopeValue(llvm::Value* p_value) {
+            type = ScopeType::LLVM;
+            llvm_value = p_value;
+        }
+
+        ScopeValue(Scope* p_value) {
+            type = ScopeType::SCOPE;
+            scope_value = p_value;
+        }
 
         ~ScopeValue() = default;
     };

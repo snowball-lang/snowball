@@ -13,7 +13,7 @@ namespace snowball {
     };
 
     struct SnowballBuildinTypes {
-        llvm::Function* sn_number_class;
+        llvm::Function* sn_number__new;
         llvm::Function* sn_number__sum;
     };
 

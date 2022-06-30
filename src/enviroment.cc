@@ -1,24 +1,31 @@
 
+#include "snowball/types.h"
 #include "snowball/errors.h"
 #include "snowball/scopes.h"
 #include "snowball/enviroment.h"
 
+#include <llvm-10/llvm/Support/raw_ostream.h>
+#include <llvm/IR/Type.h>
+
 #include <algorithm>
 
 namespace snowball {
-    Enviroment::Enviroment(SourceInfo* p_source_info) : _source_info(p_source_info) {
+    Enviroment::Enviroment(SourceInfo* p_source_info, SnowballBuildinTypes p_buildin_types) : _source_info(p_source_info) {
+        _buildin_types = p_buildin_types;
+
         Scope* global_scope = new Scope("__sn__global__", _source_info);
         _scopes.push_back(global_scope);
 
-        ScopeValue value_number_class;
         Scope* number_class_scope = new Scope("Number", _source_info);
-        value_number_class.type = ScopeType::SCOPE;
-        value_number_class.scope_value = number_class_scope;
+        ScopeValue* value_number_class = new ScopeValue(number_class_scope);
+        ScopeValue* value_number_new = new ScopeValue(_buildin_types.sn_number__new);
 
+
+        number_class_scope->set("__new", value_number_new);
         global_scope->set("Number", value_number_class);
     }
 
-    ScopeValue Enviroment::get(std::string name, Node p_node) {
+    ScopeValue* Enviroment::get(std::string name, Node p_node) {
 
         DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node.pos, p_node.width);
         size_t pos_start = 0, pos_end, delim_len = 1;

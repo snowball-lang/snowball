@@ -61,9 +61,9 @@ namespace snowball {
 
         _module = std::make_unique<llvm::Module>(prepare_module_name(), _global_context);;
 
-        _enviroment = new Enviroment(_source_info);
 
         link_std_classes();
+        _enviroment = new Enviroment(_source_info, _buildin_types);
 
         _initialized = true;
     }
@@ -110,7 +110,7 @@ namespace snowball {
                 throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
             // TODO: move into a function
-            executionEngine->addGlobalMapping(_buildin_types.sn_number_class, reinterpret_cast<snowball::Number*>(&Number_create));
+            executionEngine->addGlobalMapping(_buildin_types.sn_number__new, reinterpret_cast<snowball::Number*>(&Number__new));
             executionEngine->addGlobalMapping(_buildin_types.sn_number__sum, reinterpret_cast<snowball::Number*>(&Number__sum));
 
             llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef("main"));
@@ -132,20 +132,20 @@ cleanup:
 
         /* Number */
         auto sn_number_prototype = llvm::FunctionType::get(i8p, std::vector<llvm::Type *> { nt }, false);
-        auto sn_number_fn = llvm::Function::Create(sn_number_prototype, llvm::Function::ExternalLinkage, "Number_create", _module.get());
+        auto sn_number__new_fn = llvm::Function::Create(sn_number_prototype, llvm::Function::ExternalLinkage, "Number__new", _module.get());
 
         auto sn_number_sum_prototype = llvm::FunctionType::get(i8p, std::vector<llvm::Type *> { i8p, nt }, false);
-        auto sn_number_add_fn = llvm::Function::Create(sn_number_sum_prototype, llvm::Function::ExternalLinkage, "Number__sum", _module.get());
+        auto sn_number__add_fn = llvm::Function::Create(sn_number_sum_prototype, llvm::Function::ExternalLinkage, "Number__sum", _module.get());
 
-        llvm::verifyFunction(*sn_number_fn, &message_stream);
-        llvm::verifyFunction(*sn_number_add_fn, &message_stream);
+        llvm::verifyFunction(*sn_number__new_fn, &message_stream);
+        llvm::verifyFunction(*sn_number__add_fn, &message_stream);
 
         if (!llvm_error.empty())
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
         _buildin_types = {
-            .sn_number_class = sn_number_fn,
-            .sn_number__sum = sn_number_add_fn
+            .sn_number__new = sn_number__new_fn,
+            .sn_number__sum = sn_number__add_fn
         };
     }
 
