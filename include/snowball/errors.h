@@ -17,6 +17,7 @@ namespace snowball {
         UNEXPECTED_EOF,
         WARNING,
         VARIABLE_ERROR,
+        COMPILER_ERROR, // note: not the same as "compile time error"
 
         LLVM_INTERNAL,
 

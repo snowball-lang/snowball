@@ -70,7 +70,7 @@ namespace snowball {
 
     void Compiler::compile() {
         if (!_initialized) {
-            // TODO: error
+            throw SNError(Error::COMPILER_ERROR, "Compiler has not been initialized!");
         }
 
         /* ignore_goto_errors() */ {

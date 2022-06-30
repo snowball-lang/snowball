@@ -13,6 +13,7 @@ namespace snowball {
         __RET_ERROR_IF_CODE(Error::LLVM_INTERNAL,     "LLVM internal error")
         __RET_ERROR_IF_CODE(Error::UNDEFINED_VARIABLE,"Undefined Variable")
         __RET_ERROR_IF_CODE(Error::VARIABLE_ERROR,    "Variable Error")
+        __RET_ERROR_IF_CODE(Error::COMPILER_ERROR,    "Compiler Error")
 
         return "";
     }

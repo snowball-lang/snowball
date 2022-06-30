@@ -80,7 +80,6 @@ namespace snowball {
 
     llvm::Value* Generator::generate_variable_decl(Node p_node) {
         // TODO: check if variable is global
-        // TODO: add it to the enviroment
 
         DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node.pos, p_node.width);
         Scope* scope = _enviroment->current_scope();
