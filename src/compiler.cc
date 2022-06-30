@@ -110,7 +110,8 @@ namespace snowball {
                 throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
             // TODO: move into a function
-            executionEngine->addGlobalMapping(_buildin_types.sn_number_class, reinterpret_cast<snowball::Number*>(&sn_create_number));
+            executionEngine->addGlobalMapping(_buildin_types.sn_number_class, reinterpret_cast<snowball::Number*>(&Number_create));
+            executionEngine->addGlobalMapping(_buildin_types.sn_number__sum, reinterpret_cast<snowball::Number*>(&Number__sum));
 
             llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef("main"));
             auto result = executionEngine->runFunction(main_fn, {});
@@ -129,15 +130,22 @@ cleanup:
         llvm::PointerType* i8p = _builder.getInt8PtrTy();
         llvm::Type* nt = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
 
+        /* Number */
         auto sn_number_prototype = llvm::FunctionType::get(i8p, std::vector<llvm::Type *> { nt }, false);
-        auto sn_number_fn = llvm::Function::Create(sn_number_prototype, llvm::Function::ExternalLinkage, "sn_create_number", _module.get());
+        auto sn_number_fn = llvm::Function::Create(sn_number_prototype, llvm::Function::ExternalLinkage, "Number_create", _module.get());
+
+        auto sn_number_sum_prototype = llvm::FunctionType::get(i8p, std::vector<llvm::Type *> { i8p, nt }, false);
+        auto sn_number_add_fn = llvm::Function::Create(sn_number_sum_prototype, llvm::Function::ExternalLinkage, "Number__sum", _module.get());
+
         llvm::verifyFunction(*sn_number_fn, &message_stream);
+        llvm::verifyFunction(*sn_number_add_fn, &message_stream);
 
         if (!llvm_error.empty())
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
         _buildin_types = {
-            .sn_number_class = sn_number_fn
+            .sn_number_class = sn_number_fn,
+            .sn_number__sum = sn_number_add_fn
         };
     }
 

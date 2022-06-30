@@ -5,6 +5,10 @@
 #include <stdio.h>
 #include <stdint.h>
 
-extern "C" DLLEXPORT snowball::Number* sn_create_number(uint64_t n){
+extern "C" DLLEXPORT snowball::Number* Number_create(uint64_t n){
     return new snowball::Number(n);
+}
+
+extern "C" DLLEXPORT snowball::Number* Number__sum(snowball::Number* number, uint64_t s) {
+    return number->__sum(s);
 }

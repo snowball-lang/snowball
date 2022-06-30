@@ -78,6 +78,7 @@ namespace snowball {
 		};
 
         Type type = Type::UNKNOWN;
+		std::string TypeName; // Real type name (e.g. Number or String)
 
 		std::pair<int, int> pos;
         uint32_t width = 1; // width of the node ^^^^ (dbg).
@@ -120,10 +121,11 @@ namespace snowball {
 
 	struct ConstantValue : public Node {
 
-		ConstantValue(TokenType _const_type, std::string _value) {
+		ConstantValue(TokenType _const_type, std::string _value, std::string _typeName) {
 			const_type = _const_type;
 			value = _value;
 			type = Type::CONST_VALUE;
+			TypeName = _typeName;
 		};
 
 		~ConstantValue() {};

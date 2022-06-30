@@ -287,7 +287,7 @@ namespace snowball {
                     Token tk;
                     tk.type = TokenType::VALUE_FLOAT;
                     tk.line = cur_line;
-                    tk.col = cur_col - (int)sizeof(float_str);
+                    tk.col = cur_col - float_str.length();
                     tk.value = float_val;
                     tokens.emplace_back(tk);
 					break;
@@ -339,7 +339,7 @@ namespace snowball {
 
                     Token tk;
                     tk.line = cur_line;
-                    tk.col = cur_col - (int)sizeof(num);
+                    tk.col = cur_col - num.length();
                     tk.value = num;
 					if (mode == FLOAT){
                         tk.type = TokenType::VALUE_FLOAT;}

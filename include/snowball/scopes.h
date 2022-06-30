@@ -44,7 +44,7 @@ namespace snowball {
         ScopeType type;
 
         llvm::Value* llvm_value;
-        Scope scope_value;
+        Scope* scope_value;
 
         ~ScopeValue() = default;
     };

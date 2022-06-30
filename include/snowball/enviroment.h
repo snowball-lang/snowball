@@ -23,12 +23,14 @@ namespace snowball {
             Scope* create_scope(std::string p_name);
             void delete_scope();
 
+            ScopeValue get(std::string name, Node p_node);
+            bool item_exists(std::string name, Node p_node);
+
             ~Enviroment() {};
 
         private:
             SourceInfo* _source_info;
             std::vector<Scope*> _scopes;
-            ScopeValue get(std::string name, Node p_node);
     };
 
 }

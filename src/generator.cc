@@ -28,10 +28,25 @@ namespace snowball {
                 return generate_function(p_node);
             }
 
+            case Node::Type::OPERATOR: {
+                return generate_operator(p_node);
+            }
+
             default:
                 DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node.pos, p_node.width);
                 throw Warning(Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, p_node.type, RESET, BOLD), dbg_info);
         }
+    }
+
+    llvm::Value* Generator::generate_operator(Node p_node) {
+        llvm::Value* left = generate(p_node.exprs.at(0));
+        llvm::Value* right = generate(p_node.exprs.at(1));
+
+        // llvm::PointerType* i8p = _builder.getInt8PtrTy();
+        // llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
+
+        // llvm::Constant * num = llvm::ConstantInt::get(i64, (uint64_t)std::stoi(p_node.value));
+        // return _builder.CreateCall(_buildin_types.sn_number_class, num);
     }
 
     llvm::Value* Generator::generate_function(Node p_node) {
@@ -70,9 +85,7 @@ namespace snowball {
         DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node.pos, p_node.width);
         Scope* scope = _enviroment->current_scope();
 
-        bool _value = scope->item_exists(p_node.name);
-        DUMP(_value)
-        if (_value) {
+        if (_enviroment->item_exists(p_node.name, p_node)) {
             throw CompilerError(Error::VARIABLE_ERROR, Logger::format("'%s' has already been declared", p_node.name.c_str()), dbg_info);
         }
 

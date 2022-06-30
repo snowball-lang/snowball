@@ -60,6 +60,25 @@ namespace snowball {
                 case TokenType::VALUE_NUMBER:
                 case TokenType::VALUE_STRING:
                 case TokenType::VALUE_UNDEFINED: {
+                    std::string TypeName;
+
+                    if (_current_token.type == TokenType::VALUE_BOOL) {
+                        TypeName = "Boolean";
+                    } else if (_current_token.type == TokenType::VALUE_NULL) {
+                        TypeName = "Null";
+                    } else if (_current_token.type == TokenType::VALUE_FLOAT) {
+                        TypeName = "Float";
+                    } else if (_current_token.type == TokenType::VALUE_STRING) {
+                        TypeName = "String";
+                    } else if (_current_token.type == TokenType::VALUE_UNDEFINED) {
+                        TypeName = "Undefined";
+                    } else if (_current_token.type == TokenType::VALUE_NUMBER) {
+                        TypeName = "Number";
+                    } else {
+                        PARSER_ERROR(Error::TODO, Logger::format("Const Type not supported: %s%s%s", BLU, _current_token.type, RESET));
+                        break;
+                    }
+
                     int _width = _current_token.col;
                     std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
 
@@ -68,6 +87,7 @@ namespace snowball {
 
                     value.pos = _pos;
                     value.width = (uint32_t)_width;
+                    value.TypeName = TypeName;
 
                     _nodes.push_back(value);
                     break;
@@ -223,9 +243,28 @@ namespace snowball {
                 case TokenType::VALUE_FLOAT:
                 case TokenType::VALUE_NUMBER:
                 case TokenType::VALUE_STRING:
-                case TokenType::VALUE_UNDEFINED:
-                    expressions.push_back(ConstantValue(_current_token.type, _current_token.to_string()));
+                case TokenType::VALUE_UNDEFINED: {
+                    std::string TypeName;
+
+                    if (_current_token.type == TokenType::VALUE_BOOL) {
+                        TypeName = "Boolean";
+                    } else if (_current_token.type == TokenType::VALUE_NULL) {
+                        TypeName = "Null";
+                    } else if (_current_token.type == TokenType::VALUE_FLOAT) {
+                        TypeName = "Float";
+                    } else if (_current_token.type == TokenType::VALUE_STRING) {
+                        TypeName = "String";
+                    } else if (_current_token.type == TokenType::VALUE_UNDEFINED) {
+                        TypeName = "Undefined";
+                    } else if (_current_token.type == TokenType::VALUE_NUMBER) {
+                        TypeName = "Number";
+                    } else {
+                        PARSER_ERROR(Error::TODO, Logger::format("Const Type not supported: %s%s%s", BLU, _current_token.type, RESET));
+                    }
+
+                    expressions.push_back(ConstantValue(_current_token.type, _current_token.to_string(), TypeName));
                     break;
+                }
 
                 case TokenType::OP_NOT:
                 case TokenType::OP_PLUS:
