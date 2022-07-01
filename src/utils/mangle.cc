@@ -72,9 +72,9 @@ namespace snowball {
                     return result;
                 }
 
+                result.isMangled = true;
                 index += 2;
             }
-
 
             const char* c_str = name.c_str();
             if (c_str[index] == 'N') {
@@ -91,10 +91,33 @@ namespace snowball {
                 result.name = name.substr(index, length);
             }
 
-            if (c_str[index] == 'A') {
-                // TODO
+            while (c_str[index] == 'A') {
+                std::stringstream _length;
+                _length << ((c_str[index + 1]) - '0');
+                index += 2;
+
+                while (c_str[index] >= '0' && c_str[index] <= '9') {
+                    _length << ((c_str[index]) - '0');
+                    index++;
+                }
+
+                int length = std::stoi(_length.str().c_str());
+                result.arguments.push_back(name.substr(index, length));
             }
 
+            if (c_str[index] == 'R') {
+                std::stringstream _length;
+                _length << ((c_str[index + 1]) - '0');
+                index += 2;
+
+                while (c_str[index] >= '0' && c_str[index] <= '9') {
+                    _length << ((c_str[index]) - '0');
+                    index++;
+                }
+
+                int length = std::stoi(_length.str().c_str());
+                result.return_type = name.substr(index, length);
+            }
         }
 
         return result;
