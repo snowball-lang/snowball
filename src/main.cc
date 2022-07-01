@@ -64,7 +64,9 @@ int main(int argc, char** argv) {
 
                 compiler->compile();
             } catch(const SNError& error) {
+                printf("\n");
                 error.print_error();
+                printf("  %s/\n", BBLU);
             }
         }
     }

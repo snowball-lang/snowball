@@ -56,7 +56,6 @@ namespace snowball {
         mangled_name << return_type.size();
         mangled_name << return_type;
 
-        DUMP_S(mangled_name.str().c_str())
         return mangled_name.str();
     }
 

@@ -54,10 +54,7 @@ namespace snowball {
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
 
-        // just for testing (for now)
-        std::string mangled_name = mangle(p_node.name, { "hello", "world" });
-        unmangle(mangled_name);
-        // end testing
+        std::string mangled_name = mangle(p_node.name, {  });
 
         _enviroment->create_scope(p_node.name);
 

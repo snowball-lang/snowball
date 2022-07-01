@@ -199,7 +199,10 @@ namespace snowball {
                         }
                     }
 
-                    PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("%s%s%s not allowed inside blocks", BLU, _current_token.to_string().c_str(), RESET))
+                    if (tk.type >= TokenType::KWORD__START__POINT && tk.type <= TokenType::KWORD__ENDING__POINT)
+                        PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("%s%s%s not allowed inside blocks", BLU, _current_token.to_string().c_str(), RESET))
+
+                    UNEXPECTED_TOK("a valid expression")
                 }
             }
         }

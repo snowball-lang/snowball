@@ -152,6 +152,7 @@ namespace snowball {
         | special meanings to the
         | interpreter.
         */
+        KWORD__START__POINT, // All keywords must be grater than this
         KWORD_IF,          // Symbol: if
         KWORD_OR,          // Symbol: or
         KWORD_VAR,         // Symbol: var
@@ -177,6 +178,7 @@ namespace snowball {
         KWORD_RETURN,      // Symbol: return
         KWORD_DEFAULT,     // Symbol: default
         KWORD_CONTINUE,    // Symbol: continue
+        KWORD__ENDING__POINT, // All keywords must be less than this
 
         /*
         | Other

@@ -62,6 +62,7 @@ namespace snowball {
 			FUNCTION,
 			BLOCK,
 			IDENTIFIER,
+			ARGUMENT,
 			VAR,
 			CONST,
 			CONST_VALUE, // evaluvated to compile time constants ex: "str", 3.14, Array(1, 2), ...
@@ -117,6 +118,16 @@ namespace snowball {
 		};
 
 		~BlockNode() {};
+	};
+
+	struct ArgumentNode : public Node {
+
+		ArgumentNode(std::string p_name, std::string p_type) {
+			// todo: default values, infinite args, etc...
+			type = Type::ARGUMENT;
+		};
+
+		~ArgumentNode() {};
 	};
 
 	struct ConstantValue : public Node {
