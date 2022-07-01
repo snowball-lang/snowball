@@ -3,6 +3,8 @@
 #include <vector>
 #include <utility>
 
+#include "constants.h"
+
 #ifndef __SNOWBALL_TOKEN_H_
 #define __SNOWBALL_TOKEN_H_
 
@@ -259,35 +261,36 @@ namespace snowball {
                 case TokenType::IDENTIFIER:         return value;
 
                 // Keywods
-                case TokenType::KWORD_IMPORT:       return "import";
-                case TokenType::KWORD_CLASS:        return "class";
-                case TokenType::KWORD_ENUM:         return "enum";
-                case TokenType::KWORD_FUNC:         return "func";
-                case TokenType::KWORD_VAR:          return "var";
-                case TokenType::KWORD_CONST:        return "const";
-                case TokenType::KWORD_NULL:         return "null";
-                case TokenType::KWORD_TRUE:         return "true";
-                case TokenType::KWORD_FALSE:        return "false";
-                case TokenType::KWORD_IF:           return "if";
-                case TokenType::KWORD_ELSE:         return "else";
-                case TokenType::KWORD_WHILE:        return "while";
-                case TokenType::KWORD_FOR:          return "for";
-                case TokenType::KWORD_SWITCH:       return "switch";
-                case TokenType::KWORD_CASE:         return "case";
-                case TokenType::KWORD_DEFAULT:      return "default";
-                case TokenType::KWORD_BREAK:        return "break";
-                case TokenType::KWORD_CONTINUE:     return "continue";
-                case TokenType::KWORD_STATIC:       return "static";
-                case TokenType::KWORD_THIS:         return "this";
-                case TokenType::KWORD_SUPER:        return "super";
-                case TokenType::KWORD_RETURN:       return "return";
-                case TokenType::KWORD_AND:          return "and";
-                case TokenType::KWORD_OR:           return "or";
-                case TokenType::KWORD_NOT:          return "not";
+                case TokenType::KWORD_IMPORT:       return _SNOWBALL_KEYWORD__IMPORT;
+                case TokenType::KWORD_CLASS:        return _SNOWBALL_KEYWORD__CLASS;
+                case TokenType::KWORD_ENUM:         return _SNOWBALL_KEYWORD__ENUM;
+                case TokenType::KWORD_FUNC:         return _SNOWBALL_KEYWORD__FUNCTION;
+                case TokenType::KWORD_VAR:          return _SNOWBALL_KEYWORD__VARIABLE;
+                case TokenType::KWORD_CONST:        return _SNOWBALL_KEYWORD__CONSTANT;
+                case TokenType::KWORD_TRUE:         return _SNOWBALL_KEYWORD__TRUE;
+                case TokenType::KWORD_FALSE:        return _SNOWBALL_KEYWORD__FALSE;
+                case TokenType::KWORD_IF:           return _SNOWBALL_KEYWORD__IF;
+                case TokenType::KWORD_ELSE:         return _SNOWBALL_KEYWORD__ELSE;
+                case TokenType::KWORD_WHILE:        return _SNOWBALL_KEYWORD__WHILE;
+                case TokenType::KWORD_FOR:          return _SNOWBALL_KEYWORD__FOR;
+                case TokenType::KWORD_SWITCH:       return _SNOWBALL_KEYWORD__SWITCH;
+                case TokenType::KWORD_CASE:         return _SNOWBALL_KEYWORD__CASE;
+                case TokenType::KWORD_DEFAULT:      return _SNOWBALL_KEYWORD__DEFAULT;
+                case TokenType::KWORD_BREAK:        return _SNOWBALL_KEYWORD__BREAK;
+                case TokenType::KWORD_CONTINUE:     return _SNOWBALL_KEYWORD__CONTINUE;
+                case TokenType::KWORD_STATIC:       return _SNOWBALL_KEYWORD__STATIC;
+                case TokenType::KWORD_THIS:         return _SNOWBALL_KEYWORD__THIS;
+                case TokenType::KWORD_SUPER:        return _SNOWBALL_KEYWORD__SUPER;
+                case TokenType::KWORD_RETURN:       return _SNOWBALL_KEYWORD__RETURN;
+                case TokenType::KWORD_AND:          return _SNOWBALL_KEYWORD__AND;
+                case TokenType::KWORD_OR:           return _SNOWBALL_KEYWORD__OR;
+                case TokenType::KWORD_NOT:          return _SNOWBALL_KEYWORD__NOT;
 
                 // Literal values
-                case TokenType::VALUE_NULL:         return "null";
-                case TokenType::VALUE_UNDEFINED:    return "undefined";
+                case TokenType::KWORD_NULL:
+                case TokenType::VALUE_NULL:         return _SNOWBALL_KEYWORD__NULL;
+                case TokenType::VALUE_UNDEFINED:    return _SNOWBALL_KEYWORD__UNDEFINED;
+
 
                 case TokenType::VALUE_NUMBER:
                 case TokenType::VALUE_FLOAT:

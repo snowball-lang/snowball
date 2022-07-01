@@ -5,9 +5,9 @@
 #include <cstdarg>
 
 namespace snowball {
-    void Logger::log(std::string message)     { printf("%s\n", message.c_str());                           }
-    void Logger::rlog(std::string message)    { printf("%s\n", message.c_str());                           }
-    void Logger::elog(std::string message)    { fprintf( stderr, "%s\n", message.c_str());                 }
+    void Logger::log(std::string message)     { printf("%s\n", message.c_str());           fflush(stdout); }
+    void Logger::rlog(std::string message)    { printf("%s", message.c_str());             fflush(stdout); }
+    void Logger::elog(std::string message)    { fprintf( stderr, "%s\n", message.c_str()); fflush(stderr); }
 
     void Logger::info(std::string message)    { printf("%sinfo%s: %s\n", BBLU, RESET, message.c_str());    }
     void Logger::help(std::string message)    { printf("%shelp%s: %s\n", BGRN, RESET, message.c_str());    }

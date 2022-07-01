@@ -363,32 +363,33 @@ namespace snowball {
 					tk.col = cur_col - (int)identifier.size();
 					tk.line = cur_line;
 
-					if (identifier == "null") 		   { tk.type = TokenType::VALUE_NULL;						}
-					else if (identifier == "or")       { tk.type = TokenType::OP_OR; 							}
-					else if (identifier == "and")      { tk.type = TokenType::OP_AND; 						  	}
-					else if (identifier == "not")  	   { tk.type = TokenType::OP_NOT; 						  	}
+					if (identifier == _SNOWBALL_KEYWORD__NULL)             { tk.type = TokenType::VALUE_NULL;						}
+					else if (identifier == _SNOWBALL_KEYWORD__OR)          { tk.type = TokenType::OP_OR; 							}
+					else if (identifier == _SNOWBALL_KEYWORD__AND)         { tk.type = TokenType::OP_AND; 						  	}
+					else if (identifier == _SNOWBALL_KEYWORD__NOT)  	   { tk.type = TokenType::OP_NOT; 						  	}
 
-					else if (identifier == "if")	   { tk.type = TokenType::KWORD_IF;							}
-					else if (identifier == "var")	   { tk.type = TokenType::KWORD_VAR;						}
-					else if (identifier == "for")	   { tk.type = TokenType::KWORD_FOR;						}
-					else if (identifier == "enum")	   { tk.type = TokenType::KWORD_ENUM;						}
-					else if (identifier == "this")	   { tk.type = TokenType::KWORD_THIS;						}
-					else if (identifier == "case")	   { tk.type = TokenType::KWORD_CASE;						}
-					else if (identifier == "func")	   { tk.type = TokenType::KWORD_FUNC;						}
-					else if (identifier == "else")	   { tk.type = TokenType::KWORD_ELSE;						}
-					else if (identifier == "class")	   { tk.type = TokenType::KWORD_CLASS;						}
-					else if (identifier == "const")	   { tk.type = TokenType::KWORD_CONST;						}
-					else if (identifier == "while")	   { tk.type = TokenType::KWORD_WHILE;						}
-					else if (identifier == "super")	   { tk.type = TokenType::KWORD_SUPER;						}
-					else if (identifier == "switch")   { tk.type = TokenType::KWORD_SWITCH;						}
-					else if (identifier == "static")   { tk.type = TokenType::KWORD_STATIC;						}
-					else if (identifier == "import")   { tk.type = TokenType::KWORD_IMPORT;						}
-					else if (identifier == "return")   { tk.type = TokenType::KWORD_RETURN;						}
-					else if (identifier == "default")  { tk.type = TokenType::KWORD_DEFAULT;					}
-					else if (identifier == "continue") { tk.type = TokenType::KWORD_CONTINUE;					}
-					else if (identifier == "undefined"){ tk.type = TokenType::VALUE_UNDEFINED;					}
+					else if (identifier == _SNOWBALL_KEYWORD__IF)	       { tk.type = TokenType::KWORD_IF;							}
+					else if (identifier == _SNOWBALL_KEYWORD__VARIABLE)	   { tk.type = TokenType::KWORD_VAR;						}
+					else if (identifier == _SNOWBALL_KEYWORD__FOR)	       { tk.type = TokenType::KWORD_FOR;						}
+					else if (identifier == _SNOWBALL_KEYWORD__ENUM)	       { tk.type = TokenType::KWORD_ENUM;						}
+					else if (identifier == _SNOWBALL_KEYWORD__THIS)	       { tk.type = TokenType::KWORD_THIS;						}
+					else if (identifier == _SNOWBALL_KEYWORD__CASE)	       { tk.type = TokenType::KWORD_CASE;						}
+					else if (identifier == _SNOWBALL_KEYWORD__FUNCTION)	   { tk.type = TokenType::KWORD_FUNC;						}
+					else if (identifier == _SNOWBALL_KEYWORD__ELSE)	       { tk.type = TokenType::KWORD_ELSE;						}
+					else if (identifier == _SNOWBALL_KEYWORD__CLASS)	   { tk.type = TokenType::KWORD_CLASS;						}
+					else if (identifier == _SNOWBALL_KEYWORD__CONSTANT)	   { tk.type = TokenType::KWORD_CONST;						}
+					else if (identifier == _SNOWBALL_KEYWORD__WHILE)	   { tk.type = TokenType::KWORD_WHILE;						}
+					else if (identifier == _SNOWBALL_KEYWORD__BREAK)	   { tk.type = TokenType::KWORD_BREAK;						}
+					else if (identifier == _SNOWBALL_KEYWORD__SUPER)	   { tk.type = TokenType::KWORD_SUPER;						}
+					else if (identifier == _SNOWBALL_KEYWORD__SWITCH)      { tk.type = TokenType::KWORD_SWITCH;						}
+					else if (identifier == _SNOWBALL_KEYWORD__STATIC)      { tk.type = TokenType::KWORD_STATIC;						}
+					else if (identifier == _SNOWBALL_KEYWORD__IMPORT)      { tk.type = TokenType::KWORD_IMPORT;						}
+					else if (identifier == _SNOWBALL_KEYWORD__RETURN)      { tk.type = TokenType::KWORD_RETURN;						}
+					else if (identifier == _SNOWBALL_KEYWORD__DEFAULT)     { tk.type = TokenType::KWORD_DEFAULT;					}
+					else if (identifier == _SNOWBALL_KEYWORD__CONTINUE)    { tk.type = TokenType::KWORD_CONTINUE;					}
+					else if (identifier == _SNOWBALL_KEYWORD__UNDEFINED)   { tk.type = TokenType::VALUE_UNDEFINED;					}
 
-					else if (identifier == "true" || identifier == "false") { tk.type = TokenType::VALUE_BOOL;	}
+					else if (identifier == _SNOWBALL_KEYWORD__TRUE || identifier == _SNOWBALL_KEYWORD__FALSE) { tk.type = TokenType::VALUE_BOOL;	}
 					else {
 						tk.type = TokenType::IDENTIFIER;
 					}

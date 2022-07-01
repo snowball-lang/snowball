@@ -113,7 +113,7 @@ namespace snowball {
             executionEngine->addGlobalMapping(_buildin_types.sn_number__new, reinterpret_cast<snowball::Number*>(&Number__new));
             executionEngine->addGlobalMapping(_buildin_types.sn_number__sum, reinterpret_cast<snowball::Number*>(&Number__sum));
 
-            llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef("main"));
+            llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(_SNOWBALL_FUNCTION_ENTRY));
             auto result = executionEngine->runFunction(main_fn, {});
         }
 
