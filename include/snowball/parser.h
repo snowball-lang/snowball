@@ -20,7 +20,7 @@ namespace snowball {
 
             void parse();
 
-            std::vector<Node> nodes() { return _nodes; }
+            std::vector<Node*> nodes() { return _nodes; }
 
             ~Parser() {};
 
@@ -30,11 +30,11 @@ namespace snowball {
             void _parser_error(Error type, std::string msg);
 
             // Parser methods
-            Node _parse_expression();
-            VarNode _parse_variable();
-            FunctionNode _parse_function();
-            BlockNode _parse_block(std::vector<TokenType> p_termination = { TokenType::BRACKET_RCURLY } );
-            Node _build_op_tree(std::vector<Node> &expressions);
+            Node* _parse_expression();
+            VarNode* _parse_variable();
+            FunctionNode* _parse_function();
+            BlockNode* _parse_block(std::vector<TokenType> p_termination = { TokenType::BRACKET_RCURLY } );
+            Node* _build_op_tree(std::vector<Node*> &expressions);
 
             // Variables
             Lexer* _lexer;
@@ -43,7 +43,7 @@ namespace snowball {
             SourceInfo* _source_info;
             int __token_possition = 0;
 
-            std::vector<Node> _nodes;
+            std::vector<Node*> _nodes;
             std::vector<Token> _tokens;
     };
 

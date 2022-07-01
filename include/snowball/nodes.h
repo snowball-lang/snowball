@@ -51,7 +51,7 @@ namespace snowball {
 		NONE,
 	};
 
-    struct Node {
+    typedef struct Node {
         enum class Type {
 			UNKNOWN = -1,
 
@@ -79,22 +79,28 @@ namespace snowball {
 		};
 
         Type type = Type::UNKNOWN;
-		std::string TypeName; // Real type name (e.g. Number or String)
 
 		std::pair<int, int> pos;
         uint32_t width = 1; // width of the node ^^^^ (dbg).
 
-		// all fields from here are used as a "fill" for child classes
 		OpType op_type = OpType::NONE; // Used for operator Nodes
-		std::vector<Node> exprs; // Operator nodes (first = Left, second = Right). Variables (first = expr). function blocks
+		virtual ~Node() = default;
+    } Node;
 
-		std::string name; // Names for variables, functions and classes
-		std::string value; // Values for constant values
+	struct BlockNode : public Node {
+		std::vector<Node*> exprs;
 
-		TokenType const_type; // Const values' type
-    };
+		BlockNode() {
+			type = Type::BLOCK;
+		};
+
+		~BlockNode() {};
+	};
 
 	struct FunctionNode : public Node {
+		BlockNode* body;
+		std::string name;
+
 		FunctionNode() {
 			type = Type::FUNCTION;
 		};
@@ -103,21 +109,14 @@ namespace snowball {
 	};
 
 	struct VarNode : public Node {
+		Node* value;
+		std::string name;
 
 		VarNode() {
 			type = Type::VAR;
 		};
 
 		~VarNode() {};
-	};
-
-	struct BlockNode : public Node {
-
-		BlockNode() {
-			type = Type::BLOCK;
-		};
-
-		~BlockNode() {};
 	};
 
 	struct ArgumentNode : public Node {
@@ -131,12 +130,13 @@ namespace snowball {
 	};
 
 	struct ConstantValue : public Node {
+		std::string value;
+		TokenType const_type; // Const values' type
 
-		ConstantValue(TokenType _const_type, std::string _value, std::string _typeName) {
+		ConstantValue(TokenType _const_type, std::string _value) {
 			const_type = _const_type;
 			value = _value;
 			type = Type::CONST_VALUE;
-			TypeName = _typeName;
 		};
 
 		~ConstantValue() {};
@@ -144,9 +144,12 @@ namespace snowball {
 
 	struct BinaryOp : public Node {
 
+		Node* left;
+		Node* right;
+
 		template<class T>
-		static bool is_assignment(T p_node) {
-			OpType p_op_type = p_node.op_type;
+		static bool is_assignment(T* p_node) {
+			OpType p_op_type = p_node->op_type;
 
 			return
 				p_op_type == OpType::OP_EQ 	   	      ||
@@ -170,7 +173,7 @@ namespace snowball {
 		template<class T>
 		BinaryOp(T _op_type) {
 			type = Type::OPERATOR;
-			op_type = _op_type.op_type;
+			op_type = _op_type->op_type;
 		};
 
 		~BinaryOp() {};

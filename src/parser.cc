@@ -32,7 +32,7 @@ namespace snowball {
                     return;
 
                 case TokenType::KWORD_FUNC: {
-                    FunctionNode function = _parse_function();
+                    FunctionNode* function = _parse_function();
                     _nodes.push_back(function);
                     break;
                 }
@@ -41,11 +41,11 @@ namespace snowball {
                     int _width = _current_token.col;
                     std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
 
-                    VarNode var = _parse_variable();
+                    VarNode* var = _parse_variable();
                     _width = _width - _current_token.col;
 
-                    var.pos = _pos;
-                    var.width = (uint32_t)_width;
+                    var->pos = _pos;
+                    var->width = (uint32_t)_width;
 
                     _nodes.push_back(var);
                     break;
@@ -60,34 +60,15 @@ namespace snowball {
                 case TokenType::VALUE_NUMBER:
                 case TokenType::VALUE_STRING:
                 case TokenType::VALUE_UNDEFINED: {
-                    std::string TypeName;
-
-                    if (_current_token.type == TokenType::VALUE_BOOL) {
-                        TypeName = "Boolean";
-                    } else if (_current_token.type == TokenType::VALUE_NULL) {
-                        TypeName = "Null";
-                    } else if (_current_token.type == TokenType::VALUE_FLOAT) {
-                        TypeName = "Float";
-                    } else if (_current_token.type == TokenType::VALUE_STRING) {
-                        TypeName = "String";
-                    } else if (_current_token.type == TokenType::VALUE_UNDEFINED) {
-                        TypeName = "Undefined";
-                    } else if (_current_token.type == TokenType::VALUE_NUMBER) {
-                        TypeName = "Number";
-                    } else {
-                        PARSER_ERROR(Error::TODO, Logger::format("Const Type not supported: %s%s%s", BLU, _current_token.type, RESET));
-                        break;
-                    }
 
                     int _width = _current_token.col;
                     std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
 
-                    Node value = _parse_expression(); // Type: ConstantValue
+                    ConstantValue* value = static_cast<ConstantValue *>(_parse_expression()); // Type: ConstantValue
                     _width = _width - _current_token.col;
 
-                    value.pos = _pos;
-                    value.width = (uint32_t)_width;
-                    value.TypeName = TypeName;
+                    value->pos = _pos;
+                    value->width = (uint32_t)_width;
 
                     _nodes.push_back(value);
                     break;
@@ -104,14 +85,14 @@ namespace snowball {
 
     // Parse methods
 
-    VarNode Parser::_parse_variable() {
+    VarNode* Parser::_parse_variable() {
         ASSERT(_current_token.type == TokenType::KWORD_VAR)
         next_token();
 
-        auto var = VarNode();
+        VarNode* var = new VarNode();
         ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "variable")
 
-        var.name = _current_token.to_string();
+        var->name = _current_token.to_string();
         next_token();
 
         ASSERT_TOKEN_EOF(_current_token, TokenType::OP_EQ, "=", "variable")
@@ -121,8 +102,8 @@ namespace snowball {
             PARSER_ERROR(Error::UNEXPECTED_EOF, "Found an unexpected EOF while parsing variable's statement");
         }
 
-        Node expr = _parse_expression();
-        var.exprs.push_back(expr);
+        Node* value = _parse_expression();
+        var->value = value;
 
         if (_current_token.type == TokenType::SYM_SEMI_COLLON) {
             next_token();
@@ -131,37 +112,37 @@ namespace snowball {
         return var;
     }
 
-    FunctionNode Parser::_parse_function() {
+    FunctionNode* Parser::_parse_function() {
         // PARSER_ERROR(Error::TODO, "Functions are not yet supported.")
 
         // Assert if the token is the "func" keyword
         // and consume it.
         ASSERT(_current_token.type == TokenType::KWORD_FUNC)
 
-        FunctionNode func = FunctionNode();
+        FunctionNode* func = new FunctionNode();
         next_token();
 
         // Find function's name
         ASSERT_TOKEN(_current_token, TokenType::IDENTIFIER, "an identifier")
-        func.name = _current_token.to_string();
+        func->name = _current_token.to_string();
 
         next_token();
         // TODO: check for args
 
-        BlockNode body = _parse_block();
+        BlockNode* body = _parse_block();
         // if (_current_token.type == TokenType::BRACKET_RCURLY) {
         //     next_token();
         // } else {
         //     UNEXPECTED_TOK("a '}'")
         // }
 
-        func.exprs.push_back(body);
+        func->body = body;
         return func;
     }
 
-    BlockNode Parser::_parse_block(std::vector<TokenType> p_termination) {
-        std::vector<Node> stmts;
-        BlockNode b_node;
+    BlockNode* Parser::_parse_block(std::vector<TokenType> p_termination) {
+        std::vector<Node *> stmts;
+        BlockNode* b_node = new BlockNode();
 
         while (true) {
 
@@ -175,16 +156,15 @@ namespace snowball {
                     break;
                 }
 
-
                 case TokenType::KWORD_VAR: {
                     int _width = _current_token.col;
                     std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
 
-                    VarNode var = _parse_variable();
+                    VarNode* var = _parse_variable();
                     _width = _width - _current_token.col;
 
-                    var.pos = _pos;
-                    var.width = (uint32_t)_width;
+                    var->pos = _pos;
+                    var->width = (uint32_t)_width;
 
 
                     stmts.push_back(var);
@@ -194,7 +174,7 @@ namespace snowball {
                 default: {
                     for (TokenType termination : p_termination) {
                         if (tk.type == termination) {
-                            b_node.exprs = stmts;
+                            b_node->exprs = stmts;
                             return b_node;
                         }
                     }
@@ -207,7 +187,7 @@ namespace snowball {
             }
         }
 
-        b_node.exprs = stmts;
+        b_node->exprs = stmts;
         return b_node;
     }
 
@@ -235,8 +215,8 @@ namespace snowball {
         throw ParserError(type, msg, dbg_info);
     }
 
-    Node Parser::_parse_expression() {
-        std::vector<Node> expressions;
+    Node* Parser::_parse_expression() {
+        std::vector<Node *> expressions;
 
         while (true) {
             switch (_current_token.type)
@@ -247,25 +227,7 @@ namespace snowball {
                 case TokenType::VALUE_NUMBER:
                 case TokenType::VALUE_STRING:
                 case TokenType::VALUE_UNDEFINED: {
-                    std::string TypeName;
-
-                    if (_current_token.type == TokenType::VALUE_BOOL) {
-                        TypeName = "Boolean";
-                    } else if (_current_token.type == TokenType::VALUE_NULL) {
-                        TypeName = "Null";
-                    } else if (_current_token.type == TokenType::VALUE_FLOAT) {
-                        TypeName = "Float";
-                    } else if (_current_token.type == TokenType::VALUE_STRING) {
-                        TypeName = "String";
-                    } else if (_current_token.type == TokenType::VALUE_UNDEFINED) {
-                        TypeName = "Undefined";
-                    } else if (_current_token.type == TokenType::VALUE_NUMBER) {
-                        TypeName = "Number";
-                    } else {
-                        PARSER_ERROR(Error::TODO, Logger::format("Const Type not supported: %s%s%s", BLU, _current_token.type, RESET));
-                    }
-
-                    expressions.push_back(ConstantValue(_current_token.type, _current_token.to_string(), TypeName));
+                    expressions.push_back(new ConstantValue(_current_token.type, _current_token.to_string()));
                     break;
                 }
 
@@ -274,10 +236,10 @@ namespace snowball {
                 case TokenType::OP_MINUS:
                 case TokenType::OP_BIT_NOT:
 
-                    if (_current_token.type == TokenType::OP_NOT)     expressions.push_back(BinaryOp(OpType::OP_NOT))      ;
-                    if (_current_token.type == TokenType::OP_PLUS)    expressions.push_back(BinaryOp(OpType::OP_POSITIVE)) ;
-                    if (_current_token.type == TokenType::OP_MINUS)   expressions.push_back(BinaryOp(OpType::OP_NEGATIVE)) ;
-                    if (_current_token.type == TokenType::OP_BIT_NOT) expressions.push_back(BinaryOp(OpType::OP_BIT_NOT))  ;
+                    if (_current_token.type == TokenType::OP_NOT)     expressions.push_back(new BinaryOp(OpType::OP_NOT))      ;
+                    if (_current_token.type == TokenType::OP_PLUS)    expressions.push_back(new BinaryOp(OpType::OP_POSITIVE)) ;
+                    if (_current_token.type == TokenType::OP_MINUS)   expressions.push_back(new BinaryOp(OpType::OP_NEGATIVE)) ;
+                    if (_current_token.type == TokenType::OP_BIT_NOT) expressions.push_back(new BinaryOp(OpType::OP_BIT_NOT))  ;
 
                     break;
 
@@ -330,7 +292,7 @@ namespace snowball {
 
             if (valid) {
                 next_token(); // Eat peeked token.
-                expressions.push_back(BinaryOp(op));
+                expressions.push_back(new BinaryOp(op));
 
                 next_token();
             } else {
@@ -339,11 +301,11 @@ namespace snowball {
 
         }
 
-        Node op_tree = _build_op_tree(expressions);
+        Node* op_tree = _build_op_tree(expressions);
         return op_tree;
     }
 
-    Node Parser::_build_op_tree(std::vector<Node> &expressions) {
+    Node* Parser::_build_op_tree(std::vector<Node*> &expressions) {
         ASSERT(expressions.size() > 0)
 
         while (expressions.size() > 1) {
@@ -353,12 +315,13 @@ namespace snowball {
             bool unary = false;
 
             for (int i = 0; i < (int)expressions.size(); i++) {
-                if (!(expressions[i].type == Node::Type::OPERATOR)) {
+                BinaryOp* expression = static_cast<BinaryOp*>(expressions[i]);
+                if (!(expression->type == Node::Type::OPERATOR)) {
                     continue;
                 }
 
                 int precedence = -1;
-                switch (expressions[i].op_type) {
+                switch (expression->op_type) {
                     case OpType::OP_NOT:
                     case OpType::OP_BIT_NOT:
                     case OpType::OP_POSITIVE:
@@ -436,7 +399,7 @@ namespace snowball {
                 if (precedence < min_precedence) {
                     min_precedence = precedence;
                     next_op = i;
-                    OpType op = expressions[i].op_type;
+                    OpType op = expression->op_type;
                     unary = (
                         op == OpType::OP_NOT      ||
                         op == OpType::OP_BIT_NOT  ||
@@ -451,16 +414,16 @@ namespace snowball {
             if (unary) {
 
                 int next_expr = next_op;
-                while (expressions[next_expr].type == Node::Type::OPERATOR) {
+                while (expressions[next_expr]->type == Node::Type::OPERATOR) {
                     if (++next_expr == expressions.size()) {
                         PARSER_ERROR(Error::SYNTAX_ERROR, "expected an expression.");
                     }
                 }
 
                 for (int i = next_expr - 1; i >= next_op; i--) {
-                    Node op_node = BinaryOp(expressions[(size_t)i]);
+                    BinaryOp* op_node = new BinaryOp(expressions[(size_t)i]);
 
-                    op_node.exprs.push_back(expressions[(size_t)i + 1]);
+                    op_node->left = expressions[(size_t)i + 1];
                     expressions.erase(expressions.begin() + i + 1);
 
                     expressions.erase(expressions.begin() + i);
@@ -470,24 +433,24 @@ namespace snowball {
             } else {
 
                 // ASSERT(next_op >= 1 && next_op < (int)expressions.size() - 1)
-                // ASSERT((!(expressions[(size_t)next_op - 1].type == Node::Type::OPERATOR)) && (!(expressions[(size_t)next_op + 1].type == Node::Type::OPERATOR)));
+                // ASSERT((!(expressions[(size_t)next_op - 1]->type == Node::Type::OPERATOR)) && (!(expressions[(size_t)next_op + 1].type == Node::Type::OPERATOR)));
 
-                BinaryOp op_node = BinaryOp(expressions[(size_t)next_op + 1]);
+                BinaryOp* op_node = new BinaryOp(expressions[(size_t)next_op + 1]);
 
-                if (expressions[(size_t)next_op - 1].type == Node::Type::OPERATOR) {
+                if (expressions[(size_t)next_op - 1]->type == Node::Type::OPERATOR) {
                     if (BinaryOp::is_assignment(expressions[(size_t)next_op - 1])) {
                         PARSER_ERROR(Error::SYNTAX_ERROR, "unexpected assignment.")
                     }
                 }
 
-                if (expressions[(size_t)next_op + 1].type == Node::Type::OPERATOR) {
+                if (expressions[(size_t)next_op + 1]->type == Node::Type::OPERATOR) {
                     if (BinaryOp::is_assignment(expressions[(size_t)next_op - 1])) {
                         PARSER_ERROR(Error::SYNTAX_ERROR, "unexpected assignment.")
                     }
                 }
 
-                op_node.exprs.push_back(expressions[(size_t)next_op - 1]);
-                op_node.exprs.push_back(expressions[(size_t)next_op + 1]);
+                op_node->left = expressions[(size_t)next_op - 1];
+                op_node->right = expressions[(size_t)next_op + 1];
 
                 expressions.erase(expressions.begin() + (next_op));
                 expressions.insert((expressions.begin() + (next_op - 1)), op_node);

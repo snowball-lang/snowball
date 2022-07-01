@@ -21,7 +21,7 @@ namespace snowball {
             Scope() {};
             Scope(std::string p_scope_name, SourceInfo* p_source_info);
 
-            ScopeValue* get(std::string p_name, Node p_node);
+            ScopeValue* get(std::string p_name, Node* p_node);
             void set(std::string p_name, ScopeValue* p_value);
             bool item_exists(std::string p_name);
 

@@ -85,7 +85,7 @@ namespace snowball {
 
                 _generator = new Generator(_parser, _enviroment, _source_info, std::move(_builder), _module.get(), _buildin_types);
 
-                for (auto node : _parser->nodes()) {
+                for (auto* node : _parser->nodes()) {
                     _generator->generate(node);
                 }
             }

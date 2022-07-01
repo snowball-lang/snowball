@@ -25,9 +25,9 @@ namespace snowball {
         global_scope->set("Number", value_number_class);
     }
 
-    ScopeValue* Enviroment::get(std::string name, Node p_node) {
+    ScopeValue* Enviroment::get(std::string name, Node* p_node) {
 
-        DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node.pos, p_node.width);
+        DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
         size_t pos_start = 0, pos_end, delim_len = 1;
         std::string token;
         std::vector<std::string> parts;
@@ -58,12 +58,12 @@ namespace snowball {
             }
         }
 
-        throw CompilerError(Error::VARIABLE_ERROR, Logger::format("'%s' is not defined", p_node.name.c_str()), dbg_info);
+        throw CompilerError(Error::VARIABLE_ERROR, Logger::format("'%s' is not defined", name.c_str()), dbg_info);
     }
 
-    bool Enviroment::item_exists(std::string name, Node p_node) {
+    bool Enviroment::item_exists(std::string name, Node* p_node) {
 
-        DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node.pos, p_node.width);
+        DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
         size_t pos_start = 0, pos_end, delim_len = 1;
         std::string token;
         std::vector<std::string> parts;

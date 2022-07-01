@@ -31,7 +31,7 @@ namespace snowball {
                 _source_info = p_source_info;
             };
 
-            llvm::Value* generate(Node p_node);
+            llvm::Value* generate(Node* p_node);
 
             ~Generator() {};
 
@@ -44,10 +44,10 @@ namespace snowball {
             SnowballBuildinTypes _buildin_types;
 
             // methods
-            llvm::Value* generate_function(Node p_node);
-            llvm::Value* generate_operator(Node p_node);
-            llvm::Value* generate_const_value(Node p_node);
-            llvm::Value* generate_variable_decl(Node p_node);
+            llvm::Value* generate_operator(BinaryOp* p_node);
+            llvm::Value* generate_function(FunctionNode* p_node);
+            llvm::Value* generate_variable_decl(VarNode* p_node);
+            llvm::Value* generate_const_value(ConstantValue* p_node);
     };
 }
 
