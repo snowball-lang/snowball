@@ -198,7 +198,6 @@ namespace snowball {
         Token() {}
         Token(TokenType p_type) { type = p_type; }
 
-
         std::string to_string() const {
             switch (type) {
 

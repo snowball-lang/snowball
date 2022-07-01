@@ -1,4 +1,4 @@
 
-func main {
+func main(hello: world, argument: amazing) {
     var a = 2
 }

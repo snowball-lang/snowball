@@ -127,15 +127,57 @@ namespace snowball {
         func->name = _current_token.to_string();
 
         next_token();
+
+        std::vector<ArgumentNode*> arguments;
+
         // TODO: check for args
+        if (_current_token.type == TokenType::BRACKET_LPARENT) {
+            next_token();
+            while (true) {
+                if (_current_token.type == TokenType::IDENTIFIER) {
+                    // Argument structure: (name: type, name2: type2 = default, ...argv)
+                    // TODO: argv, default
+
+                    std::string name = _current_token.to_string();
+                    std::string type_name;
+
+                    next_token(); // consume name
+                    ASSERT_TOKEN_EOF(_current_token, TokenType::SYM_COLLON, ":", "argument statement")
+                    next_token(); // consume :
+
+                    ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "<type>", "argument type declaration")
+                    type_name = _current_token.to_string();
+                    next_token(); // consume :
+
+                    ArgumentNode* argument = new ArgumentNode(name, type_name);
+                    arguments.push_back(argument);
+
+                    // cleanup
+                    if (_current_token.type == TokenType::SYM_COMMA) {
+                        next_token();
+                        if (_current_token.type == TokenType::BRACKET_RPARENT) {
+                            next_token();
+                            break;
+                        } else if (_current_token.type == TokenType::IDENTIFIER) {
+                            continue;
+                        }
+
+                        UNEXPECTED_TOK("An indentifier or a ')'")
+
+                    } else if (_current_token.type == TokenType::BRACKET_RPARENT) {
+                        next_token();
+                        break;
+                    }
+                } else if (_current_token.type == TokenType::BRACKET_RPARENT) {
+                    next_token();
+                    break;
+                } else {
+                    UNEXPECTED_TOK("An identifier or a ')'")
+                }
+            }
+        }
 
         BlockNode* body = _parse_block();
-        // if (_current_token.type == TokenType::BRACKET_RCURLY) {
-        //     next_token();
-        // } else {
-        //     UNEXPECTED_TOK("a '}'")
-        // }
-
         func->body = body;
         return func;
     }

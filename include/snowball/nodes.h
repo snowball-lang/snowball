@@ -120,9 +120,13 @@ namespace snowball {
 	};
 
 	struct ArgumentNode : public Node {
+		std::string name;
+		std::string type_name;
 
 		ArgumentNode(std::string p_name, std::string p_type) {
 			// todo: default values, infinite args, etc...
+			name = p_name;
+			type_name = p_type;
 			type = Type::ARGUMENT;
 		};
 
