@@ -10,7 +10,7 @@ using namespace snowball;
 int main(int argc, char** argv) {
 
     // TODO: get code from FILE or REPL
-    std::string code = "func main { var n = 2 }";
+    std::string code = "func main { var n = 2 + 2 }";
 
     try {
         Compiler* compiler = new Compiler(code, "<stdin>");

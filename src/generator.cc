@@ -4,6 +4,7 @@
 #include "snowball/token.h"
 #include "snowball/errors.h"
 #include "snowball/generator.h"
+#include "snowball/utils/mangle.h"
 
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Verifier.h>
@@ -52,6 +53,11 @@ namespace snowball {
     llvm::Value* Generator::generate_function(Node p_node) {
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
+
+        // just for testing (for now)
+        std::string mangled_name = mangle(p_node.name, { "hello", "world" });
+        unmangle(mangled_name);
+        // end testing
 
         _enviroment->create_scope(p_node.name);
 
