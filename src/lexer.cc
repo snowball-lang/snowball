@@ -75,6 +75,20 @@ namespace snowball {
 			// so that the lexer does not "consume"
 			handle_eof(false);
 		}
+
+		#if _SNOWBALL_LEXER_DEBUG
+
+			PRINT_LINE("Lexer's Tokens:")
+			PRINT_LINE(LINE_SEPARATOR)
+
+			int index = 0;
+			for (Token tk : tokens) {
+				DEBUG_LEXER("[%i]: %s (type %i)", index, tk.to_string().c_str(), tk.type)
+				index++;
+			}
+
+			PRINT_LINE(LINE_SEPARATOR)
+		#endif
     }
 
 	/*=======================================

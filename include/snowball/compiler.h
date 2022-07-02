@@ -11,6 +11,8 @@
 
 #include <llvm/IR/Module.h>
 #include <llvm/IR/IRBuilder.h>
+#include <llvm/ExecutionEngine/GenericValue.h>
+
 
 #ifndef __SNOWBALL_COMPILER_H_
 #define __SNOWBALL_COMPILER_H_
@@ -27,6 +29,9 @@ namespace snowball {
 
             void initialize();
             void compile();
+
+            void cleanup();
+            llvm::GenericValue execute();
 
             ~Compiler() {};
 

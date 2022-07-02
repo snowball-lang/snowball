@@ -34,6 +34,7 @@
 
 #include <regex>
 #include <string>
+#include <stdio.h>
 
 #define SN_MODULE_NAME "llvm_snowball_compile_mod_"
 
@@ -90,36 +91,47 @@ namespace snowball {
                 }
             }
 
-            std::string module_error;
-            llvm::raw_string_ostream module_stream(module_error);
-            llvm::verifyModule(*_module, &module_stream);
+            std::string module_error_string;
+            llvm::raw_string_ostream module_error_stream(module_error_string);
+            llvm::verifyModule(*_module, &module_error_stream);
 
-            if (!module_error.empty())
-                throw SNError(Error::LLVM_INTERNAL, module_error);
+            if (!module_error_string.empty())
+                throw SNError(Error::LLVM_INTERNAL, module_error_string);
 
-            _module->print(llvm::outs(), nullptr);
-            printf("\n\n------------------\n");
+            #if _SNOWBALL_BYTECODE_DEBUG
+
+
+                PRINT_LINE("Bytecode:")
+                PRINT_LINE(LINE_SEPARATOR)
+                _module->print(llvm::outs(), nullptr);
+
+            #endif
 
             // TODO: move to Compiler::execute()
-            llvm::ExecutionEngine *executionEngine = llvm::EngineBuilder(std::move(_module))
-                                                    .setErrorStr(&llvm_error)
-                                                    .setEngineKind(llvm::EngineKind::JIT)
-                                                    .create();
 
-            if (!llvm_error.empty())
-                throw SNError(Error::LLVM_INTERNAL, llvm_error);
-
-            // TODO: move into a function
-            executionEngine->addGlobalMapping(_buildin_types.sn_number__new, reinterpret_cast<snowball::Number*>(&Number__new));
-            executionEngine->addGlobalMapping(_buildin_types.sn_number__sum, reinterpret_cast<snowball::Number*>(&Number__sum));
-
-            llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(_SNOWBALL_FUNCTION_ENTRY));
-            auto result = executionEngine->runFunction(main_fn, {});
         }
+    }
 
-        goto cleanup;
+    llvm::GenericValue Compiler::execute() {
+        std::string llvm_error;
 
-cleanup:
+        llvm::ExecutionEngine *executionEngine = llvm::EngineBuilder(std::move(_module))
+                                                .setErrorStr(&llvm_error)
+                                                .setEngineKind(llvm::EngineKind::JIT)
+                                                .create();
+
+        if (!llvm_error.empty())
+            throw SNError(Error::LLVM_INTERNAL, llvm_error);
+
+        // TODO: move into a function
+        executionEngine->addGlobalMapping(_buildin_types.sn_number__new, reinterpret_cast<snowball::Number*>(&Number__new));
+        executionEngine->addGlobalMapping(_buildin_types.sn_number__sum, reinterpret_cast<snowball::Number*>(&Number__sum));
+
+        llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(_SNOWBALL_FUNCTION_ENTRY));
+        return executionEngine->runFunction(main_fn, {});
+    }
+
+    void Compiler::cleanup() {
         _module.reset();
     }
 

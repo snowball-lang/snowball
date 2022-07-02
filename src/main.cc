@@ -66,6 +66,7 @@ int main(int argc, char** argv) {
                 compiler->initialize();
 
                 compiler->compile();
+                compiler->execute();
             } catch(const SNError& error) {
                 printf("\n");
                 error.print_error();

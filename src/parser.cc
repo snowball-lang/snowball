@@ -25,11 +25,16 @@
 namespace snowball {
 
     void Parser::parse() {
-        while (true) {
+        bool keep_parsing = true;
+
+        while (keep_parsing) {
             switch (_current_token.type)
             {
-                case TokenType::_EOF:
-                    return;
+                case TokenType::_EOF: {
+                    keep_parsing = false;
+                    printf("hello.\n");
+                    break;
+                }
 
                 case TokenType::KWORD_FUNC: {
                     FunctionNode* function = _parse_function();
@@ -79,8 +84,24 @@ namespace snowball {
                     break;
             }
 
-            next_token();
+            if (keep_parsing)
+                next_token();
         }
+
+        #if _SNOWBALL_PARSER_DEBUG
+
+            PRINT_LINE("Nodes:")
+			PRINT_LINE(LINE_SEPARATOR)
+
+			int index = 0;
+			for (Node* node : _nodes) {
+				DEBUG_PARSER("[%i]: type %d", index, node->type)
+				index++;
+			}
+
+			PRINT_LINE(LINE_SEPARATOR)
+
+        #endif
     }
 
     // Parse methods

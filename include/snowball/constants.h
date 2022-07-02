@@ -1,4 +1,6 @@
 
+#include <stdio.h>
+
 #ifndef __SNOWBALL_CONSTANTS_H_
 #define __SNOWBALL_CONSTANTS_H_
 
@@ -55,10 +57,66 @@ extern "C" {
 #define DEBUG !NDEBUG
 #endif
 
+#define LINE_SEPARATOR                        "------------------"
 #ifdef NDEBUG
     #define _SNOWBALL_BUILD_TYPE "Debug"
+
+    #define _SNOWBALL_LEXER_DEBUG             0
+    #define _SNOWBALL_PARSER_DEBUG            1
+    #define _SNOWBALL_AST_DEBUG               0
+    #define _SNOWBALL_CODEGEN_DEBUG           0
+    #define _SNOWBALL_BYTECODE_DEBUG          0
+    #define _SNOWBALL_FREE_DEBUG              0
+
+    #define PRINT_LINE(...)                 printf(__VA_ARGS__);printf("\n");fflush(stdout);
+
+    #if _SNOWBALL_LEXER_DEBUG
+    #define DEBUG_LEXER(...)               PRINT_LINE(__VA_ARGS__)
+    #else
+    #define DEBUG_LEXER(...)
+    #endif
+
+    #if _SNOWBALL_PARSER_DEBUG
+    #define DEBUG_PARSER(...)               PRINT_LINE(__VA_ARGS__)
+    #else
+    #define DEBUG_PARSER(...)
+    #endif
+
+    #if _SNOWBALL_SYMTABLE_DEBUG
+    #define DEBUG_SYMTABLE(...)             printf("%*s",ident*4," ");PRINT_LINE(__VA_ARGS__)
+    #else
+    #define DEBUG_SYMTABLE(...)
+    #endif
+
+    #if _SNOWBALL_CODEGEN_DEBUG
+    #define DEBUG_CODEGEN(...)              PRINT_LINE(__VA_ARGS__)
+    #else
+    #define DEBUG_CODEGEN(...)
+    #endif
+
+    #if _SNOWBALL_FREE_DEBUG
+    #define DEBUG_FREE(...)                 PRINT_LINE(__VA_ARGS__)
+    #else
+    #define DEBUG_FREE(...)
+    #endif
+
+    #define DEBUG_ALWAYS(...)               PRINT_LINE(__VA_ARGS__)
+
+    #define DUMP(varname) fprintf(stderr, "%s (%s) = %i\n", #varname, typeid(varname).name(), varname);
+    #define DUMP_S(varname) fprintf(stderr, "%s (%s) = %s\n", #varname, typeid(varname).name(), varname);
+
 #else
     #define _SNOWBALL_BUILD_TYPE "Default"
+
+    #define DUMP(varname)
+    #define DUMP_S(varname)
+
+    #define DEBUG_PARSER(...)
+    #define DEBUG_SYMTABLE(...)
+    #define DEBUG_CODEGEN(...)
+    #define DEBUG_FREE(...)
+
+    #define DEBUG_ALWAYS(...)
 #endif
 
 // Compiler lines
