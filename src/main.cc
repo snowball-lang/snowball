@@ -50,13 +50,16 @@ int main(int argc, char** argv) {
             error.print_error();
         }
     } else {
-        // Logger::log(_SNOWBALL_COMPILER_ENTRY);
-        // Logger::log(Logger::format("%s\nREPL:\n------------------------------- <stdin> ---------------------------------", BBLU));
-        Logger::log(Logger::format("%s\nREPL : %s\n------------------------------- <stdin> -----------------------[CTRL+C]--", BBLU, _SNOWBALL_COMPILER_ENTRY));
+        Logger::log(_SNOWBALL_COMPILER_ENTRY);
+        int line_num = 1;
+        std::string lines;
         while (true) {
-            Logger::rlog(Logger::format(" %s|%s%s ", BBLU, RESET, BOLD));
+            Logger::rlog(Logger::format(" %i %s|%s%s ", line_num, BBLU, RESET, BOLD));
             std::string line;
             std::getline( std::cin, line );
+
+            line_num += 1;
+            lines += lines;
 
             try {
                 Compiler* compiler = new Compiler(Logger::format("func main {\n\t%s\n}", line.c_str()), "<stdin>");
@@ -66,7 +69,6 @@ int main(int argc, char** argv) {
             } catch(const SNError& error) {
                 printf("\n");
                 error.print_error();
-                printf("  %s/\n", BBLU);
             }
         }
     }

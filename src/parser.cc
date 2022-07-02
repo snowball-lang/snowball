@@ -177,6 +177,7 @@ namespace snowball {
             }
         }
 
+        // TODO: add arguments to the function
         BlockNode* body = _parse_block();
         func->body = body;
         return func;
