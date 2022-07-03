@@ -11,6 +11,8 @@
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Instructions.h>
 
+#include <memory>
+#include <sstream>
 #include <optional>
 
 namespace snowball {
@@ -44,11 +46,9 @@ namespace snowball {
         llvm::Value* left = generate(p_node->left);
         llvm::Value* right = generate(p_node->right);
 
-        // llvm::PointerType* i8p = _builder.getInt8PtrTy();
-        // llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
-
-        // llvm::Constant * num = llvm::ConstantInt::get(i64, (uint64_t)std::stoi(p_node->value));
-        // return _builder.CreateCall(_buildin_types.sn_number_class, num);
+        llvm::Function* function = *_enviroment->get("Number.__sum", p_node)->llvm_function;
+        return _builder.CreateCall(function,
+            {left, right});
     }
 
     llvm::Value* Generator::generate_function(FunctionNode* p_node) {
@@ -96,9 +96,9 @@ namespace snowball {
         llvm::Value* value = generate(p_node->value);
         auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, p_node->name );
 
-        ScopeValue* scope_value = new ScopeValue(value);
+        std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(value)));
 
-        scope->set(p_node->name, scope_value);
+        scope->set(p_node->name, std::move(scope_value));
         return _builder.CreateStore (value, alloca, /*isVolatile=*/false);
     }
 
@@ -108,13 +108,26 @@ namespace snowball {
             case TokenType::VALUE_NUMBER: {
                 llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
 
-                llvm::Constant * num = llvm::ConstantInt::get(i64, (uint64_t)std::stoi(p_node->value));
                 ScopeValue* scope_value = _enviroment->get("Number.__new", p_node);
-                return _builder.CreateCall(_buildin_types.sn_number__new, { num });
+                llvm::Function* constructor = const_cast<llvm::Function*>(*scope_value->llvm_function);
+
+                llvm::Constant * num = llvm::ConstantInt::get(i64, (uint64_t)std::stoi(p_node->value));
+                return _builder.CreateCall(constructor, { num });
             }
 
             default:
                 throw SNError(Error::TODO, Logger::format("Const Value with type %s%i%s%s is not yet supported", BCYN, p_node->const_type, RESET, BOLD));
         }
+    }
+
+    // utils
+    llvm::Value* Generator::convert_to_right_value(llvm::Value* value) {
+
+        std::ostringstream ss_name;
+
+        ss_name << value->getName().str();
+        ss_name << ".load";
+
+        return _builder.CreateLoad(value, ss_name.str());
     }
 }

@@ -151,7 +151,7 @@ namespace snowball {
             Logger::elog(Logger::format("%s%2i | %s%s",           BBLU, cb_dbg_info->line - 1, RESET, cb_dbg_info->line_before.c_str()));
             Logger::elog(Logger::format("%s%2i | %s%s/%s %s\n   %s|%s %s|_%s%s%s%s\n", BBLU, cb_dbg_info->line, RESET, BRED, RESET, cb_dbg_info->line_str.c_str(), BBLU, RESET, BRED, RESET, BRED, cb_dbg_info->get_pos_str().c_str(), RESET));
             Logger::elog(Logger::format("%s%2i | %s%s\n",           BBLU, cb_dbg_info->line + 1, RESET,  cb_dbg_info->line_after.c_str()));
-            
+
         };
 
         virtual ~CompilerError() {};

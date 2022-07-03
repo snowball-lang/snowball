@@ -1,6 +1,6 @@
 
-#include "include/snowball/snowball.h"
-#include "include/snowball/utils/mangle.h"
+#include "snowball/snowball.h"
+#include "snowball/utils/mangle.h"
 
 #include <stdlib.h>
 #include <vector>

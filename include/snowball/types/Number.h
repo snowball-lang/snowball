@@ -6,23 +6,15 @@
 #ifndef SN_NUMBER_NUMBER_EXPORT_H
 #define SN_NUMBER_NUMBER_EXPORT_H
 
-namespace snowball {
-    class Number {
-        public:
-            Number(uint64_t p_number) {
-                number_ptr = p_number;
-            }
+extern "C" {
 
-            Number* __sum(uint64_t s) {
-                return new Number((uint64_t)((int)this->number_ptr + (int)s));
-            };
+typedef struct Number {
+  int64_t number;
+} Number;
 
-        private:
-            uint64_t number_ptr = 0;
-    };
 }
 
-extern "C" DLLEXPORT snowball::Number* Number__new(uint64_t n);
-extern "C" DLLEXPORT snowball::Number* Number__sum(snowball::Number* number, uint64_t s);
+extern "C" DLLEXPORT Number* Number__new(int64_t n);
+extern "C" DLLEXPORT Number* Number__sum(Number* number, Number* s);
 
 #endif // SN_NUMBER_NUMBER_EXPORT_H

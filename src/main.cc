@@ -46,6 +46,7 @@ int main(int argc, char** argv) {
             compiler->initialize();
 
             compiler->compile();
+            compiler->execute();
         } catch(const SNError& error) {
             error.print_error();
         }

@@ -2,13 +2,20 @@
 #include "snowball/export.hpp"
 #include "snowball/types/Number.h"
 
+#include <cstdlib>
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 
-extern "C" DLLEXPORT snowball::Number* Number__new(uint64_t n){
-    return new snowball::Number(n);
+extern "C" DLLEXPORT Number* Number__new(int64_t n){
+    Number* instance;
+    instance = (struct Number*)(malloc(sizeof(Number)));
+
+    instance->number = n;
+
+    return instance;
 }
 
-extern "C" DLLEXPORT snowball::Number* Number__sum(snowball::Number* number, uint64_t s) {
-    return number->__sum(s);
+extern "C" DLLEXPORT Number* Number__sum(Number* number, Number* sum) {
+    return Number__new(number->number + sum->number);
 }

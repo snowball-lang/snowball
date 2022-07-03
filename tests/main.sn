@@ -1,4 +1,4 @@
 
 func main(hello: world, argument: amazing) {
-    var a = 2
+    var a = 2 + 5
 }

@@ -21,13 +21,13 @@ namespace snowball {
                       SourceInfo* p_source_info,
                       llvm::IRBuilder<> p_builder,
                       llvm::Module* p_module,
-                      SnowballBuildinTypes p_buildin_types)
+                      struct SnowballBuildinTypes p_buildin_types)
                       :
                         _module(p_module),
                         _parser(p_parser),
                         _enviroment(p_enviroment),
                         _builder(std::move(p_builder)),
-                        _buildin_types(p_buildin_types) {
+                        _buildin_types(std::move(p_buildin_types)) {
                 _source_info = p_source_info;
             };
 
@@ -48,6 +48,9 @@ namespace snowball {
             llvm::Value* generate_function(FunctionNode* p_node);
             llvm::Value* generate_variable_decl(VarNode* p_node);
             llvm::Value* generate_const_value(ConstantValue* p_node);
+
+            // utils
+            llvm::Value* convert_to_right_value(llvm::Value* value);
     };
 }
 

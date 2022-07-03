@@ -64,7 +64,7 @@ namespace snowball {
 
 
         link_std_classes();
-        _enviroment = new Enviroment(_source_info, _buildin_types);
+        _enviroment = new Enviroment(_source_info, std::move(_buildin_types));
 
         _initialized = true;
     }
@@ -84,7 +84,7 @@ namespace snowball {
                 _parser = new Parser(_lexer, _source_info);
                 _parser->parse();
 
-                _generator = new Generator(_parser, _enviroment, _source_info, std::move(_builder), _module.get(), _buildin_types);
+                _generator = new Generator(_parser, _enviroment, _source_info, std::move(_builder), _module.get(), std::move(_buildin_types));
 
                 for (auto* node : _parser->nodes()) {
                     _generator->generate(node);
@@ -100,7 +100,6 @@ namespace snowball {
 
             #if _SNOWBALL_BYTECODE_DEBUG
 
-
                 PRINT_LINE("Bytecode:")
                 PRINT_LINE(LINE_SEPARATOR)
                 _module->print(llvm::outs(), nullptr);
@@ -108,7 +107,6 @@ namespace snowball {
             #endif
 
             // TODO: move to Compiler::execute()
-
         }
     }
 
@@ -124,8 +122,8 @@ namespace snowball {
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
         // TODO: move into a function
-        executionEngine->addGlobalMapping(_buildin_types.sn_number__new, reinterpret_cast<snowball::Number*>(&Number__new));
-        executionEngine->addGlobalMapping(_buildin_types.sn_number__sum, reinterpret_cast<snowball::Number*>(&Number__sum));
+        executionEngine->addGlobalMapping(*_enviroment->get("Number.__new", nullptr)->llvm_function, reinterpret_cast<Number*>(Number__new));
+        executionEngine->addGlobalMapping(*_enviroment->get("Number.__sum", nullptr)->llvm_function, reinterpret_cast<Number*>(Number__sum));
 
         llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(_SNOWBALL_FUNCTION_ENTRY));
         return executionEngine->runFunction(main_fn, {});
@@ -139,14 +137,16 @@ namespace snowball {
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
 
-        llvm::PointerType* i8p = _builder.getInt8PtrTy();
         llvm::Type* nt = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
 
         /* Number */
-        auto sn_number_prototype = llvm::FunctionType::get(i8p, std::vector<llvm::Type *> { nt }, false);
+        auto sn_number_struct = llvm::StructType::create(_global_context, "Number");
+        sn_number_struct->setBody({ nt });
+
+        auto sn_number_prototype = llvm::FunctionType::get(sn_number_struct, std::vector<llvm::Type *> { nt }, false);
         auto sn_number__new_fn = llvm::Function::Create(sn_number_prototype, llvm::Function::ExternalLinkage, "Number__new", _module.get());
 
-        auto sn_number_sum_prototype = llvm::FunctionType::get(i8p, std::vector<llvm::Type *> { i8p, nt }, false);
+        auto sn_number_sum_prototype = llvm::FunctionType::get(sn_number_struct, std::vector<llvm::Type *> { sn_number_struct, sn_number_struct }, false);
         auto sn_number__add_fn = llvm::Function::Create(sn_number_sum_prototype, llvm::Function::ExternalLinkage, "Number__sum", _module.get());
 
         llvm::verifyFunction(*sn_number__new_fn, &message_stream);
@@ -156,8 +156,9 @@ namespace snowball {
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
         _buildin_types = {
-            .sn_number__new = sn_number__new_fn,
-            .sn_number__sum = sn_number__add_fn
+            .sn_number_struct = sn_number_struct,
+            .sn_number__new = std::make_unique<llvm::Function*>(sn_number__new_fn),
+            .sn_number__sum = std::make_unique<llvm::Function*>(sn_number__add_fn)
         };
     }
 

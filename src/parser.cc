@@ -32,7 +32,6 @@ namespace snowball {
             {
                 case TokenType::_EOF: {
                     keep_parsing = false;
-                    printf("hello.\n");
                     break;
                 }
 
