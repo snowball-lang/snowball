@@ -1,4 +1,21 @@
 
-func main(hello: world, argument: amazing) {
+func test(a: Number) {
+
+}
+
+func test(a: Number) {
+
+}
+func test(a: Number) {
+
+}
+func test(a: Number) {
+
+}
+func test(a: Number) {
+
+}
+func main() {
     var a = 2 + 5
+    
 }

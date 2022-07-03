@@ -97,9 +97,25 @@ namespace snowball {
 		~BlockNode() {};
 	};
 
+	struct ArgumentNode : public Node {
+		std::string name;
+		std::string type_name;
+
+		ArgumentNode(std::string p_name, std::string p_type) {
+			// todo: default values, infinite args, etc...
+			name = p_name;
+			type_name = p_type;
+			type = Type::ARGUMENT;
+		};
+
+		~ArgumentNode() {};
+	};
+
 	struct FunctionNode : public Node {
 		BlockNode* body;
+
 		std::string name;
+		std::vector<ArgumentNode *> arguments;
 
 		FunctionNode() {
 			type = Type::FUNCTION;
@@ -117,20 +133,6 @@ namespace snowball {
 		};
 
 		~VarNode() {};
-	};
-
-	struct ArgumentNode : public Node {
-		std::string name;
-		std::string type_name;
-
-		ArgumentNode(std::string p_name, std::string p_type) {
-			// todo: default values, infinite args, etc...
-			name = p_name;
-			type_name = p_type;
-			type = Type::ARGUMENT;
-		};
-
-		~ArgumentNode() {};
 	};
 
 	struct ConstantValue : public Node {

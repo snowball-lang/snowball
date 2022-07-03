@@ -13,9 +13,9 @@ namespace snowball {
     };
 
     struct SnowballBuildinTypes {
-        llvm::StructType* sn_number_struct;
         std::shared_ptr<llvm::Function*> sn_number__new;
         std::shared_ptr<llvm::Function*> sn_number__sum;
+        std::shared_ptr<llvm::StructType*> sn_number_struct;
     };
 
     llvm::Type* get_llvm_type_from_sn_type(BuildinTypes type, llvm::IRBuilder<> builder);

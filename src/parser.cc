@@ -139,6 +139,17 @@ namespace snowball {
         // and consume it.
         ASSERT(_current_token.type == TokenType::KWORD_FUNC)
 
+        // todo: move to snowball utils
+        struct compareArgs
+        {
+            ArgumentNode* key;
+            compareArgs(ArgumentNode* i): key(i) {}
+
+            bool operator()(ArgumentNode* i) {
+                return (i->name == key->name);
+            }
+        };
+
         FunctionNode* func = new FunctionNode();
         next_token();
 
@@ -170,6 +181,11 @@ namespace snowball {
                     next_token(); // consume :
 
                     ArgumentNode* argument = new ArgumentNode(name, type_name);
+
+                    if (std::any_of(arguments.begin(), arguments.end(), compareArgs(argument))) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("duplicate argument '%s' in function definition", argument->name.c_str()))
+                    }
+
                     arguments.push_back(argument);
 
                     // cleanup
@@ -200,6 +216,7 @@ namespace snowball {
         // TODO: add arguments to the function
         BlockNode* body = _parse_block();
         func->body = body;
+        func->arguments = arguments;
         return func;
     }
 

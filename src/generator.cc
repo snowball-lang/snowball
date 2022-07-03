@@ -58,10 +58,39 @@ namespace snowball {
         std::string mangled_name = mangle(p_node->name, {  });
 
         _enviroment->create_scope(p_node->name);
+        Scope* current_scope = _enviroment->current_scope();
 
         auto retType = _builder.getVoidTy();
-        auto prototype = llvm::FunctionType::get(retType, false);
+
+        std::vector<llvm::Type*> arg_types;
+        for (ArgumentNode* argument : p_node->arguments) {
+
+            // check if type exists
+            ScopeValue* value = _enviroment->get(argument->type_name, argument);
+            if (value->type != ScopeType::CLASS) {
+                DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
+                throw CompilerError(Error::VARIABLE_ERROR, Logger::format("'%s' must be a referece to a class", p_node->name.c_str()), dbg_info);
+            }
+
+            llvm::StructType* type = *value->llvm_struct;
+
+            arg_types.push_back(type);
+        }
+
+        auto prototype = llvm::FunctionType::get(retType, arg_types, false);
         llvm::Function *function = llvm::Function::Create(prototype, llvm::Function::ExternalLinkage, p_node->name, _module);
+
+        int parameter_index = 0;
+        for (auto& arg : function->args()) {
+            std::string name = p_node->arguments.at(parameter_index)->name;
+            arg.setName(name);
+
+            std::unique_ptr<ScopeValue*> param_scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(&arg)));
+            current_scope->set(name, std::move(param_scope_value));
+
+            parameter_index++;
+
+        }
 
         llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder.getContext(), "body", function);
         _builder.SetInsertPoint(body);

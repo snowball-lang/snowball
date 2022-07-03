@@ -121,7 +121,6 @@ namespace snowball {
         if (!llvm_error.empty())
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
-        // TODO: move into a function
         executionEngine->addGlobalMapping(*_enviroment->get("Number.__new", nullptr)->llvm_function, reinterpret_cast<Number*>(Number__new));
         executionEngine->addGlobalMapping(*_enviroment->get("Number.__sum", nullptr)->llvm_function, reinterpret_cast<Number*>(Number__sum));
 
@@ -156,9 +155,9 @@ namespace snowball {
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
         _buildin_types = {
-            .sn_number_struct = sn_number_struct,
             .sn_number__new = std::make_unique<llvm::Function*>(sn_number__new_fn),
-            .sn_number__sum = std::make_unique<llvm::Function*>(sn_number__add_fn)
+            .sn_number__sum = std::make_unique<llvm::Function*>(sn_number__add_fn),
+            .sn_number_struct = std::make_unique<llvm::StructType*>(sn_number_struct),
         };
     }
 

@@ -7,6 +7,7 @@
 #include "snowball/source_info.h"
 
 #include <llvm/IR/Value.h>
+#include <llvm-10/llvm/IR/DerivedTypes.h>
 
 #ifndef __SNOWBALL_ENVIROMENT_SCOPES_H_
 #define __SNOWBALL_ENVIROMENT_SCOPES_H_
@@ -37,6 +38,7 @@ namespace snowball {
 
     enum ScopeType {
         SCOPE,
+        CLASS,
         LLVM,
     };
 
@@ -45,6 +47,7 @@ namespace snowball {
 
         std::shared_ptr<llvm::Value*> llvm_value;
         std::shared_ptr<llvm::Function*> llvm_function;
+        std::shared_ptr<llvm::StructType*> llvm_struct;
 
         bool isFunction = false;
 
@@ -59,6 +62,12 @@ namespace snowball {
             type = ScopeType::LLVM;
             isFunction = true;
             llvm_function = p_value;
+        }
+
+        ScopeValue(Scope* p_value, std::shared_ptr<llvm::StructType*> p_struct) {
+            type = ScopeType::CLASS;
+            llvm_struct = p_struct;
+            scope_value = p_value;
         }
 
         ScopeValue(Scope* p_value) {

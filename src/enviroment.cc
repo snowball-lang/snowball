@@ -13,20 +13,22 @@
 #include <algorithm>
 
 
-#define NEW_CLASS_DECLARATION(class) \
+#define NEW_CLASS_DECLARATION(class, llvm_struct) \
     Scope*  class##_class_scope = new Scope(#class, _source_info); \
-    ScopeValue* class##_class_scope_val = new ScopeValue(class##_class_scope); \
+    ScopeValue* class##_class_scope_val = new ScopeValue(class##_class_scope, llvm_struct); \
     std::unique_ptr<ScopeValue*> value_##class##_class = std::make_unique<ScopeValue*>(class##_class_scope_val); \
 
 #define INSERT_CLASS_TO_GLOBAL(class) \
     global_scope->set(#class, std::move(value_##class##_class));
 
-#define NEW_CLASS_PROPERTY(class, name, fname, value) \
+#define NEW_CLASS_FUNCTION(class, name, fname, value) \
     std::shared_ptr<llvm::Function*> fn_##class##_##name##_ptr = std::make_shared<llvm::Function*>(*value);\
     ScopeValue* scopev_##class##_##name = new ScopeValue(fn_##class##_##name##_ptr);\
     std::unique_ptr<ScopeValue*> value_##class##_##name = std::make_unique<ScopeValue*>(scopev_##class##_##name);\
     class##_class_scope->set(fname, std::move(value_##class##_##name));
 
+#define NEW_CLASS_PROPERTY(class, name, value) \
+    class##_class_scope->set(name, std::move(value));
 
 namespace snowball_utils {
     template <typename Iter>
@@ -48,10 +50,10 @@ namespace snowball {
         Scope* global_scope = new Scope("__sn__global__", _source_info);
         _scopes.push_back(global_scope);
 
-        NEW_CLASS_DECLARATION(Number)
+        NEW_CLASS_DECLARATION(Number, _buildin_types.sn_number_struct)
 
-        NEW_CLASS_PROPERTY(Number, init, "__new", _buildin_types.sn_number__new)
-        NEW_CLASS_PROPERTY(Number, sum, "__sum", _buildin_types.sn_number__sum)
+        NEW_CLASS_FUNCTION(Number, init, "__new", _buildin_types.sn_number__new)
+        NEW_CLASS_FUNCTION(Number, sum, "__sum", _buildin_types.sn_number__sum)
 
         INSERT_CLASS_TO_GLOBAL(Number)
     }
@@ -70,9 +72,8 @@ namespace snowball {
         parts.push_back (name.substr (pos_start));
         if (parts.size() > 1) {
             ScopeValue* scope = get(parts[0], p_node);
-            if (scope->type == ScopeType::SCOPE) {
+            if (scope->type == ScopeType::SCOPE || scope->type == ScopeType::CLASS) {
                 return scope->scope_value->get(snowball_utils::join(++parts.begin(), parts.end(), "."), p_node);
-
             }
         }
 
