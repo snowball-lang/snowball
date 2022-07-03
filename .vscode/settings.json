@@ -83,6 +83,7 @@
         "numbers": "cpp",
         "semaphore": "cpp",
         "stop_token": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "*.inc": "cpp"
     }
 }

@@ -7,7 +7,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-extern "C" DLLEXPORT Number* Number__new(int64_t n){
+#include "snowball/constants.h"
+
+extern "C" DLLEXPORT Number* Number__new(snowball_int_t n){
     Number* instance;
     instance = (struct Number*)(malloc(sizeof(Number)));
 

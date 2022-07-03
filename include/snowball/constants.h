@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdint.h>
 
 #ifndef __SNOWBALL_CONSTANTS_H_
 #define __SNOWBALL_CONSTANTS_H_
@@ -14,36 +15,28 @@ extern "C" {
 #define _SNOWBALL_BUILD_DATE                __DATE__
 #define _SNOWBALL_BUILD_TIME                __TIME__
 
-// Function names
-#define _SNOWBALL_FUNCTION_ENTRY            "main"
+// Exports
+#ifdef _WIN32
+    #define DLLEXPORT __declspec(dllexport)
+#else
+    #define DLLEXPORT
+#endif
 
-// Keywords
-#define _SNOWBALL_KEYWORD__OR               "or"
-#define _SNOWBALL_KEYWORD__IF               "if"
-#define _SNOWBALL_KEYWORD__AND              "and"
-#define _SNOWBALL_KEYWORD__NOT              "not"
-#define _SNOWBALL_KEYWORD__FOR              "for"
-#define _SNOWBALL_KEYWORD__CASE             "case"
-#define _SNOWBALL_KEYWORD__THIS             "this"
-#define _SNOWBALL_KEYWORD__ENUM             "enum"
-#define _SNOWBALL_KEYWORD__NULL             "null"
-#define _SNOWBALL_KEYWORD__TRUE             "true"
-#define _SNOWBALL_KEYWORD__ELSE             "else"
-#define _SNOWBALL_KEYWORD__CLASS            "class"
-#define _SNOWBALL_KEYWORD__FALSE            "false"
-#define _SNOWBALL_KEYWORD__WHILE            "while"
-#define _SNOWBALL_KEYWORD__BREAK            "break"
-#define _SNOWBALL_KEYWORD__SUPER            "super"
-#define _SNOWBALL_KEYWORD__STATIC           "static"
-#define _SNOWBALL_KEYWORD__IMPORT           "import"
-#define _SNOWBALL_KEYWORD__RETURN           "return"
-#define _SNOWBALL_KEYWORD__SWITCH           "switch"
-#define _SNOWBALL_KEYWORD__DEFAULT          "default"
-#define _SNOWBALL_KEYWORD__CONTINUE         "continue"
-#define _SNOWBALL_KEYWORD__FUNCTION         "func"
-#define _SNOWBALL_KEYWORD__VARIABLE         "var"
-#define _SNOWBALL_KEYWORD__CONSTANT         "const"
-#define _SNOWBALL_KEYWORD__UNDEFINED        "undefined"
+// Values
+
+#ifndef _SNOWBALL_ENABLE_INT64
+#define _SNOWBALL_ENABLE_INT64                  1           // if 1 enable snowball_int_t to be a 64bit int (instead of a 32bit int)
+#endif
+
+#if _SNOWBALL_ENABLE_INT64
+typedef int64_t                                 snowball_int_t;
+#define _SNOWBALL_INT_MAX                       9223372036854775807
+#define _SNOWBALL_INT_MIN                       (-_SNOWBALL_INT_MAX-1LL)
+#else
+typedef int32_t                                 snowball_int_t;
+#define _SNOWBALL_INT_MAX                       2147483647
+#define _SNOWBALL_INT_MIN                      -2147483648
+#endif
 
 // Debug
 #ifndef NDEBUG
@@ -118,6 +111,37 @@ extern "C" {
 
     #define DEBUG_ALWAYS(...)
 #endif
+
+// Function names
+#define _SNOWBALL_FUNCTION_ENTRY            "main"
+
+// Keywords
+#define _SNOWBALL_KEYWORD__OR               "or"
+#define _SNOWBALL_KEYWORD__IF               "if"
+#define _SNOWBALL_KEYWORD__AND              "and"
+#define _SNOWBALL_KEYWORD__NOT              "not"
+#define _SNOWBALL_KEYWORD__FOR              "for"
+#define _SNOWBALL_KEYWORD__CASE             "case"
+#define _SNOWBALL_KEYWORD__THIS             "this"
+#define _SNOWBALL_KEYWORD__ENUM             "enum"
+#define _SNOWBALL_KEYWORD__NULL             "null"
+#define _SNOWBALL_KEYWORD__TRUE             "true"
+#define _SNOWBALL_KEYWORD__ELSE             "else"
+#define _SNOWBALL_KEYWORD__CLASS            "class"
+#define _SNOWBALL_KEYWORD__FALSE            "false"
+#define _SNOWBALL_KEYWORD__WHILE            "while"
+#define _SNOWBALL_KEYWORD__BREAK            "break"
+#define _SNOWBALL_KEYWORD__SUPER            "super"
+#define _SNOWBALL_KEYWORD__STATIC           "static"
+#define _SNOWBALL_KEYWORD__IMPORT           "import"
+#define _SNOWBALL_KEYWORD__RETURN           "return"
+#define _SNOWBALL_KEYWORD__SWITCH           "switch"
+#define _SNOWBALL_KEYWORD__DEFAULT          "default"
+#define _SNOWBALL_KEYWORD__CONTINUE         "continue"
+#define _SNOWBALL_KEYWORD__FUNCTION         "func"
+#define _SNOWBALL_KEYWORD__VARIABLE         "var"
+#define _SNOWBALL_KEYWORD__CONSTANT         "const"
+#define _SNOWBALL_KEYWORD__UNDEFINED        "undefined"
 
 // Compiler lines
 #define _SNOWBALL_COMPILER_ENTRY            "Snowball " _SNOWBALL_VERSION " (" _SNOWBALL_BUILD_TYPE ": " _SNOWBALL_BUILD_DATE ", " _SNOWBALL_BUILD_TIME ")"
