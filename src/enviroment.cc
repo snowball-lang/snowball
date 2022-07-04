@@ -50,15 +50,25 @@ namespace snowball {
         Scope* global_scope = new Scope("__sn__global__", _source_info);
         _scopes.push_back(global_scope);
 
+        // Number class
         NEW_CLASS_DECLARATION(Number, _buildin_types.sn_number_struct)
 
         NEW_CLASS_FUNCTION(Number, init, "__new", _buildin_types.sn_number__new)
         NEW_CLASS_FUNCTION(Number, sum, "__sum", _buildin_types.sn_number__sum)
 
+        // String class
+        NEW_CLASS_DECLARATION(String, _buildin_types.sn_string_struct)
+
+        NEW_CLASS_FUNCTION(String, init, "__new", _buildin_types.sn_string__new)
+
+        INSERT_CLASS_TO_GLOBAL(String)
         INSERT_CLASS_TO_GLOBAL(Number)
     }
 
-    ScopeValue* Enviroment::get(std::string name, Node* p_node) {
+    ScopeValue* Enviroment::get(std::string name, Node* p_node, std::string p_o_name) {
+
+        if (p_o_name.empty()) p_o_name = name;
+
         size_t pos_start = 0, pos_end, delim_len = 1;
         std::string token;
         std::vector<std::string> parts;
@@ -71,9 +81,9 @@ namespace snowball {
 
         parts.push_back (name.substr (pos_start));
         if (parts.size() > 1) {
-            ScopeValue* scope = get(parts[0], p_node);
+            ScopeValue* scope = get(parts[0], p_node, p_o_name);
             if (scope->type == ScopeType::SCOPE || scope->type == ScopeType::CLASS) {
-                return scope->scope_value->get(snowball_utils::join(++parts.begin(), parts.end(), "."), p_node);
+                return scope->scope_value->get(snowball_utils::join(++parts.begin(), parts.end(), "."), p_node, p_o_name);
             }
         }
 
@@ -84,7 +94,7 @@ namespace snowball {
             bool value = scope->item_exists(name);
 
             if (value) {
-                return scope->get(name, p_node);
+                return scope->get(name, p_node, p_o_name);
             }
         }
 

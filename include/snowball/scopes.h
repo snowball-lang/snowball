@@ -22,7 +22,7 @@ namespace snowball {
             Scope() {};
             Scope(std::string p_scope_name, SourceInfo* p_source_info);
 
-            ScopeValue* get(std::string p_name, Node* p_node);
+            ScopeValue* get(std::string p_name, Node* p_node, std::string p_o_name = "");
             void set(std::string p_name, std::unique_ptr<ScopeValue*> p_value);
             bool item_exists(std::string p_name);
 
@@ -39,6 +39,7 @@ namespace snowball {
     enum ScopeType {
         SCOPE,
         CLASS,
+        FUNC,
         LLVM,
     };
 
@@ -59,7 +60,7 @@ namespace snowball {
         }
 
         ScopeValue(std::shared_ptr<llvm::Function*> p_value) {
-            type = ScopeType::LLVM;
+            type = ScopeType::FUNC;
             isFunction = true;
             llvm_function = p_value;
         }

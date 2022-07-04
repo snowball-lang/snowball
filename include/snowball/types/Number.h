@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include "../constants.h"
 
-#ifndef SN_NUMBER_NUMBER_EXPORT_H
-#define SN_NUMBER_NUMBER_EXPORT_H
+#ifndef SN_NUMBER_EXPORT_H
+#define SN_NUMBER_EXPORT_H
 
 extern "C" {
 
@@ -17,4 +17,4 @@ typedef struct Number {
 extern "C" DLLEXPORT Number* Number__new(snowball_int_t n);
 extern "C" DLLEXPORT Number* Number__sum(Number* number, Number* s);
 
-#endif // SN_NUMBER_NUMBER_EXPORT_H
+#endif // SN_NUMBER_EXPORT_H

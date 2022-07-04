@@ -16,13 +16,15 @@ namespace snowball {
         return !(this->_data.find(p_name) == this->_data.end());
     }
 
-    ScopeValue* Scope::get(std::string p_name, Node* p_node) {
+    ScopeValue* Scope::get(std::string p_name, Node* p_node, std::string p_o_name) {
+
+        if (p_o_name.empty()) p_o_name = p_name;
 
         bool _value = item_exists(p_name);
 
         if (!_value) {
             DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
-            throw CompilerError(Error::UNDEFINED_VARIABLE, Logger::format("Undefined variable: %s%s%s%s", BCYN, p_name.c_str(), RESET, BOLD), dbg_info);
+            throw CompilerError(Error::UNDEFINED_VARIABLE, Logger::format("Undefined variable: %s%s%s%s", BCYN, p_o_name.c_str(), RESET, BOLD), dbg_info);
         }
 
         return *_data.find(p_name)->second;

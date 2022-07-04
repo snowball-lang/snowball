@@ -31,6 +31,7 @@
 #include "snowball/generator.h"
 
 #include "snowball/types/Number.h"
+#include "snowball/types/String.h"
 
 #include <regex>
 #include <string>
@@ -124,6 +125,8 @@ namespace snowball {
         executionEngine->addGlobalMapping(*_enviroment->get("Number.__new", nullptr)->llvm_function, reinterpret_cast<Number*>(Number__new));
         executionEngine->addGlobalMapping(*_enviroment->get("Number.__sum", nullptr)->llvm_function, reinterpret_cast<Number*>(Number__sum));
 
+        executionEngine->addGlobalMapping(*_enviroment->get("String.__new", nullptr)->llvm_function, reinterpret_cast<Number*>(String__new));
+
         llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(_SNOWBALL_FUNCTION_ENTRY));
         return executionEngine->runFunction(main_fn, {});
     }
@@ -137,6 +140,7 @@ namespace snowball {
         llvm::raw_string_ostream message_stream(llvm_error);
 
         llvm::Type* nt = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
+        llvm::Type* st = get_llvm_type_from_sn_type(BuildinTypes::STRING, _builder);
 
         /* Number */
         auto sn_number_struct = llvm::StructType::create(_global_context, "Number");
@@ -151,6 +155,17 @@ namespace snowball {
         llvm::verifyFunction(*sn_number__new_fn, &message_stream);
         llvm::verifyFunction(*sn_number__add_fn, &message_stream);
 
+        /* String */
+        auto sn_string_struct = llvm::StructType::create(_global_context, "String");
+        sn_string_struct->setBody({ st, nt, nt, nt });
+
+        auto sn_string_prototype = llvm::FunctionType::get(sn_string_struct, std::vector<llvm::Type *> { st }, false);
+        auto sn_string__new_fn = llvm::Function::Create(sn_string_prototype, llvm::Function::ExternalLinkage, "String__new", _module.get());
+
+        llvm::verifyFunction(*sn_number__new_fn, &message_stream);
+        llvm::verifyFunction(*sn_number__add_fn, &message_stream);
+        llvm::verifyFunction(*sn_string__new_fn, &message_stream);
+
         if (!llvm_error.empty())
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
@@ -158,6 +173,9 @@ namespace snowball {
             .sn_number__new = std::make_unique<llvm::Function*>(sn_number__new_fn),
             .sn_number__sum = std::make_unique<llvm::Function*>(sn_number__add_fn),
             .sn_number_struct = std::make_unique<llvm::StructType*>(sn_number_struct),
+
+            .sn_string__new = std::make_unique<llvm::Function*>(sn_string__new_fn),
+            .sn_string_struct = std::make_unique<llvm::StructType*>(sn_string_struct),
         };
     }
 

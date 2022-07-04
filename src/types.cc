@@ -11,6 +11,7 @@ namespace snowball {
         {
             #define RETURN_LLVM_TYPE_IF_SN_TYPE_IS(type, llvm_type) case BuildinTypes::type: {return llvm_type; };
                 RETURN_LLVM_TYPE_IF_SN_TYPE_IS(NUMBER, builder.getInt64Ty())
+                RETURN_LLVM_TYPE_IF_SN_TYPE_IS(STRING, builder.getInt8PtrTy())
             #undef RETURN_LLVM_TYPE_IF_SN_TYPE_IS
             default:
                 // TODO: throw error

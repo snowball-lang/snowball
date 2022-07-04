@@ -4,7 +4,6 @@
 #include "snowball/token.h"
 #include "snowball/errors.h"
 #include "snowball/generator.h"
-#include "snowball/utils/mangle.h"
 
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Verifier.h>
@@ -46,7 +45,21 @@ namespace snowball {
         llvm::Value* left = generate(p_node->left);
         llvm::Value* right = generate(p_node->right);
 
-        llvm::Function* function = *_enviroment->get("Number.__sum", p_node)->llvm_function;
+        llvm::Function* function;
+        switch (p_node->op_type)
+        {
+            case OP_POSITIVE:
+            case OP_PLUS: {
+                function = *_enviroment->get(Logger::format("%s.__sum", left->getType()->getStructName().str().c_str()), p_node)->llvm_function;
+                break;
+            }
+
+            default: {
+                DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
+                throw CompilerError(Error::BUG, Logger::format("The operator with type '%i' has not been handled.", p_node->op_type), dbg_info);
+            }
+        }
+
         return _builder.CreateCall(function,
             {left, right});
     }
@@ -55,13 +68,12 @@ namespace snowball {
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
 
-        std::string mangled_name = mangle(p_node->name, {  });
-
         _enviroment->create_scope(p_node->name);
         Scope* current_scope = _enviroment->current_scope();
 
         auto retType = _builder.getVoidTy();
 
+        std::vector<std::string> arg_tnames;
         std::vector<llvm::Type*> arg_types;
         for (ArgumentNode* argument : p_node->arguments) {
 
@@ -75,6 +87,7 @@ namespace snowball {
             llvm::StructType* type = *value->llvm_struct;
 
             arg_types.push_back(type);
+            arg_tnames.push_back(type->getName().str());
         }
 
         auto prototype = llvm::FunctionType::get(retType, arg_types, false);
@@ -89,7 +102,6 @@ namespace snowball {
             current_scope->set(name, std::move(param_scope_value));
 
             parameter_index++;
-
         }
 
         llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder.getContext(), "body", function);
@@ -117,7 +129,7 @@ namespace snowball {
         DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
         Scope* scope = _enviroment->current_scope();
 
-        if (_enviroment->item_exists(p_node->name, p_node)) {
+        if (scope->item_exists(p_node->name)) {
             throw CompilerError(Error::VARIABLE_ERROR, Logger::format("'%s' has already been declared", p_node->name.c_str()), dbg_info);
         }
 
@@ -142,6 +154,15 @@ namespace snowball {
 
                 llvm::Constant * num = llvm::ConstantInt::get(i64, (uint64_t)std::stoi(p_node->value));
                 return _builder.CreateCall(constructor, { num });
+            }
+
+            case TokenType::VALUE_STRING: {
+                ScopeValue* scope_value = _enviroment->get("String.__new", p_node);
+                llvm::Function* constructor = const_cast<llvm::Function*>(*scope_value->llvm_function);
+
+                auto str = p_node->value.c_str();
+                auto value = _builder.CreateGlobalStringPtr("str");
+                return _builder.CreateCall(constructor, { value });
             }
 
             default:

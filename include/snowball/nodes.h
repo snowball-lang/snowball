@@ -83,7 +83,6 @@ namespace snowball {
 		std::pair<int, int> pos;
         uint32_t width = 1; // width of the node ^^^^ (dbg).
 
-		OpType op_type = OpType::NONE; // Used for operator Nodes
 		virtual ~Node() = default;
     } Node;
 
@@ -152,9 +151,9 @@ namespace snowball {
 
 		Node* left;
 		Node* right;
+		OpType op_type = OpType::NONE;
 
-		template<class T>
-		static bool is_assignment(T* p_node) {
+		static bool is_assignment(BinaryOp* p_node) {
 			OpType p_op_type = p_node->op_type;
 
 			return
@@ -174,12 +173,6 @@ namespace snowball {
 		BinaryOp(OpType _op_type) {
 			type = Type::OPERATOR;
 			op_type = _op_type;
-		};
-
-		template<class T>
-		BinaryOp(T _op_type) {
-			type = Type::OPERATOR;
-			op_type = _op_type->op_type;
 		};
 
 		~BinaryOp() {};

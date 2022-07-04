@@ -501,7 +501,7 @@ namespace snowball {
                 }
 
                 for (int i = next_expr - 1; i >= next_op; i--) {
-                    BinaryOp* op_node = new BinaryOp(expressions[(size_t)i]);
+                    BinaryOp* op_node = new BinaryOp(((BinaryOp*)expressions[(size_t)i])->op_type);
 
                     op_node->left = expressions[(size_t)i + 1];
                     expressions.erase(expressions.begin() + i + 1);
@@ -512,19 +512,19 @@ namespace snowball {
                 }
             } else {
 
-                // ASSERT(next_op >= 1 && next_op < (int)expressions.size() - 1)
-                // ASSERT((!(expressions[(size_t)next_op - 1]->type == Node::Type::OPERATOR)) && (!(expressions[(size_t)next_op + 1].type == Node::Type::OPERATOR)));
+                ASSERT(next_op >= 1 && next_op < (int)expressions.size() - 1)
+                ASSERT((!(expressions[(size_t)next_op - 1]->type == Node::Type::OPERATOR)) && (!(expressions[(size_t)next_op + 1].type == Node::Type::OPERATOR)));
 
-                BinaryOp* op_node = new BinaryOp(expressions[(size_t)next_op + 1]);
+                BinaryOp* op_node = new BinaryOp(((BinaryOp*)expressions[(size_t)next_op])->op_type);
 
                 if (expressions[(size_t)next_op - 1]->type == Node::Type::OPERATOR) {
-                    if (BinaryOp::is_assignment(expressions[(size_t)next_op - 1])) {
+                    if (BinaryOp::is_assignment((BinaryOp*)expressions[(size_t)next_op - 1])) {
                         PARSER_ERROR(Error::SYNTAX_ERROR, "unexpected assignment.")
                     }
                 }
 
                 if (expressions[(size_t)next_op + 1]->type == Node::Type::OPERATOR) {
-                    if (BinaryOp::is_assignment(expressions[(size_t)next_op - 1])) {
+                    if (BinaryOp::is_assignment((BinaryOp*)expressions[(size_t)next_op - 1])) {
                         PARSER_ERROR(Error::SYNTAX_ERROR, "unexpected assignment.")
                     }
                 }
