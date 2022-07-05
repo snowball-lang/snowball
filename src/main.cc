@@ -41,8 +41,8 @@ int main(int argc, char** argv) {
         std::string content( (std::istreambuf_iterator<char>(ifs) ),
                             (std::istreambuf_iterator<char>()    ) );
 
+        Compiler* compiler = new Compiler(content, filename);
         try {
-            Compiler* compiler = new Compiler(content, filename);
             compiler->initialize();
 
             compiler->compile();
@@ -50,6 +50,8 @@ int main(int argc, char** argv) {
         } catch(const SNError& error) {
             error.print_error();
         }
+
+        compiler->cleanup();
     } else {
         Logger::log(_SNOWBALL_COMPILER_ENTRY);
         int line_num = 1;
@@ -62,8 +64,8 @@ int main(int argc, char** argv) {
             line_num += 1;
             lines += lines;
 
+            Compiler* compiler = new Compiler(Logger::format("func main {\n\t%s\n}", line.c_str()), "<stdin>");
             try {
-                Compiler* compiler = new Compiler(Logger::format("func main {\n\t%s\n}", line.c_str()), "<stdin>");
                 compiler->initialize();
 
                 compiler->compile();
@@ -72,6 +74,8 @@ int main(int argc, char** argv) {
                 printf("\n");
                 error.print_error();
             }
+
+            compiler->cleanup();
         }
     }
 

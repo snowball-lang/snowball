@@ -26,6 +26,8 @@ namespace snowball {
             void set(std::string p_name, std::unique_ptr<ScopeValue*> p_value);
             bool item_exists(std::string p_name);
 
+            std::map<std::string, std::unique_ptr<ScopeValue*>> data() { return std::move(_data); }
+
             ~Scope() {};
 
         private:

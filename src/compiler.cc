@@ -106,8 +106,6 @@ namespace snowball {
                 _module->print(llvm::outs(), nullptr);
 
             #endif
-
-            // TODO: move to Compiler::execute()
         }
     }
 
@@ -132,6 +130,11 @@ namespace snowball {
     }
 
     void Compiler::cleanup() {
+
+        #if _SNOWBALL_SYMTABLE_DEBUG
+        _enviroment->debug();
+        #endif
+
         _module.reset();
     }
 
@@ -151,9 +154,6 @@ namespace snowball {
 
         auto sn_number_sum_prototype = llvm::FunctionType::get(sn_number_struct, std::vector<llvm::Type *> { sn_number_struct, sn_number_struct }, false);
         auto sn_number__add_fn = llvm::Function::Create(sn_number_sum_prototype, llvm::Function::ExternalLinkage, "Number__sum", _module.get());
-
-        llvm::verifyFunction(*sn_number__new_fn, &message_stream);
-        llvm::verifyFunction(*sn_number__add_fn, &message_stream);
 
         /* String */
         auto sn_string_struct = llvm::StructType::create(_global_context, "String");

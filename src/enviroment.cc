@@ -152,6 +152,18 @@ namespace snowball {
         return current_scope();
     }
 
+    #if _SNOWBALL_SYMTABLE_DEBUG
+    void Enviroment::debug(Scope* current_scope, int depth) {
+        std::map<std::string, std::unique_ptr<ScopeValue*>> scope = (current_scope == nullptr ? _scopes.at(0)->data() : current_scope->data());
+        std::map<std::string, std::unique_ptr<ScopeValue*>>::iterator it;
+        for (it = scope.begin(); it != scope.end(); it++) {
+            if ((*it->second)->type == ScopeType::CLASS || (*it->second)->type == ScopeType::SCOPE) {
+                debug((*it->second)->scope_value, depth+1);
+            }
+        }
+    }
+    #endif
+
     void Enviroment::delete_scope() {
         _scopes.pop_back();
     }

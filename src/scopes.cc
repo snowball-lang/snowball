@@ -8,7 +8,8 @@
 
 namespace snowball {
     Scope::Scope(std::string p_scope_name, SourceInfo* p_source_info)
-        : _source_info(p_source_info), _scope_name(p_scope_name) {}
+        : _source_info(p_source_info), _scope_name(p_scope_name) {
+        }
 
     bool Scope::item_exists(std::string p_name) {
         std::map<std::string, std::unique_ptr<ScopeValue*>>::iterator _it = this->_data.find(p_name);
