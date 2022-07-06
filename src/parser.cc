@@ -323,6 +323,11 @@ namespace snowball {
 
                     break;
 
+                case TokenType::IDENTIFIER: {
+                    expressions.push_back(new IdentifierNode(_current_token));
+                    break;
+                }
+
                 default:
                     UNEXPECTED_TOK("a valid expression")
             }

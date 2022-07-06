@@ -49,8 +49,8 @@ namespace snowball {
         ScopeType type;
 
         std::shared_ptr<llvm::Value*> llvm_value;
-        std::shared_ptr<llvm::Function*> llvm_function;
         std::shared_ptr<llvm::StructType*> llvm_struct;
+        std::shared_ptr<llvm::Function*> llvm_function;
 
         bool isFunction = false;
 

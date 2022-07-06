@@ -104,6 +104,7 @@ namespace snowball {
                 PRINT_LINE("Bytecode:")
                 PRINT_LINE(LINE_SEPARATOR)
                 _module->print(llvm::outs(), nullptr);
+                PRINT_LINE(LINE_SEPARATOR)
 
             #endif
         }
@@ -132,7 +133,11 @@ namespace snowball {
     void Compiler::cleanup() {
 
         #if _SNOWBALL_SYMTABLE_DEBUG
+        PRINT_LINE("Enviroment:")
+        PRINT_LINE(LINE_SEPARATOR)
+
         _enviroment->debug();
+        PRINT_LINE(LINE_SEPARATOR)
         #endif
 
         _module.reset();

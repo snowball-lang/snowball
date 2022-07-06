@@ -2,9 +2,13 @@
 #include "snowball/nodes.h"
 #include "snowball/errors.h"
 #include "snowball/scopes.h"
+#include "snowball/utils/mangle.h"
 
+#include <llvm-10/llvm/Support/raw_ostream.h>
 #include <memory>
 #include <optional>
+
+#include <llvm/IR/Function.h>
 
 namespace snowball {
     Scope::Scope(std::string p_scope_name, SourceInfo* p_source_info)

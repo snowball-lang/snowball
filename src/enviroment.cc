@@ -157,6 +157,8 @@ namespace snowball {
         std::map<std::string, std::unique_ptr<ScopeValue*>> scope = (current_scope == nullptr ? _scopes.at(0)->data() : current_scope->data());
         std::map<std::string, std::unique_ptr<ScopeValue*>>::iterator it;
         for (it = scope.begin(); it != scope.end(); it++) {
+            DEBUG_SYMTABLE("%s", it->first.c_str())
+
             if ((*it->second)->type == ScopeType::CLASS || (*it->second)->type == ScopeType::SCOPE) {
                 debug((*it->second)->scope_value, depth+1);
             }

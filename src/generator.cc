@@ -5,6 +5,7 @@
 #include "snowball/errors.h"
 #include "snowball/generator.h"
 
+#include <llvm-10/llvm/IR/Intrinsics.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Verifier.h>
 #include <llvm/IR/IRBuilder.h>
@@ -35,9 +36,34 @@ namespace snowball {
                 return generate_operator(static_cast<BinaryOp *>(p_node));
             }
 
+            case Node::Type::IDENTIFIER: {
+                return generate_identifier(static_cast<IdentifierNode *>(p_node));
+            }
+
             default:
                 DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
                 throw Warning(Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, p_node->type, RESET, BOLD), dbg_info);
+        }
+    }
+
+    llvm::Value* Generator::generate_identifier(IdentifierNode* p_node) {
+
+        ScopeValue* value = _enviroment->get(p_node->name, p_node);
+        switch (value->type)
+        {
+            case ScopeType::CLASS:
+                return (llvm::Value*)(*value->llvm_struct);
+
+            case ScopeType::FUNC:
+                return (llvm::Value*)(*value->llvm_function);
+
+            case ScopeType::LLVM:
+                return (llvm::Value*)(*value->llvm_value);
+
+            default: {
+                DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
+                throw CompilerError(Error::BUG, Logger::format("Scope with type ::SCOPE has been fetched in Generator::generate_identifier (idnt: %s).", p_node->name.c_str()), dbg_info);
+            }
         }
     }
 
