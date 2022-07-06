@@ -7,6 +7,10 @@
 - [ ] global variables
 - [ ] static methods
 - [ ] check if class has been initialized
+- [ ] Comments
+    - [ ] Normal
+    - [ ] Multilines
+    - [ ] Doc comments
 - [ ] Modules
     - [ ] add a System class for I/O
     - [ ] add system/local modules support
