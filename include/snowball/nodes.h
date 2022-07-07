@@ -74,7 +74,17 @@ namespace snowball {
 			INDEX,
 			MAPPED_INDEX,
 			OPERATOR,
-			CONTROL_FLOW,
+
+			// control flow
+			RETURN,
+			IF_STMT,
+
+			SWITCH,
+			WHILE,
+			FOR_LOOP,
+			BREAK,
+			CONTINUE,
+
             SN_NODES_H,
 		};
 
@@ -117,6 +127,7 @@ namespace snowball {
 		std::string return_type;
 		std::vector<ArgumentNode *> arguments;
 
+		bool hasReturn = false;
 		bool isTopLevel = false;
 
 		FunctionNode() {
@@ -124,6 +135,17 @@ namespace snowball {
 		};
 
 		~FunctionNode() {};
+	};
+
+	struct ReturnNode : public Node {
+		Node* value;
+		FunctionNode* parent;
+
+		ReturnNode() {
+			type = Type::RETURN;
+		};
+
+		~ReturnNode() {};
 	};
 
 	struct VarNode : public Node {

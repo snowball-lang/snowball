@@ -231,14 +231,19 @@ namespace snowball {
         return_type = _current_token.to_string();
         next_token();
 
-        BlockNode* body = _parse_block();
 
-        func->body = body;
         func->arguments = arguments;
         func->return_type = return_type;
 
+        _context.current_function = func;
+        BlockNode* body = _parse_block();
+        func->body = body;
+
+        _context.current_function = nullptr;
         return func;
     }
+
+
 
     BlockNode* Parser::_parse_block(std::vector<TokenType> p_termination) {
         std::vector<Node *> stmts;
@@ -266,8 +271,26 @@ namespace snowball {
                     var->pos = _pos;
                     var->width = (uint32_t)_width;
 
-
                     stmts.push_back(var);
+                    break;
+                }
+
+                case TokenType::KWORD_RETURN: {
+                    if (_context.current_function == nullptr) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "Return statements can only be used inside functions")
+                    }
+
+                    int _width = _current_token.col;
+                    std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
+
+                    ReturnNode* ret = _parse_return();
+                    _width = _width - _current_token.col;
+
+                    ret->pos = _pos;
+                    ret->width = (uint32_t)_width;
+
+                    _context.current_function->hasReturn = true;
+                    stmts.push_back(ret);
                     break;
                 }
 
@@ -289,6 +312,18 @@ namespace snowball {
 
         b_node->exprs = stmts;
         return b_node;
+    }
+
+    ReturnNode* Parser::_parse_return() {
+        ASSERT(_current_token.type == TokenType::KWORD_RETURN)
+        ASSERT(_context.current_function != nullptr)
+        
+        next_token();
+
+        ReturnNode* node = new ReturnNode();
+        node->value = _parse_expression();
+        node->parent = _context.current_function;
+        return node;
     }
 
     // Private

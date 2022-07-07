@@ -1,6 +1,6 @@
 
-func hello(a: Number) -> String {
-
+func hello(a: Number) -> Number {
+    return 2
 }
 
 func main() -> Number {

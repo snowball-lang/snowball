@@ -43,9 +43,24 @@ namespace snowball {
                 return generate_identifier(static_cast<IdentifierNode *>(p_node));
             }
 
+            case Node::Type::RETURN: {
+                return generate_return(static_cast<ReturnNode *>(p_node));
+            }
+
             default:
                 DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
                 throw Warning(Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, p_node->type, RESET, BOLD), dbg_info);
+        }
+    }
+
+    llvm::Value* Generator::generate_return(ReturnNode* p_node) {
+        llvm::Value* value = generate(p_node->value);
+
+        if (value->getType()->getStructName() == p_node->parent->return_type) {
+            return _builder.CreateRet(value);
+        } else {
+            DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
+            throw CompilerError(Error::TYPE_ERROR, Logger::format("Mismatched types between '%s' and '%s'", value->getType()->getStructName().str().c_str(), p_node->parent->return_type.c_str()), dbg_info);
         }
     }
 

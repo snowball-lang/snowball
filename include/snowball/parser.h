@@ -9,6 +9,11 @@
 
 namespace snowball {
 
+    struct ParserContext {
+        FunctionNode* current_function = nullptr;
+        // todo: classes
+    };
+
     class Parser {
 
         public:
@@ -32,6 +37,7 @@ namespace snowball {
             // Parser methods
             Node* _parse_expression();
             VarNode* _parse_variable();
+            ReturnNode* _parse_return();
             FunctionNode* _parse_function();
             BlockNode* _parse_block(std::vector<TokenType> p_termination = { TokenType::BRACKET_RCURLY } );
             Node* _build_op_tree(std::vector<Node*> &expressions);
@@ -45,6 +51,8 @@ namespace snowball {
 
             std::vector<Node*> _nodes;
             std::vector<Token> _tokens;
+
+            ParserContext _context;
     };
 
 }

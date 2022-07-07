@@ -45,6 +45,7 @@ namespace snowball {
 
             // methods
             llvm::Value* generate_operator(BinaryOp* p_node);
+            llvm::Value* generate_return(ReturnNode* p_node);
             llvm::Value* generate_function(FunctionNode* p_node);
             llvm::Value* generate_variable_decl(VarNode* p_node);
             llvm::Value* generate_identifier(IdentifierNode* p_node);

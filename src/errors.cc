@@ -9,6 +9,7 @@ namespace snowball {
         __RET_ERROR_IF_CODE(Error::TODO,              "TODO")
         __RET_ERROR_IF_CODE(Error::WARNING,           "Warning")
         __RET_ERROR_IF_CODE(Error::IO_ERROR,          "IO Error")
+        __RET_ERROR_IF_CODE(Error::TYPE_ERROR,        "Type Error")
         __RET_ERROR_IF_CODE(Error::UNEXPECTED_EOF,    "Unexpected EOF")
         __RET_ERROR_IF_CODE(Error::SYNTAX_ERROR,      "Syntax error")
         __RET_ERROR_IF_CODE(Error::LLVM_INTERNAL,     "LLVM internal error")
