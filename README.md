@@ -27,6 +27,41 @@ Features:
 
 It has a lot more features that can be explored! You can check them out in the [documentation]().
 
+## How does snowball feel?
+
+Here is an example of a class in snowball.
+
+```rs
+import System
+
+class Vector {
+
+    priv Number x;
+    priv Number y;
+
+    pub fn __init(self, x: Number, y: Number) {
+        self.x, self.y = x, y;        
+    }
+    
+    // JS equivalent: const __sum = (this, vec2) => new Vector(...)
+    // overrides operator +
+    pub fn __sum(self, vec2: Vector) -> Vector = 
+        new Vector(self.x + vec2.x, self.y + vec2.y)
+    
+    pub fn __str(self) -> String {
+        return "Vector(x=${self.x} y=${self.y})"
+    }
+}
+
+fn main(args: Array<String>) -> Number {
+    let vec1 = new Vector(1,2)
+    let vec2 = new Vector(10,22)
+    
+    System.print(vec1 + vec2)
+    return 0
+}
+```
+
 ## Installation
 
 If you whant to try snowball, the first thing you should do is to install it localy.
@@ -61,7 +96,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Links
 
-Follow this links and tell us your thoughts, ask questions and be part of the Rect community!
+Follow this links and tell us your thoughts, ask questions and be part of the Snowball community!
 
 * GitHub : https://github.com/snowball-lang/snowball
 * ORG    : https://github.com/snowball-lang
