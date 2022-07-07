@@ -1,6 +1,5 @@
 ### Todo
 
-- [ ] Function return types
 - [ ] Classes
 - [ ] constant
 - [ ] Void class
@@ -33,6 +32,7 @@
 - [x] Comments
     - [x] Normal
     - [x] Multilines
+- [x] Function return types
 - [x] return statement
     - [x] parse return statemnt
     - [x] generate return stmt
