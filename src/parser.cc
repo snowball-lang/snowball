@@ -18,6 +18,9 @@
 #define PARSER_ERROR(err, msg) _parser_error(err, msg);
 #define UNEXPECTED_TOK(expectation) PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Expected %s, got %s%s%s", expectation, RED, _current_token.to_string().c_str(), RESET));
 #define ASSERT_TOKEN(tk, ty, idnt) if (tk.type != ty) UNEXPECTED_TOK(idnt);
+#define CONSUME(tk, ty, process)  \
+    ASSERT_TOKEN_EOF(_current_token, TokenType::ty, tk, process) \
+    next_token(); // consume
 #define ASSERT_TOKEN_EOF(tk, ty, idnt, method) \
     if (tk.type == TokenType::_EOF) PARSER_ERROR(Error::UNEXPECTED_EOF, Logger::format("Found an unexpected EOF while parsing %s", method)); \
     ASSERT_TOKEN(tk, ty, idnt)
@@ -37,6 +40,7 @@ namespace snowball {
 
                 case TokenType::KWORD_FUNC: {
                     FunctionNode* function = _parse_function();
+                    function->isTopLevel = true;
                     _nodes.push_back(function);
                     break;
                 }
@@ -175,8 +179,8 @@ namespace snowball {
                     std::string type_name;
 
                     next_token(); // consume name
-                    ASSERT_TOKEN_EOF(_current_token, TokenType::SYM_COLLON, ":", "argument statement")
-                    next_token(); // consume :
+
+                    CONSUME(":", SYM_COLLON, "argument statement")
 
                     ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "<type>", "argument type declaration")
                     type_name = _current_token.to_string();
@@ -215,10 +219,22 @@ namespace snowball {
             }
         }
 
-        // TODO: add arguments to the function
+        std::string return_type;
+
+        // Consume an arrow
+        CONSUME("->", OP_MINUS, "Function return type")
+        CONSUME("->", OP_GT, "Function return type")
+
+        ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "Identifier", "Function return type")
+        return_type = _current_token.to_string();
+        next_token();
+
         BlockNode* body = _parse_block();
+
         func->body = body;
         func->arguments = arguments;
+        func->return_type = return_type;
+
         return func;
     }
 

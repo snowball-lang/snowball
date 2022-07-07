@@ -97,7 +97,8 @@ namespace snowball {
         _enviroment->create_scope(p_node->name);
         Scope* current_scope = _enviroment->current_scope();
 
-        auto retType = _builder.getVoidTy();
+        ScopeValue* returnType = _enviroment->get(p_node->return_type, p_node);
+        auto retType = (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->isTopLevel) ? _builder.getVoidTy() : *returnType->llvm_struct;
 
         std::vector<std::string> arg_tnames;
         std::vector<llvm::Type*> arg_types;
@@ -107,7 +108,7 @@ namespace snowball {
             ScopeValue* value = _enviroment->get(argument->type_name, argument);
             if (value->type != ScopeType::CLASS) {
                 DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
-                throw CompilerError(Error::VARIABLE_ERROR, Logger::format("'%s' must be a referece to a class", p_node->name.c_str()), dbg_info);
+                throw CompilerError(Error::ARGUMENT_ERROR, Logger::format("'%s' must be a referece to a class", p_node->name.c_str()), dbg_info);
             }
 
             llvm::StructType* type = *value->llvm_struct;
@@ -138,7 +139,12 @@ namespace snowball {
         }
 
         if (body->size() == 0 || !body->back().isTerminator()) {
-            _builder.CreateRet(nullptr);
+            if (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->isTopLevel) {
+                _builder.CreateRet(nullptr);
+            } /* TODO: check if function has type Void */ else {
+                DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
+                throw CompilerError(Error::FUNCTION_RET_ERR, Logger::format("'%s' must be a referece to a class", p_node->name.c_str()), dbg_info);
+            }
         }
 
         llvm::verifyFunction(*function, &message_stream);

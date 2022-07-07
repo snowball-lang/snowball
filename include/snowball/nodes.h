@@ -114,7 +114,10 @@ namespace snowball {
 		BlockNode* body;
 
 		std::string name;
+		std::string return_type;
 		std::vector<ArgumentNode *> arguments;
+
+		bool isTopLevel = false;
 
 		FunctionNode() {
 			type = Type::FUNCTION;

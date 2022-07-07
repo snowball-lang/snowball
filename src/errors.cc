@@ -15,6 +15,8 @@ namespace snowball {
         __RET_ERROR_IF_CODE(Error::UNDEFINED_VARIABLE,"Undefined Variable")
         __RET_ERROR_IF_CODE(Error::VARIABLE_ERROR,    "Variable Error")
         __RET_ERROR_IF_CODE(Error::COMPILER_ERROR,    "Compiler Error")
+        __RET_ERROR_IF_CODE(Error::ARGUMENT_ERROR,    "Argument Error")
+        __RET_ERROR_IF_CODE(Error::FUNCTION_RET_ERR,  "Function Return Error")
 
         return "";
     }

@@ -1,4 +1,4 @@
-var a=2
-func main() {
+
+func main() -> Number {
     //var b = a + 4
 }
