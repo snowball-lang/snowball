@@ -44,6 +44,7 @@ namespace snowball {
             SnowballBuildinTypes _buildin_types;
 
             // methods
+            llvm::Value* generate_call(CallNode* p_node);
             llvm::Value* generate_operator(BinaryOp* p_node);
             llvm::Value* generate_return(ReturnNode* p_node);
             llvm::Value* generate_function(FunctionNode* p_node);

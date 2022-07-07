@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
             line_num += 1;
             lines += lines;
 
-            Compiler* compiler = new Compiler(Logger::format("func %s {\n\t%s\n}", mangle(_SNOWBALL_FUNCTION_ENTRY).c_str(), line.c_str()), "<stdin>");
+            Compiler* compiler = new Compiler(Logger::format("func %s() -> Number {\n\t%s\n}", mangle(_SNOWBALL_FUNCTION_ENTRY).c_str(), line.c_str()), "<stdin>");
             try {
                 compiler->initialize();
 

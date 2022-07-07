@@ -15,6 +15,7 @@
 #include <llvm/IR/Instructions.h>
 
 #include <memory>
+#include <pthread.h>
 #include <sstream>
 #include <optional>
 
@@ -47,10 +48,45 @@ namespace snowball {
                 return generate_return(static_cast<ReturnNode *>(p_node));
             }
 
+            case Node::Type::CALL: {
+                return generate_call(static_cast<CallNode *>(p_node));
+            }
+
             default:
                 DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
                 throw Warning(Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, p_node->type, RESET, BOLD), dbg_info);
         }
+    }
+
+    llvm::Value* Generator::generate_call(CallNode* p_node) {
+        std::string method_name = p_node->method + "(";
+        std::vector<std::string> arg_types;
+        std::vector<llvm::Value*> args;
+
+        int arg_index = 0;
+        for (Node* arg : p_node->arguments) {
+            llvm::Value* result = generate(arg);
+            arg_types.push_back(result->getType()->getStructName());
+
+            args.push_back(result);
+            method_name += result->getType()->getStructName().str();
+
+            if ((p_node->arguments.size() > 1) && (arg_index < (p_node->arguments.size() - 1)))
+                method_name += ", ";
+
+            arg_index++;
+        }
+
+        method_name += ")";
+
+        std::string method_call = p_node->base == nullptr ? mangle(p_node->method, arg_types) : GET_FUNCTION_FROM_CLASS(p_node->base->name.c_str(), p_node->method, arg_types);
+        ScopeValue* function = _enviroment->get(method_call, p_node, p_node->base != nullptr ? Logger::format("%s.%s", p_node->base->name.c_str(), method_name.c_str()) : method_name);
+        if (function->type != ScopeType::FUNC) {
+            DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
+            throw CompilerError(Error::SYNTAX_ERROR, Logger::format("'%s' is not a function", p_node->method.c_str()), dbg_info);
+        }
+        // todo: pass arguments
+        return _builder.CreateCall(*function->llvm_function, args);
     }
 
     llvm::Value* Generator::generate_return(ReturnNode* p_node) {
@@ -170,6 +206,9 @@ namespace snowball {
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
         _enviroment->delete_scope();
+
+        std::unique_ptr<ScopeValue*> func_scopev = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Function*>(function)));
+        _enviroment->current_scope()->set(mangle(p_node->name, arg_tnames), std::move(func_scopev));
         return function;
     }
 

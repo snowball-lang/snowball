@@ -100,11 +100,11 @@ namespace snowball {
         }
 
         if (p_node == nullptr) {
-            throw SNError(Error::BUG, Logger::format("'%s' is not defined (p_node has not been passed to Enviroment::get)", name.c_str()));
+            throw SNError(Error::BUG, Logger::format("'%s' is not defined (p_node has not been passed to Enviroment::get)", p_o_name.c_str()));
         }
 
         DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
-        throw CompilerError(Error::VARIABLE_ERROR, Logger::format("'%s' is not defined", name.c_str()), dbg_info);
+        throw CompilerError(Error::VARIABLE_ERROR, Logger::format("'%s' is not defined", p_o_name.c_str()), dbg_info);
     }
 
     bool Enviroment::item_exists(std::string name, Node* p_node) {

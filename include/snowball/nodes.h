@@ -148,6 +148,30 @@ namespace snowball {
 		~ReturnNode() {};
 	};
 
+	struct IdentifierNode : public Node {
+		std::string name;
+
+		IdentifierNode(Token p_identifier_tk) {
+			name = p_identifier_tk.to_string();
+			type = Type::IDENTIFIER;
+			pos = std::pair<int, int>(p_identifier_tk.line, p_identifier_tk.col);
+		}
+
+		~IdentifierNode() {};
+	};
+
+	struct CallNode : public Node {
+		std::vector<Node*> arguments;
+		std::string method;
+		IdentifierNode* base = nullptr;
+
+		CallNode() {
+			type = Type::CALL;
+		};
+
+		~CallNode() {};
+	};
+
 	struct VarNode : public Node {
 		Node* value;
 		std::string name;
@@ -171,18 +195,6 @@ namespace snowball {
 		};
 
 		~ConstantValue() {};
-	};
-
-	struct IdentifierNode : public Node {
-		std::string name;
-
-		IdentifierNode(Token p_identifier_tk) {
-			name = p_identifier_tk.to_string();
-			type = Type::IDENTIFIER;
-			pos = std::pair<int, int>(p_identifier_tk.line, p_identifier_tk.col);
-		}
-
-		~IdentifierNode() {};
 	};
 
 	struct BinaryOp : public Node {

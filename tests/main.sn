@@ -1,8 +1,9 @@
 
 func hello(a: Number) -> Number {
-    return 2
+    return a
 }
 
 func main() -> Number {
+    hello(2)
     //var b = a + 4
 }

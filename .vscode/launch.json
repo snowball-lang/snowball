@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/Debug/snowball",
-            "args": [],
+            "args": ["${workspaceFolder}/tests/main.sn"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
@@ -26,7 +26,8 @@
                     "text": "-gdb-set disassembly-flavor intel",
                     "ignoreFailures": true
                 }
-            ]
+            ],
+            "logging": { "engineLogging": true }
         }
 
 

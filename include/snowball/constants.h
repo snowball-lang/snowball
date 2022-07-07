@@ -64,39 +64,39 @@ typedef int32_t                                 snowball_int_t;
     #define _SNOWBALL_SYMTABLE_DEBUG          1 // todo
     #define _SNOWBALL_FREE_DEBUG              0 // todo
 
-    #define PRINT_LINE(...)                 printf(__VA_ARGS__);printf("\n");fflush(stdout);
+    #define PRINT_LINE(...)                   printf(__VA_ARGS__);printf("\n");fflush(stdout);
 
     #if _SNOWBALL_LEXER_DEBUG
-    #define DEBUG_LEXER(...)               PRINT_LINE(__VA_ARGS__)
+    #define DEBUG_LEXER(...)                  PRINT_LINE(__VA_ARGS__)
     #else
     #define DEBUG_LEXER(...)
     #endif
 
     #if _SNOWBALL_PARSER_DEBUG
-    #define DEBUG_PARSER(...)               PRINT_LINE(__VA_ARGS__)
+    #define DEBUG_PARSER(...)                 PRINT_LINE(__VA_ARGS__)
     #else
     #define DEBUG_PARSER(...)
     #endif
 
     #if _SNOWBALL_SYMTABLE_DEBUG
-    #define DEBUG_SYMTABLE(...)             printf("%*s",depth*4," ");PRINT_LINE(__VA_ARGS__)
+    #define DEBUG_SYMTABLE(...)               printf("%*s",depth*4," ");PRINT_LINE(__VA_ARGS__)
     #else
     #define DEBUG_SYMTABLE(...)
     #endif
 
     #if _SNOWBALL_CODEGEN_DEBUG
-    #define DEBUG_CODEGEN(...)              PRINT_LINE(__VA_ARGS__)
+    #define DEBUG_CODEGEN(...)                PRINT_LINE(__VA_ARGS__)
     #else
     #define DEBUG_CODEGEN(...)
     #endif
 
     #if _SNOWBALL_FREE_DEBUG
-    #define DEBUG_FREE(...)                 PRINT_LINE(__VA_ARGS__)
+    #define DEBUG_FREE(...)                   PRINT_LINE(__VA_ARGS__)
     #else
     #define DEBUG_FREE(...)
     #endif
 
-    #define DEBUG_ALWAYS(...)               PRINT_LINE(__VA_ARGS__)
+    #define DEBUG_ALWAYS(...)                 PRINT_LINE(__VA_ARGS__)
 
     #define DUMP(varname) fprintf(stderr, "%s (%s) = %i\n", #varname, typeid(varname).name(), varname);
     #define DUMP_S(varname) fprintf(stderr, "%s (%s) = %s\n", #varname, typeid(varname).name(), varname);
