@@ -159,14 +159,18 @@ namespace snowball {
             throw CompilerError(Error::VARIABLE_ERROR, Logger::format("'%s' has already been declared", p_node->name.c_str()), dbg_info);
         }
 
-        // We asume that the variable only has 1 expression
-        llvm::Value* value = generate(p_node->value);
-        auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, p_node->name );
+        if (p_node->isGlobal) {
+            throw SNError(Error::TODO, "Global variables");
+        } else {
+            // We asume that the variable only has 1 expression
+            llvm::Value* value = generate(p_node->value);
+            auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, p_node->name );
 
-        std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(value)));
+            std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(value)));
+            scope->set(p_node->name, std::move(scope_value));
+            return _builder.CreateStore (value, alloca, /*isVolatile=*/false);
+        }
 
-        scope->set(p_node->name, std::move(scope_value));
-        return _builder.CreateStore (value, alloca, /*isVolatile=*/false);
     }
 
     llvm::Value* Generator::generate_const_value(ConstantValue* p_node) {

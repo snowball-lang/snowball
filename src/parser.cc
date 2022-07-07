@@ -51,6 +51,8 @@ namespace snowball {
                     var->pos = _pos;
                     var->width = (uint32_t)_width;
 
+                    var->isGlobal = true;
+
                     _nodes.push_back(var);
                     break;
                 }

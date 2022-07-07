@@ -126,6 +126,7 @@ namespace snowball {
 	struct VarNode : public Node {
 		Node* value;
 		std::string name;
+		bool isGlobal = false;
 
 		VarNode() {
 			type = Type::VAR;

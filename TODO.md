@@ -4,13 +4,8 @@
 - [ ] Function return types
 - [ ] Classes
 - [ ] constant
-- [ ] global variables
 - [ ] static methods
 - [ ] check if class has been initialized
-- [ ] Comments
-    - [ ] Normal
-    - [ ] Multilines
-    - [ ] Doc comments
 - [ ] Modules
     - [ ] add a System class for I/O
     - [ ] add system/local modules support
@@ -20,9 +15,13 @@
 
 - [ ] String class
 - [ ] Number class
+- [ ] global variables
 
 ### Done ✓
 
 - [x] Variables
 - [x] Function creation
     - [x] Function arguments
+- [x] Comments
+    - [x] Normal
+    - [x] Multilines

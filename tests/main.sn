@@ -1,9 +1,4 @@
-
-var a = 2
-func d() {
-    var a = "gello"
-}
-
+var a=2
 func main() {
-    var b = a + 4
+    //var b = a + 4
 }
