@@ -1,6 +1,5 @@
 ### Todo
 
-- [ ] Function mangling
 - [ ] Function return types
 - [ ] Classes
 - [ ] constant
@@ -16,10 +15,15 @@
 - [ ] String class
 - [ ] Number class
 - [ ] global variables
+- [ ] return statement
+    - [ ] parse return statemnt
+    - [ ] generate return stmt
+    - [ ] check if type of return is equal to function's return type
 
 ### Done ✓
 
 - [x] Variables
+- [x] Function mangling
 - [x] Function creation
     - [x] Function arguments
 - [x] Comments

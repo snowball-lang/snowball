@@ -30,6 +30,9 @@
 #include "snowball/compiler.h"
 #include "snowball/generator.h"
 
+#include "snowball/utils/utils.h"
+#include "snowball/utils/mangle.h"
+
 #include "snowball/types/Number.h"
 #include "snowball/types/String.h"
 
@@ -121,12 +124,12 @@ namespace snowball {
         if (!llvm_error.empty())
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
-        executionEngine->addGlobalMapping(*_enviroment->get("Number.__new", nullptr)->llvm_function, reinterpret_cast<Number*>(Number__new));
-        executionEngine->addGlobalMapping(*_enviroment->get("Number.__sum", nullptr)->llvm_function, reinterpret_cast<Number*>(Number__sum));
+        executionEngine->addGlobalMapping(*_enviroment->get(GET_FUNCTION_FROM_CLASS("Number", "__new", { "i" }), nullptr)->llvm_function, reinterpret_cast<Number*>(Number__new));
+        executionEngine->addGlobalMapping(*_enviroment->get(GET_FUNCTION_FROM_CLASS("Number", "__sum", { "Number", "Number" }), nullptr)->llvm_function, reinterpret_cast<Number*>(Number__sum));
 
-        executionEngine->addGlobalMapping(*_enviroment->get("String.__new", nullptr)->llvm_function, reinterpret_cast<Number*>(String__new));
+        executionEngine->addGlobalMapping(*_enviroment->get(GET_FUNCTION_FROM_CLASS("String", "__new", { "s" }), nullptr)->llvm_function, reinterpret_cast<Number*>(String__new));
 
-        llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(_SNOWBALL_FUNCTION_ENTRY));
+        llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(mangle(_SNOWBALL_FUNCTION_ENTRY)));
         return executionEngine->runFunction(main_fn, {});
     }
 
@@ -155,17 +158,17 @@ namespace snowball {
         sn_number_struct->setBody({ nt });
 
         auto sn_number_prototype = llvm::FunctionType::get(sn_number_struct, std::vector<llvm::Type *> { nt }, false);
-        auto sn_number__new_fn = llvm::Function::Create(sn_number_prototype, llvm::Function::ExternalLinkage, "Number__new", _module.get());
+        auto sn_number__new_fn = llvm::Function::Create(sn_number_prototype, llvm::Function::ExternalLinkage, mangle("Number.__new", {"i"}), _module.get());
 
         auto sn_number_sum_prototype = llvm::FunctionType::get(sn_number_struct, std::vector<llvm::Type *> { sn_number_struct, sn_number_struct }, false);
-        auto sn_number__add_fn = llvm::Function::Create(sn_number_sum_prototype, llvm::Function::ExternalLinkage, "Number__sum", _module.get());
+        auto sn_number__add_fn = llvm::Function::Create(sn_number_sum_prototype, llvm::Function::ExternalLinkage, mangle("Number.__sum", {"Number", "Number"}), _module.get());
 
         /* String */
         auto sn_string_struct = llvm::StructType::create(_global_context, "String");
         sn_string_struct->setBody({ st, nt, nt, nt });
 
         auto sn_string_prototype = llvm::FunctionType::get(sn_string_struct, std::vector<llvm::Type *> { st }, false);
-        auto sn_string__new_fn = llvm::Function::Create(sn_string_prototype, llvm::Function::ExternalLinkage, "String__new", _module.get());
+        auto sn_string__new_fn = llvm::Function::Create(sn_string_prototype, llvm::Function::ExternalLinkage, mangle("String.__new", {"s"}), _module.get());
 
         llvm::verifyFunction(*sn_number__new_fn, &message_stream);
         llvm::verifyFunction(*sn_number__add_fn, &message_stream);

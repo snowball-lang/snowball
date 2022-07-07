@@ -3,6 +3,7 @@
 #include "snowball/errors.h"
 #include "snowball/scopes.h"
 #include "snowball/enviroment.h"
+#include "snowball/utils/mangle.h"
 
 #include <llvm-10/llvm/Support/raw_ostream.h>
 #include <llvm/IR/Type.h>
@@ -53,13 +54,13 @@ namespace snowball {
         // Number class
         NEW_CLASS_DECLARATION(Number, _buildin_types.sn_number_struct)
 
-        NEW_CLASS_FUNCTION(Number, init, "__new", _buildin_types.sn_number__new)
-        NEW_CLASS_FUNCTION(Number, sum, "__sum", _buildin_types.sn_number__sum)
+        NEW_CLASS_FUNCTION(Number, init, mangle("__new", {"i"}), _buildin_types.sn_number__new)
+        NEW_CLASS_FUNCTION(Number, sum, mangle("__sum", {"Number", "Number"}), _buildin_types.sn_number__sum)
 
         // String class
         NEW_CLASS_DECLARATION(String, _buildin_types.sn_string_struct)
 
-        NEW_CLASS_FUNCTION(String, init, "__new", _buildin_types.sn_string__new)
+        NEW_CLASS_FUNCTION(String, init, mangle("__new", {"s"}), _buildin_types.sn_string__new)
 
         INSERT_CLASS_TO_GLOBAL(String)
         INSERT_CLASS_TO_GLOBAL(Number)

@@ -5,6 +5,9 @@
 #include "snowball/errors.h"
 #include "snowball/generator.h"
 
+#include "snowball/utils/utils.h"
+#include "snowball/utils/mangle.h"
+
 #include <llvm-10/llvm/IR/Intrinsics.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Verifier.h>
@@ -118,7 +121,7 @@ namespace snowball {
         }
 
         auto prototype = llvm::FunctionType::get(retType, arg_types, false);
-        llvm::Function *function = llvm::Function::Create(prototype, llvm::Function::ExternalLinkage, p_node->name, _module);
+        llvm::Function *function = llvm::Function::Create(prototype, llvm::Function::ExternalLinkage, mangle(p_node->name, arg_tnames), _module);
 
         int parameter_index = 0;
         for (auto& arg : function->args()) {
@@ -143,7 +146,7 @@ namespace snowball {
                 _builder.CreateRet(nullptr);
             } /* TODO: check if function has type Void */ else {
                 DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
-                throw CompilerError(Error::FUNCTION_RET_ERR, Logger::format("'%s' must be a referece to a class", p_node->name.c_str()), dbg_info);
+                throw CompilerError(Error::FUNCTION_RET_ERR, Logger::format("'Function<%s>' does not have a return statement ", p_node->name.c_str()), dbg_info);
             }
         }
 
@@ -185,7 +188,8 @@ namespace snowball {
             case TokenType::VALUE_NUMBER: {
                 llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
 
-                ScopeValue* scope_value = _enviroment->get("Number.__new", p_node);
+
+                ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS("Number", "__new", { "i" }), p_node);
                 llvm::Function* constructor = const_cast<llvm::Function*>(*scope_value->llvm_function);
 
                 llvm::Constant * num = llvm::ConstantInt::get(i64, (uint64_t)std::stoi(p_node->value));
@@ -193,7 +197,7 @@ namespace snowball {
             }
 
             case TokenType::VALUE_STRING: {
-                ScopeValue* scope_value = _enviroment->get("String.__new", p_node);
+                ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS("String", "__new", { "s" }), p_node);
                 llvm::Function* constructor = const_cast<llvm::Function*>(*scope_value->llvm_function);
 
                 auto str = p_node->value.c_str();

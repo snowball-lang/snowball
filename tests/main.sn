@@ -1,4 +1,8 @@
 
+func hello(a: Number) -> String {
+
+}
+
 func main() -> Number {
     //var b = a + 4
 }

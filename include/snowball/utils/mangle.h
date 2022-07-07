@@ -15,7 +15,7 @@ namespace snowball {
     };
 
     unmangledResult unmangle(std::string name);
-    std::string mangle(std::string name, std::vector<std::string> arguments = {}, std::string return_type = "void");
+    std::string mangle(std::string name, std::vector<std::string> arguments = {});
 }
 
 #endif // __SNOWBALL_UTILS__MANGLE_H_

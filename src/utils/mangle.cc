@@ -1,4 +1,5 @@
 #include "snowball/snowball.h"
+#include "snowball/utils/utils.h"
 #include "snowball/utils/mangle.h"
 
 #include <stdlib.h>
@@ -8,6 +9,7 @@
 #include <cctype>
 
 namespace snowball {
+
     /*=======================================
     * Mangling in snowball.
     * ---------------------------
@@ -29,19 +31,17 @@ namespace snowball {
     *     This is used so that the generator can
     *     identify witch parameters this function
     *     is uses.
-    *  4. The return type will start with the
-    *     prefix `R` and then the length of the
-    *     return type followed by the type name.
-    *       "R{LENGTH OF RETURN T}{TYPE OF RETURN T}"
     *=======================================*/
-    std::string mangle(std::string name, std::vector<std::string> arguments, std::string return_type) {
+    std::string mangle(std::string name, std::vector<std::string> arguments) {
         std::stringstream mangled_name;
         mangled_name << "_M"; // step #1
 
         // Step #2
-        mangled_name << "N";
-        mangled_name << name.size();
-        mangled_name << name;
+        for (std::string n : snowball_utils::split(name, ".")) {
+            mangled_name << "N";
+            mangled_name << n.size();
+            mangled_name << n;
+        }
 
         // Step #3
         for(std::string argument : arguments) {
@@ -49,11 +49,6 @@ namespace snowball {
             mangled_name << argument.size();
             mangled_name << argument;
         }
-
-        // Step #4
-        mangled_name << "R";
-        mangled_name << return_type.size();
-        mangled_name << return_type;
 
         return mangled_name.str();
     }
@@ -86,7 +81,13 @@ namespace snowball {
                 }
 
                 int length = std::stoi(_length.str().c_str());
-                result.name = name.substr(index, length);
+
+                if (result.name == name) {
+                    result.name = name.substr(index, length);
+                    continue;
+                }
+
+                result.name += "." + name.substr(index, length);
             }
 
             while (c_str[index] == 'A') {
@@ -101,20 +102,6 @@ namespace snowball {
 
                 int length = std::stoi(_length.str().c_str());
                 result.arguments.push_back(name.substr(index, length));
-            }
-
-            if (c_str[index] == 'R') {
-                std::stringstream _length;
-                _length << ((c_str[index + 1]) - '0');
-                index += 2;
-
-                while (c_str[index] >= '0' && c_str[index] <= '9') {
-                    _length << ((c_str[index]) - '0');
-                    index++;
-                }
-
-                int length = std::stoi(_length.str().c_str());
-                result.return_type = name.substr(index, length);
             }
         }
 

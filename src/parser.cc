@@ -222,6 +222,8 @@ namespace snowball {
         std::string return_type;
 
         // Consume an arrow
+        // TODO: if there is no arrow, return type is Void
+        // TODO: if it is a constructor, return type is the parent Class
         CONSUME("->", OP_MINUS, "Function return type")
         CONSUME("->", OP_GT, "Function return type")
 
