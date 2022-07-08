@@ -1,14 +1,5 @@
 
-func hello(x: Number) -> Number {
-    return x
-}
 
 func main() -> Number {
-    var a = hello(2).__sum(2)
-    a.__sum(2)
-
-    Number.__sum(4, 2)
-
-    var b = a + 4
-    var c = b + a
+    
 }

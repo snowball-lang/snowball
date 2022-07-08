@@ -8,6 +8,7 @@
 - [ ] default return type
 - [ ] check if class has been initialized
 - [ ] Modules
+    - [ ] module keyword (like in nodejs)
     - [ ] add a System class for I/O
     - [ ] add system/local modules support
     - [ ] custom variable/selected imports
@@ -19,6 +20,11 @@
 ### In Progress
 
 - [ ] String class
+- [ ] Unit testing
+    - [ ] Add `test` keyword
+    - [ ] Parse test statement
+    - [ ] Generate test statement
+    - [ ] Execute tests
 - [ ] Number class
 - [ ] add optimizations
 
