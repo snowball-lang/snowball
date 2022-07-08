@@ -84,6 +84,7 @@
         "semaphore": "cpp",
         "stop_token": "cpp",
         "iostream": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "__functional_03": "cpp"
     }
 }

@@ -130,6 +130,7 @@ typedef int32_t                                 snowball_int_t;
 #define _SNOWBALL_KEYWORD__AND              "and"
 #define _SNOWBALL_KEYWORD__NOT              "not"
 #define _SNOWBALL_KEYWORD__FOR              "for"
+#define _SNOWBALL_KEYWORD__TEST             "test"
 #define _SNOWBALL_KEYWORD__CASE             "case"
 #define _SNOWBALL_KEYWORD__THIS             "this"
 #define _SNOWBALL_KEYWORD__ENUM             "enum"

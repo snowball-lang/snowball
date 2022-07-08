@@ -172,6 +172,10 @@ namespace snowball {
 		~CallNode() {};
 	};
 
+	struct TestingNode : public Node {
+
+	};
+
 	struct VarNode : public Node {
 		Node* value;
 		std::string name;

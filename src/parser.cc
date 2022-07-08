@@ -45,6 +45,12 @@ namespace snowball {
                     break;
                 }
 
+                case TokenType::KWORD_TEST: {
+                    TestingNode* unit_test = _parse_unittest();
+                    _nodes.push_back(unit_test);
+                    break;
+                }
+
                 case TokenType::KWORD_VAR: {
                     int _width = _current_token.col;
                     std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
@@ -110,6 +116,10 @@ namespace snowball {
     }
 
     // Parse methods
+
+    TestingNode* Parser::_parse_unittest() {
+
+    }
 
     VarNode* Parser::_parse_variable() {
         ASSERT(_current_token.type == TokenType::KWORD_VAR)

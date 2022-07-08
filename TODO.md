@@ -21,12 +21,13 @@
 
 - [ ] String class
 - [ ] Unit testing
-    - [ ] Add `test` keyword
+    - [x] Add `test` keyword
     - [ ] Parse test statement
     - [ ] Generate test statement
     - [ ] Execute tests
 - [ ] Number class
 - [ ] add optimizations
+- [ ] Let user choose in 32/64 bits numbers
 
 ### Done ✓
 
