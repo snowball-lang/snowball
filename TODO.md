@@ -21,11 +21,6 @@
 - [ ] String class
 - [ ] Number class
 - [ ] add optimizations
-- [ ] Perform function calls
-    - [x] pass arguments
-    - [x] pass self argument if it is a class
-    - [ ] check if function class is initiated
-        - [x] check if function is static
 
 ### Done ✓
 
@@ -41,3 +36,8 @@
     - [x] parse return statemnt
     - [x] generate return stmt
     - [x] check if type of return is equal to function's return type
+- [x] Perform function calls
+    - [x] pass arguments
+    - [x] pass self argument if it is a class
+    - [x] check if function class is initiated
+        - [x] check if function is static

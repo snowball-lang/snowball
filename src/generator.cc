@@ -83,16 +83,26 @@ namespace snowball {
         llvm::Value* base_value;
         ScopeValue* class_value;
         if (p_node->base != nullptr) {
-            class_value = _enviroment->get(p_node->base->name, p_node->base);
+            if (dynamic_cast<IdentifierNode*>(p_node->base) != nullptr) {
+                class_value = _enviroment->get(dynamic_cast<IdentifierNode*>(p_node->base)->name, p_node->base);
 
-            if (class_value->type != ScopeType::CLASS) {
+                if (class_value->type != ScopeType::CLASS) {
+                    base_value = generate(p_node->base);
+                    base_struct = base_value->getType()->getStructName().str();
+
+                    args.insert(args.begin(), base_value);
+                    arg_types.insert(arg_types.begin(), base_struct);
+                } else {
+                    base_struct = dynamic_cast<IdentifierNode*>(p_node->base)->name;
+                }
+            } else {
                 base_value = generate(p_node->base);
+                class_value = _enviroment->get(base_value->getType()->getStructName().str(), p_node->base);
+
                 base_struct = base_value->getType()->getStructName().str();
 
                 args.insert(args.begin(), base_value);
                 arg_types.insert(arg_types.begin(), base_struct);
-            } else {
-                base_struct = p_node->base->name;
             }
         }
 
@@ -103,14 +113,6 @@ namespace snowball {
         if (function->type != ScopeType::FUNC) {
             DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
             throw CompilerError(Error::SYNTAX_ERROR, Logger::format("'%s' is not a function", p_node->method.c_str()), dbg_info);
-        }
-
-        if (p_node->base != nullptr) {
-            if (class_value->type == ScopeType::CLASS && !function->isStaticFunction) {
-                // Example case: Number.__sum(2)
-                DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
-                throw CompilerError(Error::SYNTAX_ERROR, Logger::format("'%s' is not a static function", Logger::format("%s.%s", base_struct.c_str(), p_node->method.c_str()).c_str()), dbg_info);
-            }
         }
 
         ASSERT(args.size() == arg_types.size())

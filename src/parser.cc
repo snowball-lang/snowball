@@ -430,7 +430,7 @@ namespace snowball {
                     ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "function index/call")
 
                     if (peek(0, true).type == TokenType::BRACKET_LPARENT)  {
-                        IdentifierNode* base = (IdentifierNode*)expression;
+                        Node* base = expression;
                         CallNode* call = _parse_function_call();
                         call->base = base;
 

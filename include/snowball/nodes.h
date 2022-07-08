@@ -163,7 +163,7 @@ namespace snowball {
 	struct CallNode : public Node {
 		std::vector<Node*> arguments;
 		std::string method;
-		IdentifierNode* base = nullptr;
+		Node* base = nullptr;
 
 		CallNode() {
 			type = Type::CALL;
