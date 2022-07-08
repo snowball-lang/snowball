@@ -100,7 +100,16 @@ namespace snowball {
                 _parser = new Parser(_lexer, _source_info);
                 _parser->parse();
 
-                _generator = new Generator(_parser, _enviroment, _source_info, std::move(_builder), _module.get(), std::move(_buildin_types));
+                _generator = new Generator(
+                    _parser,
+                    _enviroment,
+                    _source_info,
+                    std::move(_builder),
+                    _module.get(),
+                    std::move(_buildin_types),
+                    _testing_context,
+                    _enabledTests
+                );
 
                 for (auto* node : _parser->nodes()) {
                     _generator->generate(node);
@@ -141,8 +150,36 @@ namespace snowball {
         ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("Number", "__sum", { "Number", "Number" }), reinterpret_cast<Number*>(Number__sum))
         ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("String", "__new", { "s" }), reinterpret_cast<String*>(String__new))
 
-        llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(mangle(_SNOWBALL_FUNCTION_ENTRY)));
-        return executionEngine->runFunction(main_fn, {});
+        if (_enabledTests) {
+            int test_success = 1;
+
+            // todo: if it is a folder/import, iterate all paths
+            Logger::log(Logger::format("    [%s]", _path.c_str()));
+
+            for (int i = 0; i < _testing_context->getTestLength(); i++) {
+                Logger::rlog(Logger::format("        %s%s%s (%i)... ", BBLU, _testing_context->getTestAt(i).c_str(), RESET, i + 1));
+
+                int64_t (*function)() = reinterpret_cast<int64_t (*)()>(executionEngine->getFunctionAddress(_testing_context->get_name(i+1)));
+                int64_t result = function();
+
+                if (!result) {
+                    test_success = 0;
+                    Logger::log(Logger::format("%sFAILED%s", BRED, RESET));
+                    break;
+                }
+                else if (result == 1) {
+                    test_success = 0;
+                    Logger::log(Logger::format("%sPASSED%s", BGRN, RESET));
+                }
+                if (result == 2) {
+                    Logger::log(Logger::format("%sSKIPED%s", BYEL, RESET));
+                }
+            }
+            return llvm::GenericValue(llvm::ConstantInt::get(_builder.getInt8Ty(), test_success));
+        } else {
+            llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(mangle(_SNOWBALL_FUNCTION_ENTRY)));
+            return executionEngine->runFunction(main_fn, {});
+        }
     }
 
     void Compiler::optimize() {

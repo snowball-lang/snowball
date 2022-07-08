@@ -1,4 +1,10 @@
 
+
+#include <string>
+#include <vector>
+
+#include "logger.h"
+
 #ifndef __SNOWBALL_UNIT_TESTING_H_
 #define __SNOWBALL_UNIT_TESTING_H_
 
@@ -8,12 +14,17 @@ namespace snowball {
         public:
             TestingContext() {};
 
-            int addTest() { return ++_length; }
-            int getTest() { return _length; }
+            int addTest(std::string p_desc) { _tests.push_back(p_desc); return _tests.size(); }
+            int getTestLength() { return _tests.size(); }
+            std::string getTestAt(int i) { return _tests.at(i); }
+
+            std::string get_name(int number) {
+                return Logger::format("_NSNTestCaseN%i_", number);
+            }
 
             ~TestingContext() {};
         private:
-            int _length = 0;
+            std::vector<std::string> _tests;
     };
 }
 

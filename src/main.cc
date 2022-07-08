@@ -46,6 +46,10 @@ int main(int argc, char** argv) {
         try {
             compiler->initialize();
 
+            if (std::find(arguments.begin(), arguments.end(), "-t") != arguments.end()) {
+                compiler->enable_tests();
+            }
+
             compiler->compile();
             compiler->execute();
         } catch(const SNError& error) {

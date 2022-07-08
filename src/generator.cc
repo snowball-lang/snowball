@@ -63,7 +63,30 @@ namespace snowball {
     }
 
     llvm::Value* Generator::generate_test(TestingNode* p_node) {
-        
+        std::string llvm_error;
+        llvm::raw_string_ostream message_stream(llvm_error);
+        std::string test_name = _testing_context->get_name(_testing_context->addTest(p_node->description));
+
+        auto prototype = llvm::FunctionType::get(_builder.getInt64Ty(), {}, false);
+        llvm::Function *function = llvm::Function::Create(prototype, llvm::Function::ExternalLinkage, test_name, _module);
+
+        llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder.getContext(), "body", function);
+        _builder.SetInsertPoint(body);
+
+        _enviroment->create_scope(test_name);
+
+        for (Node* node : p_node->block->exprs) {
+            generate(node);
+        }
+
+        llvm::verifyFunction(*function, &message_stream);
+        if (!llvm_error.empty())
+            throw SNError(Error::LLVM_INTERNAL, llvm_error);
+
+        _enviroment->delete_scope();
+        _builder.CreateRet(llvm::ConstantInt::get(_builder.getInt64Ty(), 1));
+
+        return function;
     }
 
     llvm::Value* Generator::generate_call(CallNode* p_node) {

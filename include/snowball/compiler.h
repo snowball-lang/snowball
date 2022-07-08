@@ -33,6 +33,8 @@ namespace snowball {
 
             void cleanup();
             void optimize(); // TODO (WIP)
+
+            void enable_tests() { _enabledTests = true; }
             llvm::GenericValue execute();
 
             ~Compiler() {};
@@ -44,16 +46,17 @@ namespace snowball {
             llvm::IRBuilder<> _builder;
 
             // variables
+
             std::string _code;
             std::string _path;
 
             SourceInfo* _source_info;
             bool _initialized = false;
+            bool _enabledTests = false;
 
             Lexer* _lexer;
             Parser* _parser;
             Generator* _generator;
-
 
             Enviroment* _enviroment;
             SnowballBuildinTypes _buildin_types;
