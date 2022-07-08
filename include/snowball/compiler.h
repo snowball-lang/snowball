@@ -8,6 +8,7 @@
 #include "generator.h"
 #include "enviroment.h"
 #include "source_info.h"
+#include "unittesting.h"
 
 #include <llvm/IR/Module.h>
 #include <llvm/IR/IRBuilder.h>
@@ -53,13 +54,17 @@ namespace snowball {
             Parser* _parser;
             Generator* _generator;
 
+
             Enviroment* _enviroment;
             SnowballBuildinTypes _buildin_types;
+
+            TestingContext* _testing_context = new TestingContext();
 
             // methods
             void link_std_classes();
             void create_source_info();
             std::string prepare_module_name();
+
     };
 }
 

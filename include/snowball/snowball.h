@@ -16,6 +16,7 @@
 #include "generator.h"
 #include "enviroment.h"
 #include "source_info.h"
+#include "unittesting.h"
 
 // Types
 #include "types/Number.h"

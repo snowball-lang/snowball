@@ -29,7 +29,7 @@
     - [x] Add `test` keyword
     - [x] Parse test statement
     - [ ] check for -t argument
-    - [ ] add TestingContext class
+    - [x] add TestingContext class
     - [ ] Generate test statement
     - [ ] Execute tests
 - [ ] Number class
