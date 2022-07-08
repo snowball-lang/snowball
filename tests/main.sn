@@ -1,6 +1,6 @@
 
-func hello(a: Number) -> Number {
-    return a
+func hello(x: Number) -> Number {
+    return x
 }
 
 func main() -> Number {
@@ -8,5 +8,5 @@ func main() -> Number {
     a.__sum(2)
 
     var b = a + 4
-    var c = "awd" + 5
+    var c = b + a
 }

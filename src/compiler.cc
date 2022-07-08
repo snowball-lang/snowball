@@ -1,5 +1,5 @@
-
-#include <llvm/IR/Mangler.h>
+#include <llvm-c-10/llvm-c/Target.h>
+#include <llvm/IR/Module.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/IR/Verifier.h>
 #include <llvm/IR/IRPrintingPasses.h>
@@ -13,11 +13,15 @@
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/IRBuilder.h>
-#include <llvm/IR/Module.h>
-#include <llvm/Support/FormattedStream.h>
+#include <llvm/Passes/PassBuilder.h>
 #include <llvm/Support/MathExtras.h>
+#include <llvm/Support/FormattedStream.h>
+// #include <llvm/Passes/OptimizationLevel.h>
 
 #include <llvm/Target/TargetMachine.h>
+#include <llvm/Target/TargetOptions.h>
+
+#include "llvm/Support/TargetSelect.h"
 
 #include <llvm/ExecutionEngine/MCJIT.h>
 #include <llvm/ExecutionEngine/JITSymbol.h>
@@ -43,6 +47,9 @@
 #define SN_MODULE_NAME "llvm_snowball_compile_mod_"
 
 #define NEW_IR_BUILDER() llvm::IRBuilder<> _builder(_global_context);
+#define ADD_GLOBAL_IF_FN_EXISTS(name, function) \
+    executionEngine->addGlobalMapping(*_enviroment->get(name, nullptr)->llvm_function, function);
+
 
 namespace snowball {
     Compiler::Compiler(std::string p_code, std::string p_path) : _builder(llvm::IRBuilder<> (_global_context)) { _code = p_code                 ; _path = p_path              ; NEW_IR_BUILDER() }
@@ -58,9 +65,14 @@ namespace snowball {
     }
 
     void Compiler::initialize() {
-        LLVMInitializeNativeTarget();
+
+
+        llvm::InitializeNativeTarget();
+        llvm::InitializeAllTargetInfos();
+        llvm::InitializeAllTargets();
+        llvm::InitializeAllTargetMCs();
+        llvm::InitializeAllAsmPrinters();
         LLVMInitializeNativeAsmParser();
-        LLVMInitializeNativeAsmPrinter();
 
         create_source_info();
 
@@ -102,6 +114,7 @@ namespace snowball {
             if (!module_error_string.empty())
                 throw SNError(Error::LLVM_INTERNAL, module_error_string);
 
+
             #if _SNOWBALL_BYTECODE_DEBUG
 
                 PRINT_LINE("Bytecode:")
@@ -124,13 +137,39 @@ namespace snowball {
         if (!llvm_error.empty())
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
-        executionEngine->addGlobalMapping(*_enviroment->get(GET_FUNCTION_FROM_CLASS("Number", "__new", { "i" }), nullptr)->llvm_function, reinterpret_cast<Number*>(Number__new));
-        executionEngine->addGlobalMapping(*_enviroment->get(GET_FUNCTION_FROM_CLASS("Number", "__sum", { "Number", "Number" }), nullptr)->llvm_function, reinterpret_cast<Number*>(Number__sum));
-
-        executionEngine->addGlobalMapping(*_enviroment->get(GET_FUNCTION_FROM_CLASS("String", "__new", { "s" }), nullptr)->llvm_function, reinterpret_cast<Number*>(String__new));
+        ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("Number", "__new", { "i" }), reinterpret_cast<Number*>(Number__new))
+        ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("Number", "__sum", { "Number", "Number" }), reinterpret_cast<Number*>(Number__sum))
+        ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("String", "__new", { "s" }), reinterpret_cast<String*>(String__new))
 
         llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(mangle(_SNOWBALL_FUNCTION_ENTRY)));
         return executionEngine->runFunction(main_fn, {});
+    }
+
+    void Compiler::optimize() {
+        llvm::LoopAnalysisManager LAM;
+        llvm::FunctionAnalysisManager FAM;
+        llvm::CGSCCAnalysisManager CGAM;
+        llvm::ModuleAnalysisManager MAM;
+
+        // Create the new pass manager builder.
+        // Take a look at the PassBuilder constructor parameters for more
+        // customization, e.g. specifying a TargetMachine or various debugging
+        // options.
+        llvm::PassBuilder PB;
+
+        // Register all the basic analyses with the managers.
+        PB.registerModuleAnalyses(MAM);
+        PB.registerCGSCCAnalyses(CGAM);
+        PB.registerFunctionAnalyses(FAM);
+        PB.registerLoopAnalyses(LAM);
+        PB.crossRegisterProxies(LAM, FAM, CGAM, MAM);
+
+        // Create the pass manager.
+        // This one corresponds to a typical -O2 optimization pipeline.
+        llvm::ModulePassManager MPM = PB.buildPerModuleDefaultPipeline(llvm::PassBuilder::OptimizationLevel::O2);
+
+        // Optimize the IR!
+        MPM.run(*_module, MAM);
     }
 
     void Compiler::cleanup() {

@@ -12,6 +12,8 @@ file(GLOB_RECURSE PROJECT_SOURCES src/*.cc src/types/*.cc src/*.c)
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
 file(GLOB_RECURSE PROJECT_MISC *.md *.txt)
 set (PROJECT_EXPORT_HPP include/${PROJECT_NAME}/export.hpp)
+set (GCC_COVERAGE_COMPILE_FLAGS "-Wl,-znodelete")
+set (GCC_COVERAGE_LINK_FLAGS "-Wl,-znodelete")
 set (PROJECT_FILES
   ${PROJECT_HEADERS}
   ${PROJECT_SOURCES}
@@ -41,13 +43,18 @@ message( "COMPILE_DEFINITIONS: ${DirDefs}" )
 ##################################################    Targets     ##################################################
 add_executable(snowball ${PROJECT_FILES})
 
+foreach(target ${LLVM_TARGETS_TO_BUILD})
+  list(APPEND targets "LLVM${target}CodeGen")
+endforeach()
+
+
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${LLVM_INCLUDE_DIRS}
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<INSTALL_INTERFACE:include> PRIVATE source)
 target_include_directories(${PROJECT_NAME} PUBLIC ${LLVM_INCLUDE_DIRS} ${PROJECT_INCLUDE_DIRS})
-target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${PROJECT_LIBRARIES})
+target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES})
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
 set_target_properties     (${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 

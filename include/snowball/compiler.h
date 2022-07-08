@@ -31,6 +31,7 @@ namespace snowball {
             void compile();
 
             void cleanup();
+            void optimize(); // TODO (WIP)
             llvm::GenericValue execute();
 
             ~Compiler() {};

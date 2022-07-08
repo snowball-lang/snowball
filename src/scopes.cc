@@ -28,6 +28,11 @@ namespace snowball {
         bool _value = item_exists(p_name);
 
         if (!_value) {
+            if (p_node == nullptr)
+                throw SNError(
+                    Error::VARIABLE_ERROR,
+                    Logger::format("Undefined variable: %s%s%s%s (no p_node has been passed to Scope::get)", BCYN, p_o_name.c_str(), RESET, BOLD)
+                );
             DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
             throw CompilerError(Error::UNDEFINED_VARIABLE, Logger::format("Undefined variable: %s%s%s%s", BCYN, p_o_name.c_str(), RESET, BOLD), dbg_info);
         }

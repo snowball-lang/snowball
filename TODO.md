@@ -20,11 +20,12 @@
 
 - [ ] String class
 - [ ] Number class
+- [ ] add optimizations
 - [ ] Perform function calls
     - [x] pass arguments
     - [x] pass self argument if it is a class
     - [ ] check if function class is initiated
-        - [ ] check if function is static
+        - [x] check if function is static
 
 ### Done ✓
 

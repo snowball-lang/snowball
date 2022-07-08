@@ -115,6 +115,12 @@ typedef int32_t                                 snowball_int_t;
     #define DEBUG_ALWAYS(...)
 #endif
 
+// Optimizations
+#define _SNOWBALL_OPTIMIZE                  0
+#if _SNOWBALL_OPTIMIZE
+
+#endif
+
 // Function names
 #define _SNOWBALL_FUNCTION_ENTRY            "main"
 
