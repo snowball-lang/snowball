@@ -56,18 +56,21 @@ namespace snowball {
 
             virtual void print_error() const {
                 Logger::error(Logger::format("(%s%s%s) %s%s%s", RED, get_error(error), RESET, BOLD, message.c_str(), RESET));
-                Logger::elog(Logger::format("  %s-->%s %s:[%i:%i]", BBLU, RESET,
-                    cb_dbg_info->source_info->get_path().c_str(),
-                    cb_dbg_info->line,
-                    cb_dbg_info->pos.second,
-                    WHT));
-                Logger::elog(Logger::format("%s   |%s", BBLU, RESET));
+                Logger::elog(Logger::format("%s     |%s", BBLK, RESET));
 
                 if (cb_dbg_info->line - 1 >= 1) // first line may not be available to log
-                Logger::elog(Logger::format("%s%2i | %s%s",           BBLU, cb_dbg_info->line - 1, RESET, cb_dbg_info->line_before.c_str()));
-                Logger::elog(Logger::format("%s%2i | %s%s/%s %s\n   %s|%s %s|_%s%s%s%s", BBLU, cb_dbg_info->line, RESET, BRED, RESET, cb_dbg_info->line_str.c_str(), BBLU, RESET, BRED, RESET, BRED, cb_dbg_info->get_pos_str().c_str(), RESET));
-                Logger::elog(Logger::format("%s%2i | %s%s",           BBLU, cb_dbg_info->line + 1, RESET,  cb_dbg_info->line_after.c_str()));
+                Logger::elog(Logger::format("%s  %2i | %s%s",           BBLK, cb_dbg_info->line - 1, RESET, cb_dbg_info->line_before.c_str()));
+                Logger::elog(Logger::format(" %s>%s%2i | %s %s\n   %s  |%s  %s%s%s", BRED, BBLK, cb_dbg_info->line, RESET, cb_dbg_info->line_str.c_str(), BBLK, RESET, BRED, cb_dbg_info->get_pos_str().c_str(), RESET));
+                Logger::elog(Logger::format("%s  %2i | %s%s",           BBLK, cb_dbg_info->line + 1, RESET,  cb_dbg_info->line_after.c_str()));
+
+                Logger::elog(Logger::format("\n  %sat %s%s%s:%i:%i%s", BBLK, BBLU,
+                    cb_dbg_info->source_info->get_path().c_str(),
+                    BBLK,
+                    cb_dbg_info->line,
+                    cb_dbg_info->pos.second,
+                RESET));
             };
+
 
             virtual ~LexerError() {};
 
@@ -85,17 +88,17 @@ namespace snowball {
 
         virtual void print_error() const {
             Logger::error(Logger::format("(%s%s%s) %s%s%s", RED, get_error(error), RESET, BOLD, message.c_str(), RESET));
-            Logger::elog(Logger::format("  %s-->%s %s:[%i:%i]", BBLU, RESET,
+            if (cb_dbg_info->line - 1 >= 1) // first line may not be available to log
+            Logger::elog(Logger::format("%s  %2i | %s%s",           BBLK, cb_dbg_info->line - 1, RESET, cb_dbg_info->line_before.c_str()));
+            Logger::elog(Logger::format(" %s>%s%2i | %s %s\n   %s  |%s  %s%s%s", BRED, BBLK, cb_dbg_info->line, RESET, cb_dbg_info->line_str.c_str(), BBLK, RESET, BRED, cb_dbg_info->get_pos_str().c_str(), RESET));
+            Logger::elog(Logger::format("%s  %2i | %s%s",           BBLK, cb_dbg_info->line + 1, RESET,  cb_dbg_info->line_after.c_str()));
+
+            Logger::elog(Logger::format("\n  %sat %s%s%s:%i:%i%s", BBLK, BBLU,
                 cb_dbg_info->source_info->get_path().c_str(),
+                BBLK,
                 cb_dbg_info->line,
                 cb_dbg_info->pos.second,
-                WHT));
-            Logger::elog(Logger::format("%s   |%s", BBLU, RESET));
-
-            if (cb_dbg_info->line - 1 >= 1) // first line may not be available to log
-            Logger::elog(Logger::format("%s%2i | %s%s",           BBLU, cb_dbg_info->line - 1, RESET, cb_dbg_info->line_before.c_str()));
-            Logger::elog(Logger::format("%s%2i | %s%s/%s %s\n   %s|%s %s|_%s%s%s%s", BBLU, cb_dbg_info->line, RESET, BRED, RESET, cb_dbg_info->line_str.c_str(), BBLU, RESET, BRED, RESET, BRED, cb_dbg_info->get_pos_str().c_str(), RESET));
-            Logger::elog(Logger::format("%s%2i | %s%s",           BBLU, cb_dbg_info->line + 1, RESET,  cb_dbg_info->line_after.c_str()));
+            RESET));
         };
 
         virtual ~ParserError() {};
@@ -143,17 +146,18 @@ namespace snowball {
 
         virtual void print_error() const {
             Logger::error(Logger::format("(%s%s%s) %s%s%s", RED, get_error(error), RESET, BOLD, message.c_str(), RESET));
-            Logger::elog(Logger::format("  %s-->%s %s:[%i:%i]", BBLU, RESET,
-                cb_dbg_info->source_info->get_path().c_str(),
-                cb_dbg_info->line,
-                cb_dbg_info->pos.second,
-                WHT));
-            Logger::elog(Logger::format("%s   |%s", BBLU, RESET));
 
             if (cb_dbg_info->line - 1 >= 1) // first line may not be available to log
-            Logger::elog(Logger::format("%s%2i | %s%s",           BBLU, cb_dbg_info->line - 1, RESET, cb_dbg_info->line_before.c_str()));
-            Logger::elog(Logger::format("%s%2i | %s%s/%s %s\n   %s|%s %s|_%s%s%s%s", BBLU, cb_dbg_info->line, RESET, BRED, RESET, cb_dbg_info->line_str.c_str(), BBLU, RESET, BRED, RESET, BRED, cb_dbg_info->get_pos_str().c_str(), RESET));
-            Logger::elog(Logger::format("%s%2i | %s%s\n",           BBLU, cb_dbg_info->line + 1, RESET,  cb_dbg_info->line_after.c_str()));
+            Logger::elog(Logger::format("%s  %2i | %s%s",           BBLK, cb_dbg_info->line - 1, RESET, cb_dbg_info->line_before.c_str()));
+            Logger::elog(Logger::format(" %s>%s%2i | %s %s\n   %s  |%s  %s%s%s", BRED, BBLK, cb_dbg_info->line, RESET, cb_dbg_info->line_str.c_str(), BBLK, RESET, BRED, cb_dbg_info->get_pos_str().c_str(), RESET));
+            Logger::elog(Logger::format("%s  %2i | %s%s",           BBLK, cb_dbg_info->line + 1, RESET,  cb_dbg_info->line_after.c_str()));
+
+            Logger::elog(Logger::format("\n  %sat %s%s%s:%i:%i%s", BBLK, BBLU,
+                cb_dbg_info->source_info->get_path().c_str(),
+                BBLK,
+                cb_dbg_info->line,
+                cb_dbg_info->pos.second,
+            RESET));
 
         };
 

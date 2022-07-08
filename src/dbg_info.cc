@@ -44,7 +44,7 @@ namespace snowball {
                 done = true;
                 break;
             } else if (line_str[i] != '\t') {
-                ss_pos << '_';
+                ss_pos << ' ';
             } else {
                 ss_pos << '\t';
             }

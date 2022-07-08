@@ -1,8 +1,2 @@
 
-test "awd" {
-
-}
-
-func main() -> Number {
-
-}
+func awd() ->d {}

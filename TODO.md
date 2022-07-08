@@ -25,13 +25,15 @@
 ### In Progress
 
 - [ ] String class
+- [ ] add possitions to all nodes
 - [ ] Unit testing
     - [x] Add `test` keyword
     - [x] Parse test statement
-    - [ ] check for -t argument
+    - [x] check for -t argument
     - [x] add TestingContext class
-    - [ ] Generate test statement
-    - [ ] Execute tests
+    - [x] Generate test statement
+    - [x] Execute tests
+    - [ ] Add things like `assert`
 - [ ] Number class
 - [ ] add optimizations
 - [ ] Let user choose in 32/64 bits numbers
