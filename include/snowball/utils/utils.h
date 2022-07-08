@@ -1,9 +1,11 @@
 #include <vector>
 #include <string>
+#include <assert.h>
 
 #ifndef __SNOWBALL_UTILS__MAIN_H_
 #define __SNOWBALL_UTILS__MAIN_H_
 
+#define ASSERT(x) assert(x);
 #define GET_FUNCTION_FROM_CLASS(class, function, ...) \
     Logger::format("%s.%s", class, mangle(function, __VA_ARGS__).c_str())
 

@@ -304,7 +304,6 @@ namespace snowball {
 
                     Node* expr = _parse_expression();
                     // CONSUME(";", SYM_SEMI_COLLON, "An expression inside a block")
-                    DUMP_S(_current_token.to_string().c_str())
                     stmts.push_back(expr);
                 }
             }
@@ -363,7 +362,6 @@ namespace snowball {
                     break;
                 }
 
-                DUMP_S(_current_token.to_string().c_str())
                 Node* expr = _parse_expression();
                 next_token();
 

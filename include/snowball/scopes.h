@@ -52,7 +52,8 @@ namespace snowball {
         std::shared_ptr<llvm::StructType*> llvm_struct;
         std::shared_ptr<llvm::Function*> llvm_function;
 
-        bool isFunction = false;
+        // Function params
+        bool isStaticFunction = false;
 
         Scope* scope_value;
 
@@ -63,7 +64,6 @@ namespace snowball {
 
         ScopeValue(std::shared_ptr<llvm::Function*> p_value) {
             type = ScopeType::FUNC;
-            isFunction = true;
             llvm_function = p_value;
         }
 

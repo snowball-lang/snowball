@@ -4,6 +4,9 @@ func hello(a: Number) -> Number {
 }
 
 func main() -> Number {
-    hello(2)
-    //var b = a + 4
+    var a = hello(2)
+    a.__sum(2)
+
+    var b = a + 4
+    var c = "awd" + 5
 }

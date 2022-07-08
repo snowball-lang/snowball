@@ -79,13 +79,41 @@ namespace snowball {
 
         method_name += ")";
 
-        std::string method_call = p_node->base == nullptr ? mangle(p_node->method, arg_types) : GET_FUNCTION_FROM_CLASS(p_node->base->name.c_str(), p_node->method, arg_types);
-        ScopeValue* function = _enviroment->get(method_call, p_node, p_node->base != nullptr ? Logger::format("%s.%s", p_node->base->name.c_str(), method_name.c_str()) : method_name);
+        std::string base_struct;
+        llvm::Value* base_value;
+        ScopeValue* class_value;
+        if (p_node->base != nullptr) {
+            class_value = _enviroment->get(p_node->base->name, p_node->base);
+
+            if (class_value->type != ScopeType::CLASS) {
+                base_value = generate(p_node->base);
+                base_struct = base_value->getType()->getStructName().str();
+
+                args.insert(args.begin(), base_value);
+                arg_types.insert(arg_types.begin(), base_struct);
+            } else {
+                base_struct = p_node->base->name;
+            }
+        }
+
+
+        std::string method_call = p_node->base == nullptr ? mangle(p_node->method, arg_types) : GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, arg_types);
+        ScopeValue* function = _enviroment->get(method_call, p_node, p_node->base != nullptr ? Logger::format("%s.%s", base_struct.c_str(), method_name.c_str()) : method_name);
+
         if (function->type != ScopeType::FUNC) {
             DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
             throw CompilerError(Error::SYNTAX_ERROR, Logger::format("'%s' is not a function", p_node->method.c_str()), dbg_info);
         }
-        // todo: pass arguments
+
+        if (p_node->base != nullptr) {
+            if (class_value->type == ScopeType::CLASS && !function->isStaticFunction) {
+                // Example case: Number.__sum(2)
+                DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
+                throw CompilerError(Error::SYNTAX_ERROR, Logger::format("'%s' is not a static function", Logger::format("%s.%s", base_struct.c_str(), p_node->method.c_str()).c_str()), dbg_info);
+            }
+        }
+
+        ASSERT(args.size() == arg_types.size())
         return _builder.CreateCall(*function->llvm_function, args);
     }
 
@@ -130,7 +158,21 @@ namespace snowball {
         {
             case OP_POSITIVE:
             case OP_PLUS: {
-                function = *_enviroment->get(Logger::format("%s.__sum", left->getType()->getStructName().str().c_str()), p_node)->llvm_function;
+                function = *_enviroment->get(
+                    GET_FUNCTION_FROM_CLASS(
+                        left->getType()->getStructName().str().c_str(),
+                        "__sum",
+                        {
+                            left->getType()->getStructName().str(),
+                            right->getType()->getStructName().str()
+                        }
+                    ), p_node, Logger::format(
+                        "%s.__sum(%s, %s)",
+                            left->getType()->getStructName().str().c_str(),
+                            left->getType()->getStructName().str().c_str(),
+                            right->getType()->getStructName().str().c_str()
+                        )
+                    )->llvm_function;
                 break;
             }
 
