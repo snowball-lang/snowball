@@ -52,10 +52,18 @@ namespace snowball {
                 return generate_call(static_cast<CallNode *>(p_node));
             }
 
+            case Node::Type::TEST: {
+                return generate_test(static_cast<TestingNode *>(p_node));
+            }
+
             default:
                 DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
                 throw Warning(Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, p_node->type, RESET, BOLD), dbg_info);
         }
+    }
+
+    llvm::Value* Generator::generate_test(TestingNode* p_node) {
+        
     }
 
     llvm::Value* Generator::generate_call(CallNode* p_node) {

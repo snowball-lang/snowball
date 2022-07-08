@@ -1,4 +1,7 @@
 
+test "awd" {
+
+}
 
 func main() -> Number {
 

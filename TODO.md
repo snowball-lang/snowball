@@ -6,6 +6,11 @@
 - [ ] static methods
 - [ ] global variables
 - [ ] default return type
+- [ ] change location for OPTypes struct inside BinOP node
+- [ ] change commands to separated folder/file
+    - [ ] compile
+    - [ ] REPL
+    - [ ] unit testing
 - [ ] check if class has been initialized
 - [ ] Modules
     - [ ] module keyword (like in nodejs)
@@ -22,7 +27,9 @@
 - [ ] String class
 - [ ] Unit testing
     - [x] Add `test` keyword
-    - [ ] Parse test statement
+    - [x] Parse test statement
+    - [ ] check for -t argument
+    - [ ] add TestingContext class
     - [ ] Generate test statement
     - [ ] Execute tests
 - [ ] Number class

@@ -118,7 +118,20 @@ namespace snowball {
     // Parse methods
 
     TestingNode* Parser::_parse_unittest() {
+        ASSERT(_current_token.type == TokenType::KWORD_TEST);
+        next_token();
 
+        TestingNode* test = new TestingNode();
+
+        // TODO: parse for unit testing options (skip, allow_output, ...)
+        ASSERT_TOKEN_EOF(_current_token, TokenType::VALUE_STRING, "an unit test description", "a test declaration")
+        std::string description = _current_token.to_string(); next_token();
+
+        BlockNode* block = _parse_block();
+        test->block = block;
+        test->description = description;
+
+        return test;
     }
 
     VarNode* Parser::_parse_variable() {

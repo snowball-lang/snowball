@@ -38,6 +38,7 @@ namespace snowball {
             Node* _parse_expression();
             VarNode* _parse_variable();
             ReturnNode* _parse_return();
+            TestingNode* _parse_unittest();
             FunctionNode* _parse_function();
             CallNode* _parse_function_call();
             BlockNode* _parse_block(std::vector<TokenType> p_termination = { TokenType::BRACKET_RCURLY } );

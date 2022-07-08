@@ -71,6 +71,7 @@ namespace snowball {
 			THIS,
 			SUPER,
 			CALL,
+			TEST,
 			INDEX,
 			MAPPED_INDEX,
 			OPERATOR,
@@ -173,7 +174,13 @@ namespace snowball {
 	};
 
 	struct TestingNode : public Node {
+		BlockNode* block;
+		std::string description;
 
+		TestingNode() {
+			type = Type::TEST;
+		};
+		~TestingNode() {};
 	};
 
 	struct VarNode : public Node {
