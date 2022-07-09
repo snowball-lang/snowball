@@ -1,2 +1,5 @@
 
-func awd() ->d {}
+func main() -> Number {
+    var a = 2+5
+    var b = "hello"
+}

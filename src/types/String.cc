@@ -10,7 +10,7 @@
 
 #include "snowball/constants.h"
 
-extern "C" DLLEXPORT String* String__new(int8_t _, const char* string_ptr) {
+extern "C" DLLEXPORT String* String__new_s(int8_t _, const char* string_ptr) {
     String* instance;
     instance = (struct String*)(malloc(sizeof(String)));
 

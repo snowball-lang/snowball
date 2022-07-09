@@ -8,6 +8,7 @@
 #include "snowball/utils/utils.h"
 #include "snowball/utils/mangle.h"
 
+#include <cstdio>
 #include <llvm-10/llvm/IR/Intrinsics.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Verifier.h>
@@ -63,6 +64,7 @@ namespace snowball {
     }
 
     llvm::Value* Generator::generate_test(TestingNode* p_node) {
+        throw SNError(Error::TODO, "Unit tests are not yet supported");
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
         std::string test_name = _testing_context->get_name(_testing_context->addTest(p_node->description));
@@ -74,6 +76,15 @@ namespace snowball {
         _builder.SetInsertPoint(body);
 
         _enviroment->create_scope(test_name);
+        Scope* current_scope = _enviroment->current_scope();
+
+        llvm::Value* value = llvm::ConstantInt::get(_builder.getInt64Ty(), 1);
+        std::string test_var_name = Logger::format("_SN__TestCaseN%i_Result", _testing_context->getTestLength());
+        auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, test_var_name );
+
+        std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(value)));
+        current_scope->set(test_var_name, std::move(scope_value));
+        _builder.CreateStore (value, alloca, /*isVolatile=*/false);
 
         for (Node* node : p_node->block->exprs) {
             generate(node);
@@ -84,7 +95,7 @@ namespace snowball {
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
         _enviroment->delete_scope();
-        _builder.CreateRet(llvm::ConstantInt::get(_builder.getInt64Ty(), 1));
+        _builder.CreateRet(value);
 
         return function;
     }
@@ -272,7 +283,7 @@ namespace snowball {
                 _builder.CreateRet(nullptr);
             } /* TODO: check if function has type Void */ else {
                 DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
-                throw CompilerError(Error::FUNCTION_RET_ERR, Logger::format("'Function<%s>' does not have a return statement ", p_node->name.c_str()), dbg_info);
+                throw CompilerError(Error::FUNCTION_RET_ERR, Logger::format("Function '%s' does not have a return statement ", p_node->name.c_str()), dbg_info);
             }
         }
 

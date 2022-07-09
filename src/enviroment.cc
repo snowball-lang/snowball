@@ -54,13 +54,13 @@ namespace snowball {
         // Number class
         NEW_CLASS_DECLARATION(Number, _buildin_types.sn_number_struct)
 
-        NEW_CLASS_FUNCTION(Number, init, mangle("__new", {"i"}), _buildin_types.sn_number__new)
-        NEW_CLASS_FUNCTION(Number, sum, mangle("__sum", {"Number", "Number"}), _buildin_types.sn_number__sum)
+        NEW_CLASS_FUNCTION(Number, init, mangle("__new", {"i"}), _buildin_types.sn_number__new_i)
+        NEW_CLASS_FUNCTION(Number, sum, mangle("__sum", {"Number", "Number"}), _buildin_types.sn_number__sum_n_n)
 
         // String class
         NEW_CLASS_DECLARATION(String, _buildin_types.sn_string_struct)
 
-        NEW_CLASS_FUNCTION(String, init, mangle("__new", {"s"}), _buildin_types.sn_string__new)
+        NEW_CLASS_FUNCTION(String, init, mangle("__new", {"s"}), _buildin_types.sn_string__new_s)
 
         INSERT_CLASS_TO_GLOBAL(String)
         INSERT_CLASS_TO_GLOBAL(Number)

@@ -25,6 +25,17 @@
 ### In Progress
 
 - [ ] String class
+    - [ ] __sum
+    - [ ] __div
+    - [ ] __sub
+    - [ ] __mul
+    - [ ] split
+    - [ ] join
+    - [ ] __new
+    - [ ] upper
+    - [ ] lower
+    - [ ] __sum
+    - [ ] __sum
 - [ ] add possitions to all nodes
 - [ ] Unit testing
     - [x] Add `test` keyword
@@ -33,6 +44,7 @@
     - [x] add TestingContext class
     - [x] Generate test statement
     - [x] Execute tests
+    - [ ] return result variable as int
     - [ ] Add things like `assert`
 - [ ] Number class
 - [ ] add optimizations

@@ -146,9 +146,9 @@ namespace snowball {
         if (!llvm_error.empty())
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
-        ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("Number", "__new", { "i" }), reinterpret_cast<Number*>(Number__new))
-        ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("Number", "__sum", { "Number", "Number" }), reinterpret_cast<Number*>(Number__sum))
-        ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("String", "__new", { "s" }), reinterpret_cast<String*>(String__new))
+        ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("Number", "__new", { "i" }), reinterpret_cast<Number*>(Number__new_i))
+        ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("Number", "__sum", { "Number", "Number" }), reinterpret_cast<Number*>(Number__sum_n_n))
+        ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("String", "__new", { "s" }), reinterpret_cast<String*>(String__new_s))
 
         if (_enabledTests) {
             int test_success = 1;
@@ -233,32 +233,32 @@ namespace snowball {
         auto sn_number_struct = llvm::StructType::create(_global_context, "Number");
         sn_number_struct->setBody({ nt });
 
-        auto sn_number_prototype = llvm::FunctionType::get(sn_number_struct, std::vector<llvm::Type *> { nt }, false);
-        auto sn_number__new_fn = llvm::Function::Create(sn_number_prototype, llvm::Function::ExternalLinkage, mangle("Number.__new", {"i"}), _module.get());
+        auto sn_number_i_prototype = llvm::FunctionType::get(sn_number_struct, std::vector<llvm::Type *> { nt }, false);
+        auto sn_number__new_i_fn = llvm::Function::Create(sn_number_i_prototype, llvm::Function::ExternalLinkage, mangle("Number.__new", {"i"}), _module.get());
 
-        auto sn_number_sum_prototype = llvm::FunctionType::get(sn_number_struct, std::vector<llvm::Type *> { sn_number_struct, sn_number_struct }, false);
-        auto sn_number__add_fn = llvm::Function::Create(sn_number_sum_prototype, llvm::Function::ExternalLinkage, mangle("Number.__sum", {"Number", "Number"}), _module.get());
+        auto sn_number_sum_n_n_prototype = llvm::FunctionType::get(sn_number_struct, std::vector<llvm::Type *> { sn_number_struct, sn_number_struct }, false);
+        auto sn_number__add_n_n_fn = llvm::Function::Create(sn_number_sum_n_n_prototype, llvm::Function::ExternalLinkage, mangle("Number.__sum", {"Number", "Number"}), _module.get());
 
         /* String */
         auto sn_string_struct = llvm::StructType::create(_global_context, "String");
         sn_string_struct->setBody({ st, nt, nt, nt });
 
         auto sn_string_prototype = llvm::FunctionType::get(sn_string_struct, std::vector<llvm::Type *> { st }, false);
-        auto sn_string__new_fn = llvm::Function::Create(sn_string_prototype, llvm::Function::ExternalLinkage, mangle("String.__new", {"s"}), _module.get());
+        auto sn_string__new_s_fn = llvm::Function::Create(sn_string_prototype, llvm::Function::ExternalLinkage, mangle("String.__new", {"s"}), _module.get());
 
-        llvm::verifyFunction(*sn_number__new_fn, &message_stream);
-        llvm::verifyFunction(*sn_number__add_fn, &message_stream);
-        llvm::verifyFunction(*sn_string__new_fn, &message_stream);
+        llvm::verifyFunction(*sn_number__new_i_fn, &message_stream);
+        llvm::verifyFunction(*sn_number__add_n_n_fn, &message_stream);
+        llvm::verifyFunction(*sn_string__new_s_fn, &message_stream);
 
         if (!llvm_error.empty())
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
         _buildin_types = {
-            .sn_number__new = std::make_unique<llvm::Function*>(sn_number__new_fn),
-            .sn_number__sum = std::make_unique<llvm::Function*>(sn_number__add_fn),
+            .sn_number__new_i = std::make_unique<llvm::Function*>(sn_number__new_i_fn),
+            .sn_number__sum_n_n = std::make_unique<llvm::Function*>(sn_number__add_n_n_fn),
             .sn_number_struct = std::make_unique<llvm::StructType*>(sn_number_struct),
 
-            .sn_string__new = std::make_unique<llvm::Function*>(sn_string__new_fn),
+            .sn_string__new_s = std::make_unique<llvm::Function*>(sn_string__new_s_fn),
             .sn_string_struct = std::make_unique<llvm::StructType*>(sn_string_struct),
         };
     }

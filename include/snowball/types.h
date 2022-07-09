@@ -14,11 +14,11 @@ namespace snowball {
     };
 
     struct SnowballBuildinTypes {
-        std::shared_ptr<llvm::Function*> sn_number__new;
-        std::shared_ptr<llvm::Function*> sn_number__sum;
+        std::shared_ptr<llvm::Function*> sn_number__new_i;
+        std::shared_ptr<llvm::Function*> sn_number__sum_n_n;
         std::shared_ptr<llvm::StructType*> sn_number_struct;
 
-        std::shared_ptr<llvm::Function*> sn_string__new;
+        std::shared_ptr<llvm::Function*> sn_string__new_s;
         std::shared_ptr<llvm::StructType*> sn_string_struct;
     };
 

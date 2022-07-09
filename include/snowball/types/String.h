@@ -17,6 +17,6 @@ typedef struct String {
 
 }
 
-extern "C" DLLEXPORT String* String__new(int8_t _, const char* string_ptr);
+extern "C" DLLEXPORT String* String__new_s(int8_t _, const char* string_ptr);
 
 #endif // SN_STRING_EXPORT_H
