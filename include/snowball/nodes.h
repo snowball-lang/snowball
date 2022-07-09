@@ -128,8 +128,9 @@ namespace snowball {
 		std::string return_type;
 		std::vector<ArgumentNode *> arguments;
 
-		bool hasReturn = false;
-		bool isTopLevel = false;
+		bool is_static = false;
+		bool has_return = false;
+		bool is_lop_level = false;
 
 		FunctionNode() {
 			type = Type::FUNCTION;
@@ -193,6 +194,19 @@ namespace snowball {
 		};
 
 		~VarNode() {};
+	};
+
+	struct ClassNode : public Node {
+		std::string name;
+
+		std::vector<VarNode*> vars;
+		std::vector<FunctionNode*> functions;
+
+		ClassNode() {
+			type = Type::CLASS;
+		};
+
+		~ClassNode() {};
 	};
 
 	struct ConstantValue : public Node {

@@ -238,7 +238,7 @@ namespace snowball {
         Scope* current_scope = _enviroment->current_scope();
 
         ScopeValue* returnType = _enviroment->get(p_node->return_type, p_node);
-        auto retType = (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->isTopLevel) ? _builder.getVoidTy() : *returnType->llvm_struct;
+        auto retType = (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->is_lop_level) ? _builder.getVoidTy() : *returnType->llvm_struct;
 
         std::vector<std::string> arg_tnames;
         std::vector<llvm::Type*> arg_types;
@@ -279,7 +279,7 @@ namespace snowball {
         }
 
         if (body->size() == 0 || !body->back().isTerminator()) {
-            if (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->isTopLevel) {
+            if (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->is_lop_level) {
                 _builder.CreateRet(nullptr);
             } /* TODO: check if function has type Void */ else {
                 DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);

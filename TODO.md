@@ -1,6 +1,5 @@
 ### Todo
 
-- [ ] Classes
 - [ ] constant
 - [ ] Void class
 - [ ] static methods
@@ -34,8 +33,19 @@
     - [ ] __new
     - [ ] upper
     - [ ] lower
-    - [ ] __sum
-    - [ ] __sum
+    - [ ] capitalize
+- [ ] Classes
+    - [x] Class/static keyword
+    - [x] Parse class
+    - [ ] Parse class
+        - [x] Function
+            - [x] Support for static
+        - [ ] Variables
+            - [ ] Support for static
+    - [ ] Generate
+        - [ ] Struct type
+        - [ ] Functions
+        - [ ] Variables
 - [ ] add possitions to all nodes
 - [ ] Unit testing
     - [x] Add `test` keyword

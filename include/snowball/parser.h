@@ -36,6 +36,7 @@ namespace snowball {
 
             // Parser methods
             Node* _parse_expression();
+            ClassNode* _parse_class();
             VarNode* _parse_variable();
             ReturnNode* _parse_return();
             TestingNode* _parse_unittest();

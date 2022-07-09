@@ -40,8 +40,15 @@ namespace snowball {
 
                 case TokenType::KWORD_FUNC: {
                     FunctionNode* function = _parse_function();
-                    function->isTopLevel = true;
+                    function->is_lop_level = true;
                     _nodes.push_back(function);
+                    break;
+                }
+
+
+                case TokenType::KWORD_CLASS: {
+                    ClassNode* cls = _parse_class();
+                    _nodes.push_back(cls);
                     break;
                 }
 
@@ -134,6 +141,51 @@ namespace snowball {
         return test;
     }
 
+    ClassNode* Parser::_parse_class() {
+        ASSERT(_current_token.type == TokenType::KWORD_CLASS);
+        next_token();
+
+        ClassNode* cls = new ClassNode();
+
+        // TODO: inheritance
+        ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "a class declaration")
+        cls->name = _current_token.to_string();
+        next_token();
+
+        ASSERT_TOKEN_EOF(_current_token, TokenType::BRACKET_LCURLY, "}", "a class body")
+        while (true) {
+            next_token();
+            switch (_current_token.type) // Todo: public/private attributes
+            {
+                case TokenType::BRACKET_RCURLY: {
+                    return cls;
+                }
+
+                case TokenType::KWORD_STATIC: {
+                    if (peek(0, true).type != TokenType::KWORD_FUNC && peek(0, true).type != TokenType::KWORD_VAR) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\" or \"var\" after static");
+                    }
+                } break;
+
+                case TokenType::KWORD_VAR: {
+                    VarNode* func = _parse_variable(); // TODO: static
+                    cls->vars.push_back(func);
+                } break;
+
+                case TokenType::KWORD_FUNC: {
+                    printf("HELLO\n");
+                    FunctionNode* func = _parse_function();
+                    cls->functions.push_back(func);
+                } break;
+
+                default:
+                    PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("'%s' is not allowed inside function blocks", _current_token.to_string().c_str()))
+            }
+        }
+
+        return cls;
+    }
+
     VarNode* Parser::_parse_variable() {
         ASSERT(_current_token.type == TokenType::KWORD_VAR)
         next_token();
@@ -181,6 +233,10 @@ namespace snowball {
 
         FunctionNode* func = new FunctionNode();
         next_token();
+
+        if (peek(-3, true).type == TokenType::KWORD_STATIC) {
+            func->is_static = true;
+        }
 
         // Find function's name
         ASSERT_TOKEN(_current_token, TokenType::IDENTIFIER, "an identifier")
@@ -312,7 +368,7 @@ namespace snowball {
                     ret->pos = _pos;
                     ret->width = (uint32_t)_width;
 
-                    _context.current_function->hasReturn = true;
+                    _context.current_function->has_return = true;
                     stmts.push_back(ret);
                     break;
                 }
