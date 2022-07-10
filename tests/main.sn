@@ -1,20 +1,20 @@
 
 class awd {
     var d: Number = 2
-    func __init() {
+    fn __init() {
 
     }
 
-    func num(n: Number) -> Number {
+    fn num(n: Number) -> Number {
         return n
     }
 }
 
-func w(g: awd) -> awd
+fn w(g: awd) -> awd
 {
     return g
 }
 
-func main() -> Number {
+fn main() -> Number {
 
 }

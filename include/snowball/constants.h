@@ -148,7 +148,7 @@ typedef int32_t                                 snowball_int_t;
 #define _SNOWBALL_KEYWORD__SWITCH           "switch"
 #define _SNOWBALL_KEYWORD__DEFAULT          "default"
 #define _SNOWBALL_KEYWORD__CONTINUE         "continue"
-#define _SNOWBALL_KEYWORD__FUNCTION         "func"
+#define _SNOWBALL_KEYWORD__FUNCTION         "fn"
 #define _SNOWBALL_KEYWORD__VARIABLE         "var"
 #define _SNOWBALL_KEYWORD__CONSTANT         "const"
 #define _SNOWBALL_KEYWORD__UNDEFINED        "undefined"
