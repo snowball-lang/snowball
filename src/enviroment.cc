@@ -22,6 +22,15 @@
 #define INSERT_CLASS_TO_GLOBAL(class) \
     global_scope->set(#class, std::move(value_##class##_class));
 
+#define INSERT_FUNCTION_TO_GLOBAL(name, fn) \
+    global_scope->set(name, std::move( \
+        std::make_unique<ScopeValue*>( \
+            new ScopeValue( \
+                std::make_shared<llvm::Function*>(*fn) \
+            ) \
+        ) \
+    ));
+
 #define NEW_CLASS_FUNCTION(class, name, fname, value) \
     std::shared_ptr<llvm::Function*> fn_##class##_##name##_ptr = std::make_shared<llvm::Function*>(*value);\
     ScopeValue* scopev_##class##_##name = new ScopeValue(fn_##class##_##name##_ptr);\
@@ -54,16 +63,19 @@ namespace snowball {
         // Number class
         NEW_CLASS_DECLARATION(Number, _buildin_types.sn_number_struct)
 
-        NEW_CLASS_FUNCTION(Number, init, mangle("__new", {"i"}), _buildin_types.sn_number__new_i)
+        NEW_CLASS_FUNCTION(Number, init, mangle("__init", {"i"}), _buildin_types.sn_number__init_i)
         NEW_CLASS_FUNCTION(Number, sum, mangle("__sum", {"Number", "Number"}), _buildin_types.sn_number__sum_n_n)
 
         // String class
         NEW_CLASS_DECLARATION(String, _buildin_types.sn_string_struct)
 
-        NEW_CLASS_FUNCTION(String, init, mangle("__new", {"s"}), _buildin_types.sn_string__new_s)
+        NEW_CLASS_FUNCTION(String, init, mangle("__init", {"s"}), _buildin_types.sn_string__init_s)
 
         INSERT_CLASS_TO_GLOBAL(String)
         INSERT_CLASS_TO_GLOBAL(Number)
+
+        INSERT_FUNCTION_TO_GLOBAL(mangle("gc__alloca", {"i32"}), _buildin_types.sn_gc__alloca)
+        INSERT_FUNCTION_TO_GLOBAL(mangle("gc__realloca", {"v","i32"}), _buildin_types.sn_gc__realloca)
     }
 
     ScopeValue* Enviroment::get(std::string name, Node* p_node, std::string p_o_name) {
@@ -153,9 +165,14 @@ namespace snowball {
         return current_scope();
     }
 
+    Scope* Enviroment::create_scope(Scope* p_scope) {
+        _scopes.push_back(p_scope);
+        return current_scope();
+    }
+
     #if _SNOWBALL_SYMTABLE_DEBUG
     void Enviroment::debug(Scope* current_scope, int depth) {
-        std::map<std::string, std::unique_ptr<ScopeValue*>> scope = (current_scope == nullptr ? _scopes.at(0)->data() : current_scope->data());
+        std::map<std::string, std::unique_ptr<ScopeValue*>> scope = (current_scope == nullptr ? std::move(_scopes.at(0)->data()) : std::move(current_scope->data()));
         std::map<std::string, std::unique_ptr<ScopeValue*>>::iterator it;
         for (it = scope.begin(); it != scope.end(); it++) {
             DEBUG_SYMTABLE("%s", it->first.c_str())

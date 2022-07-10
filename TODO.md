@@ -6,6 +6,7 @@
 - [ ] global variables
 - [ ] default return type
 - [ ] change location for OPTypes struct inside BinOP node
+- [ ] change all compiler error to call macro COMPILER_ERROR
 - [ ] change commands to separated folder/file
     - [ ] compile
     - [ ] REPL
@@ -30,7 +31,7 @@
     - [ ] __mul
     - [ ] split
     - [ ] join
-    - [ ] __new
+    - [x] __init
     - [ ] upper
     - [ ] lower
     - [ ] capitalize
@@ -43,9 +44,10 @@
         - [ ] Variables
             - [ ] Support for static
     - [ ] Generate
-        - [ ] Struct type
-        - [ ] Functions
+        - [x] Struct type
+        - [x] Functions
         - [ ] Variables
+        - [ ] Self variable
 - [ ] add possitions to all nodes
 - [ ] Unit testing
     - [x] Add `test` keyword

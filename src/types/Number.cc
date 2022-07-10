@@ -9,7 +9,7 @@
 
 #include "snowball/constants.h"
 
-extern "C" DLLEXPORT Number* Number__new_i(snowball_int_t n){
+extern "C" DLLEXPORT Number* Number__init_i(snowball_int_t n){
     Number* instance;
     instance = (struct Number*)(malloc(sizeof(Number)));
 
@@ -19,5 +19,5 @@ extern "C" DLLEXPORT Number* Number__new_i(snowball_int_t n){
 }
 
 extern "C" DLLEXPORT Number* Number__sum_n_n(Number* number, Number* sum) {
-    return Number__new_i(number->number + sum->number);
+    return Number__init_i(number->number + sum->number);
 }

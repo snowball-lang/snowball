@@ -24,7 +24,10 @@ namespace snowball {
 
             ScopeValue* get(std::string p_name, Node* p_node, std::string p_o_name = "");
             void set(std::string p_name, std::unique_ptr<ScopeValue*> p_value);
+
             bool item_exists(std::string p_name);
+
+            std::string name() { return _scope_name; }
 
             std::map<std::string, std::unique_ptr<ScopeValue*>> data() { return std::move(_data); }
 

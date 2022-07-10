@@ -153,11 +153,14 @@ namespace snowball {
         next_token();
 
         ASSERT_TOKEN_EOF(_current_token, TokenType::BRACKET_LCURLY, "}", "a class body")
+        ClassNode* top_clas = std::move(_context.current_class);
+        _context.current_class = cls;
         while (true) {
             next_token();
             switch (_current_token.type) // Todo: public/private attributes
             {
                 case TokenType::BRACKET_RCURLY: {
+                    _context.current_class = top_clas;
                     return cls;
                 }
 
@@ -173,7 +176,6 @@ namespace snowball {
                 } break;
 
                 case TokenType::KWORD_FUNC: {
-                    printf("HELLO\n");
                     FunctionNode* func = _parse_function();
                     cls->functions.push_back(func);
                 } break;
@@ -183,6 +185,7 @@ namespace snowball {
             }
         }
 
+        _context.current_class = top_clas;
         return cls;
     }
 
@@ -195,6 +198,14 @@ namespace snowball {
 
         var->name = _current_token.to_string();
         next_token();
+
+        if (_context.current_class != nullptr || peek(0, true).type == TokenType::SYM_COLLON) {
+            CONSUME(":", SYM_COLLON, "a variable declaration")
+            ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "a variable declaration")
+
+            var->vtype = _current_token.to_string();
+            next_token();
+        }
 
         ASSERT_TOKEN_EOF(_current_token, TokenType::OP_EQ, "=", "variable")
         next_token();
@@ -303,12 +314,16 @@ namespace snowball {
         // Consume an arrow
         // TODO: if there is no arrow, return type is Void
         // TODO: if it is a constructor, return type is the parent Class
-        CONSUME("->", OP_MINUS, "Function return type")
-        CONSUME("->", OP_GT, "Function return type")
+        if (!(_context.current_class != nullptr && func->name == "__init")) {
+            CONSUME("->", OP_MINUS, "Function return type")
+            CONSUME("->", OP_GT, "Function return type")
 
-        ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "Identifier", "Function return type")
-        return_type = _current_token.to_string();
-        next_token();
+            ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "Identifier", "Function return type")
+            return_type = _current_token.to_string();
+            next_token();
+        } else {
+            return_type = _context.current_class->name;
+        }
 
 
         func->arguments = arguments;

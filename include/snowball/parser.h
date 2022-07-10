@@ -11,7 +11,7 @@ namespace snowball {
 
     struct ParserContext {
         FunctionNode* current_function = nullptr;
-        // todo: classes
+        ClassNode* current_class = nullptr;
     };
 
     class Parser {

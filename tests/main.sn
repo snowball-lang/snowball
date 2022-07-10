@@ -1,11 +1,20 @@
 
 class awd {
-    static func awd -> Number {
-        wad
+    var d: Number = 2
+    func __init() {
+
+    }
+
+    func num(n: Number) -> Number {
+        return n
     }
 }
 
+func w(g: awd) -> awd
+{
+    return g
+}
+
 func main() -> Number {
-    var a = 2+5
-    var b = "hello"
+
 }

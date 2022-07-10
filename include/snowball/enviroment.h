@@ -20,8 +20,10 @@ namespace snowball {
             Scope* global_scope();
             Scope* current_scope();
 
-            Scope* create_scope(std::string p_name);
             void delete_scope();
+
+            Scope* create_scope(Scope* p_scope);
+            Scope* create_scope(std::string p_name);
 
             ScopeValue* get(std::string name, Node* p_node, std::string p_o_name = "");
             bool item_exists(std::string name, Node* p_node);
