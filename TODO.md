@@ -46,8 +46,9 @@
     - [ ] Generate
         - [x] Struct type
         - [x] Functions
-        - [ ] Variables
-        - [ ] Self variable
+        - [x] Variables
+        - [x] Self variable
+        - [ ] Add function to scope before generating blocks
 - [ ] add possitions to all nodes
 - [ ] Unit testing
     - [x] Add `test` keyword

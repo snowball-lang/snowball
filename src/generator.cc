@@ -152,10 +152,32 @@ namespace snowball {
         std::vector<std::string> arg_types;
         std::vector<llvm::Value*> args;
 
+        std::string base_struct;
+        llvm::Value* base_value;
+        ScopeValue* class_value;
+        if (p_node->base != nullptr) {
+            base_value = generate(p_node->base);
+
+            if (dynamic_cast<IdentifierNode*>(p_node->base) != nullptr) {
+                class_value = _enviroment->get(dynamic_cast<IdentifierNode*>(p_node->base)->name, p_node->base);
+
+            } else {
+                class_value = _enviroment->get(base_value->getType()->getPointerElementType()->getStructName().str(), p_node->base);
+            }
+
+            base_struct = base_value->getType()->getPointerElementType()->getStructName().str();
+            args.push_back(base_value);
+            arg_types.push_back(base_struct);
+
+            method_name += "self";
+            if ((p_node->arguments.size() > 0))
+                method_name += ", ";
+        }
+
         int arg_index = 0;
         for (Node* arg : p_node->arguments) {
             llvm::Value* result = generate(arg);
-            arg_types.push_back(result->getType()->getPointerElementType()->getStructName());
+            arg_types.push_back(result->getType()->getPointerElementType()->getStructName().str());
 
             args.push_back(result);
             method_name += result->getType()->getPointerElementType()->getStructName().str();
@@ -168,35 +190,8 @@ namespace snowball {
 
         method_name += ")";
 
-        std::string base_struct;
-        llvm::Value* base_value;
-        ScopeValue* class_value;
-        if (p_node->base != nullptr) {
-            if (dynamic_cast<IdentifierNode*>(p_node->base) != nullptr) {
-                class_value = _enviroment->get(dynamic_cast<IdentifierNode*>(p_node->base)->name, p_node->base);
-
-                if (class_value->type != ScopeType::CLASS) {
-                    base_value = generate(p_node->base);
-                    base_struct = base_value->getType()->getPointerElementType()->getStructName().str();
-
-                    args.insert(args.begin(), base_value);
-                    arg_types.insert(arg_types.begin(), base_struct);
-                } else {
-                    base_struct = dynamic_cast<IdentifierNode*>(p_node->base)->name;
-                }
-            } else {
-                base_value = generate(p_node->base);
-                class_value = _enviroment->get(base_value->getType()->getPointerElementType()->getStructName().str(), p_node->base);
-
-                base_struct = base_value->getType()->getPointerElementType()->getStructName().str();
-
-                args.insert(args.begin(), base_value);
-                arg_types.insert(arg_types.begin(), base_struct);
-            }
-        }
-
-
         std::string method_call = p_node->base == nullptr ? mangle(p_node->method, arg_types) : GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, arg_types);
+        DUMP_S(method_call.c_str())
         ScopeValue* function = _enviroment->get(method_call, p_node, p_node->base != nullptr ? Logger::format("%s.%s", base_struct.c_str(), method_name.c_str()) : method_name);
 
         if (function->type != ScopeType::FUNC) {
@@ -338,6 +333,10 @@ namespace snowball {
                 name = p_node->arguments.at(parameter_index-1)->name;
             }
 
+            if (_current_class != nullptr && parameter_index>0 && name == "self") {
+                COMPILER_ERROR(SYNTAX_ERROR, "Class method can't contain self as a parameter")
+            }
+
             arg.setName(name);
 
             std::unique_ptr<ScopeValue*> param_scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(&arg)));
@@ -357,7 +356,6 @@ namespace snowball {
             generate(expr);
         }
 
-        DUMP_S(p_node->name.c_str())
         if (body->size() == 0 || !body->back().isTerminator()) {
             if (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->is_lop_level) {
                 llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
@@ -383,7 +381,8 @@ namespace snowball {
         _enviroment->delete_scope();
 
         std::unique_ptr<ScopeValue*> func_scopev = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Function*>(function)));
-        SET_TO_SCOPE_OR_CLASS(fname, func_scopev)
+        SET_TO_SCOPE_OR_CLASS(mangle(
+                p_node->name, arg_tnames), func_scopev)
 
         return function;
     }
@@ -403,11 +402,11 @@ namespace snowball {
         } else {
             // We asume that the variable only has 1 expression
             llvm::Value* value = generate(p_node->value);
-            auto* alloca = _builder.CreateAlloca (value->getType()->getPointerTo(), nullptr, p_node->name );
+            auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, p_node->name );
 
             std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(value)));
             SET_TO_SCOPE_OR_CLASS(p_node->name, std::move(scope_value))
-            
+
             return _builder.CreateStore (value, alloca, /*isVolatile=*/false);
         }
 
@@ -452,19 +451,22 @@ namespace snowball {
         llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder.getInt32Ty(), size);
 
         llvm::Value* alloca_value = _builder.CreateCall(alloca_fn, size_constant);
-        llvm::Value* bitCast = _builder.CreateBitCast(alloca_value, type->getPointerTo(), "self");
+        llvm::Value* pointerCast = _builder.CreatePointerCast(alloca_value, type->getPointerTo(), "self");
 
-        std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value *>(bitCast)));
+        std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value *>(pointerCast)));
         _enviroment->current_scope()->set("self", std::move(scope_value));
 
-        // int var_index = 0;
-        // for (Node* var : _current_class->vars) {
-        //     llvm::Value* value = generate(var);
-        //     // llvm::Value* field = _builder.CreateGEP(type, value, llvm::ConstantInt::get(_builder.getInt32Ty(), size));
-        //     // _builder.CreateCall(realloca_fn, {value, size});
 
-        //     var_index++;
-        // }
+        int var_index = 0;
+        for (VarNode* var : _current_class->vars) {
+            llvm::Value* value = generate(var->value);
+            llvm::Value* pointer = _builder.CreateStructGEP(pointerCast, var_index);
+            llvm::Value* load = convert_to_right_value(pointer);
+
+            _builder.CreateStore(load, value);
+
+            var_index++;
+        }
     }
 
     llvm::Value* Generator::convert_to_right_value(llvm::Value* value) {

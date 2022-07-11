@@ -1,18 +1,17 @@
 
 class awd {
     var d: Number = 2
+    
     fn __init() {
-
     }
 
-    fn num(n: Number) -> Number {
-        return n
+    fn num(d: Number) -> Number {
+        return d
     }
-}
 
-fn w(g: awd) -> awd
-{
-    return g
+    fn d() -> Number {
+        return self.num(5)
+    }
 }
 
 fn main() -> Number {
