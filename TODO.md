@@ -22,6 +22,9 @@
 
 - [ ] Compiler errors/Warnings don't work
 
+### None important
+- [ ] Generate class function to scope before generating blocks
+
 ### In Progress
 
 - [ ] String class
@@ -35,6 +38,7 @@
     - [ ] upper
     - [ ] lower
     - [ ] capitalize
+- [ ] New keyword
 - [ ] Classes
     - [x] Class/static keyword
     - [x] Parse class
@@ -43,12 +47,21 @@
             - [x] Support for static
         - [ ] Variables
             - [ ] Support for static
-    - [ ] Generate
+    - [x] Generate
         - [x] Struct type
         - [x] Functions
         - [x] Variables
         - [x] Self variable
-        - [ ] Add function to scope before generating blocks
+    - [ ] Call static methods
+    - [ ] Add all default override methods
+        - [ ] __init
+        - [ ] __sum
+        - [ ] __sub
+        - [ ] __div
+        - [ ] __mul
+        - [ ] __str
+        - [ ] __bool
+        - [ ] __eqeq
 - [ ] add possitions to all nodes
 - [ ] Unit testing
     - [x] Add `test` keyword
