@@ -96,8 +96,6 @@ namespace snowball {
 
         Scope* class_scope = new Scope(p_node->name, _source_info);
 
-        // TODO: add class and it's functions to the global scope
-
         ScopeValue* class_scope_val = new ScopeValue(class_scope, std::make_shared<llvm::StructType*>(class_struct));
         std::unique_ptr<ScopeValue*> class_value = std::make_unique<ScopeValue*>(class_scope_val);
         _enviroment->global_scope()->set(p_node->name, std::move(class_value));
@@ -160,7 +158,6 @@ namespace snowball {
 
             if (dynamic_cast<IdentifierNode*>(p_node->base) != nullptr) {
                 class_value = _enviroment->get(dynamic_cast<IdentifierNode*>(p_node->base)->name, p_node->base);
-
             } else {
                 class_value = _enviroment->get(base_value->getType()->getPointerElementType()->getStructName().str(), p_node->base);
             }
@@ -471,6 +468,7 @@ namespace snowball {
 
     llvm::Value* Generator::convert_to_right_value(llvm::Value* value) {
 
+        if (value->getName().str().empty()) return _builder.CreateLoad(value);
         std::ostringstream ss_name;
 
         ss_name << value->getName().str();
