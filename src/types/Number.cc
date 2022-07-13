@@ -18,6 +18,6 @@ extern "C" DLLEXPORT Number* Number__init_i(snowball_int_t n){
     return instance;
 }
 
-extern "C" DLLEXPORT Number* Number__sum_n_n(Number* number, Number* sum) {
+extern "C" DLLEXPORT Number* Number__sum_Number(Number* number, Number* sum) {
     return Number__init_i(number->number + sum->number);
 }

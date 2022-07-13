@@ -154,8 +154,12 @@ namespace snowball {
 			}
 
 			// symbols
+			case ':': {
+				if (GET_CHAR(1) == ':') consume(TokenType::SYM_COLCOL, 2);
+				else consume(TokenType::SYM_COLLON);
+				break;
+			}
 			case ',': consume(TokenType::SYM_COMMA); break;
-			case ':': consume(TokenType::SYM_COLLON); break;
 			case ';': consume(TokenType::SYM_SEMI_COLLON); break;
 			case '@': consume(TokenType::SYM_AT); break;
 			case '#': consume(TokenType::SYM_HASH); break;
@@ -381,6 +385,7 @@ namespace snowball {
 					else if (identifier == _SNOWBALL_KEYWORD__OR)          { tk.type = TokenType::OP_OR; 							}
 					else if (identifier == _SNOWBALL_KEYWORD__AND)         { tk.type = TokenType::OP_AND; 						  	}
 					else if (identifier == _SNOWBALL_KEYWORD__NOT)  	   { tk.type = TokenType::OP_NOT; 						  	}
+					else if (identifier == _SNOWBALL_KEYWORD__NEW)  	   { tk.type = TokenType::KWORD_NEW; 					  	}
 
 					else if (identifier == _SNOWBALL_KEYWORD__IF)	       { tk.type = TokenType::KWORD_IF;							}
 					else if (identifier == _SNOWBALL_KEYWORD__VARIABLE)	   { tk.type = TokenType::KWORD_VAR;						}

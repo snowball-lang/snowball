@@ -11,12 +11,11 @@ extern "C" {
 typedef struct String {
     const char * buffer;
     snowball_int_t length;
-    snowball_int_t max_length;
-    snowball_int_t factor; // the number of chars to preallocate when growing
 } String;
 
 }
 
-extern "C" DLLEXPORT String* String__init_s(int8_t _, const char* string_ptr);
+extern "C" DLLEXPORT String* String__init_s(const char* string_ptr);
+extern "C" DLLEXPORT String* String__sum_String(String* self, String* sum);
 
 #endif // SN_STRING_EXPORT_H

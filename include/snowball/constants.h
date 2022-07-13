@@ -150,6 +150,7 @@ typedef int32_t                                 snowball_int_t;
 #define _SNOWBALL_KEYWORD__CONTINUE         "continue"
 #define _SNOWBALL_KEYWORD__FUNCTION         "fn"
 #define _SNOWBALL_KEYWORD__VARIABLE         "var"
+#define _SNOWBALL_KEYWORD__NEW              "new"
 #define _SNOWBALL_KEYWORD__CONSTANT         "const"
 #define _SNOWBALL_KEYWORD__UNDEFINED        "undefined"
 

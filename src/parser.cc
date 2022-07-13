@@ -491,6 +491,12 @@ namespace snowball {
                     break;
                 }
 
+                case TokenType::KWORD_NEW: {
+                    next_token();
+                    expression = new NewNode(_parse_function_call());
+                    break;
+                }
+
                 case TokenType::OP_NOT:
                 case TokenType::OP_PLUS:
                 case TokenType::OP_MINUS:
@@ -527,6 +533,20 @@ namespace snowball {
                         Node* base = expression;
                         CallNode* call = _parse_function_call();
                         call->base = base;
+
+                        expression = call;
+                    } else {
+                        // just indexing
+                    }
+                } if (token.type == TokenType::SYM_COLCOL) { // same thing but calling static function
+                    next_token(); next_token();
+                    ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "static function index/call")
+
+                    if (peek(0, true).type == TokenType::BRACKET_LPARENT)  {
+                        Node* base = expression;
+                        CallNode* call = _parse_function_call();
+                        call->base = base;
+                        call->is_static_call = true;
 
                         expression = call;
                     } else {

@@ -15,6 +15,6 @@ typedef struct Number {
 }
 
 extern "C" DLLEXPORT Number* Number__init_i(snowball_int_t n);
-extern "C" DLLEXPORT Number* Number__sum_n_n(Number* number, Number* s);
+extern "C" DLLEXPORT Number* Number__sum_Number(Number* number, Number* s);
 
 #endif // SN_NUMBER_EXPORT_H

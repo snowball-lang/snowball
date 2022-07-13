@@ -28,7 +28,7 @@
 ### In Progress
 
 - [ ] String class
-    - [ ] __sum
+    - [x] __sum
     - [ ] __div
     - [ ] __sub
     - [ ] __mul
@@ -45,6 +45,7 @@
     - [ ] Parse class
         - [x] Function
             - [x] Support for static
+            - [ ] Public methods diferentiate from private methods (can have the same name)
         - [ ] Variables
             - [ ] Support for static
     - [x] Generate
@@ -52,14 +53,15 @@
         - [x] Functions
         - [x] Variables
         - [x] Self variable
-    - [ ] Call static methods
+    - [x] Call static methods
+    - [x] Add `new` keyword support
     - [ ] Add all default override methods
         - [ ] __init
         - [ ] __sum
         - [ ] __sub
         - [ ] __div
-        - [ ] __mul
         - [ ] __str
+        - [ ] __repr
         - [ ] __bool
         - [ ] __eqeq
 - [ ] add possitions to all nodes
@@ -74,6 +76,7 @@
     - [ ] Add things like `assert`
 - [ ] Number class
 - [ ] add optimizations
+- [ ] builtin functions change to macros in compiler
 - [ ] Let user choose in 32/64 bits numbers
 
 ### Done ✓

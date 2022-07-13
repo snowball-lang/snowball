@@ -52,6 +52,7 @@ namespace snowball {
             ClassNode* _current_class = nullptr;
 
             // methods
+            llvm::Value* generate_new(NewNode* p_node);
             llvm::Value* generate_call(CallNode* p_node);
             llvm::Value* generate_class(ClassNode* p_node);
             llvm::Value* generate_test(TestingNode* p_node);

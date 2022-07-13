@@ -71,6 +71,7 @@ namespace snowball {
 			THIS,
 			SUPER,
 			CALL,
+			NEW_CALL,
 			TEST,
 			INDEX,
 			MAPPED_INDEX,
@@ -166,12 +167,29 @@ namespace snowball {
 		std::vector<Node*> arguments;
 		std::string method;
 		Node* base = nullptr;
+		bool is_static_call = false;
 
 		CallNode() {
 			type = Type::CALL;
 		};
 
 		~CallNode() {};
+	};
+
+	struct NewNode : public Node {
+		std::vector<Node*> arguments;
+		std::string method;
+
+		NewNode() {
+			type = Type::NEW_CALL;
+		};
+
+		NewNode(CallNode* p_node) {
+			type = Type::NEW_CALL;
+			arguments = p_node->arguments;
+			method = p_node->method;
+		};
+
 	};
 
 	struct TestingNode : public Node {

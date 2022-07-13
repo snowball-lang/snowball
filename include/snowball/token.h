@@ -54,6 +54,7 @@ namespace snowball {
         SYM_HASH,          // Symbol: #
         SYM_COMMA,         // Symbol: ,
         SYM_COLLON,        // Symbol: :
+        SYM_COLCOL,        // Symbol: ::
         SYM_DOLLAR,        // Symbol: $
         SYM_QUESTION,      // Symbol: ?
         SYM_SEMI_COLLON,   // Symbol: ;
@@ -157,6 +158,7 @@ namespace snowball {
         KWORD_IF,          // Symbol: if
         KWORD_OR,          // Symbol: or
         KWORD_VAR,         // Symbol: var
+        KWORD_NEW,         // Symbol: new
         KWORD_NOT,         // Symbol: not
         KWORD_FOR,         // Symbol: for
         KWORD_AND,         // Symbol: and
@@ -211,6 +213,7 @@ namespace snowball {
                 case TokenType::SYM_DOLLAR:         return "$";
                 case TokenType::SYM_QUESTION:       return "?";
                 case TokenType::SYM_SEMI_COLLON:    return ";";
+                case TokenType::SYM_COLCOL:         return "::";
 
                 // Brackets
                 case TokenType::BRACKET_LCURLY:     return "{";
@@ -287,6 +290,7 @@ namespace snowball {
                 case TokenType::KWORD_RETURN:       return _SNOWBALL_KEYWORD__RETURN;
                 case TokenType::KWORD_AND:          return _SNOWBALL_KEYWORD__AND;
                 case TokenType::KWORD_OR:           return _SNOWBALL_KEYWORD__OR;
+                case TokenType::KWORD_NEW:          return _SNOWBALL_KEYWORD__NEW;
                 case TokenType::KWORD_NOT:          return _SNOWBALL_KEYWORD__NOT;
 
                 // Literal values
