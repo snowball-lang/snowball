@@ -66,6 +66,11 @@
         - [ ] __eqeq
 - [ ] add possitions to all nodes
 - [ ] Unit testing
+    - [x] Add a new class
+        - [x] Add a function to class
+    - [ ] Add a function
+    - [ ] Add class/function to global
+- [ ] Unit testing
     - [x] Add `test` keyword
     - [x] Parse test statement
     - [x] check for -t argument

@@ -37,12 +37,17 @@ namespace snowball {
             void enable_tests() { _enabledTests = true; }
             llvm::GenericValue execute();
 
+            // Get
+            SourceInfo* get_source_info() { return _source_info; }
+            std::unique_ptr<llvm::Module> get_module() { return std::move(_module); }
+
             ~Compiler() {};
+
+            llvm::LLVMContext global_context;
 
         private:
             // llvm
             std::unique_ptr<llvm::Module> _module;
-            llvm::LLVMContext _global_context;
             llvm::IRBuilder<> _builder;
 
             // variables

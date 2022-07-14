@@ -3,8 +3,8 @@
 #include <string>
 #include <experimental/optional>
 
-#include "snowball/nodes.h"
-#include "snowball/source_info.h"
+#include "nodes.h"
+#include "source_info.h"
 
 #include <llvm/IR/Value.h>
 #include <llvm-10/llvm/IR/DerivedTypes.h>

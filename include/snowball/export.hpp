@@ -2,6 +2,8 @@
 #ifndef SNOWBALL_EXPORT_H
 #define SNOWBALL_EXPORT_H
 
+#include "snowball.h"
+
 #ifdef SNOWBALL_STATIC
 #  define SNOWBALL_EXPORT
 #  define SNOWBALL_NO_EXPORT

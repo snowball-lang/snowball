@@ -1,14 +1,8 @@
 
 class Class {
-    fn __init() {
 
-    }
-
-    static fn hello(s: String) -> String {
-        return s
-    }
 }
 
 fn main() -> Number {
-    var a = "Class::hello(awda)"
+
 }
