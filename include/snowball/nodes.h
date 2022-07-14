@@ -192,6 +192,16 @@ namespace snowball {
 
 	};
 
+	struct ImportNode : public Node {
+		std::string path;
+
+		ImportNode() {
+			type = Type::IMPORT;
+		};
+
+		~ImportNode() {};
+	};
+
 	struct TestingNode : public Node {
 		BlockNode* block;
 		std::string description;

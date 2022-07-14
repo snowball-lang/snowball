@@ -12,11 +12,6 @@
     - [ ] REPL
     - [ ] unit testing
 - [ ] check if class has been initialized
-- [ ] Modules
-    - [ ] module keyword (like in nodejs)
-    - [ ] add a System class for I/O
-    - [ ] add system/local modules support
-    - [ ] custom variable/selected imports
 
 ### Known Bugs
 
@@ -38,6 +33,10 @@
     - [ ] upper
     - [ ] lower
     - [ ] capitalize
+- [ ] Modules
+    - [ ] add a System class for I/O
+    - [ ] add system/local modules support
+    - [ ] custom variable/selected imports
 - [ ] New keyword
 - [ ] Classes
     - [x] Class/static keyword

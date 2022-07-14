@@ -48,16 +48,16 @@
 
 #define SN_MODULE_NAME "llvm_snowball_compile_mod_"
 
-#define NEW_IR_BUILDER() llvm::IRBuilder<> _builder(_global_context);
+#define NEW_IR_BUILDER() llvm::IRBuilder<> _builder(global_context);
 #define ADD_GLOBAL_IF_FN_EXISTS(name, function) \
     executionEngine->addGlobalMapping(*_enviroment->get(name, nullptr)->llvm_function, function);
 
 
 namespace snowball {
-    Compiler::Compiler(std::string p_code, std::string p_path) : _builder(llvm::IRBuilder<> (_global_context)) { _code = p_code                 ; _path = p_path              ; NEW_IR_BUILDER() }
-    Compiler::Compiler(const char* p_code, std::string p_path) : _builder(llvm::IRBuilder<> (_global_context)) { _code = std::string(p_code)    ; _path = p_path              ; NEW_IR_BUILDER() }
-    Compiler::Compiler(std::string p_code, const char* p_path) : _builder(llvm::IRBuilder<> (_global_context)) { _code = p_code                 ; _path = std::string(p_path) ; NEW_IR_BUILDER() }
-    Compiler::Compiler(const char* p_code, const char* p_path) : _builder(llvm::IRBuilder<> (_global_context)) { _code = std::string(p_code)    ; _path = std::string(p_path) ; }
+    Compiler::Compiler(std::string p_code, std::string p_path) : _builder(llvm::IRBuilder<> (global_context)) { _code = p_code                 ; _path = p_path              ; NEW_IR_BUILDER() }
+    Compiler::Compiler(const char* p_code, std::string p_path) : _builder(llvm::IRBuilder<> (global_context)) { _code = std::string(p_code)    ; _path = p_path              ; NEW_IR_BUILDER() }
+    Compiler::Compiler(std::string p_code, const char* p_path) : _builder(llvm::IRBuilder<> (global_context)) { _code = p_code                 ; _path = std::string(p_path) ; NEW_IR_BUILDER() }
+    Compiler::Compiler(const char* p_code, const char* p_path) : _builder(llvm::IRBuilder<> (global_context)) { _code = std::string(p_code)    ; _path = std::string(p_path) ; }
 
     std::string Compiler::prepare_module_name() {
         std::string tmp = _path;
@@ -78,7 +78,7 @@ namespace snowball {
 
         create_source_info();
 
-        _module = std::make_unique<llvm::Module>(prepare_module_name(), _global_context);;
+        _module = std::make_unique<llvm::Module>(prepare_module_name(), global_context);;
 
 
         link_std_classes();
@@ -237,7 +237,7 @@ namespace snowball {
         llvm::Type* i8p = _builder.getInt8PtrTy();
 
         /* Number */
-        auto sn_number_struct = llvm::StructType::create(_global_context, "Number");
+        auto sn_number_struct = llvm::StructType::create(global_context, "Number");
         sn_number_struct->setBody(std::vector<llvm::Type *>{ nt });
 
         auto sn_number_i_prototype = llvm::FunctionType::get(sn_number_struct->getPointerTo(), std::vector<llvm::Type *> { nt }, false);
@@ -247,7 +247,7 @@ namespace snowball {
         auto sn_number__add_n_fn = llvm::Function::Create(sn_number_sum_n_n_prototype, llvm::Function::ExternalLinkage, mangle("Number.__sum", {"Number", "Number"}), _module.get());
 
         /* String */
-        auto sn_string_struct = llvm::StructType::create(_global_context, "String");
+        auto sn_string_struct = llvm::StructType::create(global_context, "String");
         sn_string_struct->setBody({ st, nt });
 
         auto sn_string_prototype = llvm::FunctionType::get(sn_string_struct->getPointerTo(), std::vector<llvm::Type *> { st }, false);

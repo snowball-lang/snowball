@@ -73,7 +73,7 @@ namespace snowball {
                 auto function_prototype = llvm::FunctionType::get(p_return_type, properties, false);
                 auto function = llvm::Function::Create(function_prototype, llvm::Function::ExternalLinkage, mangle(p_name.c_str(), propertie_types), _compiler->get_module().get());
 
-                std::shared_ptr<llvm::Function*> function_ptr = std::make_shared<llvm::Function*>(*function);\
+                std::shared_ptr<llvm::Function*> function_ptr = std::make_shared<llvm::Function*>(function);\
                 ScopeValue* scope_value = new ScopeValue(function_ptr);\
                 std::unique_ptr<ScopeValue*> fn_value = std::make_unique<ScopeValue*>(scope_value);\
                 (*p_class)->scope_value->set(p_name, std::move(fn_value));

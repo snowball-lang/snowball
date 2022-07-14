@@ -17,13 +17,15 @@
 
 #define PARSER_ERROR(err, msg) _parser_error(err, msg);
 #define UNEXPECTED_TOK(expectation) PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Expected %s, got %s%s%s", expectation, RED, _current_token.to_string().c_str(), RESET));
+#define UNEXPECTED_TOK2(expectation, method) PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Expected %s, got %s%s%s while parsing %s", expectation, RED, _current_token.to_string().c_str(), RESET, method));
 #define ASSERT_TOKEN(tk, ty, idnt) if (tk.type != ty) UNEXPECTED_TOK(idnt);
+#define ASSERT_TOKEN2(tk, ty, idnt, method) if (tk.type != ty) UNEXPECTED_TOK2(idnt, method);
 #define CONSUME(tk, ty, process)  \
     ASSERT_TOKEN_EOF(_current_token, TokenType::ty, tk, process) \
     next_token(); // consume
 #define ASSERT_TOKEN_EOF(tk, ty, idnt, method) \
     if (tk.type == TokenType::_EOF) PARSER_ERROR(Error::UNEXPECTED_EOF, Logger::format("Found an unexpected EOF while parsing %s", method)); \
-    ASSERT_TOKEN(tk, ty, idnt)
+    ASSERT_TOKEN2(tk, ty, idnt, method)
 
 namespace snowball {
 
@@ -49,6 +51,12 @@ namespace snowball {
                 case TokenType::KWORD_CLASS: {
                     ClassNode* cls = _parse_class();
                     _nodes.push_back(cls);
+                    break;
+                }
+
+                case TokenType::KWORD_IMPORT: {
+                    ImportNode* import_node = _parse_import();
+                    _nodes.push_back(import_node);
                     break;
                 }
 
@@ -123,6 +131,21 @@ namespace snowball {
     }
 
     // Parse methods
+
+    ImportNode* Parser::_parse_import() {
+        ASSERT(_current_token.type == TokenType::KWORD_IMPORT)
+        next_token();
+
+        ImportNode* node = new ImportNode();
+
+        ASSERT_TOKEN_EOF(_current_token, TokenType::VALUE_STRING, "an import path", "an import statement")
+
+        std::string path = _current_token.to_string();;
+        path = path.substr(1, path.size() - 2);
+        node->path = path;
+
+        return node;
+    }
 
     TestingNode* Parser::_parse_unittest() {
         ASSERT(_current_token.type == TokenType::KWORD_TEST);
