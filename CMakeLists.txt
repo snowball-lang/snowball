@@ -47,14 +47,15 @@ foreach(target ${LLVM_TARGETS_TO_BUILD})
   list(APPEND targets "LLVM${target}CodeGen")
 endforeach()
 
+add_subdirectory("./libs")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${LLVM_INCLUDE_DIRS}
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<INSTALL_INTERFACE:include> PRIVATE source)
-target_include_directories(${PROJECT_NAME} PUBLIC ${LLVM_INCLUDE_DIRS} ${PROJECT_INCLUDE_DIRS})
-target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES})
+    target_include_directories(${PROJECT_NAME} PUBLIC ${LLVM_INCLUDE_DIRS} ${PROJECT_INCLUDE_DIRS})
+    target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES})
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
 set_target_properties     (${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
@@ -71,3 +72,10 @@ generate_export_header(${PROJECT_NAME}
   EXPORT_MACRO_NAME    ${PROJECT_NAME_UPPER}_EXPORT
   STATIC_DEFINE        ${PROJECT_NAME_UPPER}_STATIC
 )
+
+# installation
+install(TARGETS ${PROJECT_NAME} EXPORT MyLibConfig
+    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})

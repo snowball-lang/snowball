@@ -34,6 +34,8 @@
     - [ ] lower
     - [ ] capitalize
 - [ ] Modules
+    - [ ] if library ends with .so, dlopen
+    - [ ] check entry with a snowball.json
     - [ ] add a System class for I/O
     - [ ] add system/local modules support
     - [ ] custom variable/selected imports

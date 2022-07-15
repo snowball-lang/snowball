@@ -11,6 +11,7 @@
 
 namespace snowball_utils {
     std::vector<std::string> split(std::string str, std::string token);
+    bool endsWith(const std::string &mainStr, const std::string &toMatch);
 }
 
 #endif // __SNOWBALL_UTILS__MAIN_H_

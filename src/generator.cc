@@ -20,6 +20,9 @@
 #include <sstream>
 #include <optional>
 
+#include <dlfcn.h>
+
+
 #define SET_TO_SCOPE_OR_CLASS(_name, value) \
     if (_current_class != nullptr) { \
         _enviroment->get(_current_class->name, nullptr)->scope_value->set(_name, std::move(value)); \
@@ -68,6 +71,10 @@ namespace snowball {
                 return generate_class(static_cast<ClassNode *>(p_node));
             }
 
+            case Node::Type::IMPORT: {
+                return generate_import(static_cast<ImportNode *>(p_node));
+            }
+
             case Node::Type::NEW_CALL: {
                 return generate_new(static_cast<NewNode *>(p_node));
             }
@@ -79,6 +86,29 @@ namespace snowball {
             default:
                 DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
                 throw Warning(Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, p_node->type, RESET, BOLD), dbg_info);
+        }
+    }
+
+    llvm::Value* Generator::generate_import(ImportNode* p_node) {
+        if (snowball_utils::endsWith(p_node->path, ".so")) {
+            void *handle;
+            double (*cosine)(double);
+            char *error;
+
+            handle = dlopen ("libm.so", RTLD_LAZY);
+            if (!handle) {
+                fprintf (stderr, "%s\n", dlerror());
+                exit(1);
+            }
+            dlerror();    /* Clear any existing error */
+            cosine = (double (*)(double))dlsym(handle, "cos");
+            if ((error = dlerror()) != NULL)  {
+                fprintf (stderr, "%s\n", error);
+                exit(1);
+            }
+            printf ("%f\n", (*cosine)(2.0));
+            dlclose(handle);
+
         }
     }
 

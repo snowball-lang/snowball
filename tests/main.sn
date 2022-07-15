@@ -1,8 +1,4 @@
-import ""
-
-class Class {
-
-}
+import "awd"
 
 fn main() -> Number {
 
