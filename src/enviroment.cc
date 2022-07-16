@@ -49,7 +49,7 @@ namespace snowball {
         parts.push_back (name.substr (pos_start));
         if (parts.size() > 1) {
             ScopeValue* scope = get(parts[0], p_node, p_o_name);
-            if (scope->type == ScopeType::SCOPE || scope->type == ScopeType::CLASS) {
+            if (scope->type == ScopeType::SCOPE || scope->type == ScopeType::CLASS || scope->type == ScopeType::MODULE) {
                 return scope->scope_value->get(snowball_utils::join(++parts.begin(), parts.end(), "."), p_node, p_o_name);
             }
         }
@@ -88,7 +88,7 @@ namespace snowball {
         if (parts.size() > 1) {
             if (item_exists(parts[0])) {
                 ScopeValue* scope = get(parts[0], nullptr);
-                if (scope->type == ScopeType::SCOPE || scope->type == ScopeType::CLASS) {
+                if (scope->type == ScopeType::SCOPE || scope->type == ScopeType::CLASS || scope->type == ScopeType::MODULE) {
                     return scope->scope_value->item_exists(snowball_utils::join(++parts.begin(), parts.end(), "."));
                 }
             }
@@ -133,7 +133,7 @@ namespace snowball {
         for (it = scope.begin(); it != scope.end(); it++) {
             DEBUG_SYMTABLE("%s", it->first.c_str())
 
-            if ((*it->second)->type == ScopeType::CLASS || (*it->second)->type == ScopeType::SCOPE) {
+            if ((*it->second)->type == ScopeType::CLASS || (*it->second)->type == ScopeType::SCOPE || (*it->second)->type == ScopeType::MODULE) {
                 debug((*it->second)->scope_value, depth+1);
             }
         }

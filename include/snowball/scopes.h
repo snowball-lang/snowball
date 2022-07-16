@@ -44,6 +44,7 @@ namespace snowball {
     enum ScopeType {
         SCOPE,
         CLASS,
+        MODULE,
         FUNC,
         LLVM,
     };

@@ -30,6 +30,13 @@ namespace snowball {
         return class_value;
     }
 
+    ScopeValue* SNAPI::create_module(std::string p_name, std::map<std::string, llvm::Type*> p_properties) {
+        ScopeValue* mod = create_class(p_name, p_properties);
+
+        mod->type = ScopeType::MODULE;
+        return mod;
+    }
+
     ScopeValue* SNAPI::create_function(std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<std::string, llvm::Type*>> p_args, bool is_public) {
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);

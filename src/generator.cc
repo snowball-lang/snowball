@@ -97,7 +97,13 @@ namespace snowball {
         } else if (is_snowball_lib(p_node->path)) {
             sn_module_export_ty fn;
             fn = get_sn_export_lib(p_node->path);
-            fn(_api);
+            ScopeValue* mod = fn(_api);
+
+            if (_enviroment->item_exists(p_node->path)) {
+                COMPILER_ERROR(VARIABLE_ERROR, Logger::format("module '%s' is already defined", p_node->path.c_str()))
+            }
+
+            _enviroment->current_scope()->set(p_node->path, std::make_unique<ScopeValue*>(mod));
         } else {
             // TODO
         }
@@ -230,12 +236,16 @@ namespace snowball {
             }
 
             base_struct = (*class_value->llvm_struct)->getStructName().str();
-            args.push_back(base_value);
-            arg_types.push_back(base_struct);
+            if (class_value->type == ScopeType::MODULE) {
+                p_node->is_static_call = true;
+            } else {
+                args.push_back(base_value);
+                arg_types.push_back(base_struct);
 
-            method_name += "self";
-            if ((p_node->arguments.size() > 0))
-                method_name += ", ";
+                method_name += "self";
+                if ((p_node->arguments.size() > 0))
+                    method_name += ", ";
+            }
         } else if (p_node->base != nullptr && p_node->is_static_call) {
             base_value = generate(p_node->base);
 
@@ -347,7 +357,8 @@ namespace snowball {
         ScopeValue* value = _enviroment->get(p_node->name, p_node);
         switch (value->type)
         {
-            case ScopeType::CLASS: {
+            case ScopeType::CLASS:
+            case ScopeType::MODULE: {
                 llvm::StructType* type = *value->llvm_struct;
                 llvm::Function* alloca_fn = *_enviroment->get(mangle("gc__alloca", {"i32"}, true), nullptr)->llvm_function;
                 int size = _module->getDataLayout().getTypeStoreSize(type);
@@ -356,7 +367,6 @@ namespace snowball {
                 llvm::Value* alloca_value = _builder.CreateCall(alloca_fn, size_constant);
                 return _builder.CreatePointerCast(alloca_value, type->getPointerTo());
             }
-                return (llvm::Value*)(*value->llvm_struct);
 
             case ScopeType::FUNC:
                 return (llvm::Value*)(*value->llvm_function);
@@ -365,8 +375,7 @@ namespace snowball {
                 return (llvm::Value*)(*value->llvm_value);
 
             default: {
-                DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
-                throw CompilerError(Error::BUG, Logger::format("Scope with type ::SCOPE has been fetched in Generator::generate_identifier (idnt: %s).", p_node->name.c_str()), dbg_info);
+                COMPILER_ERROR(BUG, Logger::format("Scope with type ::SCOPE has been fetched in Generator::generate_identifier (idnt: %s).", p_node->name.c_str()))
             }
         }
     }
