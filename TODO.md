@@ -1,8 +1,7 @@
 ### Todo
 
 - [ ] constant
-- [ ] Void class
-- [ ] static methods
+- [ ] Add a Any type
 - [ ] global variables
 - [ ] default return type
 - [ ] change location for OPTypes struct inside BinOP node
@@ -37,7 +36,7 @@
 - [ ] Modules
     - [ ] if library ends with .so, dlopen
     - [ ] check entry with a snowball.json
-    - [ ] add a System class for I/O
+    - [x] add a System class for I/O
     - [ ] add system/local modules support
     - [ ] custom variable/selected imports
 - [ ] Classes
@@ -72,11 +71,10 @@
     - [x] add TestingContext class
     - [x] Generate test statement
     - [x] Execute tests
-    - [ ] return result variable as int
+    - [x] return result variable as int
     - [ ] Add things like `assert`
 - [ ] Number class
-- [ ] add optimizations
-- [ ] Let user choose in 32/64 bits numbers
+- [ ] Add a Void type
 
 ### Done ✓
 
@@ -103,3 +101,5 @@
         - [x] Add a function to class
     - [x] Add a function
     - [x] Add class/function to global
+- [x] add optimizations
+- [x] Let user choose in 32/64 bits numbers

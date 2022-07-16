@@ -1,5 +1,6 @@
 import System
 
 pub fn main() -> Number {
-    System.println("hello")
+    System.println("Top 5 reasons why snowball sucks:")
+    System.println("\t* ther's none")
 }
