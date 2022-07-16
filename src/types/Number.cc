@@ -38,7 +38,8 @@ void register_number(snowball::SNAPI* API) {
                     API->get_compiler()->get_builder()
                 )
             )
-        }
+        },
+        true
     );
 
     API->create_class_method(
@@ -48,7 +49,8 @@ void register_number(snowball::SNAPI* API) {
         std::vector<std::pair<std::string, llvm::Type*>> {
             std::make_pair("Number", class_type),
             std::make_pair("Number", class_type)
-        }
+        },
+        true
     );
 
     API->add_to_enviroment("Number", std::make_unique<snowball::ScopeValue*>(number_class));

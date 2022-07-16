@@ -73,9 +73,7 @@ namespace snowball {
         throw CompilerError(Error::VARIABLE_ERROR, Logger::format("'%s' is not defined", p_o_name.c_str()), dbg_info);
     }
 
-    bool Enviroment::item_exists(std::string name, Node* p_node) {
-
-        DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
+    bool Enviroment::item_exists(std::string name) {
         size_t pos_start = 0, pos_end, delim_len = 1;
         std::string token;
         std::vector<std::string> parts;
@@ -87,9 +85,13 @@ namespace snowball {
         }
 
         parts.push_back (name.substr (pos_start));
-
         if (parts.size() > 1) {
-            return item_exists(parts[0], p_node);
+            if (item_exists(parts[0])) {
+                ScopeValue* scope = get(parts[0], nullptr);
+                if (scope->type == ScopeType::SCOPE || scope->type == ScopeType::CLASS) {
+                    return scope->scope_value->item_exists(snowball_utils::join(++parts.begin(), parts.end(), "."));
+                }
+            }
         }
 
         std::vector<Scope*> reversed_scopes = _scopes;

@@ -30,7 +30,7 @@ namespace snowball {
         return class_value;
     }
 
-    ScopeValue* SNAPI::create_function(std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<std::string, llvm::Type*>> p_args) {
+    ScopeValue* SNAPI::create_function(std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<std::string, llvm::Type*>> p_args, bool is_public) {
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
 
@@ -48,7 +48,8 @@ namespace snowball {
                 llvm::Function::ExternalLinkage,
                 mangle(
                     p_name,
-                    propertie_types
+                    propertie_types,
+                    is_public
                 ),
                 _compiler->get_module()
             );
@@ -65,7 +66,7 @@ namespace snowball {
     }
 
 
-    void SNAPI::create_class_method(ScopeValue* p_class, std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<std::string, llvm::Type*>> p_args) {
+    void SNAPI::create_class_method(ScopeValue* p_class, std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<std::string, llvm::Type*>> p_args, bool is_public) {
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
 
@@ -87,14 +88,14 @@ namespace snowball {
                         (*p_class->llvm_struct)->getStructName().str().c_str(),
                         p_name.c_str()
                     ),
-                    propertie_types
+                    propertie_types,
+                    is_public
                 ),
                 _compiler->get_module()
             );
 
         std::shared_ptr<llvm::Function*> function_ptr = std::make_shared<llvm::Function*>(function);
-        ScopeValue* scope_value = new ScopeValue(function_ptr);
-        p_class->scope_value->set(mangle(p_name, propertie_types), std::make_unique<ScopeValue*>(scope_value));
+        p_class->scope_value->set(mangle(p_name, propertie_types, is_public), std::make_unique<ScopeValue*>(new ScopeValue(function_ptr)));
 
         llvm::verifyFunction(*function, &message_stream);
 

@@ -20,7 +20,8 @@ void register_gc(snowball::SNAPI* API) {
           "i32",
           API->get_compiler()->get_builder().getInt32Ty()
         )
-      }
+      },
+      true
     );
 
     snowball::ScopeValue* gc_reallocate = API->create_function(
@@ -35,11 +36,12 @@ void register_gc(snowball::SNAPI* API) {
           "i32",
           API->get_compiler()->get_builder().getInt32Ty()
         )
-      }
+      },
+      true
     );
 
-    API->add_to_enviroment(snowball::mangle("gc__alloca", {"i32"}), std::make_unique<snowball::ScopeValue*>(gc_allocate));
-    API->add_to_enviroment(snowball::mangle("gc__realloca", {"i8", "i32"}), std::make_unique<snowball::ScopeValue*>(gc_reallocate));
+    API->add_to_enviroment(snowball::mangle("gc__alloca", {"i32"}, true), std::make_unique<snowball::ScopeValue*>(gc_allocate));
+    API->add_to_enviroment(snowball::mangle("gc__realloca", {"i8", "i32"}, true), std::make_unique<snowball::ScopeValue*>(gc_reallocate));
 }
 
 extern "C" DLLEXPORT void* _MN10gc__allocaA3i32(uint32_t bytes) {

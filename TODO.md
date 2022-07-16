@@ -12,6 +12,7 @@
     - [ ] REPL
     - [ ] unit testing
 - [ ] check if class has been initialized
+- [ ] `_MN10gc__allocaA3i32P` and `_MN12gc__reallocaA2i8A3i32P` should not really be in the enviroment
 
 ### Known Bugs
 
@@ -39,14 +40,13 @@
     - [ ] add a System class for I/O
     - [ ] add system/local modules support
     - [ ] custom variable/selected imports
-- [ ] New keyword
 - [ ] Classes
     - [x] Class/static keyword
     - [x] Parse class
     - [ ] Parse class
         - [x] Function
             - [x] Support for static
-            - [ ] Public methods diferentiate from private methods (can have the same name)
+            - [x] Public methods diferentiate from private methods (can have the same name)
         - [ ] Variables
             - [ ] Support for static
     - [x] Generate
@@ -65,12 +65,6 @@
         - [ ] __repr
         - [ ] __bool
         - [ ] __eqeq
-- [ ] add possitions to all nodes
-- [ ] Unit testing
-    - [x] Add a new class
-        - [x] Add a function to class
-    - [ ] Add a function
-    - [ ] Add class/function to global
 - [ ] Unit testing
     - [x] Add `test` keyword
     - [x] Parse test statement
@@ -103,3 +97,9 @@
     - [x] pass self argument if it is a class
     - [x] check if function class is initiated
         - [x] check if function is static
+- [x] New keyword
+- [x] API
+    - [x] Add a new class
+        - [x] Add a function to class
+    - [x] Add a function
+    - [x] Add class/function to global

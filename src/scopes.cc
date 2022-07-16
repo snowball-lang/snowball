@@ -24,7 +24,6 @@ namespace snowball {
     ScopeValue* Scope::get(std::string p_name, Node* p_node, std::string p_o_name) {
 
         if (p_o_name.empty()) p_o_name = p_name;
-
         bool _value = item_exists(p_name);
 
         if (!_value) {

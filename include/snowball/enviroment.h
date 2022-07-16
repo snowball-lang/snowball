@@ -26,7 +26,7 @@ namespace snowball {
             Scope* create_scope(std::string p_name);
 
             ScopeValue* get(std::string name, Node* p_node, std::string p_o_name = "");
-            bool item_exists(std::string name, Node* p_node);
+            bool item_exists(std::string name);
 
             #if _SNOWBALL_SYMTABLE_DEBUG
             void debug(Scope* current_scope = nullptr, int depth = 0);

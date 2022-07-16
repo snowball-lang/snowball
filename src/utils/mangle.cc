@@ -32,7 +32,7 @@ namespace snowball {
     *     identify witch parameters this function
     *     is uses.
     *=======================================*/
-    std::string mangle(std::string name, std::vector<std::string> arguments) {
+    std::string mangle(std::string name, std::vector<std::string> arguments, bool is_public) {
         std::stringstream mangled_name;
         mangled_name << "_M"; // step #1
 
@@ -48,6 +48,12 @@ namespace snowball {
             mangled_name << "A";
             mangled_name << argument.size();
             mangled_name << argument;
+        }
+
+        if (is_public) {
+            mangled_name << "P";
+        } else {
+            mangled_name << "I";
         }
 
         return mangled_name.str();
@@ -88,6 +94,10 @@ namespace snowball {
                 }
 
                 result.name += "." + name.substr(index, length);
+            }
+
+            if (c_str[index] == 'P' || c_str[index] == 'I') {
+                result.isPublic = c_str[index] == 'P';
             }
 
             while (c_str[index] == 'A') {

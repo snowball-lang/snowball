@@ -242,10 +242,10 @@ namespace snowball {
             if (dynamic_cast<IdentifierNode*>(p_node->base) != nullptr) {
                 class_value = _enviroment->get(dynamic_cast<IdentifierNode*>(p_node->base)->name, p_node->base);
                 if (class_value->type == ScopeType::LLVM) {
-                    class_value = _enviroment->get((*class_value->llvm_value)->getType()->getPointerElementType()->getStructName().str(), p_node->base);
+                    class_value = _enviroment->get((*class_value->llvm_value)->getType()->getPointerElementType()->getStructName().str(), p_node);
                 }
             } else {
-                class_value = _enviroment->get(base_value->getType()->getPointerElementType()->getStructName().str(), p_node->base);
+                class_value = _enviroment->get(base_value->getType()->getPointerElementType()->getStructName().str(), p_node);
             }
 
             base_struct = (*class_value->llvm_struct)->getStructName().str();
@@ -267,19 +267,64 @@ namespace snowball {
 
         method_name += ")";
 
-        std::string method_call = p_node->base == nullptr ? mangle(p_node->method, arg_types) : GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, arg_types);
+        // Todo: check if method is private / public
+        std::string method_call =
+            p_node->base == nullptr ?
+            mangle(p_node->method, arg_types) :
+            GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, arg_types);
+
+        ScopeValue* function;
+
+        // First, look for private methods
+        bool private_method_used = false;
+        bool private_method_exists = false;
+        if (_enviroment->item_exists(method_call)) {
+            DUMP_S(_current_class->name.c_str())
+            DUMP_S(base_struct.c_str())
+            if (_current_class != nullptr && _current_class->name == base_struct) {
+                function = _enviroment->get(method_call, p_node); // it will exist... right?
+                private_method_used = true;
+            } else {
+                private_method_exists = true;
+            }
+        }
+
+        if (!private_method_used) {
+            method_call =
+                p_node->base == nullptr ?
+                mangle(p_node->method, arg_types, true) :
+                GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, arg_types, true);
+
+            // Look for public
+            if (_enviroment->item_exists(method_call)) {
+                function = _enviroment->get(method_call, p_node);
+            } else {
+                if (private_method_exists) {
+                    COMPILER_ERROR(
+                        VARIABLE_ERROR,
+                        Logger::format("Function named '%s' is a private method that can't be accessed outside it's class",
+                            p_node->base != nullptr ?
+                                Logger::format("%s.%s", base_struct.c_str(), method_name.c_str()).c_str()
+                                : method_name.c_str()
+                        )
+                    )
+                } else {
+                    COMPILER_ERROR(
+                        VARIABLE_ERROR,
+                        Logger::format("No function found with named: %s",
+                            p_node->base != nullptr ?
+                                Logger::format("%s.%s", base_struct.c_str(), method_name.c_str()).c_str()
+                                : method_name.c_str()
+                        )
+                    )
+                }
+            }
+        }
+
         DUMP_S(method_call.c_str())
-        ScopeValue* function = _enviroment->get(
-            method_call,
-            p_node,
-            p_node->base != nullptr
-             ? Logger::format("%s.%s", base_struct.c_str(), method_name.c_str())
-             : method_name
-        );
 
         if (function->type != ScopeType::FUNC) {
-            DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
-            throw CompilerError(Error::SYNTAX_ERROR, Logger::format("'%s' is not a function", p_node->method.c_str()), dbg_info);
+            COMPILER_ERROR(SYNTAX_ERROR, Logger::format("'%s' is not a function", p_node->method.c_str()))
         }
 
         ASSERT(args.size() == arg_types.size())
@@ -304,7 +349,7 @@ namespace snowball {
         {
             case ScopeType::CLASS: {
                 llvm::StructType* type = *value->llvm_struct;
-                llvm::Function* alloca_fn = *_enviroment->get(mangle("gc__alloca", {"i32"}), nullptr)->llvm_function;
+                llvm::Function* alloca_fn = *_enviroment->get(mangle("gc__alloca", {"i32"}, true), nullptr)->llvm_function;
                 int size = _module->getDataLayout().getTypeStoreSize(type);
                 llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder.getInt32Ty(), size);
 
@@ -345,7 +390,8 @@ namespace snowball {
                         {
                             left_type->getStructName().str(),
                             right_type->getStructName().str()
-                        }
+                        },
+                        true
                     ), p_node, Logger::format(
                         "%s.__sum(%s, %s)",
                             left_type->getStructName().str().c_str(),
@@ -364,7 +410,8 @@ namespace snowball {
                         {
                             left_type->getStructName().str(),
                             right_type->getStructName().str()
-                        }
+                        },
+                        true
                     ), p_node, Logger::format(
                         "%s.__set(%s, %s)",
                             left_type->getStructName().str().c_str(),
@@ -428,7 +475,7 @@ namespace snowball {
                 _current_class == nullptr ? p_node->name : Logger::format(
                     "%s.%s", _current_class->name.c_str(),
                     p_node->name.c_str()
-                ), arg_tnames);
+                ), arg_tnames, p_node->is_public);
 
         auto prototype = llvm::FunctionType::get(retType, arg_types, false);
         llvm::Function *function = llvm::Function::Create(
@@ -473,7 +520,7 @@ namespace snowball {
             if (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->is_lop_level) {
                 llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
 
-                ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS("Number", "__init", { "i" }), p_node);
+                ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS("Number", "__init", { "i" }, true), p_node);
                 llvm::Function* constructor = const_cast<llvm::Function*>(*scope_value->llvm_function);
 
                 llvm::Constant * num = llvm::ConstantInt::get(i64, 0);
@@ -496,7 +543,7 @@ namespace snowball {
         std::unique_ptr<ScopeValue*> func_scopev = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Function*>(function)));
         (*func_scopev)->isStaticFunction = p_node->is_static;
         SET_TO_SCOPE_OR_CLASS(mangle(
-                p_node->name, arg_tnames), func_scopev)
+                p_node->name, arg_tnames, p_node->is_public), func_scopev)
 
         return function;
     }
@@ -533,7 +580,7 @@ namespace snowball {
                 llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
 
 
-                ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS("Number", "__init", { "i" }), p_node);
+                ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS("Number", "__init", { "i" }, true), p_node);
                 llvm::Function* constructor = const_cast<llvm::Function*>(*scope_value->llvm_function);
 
                 llvm::Constant * num = llvm::ConstantInt::get(i64, (uint64_t)std::stoi(p_node->value));
@@ -541,7 +588,7 @@ namespace snowball {
             }
 
             case TokenType::VALUE_STRING: {
-                ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS("String", "__init", { "s" }), p_node);
+                ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS("String", "__init", { "s" }, true), p_node);
                 llvm::Function* constructor = const_cast<llvm::Function*>(*scope_value->llvm_function);
 
                 std::string str = p_node->value;
@@ -562,7 +609,7 @@ namespace snowball {
         ASSERT(_current_class != nullptr)
 
         llvm::StructType* type = *_enviroment->get(_current_class->name, _current_class)->llvm_struct;
-        llvm::Function* alloca_fn = *_enviroment->get(mangle("gc__alloca", {"i32"}), nullptr)->llvm_function;
+        llvm::Function* alloca_fn = *_enviroment->get(mangle("gc__alloca", {"i32"}, true), nullptr)->llvm_function;
         int size = _module->getDataLayout().getTypeStoreSize(type);
         llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder.getInt32Ty(), size);
 

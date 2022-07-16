@@ -46,7 +46,8 @@ void register_string(snowball::SNAPI* API) {
                     API->get_compiler()->get_builder()
                 )
             )
-        }
+        },
+        true
     );
 
     API->create_class_method(
@@ -56,7 +57,8 @@ void register_string(snowball::SNAPI* API) {
         std::vector<std::pair<std::string, llvm::Type*>> {
             std::make_pair("String", class_type),
             std::make_pair("String", class_type)
-        }
+        },
+        true
     );
 
     API->add_to_enviroment("String", std::make_unique<snowball::ScopeValue*>(string_class));

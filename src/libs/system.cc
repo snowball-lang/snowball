@@ -5,6 +5,6 @@
 
 namespace snowball {
     void sn_system_export(SNAPI* API) {
-        
+
     }
 }

@@ -130,6 +130,7 @@ namespace snowball {
 		std::vector<ArgumentNode *> arguments;
 
 		bool is_static = false;
+		bool is_public = false;
 		bool has_return = false;
 		bool is_lop_level = false;
 

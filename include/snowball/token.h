@@ -176,9 +176,11 @@ namespace snowball {
         KWORD_WHILE,       // Symbol: while
         KWORD_CLASS,       // Symbol: class
         KWORD_IMPORT,      // Symbol: import
+        KWORD_PUBLIC,      // Symbol: pub
         KWORD_SWITCH,      // Symbol: switch
         KWORD_STATIC,      // Symbol: static
         KWORD_RETURN,      // Symbol: return
+        KWORD_PRIVATE,     // Symbol: priv
         KWORD_DEFAULT,     // Symbol: default
         KWORD_CONTINUE,    // Symbol: continue
         KWORD__ENDING__POINT, // All keywords must be less than this
@@ -267,6 +269,8 @@ namespace snowball {
 
                 // Keywods
                 case TokenType::KWORD_TEST:         return _SNOWBALL_KEYWORD__TEST;
+                case TokenType::KWORD_PUBLIC:       return _SNOWBALL_KEYWORD__PUBLIC;
+                case TokenType::KWORD_PRIVATE:      return _SNOWBALL_KEYWORD__PRIVATE;
                 case TokenType::KWORD_IMPORT:       return _SNOWBALL_KEYWORD__IMPORT;
                 case TokenType::KWORD_CLASS:        return _SNOWBALL_KEYWORD__CLASS;
                 case TokenType::KWORD_ENUM:         return _SNOWBALL_KEYWORD__ENUM;

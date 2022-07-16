@@ -1,5 +1,24 @@
 import System
 
-fn main() -> Number {
+class awd {
+    priv fn __init() {
+
+    }
+
+    priv fn sum() -> Number {
+        return 214 + 6
+    }
+
+    fn hello() -> Number {
+        return self.sum()
+    }
+}
+
+pub fn hello() -> Number {
+    return 2
+}
+
+pub fn main() -> Number {
+    var a = new awd()
 
 }

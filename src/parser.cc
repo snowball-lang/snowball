@@ -17,7 +17,7 @@
 
 #define PARSER_ERROR(err, msg) _parser_error(err, msg);
 #define UNEXPECTED_TOK(expectation) PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Expected %s, got %s%s%s", expectation, RED, _current_token.to_string().c_str(), RESET));
-#define UNEXPECTED_TOK2(expectation, method) PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Expected %s, got %s%s%s while parsing %s", expectation, RED, _current_token.to_string().c_str(), RESET, method));
+#define UNEXPECTED_TOK2(expectation, method) PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Expected %s, got %s%s%s while parsing %s", expectation, RED, _current_token.to_string().c_str(), RESET, BOLD, method));
 #define ASSERT_TOKEN(tk, ty, idnt) if (tk.type != ty) UNEXPECTED_TOK(idnt);
 #define ASSERT_TOKEN2(tk, ty, idnt, method) if (tk.type != ty) UNEXPECTED_TOK2(idnt, method);
 #define CONSUME(tk, ty, process)  \
@@ -40,14 +40,6 @@ namespace snowball {
                     break;
                 }
 
-                case TokenType::KWORD_FUNC: {
-                    FunctionNode* function = _parse_function();
-                    function->is_lop_level = true;
-                    _nodes.push_back(function);
-                    break;
-                }
-
-
                 case TokenType::KWORD_CLASS: {
                     ClassNode* cls = _parse_class();
                     _nodes.push_back(cls);
@@ -57,6 +49,24 @@ namespace snowball {
                 case TokenType::KWORD_IMPORT: {
                     ImportNode* import_node = _parse_import();
                     _nodes.push_back(import_node);
+                    break;
+                }
+
+                case TokenType::KWORD_PUBLIC:
+                case TokenType::KWORD_PRIVATE: {
+                    if (
+                        peek(0, true).type != TokenType::KWORD_FUNC
+                        && peek(0, true).type != TokenType::KWORD_VAR) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\" or \"var\" after pub/priv declaration");
+                    }
+
+                    break;
+                }
+
+                case TokenType::KWORD_FUNC: {
+                    FunctionNode* function = _parse_function();
+                    function->is_lop_level = true;
+                    _nodes.push_back(function);
                     break;
                 }
 
@@ -208,6 +218,17 @@ namespace snowball {
                     }
                 } break;
 
+                case TokenType::KWORD_PUBLIC:
+                case TokenType::KWORD_PRIVATE: {
+                    if (
+                        peek(0, true).type != TokenType::KWORD_FUNC
+                        && peek(0, true).type != TokenType::KWORD_VAR
+                        && peek(0, true).type != TokenType::KWORD_STATIC) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\", \"var\" or \"static\" after pub/priv declaration");
+                    }
+                    break;
+                }
+
                 case TokenType::KWORD_VAR: {
                     VarNode* func = _parse_variable(); // TODO: static
                     cls->vars.push_back(func);
@@ -283,8 +304,14 @@ namespace snowball {
         FunctionNode* func = new FunctionNode();
         next_token();
 
-        if (peek(-3, true).type == TokenType::KWORD_STATIC) {
+        Token pk = peek(-3, true);
+        if (pk.type == TokenType::KWORD_STATIC) {
             func->is_static = true;
+            if (peek(-4, true).type == TokenType::KWORD_PUBLIC || peek(-4, true).type == TokenType::KWORD_PRIVATE ) {
+                func->is_public = peek(-4, true).type == TokenType::KWORD_PUBLIC;
+            }
+        } else if (pk.type == TokenType::KWORD_PUBLIC || pk.type == TokenType::KWORD_PRIVATE ) {
+            func->is_public = pk.type == TokenType::KWORD_PUBLIC;
         }
 
         // Find function's name

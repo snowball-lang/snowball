@@ -180,7 +180,7 @@ namespace snowball {
             }
             return llvm::GenericValue(llvm::ConstantInt::get(_builder.getInt8Ty(), test_success));
         } else {
-            llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(mangle(_SNOWBALL_FUNCTION_ENTRY)));
+            llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(mangle(_SNOWBALL_FUNCTION_ENTRY, {}, true)));
             return executionEngine->runFunction(main_fn, {});
         }
     }
