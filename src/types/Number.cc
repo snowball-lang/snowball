@@ -57,7 +57,7 @@ void register_number(snowball::SNAPI* API) {
 }
 
 
-extern "C" DLLEXPORT Number* _MN6NumberN6__initA1i(snowball_int_t n){
+extern "C" DLLEXPORT Number* _MN6NumberN6__initA1iP(snowball_int_t n){
     Number* instance;
     instance = (struct Number*)(malloc(sizeof(Number)));
 
@@ -66,6 +66,6 @@ extern "C" DLLEXPORT Number* _MN6NumberN6__initA1i(snowball_int_t n){
     return instance;
 }
 
-extern "C" DLLEXPORT Number* _MN6NumberN5__sumA6NumberA6Number(Number* number, Number* sum) {
-    return _MN6NumberN6__initA1i(number->number + sum->number);
+extern "C" DLLEXPORT Number* _MN6NumberN5__sumA6NumberA6NumberP(Number* number, Number* sum) {
+    return _MN6NumberN6__initA1iP(number->number + sum->number);
 }

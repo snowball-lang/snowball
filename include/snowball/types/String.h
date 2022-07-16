@@ -18,7 +18,7 @@ typedef struct String {
 
 void register_string(snowball::SNAPI* API);
 
-extern "C" DLLEXPORT String* String__init_s(const char* string_ptr);
-extern "C" DLLEXPORT String* String__sum_String(String* self, String* sum);
+extern "C" DLLEXPORT String* _MN6StringN6__initA1sP(const char* string_ptr);
+extern "C" DLLEXPORT String* _MN6StringN5__sumA6StringA6StringP(String* self, String* sum);
 
 #endif // SN_STRING_EXPORT_H

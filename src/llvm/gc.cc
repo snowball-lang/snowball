@@ -44,10 +44,10 @@ void register_gc(snowball::SNAPI* API) {
     API->add_to_enviroment(snowball::mangle("gc__realloca", {"i8", "i32"}, true), std::make_unique<snowball::ScopeValue*>(gc_reallocate));
 }
 
-extern "C" DLLEXPORT void* _MN10gc__allocaA3i32(uint32_t bytes) {
+extern "C" DLLEXPORT void* _MN10gc__allocaA3i32P(uint32_t bytes) {
   return malloc(bytes);
 }
 
-extern "C" DLLEXPORT void* _MN12gc__reallocaA2i8A3i32(void* ptr, uint32_t bytes) {
+extern "C" DLLEXPORT void* _MN12gc__reallocaA2i8A3i32P(void* ptr, uint32_t bytes) {
   return realloc(ptr, bytes);
 }

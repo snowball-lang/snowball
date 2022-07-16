@@ -64,7 +64,7 @@ void register_string(snowball::SNAPI* API) {
     API->add_to_enviroment("String", std::make_unique<snowball::ScopeValue*>(string_class));
 }
 
-extern "C" DLLEXPORT String* _MN6StringN6__initA1s(const char* string_ptr) {
+extern "C" DLLEXPORT String* _MN6StringN6__initA1sP(const char* string_ptr) {
     String* instance;
     instance = (struct String*)(malloc(sizeof(String*) + (sizeof(string_ptr) + 1)));
 
@@ -74,12 +74,12 @@ extern "C" DLLEXPORT String* _MN6StringN6__initA1s(const char* string_ptr) {
     return instance;
 }
 
-extern "C" DLLEXPORT String* _MN6StringN5__sumA6StringA6String(String* self, String* sum) {
+extern "C" DLLEXPORT String* _MN6StringN5__sumA6StringA6StringP(String* self, String* sum) {
 
     char *result = (char*)malloc(self->length + sum->length + 1); // +1 for the null-terminator
     // in real code you would check for errors in malloc here
     strcpy(result, self->buffer);
     strcat(result, sum->buffer);
 
-    return _MN6StringN6__initA1s(result);
+    return _MN6StringN6__initA1sP(result);
 }
