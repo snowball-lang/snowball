@@ -1,4 +1,6 @@
 
+#include "snowball/libs.h"
+
 #include "snowball/types.h"
 #include "snowball/nodes.h"
 #include "snowball/token.h"
@@ -91,25 +93,17 @@ namespace snowball {
 
     llvm::Value* Generator::generate_import(ImportNode* p_node) {
         if (snowball_utils::endsWith(p_node->path, ".so")) {
-            void *handle;
-            double (*cosine)(double);
-            char *error;
-
-            handle = dlopen (p_node->path.c_str(), RTLD_LAZY);
-            if (!handle) {
-                fprintf (stderr, "%s\n", dlerror());
-                exit(1);
-            }
-            dlerror();    /* Clear any existing error */
-            cosine = (double (*)(double))dlsym(handle, "cos");
-            if ((error = dlerror()) != NULL)  {
-                fprintf (stderr, "%s\n", error);
-                exit(1);
-            }
-            printf ("%f\n", (*cosine)(2.0));
-            dlclose(handle);
-
+            // TODO
+        } else if (is_snowball_lib(p_node->path)) {
+            sn_module_export_ty fn;
+            fn = get_sn_export_lib(p_node->path);
+            fn(_api);
+        } else {
+            // TODO
         }
+
+        // Just return anything
+        return llvm::ConstantInt::get(_builder.getInt8Ty(), 0);
     }
 
     llvm::Value* Generator::generate_new(NewNode* p_node) {

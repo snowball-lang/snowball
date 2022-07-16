@@ -28,6 +28,7 @@
 
 #include <llvm/ExecutionEngine/GenericValue.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
+#include <llvm/Support/DynamicLibrary.h>
 
 #include "snowball/api.h"
 #include "snowball/types.h"
@@ -51,8 +52,8 @@
 
 #define NEW_IR_BUILDER() llvm::IRBuilder<> _builder(global_context);
 #define ADD_GLOBAL_IF_FN_EXISTS(name, function) \
-    executionEngine->addGlobalMapping(*_enviroment->get(name, nullptr)->llvm_function, function);
-
+    if (_module.get()->getFunction(name)) \
+        executionEngine->addGlobalMapping(*_enviroment->get(name, nullptr)->llvm_function, function);
 
 namespace snowball {
     Compiler::Compiler(std::string p_code, std::string p_path) : _builder(llvm::IRBuilder<> (global_context)) { _code = p_code                 ; _path = p_path              ; NEW_IR_BUILDER() }
@@ -104,6 +105,7 @@ namespace snowball {
                 link_std_classes();
 
                 _generator = new Generator(
+                    API,
                     _parser,
                     _enviroment,
                     _source_info,
@@ -118,6 +120,7 @@ namespace snowball {
                 }
             }
 
+            llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
             optimize();
 
             std::string module_error_string;
@@ -149,14 +152,6 @@ namespace snowball {
 
         if (!llvm_error.empty())
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
-
-        ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("Number", "__init", { "i" }), reinterpret_cast<Number*>(Number__init_i))
-        // ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("Number", "__sum", { "Number", "Number" }), reinterpret_cast<Number*>(Number__sum_Number))
-        // ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("String", "__init", { "s" }), reinterpret_cast<String*>(String__init_s))
-        // ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("String", "__sum", { "String", "String" }), reinterpret_cast<String*>(String__init_s))
-
-        ADD_GLOBAL_IF_FN_EXISTS(mangle("gc__alloca", {"i32"}), reinterpret_cast<void*>(gc__allocate))
-        // ADD_GLOBAL_IF_FN_EXISTS(mangle("gc__realloca", {"v","i32"}), reinterpret_cast<void*>(gc__reallocate))
 
         if (_enabledTests) {
             int test_success = 1;
@@ -212,9 +207,7 @@ namespace snowball {
         // Create the pass manager.
         // This one corresponds to a typical -O2 optimization pipeline.
         llvm::ModulePassManager MPM = PB.buildPerModuleDefaultPipeline(llvm::PassBuilder::OptimizationLevel::O2);
-
-        // Optimize the IR!
-        MPM.run(*_module, MAM);
+        MPM.run(*_module.get(), MAM);
     }
 
     void Compiler::cleanup() {

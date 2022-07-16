@@ -3,6 +3,7 @@
 #define __SNOWBALL_H_
 
 #include "api.h"
+#include "libs.h"
 #include "types.h"
 #include "nodes.h"
 #include "token.h"

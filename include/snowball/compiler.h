@@ -21,6 +21,7 @@
 
 namespace snowball {
     class SNAPI;
+    class Generator;
 
     class Compiler {
 

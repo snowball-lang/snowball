@@ -138,11 +138,26 @@ namespace snowball {
 
         ImportNode* node = new ImportNode();
 
-        ASSERT_TOKEN_EOF(_current_token, TokenType::VALUE_STRING, "an import path", "an import statement")
+        switch (_current_token.type)
+        {
+            case TokenType::VALUE_STRING: {
+                std::string path = _current_token.to_string();
+                path = path.substr(1, path.size() - 2);
+                node->path = path;
+                break;
+            }
 
-        std::string path = _current_token.to_string();;
-        path = path.substr(1, path.size() - 2);
-        node->path = path;
+            case TokenType::IDENTIFIER: {
+                node->path = _current_token.to_string();
+                // TODO: check if there is a dot
+                break;
+            }
+
+            default: {
+                UNEXPECTED_TOK2("a string or an identifier", "an import statement")
+            }
+        }
+
 
         return node;
     }
@@ -495,6 +510,9 @@ namespace snowball {
             callNode->arguments = arguments;
             return callNode;
         }
+
+        next_token();
+        UNEXPECTED_TOK("A left parenthesis")
     }
 
     Node* Parser::_parse_expression() {

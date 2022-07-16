@@ -1,9 +1,5 @@
-class awd {
-    fn __init() {
-
-    }
-}
+import System
 
 fn main() -> Number {
-    new awd()
+
 }

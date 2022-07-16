@@ -82,7 +82,6 @@
     - [ ] Add things like `assert`
 - [ ] Number class
 - [ ] add optimizations
-- [ ] builtin functions change to macros in compiler
 - [ ] Let user choose in 32/64 bits numbers
 
 ### Done ✓

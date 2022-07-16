@@ -2,8 +2,6 @@
 #ifndef SNOWBALL_EXPORT_H
 #define SNOWBALL_EXPORT_H
 
-#include "snowball.h"
-
 #ifdef SNOWBALL_STATIC
 #  define SNOWBALL_EXPORT
 #  define SNOWBALL_NO_EXPORT
@@ -11,15 +9,15 @@
 #  ifndef SNOWBALL_EXPORT
 #    ifdef snowball_EXPORTS
         /* We are building this library */
-#      define SNOWBALL_EXPORT
+#      define SNOWBALL_EXPORT __attribute__((visibility("default")))
 #    else
         /* We are using this library */
-#      define SNOWBALL_EXPORT 
+#      define SNOWBALL_EXPORT __attribute__((visibility("default")))
 #    endif
 #  endif
 
 #  ifndef SNOWBALL_NO_EXPORT
-#    define SNOWBALL_NO_EXPORT
+#    define SNOWBALL_NO_EXPORT __attribute__((visibility("hidden")))
 #  endif
 #endif
 

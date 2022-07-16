@@ -55,7 +55,7 @@ typedef int32_t                                 snowball_int_t;
 
 #define LINE_SEPARATOR                        "------------------"
 #ifdef NDEBUG
-    #define _SNOWBALL_BUILD_TYPE "Debug"
+    #define _SNOWBALL_BUILD_TYPE              "Debug"
 
     #define _SNOWBALL_LEXER_DEBUG             0
     #define _SNOWBALL_PARSER_DEBUG            0

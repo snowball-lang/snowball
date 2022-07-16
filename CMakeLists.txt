@@ -41,7 +41,9 @@ llvm_map_components_to_libnames(llvm_libs
 message( "COMPILE_DEFINITIONS: ${DirDefs}" )
 
 ##################################################    Targets     ##################################################
-add_executable(snowball ${PROJECT_FILES})
+add_library(snowball SHARED ${PROJECT_FILES})
+add_executable(snowballexe sn/main.cc)
+target_link_libraries(snowballexe PUBLIC snowball)
 
 foreach(target ${LLVM_TARGETS_TO_BUILD})
   list(APPEND targets "LLVM${target}CodeGen")
