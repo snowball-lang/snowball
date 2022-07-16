@@ -22,7 +22,6 @@ namespace snowball {
                       SourceInfo* p_source_info,
                       llvm::IRBuilder<> p_builder,
                       llvm::Module* p_module,
-                      struct SnowballBuildinTypes p_buildin_types,
                       TestingContext* p_testing_context,
                       bool p_testsEnabled = false)
                       :
@@ -31,8 +30,7 @@ namespace snowball {
                         _enviroment(p_enviroment),
                         _tests_enabled(p_testsEnabled),
                         _builder(std::move(p_builder)),
-                        _testing_context(p_testing_context),
-                        _buildin_types(std::move(p_buildin_types)) {
+                        _testing_context(p_testing_context) {
                 _source_info = p_source_info;
             };
 
@@ -48,7 +46,6 @@ namespace snowball {
             SourceInfo* _source_info;
             llvm::IRBuilder<> _builder;
             TestingContext* _testing_context;
-            SnowballBuildinTypes _buildin_types;
             ClassNode* _current_class = nullptr;
 
             // methods

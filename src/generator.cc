@@ -95,7 +95,7 @@ namespace snowball {
             double (*cosine)(double);
             char *error;
 
-            handle = dlopen ("libm.so", RTLD_LAZY);
+            handle = dlopen (p_node->path.c_str(), RTLD_LAZY);
             if (!handle) {
                 fprintf (stderr, "%s\n", dlerror());
                 exit(1);

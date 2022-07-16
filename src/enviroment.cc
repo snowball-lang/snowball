@@ -13,33 +13,6 @@
 #include <sstream>
 #include <algorithm>
 
-
-#define NEW_CLASS_DECLARATION(class, llvm_struct) \
-    Scope*  class##_class_scope = new Scope(#class, _source_info); \
-    ScopeValue* class##_class_scope_val = new ScopeValue(class##_class_scope, llvm_struct); \
-    std::unique_ptr<ScopeValue*> value_##class##_class = std::make_unique<ScopeValue*>(class##_class_scope_val); \
-
-#define INSERT_CLASS_TO_GLOBAL(class) \
-    global_scope->set(#class, std::move(value_##class##_class));
-
-#define INSERT_FUNCTION_TO_GLOBAL(name, fn) \
-    global_scope->set(name, std::move( \
-        std::make_unique<ScopeValue*>( \
-            new ScopeValue( \
-                std::make_shared<llvm::Function*>(*fn) \
-            ) \
-        ) \
-    ));
-
-#define NEW_CLASS_FUNCTION(class, name, fname, value) \
-    std::shared_ptr<llvm::Function*> fn_##class##_##name##_ptr = std::make_shared<llvm::Function*>(*value);\
-    ScopeValue* scopev_##class##_##name = new ScopeValue(fn_##class##_##name##_ptr);\
-    std::unique_ptr<ScopeValue*> value_##class##_##name = std::make_unique<ScopeValue*>(scopev_##class##_##name);\
-    class##_class_scope->set(fname, std::move(value_##class##_##name));
-
-#define NEW_CLASS_PROPERTY(class, name, value) \
-    class##_class_scope->set(name, std::move(value));
-
 namespace snowball_utils {
     template <typename Iter>
     std::string join(Iter begin, Iter end, std::string const& separator)
@@ -54,29 +27,9 @@ namespace snowball_utils {
 }
 
 namespace snowball {
-    Enviroment::Enviroment(SourceInfo* p_source_info, struct SnowballBuildinTypes p_buildin_types) : _source_info(p_source_info) {
-        _buildin_types = std::move(p_buildin_types);
-
+    Enviroment::Enviroment(SourceInfo* p_source_info) : _source_info(p_source_info) {
         Scope* global_scope = new Scope("__sn__global__", _source_info);
         _scopes.push_back(global_scope);
-
-        // Number class
-        NEW_CLASS_DECLARATION(Number, _buildin_types.sn_number_struct)
-
-        NEW_CLASS_FUNCTION(Number, init, mangle("__init", {"i"}), _buildin_types.sn_number__init_i)
-        NEW_CLASS_FUNCTION(Number, sum, mangle("__sum", {"Number", "Number"}), _buildin_types.sn_number__sum_n)
-
-        // String class
-        NEW_CLASS_DECLARATION(String, _buildin_types.sn_string_struct)
-
-        NEW_CLASS_FUNCTION(String, init, mangle("__init", {"s"}), _buildin_types.sn_string__init_s)
-        NEW_CLASS_FUNCTION(String, sum, mangle("__sum", {"String", "String"}), _buildin_types.sn_string__sum_s)
-
-        INSERT_CLASS_TO_GLOBAL(String)
-        INSERT_CLASS_TO_GLOBAL(Number)
-
-        INSERT_FUNCTION_TO_GLOBAL(mangle("gc__alloca", {"i32"}), _buildin_types.sn_gc__alloca)
-        INSERT_FUNCTION_TO_GLOBAL(mangle("gc__realloca", {"v","i32"}), _buildin_types.sn_gc__realloca)
     }
 
     ScopeValue* Enviroment::get(std::string name, Node* p_node, std::string p_o_name) {

@@ -5,6 +5,7 @@
 #include "lexer.h"
 #include "types.h"
 #include "parser.h"
+#include "snowball.h"
 #include "generator.h"
 #include "enviroment.h"
 #include "source_info.h"
@@ -19,6 +20,7 @@
 #define __SNOWBALL_COMPILER_H_
 
 namespace snowball {
+    class SNAPI;
 
     class Compiler {
 
@@ -38,12 +40,15 @@ namespace snowball {
             llvm::GenericValue execute();
 
             // Get
+            llvm::IRBuilder<> get_builder() { return _builder; }
             SourceInfo* get_source_info() { return _source_info; }
-            std::unique_ptr<llvm::Module> get_module() { return std::move(_module); }
+            Enviroment* get_enviroment() { return _enviroment; }
+            llvm::Module* get_module() { return _module.get(); }
 
             ~Compiler() {};
 
             llvm::LLVMContext global_context;
+            SNAPI* API;
 
         private:
             // llvm
@@ -51,7 +56,6 @@ namespace snowball {
             llvm::IRBuilder<> _builder;
 
             // variables
-
             std::string _code;
             std::string _path;
 
@@ -64,7 +68,6 @@ namespace snowball {
             Generator* _generator;
 
             Enviroment* _enviroment;
-            SnowballBuildinTypes _buildin_types;
 
             TestingContext* _testing_context = new TestingContext();
 

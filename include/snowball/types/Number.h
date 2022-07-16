@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "../constants.h"
+#include "../snowball.h"
 
 #ifndef SN_NUMBER_EXPORT_H
 #define SN_NUMBER_EXPORT_H
@@ -13,6 +14,8 @@ typedef struct Number {
 } Number;
 
 }
+
+void register_number(snowball::SNAPI* API);
 
 extern "C" DLLEXPORT Number* Number__init_i(snowball_int_t n);
 extern "C" DLLEXPORT Number* Number__sum_Number(Number* number, Number* s);

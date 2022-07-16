@@ -15,7 +15,7 @@ namespace snowball {
     class Enviroment {
 
         public:
-            Enviroment(SourceInfo* p_source_info, struct SnowballBuildinTypes p_buildin_types);
+            Enviroment(SourceInfo* p_source_info);
 
             Scope* global_scope();
             Scope* current_scope();
@@ -37,7 +37,6 @@ namespace snowball {
         private:
             SourceInfo* _source_info;
             std::vector<Scope*> _scopes;
-            struct SnowballBuildinTypes _buildin_types;
     };
 
 }

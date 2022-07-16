@@ -2,8 +2,45 @@
 #include <cstdlib>
 #include <cstdint>
 
+#include <string>
+#include <vector>
+#include <utility>
+
+#include "snowball/api.h"
 #include "snowball/llvm/gc.h"
 #include "snowball/constants.h"
+#include "snowball/utils/mangle.h"
+
+void register_gc(snowball::SNAPI* API) {
+    snowball::ScopeValue* gc_allocate = API->create_function(
+      "gc__alloca",
+      API->get_compiler()->get_builder().getInt8PtrTy(),
+      std::vector<std::pair<std::string, llvm::Type*>> {
+        std::make_pair(
+          "i32",
+          API->get_compiler()->get_builder().getInt32Ty()
+        )
+      }
+    );
+
+    snowball::ScopeValue* gc_reallocate = API->create_function(
+      "gc__realloca",
+      API->get_compiler()->get_builder().getInt8PtrTy(),
+      std::vector<std::pair<std::string, llvm::Type*>> {
+        std::make_pair(
+          "i8",
+          API->get_compiler()->get_builder().getInt8PtrTy()
+        ),
+        std::make_pair(
+          "i32",
+          API->get_compiler()->get_builder().getInt32Ty()
+        )
+      }
+    );
+
+    API->add_to_enviroment(snowball::mangle("gc__alloca", {"i32"}), std::make_unique<snowball::ScopeValue*>(gc_allocate));
+    API->add_to_enviroment(snowball::mangle("gc__realloca", {"i8", "i32"}), std::make_unique<snowball::ScopeValue*>(gc_reallocate));
+}
 
 extern "C" DLLEXPORT void* gc__allocate(uint32_t bytes) {
   return malloc(bytes);

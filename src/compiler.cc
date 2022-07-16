@@ -29,6 +29,7 @@
 #include <llvm/ExecutionEngine/GenericValue.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
 
+#include "snowball/api.h"
 #include "snowball/types.h"
 #include "snowball/lexer.h"
 #include "snowball/compiler.h"
@@ -79,10 +80,7 @@ namespace snowball {
         create_source_info();
 
         _module = std::make_unique<llvm::Module>(prepare_module_name(), global_context);;
-
-
-        link_std_classes();
-        _enviroment = new Enviroment(_source_info, std::move(_buildin_types));
+        _enviroment = new Enviroment(_source_info);
 
         _initialized = true;
     }
@@ -102,13 +100,15 @@ namespace snowball {
                 _parser = new Parser(_lexer, _source_info);
                 _parser->parse();
 
+                API = new SNAPI(std::move(this));
+                link_std_classes();
+
                 _generator = new Generator(
                     _parser,
                     _enviroment,
                     _source_info,
                     std::move(_builder),
                     _module.get(),
-                    std::move(_buildin_types),
                     _testing_context,
                     _enabledTests
                 );
@@ -117,6 +117,8 @@ namespace snowball {
                     _generator->generate(node);
                 }
             }
+
+            optimize();
 
             std::string module_error_string;
             llvm::raw_string_ostream module_error_stream(module_error_string);
@@ -149,11 +151,12 @@ namespace snowball {
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
         ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("Number", "__init", { "i" }), reinterpret_cast<Number*>(Number__init_i))
-        ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("Number", "__sum", { "Number", "Number" }), reinterpret_cast<Number*>(Number__sum_Number))
-        ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("String", "__init", { "s" }), reinterpret_cast<String*>(String__init_s))
-        ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("String", "__sum", { "String", "String" }), reinterpret_cast<String*>(String__init_s))
+        // ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("Number", "__sum", { "Number", "Number" }), reinterpret_cast<Number*>(Number__sum_Number))
+        // ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("String", "__init", { "s" }), reinterpret_cast<String*>(String__init_s))
+        // ADD_GLOBAL_IF_FN_EXISTS(GET_FUNCTION_FROM_CLASS("String", "__sum", { "String", "String" }), reinterpret_cast<String*>(String__init_s))
+
         ADD_GLOBAL_IF_FN_EXISTS(mangle("gc__alloca", {"i32"}), reinterpret_cast<void*>(gc__allocate))
-        ADD_GLOBAL_IF_FN_EXISTS(mangle("gc__realloca", {"v","i32"}), reinterpret_cast<void*>(gc__reallocate))
+        // ADD_GLOBAL_IF_FN_EXISTS(mangle("gc__realloca", {"v","i32"}), reinterpret_cast<void*>(gc__reallocate))
 
         if (_enabledTests) {
             int test_success = 1;
@@ -228,64 +231,9 @@ namespace snowball {
     }
 
     void Compiler::link_std_classes() {
-        std::string llvm_error;
-        llvm::raw_string_ostream message_stream(llvm_error);
-
-        llvm::Type* nt = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
-        llvm::Type* st = get_llvm_type_from_sn_type(BuildinTypes::STRING, _builder);
-        llvm::Type* i32 = _builder.getInt32Ty();
-        llvm::Type* i8p = _builder.getInt8PtrTy();
-
-        /* Number */
-        auto sn_number_struct = llvm::StructType::create(global_context, "Number");
-        sn_number_struct->setBody(std::vector<llvm::Type *>{ nt });
-
-        auto sn_number_i_prototype = llvm::FunctionType::get(sn_number_struct->getPointerTo(), std::vector<llvm::Type *> { nt }, false);
-        auto sn_number__init_i_fn = llvm::Function::Create(sn_number_i_prototype, llvm::Function::ExternalLinkage, mangle("Number.__init", {"i"}), _module.get());
-
-        auto sn_number_sum_n_n_prototype = llvm::FunctionType::get(sn_number_struct->getPointerTo(), std::vector<llvm::Type *> { sn_number_struct->getPointerTo(), sn_number_struct->getPointerTo() }, false);
-        auto sn_number__add_n_fn = llvm::Function::Create(sn_number_sum_n_n_prototype, llvm::Function::ExternalLinkage, mangle("Number.__sum", {"Number", "Number"}), _module.get());
-
-        /* String */
-        auto sn_string_struct = llvm::StructType::create(global_context, "String");
-        sn_string_struct->setBody({ st, nt });
-
-        auto sn_string_prototype = llvm::FunctionType::get(sn_string_struct->getPointerTo(), std::vector<llvm::Type *> { st }, false);
-        auto sn_string__init_s_fn = llvm::Function::Create(sn_string_prototype, llvm::Function::ExternalLinkage, mangle("String.__init", {"s"}), _module.get());
-
-        auto sn_string_sum_String_prototype = llvm::FunctionType::get(sn_string_struct->getPointerTo(), std::vector<llvm::Type *> { sn_string_struct->getPointerTo(), sn_string_struct->getPointerTo() }, false);
-        auto sn_string__sum_s_fn = llvm::Function::Create(sn_string_sum_String_prototype, llvm::Function::ExternalLinkage, mangle("String.__sum", {"String", "String"}), _module.get());
-
-        /* GC */
-        auto sn_gc__alloca_prototype = llvm::FunctionType::get(i8p, std::vector<llvm::Type *> { i32 }, false);
-        auto sn_gc__alloca = llvm::Function::Create(sn_gc__alloca_prototype, llvm::Function::ExternalLinkage, mangle("gc__alloca", {"i32"}), _module.get());
-
-        auto sn_gc__realloca_prototype = llvm::FunctionType::get(i8p, std::vector<llvm::Type *> { i32 }, false);
-        auto sn_gc__realloca = llvm::Function::Create(sn_gc__realloca_prototype, llvm::Function::ExternalLinkage, mangle("gc__realloca", {"v","i32"}), _module.get());
-
-        /* Checks */
-        llvm::verifyFunction(*sn_number__init_i_fn, &message_stream);
-        llvm::verifyFunction(*sn_number__add_n_fn, &message_stream);
-        llvm::verifyFunction(*sn_string__init_s_fn, &message_stream);
-        llvm::verifyFunction(*sn_string__sum_s_fn, &message_stream);
-        llvm::verifyFunction(*sn_gc__alloca, &message_stream);
-        llvm::verifyFunction(*sn_gc__realloca, &message_stream);
-
-        if (!llvm_error.empty())
-            throw SNError(Error::LLVM_INTERNAL, llvm_error);
-
-        _buildin_types = {
-            .sn_number__init_i = std::make_unique<llvm::Function*>(sn_number__init_i_fn),
-            .sn_number__sum_n = std::make_unique<llvm::Function*>(sn_number__add_n_fn),
-            .sn_number_struct = std::make_unique<llvm::StructType*>(sn_number_struct),
-
-            .sn_string__init_s = std::make_unique<llvm::Function*>(sn_string__init_s_fn),
-            .sn_string__sum_s = std::make_unique<llvm::Function*>(sn_string__sum_s_fn),
-            .sn_string_struct = std::make_unique<llvm::StructType*>(sn_string_struct),
-
-            .sn_gc__alloca = std::make_unique<llvm::Function*>(sn_gc__alloca),
-            .sn_gc__realloca = std::make_unique<llvm::Function*>(sn_gc__realloca),
-        };
+        register_number(API);
+        register_string(API);
+        register_gc(API);
     }
 
     void Compiler::create_source_info() {
