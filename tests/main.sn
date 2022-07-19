@@ -1,6 +1,9 @@
-import System
+
+pub fn hello<T>(n: T) -> T {
+    return n
+}
 
 pub fn main() -> Number {
-    System.println("Top 5 reasons why snowball sucks:")
-    System.println("\t* ther's none")
+    hello<String>("d")
+    hello<Number>(5)
 }

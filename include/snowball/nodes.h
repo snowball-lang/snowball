@@ -1,4 +1,5 @@
 
+#include <map>
 #include <memory>
 #include <string>
 #include <stdint.h>
@@ -129,6 +130,9 @@ namespace snowball {
 		std::string return_type;
 		std::vector<ArgumentNode *> arguments;
 
+		std::vector<std::string> generics;
+		std::map<std::string, std::string> generic_map;
+
 		bool is_static = false;
 		bool is_public = false;
 		bool has_return = false;
@@ -155,6 +159,11 @@ namespace snowball {
 	struct IdentifierNode : public Node {
 		std::string name;
 
+		IdentifierNode(std::string p_name) {
+			name = p_name;
+			type = Type::IDENTIFIER;
+		}
+
 		IdentifierNode(Token p_identifier_tk) {
 			name = p_identifier_tk.to_string();
 			type = Type::IDENTIFIER;
@@ -167,6 +176,9 @@ namespace snowball {
 	struct CallNode : public Node {
 		std::vector<Node*> arguments;
 		std::string method;
+
+		std::vector<std::string> generics;
+
 		Node* base = nullptr;
 		bool is_static_call = false;
 

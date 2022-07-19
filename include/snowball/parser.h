@@ -46,6 +46,8 @@ namespace snowball {
             BlockNode* _parse_block(std::vector<TokenType> p_termination = { TokenType::BRACKET_RCURLY } );
             Node* _build_op_tree(std::vector<Node*> &expressions);
 
+            std::vector<std::string> _parse_generic_expr();
+
             // Variables
             Lexer* _lexer;
             Token _current_token;

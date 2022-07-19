@@ -12,9 +12,10 @@
 #ifndef __SNOWBALL_GENERATOR_H_
 #define __SNOWBALL_GENERATOR_H_
 
-#include "api.h"
-
 namespace snowball {
+
+    class SNAPI;
+    class Generics;
 
     class Generator {
 
@@ -27,10 +28,12 @@ namespace snowball {
                 llvm::IRBuilder<> p_builder,
                 llvm::Module* p_module,
                 TestingContext* p_testing_context,
+                Generics* p_generics,
                 bool p_testsEnabled = false)
                   :
                     _module(p_module),
                     _parser(p_parser),
+                    _generics(p_generics),
                     _enviroment(p_enviroment),
                     _tests_enabled(p_testsEnabled),
                     _builder(std::move(p_builder)),
@@ -47,6 +50,7 @@ namespace snowball {
             SNAPI* _api;
             Parser* _parser;
             bool _tests_enabled;
+            Generics* _generics;
             llvm::Module* _module;
             Enviroment* _enviroment;
             SourceInfo* _source_info;

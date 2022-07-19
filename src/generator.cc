@@ -305,28 +305,43 @@ namespace snowball {
                 mangle(p_node->method, arg_types, true) :
                 GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, arg_types, true);
 
-            // Look for public
-            if (_enviroment->item_exists(method_call)) {
-                function = _enviroment->get(method_call, p_node);
+            if (p_node->generics.size() > 0) {
+                // TODO: support for private methods
+                Generics::GenericValue generic_function = _generics->get_generic(method_call, arg_types, p_node->generics, p_node);
+                auto backup = _builder.GetInsertBlock();
+
+                generate(generic_function.node);
+                function = _enviroment->get(
+                    p_node->base == nullptr ?
+                    mangle(p_node->method, generic_function.args, true) :
+                    GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, generic_function.args, true), p_node);
+
+                _builder.SetInsertPoint(backup);
             } else {
-                if (private_method_exists) {
-                    COMPILER_ERROR(
-                        VARIABLE_ERROR,
-                        Logger::format("Function named '%s' is a private method that can't be accessed outside it's class",
-                            p_node->base != nullptr ?
-                                Logger::format("%s.%s", base_struct.c_str(), method_name.c_str()).c_str()
-                                : method_name.c_str()
-                        )
-                    )
+
+                // Look for public
+                if (_enviroment->item_exists(method_call)) {
+                    function = _enviroment->get(method_call, p_node);
                 } else {
-                    COMPILER_ERROR(
-                        VARIABLE_ERROR,
-                        Logger::format("No function found with named: %s",
-                            p_node->base != nullptr ?
-                                Logger::format("%s.%s", base_struct.c_str(), method_name.c_str()).c_str()
-                                : method_name.c_str()
+                    if (private_method_exists) {
+                        COMPILER_ERROR(
+                            VARIABLE_ERROR,
+                            Logger::format("Function named '%s' is a private method that can't be accessed outside it's class",
+                                p_node->base != nullptr ?
+                                    Logger::format("%s.%s", base_struct.c_str(), method_name.c_str()).c_str()
+                                    : method_name.c_str()
+                            )
                         )
-                    )
+                    } else {
+                        COMPILER_ERROR(
+                            VARIABLE_ERROR,
+                            Logger::format("No function found with name: %s",
+                                p_node->base != nullptr ?
+                                    Logger::format("%s.%s", base_struct.c_str(), method_name.c_str()).c_str()
+                                    : method_name.c_str()
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -344,11 +359,32 @@ namespace snowball {
     llvm::Value* Generator::generate_return(ReturnNode* p_node) {
         llvm::Value* value = generate(p_node->value);
         llvm::Type* type = value->getType();
-        if (type->getPointerElementType()->getStructName() == p_node->parent->return_type) {
+        std::string ret_type = (
+            *_enviroment
+            ->current_scope()
+            ->get(
+                p_node
+                ->parent
+                ->return_type
+                .c_str(),
+                p_node
+            )->llvm_value)
+            ->getType()
+            ->getPointerElementType()
+            ->getStructName()
+            .str();
+
+        if (type->getPointerElementType()->getStructName() == ret_type) {
             return _builder.CreateRet(value);
         } else {
-            DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
-            throw CompilerError(Error::TYPE_ERROR, Logger::format("Mismatched types between '%s' and '%s'", value->getType()->getPointerElementType()->getStructName().str().c_str(), p_node->parent->return_type.c_str()), dbg_info);
+            COMPILER_ERROR(
+                TYPE_ERROR,
+                Logger::format(
+                    "Mismatched types between '%s' and '%s'",
+                    value->getType()->getPointerElementType()->getStructName().str().c_str(),
+                    ret_type.c_str()
+                )
+            )
         }
     }
 
@@ -442,6 +478,24 @@ namespace snowball {
     }
 
     llvm::Value* Generator::generate_function(FunctionNode* p_node) {
+
+        // Skip if the function contains a template
+        if (p_node->generics.size() > 0) {
+
+
+            std::vector<std::string> args;
+            for (ArgumentNode* argument : p_node->arguments) {
+                args.push_back(argument->type_name);
+            }
+
+            _generics->add_generic(mangle(
+                _current_class == nullptr ? p_node->name : Logger::format(
+                    "%s.%s", _current_class->name.c_str(),
+                    p_node->name.c_str()
+                ), args, p_node->is_public), args, p_node->return_type, p_node->generics, p_node);
+            return _builder.getInt1(0);
+        };
+
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
 
@@ -519,6 +573,21 @@ namespace snowball {
 
         if (_current_class != nullptr && p_node->name == "__init" && !p_node->is_static) {
             generate_contructor_meta();
+        }
+
+        for (const auto& generic : p_node->generic_map) {
+            ScopeValue* scope_val = _enviroment->get(generic.second, p_node);
+            if (scope_val->type != ScopeType::CLASS) {
+                COMPILER_ERROR(SYNTAX_ERROR, Logger::format("%s does not point a class", generic.second.c_str()))
+            }
+
+            llvm::Value* value = generate(new IdentifierNode(generic.second));
+            auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, generic.first );
+
+            std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(value)));
+            SET_TO_SCOPE_OR_CLASS(generic.first, std::move(scope_value))
+
+            _builder.CreateStore (value, alloca, /*isVolatile=*/false);
         }
 
         for (auto expr : p_node->body->exprs) {

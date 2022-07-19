@@ -4,16 +4,13 @@
 #include "snowball/errors.h"
 #include "snowball/parser.h"
 #include "snowball/logger.h"
+#include "snowball/utils/utils.h"
 
 #include "snowball/snowball.h"
 
 #include <string>
 #include <memory>
 #include <utility>
-
-#include <assert.h>
-
-#define ASSERT(x) assert(x);
 
 #define PARSER_ERROR(err, msg) _parser_error(err, msg);
 #define UNEXPECTED_TOK(expectation) PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Expected %s, got %s%s%s", expectation, RED, _current_token.to_string().c_str(), RESET));
@@ -320,6 +317,11 @@ namespace snowball {
 
         next_token();
 
+        if (_current_token.type == TokenType::OP_LT) {
+            std::vector<std::string> generics = _parse_generic_expr();
+            func->generics = generics;
+        }
+
         std::vector<ArgumentNode*> arguments;
 
         // TODO: check for args
@@ -509,11 +511,20 @@ namespace snowball {
     }
 
     CallNode* Parser::_parse_function_call() {
-        if (peek(0, true).type == TokenType::BRACKET_LPARENT) {
-            CallNode* callNode = new CallNode();
-            callNode->method = _current_token.to_string();
+        ASSERT(_current_token.type == TokenType::IDENTIFIER)
 
-            next_token(); next_token();
+        CallNode* callNode = new CallNode();
+        callNode->method = _current_token.to_string();
+
+        std::vector<std::string> generics;
+        if (peek(0, true).type == TokenType::OP_LT) {
+            next_token();
+            generics = _parse_generic_expr();
+        }
+
+        if (_current_token.type == TokenType::BRACKET_LPARENT) {
+
+            next_token();
 
             std::vector<Node*> arguments;
             while (true) {
@@ -535,6 +546,7 @@ namespace snowball {
             }
 
             callNode->arguments = arguments;
+            if (generics.size() > 0) callNode->generics = generics;
             return callNode;
         }
 
@@ -578,7 +590,7 @@ namespace snowball {
                     break;
 
                 case TokenType::IDENTIFIER: {
-                    if (peek(0, true).type == TokenType::BRACKET_LPARENT) {
+                    if (peek(0, true).type == TokenType::BRACKET_LPARENT || peek(0, true).type == TokenType::OP_LT) {
                         expression = _parse_function_call();
                     } else {
                         expression = new IdentifierNode(_current_token);
@@ -840,5 +852,37 @@ namespace snowball {
         }
 
         return expressions[0];
+    }
+
+    std::vector<std::string> Parser::_parse_generic_expr() {
+        ASSERT(_current_token.type == TokenType::OP_LT)
+        std::vector<std::string> types;
+
+        while (true) {
+            next_token();
+
+            if (_current_token.type == TokenType::_EOF) {
+                PARSER_ERROR(Error::UNEXPECTED_EOF, "Found EOF while parsing generic expression")
+            } else if (_current_token.type == TokenType::IDENTIFIER) {
+                types.push_back(_current_token.to_string());
+                next_token();
+
+                if (_current_token.type == TokenType::OP_GT) {
+                    next_token();
+                    break;
+                } else if (_current_token.type == TokenType::SYM_COMMA && peek(0, true).type == TokenType::IDENTIFIER) {
+                    continue;
+                }
+
+                UNEXPECTED_TOK2("A comma or a >", "a generic expression")
+            } else if (_current_token.type == TokenType::OP_GT) {
+                next_token();
+                break;
+            } else {
+                UNEXPECTED_TOK("a vaid generic expression")
+            }
+        }
+
+        return types;
     }
 }

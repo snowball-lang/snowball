@@ -102,6 +102,8 @@ namespace snowball {
                 _parser->parse();
 
                 API = new SNAPI(std::move(this));
+                Generics* generics_api = new Generics(std::move(this));
+
                 link_std_classes();
 
                 _generator = new Generator(
@@ -112,6 +114,7 @@ namespace snowball {
                     std::move(_builder),
                     _module.get(),
                     _testing_context,
+                    generics_api,
                     _enabledTests
                 );
 
@@ -121,7 +124,10 @@ namespace snowball {
             }
 
             llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
+
+            #if _SNOWBALL_CAN_OPTIMIZE
             optimize();
+            #endif
 
             std::string module_error_string;
             llvm::raw_string_ostream module_error_stream(module_error_string);

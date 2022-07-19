@@ -6,6 +6,7 @@
 - [ ] default return type
 - [ ] change location for OPTypes struct inside BinOP node
 - [ ] change all compiler error to call macro COMPILER_ERROR
+- [ ] Add readonly variables for classes
 - [ ] change commands to separated folder/file
     - [ ] compile
     - [ ] REPL
@@ -33,6 +34,7 @@
     - [ ] upper
     - [ ] lower
     - [ ] capitalize
+- [ ] Add a templating system
 - [ ] Modules
     - [ ] if library ends with .so, dlopen
     - [ ] check entry with a snowball.json

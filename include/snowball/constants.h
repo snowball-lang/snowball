@@ -23,6 +23,9 @@ extern "C" {
 #endif
 
 // Values
+#ifndef _SNOWBALL_CAN_OPTIMIZE
+#define _SNOWBALL_CAN_OPTIMIZE                  0 
+#endif
 
 #define _SNOWBALL_STR_FACTOR                    16
 #define _SNOWBALL_MAX_LENGTH                    2147483647
