@@ -8,6 +8,7 @@
 #define __SNOWBALL_BUILDIN_TYPES_H_
 
 namespace snowball {
+
     enum BuildinTypes {
         NUMBER,
         STRING,

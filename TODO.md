@@ -35,11 +35,15 @@
     - [ ] lower
     - [ ] capitalize
 - [ ] Add a templating system
+    - [x] Functions
+    - [ ] Classes
+    - [ ] Default types
+    - [ ] Infer types without explicitly typing it
 - [ ] Modules
     - [ ] if library ends with .so, dlopen
     - [ ] check entry with a snowball.json
     - [x] add a System class for I/O
-    - [ ] add system/local modules support
+    - [x] add system/local modules support
     - [ ] custom variable/selected imports
 - [ ] Classes
     - [x] Class/static keyword
@@ -56,6 +60,7 @@
         - [x] Variables
         - [x] Self variable
     - [x] Call static methods
+    - [ ] Inheritance
     - [x] Add `new` keyword support
     - [ ] Add all default override methods
         - [ ] __init

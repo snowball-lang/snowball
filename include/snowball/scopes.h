@@ -59,6 +59,10 @@ namespace snowball {
         // Function params
         bool isStaticFunction = false;
 
+        // Class params
+        std::vector<std::string> parents;
+        std::vector<std::string> properties;
+
         Scope* scope_value;
 
         ScopeValue(std::shared_ptr<llvm::Value*> p_value) {

@@ -133,7 +133,7 @@ namespace snowball {
 
         method_name += ")";
 
-        std::string fname = GET_FUNCTION_FROM_CLASS(p_node->method.c_str(), "__init", arg_types);
+        std::string fname = GET_FUNCTION_FROM_CLASS(p_node->method.c_str(), "__init", arg_types, true);
         ScopeValue* function = _enviroment->get(
             fname,
             p_node,

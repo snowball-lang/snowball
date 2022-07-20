@@ -197,7 +197,16 @@ namespace snowball {
         cls->name = _current_token.to_string();
         next_token();
 
-        ASSERT_TOKEN_EOF(_current_token, TokenType::BRACKET_LCURLY, "}", "a class body")
+        if (_current_token.type == TokenType::SYM_COLLON) {
+            next_token();
+
+            // TODO: multiple inheritance
+            ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "a class inheritance expression")
+            cls->parents.push_back(_current_token.to_string());
+            next_token();
+        }
+
+        ASSERT_TOKEN_EOF(_current_token, TokenType::BRACKET_LCURLY, "{", "a class body")
         ClassNode* top_clas = std::move(_context.current_class);
         _context.current_class = cls;
         while (true) {
@@ -516,15 +525,20 @@ namespace snowball {
         CallNode* callNode = new CallNode();
         callNode->method = _current_token.to_string();
 
+        bool has_generics = false;
         std::vector<std::string> generics;
+
         if (peek(0, true).type == TokenType::OP_LT) {
             next_token();
+            has_generics = true;
             generics = _parse_generic_expr();
         }
 
-        if (_current_token.type == TokenType::BRACKET_LPARENT) {
-
+        if ((peek(0, true).type == TokenType::BRACKET_LPARENT) || (_current_token.type == TokenType::BRACKET_LPARENT && has_generics)) {
             next_token();
+
+            if (!has_generics)
+                next_token();
 
             std::vector<Node*> arguments;
             while (true) {
