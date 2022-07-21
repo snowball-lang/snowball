@@ -246,6 +246,9 @@ namespace snowball {
 		std::vector<VarNode*> vars;
 		std::vector<FunctionNode*> functions;
 
+		// TODO: generics
+		std::vector<std::string> parents;
+
 		ClassNode() {
 			type = Type::CLASS;
 		};

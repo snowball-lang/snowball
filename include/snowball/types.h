@@ -13,6 +13,7 @@ namespace snowball {
         STRING,
     };
 
+    llvm::Value* get_alloca(llvm::Module* p_module, llvm::IRBuilder<> p_builder);
     llvm::Type* get_llvm_type_from_sn_type(BuildinTypes type, llvm::IRBuilder<> builder);
 }
 

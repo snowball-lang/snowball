@@ -12,7 +12,6 @@
     - [ ] REPL
     - [ ] unit testing
 - [ ] check if class has been initialized
-- [ ] `_MN10gc__allocaA3i32P` and `_MN12gc__reallocaA2i8A3i32P` should not really be in the enviroment
 
 ### Known Bugs
 
@@ -35,11 +34,15 @@
     - [ ] lower
     - [ ] capitalize
 - [ ] Add a templating system
+    - [x] Functions
+    - [ ] Classes
+    - [ ] Default types
+    - [ ] Infer types without explicitly typing it
 - [ ] Modules
     - [ ] if library ends with .so, dlopen
     - [ ] check entry with a snowball.json
     - [x] add a System class for I/O
-    - [ ] add system/local modules support
+    - [x] add system/local modules support
     - [ ] custom variable/selected imports
 - [ ] Classes
     - [x] Class/static keyword
@@ -56,6 +59,7 @@
         - [x] Variables
         - [x] Self variable
     - [x] Call static methods
+    - [ ] Inheritance
     - [x] Add `new` keyword support
     - [ ] Add all default override methods
         - [ ] __init
@@ -105,3 +109,4 @@
     - [x] Add class/function to global
 - [x] add optimizations
 - [x] Let user choose in 32/64 bits numbers
+- [x] `_MN10gc__allocaA3i32P` and `_MN12gc__reallocaA2i8A3i32P` should not really be in the enviroment

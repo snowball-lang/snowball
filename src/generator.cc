@@ -133,7 +133,7 @@ namespace snowball {
 
         method_name += ")";
 
-        std::string fname = GET_FUNCTION_FROM_CLASS(p_node->method.c_str(), "__init", arg_types);
+        std::string fname = GET_FUNCTION_FROM_CLASS(p_node->method.c_str(), "__init", arg_types, true);
         ScopeValue* function = _enviroment->get(
             fname,
             p_node,
@@ -396,11 +396,10 @@ namespace snowball {
             case ScopeType::CLASS:
             case ScopeType::MODULE: {
                 llvm::StructType* type = *value->llvm_struct;
-                llvm::Function* alloca_fn = *_enviroment->get(mangle("gc__alloca", {"i32"}, true), nullptr)->llvm_function;
                 int size = _module->getDataLayout().getTypeStoreSize(type);
                 llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder.getInt32Ty(), size);
 
-                llvm::Value* alloca_value = _builder.CreateCall(alloca_fn, size_constant);
+                llvm::Value* alloca_value = _builder.CreateCall(get_alloca(_module, _builder), size_constant);
                 return _builder.CreatePointerCast(alloca_value, type->getPointerTo());
             }
 
@@ -687,11 +686,10 @@ namespace snowball {
         ASSERT(_current_class != nullptr)
 
         llvm::StructType* type = *_enviroment->get(_current_class->name, _current_class)->llvm_struct;
-        llvm::Function* alloca_fn = *_enviroment->get(mangle("gc__alloca", {"i32"}, true), nullptr)->llvm_function;
         int size = _module->getDataLayout().getTypeStoreSize(type);
         llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder.getInt32Ty(), size);
 
-        llvm::Value* alloca_value = _builder.CreateCall(alloca_fn, size_constant);
+        llvm::Value* alloca_value = _builder.CreateCall(get_alloca(_module, _builder), size_constant);
         llvm::Value* pointerCast = _builder.CreatePointerCast(alloca_value, type->getPointerTo(), "self");
 
         std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value *>(pointerCast)));

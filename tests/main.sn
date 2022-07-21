@@ -1,9 +1,11 @@
+import System
 
 pub fn hello<T>(n: T) -> T {
     return n
 }
 
 pub fn main() -> Number {
-    hello<String>("d")
+    var d = hello<String>("d")
     hello<Number>(5)
+    System.print(d)
 }

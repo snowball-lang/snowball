@@ -1,12 +1,31 @@
 
 #include <memory>
+#include <vector>
 #include <algorithm>
 
 #include <llvm/IR/IRBuilder.h>
+
 #include "snowball/types.h"
 #include "snowball/constants.h"
+#include "snowball/utils/mangle.h"
 
 namespace snowball {
+
+    llvm::Value* get_alloca(llvm::Module* p_module, llvm::IRBuilder<> p_builder) {
+        llvm::FunctionType* type = llvm::FunctionType::get(
+            p_builder.getInt8PtrTy(),
+            std::vector<llvm::Type*> {
+                p_builder.getInt32Ty()
+            },
+            false
+        );
+
+        return p_module->getOrInsertFunction(
+            mangle("__sn_alloca__", { "i32" }, true),
+            type
+        ).getCallee();
+    }
+
     llvm::Type* get_llvm_type_from_sn_type(BuildinTypes type, llvm::IRBuilder<> builder) {
 
         switch (type)
