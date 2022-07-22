@@ -7,29 +7,36 @@
 
 #include <vector>
 #include <utility>
+#include <string>
 
 namespace snowball {
     ScopeValue* sn_system_export(SNAPI* API) {
-        llvm::Type* string_class = (*API->get_compiler()->get_enviroment()->get("String", nullptr)->llvm_struct)->getPointerTo();
-        ScopeValue* system_module = API->create_module("System", {});
+        ScopeValue* string_class = API->get_compiler()->get_enviroment()->get("String", nullptr);
+        API->create_module("System", {}, [&](ScopeValue* system_module) {
+            llvm::Type* class_type = (*system_module->llvm_struct)->getPointerTo();
 
-        API->create_class_method(
-            system_module,
-            "print",
-            API->get_compiler()->get_builder().getVoidTy(),
-            { std::make_pair("String", string_class) },
-            true
-        );
+            API->create_class_method(
+                system_module,
+                "print",
+                API->get_compiler()->builder.getVoidTy(),
+                std::vector<std::pair<std::string, llvm::Type*>> {
+                    std::make_pair("String", *string_class->llvm_struct)
+                },
+                true,
+                nullptr
+            );
 
-        API->create_class_method(
-            system_module,
-            "println",
-            API->get_compiler()->get_builder().getVoidTy(),
-            { std::make_pair("String", string_class) },
-            true
-        );
-
-        return system_module;
+            API->create_class_method(
+                system_module,
+                "println",
+                API->get_compiler()->builder.getVoidTy(),
+                std::vector<std::pair<std::string, llvm::Type*>> {
+                    std::make_pair("String", *string_class->llvm_struct)
+                },
+                true,
+                nullptr
+            );
+        });
     }
 }
 

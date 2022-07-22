@@ -24,7 +24,7 @@ extern "C" {
 
 // Values
 #ifndef _SNOWBALL_CAN_OPTIMIZE
-#define _SNOWBALL_CAN_OPTIMIZE                  0 
+#define _SNOWBALL_CAN_OPTIMIZE                  0
 #endif
 
 #define _SNOWBALL_STR_FACTOR                    16

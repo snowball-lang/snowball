@@ -73,7 +73,9 @@ namespace snowball {
 
             // utils
             void generate_contructor_meta();
-            llvm::Value* convert_to_right_value(llvm::Value* value);
+
+        public:
+            static llvm::Value* convert_to_right_value(llvm::IRBuilder<> p_builder, llvm::Value* value);
     };
 }
 

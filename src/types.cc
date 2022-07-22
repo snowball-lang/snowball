@@ -1,4 +1,5 @@
 
+#include <llvm-10/llvm/IR/DerivedTypes.h>
 #include <memory>
 #include <vector>
 #include <algorithm>
@@ -12,18 +13,8 @@
 namespace snowball {
 
     llvm::Value* get_alloca(llvm::Module* p_module, llvm::IRBuilder<> p_builder) {
-        llvm::FunctionType* type = llvm::FunctionType::get(
-            p_builder.getInt8PtrTy(),
-            std::vector<llvm::Type*> {
-                p_builder.getInt32Ty()
-            },
-            false
-        );
-
-        return p_module->getOrInsertFunction(
-            mangle("__sn_alloca__", { "i32" }, true),
-            type
-        ).getCallee();
+        llvm::FunctionType* function_type = llvm::FunctionType::get(p_builder.getInt8PtrTy(), { p_builder.getInt32Ty() }, false);
+        return p_module->getOrInsertFunction(mangle("__sn__alloca__", { "i32" }, true), function_type).getCallee();
     }
 
     llvm::Type* get_llvm_type_from_sn_type(BuildinTypes type, llvm::IRBuilder<> builder) {

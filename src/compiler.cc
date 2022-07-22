@@ -50,16 +50,16 @@
 
 #define SN_MODULE_NAME "llvm_snowball_compile_mod_"
 
-#define NEW_IR_BUILDER() llvm::IRBuilder<> _builder(global_context);
+#define NEW_IR_BUILDER() llvm::IRBuilder<> builder(global_context);
 #define ADD_GLOBAL_IF_FN_EXISTS(name, function) \
     if (_module.get()->getFunction(name)) \
         executionEngine->addGlobalMapping(*_enviroment->get(name, nullptr)->llvm_function, function);
 
 namespace snowball {
-    Compiler::Compiler(std::string p_code, std::string p_path) : _builder(llvm::IRBuilder<> (global_context)) { _code = p_code                 ; _path = p_path              ; NEW_IR_BUILDER() }
-    Compiler::Compiler(const char* p_code, std::string p_path) : _builder(llvm::IRBuilder<> (global_context)) { _code = std::string(p_code)    ; _path = p_path              ; NEW_IR_BUILDER() }
-    Compiler::Compiler(std::string p_code, const char* p_path) : _builder(llvm::IRBuilder<> (global_context)) { _code = p_code                 ; _path = std::string(p_path) ; NEW_IR_BUILDER() }
-    Compiler::Compiler(const char* p_code, const char* p_path) : _builder(llvm::IRBuilder<> (global_context)) { _code = std::string(p_code)    ; _path = std::string(p_path) ; }
+    Compiler::Compiler(std::string p_code, std::string p_path) : builder(llvm::IRBuilder<> (global_context)) { _code = p_code                 ; _path = p_path              ; NEW_IR_BUILDER() }
+    Compiler::Compiler(const char* p_code, std::string p_path) : builder(llvm::IRBuilder<> (global_context)) { _code = std::string(p_code)    ; _path = p_path              ; NEW_IR_BUILDER() }
+    Compiler::Compiler(std::string p_code, const char* p_path) : builder(llvm::IRBuilder<> (global_context)) { _code = p_code                 ; _path = std::string(p_path) ; NEW_IR_BUILDER() }
+    Compiler::Compiler(const char* p_code, const char* p_path) : builder(llvm::IRBuilder<> (global_context)) { _code = std::string(p_code)    ; _path = std::string(p_path) ; }
 
     std::string Compiler::prepare_module_name() {
         std::string tmp = _path;
@@ -111,7 +111,7 @@ namespace snowball {
                     _parser,
                     _enviroment,
                     _source_info,
-                    std::move(_builder),
+                    std::move(builder),
                     _module.get(),
                     _testing_context,
                     generics_api,
@@ -148,7 +148,7 @@ namespace snowball {
         }
     }
 
-    llvm::GenericValue Compiler::execute() {
+    int Compiler::execute() {
         std::string llvm_error;
 
         llvm::ExecutionEngine *executionEngine = llvm::EngineBuilder(std::move(_module))
@@ -163,6 +163,11 @@ namespace snowball {
             int test_success = 1;
 
             // todo: if it is a folder/import, iterate all paths
+            if (_testing_context->getTestLength() == 0) {
+                Logger::warning("No unit tests found!");
+                return 2;
+            }
+
             Logger::log(Logger::format("    [%s]", _path.c_str()));
 
             for (int i = 0; i < _testing_context->getTestLength(); i++) {
@@ -184,10 +189,12 @@ namespace snowball {
                     Logger::log(Logger::format("%sSKIPED%s", BYEL, RESET));
                 }
             }
-            return llvm::GenericValue(llvm::ConstantInt::get(_builder.getInt8Ty(), test_success));
+
+            return test_success;
         } else {
             llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(mangle(_SNOWBALL_FUNCTION_ENTRY, {}, true)));
-            return executionEngine->runFunction(main_fn, {});
+            executionEngine->runFunction(main_fn, {});
+            return 0; // TODO: return function result
         }
     }
 

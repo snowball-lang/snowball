@@ -15,53 +15,54 @@
 #include "snowball/constants.h"
 
 void register_string(snowball::SNAPI* API) {
+
     snowball::ScopeValue* string_class = API->create_class("String", std::map<std::string, llvm::Type*> {
         {
             "buffer",
             snowball::get_llvm_type_from_sn_type(
                 snowball::BuildinTypes::STRING,
-                API->get_compiler()->get_builder()
+                API->get_compiler()->builder
             ),
         },
         {
             "length",
             snowball::get_llvm_type_from_sn_type(
                 snowball::BuildinTypes::NUMBER,
-                API->get_compiler()->get_builder()
+                API->get_compiler()->builder
             ),
         }
-    });
+    }, [&](snowball::ScopeValue* cls) {
+        llvm::Type* class_type = (*cls->llvm_struct)->getPointerTo();
 
-    llvm::Type* class_type = (*string_class->llvm_struct)->getPointerTo();
-
-    API->create_class_method(
-        string_class,
-        "__init",
-        class_type,
-        std::vector<std::pair<std::string, llvm::Type*>> {
-            std::make_pair(
-                "s",
-                snowball::get_llvm_type_from_sn_type(
-                    snowball::BuildinTypes::STRING,
-                    API->get_compiler()->get_builder()
+        API->create_class_method(
+            cls,
+            "__init",
+            class_type,
+            std::vector<std::pair<std::string, llvm::Type*>> {
+                std::make_pair(
+                    "s",
+                    snowball::get_llvm_type_from_sn_type(
+                        snowball::BuildinTypes::STRING,
+                        API->get_compiler()->builder
+                    )
                 )
-            )
-        },
-        true
-    );
+            },
+            true,
+            nullptr
+        );
 
-    API->create_class_method(
-        string_class,
-        "__sum",
-        class_type,
-        std::vector<std::pair<std::string, llvm::Type*>> {
-            std::make_pair("String", class_type),
-            std::make_pair("String", class_type)
-        },
-        true
-    );
-
-    API->add_to_enviroment("String", std::make_unique<snowball::ScopeValue*>(string_class));
+        API->create_class_method(
+            cls,
+            "__sum",
+            class_type,
+            std::vector<std::pair<std::string, llvm::Type*>> {
+                std::make_pair("String", class_type),
+                std::make_pair("String", class_type)
+            },
+            true,
+            nullptr
+        );
+    });
 }
 
 extern "C" DLLEXPORT String* _MN6StringN6__initA1sP(const char* string_ptr) {

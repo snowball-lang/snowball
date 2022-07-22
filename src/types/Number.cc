@@ -1,7 +1,11 @@
 
-#include "snowball/export.hpp"
 #include "snowball/api.h"
+#include "snowball/types.h"
+#include "snowball/scopes.h"
+#include "snowball/snowball.h"
 #include "snowball/types/Number.h"
+
+#include "snowball/export.hpp"
 
 #include <vector>
 #include <utility>
@@ -14,46 +18,46 @@
 #include "snowball/constants.h"
 
 void register_number(snowball::SNAPI* API) {
-    snowball::ScopeValue* number_class = API->create_class("Number", std::map<std::string, llvm::Type*> {
+    API->create_class("Number", std::map<std::string, llvm::Type*> {
         {
             "number",
             snowball::get_llvm_type_from_sn_type(
                 snowball::BuildinTypes::NUMBER,
-                API->get_compiler()->get_builder()
+                API->get_compiler()->builder
             ),
         },
-    });
+    }, [&](snowball::ScopeValue* cls) {
+        llvm::Type* class_type = (*cls->llvm_struct)->getPointerTo();
 
-    llvm::Type* class_type = (*number_class->llvm_struct)->getPointerTo();
-
-    API->create_class_method(
-        number_class,
-        "__init",
-        class_type,
-        std::vector<std::pair<std::string, llvm::Type*>> {
-            std::make_pair(
-                "i",
-                snowball::get_llvm_type_from_sn_type(
-                    snowball::BuildinTypes::NUMBER,
-                    API->get_compiler()->get_builder()
+        API->create_class_method(
+            cls,
+            "__init",
+            class_type,
+            std::vector<std::pair<std::string, llvm::Type*>> {
+                std::make_pair(
+                    "i",
+                    snowball::get_llvm_type_from_sn_type(
+                        snowball::BuildinTypes::NUMBER,
+                        API->get_compiler()->builder
+                    )
                 )
-            )
-        },
-        true
-    );
+            },
+            true,
+            nullptr
+        );
 
-    API->create_class_method(
-        number_class,
-        "__sum",
-        class_type,
-        std::vector<std::pair<std::string, llvm::Type*>> {
-            std::make_pair("Number", class_type),
-            std::make_pair("Number", class_type)
-        },
-        true
-    );
-
-    API->add_to_enviroment("Number", std::make_unique<snowball::ScopeValue*>(number_class));
+        API->create_class_method(
+            cls,
+            "__sum",
+            class_type,
+            std::vector<std::pair<std::string, llvm::Type*>> {
+                std::make_pair("Number", class_type),
+                std::make_pair("Number", class_type)
+            },
+            true,
+            nullptr
+        );
+    });
 }
 
 

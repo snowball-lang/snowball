@@ -180,6 +180,7 @@ namespace snowball {
 
     llvm::Value* Generator::generate_test(TestingNode* p_node) {
         throw SNError(Error::TODO, "Unit tests are not yet supported");
+
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
         std::string test_name = _testing_context->get_name(_testing_context->addTest(p_node->description));
@@ -195,7 +196,7 @@ namespace snowball {
 
         llvm::Value* value = llvm::ConstantInt::get(_builder.getInt64Ty(), 1);
         std::string test_var_name = Logger::format("_SN__TestCaseN%i_Result", _testing_context->getTestLength());
-        auto* alloca = _builder.CreateAlloca (value->getType()->getPointerTo(), nullptr, test_var_name );
+        auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, test_var_name );
 
         std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(value)));
         current_scope->set(test_var_name, std::move(scope_value));
@@ -700,7 +701,7 @@ namespace snowball {
         for (VarNode* var : _current_class->vars) {
             llvm::Value* value = generate(var->value);
             llvm::Value* pointer = _builder.CreateStructGEP(pointerCast, var_index);
-            llvm::Value* load = convert_to_right_value(pointer);
+            llvm::Value* load = convert_to_right_value(_builder, pointer);
 
             _builder.CreateStore(load, value);
 
@@ -708,14 +709,14 @@ namespace snowball {
         }
     }
 
-    llvm::Value* Generator::convert_to_right_value(llvm::Value* value) {
+    llvm::Value* Generator::convert_to_right_value(llvm::IRBuilder<> p_builder, llvm::Value* value) {
 
-        if (value->getName().str().empty()) return _builder.CreateLoad(value);
+        if (value->getName().str().empty()) return p_builder.CreateLoad(value);
         std::ostringstream ss_name;
 
         ss_name << value->getName().str();
         ss_name << ".load";
 
-        return _builder.CreateLoad(value, ss_name.str());
+        return p_builder.CreateLoad(value, ss_name.str());
     }
 }

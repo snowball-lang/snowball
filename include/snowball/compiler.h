@@ -35,13 +35,12 @@ namespace snowball {
             void compile();
 
             void cleanup();
-            void optimize(); // TODO (WIP)
+            void optimize();
 
+            int execute();
             void enable_tests() { _enabledTests = true; }
-            llvm::GenericValue execute();
 
             // Get
-            llvm::IRBuilder<> get_builder() { return _builder; }
             SourceInfo* get_source_info() { return _source_info; }
             Enviroment* get_enviroment() { return _enviroment; }
             llvm::Module* get_module() { return _module.get(); }
@@ -49,12 +48,12 @@ namespace snowball {
             ~Compiler() {};
 
             llvm::LLVMContext global_context;
+            llvm::IRBuilder<> builder;
             SNAPI* API;
 
         private:
             // llvm
             std::unique_ptr<llvm::Module> _module;
-            llvm::IRBuilder<> _builder;
 
             // variables
             std::string _code;
