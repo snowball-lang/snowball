@@ -1,11 +1,4 @@
-import System
-
-pub fn hello<T>(n: T) -> T {
-    return n
-}
 
 pub fn main() -> Number {
-    var d = hello<String>("d")
-    hello<Number>(5)
-    System.print(d)
+    2 + 5
 }
