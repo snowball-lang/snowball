@@ -17,6 +17,34 @@
 
 #include "snowball/constants.h"
 
+extern "C" struct Number {
+  snowball_int_t number;
+
+    // to reference it: static_cast<Number*(*)(snowball_int_t)>(Number::__init);
+    static Number* __init(snowball_int_t num) {
+        Number* instance;
+        instance = (struct Number*)(malloc(sizeof(Number)));
+
+        instance->number = num;
+
+        return instance;
+    }
+};
+
+extern "C" DLLEXPORT Number* _MN6NumberN6__initA1iP(snowball_int_t n) {
+    Number* instance;
+    instance = (struct Number*)(malloc(sizeof(Number)));
+
+    instance->number = n;
+
+    return instance;
+}
+
+extern "C" DLLEXPORT Number* _MN6NumberN5__sumA6NumberA6NumberP(Number* number, Number* sum) {
+    return _MN6NumberN6__initA1iP(number->number + sum->number);
+}
+
+
 void register_number(snowball::SNAPI* API) {
     API->create_class("Number", std::map<std::string, llvm::Type*> {
         {
@@ -58,18 +86,4 @@ void register_number(snowball::SNAPI* API) {
             nullptr
         );
     });
-}
-
-
-extern "C" DLLEXPORT Number* _MN6NumberN6__initA1iP(snowball_int_t n){
-    Number* instance;
-    instance = (struct Number*)(malloc(sizeof(Number)));
-
-    instance->number = n;
-
-    return instance;
-}
-
-extern "C" DLLEXPORT Number* _MN6NumberN5__sumA6NumberA6NumberP(Number* number, Number* sum) {
-    return _MN6NumberN6__initA1iP(number->number + sum->number);
 }

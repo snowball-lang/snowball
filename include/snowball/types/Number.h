@@ -7,13 +7,7 @@
 #ifndef SN_NUMBER_EXPORT_H
 #define SN_NUMBER_EXPORT_H
 
-extern "C" {
-
-typedef struct Number {
-  snowball_int_t number;
-} Number;
-
-}
+extern "C" struct Number;
 
 void register_number(snowball::SNAPI* API);
 
