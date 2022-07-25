@@ -66,8 +66,6 @@ namespace snowball {
                             store->return_ty
                     );
 
-                    DUMP_S(node->return_type.c_str())
-
                     GenericValue result;
 
                     result.node = node;

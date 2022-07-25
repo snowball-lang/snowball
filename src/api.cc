@@ -80,7 +80,6 @@ namespace snowball {
                 _compiler->get_module()
             );
 
-        DUMP_S(name.c_str())
         llvm::sys::DynamicLibrary::AddSymbol(name, p_pointer);
 
         std::shared_ptr<llvm::Function*> function_ptr = std::make_shared<llvm::Function*>(function);

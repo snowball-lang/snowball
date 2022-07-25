@@ -1,10 +1,11 @@
 import System
-pub fn hello(f: Number) -> Number {
+
+pub fn hello<T>(f: T) -> T {
     var g = f
-    return g
+    return g + "world"
 }
 
 pub fn main() -> Number {
-    var d = "5" + "2"
-    System.print("d")
+    var d = "hello, "
+    System.print(hello<String>(d))
 }

@@ -11,6 +11,6 @@
 #include "snowball/constants.h"
 #include "snowball/utils/mangle.h"
 
-extern "C" DLLEXPORT void* _MN13__sn_alloca__A3i32P(uint32_t bytes) {
+extern "C" DLLEXPORT void* _MN14__sn__alloca__A3i32P(uint32_t bytes) {
   return malloc(bytes);
 }

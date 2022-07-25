@@ -345,8 +345,6 @@ namespace snowball {
             }
         }
 
-        DUMP_S(method_call.c_str())
-
         if (function->type != ScopeType::FUNC) {
             COMPILER_ERROR(SYNTAX_ERROR, Logger::format("'%s' is not a function", p_node->method.c_str()))
         }
@@ -358,7 +356,25 @@ namespace snowball {
     llvm::Value* Generator::generate_return(ReturnNode* p_node) {
         llvm::Value* value = generate(p_node->value);
         llvm::Type* type = value->getType();
-        std::string ret_type = (*_enviroment->get(p_node->parent->return_type.c_str(), p_node)->llvm_struct)->getStructName().str();
+        ScopeValue* ret_value = _enviroment
+            ->get(
+                p_node
+                ->parent
+                ->return_type
+                .c_str(),
+                p_node
+            );
+
+        std::string ret_type;
+        if (ret_value->type == ScopeType::CLASS) {
+            ret_type = (*ret_value->llvm_struct)->getStructName().str();
+        } else if (ret_value->type == ScopeType::LLVM) {
+            ret_type = (*ret_value->llvm_value)
+                ->getType()
+                ->getPointerElementType()
+                ->getStructName()
+                .str();
+        }
 
         if (type->getPointerElementType()->getStructName() == ret_type) {
             return _builder.CreateRet(value);
@@ -644,7 +660,6 @@ namespace snowball {
         {
             case TokenType::VALUE_NUMBER: {
                 llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
-
 
                 ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS("Number", "__init", { "i" }, true), p_node);
                 llvm::Function* constructor = const_cast<llvm::Function*>(*scope_value->llvm_function);
