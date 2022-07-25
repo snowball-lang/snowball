@@ -7,11 +7,23 @@
 #ifndef SN_NUMBER_EXPORT_H
 #define SN_NUMBER_EXPORT_H
 
-extern "C" struct Number;
+extern "C" struct Number {
+  snowball_int_t __number;
+
+    static Number* __init(snowball_int_t num) {
+        Number* instance;
+        instance = (struct Number*)(malloc(sizeof(Number)));
+
+        instance->__number = num;
+
+        return instance;
+    }
+
+    static Number* __sum(Number* self, Number* num) {
+        return __init(self->__number + num->__number);
+    }
+};
 
 void register_number(snowball::SNAPI* API);
-
-extern "C" DLLEXPORT Number* _MN6NumberN6__initA1iP(snowball_int_t n);
-extern "C" DLLEXPORT Number* _MN6NumberN5__sumA6NumberA6NumberP(Number* number, Number* s);
 
 #endif // SN_NUMBER_EXPORT_H

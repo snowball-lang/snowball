@@ -3,7 +3,6 @@
 #include "snowball/constants.h"
 #include "snowball/utils/mangle.h"
 
-
 #include <string>
 #include <vector>
 #include <fstream>
@@ -12,8 +11,7 @@
 #include <exception>
 #include <stdexcept>
 
-#define COMPILER ""
-#define LICENSE ""
+#include <llvm/Support/FormattedStream.h>
 
 using namespace snowball;
 

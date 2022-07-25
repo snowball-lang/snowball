@@ -16,9 +16,23 @@ namespace snowball {
         }
 
     bool Scope::item_exists(std::string p_name) {
-        std::map<std::string, std::unique_ptr<ScopeValue*>>::iterator _it = this->_data.find(p_name);
+        unmangledResult result = unmangle(p_name);
 
-        return !(this->_data.find(p_name) == this->_data.end());
+        std::map<std::string, std::unique_ptr<ScopeValue*>>::iterator _it = this->_data.find(result.name);
+        if (_it != this->_data.end() && result.isMangled && (*_it->second)->type == ScopeType::FUNC_CONTAINER) {
+            for (int i = 0; i < (*_it->second)->instances.size(); i++) {
+                ScopeValue* scope_value = *(*_it->second)->instances[i];
+
+                // TODO: (re-write) check for argv and default values
+                if (result.arguments == scope_value->arguments) {
+                    if (result.isPublic == scope_value->isPublic) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return _it != this->_data.end();
     }
 
     ScopeValue* Scope::get(std::string p_name, Node* p_node, std::string p_o_name) {
@@ -32,8 +46,25 @@ namespace snowball {
                     Error::VARIABLE_ERROR,
                     Logger::format("Undefined variable: %s%s%s%s (no p_node has been passed to Scope::get)", BCYN, p_o_name.c_str(), RESET, BOLD)
                 );
+
             DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
             throw CompilerError(Error::UNDEFINED_VARIABLE, Logger::format("Undefined variable: %s%s%s%s", BCYN, p_o_name.c_str(), RESET, BOLD), dbg_info);
+        }
+
+        unmangledResult unmangled = unmangle(p_name);
+
+        std::map<std::string, std::unique_ptr<ScopeValue*>>::iterator _it = this->_data.find(unmangled.name);
+        if (_it != this->_data.end() && unmangled.isMangled && (*_it->second)->type == ScopeType::FUNC_CONTAINER) {
+            for (int i = 0; i < (*_it->second)->instances.size(); i++) {
+                ScopeValue* scope_value = *(*_it->second)->instances[i];
+
+                // TODO: (re-write) check for argv and default values
+                if (unmangled.arguments == scope_value->arguments) {
+                    if (unmangled.isPublic == scope_value->isPublic) {
+                        return scope_value;
+                    }
+                }
+            }
         }
 
         return *_data.find(p_name)->second;
@@ -41,6 +72,24 @@ namespace snowball {
 
 
     void Scope::set(std::string p_name, std::unique_ptr<ScopeValue*> p_value) {
+        if ((*p_value)->type == ScopeType::FUNC) {
+            unmangledResult result = unmangle(p_name);
+
+            if (result.isMangled) {
+                if (item_exists(result.name)) {
+                    (*(*this->_data.find(result.name)).second)->instances.push_back(std::move(p_value));
+                    return;
+                }
+
+                ScopeValue* container = new ScopeValue(ScopeType::FUNC_CONTAINER);
+                container->instances.push_back(std::move(p_value));
+
+                this->_data.emplace( result.name, std::make_unique<ScopeValue*>(container) );
+
+                return;
+            }
+        }
+
         this->_data.emplace ( p_name, std::move(p_value) );
     }
 

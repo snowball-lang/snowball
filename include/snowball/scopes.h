@@ -5,8 +5,10 @@
 
 #include "nodes.h"
 #include "source_info.h"
+#include "utils/mangle.h"
 
 #include <llvm/IR/Value.h>
+#include <llvm-10/llvm/IR/Function.h>
 #include <llvm-10/llvm/IR/DerivedTypes.h>
 
 #ifndef __SNOWBALL_ENVIROMENT_SCOPES_H_
@@ -47,6 +49,7 @@ namespace snowball {
         MODULE,
         FUNC,
         LLVM,
+        FUNC_CONTAINER,
     };
 
     typedef struct ScopeValue {
@@ -56,8 +59,14 @@ namespace snowball {
         std::shared_ptr<llvm::StructType*> llvm_struct;
         std::shared_ptr<llvm::Function*> llvm_function;
 
+        bool isPublic = false;
+
         // Function params
         bool isStaticFunction = false;
+        std::vector<std::string> arguments;
+
+        // Function Containers
+        std::vector<std::unique_ptr<ScopeValue*>> instances;
 
         // Class params
         std::vector<std::string> parents;
@@ -70,9 +79,19 @@ namespace snowball {
             llvm_value = p_value;
         }
 
+        ScopeValue(ScopeType p_type) {
+            type = p_type;
+        }
+
         ScopeValue(std::shared_ptr<llvm::Function*> p_value) {
             type = ScopeType::FUNC;
             llvm_function = p_value;
+
+            unmangledResult result = unmangle((*p_value)->getName());
+            if (result.isMangled) {
+                isPublic = result.isPublic;
+                arguments = result.arguments;
+            }
         }
 
         ScopeValue(Scope* p_value, std::shared_ptr<llvm::StructType*> p_struct) {

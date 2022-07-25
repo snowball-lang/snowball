@@ -16,7 +16,6 @@
 #include <llvm/Passes/PassBuilder.h>
 #include <llvm/Support/MathExtras.h>
 #include <llvm/Support/FormattedStream.h>
-// #include <llvm/Passes/OptimizationLevel.h>
 
 #include <llvm/Target/TargetMachine.h>
 #include <llvm/Target/TargetOptions.h>
@@ -238,7 +237,7 @@ namespace snowball {
 
     void Compiler::link_std_classes() {
         register_number(API);
-        // register_string(API);
+        register_string(API);
     }
 
     void Compiler::create_source_info() {

@@ -290,8 +290,6 @@ namespace snowball {
         bool private_method_used = false;
         bool private_method_exists = false;
         if (_enviroment->item_exists(method_call)) {
-            DUMP_S(_current_class->name.c_str())
-            DUMP_S(base_struct.c_str())
             if (_current_class != nullptr && _current_class->name == base_struct) {
                 function = _enviroment->get(method_call, p_node); // it will exist... right?
                 private_method_used = true;
@@ -360,20 +358,7 @@ namespace snowball {
     llvm::Value* Generator::generate_return(ReturnNode* p_node) {
         llvm::Value* value = generate(p_node->value);
         llvm::Type* type = value->getType();
-        std::string ret_type = (
-            *_enviroment
-            ->current_scope()
-            ->get(
-                p_node
-                ->parent
-                ->return_type
-                .c_str(),
-                p_node
-            )->llvm_value)
-            ->getType()
-            ->getPointerElementType()
-            ->getStructName()
-            .str();
+        std::string ret_type = (*_enviroment->get(p_node->parent->return_type.c_str(), p_node)->llvm_struct)->getStructName().str();
 
         if (type->getPointerElementType()->getStructName() == ret_type) {
             return _builder.CreateRet(value);
@@ -394,14 +379,17 @@ namespace snowball {
         ScopeValue* value = _enviroment->get(p_node->name, p_node);
         switch (value->type)
         {
-            case ScopeType::CLASS:
-            case ScopeType::MODULE: {
+            case ScopeType::CLASS: {
                 llvm::StructType* type = *value->llvm_struct;
                 int size = _module->getDataLayout().getTypeStoreSize(type);
                 llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder.getInt32Ty(), size);
 
                 llvm::Value* alloca_value = _builder.CreateCall(get_alloca(_module, _builder), size_constant);
                 return _builder.CreatePointerCast(alloca_value, type->getPointerTo());
+            }
+
+            case ScopeType::MODULE: {
+                return (llvm::Value*)(*value->llvm_struct);
             }
 
             case ScopeType::FUNC:
@@ -499,14 +487,14 @@ namespace snowball {
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
 
-        _enviroment->create_scope(p_node->name);
-        Scope* current_scope = _enviroment->current_scope();
-
         ScopeValue* returnType = _enviroment->get(p_node->return_type, p_node);
         auto retType = (
             p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->is_lop_level)
             ? (*_enviroment->get("Number", nullptr)->llvm_struct)->getPointerTo()
             : (*returnType->llvm_struct)->getPointerTo();
+
+        _enviroment->create_scope(p_node->name);
+        Scope* current_scope = _enviroment->current_scope();
 
         std::vector<std::string> arg_tnames;
         std::vector<llvm::Type*> arg_types;

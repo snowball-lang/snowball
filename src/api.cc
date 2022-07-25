@@ -12,6 +12,8 @@
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/ExecutionEngine/GenericValue.h>
 
+#include <llvm/Support/DynamicLibrary.h>
+
 #include "snowball/api.h"
 #include "snowball/compiler.h"
 
@@ -45,83 +47,44 @@ namespace snowball {
         if (cb != nullptr)
             cb(mod);
 
-        add_to_enviroment(p_name, std::make_unique<ScopeValue*>(mod));
         return mod;
     }
 
-    // ScopeValue* SNAPI::create_function(std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<std::string, llvm::Type*>> p_args, bool is_public) {
-    //     std::string llvm_error;
-    //     llvm::raw_string_ostream message_stream(llvm_error);
-
-    //     std::vector<llvm::Type*> properties;
-    //     std::vector<std::string> propertie_types;
-    //     for (auto const& pair : p_args) {
-    //         properties.push_back(pair.second);
-    //         propertie_types.push_back(pair.first);
-    //     }
-
-    //     auto function_prototype = llvm::FunctionType::get(p_return_type, properties, false);
-    //     auto function =
-    //         llvm::Function::Create(
-    //             function_prototype,
-    //             llvm::Function::ExternalLinkage,
-    //             mangle(
-    //                 p_name,
-    //                 propertie_types,
-    //                 is_public
-    //             ),
-    //             _compiler->get_module()
-    //         );
-
-    //     std::shared_ptr<llvm::Function*> function_ptr = std::make_shared<llvm::Function*>(function);
-    //     ScopeValue* scope_value = new ScopeValue(function_ptr);
-
-    //     llvm::verifyFunction(*function, &message_stream);
-
-    //     if (!llvm_error.empty())
-    //         throw SNError(Error::LLVM_INTERNAL, llvm_error);
-
-    //     return scope_value;
-    // }
-
-
-    void SNAPI::create_class_method(ScopeValue* p_class, std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<std::string, llvm::Type*>> p_args, bool is_public, std::function<void(Compiler*)> cb) {
+    void SNAPI::create_class_method(ScopeValue* p_class, std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<std::string, llvm::Type*>> p_args, bool p_is_public, void* p_pointer) {
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
 
-        std::vector<llvm::Type*> properties;
-        std::vector<std::string> propertie_types;
+        std::vector<llvm::Type*> arguments;
+        std::vector<std::string> arguments_types;
         for (auto const& pair : p_args) {
-            properties.push_back(pair.second);
-            propertie_types.push_back(pair.first);
+            arguments.push_back(pair.second);
+            arguments_types.push_back(pair.first);
         }
 
-        auto function_prototype = llvm::FunctionType::get(p_return_type, properties, false);
+        std::string name = mangle(
+            Logger::format(
+                "%s.%s",
+                (*p_class->llvm_struct)->getStructName().str().c_str(),
+                p_name.c_str()
+            ),
+            arguments_types,
+            p_is_public
+        );
+
+        auto function_prototype = llvm::FunctionType::get(p_return_type, arguments, false);
         auto function =
             llvm::Function::Create(
                 function_prototype,
                 llvm::Function::ExternalLinkage,
-                mangle(
-                    Logger::format(
-                        "%s.%s",
-                        (*p_class->llvm_struct)->getStructName().str().c_str(),
-                        p_name.c_str()
-                    ),
-                    propertie_types,
-                    is_public
-                ),
+                name,
                 _compiler->get_module()
             );
 
-        if (cb != nullptr) {
-            llvm::BasicBlock *body = llvm::BasicBlock::Create(_compiler->builder.getContext(), "body", function);
-            _compiler->builder.SetInsertPoint(body);
-
-            cb(_compiler);
-        }
+        DUMP_S(name.c_str())
+        llvm::sys::DynamicLibrary::AddSymbol(name, p_pointer);
 
         std::shared_ptr<llvm::Function*> function_ptr = std::make_shared<llvm::Function*>(function);
-        p_class->scope_value->set(mangle(p_name, propertie_types, is_public), std::make_unique<ScopeValue*>(new ScopeValue(function_ptr)));
+        p_class->scope_value->set(mangle(p_name, arguments_types, p_is_public), std::make_unique<ScopeValue*>(new ScopeValue(function_ptr)));
 
         llvm::verifyFunction(*function, &message_stream);
 

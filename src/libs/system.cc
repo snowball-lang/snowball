@@ -11,19 +11,19 @@
 
 namespace snowball {
     ScopeValue* sn_system_export(SNAPI* API) {
-        ScopeValue* string_class = API->get_compiler()->get_enviroment()->get("String", nullptr);
-        API->create_module("System", {}, [&](ScopeValue* system_module) {
-            llvm::Type* class_type = (*system_module->llvm_struct)->getPointerTo();
+        llvm::Type* string_class = (*API->get_compiler()->get_enviroment()->get("String", nullptr)->llvm_struct)->getPointerTo();
+
+        return API->create_module("System", {}, [&](ScopeValue* system_module) {
 
             API->create_class_method(
                 system_module,
                 "print",
                 API->get_compiler()->builder.getVoidTy(),
                 std::vector<std::pair<std::string, llvm::Type*>> {
-                    std::make_pair("String", *string_class->llvm_struct)
+                    std::make_pair("String", string_class)
                 },
                 true,
-                nullptr
+                (void*)static_cast<void(*)(String*)>(System::print)
             );
 
             API->create_class_method(
@@ -31,19 +31,11 @@ namespace snowball {
                 "println",
                 API->get_compiler()->builder.getVoidTy(),
                 std::vector<std::pair<std::string, llvm::Type*>> {
-                    std::make_pair("String", *string_class->llvm_struct)
+                    std::make_pair("String", string_class)
                 },
                 true,
-                nullptr
+                (void*)static_cast<void(*)(String*)>(System::println)
             );
         });
     }
-}
-
-extern "C" DLLEXPORT void _MN6SystemN7printlnA6StringP(String* str) {
-    printf("%s\n", str->buffer);
-}
-
-extern "C" DLLEXPORT void _MN6SystemN5printA6StringP(String* str) {
-    printf("%s", str->buffer);
 }

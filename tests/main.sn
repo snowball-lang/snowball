@@ -1,4 +1,10 @@
+import System
+pub fn hello(f: Number) -> Number {
+    var g = f
+    return g
+}
 
 pub fn main() -> Number {
-
+    var d = "5" + "2"
+    System.print("d")
 }

@@ -17,38 +17,10 @@
 
 #include "snowball/constants.h"
 
-extern "C" struct Number {
-  snowball_int_t number;
-
-    // to reference it: static_cast<Number*(*)(snowball_int_t)>(Number::__init);
-    static Number* __init(snowball_int_t num) {
-        Number* instance;
-        instance = (struct Number*)(malloc(sizeof(Number)));
-
-        instance->number = num;
-
-        return instance;
-    }
-};
-
-extern "C" DLLEXPORT Number* _MN6NumberN6__initA1iP(snowball_int_t n) {
-    Number* instance;
-    instance = (struct Number*)(malloc(sizeof(Number)));
-
-    instance->number = n;
-
-    return instance;
-}
-
-extern "C" DLLEXPORT Number* _MN6NumberN5__sumA6NumberA6NumberP(Number* number, Number* sum) {
-    return _MN6NumberN6__initA1iP(number->number + sum->number);
-}
-
-
 void register_number(snowball::SNAPI* API) {
     API->create_class("Number", std::map<std::string, llvm::Type*> {
         {
-            "number",
+            "__number",
             snowball::get_llvm_type_from_sn_type(
                 snowball::BuildinTypes::NUMBER,
                 API->get_compiler()->builder
@@ -71,7 +43,7 @@ void register_number(snowball::SNAPI* API) {
                 )
             },
             true,
-            nullptr
+            (void*)static_cast<Number*(*)(snowball_int_t)>(Number::__init)
         );
 
         API->create_class_method(
@@ -83,7 +55,7 @@ void register_number(snowball::SNAPI* API) {
                 std::make_pair("Number", class_type)
             },
             true,
-            nullptr
+            (void*)static_cast<Number*(*)(Number*, Number*)>(Number::__sum)
         );
     });
 }

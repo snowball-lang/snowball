@@ -159,6 +159,7 @@ namespace snowball {
                 cb_dbg_info->pos.second,
             RESET));
 
+
         };
 
         virtual ~CompilerError() {};
