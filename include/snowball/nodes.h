@@ -292,6 +292,57 @@ namespace snowball {
 				p_op_type == OpType::OP_BIT_XOR_EQ;
 		}
 
+		std::string to_string() {
+			switch (op_type)
+			{
+
+                case OpType::OP_GT:              return ">";
+                case OpType::OP_LT:              return "<";
+                case OpType::OP_GTEQ:            return ">=";
+                case OpType::OP_EQEQ:            return "==";
+                case OpType::OP_LTEQ:            return "<=";
+                case OpType::OP_NOTEQ:           return "!=";
+
+                // Mathematical symbols
+                case OpType::OP_MOD:             return "%";
+                case OpType::OP_DIV:             return "/";
+                case OpType::OP_MUL:             return "*";
+				case OpType::OP_POSITIVE:
+                case OpType::OP_PLUS:            return "+";
+                case OpType::OP_MINUS:           return "-";
+                case OpType::OP_NEGATIVE:
+                case OpType::OP_MULEQ:           return "*=";
+                case OpType::OP_DIVEQ:           return "/=";
+                case OpType::OP_PLUSEQ:          return "+=";
+                case OpType::OP_MOD_EQ:          return "%=";
+                case OpType::OP_MINUSEQ:         return "-=";
+
+                // Asignment
+                case OpType::OP_EQ:              return "=";
+                case OpType::OP_OR:              return "||";
+                case OpType::OP_AND:             return "&&";
+                case OpType::OP_NOT:             return "!";
+
+                // Bitwise operations
+                case OpType::OP_BIT_OR:          return "|";
+                case OpType::OP_BIT_NOT:         return "~";
+                case OpType::OP_BIT_AND:         return "&";
+                case OpType::OP_BIT_XOR:         return "^";
+                case OpType::OP_BIT_OR_EQ:       return "|=";
+                case OpType::OP_BIT_LSHIFT:      return "<<";
+                case OpType::OP_BIT_RSHIFT:      return ">>";
+                case OpType::OP_BIT_AND_EQ:      return "&=";
+                case OpType::OP_BIT_XOR_EQ:      return "^=";
+                case OpType::OP_BIT_LSHIFT_EQ:   return "<<=";
+                case OpType::OP_BIT_RSHIFT_EQ:   return ">>=";
+
+				case OpType::NONE:
+					return "<NONE>";
+			}
+
+			return "<BUG>";
+		}
+
 		BinaryOp(OpType _op_type) {
 			type = Type::OPERATOR;
 			op_type = _op_type;

@@ -1,11 +1,12 @@
-import System
-
-pub fn hello<T>(f: T) -> T {
-    var g = f
-    return g + "world"
-}
 
 pub fn main() -> Number {
-    var d = "hello, "
-    System.print(hello<String>(d))
+    // normal:
+    var vec = 5 + 5
+
+    // probally bugs:
+    var vec = 5 + 5 = 10
+    var vec + 5 + 5
+    var vec + 5 + 5 = 10
+    var vec + 5 = 10
+
 }

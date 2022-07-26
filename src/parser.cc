@@ -515,7 +515,7 @@ namespace snowball {
     }
 
     void Parser::_parser_error(Error type, std::string msg) {
-        DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, std::pair<int, int>(_current_token.line, _current_token.col), _current_token.to_string().size());
+        DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, std::pair<int, int>(tk.line, tk.col), tk.to_string().size());
         throw ParserError(type, msg, dbg_info);
     }
 
@@ -730,55 +730,55 @@ namespace snowball {
                     case OpType::OP_BIT_NOT:
                     case OpType::OP_POSITIVE:
                     case OpType::OP_NEGATIVE:
-                        min_precedence = 0;
+                        precedence = 0;
                         break;
 
                     case OpType::OP_MUL:
                     case OpType::OP_DIV:
                     case OpType::OP_MOD:
-                        min_precedence = 1;
+                        precedence = 1;
                         break;
 
                     case OpType::OP_PLUS:
                     case OpType::OP_MINUS:
-                        min_precedence = 2;
+                        precedence = 2;
                         break;
 
                     case OpType::OP_BIT_LSHIFT:
                     case OpType::OP_BIT_RSHIFT:
-                        min_precedence = 3;
+                        precedence = 3;
                         break;
 
                     case OpType::OP_LT:
                     case OpType::OP_LTEQ:
                     case OpType::OP_GT:
                     case OpType::OP_GTEQ:
-                        min_precedence = 4;
+                        precedence = 4;
                         break;
 
                     case OpType::OP_EQEQ:
                     case OpType::OP_NOTEQ:
-                        min_precedence = 5;
+                        precedence = 5;
                         break;
 
                     case OpType::OP_BIT_AND:
-                        min_precedence = 6;
+                        precedence = 6;
                         break;
 
                     case OpType::OP_BIT_XOR:
-                        min_precedence = 7;
+                        precedence = 7;
                         break;
 
                     case OpType::OP_BIT_OR:
-                        min_precedence = 8;
+                        precedence = 8;
                         break;
 
                     case OpType::OP_AND:
-                        min_precedence = 9;
+                        precedence = 9;
                         break;
 
                     case OpType::OP_OR:
-                        min_precedence = 10;
+                        precedence = 10;
                         break;
 
                     case OpType::OP_EQ:
@@ -791,12 +791,16 @@ namespace snowball {
                     case OpType::OP_BIT_RSHIFT_EQ:
                     case OpType::OP_BIT_AND_EQ:
                     case OpType::OP_BIT_XOR_EQ:
-                    case OpType::OP_BIT_OR_EQ:
-                        min_precedence = 11;
-                        break;
+                    case OpType::OP_BIT_OR_EQ: {
+                        // TODO: throw error with possition of the expression, not the current token
+                        // TODO: possible solution, go back a token?
+                        PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Operator '%s' not allowed in expressions", expression->to_string().c_str()))
+                    }
+                        // precedence = 11;
+                        // break;
 
                     case OpType::NONE:
-                        min_precedence = -1;
+                        precedence = -1;
                         break;
                 }
 
@@ -856,8 +860,7 @@ namespace snowball {
                 op_node->left = expressions[(size_t)next_op - 1];
                 op_node->right = expressions[(size_t)next_op + 1];
 
-                expressions.erase(expressions.begin() + (next_op));
-                expressions.insert((expressions.begin() + (next_op - 1)), op_node);
+                expressions.at((next_op - 1)) = op_node;
 
                 expressions.erase(expressions.begin() + next_op);
                 expressions.erase(expressions.begin() + next_op);
