@@ -515,7 +515,7 @@ namespace snowball {
     }
 
     void Parser::_parser_error(Error type, std::string msg) {
-        DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, std::pair<int, int>(tk.line, tk.col), tk.to_string().size());
+        DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, std::pair<int, int>(_current_token.line, _current_token.col), _current_token.to_string().size());
         throw ParserError(type, msg, dbg_info);
     }
 
