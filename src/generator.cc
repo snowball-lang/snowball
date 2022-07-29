@@ -36,6 +36,27 @@
     DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width); \
     throw CompilerError(Error::error, message, dbg_info);
 
+#define FUNCTION_CALL_NOT_FOUND() \
+    if (private_method_exists) { \
+        COMPILER_ERROR(\
+            VARIABLE_ERROR,\
+            Logger::format("Function named '%s' is a private method that can't be accessed outside it's class",\
+                p_node->base != nullptr ?\
+                    Logger::format("%s.%s", base_struct.c_str(), method_name.c_str()).c_str()\
+                    : method_name.c_str()\
+            )\
+        )\
+    } else {\
+        COMPILER_ERROR(\
+            VARIABLE_ERROR,\
+            Logger::format("No function found with name: %s",\
+                p_node->base != nullptr ?\
+                    Logger::format("%s.%s", base_struct.c_str(), method_name.c_str()).c_str()\
+                    : method_name.c_str()\
+            )\
+        )\
+    }
+
 namespace snowball {
 
     llvm::Value* Generator::generate(Node* p_node) {
@@ -296,6 +317,22 @@ namespace snowball {
             } else {
                 private_method_exists = true;
             }
+        } else if (p_node->generics.size() > 0) {
+            auto [generic_function, succ] = _generics->get_generic(method_call, arg_types, p_node->generics, p_node);
+            if (succ && _current_class != nullptr && _current_class->name == base_struct) {
+                auto backup = _builder.GetInsertBlock();
+
+                generate(generic_function.node);
+                function = _enviroment->get(
+                    p_node->base == nullptr ?
+                    mangle(p_node->method, generic_function.args, false) :
+                    GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, generic_function.args, false), p_node);
+
+                _builder.SetInsertPoint(backup);
+                private_method_used = true;
+            } else if (succ) {
+                private_method_exists = true;
+            }
         }
 
         if (!private_method_used) {
@@ -305,42 +342,27 @@ namespace snowball {
                 GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, arg_types, true);
 
             if (p_node->generics.size() > 0) {
-                // TODO: support for private methods
-                Generics::GenericValue generic_function = _generics->get_generic(method_call, arg_types, p_node->generics, p_node);
-                auto backup = _builder.GetInsertBlock();
+                auto [generic_function, succ] = _generics->get_generic(method_call, arg_types, p_node->generics, p_node);
+                if (succ) {
+                    auto backup = _builder.GetInsertBlock();
 
-                generate(generic_function.node);
-                function = _enviroment->get(
-                    p_node->base == nullptr ?
-                    mangle(p_node->method, generic_function.args, true) :
-                    GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, generic_function.args, true), p_node);
+                    generate(generic_function.node);
+                    function = _enviroment->get(
+                        p_node->base == nullptr ?
+                        mangle(p_node->method, generic_function.args, true) :
+                        GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, generic_function.args, true), p_node);
 
-                _builder.SetInsertPoint(backup);
+                    _builder.SetInsertPoint(backup);
+                } else {
+                    FUNCTION_CALL_NOT_FOUND()
+                }
             } else {
 
                 // Look for public
                 if (_enviroment->item_exists(method_call)) {
                     function = _enviroment->get(method_call, p_node);
                 } else {
-                    if (private_method_exists) {
-                        COMPILER_ERROR(
-                            VARIABLE_ERROR,
-                            Logger::format("Function named '%s' is a private method that can't be accessed outside it's class",
-                                p_node->base != nullptr ?
-                                    Logger::format("%s.%s", base_struct.c_str(), method_name.c_str()).c_str()
-                                    : method_name.c_str()
-                            )
-                        )
-                    } else {
-                        COMPILER_ERROR(
-                            VARIABLE_ERROR,
-                            Logger::format("No function found with name: %s",
-                                p_node->base != nullptr ?
-                                    Logger::format("%s.%s", base_struct.c_str(), method_name.c_str()).c_str()
-                                    : method_name.c_str()
-                            )
-                        )
-                    }
+                    FUNCTION_CALL_NOT_FOUND()
                 }
             }
         }

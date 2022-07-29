@@ -23,7 +23,7 @@ namespace snowball {
         _stores.push_back(store);
     }
 
-    Generics::GenericValue Generics::get_generic(std::string p_name, std::vector<std::string> p_args, std::vector<std::string> p_generics, Node* p_node) {
+    std::pair<Generics::GenericValue, bool> Generics::get_generic(std::string p_name, std::vector<std::string> p_args, std::vector<std::string> p_generics, Node* p_node) {
         for (const auto& store : _stores) {
 
             if (store->generics.size() == p_generics.size() && p_args.size() == store->args.size()) {
@@ -73,23 +73,12 @@ namespace snowball {
                     result.args = function_args;
                     result.return_ty = node->return_type;
 
-                    return result;
+                    return { result, true };
                 }
             }
         }
 
-        std::string args;
-        int arg_index = 0;
-        for (std::string arg : p_args) {
-            args += arg;
-            if (arg_index < (p_args.size()-1)) {
-                args += ", ";
-            }
-        }
-
-        // TODO: output with generics inside <>
-
-        DBGSourceInfo* dbg_info = new DBGSourceInfo(_compiler->get_source_info(), p_node->pos, p_node->width);
-        throw CompilerError(Error::VARIABLE_ERROR, Logger::format("'%s(%s)' is not defined", unmangle(p_name).name.c_str(), args.c_str()), dbg_info);
+        GenericValue dummy;
+        return { dummy, false };
     }
 }

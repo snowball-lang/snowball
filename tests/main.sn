@@ -1,12 +1,10 @@
 
+pub fn hello<T>(d:String) -> T {
+    return 6
+}
+
 pub fn main() -> Number {
     // normal:
-    var vec = 5 + 5
-
-    // probally bugs:
-    var vec = 5 + 5 = 10
-    var vec + 5 + 5
-    var vec + 5 + 5 = 10
-    var vec + 5 = 10
-
+    var vec = hello<Number>("5")
+    var d = hello<String>("5")
 }

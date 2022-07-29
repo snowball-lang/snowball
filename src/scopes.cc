@@ -30,6 +30,8 @@ namespace snowball {
                     }
                 }
             }
+
+            return false;
         }
 
         return _it != this->_data.end();

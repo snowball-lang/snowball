@@ -25,7 +25,7 @@ namespace snowball {
 
             Generics(Compiler* p_compiler) : _compiler(p_compiler) {};
 
-            GenericValue get_generic(std::string p_name, std::vector<std::string> p_args, std::vector<std::string> p_generics, Node* p_node);
+            std::pair<GenericValue, bool> get_generic(std::string p_name, std::vector<std::string> p_args, std::vector<std::string> p_generics, Node* p_node);
             void add_generic(std::string p_name, std::vector<std::string> p_args, std::string ret, std::vector<std::string> p_generics, Node* p_node);
 
             ~Generics() {};
