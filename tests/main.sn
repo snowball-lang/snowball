@@ -1,10 +1,9 @@
-
+import System
 pub fn hello<T>(d:String) -> T {
-    return 6
+    return d + "lol"
 }
 
 pub fn main() -> Number {
-    // normal:
-    var vec = hello<Number>("5")
-    var d = hello<String>("5")
+    var vec = hello<String>("pringaoo!!!")
+    System.print(vec)
 }

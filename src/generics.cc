@@ -20,13 +20,23 @@ namespace snowball {
         store->generics = p_generics;
         store->node = (FunctionNode*)p_node;
 
+        if (std::find_if(_stores.begin(), _stores.end(), [store](GenericStore* p_store) {
+            return (store->name == p_store->name && store->args == p_store->args);
+        }) != _stores.end()) {
+            DBGSourceInfo* dbg_info = new DBGSourceInfo(_compiler->get_source_info(), p_node->pos, p_node->width);
+            throw CompilerError(Error::VARIABLE_ERROR, Logger::format("Generic function '%s' has already been defined", unmangle(store->name).name.c_str()), dbg_info);
+        }
+
         _stores.push_back(store);
     }
 
     std::pair<Generics::GenericValue, bool> Generics::get_generic(std::string p_name, std::vector<std::string> p_args, std::vector<std::string> p_generics, Node* p_node) {
+        DUMP_S(p_name.c_str())
         for (const auto& store : _stores) {
 
-            if (store->generics.size() == p_generics.size() && p_args.size() == store->args.size()) {
+            unmangledResult unmangled = unmangle(p_name);
+
+            if (store->generics.size() == p_generics.size() && p_args.size() == store->args.size() && unmangled.isPublic == store->node->is_public) {
                 std::map<std::string, std::string> completed_generics;
                 for (int generic_index = 0; generic_index < p_generics.size(); generic_index++) {
                     completed_generics.insert({store->generics[generic_index], p_generics[generic_index]});

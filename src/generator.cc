@@ -319,7 +319,7 @@ namespace snowball {
             }
         } else if (p_node->generics.size() > 0) {
             auto [generic_function, succ] = _generics->get_generic(method_call, arg_types, p_node->generics, p_node);
-            if (succ && _current_class != nullptr && _current_class->name == base_struct) {
+            if (succ && ((_current_class != nullptr && _current_class->name == base_struct) || generic_function.node->is_lop_level)) {
                 auto backup = _builder.GetInsertBlock();
 
                 generate(generic_function.node);
