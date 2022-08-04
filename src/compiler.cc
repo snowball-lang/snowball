@@ -328,8 +328,8 @@ namespace snowball {
     }
 
     void Compiler::link_std_classes() {
-        register_number(API);
         register_string(API);
+        register_number(API);
     }
 
     void Compiler::create_source_info() {

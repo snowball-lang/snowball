@@ -28,7 +28,7 @@ namespace snowball_utils {
 
 namespace snowball {
     Enviroment::Enviroment(SourceInfo* p_source_info) : _source_info(p_source_info) {
-        Scope* global_scope = new Scope("__sn__global__", _source_info);
+        Scope* global_scope = new Scope(SN_GLOBAL_SCOPE, _source_info);
         _scopes.push_back(global_scope);
     }
 

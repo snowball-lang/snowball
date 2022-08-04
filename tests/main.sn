@@ -1,9 +1,10 @@
 import System
-pub fn hello<T>(d:String) -> T {
-    return d + "lol"
+
+fn h(i: Number) -> Number {
+    System.print(i.__str())
+    return h(i + 1)
 }
 
 pub fn main() -> Number {
-    var vec = hello<String>("pringaoo!!!")
-    System.print(vec)
+    h(0)
 }

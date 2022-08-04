@@ -311,8 +311,9 @@ namespace snowball {
         bool private_method_used = false;
         bool private_method_exists = false;
         if (_enviroment->item_exists(method_call)) {
-            if (_current_class != nullptr && _current_class->name == base_struct) {
-                function = _enviroment->get(method_call, p_node); // it will exist... right?
+            ScopeValue* private_function = _enviroment->get(method_call, p_node); // it will exist... right?
+            if ((_current_class != nullptr && _current_class->name == base_struct) || (private_function->parent_scope->name() == SN_GLOBAL_SCOPE)) {
+                function = private_function;
                 private_method_used = true;
             } else {
                 private_method_exists = true;
@@ -531,8 +532,6 @@ namespace snowball {
             ? (*_enviroment->get("Number", nullptr)->llvm_struct)->getPointerTo()
             : (*returnType->llvm_struct)->getPointerTo();
 
-        _enviroment->create_scope(p_node->name);
-        Scope* current_scope = _enviroment->current_scope();
 
         std::vector<std::string> arg_tnames;
         std::vector<llvm::Type*> arg_types;
@@ -572,6 +571,13 @@ namespace snowball {
             llvm::Function::ExternalLinkage,
             fname,
             _module);
+
+        std::unique_ptr<ScopeValue*> func_scopev = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Function*>(function)));
+        (*func_scopev)->isStaticFunction = p_node->is_static;
+        SET_TO_SCOPE_OR_CLASS(mangle(
+                p_node->name, arg_tnames, p_node->is_public), func_scopev)
+
+        Scope* current_scope = _enviroment->create_scope(p_node->name);
 
         int parameter_index = _current_class != nullptr ? 0 : 1;
         for (auto& arg : function->args()) {
@@ -643,11 +649,6 @@ namespace snowball {
         }
 
         _enviroment->delete_scope();
-
-        std::unique_ptr<ScopeValue*> func_scopev = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Function*>(function)));
-        (*func_scopev)->isStaticFunction = p_node->is_static;
-        SET_TO_SCOPE_OR_CLASS(mangle(
-                p_node->name, arg_tnames, p_node->is_public), func_scopev)
 
         return function;
     }

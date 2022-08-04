@@ -74,6 +74,8 @@ namespace snowball {
 
 
     void Scope::set(std::string p_name, std::unique_ptr<ScopeValue*> p_value) {
+        (*p_value)->parent_scope = std::move(this);
+
         if ((*p_value)->type == ScopeType::FUNC) {
             unmangledResult result = unmangle(p_name);
 
@@ -84,6 +86,9 @@ namespace snowball {
                 }
 
                 ScopeValue* container = new ScopeValue(ScopeType::FUNC_CONTAINER);
+
+                container->parent_scope = std::move(this);
+
                 container->instances.push_back(std::move(p_value));
 
                 this->_data.emplace( result.name, std::make_unique<ScopeValue*>(container) );

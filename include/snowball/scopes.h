@@ -54,6 +54,7 @@ namespace snowball {
 
     typedef struct ScopeValue {
         ScopeType type;
+        Scope* parent_scope;
 
         std::shared_ptr<llvm::Value*> llvm_value;
         std::shared_ptr<llvm::StructType*> llvm_struct;
@@ -62,6 +63,7 @@ namespace snowball {
         bool isPublic = false;
 
         // Function params
+        bool isTopLevel = false;
         bool isStaticFunction = false;
         std::vector<std::string> arguments;
 

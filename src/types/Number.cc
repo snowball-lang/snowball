@@ -18,6 +18,8 @@
 #include "snowball/constants.h"
 
 void register_number(snowball::SNAPI* API) {
+    llvm::Type* string_class = (*API->get_compiler()->get_enviroment()->get("String", nullptr)->llvm_struct)->getPointerTo();
+
     API->create_class("Number", std::map<std::string, llvm::Type*> {
         {
             "__number",
@@ -56,6 +58,17 @@ void register_number(snowball::SNAPI* API) {
             },
             true,
             (void*)static_cast<Number*(*)(Number*, Number*)>(Number::__sum)
+        );
+
+        API->create_class_method(
+            cls,
+            "__str",
+            string_class,
+            std::vector<std::pair<std::string, llvm::Type*>> {
+                std::make_pair("Number", class_type)
+            },
+            true,
+            (void*)static_cast<String*(*)(Number*)>(Number::__str)
         );
     });
 }
