@@ -40,6 +40,7 @@
 
 #include "snowball/types/Number.h"
 #include "snowball/types/String.h"
+#include "snowball/types/Bool.h"
 
 #include "snowball/llvm/gc.h"
 
@@ -168,10 +169,10 @@ namespace snowball {
         llvm::InitializeAllTargetMCs();
         llvm::InitializeAllAsmPrinters();
         LLVMInitializeNativeAsmParser();
-
         create_source_info();
 
-        _module = std::make_unique<llvm::Module>(prepare_module_name(), global_context);;
+        _module = std::make_unique<llvm::Module>(prepare_module_name(), global_context);
+
         _enviroment = new Enviroment(_source_info);
 
         _initialized = true;
@@ -264,26 +265,25 @@ namespace snowball {
             for (int i = 0; i < _testing_context->getTestLength(); i++) {
                 Logger::rlog(Logger::format("        %s%s%s (%i)... ", BBLU, _testing_context->getTestAt(i).c_str(), RESET, i + 1));
 
-                int64_t (*function)() = reinterpret_cast<int64_t (*)()>(executionEngine->getFunctionAddress(_testing_context->get_name(i+1)));
-                int64_t result = function();
+                snowball_int_t (*function)() = reinterpret_cast<snowball_int_t (*)()>(executionEngine->getFunctionAddress(_testing_context->get_name(i+1)));
+                snowball_int_t result = function();
 
                 if (!result) {
                     test_success = 0;
                     Logger::log(Logger::format("%sFAILED%s", BRED, RESET));
                     break;
-                }
-                else if (result == 1) {
-                    test_success = 0;
+                } else if (result == 1) {
                     Logger::log(Logger::format("%sPASSED%s", BGRN, RESET));
-                }
-                if (result == 2) {
+                } else if (result == 2) {
                     Logger::log(Logger::format("%sSKIPED%s", BYEL, RESET));
+                } else {
+                    Logger::log(Logger::format("%sUNKNOWN%s", BBLK, RESET));
                 }
             }
 
             return test_success;
         } else {
-            llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(mangle(_SNOWBALL_FUNCTION_ENTRY, {}, true)));
+            llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(mangle(_SNOWBALL_FUNCTION_ENTRY, {}, false)));
             executionEngine->runFunction(main_fn, {});
             return 0; // TODO: return function result
         }
@@ -328,8 +328,13 @@ namespace snowball {
     }
 
     void Compiler::link_std_classes() {
+        API->init_mode();
+
         register_string(API);
         register_number(API);
+        register_bool(API);
+
+        API->register_all();
     }
 
     void Compiler::create_source_info() {

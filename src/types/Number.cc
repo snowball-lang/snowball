@@ -17,8 +17,34 @@
 
 #include "snowball/constants.h"
 
+Number* Number::__init(snowball_int_t num) {
+    Number* instance;
+    instance = (Number*)(malloc(sizeof(Number)));
+    instance->__number = num;
+
+    return instance;
+}
+
+Number* Number::__init(Number* num) {
+    return Number::__init(num->__number);
+}
+
+Number* Number::__sum(Number* self, Number* num) {
+    return __init(self->__number + num->__number);
+}
+
+String* Number::__str(Number* self) {
+    std::ostringstream s;
+    s << (int)self->__number;
+
+    return String::__init(s.str().c_str());
+}
+
+Bool* Number::__bool(Number* self) {
+    return Bool::__init(self);
+}
+
 void register_number(snowball::SNAPI* API) {
-    llvm::Type* string_class = (*API->get_compiler()->get_enviroment()->get("String", nullptr)->llvm_struct)->getPointerTo();
 
     API->create_class("Number", std::map<std::string, llvm::Type*> {
         {
@@ -28,8 +54,10 @@ void register_number(snowball::SNAPI* API) {
                 API->get_compiler()->builder
             ),
         },
-    }, [&](snowball::ScopeValue* cls) {
+    }, [API](snowball::ScopeValue* cls) {
         llvm::Type* class_type = (*cls->llvm_struct)->getPointerTo();
+        llvm::Type* bool_class = (*API->get_compiler()->get_enviroment()->get("Bool", nullptr)->llvm_struct)->getPointerTo();
+        llvm::Type* string_class = (*API->get_compiler()->get_enviroment()->get("String", nullptr)->llvm_struct)->getPointerTo();
 
         API->create_class_method(
             cls,
@@ -46,6 +74,17 @@ void register_number(snowball::SNAPI* API) {
             },
             true,
             (void*)static_cast<Number*(*)(snowball_int_t)>(Number::__init)
+        );
+
+        API->create_class_method( // new Number(2)
+            cls,
+            "__init",
+            class_type,
+            std::vector<std::pair<std::string, llvm::Type*>> {
+                std::make_pair("Number", class_type)
+            },
+            true,
+            (void*)static_cast<Number*(*)(Number*)>(Number::__init)
         );
 
         API->create_class_method(
@@ -69,6 +108,17 @@ void register_number(snowball::SNAPI* API) {
             },
             true,
             (void*)static_cast<String*(*)(Number*)>(Number::__str)
+        );
+
+        API->create_class_method(
+            cls,
+            "__bool",
+            bool_class,
+            std::vector<std::pair<std::string, llvm::Type*>> {
+                std::make_pair("Number", class_type)
+            },
+            true,
+            (void*)static_cast<Bool*(*)(Number*)>(Number::__bool)
         );
     });
 }

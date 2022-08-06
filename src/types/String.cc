@@ -14,6 +14,26 @@
 
 #include "snowball/constants.h"
 
+String* String::__init(const char* __str) {
+    String* instance;
+    instance = (struct String*)(malloc(sizeof(String*) + (sizeof(__str) + 1)));
+
+    instance->__buffer = __str;
+    instance->__length = strlen(__str);
+
+    return instance;
+}
+
+String* String::__sum(String* self, String* sum) {
+
+    char *result = (char*)malloc(self->__length + sum->__length + 1); // +1 for the null-terminator
+    // in real code you would check for errors in malloc here
+    strcpy(result, self->__buffer);
+    strcat(result, sum->__buffer);
+
+    return __init(result);
+}
+
 void register_string(snowball::SNAPI* API) {
     API->create_class("String", std::map<std::string, llvm::Type*> {
         {

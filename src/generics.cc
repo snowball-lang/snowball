@@ -31,7 +31,6 @@ namespace snowball {
     }
 
     std::pair<Generics::GenericValue, bool> Generics::get_generic(std::string p_name, std::vector<std::string> p_args, std::vector<std::string> p_generics, Node* p_node) {
-        DUMP_S(p_name.c_str())
         for (const auto& store : _stores) {
 
             unmangledResult unmangled = unmangle(p_name);

@@ -31,12 +31,31 @@ namespace snowball {
         Scope* class_scope = new Scope(p_name, _compiler->get_source_info());
         ScopeValue* class_value = new ScopeValue(class_scope, std::make_shared<llvm::StructType*>(llvm_struct));
 
-        if (cb != nullptr)
+        if (cb != nullptr && !_init_mode)
             cb(class_value);
 
         if (!is_module)
             add_to_enviroment(p_name, std::make_unique<ScopeValue*>(class_value));
+
+        if (_init_mode) {
+            _types.emplace(class_value, cb);
+        }
+
         return class_value;
+    }
+
+    void SNAPI::init_mode() {
+        _init_mode = true;
+    }
+
+    void SNAPI::register_all() {
+        std::map<ScopeValue*, std::function<void(ScopeValue*)>>::iterator it;
+
+        for (it = _types.begin(); it != _types.end(); it++) {
+            it->second(it->first);
+        }
+
+        _init_mode = false;
     }
 
     ScopeValue* SNAPI::create_module(std::string p_name, std::map<std::string, llvm::Type*> p_properties, std::function<void(ScopeValue*)> cb) {

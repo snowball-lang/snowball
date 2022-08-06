@@ -69,7 +69,6 @@ namespace snowball {
 			CONST_VALUE, // evaluvated to compile time constants ex: "str", 3.14, Array(1, 2), ...
 			ARRAY,       // literal array ex: [1, 2, [3]]
 			MAP,         // literal map   ex: { "key":"value", 1:[2, 3] }
-			THIS,
 			SUPER,
 			CALL,
 			NEW_CALL,
@@ -77,6 +76,8 @@ namespace snowball {
 			INDEX,
 			MAPPED_INDEX,
 			OPERATOR,
+
+			ASSERT,
 
 			// control flow
 			RETURN,
@@ -143,6 +144,16 @@ namespace snowball {
 		};
 
 		~FunctionNode() {};
+	};
+
+	struct AssertNode : public Node {
+		Node* expr;
+
+		AssertNode() {
+			type = Type::ASSERT;
+		};
+
+		~AssertNode() {};
 	};
 
 	struct ReturnNode : public Node {
@@ -273,6 +284,8 @@ namespace snowball {
 
 		Node* left;
 		Node* right;
+
+		bool unary = false;
 		OpType op_type = OpType::NONE;
 
 		static bool is_assignment(BinaryOp* p_node) {
@@ -346,6 +359,11 @@ namespace snowball {
 		BinaryOp(OpType _op_type) {
 			type = Type::OPERATOR;
 			op_type = _op_type;
+			unary = (
+				op_type == OpType::OP_NOT      ||
+				op_type == OpType::OP_BIT_NOT  ||
+				op_type == OpType::OP_POSITIVE ||
+				op_type == OpType::OP_NEGATIVE );
 		};
 
 		~BinaryOp() {};

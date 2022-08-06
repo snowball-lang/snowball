@@ -6,7 +6,7 @@ add_definitions(${LLVM_DEFINITIONS})
 
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/types/*.h include/*.hpp)
 file(GLOB_RECURSE PROJECT_SOURCES src/*.cc src/types/*.cc src/*.c)
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)

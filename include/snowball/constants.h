@@ -23,9 +23,6 @@ extern "C" {
 #endif
 
 // Values
-#ifndef _SNOWBALL_CAN_OPTIMIZE
-#define _SNOWBALL_CAN_OPTIMIZE                  1
-#endif
 
 #define _SNOWBALL_STR_FACTOR                    16
 #define _SNOWBALL_MAX_LENGTH                    2147483647
@@ -119,9 +116,8 @@ typedef int32_t                                 snowball_int_t;
 #endif
 
 // Optimizations
-#define _SNOWBALL_OPTIMIZE                  0
-#if _SNOWBALL_OPTIMIZE
-
+#ifndef _SNOWBALL_CAN_OPTIMIZE
+#define _SNOWBALL_CAN_OPTIMIZE                  0
 #endif
 
 // Function names
@@ -141,7 +137,7 @@ typedef int32_t                                 snowball_int_t;
 #define _SNOWBALL_KEYWORD__TRUE             "true"
 #define _SNOWBALL_KEYWORD__ELSE             "else"
 #define _SNOWBALL_KEYWORD__CLASS            "class"
-#define _SNOWBALL_KEYWORD__CLASS            "class"
+#define _SNOWBALL_KEYWORD__ASSERT           "assert"
 #define _SNOWBALL_KEYWORD__PRIVATE          "priv"
 #define _SNOWBALL_KEYWORD__PUBLIC           "pub"
 #define _SNOWBALL_KEYWORD__FALSE            "false"

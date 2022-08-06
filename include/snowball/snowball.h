@@ -27,6 +27,7 @@
 // Types
 #include "types/Number.h"
 #include "types/String.h"
+#include "types/Bool.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -26,9 +26,16 @@ namespace snowball {
             void add_to_enviroment(std::string p_name, std::unique_ptr<ScopeValue*> p_scope_value);
             Compiler* get_compiler() { return _compiler; }
 
+            void init_mode();
+            void register_all();
+
             ~SNAPI() {};
 
         private:
+
+            bool _init_mode = false;
+            std::map<ScopeValue*, std::function<void(ScopeValue*)>> _types;
+
             Compiler* _compiler;
             SourceInfo* _source_info;
     };

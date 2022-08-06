@@ -43,7 +43,7 @@ namespace snowball {
             TestingNode* _parse_unittest();
             FunctionNode* _parse_function();
             CallNode* _parse_function_call();
-            BlockNode* _parse_block(std::vector<TokenType> p_termination = { TokenType::BRACKET_RCURLY } );
+            BlockNode* _parse_block(std::vector<TokenType> p_termination = { TokenType::BRACKET_RCURLY }, bool is_test = false );
             Node* _build_op_tree(std::vector<Node*> &expressions);
 
             std::vector<std::string> _parse_generic_expr();

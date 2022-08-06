@@ -36,6 +36,16 @@
     DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width); \
     throw CompilerError(Error::error, message, dbg_info);
 
+
+#define GET_BOOL_VALUE(ret, __v) \
+    std::string  __ty = __v->getType()->getPointerElementType()->getStructName().str(); \
+    if (__ty != "Bool") { \
+        llvm::Value* __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS(__ty.c_str(), "__bool", {__ty.c_str()}, true), p_node)->llvm_function; \
+        __v = _builder.CreateCall(__c, {__v}); \
+    } \
+    llvm::Value* __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS("Bool", "__real_bool", {"Bool"}, false), p_node)->llvm_function; \
+    llvm::Value* ret = _builder.CreateCall(__c, {__v}); \
+
 #define FUNCTION_CALL_NOT_FOUND() \
     if (private_method_exists) { \
         COMPILER_ERROR(\
@@ -106,10 +116,55 @@ namespace snowball {
                 return generate_test(static_cast<TestingNode *>(p_node));
             }
 
+            case Node::Type::ASSERT: {
+                return generate_assert(static_cast<AssertNode *>(p_node));
+            }
+
             default:
                 DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
                 throw Warning(Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, p_node->type, RESET, BOLD), dbg_info);
         }
+    }
+
+    llvm::Value* Generator::generate_assert(AssertNode* p_node) {
+        llvm::Value* inital_value = generate(p_node->expr); \
+
+        GET_BOOL_VALUE(assertion, inital_value)
+
+        std::string test_var_name = Logger::format("_SN__TestCaseN%i_Result", _testing_context->getTestLength());
+        llvm::Value* current_test = *_enviroment->current_scope()->get(test_var_name, nullptr)->llvm_value;
+
+        int size = _module->getDataLayout().getTypeStoreSize(_builder.getInt32Ty());
+        _builder.CreateStore(assertion, current_test);
+
+        llvm::Value* cond = _builder.CreateICmpEQ(
+            current_test,
+            llvm::ConstantExpr::getIntToPtr(
+                    llvm::ConstantInt::get(get_llvm_type_from_sn_type(
+                        BuildinTypes::NUMBER,
+                        _builder),
+                    1
+                ),
+                get_llvm_type_from_sn_type(
+                    BuildinTypes::NUMBER,
+                    _builder
+                )->getPointerTo()
+            ),
+            "ifcond"
+        );
+
+        llvm::Function *TheFunction = _builder.GetInsertBlock()->getParent();
+        llvm::BasicBlock* ThenBB = llvm::BasicBlock::Create(_builder.getContext(), "then", TheFunction);
+        llvm::BasicBlock* MergeBB = llvm::BasicBlock::Create(_builder.getContext(), "ifcont", TheFunction);
+
+        _builder.CreateCondBr(cond, ThenBB, MergeBB);
+
+        _builder.SetInsertPoint(ThenBB);
+        _builder.CreateRet(convert_to_right_value(_builder, current_test));
+
+        _builder.SetInsertPoint(MergeBB);
+
+        return MergeBB;
     }
 
     llvm::Value* Generator::generate_import(ImportNode* p_node) {
@@ -200,7 +255,7 @@ namespace snowball {
     }
 
     llvm::Value* Generator::generate_test(TestingNode* p_node) {
-        throw SNError(Error::TODO, "Unit tests are not yet supported");
+        // throw SNError(Error::TODO, "Unit tests are not yet supported");
 
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
@@ -212,14 +267,13 @@ namespace snowball {
         llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder.getContext(), "body", function);
         _builder.SetInsertPoint(body);
 
-        _enviroment->create_scope(test_name);
-        Scope* current_scope = _enviroment->current_scope();
+        Scope* current_scope = _enviroment->create_scope(test_name);
 
-        llvm::Value* value = llvm::ConstantInt::get(_builder.getInt64Ty(), 1);
+        llvm::Value* value = llvm::ConstantInt::get(_builder.getInt64Ty(), 3);
         std::string test_var_name = Logger::format("_SN__TestCaseN%i_Result", _testing_context->getTestLength());
         auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, test_var_name );
 
-        std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(value)));
+        std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(alloca)));
         current_scope->set(test_var_name, std::move(scope_value));
         _builder.CreateStore (value, alloca, /*isVolatile=*/false);
 
@@ -232,7 +286,7 @@ namespace snowball {
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
         _enviroment->delete_scope();
-        _builder.CreateRet(value);
+        _builder.CreateRet(convert_to_right_value(_builder, alloca));
 
         return function;
     }
@@ -445,63 +499,97 @@ namespace snowball {
 
     llvm::Value* Generator::generate_operator(BinaryOp* p_node) {
         llvm::Value* left = generate(p_node->left);
-        llvm::Value* right = generate(p_node->right);
 
-        llvm::Type* left_type = left->getType()->isPointerTy() ? left->getType()->getPointerElementType() : left->getType();
-        llvm::Type* right_type = right->getType()->isPointerTy() ? right->getType()->getPointerElementType() : right->getType();
+        if (p_node->unary) {
+            llvm::Type* left_type = left->getType()->isPointerTy() ? left->getType()->getPointerElementType() : left->getType();
 
-        llvm::Function* function;
-        switch (p_node->op_type)
-        {
-            case OP_POSITIVE:
-            case OP_PLUS: {
-                function = *_enviroment->get(
-                    GET_FUNCTION_FROM_CLASS(
-                        left_type->getStructName().str().c_str(),
-                        "__sum",
-                        {
-                            left_type->getStructName().str(),
-                            right_type->getStructName().str()
-                        },
-                        true
-                    ), p_node, Logger::format(
-                        "%s.__sum(%s, %s)",
+            llvm::Function* function;
+            switch (p_node->op_type)
+            {
+                case OP_NOT: {
+                    function = *_enviroment->get(
+                        GET_FUNCTION_FROM_CLASS(
                             left_type->getStructName().str().c_str(),
-                            left_type->getStructName().str().c_str(),
-                            right_type->getStructName().str().c_str()
-                        )
-                    )->llvm_function;
-                break;
+                            "__not",
+                            {
+                                left_type->getStructName().str(),
+                            },
+                            true
+                        ), p_node, Logger::format(
+                            "%s.__not(self)",
+                                left_type->getStructName().str().c_str()
+                            )
+                        )->llvm_function;
+                    break;
+                }
+
+                default: {
+                    DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
+                    throw CompilerError(Error::BUG, Logger::format("The operator with type '%i' has not been handled.", p_node->op_type), dbg_info);
+                }
             }
 
-            case OP_EQ: {
-                function = *_enviroment->get(
-                    GET_FUNCTION_FROM_CLASS(
-                        left_type->getStructName().str().c_str(),
-                        "__set",
-                        {
-                            left_type->getStructName().str(),
-                            right_type->getStructName().str()
-                        },
-                        true
-                    ), p_node, Logger::format(
-                        "%s.__set(%s, %s)",
+            return _builder.CreateCall(function,
+                {left});
+        } else {
+            llvm::Value* right = generate(p_node->right);
+
+            llvm::Type* left_type = left->getType()->isPointerTy() ? left->getType()->getPointerElementType() : left->getType();
+            llvm::Type* right_type = right->getType()->isPointerTy() ? right->getType()->getPointerElementType() : right->getType();
+
+            llvm::Function* function;
+            switch (p_node->op_type)
+            {
+                case OP_POSITIVE:
+                case OP_PLUS: {
+                    function = *_enviroment->get(
+                        GET_FUNCTION_FROM_CLASS(
                             left_type->getStructName().str().c_str(),
+                            "__sum",
+                            {
+                                left_type->getStructName().str(),
+                                right_type->getStructName().str()
+                            },
+                            true
+                        ), p_node, Logger::format(
+                            "%s.__sum(%s, %s)",
+                                left_type->getStructName().str().c_str(),
+                                left_type->getStructName().str().c_str(),
+                                right_type->getStructName().str().c_str()
+                            )
+                        )->llvm_function;
+                    break;
+                }
+
+                case OP_EQ: {
+                    function = *_enviroment->get(
+                        GET_FUNCTION_FROM_CLASS(
                             left_type->getStructName().str().c_str(),
-                            right_type->getStructName().str().c_str()
-                        )
-                    )->llvm_function;
-                break;
+                            "__set",
+                            {
+                                left_type->getStructName().str(),
+                                right_type->getStructName().str()
+                            },
+                            true
+                        ), p_node, Logger::format(
+                            "%s.__set(%s, %s)",
+                                left_type->getStructName().str().c_str(),
+                                left_type->getStructName().str().c_str(),
+                                right_type->getStructName().str().c_str()
+                            )
+                        )->llvm_function;
+                    break;
+                }
+
+                default: {
+                    DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
+                    throw CompilerError(Error::BUG, Logger::format("The operator with type '%i' has not been handled.", p_node->op_type), dbg_info);
+                }
             }
 
-            default: {
-                DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
-                throw CompilerError(Error::BUG, Logger::format("The operator with type '%i' has not been handled.", p_node->op_type), dbg_info);
-            }
+            return _builder.CreateCall(function,
+                {left, right});
         }
-
-        return _builder.CreateCall(function,
-            {left, right});
     }
 
     llvm::Value* Generator::generate_function(FunctionNode* p_node) {

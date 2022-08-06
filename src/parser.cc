@@ -92,25 +92,25 @@ namespace snowball {
                 case TokenType::SYM_SEMI_COLLON:
                     break;
 
-                case TokenType::VALUE_BOOL:
-                case TokenType::VALUE_NULL:
-                case TokenType::VALUE_FLOAT:
-                case TokenType::VALUE_NUMBER:
-                case TokenType::VALUE_STRING:
-                case TokenType::VALUE_UNDEFINED: {
+                // case TokenType::VALUE_BOOL:
+                // case TokenType::VALUE_NULL:
+                // case TokenType::VALUE_FLOAT:
+                // case TokenType::VALUE_NUMBER:
+                // case TokenType::VALUE_STRING:
+                // case TokenType::VALUE_UNDEFINED: {
 
-                    int _width = _current_token.col;
-                    std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
+                //     int _width = _current_token.col;
+                //     std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
 
-                    ConstantValue* value = static_cast<ConstantValue *>(_parse_expression()); // Type: ConstantValue
-                    _width = _width - _current_token.col;
+                //     ConstantValue* value = static_cast<ConstantValue *>(_parse_expression()); // Type: ConstantValue
+                //     _width = _width - _current_token.col;
 
-                    value->pos = _pos;
-                    value->width = (uint32_t)_width;
+                //     value->pos = _pos;
+                //     value->width = (uint32_t)_width;
 
-                    _nodes.push_back(value);
-                    break;
-                }
+                //     _nodes.push_back(value);
+                //     break;
+                // }
 
                 default:
                     PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Unexpected token found: %s%s%s", BLU, _current_token.to_string().c_str(), RESET))
@@ -179,7 +179,8 @@ namespace snowball {
         ASSERT_TOKEN_EOF(_current_token, TokenType::VALUE_STRING, "an unit test description", "a test declaration")
         std::string description = _current_token.to_string(); next_token();
 
-        BlockNode* block = _parse_block();
+        BlockNode* block = _parse_block({ TokenType::BRACKET_RCURLY }, true);
+
         test->block = block;
         test->description = description;
 
@@ -211,7 +212,7 @@ namespace snowball {
         _context.current_class = cls;
         while (true) {
             next_token();
-            switch (_current_token.type) // Todo: public/private attributes
+            switch (_current_token.type)
             {
                 case TokenType::BRACKET_RCURLY: {
                     _context.current_class = top_clas;
@@ -236,7 +237,7 @@ namespace snowball {
                 }
 
                 case TokenType::KWORD_VAR: {
-                    VarNode* func = _parse_variable(); // TODO: static
+                    VarNode* func = _parse_variable();
                     cls->vars.push_back(func);
                 } break;
 
@@ -273,9 +274,8 @@ namespace snowball {
         }
 
         ASSERT_TOKEN_EOF(_current_token, TokenType::OP_EQ, "=", "variable")
-        next_token();
 
-        if (_current_token.type == TokenType::_EOF) {
+        if (peek().type == TokenType::_EOF) {
             PARSER_ERROR(Error::UNEXPECTED_EOF, "Found an unexpected EOF while parsing variable's statement");
         }
 
@@ -415,7 +415,7 @@ namespace snowball {
 
 
 
-    BlockNode* Parser::_parse_block(std::vector<TokenType> p_termination) {
+    BlockNode* Parser::_parse_block(std::vector<TokenType> p_termination, bool is_test) {
         std::vector<Node *> stmts;
         BlockNode* b_node = new BlockNode();
 
@@ -445,9 +445,29 @@ namespace snowball {
                     break;
                 }
 
+                case TokenType::KWORD_ASSERT: {
+                    if (is_test) {
+                        int _width = _current_token.col;
+                        std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
+
+                        AssertNode* node = new AssertNode();
+                        Node* expr = _parse_expression();
+                        _width = _width - _current_token.col;
+
+                        node->pos = _pos;
+                        node->expr = expr;
+                        node->width = (uint32_t)_width;
+
+                        stmts.push_back(node);
+                        break;
+                    } // fall through
+                }
+
                 case TokenType::KWORD_RETURN: {
                     if (_context.current_function == nullptr) {
                         PARSER_ERROR(Error::SYNTAX_ERROR, "Return statements can only be used inside functions")
+                    } else if (is_test) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "Return statements can't be used inside unit tests!")
                     }
 
                     int _width = _current_token.col;
@@ -473,7 +493,6 @@ namespace snowball {
                     }
 
                     Node* expr = _parse_expression();
-                    // CONSUME(";", SYM_SEMI_COLLON, "An expression inside a block")
                     stmts.push_back(expr);
                 }
             }
@@ -486,8 +505,6 @@ namespace snowball {
     ReturnNode* Parser::_parse_return() {
         ASSERT(_current_token.type == TokenType::KWORD_RETURN)
         ASSERT(_context.current_function != nullptr)
-
-        next_token();
 
         ReturnNode* node = new ReturnNode();
         node->value = _parse_expression();
@@ -525,7 +542,6 @@ namespace snowball {
         CallNode* callNode = new CallNode();
         callNode->method = _current_token.to_string();
 
-        // TODO: error for normal function calls
         std::vector<std::string> generics;
         if (peek(0, true).type == TokenType::OP_LT) {
             next_token();
@@ -536,8 +552,6 @@ namespace snowball {
 
             if (peek(0, true).type == TokenType::BRACKET_LPARENT)
                 next_token();
-
-            next_token();
 
             std::vector<Node*> arguments;
             while (true) {
@@ -572,7 +586,11 @@ namespace snowball {
 
         while (true) {
             Node* expression;
-            switch (_current_token.type)
+            next_token();
+
+            Token tk = _current_token;
+
+            switch (tk.type)
             {
                 case TokenType::VALUE_BOOL:
                 case TokenType::VALUE_NULL:
@@ -580,7 +598,7 @@ namespace snowball {
                 case TokenType::VALUE_NUMBER:
                 case TokenType::VALUE_STRING:
                 case TokenType::VALUE_UNDEFINED: {
-                    expression = new ConstantValue(_current_token.type, _current_token.to_string());
+                    expression = new ConstantValue(tk.type, tk.to_string());
                     break;
                 }
 
@@ -593,20 +611,21 @@ namespace snowball {
                 case TokenType::OP_NOT:
                 case TokenType::OP_PLUS:
                 case TokenType::OP_MINUS:
-                case TokenType::OP_BIT_NOT:
+                case TokenType::OP_BIT_NOT: {
 
-                    if (_current_token.type == TokenType::OP_NOT)     expression = new BinaryOp(OpType::OP_NOT)      ;
-                    if (_current_token.type == TokenType::OP_PLUS)    expression = new BinaryOp(OpType::OP_POSITIVE) ;
-                    if (_current_token.type == TokenType::OP_MINUS)   expression = new BinaryOp(OpType::OP_NEGATIVE) ;
-                    if (_current_token.type == TokenType::OP_BIT_NOT) expression = new BinaryOp(OpType::OP_BIT_NOT)  ;
+                    if (tk.type == TokenType::OP_NOT)          expressions.push_back(new BinaryOp(OpType::OP_NOT))      ;
+                    else if (tk.type == TokenType::OP_PLUS)    expressions.push_back(new BinaryOp(OpType::OP_POSITIVE)) ;
+                    else if (tk.type == TokenType::OP_MINUS)   expressions.push_back(new BinaryOp(OpType::OP_NEGATIVE)) ;
+                    else if (tk.type == TokenType::OP_BIT_NOT) expressions.push_back(new BinaryOp(OpType::OP_BIT_NOT))  ;
 
-                    break;
+                    continue;
+                }
 
                 case TokenType::IDENTIFIER: {
                     if (peek(0, true).type == TokenType::BRACKET_LPARENT || peek(0, true).type == TokenType::OP_LT) {
                         expression = _parse_function_call();
                     } else {
-                        expression = new IdentifierNode(_current_token);
+                        expression = new IdentifierNode(tk);
                     }
                     break;
                 }
@@ -620,7 +639,7 @@ namespace snowball {
                 Token token = peek(0, true);
                 if (token.type == TokenType::SYM_DOT) {
                     next_token(); next_token();
-                    ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "function index/call")
+                    ASSERT_TOKEN_EOF(tk, TokenType::IDENTIFIER, "an identifier", "function index/call")
 
                     if (peek(0, true).type == TokenType::BRACKET_LPARENT)  {
                         Node* base = expression;
@@ -633,7 +652,7 @@ namespace snowball {
                     }
                 } if (token.type == TokenType::SYM_COLCOL) { // same thing but calling static function
                     next_token(); next_token();
-                    ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "static function index/call")
+                    ASSERT_TOKEN_EOF(tk, TokenType::IDENTIFIER, "an identifier", "static function index/call")
 
                     if (peek(0, true).type == TokenType::BRACKET_LPARENT)  {
                         Node* base = expression;
@@ -650,14 +669,14 @@ namespace snowball {
                 }
             }
 
-            expressions.push_back(expression);
-            Token tk = peek(0, true);
+            expressions.emplace_back(expression);
+            tk = peek();
 
             OpType op;
             bool valid = true;
 
             switch (tk.type) {
-            #define OP_CASE(m_op) case TokenType::m_op: op = OpType::m_op; break;
+            #define OP_CASE(m_op) case TokenType::m_op: {op = OpType::m_op; break;}
                 OP_CASE(OP_EQ);
                 OP_CASE(OP_EQEQ);
                 OP_CASE(OP_PLUS);
@@ -697,8 +716,6 @@ namespace snowball {
             if (valid) {
                 next_token(); // Eat peeked token.
                 expressions.push_back(new BinaryOp(op));
-
-                next_token();
             } else {
                 break;
             }
@@ -832,10 +849,9 @@ namespace snowball {
                     BinaryOp* op_node = new BinaryOp(((BinaryOp*)expressions[(size_t)i])->op_type);
 
                     op_node->left = expressions[(size_t)i + 1];
-                    expressions.erase(expressions.begin() + i + 1);
 
-                    expressions.erase(expressions.begin() + i);
-                    expressions.insert(expressions.begin(), op_node);
+                    expressions.at(i) = op_node;
+                    expressions.erase(expressions.begin() + i + 1);
 
                 }
             } else {

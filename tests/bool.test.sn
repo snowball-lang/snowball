@@ -1,0 +1,10 @@
+
+test "Bool value contain 'true' from new instance" {
+    assert new Bool(1)
+}
+
+test "Bool value contain 'false' from new instance" {
+    assert !new Bool(0)
+}
+
+// TODO: try `true` and `false`

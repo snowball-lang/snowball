@@ -51,8 +51,8 @@
         - [x] Function
             - [x] Support for static
             - [x] Public methods diferentiate from private methods (can have the same name)
-        - [ ] Variables
-            - [ ] Support for static
+        - [x] Variables
+            - [x] Support for static
     - [x] Generate
         - [x] Struct type
         - [x] Functions
@@ -70,15 +70,6 @@
         - [ ] __repr
         - [ ] __bool
         - [ ] __eqeq
-- [ ] Unit testing
-    - [x] Add `test` keyword
-    - [x] Parse test statement
-    - [x] check for -t argument
-    - [x] add TestingContext class
-    - [x] Generate test statement
-    - [x] Execute tests
-    - [x] return result variable as int
-    - [ ] Add things like `assert`
 - [ ] Number class
 - [ ] Add a Void type
 
@@ -110,3 +101,12 @@
 - [x] add optimizations
 - [x] Let user choose in 32/64 bits numbers
 - [x] `_MN10gc__allocaA3i32P` and `_MN12gc__reallocaA2i8A3i32P` should not really be in the enviroment
+- [x] Unit testing
+    - [x] Add `test` keyword
+    - [x] Parse test statement
+    - [x] check for -t argument
+    - [x] add TestingContext class
+    - [x] Generate test statement
+    - [x] Execute tests
+    - [x] return result variable as int
+    - [x] Add things like `assert`
