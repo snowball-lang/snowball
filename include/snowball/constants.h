@@ -44,24 +44,20 @@ typedef int32_t                                 snowball_int_t;
 // Debug
 #ifndef NDEBUG
 // Production builds should set NDEBUG=1
-#define NDEBUG false
+#define _SN_DEBUG false
 #else
-#define NDEBUG true
-#endif
-
-#ifndef DEBUG
-#define DEBUG !NDEBUG
+#define _SN_DEBUG true
 #endif
 
 #define LINE_SEPARATOR                        "------------------"
-#ifdef NDEBUG
+#ifdef _SN_DEBUG
     #define _SNOWBALL_BUILD_TYPE              "Debug"
 
     #define _SNOWBALL_LEXER_DEBUG             0
     #define _SNOWBALL_PARSER_DEBUG            0
     #define _SNOWBALL_CODEGEN_DEBUG           0 // todo
-    #define _SNOWBALL_BYTECODE_DEBUG          1
-    #define _SNOWBALL_SYMTABLE_DEBUG          1
+    #define _SNOWBALL_BYTECODE_DEBUG          0
+    #define _SNOWBALL_SYMTABLE_DEBUG          0
     #define _SNOWBALL_FREE_DEBUG              0 // todo
 
     #define PRINT_LINE(...)                   printf(__VA_ARGS__);printf("\n");fflush(stdout);

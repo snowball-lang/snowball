@@ -40,6 +40,10 @@ String* Number::__str(Number* self) {
     return String::__init(s.str().c_str());
 }
 
+Bool* Number::__eqeq(Number* self, Number* comp) {
+    return Bool::__init(self->__number == comp->__number);
+}
+
 Bool* Number::__bool(Number* self) {
     return Bool::__init(self);
 }
@@ -119,6 +123,18 @@ void register_number(snowball::SNAPI* API) {
             },
             true,
             (void*)static_cast<Bool*(*)(Number*)>(Number::__bool)
+        );
+
+        API->create_class_method(
+            cls,
+            "__eqeq",
+            bool_class,
+            std::vector<std::pair<std::string, llvm::Type*>> {
+                std::make_pair("Number", class_type),
+                std::make_pair("Number", class_type)
+            },
+            true,
+            (void*)static_cast<Bool*(*)(Number*, Number*)>(Number::__eqeq)
         );
     });
 }

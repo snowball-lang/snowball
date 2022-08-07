@@ -1,6 +1,7 @@
 ### Todo
 
 - [ ] constant
+- [ ] Add a Void type
 - [ ] Add a Any type
 - [ ] global variables
 - [ ] default return type
@@ -22,17 +23,6 @@
 
 ### In Progress
 
-- [ ] String class
-    - [x] __sum
-    - [ ] __div
-    - [ ] __sub
-    - [ ] __mul
-    - [ ] split
-    - [ ] join
-    - [x] __init
-    - [ ] upper
-    - [ ] lower
-    - [ ] capitalize
 - [ ] Add a templating system
     - [x] Functions
     - [ ] Classes
@@ -71,7 +61,7 @@
         - [ ] __bool
         - [ ] __eqeq
 - [ ] Number class
-- [ ] Add a Void type
+- [ ] String class
 
 ### Done ✓
 

@@ -20,6 +20,7 @@ extern "C" struct Number {
     static Number* __sum(Number* self, Number* num);
     static String* __str(Number* self);
 
+    static Bool* __eqeq(Number* self, Number* comp);
     static Bool* __bool(Number* self);
 };
 

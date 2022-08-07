@@ -68,11 +68,11 @@ int main(int argc, char** argv) {
 
             while ((entry = readdir(dp))) {
                 if (endsWith(entry->d_name, ".test.sn")) {
-                    std::ifstream file_content(filename + "/" + entry->d_name);
+                    std::ifstream file_content(filename + entry->d_name);
                     std::string content( (std::istreambuf_iterator<char>(file_content) ),
                         (std::istreambuf_iterator<char>()    ) );
 
-                    compile(content, entry->d_name, arguments);
+                    compile(content, filename + entry->d_name, arguments);
                 }
             }
 

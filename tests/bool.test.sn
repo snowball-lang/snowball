@@ -7,4 +7,8 @@ test "Bool value contain 'false' from new instance" {
     assert !new Bool(0)
 }
 
+test "check if true is the same as true" {
+    assert new Bool(1) == new Bool(1)
+}
+
 // TODO: try `true` and `false`

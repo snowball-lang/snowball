@@ -37,6 +37,10 @@ String* Bool::__str(Bool* self) {
     return String::__init(self->__bool ? "true" : "false");
 }
 
+Bool* Bool::__eqeq(Bool* self, Bool* second) {
+    return Bool::__init(self->__bool == second->__bool);
+}
+
 Bool* Bool::__not(Bool* self) {
     return Bool::__init(!self->__bool);
 }
@@ -103,6 +107,18 @@ void register_bool(snowball::SNAPI* API) {
             },
             true,
             (void*)static_cast<Bool*(*)(Bool*)>(Bool::__not)
+        );
+
+        API->create_class_method(
+            cls,
+            "__eqeq",
+            class_type,
+            std::vector<std::pair<std::string, llvm::Type*>> {
+                std::make_pair("Bool", class_type),
+                std::make_pair("Bool", class_type)
+            },
+            true,
+            (void*)static_cast<Bool*(*)(Bool*, Bool*)>(Bool::__eqeq)
         );
 
     });

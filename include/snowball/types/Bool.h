@@ -20,6 +20,7 @@ extern "C" struct Bool {
     static snowball_int_t __real_bool(Bool* self);
     static String* __str(Bool* self);
     static Bool* __not(Bool* self);
+    static Bool* __eqeq(Bool* self, Bool* second);
 };
 
 void register_bool(snowball::SNAPI* API);

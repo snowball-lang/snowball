@@ -1,0 +1,16 @@
+
+test "perform additions" {
+    var a = 2
+    var b = 6
+
+    var c = a + 4
+
+    assert c == b
+}
+
+test "check if numbers are the same" {
+    assert 2 == 2
+    assert 100000000000000 == 100000000000000
+    assert 0x23 == 0xFFFFF
+    assert 0b0100 == 0b0100
+}

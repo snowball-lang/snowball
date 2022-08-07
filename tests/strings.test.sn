@@ -1,0 +1,20 @@
+
+test "check if strings are the same" {
+    assert "hello" == "hello"
+    assert "" == ""
+}
+
+test "test for scaping characters" {
+    assert "\n" == "\n"
+    assert "\t" == "\t"
+    assert "\r" == "\r"
+    assert "\'" == "\'"
+}
+
+test "perform string additions" {
+    var s = "hello, "
+    var s2 = s + "world"
+
+    assert s2 == "hello, world"
+}
+

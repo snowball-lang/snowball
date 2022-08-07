@@ -46,6 +46,39 @@
     llvm::Value* __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS("Bool", "__real_bool", {"Bool"}, false), p_node)->llvm_function; \
     llvm::Value* ret = _builder.CreateCall(__c, {__v}); \
 
+#define CALL_OPERATOR(method) \
+    function = *_enviroment->get( \
+    GET_FUNCTION_FROM_CLASS( \
+        left_type->getStructName().str().c_str(), \
+        method, \
+        { \
+            left_type->getStructName().str(), \
+            right_type->getStructName().str() \
+        }, \
+        true \
+    ), p_node, Logger::format( \
+        "%s." method "(%s, %s)", \
+            left_type->getStructName().str().c_str(), \
+            left_type->getStructName().str().c_str(), \
+            right_type->getStructName().str().c_str() \
+        ) \
+    )->llvm_function;
+
+#define CALL_UNARY_OPERATOR(method) \
+    function = *_enviroment->get( \
+    GET_FUNCTION_FROM_CLASS( \
+        left_type->getStructName().str().c_str(), \
+        method, \
+        { \
+            left_type->getStructName().str() \
+        }, \
+        true \
+    ), p_node, Logger::format( \
+        "%s." method "(self)", \
+            left_type->getStructName().str().c_str() \
+        ) \
+    )->llvm_function;
+
 #define FUNCTION_CALL_NOT_FOUND() \
     if (private_method_exists) { \
         COMPILER_ERROR(\
@@ -507,25 +540,12 @@ namespace snowball {
             switch (p_node->op_type)
             {
                 case OP_NOT: {
-                    function = *_enviroment->get(
-                        GET_FUNCTION_FROM_CLASS(
-                            left_type->getStructName().str().c_str(),
-                            "__not",
-                            {
-                                left_type->getStructName().str(),
-                            },
-                            true
-                        ), p_node, Logger::format(
-                            "%s.__not(self)",
-                                left_type->getStructName().str().c_str()
-                            )
-                        )->llvm_function;
+                    CALL_UNARY_OPERATOR("__not")
                     break;
                 }
 
                 default: {
-                    DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
-                    throw CompilerError(Error::BUG, Logger::format("The operator with type '%i' has not been handled.", p_node->op_type), dbg_info);
+                    COMPILER_ERROR(BUG, Logger::format("The operator with type '%i' has not been handled.", p_node->op_type))
                 }
             }
 
@@ -542,48 +562,22 @@ namespace snowball {
             {
                 case OP_POSITIVE:
                 case OP_PLUS: {
-                    function = *_enviroment->get(
-                        GET_FUNCTION_FROM_CLASS(
-                            left_type->getStructName().str().c_str(),
-                            "__sum",
-                            {
-                                left_type->getStructName().str(),
-                                right_type->getStructName().str()
-                            },
-                            true
-                        ), p_node, Logger::format(
-                            "%s.__sum(%s, %s)",
-                                left_type->getStructName().str().c_str(),
-                                left_type->getStructName().str().c_str(),
-                                right_type->getStructName().str().c_str()
-                            )
-                        )->llvm_function;
+                    CALL_OPERATOR("__sum")
                     break;
                 }
 
                 case OP_EQ: {
-                    function = *_enviroment->get(
-                        GET_FUNCTION_FROM_CLASS(
-                            left_type->getStructName().str().c_str(),
-                            "__set",
-                            {
-                                left_type->getStructName().str(),
-                                right_type->getStructName().str()
-                            },
-                            true
-                        ), p_node, Logger::format(
-                            "%s.__set(%s, %s)",
-                                left_type->getStructName().str().c_str(),
-                                left_type->getStructName().str().c_str(),
-                                right_type->getStructName().str().c_str()
-                            )
-                        )->llvm_function;
+                    CALL_OPERATOR("__set")
+                    break;
+                }
+
+                case OP_EQEQ: {
+                    CALL_OPERATOR("__eqeq")
                     break;
                 }
 
                 default: {
-                    DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
-                    throw CompilerError(Error::BUG, Logger::format("The operator with type '%i' has not been handled.", p_node->op_type), dbg_info);
+                    COMPILER_ERROR(BUG, Logger::format("The operator with type '%i' has not been handled.", p_node->op_type))
                 }
             }
 
@@ -773,9 +767,22 @@ namespace snowball {
                 llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
 
                 ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS("Number", "__init", { "i" }, true), p_node);
+
+                uint64_t number_value;
+
+                if ((p_node->value.rfind("0x", 0) == 0) || (p_node->value.rfind("0X", 0) == 0)) {
+                    number_value = std::stoul(p_node->value, nullptr, 16);
+                } else if ((p_node->value.rfind("0b", 0) == 0) || (p_node->value.rfind("0B", 0) == 0)) {
+                    number_value = std::stoul(p_node->value.substr(2, (size_t)(p_node->value.size() - 2)), nullptr, 2);
+                } else {
+                    number_value = std::stoul(p_node->value);
+                }
+
                 llvm::Function* constructor = const_cast<llvm::Function*>(*scope_value->llvm_function);
 
-                llvm::Constant * num = llvm::ConstantInt::get(i64, (uint64_t)std::stoi(p_node->value));
+                DUMP(number_value)
+                DUMP_S(p_node->value.c_str())
+                llvm::Constant * num = llvm::ConstantInt::get(i64, (uint64_t)number_value);
                 return _builder.CreateCall(constructor, { num });
             }
 

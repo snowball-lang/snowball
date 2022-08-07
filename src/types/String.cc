@@ -34,6 +34,10 @@ String* String::__sum(String* self, String* sum) {
     return __init(result);
 }
 
+Bool* String::__eqeq(String* self, String* second) {
+    return Bool::__init(strcmp(self->__buffer, second->__buffer) == 0);
+}
+
 void register_string(snowball::SNAPI* API) {
     API->create_class("String", std::map<std::string, llvm::Type*> {
         {
@@ -52,6 +56,7 @@ void register_string(snowball::SNAPI* API) {
         }
     }, [&](snowball::ScopeValue* cls) {
         llvm::Type* class_type = (*cls->llvm_struct)->getPointerTo();
+        llvm::Type* bool_class = (*API->get_compiler()->get_enviroment()->get("Bool", nullptr)->llvm_struct)->getPointerTo();
 
         API->create_class_method(
             cls,
@@ -80,6 +85,18 @@ void register_string(snowball::SNAPI* API) {
             },
             true,
             (void*)static_cast<String*(*)(String*, String*)>(String::__sum)
+        );
+
+        API->create_class_method(
+            cls,
+            "__eqeq",
+            bool_class,
+            std::vector<std::pair<std::string, llvm::Type*>> {
+                std::make_pair("String", class_type),
+                std::make_pair("String", class_type)
+            },
+            true,
+            (void*)static_cast<Bool*(*)(String*, String*)>(String::__eqeq)
         );
     });
 }

@@ -12,6 +12,8 @@
 #include <memory>
 #include <utility>
 
+#include <assert.h>
+
 #define PARSER_ERROR(err, msg) _parser_error(err, msg);
 #define UNEXPECTED_TOK(expectation) PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Expected %s, got %s%s%s", expectation, RED, _current_token.to_string().c_str(), RESET));
 #define UNEXPECTED_TOK2(expectation, method) PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Expected %s, got %s%s%s while parsing %s", expectation, RED, _current_token.to_string().c_str(), RESET, BOLD, method));
@@ -737,7 +739,7 @@ namespace snowball {
 
             for (int i = 0; i < (int)expressions.size(); i++) {
                 BinaryOp* expression = static_cast<BinaryOp*>(expressions[i]);
-                if (!(expression->type == Node::Type::OPERATOR)) {
+                if (expression->type != Node::Type::OPERATOR) {
                     continue;
                 }
 
@@ -746,57 +748,68 @@ namespace snowball {
                     case OpType::OP_NOT:
                     case OpType::OP_BIT_NOT:
                     case OpType::OP_POSITIVE:
-                    case OpType::OP_NEGATIVE:
+                    case OpType::OP_NEGATIVE: {
                         precedence = 0;
                         break;
+                    }
 
                     case OpType::OP_MUL:
                     case OpType::OP_DIV:
-                    case OpType::OP_MOD:
+                    case OpType::OP_MOD: {
                         precedence = 1;
                         break;
+                    }
 
                     case OpType::OP_PLUS:
-                    case OpType::OP_MINUS:
+                    case OpType::OP_MINUS: {
                         precedence = 2;
                         break;
+                    }
 
                     case OpType::OP_BIT_LSHIFT:
-                    case OpType::OP_BIT_RSHIFT:
+                    case OpType::OP_BIT_RSHIFT: {
                         precedence = 3;
                         break;
+                    }
 
                     case OpType::OP_LT:
                     case OpType::OP_LTEQ:
                     case OpType::OP_GT:
-                    case OpType::OP_GTEQ:
+                    case OpType::OP_GTEQ: {
                         precedence = 4;
                         break;
+                    }
 
                     case OpType::OP_EQEQ:
-                    case OpType::OP_NOTEQ:
+                    case OpType::OP_NOTEQ: {
                         precedence = 5;
                         break;
+                    }
 
-                    case OpType::OP_BIT_AND:
+                    case OpType::OP_BIT_AND: {
                         precedence = 6;
                         break;
+                    }
 
-                    case OpType::OP_BIT_XOR:
+                    case OpType::OP_BIT_XOR: {
                         precedence = 7;
                         break;
+                    }
 
-                    case OpType::OP_BIT_OR:
+                    case OpType::OP_BIT_OR: {
                         precedence = 8;
                         break;
+                    }
 
-                    case OpType::OP_AND:
+                    case OpType::OP_AND: {
                         precedence = 9;
                         break;
+                    }
 
-                    case OpType::OP_OR:
+                    case OpType::OP_OR: {
                         precedence = 10;
                         break;
+                    }
 
                     case OpType::OP_EQ:
                     case OpType::OP_PLUSEQ:
@@ -816,9 +829,10 @@ namespace snowball {
                         // precedence = 11;
                         // break;
 
-                    case OpType::NONE:
+                    case OpType::NONE: {
                         precedence = -1;
                         break;
+                    }
                 }
 
                 if (precedence < min_precedence) {
@@ -855,9 +869,8 @@ namespace snowball {
 
                 }
             } else {
-
                 ASSERT(next_op >= 1 && next_op < (int)expressions.size() - 1)
-                ASSERT((!(expressions[(size_t)next_op - 1]->type == Node::Type::OPERATOR)) && (!(expressions[(size_t)next_op + 1].type == Node::Type::OPERATOR)));
+                ASSERT((!(expressions[(size_t)next_op - 1]->type == Node::Type::OPERATOR)) && (!(expressions[(size_t)next_op + 1]->type == Node::Type::OPERATOR)));
 
                 BinaryOp* op_node = new BinaryOp(((BinaryOp*)expressions[(size_t)next_op])->op_type);
 
