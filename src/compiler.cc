@@ -17,6 +17,9 @@
 #include <llvm/Support/MathExtras.h>
 #include <llvm/Support/FormattedStream.h>
 
+#include <llvm/Support/TargetRegistry.h>
+#include <llvm/Support/DynamicLibrary.h>
+
 #include <llvm/Target/TargetMachine.h>
 #include <llvm/Target/TargetOptions.h>
 
@@ -27,7 +30,6 @@
 
 #include <llvm/ExecutionEngine/GenericValue.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
-#include <llvm/Support/DynamicLibrary.h>
 
 #include "snowball/api.h"
 #include "snowball/types.h"
@@ -47,98 +49,6 @@
 #include <regex>
 #include <string>
 #include <stdio.h>
-
-
-//
-// The adventures of a compiler.
-//
-// The snowball compiler can be separated into 2 sections. The front end and the backend.
-//
-// The front-end is used to recieve / tokenize and parse the source code. The source
-// code is the used as an AST. The Generator (backend) is in charge of translating
-// the AST into LLVM IR by using the LLVM API.
-//
-// The LLVM IR is can then be used for 2 situations. It can either be JITed by LLVM JIT
-// or it can be compiled to an executable.
-//
-// There are helper services / utils to make snowball better called middlewares. Examples
-// of this are:
-//   The Enviroment
-//   The Error Handling
-// and many more. The utils do not appear in the diagram below because they are not as important.
-// such as Loggers and string utils.
-//
-// Finally, the built in types are inserted via the Snowball API. The functions are declared into
-// the LLVM IR and the mangled name would be used as a symbol pointing to the desired function. Another
-// option is to generate the function via the LLVM API, this would be helpfull to do things like generic functions.
-//
-// ┌──────────────────────────────────────────────────────────────────────────────┐
-// │                                                                              │
-// │    ┌──────────────────────────────────────────────────────────────────────┐  │
-// │    │                                                                      │  │
-// │    │   Front End                                                          │  │
-// │    │                                                                      │  │
-// │    │ ─────────────────────────────────────────────────────────────────    │  │
-// │    │                                                                      │  │    ┌────────────────────────────────────────────────────────────────────────┐
-// │    │                                                                      │  │    │                                                                        │
-// │    │  ┌─────────────────────────┐          ┌──────────────────────────┐   │  │    │  ┌─────────────────────────────────────────────────────────────────┐   │
-// │    │  │                         │          │                          ├───┼──┘    │  │                                                                 │   │
-// │    │  │  MAIN PROGRAM (AKA CLI) │          │  Tokenizer (AKA LEXER)   │   │       │  │   Back End                                                      │   │
-// │    │  │                         │          │                          │   │       │  │                                                                 │   │
-// │    │  │                         │          │                          │   │       │  │ ────────────────────────────────────────────────────────────────┤   │
-// │    │  │ ┌───────┐    ┌────────┐ │          │                          │   │       │  │                                                                 │   │
-// │    │  │ │REPL   │    │CODE    │ │          │                          │   │       │  │  ┌────────────────────────────┐  ┌───────────────────────────┐  │   │
-// │    │  │ │       │    │FROM    │ │          │                          │   │       │  │  │                            │  │                           │  │   │
-// ├────┼──┤ │       │ OR │FILE    │ │    ┌─────┼──────────────┐           │   │       │  │  │  GENERATOR                 │  │                           │  │   │
-// │    │  │ │       │    │        │ │    │     │              │           │   │       │  │  │                            │  │                           │  │   │
-// │    │  │ │       │    │        │ │    │     │    ┌─────────▼───────┐   │   │       └──┼──┤  ┌────────────────────┐    │  │                           │  │   │
-// │    │  │ │       │    │        │ │    │     │    │                 │   │   │          │  │  │                    │    │  │                           │  │   │
-// │    │  │ │       │    │        │ │    │     │    │                 │   │   │          │  │  │  GENERTION PROCESS ├────┼──►                           │  │   │
-// │    │  │ └───┬───┘    └───┬────┘ │    │     │    │                 │   │   │          │  │  │                    │    │  │                           │  │   │
-// │    │  │     │            │      │    │     │    │                 │   │   │          │  │  │  src/generator.cc  │    │  │         ENVIROMENT        ├──┼───┤
-// │    │  │     └────────────┴──────┼────┘     │    │  TOKENIZING     │   │   │          │  │  │                    ◄────┼──┤                           │  │   │
-// │    │  │      CODE AS STRING     │          │    │  PROCESS        │   │   │          │  │  │                    │    │  │                           │  │   │
-// │    │  └─────────────────────────┘          │    │                 │   │   │          │  │  │                    │    │  │                           │  │   │
-// │    │                                       │    │                 │   │   │          │  │  │                    │    │  │                           │  │   │
-// │    │  ┌─────────────────────────┐          │    │                 │   │   │          │  │  │                    │    │  │                           │  │   │
-// │    │  │                         │          │    │                 │   │   │          │  │  │                    │    │  │                           │  │   │
-// │    │  │                         │          │    │                 │   │   │          │  │  │                    │    │  │                           │  │   │
-// ├────┼──┤  PARSER                 │          │    │  src/lexer.cc   │   │   │          │  │  │                    │    │  │                           │  │   │
-// │    │  │                         │          │    │                 │   │   │          │  │  │                    │    │  └───────────────────────────┘  │   │
-// │    │  │                         │          │    │                 │   │   │          │  │  │                    │    │                                 │   │
-// │    │  │  ┌──────────────────┐   │          │    │                 │   │   │          │  │  │                    ├─┐  │  ┌───────────────────────────┐  │   │
-// │    │  │  │                  │   │          │    │                 │   │   │          │  │  │                    │ │  │  │                           │  │   │
-// │    │  │  │ PARSING PROCESS  │   │          │    │                 │   │   │          │  │  │                    │ │  │  │                           │  │   │
-// │    │  │  │                  │   │          │    └──────────┬──────┘   │   │          │  │  └─────────▲──────────┘ │  │  │                           │  │   │
-// │    │  │  │                  │   │          │               │          │   │          │  │            │            │  │  │                           │  │   │
-// │    │  │  │ src/parser.cc    │   │          │               │          │   │          │  │            │            │  │  │                           │  │   │
-// │    │  │  │                  ◄───┼──────────┼───────────────┘          │   │          │  │            │            │  │  │                           │  │   │
-// │    │  │  │                  │   │          │ TOKEN OBJECTS            │   │          │  │            │            └──┼──►          LLVM IR          ├──┼───┤
-// │    │  │  │                  │   │          │                          │   │          │  │            │               │  │                           │  │   │
-// │    │  │  │                  │   │          │                          │   │          │  │            │               │  │                           │  │   │
-// │    │  │  │                  │   │          │                          │   │          │  │            │               │  │                           │  │   │
-// │    │  │  └────────┬─────────┘   │          │                          │   │          │  │            │               │  │                           │  │   │
-// │    │  │           │             │          │                          │   │          │  │            │               │  │                           │  │   │
-// │    │  │           │             │          │                          │   │          │  │            │               │  │                           │  │   │
-// │    │  └───────────┼─────────────┘          └──────────────────────────┘   │          │  └────────────┼───────────────┘  └─────────────┬─────────────┘  │   │
-// │    │              │                                                       │          │               │                                │                │   │
-// │    └──────────────┼───────────────────────────────────────────────────────┘          └───────────────┼────────────────────────────────┼────────────────┘   │
-// │                   │                                                                                  │                                │                    │
-// │                   └──────────────────────────────────────────────────────────────────────────────────┘                                │                    │
-// │                                                                                                                                       │                    │
-// │                                                    ┌──────────────────────────────────┐                                               │                    │
-// │                                                    │                                  │                                               │                    │
-// │                                                    │                                  │              ┌────────────────┐               │                    │
-// │                                                    │                                  │              │                │               │                    │
-// │                                                    │                                  │              │  OUTPUT:       │               │                    │
-// └────────────────────────────────────────────────────►          ERROR HANDLER           │              │                ◄───────────────┘                    │
-//                                                      │                                  │              │  LLVM JIT      │                                    │
-//                                                      │                                  │              │  OR            │                                    │
-//                                                      │                                  │              │  EXECUTABLE    │                                    │
-//                                                      │                                  │              │                │                                    │
-//                                                      └────────────────▲─────────────────┘              └────────────────┘                                    │
-//                                                                       │                                                                                      │
-//                                                                       └──────────────────────────────────────────────────────────────────────────────────────┘
 
 #define SN_MODULE_NAME "llvm_snowball_compile_mod_"
 
@@ -171,7 +81,26 @@ namespace snowball {
         LLVMInitializeNativeAsmParser();
         create_source_info();
 
+        std::string target_error;
+
+        auto targetTriple = llvm::sys::getDefaultTargetTriple();
+        auto target = llvm::TargetRegistry::lookupTarget(targetTriple, target_error);
+
+        if (!target) {
+            throw new SNError(Error::LLVM_INTERNAL, Logger::format("Could not create target info: %s", target_error.c_str()));
+        }
+
+        auto CPU = "generic";
+        auto features = "";
+
+        llvm::TargetOptions opt;
+        auto RM = llvm::Optional<llvm::Reloc::Model>();
+        auto targetMachine = target->createTargetMachine(targetTriple, CPU, features, opt, RM);
+
         _module = std::make_unique<llvm::Module>(prepare_module_name(), global_context);
+
+        _module->setDataLayout(targetMachine->createDataLayout());
+        _module->setTargetTriple(targetTriple);
 
         _enviroment = new Enviroment(_source_info);
 

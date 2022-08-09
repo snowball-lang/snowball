@@ -1,0 +1,5 @@
+// This should be ignored by the tester!
+
+fn main() -> Number {
+    
+}
