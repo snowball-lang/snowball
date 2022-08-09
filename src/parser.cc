@@ -19,6 +19,7 @@
 #define UNEXPECTED_TOK2(expectation, method) PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Expected %s, got %s%s%s while parsing %s", expectation, RED, _current_token.to_string().c_str(), RESET, BOLD, method));
 #define ASSERT_TOKEN(tk, ty, idnt) if (tk.type != ty) UNEXPECTED_TOK(idnt);
 #define ASSERT_TOKEN2(tk, ty, idnt, method) if (tk.type != ty) UNEXPECTED_TOK2(idnt, method);
+#define TOKEN_EQUAL(token, _comp) (token.type == TokenType::_comp)
 #define CONSUME(tk, ty, process)  \
     ASSERT_TOKEN_EOF(_current_token, TokenType::ty, tk, process) \
     next_token(); // consume
@@ -180,6 +181,15 @@ namespace snowball {
         // TODO: parse for unit testing options (skip, allow_output, ...)
         ASSERT_TOKEN_EOF(_current_token, TokenType::VALUE_STRING, "an unit test description", "a test declaration")
         std::string description = _current_token.to_string(); next_token();
+
+        if (_current_token.type == TokenType::IDENTIFIER) {
+            if (_current_token.to_string() == "skip") { // test "..." skip {}
+                next_token();
+                test->skip = true;
+            } else {
+                UNEXPECTED_TOK2("an identifier: skip, output", "test's attributes")
+            }
+        }
 
         BlockNode* block = _parse_block({ TokenType::BRACKET_RCURLY }, true);
 
@@ -420,11 +430,11 @@ namespace snowball {
     BlockNode* Parser::_parse_block(std::vector<TokenType> p_termination, bool is_test) {
         std::vector<Node *> stmts;
         BlockNode* b_node = new BlockNode();
+        Token tk = _current_token;
 
         while (true) {
 
-            next_token();
-            Token tk = _current_token;
+            tk = peek();
 
             switch (tk.type)
             {
@@ -437,6 +447,7 @@ namespace snowball {
                     int _width = _current_token.col;
                     std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
 
+                    next_token();
                     VarNode* var = _parse_variable();
                     _width = _width - _current_token.col;
 
@@ -453,6 +464,8 @@ namespace snowball {
                         std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
 
                         AssertNode* node = new AssertNode();
+
+                        next_token();
                         Node* expr = _parse_expression();
                         _width = _width - _current_token.col;
 
@@ -475,6 +488,7 @@ namespace snowball {
                     int _width = _current_token.col;
                     std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
 
+                    next_token();
                     ReturnNode* ret = _parse_return();
                     _width = _width - _current_token.col;
 
@@ -489,6 +503,7 @@ namespace snowball {
                 default: {
                     for (TokenType termination : p_termination) {
                         if (tk.type == termination) {
+                            next_token();
                             b_node->exprs = stmts;
                             return b_node;
                         }
@@ -515,6 +530,16 @@ namespace snowball {
     }
 
     // Private
+
+    void Parser::previous_token(int p_offset) {
+        try {
+            __token_possition--;
+            _current_token = _tokens.at(__token_possition);
+        } catch (std::out_of_range& _) {
+            PARSER_ERROR(Error::BUG, "Index error")
+        }
+    }
+
     void Parser::next_token(int p_offset) {
         try {
             __token_possition++;
@@ -543,34 +568,37 @@ namespace snowball {
 
         CallNode* callNode = new CallNode();
         callNode->method = _current_token.to_string();
+        next_token();
 
         std::vector<std::string> generics;
-        if (peek(0, true).type == TokenType::OP_LT) {
-            next_token();
+        bool has_generics = false;
+        if (_current_token.type == TokenType::OP_LT) {
+            has_generics = true;
             generics = _parse_generic_expr();
         }
 
-        if (peek(0, true).type == TokenType::BRACKET_LPARENT || _current_token.type == TokenType::BRACKET_LPARENT) {
-
-            if (peek(0, true).type == TokenType::BRACKET_LPARENT)
-                next_token();
+        if (_current_token.type == TokenType::BRACKET_LPARENT) {
 
             std::vector<Node*> arguments;
-            while (true) {
-                if (_current_token.type == TokenType::BRACKET_RPARENT) {
-                    break;
-                }
+            Token tk = peek();
 
-                Node* expr = _parse_expression();
-                next_token();
+            if (tk.type == TokenType::BRACKET_RPARENT) {
+                next_token(); // eat BRACKET_RPARAN
+            } else {
+                while (true) {
 
-                arguments.push_back(expr);
-                if (_current_token.type == TokenType::SYM_COMMA) {
+                    Node* arg = _parse_expression();
+                    arguments.push_back(arg);
+
                     next_token();
-                } else if (_current_token.type == TokenType::BRACKET_RPARENT) {
-                    break;
-                } else {
-                    PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Unexpected symbol found ('%s') while parsing function call", _current_token.to_string().c_str()))
+                    tk = _current_token;
+                    if (tk.type == TokenType::SYM_COMMA) {
+                        // pass
+                    } else if (tk.type == TokenType::BRACKET_RPARENT) {
+                        break;
+                    } else {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Unexpected a comma or a right paren. found ('%s') while parsing function call", _current_token.to_string().c_str()))
+                    }
                 }
             }
 
@@ -579,8 +607,8 @@ namespace snowball {
             return callNode;
         }
 
-        next_token();
-        UNEXPECTED_TOK("A left parenthesis")
+
+        UNEXPECTED_TOK("a left parenthesis or a generic statement")
     }
 
     Node* Parser::_parse_expression() {
@@ -592,49 +620,29 @@ namespace snowball {
 
             Token tk = _current_token;
 
-            switch (tk.type)
-            {
-                case TokenType::VALUE_BOOL:
-                case TokenType::VALUE_NULL:
-                case TokenType::VALUE_FLOAT:
-                case TokenType::VALUE_NUMBER:
-                case TokenType::VALUE_STRING:
-                case TokenType::VALUE_UNDEFINED: {
-                    expression = new ConstantValue(tk.type, tk.to_string());
-                    break;
+            #define IF_TOKEN(comp) TOKEN_EQUAL(tk, comp)
+            if (IF_TOKEN(VALUE_BOOL) || IF_TOKEN(VALUE_NULL) || IF_TOKEN(VALUE_FLOAT) || IF_TOKEN(VALUE_NUMBER) || IF_TOKEN(VALUE_STRING) || IF_TOKEN(VALUE_UNDEFINED)) {
+                expression = new ConstantValue(tk.type, tk.to_string());
+            } else if (IF_TOKEN(KWORD_NEW)) {
+                next_token();
+                expression = new NewNode(_parse_function_call());
+            } else if (IF_TOKEN(OP_NOT) || IF_TOKEN(OP_PLUS) || IF_TOKEN(OP_MINUS) || IF_TOKEN(OP_BIT_NOT)) {
+                if (tk.type == TokenType::OP_NOT)          expressions.push_back(new BinaryOp(OpType::OP_NOT))      ;
+                else if (tk.type == TokenType::OP_PLUS)    expressions.push_back(new BinaryOp(OpType::OP_POSITIVE)) ;
+                else if (tk.type == TokenType::OP_MINUS)   expressions.push_back(new BinaryOp(OpType::OP_NEGATIVE)) ;
+                else if (tk.type == TokenType::OP_BIT_NOT) expressions.push_back(new BinaryOp(OpType::OP_BIT_NOT))  ;
+
+                continue;
+            } else if (IF_TOKEN(IDENTIFIER)) {
+                if (peek(0, true).type == TokenType::BRACKET_LPARENT || peek(0, true).type == TokenType::OP_LT) {
+                    expression = _parse_function_call();
+                } else {
+                    expression = new IdentifierNode(tk);
                 }
-
-                case TokenType::KWORD_NEW: {
-                    next_token();
-                    expression = new NewNode(_parse_function_call());
-                    break;
-                }
-
-                case TokenType::OP_NOT:
-                case TokenType::OP_PLUS:
-                case TokenType::OP_MINUS:
-                case TokenType::OP_BIT_NOT: {
-
-                    if (tk.type == TokenType::OP_NOT)          expressions.push_back(new BinaryOp(OpType::OP_NOT))      ;
-                    else if (tk.type == TokenType::OP_PLUS)    expressions.push_back(new BinaryOp(OpType::OP_POSITIVE)) ;
-                    else if (tk.type == TokenType::OP_MINUS)   expressions.push_back(new BinaryOp(OpType::OP_NEGATIVE)) ;
-                    else if (tk.type == TokenType::OP_BIT_NOT) expressions.push_back(new BinaryOp(OpType::OP_BIT_NOT))  ;
-
-                    continue;
-                }
-
-                case TokenType::IDENTIFIER: {
-                    if (peek(0, true).type == TokenType::BRACKET_LPARENT || peek(0, true).type == TokenType::OP_LT) {
-                        expression = _parse_function_call();
-                    } else {
-                        expression = new IdentifierNode(tk);
-                    }
-                    break;
-                }
-
-                default:
-                    UNEXPECTED_TOK("a valid expression")
+            } else {
+                UNEXPECTED_TOK("a valid expression")
             }
+            #undef IF_TOKEN
 
             // Indexing
             while (true) {
@@ -643,9 +651,10 @@ namespace snowball {
                     next_token(); next_token();
                     ASSERT_TOKEN_EOF(tk, TokenType::IDENTIFIER, "an identifier", "function index/call")
 
-                    if (peek(0, true).type == TokenType::BRACKET_LPARENT)  {
+                    if (peek(0, true).type == TokenType::BRACKET_LPARENT || peek(0, true).type == TokenType::OP_LT)  {
                         Node* base = expression;
                         CallNode* call = _parse_function_call();
+
                         call->base = base;
 
                         expression = call;
@@ -656,9 +665,10 @@ namespace snowball {
                     next_token(); next_token();
                     ASSERT_TOKEN_EOF(tk, TokenType::IDENTIFIER, "an identifier", "static function index/call")
 
-                    if (peek(0, true).type == TokenType::BRACKET_LPARENT)  {
+                    if (peek(0, true).type == TokenType::BRACKET_LPARENT || peek(0, true).type == TokenType::OP_LT)  {
                         Node* base = expression;
                         CallNode* call = _parse_function_call();
+
                         call->base = base;
                         call->is_static_call = true;
 

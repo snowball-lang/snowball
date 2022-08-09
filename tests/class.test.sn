@@ -1,0 +1,45 @@
+
+class TestCase {
+    pub fn __init() {
+
+    }
+
+    pub fn hello() -> Number {
+        return 2
+    }
+
+    pub static fn static_fn() -> Number {
+        return 3
+    }
+
+    pub static fn hello() -> Number {
+        return TestCase::static_fn()
+    }
+
+    pub fn __bool() -> Bool {
+        return new Bool(1) // TODO: true
+    }
+}
+
+test "create a new instance of a class" {
+    assert new TestCase()
+}
+
+test "call class function" {
+    var t = new TestCase()
+    assert t.hello() == 2
+}
+
+test "call class static function" {
+    assert TestCase::static_fn() == 3
+}
+
+test "call static function from static method (with static overide)" {
+    assert TestCase::hello() == 3
+}
+
+test "Class method call with generics" skip {
+    var t = new TestCase()
+    assert t.tmp<Number>(3) == 3
+    assert t.tmp<String>("3") == "3"
+}

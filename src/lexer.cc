@@ -22,18 +22,9 @@
 	    cur_line++;          \
     }
 
-#define IS_NUM(c) ( \
-    (               \
-        '0' <= c && \
-        c <= '9'    \
-        )           \
-    )
-
-#define IS_HEX_CHAR(c)   \
-( IS_NUM(c) || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F') )
-
-#define IS_TEXT(c)       \
-( (c == '_') || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') )
+#define IS_NUM(c) (('0' <= c && c <= '9'))
+#define IS_HEX_CHAR(c) ( IS_NUM(c) || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F') )
+#define IS_TEXT(c) ( (c == '_') || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') )
 
 
 

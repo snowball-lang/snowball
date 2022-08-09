@@ -160,44 +160,36 @@ namespace snowball {
     }
 
     llvm::Value* Generator::generate_assert(AssertNode* p_node) {
-        llvm::Value* inital_value = generate(p_node->expr); \
-
+        llvm::Value* inital_value = generate(p_node->expr);
         GET_BOOL_VALUE(assertion, inital_value)
 
         std::string test_var_name = Logger::format("_SN__TestCaseN%i_Result", _testing_context->getTestLength());
         llvm::Value* current_test = *_enviroment->current_scope()->get(test_var_name, nullptr)->llvm_value;
 
-        int size = _module->getDataLayout().getTypeStoreSize(_builder.getInt32Ty());
         _builder.CreateStore(assertion, current_test);
 
         llvm::Value* cond = _builder.CreateICmpEQ(
-            current_test,
-            llvm::ConstantExpr::getIntToPtr(
-                    llvm::ConstantInt::get(get_llvm_type_from_sn_type(
-                        BuildinTypes::NUMBER,
-                        _builder),
-                    1
-                ),
+            convert_to_right_value(_builder, current_test),
+            llvm::ConstantInt::get(
                 get_llvm_type_from_sn_type(
                     BuildinTypes::NUMBER,
-                    _builder
-                )->getPointerTo()
-            ),
-            "ifcond"
+                    _builder),
+                1
+            )
         );
 
         llvm::Function *TheFunction = _builder.GetInsertBlock()->getParent();
-        llvm::BasicBlock* ThenBB = llvm::BasicBlock::Create(_builder.getContext(), "then", TheFunction);
-        llvm::BasicBlock* MergeBB = llvm::BasicBlock::Create(_builder.getContext(), "ifcont", TheFunction);
+        llvm::BasicBlock* FailBB = llvm::BasicBlock::Create(_builder.getContext(), "", TheFunction);
+        llvm::BasicBlock* ContinueBB = llvm::BasicBlock::Create(_builder.getContext(), "", TheFunction);
 
-        _builder.CreateCondBr(cond, ThenBB, MergeBB);
+        _builder.CreateCondBr(cond, ContinueBB, FailBB);
 
-        _builder.SetInsertPoint(ThenBB);
+        _builder.SetInsertPoint(FailBB);
         _builder.CreateRet(convert_to_right_value(_builder, current_test));
 
-        _builder.SetInsertPoint(MergeBB);
+        _builder.SetInsertPoint(ContinueBB);
 
-        return MergeBB;
+        return ContinueBB;
     }
 
     llvm::Value* Generator::generate_import(ImportNode* p_node) {
@@ -288,7 +280,6 @@ namespace snowball {
     }
 
     llvm::Value* Generator::generate_test(TestingNode* p_node) {
-        // throw SNError(Error::TODO, "Unit tests are not yet supported");
 
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
@@ -300,28 +291,36 @@ namespace snowball {
         llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder.getContext(), "body", function);
         _builder.SetInsertPoint(body);
 
-        Scope* current_scope = _enviroment->create_scope(test_name);
+        if (p_node->skip) {
+            _enviroment->delete_scope();
+            _builder.CreateRet(llvm::ConstantInt::get(_builder.getInt64Ty(), 2));
 
-        llvm::Value* value = llvm::ConstantInt::get(_builder.getInt64Ty(), 3);
-        std::string test_var_name = Logger::format("_SN__TestCaseN%i_Result", _testing_context->getTestLength());
-        auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, test_var_name );
+            return function;
 
-        std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(alloca)));
-        current_scope->set(test_var_name, std::move(scope_value));
-        _builder.CreateStore (value, alloca, /*isVolatile=*/false);
+        } else {
+            Scope* current_scope = _enviroment->create_scope(test_name);
+            llvm::Value* value = llvm::ConstantInt::get(_builder.getInt64Ty(), 3);
 
-        for (Node* node : p_node->block->exprs) {
-            generate(node);
+            std::string test_var_name = Logger::format("_SN__TestCaseN%i_Result", _testing_context->getTestLength());
+            auto* llvm_alloca = _builder.CreateAlloca (value->getType(), nullptr, test_var_name );
+
+            std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(llvm_alloca)));
+            current_scope->set(test_var_name, std::move(scope_value));
+            _builder.CreateStore (value, llvm_alloca, /*isVolatile=*/false);
+
+            for (Node* node : p_node->block->exprs) {
+                generate(node);
+            }
+
+            llvm::verifyFunction(*function, &message_stream);
+            if (!llvm_error.empty())
+                throw SNError(Error::LLVM_INTERNAL, llvm_error);
+
+            _enviroment->delete_scope();
+            _builder.CreateRet(convert_to_right_value(_builder, llvm_alloca));
+
+            return function;
         }
-
-        llvm::verifyFunction(*function, &message_stream);
-        if (!llvm_error.empty())
-            throw SNError(Error::LLVM_INTERNAL, llvm_error);
-
-        _enviroment->delete_scope();
-        _builder.CreateRet(convert_to_right_value(_builder, alloca));
-
-        return function;
     }
 
     llvm::Value* Generator::generate_call(CallNode* p_node) {
@@ -780,8 +779,6 @@ namespace snowball {
 
                 llvm::Function* constructor = const_cast<llvm::Function*>(*scope_value->llvm_function);
 
-                DUMP(number_value)
-                DUMP_S(p_node->value.c_str())
                 llvm::Constant * num = llvm::ConstantInt::get(i64, (uint64_t)number_value);
                 return _builder.CreateCall(constructor, { num });
             }

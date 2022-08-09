@@ -21,9 +21,8 @@ Bool* Bool::__init(Number* value) {
 }
 
 Bool* Bool::__init(bool value) {
-    Bool* instance;
+    Bool* instance = (Bool*)(malloc(sizeof(Bool)));
 
-    instance = (Bool*)(malloc(sizeof(Bool)));
     instance->__bool = value;
 
     return instance;

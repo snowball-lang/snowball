@@ -230,6 +230,8 @@ namespace snowball {
 		BlockNode* block;
 		std::string description;
 
+		bool skip = false;
+
 		TestingNode() {
 			type = Type::TEST;
 		};

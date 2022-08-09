@@ -31,6 +31,7 @@ namespace snowball {
 
         private:
             void next_token(int p_offset = 0);
+            void previous_token(int p_offset = 0);
             Token peek(int p_offset = 0, bool p_safe = false);
             void _parser_error(Error type, std::string msg);
 

@@ -1,0 +1,25 @@
+
+fn test_no_args() -> Number {
+    return 6
+}
+
+fn test_args(string: String, string2: String) -> String {
+    return string + string2
+}
+
+fn test_generic<T>(a: T) -> T {
+    return a
+}
+
+test "call function without arguments" {
+    assert test_no_args() == 6
+}
+
+test "call function with arguments" {
+    assert test_args("hello, ", "world") == "hello, world"
+}
+
+test "call/create generic function" {
+    assert test_generic<String>("hello") == "hello"
+    assert test_generic<Number>(5) == 5
+}
