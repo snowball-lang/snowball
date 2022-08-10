@@ -38,8 +38,6 @@ llvm_map_components_to_libnames(llvm_libs
     mcjit
 )
 
-message( "COMPILE_DEFINITIONS: ${DirDefs}" )
-
 ##################################################    Targets     ##################################################
 add_library(snowball SHARED ${PROJECT_FILES})
 add_executable(snowballexe sn/main.cc)

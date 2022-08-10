@@ -25,16 +25,24 @@ using namespace snowball_utils;
 int compile(std::string content, std::string filename, std::vector<std::string> arguments) {
 
     int result;
+    bool test = std::find(arguments.begin(), arguments.end(), "-t") != arguments.end();
+    bool compile = std::find(arguments.begin(), arguments.end(), "-c") != arguments.end();
+
     Compiler* compiler = new Compiler(content, filename);
     try {
         compiler->initialize();
 
-        if (std::find(arguments.begin(), arguments.end(), "-t") != arguments.end()) {
+        if (test) {
             compiler->enable_tests();
         }
 
         compiler->compile();
-        result = compiler->execute();
+
+        if (compile && !test) {
+            compiler->emit_object("out.o");
+        } else {
+            result = compiler->execute();
+        }
     } catch(const SNError& error) {
         error.print_error();
     }

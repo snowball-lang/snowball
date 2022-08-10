@@ -40,7 +40,7 @@
 #define GET_BOOL_VALUE(ret, __v) \
     std::string  __ty = __v->getType()->getPointerElementType()->getStructName().str(); \
     if (__ty != "Bool") { \
-        llvm::Value* __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS(__ty.c_str(), "__bool", {__ty.c_str()}, true), p_node)->llvm_function; \
+        llvm::Value* __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS(__ty.c_str(), "__bool", {__ty.c_str()}, true), p_node, Logger::format("%s.__bool(self)", __ty.c_str()))->llvm_function; \
         __v = _builder.CreateCall(__c, {__v}); \
     } \
     llvm::Value* __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS("Bool", "__real_bool", {"Bool"}, false), p_node)->llvm_function; \
@@ -246,7 +246,7 @@ namespace snowball {
             throw CompilerError(Error::SYNTAX_ERROR, Logger::format("'%s' is not a function", p_node->method.c_str()), dbg_info);
         }
 
-        return _builder.CreateCall(*function->llvm_function, args);
+        return _builder.CreateCall(*function->llvm_function, args, "calltmp");
     }
 
     llvm::Value* Generator::generate_class(ClassNode* p_node) {
@@ -747,7 +747,6 @@ namespace snowball {
         if (p_node->isGlobal) {
             throw SNError(Error::TODO, "Global variables");
         } else {
-            // We asume that the variable only has 1 expression
             llvm::Value* value = generate(p_node->value);
             auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, p_node->name );
 

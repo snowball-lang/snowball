@@ -15,6 +15,7 @@ extern "C" struct String {
 
     static String* __init(const char* __str);
     static String* __sum(String* self, String* sum);
+    static Bool* __bool(String* self);
     static Bool* __eqeq(String* self, String* second);
 };
 

@@ -13,6 +13,10 @@
 
 #include <llvm/IR/Module.h>
 #include <llvm/IR/IRBuilder.h>
+
+#include <llvm/Target/TargetMachine.h>
+#include <llvm/Target/TargetOptions.h>
+
 #include <llvm/ExecutionEngine/GenericValue.h>
 
 
@@ -27,15 +31,14 @@ namespace snowball {
 
         public:
             Compiler(std::string p_code, std::string p_path);
-            Compiler(const char* p_code, std::string p_path);
-            Compiler(std::string p_code, const char* p_path);
-            Compiler(const char* p_code, const char* p_path);
 
             void initialize();
             void compile();
 
             void cleanup();
             void optimize();
+
+            void emit_object(std::string p_output);
 
             int execute();
             void enable_tests() { _enabledTests = true; }
@@ -62,6 +65,8 @@ namespace snowball {
             SourceInfo* _source_info;
             bool _initialized = false;
             bool _enabledTests = false;
+
+            llvm::TargetMachine* _target_machine;
 
             Lexer* _lexer;
             Parser* _parser;

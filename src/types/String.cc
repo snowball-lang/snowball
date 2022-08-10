@@ -38,6 +38,10 @@ Bool* String::__eqeq(String* self, String* second) {
     return Bool::__init(strcmp(self->__buffer, second->__buffer) == 0);
 }
 
+Bool* String::__bool(String* self) {
+    return Bool::__init(self->__length != 0);
+}
+
 void register_string(snowball::SNAPI* API) {
     API->create_class("String", std::map<std::string, llvm::Type*> {
         {
@@ -73,6 +77,17 @@ void register_string(snowball::SNAPI* API) {
             },
             true,
             (void*)static_cast<String*(*)(const char*)>(String::__init)
+        );
+
+        API->create_class_method(
+            cls,
+            "__bool",
+            bool_class,
+            std::vector<std::pair<std::string, llvm::Type*>> {
+                std::make_pair("String", class_type)
+            },
+            true,
+            (void*)static_cast<Bool*(*)(String*)>(String::__bool)
         );
 
         API->create_class_method(

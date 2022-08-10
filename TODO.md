@@ -37,7 +37,7 @@
 - [ ] Classes
     - [x] Class/static keyword
     - [x] Parse class
-    - [ ] Parse class
+    - [x] Parse class
         - [x] Function
             - [x] Support for static
             - [x] Public methods diferentiate from private methods (can have the same name)
@@ -58,7 +58,6 @@
         - [ ] __div
         - [ ] __str
         - [ ] __repr
-        - [ ] __bool
         - [ ] __eqeq
 - [ ] Number class
 - [ ] String class

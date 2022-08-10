@@ -17,6 +17,8 @@
 #include <llvm/Support/MathExtras.h>
 #include <llvm/Support/FormattedStream.h>
 
+#include <llvm/IR/LegacyPassManager.h>
+
 #include <llvm/Support/TargetRegistry.h>
 #include <llvm/Support/DynamicLibrary.h>
 
@@ -58,10 +60,13 @@
         executionEngine->addGlobalMapping(*_enviroment->get(name, nullptr)->llvm_function, function);
 
 namespace snowball {
-    Compiler::Compiler(std::string p_code, std::string p_path) : builder(llvm::IRBuilder<> (global_context)) { _code = p_code                 ; _path = p_path              ; NEW_IR_BUILDER() }
-    Compiler::Compiler(const char* p_code, std::string p_path) : builder(llvm::IRBuilder<> (global_context)) { _code = std::string(p_code)    ; _path = p_path              ; NEW_IR_BUILDER() }
-    Compiler::Compiler(std::string p_code, const char* p_path) : builder(llvm::IRBuilder<> (global_context)) { _code = p_code                 ; _path = std::string(p_path) ; NEW_IR_BUILDER() }
-    Compiler::Compiler(const char* p_code, const char* p_path) : builder(llvm::IRBuilder<> (global_context)) { _code = std::string(p_code)    ; _path = std::string(p_path) ; }
+    Compiler::Compiler(std::string p_code, std::string p_path)
+        : builder(llvm::IRBuilder<> (global_context)) {
+            _code = p_code;
+            _path = p_path;
+
+            NEW_IR_BUILDER()
+        }
 
     std::string Compiler::prepare_module_name() {
         std::string tmp = _path;
@@ -95,11 +100,11 @@ namespace snowball {
 
         llvm::TargetOptions opt;
         auto RM = llvm::Optional<llvm::Reloc::Model>();
-        auto targetMachine = target->createTargetMachine(targetTriple, CPU, features, opt, RM);
+        _target_machine = target->createTargetMachine(targetTriple, CPU, features, opt, RM);
 
         _module = std::make_unique<llvm::Module>(prepare_module_name(), global_context);
 
-        _module->setDataLayout(targetMachine->createDataLayout());
+        _module->setDataLayout(_target_machine->createDataLayout());
         _module->setTargetTriple(targetTriple);
 
         _enviroment = new Enviroment(_source_info);
@@ -157,7 +162,6 @@ namespace snowball {
             if (!module_error_string.empty())
                 throw SNError(Error::LLVM_INTERNAL, module_error_string);
 
-
             #if _SNOWBALL_BYTECODE_DEBUG
 
                 PRINT_LINE("Bytecode:")
@@ -167,6 +171,30 @@ namespace snowball {
 
             #endif
         }
+    }
+
+    void Compiler::emit_object(std::string p_output) {
+        throw SNError(Error::TODO, "Object compilation is not yet ready!");
+
+        // TODO: https://stackoverflow.com/questions/11657529/how-to-generate-an-executable-from-an-llvmmodule
+        std::error_code EC;
+        llvm::raw_fd_ostream dest(p_output, EC, llvm::sys::fs::OF_None);
+
+        if (EC) {
+            throw SNError(Error::IO_ERROR, Logger::format("Could not open file: %s", EC.message().c_str()));
+        }
+
+        llvm::legacy::PassManager pass;
+        auto FileType = llvm::CGFT_ObjectFile;
+
+        if (_target_machine->addPassesToEmitFile(pass, dest, nullptr, FileType)) {
+            throw SNError(Error::LLVM_INTERNAL, "TargetMachine can't emit a file of this type");
+        }
+
+        pass.run(*_module);
+        dest.flush();
+
+
     }
 
     int Compiler::execute() {
