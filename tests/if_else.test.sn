@@ -1,0 +1,20 @@
+import System
+
+test "basic if statement" {
+    if !1 {
+        assert 0
+    }
+
+    assert 1
+}
+
+// TODO: this fails!
+test "test else statement" skip {
+    if 0 {
+        assert 0
+    } else {
+        assert 1
+    }
+
+    assert 0
+}

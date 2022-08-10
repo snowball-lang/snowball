@@ -153,10 +153,74 @@ namespace snowball {
                 return generate_assert(static_cast<AssertNode *>(p_node));
             }
 
+            case Node::Type::IF_STMT: {
+                return generate_if_stmt(static_cast<IfStatementNode *>(p_node));
+            }
+
             default:
                 DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
                 throw Warning(Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, p_node->type, RESET, BOLD), dbg_info);
         }
+    }
+
+    llvm::Value* Generator::generate_if_stmt(IfStatementNode *p_node) {
+        #define ELSE_STMT_EXISTS() p_node->else_stmt != NULL
+
+        llvm::Value* inital_value = generate(p_node->stmt);
+        GET_BOOL_VALUE(condition, inital_value)
+
+        llvm::Value* cond = _builder.CreateICmpEQ(
+            condition,
+            llvm::ConstantInt::get(
+                get_llvm_type_from_sn_type(
+                    BuildinTypes::NUMBER,
+                    _builder),
+                1
+            )
+        );
+
+        llvm::Function *TheFunction = _builder.GetInsertBlock()->getParent();
+        llvm::BasicBlock* IfBB = llvm::BasicBlock::Create(_builder.getContext(), "btrue", TheFunction);
+        llvm::BasicBlock* ElseBB;
+
+        if (ELSE_STMT_EXISTS()) {
+            ElseBB = llvm::BasicBlock::Create(_builder.getContext(), "bfalse", TheFunction);
+        }
+
+        llvm::BasicBlock* ContinueBB = llvm::BasicBlock::Create(_builder.getContext(), "end", TheFunction);
+
+        _builder.CreateCondBr(cond, IfBB, ELSE_STMT_EXISTS() ? ElseBB : ContinueBB);
+
+        // Generate if statement
+        _builder.SetInsertPoint(IfBB);
+        _enviroment->create_scope("if$true");
+
+        for (Node* node : p_node->body->exprs) {
+            generate(node);
+        }
+
+        _builder.CreateBr(ContinueBB);
+        _enviroment->delete_scope();
+
+        // Generate else statement (if it exist)
+        if (ELSE_STMT_EXISTS()) {
+            _builder.SetInsertPoint(ElseBB);
+
+            _enviroment->create_scope("if$false");
+
+            for (Node* node : p_node->else_stmt->exprs) {
+                generate(node);
+            }
+
+            _builder.CreateBr(ContinueBB);
+            _enviroment->delete_scope();
+        }
+
+        // Continue with rest of body
+        _builder.SetInsertPoint(ContinueBB);
+        return ContinueBB;
+
+        #undef ELSE_STMT_EXISTS
     }
 
     llvm::Value* Generator::generate_assert(AssertNode* p_node) {
@@ -164,7 +228,7 @@ namespace snowball {
         GET_BOOL_VALUE(assertion, inital_value)
 
         std::string test_var_name = Logger::format("_SN__TestCaseN%i_Result", _testing_context->getTestLength());
-        llvm::Value* current_test = *_enviroment->current_scope()->get(test_var_name, nullptr)->llvm_value;
+        llvm::Value* current_test = *_enviroment->get(test_var_name, nullptr)->llvm_value;
 
         _builder.CreateStore(assertion, current_test);
 

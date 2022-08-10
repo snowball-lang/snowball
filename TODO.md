@@ -23,6 +23,7 @@
 
 ### In Progress
 
+- [ ] fix if/else test in `test/if_else.test.sn`!!!
 - [ ] Add a templating system
     - [x] Functions
     - [ ] Classes

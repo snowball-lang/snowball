@@ -48,6 +48,10 @@ Bool* Number::__bool(Number* self) {
     return Bool::__init(self);
 }
 
+Bool* Number::__not(Number* self) {
+    return Bool::__init(!(self->__number != 0));
+}
+
 void register_number(snowball::SNAPI* API) {
 
     API->create_class("Number", std::map<std::string, llvm::Type*> {
@@ -89,6 +93,17 @@ void register_number(snowball::SNAPI* API) {
             },
             true,
             (void*)static_cast<Number*(*)(Number*)>(Number::__init)
+        );
+
+        API->create_class_method(
+            cls,
+            "__not",
+            bool_class,
+            std::vector<std::pair<std::string, llvm::Type*>> {
+                std::make_pair("Number", class_type)
+            },
+            true,
+            (void*)static_cast<Bool*(*)(Number*)>(Number::__not)
         );
 
         API->create_class_method(

@@ -9,14 +9,16 @@
 
 namespace snowball {
 
-    struct ParserContext {
-        FunctionNode* current_function = nullptr;
-        ClassNode* current_class = nullptr;
-    };
-
     class Parser {
 
         public:
+
+            struct ParserContext {
+                bool is_test = false; // parsing in test declaration
+                FunctionNode* current_function = nullptr;
+                ClassNode* current_class = nullptr;
+            };
+
             Parser(Lexer* p_lexer, SourceInfo* p_source_info) : _lexer(p_lexer) {
                 _tokens = _lexer->tokens;
                 _source_info = p_source_info;
@@ -43,8 +45,9 @@ namespace snowball {
             ReturnNode* _parse_return();
             TestingNode* _parse_unittest();
             FunctionNode* _parse_function();
+            IfStatementNode* _parse_ifstmt();
             CallNode* _parse_function_call();
-            BlockNode* _parse_block(std::vector<TokenType> p_termination = { TokenType::BRACKET_RCURLY }, bool is_test = false );
+            BlockNode* _parse_block(std::vector<TokenType> p_termination = { TokenType::BRACKET_RCURLY });
             Node* _build_op_tree(std::vector<Node*> &expressions);
 
             std::vector<std::string> _parse_generic_expr();

@@ -22,6 +22,8 @@ extern "C" struct Number {
 
     static Bool* __eqeq(Number* self, Number* comp);
     static Bool* __bool(Number* self);
+
+    static Bool* __not(Number* self);
 };
 
 void register_number(snowball::SNAPI* API);
