@@ -151,6 +151,14 @@ namespace snowball {
 
             llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
 
+            #if _SNOWBALL_SYMTABLE_DEBUG
+            PRINT_LINE("Enviroment:")
+            PRINT_LINE(LINE_SEPARATOR)
+
+            _enviroment->debug();
+            PRINT_LINE(LINE_SEPARATOR)
+            #endif
+
             #if _SNOWBALL_CAN_OPTIMIZE
             optimize();
             #endif
@@ -193,8 +201,6 @@ namespace snowball {
 
         pass.run(*_module);
         dest.flush();
-
-
     }
 
     int Compiler::execute() {
@@ -272,15 +278,6 @@ namespace snowball {
     }
 
     void Compiler::cleanup() {
-
-        #if _SNOWBALL_SYMTABLE_DEBUG
-        PRINT_LINE("Enviroment:")
-        PRINT_LINE(LINE_SEPARATOR)
-
-        _enviroment->debug();
-        PRINT_LINE(LINE_SEPARATOR)
-        #endif
-
         _module.reset();
     }
 

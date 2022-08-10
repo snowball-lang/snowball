@@ -110,6 +110,17 @@ namespace snowball {
 		~BlockNode() {};
 	};
 
+	struct IfStatementNode : public Node {
+		BlockNode* body;
+		BlockNode* else_stmt;
+
+		IfStatementNode(std::string p_name, std::string p_type) {
+			type = Type::IF_STMT;
+		};
+
+		~IfStatementNode() {};
+	};
+
 	struct ArgumentNode : public Node {
 		std::string name;
 		std::string type_name;
