@@ -1,9 +1,9 @@
 // This should be ignored by the tester!
 
-
+import System
 fn main() -> Number {
 
-
+    System.print("hello")
 
     return 0
 }

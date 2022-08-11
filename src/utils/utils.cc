@@ -18,6 +18,7 @@ namespace fs = std::filesystem;
 
 namespace snowball_utils {
 
+    #if 0
     std::string get_exe_folder() {
         #ifdef _WIN32
             wchar_t path[MAX_PATH] = { 0 };
@@ -41,6 +42,7 @@ namespace snowball_utils {
 
         return full_path;
     }
+    #endif
 
     std::vector<std::string> split(std::string str, std::string token){
         std::vector<std::string>result;

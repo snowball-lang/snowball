@@ -11,9 +11,9 @@ namespace snowball {
     }
 
     sn_module_export_ty get_sn_export_lib(std::string name) {
-        // if (name == "System") {
-        //     return sn_system_export;
-        // }
+        if (name == "System") {
+            return sn_system_export;
+        }
 
         // TODO: rest of the modules
 

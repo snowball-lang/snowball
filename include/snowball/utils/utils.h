@@ -10,7 +10,10 @@
     Logger::format("%s.%s", class, mangle(function, __VA_ARGS__).c_str())
 
 namespace snowball_utils {
+    #if 0
     std::string get_exe_folder();
+    std::string get_lib_folder();
+    #endif
     std::vector<std::string> split(std::string str, std::string token);
     bool endsWith(const std::string &mainStr, const std::string &toMatch);
 }
