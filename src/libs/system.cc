@@ -2,7 +2,7 @@
 #include "snowball/api.h"
 #include "snowball/snowball.h"
 #include "snowball/constants.h"
-#include "system.h"
+#include "snowball/libs/system.h"
 #include "snowball/types/String.h"
 
 #include <vector>

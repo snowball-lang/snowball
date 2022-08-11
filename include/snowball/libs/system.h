@@ -1,8 +1,8 @@
 #include <cstdlib>
 #include <cstdint>
 
-#include "snowball/api.h"
-#include "snowball/constants.h"
+#include "../api.h"
+#include "../constants.h"
 
 #ifndef SN_SYSTEM_EXPORT_H
 #define SN_SYSTEM_EXPORT_H
