@@ -135,7 +135,7 @@ namespace snowball {
                 _parser->parse();
 
                 SHOW_STATUS(Logger::compiling(Logger::progress(0.55)))
-                API = new SNAPI(std::move(this));
+                API = new SNAPI(*this);
                 Generics* generics_api = new Generics(std::move(this));
 
                 SHOW_STATUS(Logger::compiling(Logger::progress(0.60)))

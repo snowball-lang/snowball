@@ -34,6 +34,11 @@ namespace snowball_utils {
         fs::path exe_folder = get_exe_folder();
         fs::path full_path = exe_folder / "libs";
 
+        bool filepathExists = fs::is_directory(full_path);
+        if (!filepathExists) {
+            throw snowball::SNError(snowball::Error::IO_ERROR, "Could not find system libraries!");
+        }
+
         return full_path;
     }
 

@@ -1,16 +1,9 @@
 // This should be ignored by the tester!
 
-import System
 
 fn main() -> Number {
 
-    var a = new Number(0).__bool()
-    System.print(a.__str())
-    if 0 {
-        System.print("世界")
-    } else {
-        System.print("h")
-    }
+
 
     return 0
 }

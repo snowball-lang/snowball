@@ -54,7 +54,7 @@ void register_bool(snowball::SNAPI* API) {
                 API->get_compiler()->builder
             ),
         },
-    }, [&](snowball::ScopeValue* cls) {
+    }, [API](snowball::ScopeValue* cls) {
 
         llvm::Type* string_class = (*API->get_compiler()->get_enviroment()->get("String", nullptr)->llvm_struct)->getPointerTo();
         llvm::Type* number_class = (*API->get_compiler()->get_enviroment()->get("Number", nullptr)->llvm_struct)->getPointerTo();
