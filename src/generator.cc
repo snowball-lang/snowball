@@ -643,7 +643,7 @@ namespace snowball {
                 }
 
                 case OP_EQ: {
-                    CALL_OPERATOR("__set")
+                    CALL_OPERATOR("__eq")
                     break;
                 }
 

@@ -4,6 +4,7 @@
 - [ ] Add a Void type
 - [ ] Add a Any type
 - [ ] global variables
+- [ ] test for all operators
 - [ ] default return type
 - [ ] change location for OPTypes struct inside BinOP node
 - [ ] change all compiler error to call macro COMPILER_ERROR

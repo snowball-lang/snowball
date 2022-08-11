@@ -543,7 +543,7 @@ namespace snowball {
                         }
                     }
 
-                    Node* expr = _parse_expression();
+                    Node* expr = _parse_expression(true);
                     stmts.push_back(expr);
                 }
             }
@@ -647,7 +647,7 @@ namespace snowball {
         UNEXPECTED_TOK("a left parenthesis or a generic statement")
     }
 
-    Node* Parser::_parse_expression() {
+    Node* Parser::_parse_expression(bool p_allow_assign) {
         std::vector<Node *> expressions;
 
         while (true) {
@@ -770,8 +770,13 @@ namespace snowball {
 
         }
 
-        Node* op_tree = _build_op_tree(expressions);
-        return op_tree;
+        Node* tree = _build_op_tree(expressions);
+        if (tree->type == Node::Type::OPERATOR) {
+            if (!p_allow_assign && BinaryOp::is_assignment((BinaryOp*)tree)) {
+                PARSER_ERROR(Error::SYNTAX_ERROR, "assignment is not allowed inside expression.");
+            }
+        }
+        return tree;
     }
 
     Node* Parser::_build_op_tree(std::vector<Node*> &expressions) {
@@ -868,12 +873,9 @@ namespace snowball {
                     case OpType::OP_BIT_AND_EQ:
                     case OpType::OP_BIT_XOR_EQ:
                     case OpType::OP_BIT_OR_EQ: {
-                        // TODO: throw error with possition of the expression, not the current token
-                        // TODO: possible solution, go back a token?
-                        PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Operator '%s' not allowed in expressions", expression->to_string().c_str()))
+                        precedence = 11;
+                        break;
                     }
-                        // precedence = 11;
-                        // break;
 
                     case OpType::NONE: {
                         precedence = -1;

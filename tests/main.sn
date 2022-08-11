@@ -3,7 +3,7 @@
 import System
 fn main() -> Number {
 
-    System.print("hello")
+    var a = 2
 
     return 0
 }

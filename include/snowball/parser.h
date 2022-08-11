@@ -38,7 +38,7 @@ namespace snowball {
             void _parser_error(Error type, std::string msg);
 
             // Parser methods
-            Node* _parse_expression();
+            Node* _parse_expression(bool p_allow_assign = false);
             ClassNode* _parse_class();
             VarNode* _parse_variable();
             ImportNode* _parse_import();
