@@ -11,6 +11,8 @@ file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/types/*.h include/*.hpp)
 file(GLOB_RECURSE PROJECT_SOURCES src/*.cc src/types/*.cc src/*.c)
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
 file(GLOB_RECURSE PROJECT_MISC *.md *.txt)
+file(GLOB_RECURSE LIBS_HEADERS libs/*.h)
+file(GLOB_RECURSE LIBS_SOURCES libs/*.cc)
 set (PROJECT_EXPORT_HPP include/${PROJECT_NAME}/export.hpp)
 set (GCC_COVERAGE_COMPILE_FLAGS "-Wl,-znodelete")
 set (GCC_COVERAGE_LINK_FLAGS "-Wl,-znodelete")
@@ -21,6 +23,10 @@ set (PROJECT_FILES
   ${PROJECT_MISC}
   ${PROJECT_EXPORT_HPP}
   ${LLVM_INCLUDE_DIRS})
+
+set (SYSTEM_FILES
+  ${LIBS_HEADERS}
+  ${LIBS_SOURCES})
 
 # Map llvm components
 llvm_map_components_to_libnames(llvm_libs
@@ -40,7 +46,13 @@ llvm_map_components_to_libnames(llvm_libs
 
 ##################################################    Targets     ##################################################
 add_library(snowball SHARED ${PROJECT_FILES})
+add_library(system_libs SHARED ${SYSTEM_FILES})
+
+target_link_libraries(system_libs PUBLIC snowball)
+
 add_executable(snowballexe sn/main.cc)
+set_target_properties(snowballexe PROPERTIES OUTPUT_NAME "snowball")
+
 target_link_libraries(snowballexe PUBLIC snowball)
 
 foreach(target ${LLVM_TARGETS_TO_BUILD})
@@ -73,8 +85,10 @@ generate_export_header(${PROJECT_NAME}
 )
 
 # installation
+install(TARGETS system_libs EXPORT MyLibConfig DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/libs)
 install(TARGETS ${PROJECT_NAME} EXPORT MyLibConfig
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS snowballexe EXPORT MyLibConfig DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})

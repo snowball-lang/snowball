@@ -11,6 +11,7 @@
 
 namespace snowball_utils {
     std::string get_exe_folder();
+    std::string get_lib_folder();
     std::vector<std::string> split(std::string str, std::string token);
     bool endsWith(const std::string &mainStr, const std::string &toMatch);
 }
