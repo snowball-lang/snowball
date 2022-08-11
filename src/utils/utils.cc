@@ -12,6 +12,10 @@
 #include <unistd.h>     //readlink
 #endif
 
+#include <iostream>
+#include <filesystem>
+namespace fs = std::filesystem;
+
 namespace snowball_utils {
 
     std::string get_exe_folder() {
@@ -24,6 +28,13 @@ namespace snowball_utils {
             ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
             return std::string(result, (count > 0) ? count : 0);
         #endif
+    }
+
+    std::string get_lib_folder() {
+        fs::path exe_folder = get_exe_folder();
+        fs::path full_path = exe_folder / "libs";
+
+        return full_path;
     }
 
     std::vector<std::string> split(std::string str, std::string token){

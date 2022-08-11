@@ -9,12 +9,10 @@ test "basic if statement" {
 }
 
 // TODO: this fails!
-test "test else statement" skip {
+test "test else statement" {
     if 0 {
         assert 0
     } else {
-        assert 1
+        assert 1 // if this does not exist, it should output "UNKNOWN"
     }
-
-    assert 0
 }

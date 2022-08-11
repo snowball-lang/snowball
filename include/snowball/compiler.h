@@ -33,7 +33,7 @@ namespace snowball {
             Compiler(std::string p_code, std::string p_path);
 
             void initialize();
-            void compile();
+            void compile(bool verbose = true);
 
             void cleanup();
             void optimize();
@@ -73,7 +73,6 @@ namespace snowball {
             Generator* _generator;
 
             Enviroment* _enviroment;
-
             TestingContext* _testing_context = new TestingContext();
 
             // methods

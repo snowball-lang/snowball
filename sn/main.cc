@@ -20,6 +20,7 @@
 #include <llvm/Support/FormattedStream.h>
 
 using namespace snowball;
+using namespace std::chrono;
 using namespace snowball_utils;
 
 int compile(std::string content, std::string filename, std::vector<std::string> arguments) {
@@ -36,7 +37,7 @@ int compile(std::string content, std::string filename, std::vector<std::string> 
             compiler->enable_tests();
         }
 
-        compiler->compile();
+        compiler->compile(!test);
 
         if (compile && !test) {
             compiler->emit_object("out.o");
@@ -74,14 +75,35 @@ int main(int argc, char** argv) {
 
             dp = opendir(filename.c_str()); // We know it will exist
 
+            int amount_of_errors = 0;
+            auto start = high_resolution_clock::now();
+
             while ((entry = readdir(dp))) {
                 if (endsWith(entry->d_name, ".test.sn")) {
                     std::ifstream file_content(filename + entry->d_name);
                     std::string content( (std::istreambuf_iterator<char>(file_content) ),
                         (std::istreambuf_iterator<char>()    ) );
 
-                    compile(content, filename + entry->d_name, arguments);
+                    int success = compile(content, filename + entry->d_name, arguments);
+                    if (!success) {
+                        amount_of_errors++;
+                    }
                 }
+            }
+
+            auto stop = high_resolution_clock::now();
+
+            // Subtract stop and start timepoints and
+            // cast it to required unit. Predefined units
+            // are nanoseconds, microseconds, milliseconds,
+            // seconds, minutes, hours. Use duration_cast()
+            // function.
+            auto duration = duration_cast<milliseconds>(stop - start);
+
+            if (amount_of_errors > 0) {
+                Logger::info(Logger::format("%s%i%s unit test(s) failed (executed in %s%ims%s)", BRED, amount_of_errors, RESET, BBLU, duration.count(), RESET));
+            } else {
+                Logger::info(Logger::format("\tUnit tests successfuly executed in %s%ims%s", BBLU, duration.count(), RESET));
             }
 
             closedir(dp);

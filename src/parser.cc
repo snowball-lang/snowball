@@ -464,6 +464,12 @@ namespace snowball {
                     break;
                 }
 
+                case TokenType::BRACKET_LCURLY: {
+                    next_token();
+                    stmts.push_back(_parse_block());
+                    break;
+                }
+
                 case TokenType::KWORD_IF: {
                     next_token();
                     IfStatementNode* stmt = _parse_ifstmt();

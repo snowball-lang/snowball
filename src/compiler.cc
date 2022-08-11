@@ -112,26 +112,36 @@ namespace snowball {
         _initialized = true;
     }
 
-    void Compiler::compile() {
+    void Compiler::compile(bool verbose) {
         if (!_initialized) {
             throw SNError(Error::COMPILER_ERROR, "Compiler has not been initialized!");
         }
 
+        #define SHOW_STATUS(status) if (verbose) status;
+
+        SHOW_STATUS(Logger::compiling(Logger::progress(0)));
+
         /* ignore_goto_errors() */ {
             std::string llvm_error;
 
+            SHOW_STATUS(Logger::compiling(Logger::progress(0.30)))
             _lexer = new Lexer(_source_info);
             _lexer->tokenize();
 
             if (_lexer->tokens.size() != 0) {
+                SHOW_STATUS(Logger::compiling(Logger::progress(0.50)))
+
                 _parser = new Parser(_lexer, _source_info);
                 _parser->parse();
 
+                SHOW_STATUS(Logger::compiling(Logger::progress(0.55)))
                 API = new SNAPI(std::move(this));
                 Generics* generics_api = new Generics(std::move(this));
 
+                SHOW_STATUS(Logger::compiling(Logger::progress(0.60)))
                 link_std_classes();
 
+                SHOW_STATUS(Logger::compiling(Logger::progress(0.70)))
                 _generator = new Generator(
                     API,
                     _parser,
@@ -147,6 +157,8 @@ namespace snowball {
                 for (auto* node : _parser->nodes()) {
                     _generator->generate(node);
                 }
+
+                SHOW_STATUS(Logger::compiling(Logger::progress(0.80)))
             }
 
             llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
@@ -170,6 +182,9 @@ namespace snowball {
             if (!module_error_string.empty())
                 throw SNError(Error::LLVM_INTERNAL, module_error_string);
 
+            SHOW_STATUS(Logger::compiling(Logger::progress(0.1)))
+            SHOW_STATUS(Logger::reset_status())
+
             #if _SNOWBALL_BYTECODE_DEBUG
 
                 PRINT_LINE("Bytecode:")
@@ -179,6 +194,8 @@ namespace snowball {
 
             #endif
         }
+
+        #undef SHOW_STATUS
     }
 
     void Compiler::emit_object(std::string p_output) {

@@ -24,6 +24,11 @@ namespace snowball {
         static void verbose (std::string message);
         static void success (std::string message);
 
+        // status messages
+        static void reset_status();
+        static void compiling (std::string message);
+
+        static std::string progress(float progress = 0);
         static std::string format(const char* p_format, ...);
 
     };

@@ -157,11 +157,24 @@ namespace snowball {
                 return generate_if_stmt(static_cast<IfStatementNode *>(p_node));
             }
 
+            case Node::Type::BLOCK: {
+                return generate_block(static_cast<BlockNode *>(p_node));
+            }
+
             default:
                 DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
                 throw Warning(Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, p_node->type, RESET, BOLD), dbg_info);
         }
     }
+
+    llvm::Value* Generator::generate_block(BlockNode * p_node) {
+        for (Node* node : p_node->exprs) {
+            generate(node);
+        }
+
+        return llvm::ConstantInt::get(_builder.getInt1Ty(), 0);
+    }
+
 
     llvm::Value* Generator::generate_if_stmt(IfStatementNode *p_node) {
         #define ELSE_STMT_EXISTS() p_node->else_stmt != NULL
