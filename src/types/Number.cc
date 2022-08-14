@@ -64,16 +64,16 @@ void register_number(snowball::SNAPI* API) {
         },
     }, [API](snowball::ScopeValue* cls) {
         llvm::Type* class_type = (*cls->llvm_struct)->getPointerTo();
-        llvm::Type* bool_class = (*API->get_compiler()->get_enviroment()->get("Bool", nullptr)->llvm_struct)->getPointerTo();
-        llvm::Type* string_class = (*API->get_compiler()->get_enviroment()->get("String", nullptr)->llvm_struct)->getPointerTo();
+        llvm::Type* bool_class = (*API->get_compiler()->get_enviroment()->get(snowball::BOOL_TYPE->mangle(), nullptr)->llvm_struct)->getPointerTo();
+        llvm::Type* string_class = (*API->get_compiler()->get_enviroment()->get(snowball::STRING_TYPE->mangle(), nullptr)->llvm_struct)->getPointerTo();
 
         API->create_class_method(
             cls,
             "__init",
             class_type,
-            std::vector<std::pair<std::string, llvm::Type*>> {
+            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
                 std::make_pair(
-                    "i",
+                    new snowball::Type("&i"),
                     snowball::get_llvm_type_from_sn_type(
                         snowball::BuildinTypes::NUMBER,
                         API->get_compiler()->builder
@@ -88,8 +88,8 @@ void register_number(snowball::SNAPI* API) {
             cls,
             "__init",
             class_type,
-            std::vector<std::pair<std::string, llvm::Type*>> {
-                std::make_pair("Number", class_type)
+            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
+                std::make_pair(snowball::NUMBER_TYPE, class_type)
             },
             true,
             (void*)static_cast<Number*(*)(Number*)>(Number::__init)
@@ -99,8 +99,8 @@ void register_number(snowball::SNAPI* API) {
             cls,
             "__not",
             bool_class,
-            std::vector<std::pair<std::string, llvm::Type*>> {
-                std::make_pair("Number", class_type)
+            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
+                std::make_pair(snowball::NUMBER_TYPE, class_type)
             },
             true,
             (void*)static_cast<Bool*(*)(Number*)>(Number::__not)
@@ -110,9 +110,9 @@ void register_number(snowball::SNAPI* API) {
             cls,
             "__sum",
             class_type,
-            std::vector<std::pair<std::string, llvm::Type*>> {
-                std::make_pair("Number", class_type),
-                std::make_pair("Number", class_type)
+            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
+                std::make_pair(snowball::NUMBER_TYPE, class_type),
+                std::make_pair(snowball::NUMBER_TYPE, class_type)
             },
             true,
             (void*)static_cast<Number*(*)(Number*, Number*)>(Number::__sum)
@@ -122,8 +122,8 @@ void register_number(snowball::SNAPI* API) {
             cls,
             "__str",
             string_class,
-            std::vector<std::pair<std::string, llvm::Type*>> {
-                std::make_pair("Number", class_type)
+            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
+                std::make_pair(snowball::NUMBER_TYPE, class_type)
             },
             true,
             (void*)static_cast<String*(*)(Number*)>(Number::__str)
@@ -133,8 +133,8 @@ void register_number(snowball::SNAPI* API) {
             cls,
             "__bool",
             bool_class,
-            std::vector<std::pair<std::string, llvm::Type*>> {
-                std::make_pair("Number", class_type)
+            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
+                std::make_pair(snowball::NUMBER_TYPE, class_type)
             },
             true,
             (void*)static_cast<Bool*(*)(Number*)>(Number::__bool)
@@ -144,9 +144,9 @@ void register_number(snowball::SNAPI* API) {
             cls,
             "__eqeq",
             bool_class,
-            std::vector<std::pair<std::string, llvm::Type*>> {
-                std::make_pair("Number", class_type),
-                std::make_pair("Number", class_type)
+            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
+                std::make_pair(snowball::NUMBER_TYPE, class_type),
+                std::make_pair(snowball::NUMBER_TYPE, class_type)
             },
             true,
             (void*)static_cast<Bool*(*)(Number*, Number*)>(Number::__eqeq)

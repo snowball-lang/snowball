@@ -11,7 +11,7 @@
 namespace snowball {
     class Generics;
 
-    void Generics::add_generic(std::string p_name, std::vector<std::string> p_args, std::string ret, std::vector<std::string> p_generics, Node* p_node) {
+    void Generics::add_generic(std::string p_name, std::vector<Type*> p_args, Type* ret, std::vector<Type*> p_generics, Node* p_node) {
         GenericStore* store = new GenericStore();
 
         store->name = p_name;
@@ -30,27 +30,28 @@ namespace snowball {
         _stores.push_back(store);
     }
 
-    std::pair<Generics::GenericValue, bool> Generics::get_generic(std::string p_name, std::vector<std::string> p_args, std::vector<std::string> p_generics, Node* p_node) {
+    std::pair<Generics::GenericValue, bool> Generics::get_generic(std::string p_name, std::vector<Type*> p_args, std::vector<Type*> p_generics, Node* p_node) {
         for (const auto& store : _stores) {
 
             unmangledResult unmangled = unmangle(p_name);
 
+            // TODO: fix generics not found!!!!!!
             if (store->generics.size() == p_generics.size() && p_args.size() == store->args.size() && unmangled.isPublic == store->node->is_public) {
-                std::map<std::string, std::string> completed_generics;
+                std::map<std::string, Type*> completed_generics;
                 for (int generic_index = 0; generic_index < p_generics.size(); generic_index++) {
-                    completed_generics.insert({store->generics[generic_index], p_generics[generic_index]});
+                    completed_generics.insert({TypeChecker::to_mangle(store->generics[generic_index]), p_generics[generic_index]});
                 }
 
-                std::vector<std::string> function_args;
-                for (std::string st_arg : store->args) {
-                    std::map<std::string, std::string>::iterator argument = completed_generics.find(st_arg);
+                std::vector<Type*> function_args;
+                for (Type* st_arg : store->args) {
+                    std::map<std::string, Type*>::iterator argument = completed_generics.find(TypeChecker::to_mangle(st_arg));
                     function_args.push_back(argument != completed_generics.end() ? argument->second : st_arg);
                 }
 
                 ASSERT(store->node->arguments.size() == function_args.size())
                 if (function_args == p_args) {
                     FunctionNode* node = new FunctionNode();
-                    std::map<std::string, std::string>::iterator ret_ty = completed_generics.find(store->return_ty);
+                    std::map<std::string, Type*>::iterator ret_ty = completed_generics.find(TypeChecker::to_mangle(store->return_ty));
 
 		            std::vector<ArgumentNode *> arguments;
                     for (int i = 0; i < function_args.size(); i++) {

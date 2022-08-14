@@ -4,12 +4,12 @@
 
 #include "api.h"
 #include "libs.h"
-#include "types.h"
 #include "nodes.h"
 #include "token.h"
 #include "lexer.h"
 #include "scopes.h"
 #include "parser.h"
+#include "types.h"
 #include "logger.h"
 #include "errors.h"
 #include "generics.h"
@@ -22,6 +22,7 @@
 #include "unittesting.h"
 
 // utils
+#include "utils/utils.h"
 #include "utils/mangle.h"
 
 // Types

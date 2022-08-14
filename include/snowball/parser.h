@@ -2,6 +2,8 @@
 #include "nodes.h"
 #include "lexer.h"
 
+#include "types.h"
+
 #include <memory>
 
 #ifndef __SNOWBALL_PARSER_H_
@@ -50,7 +52,8 @@ namespace snowball {
             BlockNode* _parse_block(std::vector<TokenType> p_termination = { TokenType::BRACKET_RCURLY });
             Node* _build_op_tree(std::vector<Node*> &expressions);
 
-            std::vector<std::string> _parse_generic_expr();
+            Type* _parse_type();
+            std::vector<Type*> _parse_generic_expr();
 
             // Variables
             Lexer* _lexer;

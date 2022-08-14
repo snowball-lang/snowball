@@ -65,7 +65,7 @@ namespace snowball {
         // Function params
         bool isTopLevel = false;
         bool isStaticFunction = false;
-        std::vector<std::string> arguments;
+        std::vector<Type*> arguments;
 
         // Function Containers
         std::vector<std::unique_ptr<ScopeValue*>> instances;
@@ -90,7 +90,7 @@ namespace snowball {
             llvm_function = p_value;
 
             unmangledResult result = unmangle((*p_value)->getName());
-            if (result.isMangled) {
+            if (result.isMangled && result.isFunction) {
                 isPublic = result.isPublic;
                 arguments = result.arguments;
             }

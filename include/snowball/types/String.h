@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "../constants.h"
 #include "snowball/api.h"
+#include "snowball/types.h"
 
 #ifndef SN_STRING_EXPORT_H
 #define SN_STRING_EXPORT_H

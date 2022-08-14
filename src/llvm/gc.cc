@@ -11,6 +11,13 @@
 #include "snowball/constants.h"
 #include "snowball/utils/mangle.h"
 
-extern "C" DLLEXPORT void* _MN14__sn__alloca__A3i32P(uint32_t bytes) {
+/**
+ * @brief Allocate bytes and return it as a pointer. \
+ *        called inside the LLVM IR code.
+ *
+ * @note This function is already mangled to \
+ *       directly access it from the dynamic library
+ */
+extern "C" DLLEXPORT void* _SNalc(uint32_t bytes) {
   return malloc(bytes);
 }

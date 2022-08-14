@@ -19,22 +19,20 @@ namespace snowball {
         unmangledResult result = unmangle(p_name);
 
         std::map<std::string, std::unique_ptr<ScopeValue*>>::iterator _it = this->_data.find(result.name);
-        if (_it != this->_data.end() && result.isMangled && (*_it->second)->type == ScopeType::FUNC_CONTAINER) {
+        if (_it != this->_data.end() && result.isMangled && result.isFunction && (*_it->second)->type == ScopeType::FUNC_CONTAINER) {
             for (int i = 0; i < (*_it->second)->instances.size(); i++) {
                 ScopeValue* scope_value = *(*_it->second)->instances[i];
 
-                // TODO: (re-write) check for argv and default values
-                if (result.arguments == scope_value->arguments) {
-                    if (result.isPublic == scope_value->isPublic) {
-                        return true;
-                    }
+                // TODO: check for argv and default values
+                if (TypeChecker::functions_equal(result.name, result.name, result.arguments, scope_value->arguments, result.isPublic, scope_value->isPublic)) {
+                    return true;
                 }
             }
 
             return false;
         }
 
-        return _it != this->_data.end();
+        return this->_data.find(p_name) != this->_data.end();
     }
 
     ScopeValue* Scope::get(std::string p_name, Node* p_node, std::string p_o_name) {
@@ -56,15 +54,13 @@ namespace snowball {
         unmangledResult unmangled = unmangle(p_name);
 
         std::map<std::string, std::unique_ptr<ScopeValue*>>::iterator _it = this->_data.find(unmangled.name);
-        if (_it != this->_data.end() && unmangled.isMangled && (*_it->second)->type == ScopeType::FUNC_CONTAINER) {
+        if (_it != this->_data.end() && unmangled.isMangled && unmangled.isFunction && (*_it->second)->type == ScopeType::FUNC_CONTAINER) {
             for (int i = 0; i < (*_it->second)->instances.size(); i++) {
                 ScopeValue* scope_value = *(*_it->second)->instances[i];
 
                 // TODO: (re-write) check for argv and default values
-                if (unmangled.arguments == scope_value->arguments) {
-                    if (unmangled.isPublic == scope_value->isPublic) {
-                        return scope_value;
-                    }
+                if (TypeChecker::functions_equal(unmangled.name, unmangled.name, unmangled.arguments, scope_value->arguments, unmangled.isPublic, scope_value->isPublic)) {
+                    return scope_value;
                 }
             }
         }
@@ -79,7 +75,7 @@ namespace snowball {
         if ((*p_value)->type == ScopeType::FUNC) {
             unmangledResult result = unmangle(p_name);
 
-            if (result.isMangled) {
+            if (result.isMangled && result.isFunction) {
                 if (item_exists(result.name)) {
                     (*(*this->_data.find(result.name)).second)->instances.push_back(std::move(p_value));
                     return;

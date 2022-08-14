@@ -138,7 +138,7 @@ namespace snowball {
             } else if ((*it->second)->type == ScopeType::FUNC_CONTAINER) {
                 for (int i = 0; i < (*it->second)->instances.size(); i++) {
                     ScopeValue* scope_value = *(*it->second)->instances[i];
-                    DEBUG_SYMTABLE("    %s", (*scope_value->llvm_function)->getName())
+                    DEBUG_SYMTABLE("    %s", (*scope_value->llvm_function)->getName().str().c_str())
                 }
             }
         }

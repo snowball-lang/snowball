@@ -231,6 +231,11 @@ namespace snowball {
         cls->name = _current_token.to_string();
         next_token();
 
+        if (_current_token.type == TokenType::OP_LT) {
+            std::vector<Type*> generics = _parse_generic_expr();
+            cls->generics = generics;
+        }
+
         if (_current_token.type == TokenType::SYM_COLLON) {
             next_token();
 
@@ -302,7 +307,7 @@ namespace snowball {
             CONSUME(":", SYM_COLLON, "a variable declaration")
             ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "a variable declaration")
 
-            var->vtype = _current_token.to_string();
+            var->vtype = _parse_type();
             next_token();
         }
 
@@ -360,7 +365,7 @@ namespace snowball {
         next_token();
 
         if (_current_token.type == TokenType::OP_LT) {
-            std::vector<std::string> generics = _parse_generic_expr();
+            std::vector<Type*> generics = _parse_generic_expr();
             func->generics = generics;
         }
 
@@ -375,17 +380,16 @@ namespace snowball {
                     // TODO: argv, default
 
                     std::string name = _current_token.to_string();
-                    std::string type_name;
+                    Type* arg_type;
 
                     next_token(); // consume name
 
                     CONSUME(":", SYM_COLLON, "argument statement")
 
                     ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "<type>", "argument type declaration")
-                    type_name = _current_token.to_string();
-                    next_token(); // consume :
+                    arg_type = _parse_type();
 
-                    ArgumentNode* argument = new ArgumentNode(name, type_name);
+                    ArgumentNode* argument = new ArgumentNode(name, arg_type);
 
                     if (std::any_of(arguments.begin(), arguments.end(), compareArgs(argument))) {
                         PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("duplicate argument '%s' in function definition", argument->name.c_str()))
@@ -418,7 +422,7 @@ namespace snowball {
             }
         }
 
-        std::string return_type;
+        Type* return_type;
 
         // Consume an arrow
         // TODO: if there is no arrow, return type is Void
@@ -428,10 +432,9 @@ namespace snowball {
             CONSUME("->", OP_GT, "Function return type")
 
             ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "Identifier", "Function return type")
-            return_type = _current_token.to_string();
-            next_token();
+            return_type = _parse_type();
         } else {
-            return_type = _context.current_class->name;
+            return_type = new Type(_context.current_class->name);
         }
 
 
@@ -604,7 +607,7 @@ namespace snowball {
         callNode->method = _current_token.to_string();
         next_token();
 
-        std::vector<std::string> generics;
+        std::vector<Type*> generics;
         bool has_generics = false;
         if (_current_token.type == TokenType::OP_LT) {
             has_generics = true;
@@ -771,11 +774,12 @@ namespace snowball {
         }
 
         Node* tree = _build_op_tree(expressions);
-        if (tree->type == Node::Type::OPERATOR) {
+        if (tree->type == Node::Ty::OPERATOR) {
             if (!p_allow_assign && BinaryOp::is_assignment((BinaryOp*)tree)) {
                 PARSER_ERROR(Error::SYNTAX_ERROR, "assignment is not allowed inside expression.");
             }
         }
+
         return tree;
     }
 
@@ -790,7 +794,7 @@ namespace snowball {
 
             for (int i = 0; i < (int)expressions.size(); i++) {
                 BinaryOp* expression = static_cast<BinaryOp*>(expressions[i]);
-                if (expression->type != Node::Type::OPERATOR) {
+                if (expression->type != Node::Ty::OPERATOR) {
                     continue;
                 }
 
@@ -901,7 +905,7 @@ namespace snowball {
             if (unary) {
 
                 int next_expr = next_op;
-                while (expressions[next_expr]->type == Node::Type::OPERATOR) {
+                while (expressions[next_expr]->type == Node::Ty::OPERATOR) {
                     if (++next_expr == expressions.size()) {
                         PARSER_ERROR(Error::SYNTAX_ERROR, "expected an expression.");
                     }
@@ -918,17 +922,17 @@ namespace snowball {
                 }
             } else {
                 ASSERT(next_op >= 1 && next_op < (int)expressions.size() - 1)
-                ASSERT((!(expressions[(size_t)next_op - 1]->type == Node::Type::OPERATOR)) && (!(expressions[(size_t)next_op + 1]->type == Node::Type::OPERATOR)));
+                ASSERT((!(expressions[(size_t)next_op - 1]->type == Node::Ty::OPERATOR)) && (!(expressions[(size_t)next_op + 1]->type == Node::Ty::OPERATOR)));
 
                 BinaryOp* op_node = new BinaryOp(((BinaryOp*)expressions[(size_t)next_op])->op_type);
 
-                if (expressions[(size_t)next_op - 1]->type == Node::Type::OPERATOR) {
+                if (expressions[(size_t)next_op - 1]->type == Node::Ty::OPERATOR) {
                     if (BinaryOp::is_assignment((BinaryOp*)expressions[(size_t)next_op - 1])) {
                         PARSER_ERROR(Error::SYNTAX_ERROR, "unexpected assignment.")
                     }
                 }
 
-                if (expressions[(size_t)next_op + 1]->type == Node::Type::OPERATOR) {
+                if (expressions[(size_t)next_op + 1]->type == Node::Ty::OPERATOR) {
                     if (BinaryOp::is_assignment((BinaryOp*)expressions[(size_t)next_op - 1])) {
                         PARSER_ERROR(Error::SYNTAX_ERROR, "unexpected assignment.")
                     }
@@ -947,9 +951,23 @@ namespace snowball {
         return expressions[0];
     }
 
-    std::vector<std::string> Parser::_parse_generic_expr() {
+    Type* Parser::_parse_type() {
+        ASSERT(_current_token.type == TokenType::IDENTIFIER)
+
+        std::string name = _current_token.to_string();
+        std::vector<Type*> type_generics;
+        next_token();
+
+        if (_current_token.type == TokenType::OP_LT) {
+            type_generics = _parse_generic_expr();
+        }
+
+        return new Type(name, type_generics);
+    }
+
+    std::vector<Type*> Parser::_parse_generic_expr() {
         ASSERT(_current_token.type == TokenType::OP_LT)
-        std::vector<std::string> types;
+        std::vector<Type*> types;
 
         while (true) {
             next_token();
@@ -957,8 +975,7 @@ namespace snowball {
             if (_current_token.type == TokenType::_EOF) {
                 PARSER_ERROR(Error::UNEXPECTED_EOF, "Found EOF while parsing generic expression")
             } else if (_current_token.type == TokenType::IDENTIFIER) {
-                types.push_back(_current_token.to_string());
-                next_token();
+                types.push_back(_parse_type());
 
                 if (_current_token.type == TokenType::OP_GT) {
                     next_token();

@@ -1,9 +1,6 @@
 // This should be ignored by the tester!
 
-import System
 fn main() -> Number {
-
-    var a = 2
 
     return 0
 }

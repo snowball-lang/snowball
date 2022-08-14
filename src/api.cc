@@ -19,7 +19,7 @@
 
 namespace snowball {
     ScopeValue* SNAPI::create_class(std::string p_name, std::map<std::string, llvm::Type*> p_properties, std::function<void(ScopeValue*)> cb, bool is_module) {
-        llvm::StructType* llvm_struct = llvm::StructType::create(_compiler->global_context, p_name);
+        llvm::StructType* llvm_struct = llvm::StructType::create(_compiler->global_context, mangle(p_name, {}, true, true));
 
         std::vector<llvm::Type*> properties;
         for (auto const& pair : p_properties) {
@@ -28,14 +28,14 @@ namespace snowball {
 
         llvm_struct->setBody(properties);
 
-        Scope* class_scope = new Scope(p_name, _compiler->get_source_info());
+        Scope* class_scope = new Scope(mangle(p_name, {}, true, true), _compiler->get_source_info());
         ScopeValue* class_value = new ScopeValue(class_scope, std::make_shared<llvm::StructType*>(llvm_struct));
 
         if (cb != nullptr && !_init_mode)
             cb(class_value);
 
         if (!is_module)
-            add_to_enviroment(p_name, std::make_unique<ScopeValue*>(class_value));
+            add_to_enviroment(mangle(p_name, {}, true, true), std::make_unique<ScopeValue*>(class_value));
 
         if (_init_mode) {
             _types.emplace(class_value, cb);
@@ -69,12 +69,12 @@ namespace snowball {
         return mod;
     }
 
-    void SNAPI::create_class_method(ScopeValue* p_class, std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<std::string, llvm::Type*>> p_args, bool p_is_public, void* p_pointer) {
+    void SNAPI::create_class_method(ScopeValue* p_class, std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<Type*, llvm::Type*>> p_args, bool p_is_public, void* p_pointer) {
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
 
         std::vector<llvm::Type*> arguments;
-        std::vector<std::string> arguments_types;
+        std::vector<Type*> arguments_types;
         for (auto const& pair : p_args) {
             arguments.push_back(pair.second);
             arguments_types.push_back(pair.first);

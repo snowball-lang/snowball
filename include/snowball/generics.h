@@ -14,19 +14,19 @@ namespace snowball {
 
             struct GenericValue {
                 std::string name;
-                std::vector<std::string> args;
-                std::string return_ty;
+                std::vector<Type*> args;
+                Type* return_ty;
                 FunctionNode* node;
             };
 
             struct GenericStore : public GenericValue {
-                std::vector<std::string> generics;
+                std::vector<Type*> generics;
             };
 
             Generics(Compiler* p_compiler) : _compiler(p_compiler) {};
 
-            std::pair<GenericValue, bool> get_generic(std::string p_name, std::vector<std::string> p_args, std::vector<std::string> p_generics, Node* p_node);
-            void add_generic(std::string p_name, std::vector<std::string> p_args, std::string ret, std::vector<std::string> p_generics, Node* p_node);
+            std::pair<GenericValue, bool> get_generic(std::string p_name, std::vector<Type*> p_args, std::vector<Type*> p_generics, Node* p_node);
+            void add_generic(std::string p_name, std::vector<Type*> p_args, Type* ret, std::vector<Type*> p_generics, Node* p_node);
 
             ~Generics() {};
 

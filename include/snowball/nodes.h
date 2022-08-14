@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "token.h"
+#include "types.h"
 #include "llvm/IR/Value.h"
 
 #ifndef __SNOWBALL_NODE_H_
@@ -53,7 +54,7 @@ namespace snowball {
 	};
 
     typedef struct Node {
-        enum class Type {
+        enum class Ty {
 			UNKNOWN = -1,
 
 			IMPORT,
@@ -92,7 +93,7 @@ namespace snowball {
             SN_NODES_H,
 		};
 
-        Type type = Type::UNKNOWN;
+        Ty type = Ty::UNKNOWN;
 
 		std::pair<int, int> pos;
         uint32_t width = 1; // width of the node ^^^^ (dbg).
@@ -104,7 +105,7 @@ namespace snowball {
 		std::vector<Node*> exprs;
 
 		BlockNode() {
-			type = Type::BLOCK;
+			type = Ty::BLOCK;
 		};
 
 		~BlockNode() {};
@@ -117,7 +118,7 @@ namespace snowball {
 		BlockNode* else_stmt = NULL;
 
 		IfStatementNode() {
-			type = Type::IF_STMT;
+			type = Ty::IF_STMT;
 		};
 
 		~IfStatementNode() {};
@@ -125,13 +126,13 @@ namespace snowball {
 
 	struct ArgumentNode : public Node {
 		std::string name;
-		std::string type_name;
+		Type* arg_type;
 
-		ArgumentNode(std::string p_name, std::string p_type) {
+		ArgumentNode(std::string p_name, Type* p_type) {
 			// todo: default values, infinite args, etc...
 			name = p_name;
-			type_name = p_type;
-			type = Type::ARGUMENT;
+			arg_type = p_type;
+			type = Ty::ARGUMENT;
 		};
 
 		~ArgumentNode() {};
@@ -141,11 +142,11 @@ namespace snowball {
 		BlockNode* body;
 
 		std::string name;
-		std::string return_type;
+		Type* return_type;
 		std::vector<ArgumentNode *> arguments;
 
-		std::vector<std::string> generics;
-		std::map<std::string, std::string> generic_map;
+		std::vector<Type*> generics;
+		std::map<std::string, Type*> generic_map;
 
 		bool is_static = false;
 		bool is_public = false;
@@ -153,7 +154,7 @@ namespace snowball {
 		bool is_lop_level = false;
 
 		FunctionNode() {
-			type = Type::FUNCTION;
+			type = Ty::FUNCTION;
 		};
 
 		~FunctionNode() {};
@@ -163,7 +164,7 @@ namespace snowball {
 		Node* expr;
 
 		AssertNode() {
-			type = Type::ASSERT;
+			type = Ty::ASSERT;
 		};
 
 		~AssertNode() {};
@@ -174,7 +175,7 @@ namespace snowball {
 		FunctionNode* parent;
 
 		ReturnNode() {
-			type = Type::RETURN;
+			type = Ty::RETURN;
 		};
 
 		~ReturnNode() {};
@@ -185,12 +186,12 @@ namespace snowball {
 
 		IdentifierNode(std::string p_name) {
 			name = p_name;
-			type = Type::IDENTIFIER;
+			type = Ty::IDENTIFIER;
 		}
 
 		IdentifierNode(Token p_identifier_tk) {
 			name = p_identifier_tk.to_string();
-			type = Type::IDENTIFIER;
+			type = Ty::IDENTIFIER;
 			pos = std::pair<int, int>(p_identifier_tk.line, p_identifier_tk.col);
 		}
 
@@ -201,13 +202,13 @@ namespace snowball {
 		std::vector<Node*> arguments;
 		std::string method;
 
-		std::vector<std::string> generics;
+		std::vector<Type*> generics;
 
 		Node* base = nullptr;
 		bool is_static_call = false;
 
 		CallNode() {
-			type = Type::CALL;
+			type = Ty::CALL;
 		};
 
 		~CallNode() {};
@@ -218,11 +219,11 @@ namespace snowball {
 		std::string method;
 
 		NewNode() {
-			type = Type::NEW_CALL;
+			type = Ty::NEW_CALL;
 		};
 
 		NewNode(CallNode* p_node) {
-			type = Type::NEW_CALL;
+			type = Ty::NEW_CALL;
 			arguments = p_node->arguments;
 			method = p_node->method;
 		};
@@ -233,7 +234,7 @@ namespace snowball {
 		std::string path;
 
 		ImportNode() {
-			type = Type::IMPORT;
+			type = Ty::IMPORT;
 		};
 
 		~ImportNode() {};
@@ -246,7 +247,7 @@ namespace snowball {
 		bool skip = false;
 
 		TestingNode() {
-			type = Type::TEST;
+			type = Ty::TEST;
 		};
 		~TestingNode() {};
 	};
@@ -255,12 +256,12 @@ namespace snowball {
 		Node* value;
 
 		std::string name;
-		std::string vtype;
+		Type* vtype;
 
 		bool isGlobal = false;
 
 		VarNode() {
-			type = Type::VAR;
+			type = Ty::VAR;
 		};
 
 		~VarNode() {};
@@ -273,10 +274,11 @@ namespace snowball {
 		std::vector<FunctionNode*> functions;
 
 		// TODO: generics
+		std::vector<Type*> generics;
 		std::vector<std::string> parents;
 
 		ClassNode() {
-			type = Type::CLASS;
+			type = Ty::CLASS;
 		};
 
 		~ClassNode() {};
@@ -289,7 +291,7 @@ namespace snowball {
 		ConstantValue(TokenType _const_type, std::string _value) {
 			const_type = _const_type;
 			value = _value;
-			type = Type::CONST_VALUE;
+			type = Ty::CONST_VALUE;
 		};
 
 		~ConstantValue() {};
@@ -372,7 +374,7 @@ namespace snowball {
 		}
 
 		BinaryOp(OpType _op_type) {
-			type = Type::OPERATOR;
+			type = Ty::OPERATOR;
 			op_type = _op_type;
 			unary = (
 				op_type == OpType::OP_NOT      ||
