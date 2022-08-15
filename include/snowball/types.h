@@ -10,6 +10,8 @@
 namespace snowball {
 
     class Node;
+    class FunctionNode;
+
     class ScopeValue;
     class Enviroment;
 
@@ -26,6 +28,11 @@ namespace snowball {
             static bool is_class(ScopeValue* p_value);
             static std::string to_mangle(Type* p_type);
             static std::string to_mangle(std::string p_name, std::vector<Type*> p_generics);
+
+            static std::string get_type_name(llvm::Type* p_ty);
+
+            static std::pair<std::vector<Type*>,bool> deduce_template_args(
+                FunctionNode* def, std::vector<Type*> params, std::vector<Type*> gparams);
 
             static std::pair<Type*, int> to_type(std::string p_type);
             static ScopeValue* get_type(Enviroment* p_enviroment, Type* p_type, Node* p_node = nullptr);

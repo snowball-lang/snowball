@@ -555,14 +555,11 @@ namespace snowball {
         if (TypeChecker::is_class(ret_value)) {
             ret_type = (*ret_value->llvm_struct)->getStructName().str();
         } else if (ret_value->type == ScopeType::LLVM) {
-            ret_type = (*ret_value->llvm_value)
-                ->getType()
-                ->getPointerElementType()
-                ->getStructName()
-                .str();
+            ret_type = TypeChecker::get_type_name((*ret_value->llvm_value)
+                ->getType());
         }
 
-        if (type->getPointerElementType()->getStructName() == ret_type) {
+        if (TypeChecker::get_type_name(type) == ret_type) {
             return _builder.CreateRet(value);
         } else {
             COMPILER_ERROR(
@@ -781,13 +778,26 @@ namespace snowball {
                 COMPILER_ERROR(SYNTAX_ERROR, Logger::format("%s does not point a class", generic.second->to_string().c_str()))
             }
 
-            llvm::Value* value = generate(new IdentifierNode(generic.second->to_string()));
-            auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, generic.first );
+            std::string name = generic.second->mangle();
 
-            std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(value)));
-            SET_TO_SCOPE_OR_CLASS(generic.first, std::move(scope_value))
+            if (_enviroment->item_exists(name)) {
+                auto ty = *_enviroment->get(name, p_node)->llvm_struct;
 
-            _builder.CreateStore (value, alloca, /*isVolatile=*/false);
+                int size = _module->getDataLayout().getTypeStoreSize(ty);
+                llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder.getInt32Ty(), size);
+
+                llvm::Value* alloca_value = _builder.CreateCall(get_alloca(_module, _builder), size_constant);
+                llvm::Value* cast = _builder.CreatePointerCast(alloca_value, ty->getPointerTo(), generic.first);
+
+                std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(cast)));
+
+                SET_TO_SCOPE_OR_CLASS(generic.first, std::move(scope_value))
+
+
+                continue;
+            }
+
+            COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Type '%s' not found in generics", p_node->name))
         }
 
         for (auto expr : p_node->body->exprs) {

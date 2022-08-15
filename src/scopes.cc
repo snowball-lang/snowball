@@ -22,7 +22,6 @@ namespace snowball {
         if (_it != this->_data.end() && result.isMangled && result.isFunction && (*_it->second)->type == ScopeType::FUNC_CONTAINER) {
             for (int i = 0; i < (*_it->second)->instances.size(); i++) {
                 ScopeValue* scope_value = *(*_it->second)->instances[i];
-
                 // TODO: check for argv and default values
                 if (TypeChecker::functions_equal(result.name, result.name, result.arguments, scope_value->arguments, result.isPublic, scope_value->isPublic)) {
                     return true;

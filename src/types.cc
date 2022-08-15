@@ -81,7 +81,13 @@ namespace snowball {
         return p_enviroment->get(to_mangle(p_type), p_node);
     }
 
-    bool TypeChecker::is_class(ScopeValue* p_value) { return p_value->type = ScopeType::CLASS; }
+    std::string TypeChecker::get_type_name(llvm::Type* p_ty) {
+        return p_ty->isPointerTy() ?
+            p_ty->getPointerElementType()->getStructName() :
+            p_ty->getStructName();
+    }
+
+    bool TypeChecker::is_class(ScopeValue* p_value) { return p_value->type == ScopeType::CLASS; }
     bool TypeChecker::functions_equal(
         std::string p_name,
         std::string p_name2,
@@ -100,6 +106,55 @@ namespace snowball {
             }
 
         return (args_equal && (p_name == p_name2) && (p_public == p_public2));
+    }
+
+    std::pair<std::vector<Type*>,bool> TypeChecker::deduce_template_args(
+                FunctionNode* def, std::vector<Type*> params, std::vector<Type*> gparams) {
+        std::vector<Type*> deduced_types;
+        int garg_idx = 0; // The first given generic argument of the func call expr
+        for (int i = 0; i < def->generics.size(); i++)
+        {
+            auto garg = def->generics[i];
+            // We have a generic type parameter garg
+            // 1. Look up the idx where the generic type is used in the args
+            // 2. Look up the type of the arg at the idx in the function call expr.
+            // 3. The type of the arg in the function call expr is the deduced type
+
+            // -> 1.
+            auto it = std::find_if(def->generics.begin(), def->generics.end(), [&](Type* arg) {
+                return arg->equals(garg);
+                });
+
+            // -> 2.
+            if (it != def->generics.end())
+            {
+                int arg_idx = std::distance(def->generics.begin(), it);
+                auto deduced_type = params[arg_idx];
+                // -> 3.
+                deduced_types.push_back(deduced_type);
+            }
+
+            // Generic Type was not found in arg list
+            // See if it was given
+            else if (garg_idx < gparams.size())
+            {
+                auto type_spec = gparams[garg_idx];
+                deduced_types.push_back(type_spec);
+            }
+
+            // TODO:
+            // else if (garg->default_type != nullptr)
+            // {
+            //     auto type_spec = garg->default_type;
+            //     deduced_types.push_back(type_spec);
+            // }
+
+            else
+            {
+                return { {},false };
+            }
+        }
+        return { deduced_types,true };
     }
 
     llvm::Value* get_alloca(llvm::Module* p_module, llvm::IRBuilder<> p_builder) {

@@ -37,25 +37,20 @@ namespace snowball {
 
             // TODO: fix generics not found!!!!!!
             if (store->generics.size() == p_generics.size() && p_args.size() == store->args.size() && unmangled.isPublic == store->node->is_public) {
+                auto [args, succ] = TypeChecker::deduce_template_args(store->node, p_args, p_generics);
+
                 std::map<std::string, Type*> completed_generics;
                 for (int generic_index = 0; generic_index < p_generics.size(); generic_index++) {
-                    completed_generics.insert({TypeChecker::to_mangle(store->generics[generic_index]), p_generics[generic_index]});
+                    completed_generics.insert({TypeChecker::to_mangle(store->generics[generic_index]), p_args[generic_index]});
                 }
 
-                std::vector<Type*> function_args;
-                for (Type* st_arg : store->args) {
-                    std::map<std::string, Type*>::iterator argument = completed_generics.find(TypeChecker::to_mangle(st_arg));
-                    function_args.push_back(argument != completed_generics.end() ? argument->second : st_arg);
-                }
-
-                ASSERT(store->node->arguments.size() == function_args.size())
-                if (function_args == p_args) {
+                if (succ) {
                     FunctionNode* node = new FunctionNode();
                     std::map<std::string, Type*>::iterator ret_ty = completed_generics.find(TypeChecker::to_mangle(store->return_ty));
 
 		            std::vector<ArgumentNode *> arguments;
-                    for (int i = 0; i < function_args.size(); i++) {
-                        arguments.push_back(new ArgumentNode(store->node->arguments[i]->name, function_args[i]));
+                    for (int i = 0; i < args.size(); i++) {
+                        arguments.push_back(new ArgumentNode(store->node->arguments[i]->name, args[i]));
                     }
 
                     node->name = unmangle(p_name).name;
@@ -80,7 +75,7 @@ namespace snowball {
 
                     result.node = node;
                     result.name = unmangle(p_name).name;
-                    result.args = function_args;
+                    result.args = args;
                     result.return_ty = node->return_type;
 
                     return { result, true };
