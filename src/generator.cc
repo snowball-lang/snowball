@@ -281,7 +281,7 @@ namespace snowball {
                 COMPILER_ERROR(VARIABLE_ERROR, Logger::format("module '%s' is already defined", p_node->path.c_str()))
             }
 
-            _enviroment->current_scope()->set(p_node->path, std::make_unique<ScopeValue*>(mod));
+            _enviroment->current_scope()->set(mangle(p_node->path, {}, true, true), std::make_unique<ScopeValue*>(mod));
         } else {
             // TODO
         }
@@ -418,7 +418,18 @@ namespace snowball {
             base_value = generate(p_node->base);
 
             if (dynamic_cast<IdentifierNode*>(p_node->base) != nullptr) {
-                class_value = _enviroment->get(dynamic_cast<IdentifierNode*>(p_node->base)->name, p_node->base);
+
+                std::string base_name = dynamic_cast<IdentifierNode*>(p_node->base)->name;
+                std::string mangled_base_name = (new Type(base_name))->mangle();
+
+                if (_enviroment->item_exists(mangled_base_name)) {
+                    class_value = _enviroment->get(mangled_base_name, p_node);
+                } else if (_enviroment->item_exists(base_name)) {
+                    class_value = _enviroment->get(base_name, p_node);
+                } else {
+                    COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Identifier %s does not exist (in function call base)!"))
+                }
+
                 if (class_value->type == ScopeType::LLVM) {
                     class_value = _enviroment->get((*class_value->llvm_value)->getType()->getPointerElementType()->getStructName().str(), p_node->base);
                 }

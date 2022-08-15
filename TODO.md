@@ -18,6 +18,7 @@
 ### Known Bugs
 
 - [ ] Compiler errors/Warnings don't work
+- [ ] Some "built in type" constructors are not found (sometimes)
 
 ### None important
 - [ ] Generate class function to scope before generating blocks
