@@ -660,6 +660,11 @@ namespace snowball {
             switch (p_node->op_type)
             {
                 case OP_PLUS: {
+                    if ((TypeChecker::get_type_name(left_type) == NUMBER_TYPE->mangle()) &&
+                    (TypeChecker::get_type_name(right_type) == NUMBER_TYPE->mangle())) {
+                        return _builder.CreateAdd(left, right);
+                    }
+
                     CALL_OPERATOR("__sum")
                     break;
                 }
@@ -680,6 +685,11 @@ namespace snowball {
                 }
 
                 case OP_MINUS: {
+                    if ((TypeChecker::get_type_name(left_type) == NUMBER_TYPE->mangle()) &&
+                    (TypeChecker::get_type_name(right_type) == NUMBER_TYPE->mangle())) {
+                        return _builder.CreateSub(left, right);
+                    }
+
                     CALL_OPERATOR("__sub")
                     break;
                 }

@@ -16,8 +16,6 @@ extern "C" struct Number {
 
     static snowball_int_t __init(snowball_int_t num);
 
-    static snowball_int_t __sum(snowball_int_t self, snowball_int_t num);
-    static snowball_int_t __sub(snowball_int_t self, snowball_int_t num);
     static String* __str(snowball_int_t self);
 
     static Bool* __eqeq(snowball_int_t self, snowball_int_t comp);

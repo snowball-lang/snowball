@@ -21,14 +21,6 @@ snowball_int_t Number::__init(snowball_int_t num) {
     return num;
 }
 
-snowball_int_t Number::__sum(snowball_int_t self, snowball_int_t num) {
-    return self + num;
-}
-
-snowball_int_t Number::__sub(snowball_int_t self, snowball_int_t num) {
-    return self - num;
-}
-
 String* Number::__str(snowball_int_t self) {
     std::ostringstream s;
     s << (int)self;
@@ -104,30 +96,6 @@ void register_number(snowball::SNAPI* API) {
             },
             true,
             (void*)static_cast<Bool*(*)(snowball_int_t)>(Number::__not)
-        );
-
-        API->create_class_method(
-            cls,
-            "__sum",
-            class_type,
-            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
-                std::make_pair(snowball::NUMBER_TYPE, class_type),
-                std::make_pair(snowball::NUMBER_TYPE, class_type)
-            },
-            true,
-            (void*)static_cast<snowball_int_t(*)(snowball_int_t, snowball_int_t)>(Number::__sum)
-        );
-
-        API->create_class_method(
-            cls,
-            "__sub",
-            class_type,
-            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
-                std::make_pair(snowball::NUMBER_TYPE, class_type),
-                std::make_pair(snowball::NUMBER_TYPE, class_type)
-            },
-            true,
-            (void*)static_cast<snowball_int_t(*)(snowball_int_t, snowball_int_t)>(Number::__sub)
         );
 
         API->create_class_method(
