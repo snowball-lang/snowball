@@ -38,7 +38,8 @@ namespace snowball {
             void cleanup();
             void optimize();
 
-            void emit_object(std::string p_output);
+            int emit_binary(std::string p_output);
+            int emit_object(std::string p_output);
 
             int execute();
             void enable_tests() { _enabledTests = true; }

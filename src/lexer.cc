@@ -60,7 +60,7 @@ namespace snowball {
 		// does not detect the end of the source code.
 		// that is why we add a Token with _EOF type to
 		// the Token array (for later use in the parser)
-		if ((*tokens.end()).type != TokenType::_EOF) {
+		if (tokens.size() == 0 || ((*tokens.end()).type != TokenType::_EOF)) {
 
 			// add "false" as a param for "p_consume"
 			// so that the lexer does not "consume"

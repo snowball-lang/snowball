@@ -47,6 +47,14 @@ foreach(target ${LLVM_TARGETS_TO_BUILD})
   list(APPEND targets "LLVM${target}CodeGen")
 endforeach()
 
+execute_process(COMMAND gcc -dumpversion OUTPUT_VARIABLE _LIBC_VERSION)
+string(REGEX REPLACE "\n" "" _LIBC_VERSION "${_LIBC_VERSION}")
+
+add_compile_definitions(CC_PATH="/usr/bin/clang")
+add_compile_definitions(LD_PATH="/usr/bin/ld")
+add_compile_definitions(STATICLIB_DIR="/usr/lib/")
+
+add_compile_definitions(LIBC_VERSION="${_LIBC_VERSION}")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${LLVM_INCLUDE_DIRS}

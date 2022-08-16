@@ -28,6 +28,7 @@ int compile(std::string content, std::string filename, std::vector<std::string> 
     int result;
     bool test = std::find(arguments.begin(), arguments.end(), "-t") != arguments.end();
     bool compile = std::find(arguments.begin(), arguments.end(), "-c") != arguments.end();
+    bool object = std::find(arguments.begin(), arguments.end(), "-o") != arguments.end();
 
     Compiler* compiler = new Compiler(content, filename);
     try {
@@ -39,7 +40,9 @@ int compile(std::string content, std::string filename, std::vector<std::string> 
 
         compiler->compile(!test);
 
-        if (compile && !test) {
+        if (compile && !test && !object) {
+            compiler->emit_binary("out.o");
+        } else if (!compile && !test && object) {
             compiler->emit_object("out.o");
         } else {
             result = compiler->execute();
@@ -48,6 +51,7 @@ int compile(std::string content, std::string filename, std::vector<std::string> 
         error.print_error();
     }
 
+    // compiler->get_module()->print(llvm::outs(), nullptr);
     compiler->cleanup();
     return result;
 }

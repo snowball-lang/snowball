@@ -17,8 +17,8 @@
 
 #include "snowball/constants.h"
 
-Bool* Bool::__init(Number* value) {
-    return Bool::__init(value->__number != 0);
+Bool* Bool::__init(snowball_int_t value) {
+    return Bool::__init(value != 0);
 }
 
 Bool* Bool::__init(bool value) {
@@ -58,7 +58,7 @@ void register_bool(snowball::SNAPI* API) {
     }, [API](snowball::ScopeValue* cls) {
 
         llvm::Type* string_class = (*API->get_compiler()->get_enviroment()->get(snowball::STRING_TYPE->mangle(), nullptr)->llvm_struct)->getPointerTo();
-        llvm::Type* number_class = (*API->get_compiler()->get_enviroment()->get(snowball::NUMBER_TYPE->mangle(), nullptr)->llvm_struct)->getPointerTo();
+        llvm::Type* number_class = snowball::TypeChecker::type2llvm(API->get_compiler()->builder, *API->get_compiler()->get_enviroment()->get(snowball::NUMBER_TYPE->mangle(), nullptr)->llvm_struct);
 
         llvm::Type* class_type = (*cls->llvm_struct)->getPointerTo();
 
@@ -70,7 +70,7 @@ void register_bool(snowball::SNAPI* API) {
                 std::make_pair(snowball::NUMBER_TYPE, number_class)
             },
             true,
-            (void*)static_cast<Bool*(*)(Number*)>(Bool::__init)
+            (void*)static_cast<Bool*(*)(snowball_int_t)>(Bool::__init)
         );
 
         API->create_class_method(

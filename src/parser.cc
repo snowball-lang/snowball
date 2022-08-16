@@ -133,6 +133,13 @@ namespace snowball {
 			for (Node* node : _nodes) {
 				DEBUG_PARSER("[%i]: type %d", index, node->type)
 				index++;
+
+                if (node->type == Node::Ty::FUNCTION) {
+                    for (Node* expr : ((BlockNode*)((FunctionNode*)node)->body)->exprs) {
+                        DEBUG_PARSER("  - [%i]: type %d", index, expr->type)
+                        index++;
+                    }
+                }
 			}
 
 			PRINT_LINE(LINE_SEPARATOR)

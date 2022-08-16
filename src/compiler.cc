@@ -47,10 +47,12 @@
 #include "snowball/types/Bool.h"
 
 #include "snowball/llvm/gc.h"
+#include "snowball/ld_args.h"
 
 #include <regex>
 #include <string>
 #include <stdio.h>
+#include <unistd.h>
 
 #define SN_MODULE_NAME "llvm_snowball_compile_mod_"
 
@@ -198,8 +200,38 @@ namespace snowball {
         #undef SHOW_STATUS
     }
 
-    void Compiler::emit_object(std::string p_output) {
-        throw SNError(Error::TODO, "Object compilation is not yet ready!");
+    int Compiler::emit_binary(std::string p_output) {
+        // write to temporary object file
+        std::string objfile = Logger::format("%s.so", p_output.c_str());
+        DEBUG_CODEGEN("Emitting object file... (%s)", objfile);
+        int objstatus = emit_object(objfile);
+        if(objstatus != EXIT_SUCCESS) return objstatus;
+
+        // object file written, now invoke llc
+        // int ldstatus = execl(LD_PATH, "", NULL);
+        std::string ldcommand; std::string p_input = Logger::format("%s.so", p_output.c_str());
+        std::vector<std::string> ld_args = LD_ARGS();
+
+        for(int i = 0; i < LD_ARGC; i++) { ldcommand += ld_args[i]; ldcommand += " "; }
+        // for(int i = 0; i < linkedc; i++) ldcommand += string(linked[i]) + " ";
+
+        DEBUG_CODEGEN("Invoking linker (" LD_PATH " with stdlib at " STATICLIB_DIR ")");
+        DEBUG_CODEGEN(Logger::format("Linker command: %s", ldcommand.c_str()));
+
+        int ldstatus = system(ldcommand.c_str());
+        if(ldstatus)
+        {
+            remove(objfile.c_str());
+            throw SNError(IO_ERROR, Logger::format("Linking error. Linking with " LD_PATH " failed with code %d", ldstatus));
+        }
+
+        // clean up
+        DEBUG_CODEGEN("Cleaning up object file... (%s)", objfile.c_str());
+        remove(objfile.c_str());
+        return EXIT_SUCCESS;
+    }
+
+    int Compiler::emit_object(std::string p_output) {
 
         // TODO: https://stackoverflow.com/questions/11657529/how-to-generate-an-executable-from-an-llvmmodule
         std::error_code EC;
@@ -218,6 +250,8 @@ namespace snowball {
 
         pass.run(*_module);
         dest.flush();
+
+        return EXIT_SUCCESS;
     }
 
     int Compiler::execute() {
@@ -295,13 +329,6 @@ namespace snowball {
     }
 
     void Compiler::cleanup() {
-            #if _SNOWBALL_SYMTABLE_DEBUG
-            PRINT_LINE("Enviroment:")
-            PRINT_LINE(LINE_SEPARATOR)
-
-            _enviroment->debug();
-            PRINT_LINE(LINE_SEPARATOR)
-            #endif
         _module.reset();
     }
 

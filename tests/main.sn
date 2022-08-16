@@ -1,6 +1,5 @@
 // This should be ignored by the tester!
 
 fn main() -> Number {
-
-    return 0
+    return 2
 }

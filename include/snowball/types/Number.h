@@ -14,16 +14,17 @@
 extern "C" struct Number {
     snowball_int_t __number;
 
-    static Number* __init(snowball_int_t num);
-    static Number* __init(Number* num);
+    static snowball_int_t __init(snowball_int_t num);
 
-    static Number* __sum(Number* self, Number* num);
-    static String* __str(Number* self);
+    static snowball_int_t __sum(snowball_int_t self, snowball_int_t num);
+    static snowball_int_t __sub(snowball_int_t self, snowball_int_t num);
+    static String* __str(snowball_int_t self);
 
-    static Bool* __eqeq(Number* self, Number* comp);
-    static Bool* __bool(Number* self);
+    static Bool* __eqeq(snowball_int_t self, snowball_int_t comp);
+    static Bool* __lteq(snowball_int_t self, snowball_int_t num);
 
-    static Bool* __not(Number* self);
+    static Bool* __not(snowball_int_t self);
+    static Bool* __bool(snowball_int_t self);
 };
 
 void register_number(snowball::SNAPI* API);

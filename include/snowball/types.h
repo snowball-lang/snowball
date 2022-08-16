@@ -28,6 +28,7 @@ namespace snowball {
             static bool is_class(ScopeValue* p_value);
             static std::string to_mangle(Type* p_type);
             static std::string to_mangle(std::string p_name, std::vector<Type*> p_generics);
+            static llvm::Type* type2llvm(llvm::IRBuilder<> p_builder, llvm::Type* p_type);
 
             static std::string get_type_name(llvm::Type* p_ty);
 

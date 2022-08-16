@@ -17,39 +17,39 @@
 
 #include "snowball/constants.h"
 
-Number* Number::__init(snowball_int_t num) {
-    Number* instance;
-    instance = (Number*)(malloc(sizeof(Number)));
-    instance->__number = num;
-
-    return instance;
+snowball_int_t Number::__init(snowball_int_t num) {
+    return num;
 }
 
-Number* Number::__init(Number* num) {
-    return Number::__init(num->__number);
+snowball_int_t Number::__sum(snowball_int_t self, snowball_int_t num) {
+    return self + num;
 }
 
-Number* Number::__sum(Number* self, Number* num) {
-    return __init(self->__number + num->__number);
+snowball_int_t Number::__sub(snowball_int_t self, snowball_int_t num) {
+    return self - num;
 }
 
-String* Number::__str(Number* self) {
+String* Number::__str(snowball_int_t self) {
     std::ostringstream s;
-    s << (int)self->__number;
+    s << (int)self;
 
     return String::__init(s.str().c_str());
 }
 
-Bool* Number::__eqeq(Number* self, Number* comp) {
-    return Bool::__init(self->__number == comp->__number);
+Bool* Number::__eqeq(snowball_int_t self, snowball_int_t comp) {
+    return Bool::__init(self == comp);
 }
 
-Bool* Number::__bool(Number* self) {
+Bool* Number::__bool(snowball_int_t self) {
     return Bool::__init(self);
 }
 
-Bool* Number::__not(Number* self) {
-    return Bool::__init(!(self->__number != 0));
+Bool* Number::__not(snowball_int_t self) {
+    return Bool::__init(!(self != 0));
+}
+
+Bool* Number::__lteq(snowball_int_t self, snowball_int_t comp) {
+    return Bool::__init(self <= comp);
 }
 
 void register_number(snowball::SNAPI* API) {
@@ -63,7 +63,7 @@ void register_number(snowball::SNAPI* API) {
             ),
         },
     }, [API](snowball::ScopeValue* cls) {
-        llvm::Type* class_type = (*cls->llvm_struct)->getPointerTo();
+        llvm::Type* class_type = snowball::TypeChecker::type2llvm(API->get_compiler()->builder, (*cls->llvm_struct)->getPointerTo());
         llvm::Type* bool_class = (*API->get_compiler()->get_enviroment()->get(snowball::BOOL_TYPE->mangle(), nullptr)->llvm_struct)->getPointerTo();
         llvm::Type* string_class = (*API->get_compiler()->get_enviroment()->get(snowball::STRING_TYPE->mangle(), nullptr)->llvm_struct)->getPointerTo();
 
@@ -81,7 +81,7 @@ void register_number(snowball::SNAPI* API) {
                 )
             },
             true,
-            (void*)static_cast<Number*(*)(snowball_int_t)>(Number::__init)
+            (void*)static_cast<snowball_int_t(*)(snowball_int_t)>(Number::__init)
         );
 
         API->create_class_method( // new Number(2)
@@ -92,7 +92,7 @@ void register_number(snowball::SNAPI* API) {
                 std::make_pair(snowball::NUMBER_TYPE, class_type)
             },
             true,
-            (void*)static_cast<Number*(*)(Number*)>(Number::__init)
+            (void*)static_cast<snowball_int_t(*)(snowball_int_t)>(Number::__init)
         );
 
         API->create_class_method(
@@ -103,7 +103,7 @@ void register_number(snowball::SNAPI* API) {
                 std::make_pair(snowball::NUMBER_TYPE, class_type)
             },
             true,
-            (void*)static_cast<Bool*(*)(Number*)>(Number::__not)
+            (void*)static_cast<Bool*(*)(snowball_int_t)>(Number::__not)
         );
 
         API->create_class_method(
@@ -115,7 +115,19 @@ void register_number(snowball::SNAPI* API) {
                 std::make_pair(snowball::NUMBER_TYPE, class_type)
             },
             true,
-            (void*)static_cast<Number*(*)(Number*, Number*)>(Number::__sum)
+            (void*)static_cast<snowball_int_t(*)(snowball_int_t, snowball_int_t)>(Number::__sum)
+        );
+
+        API->create_class_method(
+            cls,
+            "__sub",
+            class_type,
+            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
+                std::make_pair(snowball::NUMBER_TYPE, class_type),
+                std::make_pair(snowball::NUMBER_TYPE, class_type)
+            },
+            true,
+            (void*)static_cast<snowball_int_t(*)(snowball_int_t, snowball_int_t)>(Number::__sub)
         );
 
         API->create_class_method(
@@ -126,7 +138,7 @@ void register_number(snowball::SNAPI* API) {
                 std::make_pair(snowball::NUMBER_TYPE, class_type)
             },
             true,
-            (void*)static_cast<String*(*)(Number*)>(Number::__str)
+            (void*)static_cast<String*(*)(snowball_int_t)>(Number::__str)
         );
 
         API->create_class_method(
@@ -137,7 +149,7 @@ void register_number(snowball::SNAPI* API) {
                 std::make_pair(snowball::NUMBER_TYPE, class_type)
             },
             true,
-            (void*)static_cast<Bool*(*)(Number*)>(Number::__bool)
+            (void*)static_cast<Bool*(*)(snowball_int_t)>(Number::__bool)
         );
 
         API->create_class_method(
@@ -149,7 +161,19 @@ void register_number(snowball::SNAPI* API) {
                 std::make_pair(snowball::NUMBER_TYPE, class_type)
             },
             true,
-            (void*)static_cast<Bool*(*)(Number*, Number*)>(Number::__eqeq)
+            (void*)static_cast<Bool*(*)(snowball_int_t, snowball_int_t)>(Number::__eqeq)
+        );
+
+        API->create_class_method(
+            cls,
+            "__lteq",
+            bool_class,
+            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
+                std::make_pair(snowball::NUMBER_TYPE, class_type),
+                std::make_pair(snowball::NUMBER_TYPE, class_type)
+            },
+            true,
+            (void*)static_cast<Bool*(*)(snowball_int_t, snowball_int_t)>(Number::__lteq)
         );
     });
 }

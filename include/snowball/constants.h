@@ -56,7 +56,7 @@ typedef int32_t                                 snowball_int_t;
     #define _SNOWBALL_LEXER_DEBUG             0
     #define _SNOWBALL_PARSER_DEBUG            0
     #define _SNOWBALL_CODEGEN_DEBUG           0 // todo
-    #define _SNOWBALL_BYTECODE_DEBUG          0
+    #define _SNOWBALL_BYTECODE_DEBUG          1
     #define _SNOWBALL_SYMTABLE_DEBUG          0
     #define _SNOWBALL_FREE_DEBUG              0 // todo
 
@@ -111,9 +111,23 @@ typedef int32_t                                 snowball_int_t;
     #define DEBUG_ALWAYS(...)
 #endif
 
+// LD
+#pragma region
+
+// path of c compiler used for linking
+#ifndef LD_PATH
+#error "LD_PATH must be defined! (e.g. \"/usr/bin/ld\")"
+#endif
+
+// ld args
+#include "ld_args.h"
+
+#pragma endregion
+
+
 // Optimizations
 #ifndef _SNOWBALL_CAN_OPTIMIZE
-#define _SNOWBALL_CAN_OPTIMIZE                  1
+#define _SNOWBALL_CAN_OPTIMIZE                  0
 #endif
 
 // Function names

@@ -82,9 +82,22 @@ namespace snowball {
     }
 
     std::string TypeChecker::get_type_name(llvm::Type* p_ty) {
+
+        if (p_ty->isIntegerTy()) {
+            return NUMBER_TYPE->mangle();
+        }
+
         return p_ty->isPointerTy() ?
             p_ty->getPointerElementType()->getStructName() :
             p_ty->getStructName();
+    }
+
+    llvm::Type* TypeChecker::type2llvm(llvm::IRBuilder<> p_builder, llvm::Type* p_type) {
+        if (p_type->isIntegerTy() || (get_type_name(p_type) == NUMBER_TYPE->mangle())) {
+            return get_llvm_type_from_sn_type(BuildinTypes::NUMBER, p_builder);
+        }
+
+        return p_type->getPointerTo();
     }
 
     bool TypeChecker::is_class(ScopeValue* p_value) { return p_value->type == ScopeType::CLASS; }

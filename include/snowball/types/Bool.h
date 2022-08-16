@@ -16,7 +16,7 @@ extern "C" struct Bool {
     bool __bool;
 
     static Bool* __init(bool value);
-    static Bool* __init(Number* value);
+    static Bool* __init(snowball_int_t value);
     static snowball_int_t __real_bool(Bool* self);
     static String* __str(Bool* self);
     static Bool* __not(Bool* self);

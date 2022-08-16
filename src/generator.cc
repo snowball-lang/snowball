@@ -38,7 +38,7 @@
 
 
 #define GET_BOOL_VALUE(ret, __v) \
-    std::string  __ty = __v->getType()->getPointerElementType()->getStructName().str(); \
+    std::string  __ty = TypeChecker::get_type_name(__v->getType()); \
     if (__ty != BOOL_TYPE->mangle()) { \
         llvm::Value* __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS(__ty.c_str(), "__bool", {TypeChecker::to_type(__ty).first}, true), p_node, Logger::format("%s.__bool(self)", __ty.c_str()))->llvm_function; \
         __v = _builder.CreateCall(__c, {__v}); \
@@ -49,33 +49,33 @@
 #define CALL_OPERATOR(method) \
     function = *_enviroment->get( \
     GET_FUNCTION_FROM_CLASS( \
-        left_type->getStructName().str().c_str(), \
+        TypeChecker::get_type_name(left_type).c_str(), \
         method, \
         { \
-            TypeChecker::to_type(left_type->getStructName().str()).first, \
-            TypeChecker::to_type(right_type->getStructName().str()).first \
+            TypeChecker::to_type(TypeChecker::get_type_name(left_type)).first, \
+            TypeChecker::to_type(TypeChecker::get_type_name(right_type)).first \
         }, \
         true \
     ), p_node, Logger::format( \
         "%s." method "(%s, %s)", \
-            left_type->getStructName().str().c_str(), \
-            left_type->getStructName().str().c_str(), \
-            right_type->getStructName().str().c_str() \
+            TypeChecker::get_type_name(left_type).c_str(), \
+            TypeChecker::get_type_name(left_type).c_str(), \
+            TypeChecker::get_type_name(right_type).c_str() \
         ) \
     )->llvm_function;
 
 #define CALL_UNARY_OPERATOR(method) \
     function = *_enviroment->get( \
     GET_FUNCTION_FROM_CLASS( \
-        left_type->getStructName().str().c_str(), \
+        TypeChecker::get_type_name(left_type).c_str(), \
         method, \
         { \
-            TypeChecker::to_type(left_type->getStructName().str()).first \
+            TypeChecker::to_type(TypeChecker::get_type_name(left_type)).first \
         }, \
         true \
     ), p_node, Logger::format( \
         "%s." method "(self)", \
-            left_type->getStructName().str().c_str() \
+            TypeChecker::get_type_name(left_type).c_str() \
         ) \
     )->llvm_function;
 
@@ -212,20 +212,25 @@ namespace snowball {
             generate(node);
         }
 
-        _builder.CreateBr(ContinueBB);
+        // if (IfBB->size() == 0 || !IfBB->back().isTerminator()) {
+            _builder.CreateBr(ContinueBB);
+        // }
+
         _enviroment->delete_scope();
 
         // Generate else statement (if it exist)
         if (ELSE_STMT_EXISTS()) {
             _builder.SetInsertPoint(ElseBB);
-
             _enviroment->create_scope("if$false");
 
             for (Node* node : p_node->else_stmt->exprs) {
                 generate(node);
             }
 
-            _builder.CreateBr(ContinueBB);
+            // if (ElseBB->size() == 0 || !ElseBB->back().isTerminator()) {
+                _builder.CreateBr(ContinueBB);
+            // }
+
             _enviroment->delete_scope();
         }
 
@@ -298,10 +303,10 @@ namespace snowball {
         int arg_index = 0;
         for (Node* arg : p_node->arguments) {
             llvm::Value* result = generate(arg);
-            arg_types.push_back(TypeChecker::to_type(result->getType()->getPointerElementType()->getStructName().str()).first);
+            arg_types.push_back(TypeChecker::to_type(TypeChecker::get_type_name(result->getType())).first);
 
             args.push_back(result);
-            method_name += result->getType()->getPointerElementType()->getStructName().str();
+            method_name += TypeChecker::get_type_name(result->getType());
 
             if ((p_node->arguments.size() > 1) && (arg_index < (p_node->arguments.size() - 1)))
                 method_name += ", ";
@@ -431,13 +436,13 @@ namespace snowball {
                 }
 
                 if (class_value->type == ScopeType::LLVM) {
-                    class_value = _enviroment->get((*class_value->llvm_value)->getType()->getPointerElementType()->getStructName().str(), p_node->base);
+                    class_value = _enviroment->get(TypeChecker::get_type_name((*class_value->llvm_value)->getType()), p_node->base);
                 }
             } else {
-                class_value = _enviroment->get(base_value->getType()->getPointerElementType()->getStructName().str(), p_node->base);
+                class_value = _enviroment->get(TypeChecker::get_type_name(base_value->getType()), p_node->base);
             }
 
-            base_struct = (*class_value->llvm_struct)->getStructName().str();
+            base_struct = TypeChecker::get_type_name(*class_value->llvm_struct);
             if (class_value->type == ScopeType::MODULE) {
                 p_node->is_static_call = true;
             } else {
@@ -455,22 +460,22 @@ namespace snowball {
             if (dynamic_cast<IdentifierNode*>(p_node->base) != nullptr) {
                 class_value = _enviroment->get((new Type(dynamic_cast<IdentifierNode*>(p_node->base)->name))->mangle(), p_node->base);
                 if (class_value->type == ScopeType::LLVM) {
-                    class_value = _enviroment->get((*class_value->llvm_value)->getType()->getPointerElementType()->getStructName().str(), p_node);
+                    class_value = _enviroment->get(TypeChecker::get_type_name((*class_value->llvm_value)->getType()), p_node);
                 }
             } else {
-                class_value = _enviroment->get(base_value->getType()->getPointerElementType()->getStructName().str(), p_node);
+                class_value = _enviroment->get(TypeChecker::get_type_name(base_value->getType()), p_node);
             }
 
-            base_struct = (*class_value->llvm_struct)->getStructName().str();
+            base_struct = TypeChecker::get_type_name(*class_value->llvm_struct);
         }
 
         int arg_index = 0;
         for (Node* arg : p_node->arguments) {
             llvm::Value* result = generate(arg);
-            arg_types.push_back(TypeChecker::to_type(result->getType()->getPointerElementType()->getStructName().str()).first);
+            arg_types.push_back(TypeChecker::to_type(TypeChecker::get_type_name(result->getType())).first);
 
             args.push_back(result);
-            method_name += result->getType()->getPointerElementType()->getStructName().str();
+            method_name += TypeChecker::get_type_name(result->getType());
 
             if ((p_node->arguments.size() > 1) && (arg_index < (p_node->arguments.size() - 1)))
                 method_name += ", ";
@@ -564,7 +569,7 @@ namespace snowball {
 
         std::string ret_type;
         if (TypeChecker::is_class(ret_value)) {
-            ret_type = (*ret_value->llvm_struct)->getStructName().str();
+            ret_type = TypeChecker::get_type_name(*ret_value->llvm_struct);
         } else if (ret_value->type == ScopeType::LLVM) {
             ret_type = TypeChecker::get_type_name((*ret_value->llvm_value)
                 ->getType());
@@ -577,7 +582,7 @@ namespace snowball {
                 TYPE_ERROR,
                 Logger::format(
                     "Mismatched types between '%s' and '%s'",
-                    value->getType()->getPointerElementType()->getStructName().str().c_str(),
+                    TypeChecker::get_type_name(value->getType()).c_str(),
                     ret_type.c_str()
                 )
             )
@@ -594,7 +599,7 @@ namespace snowball {
         } else if (_enviroment->item_exists(name)) {
             value = _enviroment->get(name, p_node);
         } else {
-            COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Identifier %s does not exist!"))
+            COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Identifier %s does not exist!", p_node->name.c_str()))
         }
 
         switch (value->type)
@@ -654,7 +659,6 @@ namespace snowball {
             llvm::Function* function;
             switch (p_node->op_type)
             {
-                case OP_POSITIVE:
                 case OP_PLUS: {
                     CALL_OPERATOR("__sum")
                     break;
@@ -667,6 +671,16 @@ namespace snowball {
 
                 case OP_EQEQ: {
                     CALL_OPERATOR("__eqeq")
+                    break;
+                }
+
+                case OP_LTEQ: {
+                    CALL_OPERATOR("__lteq")
+                    break;
+                }
+
+                case OP_MINUS: {
+                    CALL_OPERATOR("__sub")
                     break;
                 }
 
@@ -684,7 +698,6 @@ namespace snowball {
 
         // Skip if the function contains a template
         if (p_node->generics.size() > 0) {
-
 
             std::vector<Type*> args;
             for (ArgumentNode* argument : p_node->arguments) {
@@ -706,8 +719,8 @@ namespace snowball {
         ScopeValue* returnType = TypeChecker::get_type(_enviroment, p_node->return_type, p_node);
         auto retType = (
             p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->is_lop_level)
-            ? (*_enviroment->get(NUMBER_TYPE->mangle(), nullptr)->llvm_struct)->getPointerTo()
-            : (*returnType->llvm_struct)->getPointerTo();
+            ? get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder)
+            : TypeChecker::type2llvm(_builder, *returnType->llvm_struct);
 
 
         std::vector<Type*> arg_tnames;
@@ -722,7 +735,7 @@ namespace snowball {
 
             llvm::StructType* type = *value->llvm_struct;
 
-            arg_types.push_back(type->getPointerTo());
+            arg_types.push_back(TypeChecker::type2llvm(_builder, type));
             arg_tnames.push_back(TypeChecker::to_type(type->getName().str()).first);
         }
 
@@ -798,13 +811,11 @@ namespace snowball {
                 llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder.getInt32Ty(), size);
 
                 llvm::Value* alloca_value = _builder.CreateCall(get_alloca(_module, _builder), size_constant);
-                llvm::Value* cast = _builder.CreatePointerCast(alloca_value, ty->getPointerTo(), generic.first);
+                llvm::Value* cast = _builder.CreatePointerCast(alloca_value, TypeChecker::type2llvm(_builder, ty), generic.first);
 
                 std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(cast)));
 
                 SET_TO_SCOPE_OR_CLASS(generic.first, std::move(scope_value))
-
-
                 continue;
             }
 
@@ -819,7 +830,7 @@ namespace snowball {
             if (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->is_lop_level) {
                 llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
 
-                ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS(NUMBER_TYPE->mangle().c_str(), "__init", { new Type("&i") }, true), p_node);
+                ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS(NUMBER_TYPE->mangle().c_str(), "__init", { NUMBER_TYPE }, true), p_node);
                 llvm::Function* constructor = const_cast<llvm::Function*>(*scope_value->llvm_function);
 
                 llvm::Constant * num = llvm::ConstantInt::get(i64, 0);
@@ -871,7 +882,7 @@ namespace snowball {
             case TokenType::VALUE_NUMBER: {
                 llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
 
-                ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS(NUMBER_TYPE->mangle().c_str(), "__init", { new Type("&i") }, true), nullptr);
+                // ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS(NUMBER_TYPE->mangle().c_str(), "__init", { new Type("&i") }, true), nullptr);
                 uint64_t number_value;
 
                 if ((p_node->value.rfind("0x", 0) == 0) || (p_node->value.rfind("0X", 0) == 0)) {
@@ -882,10 +893,10 @@ namespace snowball {
                     number_value = std::stoul(p_node->value);
                 }
 
-                llvm::Function* constructor = const_cast<llvm::Function*>(*scope_value->llvm_function);
+                // llvm::Function* constructor = const_cast<llvm::Function*>(*scope_value->llvm_function);
 
                 llvm::Constant * num = llvm::ConstantInt::get(i64, (uint64_t)number_value);
-                return _builder.CreateCall(constructor, { num });
+                return num;
             }
 
             case TokenType::VALUE_STRING: {
