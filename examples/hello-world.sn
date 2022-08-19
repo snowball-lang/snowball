@@ -1,6 +1,6 @@
 
 import System
 
-fn main() -> Number {
+fn main() Number {
     System.print("hello, world")
 }

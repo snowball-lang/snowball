@@ -1,13 +1,13 @@
 import System
-fn test_no_args() -> Number {
+fn test_no_args() Number {
     return 6
 }
 
-fn test_args(string: String, string2: String) -> String {
+fn test_args(string: String, string2: String) String {
     return string + string2
 }
 
-fn test_generic<T>(a: T) -> T {
+fn test_generic<T>(a: T) T {
     return a
 }
 

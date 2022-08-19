@@ -1,5 +1,5 @@
 import System
-fn fib(n: Number) -> Number {
+fn fib(n: Number) Number {
     if n <= 1 {
         return n
     }
@@ -7,6 +7,6 @@ fn fib(n: Number) -> Number {
     return fib(n-1) + fib(n-2)
 }
 
-fn main() -> Number {
+fn main() Number {
     System.print(fib(47).__str())
 }

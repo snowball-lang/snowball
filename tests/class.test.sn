@@ -4,19 +4,19 @@ class TestCase {
 
     }
 
-    pub fn hello() -> Number {
+    pub fn hello() Number {
         return 2
     }
 
-    pub static fn static_fn() -> Number {
+    pub static fn static_fn() Number {
         return 3
     }
 
-    pub static fn hello() -> Number {
+    pub static fn hello() Number {
         return TestCase::static_fn()
     }
 
-    pub fn __bool() -> Bool {
+    pub fn __bool() Bool {
         return true
     }
 }

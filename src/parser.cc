@@ -435,9 +435,6 @@ namespace snowball {
         // TODO: if there is no arrow, return type is Void
         // TODO: if it is a constructor, return type is the parent Class
         if (!(_context.current_class != nullptr && func->name == "__init")) {
-            CONSUME("->", OP_MINUS, "Function return type")
-            CONSUME("->", OP_GT, "Function return type")
-
             ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "Identifier", "Function return type")
             return_type = _parse_type();
         } else {

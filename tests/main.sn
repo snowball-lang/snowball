@@ -1,7 +1,7 @@
 // This should be ignored by the tester!
 
 import System
-fn main() -> Number {
+fn main() Number {
     var a = 5
     System.println(a.__str())
     return 2 + a
