@@ -70,7 +70,7 @@ namespace snowball {
                 generics.push_back(type);
             }
 
-            ASSERT(p_type[index] == ']')
+            // ASSERT(p_type[index] == ']')
             index++;
         }
 

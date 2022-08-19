@@ -20,7 +20,7 @@ namespace snowball {
     void Logger::success(std::string message) { printf("%ssuccess%s: %s\n", BGRN, RESET, message.c_str()); }
 
     // status
-    void Logger::reset_status() { printf("\33[2K\r"); };
+    void Logger::reset_status() { printf("\33[2K\r");fflush(stdout); };
     void Logger::compiling(std::string message) {
         printf("\33[2K\r%s   compiling%s %s", BGRN, RESET, message.c_str());
         fflush(stdout);

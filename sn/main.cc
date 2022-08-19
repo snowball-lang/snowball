@@ -27,7 +27,7 @@ int compile(std::string content, std::string filename, std::vector<std::string> 
 
     int result;
     bool test = std::find(arguments.begin(), arguments.end(), "-t") != arguments.end();
-    bool compile = std::find(arguments.begin(), arguments.end(), "-c") != arguments.end();
+    bool JIT = std::find(arguments.begin(), arguments.end(), "-j") != arguments.end();
     bool object = std::find(arguments.begin(), arguments.end(), "-b") != arguments.end();
     auto output_param = std::find(arguments.begin(), arguments.end(), "-o");
     std::string output = _SNOWBALL_OUT_DEFAULT;
@@ -45,12 +45,12 @@ int compile(std::string content, std::string filename, std::vector<std::string> 
 
         compiler->compile(!test);
 
-        if (compile && !test && !object) {
-            compiler->emit_binary(output);
-        } else if (!compile && !test && object) {
+        if ((JIT || test) && !object) {
+            result = compiler->execute();
+        } else if (!JIT && !test && object) {
             compiler->emit_object(output);
         } else {
-            result = compiler->execute();
+            compiler->emit_binary(output);
         }
     } catch(const SNError& error) {
         error.print_error();

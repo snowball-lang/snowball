@@ -913,9 +913,7 @@ namespace snowball {
         {
             case TokenType::VALUE_NUMBER: {
                 llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
-
-                // ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS(NUMBER_TYPE->mangle().c_str(), "__init", { new Type("&i") }, true), nullptr);
-                uint64_t number_value;
+                snowball_int_t number_value;
 
                 if ((p_node->value.rfind("0x", 0) == 0) || (p_node->value.rfind("0X", 0) == 0)) {
                     number_value = std::stoul(p_node->value, nullptr, 16);
@@ -925,9 +923,7 @@ namespace snowball {
                     number_value = std::stoul(p_node->value);
                 }
 
-                // llvm::Function* constructor = const_cast<llvm::Function*>(*scope_value->llvm_function);
-
-                llvm::Constant * num = llvm::ConstantInt::get(i64, (uint64_t)number_value);
+                llvm::Constant * num = llvm::ConstantInt::get(i64, (snowball_int_t)number_value);
                 return num;
             }
 

@@ -228,7 +228,7 @@ namespace snowball {
             throw SNError(IO_ERROR, Logger::format("Linking error. Linking with " LD_PATH " failed with code %d", ldstatus));
         }
 
-        Logger::success(Logger::format("Snowball project file successfully compiled! 🥳\n output: %s", p_output.c_str()))
+        Logger::success(Logger::format("Snowball project file successfully compiled! 🥳\n %soutput%s: %s", BGRN, RESET, p_output.c_str()))
 
         // clean up
         DEBUG_CODEGEN("Cleaning up object file... (%s)", objfile.c_str());
