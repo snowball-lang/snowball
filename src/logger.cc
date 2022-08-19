@@ -20,8 +20,11 @@ namespace snowball {
     void Logger::success(std::string message) { printf("%ssuccess%s: %s\n", BGRN, RESET, message.c_str()); }
 
     // status
-    void Logger::reset_status() { printf("\33[2K\r\n"); };
-    void Logger::compiling(std::string message) { printf("\33[2K\r%s   compiling%s %s", BGRN, RESET, message.c_str()); };
+    void Logger::reset_status() { printf("\33[2K\r"); };
+    void Logger::compiling(std::string message) {
+        printf("\33[2K\r%s   compiling%s %s", BGRN, RESET, message.c_str());
+        fflush(stdout);
+    };
 
     std::string Logger::progress(float progress) {
         std::stringstream output;

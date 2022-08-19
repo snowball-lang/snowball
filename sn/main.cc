@@ -28,7 +28,12 @@ int compile(std::string content, std::string filename, std::vector<std::string> 
     int result;
     bool test = std::find(arguments.begin(), arguments.end(), "-t") != arguments.end();
     bool compile = std::find(arguments.begin(), arguments.end(), "-c") != arguments.end();
-    bool object = std::find(arguments.begin(), arguments.end(), "-o") != arguments.end();
+    bool object = std::find(arguments.begin(), arguments.end(), "-b") != arguments.end();
+    auto output_param = std::find(arguments.begin(), arguments.end(), "-o");
+    std::string output = _SNOWBALL_OUT_DEFAULT;
+    if (output_param != arguments.end()) {
+        output = *(++output_param);
+    }
 
     Compiler* compiler = new Compiler(content, filename);
     try {
@@ -41,9 +46,9 @@ int compile(std::string content, std::string filename, std::vector<std::string> 
         compiler->compile(!test);
 
         if (compile && !test && !object) {
-            compiler->emit_binary("out.o");
+            compiler->emit_binary(output);
         } else if (!compile && !test && object) {
-            compiler->emit_object("out.o");
+            compiler->emit_object(output);
         } else {
             result = compiler->execute();
         }
@@ -67,8 +72,11 @@ int main(int argc, char** argv) {
             continue;
         }
 
-        filename = (const char*)(argv[arg]);
-        break;
+        if (filename.empty()) {
+            filename = (const char*)(argv[arg]);
+        } else {
+            arguments.push_back((const char*)(argv[arg]));
+        }
     }
 
     if (!filename.empty()) {

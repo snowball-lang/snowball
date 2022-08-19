@@ -1,12 +1,12 @@
 
 test "Bool value contain 'true' from new instance" {
-    assert new Bool(1)
+    assert true
 }
 
 test "Bool value contain 'false' from new instance" {
-    assert !new Bool(0)
+    assert !false
 }
 
-test "check if true is the same as true" {
-    assert new Bool(1) == new Bool(1)
+test "check if true is the same as 1" {
+    assert true == 1
 }

@@ -1,8 +1,5 @@
 import System
 fn fib(n: Number) -> Number {
-    var a = n <= 1
-    //System.print(n.__str())
-    //System.print(a.__str())
     if n <= 1 {
         return n
     }
@@ -11,5 +8,5 @@ fn fib(n: Number) -> Number {
 }
 
 fn main() -> Number {
-    fib(47)
+    System.print(fib(47).__str())
 }

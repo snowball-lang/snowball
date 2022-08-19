@@ -13,7 +13,7 @@ file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
 file(GLOB_RECURSE PROJECT_MISC *.md *.txt)
 set (PROJECT_EXPORT_HPP include/${PROJECT_NAME}/export.hpp)
 set (GCC_COVERAGE_COMPILE_FLAGS "-Wl,-znodelete")
-set (GCC_COVERAGE_LINK_FLAGS "-Wl,-znodelete")
+set (GCC_COVERAGE_LINK_FLAGS "-rdynamic")
 set (PROJECT_FILES
   ${PROJECT_HEADERS}
   ${PROJECT_SOURCES}
@@ -21,6 +21,7 @@ set (PROJECT_FILES
   ${PROJECT_MISC}
   ${PROJECT_EXPORT_HPP}
   ${LLVM_INCLUDE_DIRS})
+
 
 # Map llvm components
 llvm_map_components_to_libnames(llvm_libs
@@ -52,7 +53,7 @@ string(REGEX REPLACE "\n" "" _LIBC_VERSION "${_LIBC_VERSION}")
 
 add_compile_definitions(CC_PATH="/usr/bin/clang")
 add_compile_definitions(LD_PATH="/usr/bin/ld")
-add_compile_definitions(STATICLIB_DIR="/usr/lib/")
+add_compile_definitions(STATICLIB_DIR="/usr/local/lib/")
 
 add_compile_definitions(LIBC_VERSION="${_LIBC_VERSION}")
 

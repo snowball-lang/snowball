@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# special thanks to drujensen. This code is from https://github.com/drujensen/fib
+
 
 class Language
   attr_accessor :ext, :name, :type, :compile_cmd, :run_cmd, :compile_time, :run_time
@@ -45,9 +47,8 @@ languages = []
 languages << Language.new("c", "C", :compiled, "gcc -O3 -o fib fib.c", "./fib")
 languages << Language.new("cpp", "C++", :compiled, "g++ -O3 -o fib fib.cpp", "./fib")
 languages << Language.new("snj", "snowball (JIT)", :interpreted, "", "../../Debug/snowballexe fib.sn")
+languages << Language.new("snc", "snowball (compiled)", :compiled, "../../Debug/snowballexe -c fib.sn -o fib", "./fib")
 
-languages << Language.new("go", "Go", :compiled, "go build fib.go", "./fib")
-languages << Language.new("lua", "Lua", :interpreted, "", "lua fib.lua")
 languages << Language.new("php", "Php", :interpreted, "", "php fib.php")
 
 languages << Language.new("py", "Python", :interpreted, "", "python fib.py")

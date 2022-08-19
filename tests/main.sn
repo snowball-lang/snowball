@@ -1,5 +1,6 @@
 // This should be ignored by the tester!
 
 fn main() -> Number {
+    var a = false.__str()
     return 2
 }

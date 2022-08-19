@@ -15,32 +15,32 @@
 
 #include "snowball/constants.h"
 
-String* String::__init(const char* __str) {
-    String* instance;
-    instance = (struct String*)(malloc(sizeof(String*) + (sizeof(__str) + 1)));
+extern "C" int __sn_string__eqeq(String* self, String* second) {
+    return strcmp(self->__buffer, second->__buffer) == 0;
+}
 
-    instance->__buffer = __str;
+extern "C" int __sn_string__bool(String* self) {
+    return self->__length != 0;
+}
+
+extern "C" String* __sn_string__init(char* __str) {
+    String* instance = (struct String*)(malloc(sizeof(String*) + (sizeof(__str) + 1)));
+
+    instance->__buffer = (char*)malloc(sizeof(__str) + 1);
+    strcpy(instance->__buffer, __str);
     instance->__length = strlen(__str);
 
     return instance;
 }
 
-String* String::__sum(String* self, String* sum) {
+extern "C" String* __sn_string__sum(String* self, String* sum) {
 
     char *result = (char*)malloc(self->__length + sum->__length + 1); // +1 for the null-terminator
     // in real code you would check for errors in malloc here
     strcpy(result, self->__buffer);
     strcat(result, sum->__buffer);
 
-    return __init(result);
-}
-
-Bool* String::__eqeq(String* self, String* second) {
-    return Bool::__init(strcmp(self->__buffer, second->__buffer) == 0);
-}
-
-Bool* String::__bool(String* self) {
-    return Bool::__init(self->__length != 0);
+    return __sn_string__init(result);
 }
 
 void register_string(snowball::SNAPI* API) {
@@ -61,7 +61,7 @@ void register_string(snowball::SNAPI* API) {
         }
     }, [API](snowball::ScopeValue* cls) {
         llvm::Type* class_type = (*cls->llvm_struct)->getPointerTo();
-        llvm::Type* bool_class = (*API->get_compiler()->get_enviroment()->get(snowball::BOOL_TYPE->mangle(), nullptr)->llvm_struct)->getPointerTo();
+        llvm::Type* bool_class = snowball::get_llvm_type_from_sn_type(snowball::BuildinTypes::BOOL, API->get_compiler()->builder);
 
         API->create_class_method(
             cls,
@@ -77,18 +77,7 @@ void register_string(snowball::SNAPI* API) {
                 )
             },
             true,
-            (void*)static_cast<String*(*)(const char*)>(String::__init)
-        );
-
-        API->create_class_method(
-            cls,
-            "__bool",
-            bool_class,
-            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
-                std::make_pair(snowball::STRING_TYPE, class_type)
-            },
-            true,
-            (void*)static_cast<Bool*(*)(String*)>(String::__bool)
+            "__sn_string__init"
         );
 
         API->create_class_method(
@@ -100,7 +89,7 @@ void register_string(snowball::SNAPI* API) {
                 std::make_pair(snowball::STRING_TYPE, class_type)
             },
             true,
-            (void*)static_cast<String*(*)(String*, String*)>(String::__sum)
+            "__sn_string__sum"
         );
 
         API->create_class_method(
@@ -112,7 +101,19 @@ void register_string(snowball::SNAPI* API) {
                 std::make_pair(snowball::STRING_TYPE, class_type)
             },
             true,
-            (void*)static_cast<Bool*(*)(String*, String*)>(String::__eqeq)
+            "__sn_string__eqeq"
+        );
+
+        API->create_class_method(
+            cls,
+            "__bool",
+            bool_class,
+            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
+                std::make_pair(snowball::STRING_TYPE, class_type),
+                std::make_pair(snowball::STRING_TYPE, class_type)
+            },
+            true,
+            "__sn_string__bool"
         );
     });
 }

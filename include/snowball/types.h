@@ -2,6 +2,7 @@
 #include <memory>
 #include <algorithm>
 
+#include "constants.h"
 #include <llvm/IR/IRBuilder.h>
 
 #ifndef __SNOWBALL_BUILDIN_TYPES_H_
@@ -18,6 +19,7 @@ namespace snowball {
     class Type;
 
     enum BuildinTypes {
+        BOOL,
         NUMBER,
         STRING,
     };
@@ -55,7 +57,7 @@ namespace snowball {
         }
 
         bool equals(Type* p_comp) {
-            bool gens_equal;
+            bool gens_equal = p_comp->generics.size() == 0;
 
             if (p_comp->generics.size() == generics.size()) {
                 for (int i = 0; i < generics.size(); i++) {

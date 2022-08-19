@@ -69,7 +69,7 @@ namespace snowball {
         return mod;
     }
 
-    void SNAPI::create_class_method(ScopeValue* p_class, std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<Type*, llvm::Type*>> p_args, bool p_is_public, void* p_pointer) {
+    void SNAPI::create_class_method(ScopeValue* p_class, std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<Type*, llvm::Type*>> p_args, bool p_is_public, std::string p_pointer) {
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
 
@@ -80,29 +80,22 @@ namespace snowball {
             arguments_types.push_back(pair.first);
         }
 
-        std::string name = mangle(
-            Logger::format(
-                "%s.%s",
-                (*p_class->llvm_struct)->getStructName().str().c_str(),
-                p_name.c_str()
-            ),
-            arguments_types,
-            p_is_public
-        );
-
         auto function_prototype = llvm::FunctionType::get(p_return_type, arguments, false);
         auto function =
             llvm::Function::Create(
                 function_prototype,
                 llvm::Function::ExternalLinkage,
-                name,
+                p_pointer,
                 _compiler->get_module()
             );
 
-        llvm::sys::DynamicLibrary::AddSymbol(name, p_pointer);
-
         std::shared_ptr<llvm::Function*> function_ptr = std::make_shared<llvm::Function*>(function);
-        p_class->scope_value->set(mangle(p_name, arguments_types, p_is_public), std::make_unique<ScopeValue*>(new ScopeValue(function_ptr)));
+        std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(function_ptr));
+
+        (*scope_value)->isPublic = p_is_public;
+        (*scope_value)->arguments = arguments_types;
+
+        p_class->scope_value->set(mangle(p_name, arguments_types, p_is_public), std::move(scope_value));
 
         llvm::verifyFunction(*function, &message_stream);
 

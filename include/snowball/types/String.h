@@ -11,14 +11,14 @@
 struct Bool;
 
 extern "C" struct String {
-    const char * __buffer;
+    char * __buffer;
     snowball_int_t __length;
-
-    static String* __init(const char* __str);
-    static String* __sum(String* self, String* sum);
-    static Bool* __bool(String* self);
-    static Bool* __eqeq(String* self, String* second);
 };
+
+extern "C" int __bool(String* self);
+extern "C" int __eqeq(String* self, String* second);
+extern "C" String* __sn_string__init(char* __str);
+extern "C" String* __sn_string__sum(String* self, String* sum);
 
 void register_string(snowball::SNAPI* API);
 

@@ -1,3 +1,4 @@
+#include <llvm-10/llvm/Support/CodeGen.h>
 #include <llvm-c-10/llvm-c/Target.h>
 #include <llvm/IR/Module.h>
 #include <llvm/ADT/SmallVector.h>
@@ -28,6 +29,7 @@
 #include "llvm/Support/TargetSelect.h"
 
 #include <llvm/ExecutionEngine/MCJIT.h>
+#include <llvm/ExecutionEngine/Orc/Legacy.h>
 #include <llvm/ExecutionEngine/JITSymbol.h>
 
 #include <llvm/ExecutionEngine/GenericValue.h>
@@ -108,6 +110,7 @@ namespace snowball {
 
         _module->setDataLayout(_target_machine->createDataLayout());
         _module->setTargetTriple(targetTriple);
+        _module->setSourceFileName(_source_info->get_path());
 
         _enviroment = new Enviroment(_source_info);
 
@@ -225,6 +228,8 @@ namespace snowball {
             throw SNError(IO_ERROR, Logger::format("Linking error. Linking with " LD_PATH " failed with code %d", ldstatus));
         }
 
+        Logger::success(Logger::format("Snowball project file successfully compiled! 🥳\n output: %s", p_output.c_str()))
+
         // clean up
         DEBUG_CODEGEN("Cleaning up object file... (%s)", objfile.c_str());
         remove(objfile.c_str());
@@ -297,38 +302,65 @@ namespace snowball {
 
             return test_success;
         } else {
-            llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(mangle(_SNOWBALL_FUNCTION_ENTRY, {}, false)));
+            llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(_SNOWBALL_FUNCTION_ENTRY));
             executionEngine->runFunction(main_fn, {});
             return 0; // TODO: return function result
         }
     }
 
     void Compiler::optimize() {
-        llvm::LoopAnalysisManager LAM;
-        llvm::FunctionAnalysisManager FAM;
-        llvm::CGSCCAnalysisManager CGAM;
-        llvm::ModuleAnalysisManager MAM;
+        #ifdef DEBUG
+        llvm::LoopAnalysisManager loop_analysis_manager(true);
+        llvm::FunctionAnalysisManager function_analysis_manager(true);
+        llvm::CGSCCAnalysisManager c_gscc_analysis_manager(true);
+        llvm::ModuleAnalysisManager module_analysis_manager(true);
+        #else
+        llvm::LoopAnalysisManager loop_analysis_manager(false);
+        llvm::FunctionAnalysisManager function_analysis_manager(false);
+        llvm::CGSCCAnalysisManager c_gscc_analysis_manager(false);
+        llvm::ModuleAnalysisManager module_analysis_manager(false);
+        #endif
 
         // Create the new pass manager builder.
         // Take a look at the PassBuilder constructor parameters for more
         // customization, e.g. specifying a TargetMachine or various debugging
         // options.
-        llvm::PassBuilder PB;
+        llvm::PassBuilder pass_builder;
 
         // Register all the basic analyses with the managers.
-        PB.registerModuleAnalyses(MAM);
-        PB.registerCGSCCAnalyses(CGAM);
-        PB.registerFunctionAnalyses(FAM);
-        PB.registerLoopAnalyses(LAM);
-        PB.crossRegisterProxies(LAM, FAM, CGAM, MAM);
+        pass_builder.registerModuleAnalyses(module_analysis_manager);
+        pass_builder.registerCGSCCAnalyses(c_gscc_analysis_manager);
+        pass_builder.registerFunctionAnalyses(function_analysis_manager);
+        pass_builder.registerLoopAnalyses(loop_analysis_manager);
 
-        // Create the pass manager.
-        // This one corresponds to a typical -O2 optimization pipeline.
-        llvm::ModulePassManager MPM = PB.buildPerModuleDefaultPipeline(llvm::PassBuilder::OptimizationLevel::O2);
-        MPM.run(*_module.get(), MAM);
+        // cross register them too?
+        pass_builder.crossRegisterProxies(loop_analysis_manager, function_analysis_manager,
+                                        c_gscc_analysis_manager, module_analysis_manager);
+
+        // todo: let user decide
+        // llvm::PassBuilder::OptimizationLevel level;
+        // switch(_opt_level)
+        // {
+        //     case OPTIMIZE_O0: level = llvm::PassBuilder::OptimizationLevel::O0; break;
+        //     case OPTIMIZE_O1: level = llvm::PassBuilder::OptimizationLevel::O1; break;
+        //     case OPTIMIZE_O2: level = llvm::PassBuilder::OptimizationLevel::O2; break;
+        //     case OPTIMIZE_O3: level = llvm::PassBuilder::OptimizationLevel::O3; break;
+        //     case OPTIMIZE_Os: level = llvm::PassBuilder::OptimizationLevel::Os; break;
+        //     case OPTIMIZE_Oz: level = llvm::PassBuilder::OptimizationLevel::Oz; break;
+        //     default: THROW_INTERNAL_ERROR("during code optimization");
+        // }
+        llvm::ModulePassManager MPM = pass_builder.buildPerModuleDefaultPipeline(llvm::PassBuilder::OptimizationLevel::O3);
+        MPM.run(*_module.get(), module_analysis_manager);
     }
 
     void Compiler::cleanup() {
+            #if _SNOWBALL_SYMTABLE_DEBUG
+            PRINT_LINE("Enviroment:")
+            PRINT_LINE(LINE_SEPARATOR)
+
+            _enviroment->debug();
+            PRINT_LINE(LINE_SEPARATOR)
+            #endif
         _module.reset();
     }
 

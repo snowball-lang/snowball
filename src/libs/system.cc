@@ -10,6 +10,14 @@
 #include <utility>
 #include <string>
 
+extern "C" void __sn_system_println(String* __msg) {
+    printf("%s\n", __msg->__buffer);
+}
+
+extern "C" void __sn_system_print(String* __msg) {
+    printf("%s\n", __msg->__buffer);
+}
+
 namespace snowball {
     ScopeValue* sn_system_export(SNAPI* API) {
         llvm::Type* string_class = (*API->get_compiler()->get_enviroment()->get(STRING_TYPE->mangle(), nullptr)->llvm_struct)->getPointerTo();
@@ -24,7 +32,7 @@ namespace snowball {
                     std::make_pair(STRING_TYPE, string_class)
                 },
                 true,
-                (void*)static_cast<void(*)(String*)>(System::print)
+                "__sn_system_print"
             );
 
             API->create_class_method(
@@ -35,7 +43,7 @@ namespace snowball {
                     std::make_pair(STRING_TYPE, string_class)
                 },
                 true,
-                (void*)static_cast<void(*)(String*)>(System::println)
+                "__sn_system_println"
             );
         });
     }

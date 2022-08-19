@@ -1,4 +1,4 @@
-
+import System
 fn test_no_args() -> Number {
     return 6
 }
@@ -21,5 +21,6 @@ test "call function with arguments" {
 
 test "call/create generic function" {
     assert test_generic<String>("hello") == "hello"
+    var a = test_generic<String>("hello") == "hellog"
     assert test_generic<Number>(5) == 5
 }

@@ -83,8 +83,16 @@ namespace snowball {
 
     std::string TypeChecker::get_type_name(llvm::Type* p_ty) {
 
-        if (p_ty->isIntegerTy()) {
-            return NUMBER_TYPE->mangle();
+        if (llvm::IntegerType *intType = llvm::dyn_cast<llvm::IntegerType>(p_ty)) {
+            unsigned int width = intType->getBitWidth();
+            switch (width)
+            {
+                case 1:
+                    return BOOL_TYPE->mangle();
+
+                default:
+                    return NUMBER_TYPE->mangle();
+            }
         }
 
         return p_ty->isPointerTy() ?
@@ -93,7 +101,10 @@ namespace snowball {
     }
 
     llvm::Type* TypeChecker::type2llvm(llvm::IRBuilder<> p_builder, llvm::Type* p_type) {
-        if (p_type->isIntegerTy() || (get_type_name(p_type) == NUMBER_TYPE->mangle())) {
+        // TODO: bool
+        if (get_type_name(p_type) == BOOL_TYPE->mangle()) {
+            return get_llvm_type_from_sn_type(BuildinTypes::BOOL, p_builder);
+        } else if (p_type->isIntegerTy() || (get_type_name(p_type) == NUMBER_TYPE->mangle())) {
             return get_llvm_type_from_sn_type(BuildinTypes::NUMBER, p_builder);
         }
 
@@ -186,6 +197,7 @@ namespace snowball {
                     RETURN_LLVM_TYPE_IF_SN_TYPE_IS(NUMBER, builder.getInt32Ty())
                 #endif
                 RETURN_LLVM_TYPE_IF_SN_TYPE_IS(STRING, builder.getInt8PtrTy())
+                RETURN_LLVM_TYPE_IF_SN_TYPE_IS(BOOL, builder.getInt1Ty())
             #undef RETURN_LLVM_TYPE_IF_SN_TYPE_IS
             default:
                 // TODO: throw error

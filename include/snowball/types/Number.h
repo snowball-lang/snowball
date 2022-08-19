@@ -11,19 +11,9 @@
 #ifndef SN_NUMBER_EXPORT_H
 #define SN_NUMBER_EXPORT_H
 
-extern "C" struct Number {
-    snowball_int_t __number;
-
-    static snowball_int_t __init(snowball_int_t num);
-
-    static String* __str(snowball_int_t self);
-
-    static Bool* __eqeq(snowball_int_t self, snowball_int_t comp);
-    static Bool* __lteq(snowball_int_t self, snowball_int_t num);
-
-    static Bool* __not(snowball_int_t self);
-    static Bool* __bool(snowball_int_t self);
-};
+extern "C" snowball_int_t __sn_number__init(snowball_int_t num);
+extern "C" String*        __sn_number__str (snowball_int_t num);
+extern "C" int            __sn_number__bool(snowball_int_t self);
 
 void register_number(snowball::SNAPI* API);
 

@@ -32,6 +32,13 @@
         _enviroment->current_scope()->set(_name, std::move(value)); \
     }
 
+#define SET_TO_GLOBAL_OR_CLASS(_name, value) \
+    if (_current_class != nullptr) { \
+        _enviroment->get(_current_class->name, nullptr)->scope_value->set(_name, std::move(value)); \
+    } else { \
+        _enviroment->global_scope()->set(_name, std::move(value)); \
+    }
+
 #define COMPILER_ERROR(error, message) \
     DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width); \
     throw CompilerError(Error::error, message, dbg_info);
@@ -43,8 +50,7 @@
         llvm::Value* __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS(__ty.c_str(), "__bool", {TypeChecker::to_type(__ty).first}, true), p_node, Logger::format("%s.__bool(self)", __ty.c_str()))->llvm_function; \
         __v = _builder.CreateCall(__c, {__v}); \
     } \
-    llvm::Value* __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS(BOOL_TYPE->mangle().c_str(), "__real_bool", {BOOL_TYPE}, false), p_node)->llvm_function; \
-    llvm::Value* ret = _builder.CreateCall(__c, {__v}); \
+    llvm::Value* ret = __v;
 
 #define CALL_OPERATOR(method) \
     function = *_enviroment->get( \
@@ -186,7 +192,7 @@ namespace snowball {
             condition,
             llvm::ConstantInt::get(
                 get_llvm_type_from_sn_type(
-                    BuildinTypes::NUMBER,
+                    BuildinTypes::BOOL,
                     _builder),
                 1
             )
@@ -212,9 +218,9 @@ namespace snowball {
             generate(node);
         }
 
-        // if (IfBB->size() == 0 || !IfBB->back().isTerminator()) {
+        if (IfBB->size() == 0 || !IfBB->back().isTerminator()) {
             _builder.CreateBr(ContinueBB);
-        // }
+        }
 
         _enviroment->delete_scope();
 
@@ -227,9 +233,9 @@ namespace snowball {
                 generate(node);
             }
 
-            // if (ElseBB->size() == 0 || !ElseBB->back().isTerminator()) {
+            if (ElseBB->size() == 0 || !ElseBB->back().isTerminator()) {
                 _builder.CreateBr(ContinueBB);
-            // }
+            }
 
             _enviroment->delete_scope();
         }
@@ -248,13 +254,13 @@ namespace snowball {
         std::string test_var_name = Logger::format("_SN__TestCaseN%i_Result", _testing_context->getTestLength());
         llvm::Value* current_test = *_enviroment->get(test_var_name, nullptr)->llvm_value;
 
-        _builder.CreateStore(assertion, current_test);
+        _builder.CreateStore(_builder.CreateIntCast(assertion, get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder), true), current_test);
 
         llvm::Value* cond = _builder.CreateICmpEQ(
-            convert_to_right_value(_builder, current_test),
+            assertion,
             llvm::ConstantInt::get(
                 get_llvm_type_from_sn_type(
-                    BuildinTypes::NUMBER,
+                    BuildinTypes::BOOL,
                     _builder),
                 1
             )
@@ -639,6 +645,11 @@ namespace snowball {
             switch (p_node->op_type)
             {
                 case OP_NOT: {
+                    if ((TypeChecker::get_type_name(left_type) == BOOL_TYPE->mangle()) ||
+                    (TypeChecker::get_type_name(left_type) == NUMBER_TYPE->mangle())) {
+                        return _builder.CreateNot(left);
+                    }
+
                     CALL_UNARY_OPERATOR("__not")
                     break;
                 }
@@ -675,11 +686,24 @@ namespace snowball {
                 }
 
                 case OP_EQEQ: {
+
+                    if (((TypeChecker::get_type_name(left_type) == NUMBER_TYPE->mangle()) &&
+                    (TypeChecker::get_type_name(right_type) == NUMBER_TYPE->mangle())) ||
+                    ((TypeChecker::get_type_name(left_type) == BOOL_TYPE->mangle()) &&
+                    (TypeChecker::get_type_name(right_type) == BOOL_TYPE->mangle()))) {
+                        return _builder.CreateICmpEQ(left, right);
+                    }
+
                     CALL_OPERATOR("__eqeq")
                     break;
                 }
 
                 case OP_LTEQ: {
+                    if ((TypeChecker::get_type_name(left_type) == NUMBER_TYPE->mangle()) &&
+                    (TypeChecker::get_type_name(right_type) == NUMBER_TYPE->mangle())) {
+                        return _builder.CreateICmpSLE(left, right);
+                    }
+
                     CALL_OPERATOR("__lteq")
                     break;
                 }
@@ -706,6 +730,8 @@ namespace snowball {
 
     llvm::Value* Generator::generate_function(FunctionNode* p_node) {
 
+        #define IS_ENTRY_POINT() (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->is_lop_level)
+
         // Skip if the function contains a template
         if (p_node->generics.size() > 0) {
 
@@ -727,11 +753,10 @@ namespace snowball {
         llvm::raw_string_ostream message_stream(llvm_error);
 
         ScopeValue* returnType = TypeChecker::get_type(_enviroment, p_node->return_type, p_node);
-        auto retType = (
-            p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->is_lop_level)
-            ? get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder)
-            : TypeChecker::type2llvm(_builder, *returnType->llvm_struct);
-
+        auto retType =
+            IS_ENTRY_POINT()
+                ? get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder)
+                : TypeChecker::type2llvm(_builder, *returnType->llvm_struct);
 
         std::vector<Type*> arg_tnames;
         std::vector<llvm::Type*> arg_types;
@@ -768,12 +793,12 @@ namespace snowball {
         llvm::Function *function = llvm::Function::Create(
             prototype,
             llvm::Function::ExternalLinkage,
-            fname,
+            IS_ENTRY_POINT() ? _SNOWBALL_FUNCTION_ENTRY : fname,
             _module);
 
         std::unique_ptr<ScopeValue*> func_scopev = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Function*>(function)));
         (*func_scopev)->isStaticFunction = p_node->is_static;
-        SET_TO_SCOPE_OR_CLASS(mangle(
+        SET_TO_GLOBAL_OR_CLASS(mangle(
                 p_node->name, arg_tnames, p_node->is_public), func_scopev);
 
         Scope* current_scope = _enviroment->create_scope(p_node->name);
@@ -839,12 +864,7 @@ namespace snowball {
         if (body->size() == 0 || !body->back().isTerminator()) {
             if (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->is_lop_level) {
                 llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
-
-                ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS(NUMBER_TYPE->mangle().c_str(), "__init", { NUMBER_TYPE }, true), p_node);
-                llvm::Function* constructor = const_cast<llvm::Function*>(*scope_value->llvm_function);
-
-                llvm::Constant * num = llvm::ConstantInt::get(i64, 0);
-                _builder.CreateRet(_builder.CreateCall(constructor, { num }));
+                _builder.CreateRet(llvm::ConstantInt::get(i64, 0));
             } else if (_current_class != nullptr && p_node->name == "__init") {
                 _builder.CreateRet(*current_scope->get("self", nullptr)->llvm_value);
             } /* TODO: check if function has type Void */ else {
@@ -860,6 +880,8 @@ namespace snowball {
         _enviroment->delete_scope();
 
         return function;
+
+        #undef IS_ENTRY_POINT
     }
 
     llvm::Value* Generator::generate_variable_decl(VarNode* p_node) {
@@ -879,7 +901,7 @@ namespace snowball {
             auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, p_node->name );
 
             std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(value)));
-            SET_TO_SCOPE_OR_CLASS(p_node->name, std::move(scope_value))
+            _enviroment->current_scope()->set(p_node->name, std::move(scope_value));
 
             return _builder.CreateStore (value, alloca, /*isVolatile=*/false);
         }
@@ -918,6 +940,11 @@ namespace snowball {
                 llvm::Constant* value = _builder.CreateGlobalStringPtr(str.c_str(), ".str");
                 llvm::Value* call = _builder.CreateCall(constructor, { value });
                 return _builder.CreatePointerCast(call, call->getType());
+            }
+
+            case TokenType::VALUE_BOOL: {
+                llvm::Type * i1 = get_llvm_type_from_sn_type(BuildinTypes::BOOL, _builder);
+                return llvm::ConstantInt::get(i1, p_node->value == "true");
             }
 
             default:

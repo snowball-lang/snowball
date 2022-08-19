@@ -2,7 +2,7 @@
 
 - [ ] constant
 - [ ] Add a Void type
-- [ ] Add a Any type
+- [ ] Add a preprocesor
 - [ ] global variables
 - [ ] test for all operators
 - [ ] default return type
@@ -22,6 +22,7 @@
 
 ### None important
 - [ ] Generate class function to scope before generating blocks
+- [ ] Add a Any type
 
 ### In Progress
 
