@@ -287,6 +287,7 @@ namespace snowball {
                 snowball_int_t (*function)() = reinterpret_cast<snowball_int_t (*)()>(executionEngine->getFunctionAddress(_testing_context->get_name(i+1)));
                 snowball_int_t result = function();
 
+                printf("n: %li\n", result);
                 if (!result) {
                     test_success = 0;
                     Logger::log(Logger::format("%sFAILED%s", BRED, RESET));

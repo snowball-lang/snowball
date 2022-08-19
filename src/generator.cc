@@ -256,11 +256,11 @@ namespace snowball {
 
         _builder.CreateStore(_builder.CreateIntCast(assertion, get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder), true), current_test);
 
-        llvm::Value* cond = _builder.CreateICmpEQ(
-            assertion,
+        llvm::Value* cond = _builder.CreateICmpNE(
+            convert_to_right_value(_builder, current_test),
             llvm::ConstantInt::get(
                 get_llvm_type_from_sn_type(
-                    BuildinTypes::BOOL,
+                    BuildinTypes::NUMBER,
                     _builder),
                 1
             )

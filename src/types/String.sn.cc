@@ -94,6 +94,17 @@ void register_string(snowball::SNAPI* API) {
 
         API->create_class_method(
             cls,
+            "__bool",
+            bool_class,
+            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
+                std::make_pair(snowball::STRING_TYPE, class_type),
+            },
+            true,
+            "__sn_string__bool"
+        );
+
+        API->create_class_method(
+            cls,
             "__eqeq",
             bool_class,
             std::vector<std::pair<snowball::Type*, llvm::Type*>> {
@@ -102,18 +113,6 @@ void register_string(snowball::SNAPI* API) {
             },
             true,
             "__sn_string__eqeq"
-        );
-
-        API->create_class_method(
-            cls,
-            "__bool",
-            bool_class,
-            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
-                std::make_pair(snowball::STRING_TYPE, class_type),
-                std::make_pair(snowball::STRING_TYPE, class_type)
-            },
-            true,
-            "__sn_string__bool"
         );
     });
 }

@@ -15,8 +15,8 @@ extern "C" struct String {
     snowball_int_t __length;
 };
 
-extern "C" int __bool(String* self);
-extern "C" int __eqeq(String* self, String* second);
+extern "C" int __sn_string__bool(String* self);
+extern "C" int __sn_string__eqeq(String* self, String* second);
 extern "C" String* __sn_string__init(char* __str);
 extern "C" String* __sn_string__sum(String* self, String* sum);
 

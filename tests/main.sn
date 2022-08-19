@@ -1,6 +1,8 @@
 // This should be ignored by the tester!
 
+import System
 fn main() -> Number {
-    var a = false.__str()
-    return 2
+    var a = 5
+    System.println(a.__str())
+    return 2 + a
 }
