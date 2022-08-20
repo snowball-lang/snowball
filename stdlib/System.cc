@@ -1,10 +1,9 @@
 
-#include "snowball/api.h"
-#include "snowball/types.h"
-#include "snowball/snowball.h"
-#include "snowball/constants.h"
-#include "snowball/libs/system.h"
-#include "snowball/types/String.h"
+#include "../include/snowball/api.h"
+#include "../include/snowball/types.h"
+#include "../include/snowball/snowball.h"
+#include "../include/snowball/constants.h"
+#include "../include/snowball/types/String.h"
 
 #include <vector>
 #include <utility>
@@ -19,7 +18,7 @@ extern "C" void __sn_system_print(String* __msg) {
 }
 
 namespace snowball {
-    ScopeValue* sn_system_export(SNAPI* API) {
+    extern "C" ScopeValue* sn_export(SNAPI* API) {
         llvm::Type* string_class = (*API->get_compiler()->get_enviroment()->get(STRING_TYPE->mangle(), nullptr)->llvm_struct)->getPointerTo();
 
         return API->create_module("System", {}, [&](ScopeValue* system_module) {

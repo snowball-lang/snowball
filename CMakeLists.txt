@@ -54,7 +54,7 @@ string(REGEX REPLACE "\n" "" _LIBC_VERSION "${_LIBC_VERSION}")
 
 add_compile_definitions(CC_PATH="/usr/bin/clang")
 add_compile_definitions(LD_PATH="/usr/bin/ld")
-add_compile_definitions(STATICLIB_DIR="/usr/local/lib/")
+add_compile_definitions(STATICLIB_DIR="/usr/lib/")
 
 add_compile_definitions(LIBC_VERSION="${_LIBC_VERSION}")
 
@@ -72,6 +72,20 @@ if(NOT BUILD_SHARED_LIBS)
   string               (TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
   set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS -D${PROJECT_NAME_UPPER}_STATIC)
 endif()
+
+##################################################    StdLib   ##################################################
+file(GLOB files "stdlib/*.cc")
+foreach(file ${files})
+  get_filename_component(lib_name ${file} NAME_WE )
+  add_library(${lib_name} SHARED ${file})
+  target_link_libraries(${lib_name} PUBLIC ${PROJECT_NAME})
+
+  install(TARGETS ${lib_name} EXPORT MyLibConfig
+    ARCHIVE  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/snowball-libs
+    LIBRARY  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/snowball-libs
+    RUNTIME  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/snowball-libs)
+endforeach()
+
 
 ##################################################    Postbuild   ##################################################
 include               (GenerateExportHeader)

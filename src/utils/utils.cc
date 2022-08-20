@@ -31,9 +31,11 @@ namespace snowball_utils {
         #endif
     }
 
+    #endif
+
     std::string get_lib_folder() {
-        fs::path exe_folder = get_exe_folder();
-        fs::path full_path = exe_folder / "libs";
+        fs::path exe_folder = STATICLIB_DIR;
+        fs::path full_path = exe_folder / _SNOWBALL_LIBRARY_DIR;
 
         bool filepathExists = fs::is_directory(full_path);
         if (!filepathExists) {
@@ -42,7 +44,6 @@ namespace snowball_utils {
 
         return full_path;
     }
-    #endif
 
     std::vector<std::string> split(std::string str, std::string token){
         std::vector<std::string>result;

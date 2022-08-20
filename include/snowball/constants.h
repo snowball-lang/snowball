@@ -123,7 +123,13 @@ typedef int32_t                                 snowball_int_t;
 // ld args
 #include "ld_args.h"
 
+#ifndef STATICLIB_DIR
+#error "STATICLIB_DIR path must be defined! (e.g. \"/usr/lib/\")"
+#endif
+
+#define _SNOWBALL_LIBRARY_DIR "snowball-libs"
 #pragma endregion
+
 
 
 // Optimizations
