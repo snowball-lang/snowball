@@ -350,7 +350,7 @@ namespace snowball {
         //     case OPTIMIZE_Oz: level = llvm::PassBuilder::OptimizationLevel::Oz; break;
         //     default: THROW_INTERNAL_ERROR("during code optimization");
         // }
-        llvm::ModulePassManager MPM = pass_builder.buildPerModuleDefaultPipeline(llvm::PassBuilder::OptimizationLevel::O3);
+        llvm::ModulePassManager MPM = pass_builder.buildPerModuleDefaultPipeline(llvm::PassBuilder::OptimizationLevel::Os);
         MPM.run(*_module.get(), module_analysis_manager);
     }
 

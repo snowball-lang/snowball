@@ -45,9 +45,9 @@ end
 languages = []
 
 languages << Language.new("c", "C", :compiled, "gcc -O3 -o fib fib.c", "./fib")
-languages << Language.new("cpp", "C++", :compiled, "g++ -O3 -o fib fib.cpp", "./fib")
-languages << Language.new("snj", "snowball (JIT)", :interpreted, "", "../../Debug/snowballexe fib.sn")
-languages << Language.new("snc", "snowball (compiled)", :compiled, "../../Debug/snowballexe -c fib.sn -o fib", "./fib")
+languages << Language.new("cpp", "C++", :compiled, "clang++ -O3 -o fib fib.cpp", "./fib")
+languages << Language.new("snj", "snowball (JIT)", :interpreted, "", "snowball -j fib.sn")
+languages << Language.new("snc", "snowball (compiled)", :compiled, "snowball -c fib.sn -o fib", "./fib")
 
 languages << Language.new("php", "Php", :interpreted, "", "php fib.php")
 
@@ -55,7 +55,7 @@ languages << Language.new("py", "Python", :interpreted, "", "python fib.py")
 languages << Language.new("py3", "Python3", :interpreted, "", "python3 fib.py")
 
 filter = ARGV[0] ? ARGV[0].split(",") : []
-count = ARGV[1] ? ARGV[1].to_i : 5
+count = ARGV[1] ? ARGV[1].to_i : 50
 list = languages
 
 unless (filter.empty? || filter[0] == "all")
@@ -67,14 +67,8 @@ end
 begin
   puts "-----------------"
   list.each do |lang|
-    if [:compiled, :vm, :mixed].include? lang.type
-      puts "Running #{lang.name} #{count} time(s)"
-      count.times do
-        print "."
-        lang.run
-      end
-    else
-      puts "Running #{lang.name} 1 time"
+    puts "Running #{lang.name} #{count} time(s)"
+    count.times do
       print "."
       lang.run
     end

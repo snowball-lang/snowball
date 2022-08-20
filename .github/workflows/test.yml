@@ -1,0 +1,26 @@
+on:
+  label:
+    types:
+      - created
+  push:
+    branches:
+      - main
+  pull_request:
+    # Sequence of patterns matched against refs/heads
+    branches:
+      - main
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build CMake config
+        run: |
+            cmake .
+      - name: Build/Install Snowball
+        run: |
+            sudo make install
+      - name: Runing unit tests
+        run: |
+            snowball -t tests/
+

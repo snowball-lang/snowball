@@ -43,6 +43,8 @@ llvm_map_components_to_libnames(llvm_libs
 add_library(snowball SHARED ${PROJECT_FILES})
 add_executable(snowballexe sn/main.cc)
 target_link_libraries(snowballexe PUBLIC snowball)
+set_target_properties(snowballexe PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+
 
 foreach(target ${LLVM_TARGETS_TO_BUILD})
   list(APPEND targets "LLVM${target}CodeGen")
