@@ -42,9 +42,8 @@ llvm_map_components_to_libnames(llvm_libs
 ##################################################    Targets     ##################################################
 add_library(snowball SHARED ${PROJECT_FILES})
 add_executable(snowballexe sn/main.cc)
-target_link_libraries(snowballexe PUBLIC snowball)
+target_link_libraries(snowballexe PUBLIC ${PROJECT_NAME})
 set_target_properties(snowballexe PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
-
 
 foreach(target ${LLVM_TARGETS_TO_BUILD})
   list(APPEND targets "LLVM${target}CodeGen")
@@ -88,8 +87,8 @@ install(TARGETS ${PROJECT_NAME} EXPORT MyLibConfig
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})
-  install(TARGETS snowballexe EXPORT MyLibConfig
-    ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS snowballexe EXPORT MyLibConfig
+  ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
