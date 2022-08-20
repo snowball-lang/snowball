@@ -14,6 +14,7 @@ jobs:
   run-tests:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Build CMake config
         run: |
             cmake .
