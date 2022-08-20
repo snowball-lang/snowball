@@ -218,7 +218,7 @@ namespace snowball {
             generate(node);
         }
 
-        if (IfBB->size() == 0 || !IfBB->back().isTerminator()) {
+        if ((IfBB->size() == 0 || !IfBB->back().isTerminator()) || _context.is_test) {
             _builder.CreateBr(ContinueBB);
         }
 
@@ -233,7 +233,7 @@ namespace snowball {
                 generate(node);
             }
 
-            if (ElseBB->size() == 0 || !ElseBB->back().isTerminator()) {
+            if ((ElseBB->size() == 0 || !ElseBB->back().isTerminator()) || _context.is_test) {
                 _builder.CreateBr(ContinueBB);
             }
 
@@ -251,12 +251,11 @@ namespace snowball {
         llvm::Value* inital_value = generate(p_node->expr);
         GET_BOOL_VALUE(assertion, inital_value)
 
-        std::string test_var_name = Logger::format("_SN__TestCaseN%i_Result", _testing_context->getTestLength());
-        llvm::Value* current_test = *_enviroment->get(test_var_name, nullptr)->llvm_value;
+        llvm::Value* current_test = *_enviroment->get("?test-result", nullptr)->llvm_value;
 
-        _builder.CreateStore(_builder.CreateIntCast(assertion, get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder), true), current_test);
+        _builder.CreateStore(_builder.CreateIntCast(assertion, get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder), false), current_test);
 
-        llvm::Value* cond = _builder.CreateICmpNE(
+        llvm::Value* cond = _builder.CreateICmpEQ(
             convert_to_right_value(_builder, current_test),
             llvm::ConstantInt::get(
                 get_llvm_type_from_sn_type(
@@ -267,8 +266,8 @@ namespace snowball {
         );
 
         llvm::Function *TheFunction = _builder.GetInsertBlock()->getParent();
-        llvm::BasicBlock* FailBB = llvm::BasicBlock::Create(_builder.getContext(), "", TheFunction);
-        llvm::BasicBlock* ContinueBB = llvm::BasicBlock::Create(_builder.getContext(), "", TheFunction);
+        llvm::BasicBlock* FailBB = llvm::BasicBlock::Create(_builder.getContext(), "assert_fail", TheFunction);
+        llvm::BasicBlock* ContinueBB = llvm::BasicBlock::Create(_builder.getContext(), "assert_continue", TheFunction);
 
         _builder.CreateCondBr(cond, ContinueBB, FailBB);
 
@@ -394,17 +393,18 @@ namespace snowball {
             Scope* current_scope = _enviroment->create_scope(test_name);
             llvm::Value* value = llvm::ConstantInt::get(_builder.getInt64Ty(), 3);
 
-            std::string test_var_name = Logger::format("_SN__TestCaseN%i_Result", _testing_context->getTestLength());
-            auto* llvm_alloca = _builder.CreateAlloca (value->getType(), nullptr, test_var_name );
+            auto* llvm_alloca = _builder.CreateAlloca (value->getType(), nullptr, "?test-result" );
 
             std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(llvm_alloca)));
-            current_scope->set(test_var_name, std::move(scope_value));
+            current_scope->set("?test-result", std::move(scope_value));
             _builder.CreateStore (value, llvm_alloca, /*isVolatile=*/false);
 
+            _context.is_test = true;
             for (Node* node : p_node->block->exprs) {
                 generate(node);
             }
 
+            _context.is_test = false;
             llvm::verifyFunction(*function, &message_stream);
             if (!llvm_error.empty())
                 throw SNError(Error::LLVM_INTERNAL, llvm_error);
@@ -671,6 +671,7 @@ namespace snowball {
             switch (p_node->op_type)
             {
                 case OP_PLUS: {
+                    // TODO: bool + bool
                     if ((TypeChecker::get_type_name(left_type) == NUMBER_TYPE->mangle()) &&
                     (TypeChecker::get_type_name(right_type) == NUMBER_TYPE->mangle())) {
                         return _builder.CreateAdd(left, right);
@@ -687,11 +688,18 @@ namespace snowball {
 
                 case OP_EQEQ: {
 
+                    // TODO: convert bool to number if it exists
                     if (((TypeChecker::get_type_name(left_type) == NUMBER_TYPE->mangle()) &&
                     (TypeChecker::get_type_name(right_type) == NUMBER_TYPE->mangle())) ||
                     ((TypeChecker::get_type_name(left_type) == BOOL_TYPE->mangle()) &&
-                    (TypeChecker::get_type_name(right_type) == BOOL_TYPE->mangle()))) {
+                    (TypeChecker::get_type_name(right_type) == BOOL_TYPE->mangle()))) { // number == number || bool == bool
                         return _builder.CreateICmpEQ(left, right);
+                    } else if ((TypeChecker::get_type_name(left_type) == BOOL_TYPE->mangle()) &&
+                    (TypeChecker::get_type_name(right_type) == NUMBER_TYPE->mangle())) { // bool == number
+                        return _builder.CreateICmpEQ(_builder.CreateIntCast(left, get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder), false), right);
+                    } else if ((TypeChecker::get_type_name(left_type) == NUMBER_TYPE->mangle()) &&
+                    (TypeChecker::get_type_name(right_type) == BOOL_TYPE->mangle())) { // number == bool
+                        return _builder.CreateICmpEQ(left, _builder.CreateIntCast(right, get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder), false));
                     }
 
                     CALL_OPERATOR("__eqeq")

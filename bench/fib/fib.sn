@@ -1,4 +1,5 @@
 import System
+
 fn fib(n: Number) Number {
     if n <= 1 {
         return n

@@ -51,12 +51,19 @@ namespace snowball {
             Parser* _parser;
             bool _tests_enabled;
             Generics* _generics;
+
             llvm::Module* _module;
             Enviroment* _enviroment;
             SourceInfo* _source_info;
+
             llvm::IRBuilder<> _builder;
             TestingContext* _testing_context;
             ClassNode* _current_class = nullptr;
+
+            // some context
+            struct {
+                bool is_test = false;
+            } _context;
 
             // methods
             llvm::Value* generate_new(NewNode* p_node);

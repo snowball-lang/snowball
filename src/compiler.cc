@@ -284,10 +284,10 @@ namespace snowball {
             for (int i = 0; i < _testing_context->getTestLength(); i++) {
                 Logger::rlog(Logger::format("        %s%s%s (%i)... ", BBLU, _testing_context->getTestAt(i).c_str(), RESET, i + 1));
 
-                snowball_int_t (*function)() = reinterpret_cast<snowball_int_t (*)()>(executionEngine->getFunctionAddress(_testing_context->get_name(i+1)));
-                snowball_int_t result = function();
+                llvm::Function *function = executionEngine->FindFunctionNamed(llvm::StringRef(_testing_context->get_name(i+1)));
 
-                printf("n: %li\n", result);
+                int result = executionEngine->runFunction(function, {}).IntVal.getZExtValue();
+
                 if (!result) {
                     test_success = 0;
                     Logger::log(Logger::format("%sFAILED%s", BRED, RESET));
@@ -305,7 +305,7 @@ namespace snowball {
         } else {
             llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(_SNOWBALL_FUNCTION_ENTRY));
             executionEngine->runFunction(main_fn, {});
-            return 0; // TODO: return function result
+            return executionEngine->runFunction(main_fn, {}).IntVal.getZExtValue(); // TODO: return function result
         }
     }
 
