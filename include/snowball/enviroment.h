@@ -8,7 +8,7 @@
 #ifndef __SNOWBALL_ENVIROMENT_H_
 #define __SNOWBALL_ENVIROMENT_H_
 
-#define SN_GLOBAL_SCOPE "__sn_global_scope"
+#define SN_GLOBAL_SCOPE "$sn_global_scope"
 
 namespace snowball {
 

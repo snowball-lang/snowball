@@ -3,6 +3,7 @@
 import System
 fn main() Number {
     var a = 5
-    System.println(a.__str())
+    System.println("HELLO")
+    System.println(System.input())
     return 2 + a
 }

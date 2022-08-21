@@ -55,7 +55,7 @@ languages << Language.new("py", "Python", :interpreted, "", "python fib.py")
 languages << Language.new("py3", "Python3", :interpreted, "", "python3 fib.py")
 
 filter = ARGV[0] ? ARGV[0].split(",") : []
-count = ARGV[1] ? ARGV[1].to_i : 50
+count = ARGV[1] ? ARGV[1].to_i : 10
 list = languages
 
 unless (filter.empty? || filter[0] == "all")

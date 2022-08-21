@@ -18,8 +18,8 @@
 
 #include "snowball/constants.h"
 
-extern "C" String* __sn_bool__str(int self) {
-    return __sn_string__init(self ? (char*)"true" : (char*)"false");
+extern "C" String* sn_Bool____str(int self) {
+    return sn_String____init(self ? (char*)"true" : (char*)"false");
 }
 
 void register_bool(snowball::SNAPI* API) {
@@ -36,9 +36,7 @@ void register_bool(snowball::SNAPI* API) {
             string_class,
             std::vector<std::pair<snowball::Type*, llvm::Type*>> {
                 std::make_pair(snowball::BOOL_TYPE, class_type)
-            },
-            true,
-            "__sn_bool__str"
+            }
         );
     });
 }

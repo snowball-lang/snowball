@@ -15,10 +15,10 @@ extern "C" struct String {
     snowball_int_t __length;
 };
 
-extern "C" int __sn_string__bool(String* self);
-extern "C" int __sn_string__eqeq(String* self, String* second);
-extern "C" String* __sn_string__init(char* __str);
-extern "C" String* __sn_string__sum(String* self, String* sum);
+extern "C" int sn_String____bool(String* self);
+extern "C" int sn_String____eqeq(String* self, String* second);
+extern "C" String* sn_String____init(char* __str);
+extern "C" String* sn_String____sum(String* self, String* sum);
 
 void register_string(snowball::SNAPI* API);
 

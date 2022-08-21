@@ -283,8 +283,7 @@ namespace snowball {
         if (snowball_utils::endsWith(p_node->path, ".so")) {
             // TODO
         } else if (is_snowball_lib(p_node->path)) {
-            sn_module_export_ty fn;
-            fn = get_sn_export_lib(p_node->path);
+            sn_module_export_ty fn = get_sn_export_lib(p_node->path);
             ScopeValue* mod = fn(_api);
 
             if (_enviroment->item_exists(p_node->path)) {

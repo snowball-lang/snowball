@@ -17,11 +17,11 @@
 
 #include "snowball/constants.h"
 
-extern "C" snowball_int_t __sn_number__init(snowball_int_t num) { return num; }
-extern "C" int __sn_number__bool(snowball_int_t self)           { return self == 1; }
+extern "C" snowball_int_t sn_Number____init(snowball_int_t num) { return num; }
+extern "C" int sn_Number____bool(snowball_int_t self)           { return self == 1; }
 
-extern "C" String* __sn_number__str (snowball_int_t self) {
-    return __sn_string__init(std::to_string(self).data());
+extern "C" String* sn_Number____str (snowball_int_t self) {
+    return sn_String____init(std::to_string(self).data());
 }
 
 void register_number(snowball::SNAPI* API) {
@@ -37,9 +37,7 @@ void register_number(snowball::SNAPI* API) {
             class_type,
             std::vector<std::pair<snowball::Type*, llvm::Type*>> {
                 std::make_pair(snowball::NUMBER_TYPE, class_type)
-            },
-            true,
-            "__sn_number__init"
+            }
         );
 
         API->create_class_method( // new Number(2)
@@ -48,9 +46,7 @@ void register_number(snowball::SNAPI* API) {
             bool_class,
             std::vector<std::pair<snowball::Type*, llvm::Type*>> {
                 std::make_pair(snowball::NUMBER_TYPE, class_type)
-            },
-            true,
-            "__sn_number__bool"
+            }
         );
 
         API->create_class_method(
@@ -59,9 +55,7 @@ void register_number(snowball::SNAPI* API) {
             string_class,
             std::vector<std::pair<snowball::Type*, llvm::Type*>> {
                 std::make_pair(snowball::NUMBER_TYPE, class_type)
-            },
-            true,
-            "__sn_number__str"
+            }
         );
     });
 }

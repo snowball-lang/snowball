@@ -15,15 +15,15 @@
 
 #include "snowball/constants.h"
 
-extern "C" int __sn_string__eqeq(String* self, String* second) {
+extern "C" int sn_String____eqeq(String* self, String* second) {
     return strcmp(self->__buffer, second->__buffer) == 0;
 }
 
-extern "C" int __sn_string__bool(String* self) {
+extern "C" int sn_String____bool(String* self) {
     return self->__length != 0;
 }
 
-extern "C" String* __sn_string__init(char* __str) {
+extern "C" String* sn_String____init(char* __str) {
     String* instance = (struct String*)(malloc(sizeof(String*) + (sizeof(__str) + 1)));
 
     instance->__buffer = (char*)malloc(sizeof(__str) + 1);
@@ -33,14 +33,14 @@ extern "C" String* __sn_string__init(char* __str) {
     return instance;
 }
 
-extern "C" String* __sn_string__sum(String* self, String* sum) {
+extern "C" String* sn_String____sum(String* self, String* sum) {
 
     char *result = (char*)malloc(self->__length + sum->__length + 1); // +1 for the null-terminator
     // in real code you would check for errors in malloc here
     strcpy(result, self->__buffer);
     strcat(result, sum->__buffer);
 
-    return __sn_string__init(result);
+    return sn_String____init(result);
 }
 
 void register_string(snowball::SNAPI* API) {
@@ -75,9 +75,7 @@ void register_string(snowball::SNAPI* API) {
                         API->get_compiler()->builder
                     )
                 )
-            },
-            true,
-            "__sn_string__init"
+            }
         );
 
         API->create_class_method(
@@ -87,9 +85,7 @@ void register_string(snowball::SNAPI* API) {
             std::vector<std::pair<snowball::Type*, llvm::Type*>> {
                 std::make_pair(snowball::STRING_TYPE, class_type),
                 std::make_pair(snowball::STRING_TYPE, class_type)
-            },
-            true,
-            "__sn_string__sum"
+            }
         );
 
         API->create_class_method(
@@ -98,9 +94,7 @@ void register_string(snowball::SNAPI* API) {
             bool_class,
             std::vector<std::pair<snowball::Type*, llvm::Type*>> {
                 std::make_pair(snowball::STRING_TYPE, class_type),
-            },
-            true,
-            "__sn_string__bool"
+            }
         );
 
         API->create_class_method(
@@ -110,9 +104,7 @@ void register_string(snowball::SNAPI* API) {
             std::vector<std::pair<snowball::Type*, llvm::Type*>> {
                 std::make_pair(snowball::STRING_TYPE, class_type),
                 std::make_pair(snowball::STRING_TYPE, class_type)
-            },
-            true,
-            "__sn_string__eqeq"
+            }
         );
     });
 }

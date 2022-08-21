@@ -304,7 +304,6 @@ namespace snowball {
             return test_success;
         } else {
             llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(_SNOWBALL_FUNCTION_ENTRY));
-            executionEngine->runFunction(main_fn, {});
             return executionEngine->runFunction(main_fn, {}).IntVal.getZExtValue(); // TODO: return function result
         }
     }

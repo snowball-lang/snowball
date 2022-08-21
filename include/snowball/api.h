@@ -22,7 +22,7 @@ namespace snowball {
             ScopeValue* create_class(std::string p_name, std::map<std::string, llvm::Type*> p_properties, std::function<void(ScopeValue*)> cb, bool is_module = false);
             ScopeValue* create_module(std::string p_name, std::map<std::string, llvm::Type*> p_properties, std::function<void(ScopeValue*)> cb);
             // ScopeValue* create_function(std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<std::string, llvm::Type*>> p_args = {}, bool is_public = false);
-            void create_class_method(ScopeValue* p_class, std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<Type*, llvm::Type*>> p_args, bool p_is_public, std::string p_pointer);
+            void create_class_method(ScopeValue* p_class, std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<Type*, llvm::Type*>> p_args);
             void add_to_enviroment(std::string p_name, std::unique_ptr<ScopeValue*> p_scope_value);
             Compiler* get_compiler() { return std::move(_compiler); }
 
