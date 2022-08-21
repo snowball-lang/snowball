@@ -47,7 +47,7 @@ languages = []
 languages << Language.new("c", "C", :compiled, "gcc -O3 -o fib fib.c", "./fib")
 languages << Language.new("cpp", "C++", :compiled, "clang++ -O3 -o fib fib.cpp", "./fib")
 languages << Language.new("snj", "snowball (JIT)", :interpreted, "", "snowball -j fib.sn")
-languages << Language.new("snc", "snowball (compiled)", :compiled, "snowball -c fib.sn -o fib", "./fib")
+languages << Language.new("snc", "snowball (compiled)", :compiled, "snowball fib.sn -o fib", "./fib")
 
 languages << Language.new("php", "Php", :interpreted, "", "php fib.php")
 
