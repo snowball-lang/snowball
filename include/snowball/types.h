@@ -29,6 +29,7 @@ namespace snowball {
 
             static bool is_class(ScopeValue* p_value);
             static std::string to_mangle(Type* p_type);
+            static bool is_number(llvm::Type* p_type);
             static std::string to_mangle(std::string p_name, std::vector<Type*> p_generics);
             static llvm::Type* type2llvm(llvm::IRBuilder<> p_builder, llvm::Type* p_type);
 
@@ -80,7 +81,10 @@ namespace snowball {
 
     inline Type* BOOL_TYPE = new Type("Bool");
     inline Type* STRING_TYPE = new Type("String");
-    inline Type* NUMBER_TYPE = new Type("Number");
+    inline Type* NUMBER_TYPE = new Type("Int");
+    inline Type* INT16_TYPE = new Type("i16");
+    inline Type* INT32_TYPE = new Type("i32");
+    inline Type* INT64_TYPE = new Type("i64");
 
     llvm::Type* get_llvm_type_from_sn_type(BuildinTypes type, llvm::IRBuilder<> builder);
     llvm::Value* get_alloca(llvm::Module* p_module, llvm::IRBuilder<> p_builder);

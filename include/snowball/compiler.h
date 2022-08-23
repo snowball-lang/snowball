@@ -51,6 +51,8 @@ namespace snowball {
 
             ~Compiler() {};
 
+            std::vector<std::string> linked_libraries;
+
             llvm::LLVMContext global_context;
             llvm::IRBuilder<> builder;
             SNAPI* API;

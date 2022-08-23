@@ -46,7 +46,9 @@
 
 #define GET_BOOL_VALUE(ret, __v) \
     std::string  __ty = TypeChecker::get_type_name(__v->getType()); \
-    if (__ty != BOOL_TYPE->mangle()) { \
+    if (TypeChecker::is_number(__v->getType())) { \
+        __v =  _builder.CreateICmpEQ(__v, llvm::ConstantInt::get(__v->getType(), 1)); \
+    } else if (__ty != BOOL_TYPE->mangle()) { \
         llvm::Value* __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS(__ty.c_str(), "__bool", {TypeChecker::to_type(__ty).first}, true), p_node, Logger::format("%s.__bool(self)", __ty.c_str()))->llvm_function; \
         __v = _builder.CreateCall(__c, {__v}); \
     } \
@@ -283,13 +285,14 @@ namespace snowball {
         if (snowball_utils::endsWith(p_node->path, ".so")) {
             // TODO
         } else if (is_snowball_lib(p_node->path)) {
-            sn_module_export_ty fn = get_sn_export_lib(p_node->path);
+            auto [fn, path] = get_sn_export_lib(p_node->path);
             ScopeValue* mod = fn(_api);
 
             if (_enviroment->item_exists(p_node->path)) {
                 COMPILER_ERROR(VARIABLE_ERROR, Logger::format("module '%s' is already defined", p_node->path.c_str()))
             }
 
+            _linked_libraries.push_back(path);
             _enviroment->current_scope()->set(mangle(p_node->path, {}, true, true), std::make_unique<ScopeValue*>(mod));
         } else {
             // TODO
@@ -644,8 +647,7 @@ namespace snowball {
             switch (p_node->op_type)
             {
                 case OP_NOT: {
-                    if ((TypeChecker::get_type_name(left_type) == BOOL_TYPE->mangle()) ||
-                    (TypeChecker::get_type_name(left_type) == NUMBER_TYPE->mangle())) {
+                    if ((TypeChecker::get_type_name(left_type) == BOOL_TYPE->mangle()) || TypeChecker::is_number(left_type)) {
                         return _builder.CreateNot(left);
                     }
 
@@ -663,6 +665,7 @@ namespace snowball {
         } else {
             llvm::Value* right = generate(p_node->right);
 
+            // get names with type checker
             llvm::Type* left_type = left->getType()->isPointerTy() ? left->getType()->getPointerElementType() : left->getType();
             llvm::Type* right_type = right->getType()->isPointerTy() ? right->getType()->getPointerElementType() : right->getType();
 
@@ -670,11 +673,13 @@ namespace snowball {
             switch (p_node->op_type)
             {
                 case OP_PLUS: {
-                    // TODO: bool + bool
-                    if ((TypeChecker::get_type_name(left_type) == NUMBER_TYPE->mangle()) &&
-                    (TypeChecker::get_type_name(right_type) == NUMBER_TYPE->mangle())) {
+                    bool types_equal = TypeChecker::get_type_name(left_type) == TypeChecker::get_type_name(right_type);
+
+                    if (types_equal && TypeChecker::is_number(left_type)) {
                         return _builder.CreateAdd(left, right);
                     }
+                    // TODO: bool + bool
+                    // TODO: create int cast if they dont match or throw an error
 
                     CALL_OPERATOR("__sum")
                     break;
@@ -686,19 +691,10 @@ namespace snowball {
                 }
 
                 case OP_EQEQ: {
+                    bool types_equal = TypeChecker::get_type_name(left_type) == TypeChecker::get_type_name(right_type);
 
-                    // TODO: convert bool to number if it exists
-                    if (((TypeChecker::get_type_name(left_type) == NUMBER_TYPE->mangle()) &&
-                    (TypeChecker::get_type_name(right_type) == NUMBER_TYPE->mangle())) ||
-                    ((TypeChecker::get_type_name(left_type) == BOOL_TYPE->mangle()) &&
-                    (TypeChecker::get_type_name(right_type) == BOOL_TYPE->mangle()))) { // number == number || bool == bool
+                    if (types_equal && TypeChecker::is_number(left_type)) {
                         return _builder.CreateICmpEQ(left, right);
-                    } else if ((TypeChecker::get_type_name(left_type) == BOOL_TYPE->mangle()) &&
-                    (TypeChecker::get_type_name(right_type) == NUMBER_TYPE->mangle())) { // bool == number
-                        return _builder.CreateICmpEQ(_builder.CreateIntCast(left, get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder), false), right);
-                    } else if ((TypeChecker::get_type_name(left_type) == NUMBER_TYPE->mangle()) &&
-                    (TypeChecker::get_type_name(right_type) == BOOL_TYPE->mangle())) { // number == bool
-                        return _builder.CreateICmpEQ(left, _builder.CreateIntCast(right, get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder), false));
                     }
 
                     CALL_OPERATOR("__eqeq")
@@ -706,8 +702,9 @@ namespace snowball {
                 }
 
                 case OP_LTEQ: {
-                    if ((TypeChecker::get_type_name(left_type) == NUMBER_TYPE->mangle()) &&
-                    (TypeChecker::get_type_name(right_type) == NUMBER_TYPE->mangle())) {
+                    bool types_equal = TypeChecker::get_type_name(left_type) == TypeChecker::get_type_name(right_type);
+
+                    if (types_equal && TypeChecker::is_number(left_type)) {
                         return _builder.CreateICmpSLE(left, right);
                     }
 
@@ -716,10 +713,12 @@ namespace snowball {
                 }
 
                 case OP_MINUS: {
-                    if ((TypeChecker::get_type_name(left_type) == NUMBER_TYPE->mangle()) &&
-                    (TypeChecker::get_type_name(right_type) == NUMBER_TYPE->mangle())) {
+                    bool types_equal = TypeChecker::get_type_name(left_type) == TypeChecker::get_type_name(right_type);
+
+                    if (types_equal && TypeChecker::is_number(left_type)) {
                         return _builder.CreateSub(left, right);
                     }
+
 
                     CALL_OPERATOR("__sub")
                     break;

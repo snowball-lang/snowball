@@ -22,6 +22,7 @@
 using namespace snowball;
 using namespace std::chrono;
 using namespace snowball_utils;
+namespace fs = std::filesystem;
 
 int compile(std::string content, std::string filename, std::vector<std::string> arguments) {
 
@@ -56,7 +57,7 @@ int compile(std::string content, std::string filename, std::vector<std::string> 
         error.print_error();
     }
 
-    // compiler->get_module()->print(llvm::outs(), nullptr);
+    compiler->get_module()->print(llvm::outs(), nullptr);
     compiler->cleanup();
     return result;
 }
@@ -92,11 +93,12 @@ int main(int argc, char** argv) {
 
             while ((entry = readdir(dp))) {
                 if (endsWith(entry->d_name, ".test.sn")) {
-                    std::ifstream file_content(filename + entry->d_name);
+                    std::string path = ((fs::path)filename) / entry->d_name;
+                    std::ifstream file_content(path);
                     std::string content( (std::istreambuf_iterator<char>(file_content) ),
                         (std::istreambuf_iterator<char>()    ) );
 
-                    int success = compile(content, filename + entry->d_name, arguments);
+                    int success = compile(content, path, arguments);
                     if (!success) {
                         amount_of_errors++;
                     }
@@ -143,7 +145,7 @@ int main(int argc, char** argv) {
             line_num += 1;
             lines += lines;
 
-            Compiler* compiler = new Compiler(Logger::format("pub fn %s() -> Number {\n    %s\n    return 0\n}", _SNOWBALL_FUNCTION_ENTRY, line.c_str()), "<stdin>");
+            Compiler* compiler = new Compiler(Logger::format("pub fn %s() -> Int {\n    %s\n    return 0\n}", _SNOWBALL_FUNCTION_ENTRY, line.c_str()), "<stdin>");
             try {
                 compiler->initialize();
 

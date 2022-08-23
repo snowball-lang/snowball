@@ -4,15 +4,15 @@ class TestCase {
 
     }
 
-    pub fn hello() Number {
+    pub fn hello() Int {
         return 2
     }
 
-    pub static fn static_fn() Number {
+    pub static fn static_fn() Int {
         return 3
     }
 
-    pub static fn hello() Number {
+    pub static fn hello() Int {
         return TestCase::static_fn()
     }
 
@@ -40,6 +40,6 @@ test "call static function from static method (with static overide)" {
 
 test "Class method call with generics" skip {
     var t = new TestCase()
-    assert t.tmp<Number>(3) == 3
+    assert t.tmp<Int>(3) == 3
     assert t.tmp<String>("3") == "3"
 }

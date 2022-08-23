@@ -29,7 +29,7 @@ extern "C" {
 #define _SNOWBALL_OUT_DEFAULT                   "out.o"
 
 #ifndef _SNOWBALL_ENABLE_INT64
-#define _SNOWBALL_ENABLE_INT64                  1           // if 1 enable snowball_int_t to be a 64bit int (instead of a 32bit int)
+#define _SNOWBALL_ENABLE_INT64                  0           // if 1 enable snowball_int_t to be a 64bit int (instead of a 32bit int)
 #endif
 
 #if _SNOWBALL_ENABLE_INT64
@@ -56,7 +56,7 @@ typedef int32_t                                 snowball_int_t;
 
     #define _SNOWBALL_LEXER_DEBUG             0
     #define _SNOWBALL_PARSER_DEBUG            0
-    #define _SNOWBALL_CODEGEN_DEBUG           0 // todo
+    #define _SNOWBALL_CODEGEN_DEBUG           0
     #define _SNOWBALL_BYTECODE_DEBUG          0
     #define _SNOWBALL_SYMTABLE_DEBUG          0
     #define _SNOWBALL_FREE_DEBUG              0 // todo

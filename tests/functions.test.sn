@@ -1,5 +1,5 @@
 import System
-fn test_no_args() Number {
+fn test_no_args() Int {
     return 6
 }
 
@@ -21,5 +21,5 @@ test "call function with arguments" {
 
 test "call/create generic function" {
     assert test_generic<String>("hello") == "hello"
-    assert test_generic<Number>(5) == 5
+    assert test_generic<Int>(5) == 5
 }

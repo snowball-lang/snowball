@@ -17,6 +17,7 @@
 #include <stdint.h>
 
 #include "snowball/constants.h"
+#include "snowball/utils/api.h"
 
 extern "C" String* sn_Bool____str(int self) {
     return sn_String____init(self ? (char*)"true" : (char*)"false");
@@ -24,19 +25,11 @@ extern "C" String* sn_Bool____str(int self) {
 
 void register_bool(snowball::SNAPI* API) {
 
-    API->create_class("Bool", std::map<std::string, llvm::Type*> {}, [API](snowball::ScopeValue* cls) {
+    API->create_class("Bool", std::map<std::string, llvm::Type*> {}, [API](snowball::ScopeValue* CLASS) {
 
         llvm::Type* string_class = (*API->get_compiler()->get_enviroment()->get(snowball::STRING_TYPE->mangle(), nullptr)->llvm_struct)->getPointerTo();
-        llvm::Type* number_class = snowball::get_llvm_type_from_sn_type(snowball::BuildinTypes::NUMBER, API->get_compiler()->builder);
         llvm::Type* class_type = snowball::get_llvm_type_from_sn_type(snowball::BuildinTypes::BOOL, API->get_compiler()->builder);
 
-        API->create_class_method(
-            cls,
-            "__str",
-            string_class,
-            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
-                std::make_pair(snowball::BOOL_TYPE, class_type)
-            }
-        );
+        METHOD("__str", string_class, { METHOD_ARGUMENT(snowball::BOOL_TYPE, class_type) })
     });
 }

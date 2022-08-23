@@ -36,10 +36,10 @@ import System
 
 class Vector {
 
-    priv Number x;
-    priv Number y;
+    priv Int x;
+    priv Int y;
 
-    pub fn __init(self, x: Number, y: Number) {
+    pub fn __init(self, x: Int, y: Int) {
         self.x, self.y = x, y;        
     }
     
@@ -53,7 +53,7 @@ class Vector {
     }
 }
 
-fn main(args: Array<String>) -> Number {
+fn main(args: Array<String>) -> Int {
     let vec1 = new Vector(1,2)
     let vec2 = new Vector(10,22)
     

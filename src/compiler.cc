@@ -44,7 +44,7 @@
 #include "snowball/utils/utils.h"
 #include "snowball/utils/mangle.h"
 
-#include "snowball/types/Number.h"
+#include "snowball/types/Int.h"
 #include "snowball/types/String.h"
 #include "snowball/types/Bool.h"
 
@@ -154,6 +154,7 @@ namespace snowball {
                     _source_info,
                     std::move(builder),
                     _module.get(),
+                    this->linked_libraries,
                     _testing_context,
                     generics_api,
                     _enabledTests
@@ -206,7 +207,7 @@ namespace snowball {
     int Compiler::emit_binary(std::string p_output) {
         // write to temporary object file
         std::string objfile = Logger::format("%s.so", p_output.c_str());
-        DEBUG_CODEGEN("Emitting object file... (%s)", objfile);
+        DEBUG_CODEGEN("Emitting object file... (%s)", objfile.c_str());
         int objstatus = emit_object(objfile);
         if(objstatus != EXIT_SUCCESS) return objstatus;
 
@@ -216,10 +217,17 @@ namespace snowball {
         std::vector<std::string> ld_args = LD_ARGS();
 
         for(int i = 0; i < LD_ARGC; i++) { ldcommand += ld_args[i]; ldcommand += " "; }
-        // for(int i = 0; i < linkedc; i++) ldcommand += string(linked[i]) + " ";
+        for(int i = 0; i < linked_libraries.size(); i++) {
+            ldcommand += "-l:" + linked_libraries[i] + " ";
+            DEBUG_CODEGEN("Linking library: %s", linked_libraries[i].c_str());
+        }
+
+        #if _SNOWBALL_CODEGEN_DEBUG
+        ldcommand += "--verbose";
+        #endif
 
         DEBUG_CODEGEN("Invoking linker (" LD_PATH " with stdlib at " STATICLIB_DIR ")");
-        DEBUG_CODEGEN(Logger::format("Linker command: %s", ldcommand.c_str()));
+        DEBUG_CODEGEN("Linker command: %s", ldcommand.c_str());
 
         int ldstatus = system(ldcommand.c_str());
         if(ldstatus)
@@ -228,7 +236,7 @@ namespace snowball {
             throw SNError(IO_ERROR, Logger::format("Linking error. Linking with " LD_PATH " failed with code %d", ldstatus));
         }
 
-        Logger::success(Logger::format("Snowball project file successfully compiled! 🥳\n %soutput%s: %s", BGRN, RESET, p_output.c_str()))
+        Logger::success(Logger::format("Snowball project file successfully compiled! 🥳\n %soutput%s: %s", BGRN, RESET, p_output.c_str()));
 
         // clean up
         DEBUG_CODEGEN("Cleaning up object file... (%s)", objfile.c_str());

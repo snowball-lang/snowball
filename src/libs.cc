@@ -13,7 +13,7 @@ namespace snowball {
         return ((name == "System") || (name == "Math") || (name == "Os") || (name == "Path"));
     }
 
-    sn_module_export_ty get_sn_export_lib(std::string name) {
+    std::pair<sn_module_export_ty, std::string> get_sn_export_lib(std::string name) {
         fs::path path = snowball_utils::get_lib_folder();
         std::string full_path = path / Logger::format("lib%s.so", name.c_str());
 
@@ -30,6 +30,6 @@ namespace snowball {
         llvm::sys::DynamicLibrary::LoadLibraryPermanently(full_path.c_str());
         // dlclose(lib);
 
-        return export_function;
+        return {export_function, full_path};
     }
 }

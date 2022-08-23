@@ -63,7 +63,7 @@
         - [ ] __str
         - [ ] __repr
         - [ ] __eqeq
-- [ ] Number class
+- [ ] Int class
 - [ ] String class
 
 ### Done ✓

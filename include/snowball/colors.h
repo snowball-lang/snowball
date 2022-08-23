@@ -1,6 +1,6 @@
 
 #ifndef __SNOWBALL_COLORS_H_
-#define  __SNOWBALL_COLORS_H_
+#define __SNOWBALL_COLORS_H_
 
 namespace snowball {
 

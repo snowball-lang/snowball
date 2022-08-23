@@ -81,6 +81,15 @@ namespace snowball {
         return p_enviroment->get(to_mangle(p_type), p_node);
     }
 
+    bool TypeChecker::is_number(llvm::Type* p_type) {
+        if (llvm::IntegerType *intType = llvm::dyn_cast<llvm::IntegerType>(p_type)) {
+            return (intType->getBitWidth() != 1);
+        }
+
+        // Int is supposed to represent as i32
+        return get_type_name(p_type) == INT32_TYPE->mangle();
+    }
+
     std::string TypeChecker::get_type_name(llvm::Type* p_ty) {
 
         if (llvm::IntegerType *intType = llvm::dyn_cast<llvm::IntegerType>(p_ty)) {
@@ -90,9 +99,18 @@ namespace snowball {
                 case 1:
                     return BOOL_TYPE->mangle();
 
+                case 16:
+                    return INT16_TYPE->mangle();
+
+                case 64:
+                    return INT64_TYPE->mangle();
+
+                case 32:
                 default:
-                    return NUMBER_TYPE->mangle();
+                    return INT32_TYPE->mangle();
             }
+        } else if (p_ty->getStructName() == NUMBER_TYPE->mangle()) {
+            return INT32_TYPE->mangle();
         }
 
         return p_ty->isPointerTy() ?
@@ -104,8 +122,10 @@ namespace snowball {
         // TODO: bool
         if (get_type_name(p_type) == BOOL_TYPE->mangle()) {
             return get_llvm_type_from_sn_type(BuildinTypes::BOOL, p_builder);
-        } else if (p_type->isIntegerTy() || (get_type_name(p_type) == NUMBER_TYPE->mangle())) {
+        } else if (get_type_name(p_type) == INT32_TYPE->mangle()) {
             return get_llvm_type_from_sn_type(BuildinTypes::NUMBER, p_builder);
+        } else if (is_number(p_type)) {
+            return p_type;
         }
 
         return p_type->getPointerTo();

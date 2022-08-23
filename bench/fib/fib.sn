@@ -1,6 +1,6 @@
 import System
 
-fn fib(n: Number) Number {
+fn fib(n: Int) Int {
     if n <= 1 {
         return n
     }
@@ -8,6 +8,6 @@ fn fib(n: Number) Number {
     return fib(n-1) + fib(n-2)
 }
 
-fn main() Number {
+fn main() Int {
     System.print(fib(47).__str())
 }

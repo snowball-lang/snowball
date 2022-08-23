@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "snowball/constants.h"
+#include "snowball/utils/api.h"
 
 extern "C" int sn_String____eqeq(String* self, String* second) {
     return strcmp(self->__buffer, second->__buffer) == 0;
@@ -59,52 +60,26 @@ void register_string(snowball::SNAPI* API) {
                 API->get_compiler()->builder
             ),
         }
-    }, [API](snowball::ScopeValue* cls) {
-        llvm::Type* class_type = (*cls->llvm_struct)->getPointerTo();
+    }, [API](snowball::ScopeValue* CLASS) {
+        llvm::Type* class_type = (*CLASS->llvm_struct)->getPointerTo();
         llvm::Type* bool_class = snowball::get_llvm_type_from_sn_type(snowball::BuildinTypes::BOOL, API->get_compiler()->builder);
 
-        API->create_class_method(
-            cls,
-            "__init",
-            class_type,
-            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
-                std::make_pair(
-                    new snowball::Type("&s"),
-                    snowball::get_llvm_type_from_sn_type(
-                        snowball::BuildinTypes::STRING,
-                        API->get_compiler()->builder
-                    )
-                )
-            }
-        );
+        METHOD("__bool", bool_class, { METHOD_ARGUMENT(snowball::STRING_TYPE, class_type) })
+        METHOD("__sum",  class_type, {
+            METHOD_ARGUMENT(snowball::STRING_TYPE, class_type),
+            METHOD_ARGUMENT(snowball::STRING_TYPE, class_type)
+        })
 
-        API->create_class_method(
-            cls,
-            "__sum",
-            class_type,
-            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
-                std::make_pair(snowball::STRING_TYPE, class_type),
-                std::make_pair(snowball::STRING_TYPE, class_type)
-            }
-        );
+        METHOD("__eqeq",  class_type, {
+            METHOD_ARGUMENT(snowball::STRING_TYPE, class_type),
+            METHOD_ARGUMENT(snowball::STRING_TYPE, class_type)
+        })
 
-        API->create_class_method(
-            cls,
-            "__bool",
-            bool_class,
-            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
-                std::make_pair(snowball::STRING_TYPE, class_type),
-            }
-        );
-
-        API->create_class_method(
-            cls,
-            "__eqeq",
-            bool_class,
-            std::vector<std::pair<snowball::Type*, llvm::Type*>> {
-                std::make_pair(snowball::STRING_TYPE, class_type),
-                std::make_pair(snowball::STRING_TYPE, class_type)
-            }
-        );
+        METHOD("__init", class_type,   {
+            METHOD_ARGUMENT(new snowball::Type("&s"), snowball::get_llvm_type_from_sn_type(
+                snowball::BuildinTypes::STRING,
+                API->get_compiler()->builder
+            ))
+        })
     });
 }

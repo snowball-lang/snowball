@@ -26,7 +26,7 @@
 #include "utils/mangle.h"
 
 // Types
-#include "types/Number.h"
+#include "types/Int.h"
 #include "types/String.h"
 #include "types/Bool.h"
 
