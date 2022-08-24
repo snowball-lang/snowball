@@ -3,6 +3,7 @@
 extern fn printf(String, ...) Void;
 
 // === Exports
+// TODO: convert to generic
 pub fn println(__message: String) Void {
-    printf("%s\n", __message);
+    printf("%s\n", __message)
 }

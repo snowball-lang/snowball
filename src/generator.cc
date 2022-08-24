@@ -791,7 +791,7 @@ namespace snowball {
             arg_tnames.insert(arg_tnames.begin(), TypeChecker::to_type(_current_class->name).first);
         }
 
-        std::string fname = mangle(
+        std::string fname = p_node->is_extern ? p_node->name : mangle(
                 _current_class == nullptr ? p_node->name : Logger::format(
                     "%s.%s", _current_class->name.c_str(),
                     p_node->name.c_str()
@@ -832,51 +832,55 @@ namespace snowball {
             parameter_index++;
         }
 
-        llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder.getContext(), "body", function);
-        _builder.SetInsertPoint(body);
+        // BODY GENERATION
 
-        if (_current_class != nullptr && p_node->name == "__init" && !p_node->is_static) {
-            generate_contructor_meta();
-        }
+        if (!p_node->is_foward) {
+            llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder.getContext(), "body", function);
+            _builder.SetInsertPoint(body);
 
-        for (const auto& generic : p_node->generic_map) {
-            ScopeValue* scope_val = TypeChecker::get_type(_enviroment, generic.second, p_node);
-            if (!TypeChecker::is_class(scope_val)) {
-                COMPILER_ERROR(SYNTAX_ERROR, Logger::format("%s does not point a class", generic.second->to_string().c_str()))
+            if (_current_class != nullptr && p_node->name == "__init" && !p_node->is_static) {
+                generate_contructor_meta();
             }
 
-            std::string name = generic.second->mangle();
+            for (const auto& generic : p_node->generic_map) {
+                ScopeValue* scope_val = TypeChecker::get_type(_enviroment, generic.second, p_node);
+                if (!TypeChecker::is_class(scope_val)) {
+                    COMPILER_ERROR(SYNTAX_ERROR, Logger::format("%s does not point a class", generic.second->to_string().c_str()))
+                }
 
-            if (_enviroment->item_exists(name)) {
-                auto ty = *_enviroment->get(name, p_node)->llvm_struct;
+                std::string name = generic.second->mangle();
 
-                int size = _module->getDataLayout().getTypeStoreSize(ty);
-                llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder.getInt32Ty(), size);
+                if (_enviroment->item_exists(name)) {
+                    auto ty = *_enviroment->get(name, p_node)->llvm_struct;
 
-                llvm::Value* alloca_value = _builder.CreateCall(get_alloca(_module, _builder), size_constant);
-                llvm::Value* cast = _builder.CreatePointerCast(alloca_value, TypeChecker::type2llvm(_builder, ty), generic.first);
+                    int size = _module->getDataLayout().getTypeStoreSize(ty);
+                    llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder.getInt32Ty(), size);
 
-                std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(cast)));
+                    llvm::Value* alloca_value = _builder.CreateCall(get_alloca(_module, _builder), size_constant);
+                    llvm::Value* cast = _builder.CreatePointerCast(alloca_value, TypeChecker::type2llvm(_builder, ty), generic.first);
 
-                SET_TO_SCOPE_OR_CLASS(generic.first, std::move(scope_value))
-                continue;
+                    std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(cast)));
+
+                    SET_TO_SCOPE_OR_CLASS(generic.first, std::move(scope_value))
+                    continue;
+                }
+
+                COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Type '%s' not found in generics", p_node->name))
             }
 
-            COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Type '%s' not found in generics", p_node->name))
-        }
+            for (auto expr : p_node->body->exprs) {
+                generate(expr);
+            }
 
-        for (auto expr : p_node->body->exprs) {
-            generate(expr);
-        }
-
-        if (body->size() == 0 || !body->back().isTerminator()) {
-            if (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->is_lop_level) {
-                llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
-                _builder.CreateRet(llvm::ConstantInt::get(i64, 0));
-            } else if (_current_class != nullptr && p_node->name == "__init") {
-                _builder.CreateRet(*current_scope->get("self", nullptr)->llvm_value);
-            } /* TODO: check if function has type Void */ else {
-                // COMPILER_ERROR(FUNCTION_RET_ERR, Logger::format("Function '%s' does not have a return statement ", p_node->name.c_str()))
+            if (body->size() == 0 || !body->back().isTerminator()) {
+                if (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->is_lop_level) {
+                    llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
+                    _builder.CreateRet(llvm::ConstantInt::get(i64, 0));
+                } else if (_current_class != nullptr && p_node->name == "__init") {
+                    _builder.CreateRet(*current_scope->get("self", nullptr)->llvm_value);
+                } /* TODO: check if function has type Void */ else {
+                    // COMPILER_ERROR(FUNCTION_RET_ERR, Logger::format("Function '%s' does not have a return statement ", p_node->name.c_str()))
+                }
             }
         }
 

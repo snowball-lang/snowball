@@ -171,6 +171,7 @@ namespace snowball {
         KWORD_CONST,       // Symbol: const
         KWORD_SUPER,       // Symbol: super
         KWORD_WHILE,       // Symbol: while
+        KWORD_EXTERN,      // Synbol: extern
         KWORD_CLASS,       // Symbol: class
         KWORD_IMPORT,      // Symbol: import
         KWORD_ASSERT,      // Symbol: assert

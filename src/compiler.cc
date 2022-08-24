@@ -45,6 +45,7 @@
 #include "snowball/utils/mangle.h"
 
 #include "snowball/types/Int.h"
+#include "snowball/types/Void.h"
 #include "snowball/types/String.h"
 #include "snowball/types/Bool.h"
 
@@ -375,6 +376,7 @@ namespace snowball {
     void Compiler::link_std_classes() {
         API->init_mode();
 
+        register_void(API);
         register_string(API);
         register_number(API);
         register_bool(API);

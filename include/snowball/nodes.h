@@ -149,6 +149,9 @@ namespace snowball {
 		std::map<std::string, Type*> generic_map;
 
 		bool is_static = false;
+		bool has_vargs = false;
+		bool is_foward = false;
+		bool is_extern = false;
 		bool is_public = false;
 		bool has_return = false;
 		bool is_lop_level = false;

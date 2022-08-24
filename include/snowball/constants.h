@@ -134,7 +134,7 @@ typedef int32_t                                 snowball_int_t;
 
 // Optimizations
 #ifndef _SNOWBALL_CAN_OPTIMIZE
-#define _SNOWBALL_CAN_OPTIMIZE                  1
+#define _SNOWBALL_CAN_OPTIMIZE                  0
 #endif
 
 // Function names
@@ -160,6 +160,7 @@ typedef int32_t                                 snowball_int_t;
 #define _SNOWBALL_KEYWORD__FALSE            "false"
 #define _SNOWBALL_KEYWORD__WHILE            "while"
 #define _SNOWBALL_KEYWORD__BREAK            "break"
+#define _SNOWBALL_KEYWORD__EXTERN           "extern"
 #define _SNOWBALL_KEYWORD__SUPER            "super"
 #define _SNOWBALL_KEYWORD__STATIC           "static"
 #define _SNOWBALL_KEYWORD__IMPORT           "import"

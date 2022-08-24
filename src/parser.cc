@@ -52,6 +52,14 @@ namespace snowball {
                     break;
                 }
 
+                case TokenType::KWORD_EXTERN: {
+                    if (peek(0, true).type != TokenType::KWORD_FUNC) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword an extern function declaration");
+                    }
+
+                    break;
+                }
+
                 case TokenType::KWORD_PUBLIC:
                 case TokenType::KWORD_PRIVATE: {
                     if (
@@ -356,7 +364,9 @@ namespace snowball {
         next_token();
 
         Token pk = peek(-3, true);
-        if (pk.type == TokenType::KWORD_STATIC) {
+        if (pk.type == TokenType::KWORD_EXTERN) {
+            func->is_extern = true;
+        } else if (pk.type == TokenType::KWORD_STATIC) {
             func->is_static = true;
             if (peek(-4, true).type == TokenType::KWORD_PUBLIC || peek(-4, true).type == TokenType::KWORD_PRIVATE ) {
                 func->is_public = peek(-4, true).type == TokenType::KWORD_PUBLIC;
@@ -372,6 +382,11 @@ namespace snowball {
         next_token();
 
         if (_current_token.type == TokenType::OP_LT) {
+
+            if (func->is_extern) {
+                PARSER_ERROR(SYNTAX_ERROR, "Can't define an extern function with generics")
+            }
+
             std::vector<Type*> generics = _parse_generic_expr();
             func->generics = generics;
         }
@@ -386,43 +401,53 @@ namespace snowball {
                     // Argument structure: (name: type, name2: type2 = default, ...argv)
                     // TODO: argv, default
 
-                    std::string name = _current_token.to_string();
-                    Type* arg_type;
+                    if (func->is_extern) {
+                        Type* arg_type = _parse_type();
+                        ArgumentNode* argument = new ArgumentNode("", arg_type);
 
-                    next_token(); // consume name
+                        arguments.push_back(argument);
 
-                    CONSUME(":", SYM_COLLON, "argument statement")
-
-                    ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "<type>", "argument type declaration")
-                    arg_type = _parse_type();
-
-                    ArgumentNode* argument = new ArgumentNode(name, arg_type);
-
-                    if (std::any_of(arguments.begin(), arguments.end(), compareArgs(argument))) {
-                        PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("duplicate argument '%s' in function definition", argument->name.c_str()))
-                    }
-
-                    arguments.push_back(argument);
-
-                    // cleanup
-                    if (_current_token.type == TokenType::SYM_COMMA) {
-                        next_token();
-                        if (_current_token.type == TokenType::BRACKET_RPARENT) {
+                       if (_current_token.type == TokenType::SYM_COMMA) {
                             next_token();
-                            break;
-                        } else if (_current_token.type == TokenType::IDENTIFIER) {
-                            continue;
+                        } else if (_current_token.type == TokenType::BRACKET_RPARENT) {
+                            next_token(); break;
+                        } else {
+                            UNEXPECTED_TOK("A comma")
+                        }
+                    } else {
+                        std::string name = _current_token.to_string();
+                        Type* arg_type;
+
+                        next_token(); // consume name
+
+                        CONSUME(":", SYM_COLLON, "argument statement")
+
+                        ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "<type>", "argument type declaration")
+                        arg_type = _parse_type();
+
+                        ArgumentNode* argument = new ArgumentNode(name, arg_type);
+
+                        if (std::any_of(arguments.begin(), arguments.end(), compareArgs(argument))) {
+                            PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("duplicate argument '%s' in function definition", argument->name.c_str()))
                         }
 
-                        UNEXPECTED_TOK("An indentifier or a ')'")
+                        arguments.push_back(argument);
 
-                    } else if (_current_token.type == TokenType::BRACKET_RPARENT) {
-                        next_token();
-                        break;
+                        // cleanup
+                        if (_current_token.type == TokenType::SYM_COMMA) {
+                            next_token();
+                        } else if (_current_token.type == TokenType::BRACKET_RPARENT) {
+                            next_token(); break;
+                        } else {
+                            UNEXPECTED_TOK("a comma")
+                        }
                     }
                 } else if (_current_token.type == TokenType::BRACKET_RPARENT) {
                     next_token();
                     break;
+                } else if (_current_token.type == TokenType::SYM_DOT && peek().type == TokenType::SYM_DOT && peek(1, true).type == TokenType::SYM_DOT) {
+                    func->has_vargs = true;
+                    next_token(2);
                 } else {
                     UNEXPECTED_TOK("An identifier or a ')'")
                 }
@@ -446,8 +471,19 @@ namespace snowball {
         func->return_type = return_type;
 
         _context.current_function = func;
-        BlockNode* body = _parse_block();
-        func->body = body;
+
+        if (_current_token.type == TokenType::SYM_SEMI_COLLON) {
+            func->is_foward = true;
+            next_token();
+        } else {
+
+            if (func->is_extern) {
+                PARSER_ERROR(SYNTAX_ERROR, "External functions can't have body blocks!")
+            }
+
+            BlockNode* body = _parse_block();
+            func->body = body;
+        }
 
         _context.current_function = nullptr;
         return func;
