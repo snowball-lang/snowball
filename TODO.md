@@ -1,7 +1,6 @@
 ### Todo
 
 - [ ] constant
-- [ ] Add a Void type
 - [ ] Add a preprocesor
 - [ ] global variables
 - [ ] test for all operators
@@ -63,8 +62,6 @@
         - [ ] __str
         - [ ] __repr
         - [ ] __eqeq
-- [ ] Int class
-- [ ] String class
 
 ### Done ✓
 
@@ -103,3 +100,7 @@
     - [x] Execute tests
     - [x] return result variable as int
     - [x] Add things like `assert`
+- [x] Add a Void type
+- [x] Int class
+    - [x] Different types of integers
+- [x] String class

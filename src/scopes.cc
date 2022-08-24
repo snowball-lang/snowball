@@ -23,7 +23,7 @@ namespace snowball {
             for (int i = 0; i < (*_it->second)->instances.size(); i++) {
                 ScopeValue* scope_value = *(*_it->second)->instances[i];
                 // TODO: check for argv and default values
-                if (TypeChecker::functions_equal(result.name, result.name, result.arguments, scope_value->arguments, result.isPublic, scope_value->isPublic)) {
+                if (TypeChecker::functions_equal(result.name, result.name, result.arguments, scope_value->arguments, result.isPublic, scope_value->isPublic, scope_value->hasVArg)) {
                     return true;
                 }
             }
@@ -58,7 +58,7 @@ namespace snowball {
                 ScopeValue* scope_value = *(*_it->second)->instances[i];
 
                 // TODO: (re-write) check for argv and default values
-                if (TypeChecker::functions_equal(unmangled.name, unmangled.name, unmangled.arguments, scope_value->arguments, unmangled.isPublic, scope_value->isPublic)) {
+                if (TypeChecker::functions_equal(unmangled.name, unmangled.name, unmangled.arguments, scope_value->arguments, unmangled.isPublic, scope_value->isPublic, scope_value->hasVArg)) {
                     return scope_value;
                 }
             }

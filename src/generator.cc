@@ -797,7 +797,7 @@ namespace snowball {
                     p_node->name.c_str()
                 ), arg_tnames, p_node->is_public);
 
-        auto prototype = llvm::FunctionType::get(retType, arg_types, false);
+        auto prototype = llvm::FunctionType::get(retType, arg_types, p_node->has_vargs);
         llvm::Function *function = llvm::Function::Create(
             prototype,
             llvm::Function::ExternalLinkage,
@@ -806,6 +806,8 @@ namespace snowball {
 
         std::unique_ptr<ScopeValue*> func_scopev = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Function*>(function)));
         (*func_scopev)->isStaticFunction = p_node->is_static;
+        (*func_scopev)->hasVArg = p_node->has_vargs;
+        (*func_scopev)->arguments = arg_tnames;
         SET_TO_GLOBAL_OR_CLASS(mangle(
                 p_node->name, arg_tnames, p_node->is_public), func_scopev);
 
@@ -940,14 +942,10 @@ namespace snowball {
             }
 
             case TokenType::VALUE_STRING: {
-                ScopeValue* scope_value = _enviroment->get(GET_FUNCTION_FROM_CLASS(STRING_TYPE->mangle().c_str(), "__init", { new Type("&s") }, true), p_node);
-                llvm::Function* constructor = const_cast<llvm::Function*>(*scope_value->llvm_function);
-
                 std::string str = p_node->value;
                 str = str.substr(1, str.size() - 2);
                 llvm::Constant* value = _builder.CreateGlobalStringPtr(str.c_str(), ".str");
-                llvm::Value* call = _builder.CreateCall(constructor, { value });
-                return _builder.CreatePointerCast(call, call->getType());
+                return value;
             }
 
             case TokenType::VALUE_BOOL: {

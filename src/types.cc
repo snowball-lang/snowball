@@ -121,12 +121,20 @@ namespace snowball {
 
     std::string TypeChecker::get_type_name(llvm::Type* p_ty) {
 
-        if (llvm::IntegerType *intType = llvm::dyn_cast_or_null<llvm::IntegerType>(p_ty)) {
+        llvm::Type* base_type = p_ty->isPointerTy() ?
+            p_ty->getPointerElementType() : p_ty;
+
+        if (base_type->isVoidTy()) {
+            return VOID_TYPE->mangle();
+        } else if (llvm::IntegerType *intType = llvm::dyn_cast_or_null<llvm::IntegerType>(base_type)) {
             unsigned int width = intType->getBitWidth();
             switch (width)
             {
                 case 1:
                     return BOOL_TYPE->mangle();
+
+                case 8:
+                    return STRING_TYPE->mangle();
 
                 case 16:
                     return INT16_TYPE->mangle();
@@ -140,9 +148,7 @@ namespace snowball {
             }
         }
 
-        return p_ty->isPointerTy() ?
-            p_ty->getPointerElementType()->getStructName() :
-            p_ty->getStructName();
+        return base_type->getStructName();
     }
 
     llvm::Type* TypeChecker::type2llvm(llvm::IRBuilder<> p_builder, llvm::Type* p_type) {
@@ -154,6 +160,10 @@ namespace snowball {
             return get_llvm_type_from_sn_type(BuildinTypes::NUMBER, p_builder);
         } else if (get_type_name(p_type) == INT16_TYPE->mangle()) {
             return p_builder.getInt16Ty();
+        } else if (get_type_name(p_type) == STRING_TYPE->mangle()) {
+            return p_builder.getInt8PtrTy();
+        } else if (get_type_name(p_type) == VOID_TYPE->mangle()) {
+            return p_builder.getVoidTy();
         } else if (get_type_name(p_type) == INT32_TYPE->mangle()) {
             return p_builder.getInt32Ty();
         } else if (get_type_name(p_type) == INT64_TYPE->mangle()) {
@@ -174,16 +184,32 @@ namespace snowball {
         std::vector<Type*> p_args2,
 
         bool p_public,
-        bool p_public2) {
+        bool p_public2,
+
+        bool has_varg) {
+
+            // check if both functions have 0 arguments or if the function call has less
+            // arguments than the declaration
             bool args_equal = ((p_args.size() == p_args2.size()) && (p_args.size() == 0));
 
-            if (p_args.size() == p_args2.size()) {
+            DUMP(p_args2.size())
+            // Iterate each argument and check if they match types.
+            // We only iterate only if the function call has the same
+            // number of arguments or more (because the variadic arguments).
+            if (p_args.size() >= p_args2.size()) {
                 for (int i = 0; i < p_args.size(); i++) {
+
+                    DUMP(i)
+                    // Check if the function has variadic arguments
+                    if ((i == p_args2.size()) && has_varg) {
+                        break;
+                    }
+
                     args_equal = p_args.at(i)->equals(p_args2.at(i));
                 }
             }
 
-        return (args_equal && (p_name == p_name2) && (p_public == p_public2));
+            return (args_equal && (p_name == p_name2) && (p_public == p_public2));
     }
 
     std::pair<std::vector<Type*>,bool> TypeChecker::deduce_template_args(

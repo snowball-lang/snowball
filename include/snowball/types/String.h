@@ -8,17 +8,9 @@
 #ifndef SN_STRING_EXPORT_H
 #define SN_STRING_EXPORT_H
 
-struct Bool;
-
-extern "C" struct String {
-    char * __buffer;
-    snowball_int_t __length;
-};
-
-extern "C" int sn_String____bool(String* self);
-extern "C" int sn_String____eqeq(String* self, String* second);
-extern "C" String* sn_String____init(char* __str);
-extern "C" String* sn_String____sum(String* self, String* sum);
+extern "C" int sn_String__bool(char* self);
+extern "C" int sn_String__eqeq(char* self, char* second);
+extern "C" char* sn_String__sum(char* self, char* sum);
 
 void register_string(snowball::SNAPI* API);
 

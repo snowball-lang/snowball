@@ -69,7 +69,7 @@ namespace snowball {
         return mod;
     }
 
-    void SNAPI::create_class_method(ScopeValue* p_class, std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<Type*, llvm::Type*>> p_args) {
+    void SNAPI::create_class_method(ScopeValue* p_class, std::string p_name, llvm::Type* p_return_type, std::vector<std::pair<Type*, llvm::Type*>> p_args, std::string p_pointer) {
         std::string llvm_error;
         llvm::raw_string_ostream message_stream(llvm_error);
 
@@ -80,7 +80,7 @@ namespace snowball {
             arguments_types.push_back(pair.first);
         }
 
-        std::string C_name = Logger::format("sn_%s__%s", TypeChecker::to_type(p_class->scope_value->name()).first->name.c_str(), p_name.c_str());
+        std::string C_name = p_pointer.empty() ? Logger::format("sn_%s__%s", TypeChecker::to_type(p_class->scope_value->name()).first->name.c_str(), p_name.c_str()) : p_pointer;
         auto function_prototype = llvm::FunctionType::get(p_return_type, arguments, false);
         auto function =
             llvm::Function::Create(

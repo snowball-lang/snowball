@@ -63,6 +63,7 @@ namespace snowball {
         bool isPublic = false;
 
         // Function params
+        bool hasVArg = false;
         bool isTopLevel = false;
         bool isStaticFunction = false;
         std::vector<Type*> arguments;
