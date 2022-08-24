@@ -446,6 +446,11 @@ namespace snowball {
                     next_token();
                     break;
                 } else if (_current_token.type == TokenType::SYM_DOT && peek().type == TokenType::SYM_DOT && peek(1, true).type == TokenType::SYM_DOT) {
+
+                    if (!func->is_extern) {
+                        PARSER_ERROR(TODO, "Variadic Arguments for non extern functions")
+                    }
+
                     func->has_vargs = true;
                     next_token(2);
                 } else {
