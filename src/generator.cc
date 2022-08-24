@@ -45,11 +45,12 @@
 
 
 #define GET_BOOL_VALUE(ret, __v) \
-    std::string  __ty = TypeChecker::get_type_name(__v->getType()); \
-    if (TypeChecker::is_number(__v->getType())) { \
+    llvm::Type* __ty = TypeChecker::type2llvm(_builder, __v->getType());\
+    std::string  __tys = TypeChecker::get_type_name(__ty); \
+    if (TypeChecker::is_number(__ty)) { \
         __v =  _builder.CreateICmpEQ(__v, llvm::ConstantInt::get(__v->getType(), 1)); \
-    } else if (__ty != BOOL_TYPE->mangle()) { \
-        llvm::Value* __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS(__ty.c_str(), "__bool", {TypeChecker::to_type(__ty).first}, true), p_node, Logger::format("%s.__bool(self)", __ty.c_str()))->llvm_function; \
+    } else if (__tys != BOOL_TYPE->mangle()) { \
+        llvm::Value* __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS(__tys.c_str(), "__bool", {TypeChecker::to_type(__tys).first}, true), p_node, Logger::format("%s.__bool(self)", __tys.c_str()))->llvm_function; \
         __v = _builder.CreateCall(__c, {__v}); \
     } \
     llvm::Value* ret = __v;
@@ -193,9 +194,7 @@ namespace snowball {
         llvm::Value* cond = _builder.CreateICmpEQ(
             condition,
             llvm::ConstantInt::get(
-                get_llvm_type_from_sn_type(
-                    BuildinTypes::BOOL,
-                    _builder),
+                get_llvm_type_from_sn_type(BuildinTypes::BOOL, _builder),
                 1
             )
         );
@@ -255,14 +254,13 @@ namespace snowball {
 
         llvm::Value* current_test = *_enviroment->get("?test-result", nullptr)->llvm_value;
 
-        _builder.CreateStore(_builder.CreateIntCast(assertion, get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder), false), current_test);
+        _builder.CreateStore(_builder.CreateIntCast(assertion, _builder.getInt8Ty(), false), current_test);
 
+        // DUMP_S(TypeChecker::get_type_name(current_test->getType()).c_str())
         llvm::Value* cond = _builder.CreateICmpEQ(
             convert_to_right_value(_builder, current_test),
             llvm::ConstantInt::get(
-                get_llvm_type_from_sn_type(
-                    BuildinTypes::NUMBER,
-                    _builder),
+                _builder.getInt8Ty(),
                 1
             )
         );
@@ -379,7 +377,7 @@ namespace snowball {
         llvm::raw_string_ostream message_stream(llvm_error);
         std::string test_name = _testing_context->get_name(_testing_context->addTest(p_node->description));
 
-        auto prototype = llvm::FunctionType::get(_builder.getInt64Ty(), {}, false);
+        auto prototype = llvm::FunctionType::get(_builder.getInt8Ty(), {}, false);
         llvm::Function *function = llvm::Function::Create(prototype, llvm::Function::ExternalLinkage, test_name, _module);
 
         llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder.getContext(), "body", function);
@@ -393,7 +391,7 @@ namespace snowball {
 
         } else {
             Scope* current_scope = _enviroment->create_scope(test_name);
-            llvm::Value* value = llvm::ConstantInt::get(_builder.getInt64Ty(), 3);
+            llvm::Value* value = llvm::ConstantInt::get(_builder.getInt8Ty(), 3);
 
             auto* llvm_alloca = _builder.CreateAlloca (value->getType(), nullptr, "?test-result" );
 
@@ -577,10 +575,10 @@ namespace snowball {
 
         std::string ret_type;
         if (TypeChecker::is_class(ret_value)) {
-            ret_type = TypeChecker::get_type_name(*ret_value->llvm_struct);
+            ret_type = TypeChecker::get_type_name(TypeChecker::type2llvm(_builder, *ret_value->llvm_struct));
         } else if (ret_value->type == ScopeType::LLVM) {
-            ret_type = TypeChecker::get_type_name((*ret_value->llvm_value)
-                ->getType());
+            ret_type = TypeChecker::get_type_name(TypeChecker::type2llvm(_builder, (*ret_value->llvm_value)
+                ->getType()));
         }
 
         if (TypeChecker::get_type_name(type) == ret_type) {
@@ -673,6 +671,7 @@ namespace snowball {
             switch (p_node->op_type)
             {
                 case OP_PLUS: {
+                    TypeChecker::implicit_cast(_builder, left_type, right);
                     bool types_equal = TypeChecker::get_type_name(left_type) == TypeChecker::get_type_name(right_type);
 
                     if (types_equal && TypeChecker::is_number(left_type)) {
@@ -691,6 +690,7 @@ namespace snowball {
                 }
 
                 case OP_EQEQ: {
+                    TypeChecker::implicit_cast(_builder, left_type, right);
                     bool types_equal = TypeChecker::get_type_name(left_type) == TypeChecker::get_type_name(right_type);
 
                     if (types_equal && TypeChecker::is_number(left_type)) {
@@ -702,6 +702,7 @@ namespace snowball {
                 }
 
                 case OP_LTEQ: {
+                    TypeChecker::implicit_cast(_builder, left_type, right);
                     bool types_equal = TypeChecker::get_type_name(left_type) == TypeChecker::get_type_name(right_type);
 
                     if (types_equal && TypeChecker::is_number(left_type)) {
@@ -713,6 +714,7 @@ namespace snowball {
                 }
 
                 case OP_MINUS: {
+                    TypeChecker::implicit_cast(_builder, left_type, right);
                     bool types_equal = TypeChecker::get_type_name(left_type) == TypeChecker::get_type_name(right_type);
 
                     if (types_equal && TypeChecker::is_number(left_type)) {

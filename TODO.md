@@ -93,7 +93,7 @@
     - [x] Add class/function to global
 - [x] add optimizations
 - [x] Let user choose in 32/64 bits numbers
-- [x] `_MN10gc__allocaA3i32P` and `_MN12gc__reallocaA2i8A3i32P` should not really be in the enviroment
+- [x] `alloca` should not really be in the enviroment
 - [x] Unit testing
     - [x] Add `test` keyword
     - [x] Parse test statement

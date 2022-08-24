@@ -89,7 +89,7 @@ namespace snowball {
             type = ScopeType::FUNC;
             llvm_function = p_value;
 
-            unmangledResult result = unmangle((*p_value)->getName());
+            unmangledResult result = unmangle((*p_value)->getName().str());
             if (result.isMangled && result.isFunction) {
                 isPublic = result.isPublic;
                 arguments = result.arguments;

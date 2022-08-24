@@ -152,7 +152,7 @@ namespace snowball {
                     _parser,
                     _enviroment,
                     _source_info,
-                    std::move(builder),
+                    builder,
                     _module.get(),
                     this->linked_libraries,
                     _testing_context,

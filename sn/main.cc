@@ -57,7 +57,7 @@ int compile(std::string content, std::string filename, std::vector<std::string> 
         error.print_error();
     }
 
-    compiler->get_module()->print(llvm::outs(), nullptr);
+    // compiler->get_module()->print(llvm::outs(), nullptr);
     compiler->cleanup();
     return result;
 }

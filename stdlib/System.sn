@@ -1,0 +1,8 @@
+
+// === C function declarations
+extern fn printf(String, ...) Void;
+
+// === Exports
+pub fn println(__message: String) Void {
+    printf("%s\n", __message);
+}

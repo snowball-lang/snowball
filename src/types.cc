@@ -81,6 +81,35 @@ namespace snowball {
         return p_enviroment->get(to_mangle(p_type), p_node);
     }
 
+    bool TypeChecker::both_number(llvm::Type* p_left, llvm::Type* p_right) {
+        return is_number(p_left) && is_number(p_right);
+    }
+
+    bool TypeChecker::has_less_width(llvm::IntegerType* p_src, llvm::IntegerType* p_comp) {
+        return p_src->getBitWidth() < p_comp->getBitWidth();
+    }
+
+    // NOTE: the function returns false if types contain integer types
+    //       checkout TypeChecker::both_number as an alternative to this
+    //       function for integer types.
+    bool TypeChecker::is_castable(llvm::Type* p_left, llvm::Type* p_right) {
+        // TODO: check for inheritance of classes
+        return false;
+    }
+
+    void TypeChecker::implicit_cast(llvm::IRBuilder<> p_builder, llvm::Type* p_left, llvm::Value* p_right) {
+        llvm::Type* right_type = p_right->getType();
+        if (both_number(p_left, right_type)) {
+            if (has_less_width(llvm::dyn_cast<llvm::IntegerType>(right_type), llvm::dyn_cast<llvm::IntegerType>(p_left))) {
+                p_builder.CreateTrunc(p_right, p_left);
+            }
+
+            p_builder.CreateBitCast(p_right, p_left);
+        } if (is_castable(p_left, right_type)) {
+            // TODO
+        }
+    }
+
     bool TypeChecker::is_number(llvm::Type* p_type) {
         if (llvm::IntegerType *intType = llvm::dyn_cast<llvm::IntegerType>(p_type)) {
             return (intType->getBitWidth() != 1);
@@ -92,7 +121,7 @@ namespace snowball {
 
     std::string TypeChecker::get_type_name(llvm::Type* p_ty) {
 
-        if (llvm::IntegerType *intType = llvm::dyn_cast<llvm::IntegerType>(p_ty)) {
+        if (llvm::IntegerType *intType = llvm::dyn_cast_or_null<llvm::IntegerType>(p_ty)) {
             unsigned int width = intType->getBitWidth();
             switch (width)
             {
@@ -109,8 +138,6 @@ namespace snowball {
                 default:
                     return INT32_TYPE->mangle();
             }
-        } else if (p_ty->getStructName() == NUMBER_TYPE->mangle()) {
-            return INT32_TYPE->mangle();
         }
 
         return p_ty->isPointerTy() ?
@@ -120,15 +147,22 @@ namespace snowball {
 
     llvm::Type* TypeChecker::type2llvm(llvm::IRBuilder<> p_builder, llvm::Type* p_type) {
         // TODO: bool
+        DUMP_S(get_type_name(p_type).c_str())
         if (get_type_name(p_type) == BOOL_TYPE->mangle()) {
             return get_llvm_type_from_sn_type(BuildinTypes::BOOL, p_builder);
-        } else if (get_type_name(p_type) == INT32_TYPE->mangle()) {
+        } else if (get_type_name(p_type) == NUMBER_TYPE->mangle()) {
             return get_llvm_type_from_sn_type(BuildinTypes::NUMBER, p_builder);
+        } else if (get_type_name(p_type) == INT16_TYPE->mangle()) {
+            return p_builder.getInt16Ty();
+        } else if (get_type_name(p_type) == INT32_TYPE->mangle()) {
+            return p_builder.getInt32Ty();
+        } else if (get_type_name(p_type) == INT64_TYPE->mangle()) {
+            return p_builder.getInt64Ty();
         } else if (is_number(p_type)) {
             return p_type;
         }
 
-        return p_type->getPointerTo();
+        return p_type->isPointerTy() ? p_type : p_type->getPointerTo();
     }
 
     bool TypeChecker::is_class(ScopeValue* p_value) { return p_value->type == ScopeType::CLASS; }

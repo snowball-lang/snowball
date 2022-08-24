@@ -19,7 +19,7 @@ namespace snowball {
             std::string getTestAt(int i) { return _tests.at(i); }
 
             std::string get_name(int number) {
-                return Logger::format("_NSNTestCaseN%i_", number);
+                return Logger::format("_SN_?%i_", number);
             }
 
             ~TestingContext() {};

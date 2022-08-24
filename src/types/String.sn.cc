@@ -70,7 +70,7 @@ void register_string(snowball::SNAPI* API) {
             METHOD_ARGUMENT(snowball::STRING_TYPE, class_type)
         })
 
-        METHOD("__eqeq",  class_type, {
+        METHOD("__eqeq",  bool_class, {
             METHOD_ARGUMENT(snowball::STRING_TYPE, class_type),
             METHOD_ARGUMENT(snowball::STRING_TYPE, class_type)
         })
