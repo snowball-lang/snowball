@@ -52,6 +52,7 @@ namespace snowball {
         FUNC_CONTAINER,
     };
 
+    // TODO: cleaner structs with childs
     typedef struct ScopeValue {
         ScopeType type;
         Scope* parent_scope;
@@ -74,6 +75,9 @@ namespace snowball {
         // Class params
         std::vector<std::string> parents;
         std::vector<std::string> properties;
+
+        // Module params
+        std::string module_name;
 
         Scope* scope_value;
 

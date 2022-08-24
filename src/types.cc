@@ -152,8 +152,6 @@ namespace snowball {
     }
 
     llvm::Type* TypeChecker::type2llvm(llvm::IRBuilder<> p_builder, llvm::Type* p_type) {
-        // TODO: bool
-        DUMP_S(get_type_name(p_type).c_str())
         if (get_type_name(p_type) == BOOL_TYPE->mangle()) {
             return get_llvm_type_from_sn_type(BuildinTypes::BOOL, p_builder);
         } else if (get_type_name(p_type) == NUMBER_TYPE->mangle()) {
@@ -192,14 +190,12 @@ namespace snowball {
             // arguments than the declaration
             bool args_equal = ((p_args.size() == p_args2.size()) && (p_args.size() == 0));
 
-            DUMP(p_args2.size())
             // Iterate each argument and check if they match types.
             // We only iterate only if the function call has the same
             // number of arguments or more (because the variadic arguments).
             if (p_args.size() >= p_args2.size()) {
                 for (int i = 0; i < p_args.size(); i++) {
 
-                    DUMP(i)
                     // Check if the function has variadic arguments
                     if ((i == p_args2.size()) && has_varg) {
                         break;

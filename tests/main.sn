@@ -3,7 +3,6 @@
 import System
 fn main() i32 {
     var a = 5
-    System.println("Input what ever comes to mind!")
-    System.println("input: " + System.input())
+    System.println("OMG, A STDLIB WRITTEN BY SNOWBALL!??!??!?!?!?")
     return 2 + a
 }

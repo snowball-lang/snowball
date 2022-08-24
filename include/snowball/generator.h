@@ -39,9 +39,9 @@ namespace snowball {
                     _tests_enabled(p_testsEnabled),
                     _builder(std::move(p_builder)),
                     _linked_libraries(p_linked_libraries),
-                    _testing_context(p_testing_context),
                     _api(p_api) {
                 _source_info = p_source_info;
+                _context._testing_context = p_testing_context;
             };
 
             llvm::Value* generate(Node* p_node);
@@ -59,14 +59,16 @@ namespace snowball {
             SourceInfo* _source_info;
 
             llvm::IRBuilder<> _builder;
-            TestingContext* _testing_context;
-            ClassNode* _current_class = nullptr;
 
             std::vector<std::string>& _linked_libraries;
 
             // some context
             struct {
                 bool is_test = false;
+
+                ScopeValue* _current_module = nullptr;
+                TestingContext* _testing_context;
+                ClassNode* _current_class = nullptr;
             } _context;
 
             // methods
