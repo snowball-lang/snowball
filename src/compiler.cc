@@ -262,7 +262,8 @@ namespace snowball {
             throw SNError(Error::LLVM_INTERNAL, "TargetMachine can't emit a file of this type");
         }
 
-        Logger::success(Logger::format("Snowball project compiled to an object file! ✨\n %soutput%s: %s", BGRN, RESET, p_output.c_str()));
+        if (!p_for_executable)
+            Logger::success(Logger::format("Snowball project compiled to an object file! ✨\n %soutput%s: %s", BGRN, RESET, p_output.c_str()));
 
         pass.run(*_module);
         dest.flush();

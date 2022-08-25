@@ -87,8 +87,9 @@ namespace snowball {
         return p_enviroment->get(to_mangle(p_type), p_node);
     }
 
-    bool TypeChecker::both_number(llvm::Type* p_left, llvm::Type* p_right) {
-        return is_number(p_left) && is_number(p_right);
+    bool TypeChecker::both_number(llvm::Type* p_left, llvm::Type* p_right, bool p_allow_bools) {
+        return (is_number(p_left) || (is_bool(p_left) && p_allow_bools)) &&
+              (is_number(p_right) || (is_bool(p_right) && p_allow_bools));
     }
 
     bool TypeChecker::has_less_width(llvm::IntegerType* p_src, llvm::IntegerType* p_comp) {
@@ -103,22 +104,36 @@ namespace snowball {
         return false;
     }
 
-    void TypeChecker::implicit_cast(llvm::IRBuilder<> p_builder, llvm::Type* p_left, llvm::Value* p_right) {
+    llvm::Value* TypeChecker::implicit_cast(llvm::IRBuilder<> p_builder, llvm::Type* p_left, llvm::Value* p_right) {
         llvm::Type* right_type = p_right->getType();
-        if (both_number(p_left, right_type)) {
+        if (both_number(p_left, right_type, true)) {
+
+            // i32 < i1 <
             if (has_less_width(llvm::dyn_cast<llvm::IntegerType>(right_type), llvm::dyn_cast<llvm::IntegerType>(p_left))) {
-                p_builder.CreateTrunc(p_right, p_left);
+                return p_builder.CreateTrunc(p_right, p_left);
             }
 
-            p_builder.CreateBitCast(p_right, p_left);
-        } if (is_castable(p_left, right_type)) {
-            // TODO
+            return p_builder.CreateIntCast(p_right, p_left, true);
+        } else if (is_castable(p_left, right_type)) {
+            throw SNError(Error::TODO, "Bit casts for non-integer types are not alowed!");
         }
+
+
+        return p_right;
+    }
+
+    bool TypeChecker::is_bool(llvm::Type* p_type) {
+        if (llvm::IntegerType *intType = llvm::dyn_cast<llvm::IntegerType>(p_type)) {
+            return intType->getBitWidth() == 1;
+        }
+
+        // Int is supposed to represent as i32
+        return get_type_name(p_type) == BOOL_TYPE->mangle();
     }
 
     bool TypeChecker::is_number(llvm::Type* p_type) {
-        if (llvm::IntegerType *intType = llvm::dyn_cast<llvm::IntegerType>(p_type)) {
-            return (intType->getBitWidth() != 1);
+        if (llvm::IntegerType *intType = llvm::dyn_cast<llvm::IntegerType>(p_type->isPointerTy() ? p_type->getPointerElementType() : p_type)) {
+            return (intType->getBitWidth() != 1) && (intType->getBitWidth() != 8);
         }
 
         // Int is supposed to represent as i32
@@ -201,7 +216,7 @@ namespace snowball {
             // Iterate each argument and check if they match types.
             // We only iterate only if the function call has the same
             // number of arguments or more (because the variadic arguments).
-            if (p_args.size() >= p_args2.size()) {
+            if ((p_args.size() >= p_args2.size() && has_varg) || p_args.size() <= p_args2.size()) {
                 for (int i = 0; i < p_args.size(); i++) {
 
                     // Check if the function has variadic arguments

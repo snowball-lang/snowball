@@ -7,3 +7,15 @@ extern fn printf(String, ...) Void;
 pub fn println(__message: String) Void {
     printf("%s\n", __message)
 }
+
+pub fn println(__message: i16) Void {
+    printf("%d\n", __message)
+}
+
+pub fn println(__message: i32) Void {
+    printf("%ld\n", __message)
+}
+
+pub fn println(__message: i64) Void {
+    printf("%i\n", __message)
+}

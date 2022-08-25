@@ -28,10 +28,11 @@ namespace snowball {
         public:
 
             static bool is_castable(llvm::Type* p_left, llvm::Type* p_right);
-            static bool both_number(llvm::Type* p_left, llvm::Type* p_right);
             static bool has_less_width(llvm::IntegerType* p_src, llvm::IntegerType* p_comp);
-            static void implicit_cast(llvm::IRBuilder<> p_builder, llvm::Type* p_left, llvm::Value* p_right);
+            static bool both_number(llvm::Type* p_left, llvm::Type* p_right, bool p_allow_bools = false);
+            static llvm::Value* implicit_cast(llvm::IRBuilder<> p_builder, llvm::Type* p_left, llvm::Value* p_right);
 
+            static bool is_bool(llvm::Type* p_type);
             static bool is_class(ScopeValue* p_value);
             static std::string to_mangle(Type* p_type);
             static bool is_number(llvm::Type* p_type);

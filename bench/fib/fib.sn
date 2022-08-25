@@ -9,5 +9,5 @@ fn fib(n: Int) Int {
 }
 
 fn main() Int {
-    System.print(fib(47).__str())
+    System.println(fib(47))
 }

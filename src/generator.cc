@@ -55,7 +55,7 @@
     std::string  __tys = TypeChecker::get_type_name(__ty); \
     if (TypeChecker::is_number(__ty)) { \
         __v =  _builder.CreateICmpEQ(__v, llvm::ConstantInt::get(__v->getType(), 1)); \
-    } else if (__tys != BOOL_TYPE->mangle()) { \
+    } else if (!TypeChecker::is_bool(__ty)) { \
         llvm::Value* __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS(__tys.c_str(), "__bool", {TypeChecker::to_type(__tys).first}, true), p_node, Logger::format("%s.__bool(self)", __tys.c_str()))->llvm_function; \
         __v = _builder.CreateCall(__c, {__v}); \
     } \
@@ -491,7 +491,7 @@ namespace snowball {
 
         if (p_node->skip) {
             _enviroment->delete_scope();
-            _builder.CreateRet(llvm::ConstantInt::get(_builder.getInt64Ty(), 2));
+            _builder.CreateRet(llvm::ConstantInt::get(_builder.getInt8Ty(), 2));
 
             return function;
 
@@ -760,7 +760,7 @@ namespace snowball {
             switch (p_node->op_type)
             {
                 case OP_NOT: {
-                    if ((TypeChecker::get_type_name(left_type) == BOOL_TYPE->mangle()) || TypeChecker::is_number(left_type)) {
+                    if (TypeChecker::is_bool(left_type) || TypeChecker::is_number(left_type)) {
                         return _builder.CreateNot(left);
                     }
 
@@ -786,11 +786,11 @@ namespace snowball {
             switch (p_node->op_type)
             {
                 case OP_PLUS: {
-                    TypeChecker::implicit_cast(_builder, left_type, right);
-                    bool types_equal = TypeChecker::get_type_name(left_type) == TypeChecker::get_type_name(right_type);
+                    llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right);
+                    bool types_equal = TypeChecker::get_type_name(left_type) == TypeChecker::get_type_name(new_right->getType());
 
-                    if (types_equal && TypeChecker::is_number(left_type)) {
-                        return _builder.CreateAdd(left, right);
+                    if (types_equal && (TypeChecker::is_number(left_type) || TypeChecker::is_bool(left_type))) {
+                        return _builder.CreateAdd(left, new_right);
                     }
                     // TODO: bool + bool
                     // TODO: create int cast if they dont match or throw an error
@@ -805,11 +805,11 @@ namespace snowball {
                 }
 
                 case OP_EQEQ: {
-                    TypeChecker::implicit_cast(_builder, left_type, right);
-                    bool types_equal = TypeChecker::get_type_name(left_type) == TypeChecker::get_type_name(right_type);
+                    llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right);
+                    bool types_equal = TypeChecker::get_type_name(left_type) == TypeChecker::get_type_name(new_right->getType());
 
-                    if (types_equal && TypeChecker::is_number(left_type)) {
-                        return _builder.CreateICmpEQ(left, right);
+                    if (types_equal && (TypeChecker::is_number(left_type) || TypeChecker::is_bool(left_type))) {
+                        return _builder.CreateICmpEQ(left, new_right);
                     }
 
                     CALL_OPERATOR("__eqeq")
@@ -817,11 +817,11 @@ namespace snowball {
                 }
 
                 case OP_LTEQ: {
-                    TypeChecker::implicit_cast(_builder, left_type, right);
-                    bool types_equal = TypeChecker::get_type_name(left_type) == TypeChecker::get_type_name(right_type);
+                    llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right);
+                    bool types_equal = TypeChecker::get_type_name(left_type) == TypeChecker::get_type_name(new_right->getType());
 
-                    if (types_equal && TypeChecker::is_number(left_type)) {
-                        return _builder.CreateICmpSLE(left, right);
+                    if (types_equal && (TypeChecker::is_number(left_type) || TypeChecker::is_bool(left_type))) {
+                        return _builder.CreateICmpSLE(left, new_right);
                     }
 
                     CALL_OPERATOR("__lteq")
@@ -829,11 +829,11 @@ namespace snowball {
                 }
 
                 case OP_MINUS: {
-                    TypeChecker::implicit_cast(_builder, left_type, right);
-                    bool types_equal = TypeChecker::get_type_name(left_type) == TypeChecker::get_type_name(right_type);
+                    llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right);
+                    bool types_equal = TypeChecker::get_type_name(left_type) == TypeChecker::get_type_name(new_right->getType());
 
-                    if (types_equal && TypeChecker::is_number(left_type)) {
-                        return _builder.CreateSub(left, right);
+                    if (types_equal && (TypeChecker::is_number(left_type) || TypeChecker::is_bool(left_type))) {
+                        return _builder.CreateSub(left, new_right);
                     }
 
 
