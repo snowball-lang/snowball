@@ -74,6 +74,7 @@ namespace snowball {
             // methods
             llvm::Value* generate_new(NewNode* p_node);
             llvm::Value* generate_call(CallNode* p_node);
+            llvm::Value* generate_index(IndexNode* p_node);
             llvm::Value* generate_class(ClassNode* p_node);
             llvm::Value* generate_test(TestingNode* p_node);
             llvm::Value* generate_block(BlockNode * p_node);

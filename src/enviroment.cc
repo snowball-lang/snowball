@@ -4,6 +4,7 @@
 #include "snowball/scopes.h"
 #include "snowball/enviroment.h"
 #include "snowball/utils/mangle.h"
+#include "snowball/utils/utils.h"
 
 #include <llvm-10/llvm/Support/raw_ostream.h>
 #include <llvm/IR/Type.h>
@@ -12,19 +13,6 @@
 #include <numeric>
 #include <sstream>
 #include <algorithm>
-
-namespace snowball_utils {
-    template <typename Iter>
-    std::string join(Iter begin, Iter end, std::string const& separator)
-    {
-        std::ostringstream result;
-        if (begin != end)
-            result << *begin++;
-        while (begin != end)
-            result << separator << *begin++;
-        return result.str();
-    }
-}
 
 namespace snowball {
     Enviroment::Enviroment(SourceInfo* p_source_info) : _source_info(p_source_info) {

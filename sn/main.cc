@@ -49,7 +49,7 @@ int compile(std::string content, std::string filename, std::vector<std::string> 
         if ((JIT || test) && !object) {
             result = compiler->execute();
         } else if (!JIT && !test && object) {
-            compiler->emit_object(output);
+            compiler->emit_object(output, false);
         } else {
             compiler->emit_binary(output);
         }

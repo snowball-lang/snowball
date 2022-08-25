@@ -1,4 +1,5 @@
 #include <vector>
+#include <sstream>
 #include <string>
 #include <assert.h>
 
@@ -16,6 +17,18 @@ namespace snowball_utils {
     std::string get_lib_folder();
     std::vector<std::string> split(std::string str, std::string token);
     bool endsWith(const std::string &mainStr, const std::string &toMatch);
+
+    template <typename Iter>
+    // https://stackoverflow.com/questions/495021/why-can-templates-only-be-implemented-in-the-header-file
+    std::string join(Iter begin, Iter end, std::string const& separator)
+    {
+        std::ostringstream result;
+        if (begin != end)
+            result << *begin++;
+        while (begin != end)
+            result << separator << *begin++;
+        return result.str();
+    }
 }
 
 #endif // __SNOWBALL_UTILS__MAIN_H_

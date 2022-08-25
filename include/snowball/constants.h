@@ -134,7 +134,7 @@ typedef int32_t                                 snowball_int_t;
 
 // Optimizations
 #ifndef _SNOWBALL_CAN_OPTIMIZE
-#define _SNOWBALL_CAN_OPTIMIZE                  0
+#define _SNOWBALL_CAN_OPTIMIZE                  1
 #endif
 
 // Function names

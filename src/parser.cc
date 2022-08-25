@@ -743,22 +743,31 @@ namespace snowball {
                         call->base = expression;
                         expression = call;
                     } else {
-                        // just indexing
+                        IndexNode* index = new IndexNode();
+
+                        index->base = expression;
+                        index->member = new IdentifierNode(_current_token);
+
+                        expression = index;
                     }
                 } if (tk.type == TokenType::SYM_COLCOL) { // same thing but calling static function
                     next_token(1);
                     ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "static function index/call")
 
                     if (peek(0, true).type == TokenType::BRACKET_LPARENT || peek(0, true).type == TokenType::OP_LT)  {
-                        Node* base = expression;
                         CallNode* call = _parse_function_call();
 
-                        call->base = base;
+                        call->base = expression;
                         call->is_static_call = true;
 
                         expression = call;
                     } else {
-                        // just indexing
+                        IndexNode* index = new IndexNode();
+
+                        index->base = expression;
+                        index->member = new IdentifierNode(_current_token);
+
+                        expression = index;
                     }
                 } else {
                     break;

@@ -11,6 +11,8 @@
 
 #include "snowball/types.h"
 #include "snowball/constants.h"
+#include "snowball/errors.h"
+#include "snowball/logger.h"
 #include "snowball/enviroment.h"
 #include "snowball/utils/mangle.h"
 #include "snowball/utils/utils.h"
@@ -73,6 +75,10 @@ namespace snowball {
             // ASSERT(p_type[index] == ']')
             index++;
         }
+
+        // Int should actually be i32
+        // TODO: check if there is a better way to do this
+        if (name == "Int") name = "i32";
 
         return {new Type(name, generics), index};
     }
@@ -146,9 +152,11 @@ namespace snowball {
                 default:
                     return INT32_TYPE->mangle();
             }
+        } else if (base_type->isStructTy()) {
+            return base_type->getStructName();
         }
 
-        return base_type->getStructName();
+        throw SNError(Error::BUG, Logger::format("Type with ID %i could not be decided!", base_type->getTypeID()));
     }
 
     llvm::Type* TypeChecker::type2llvm(llvm::IRBuilder<> p_builder, llvm::Type* p_type) {

@@ -201,6 +201,17 @@ namespace snowball {
 		~IdentifierNode() {};
 	};
 
+	struct IndexNode : public Node {
+		Node* base;
+		IdentifierNode* member;
+
+		IndexNode() {
+			type = Ty::INDEX;
+		};
+
+		~IndexNode() {};
+	};
+
 	struct CallNode : public Node {
 		std::vector<Node*> arguments;
 		std::string method;

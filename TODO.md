@@ -3,6 +3,7 @@
 - [ ] constant
 - [ ] Add a preprocesor
 - [ ] global variables
+- [ ] handle if function returns void, it can't be used as variable
 - [ ] test for all operators
 - [ ] default return type
 - [ ] change location for OPTypes struct inside BinOP node

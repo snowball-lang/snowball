@@ -209,7 +209,7 @@ namespace snowball {
         // write to temporary object file
         std::string objfile = Logger::format("%s.so", p_output.c_str());
         DEBUG_CODEGEN("Emitting object file... (%s)", objfile.c_str());
-        int objstatus = emit_object(objfile);
+        int objstatus = emit_object(objfile, true);
         if(objstatus != EXIT_SUCCESS) return objstatus;
 
         // object file written, now invoke llc
@@ -245,7 +245,7 @@ namespace snowball {
         return EXIT_SUCCESS;
     }
 
-    int Compiler::emit_object(std::string p_output) {
+    int Compiler::emit_object(std::string p_output, bool p_for_executable) {
 
         // TODO: https://stackoverflow.com/questions/11657529/how-to-generate-an-executable-from-an-llvmmodule
         std::error_code EC;
@@ -261,6 +261,8 @@ namespace snowball {
         if (_target_machine->addPassesToEmitFile(pass, dest, nullptr, FileType)) {
             throw SNError(Error::LLVM_INTERNAL, "TargetMachine can't emit a file of this type");
         }
+
+        Logger::success(Logger::format("Snowball project compiled to an object file! ✨\n %soutput%s: %s", BGRN, RESET, p_output.c_str()));
 
         pass.run(*_module);
         dest.flush();
