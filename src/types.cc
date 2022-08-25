@@ -105,10 +105,11 @@ namespace snowball {
     }
 
     llvm::Value* TypeChecker::implicit_cast(llvm::IRBuilder<> p_builder, llvm::Type* p_left, llvm::Value* p_right) {
+
+        // TODO: if left or right is float, convert the other side to float.
         llvm::Type* right_type = p_right->getType();
         if (both_number(p_left, right_type, true)) {
 
-            // i32 < i1 <
             if (has_less_width(llvm::dyn_cast<llvm::IntegerType>(right_type), llvm::dyn_cast<llvm::IntegerType>(p_left))) {
                 return p_builder.CreateTrunc(p_right, p_left);
             }
@@ -167,6 +168,10 @@ namespace snowball {
                 default:
                     return INT32_TYPE->mangle();
             }
+        } else if (base_type->isFloatTy()) {
+            return FLOAT32_TYPE->mangle();
+        } else if (base_type->isDoubleTy()) {
+            return FLOAT64_TYPE->mangle();
         } else if (base_type->isStructTy()) {
             return base_type->getStructName();
         }
@@ -179,6 +184,10 @@ namespace snowball {
             return get_llvm_type_from_sn_type(BuildinTypes::BOOL, p_builder);
         } else if (get_type_name(p_type) == NUMBER_TYPE->mangle()) {
             return get_llvm_type_from_sn_type(BuildinTypes::NUMBER, p_builder);
+        } else if (get_type_name(p_type) == FLOAT32_TYPE->mangle()) {
+            return p_builder.getFloatTy();
+        } else if (get_type_name(p_type) == FLOAT64_TYPE->mangle()) {
+            return p_builder.getDoubleTy();
         } else if (get_type_name(p_type) == INT16_TYPE->mangle()) {
             return p_builder.getInt16Ty();
         } else if (get_type_name(p_type) == STRING_TYPE->mangle()) {
@@ -295,6 +304,8 @@ namespace snowball {
                 #else
                     RETURN_LLVM_TYPE_IF_SN_TYPE_IS(NUMBER, builder.getInt32Ty())
                 #endif
+                RETURN_LLVM_TYPE_IF_SN_TYPE_IS(FLOAT, builder.getFloatTy())
+                RETURN_LLVM_TYPE_IF_SN_TYPE_IS(DOUBLE, builder.getDoubleTy())
                 RETURN_LLVM_TYPE_IF_SN_TYPE_IS(STRING, builder.getInt8PtrTy())
                 RETURN_LLVM_TYPE_IF_SN_TYPE_IS(BOOL, builder.getInt1Ty())
             #undef RETURN_LLVM_TYPE_IF_SN_TYPE_IS

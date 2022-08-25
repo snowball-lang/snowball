@@ -21,7 +21,10 @@ namespace snowball {
     enum BuildinTypes {
         BOOL,
         NUMBER,
+        FLOAT,
+        DOUBLE,
         STRING,
+        // TODO: i32, i64, i16
     };
 
     class TypeChecker {
@@ -85,13 +88,15 @@ namespace snowball {
         }
     };
 
-    inline Type* BOOL_TYPE   = new Type("Bool");
-    inline Type* STRING_TYPE = new Type("String");
-    inline Type* NUMBER_TYPE = new Type("Int");
-    inline Type* INT16_TYPE  = new Type("i16");
-    inline Type* INT32_TYPE  = new Type("i32");
-    inline Type* INT64_TYPE  = new Type("i64");
-    inline Type* VOID_TYPE   = new Type("Void");
+    inline Type* BOOL_TYPE    = new Type("Bool");
+    inline Type* STRING_TYPE  = new Type("String");
+    inline Type* NUMBER_TYPE  = new Type("Int");
+    inline Type* INT16_TYPE   = new Type("i16");
+    inline Type* INT32_TYPE   = new Type("i32");
+    inline Type* INT64_TYPE   = new Type("i64");
+    inline Type* FLOAT32_TYPE = new Type("f32");
+    inline Type* FLOAT64_TYPE = new Type("f64");
+    inline Type* VOID_TYPE    = new Type("Void");
 
     llvm::Type* get_llvm_type_from_sn_type(BuildinTypes type, llvm::IRBuilder<> builder);
     llvm::Value* get_alloca(llvm::Module* p_module, llvm::IRBuilder<> p_builder);

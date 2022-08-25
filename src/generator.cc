@@ -1072,6 +1072,11 @@ namespace snowball {
                 return llvm::ConstantInt::get(i1, p_node->value == "true");
             }
 
+            case TokenType::VALUE_FLOAT: {
+                llvm::Type * f = get_llvm_type_from_sn_type(BuildinTypes::FLOAT, _builder);
+                return llvm::ConstantFP::get(f, std::stof(p_node->value));
+            }
+
             default:
                 throw SNError(Error::TODO, Logger::format("Const Value with type %s%i%s%s is not yet supported", BCYN, p_node->const_type, RESET, BOLD));
         }

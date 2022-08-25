@@ -44,7 +44,7 @@
 #include "snowball/utils/utils.h"
 #include "snowball/utils/mangle.h"
 
-#include "snowball/types/Int.h"
+#include "snowball/types/Numbers.h"
 #include "snowball/types/Void.h"
 #include "snowball/types/String.h"
 #include "snowball/types/Bool.h"
