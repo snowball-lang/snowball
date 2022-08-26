@@ -92,6 +92,10 @@ namespace snowball {
               (is_number(p_right) || (is_bool(p_right) && p_allow_bools));
     }
 
+    bool TypeChecker::is_float(llvm::Type* p_type) {
+        return p_type->isFloatTy() || p_type->isDoubleTy();
+    }
+
     bool TypeChecker::has_less_width(llvm::IntegerType* p_src, llvm::IntegerType* p_comp) {
         return p_src->getBitWidth() < p_comp->getBitWidth();
     }
@@ -108,7 +112,12 @@ namespace snowball {
 
         // TODO: if left or right is float, convert the other side to float.
         llvm::Type* right_type = p_right->getType();
-        if (both_number(p_left, right_type, true)) {
+
+        if (right_type == p_left) return p_right;
+
+        if (is_float(p_left) && is_number(right_type)) {
+            return p_builder.CreateSIToFP(p_right, p_left);
+        } else if (both_number(p_left, right_type, true)) {
 
             if (has_less_width(llvm::dyn_cast<llvm::IntegerType>(right_type), llvm::dyn_cast<llvm::IntegerType>(p_left))) {
                 return p_builder.CreateTrunc(p_right, p_left);
@@ -118,7 +127,6 @@ namespace snowball {
         } else if (is_castable(p_left, right_type)) {
             throw SNError(Error::TODO, "Bit casts for non-integer types are not alowed!");
         }
-
 
         return p_right;
     }

@@ -4,6 +4,6 @@ import System
 fn main() i32 {
     var a = 5.6
     System.println("OMG, A STDLIB WRITTEN BY SNOWBALL!??!??!?!?!?")
-    System.println(a)
-    return 2 + a
+    System.println(a + 2.5)
+    return 5
 }

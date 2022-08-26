@@ -30,6 +30,7 @@ namespace snowball {
     class TypeChecker {
         public:
 
+            static bool is_float(llvm::Type* p_type);
             static bool is_castable(llvm::Type* p_left, llvm::Type* p_right);
             static bool has_less_width(llvm::IntegerType* p_src, llvm::IntegerType* p_comp);
             static bool both_number(llvm::Type* p_left, llvm::Type* p_right, bool p_allow_bools = false);

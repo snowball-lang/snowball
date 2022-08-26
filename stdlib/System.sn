@@ -17,7 +17,7 @@ pub fn println(__message: i32) Void {
 }
 
 pub fn println(__message: f32) Void {
-    printf("%f\n", __message)
+    printf("%.6f\n", __message)
 }
 
 pub fn println(__message: f64) Void {
