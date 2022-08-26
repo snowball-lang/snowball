@@ -143,6 +143,7 @@ typedef int32_t                                 snowball_int_t;
 // Keywords
 #define _SNOWBALL_KEYWORD__OR               "or"
 #define _SNOWBALL_KEYWORD__IF               "if"
+#define _SNOWBALL_KEYWORD__AS               "as"
 #define _SNOWBALL_KEYWORD__AND              "and"
 #define _SNOWBALL_KEYWORD__NOT              "not"
 #define _SNOWBALL_KEYWORD__FOR              "for"

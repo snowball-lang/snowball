@@ -1092,7 +1092,7 @@ namespace snowball {
             }
 
             case TokenType::VALUE_FLOAT: {
-                COMPILER_ERROR(TODO, "Floats are not yet ready!")
+                // COMPILER_ERROR(TODO, "Floats are not yet ready!")
                 llvm::Type * f = get_llvm_type_from_sn_type(BuildinTypes::FLOAT, _builder);
                 return llvm::ConstantFP::get(f, std::stof(p_node->value));
             }

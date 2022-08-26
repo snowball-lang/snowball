@@ -116,6 +116,8 @@ namespace snowball {
         if (right_type == p_left) return p_right;
 
         if (is_float(p_left) && is_number(right_type)) {
+            return p_builder.CreateFPToSI(p_right, p_left);
+        } else if (is_number(p_left) && is_float(right_type)) {
             return p_builder.CreateSIToFP(p_right, p_left);
         } else if (both_number(p_left, right_type, true)) {
 

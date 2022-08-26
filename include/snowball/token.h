@@ -173,6 +173,7 @@ namespace snowball {
         KWORD_WHILE,       // Symbol: while
         KWORD_EXTERN,      // Synbol: extern
         KWORD_CLASS,       // Symbol: class
+        KWORD_AS,          // Symbol: as
         KWORD_IMPORT,      // Symbol: import
         KWORD_ASSERT,      // Symbol: assert
         KWORD_PUBLIC,      // Symbol: pub
@@ -272,7 +273,8 @@ namespace snowball {
                 case TokenType::KWORD_PRIVATE:      return _SNOWBALL_KEYWORD__PRIVATE;
                 case TokenType::KWORD_IMPORT:       return _SNOWBALL_KEYWORD__IMPORT;
                 case TokenType::KWORD_CLASS:        return _SNOWBALL_KEYWORD__CLASS;
-                case TokenType::KWORD_ASSERT:        return _SNOWBALL_KEYWORD__ASSERT;
+                case TokenType::KWORD_ASSERT:       return _SNOWBALL_KEYWORD__ASSERT;
+                case TokenType::KWORD_AS:           return _SNOWBALL_KEYWORD__AS;
                 case TokenType::KWORD_ENUM:         return _SNOWBALL_KEYWORD__ENUM;
                 case TokenType::KWORD_FUNC:         return _SNOWBALL_KEYWORD__FUNCTION;
                 case TokenType::KWORD_VAR:          return _SNOWBALL_KEYWORD__VARIABLE;

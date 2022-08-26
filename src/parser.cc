@@ -103,26 +103,6 @@ namespace snowball {
                 case TokenType::SYM_SEMI_COLLON:
                     break;
 
-                // case TokenType::VALUE_BOOL:
-                // case TokenType::VALUE_NULL:
-                // case TokenType::VALUE_FLOAT:
-                // case TokenType::VALUE_NUMBER:
-                // case TokenType::VALUE_STRING:
-                // case TokenType::VALUE_UNDEFINED: {
-
-                //     int _width = _current_token.col;
-                //     std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
-
-                //     ConstantValue* value = static_cast<ConstantValue *>(_parse_expression()); // Type: ConstantValue
-                //     _width = _width - _current_token.col;
-
-                //     value->pos = _pos;
-                //     value->width = (uint32_t)_width;
-
-                //     _nodes.push_back(value);
-                //     break;
-                // }
-
                 default:
                     PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Unexpected token found: %s%s%s", BLU, _current_token.to_string().c_str(), RESET))
                     break;
@@ -813,6 +793,7 @@ namespace snowball {
                 OP_CASE(OP_BIT_AND_EQ);
                 OP_CASE(OP_BIT_XOR);
                 OP_CASE(OP_BIT_XOR_EQ);
+
             #undef OP_CASE
 
                 default: valid = false;
@@ -822,6 +803,22 @@ namespace snowball {
                 next_token(); // Eat peeked token.
                 expressions.push_back(new BinaryOp(op));
             } else {
+
+                // Casting will be done with the "as" keyword.
+                if (tk.type == TokenType::KWORD_AS) {
+                    next_token();
+                    tk = peek();
+                    if (tk.type == TokenType::IDENTIFIER) {
+                        next_token();
+                        CastNode* cast_node = new CastNode();
+                        cast_node->cast_type = _parse_type();
+                        previous_token();
+                        cast_node->expr = expressions.at(expressions.size() - 1);
+
+                        expressions.at(expressions.size() - 1) = cast_node;
+                    }
+                }
+
                 break;
             }
 

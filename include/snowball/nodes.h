@@ -58,7 +58,7 @@ namespace snowball {
 			UNKNOWN = -1,
 
 			IMPORT,
-			FILE,
+			CAST,
 			CLASS,
 			ENUM,
 			FUNCTION,
@@ -129,7 +129,7 @@ namespace snowball {
 		Type* arg_type;
 
 		ArgumentNode(std::string p_name, Type* p_type) {
-			// todo: default values, infinite args, etc...
+			// todo: default values
 			name = p_name;
 			arg_type = p_type;
 			type = Ty::ARGUMENT;
@@ -137,6 +137,18 @@ namespace snowball {
 
 		~ArgumentNode() {};
 	};
+
+	struct CastNode : public Node {
+		Node* expr;
+		Type* cast_type;
+
+		CastNode() {
+			type = Ty::CAST;
+		};
+
+		~CastNode() {};
+	};
+
 
 	struct FunctionNode : public Node {
 		BlockNode* body;
