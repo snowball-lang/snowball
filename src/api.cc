@@ -1,6 +1,6 @@
 
-#include <llvm-10/llvm/IR/DerivedTypes.h>
-#include <llvm-10/llvm/IR/Verifier.h>
+#include <llvm-14/llvm/IR/DerivedTypes.h>
+#include <llvm-14/llvm/IR/Verifier.h>
 #include <map>
 #include <memory>
 
@@ -19,7 +19,7 @@
 
 namespace snowball {
     ScopeValue* SNAPI::create_class(std::string p_name, std::map<std::string, llvm::Type*> p_properties, std::function<void(ScopeValue*)> cb, bool is_module) {
-        llvm::StructType* llvm_struct = llvm::StructType::create(_compiler->global_context, mangle(p_name, {}, true, true));
+        llvm::StructType* llvm_struct = llvm::StructType::create(compiler->global_context, mangle(p_name, {}, true, true));
 
         std::vector<llvm::Type*> properties;
         for (auto const& pair : p_properties) {
@@ -28,7 +28,7 @@ namespace snowball {
 
         llvm_struct->setBody(properties);
 
-        Scope* class_scope = new Scope(mangle(p_name, {}, true, true), _compiler->get_source_info());
+        Scope* class_scope = new Scope(mangle(p_name, {}, true, true), compiler->get_source_info());
         ScopeValue* class_value = new ScopeValue(class_scope, std::make_shared<llvm::StructType*>(llvm_struct));
 
         if (cb != nullptr && !_init_mode)
@@ -87,7 +87,7 @@ namespace snowball {
                 function_prototype,
                 llvm::Function::ExternalLinkage,
                 C_name,
-                _compiler->get_module()
+                compiler->get_module()
             );
 
         std::shared_ptr<llvm::Function*> function_ptr = std::make_shared<llvm::Function*>(function);
@@ -105,6 +105,6 @@ namespace snowball {
     }
 
     void SNAPI::add_to_enviroment(std::string p_name, std::unique_ptr<ScopeValue*> p_scope_value) {
-        _compiler->get_enviroment()->current_scope()->set(p_name, std::move(p_scope_value));
+        compiler->get_enviroment()->current_scope()->set(p_name, std::move(p_scope_value));
     }
 }

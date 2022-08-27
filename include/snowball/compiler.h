@@ -53,8 +53,8 @@ namespace snowball {
 
             std::vector<std::string> linked_libraries;
 
-            llvm::IRBuilder<> builder;
             llvm::LLVMContext global_context;
+            std::shared_ptr<llvm::IRBuilder<>> builder;
             SNAPI* API;
 
         private:

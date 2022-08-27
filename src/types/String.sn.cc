@@ -36,8 +36,8 @@ extern "C" char* sn_String__sum(char* self, char* sum) {
 
 void register_string(snowball::SNAPI* API) {
     API->create_class("String", std::map<std::string, llvm::Type*> {}, [API](snowball::ScopeValue* CLASS) {
-        llvm::Type* class_type = snowball::get_llvm_type_from_sn_type(snowball::BuildinTypes::STRING, API->get_compiler()->builder);
-        llvm::Type* bool_class = snowball::get_llvm_type_from_sn_type(snowball::BuildinTypes::BOOL, API->get_compiler()->builder);
+        llvm::Type* class_type = snowball::get_llvm_type_from_sn_type(snowball::BuildinTypes::STRING, API->compiler->builder);
+        llvm::Type* bool_class = snowball::get_llvm_type_from_sn_type(snowball::BuildinTypes::BOOL, API->compiler->builder);
 
         METHOD("__bool", bool_class, {METHOD_ARGUMENT(snowball::STRING_TYPE, class_type)}, "sn_String__bool")
         METHOD("__sum",  class_type, {

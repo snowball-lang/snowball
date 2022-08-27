@@ -11,7 +11,7 @@
 #include "snowball/utils/mangle.h"
 
 #include <cstdio>
-#include <llvm-10/llvm/IR/Intrinsics.h>
+#include <llvm-14/llvm/IR/Intrinsics.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Verifier.h>
 #include <llvm/IR/IRBuilder.h>
@@ -54,12 +54,12 @@
     llvm::Type* __ty = TypeChecker::type2llvm(_builder, __v->getType());\
     std::string  __tys = TypeChecker::get_type_name(__ty); \
     if (TypeChecker::is_number(__ty)) { \
-        __v =  _builder.CreateICmpEQ(__v, llvm::ConstantInt::get(__v->getType(), 1)); \
+        __v =  _builder->CreateICmpEQ(__v, llvm::ConstantInt::get(__ty, 1)); \
     } else if (__ty->isDoubleTy() || __ty->isFloatTy()) { \
-        __v = _builder.CreateFCmpOEQ(__v, llvm::ConstantFP::get(__ty, 1.0)); \
+        __v = _builder->CreateFCmpOEQ(__v, llvm::ConstantFP::get(__ty, 1.0)); \
     } else if (!TypeChecker::is_bool(__ty)) { \
-        llvm::Value* __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS(__tys.c_str(), "__bool", {TypeChecker::to_type(__tys).first}, true), p_node, Logger::format("%s.__bool(self)", __tys.c_str()))->llvm_function; \
-        __v = _builder.CreateCall(__c, {__v}); \
+        auto __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS(__tys.c_str(), "__bool", {TypeChecker::to_type(__tys).first}, true), p_node, Logger::format("%s.__bool(self)", __tys.c_str()))->llvm_function; \
+        __v = _builder->CreateCall(__c, {__v}); \
     } \
     llvm::Value* ret = __v;
 
@@ -228,7 +228,7 @@ namespace snowball {
                         BBLU, p_node->member->name.c_str(), RESET))
                 }
 
-                return _builder.CreateGEP(gen_result, llvm::ConstantInt::get(_builder.getInt32Ty(), pos));
+                return _builder->CreateExtractElement(gen_result, llvm::ConstantInt::get(_builder->getInt32Ty(), pos));
             }
 
             case ScopeType::MODULE: {
@@ -256,7 +256,7 @@ namespace snowball {
             generate(node);
         }
 
-        return llvm::ConstantInt::get(_builder.getInt1Ty(), 0);
+        return llvm::ConstantInt::get(_builder->getInt1Ty(), 0);
     }
 
 
@@ -266,7 +266,7 @@ namespace snowball {
         llvm::Value* inital_value = generate(p_node->stmt);
         GET_BOOL_VALUE(condition, inital_value)
 
-        llvm::Value* cond = _builder.CreateICmpEQ(
+        llvm::Value* cond = _builder->CreateICmpEQ(
             condition,
             llvm::ConstantInt::get(
                 get_llvm_type_from_sn_type(BuildinTypes::BOOL, _builder),
@@ -274,20 +274,20 @@ namespace snowball {
             )
         );
 
-        llvm::Function *TheFunction = _builder.GetInsertBlock()->getParent();
-        llvm::BasicBlock* IfBB = llvm::BasicBlock::Create(_builder.getContext(), "btrue", TheFunction);
+        llvm::Function *TheFunction = _builder->GetInsertBlock()->getParent();
+        llvm::BasicBlock* IfBB = llvm::BasicBlock::Create(_builder->getContext(), "btrue", TheFunction);
         llvm::BasicBlock* ElseBB;
 
         if (ELSE_STMT_EXISTS()) {
-            ElseBB = llvm::BasicBlock::Create(_builder.getContext(), "bfalse", TheFunction);
+            ElseBB = llvm::BasicBlock::Create(_builder->getContext(), "bfalse", TheFunction);
         }
 
-        llvm::BasicBlock* ContinueBB = llvm::BasicBlock::Create(_builder.getContext(), "end", TheFunction);
+        llvm::BasicBlock* ContinueBB = llvm::BasicBlock::Create(_builder->getContext(), "end", TheFunction);
 
-        _builder.CreateCondBr(cond, IfBB, ELSE_STMT_EXISTS() ? ElseBB : ContinueBB);
+        _builder->CreateCondBr(cond, IfBB, ELSE_STMT_EXISTS() ? ElseBB : ContinueBB);
 
         // Generate if statement
-        _builder.SetInsertPoint(IfBB);
+        _builder->SetInsertPoint(IfBB);
         _enviroment->create_scope("if$true");
 
         for (Node* node : p_node->body->exprs) {
@@ -295,14 +295,14 @@ namespace snowball {
         }
 
         if ((IfBB->size() == 0 || !IfBB->back().isTerminator()) || _context.is_test) {
-            _builder.CreateBr(ContinueBB);
+            _builder->CreateBr(ContinueBB);
         }
 
         _enviroment->delete_scope();
 
         // Generate else statement (if it exist)
         if (ELSE_STMT_EXISTS()) {
-            _builder.SetInsertPoint(ElseBB);
+            _builder->SetInsertPoint(ElseBB);
             _enviroment->create_scope("if$false");
 
             for (Node* node : p_node->else_stmt->exprs) {
@@ -310,14 +310,14 @@ namespace snowball {
             }
 
             if ((ElseBB->size() == 0 || !ElseBB->back().isTerminator()) || _context.is_test) {
-                _builder.CreateBr(ContinueBB);
+                _builder->CreateBr(ContinueBB);
             }
 
             _enviroment->delete_scope();
         }
 
         // Continue with rest of body
-        _builder.SetInsertPoint(ContinueBB);
+        _builder->SetInsertPoint(ContinueBB);
         return ContinueBB;
 
         #undef ELSE_STMT_EXISTS
@@ -329,27 +329,26 @@ namespace snowball {
 
         llvm::Value* current_test = *_enviroment->get("?test-result", nullptr)->llvm_value;
 
-        _builder.CreateStore(_builder.CreateIntCast(assertion, _builder.getInt8Ty(), false), current_test);
+        _builder->CreateStore(_builder->CreateIntCast(assertion, _builder->getInt8Ty(), false), current_test);
 
-        // DUMP_S(TypeChecker::get_type_name(current_test->getType()).c_str())
-        llvm::Value* cond = _builder.CreateICmpEQ(
+        llvm::Value* cond = _builder->CreateICmpEQ(
             convert_to_right_value(_builder, current_test),
             llvm::ConstantInt::get(
-                _builder.getInt8Ty(),
+                _builder->getInt8Ty(),
                 1
             )
         );
 
-        llvm::Function *TheFunction = _builder.GetInsertBlock()->getParent();
-        llvm::BasicBlock* FailBB = llvm::BasicBlock::Create(_builder.getContext(), "assert_fail", TheFunction);
-        llvm::BasicBlock* ContinueBB = llvm::BasicBlock::Create(_builder.getContext(), "assert_continue", TheFunction);
+        llvm::Function *TheFunction = _builder->GetInsertBlock()->getParent();
+        llvm::BasicBlock* FailBB = llvm::BasicBlock::Create(_builder->getContext(), "assert_fail", TheFunction);
+        llvm::BasicBlock* ContinueBB = llvm::BasicBlock::Create(_builder->getContext(), "assert_continue", TheFunction);
 
-        _builder.CreateCondBr(cond, ContinueBB, FailBB);
+        _builder->CreateCondBr(cond, ContinueBB, FailBB);
 
-        _builder.SetInsertPoint(FailBB);
-        _builder.CreateRet(convert_to_right_value(_builder, current_test));
+        _builder->SetInsertPoint(FailBB);
+        _builder->CreateRet(convert_to_right_value(_builder, current_test));
 
-        _builder.SetInsertPoint(ContinueBB);
+        _builder->SetInsertPoint(ContinueBB);
 
         return ContinueBB;
     }
@@ -372,7 +371,7 @@ namespace snowball {
 
                 _linked_libraries.push_back(path);
                 _enviroment->current_scope()->set(mangle(p_node->path, {}, true, true), std::make_unique<ScopeValue*>(mod));
-                return llvm::ConstantInt::get(_builder.getInt8Ty(), 0);
+                return llvm::ConstantInt::get(_builder->getInt8Ty(), 0);
             } else {
                 module_name = p_node->path;
                 module_path = get_sn_lib_src(p_node->path);
@@ -382,7 +381,7 @@ namespace snowball {
         }
 
         ScopeValue* module_scope = new ScopeValue(new Scope());
-        auto class_struct = llvm::StructType::create(_builder.getContext(), module_name);
+        auto class_struct = llvm::StructType::create(_builder->getContext(), module_name);
         class_struct->setBody({}, true);
         module_scope->llvm_struct = std::make_shared<llvm::StructType *>(class_struct);
         module_scope->module_name = module_name;
@@ -423,7 +422,7 @@ namespace snowball {
         _source_info = source_bk;
 
         // Just return anything
-        return llvm::ConstantInt::get(_builder.getInt8Ty(), 0);
+        return llvm::ConstantInt::get(_builder->getInt8Ty(), 0);
     }
 
     llvm::Value* Generator::generate_new(NewNode* p_node) {
@@ -460,7 +459,7 @@ namespace snowball {
             throw CompilerError(Error::SYNTAX_ERROR, Logger::format("'%s' is not a function", p_node->method.c_str()), dbg_info);
         }
 
-        return _builder.CreateCall(*function->llvm_function, args, "calltmp");
+        return _builder->CreateCall(*function->llvm_function, args, "calltmp");
     }
 
     llvm::Value* Generator::generate_class(ClassNode* p_node) {
@@ -470,7 +469,7 @@ namespace snowball {
         // TODO: class name mangled if module exists
         Scope* class_scope = new Scope(p_node->name, _source_info);
 
-        auto class_struct = llvm::StructType::create(_builder.getContext(), ADD_MODULE_NAME_IF_EXISTS(".") class_type->mangle());
+        auto class_struct = llvm::StructType::create(_builder->getContext(), ADD_MODULE_NAME_IF_EXISTS(".") class_type->mangle());
         ScopeValue* class_scope_val = new ScopeValue(class_scope, std::make_shared<llvm::StructType*>(class_struct));
         std::unique_ptr<ScopeValue*> class_value = std::make_unique<ScopeValue*>(class_scope_val);
         SET_TO_GLOBAL_OR_CLASS(class_type->mangle(), class_value)
@@ -505,32 +504,34 @@ namespace snowball {
         llvm::raw_string_ostream message_stream(llvm_error);
         std::string test_name = _context._testing_context->get_name(_context._testing_context->addTest(p_node->description));
 
-        auto prototype = llvm::FunctionType::get(_builder.getInt8Ty(), {}, false);
+        auto prototype = llvm::FunctionType::get(_builder->getInt8Ty(), {}, false);
         llvm::Function *function = llvm::Function::Create(prototype, llvm::Function::ExternalLinkage, test_name, _module);
 
-        llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder.getContext(), "body", function);
-        _builder.SetInsertPoint(body);
+        llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder->getContext(), "body", function);
+        _builder->SetInsertPoint(body);
 
         if (p_node->skip) {
             _enviroment->delete_scope();
-            _builder.CreateRet(llvm::ConstantInt::get(_builder.getInt8Ty(), 2));
+            _builder->CreateRet(llvm::ConstantInt::get(_builder->getInt8Ty(), 2));
 
             return function;
 
         } else {
             Scope* current_scope = _enviroment->create_scope(test_name);
-            llvm::Value* value = llvm::ConstantInt::get(_builder.getInt8Ty(), 3);
+            llvm::Value* value = llvm::ConstantInt::get(_builder->getInt8Ty(), 3);
 
-            auto* llvm_alloca = _builder.CreateAlloca (value->getType(), nullptr, "?test-result" );
+            auto* llvm_alloca = _builder->CreateAlloca (value->getType(), nullptr, "?test-result" );
 
             std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(llvm_alloca)));
             current_scope->set("?test-result", std::move(scope_value));
-            _builder.CreateStore (value, llvm_alloca, /*isVolatile=*/false);
+            _builder->CreateStore (value, llvm_alloca, /*isVolatile=*/false);
 
             _context.is_test = true;
             for (Node* node : p_node->block->exprs) {
                 generate(node);
             }
+
+            _builder->CreateRet(convert_to_right_value(_builder, llvm_alloca));
 
             _context.is_test = false;
             llvm::verifyFunction(*function, &message_stream);
@@ -538,7 +539,6 @@ namespace snowball {
                 throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
             _enviroment->delete_scope();
-            _builder.CreateRet(convert_to_right_value(_builder, llvm_alloca));
 
             return function;
         }
@@ -654,7 +654,7 @@ namespace snowball {
         } else if (p_node->generics.size() > 0) {
             auto [generic_function, succ] = _generics->get_generic(method_call, arg_types, p_node->generics, p_node);
             if (succ && ((_context._current_module != nullptr && _context._current_module->module_name == base_struct) || (_context._current_class != nullptr && _context._current_class->name == base_struct) || generic_function.node->is_lop_level)) {
-                auto backup = _builder.GetInsertBlock();
+                auto backup = _builder->GetInsertBlock();
 
                 generate(generic_function.node);
                 function = _enviroment->get(
@@ -662,7 +662,7 @@ namespace snowball {
                     mangle(p_node->method, generic_function.args, false) :
                     GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, generic_function.args, false), p_node);
 
-                _builder.SetInsertPoint(backup);
+                _builder->SetInsertPoint(backup);
                 private_method_used = true;
             } else if (succ) {
                 private_method_exists = true;
@@ -679,7 +679,7 @@ namespace snowball {
             if (p_node->generics.size() > 0) {
                 auto [generic_function, succ] = _generics->get_generic(method_call, arg_types, p_node->generics, p_node);
                 if (succ) {
-                    auto backup = _builder.GetInsertBlock();
+                    auto backup = _builder->GetInsertBlock();
 
                     generate(generic_function.node);
                     function = _enviroment->get(
@@ -687,7 +687,7 @@ namespace snowball {
                         mangle(p_node->method, generic_function.args, true) :
                         GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, generic_function.args, true), p_node);
 
-                    _builder.SetInsertPoint(backup);
+                    _builder->SetInsertPoint(backup);
                 } else {
                     FUNCTION_CALL_NOT_FOUND()
                 }
@@ -707,7 +707,7 @@ namespace snowball {
         }
 
         ASSERT(args.size() == arg_types.size())
-        return _builder.CreateCall(*function->llvm_function, args);
+        return _builder->CreateCall(*function->llvm_function, args);
     }
 
     llvm::Value* Generator::generate_return(ReturnNode* p_node) {
@@ -731,7 +731,7 @@ namespace snowball {
         if ((TypeChecker::get_type_name(new_right_type) == ret_type) ||
             (TypeChecker::is_number(left_type) || TypeChecker::is_float(left_type) || TypeChecker::is_bool(left_type)) &&
             (TypeChecker::is_number(new_right_type) || TypeChecker::is_float(new_right_type) || TypeChecker::is_bool(new_right_type))) {
-            return _builder.CreateRet(new_right);
+            return _builder->CreateRet(new_right);
         } else {
             COMPILER_ERROR(
                 TYPE_ERROR,
@@ -762,7 +762,7 @@ namespace snowball {
             case ScopeType::MODULE:
             case ScopeType::CLASS: {
                 llvm::StructType* type = *value->llvm_struct;
-                auto alloca = _builder.CreateAlloca(type);
+                auto alloca = _builder->CreateAlloca(type);
                 alloca->eraseFromParent();
                 return alloca;
             }
@@ -790,7 +790,7 @@ namespace snowball {
             {
                 case OP_NOT: {
                     if (TypeChecker::is_bool(left_type) || TypeChecker::is_number(left_type)) {
-                        return _builder.CreateNot(left);
+                        return _builder->CreateNot(left);
                     }
 
                     CALL_UNARY_OPERATOR("__not")
@@ -802,7 +802,7 @@ namespace snowball {
                 }
             }
 
-            return _builder.CreateCall(function,
+            return _builder->CreateCall(function,
                 {left});
         } else {
             llvm::Value* right = generate(p_node->right);
@@ -819,10 +819,10 @@ namespace snowball {
                     llvm::Type* new_right_type = new_right->getType();
 
                     if (TypeChecker::is_float(new_right_type) && TypeChecker::is_float(left_type)) {
-                        return _builder.CreateFAdd(left, new_right);
+                        return _builder->CreateFAdd(left, new_right);
                     } else if ((TypeChecker::is_number(left_type) || TypeChecker::is_float(left_type) || TypeChecker::is_bool(left_type)) &&
                     (TypeChecker::is_number(new_right_type) || TypeChecker::is_float(new_right_type) || TypeChecker::is_bool(new_right_type))) {
-                        return _builder.CreateAdd(left, new_right);
+                        return _builder->CreateAdd(left, new_right);
                     }
                     // TODO: bool + bool
                     // TODO: create int cast if they dont match or throw an error
@@ -841,10 +841,9 @@ namespace snowball {
                     llvm::Type* new_right_type = new_right->getType();
 
                     if (TypeChecker::is_float(new_right_type) && TypeChecker::is_float(left_type)) {
-                        return _builder.CreateFCmpOEQ(left, new_right);
-                    } else if ((TypeChecker::is_number(left_type) || TypeChecker::is_float(left_type) || TypeChecker::is_bool(left_type)) &&
-                    (TypeChecker::is_number(new_right_type) || TypeChecker::is_float(new_right_type) || TypeChecker::is_bool(new_right_type))) {
-                        return _builder.CreateICmpEQ(left, new_right);
+                        return _builder->CreateFCmpOEQ(left, new_right);
+                    } else if (TypeChecker::both_number(left_type, new_right_type, true)) {
+                        return _builder->CreateICmpEQ(left, new_right);
                     }
 
                     CALL_OPERATOR("__eqeq")
@@ -856,10 +855,10 @@ namespace snowball {
                     llvm::Type* new_right_type = new_right->getType();
 
                     if (TypeChecker::is_float(new_right_type) && TypeChecker::is_float(left_type)) {
-                        return _builder.CreateFCmpOLE(left, new_right);
+                        return _builder->CreateFCmpOLE(left, new_right);
                     } else if ((TypeChecker::is_number(left_type) || TypeChecker::is_float(left_type) || TypeChecker::is_bool(left_type)) &&
                     (TypeChecker::is_number(new_right_type) || TypeChecker::is_float(new_right_type) || TypeChecker::is_bool(new_right_type))) {
-                        return _builder.CreateICmpSLE(left, new_right);
+                        return _builder->CreateICmpSLE(left, new_right);
                     }
 
                     CALL_OPERATOR("__lteq")
@@ -871,10 +870,10 @@ namespace snowball {
                     llvm::Type* new_right_type = new_right->getType();
 
                     if (TypeChecker::is_float(new_right_type) && TypeChecker::is_float(left_type)) {
-                        return _builder.CreateFSub(left, new_right);
+                        return _builder->CreateFSub(left, new_right);
                     } else if ((TypeChecker::is_number(left_type) || TypeChecker::is_float(left_type) || TypeChecker::is_bool(left_type)) &&
                     (TypeChecker::is_number(new_right_type) || TypeChecker::is_float(new_right_type) || TypeChecker::is_bool(new_right_type))) {
-                        return _builder.CreateSub(left, new_right);
+                        return _builder->CreateSub(left, new_right);
                     }
 
 
@@ -887,7 +886,7 @@ namespace snowball {
                 }
             }
 
-            return _builder.CreateCall(function,
+            return _builder->CreateCall(function,
                 {left, right});
         }
     }
@@ -910,7 +909,7 @@ namespace snowball {
                     "%s.%s", _context._current_class->name.c_str(),
                     p_node->name.c_str()
                 )), args, p_node->is_public), args, p_node->return_type, p_node->generics, p_node);
-            return _builder.getInt1(0);
+            return _builder->getInt1(0);
         };
 
         std::string llvm_error;
@@ -995,8 +994,8 @@ namespace snowball {
         // BODY GENERATION
 
         if (!p_node->is_foward) {
-            llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder.getContext(), "body", function);
-            _builder.SetInsertPoint(body);
+            llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder->getContext(), "body", function);
+            _builder->SetInsertPoint(body);
 
             if (_context._current_class != nullptr && p_node->name == "__init" && !p_node->is_static) {
                 generate_contructor_meta();
@@ -1014,10 +1013,10 @@ namespace snowball {
                     auto ty = *_enviroment->get(name, p_node)->llvm_struct;
 
                     int size = _module->getDataLayout().getTypeStoreSize(ty);
-                    llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder.getInt32Ty(), size);
+                    llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder->getInt32Ty(), size);
 
-                    llvm::Value* alloca_value = _builder.CreateCall(get_alloca(_module, _builder), size_constant);
-                    llvm::Value* cast = _builder.CreatePointerCast(alloca_value, TypeChecker::type2llvm(_builder, ty), generic.first);
+                    llvm::Value* alloca_value = _builder->CreateCall(get_alloca(_module, _builder), {size_constant});
+                    llvm::Value* cast = _builder->CreatePointerCast(alloca_value, TypeChecker::type2llvm(_builder, ty), generic.first);
 
                     std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(cast)));
 
@@ -1035,11 +1034,11 @@ namespace snowball {
             if (body->size() == 0 || !body->back().isTerminator()) {
                 if (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->is_lop_level) {
                     llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
-                    _builder.CreateRet(llvm::ConstantInt::get(i64, 0));
+                    _builder->CreateRet(llvm::ConstantInt::get(i64, 0));
                 } else if (_context._current_class != nullptr && p_node->name == "__init") {
-                    _builder.CreateRet(*current_scope->get("self", nullptr)->llvm_value);
+                    _builder->CreateRet(*current_scope->get("self", nullptr)->llvm_value);
                 } else if (retType->isVoidTy()) {
-                    _builder.CreateRet(nullptr);
+                    _builder->CreateRet(nullptr);
                 } else {
                     COMPILER_ERROR(FUNCTION_RET_ERR, Logger::format("Function '%s' does not have a return statement for all paths!", p_node->name.c_str()))
                 }
@@ -1072,12 +1071,12 @@ namespace snowball {
             throw SNError(Error::TODO, "Global variables");
         } else {
             llvm::Value* value = generate(p_node->value);
-            auto* alloca = _builder.CreateAlloca (value->getType(), nullptr, p_node->name );
+            auto* alloca = _builder->CreateAlloca (value->getType(), nullptr, p_node->name );
 
             std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(value)));
             _enviroment->current_scope()->set(p_node->name, std::move(scope_value));
 
-            return _builder.CreateStore (value, alloca, /*isVolatile=*/false);
+            return _builder->CreateStore (value, alloca, /*isVolatile=*/false);
         }
 
     }
@@ -1104,7 +1103,7 @@ namespace snowball {
             case TokenType::VALUE_STRING: {
                 std::string str = p_node->value;
                 str = str.substr(1, str.size() - 2);
-                llvm::Constant* value = _builder.CreateGlobalStringPtr(str.c_str(), ".str");
+                llvm::Constant* value = _builder->CreateGlobalStringPtr(str.c_str(), ".str");
                 return value;
             }
 
@@ -1131,10 +1130,10 @@ namespace snowball {
 
         llvm::StructType* type = *_enviroment->get(_context._current_class->name, _context._current_class)->llvm_struct;
         int size = _module->getDataLayout().getTypeStoreSize(type);
-        llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder.getInt32Ty(), size);
+        llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder->getInt32Ty(), size);
 
-        llvm::Value* alloca_value = _builder.CreateCall(get_alloca(_module, _builder), size_constant);
-        llvm::Value* pointerCast = _builder.CreatePointerCast(alloca_value, type->getPointerTo(), "self");
+        llvm::Value* alloca_value = _builder->CreateCall(get_alloca(_module, _builder), {size_constant});
+        llvm::Value* pointerCast = _builder->CreatePointerCast(alloca_value, type->getPointerTo(), "self");
 
         std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value *>(pointerCast)));
         _enviroment->current_scope()->set("self", std::move(scope_value));
@@ -1143,23 +1142,23 @@ namespace snowball {
         int var_index = 0;
         for (VarNode* var : _context._current_class->vars) {
             llvm::Value* value = generate(var->value);
-            llvm::Value* pointer = _builder.CreateStructGEP(pointerCast, var_index);
+            llvm::Value* pointer = _builder->CreateExtractElement(pointerCast, var_index);
             llvm::Value* load = convert_to_right_value(_builder, pointer);
 
-            _builder.CreateStore(load, value);
+            _builder->CreateStore(load, value);
 
             var_index++;
         }
     }
 
-    llvm::Value* Generator::convert_to_right_value(llvm::IRBuilder<> p_builder, llvm::Value* value) {
+    llvm::Value* Generator::convert_to_right_value(std::shared_ptr<llvm::IRBuilder<>> p_builder, llvm::Value* value) {
 
-        if (value->getName().str().empty()) return p_builder.CreateLoad(value);
+        auto type = value->getType();
+
         std::ostringstream ss_name;
-
         ss_name << value->getName().str();
         ss_name << ".load";
 
-        return p_builder.CreateLoad(value, ss_name.str());
+        return p_builder->CreateLoad(type->isPointerTy() ? type->getPointerElementType() : type, value, ss_name.str());
     }
 }

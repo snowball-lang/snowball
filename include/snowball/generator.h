@@ -25,7 +25,7 @@ namespace snowball {
                 Parser* p_parser,
                 Enviroment* p_enviroment,
                 SourceInfo* p_source_info,
-                llvm::IRBuilder<> p_builder,
+                std::shared_ptr<llvm::IRBuilder<>> p_builder,
                 llvm::Module* p_module,
                 std::vector<std::string>& p_linked_libraries,
                 TestingContext* p_testing_context,
@@ -37,11 +37,11 @@ namespace snowball {
                     _generics(p_generics),
                     _enviroment(p_enviroment),
                     _tests_enabled(p_testsEnabled),
-                    _builder(std::move(p_builder)),
                     _linked_libraries(p_linked_libraries),
                     _api(p_api) {
                 _source_info = p_source_info;
                 _context._testing_context = p_testing_context;
+                _builder = p_builder;
             };
 
             llvm::Value* generate(Node* p_node);
@@ -58,7 +58,7 @@ namespace snowball {
             Enviroment* _enviroment;
             SourceInfo* _source_info;
 
-            llvm::IRBuilder<> _builder;
+            std::shared_ptr<llvm::IRBuilder<>> _builder;
 
             std::vector<std::string>& _linked_libraries;
 
@@ -93,7 +93,7 @@ namespace snowball {
             void generate_contructor_meta();
 
         public:
-            static llvm::Value* convert_to_right_value(llvm::IRBuilder<> p_builder, llvm::Value* value);
+            static llvm::Value* convert_to_right_value(std::shared_ptr<llvm::IRBuilder<>> p_builder, llvm::Value* value);
     };
 }
 

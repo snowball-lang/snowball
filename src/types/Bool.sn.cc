@@ -27,8 +27,8 @@ void register_bool(snowball::SNAPI* API) {
 
     API->create_class("Bool", std::map<std::string, llvm::Type*> {}, [API](snowball::ScopeValue* CLASS) {
 
-        llvm::Type* string_class = snowball::get_llvm_type_from_sn_type(snowball::BuildinTypes::STRING, API->get_compiler()->builder);
-        llvm::Type* class_type = snowball::get_llvm_type_from_sn_type(snowball::BuildinTypes::BOOL, API->get_compiler()->builder);
+        llvm::Type* string_class = snowball::get_llvm_type_from_sn_type(snowball::BuildinTypes::STRING, API->compiler->builder);
+        llvm::Type* class_type = snowball::get_llvm_type_from_sn_type(snowball::BuildinTypes::BOOL, API->compiler->builder);
 
         METHOD("__str", string_class, { METHOD_ARGUMENT(snowball::BOOL_TYPE, class_type) }, "sn_Bool__str")
     });

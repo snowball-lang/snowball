@@ -34,13 +34,13 @@ namespace snowball {
             static bool is_castable(llvm::Type* p_left, llvm::Type* p_right);
             static bool has_less_width(llvm::IntegerType* p_src, llvm::IntegerType* p_comp);
             static bool both_number(llvm::Type* p_left, llvm::Type* p_right, bool p_allow_bools = false);
-            static std::pair<llvm::Value*, bool> implicit_cast(llvm::IRBuilder<> p_builder, llvm::Type* p_left, llvm::Value* p_right);
+            static std::pair<llvm::Value*, bool> implicit_cast(std::shared_ptr<llvm::IRBuilder<>> p_builder, llvm::Type* p_left, llvm::Value* p_right);
             static bool is_bool(llvm::Type* p_type);
             static bool is_class(ScopeValue* p_value);
             static std::string to_mangle(Type* p_type);
             static bool is_number(llvm::Type* p_type);
             static std::string to_mangle(std::string p_name, std::vector<Type*> p_generics);
-            static llvm::Type* type2llvm(llvm::IRBuilder<> p_builder, llvm::Type* p_type);
+            static llvm::Type* type2llvm(std::shared_ptr<llvm::IRBuilder<>> p_builder, llvm::Type* p_type);
 
             static std::string get_type_name(llvm::Type* p_ty);
 
@@ -98,8 +98,8 @@ namespace snowball {
     inline Type* FLOAT64_TYPE = new Type("f64");
     inline Type* VOID_TYPE    = new Type("Void");
 
-    llvm::Type* get_llvm_type_from_sn_type(BuildinTypes type, llvm::IRBuilder<> builder);
-    llvm::Value* get_alloca(llvm::Module* p_module, llvm::IRBuilder<> p_builder);
+    llvm::Type* get_llvm_type_from_sn_type(BuildinTypes type, std::shared_ptr<llvm::IRBuilder<>> builder);
+    llvm::Function* get_alloca(llvm::Module* p_module, std::shared_ptr<llvm::IRBuilder<>> p_builder);
 }
 
 #endif // __SNOWBALL_BUILDIN_TYPES_H_

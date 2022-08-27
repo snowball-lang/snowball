@@ -1,5 +1,5 @@
 
-#include <llvm-10/llvm/IR/DerivedTypes.h>
+#include <llvm-14/llvm/IR/DerivedTypes.h>
 #include <memory>
 #include <vector>
 #include <algorithm>
@@ -108,7 +108,7 @@ namespace snowball {
         return false;
     }
 
-    std::pair<llvm::Value*, bool> TypeChecker::implicit_cast(llvm::IRBuilder<> p_builder, llvm::Type* p_left, llvm::Value* p_right) {
+    std::pair<llvm::Value*, bool> TypeChecker::implicit_cast(std::shared_ptr<llvm::IRBuilder<>> p_builder, llvm::Type* p_left, llvm::Value* p_right) {
 
         // TODO: if left or right is float, convert the other side to float.
         llvm::Type* right_type = p_right->getType();
@@ -116,20 +116,20 @@ namespace snowball {
         if (right_type == p_left) return {p_right, true};
 
         if (is_float(p_left) && is_number(right_type)) {
-            return {p_builder.CreateFPToSI(p_right, p_left), true};
+            return {p_builder->CreateFPToSI(p_right, p_left), true};
         } if (p_left->isDoubleTy() && right_type->isFloatTy()) {
-            return {p_builder.CreateFPCast(p_right, p_left), true};
+            return {p_builder->CreateFPCast(p_right, p_left), true};
         } if (p_left->isFloatTy() && right_type->isDoubleTy()) {
-            return {p_builder.CreateFPTrunc(p_right, p_left), true};
+            return {p_builder->CreateFPTrunc(p_right, p_left), true};
         } else if (is_number(p_left) && is_float(right_type)) {
-            return {p_builder.CreateSIToFP(p_right, p_left), true};
+            return {p_builder->CreateSIToFP(p_right, p_left), true};
         } else if (both_number(p_left, right_type, true)) {
 
             if (has_less_width(llvm::dyn_cast<llvm::IntegerType>(right_type), llvm::dyn_cast<llvm::IntegerType>(p_left))) {
-                return {p_builder.CreateTrunc(p_right, p_left), true};
+                return {p_builder->CreateTrunc(p_right, p_left), true};
             }
 
-            return {p_builder.CreateIntCast(p_right, p_left, true), true};
+            return {p_builder->CreateIntCast(p_right, p_left, true), true};
         } else if (is_castable(p_left, right_type)) {
             throw SNError(Error::TODO, "Bit casts for non-integer types are not alowed!");
         }
@@ -187,31 +187,31 @@ namespace snowball {
         } else if (base_type->isDoubleTy()) {
             return FLOAT64_TYPE->mangle();
         } else if (base_type->isStructTy()) {
-            return base_type->getStructName();
+            return base_type->getStructName().str();
         }
 
         throw SNError(Error::BUG, Logger::format("Type with ID %i could not be decided!", base_type->getTypeID()));
     }
 
-    llvm::Type* TypeChecker::type2llvm(llvm::IRBuilder<> p_builder, llvm::Type* p_type) {
+    llvm::Type* TypeChecker::type2llvm(std::shared_ptr<llvm::IRBuilder<>> p_builder, llvm::Type* p_type) {
         if (get_type_name(p_type) == BOOL_TYPE->mangle()) {
-            return get_llvm_type_from_sn_type(BuildinTypes::BOOL, p_builder);
+            return get_llvm_type_from_sn_type(BuildinTypes::BOOL, std::move(p_builder));
         } else if (get_type_name(p_type) == NUMBER_TYPE->mangle()) {
-            return get_llvm_type_from_sn_type(BuildinTypes::NUMBER, p_builder);
+            return get_llvm_type_from_sn_type(BuildinTypes::NUMBER, std::move(p_builder));
         } else if (get_type_name(p_type) == FLOAT32_TYPE->mangle()) {
-            return p_builder.getFloatTy();
+            return p_builder->getFloatTy();
         } else if (get_type_name(p_type) == FLOAT64_TYPE->mangle()) {
-            return p_builder.getDoubleTy();
+            return p_builder->getDoubleTy();
         } else if (get_type_name(p_type) == INT16_TYPE->mangle()) {
-            return p_builder.getInt16Ty();
+            return p_builder->getInt16Ty();
         } else if (get_type_name(p_type) == STRING_TYPE->mangle()) {
-            return p_builder.getInt8PtrTy();
+            return p_builder->getInt8PtrTy();
         } else if (get_type_name(p_type) == VOID_TYPE->mangle()) {
-            return p_builder.getVoidTy();
+            return p_builder->getVoidTy();
         } else if (get_type_name(p_type) == INT32_TYPE->mangle()) {
-            return p_builder.getInt32Ty();
+            return p_builder->getInt32Ty();
         } else if (get_type_name(p_type) == INT64_TYPE->mangle()) {
-            return p_builder.getInt64Ty();
+            return p_builder->getInt64Ty();
         } else if (is_number(p_type)) {
             return p_type;
         }
@@ -303,25 +303,25 @@ namespace snowball {
         return { deduced_types,true };
     }
 
-    llvm::Value* get_alloca(llvm::Module* p_module, llvm::IRBuilder<> p_builder) {
-        llvm::FunctionType* function_type = llvm::FunctionType::get(p_builder.getInt8PtrTy(), { p_builder.getInt32Ty() }, false);
-        return p_module->getOrInsertFunction("_SNalc", function_type).getCallee();
+    llvm::Function* get_alloca(llvm::Module* p_module, std::shared_ptr<llvm::IRBuilder<>> p_builder) {
+        llvm::FunctionType* function_type = llvm::FunctionType::get(p_builder->getInt8PtrTy(), { p_builder->getInt32Ty() }, false);
+        return (llvm::Function*)p_module->getOrInsertFunction("_SNalc", function_type).getCallee();
     }
 
-    llvm::Type* get_llvm_type_from_sn_type(BuildinTypes type, llvm::IRBuilder<> builder) {
+    llvm::Type* get_llvm_type_from_sn_type(BuildinTypes type, std::shared_ptr<llvm::IRBuilder<>> builder) {
 
         switch (type)
         {
             #define RETURN_LLVM_TYPE_IF_SN_TYPE_IS(type, llvm_type) case BuildinTypes::type: {return llvm_type; };
                 #if _SNOWBALL_ENABLE_INT64
-                    RETURN_LLVM_TYPE_IF_SN_TYPE_IS(NUMBER, builder.getInt64Ty())
+                    RETURN_LLVM_TYPE_IF_SN_TYPE_IS(NUMBER, builder->getInt64Ty())
                 #else
-                    RETURN_LLVM_TYPE_IF_SN_TYPE_IS(NUMBER, builder.getInt32Ty())
+                    RETURN_LLVM_TYPE_IF_SN_TYPE_IS(NUMBER, builder->getInt32Ty())
                 #endif
-                RETURN_LLVM_TYPE_IF_SN_TYPE_IS(FLOAT, builder.getFloatTy())
-                RETURN_LLVM_TYPE_IF_SN_TYPE_IS(DOUBLE, builder.getDoubleTy())
-                RETURN_LLVM_TYPE_IF_SN_TYPE_IS(STRING, builder.getInt8PtrTy())
-                RETURN_LLVM_TYPE_IF_SN_TYPE_IS(BOOL, builder.getInt1Ty())
+                RETURN_LLVM_TYPE_IF_SN_TYPE_IS(FLOAT, builder->getFloatTy())
+                RETURN_LLVM_TYPE_IF_SN_TYPE_IS(DOUBLE, builder->getDoubleTy())
+                RETURN_LLVM_TYPE_IF_SN_TYPE_IS(STRING, builder->getInt8PtrTy())
+                RETURN_LLVM_TYPE_IF_SN_TYPE_IS(BOOL, builder->getInt1Ty())
             #undef RETURN_LLVM_TYPE_IF_SN_TYPE_IS
             default:
                 // TODO: throw error

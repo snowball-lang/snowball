@@ -1,5 +1,6 @@
-#include <llvm-10/llvm/Support/CodeGen.h>
-#include <llvm-c-10/llvm-c/Target.h>
+#include <llvm-14/llvm/Support/CodeGen.h>
+#include <llvm/Support/Host.h>
+#include <llvm/Support/FileSystem.h>
 #include <llvm/IR/Module.h>
 #include <llvm/ADT/SmallVector.h>
 #include <llvm/IR/Verifier.h>
@@ -15,12 +16,12 @@
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/Passes/PassBuilder.h>
-#include <llvm/Support/MathExtras.h>
 #include <llvm/Support/FormattedStream.h>
 
 #include <llvm/IR/LegacyPassManager.h>
 
-#include <llvm/Support/TargetRegistry.h>
+#include <llvm/Passes/OptimizationLevel.h>
+#include <llvm/MC/TargetRegistry.h>
 #include <llvm/Support/DynamicLibrary.h>
 
 #include <llvm/Target/TargetMachine.h>
@@ -28,8 +29,9 @@
 
 #include "llvm/Support/TargetSelect.h"
 
+#include <llvm/Support/raw_ostream.h>
 #include <llvm/ExecutionEngine/MCJIT.h>
-#include <llvm/ExecutionEngine/Orc/Legacy.h>
+// #include <llvm/ExecutionEngine/Orc/Legacy.h>
 #include <llvm/ExecutionEngine/JITSymbol.h>
 
 #include <llvm/ExecutionEngine/GenericValue.h>
@@ -59,19 +61,15 @@
 
 #define SN_MODULE_NAME "llvm_snowball_compile_mod_"
 
-#define NEW_IR_BUILDER() llvm::IRBuilder<> builder(global_context);
 #define ADD_GLOBAL_IF_FN_EXISTS(name, function) \
     if (_module.get()->getFunction(name)) \
         executionEngine->addGlobalMapping(*_enviroment->get(name, nullptr)->llvm_function, function);
 
 namespace snowball {
-    Compiler::Compiler(std::string p_code, std::string p_path)
-        : builder(llvm::IRBuilder<> (global_context)) {
-            _code = p_code;
-            _path = p_path;
-
-            NEW_IR_BUILDER()
-        }
+    Compiler::Compiler(std::string p_code, std::string p_path) {
+        _code = p_code;
+        _path = p_path;
+    }
 
     std::string Compiler::prepare_module_name() {
         std::string tmp = _path;
@@ -81,8 +79,6 @@ namespace snowball {
     }
 
     void Compiler::initialize() {
-
-
         llvm::InitializeNativeTarget();
         llvm::InitializeAllTargetInfos();
         llvm::InitializeAllTargets();
@@ -90,6 +86,8 @@ namespace snowball {
         llvm::InitializeAllAsmPrinters();
         LLVMInitializeNativeAsmParser();
         create_source_info();
+
+        builder = std::make_shared<llvm::IRBuilder<>>(global_context);
 
         std::string target_error;
 
@@ -153,7 +151,7 @@ namespace snowball {
                     _parser,
                     _enviroment,
                     _source_info,
-                    builder,
+                    std::move(builder),
                     _module.get(),
                     this->linked_libraries,
                     _testing_context,
@@ -321,17 +319,10 @@ namespace snowball {
     }
 
     void Compiler::optimize() {
-        #ifdef DEBUG
-        llvm::LoopAnalysisManager loop_analysis_manager(true);
-        llvm::FunctionAnalysisManager function_analysis_manager(true);
-        llvm::CGSCCAnalysisManager c_gscc_analysis_manager(true);
-        llvm::ModuleAnalysisManager module_analysis_manager(true);
-        #else
-        llvm::LoopAnalysisManager loop_analysis_manager(false);
-        llvm::FunctionAnalysisManager function_analysis_manager(false);
-        llvm::CGSCCAnalysisManager c_gscc_analysis_manager(false);
-        llvm::ModuleAnalysisManager module_analysis_manager(false);
-        #endif
+        llvm::LoopAnalysisManager loop_analysis_manager;
+        llvm::FunctionAnalysisManager function_analysis_manager;
+        llvm::CGSCCAnalysisManager c_gscc_analysis_manager;
+        llvm::ModuleAnalysisManager module_analysis_manager;
 
         // Create the new pass manager builder.
         // Take a look at the PassBuilder constructor parameters for more
@@ -350,18 +341,18 @@ namespace snowball {
                                         c_gscc_analysis_manager, module_analysis_manager);
 
         // todo: let user decide
-        // llvm::PassBuilder::OptimizationLevel level;
+        // llvm::OptimizationLevel level;
         // switch(_opt_level)
         // {
-        //     case OPTIMIZE_O0: level = llvm::PassBuilder::OptimizationLevel::O0; break;
-        //     case OPTIMIZE_O1: level = llvm::PassBuilder::OptimizationLevel::O1; break;
-        //     case OPTIMIZE_O2: level = llvm::PassBuilder::OptimizationLevel::O2; break;
-        //     case OPTIMIZE_O3: level = llvm::PassBuilder::OptimizationLevel::O3; break;
-        //     case OPTIMIZE_Os: level = llvm::PassBuilder::OptimizationLevel::Os; break;
-        //     case OPTIMIZE_Oz: level = llvm::PassBuilder::OptimizationLevel::Oz; break;
+        //     case OPTIMIZE_O0: level = llvm::OptimizationLevel::O0; break;
+        //     case OPTIMIZE_O1: level = llvm::OptimizationLevel::O1; break;
+        //     case OPTIMIZE_O2: level = llvm::OptimizationLevel::O2; break;
+        //     case OPTIMIZE_O3: level = llvm::OptimizationLevel::O3; break;
+        //     case OPTIMIZE_Os: level = llvm::OptimizationLevel::Os; break;
+        //     case OPTIMIZE_Oz: level = llvm::OptimizationLevel::Oz; break;
         //     default: THROW_INTERNAL_ERROR("during code optimization");
         // }
-        llvm::ModulePassManager MPM = pass_builder.buildPerModuleDefaultPipeline(llvm::PassBuilder::OptimizationLevel::Os);
+        llvm::ModulePassManager MPM = pass_builder.buildPerModuleDefaultPipeline(llvm::OptimizationLevel::Os);
         MPM.run(*_module.get(), module_analysis_manager);
     }
 
