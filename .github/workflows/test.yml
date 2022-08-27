@@ -10,13 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: install llvm-14
-        run: |
-          sudo apt update
-          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          sudo apt-add-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-14 main"
-          sudo apt-get update
-          sudo apt-get install -y llvm-14 llvm-14-dev clang-14 llvm-14-tools --fix-missing --fix-broken
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "14.0"
       - name: Build CMake config
         run: |
             cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr .
