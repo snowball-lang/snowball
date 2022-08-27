@@ -55,6 +55,8 @@
     std::string  __tys = TypeChecker::get_type_name(__ty); \
     if (TypeChecker::is_number(__ty)) { \
         __v =  _builder.CreateICmpEQ(__v, llvm::ConstantInt::get(__v->getType(), 1)); \
+    } else if (__ty->isDoubleTy() || __ty->isFloatTy()) { \
+        __v = _builder.CreateFCmpOEQ(__v, llvm::ConstantFP::get(__ty, 1.0)); \
     } else if (!TypeChecker::is_bool(__ty)) { \
         llvm::Value* __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS(__tys.c_str(), "__bool", {TypeChecker::to_type(__tys).first}, true), p_node, Logger::format("%s.__bool(self)", __tys.c_str()))->llvm_function; \
         __v = _builder.CreateCall(__c, {__v}); \
@@ -124,6 +126,10 @@ namespace snowball {
                 return generate_const_value(static_cast<ConstantValue *>(p_node));
             }
 
+            case Node::Ty::CAST: {
+                return generate_cast(static_cast<CastNode *>(p_node));
+            }
+
             case Node::Ty::VAR: {
                 return generate_variable_decl(static_cast<VarNode *>(p_node));
             }
@@ -184,6 +190,22 @@ namespace snowball {
                 DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
                 throw Warning(Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, p_node->type, RESET, BOLD), dbg_info);
         }
+    }
+
+    llvm::Value* Generator::generate_cast(CastNode* p_node) {
+        auto original_value = generate(p_node->expr);
+        auto cast_type = TypeChecker::get_type(_enviroment, p_node->cast_type, p_node);
+
+        if (!TypeChecker::is_class(cast_type)) {
+            COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Type '%s' does not point to a class!", p_node->cast_type->to_string().c_str()))
+        }
+
+        auto [cast, succ] = TypeChecker::implicit_cast(_builder, TypeChecker::type2llvm(_builder, *cast_type->llvm_struct), original_value);
+        if (!succ) {
+            COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Can't cast type '%s' to '%s'!", TypeChecker::to_type(TypeChecker::get_type_name(original_value->getType())).first->to_string().c_str(), p_node->cast_type->to_string().c_str()))
+        }
+
+        return cast;
     }
 
     llvm::Value* Generator::generate_index(IndexNode* p_node) {
@@ -703,7 +725,7 @@ namespace snowball {
             ret_type = TypeChecker::get_type_name(left_type);
         }
 
-        llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, value);
+        llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, value).first;
         llvm::Type* new_right_type = new_right->getType();
 
         if ((TypeChecker::get_type_name(new_right_type) == ret_type) ||
@@ -793,7 +815,7 @@ namespace snowball {
             switch (p_node->op_type)
             {
                 case OP_PLUS: {
-                    llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right);
+                    llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right).first;
                     llvm::Type* new_right_type = new_right->getType();
 
                     if (TypeChecker::is_float(new_right_type) && TypeChecker::is_float(left_type)) {
@@ -815,11 +837,11 @@ namespace snowball {
                 }
 
                 case OP_EQEQ: {
-                    llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right);
+                    llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right).first;
                     llvm::Type* new_right_type = new_right->getType();
 
                     if (TypeChecker::is_float(new_right_type) && TypeChecker::is_float(left_type)) {
-                        return _builder.CreateFAdd(left, new_right);
+                        return _builder.CreateFCmpOEQ(left, new_right);
                     } else if ((TypeChecker::is_number(left_type) || TypeChecker::is_float(left_type) || TypeChecker::is_bool(left_type)) &&
                     (TypeChecker::is_number(new_right_type) || TypeChecker::is_float(new_right_type) || TypeChecker::is_bool(new_right_type))) {
                         return _builder.CreateICmpEQ(left, new_right);
@@ -830,7 +852,7 @@ namespace snowball {
                 }
 
                 case OP_LTEQ: {
-                    llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right);
+                    llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right).first;
                     llvm::Type* new_right_type = new_right->getType();
 
                     if (TypeChecker::is_float(new_right_type) && TypeChecker::is_float(left_type)) {
@@ -845,7 +867,7 @@ namespace snowball {
                 }
 
                 case OP_MINUS: {
-                    llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right);
+                    llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right).first;
                     llvm::Type* new_right_type = new_right->getType();
 
                     if (TypeChecker::is_float(new_right_type) && TypeChecker::is_float(left_type)) {
@@ -1092,7 +1114,7 @@ namespace snowball {
             }
 
             case TokenType::VALUE_FLOAT: {
-                // COMPILER_ERROR(TODO, "Floats are not yet ready!")
+                COMPILER_ERROR(TODO, "Floats are not yet ready!")
                 llvm::Type * f = get_llvm_type_from_sn_type(BuildinTypes::FLOAT, _builder);
                 return llvm::ConstantFP::get(f, std::stof(p_node->value));
             }

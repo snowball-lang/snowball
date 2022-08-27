@@ -16,12 +16,12 @@ pub fn println(__message: i32) Void {
     printf("%ld\n", __message)
 }
 
-pub fn println(__message: f32) Void {
-    println(__message as f64)
-}
-
 pub fn println(__message: f64) Void {
     printf("%f\n", __message)
+}
+
+pub fn println(__message: f32) Void {
+    println(__message as f64)
 }
 
 pub fn println(__message: i64) Void {

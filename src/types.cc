@@ -108,29 +108,33 @@ namespace snowball {
         return false;
     }
 
-    llvm::Value* TypeChecker::implicit_cast(llvm::IRBuilder<> p_builder, llvm::Type* p_left, llvm::Value* p_right) {
+    std::pair<llvm::Value*, bool> TypeChecker::implicit_cast(llvm::IRBuilder<> p_builder, llvm::Type* p_left, llvm::Value* p_right) {
 
         // TODO: if left or right is float, convert the other side to float.
         llvm::Type* right_type = p_right->getType();
 
-        if (right_type == p_left) return p_right;
+        if (right_type == p_left) return {p_right, true};
 
         if (is_float(p_left) && is_number(right_type)) {
-            return p_builder.CreateFPToSI(p_right, p_left);
+            return {p_builder.CreateFPToSI(p_right, p_left), true};
+        } if (p_left->isDoubleTy() && right_type->isFloatTy()) {
+            return {p_builder.CreateFPCast(p_right, p_left), true};
+        } if (p_left->isFloatTy() && right_type->isDoubleTy()) {
+            return {p_builder.CreateFPTrunc(p_right, p_left), true};
         } else if (is_number(p_left) && is_float(right_type)) {
-            return p_builder.CreateSIToFP(p_right, p_left);
+            return {p_builder.CreateSIToFP(p_right, p_left), true};
         } else if (both_number(p_left, right_type, true)) {
 
             if (has_less_width(llvm::dyn_cast<llvm::IntegerType>(right_type), llvm::dyn_cast<llvm::IntegerType>(p_left))) {
-                return p_builder.CreateTrunc(p_right, p_left);
+                return {p_builder.CreateTrunc(p_right, p_left), true};
             }
 
-            return p_builder.CreateIntCast(p_right, p_left, true);
+            return {p_builder.CreateIntCast(p_right, p_left, true), true};
         } else if (is_castable(p_left, right_type)) {
             throw SNError(Error::TODO, "Bit casts for non-integer types are not alowed!");
         }
 
-        return p_right;
+        return {p_right, false};
     }
 
     bool TypeChecker::is_bool(llvm::Type* p_type) {
