@@ -74,8 +74,8 @@ if(NOT BUILD_SHARED_LIBS)
 endif()
 
 ##################################################    StdLib   ##################################################
-file(GLOB files "stdlib/*.cc")
-foreach(file ${files})
+file(GLOB std_c_files "stdlib/*.cc")
+foreach(file ${std_c_files})
   get_filename_component(lib_name ${file} NAME_WE )
   add_library(${lib_name} SHARED ${file})
   target_link_libraries(${lib_name} PUBLIC ${PROJECT_NAME})
@@ -85,6 +85,10 @@ foreach(file ${files})
     LIBRARY  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/snowball-libs
     RUNTIME  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/snowball-libs)
 endforeach()
+
+file(GLOB std_sn_files "stdlib/*.sn")
+install(FILES ${std_sn_files} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/snowball-libs)
+
 
 
 ##################################################    Postbuild   ##################################################

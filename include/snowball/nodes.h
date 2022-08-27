@@ -58,7 +58,7 @@ namespace snowball {
 			UNKNOWN = -1,
 
 			IMPORT,
-			FILE,
+			CAST,
 			CLASS,
 			ENUM,
 			FUNCTION,
@@ -129,7 +129,7 @@ namespace snowball {
 		Type* arg_type;
 
 		ArgumentNode(std::string p_name, Type* p_type) {
-			// todo: default values, infinite args, etc...
+			// todo: default values
 			name = p_name;
 			arg_type = p_type;
 			type = Ty::ARGUMENT;
@@ -137,6 +137,18 @@ namespace snowball {
 
 		~ArgumentNode() {};
 	};
+
+	struct CastNode : public Node {
+		Node* expr;
+		Type* cast_type;
+
+		CastNode() {
+			type = Ty::CAST;
+		};
+
+		~CastNode() {};
+	};
+
 
 	struct FunctionNode : public Node {
 		BlockNode* body;
@@ -149,6 +161,9 @@ namespace snowball {
 		std::map<std::string, Type*> generic_map;
 
 		bool is_static = false;
+		bool has_vargs = false;
+		bool is_foward = false;
+		bool is_extern = false;
 		bool is_public = false;
 		bool has_return = false;
 		bool is_lop_level = false;
@@ -196,6 +211,17 @@ namespace snowball {
 		}
 
 		~IdentifierNode() {};
+	};
+
+	struct IndexNode : public Node {
+		Node* base;
+		IdentifierNode* member;
+
+		IndexNode() {
+			type = Ty::INDEX;
+		};
+
+		~IndexNode() {};
 	};
 
 	struct CallNode : public Node {

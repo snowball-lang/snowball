@@ -1,9 +1,9 @@
 ### Todo
 
 - [ ] constant
-- [ ] Add a Void type
 - [ ] Add a preprocesor
 - [ ] global variables
+- [ ] handle if function returns void, it can't be used as variable
 - [ ] test for all operators
 - [ ] default return type
 - [ ] change location for OPTypes struct inside BinOP node
@@ -63,8 +63,6 @@
         - [ ] __str
         - [ ] __repr
         - [ ] __eqeq
-- [ ] Int class
-- [ ] String class
 
 ### Done ✓
 
@@ -93,7 +91,7 @@
     - [x] Add class/function to global
 - [x] add optimizations
 - [x] Let user choose in 32/64 bits numbers
-- [x] `_MN10gc__allocaA3i32P` and `_MN12gc__reallocaA2i8A3i32P` should not really be in the enviroment
+- [x] `alloca` should not really be in the enviroment
 - [x] Unit testing
     - [x] Add `test` keyword
     - [x] Parse test statement
@@ -103,3 +101,7 @@
     - [x] Execute tests
     - [x] return result variable as int
     - [x] Add things like `assert`
+- [x] Add a Void type
+- [x] Int class
+    - [x] Different types of integers
+- [x] String class

@@ -49,7 +49,7 @@ int compile(std::string content, std::string filename, std::vector<std::string> 
         if ((JIT || test) && !object) {
             result = compiler->execute();
         } else if (!JIT && !test && object) {
-            compiler->emit_object(output);
+            compiler->emit_object(output, false);
         } else {
             compiler->emit_binary(output);
         }
@@ -57,7 +57,7 @@ int compile(std::string content, std::string filename, std::vector<std::string> 
         error.print_error();
     }
 
-    compiler->get_module()->print(llvm::outs(), nullptr);
+    // compiler->get_module()->print(llvm::outs(), nullptr);
     compiler->cleanup();
     return result;
 }

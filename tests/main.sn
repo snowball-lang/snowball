@@ -2,8 +2,8 @@
 
 import System
 fn main() i32 {
-    var a = 5
-    System.println("Input what ever comes to mind!")
-    System.println("input: " + System.input())
-    return 2 + a
+    var a = 5.6
+    System.println("OMG, A STDLIB WRITTEN BY SNOWBALL!??!??!?!?!?")
+    System.println(a + 2.5)
+    return 5
 }

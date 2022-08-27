@@ -39,7 +39,7 @@ namespace snowball {
             void optimize();
 
             int emit_binary(std::string p_output);
-            int emit_object(std::string p_output);
+            int emit_object(std::string p_output, bool p_for_executable = false);
 
             int execute();
             void enable_tests() { _enabledTests = true; }
@@ -53,8 +53,8 @@ namespace snowball {
 
             std::vector<std::string> linked_libraries;
 
-            llvm::LLVMContext global_context;
             llvm::IRBuilder<> builder;
+            llvm::LLVMContext global_context;
             SNAPI* API;
 
         private:

@@ -52,6 +52,7 @@ namespace snowball {
         FUNC_CONTAINER,
     };
 
+    // TODO: cleaner structs with childs
     typedef struct ScopeValue {
         ScopeType type;
         Scope* parent_scope;
@@ -63,6 +64,7 @@ namespace snowball {
         bool isPublic = false;
 
         // Function params
+        bool hasVArg = false;
         bool isTopLevel = false;
         bool isStaticFunction = false;
         std::vector<Type*> arguments;
@@ -73,6 +75,9 @@ namespace snowball {
         // Class params
         std::vector<std::string> parents;
         std::vector<std::string> properties;
+
+        // Module params
+        std::string module_name;
 
         Scope* scope_value;
 
@@ -89,7 +94,7 @@ namespace snowball {
             type = ScopeType::FUNC;
             llvm_function = p_value;
 
-            unmangledResult result = unmangle((*p_value)->getName());
+            unmangledResult result = unmangle((*p_value)->getName().str());
             if (result.isMangled && result.isFunction) {
                 isPublic = result.isPublic;
                 arguments = result.arguments;

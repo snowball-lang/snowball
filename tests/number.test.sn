@@ -1,12 +1,15 @@
 
 import System
-test "perform additions" {
+test "perform additions" skip /* skip until floats work*/ {
     var a = 2
     var b = 6
+    var c = 2.6
 
-    var c = a + 4
+    var d = a + 4
+    var e = b + c
 
     assert c == b
+    assert e == 8.6
 }
 
 test "check if numbers are the same" {

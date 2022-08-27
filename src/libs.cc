@@ -13,6 +13,15 @@ namespace snowball {
         return ((name == "System") || (name == "Math") || (name == "Os") || (name == "Path"));
     }
 
+    bool snlib_is_object(std::string name) {
+        return ((name == "Os"));
+    }
+
+    std::string get_sn_lib_src(std::string name) {
+        fs::path path = snowball_utils::get_lib_folder();
+        return ((std::string)(path / name)) + ".sn";
+    }
+
     std::pair<sn_module_export_ty, std::string> get_sn_export_lib(std::string name) {
         fs::path path = snowball_utils::get_lib_folder();
         std::string full_path = path / Logger::format("lib%s.so", name.c_str());

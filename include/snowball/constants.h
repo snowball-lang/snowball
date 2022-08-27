@@ -57,7 +57,7 @@ typedef int32_t                                 snowball_int_t;
     #define _SNOWBALL_LEXER_DEBUG             0
     #define _SNOWBALL_PARSER_DEBUG            0
     #define _SNOWBALL_CODEGEN_DEBUG           0
-    #define _SNOWBALL_BYTECODE_DEBUG          0
+    #define _SNOWBALL_BYTECODE_DEBUG          1
     #define _SNOWBALL_SYMTABLE_DEBUG          0
     #define _SNOWBALL_FREE_DEBUG              0 // todo
 
@@ -143,6 +143,7 @@ typedef int32_t                                 snowball_int_t;
 // Keywords
 #define _SNOWBALL_KEYWORD__OR               "or"
 #define _SNOWBALL_KEYWORD__IF               "if"
+#define _SNOWBALL_KEYWORD__AS               "as"
 #define _SNOWBALL_KEYWORD__AND              "and"
 #define _SNOWBALL_KEYWORD__NOT              "not"
 #define _SNOWBALL_KEYWORD__FOR              "for"
@@ -160,6 +161,7 @@ typedef int32_t                                 snowball_int_t;
 #define _SNOWBALL_KEYWORD__FALSE            "false"
 #define _SNOWBALL_KEYWORD__WHILE            "while"
 #define _SNOWBALL_KEYWORD__BREAK            "break"
+#define _SNOWBALL_KEYWORD__EXTERN           "extern"
 #define _SNOWBALL_KEYWORD__SUPER            "super"
 #define _SNOWBALL_KEYWORD__STATIC           "static"
 #define _SNOWBALL_KEYWORD__IMPORT           "import"

@@ -3,7 +3,7 @@
 #include "snowball/types.h"
 #include "snowball/scopes.h"
 #include "snowball/snowball.h"
-#include "snowball/types/Int.h"
+#include "snowball/types/Numbers.h"
 
 #include "snowball/export.hpp"
 
@@ -23,4 +23,7 @@ void register_number(snowball::SNAPI* API) {
     API->create_class("i16", std::map<std::string, llvm::Type*> {}, [API](snowball::ScopeValue* CLASS) {});
     API->create_class("i32", std::map<std::string, llvm::Type*> {}, [API](snowball::ScopeValue* CLASS) {});
     API->create_class("i64", std::map<std::string, llvm::Type*> {}, [API](snowball::ScopeValue* CLASS) {});
+
+    API->create_class("f32", std::map<std::string, llvm::Type*> {}, [API](snowball::ScopeValue* CLASS) {});
+    API->create_class("f64", std::map<std::string, llvm::Type*> {}, [API](snowball::ScopeValue* CLASS) {});
 }

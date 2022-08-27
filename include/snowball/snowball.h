@@ -26,9 +26,10 @@
 #include "utils/mangle.h"
 
 // Types
-#include "types/Int.h"
+#include "types/Numbers.h"
 #include "types/String.h"
 #include "types/Bool.h"
+#include "types/Void.h"
 
 #ifdef __cplusplus
 extern "C" {
