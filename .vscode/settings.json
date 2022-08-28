@@ -90,6 +90,7 @@
         "filesystem": "cpp",
         "__memory": "cpp",
         "variant": "cpp",
-        "__bits": "cpp"
+        "__bits": "cpp",
+        "unordered_set": "cpp"
     }
 }

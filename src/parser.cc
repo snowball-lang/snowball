@@ -284,6 +284,12 @@ namespace snowball {
             }
         }
 
+
+        auto vars_duplicate = std::unique(cls->vars.begin(), cls->vars.end());
+        if (vars_duplicate != cls->vars.end()) {
+            PARSER_ERROR(VARIABLE_ERROR, Logger::format("Class attribute already exist names '%s'", (*vars_duplicate)->name.c_str()))
+        }
+
         _context.current_class = top_clas;
         return cls;
     }
@@ -298,12 +304,12 @@ namespace snowball {
         var->name = _current_token.to_string();
         next_token();
 
-        if (_context.current_class != nullptr || peek(0, true).type == TokenType::SYM_COLLON) {
+        if ((_context.current_class != nullptr && _context.current_function == nullptr) || peek(0, true).type == TokenType::SYM_COLLON) {
             CONSUME(":", SYM_COLLON, "a variable declaration")
             ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "a variable declaration")
 
             var->vtype = _parse_type();
-            next_token();
+            // next_token();
         }
 
         ASSERT_TOKEN_EOF(_current_token, TokenType::OP_EQ, "=", "variable")
@@ -673,6 +679,7 @@ namespace snowball {
 
 
         UNEXPECTED_TOK("a left parenthesis or a generic statement")
+        return nullptr; // Used to remove those anoying warnings >:(
     }
 
     Node* Parser::_parse_expression(bool p_allow_assign) {

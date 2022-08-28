@@ -228,7 +228,10 @@ namespace snowball {
                         BBLU, p_node->member->name.c_str(), RESET))
                 }
 
-                return _builder->CreateExtractElement(gen_result, llvm::ConstantInt::get(_builder->getInt32Ty(), pos));
+                // We asume it's a pointer since raw types does not have any attriute
+                auto GEP = _builder->CreateInBoundsGEP(gen_result->getType()->getPointerElementType(), gen_result, {llvm::ConstantInt::get(_builder->getInt32Ty(), 0), llvm::ConstantInt::get(_builder->getInt32Ty(), pos)});
+
+                return convert_to_right_value(_builder, GEP);
             }
 
             case ScopeType::MODULE: {
@@ -471,8 +474,6 @@ namespace snowball {
 
         auto class_struct = llvm::StructType::create(_builder->getContext(), ADD_MODULE_NAME_IF_EXISTS(".") class_type->mangle());
         ScopeValue* class_scope_val = new ScopeValue(class_scope, std::make_shared<llvm::StructType*>(class_struct));
-        std::unique_ptr<ScopeValue*> class_value = std::make_unique<ScopeValue*>(class_scope_val);
-        SET_TO_GLOBAL_OR_CLASS(class_type->mangle(), class_value)
 
         std::vector<llvm::Type*> var_types;
         for (VarNode* var : p_node->vars) {
@@ -481,9 +482,12 @@ namespace snowball {
                 COMPILER_ERROR(TYPE_ERROR, Logger::format("'%s' does not reference a class", var->vtype->name.c_str()))
             }
 
-            var_types.push_back((llvm::Type*)(*type->llvm_struct));
+            class_scope_val->properties.push_back(var->name);
+            var_types.push_back(TypeChecker::type2llvm(_builder, (llvm::Type*)(*type->llvm_struct)));
         }
 
+        std::unique_ptr<ScopeValue*> class_value = std::make_unique<ScopeValue*>(class_scope_val);
+        SET_TO_GLOBAL_OR_CLASS(class_type->mangle(), class_value)
 
         class_struct->setBody(var_types);
 
@@ -1138,14 +1142,13 @@ namespace snowball {
         std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value *>(pointerCast)));
         _enviroment->current_scope()->set("self", std::move(scope_value));
 
-
         int var_index = 0;
         for (VarNode* var : _context._current_class->vars) {
             llvm::Value* value = generate(var->value);
-            llvm::Value* pointer = _builder->CreateExtractElement(pointerCast, var_index);
-            llvm::Value* load = convert_to_right_value(_builder, pointer);
+            llvm::Value* pointer = _builder->CreateInBoundsGEP(pointerCast->getType()->getPointerElementType(), pointerCast, {llvm::ConstantInt::get(_builder->getInt32Ty(), 0), llvm::ConstantInt::get(_builder->getInt32Ty(), var_index)});
+            // llvm::Value* load = convert_to_right_value(_builder, pointer);
 
-            _builder->CreateStore(load, value);
+            _builder->CreateStore(value, pointer);
 
             var_index++;
         }
@@ -1154,11 +1157,6 @@ namespace snowball {
     llvm::Value* Generator::convert_to_right_value(std::shared_ptr<llvm::IRBuilder<>> p_builder, llvm::Value* value) {
 
         auto type = value->getType();
-
-        std::ostringstream ss_name;
-        ss_name << value->getName().str();
-        ss_name << ".load";
-
-        return p_builder->CreateLoad(type->isPointerTy() ? type->getPointerElementType() : type, value, ss_name.str());
+        return p_builder->CreateLoad((type->isPointerTy()) ? type->getPointerElementType() : type, value);
     }
 }

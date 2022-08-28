@@ -1,7 +1,8 @@
 
 class TestCase {
+    pub var num: Int = 2
     pub fn __init() {
-
+        var d = 5
     }
 
     pub fn hello() Int {
@@ -32,6 +33,11 @@ test "call class function" {
 
 test "call class static function" {
     assert TestCase::static_fn() == 3
+}
+
+test "get class asstributes" {
+    var t = new TestCase()
+    assert t.num == 2
 }
 
 test "call static function from static method (with static overide)" {
