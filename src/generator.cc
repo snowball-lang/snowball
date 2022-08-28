@@ -14,6 +14,7 @@
 #include <llvm/IR/Intrinsics.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Verifier.h>
+#include <llvm/IR/Attributes.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Instructions.h>
 
@@ -510,6 +511,13 @@ namespace snowball {
 
         auto prototype = llvm::FunctionType::get(_builder->getInt8Ty(), {}, false);
         llvm::Function *function = llvm::Function::Create(prototype, llvm::Function::ExternalLinkage, test_name, _module);
+
+        llvm::AttrBuilder attr_builder(_builder->getContext());
+        attr_builder.addAttribute(llvm::Attribute::AttrKind::NoUnwind);
+        attr_builder.addAttribute(llvm::Attribute::AttrKind::NoInline);
+        attr_builder.addAttribute(llvm::Attribute::AttrKind::OptimizeNone);
+
+        function->addFnAttrs(attr_builder);
 
         llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder->getContext(), "body", function);
         _builder->SetInsertPoint(body);
@@ -1117,7 +1125,7 @@ namespace snowball {
             }
 
             case TokenType::VALUE_FLOAT: {
-                COMPILER_ERROR(TODO, "Floats are not yet ready!")
+                // COMPILER_ERROR(TODO, "Floats are not yet ready!")
                 llvm::Type * f = get_llvm_type_from_sn_type(BuildinTypes::FLOAT, _builder);
                 return llvm::ConstantFP::get(f, std::stof(p_node->value));
             }

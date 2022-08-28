@@ -1,14 +1,19 @@
 
 import System
-test "perform additions" skip /* skip until floats work*/ {
+test "perform additions" /* skip until floats work*/ {
     var a = 2
     var b = 6
     var c = 2.6
 
     var d = a + 4
-    var e = b + c
+    var e = c + b
+    var f = b + c
 
-    assert c == b
+    // System.println(e)
+    // System.println(f)
+
+    // assert c == b
+    assert f == 8
     assert e == 8.6
 }
 

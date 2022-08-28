@@ -116,13 +116,13 @@ namespace snowball {
         if (right_type == p_left) return {p_right, true};
 
         if (is_float(p_left) && is_number(right_type)) {
-            return {p_builder->CreateFPToSI(p_right, p_left), true};
+            return {p_builder->CreateSIToFP(p_right, p_left), true};
         } if (p_left->isDoubleTy() && right_type->isFloatTy()) {
             return {p_builder->CreateFPCast(p_right, p_left), true};
         } if (p_left->isFloatTy() && right_type->isDoubleTy()) {
             return {p_builder->CreateFPTrunc(p_right, p_left), true};
         } else if (is_number(p_left) && is_float(right_type)) {
-            return {p_builder->CreateSIToFP(p_right, p_left), true};
+            return {p_builder->CreateFPToSI(p_right, p_left), true};
         } else if (both_number(p_left, right_type, true)) {
 
             if (has_less_width(llvm::dyn_cast<llvm::IntegerType>(right_type), llvm::dyn_cast<llvm::IntegerType>(p_left))) {

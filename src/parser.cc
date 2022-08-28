@@ -284,7 +284,7 @@ namespace snowball {
             }
         }
 
-
+        // TODO: this does not work if class has 2 duplicate variables
         auto vars_duplicate = std::unique(cls->vars.begin(), cls->vars.end());
         if (vars_duplicate != cls->vars.end()) {
             PARSER_ERROR(VARIABLE_ERROR, Logger::format("Class attribute already exist names '%s'", (*vars_duplicate)->name.c_str()))
