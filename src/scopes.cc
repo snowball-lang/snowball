@@ -5,7 +5,7 @@
 #include "snowball/utils/mangle.h"
 #include "snowball/utils/utils.h"
 
-#include <llvm-14/llvm/Support/raw_ostream.h>
+#include <llvm/Support/raw_ostream.h>
 #include <memory>
 #include <optional>
 

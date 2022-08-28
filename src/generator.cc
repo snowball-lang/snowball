@@ -11,7 +11,7 @@
 #include "snowball/utils/mangle.h"
 
 #include <cstdio>
-#include <llvm-14/llvm/IR/Intrinsics.h>
+#include <llvm/IR/Intrinsics.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Verifier.h>
 #include <llvm/IR/IRBuilder.h>

@@ -1,6 +1,6 @@
 
 #include "snowball/libs.h"
-#include <llvm-14/llvm/Support/DynamicLibrary.h>
+#include <llvm/Support/DynamicLibrary.h>
 #include <string>
 #include <dlfcn.h>
 

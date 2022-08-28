@@ -8,8 +8,8 @@
 #include "utils/mangle.h"
 
 #include <llvm/IR/Value.h>
-#include <llvm-14/llvm/IR/Function.h>
-#include <llvm-14/llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/DerivedTypes.h>
 
 #ifndef __SNOWBALL_ENVIROMENT_SCOPES_H_
 #define __SNOWBALL_ENVIROMENT_SCOPES_H_

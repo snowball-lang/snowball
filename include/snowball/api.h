@@ -2,7 +2,7 @@
 #include "snowball.h"
 #include "compiler.h"
 
-#include <llvm-14/llvm/IR/DerivedTypes.h>
+#include <llvm/IR/DerivedTypes.h>
 #include <map>
 #include <memory>
 
