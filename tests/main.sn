@@ -2,14 +2,11 @@
 
 import System
 
-fn adios() Int {
-    return 7
-}
-
+@[cfg(test)]
 mod test {
 
     pub fn hello() Int {
-        return ::adios()
+        return 6
     }
 }
 

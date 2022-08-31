@@ -233,7 +233,7 @@ namespace snowball {
         }
     }
 
-    Node* Parser::_parse_decorator() {
+    DecoratorNode* Parser::_parse_decorator() {
         ASSERT(_current_token.type == TokenType::SYM_AT)
         next_token();
 
@@ -249,15 +249,16 @@ namespace snowball {
 
                 if (_current_token.type == TokenType::SYM_COMMA) {
                     next_token();
-                } else if (tk.type == TokenType::BRACKET_RPARENT) {
+                } else if (_current_token.type == TokenType::BRACKET_RPARENT) {
                     break;
                 } else {
-                    PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Expected a comma or a right paren. found ('%s') while parsing function call", _current_token.to_string().c_str()))
+                    PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Expected a comma or a right paren. found ('%s') while parsing attributes", _current_token.to_string().c_str()))
                 }
             } else if (_current_token.type == TokenType::BRACKET_RPARENT) {
                 break;
             }
         }
+
         PARSER_ERROR(TODO, "Decorators are not yet supported!")
     }
 

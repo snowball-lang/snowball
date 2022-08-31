@@ -40,7 +40,7 @@ namespace snowball {
 
             // Parser methods
             Node* _parse_expression(bool p_allow_assign = false);
-            Node* _parse_decorator();
+            DecoratorNode* _parse_decorator();
             ClassNode* _parse_class();
             VarNode* _parse_variable();
             ImportNode* _parse_import();
