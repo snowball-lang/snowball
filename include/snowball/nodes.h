@@ -78,8 +78,6 @@ namespace snowball {
 			MAPPED_INDEX,
 			OPERATOR,
 
-			ASSERT,
-
 			// control flow
 			RETURN,
 			IF_STMT,

@@ -14,6 +14,7 @@
     - [ ] REPL
     - [ ] unit testing
 - [ ] check if class has been initialized
+- [ ] call public function or private `e.g. (pub)function()`
 
 ### Known Bugs
 
@@ -27,6 +28,7 @@
 ### In Progress
 
 - [ ] fix if/else test in `test/if_else.test.sn`!!!
+- [ ] Attributes
 - [ ] Add a templating system
     - [x] Functions
     - [ ] Classes
