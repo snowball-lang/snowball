@@ -16,7 +16,6 @@ namespace snowball {
         public:
 
             struct ParserContext {
-                bool is_test = false; // parsing in test declaration
                 FunctionNode* current_function = nullptr;
                 ClassNode* current_class = nullptr;
             };

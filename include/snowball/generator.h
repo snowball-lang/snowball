@@ -61,8 +61,6 @@ namespace snowball {
 
             // some context
             struct {
-                bool is_test = false;
-
                 ScopeValue* _current_module = nullptr;
                 ClassNode* _current_class = nullptr;
             } _context;
@@ -76,6 +74,7 @@ namespace snowball {
             llvm::Value* generate_block(BlockNode * p_node);
             llvm::Value* generate_import(ImportNode* p_node);
             llvm::Value* generate_operator(BinaryOp* p_node);
+            llvm::Value* generate_module(ModuleNode* p_node);
             llvm::Value* generate_return(ReturnNode* p_node);
             llvm::Value* generate_function(FunctionNode* p_node);
             llvm::Value* generate_variable_decl(VarNode* p_node);

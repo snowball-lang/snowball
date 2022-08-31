@@ -127,6 +127,10 @@ namespace snowball {
                 return generate_const_value(static_cast<ConstantValue *>(p_node));
             }
 
+            case Node::Ty::MODULE: {
+                return generate_module(static_cast<ModuleNode *>(p_node));
+            }
+
             case Node::Ty::CAST: {
                 return generate_cast(static_cast<CastNode *>(p_node));
             }
@@ -247,7 +251,31 @@ namespace snowball {
         }
     }
 
-    llvm::Value* Generator::generate_block(BlockNode * p_node) {
+    llvm::Value* Generator::generate_module(ModuleNode* p_node) {
+
+        // TODO: check if module already exists
+        ScopeValue* module_scope = new ScopeValue(new Scope());
+        auto class_struct = llvm::StructType::create(_builder->getContext(), p_node->name);
+        class_struct->setBody({}, true);
+        module_scope->llvm_struct = std::make_shared<llvm::StructType *>(class_struct);
+        module_scope->module_name = ADD_MODULE_NAME_IF_EXISTS(".") p_node->name;
+        module_scope->type = ScopeType::MODULE;
+
+        _context._current_module = module_scope;
+        _enviroment->global_scope()->set(p_node->name, std::make_unique<ScopeValue*>(module_scope));
+
+        for (Node* node : p_node->nodes) {
+            generate(node);
+        }
+
+
+        _context._current_module = nullptr;
+
+        // Just return anything
+        return llvm::ConstantInt::get(_builder->getInt8Ty(), 0);
+    }
+
+    llvm::Value* Generator::generate_block(BlockNode* p_node) {
         for (Node* node : p_node->exprs) {
             generate(node);
         }
