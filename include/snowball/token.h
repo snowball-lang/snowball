@@ -151,7 +151,7 @@ namespace snowball {
         | interpreter.
         */
         KWORD__START__POINT, // All keywords must be grater than this
-        KWORD_TEST,        // Symbol: test
+        KWORD_MOD,        // Symbol: mod
         KWORD_IF,          // Symbol: if
         KWORD_OR,          // Symbol: or
         KWORD_VAR,         // Symbol: var
@@ -268,7 +268,7 @@ namespace snowball {
                 case TokenType::IDENTIFIER:         return value;
 
                 // Keywods
-                case TokenType::KWORD_TEST:         return _SNOWBALL_KEYWORD__TEST;
+                case TokenType::KWORD_MOD:         return _SNOWBALL_KEYWORD__MODULE;
                 case TokenType::KWORD_PUBLIC:       return _SNOWBALL_KEYWORD__PUBLIC;
                 case TokenType::KWORD_PRIVATE:      return _SNOWBALL_KEYWORD__PRIVATE;
                 case TokenType::KWORD_IMPORT:       return _SNOWBALL_KEYWORD__IMPORT;

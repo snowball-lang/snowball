@@ -8,11 +8,40 @@ test "basic if statement" {
     assert 1
 }
 
-// TODO: this fails!
 test "test else statement" {
     if false {
         assert 0
     } else {
         assert 1 // if this does not exist, it should output "UNKNOWN"
+    }
+}
+
+test "nested if statements" {
+    if true {
+    if true {
+    if true {
+    if true {
+    if true {
+    if true {
+    if true {
+    if true {
+    if true {
+    if true {
+    if true {
+    if false {
+        assert 0
+    } else {
+        assert 1
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
     }
 }

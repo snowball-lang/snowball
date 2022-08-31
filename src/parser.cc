@@ -60,6 +60,11 @@ namespace snowball {
                     break;
                 }
 
+                case TokenType::SYM_AT: {
+                    _nodes.push_back(_parse_decorator());
+                    break;
+                }
+
                 case TokenType::KWORD_PUBLIC:
                 case TokenType::KWORD_PRIVATE: {
                     if (
@@ -78,9 +83,9 @@ namespace snowball {
                     break;
                 }
 
-                case TokenType::KWORD_TEST: {
-                    TestingNode* unit_test = _parse_unittest();
-                    _nodes.push_back(unit_test);
+                case TokenType::KWORD_MOD: {
+                    ModuleNode* mod = _parse_module();
+                    _nodes.push_back(mod);
                     break;
                 }
 
@@ -137,6 +142,104 @@ namespace snowball {
 
     // Parse methods
 
+    ModuleNode* Parser::_parse_module() {
+        ASSERT(_current_token.type == TokenType::KWORD_MOD)
+        next_token();
+
+        ModuleNode* node = new ModuleNode();
+        ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "identifier", "a module body")
+        node->name = _current_token.to_string(); next_token();
+
+        ASSERT_TOKEN_EOF(_current_token, TokenType::BRACKET_LCURLY, "{", "a class body")
+        while (true) {
+            next_token();
+            switch (_current_token.type)
+            {
+                case TokenType::BRACKET_RCURLY: {
+                    return node;
+                }
+
+                case TokenType::KWORD_CLASS: {
+                    ClassNode* cls = _parse_class();
+                    node->nodes.push_back(cls);
+                    break;
+                }
+
+                case TokenType::KWORD_IMPORT: {
+                    ImportNode* import_node = _parse_import();
+                    node->nodes.push_back(import_node);
+                    break;
+                }
+
+                case TokenType::KWORD_EXTERN: {
+                    if (peek(0, true).type != TokenType::KWORD_FUNC) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword an extern function declaration");
+                    }
+
+                    break;
+                }
+
+                case TokenType::SYM_AT: {
+                    node->nodes.push_back(_parse_decorator());
+                    break;
+                }
+
+                case TokenType::KWORD_PUBLIC:
+                case TokenType::KWORD_PRIVATE: {
+                    if (
+                        peek(0, true).type != TokenType::KWORD_FUNC
+                        && peek(0, true).type != TokenType::KWORD_VAR) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\" or \"var\" after pub/priv declaration");
+                    }
+
+                    break;
+                }
+
+                case TokenType::KWORD_FUNC: {
+                    FunctionNode* function = _parse_function();
+                    function->is_lop_level = true;
+                    node->nodes.push_back(function);
+                    break;
+                }
+
+                case TokenType::KWORD_MOD: {
+                    ModuleNode* mod = _parse_module();
+                    node->nodes.push_back(mod);
+                    break;
+                }
+
+                case TokenType::KWORD_VAR: {
+                    int _width = _current_token.col;
+                    std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
+
+                    VarNode* var = _parse_variable();
+                    _width = _width - _current_token.col;
+
+                    var->pos = _pos;
+                    var->width = (uint32_t)_width;
+
+                    var->isGlobal = true;
+
+                    node->nodes.push_back(var);
+                    break;
+                }
+
+                case TokenType::SYM_SEMI_COLLON:
+                    break;
+
+                default:
+                    PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("'%s' is not allowed inside module blocks", _current_token.to_string().c_str()))
+            }
+        }
+    }
+
+    Node* Parser::_parse_decorator() {
+        ASSERT(_current_token.type == TokenType::SYM_AT)
+        next_token();
+
+        PARSER_ERROR(TODO, "Decorators are not yet supported!")
+    }
+
     ImportNode* Parser::_parse_import() {
         ASSERT(_current_token.type == TokenType::KWORD_IMPORT)
         next_token();
@@ -165,35 +268,6 @@ namespace snowball {
 
 
         return node;
-    }
-
-    TestingNode* Parser::_parse_unittest() {
-        ASSERT(_current_token.type == TokenType::KWORD_TEST);
-        next_token();
-
-        TestingNode* test = new TestingNode();
-        _context.is_test = true;
-
-        // TODO: parse for unit testing options (skip, allow_output, ...)
-        ASSERT_TOKEN_EOF(_current_token, TokenType::VALUE_STRING, "an unit test description", "a test declaration")
-        std::string description = _current_token.to_string(); next_token();
-
-        if (_current_token.type == TokenType::IDENTIFIER) {
-            if (_current_token.to_string() == "skip") { // test "..." skip {}
-                next_token();
-                test->skip = true;
-            } else {
-                UNEXPECTED_TOK2("an identifier: skip, output", "test's attributes")
-            }
-        }
-
-        BlockNode* block = _parse_block();
-
-        test->block = block;
-        test->description = description;
-
-        _context.is_test = false;
-        return test;
     }
 
     IfStatementNode* Parser::_parse_ifstmt() {
@@ -529,8 +603,6 @@ namespace snowball {
                 case TokenType::KWORD_RETURN: {
                     if (_context.current_function == nullptr) {
                         PARSER_ERROR(Error::SYNTAX_ERROR, "Return statements can only be used inside functions")
-                    } else if (_context.is_test) {
-                        PARSER_ERROR(Error::SYNTAX_ERROR, "Return statements can't be used inside unit tests!")
                     }
 
                     int _width = _current_token.col;
@@ -546,26 +618,6 @@ namespace snowball {
                     _context.current_function->has_return = true;
                     stmts.push_back(ret);
                     break;
-                }
-
-                case TokenType::KWORD_ASSERT: { // note: always be at the top of default
-                    if (_context.is_test) {
-                        int _width = _current_token.col;
-                        std::pair<int, int> _pos = std::make_pair(_current_token.line, _current_token.col);
-
-                        AssertNode* node = new AssertNode();
-
-                        next_token();
-                        Node* expr = _parse_expression();
-                        _width = _width - _current_token.col;
-
-                        node->pos = _pos;
-                        node->expr = expr;
-                        node->width = (uint32_t)_width;
-
-                        stmts.push_back(node);
-                        break;
-                    } // fall through
                 }
 
                 default: {

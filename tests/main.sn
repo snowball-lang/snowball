@@ -1,6 +1,13 @@
 // This should be ignored by the tester!
 
 import System
+
+mod test {
+    pub fn hello() Int {
+        return 5
+    }
+}
+
 fn main() i32 {
     var a = 5.6
     System.println("OMG, A STDLIB WRITTEN BY SNOWBALL!??!??!?!?!?")

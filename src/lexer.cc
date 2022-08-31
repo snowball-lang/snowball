@@ -381,7 +381,7 @@ namespace snowball {
 					else if (identifier == _SNOWBALL_KEYWORD__IF)	       { tk.type = TokenType::KWORD_IF;							}
 					else if (identifier == _SNOWBALL_KEYWORD__VARIABLE)	   { tk.type = TokenType::KWORD_VAR;						}
 					else if (identifier == _SNOWBALL_KEYWORD__FOR)	       { tk.type = TokenType::KWORD_FOR;						}
-					else if (identifier == _SNOWBALL_KEYWORD__TEST)	       { tk.type = TokenType::KWORD_TEST;						}
+					else if (identifier == _SNOWBALL_KEYWORD__MODULE)	       { tk.type = TokenType::KWORD_MOD;						}
 					else if (identifier == _SNOWBALL_KEYWORD__ENUM)	       { tk.type = TokenType::KWORD_ENUM;						}
 					else if (identifier == _SNOWBALL_KEYWORD__THIS)	       { tk.type = TokenType::KWORD_THIS;						}
 					else if (identifier == _SNOWBALL_KEYWORD__ASSERT)	   { tk.type = TokenType::KWORD_ASSERT;						}

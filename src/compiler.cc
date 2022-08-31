@@ -154,7 +154,6 @@ namespace snowball {
                     std::move(builder),
                     _module.get(),
                     this->linked_libraries,
-                    _testing_context,
                     generics_api,
                     _enabledTests
                 );
@@ -281,37 +280,38 @@ namespace snowball {
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
 
         if (_enabledTests) {
+            throw SNError(Error::TODO, "unit testings");
             int test_success = 1;
 
             // todo: if it is a folder/import, iterate all paths
-            if (_testing_context->getTestLength() == 0) {
-                Logger::warning("No unit tests found!");
-                return 2;
-            }
+            // if (_testing_context->getTestLength() == 0) {
+            //     Logger::warning("No unit tests found!");
+            //     return 2;
+            // }
 
             Logger::log(Logger::format("    [%s]", _path.c_str()));
 
-            for (int i = 0; i < _testing_context->getTestLength(); i++) {
-                Logger::rlog(Logger::format("        %s%s%s (%i)... ", BBLU, _testing_context->getTestAt(i).c_str(), RESET, i + 1));
+            // for (int i = 0; i < _testing_context->getTestLength(); i++) {
+            //     Logger::rlog(Logger::format("        %s%s%s (%i)... ", BBLU, _testing_context->getTestAt(i).c_str(), RESET, i + 1));
 
-                llvm::Function *function = executionEngine->FindFunctionNamed(llvm::StringRef(_testing_context->get_name(i+1)));
+            //     llvm::Function *function = executionEngine->FindFunctionNamed(llvm::StringRef(_testing_context->get_name(i+1)));
 
-                int result = executionEngine->runFunction(function, {}).IntVal.getZExtValue();
+            //     int result = executionEngine->runFunction(function, {}).IntVal.getZExtValue();
 
-                if (!result) {
-                    test_success = 0;
-                    Logger::log(Logger::format("%sFAILED%s", BRED, RESET));
-                    break;
-                } else if (result == 1) {
-                    Logger::log(Logger::format("%sPASSED%s", BGRN, RESET));
-                } else if (result == 2) {
-                    Logger::log(Logger::format("%sSKIPED%s", BYEL, RESET));
-                } else {
-                    Logger::log(Logger::format("%sUNKNOWN%s", BBLK, RESET));
-                }
-            }
+            //     if (!result) {
+            //         test_success = 0;
+            //         Logger::log(Logger::format("%sFAILED%s", BRED, RESET));
+            //         break;
+            //     } else if (result == 1) {
+            //         Logger::log(Logger::format("%sPASSED%s", BGRN, RESET));
+            //     } else if (result == 2) {
+            //         Logger::log(Logger::format("%sSKIPED%s", BYEL, RESET));
+            //     } else {
+            //         Logger::log(Logger::format("%sUNKNOWN%s", BBLK, RESET));
+            //     }
+            // }
 
-            return test_success;
+            // return test_success;
         } else {
             llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(_SNOWBALL_FUNCTION_ENTRY));
             return executionEngine->runFunction(main_fn, {}).IntVal.getZExtValue(); // TODO: return function result

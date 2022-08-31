@@ -171,14 +171,6 @@ namespace snowball {
                 return generate_new(static_cast<NewNode *>(p_node));
             }
 
-            case Node::Ty::TEST: {
-                return generate_test(static_cast<TestingNode *>(p_node));
-            }
-
-            case Node::Ty::ASSERT: {
-                return generate_assert(static_cast<AssertNode *>(p_node));
-            }
-
             case Node::Ty::IF_STMT: {
                 return generate_if_stmt(static_cast<IfStatementNode *>(p_node));
             }
@@ -298,9 +290,7 @@ namespace snowball {
             generate(node);
         }
 
-        if ((IfBB->size() == 0 || !IfBB->back().isTerminator()) || _context.is_test) {
-            _builder->CreateBr(ContinueBB);
-        }
+        _builder->CreateBr(ContinueBB);
 
         _enviroment->delete_scope();
 
@@ -313,9 +303,7 @@ namespace snowball {
                 generate(node);
             }
 
-            if ((ElseBB->size() == 0 || !ElseBB->back().isTerminator()) || _context.is_test) {
-                _builder->CreateBr(ContinueBB);
-            }
+            _builder->CreateBr(ContinueBB);
 
             _enviroment->delete_scope();
         }
@@ -327,35 +315,6 @@ namespace snowball {
         #undef ELSE_STMT_EXISTS
     }
 
-    llvm::Value* Generator::generate_assert(AssertNode* p_node) {
-        llvm::Value* inital_value = generate(p_node->expr);
-        GET_BOOL_VALUE(assertion, inital_value)
-
-        llvm::Value* current_test = *_enviroment->get("?test-result", nullptr)->llvm_value;
-
-        _builder->CreateStore(_builder->CreateIntCast(assertion, _builder->getInt8Ty(), false), current_test);
-
-        llvm::Value* cond = _builder->CreateICmpEQ(
-            convert_to_right_value(_builder, current_test),
-            llvm::ConstantInt::get(
-                _builder->getInt8Ty(),
-                1
-            )
-        );
-
-        llvm::Function *TheFunction = _builder->GetInsertBlock()->getParent();
-        llvm::BasicBlock* FailBB = llvm::BasicBlock::Create(_builder->getContext(), "assert_fail", TheFunction);
-        llvm::BasicBlock* ContinueBB = llvm::BasicBlock::Create(_builder->getContext(), "assert_continue", TheFunction);
-
-        _builder->CreateCondBr(cond, ContinueBB, FailBB);
-
-        _builder->SetInsertPoint(FailBB);
-        _builder->CreateRet(convert_to_right_value(_builder, current_test));
-
-        _builder->SetInsertPoint(ContinueBB);
-
-        return ContinueBB;
-    }
 
     llvm::Value* Generator::generate_import(ImportNode* p_node) {
 
@@ -501,59 +460,6 @@ namespace snowball {
 
         _context._current_class = nullptr;
         return (llvm::Value*)class_struct;
-    }
-
-    llvm::Value* Generator::generate_test(TestingNode* p_node) {
-
-        std::string llvm_error;
-        llvm::raw_string_ostream message_stream(llvm_error);
-        std::string test_name = _context._testing_context->get_name(_context._testing_context->addTest(p_node->description));
-
-        auto prototype = llvm::FunctionType::get(_builder->getInt8Ty(), {}, false);
-        llvm::Function *function = llvm::Function::Create(prototype, llvm::Function::ExternalLinkage, test_name, _module);
-
-        llvm::AttrBuilder attr_builder(_builder->getContext());
-        attr_builder.addAttribute(llvm::Attribute::AttrKind::NoUnwind);
-        attr_builder.addAttribute(llvm::Attribute::AttrKind::NoInline);
-        attr_builder.addAttribute(llvm::Attribute::AttrKind::OptimizeNone);
-
-        function->addFnAttrs(attr_builder);
-
-        llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder->getContext(), "body", function);
-        _builder->SetInsertPoint(body);
-
-        if (p_node->skip) {
-            _enviroment->delete_scope();
-            _builder->CreateRet(llvm::ConstantInt::get(_builder->getInt8Ty(), 2));
-
-            return function;
-
-        } else {
-            Scope* current_scope = _enviroment->create_scope(test_name);
-            llvm::Value* value = llvm::ConstantInt::get(_builder->getInt8Ty(), 3);
-
-            auto* llvm_alloca = _builder->CreateAlloca (value->getType(), nullptr, "?test-result" );
-
-            std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(llvm_alloca)));
-            current_scope->set("?test-result", std::move(scope_value));
-            _builder->CreateStore (value, llvm_alloca, /*isVolatile=*/false);
-
-            _context.is_test = true;
-            for (Node* node : p_node->block->exprs) {
-                generate(node);
-            }
-
-            _builder->CreateRet(convert_to_right_value(_builder, llvm_alloca));
-
-            _context.is_test = false;
-            llvm::verifyFunction(*function, &message_stream);
-            if (!llvm_error.empty())
-                throw SNError(Error::LLVM_INTERNAL, llvm_error);
-
-            _enviroment->delete_scope();
-
-            return function;
-        }
     }
 
     llvm::Value* Generator::generate_call(CallNode* p_node) {

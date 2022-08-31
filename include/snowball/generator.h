@@ -3,7 +3,6 @@
 #include "parser.h"
 #include "enviroment.h"
 #include "source_info.h"
-#include "unittesting.h"
 
 #include <memory>
 
@@ -28,7 +27,6 @@ namespace snowball {
                 std::shared_ptr<llvm::IRBuilder<>> p_builder,
                 llvm::Module* p_module,
                 std::vector<std::string>& p_linked_libraries,
-                TestingContext* p_testing_context,
                 Generics* p_generics,
                 bool p_testsEnabled = false)
                   :
@@ -40,7 +38,6 @@ namespace snowball {
                     _linked_libraries(p_linked_libraries),
                     _api(p_api) {
                 _source_info = p_source_info;
-                _context._testing_context = p_testing_context;
                 _builder = p_builder;
             };
 
@@ -67,7 +64,6 @@ namespace snowball {
                 bool is_test = false;
 
                 ScopeValue* _current_module = nullptr;
-                TestingContext* _testing_context;
                 ClassNode* _current_class = nullptr;
             } _context;
 
@@ -77,9 +73,7 @@ namespace snowball {
             llvm::Value* generate_cast(CastNode* p_node);
             llvm::Value* generate_index(IndexNode* p_node);
             llvm::Value* generate_class(ClassNode* p_node);
-            llvm::Value* generate_test(TestingNode* p_node);
             llvm::Value* generate_block(BlockNode * p_node);
-            llvm::Value* generate_assert(AssertNode* p_node);
             llvm::Value* generate_import(ImportNode* p_node);
             llvm::Value* generate_operator(BinaryOp* p_node);
             llvm::Value* generate_return(ReturnNode* p_node);

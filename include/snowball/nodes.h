@@ -73,7 +73,7 @@ namespace snowball {
 			SUPER,
 			CALL,
 			NEW_CALL,
-			TEST,
+			MODULE,
 			INDEX,
 			MAPPED_INDEX,
 			OPERATOR,
@@ -100,6 +100,17 @@ namespace snowball {
 
 		virtual ~Node() = default;
     } Node;
+
+	struct ModuleNode : public Node {
+		std::string name;
+		std::vector<Node*> nodes;
+
+		ModuleNode() {
+			type = Ty::MODULE;
+		};
+
+		~ModuleNode() {};
+	};
 
 	struct BlockNode : public Node {
 		std::vector<Node*> exprs;
@@ -174,17 +185,6 @@ namespace snowball {
 
 		~FunctionNode() {};
 	};
-
-	struct AssertNode : public Node {
-		Node* expr;
-
-		AssertNode() {
-			type = Ty::ASSERT;
-		};
-
-		~AssertNode() {};
-	};
-
 	struct ReturnNode : public Node {
 		Node* value;
 		FunctionNode* parent;
@@ -264,18 +264,6 @@ namespace snowball {
 		};
 
 		~ImportNode() {};
-	};
-
-	struct TestingNode : public Node {
-		BlockNode* block;
-		std::string description;
-
-		bool skip = false;
-
-		TestingNode() {
-			type = Ty::TEST;
-		};
-		~TestingNode() {};
 	};
 
 	struct VarNode : public Node {
