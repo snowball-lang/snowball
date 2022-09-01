@@ -2,9 +2,10 @@
 
 import System
 
-@[cfg(test)]
+// @[cfg(test)]
 mod test {
 
+    @[test]
     pub fn hello() Int {
         return 6
     }

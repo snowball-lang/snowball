@@ -64,7 +64,7 @@ namespace snowball {
 			FUNCTION,
 			BLOCK,
 			IDENTIFIER,
-			DECORATOR,
+			ATTRIBUTE,
 			ARGUMENT,
 			VAR,
 			CONST,
@@ -185,21 +185,21 @@ namespace snowball {
 		~FunctionNode() {};
 	};
 
-	struct DecoratorNode : public Node {
+	struct AttributeNode : public Node {
 		Node* node;
 
-		struct DecoratorArgument {
+		struct AttributeArgument {
 			std::string name;
 			std::map<std::string, std::string> arguments;
 		};
 
-		std::vector<DecoratorArgument> decorators;
+		std::vector<AttributeArgument> decorators;
 
-		DecoratorNode() {
-			type = Ty::DECORATOR;
+		AttributeNode() {
+			type = Ty::ATTRIBUTE;
 		};
 
-		~DecoratorNode() {};
+		~AttributeNode() {};
 	};
 
 	struct ReturnNode : public Node {

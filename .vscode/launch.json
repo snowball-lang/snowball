@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/Debug/snowball",
-            "args": ["-t", "${workspaceFolder}/tests/class.test.sn"],
+            "args": ["${workspaceFolder}/tests/main.sn"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

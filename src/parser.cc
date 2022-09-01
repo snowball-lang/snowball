@@ -52,16 +52,16 @@ namespace snowball {
                     break;
                 }
 
-                case TokenType::KWORD_EXTERN: {
-                    if (peek(0, true).type != TokenType::KWORD_FUNC) {
-                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword an extern function declaration");
-                    }
-
+                case TokenType::SYM_AT: {
+                    _nodes.push_back(_parse_attribute());
                     break;
                 }
 
-                case TokenType::SYM_AT: {
-                    _nodes.push_back(_parse_decorator());
+                case TokenType::KWORD_EXTERN: {
+                    if (peek(0, true).type != TokenType::KWORD_FUNC) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected fn keyword in an extern function declaration");
+                    }
+
                     break;
                 }
 
@@ -180,7 +180,7 @@ namespace snowball {
                 }
 
                 case TokenType::SYM_AT: {
-                    node->nodes.push_back(_parse_decorator());
+                    node->nodes.push_back(_parse_attribute());
                     break;
                 }
 
@@ -233,33 +233,81 @@ namespace snowball {
         }
     }
 
-    DecoratorNode* Parser::_parse_decorator() {
+    AttributeNode* Parser::_parse_attribute() {
         ASSERT(_current_token.type == TokenType::SYM_AT)
         next_token();
 
-        PARSER_ERROR(TODO, "Attributes not yet supported :(")
+        // PARSER_ERROR(TODO, "Attributes not yet supported :(")
+        AttributeNode* node = new AttributeNode();
 
         // TODO: check for "!" for global atributes
-        ASSERT_TOKEN_EOF(_current_token, TokenType::BRACKET_LPARENT, "[", "attribute")
+        ASSERT_TOKEN_EOF(_current_token, TokenType::BRACKET_LSQUARED, "[", "attribute")
         while (true) {
             next_token();
             if (_current_token.type == TokenType::IDENTIFIER) {
 
-                // TODO: identifier, identifier(value), identifier(value = "constant")
+                if (_current_token.type == TokenType::IDENTIFIER) {
+                    AttributeNode::AttributeArgument arg;
+                    arg.name = _current_token.to_string();
+                    // TODO: identifier, identifier(value), identifier(value = "constant")
+
+                    next_token();
+                }
 
                 if (_current_token.type == TokenType::SYM_COMMA) {
                     next_token();
-                } else if (_current_token.type == TokenType::BRACKET_RPARENT) {
+                } else if (_current_token.type == TokenType::BRACKET_RSQUARED) {
                     break;
                 } else {
-                    PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Expected a comma or a right paren. found ('%s') while parsing attributes", _current_token.to_string().c_str()))
+                    PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("Expected a comma or a right squared paren. found '%s' while parsing attributes", _current_token.to_string().c_str()))
                 }
-            } else if (_current_token.type == TokenType::BRACKET_RPARENT) {
+            } else if (_current_token.type == TokenType::BRACKET_RSQUARED) {
                 break;
             }
         }
 
+        bool keep_looping = true;
+        while (keep_looping) {
+            next_token();
+            switch (_current_token.type) {
+                case TokenType::KWORD_EXTERN: {
+                    if (peek(0, true).type != TokenType::KWORD_FUNC) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected fn keyword in an extern function declaration");
+                    }
+
+                    break;
+                }
+
+                case TokenType::KWORD_PUBLIC:
+                case TokenType::KWORD_PRIVATE: {
+                    if (
+                        peek(0, true).type != TokenType::KWORD_FUNC) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\" after pub/priv declaration");
+                    }
+
+                    break;
+                }
+
+                case TokenType::KWORD_FUNC: {
+                    FunctionNode* function = _parse_function();
+                    function->is_lop_level = true;
+                    node->node = function;
+
+                    keep_looping = false;
+                    break;
+                }
+
+                case TokenType::KWORD_MOD: {
+                    node->node = _parse_module();
+                    keep_looping = false;
+
+                    break;
+                }
+            }
+        }
+
         PARSER_ERROR(TODO, "Decorators are not yet supported!")
+        return node;
     }
 
     ImportNode* Parser::_parse_import() {
