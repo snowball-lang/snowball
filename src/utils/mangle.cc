@@ -65,7 +65,7 @@ namespace snowball {
         return mangled_name.str();
     }
 
-    unmangledResult unmangle(std::string name) {
+    unmangledResult unmangle(std::string name, std::string separator) {
         unmangledResult result;
         // result.name = name;
 
@@ -108,7 +108,7 @@ namespace snowball {
                     continue;
                 }
 
-                result.name += "." + extracted;
+                result.name += separator + extracted;
             }
 
             if (c_str[index] == 'P' || c_str[index] == 'I') {

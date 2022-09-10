@@ -193,7 +193,7 @@ namespace snowball {
 			std::map<std::string, std::string> arguments;
 		};
 
-		std::vector<AttributeArgument> decorators;
+		std::vector<AttributeArgument> attributes;
 
 		AttributeNode() {
 			type = Ty::ATTRIBUTE;

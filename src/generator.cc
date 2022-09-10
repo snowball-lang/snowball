@@ -131,6 +131,10 @@ namespace snowball {
                 return generate_module(static_cast<ModuleNode *>(p_node));
             }
 
+            case Node::Ty::ATTRIBUTE: {
+                return generate_attribute(static_cast<AttributeNode *>(p_node));
+            }
+
             case Node::Ty::CAST: {
                 return generate_cast(static_cast<CastNode *>(p_node));
             }
@@ -189,6 +193,30 @@ namespace snowball {
         }
     }
 
+    llvm::Value* Generator::generate_attribute(AttributeNode* p_node) {
+        auto attrs = _api->get_attributes();
+
+        for (auto node_attrs : p_node->attributes) {
+            bool attr_exists = false;
+            for (auto attr : attrs) {
+                if (attr->get_name() == node_attrs.name) {
+                    attr_exists = true;
+
+                    if (attr->start(_api->context)) {
+                        auto generated = generate(p_node->node);
+                        attr->end(generated, _api);
+                    }
+
+                    break;
+                }
+            }
+
+            if (!attr_exists) {
+                COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Attribute name not found: %s", node_attrs.name.c_str()))
+            }
+        }
+    }
+
     llvm::Value* Generator::generate_cast(CastNode* p_node) {
         auto original_value = generate(p_node->expr);
         auto cast_type = TypeChecker::get_type(_enviroment, p_node->cast_type, p_node);
@@ -227,7 +255,6 @@ namespace snowball {
 
                 // We asume it's a pointer since raw types does not have any attriute
                 auto GEP = _builder->CreateInBoundsGEP(gen_result->getType()->getPointerElementType(), gen_result, {llvm::ConstantInt::get(_builder->getInt32Ty(), 0), llvm::ConstantInt::get(_builder->getInt32Ty(), pos)});
-
                 return convert_to_right_value(_builder, GEP);
             }
 

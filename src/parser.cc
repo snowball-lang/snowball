@@ -246,13 +246,13 @@ namespace snowball {
             next_token();
             if (_current_token.type == TokenType::IDENTIFIER) {
 
-                if (_current_token.type == TokenType::IDENTIFIER) {
-                    AttributeNode::AttributeArgument arg;
-                    arg.name = _current_token.to_string();
-                    // TODO: identifier, identifier(value), identifier(value = "constant")
+                AttributeNode::AttributeArgument arg;
+                arg.name = _current_token.to_string();
+                next_token();
+                // TODO: identifier, identifier(value), identifier(value = "constant")
 
-                    next_token();
-                }
+                node->attributes.push_back(arg);
+
 
                 if (_current_token.type == TokenType::SYM_COMMA) {
                     next_token();
@@ -306,7 +306,7 @@ namespace snowball {
             }
         }
 
-        PARSER_ERROR(TODO, "Decorators are not yet supported!")
+        // PARSER_ERROR(TODO, "Decorators are not yet supported!")
         return node;
     }
 

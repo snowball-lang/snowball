@@ -54,16 +54,14 @@
 #include "snowball/llvm/gc.h"
 #include "snowball/ld_args.h"
 
+#include "snowball/attribs/tests.h"
+
 #include <regex>
 #include <string>
 #include <stdio.h>
 #include <unistd.h>
 
 #define SN_MODULE_NAME "llvm_snowball_compile_mod_"
-
-#define ADD_GLOBAL_IF_FN_EXISTS(name, function) \
-    if (_module.get()->getFunction(name)) \
-        executionEngine->addGlobalMapping(*_enviroment->get(name, nullptr)->llvm_function, function);
 
 namespace snowball {
     Compiler::Compiler(std::string p_code, std::string p_path) {
@@ -139,7 +137,11 @@ namespace snowball {
                 _parser->parse();
 
                 SHOW_STATUS(Logger::compiling(Logger::progress(0.55)))
-                API = new SNAPI(*this);
+
+                SNAPI::Context api_context;
+                api_context.is_test = _enabledTests;
+
+                API = new SNAPI(std::move(this), api_context);
                 Generics* generics_api = new Generics(std::move(this));
 
                 SHOW_STATUS(Logger::compiling(Logger::progress(0.60)))
@@ -151,7 +153,7 @@ namespace snowball {
                     _parser,
                     _enviroment,
                     _source_info,
-                    std::move(builder),
+                    builder,
                     _module.get(),
                     this->linked_libraries,
                     generics_api,
@@ -163,6 +165,13 @@ namespace snowball {
                 }
 
                 SHOW_STATUS(Logger::compiling(Logger::progress(0.80)))
+
+                for (auto attr : API->get_attributes()) {
+                    attr->after_compile(API);
+                }
+                
+                SHOW_STATUS(Logger::compiling(Logger::progress(0.85)))
+
             }
 
             llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
@@ -186,7 +195,7 @@ namespace snowball {
             if (!module_error_string.empty())
                 throw SNError(Error::LLVM_INTERNAL, module_error_string);
 
-            SHOW_STATUS(Logger::compiling(Logger::progress(0.1)))
+            SHOW_STATUS(Logger::compiling(Logger::progress(1)))
             SHOW_STATUS(Logger::reset_status())
 
             #if _SNOWBALL_BYTECODE_DEBUG
@@ -376,6 +385,8 @@ namespace snowball {
         register_bool(API);
 
         API->register_all();
+
+        API->register_attribute(new TestsAttribute());
     }
 
     void Compiler::create_source_info() {

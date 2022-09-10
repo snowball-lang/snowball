@@ -3,15 +3,15 @@
 import System
 
 // @[cfg(test)]
-mod test {
+// mod test {
 
     @[test]
-    pub fn hello() Int {
-        return 6
+    pub fn hello() Void {
+        
     }
-}
+// }
 
 fn main() i32 {
-    System.println(test::hello())
+    // System.println(hello())
     return 5
 }

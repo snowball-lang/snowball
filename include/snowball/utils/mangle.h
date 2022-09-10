@@ -20,7 +20,7 @@ namespace snowball {
 
     };
 
-    unmangledResult unmangle(std::string name);
+    unmangledResult unmangle(std::string name, std::string separator = ".");
     std::string mangle(std::string name, std::vector<Type*> arguments = {}, bool is_public = false, bool is_class = false);
 }
 

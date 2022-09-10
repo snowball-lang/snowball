@@ -18,6 +18,7 @@
 #include "compiler.h"
 #include "generator.h"
 #include "enviroment.h"
+#include "attributes.h"
 #include "source_info.h"
 
 // utils
