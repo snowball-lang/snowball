@@ -60,7 +60,10 @@
 #include <string>
 #include <stdio.h>
 #include <unistd.h>
+#include <fstream>
+#include <filesystem>
 
+namespace fs = std::filesystem;
 #define SN_MODULE_NAME "llvm_snowball_compile_mod_"
 
 namespace snowball {
@@ -110,8 +113,11 @@ namespace snowball {
         _module->setSourceFileName(_source_info->get_path());
 
         _enviroment = new Enviroment(_source_info);
-
         _initialized = true;
+
+        config_folder = fs::current_path() / ".sn";
+        if (!fs::exists(config_folder)) fs::create_directory(config_folder);
+        if (!fs::exists(config_folder / "bin")) fs::create_directory(config_folder / "bin");
     }
 
     void Compiler::compile(bool verbose) {
@@ -243,7 +249,7 @@ namespace snowball {
             throw SNError(IO_ERROR, Logger::format("Linking error. Linking with " LD_PATH " failed with code %d", ldstatus));
         }
 
-        Logger::success(Logger::format("Snowball project file successfully compiled! 🥳\n %soutput%s: %s", BGRN, RESET, p_output.c_str()));
+        Logger::success(Logger::format("Snowball project file successfully compiled! 🥳", BGRN, RESET, p_output.c_str()));
 
         // clean up
         DEBUG_CODEGEN("Cleaning up object file... (%s)", objfile.c_str());
@@ -269,7 +275,7 @@ namespace snowball {
         }
 
         if (!p_for_executable)
-            Logger::success(Logger::format("Snowball project compiled to an object file! ✨\n %soutput%s: %s", BGRN, RESET, p_output.c_str()));
+            Logger::success(Logger::format("Snowball project compiled to an object file! ✨\n", BGRN, RESET, p_output.c_str()));
 
         pass.run(*_module);
         dest.flush();
@@ -277,54 +283,18 @@ namespace snowball {
         return EXIT_SUCCESS;
     }
 
-    int Compiler::execute() {
-        std::string llvm_error;
-
-        llvm::ExecutionEngine *executionEngine = llvm::EngineBuilder(std::move(_module))
-                                                .setErrorStr(&llvm_error)
-                                                .setEngineKind(llvm::EngineKind::JIT)
-                                                .create();
-
-        if (!llvm_error.empty())
-            throw SNError(Error::LLVM_INTERNAL, llvm_error);
-
-        if (_enabledTests) {
-            throw SNError(Error::TODO, "unit testings");
-            int test_success = 1;
-
-            // todo: if it is a folder/import, iterate all paths
-            // if (_testing_context->getTestLength() == 0) {
-            //     Logger::warning("No unit tests found!");
-            //     return 2;
-            // }
-
-            Logger::log(Logger::format("    [%s]", _path.c_str()));
-
-            // for (int i = 0; i < _testing_context->getTestLength(); i++) {
-            //     Logger::rlog(Logger::format("        %s%s%s (%i)... ", BBLU, _testing_context->getTestAt(i).c_str(), RESET, i + 1));
-
-            //     llvm::Function *function = executionEngine->FindFunctionNamed(llvm::StringRef(_testing_context->get_name(i+1)));
-
-            //     int result = executionEngine->runFunction(function, {}).IntVal.getZExtValue();
-
-            //     if (!result) {
-            //         test_success = 0;
-            //         Logger::log(Logger::format("%sFAILED%s", BRED, RESET));
-            //         break;
-            //     } else if (result == 1) {
-            //         Logger::log(Logger::format("%sPASSED%s", BGRN, RESET));
-            //     } else if (result == 2) {
-            //         Logger::log(Logger::format("%sSKIPED%s", BYEL, RESET));
-            //     } else {
-            //         Logger::log(Logger::format("%sUNKNOWN%s", BBLK, RESET));
-            //     }
-            // }
-
-            // return test_success;
-        } else {
-            llvm::Function *main_fn = executionEngine->FindFunctionNamed(llvm::StringRef(_SNOWBALL_FUNCTION_ENTRY));
-            return executionEngine->runFunction(main_fn, {}).IntVal.getZExtValue(); // TODO: return function result
+    toml::parse_result Compiler::get_config() {
+        std::string name = fs::current_path() / "sn.toml";
+        std::ifstream f(name.c_str());
+        if (f.good()) {
+            return toml::parse_file(name);
         }
+
+        throw SNError(Error::IO_ERROR, Logger::format("Project configuration not found (%s)\n%shelp%s: try runing 'snowball init --cfg'", name.c_str(), BGRN, RESET));
+    }
+
+    int Compiler::execute(std::string p_output) {
+        throw SNError(Error::TODO, "Execute from executable");
     }
 
     void Compiler::optimize() {

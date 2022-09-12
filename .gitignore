@@ -44,3 +44,6 @@ CMakeFiles/
 Debug/
 build/
 install_manifest.txt
+
+.sn/
+.sn/*

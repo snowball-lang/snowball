@@ -1,7 +1,4 @@
 
-#include <string>
-
-
 #include "lexer.h"
 #include "types.h"
 #include "parser.h"
@@ -9,6 +6,8 @@
 #include "generator.h"
 #include "enviroment.h"
 #include "source_info.h"
+
+#include "vendor/toml.hpp"
 
 #include <llvm/IR/Module.h>
 #include <llvm/IR/IRBuilder.h>
@@ -18,7 +17,10 @@
 
 #include <llvm/ExecutionEngine/GenericValue.h>
 
+#include <string>
+#include <filesystem>
 
+namespace fs = std::filesystem;
 #ifndef __SNOWBALL_COMPILER_H_
 #define __SNOWBALL_COMPILER_H_
 
@@ -37,10 +39,12 @@ namespace snowball {
             void cleanup();
             void optimize();
 
+            static toml::parse_result get_config();
+
             int emit_binary(std::string p_output);
             int emit_object(std::string p_output, bool p_for_executable = false);
 
-            int execute();
+            int execute(std::string p_output);
             void enable_tests() { _enabledTests = true; }
 
             // Get
@@ -55,6 +59,8 @@ namespace snowball {
             llvm::LLVMContext global_context;
             std::shared_ptr<llvm::IRBuilder<>> builder;
             SNAPI* API;
+
+            fs::path config_folder;
 
         private:
             // llvm

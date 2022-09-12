@@ -7,7 +7,7 @@ add_definitions(${LLVM_DEFINITIONS})
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 set(CMAKE_CXX_STANDARD 17)
-file(GLOB_RECURSE PROJECT_HEADERS include/*.h include/types/*.h include/*.hpp)
+file(GLOB_RECURSE PROJECT_HEADERS include/snowball/*.h include/snowball/types/*.h include/snowball/*.hpp)
 file(GLOB_RECURSE PROJECT_SOURCES src/*.cc src/types/*.cc src/*.c)
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
 file(GLOB_RECURSE PROJECT_MISC *.md *.txt)
@@ -21,6 +21,12 @@ set (PROJECT_FILES
   ${PROJECT_MISC}
   ${PROJECT_EXPORT_HPP}
   ${LLVM_INCLUDE_DIRS})
+
+file(GLOB_RECURSE EXEC_HEADERS include/exec/*.h include/exec/*.hpp)
+file(GLOB_RECURSE EXEC_SOURCES exec/*.cc exec/*.cc exec/*.c)
+set (EXEC_FILES
+  ${EXEC_HEADERS}
+  ${EXEC_SOURCES})
 
 
 # Map llvm components
@@ -41,7 +47,7 @@ llvm_map_components_to_libnames(llvm_libs
 
 ##################################################    Targets     ##################################################
 add_library(snowball SHARED ${PROJECT_FILES})
-add_executable(snowballexe sn/main.cc)
+add_executable(snowballexe ${EXEC_FILES})
 target_link_libraries(snowballexe PUBLIC ${PROJECT_NAME})
 set_target_properties(snowballexe PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
 

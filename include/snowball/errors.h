@@ -19,6 +19,7 @@ namespace snowball {
         UNEXPECTED_EOF,
         WARNING,
         VARIABLE_ERROR,
+        CONFIGURATION_ERROR,
         ARGUMENT_ERROR,
         FUNCTION_RET_ERR,
         COMPILER_ERROR, // note: not the same as "compile time error"
