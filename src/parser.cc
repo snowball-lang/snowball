@@ -240,7 +240,7 @@ namespace snowball {
         // PARSER_ERROR(TODO, "Attributes not yet supported :(")
         AttributeNode* node = new AttributeNode();
 
-        // TODO: check for "!" for global atributes
+        // TODO: check for "!" for global attributes
         ASSERT_TOKEN_EOF(_current_token, TokenType::BRACKET_LSQUARED, "[", "attribute")
         while (true) {
             next_token();
@@ -801,7 +801,7 @@ namespace snowball {
 
 
         UNEXPECTED_TOK("a left parenthesis or a generic statement")
-        return nullptr; // Used to remove those anoying warnings >:(
+        return nullptr; // Used to remove those annoying warnings >:(
     }
 
     Node* Parser::_parse_expression(bool p_allow_assign) {

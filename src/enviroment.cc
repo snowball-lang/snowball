@@ -15,7 +15,7 @@
 #include <algorithm>
 
 namespace snowball {
-    Enviroment::Enviroment(SourceInfo* p_source_info) : _source_info(p_source_info) {
+    Enviroment::Environment(SourceInfo* p_source_info) : _source_info(p_source_info) {
         Scope* global_scope = new Scope(SN_GLOBAL_SCOPE, _source_info);
         _scopes.push_back(global_scope);
     }
@@ -54,7 +54,7 @@ namespace snowball {
         }
 
         if (p_node == nullptr) {
-            throw SNError(Error::BUG, Logger::format("'%s' is not defined (p_node has not been passed to Enviroment::get)", p_o_name.c_str()));
+            throw SNError(Error::BUG, Logger::format("'%s' is not defined (p_node has not been passed to Environment::get)", p_o_name.c_str()));
         }
 
         DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);

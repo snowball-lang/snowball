@@ -104,7 +104,7 @@ namespace snowball {
             throw SNError(Error::LLVM_INTERNAL, llvm_error);
     }
 
-    void SNAPI::add_to_enviroment(std::string p_name, std::unique_ptr<ScopeValue*> p_scope_value) {
+    void SNAPI::add_to_environment(std::string p_name, std::unique_ptr<ScopeValue*> p_scope_value) {
         compiler->get_enviroment()->current_scope()->set(p_name, std::move(p_scope_value));
     }
 }

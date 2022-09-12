@@ -1,7 +1,7 @@
 ### Todo
 
 - [ ] constant
-- [ ] Add a preprocesor
+- [ ] Add a preprocessor
 - [ ] global variables
 - [ ] handle if function returns void, it can't be used as variable
 - [ ] test for all operators
@@ -46,7 +46,7 @@
     - [x] Parse class
         - [x] Function
             - [x] Support for static
-            - [x] Public methods diferentiate from private methods (can have the same name)
+            - [x] Public methods differentiate from private methods (can have the same name)
         - [x] Variables
             - [x] Support for static
     - [x] Generate
@@ -77,7 +77,7 @@
     - [x] Multilines
 - [x] Function return types
 - [x] return statement
-    - [x] parse return statemnt
+    - [x] parse return statement
     - [x] generate return stmt
     - [x] check if type of return is equal to function's return type
 - [x] Perform function calls
@@ -93,7 +93,7 @@
     - [x] Add class/function to global
 - [x] add optimizations
 - [x] Let user choose in 32/64 bits numbers
-- [x] `alloca` should not really be in the enviroment
+- [x] `alloca` should not really be in the environment
 - [x] Unit testing
     - [x] Add `test` keyword
     - [x] Parse test statement

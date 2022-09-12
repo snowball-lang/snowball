@@ -11,8 +11,8 @@
 #include <llvm/IR/Function.h>
 #include <llvm/IR/DerivedTypes.h>
 
-#ifndef __SNOWBALL_ENVIROMENT_SCOPES_H_
-#define __SNOWBALL_ENVIROMENT_SCOPES_H_
+#ifndef __SNOWBALL_ENVIRONMENT_SCOPES_H_
+#define __SNOWBALL_ENVIRONMENT_SCOPES_H_
 
 namespace snowball {
 
@@ -52,7 +52,7 @@ namespace snowball {
         FUNC_CONTAINER,
     };
 
-    // TODO: cleaner structs with childs
+    // TODO: cleaner structs with child
     typedef struct ScopeValue {
         ScopeType type;
         Scope* parent_scope;

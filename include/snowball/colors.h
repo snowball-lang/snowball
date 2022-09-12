@@ -44,7 +44,7 @@ namespace snowball {
     extern const char*  CYNB;
     extern const char*  WHTB;
 
-    //High intensty background
+    //High intensity background
     extern const char*  BLKHB;
     extern const char*  REDHB;
     extern const char*  GRNHB;
@@ -54,7 +54,7 @@ namespace snowball {
     extern const char*  CYNHB;
     extern const char*  WHTHB;
 
-    //High intensty text
+    //High intensity text
     extern const char*  HBLK;
     extern const char*  HRED;
     extern const char*  HGRN;

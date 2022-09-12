@@ -21,7 +21,7 @@ Features:
 * Object oriented programming
 * It is memory safe
 * Built-in functions for better productions
-* Faster than other programming lanugages
+* Faster than other programming languages
 * Garbage collector
 * Unit testing
 
@@ -64,7 +64,7 @@ fn main(args: Array<String>) -> Int {
 
 ## Installation
 
-If you whant to try snowball, the first thing you should do is to install it localy.
+If you want to try snowball, the first thing you should do is to install it locally.
 
 1. Clone the repository using `git clone https://github.com/snowball-lang/snowball`
 2. Go into the project directory

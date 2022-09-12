@@ -20,7 +20,7 @@ jobs:
       - name: Build/Install Snowball
         run: |
             sudo make install
-      - name: Runing unit tests
+      - name: Running unit tests
         run: |
             snowball -t tests/
 

@@ -107,7 +107,7 @@ int main(int argc, char** argv) {
 
             auto stop = high_resolution_clock::now();
 
-            // Subtract stop and start timepoints and
+            // Subtract stop and start time stamps and
             // cast it to required unit. Predefined units
             // are nanoseconds, microseconds, milliseconds,
             // seconds, minutes, hours. Use duration_cast()
@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
             if (amount_of_errors > 0) {
                 Logger::info(Logger::format("%s%i%s unit test(s) failed (executed in %s%ims%s)", BRED, amount_of_errors, RESET, BBLU, duration.count(), RESET));
             } else {
-                Logger::info(Logger::format("\tUnit tests successfuly executed in %s%ims%s", BBLU, duration.count(), RESET));
+                Logger::info(Logger::format("\tUnit tests successfully executed in %s%ims%s", BBLU, duration.count(), RESET));
             }
 
             closedir(dp);

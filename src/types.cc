@@ -83,7 +83,7 @@ namespace snowball {
         return {new Type(name, generics), index};
     }
 
-    ScopeValue* TypeChecker::get_type(Enviroment* p_enviroment, Type* p_type, Node* p_node) {
+    ScopeValue* TypeChecker::get_type(Enviroment* p_environment, Type* p_type, Node* p_node) {
         return p_enviroment->get(to_mangle(p_type), p_node);
     }
 
@@ -131,7 +131,7 @@ namespace snowball {
 
             return {p_builder->CreateIntCast(p_right, p_left, true), true};
         } else if (is_castable(p_left, right_type)) {
-            throw SNError(Error::TODO, "Bit casts for non-integer types are not alowed!");
+            throw SNError(Error::TODO, "Bit casts for non-integer types are not allowed!");
         }
 
         return {p_right, false};

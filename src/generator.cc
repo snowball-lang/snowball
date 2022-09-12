@@ -26,8 +26,8 @@
 
 #include <dlfcn.h>
 
-#define MODULE_NAME_IF_EXISTS(_sufix) (_context._current_module != nullptr ? (_context._current_module->module_name + _sufix) : "")
-#define ADD_MODULE_NAME_IF_EXISTS(_sufix) MODULE_NAME_IF_EXISTS(_sufix) +
+#define MODULE_NAME_IF_EXISTS(_suffix) (_context._current_module != nullptr ? (_context._current_module->module_name + _suffix) : "")
+#define ADD_MODULE_NAME_IF_EXISTS(_suffix) MODULE_NAME_IF_EXISTS(_suffix) +
 #define SET_TO_SCOPE_OR_CLASS(_name, value) \
     if (_context._current_class != nullptr) { \
         _enviroment->get(_context._current_class->name, nullptr)->scope_value->set(_name, std::move(value)); \
@@ -253,7 +253,7 @@ namespace snowball {
                         BBLU, p_node->member->name.c_str(), RESET))
                 }
 
-                // We asume it's a pointer since raw types does not have any attriute
+                // We assume it's a pointer since raw types does not have any attribute
                 auto GEP = _builder->CreateInBoundsGEP(gen_result->getType()->getPointerElementType(), gen_result, {llvm::ConstantInt::get(_builder->getInt32Ty(), 0), llvm::ConstantInt::get(_builder->getInt32Ty(), pos)});
                 return convert_to_right_value(_builder, GEP);
             }
@@ -314,7 +314,7 @@ namespace snowball {
     llvm::Value* Generator::generate_if_stmt(IfStatementNode *p_node) {
         #define ELSE_STMT_EXISTS() p_node->else_stmt != NULL
 
-        llvm::Value* inital_value = generate(p_node->stmt);
+        llvm::Value* initial_value = generate(p_node->stmt);
         GET_BOOL_VALUE(condition, inital_value)
 
         llvm::Value* cond = _builder->CreateICmpEQ(
@@ -901,7 +901,7 @@ namespace snowball {
             // check if type exists
             ScopeValue* value = TypeChecker::get_type(_enviroment, argument->arg_type, argument);
             if (!TypeChecker::is_class(value)) {
-                COMPILER_ERROR(ARGUMENT_ERROR, Logger::format("'%s' must be a referece to a class", p_node->name.c_str()))
+                COMPILER_ERROR(ARGUMENT_ERROR, Logger::format("'%s' must be a reference to a class", p_node->name.c_str()))
             }
 
             llvm::StructType* type = *value->llvm_struct;
@@ -911,7 +911,7 @@ namespace snowball {
         }
 
         if (_context._current_class != nullptr && p_node->name != "__init" && !p_node->is_static) {
-            // We asume that the class has already been assigned
+            // We assume that the class has already been assigned
             arg_types.insert(
                 arg_types.begin(),
                 ((llvm::Type*)*_enviroment->get(_context._current_class->name, p_node)->llvm_struct)->getPointerTo()
@@ -1098,7 +1098,7 @@ namespace snowball {
 
     // utils
 
-    void Generator::generate_contructor_meta() {
+    void Generator::generate_constructor_meta() {
         ASSERT(_context._current_class != nullptr)
 
         llvm::StructType* type = *_enviroment->get(_context._current_class->name, _context._current_class)->llvm_struct;

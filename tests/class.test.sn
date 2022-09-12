@@ -35,12 +35,12 @@ test "call class static function" {
     assert TestCase::static_fn() == 3
 }
 
-test "get class asstributes" {
+test "get class attributes" {
     var t = new TestCase()
     assert t.num == 2
 }
 
-test "call static function from static method (with static overide)" {
+test "call static function from static method (with static override)" {
     assert TestCase::hello() == 3
 }
 

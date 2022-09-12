@@ -40,7 +40,7 @@ namespace snowball {
     const char* CYNB = "\e[46m";
     const char* WHTB = "\e[47m";
 
-    //High intensty background
+    //High intensity background
     const char* BLKHB = "\e[0;100m";
     const char* REDHB = "\e[0;101m";
     const char* GRNHB = "\e[0;102m";
@@ -50,7 +50,7 @@ namespace snowball {
     const char* CYNHB = "\e[0;106m";
     const char* WHTHB = "\e[0;107m";
 
-    //High intensty text
+    //High intensity text
     const char* HBLK = "\e[0;90m";
     const char* HRED = "\e[0;91m";
     const char* HGRN = "\e[0;92m";

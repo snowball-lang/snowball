@@ -9,7 +9,7 @@ namespace snowball {
     class SourceInfo {
 
         public:
-            SourceInfo(std::string p_code = "", std::string p_path = "<anonimus>") {
+            SourceInfo(std::string p_code = "", std::string p_path = "<anonymous>") {
                 _code = p_code;
                 _path = p_path;
             };

@@ -11,7 +11,7 @@
 namespace snowball {
     enum class TokenType {
         /*
-        | Indentifiers
+        | Identifiers
         |---------------
         | An identifier is lexical token
         | (also called symbol, but not to
@@ -73,8 +73,8 @@ namespace snowball {
         |
         | note that it can also work
         | with other types such as
-        | string concationation and
-        | calling the overiding function
+        | string concatenation and
+        | calling the overriding function
         | in a class.
         */
         // TODO: Exponential
@@ -94,9 +94,9 @@ namespace snowball {
         OP_MINUSEQ,        // Symbol: -=
 
         /*
-        | Comparasion tokens
+        | Comparison tokens
         |--------------------
-        | `Comparasion tokens` are
+        | `Comparison tokens` are
         | tokens used to compare 2
         | values. It will return
         | true if the statement matches
@@ -113,7 +113,7 @@ namespace snowball {
         OP_NOTEQ,          // Symbol: !=
 
         /*
-        | Asignment tokens
+        | Assignment tokens
         |------------------
         | This tokens are used
         | to set a value to a
@@ -171,7 +171,7 @@ namespace snowball {
         KWORD_CONST,       // Symbol: const
         KWORD_SUPER,       // Symbol: super
         KWORD_WHILE,       // Symbol: while
-        KWORD_EXTERN,      // Synbol: extern
+        KWORD_EXTERN,      // Symbol: extern
         KWORD_CLASS,       // Symbol: class
         KWORD_AS,          // Symbol: as
         KWORD_IMPORT,      // Symbol: import
@@ -180,7 +180,7 @@ namespace snowball {
         KWORD_SWITCH,      // Symbol: switch
         KWORD_STATIC,      // Symbol: static
         KWORD_RETURN,      // Symbol: return
-        KWORD_PRIVATE,     // Symbol: priv
+        KWORD_PRIVATE,     // Symbol: private
         KWORD_DEFAULT,     // Symbol: default
         KWORD_CONTINUE,    // Symbol: continue
         KWORD__ENDING__POINT, // All keywords must be less than this
@@ -225,7 +225,7 @@ namespace snowball {
                 case TokenType::BRACKET_LSQUARED:   return "[";
                 case TokenType::BRACKET_RSQUARED:   return "]";
 
-                // Equiality
+                // Equality
                 case TokenType::OP_GT:              return ">";
                 case TokenType::OP_LT:              return "<";
                 case TokenType::OP_GTEQ:            return ">=";
@@ -245,7 +245,7 @@ namespace snowball {
                 case TokenType::OP_MOD_EQ:          return "%=";
                 case TokenType::OP_MINUSEQ:         return "-=";
 
-                // Asignment
+                // Assignment
                 case TokenType::OP_EQ:              return "=";
                 case TokenType::OP_OR:              return "||";
                 case TokenType::OP_AND:             return "&&";
@@ -267,7 +267,7 @@ namespace snowball {
                 // Identifiers
                 case TokenType::IDENTIFIER:         return value;
 
-                // Keywods
+                // Keywords
                 case TokenType::KWORD_MOD:         return _SNOWBALL_KEYWORD__MODULE;
                 case TokenType::KWORD_PUBLIC:       return _SNOWBALL_KEYWORD__PUBLIC;
                 case TokenType::KWORD_PRIVATE:      return _SNOWBALL_KEYWORD__PRIVATE;

@@ -22,7 +22,7 @@ namespace snowball {
             Generator(
                 SNAPI* p_api,
                 Parser* p_parser,
-                Enviroment* p_enviroment,
+                Enviroment* p_environment,
                 SourceInfo* p_source_info,
                 std::shared_ptr<llvm::IRBuilder<>> p_builder,
                 llvm::Module* p_module,
@@ -33,7 +33,7 @@ namespace snowball {
                     _module(p_module),
                     _parser(p_parser),
                     _generics(p_generics),
-                    _enviroment(p_enviroment),
+                    _enviroment(p_environment),
                     _tests_enabled(p_testsEnabled),
                     _linked_libraries(p_linked_libraries),
                     _api(p_api) {
@@ -52,7 +52,7 @@ namespace snowball {
             Generics* _generics;
 
             llvm::Module* _module;
-            Enviroment* _enviroment;
+            Enviroment* _environment;
             SourceInfo* _source_info;
 
             std::shared_ptr<llvm::IRBuilder<>> _builder;
@@ -84,7 +84,7 @@ namespace snowball {
             llvm::Value* generate_const_value(ConstantValue* p_node);
 
             // utils
-            void generate_contructor_meta();
+            void generate_constructor_meta();
 
         public:
             static llvm::Value* convert_to_right_value(std::shared_ptr<llvm::IRBuilder<>> p_builder, llvm::Value* value);

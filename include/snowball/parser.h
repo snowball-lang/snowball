@@ -60,7 +60,7 @@ namespace snowball {
             Token _current_token;
 
             SourceInfo* _source_info;
-            int __token_possition = 0;
+            int __token_position = 0;
 
             std::vector<Node*> _nodes;
             std::vector<Token> _tokens;

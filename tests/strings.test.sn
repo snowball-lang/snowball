@@ -4,7 +4,7 @@ test "check if strings are the same" {
     assert "" == ""
 }
 
-test "test for scaping characters" {
+test "test for escaping characters" {
     assert "\n" == "\n"
     assert "\t" == "\t"
     assert "\r" == "\r"

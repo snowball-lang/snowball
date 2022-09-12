@@ -20,7 +20,7 @@ jobs:
       - name: Build/Install Snowball
         run: |
             sudo make install
-      - name: Runing Bench (fib)
+      - name: Running Bench (fib)
         run: |
             cd bench/fib
             chmod +x ./run.sh

@@ -68,7 +68,7 @@ namespace snowball {
 			ARGUMENT,
 			VAR,
 			CONST,
-			CONST_VALUE, // evaluvated to compile time constants ex: "str", 3.14, Array(1, 2), ...
+			CONST_VALUE, // evaluated to compile time constants ex: "str", 3.14, Array(1, 2), ...
 			ARRAY,       // literal array ex: [1, 2, [3]]
 			MAP,         // literal map   ex: { "key":"value", 1:[2, 3] }
 			SUPER,
@@ -172,7 +172,7 @@ namespace snowball {
 
 		bool is_static = false;
 		bool has_vargs = false;
-		bool is_foward = false;
+		bool is_forward = false;
 		bool is_extern = false;
 		bool is_public = false;
 		bool has_return = false;
@@ -378,7 +378,7 @@ namespace snowball {
                 case OpType::OP_MOD_EQ:          return "%=";
                 case OpType::OP_MINUSEQ:         return "-=";
 
-                // Asignment
+                // Assignment
                 case OpType::OP_EQ:              return "=";
                 case OpType::OP_OR:              return "||";
                 case OpType::OP_AND:             return "&&";
