@@ -871,6 +871,22 @@ namespace snowball {
                     break;
                 }
 
+                case OP_DIV: {
+                    llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right).first;
+                    llvm::Type* new_right_type = new_right->getType();
+
+                    if (TypeChecker::is_float(new_right_type) && TypeChecker::is_float(left_type)) {
+                        return _builder->CreateFDiv(left, new_right);
+                    } else if ((TypeChecker::is_number(left_type) || TypeChecker::is_float(left_type) || TypeChecker::is_bool(left_type)) &&
+                    (TypeChecker::is_number(new_right_type) || TypeChecker::is_float(new_right_type) || TypeChecker::is_bool(new_right_type))) {
+                        return _builder->CreateSDiv(left, new_right);
+                    }
+
+
+                    CALL_OPERATOR("__sub")
+                    break;
+                }
+
                 default: {
                     COMPILER_ERROR(BUG, Logger::format("The operator with type '%i' has not been handled.", p_node->op_type))
                 }
@@ -1130,7 +1146,22 @@ namespace snowball {
 
         int var_index = 0;
         for (VarNode* var : _context._current_class->vars) {
+            auto p_node = var; // for compiler errors
+
+            auto var_type = TypeChecker::get_type(_enviroment, var->vtype, var);
+            if (!TypeChecker::is_class(var_type)) {
+                COMPILER_ERROR(TYPE_ERROR, Logger::format("Type %s does not point to a valid type.", var->vtype->to_string().c_str()))
+            }
+
             llvm::Value* value = generate(var->value);
+
+            if (TypeChecker::to_type(TypeChecker::get_type_name(value->getType())).first != var->vtype) {
+                auto [cast, succ] = TypeChecker::implicit_cast(_builder, TypeChecker::type2llvm(_builder, *var_type->llvm_struct), value);
+                if (!succ) {
+                    COMPILER_ERROR(TYPE_ERROR, Logger::format("Can't cast type '%s' to '%s'!", TypeChecker::to_type(TypeChecker::get_type_name(value->getType())).first->to_string().c_str(), var->vtype->to_string().c_str()))
+                }
+            }
+
             llvm::Value* pointer = _builder->CreateInBoundsGEP(pointerCast->getType()->getPointerElementType(), pointerCast, {llvm::ConstantInt::get(_builder->getInt32Ty(), 0), llvm::ConstantInt::get(_builder->getInt32Ty(), var_index)});
             // llvm::Value* load = convert_to_right_value(_builder, pointer);
 

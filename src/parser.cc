@@ -629,8 +629,6 @@ namespace snowball {
         return func;
     }
 
-
-
     BlockNode* Parser::_parse_block(std::vector<TokenType> p_termination) {
         std::vector<Node *> stmts;
         BlockNode* b_node = new BlockNode();
