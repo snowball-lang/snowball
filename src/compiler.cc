@@ -18,6 +18,7 @@
 #include <llvm/Passes/PassBuilder.h>
 #include <llvm/Support/FormattedStream.h>
 
+#include <llvm/Transforms/IPO.h>
 #include <llvm/IR/LegacyPassManager.h>
 
 #include <llvm/Passes/OptimizationLevel.h>
@@ -332,7 +333,7 @@ namespace snowball {
         //     case OPTIMIZE_Oz: level = llvm::OptimizationLevel::Oz; break;
         //     default: THROW_INTERNAL_ERROR("during code optimization");
         // }
-        llvm::ModulePassManager MPM = pass_builder.buildPerModuleDefaultPipeline(llvm::OptimizationLevel::Os);
+        llvm::ModulePassManager MPM = pass_builder.buildPerModuleDefaultPipeline(llvm::OptimizationLevel::O3);
         MPM.run(*_module.get(), module_analysis_manager);
     }
 

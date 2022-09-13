@@ -45,13 +45,16 @@ namespace snowball {
                 // TODO: false if --no-output is passed
                 compiler->compile(true);
 
+                int status;
                 if (p_opts.emit_type == exec::Options::EmitType::OBJECT) {
-                    compiler->emit_object(output);
+                    status = compiler->emit_object(output);
                 } else {
-                    compiler->emit_binary(output);
+                    status = compiler->emit_binary(output);
                 }
 
                 compiler->cleanup();
+
+                return status;
             }
         }
     }

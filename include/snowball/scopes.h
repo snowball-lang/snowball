@@ -73,7 +73,7 @@ namespace snowball {
         std::vector<std::unique_ptr<ScopeValue*>> instances;
 
         // Class params
-        std::vector<std::string> parents;
+        std::vector<Type*> parents;
 
         struct ClassPropertie {
             std::string name;

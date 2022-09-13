@@ -134,26 +134,18 @@ namespace snowball {
 
                     auto main_function = mod->getFunction(_SNOWBALL_FUNCTION_ENTRY);
                     if (main_function) {
-                        main_function->removeFromParent();
+                        main_function->deleteBody();
                     }
 
-                    auto prototype = llvm::FunctionType::get(builder->getInt1Ty(), {});
-
-                    auto fn = llvm::Function::Create(
-                        prototype,
-                        llvm::Function::ExternalLinkage,
-                        _SNOWBALL_FUNCTION_ENTRY,
-                        mod);
-
-                    llvm::BasicBlock *body = llvm::BasicBlock::Create(builder->getContext(), "body", fn);
+                    llvm::BasicBlock *body = llvm::BasicBlock::Create(builder->getContext(), "body", main_function);
                     builder->SetInsertPoint(body);
 
                     auto puts = get_puts(mod, builder);
-                    builder->CreateCall(puts, { builder->CreateGlobalStringPtr(Logger::format("\nrunning %s%i%s %s", BCYN, tests.size(), RESET, tests.size() == 1 ? "test" : "tests"), ".test::alloca") });
+                    builder->CreateCall(puts, { builder->CreateGlobalStringPtr(Logger::format("\nrunning %s%i%s %s", BCYN, tests.size(), RESET, tests.size() == 1 ? "test" : "tests"), ".test::message") });
 
                     auto core_test = mod->getFunction(__SNOWBALL_CORE_TEST_START());
                     auto call = builder->CreateCall(core_test);
-                    builder->CreateRet(llvm::ConstantInt::get(builder->getInt1Ty(), 1));
+                    builder->CreateRet(llvm::ConstantInt::get(builder->getInt32Ty(), 1));
                 }
             };
     };

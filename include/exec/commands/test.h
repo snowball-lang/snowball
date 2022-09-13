@@ -64,8 +64,7 @@ namespace snowball {
                 Logger::message("Finished", Logger::format("test target(s) in %ims", duration));
                 Logger::message("Running", Logger::format("unittests (%s)", filename.c_str()));
 
-
-                system(output.c_str());
+                return system(output.c_str());
             }
         }
     }

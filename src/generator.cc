@@ -421,6 +421,7 @@ namespace snowball {
         module_scope->module_name = module_name;
         module_scope->type = ScopeType::MODULE;
 
+        auto module_bk = _context._current_module;
         _context._current_module = module_scope;
         _enviroment->global_scope()->set(module_name, std::make_unique<ScopeValue*>(module_scope));
 
@@ -452,7 +453,7 @@ namespace snowball {
 
         }
 
-        _context._current_module = nullptr;
+        _context._current_module = module_bk;
         _source_info = source_bk;
         _api->context.is_crate = true;
 
@@ -525,6 +526,10 @@ namespace snowball {
 
         _context._current_class = p_node;
         _context._current_class->name = class_type->mangle();
+
+        for (Type* parent : p_node->parents) {
+            COMPILER_ERROR(TODO, "Parents not yet supported!")
+        }
 
         for (FunctionNode* func : p_node->functions) {
             generate(func);

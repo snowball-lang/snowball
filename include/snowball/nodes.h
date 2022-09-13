@@ -307,7 +307,7 @@ namespace snowball {
 
 		// TODO: generics
 		std::vector<Type*> generics;
-		std::vector<std::string> parents;
+		std::vector<Type*> parents;
 
 		ClassNode() {
 			type = Ty::CLASS;

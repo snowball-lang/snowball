@@ -8,6 +8,7 @@
 #include "exec/cli.h"
 #include "exec/commands/build.h"
 #include "exec/commands/run.h"
+#include "exec/commands/init.h"
 #include "exec/commands/test.h"
 
 #include <string>
@@ -47,6 +48,8 @@ int main(int argc, char** argv) {
             return exec::commands::run(opts.run_opts);
         } else if (opts.command == exec::Options::TEST) {
             return exec::commands::test(opts.test_opts);
+        } else if (opts.command == exec::Options::INIT) {
+            return exec::commands::init(opts.init_opts);
         } else {
             throw SNError(Error::TODO, Logger::format("Command with type %i not yet supported", opts.command));
         }

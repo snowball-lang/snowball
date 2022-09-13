@@ -7,9 +7,12 @@ import "tests/bool"
 // import "tests/if_else"
 // import "tests/number"
 // import "tests/strings"
-import System
 
-class Hello {
+class Base {
+
+}
+
+class Child : Base {
     pub var hello: String = "hello
     world
     hello"
@@ -26,7 +29,5 @@ class Hello {
 
 fn main() Void {
 
-    var h = new Hello()
-    System.println(h.priv_memeber())
-    System.println(6 / 2)
+    var h = new Child()
 }

@@ -50,7 +50,7 @@ namespace snowball {
             // Get
             SourceInfo* get_source_info() { return _source_info; }
             Enviroment* get_enviroment() { return _enviroment; }
-            llvm::Module* get_module() { return _module.get(); }
+            llvm::Module* get_module() const { return _module.get(); }
 
             ~Compiler() {};
 

@@ -380,8 +380,7 @@ namespace snowball {
 
             // TODO: multiple inheritance
             ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "a class inheritance expression")
-            cls->parents.push_back(_current_token.to_string());
-            next_token();
+            cls->parents.push_back(_parse_type());
         }
 
         ASSERT_TOKEN_EOF(_current_token, TokenType::BRACKET_LCURLY, "{", "a class body")

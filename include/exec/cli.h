@@ -35,7 +35,10 @@ namespace snowball {
             } test_opts;
 
             struct InitOptions {
-                // TODO
+                bool cfg = false;
+                bool lib = false;
+                bool yes = false;
+                bool skip_cfg = false;
             } init_opts;
 
 

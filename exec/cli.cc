@@ -56,6 +56,28 @@ namespace snowball {
             } else if (current_arg == "test") {
                 opts.command = Options::Command::TEST;
                 // TODO
+            } else if (current_arg == "init") {
+                opts.command = Options::Command::INIT;
+
+                while (current_index < args.size() - 1) {
+                    NEXT_ARGUMENT();
+
+                    if (IF_ANY_ARG("--yes", "-y")) {
+                        opts.init_opts.yes = true;
+                    } else if (IF_ANY_ARG("--lib", "-l")) {
+                        opts.init_opts.lib = true;
+                    } else if (IF_ANY_ARG("--cfg", "-c")) {
+                        opts.init_opts.cfg = true;
+                    } else if (IF_ARG("--skip-cfg")) {
+                        if (opts.init_opts.cfg == true) {
+                            throw SNError(Error::ARGUMENT_ERROR, "Can't have argument `--skip-cfg` if argument `--cfg` has been passed");
+                        }
+
+                        opts.init_opts.skip_cfg = true;
+                    } else {
+                        throw SNError(Error::ARGUMENT_ERROR, Logger::format("Unexpected argument for the init command: %s", current_arg.c_str()));
+                    }
+                }
             } else {
                 throw SNError(Error::ARGUMENT_ERROR, Logger::format("Unknown command found: %s", current_arg.c_str()));
             }
