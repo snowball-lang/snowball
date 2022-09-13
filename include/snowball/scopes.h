@@ -74,7 +74,13 @@ namespace snowball {
 
         // Class params
         std::vector<std::string> parents;
-        std::vector<std::string> properties;
+
+        struct ClassPropertie {
+            std::string name;
+            bool is_public;
+        };
+
+        std::vector<ClassPropertie> properties;
 
         // Module params
         std::string module_name;

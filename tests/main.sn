@@ -7,7 +7,22 @@ import "tests/bool"
 // import "tests/if_else"
 // import "tests/number"
 // import "tests/strings"
+import System
+
+class Hello {
+    pub var hello: Int = 2
+
+    pub fn __init() {
+
+    }
+
+    pub fn priv_memeber() Int {
+        return self.hello
+    }
+}
 
 fn main() Void {
-    // return 5
+
+    var h = new Hello()
+    System.println(h.priv_memeber())
 }

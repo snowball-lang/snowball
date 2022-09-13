@@ -289,6 +289,7 @@ namespace snowball {
 		std::string name;
 		Type* vtype;
 
+		bool isPublic = false;
 		bool isGlobal = false;
 
 		VarNode() {

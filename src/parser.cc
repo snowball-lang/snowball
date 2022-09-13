@@ -440,9 +440,14 @@ namespace snowball {
 
     VarNode* Parser::_parse_variable() {
         ASSERT(_current_token.type == TokenType::KWORD_VAR)
-        next_token();
 
         VarNode* var = new VarNode();
+
+        if (peek(-2, true).type == TokenType::KWORD_PUBLIC) {
+            var->isPublic = true;
+        }
+
+        next_token();
         ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "variable")
 
         var->name = _current_token.to_string();

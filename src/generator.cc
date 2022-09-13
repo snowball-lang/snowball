@@ -234,16 +234,19 @@ namespace snowball {
     }
 
     llvm::Value* Generator::generate_index(IndexNode* p_node) {
-        llvm::Value* gen_result = generate(p_node->base);
+        llvm::Value* gen_result = generate(p_node->base); // TODO: check if base points to a type
         llvm::Type* type = gen_result->getType();
 
         ScopeValue* value = _enviroment->get(TypeChecker::get_type_name(type), p_node);
         switch (value->type)
         {
             case ScopeType::CLASS: {
-                std::vector<std::string> properties = value->properties;
+                std::vector<ScopeValue::ClassPropertie> properties = value->properties;
 
-                ptrdiff_t pos = std::find(properties.begin(), properties.end(), p_node->member->name) - properties.begin();
+                ptrdiff_t pos = std::find_if(properties.begin(), properties.end(), [&](ScopeValue::ClassPropertie p_prop) {
+                    return p_prop.name == p_node->member->name;
+                }) - properties.begin();
+
                 if (pos >= properties.size()) {
 
                     // TODO: index error
@@ -251,6 +254,13 @@ namespace snowball {
                         "Class %s%s%s does not have a member called %s%s%s!",
                         BBLU, TypeChecker::to_type(TypeChecker::get_type_name(type)).first->to_string().c_str(), RESET,
                         BBLU, p_node->member->name.c_str(), RESET))
+                }
+
+                if ((!properties.at(pos).is_public) && _context._current_class == nullptr) {
+                    COMPILER_ERROR(VARIABLE_ERROR, Logger::format(
+                        "Trying to access member private %s%s%s from class %s%s%s!",
+                        BBLU, p_node->member->name.c_str(), RESET,
+                        BBLU, TypeChecker::to_type(TypeChecker::get_type_name(type)).first->to_string().c_str(), RESET))
                 }
 
                 // We asume it's a pointer since raw types does not have any attriute
@@ -484,7 +494,7 @@ namespace snowball {
             throw CompilerError(Error::SYNTAX_ERROR, Logger::format("'%s' is not a function", p_node->method.c_str()), dbg_info);
         }
 
-        return _builder->CreateCall(*function->llvm_function, args, "calltmp");
+        return _builder->CreateCall(*function->llvm_function, args);
     }
 
     llvm::Value* Generator::generate_class(ClassNode* p_node) {
@@ -504,7 +514,7 @@ namespace snowball {
                 COMPILER_ERROR(TYPE_ERROR, Logger::format("'%s' does not reference a class", var->vtype->name.c_str()))
             }
 
-            class_scope_val->properties.push_back(var->name);
+            class_scope_val->properties.push_back({ .name = var->name, .is_public = var->isPublic });
             var_types.push_back(TypeChecker::type2llvm(_builder, (llvm::Type*)(*type->llvm_struct)));
         }
 
