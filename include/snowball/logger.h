@@ -24,6 +24,8 @@ namespace snowball {
         static void verbose (std::string message);
         static void success (std::string message);
 
+        static void message(std::string topic, std::string message);
+
         // status messages
         static void reset_status();
         static void compiling (std::string message);

@@ -308,6 +308,12 @@ namespace snowball {
         return (llvm::Function*)p_module->getOrInsertFunction("_SNalc", function_type).getCallee();
     }
 
+    llvm::Function* get_puts(llvm::Module* p_module, std::shared_ptr<llvm::IRBuilder<>> p_builder) {
+        llvm::FunctionType* function_type = llvm::FunctionType::get(p_builder->getVoidTy(), { p_builder->getInt8PtrTy() }, false);
+        return (llvm::Function*)p_module->getOrInsertFunction("puts", function_type).getCallee();
+    }
+
+
     llvm::Type* get_llvm_type_from_sn_type(BuildinTypes type, std::shared_ptr<llvm::IRBuilder<>> builder) {
 
         switch (type)

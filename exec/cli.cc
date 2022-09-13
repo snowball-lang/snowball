@@ -50,8 +50,13 @@ namespace snowball {
                         throw SNError(Error::ARGUMENT_ERROR, Logger::format("Unexpected argument for the build command: %s", current_arg.c_str()));
                     }
                 }
+            } else if (current_arg == "run") {
+                opts.command = Options::Command::RUN;
+                // TODO?
+            } else if (current_arg == "test") {
+                opts.command = Options::Command::TEST;
+                // TODO
             } else {
-                printf(current_arg.c_str());
                 throw SNError(Error::ARGUMENT_ERROR, Logger::format("Unknown command found: %s", current_arg.c_str()));
             }
 

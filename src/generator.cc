@@ -378,13 +378,13 @@ namespace snowball {
 
         if (snowball_utils::endsWith(p_node->path, ".so")) {
             // TODO
-        } else if (is_snowball_lib(p_node->path)) {
+        } else if (Library::is_snowball_lib(p_node->path)) {
             if (_enviroment->item_exists(p_node->path)) {
                 COMPILER_ERROR(VARIABLE_ERROR, Logger::format("module '%s' is already defined", p_node->path.c_str()))
             }
 
-            if (snlib_is_object(p_node->path)) {
-                auto [fn, path] = get_sn_export_lib(p_node->path);
+            if (Library::snlib_is_object(p_node->path)) {
+                auto [fn, path] = Library::get_sn_export_lib(p_node->path);
                 ScopeValue* mod = fn(_api);
 
                 _linked_libraries.push_back(path);
@@ -392,10 +392,16 @@ namespace snowball {
                 return llvm::ConstantInt::get(_builder->getInt8Ty(), 0);
             } else {
                 module_name = p_node->path;
-                module_path = get_sn_lib_src(p_node->path);
+                module_path = Library::get_sn_lib_src(p_node->path);
             }
+
+            _api->context.is_crate = false;
         } else {
-            // TODO
+            module_path = Library::find_lib_by_path(p_node->path);
+            module_name = Library::get_module_name(p_node->path);
+            if (module_path.empty()) {
+                COMPILER_ERROR(IO_ERROR, Logger::format("Module '%s' not found.", p_node->path.c_str()))
+            }
         }
 
         ScopeValue* module_scope = new ScopeValue(new Scope());
@@ -438,6 +444,7 @@ namespace snowball {
 
         _context._current_module = nullptr;
         _source_info = source_bk;
+        _api->context.is_crate = true;
 
         // Just return anything
         return llvm::ConstantInt::get(_builder->getInt8Ty(), 0);

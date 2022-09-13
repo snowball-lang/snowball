@@ -8,13 +8,13 @@
 #include "snowball/vendor/toml.hpp"
 
 
-#ifndef __SNOWBALL_EXEC_BUILD_CMD_H_
-#define __SNOWBALL_EXEC_BUILD_CMD_H_
+#ifndef __SNOWBALL_EXEC_RUN_CMD_H_
+#define __SNOWBALL_EXEC_RUN_CMD_H_
 
 namespace snowball {
     namespace exec {
         namespace commands {
-            int build(exec::Options::BuildOptions p_opts) {
+            int run(exec::Options::RunOptions p_opts) {
 
                 toml::parse_result parsed_config = Compiler::get_config();
 
@@ -38,23 +38,16 @@ namespace snowball {
                 Compiler* compiler = new Compiler(content, filename);
                 compiler->initialize();
 
-                if (p_opts.is_test) {
-                    compiler->enable_tests();
-                }
-
                 // TODO: false if --no-output is passed
                 compiler->compile(true);
-
-                if (p_opts.emit_type == exec::Options::EmitType::OBJECT) {
-                    compiler->emit_object(output);
-                } else {
-                    compiler->emit_binary(output);
-                }
+                compiler->emit_binary(output, false);
 
                 compiler->cleanup();
+
+                system(output.c_str());
             }
         }
     }
 }
 
-#endif // __SNOWBALL_EXEC_BUILD_CMD_H_
+#endif // __SNOWBALL_EXEC_RUN_CMD_H_

@@ -20,7 +20,7 @@ namespace snowball {
         RET_ERROR_IF_CODE(Error::FUNCTION_RET_ERR,    "Function Return Error")
         RET_ERROR_IF_CODE(Error::CONFIGURATION_ERROR, "Configuration Error")
 
-        return "";
+        return "Error";
     }
     #undef RET_ERROR_IF_CODE
 }

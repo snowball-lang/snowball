@@ -100,6 +100,7 @@ namespace snowball {
 
     llvm::Type* get_llvm_type_from_sn_type(BuildinTypes type, std::shared_ptr<llvm::IRBuilder<>> builder);
     llvm::Function* get_alloca(llvm::Module* p_module, std::shared_ptr<llvm::IRBuilder<>> p_builder);
+    llvm::Function* get_puts(llvm::Module* p_module, std::shared_ptr<llvm::IRBuilder<>> p_builder);
 }
 
 #endif // __SNOWBALL_BUILDIN_TYPES_H_

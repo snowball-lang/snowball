@@ -21,6 +21,7 @@ namespace snowball {
         public:
 
             struct Context {
+                bool is_crate = true; // The attribute is executed in the current crate.
                 bool is_test;
             };
 

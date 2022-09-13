@@ -609,7 +609,7 @@ namespace snowball {
 
         if (_current_token.type == TokenType::SYM_SEMI_COLLON) {
             func->is_foward = true;
-            next_token();
+            // next_token();
         } else {
 
             if (func->is_extern) {

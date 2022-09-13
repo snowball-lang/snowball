@@ -41,8 +41,8 @@ namespace snowball {
 
             static toml::parse_result get_config();
 
-            int emit_binary(std::string p_output);
-            int emit_object(std::string p_output, bool p_for_executable = false);
+            int emit_binary(std::string p_output, bool p_pmessage = true);
+            int emit_object(std::string p_output, bool p_pmessage = true);
 
             int execute(std::string p_output);
             void enable_tests() { _enabledTests = true; }

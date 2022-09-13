@@ -58,7 +58,7 @@ typedef int32_t                                 snowball_int_t;
     #define _SNOWBALL_PARSER_DEBUG            0
     #define _SNOWBALL_CODEGEN_DEBUG           0
     #define _SNOWBALL_BYTECODE_DEBUG          1
-    #define _SNOWBALL_SYMTABLE_DEBUG          1
+    #define _SNOWBALL_SYMTABLE_DEBUG          0
     #define _SNOWBALL_FREE_DEBUG              0 // todo
 
     #define PRINT_LINE(...)                   printf(__VA_ARGS__);printf("\n");fflush(stdout);
@@ -155,7 +155,6 @@ typedef int32_t                                 snowball_int_t;
 #define _SNOWBALL_KEYWORD__TRUE             "true"
 #define _SNOWBALL_KEYWORD__ELSE             "else"
 #define _SNOWBALL_KEYWORD__CLASS            "class"
-#define _SNOWBALL_KEYWORD__ASSERT           "assert"
 #define _SNOWBALL_KEYWORD__PRIVATE          "priv"
 #define _SNOWBALL_KEYWORD__PUBLIC           "pub"
 #define _SNOWBALL_KEYWORD__FALSE            "false"

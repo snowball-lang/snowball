@@ -7,6 +7,8 @@
 
 #include "exec/cli.h"
 #include "exec/commands/build.h"
+#include "exec/commands/run.h"
+#include "exec/commands/test.h"
 
 #include <string>
 #include <vector>
@@ -41,6 +43,10 @@ int main(int argc, char** argv) {
 
         if (opts.command == exec::Options::BUILD) {
             return exec::commands::build(opts.build_opts);
+        } else if (opts.command == exec::Options::RUN) {
+            return exec::commands::run(opts.run_opts);
+        } else if (opts.command == exec::Options::TEST) {
+            return exec::commands::test(opts.test_opts);
         } else {
             throw SNError(Error::TODO, Logger::format("Command with type %i not yet supported", opts.command));
         }

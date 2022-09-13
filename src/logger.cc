@@ -5,6 +5,9 @@
 #include <cstdarg>
 #include <sstream>
 
+#include <iostream>
+#include <iomanip>
+
 #define _SN_LOGGER_BAR_WIDTH 70
 
 namespace snowball {
@@ -19,10 +22,14 @@ namespace snowball {
     void Logger::verbose(std::string message) { printf("%sverbose%s: %s\n", BMAG, RESET, message.c_str()); }
     void Logger::success(std::string message) { printf("%ssuccess%s: %s\n", BGRN, RESET, message.c_str()); }
 
+    void Logger::message(std::string topic, std::string message) { std::cout
+     << BGRN << std::setw(10)
+     << std::fixed << topic << RESET << ' ' << message << std::endl; }
+
     // status
     void Logger::reset_status() { printf("\33[2K\r");fflush(stdout); };
     void Logger::compiling(std::string message) {
-        printf("\33[2K\r%s   compiling%s %s", BGRN, RESET, message.c_str());
+        printf("\33[2K\r%s Compiling%s %s", BGRN, RESET, message.c_str());
         fflush(stdout);
     };
 

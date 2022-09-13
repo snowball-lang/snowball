@@ -1,17 +1,13 @@
 // This should be ignored by the tester!
 
-import System
+import "tests/bool"
+// import "tests/class"
+// import "tests/functions"
+// import "tests/fuzzy"
+// import "tests/if_else"
+// import "tests/number"
+// import "tests/strings"
 
-// @[cfg(test)]
-// mod test {
-
-    @[test]
-    pub fn hello() Void {
-        
-    }
-// }
-
-fn main() i32 {
-    // System.println(hello())
-    return 5
+fn main() Void {
+    // return 5
 }
