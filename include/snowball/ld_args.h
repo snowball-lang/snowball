@@ -13,11 +13,9 @@
 	"-L/usr/lib/gcc/x86_64-linux-gnu/" LIBC_VERSION "/", \
 	"-L/usr/lib/gcc/x86_64-linux-gnu/" LIBC_VERSION "/", \
 	"-L" STATICLIB_DIR, \
+	"-L" STATICLIB_DIR "" _SNOWBALL_LIBRARY_DIR, \
 	p_input, \
 	"-lsnowball", \
 	"-lc", \
 	"-lgcc", \
-	"-lm", \
-	"-o", p_output}
-	
-#define LD_ARGC 18
+	"-lm"}

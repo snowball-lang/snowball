@@ -92,6 +92,7 @@
         "variant": "cpp",
         "__bits": "cpp",
         "unordered_set": "cpp",
-        "*.def": "cpp"
+        "*.def": "cpp",
+        "source_location": "cpp"
     }
 }

@@ -33,9 +33,9 @@ namespace snowball_utils {
 
     #endif
 
-    std::string get_lib_folder() {
+    std::string get_lib_folder(bool is_obj) {
         fs::path exe_folder = STATICLIB_DIR;
-        fs::path full_path = exe_folder / _SNOWBALL_LIBRARY_DIR;
+        fs::path full_path = is_obj ? exe_folder : (exe_folder / _SNOWBALL_LIBRARY_DIR);
 
         bool filepathExists = fs::is_directory(full_path);
         if (!filepathExists) {

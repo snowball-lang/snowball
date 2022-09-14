@@ -230,15 +230,18 @@ namespace snowball {
         std::string ldcommand; std::string p_input = Logger::format("%s.so", p_output.c_str());
         std::vector<std::string> ld_args = LD_ARGS();
 
-        for(int i = 0; i < LD_ARGC; i++) { ldcommand += ld_args[i]; ldcommand += " "; }
+        for(int i = 0; i < ld_args.size(); i++) { ldcommand += ld_args[i]; ldcommand += " "; }
         for(int i = 0; i < linked_libraries.size(); i++) {
             ldcommand += "-l:" + linked_libraries[i] + " ";
             DEBUG_CODEGEN("Linking library: %s", linked_libraries[i].c_str());
         }
 
         #if _SNOWBALL_CODEGEN_DEBUG
-        ldcommand += "--verbose";
+        ldcommand += "--verbose ";
         #endif
+
+        ldcommand += " -o";
+        ldcommand += p_output;
 
         DEBUG_CODEGEN("Invoking linker (" LD_PATH " with stdlib at " STATICLIB_DIR ")");
         DEBUG_CODEGEN("Linker command: %s", ldcommand.c_str());
@@ -256,6 +259,7 @@ namespace snowball {
         // clean up
         DEBUG_CODEGEN("Cleaning up object file... (%s)", objfile.c_str());
         remove(objfile.c_str());
+
         return EXIT_SUCCESS;
     }
 
@@ -273,6 +277,7 @@ namespace snowball {
         auto FileType = llvm::CGFT_ObjectFile;
 
         if (_target_machine->addPassesToEmitFile(pass, dest, nullptr, FileType)) {
+            remove(p_output.c_str());
             throw SNError(Error::LLVM_INTERNAL, "TargetMachine can't emit a file of this type");
         }
 

@@ -24,6 +24,7 @@ namespace snowball {
         FLOAT,
         DOUBLE,
         STRING,
+        VOID,
         // TODO: i32, i64, i16
     };
 

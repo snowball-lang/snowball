@@ -15,7 +15,7 @@ namespace snowball {
     }
 
     bool Library::snlib_is_object(std::string name) {
-        return ((name == "Os"));
+        return ((name == "Os") || (name == "System"));
     }
 
     std::string Library::get_sn_lib_src(std::string name) {
@@ -24,8 +24,9 @@ namespace snowball {
     }
 
     std::pair<sn_module_export_ty, std::string> Library::get_sn_export_lib(std::string name) {
-        fs::path path = snowball_utils::get_lib_folder();
-        std::string full_path = path / Logger::format("lib%s.so", name.c_str());
+        std::string filename = Logger::format("libSnowball%s.so", name.c_str());
+        fs::path path = snowball_utils::get_lib_folder(true);
+        std::string full_path = path / filename;
 
         void* lib = dlopen(full_path.c_str(), RTLD_LAZY);
         if (!lib) {
@@ -40,7 +41,8 @@ namespace snowball {
         llvm::sys::DynamicLibrary::LoadLibraryPermanently(full_path.c_str());
         // dlclose(lib);
 
-        return {export_function, full_path};
+        // TODO: also return lib to close it after
+        return {export_function, filename};
     }
 
     std::string Library::find_lib_by_path(std::string initial_path) {

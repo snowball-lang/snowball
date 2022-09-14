@@ -22,11 +22,34 @@ extern "C" {
     #define DLLEXPORT
 #endif
 
+// OS specific
+#pragma region
+#ifdef _WIN32
+	#define OS_NAME "Windows 32-bit"
+	#define PATH_SEPARATOR "\\"
+#elif _WIN64
+	#define OS_NAME "Windows 64-bit"
+	#define PATH_SEPARATOR "\\"
+#elif __APPLE__ || __MACH__
+	#define OS_NAME "Mac OS_NAMEX"
+	#define PATH_SEPARATOR "/"
+#elif __linux__
+	#define OS_NAME "Linux"
+	#define PATH_SEPARATOR "/"
+#elif __unix || __unix__
+	#define OS_NAME "Unix"
+	#define PATH_SEPARATOR "/"
+#else
+	#define OS_NAME "Unknown OS"
+	#define PATH_SEPARATOR "/"
+#endif
+#pragma endregion
+
 // Values
 
 #define _SNOWBALL_STR_FACTOR                    16
 #define _SNOWBALL_MAX_LENGTH                    2147483647
-#define _SNOWBALL_OUT_DEFAULT                   ".sn/bin/out.o"
+#define _SNOWBALL_OUT_DEFAULT                   ".sn" PATH_SEPARATOR "bin" PATH_SEPARATOR "out.o"
 
 #ifndef _SNOWBALL_ENABLE_INT64
 #define _SNOWBALL_ENABLE_INT64                  0           // if 1 enable snowball_int_t to be a 64bit int (instead of a 32bit int)
@@ -57,7 +80,7 @@ typedef int32_t                                 snowball_int_t;
     #define _SNOWBALL_LEXER_DEBUG             0
     #define _SNOWBALL_PARSER_DEBUG            0
     #define _SNOWBALL_CODEGEN_DEBUG           0
-    #define _SNOWBALL_BYTECODE_DEBUG          0
+    #define _SNOWBALL_BYTECODE_DEBUG          1
     #define _SNOWBALL_SYMTABLE_DEBUG          0
     #define _SNOWBALL_FREE_DEBUG              0 // todo
 
@@ -115,7 +138,12 @@ typedef int32_t                                 snowball_int_t;
 // LD
 #pragma region
 
-// path of c compiler used for linking
+#ifndef _SNOWBALL_LIBRARY_DIR
+#error "_SNOWBALL_LIBRARY_DIR must be defined! (e.g. \"snowball-libs\")"
+#endif
+
+
+// path of ld compiler used for linking
 #ifndef LD_PATH
 #error "LD_PATH must be defined! (e.g. \"/usr/bin/ld\")"
 #endif
@@ -127,7 +155,6 @@ typedef int32_t                                 snowball_int_t;
 #error "STATICLIB_DIR path must be defined! (e.g. \"/usr/lib/\")"
 #endif
 
-#define _SNOWBALL_LIBRARY_DIR "snowball-libs"
 #pragma endregion
 
 

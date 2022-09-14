@@ -58,9 +58,14 @@ endforeach()
 execute_process(COMMAND gcc -dumpversion OUTPUT_VARIABLE _LIBC_VERSION)
 string(REGEX REPLACE "\n" "" _LIBC_VERSION "${_LIBC_VERSION}")
 
+set (STATICLIB_DIR "/usr/lib")
+set (_SNOWBALL_LIBRARY_DIR "snowball")
+
 add_compile_definitions(CC_PATH="/usr/bin/clang")
 add_compile_definitions(LD_PATH="/usr/bin/ld")
-add_compile_definitions(STATICLIB_DIR="/usr/lib/")
+add_compile_definitions(STATICLIB_DIR="${STATICLIB_DIR}/")
+
+add_compile_definitions(_SNOWBALL_LIBRARY_DIR="${_SNOWBALL_LIBRARY_DIR}")
 
 add_compile_definitions(LIBC_VERSION="${_LIBC_VERSION}")
 
@@ -83,17 +88,25 @@ endif()
 file(GLOB std_c_files "stdlib/*.cc")
 foreach(file ${std_c_files})
   get_filename_component(lib_name ${file} NAME_WE )
-  add_library(${lib_name} SHARED ${file})
+
+    # TODO: see if this can be cleaner
+  set (LIB_FILE
+    ${file}
+    "stdlib/${lib_name}.h")
+
+  set (lib_name "Snowball${lib_name}")
+
+  add_library(${lib_name} SHARED ${LIB_FILE})
   target_link_libraries(${lib_name} PUBLIC ${PROJECT_NAME})
 
   install(TARGETS ${lib_name} EXPORT MyLibConfig
-    ARCHIVE  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/snowball-libs
-    LIBRARY  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/snowball-libs
-    RUNTIME  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/snowball-libs)
+    ARCHIVE  DESTINATION ${STATICLIB_DIR}/
+    LIBRARY  DESTINATION ${STATICLIB_DIR}/
+    RUNTIME  DESTINATION ${STATICLIB_DIR}/)
 endforeach()
 
 file(GLOB std_sn_files "stdlib/*.sn")
-install(FILES ${std_sn_files} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/snowball-libs)
+install(FILES ${std_sn_files} DESTINATION ${STATICLIB_DIR}/${_SNOWBALL_LIBRARY_DIR})
 
 
 

@@ -33,7 +33,7 @@ namespace snowball {
                     (std::istreambuf_iterator<char>()    ) );
 
                 // TODO: check for output
-                std::string output = _SNOWBALL_OUT_DEFAULT;
+                std::string output = fs::current_path() / _SNOWBALL_OUT_DEFAULT;
 
                 Compiler* compiler = new Compiler(content, filename);
                 compiler->initialize();

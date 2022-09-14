@@ -328,6 +328,7 @@ namespace snowball {
                 RETURN_LLVM_TYPE_IF_SN_TYPE_IS(DOUBLE, builder->getDoubleTy())
                 RETURN_LLVM_TYPE_IF_SN_TYPE_IS(STRING, builder->getInt8PtrTy())
                 RETURN_LLVM_TYPE_IF_SN_TYPE_IS(BOOL, builder->getInt1Ty())
+                RETURN_LLVM_TYPE_IF_SN_TYPE_IS(VOID, builder->getVoidTy())
             #undef RETURN_LLVM_TYPE_IF_SN_TYPE_IS
             default:
                 // TODO: throw error

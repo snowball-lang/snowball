@@ -1,33 +1,17 @@
 // This should be ignored by the tester!
 
-import "tests/bool"
+// import "tests/bool"
 // import "tests/class"
 // import "tests/functions"
 // import "tests/fuzzy"
 // import "tests/if_else"
 // import "tests/number"
 // import "tests/strings"
-
-class Base {
-
-}
-
-class Child : Base {
-    pub var hello: String = "hello
-    world
-    hello"
-
-    pub fn __init() {
-
-    }
-
-    pub fn priv_memeber() String {
-        return self.hello
-    }
-
-}
+import System
 
 fn main() Void {
 
-    var h = new Child()
+    System.println("Input a your name:")
+    var a = "hello " + System.input()
+    System.println(a + "... thats a cool name...")
 }
