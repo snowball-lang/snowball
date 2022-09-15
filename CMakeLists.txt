@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 project(snowball)
 
+
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "User path" FORCE)
+endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+
 find_package(LLVM REQUIRED CONFIG)
 add_definitions(${LLVM_DEFINITIONS})
 
@@ -50,6 +55,8 @@ add_library(snowball SHARED ${PROJECT_FILES})
 add_executable(snowballexe ${EXEC_FILES})
 target_link_libraries(snowballexe PUBLIC ${PROJECT_NAME})
 set_target_properties(snowballexe PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+
+set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES /usr/local/lib ${CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES})
 
 foreach(target ${LLVM_TARGETS_TO_BUILD})
   list(APPEND targets "LLVM${target}CodeGen")
@@ -122,8 +129,7 @@ generate_export_header(${PROJECT_NAME}
 # installation
 install(TARGETS ${PROJECT_NAME} EXPORT MyLibConfig
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})
+    LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(TARGETS snowballexe EXPORT MyLibConfig
   ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
