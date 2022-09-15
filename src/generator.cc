@@ -11,6 +11,8 @@
 #include "snowball/utils/mangle.h"
 
 #include <cstdio>
+#include <llvm-14/llvm/IR/Constants.h>
+#include <llvm-14/llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Intrinsics.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Verifier.h>
@@ -765,8 +767,13 @@ namespace snowball {
             case ScopeType::FUNC:
                 return (llvm::Value*)(*value->llvm_function);
 
-            case ScopeType::LLVM:
-                return (llvm::Value*)(*value->llvm_value);
+            case ScopeType::LLVM: {
+                llvm::Value* llvalue = *value->llvm_value;
+                if (llvm::GlobalValue* G = llvm::dyn_cast<llvm::GlobalValue>(llvalue))
+                    return convert_to_right_value(_builder, G);
+
+                return llvalue;
+            }
 
             default: {
                 COMPILER_ERROR(BUG, Logger::format("Invalid Scope Value (idnt: %s).", p_node->name.c_str()))
@@ -1058,6 +1065,8 @@ namespace snowball {
 
         llvm::verifyFunction(*function, &message_stream);
         if (!llvm_error.empty()) {
+            _module->print(llvm::outs(), nullptr);
+
             COMPILER_ERROR(LLVM_INTERNAL, llvm_error)
         }
 
@@ -1079,7 +1088,89 @@ namespace snowball {
         }
 
         if (p_node->isGlobal) {
-            throw SNError(Error::TODO, "Global variables");
+            if (!(p_node->value->type == Node::Ty::CONST_VALUE)) {
+                auto mangled_name = ((std::string)"_GLOBAL__I") + mangle("$SN.$GlobalInit$");
+
+
+                auto fn = _module->getFunction(mangled_name);
+
+                if (!fn) {
+                    auto prototype = llvm::FunctionType::get(_builder->getVoidTy(), {});
+                    fn = llvm::Function::Create(
+                            prototype,
+                            llvm::Function::ExternalLinkage,
+                            mangled_name,
+                            _module);
+
+                    // Create CTors
+                    auto ctors_ty = llvm::StructType::get(_builder->getInt32Ty(), prototype->getPointerTo(), _builder->getInt8PtrTy());
+                    llvm::GlobalVariable* ctors_gvar = new llvm::GlobalVariable(/*Module=*/*_module,
+                        /*Type=*/llvm::ArrayType::get(ctors_ty, 1),
+                        /*isConstant=*/true,
+                        /*Linkage=*/llvm::GlobalValue::AppendingLinkage,
+                        /*Initializer=*/llvm::ConstantArray::get(llvm::ArrayType::get(ctors_ty, 1),
+                        llvm::ConstantStruct::get(ctors_ty, {
+                            llvm::ConstantInt::get(_builder->getInt32Ty(), 65535),
+                            fn,
+                            llvm::ConstantPointerNull::get(_builder->getInt8PtrTy())
+                        })
+                    ), // has initializer, specified below
+                        /*Name=*/"llvm.global_ctors");
+
+                    ctors_gvar->setSection(".ctor");
+
+                    // Create function
+                    llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder->getContext(), "body", fn);
+                    _builder->SetInsertPoint(body);
+
+                    _builder->CreateRetVoid();
+
+                }
+
+                llvm::BasicBlock& block = fn->getEntryBlock();
+                block.back().eraseFromParent();
+
+                _builder->SetInsertPoint(&block);
+
+                auto g_value = generate(p_node->value);
+                auto g_type = g_value->getType();
+                llvm::GlobalVariable* gvar_ptr = new llvm::GlobalVariable(/*Module=*/*_module,
+                    /*Type=*/g_type,
+                    /*isConstant=*/false,
+                    /*Linkage=*/llvm::GlobalValue::CommonLinkage,
+                    /*Initializer=*/0, // has initializer, specified below
+                    /*Name=*/(ADD_MODULE_NAME_IF_EXISTS("::") p_node->name));
+
+                gvar_ptr->setInitializer(llvm::Constant::getNullValue(g_type));
+
+                std::unique_ptr<ScopeValue*> scope_val = std::make_unique<ScopeValue*>(
+                    new ScopeValue(
+                        std::make_shared<llvm::Value*>(
+                            gvar_ptr
+                        )
+                    )
+                );
+
+                SET_TO_GLOBAL_OR_CLASS(p_node->name, scope_val);
+
+                _builder->CreateStore(g_value, gvar_ptr);
+                _builder->CreateRetVoid();
+
+                return gvar_ptr;
+            }
+
+            auto g_value = generate(p_node->value);
+            llvm::GlobalVariable* gvar_ptr = new llvm::GlobalVariable(/*Module=*/*_module,
+                /*Type=*/TypeChecker::type2llvm(_builder, g_value->getType()),
+                /*isConstant=*/false,
+                /*Linkage=*/llvm::GlobalValue::ExternalLinkage,
+                /*Initializer=*/static_cast<llvm::Constant *>(g_value), // has initializer, specified below
+                /*Name=*/(ADD_MODULE_NAME_IF_EXISTS("::") p_node->name));
+
+            std::unique_ptr<ScopeValue*> scope_val = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Value*>(g_value)));
+            SET_TO_GLOBAL_OR_CLASS(p_node->name, scope_val);
+
+            return gvar_ptr;
         } else {
             llvm::Value* value = generate(p_node->value);
             auto* alloca = _builder->CreateAlloca (value->getType(), nullptr, p_node->name );

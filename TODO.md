@@ -2,7 +2,6 @@
 
 - [ ] constant
 - [ ] Add a preprocesor
-- [ ] global variables
 - [ ] handle if function returns void, it can't be used as variable
 - [ ] test for all operators
 - [ ] default return type
@@ -27,7 +26,7 @@
 
 ### In Progress
 
-- [ ] fix if/else test in `test/if_else.test.sn`!!!
+- [ ] global variables
 - [ ] Attributes
 - [ ] Add a templating system
     - [x] Functions
