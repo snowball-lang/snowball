@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -eu
 
 log() {
     echo "[snowball installer]: $@"
