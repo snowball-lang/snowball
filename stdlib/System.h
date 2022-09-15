@@ -16,4 +16,5 @@ struct System {
     static void println(double  __msg);
 
     static char* input();
+    static void exit(int code);
 };

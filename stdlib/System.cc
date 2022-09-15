@@ -51,6 +51,12 @@ char* System::input() {
     return (char*)realloc(str, sizeof(*str)*len);
 }
 
+// oh, no... who would've had expected naming confusion?
+void real_exit(int __code) { exit(__code); }
+void System::exit(int code) {
+    real_exit(code);
+}
+
 // == Definitions
 extern "C" snowball::ScopeValue* sn_export(snowball::SNAPI* API) {
 
@@ -73,7 +79,7 @@ extern "C" snowball::ScopeValue* sn_export(snowball::SNAPI* API) {
         METHOD("println", void_type, { METHOD_ARGUMENT(snowball::FLOAT32_TYPE, float_type) },  "_ZN6System7printlnEf")
         METHOD("println", void_type, { METHOD_ARGUMENT(snowball::FLOAT64_TYPE, double_type) }, "_ZN6System7printlnEd")
 
-
         METHOD("input", string_type, { /* TODO: default string for prompts */ }, "_ZN6System5inputEv")
+        METHOD("exit", string_type, { METHOD_ARGUMENT(snowball::INT32_TYPE, int32_type) /* TODO: default code = 0 */ }, "_ZN6System4exitEi")
     });
 }

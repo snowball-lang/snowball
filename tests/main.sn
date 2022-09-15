@@ -9,9 +9,12 @@
 // import "tests/strings"
 import System
 
+fn hello(d: String) Void {
+    System.println(d)
+}
+
 fn main() Void {
 
-    System.println("Input a your name:")
-    var a = "hello " + System.input()
-    System.println(a + "... thats a cool name...")
+    System.exit(0)
+    System.println( "... thats a cool name...")
 }

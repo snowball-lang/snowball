@@ -16,6 +16,7 @@
 #include "snowball/constants.h"
 #include "snowball/utils/api.h"
 
+// TODO: make them mangle?
 extern "C" int sn_String__eqeq(char* self, char* second) {
     return strcmp(self, second) == 0;
 }

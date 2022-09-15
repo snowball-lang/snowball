@@ -47,3 +47,4 @@ install_manifest.txt
 
 .sn/
 .sn/*
+.cache/
