@@ -8,14 +8,9 @@
 // import "tests/number"
 // import "tests/strings"
 import System
-
-fn example() Int {
-    return 5
-}
-
-var b = example()
+import Math
 
 fn main() Void {
 
-    System.println( b )
+    System.println( Math.PI )
 }

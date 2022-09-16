@@ -273,7 +273,7 @@ namespace snowball {
             case ScopeType::MODULE: {
                 // TODO: custom error if no member exists
                 // TODO: module variables?
-                return generate(new IdentifierNode((value->module_name + ".") + (new Type(p_node->member->name))->mangle()));
+                return generate(new IdentifierNode((value->module_name + ".") + p_node->member->name));
             }
 
             case ScopeType::FUNC: {
@@ -769,8 +769,10 @@ namespace snowball {
 
             case ScopeType::LLVM: {
                 llvm::Value* llvalue = *value->llvm_value;
-                if (llvm::GlobalValue* G = llvm::dyn_cast<llvm::GlobalValue>(llvalue))
+                DUMP_S(p_node->name.c_str())
+                if (llvm::GlobalValue* G = llvm::dyn_cast<llvm::GlobalValue>(llvalue)) {
                     return convert_to_right_value(_builder, G);
+                }
 
                 return llvalue;
             }
@@ -1168,6 +1170,7 @@ namespace snowball {
                 /*Name=*/(ADD_MODULE_NAME_IF_EXISTS("::") p_node->name));
 
             std::unique_ptr<ScopeValue*> scope_val = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Value*>(g_value)));
+            (*scope_val)->isPublic = p_node->isPublic;
             SET_TO_GLOBAL_OR_CLASS(p_node->name, scope_val);
 
             return gvar_ptr;
