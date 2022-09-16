@@ -107,6 +107,7 @@ namespace snowball {
         OP_LT,             // Symbol: <
 
         // Double character tokens
+		OP_ARROW,          // Symbol: =>
         OP_EQEQ,           // Symbol: ==
         OP_GTEQ,           // Symbol: >=
         OP_LTEQ,           // Symbol: <=
@@ -231,6 +232,7 @@ namespace snowball {
                 case TokenType::OP_EQEQ:            return "==";
                 case TokenType::OP_LTEQ:            return "<=";
                 case TokenType::OP_NOTEQ:           return "!=";
+                case TokenType::OP_ARROW:           return "=>";
 
                 // Mathematical symbols
                 case TokenType::OP_MOD:             return "%";

@@ -297,7 +297,7 @@ namespace snowball {
         auto class_struct = llvm::StructType::create(_builder->getContext(), p_node->name);
         class_struct->setBody({}, true);
         module_scope->llvm_struct = std::make_shared<llvm::StructType *>(class_struct);
-        module_scope->module_name = ADD_MODULE_NAME_IF_EXISTS(".") p_node->name;
+        module_scope->module_name = p_node->name;
         module_scope->type = ScopeType::MODULE;
 
         _context._current_module = module_scope;
@@ -751,7 +751,7 @@ namespace snowball {
         } else if (_enviroment->item_exists(name)) {
             value = _enviroment->get(name, p_node);
         } else {
-            COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Identifier %s does not exist!", p_node->name.c_str()))
+            COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Identifier %s does not exist!", (p_node->name).c_str()))
         }
 
         switch (value->type)
@@ -769,8 +769,17 @@ namespace snowball {
 
             case ScopeType::LLVM: {
                 llvm::Value* llvalue = *value->llvm_value;
-                DUMP_S(p_node->name.c_str())
                 if (llvm::GlobalValue* G = llvm::dyn_cast<llvm::GlobalValue>(llvalue)) {
+
+                    if (p_node->name.find(".") != std::string::npos) {
+                        std::string split = snowball_utils::split(p_node->name, ".").at(0);
+                        if ((_context._current_module == nullptr ? true : _context._current_module->module_name != split)) {
+                            if (!value->isPublic) {
+                                COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Trying to access a private variable from '%s'", split.c_str()))
+                            }
+                        }
+                    }
+
                     return convert_to_right_value(_builder, G);
                 }
 
@@ -854,6 +863,20 @@ namespace snowball {
                     break;
                 }
 
+                case OP_NOTEQ: {
+                    llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right).first;
+                    llvm::Type* new_right_type = new_right->getType();
+
+                    if (TypeChecker::is_float(new_right_type) && TypeChecker::is_float(left_type)) {
+                        return _builder->CreateFCmpONE(left, new_right);
+                    } else if (TypeChecker::both_number(left_type, new_right_type, true)) {
+                        return _builder->CreateICmpNE(left, new_right);
+                    }
+
+                    CALL_OPERATOR("__noteq")
+                    break;
+                }
+
                 case OP_LTEQ: {
                     llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right).first;
                     llvm::Type* new_right_type = new_right->getType();
@@ -924,7 +947,7 @@ namespace snowball {
             }
 
             // TODO: check if return type and arg types exist
-            _generics->add_generic(mangle(ADD_MODULE_NAME_IF_EXISTS(".")
+            _generics->add_generic(mangle(
                 (_context._current_class == nullptr ? p_node->name : Logger::format(
                     "%s.%s", _context._current_class->name.c_str(),
                     p_node->name.c_str()
@@ -967,7 +990,7 @@ namespace snowball {
         }
 
         std::string fname = p_node->is_extern ? p_node->name : mangle(
-                ADD_MODULE_NAME_IF_EXISTS(".")
+
                 (_context._current_class == nullptr ? p_node->name : Logger::format(
                     "%s.%s", _context._current_class->name.c_str(),
                     p_node->name.c_str()
@@ -1082,11 +1105,10 @@ namespace snowball {
     llvm::Value* Generator::generate_variable_decl(VarNode* p_node) {
         // TODO: check if variable is global
 
-        DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
         Scope* scope = _enviroment->current_scope();
 
-        if (scope->item_exists(p_node->name) || p_node->name == _enviroment->current_scope()->name()) {
-            throw CompilerError(Error::VARIABLE_ERROR, Logger::format("'%s' has already been declared", p_node->name.c_str()), dbg_info);
+        if (scope->item_exists( p_node->name) || p_node->name == _enviroment->current_scope()->name()) {
+            COMPILER_ERROR(VARIABLE_ERROR, Logger::format("'%s' has already been declared", p_node->name.c_str()))
         }
 
         if (p_node->isGlobal) {
@@ -1153,6 +1175,7 @@ namespace snowball {
                     )
                 );
 
+                (*scope_val)->isPublic = p_node->isPublic;
                 SET_TO_GLOBAL_OR_CLASS(p_node->name, scope_val);
 
                 _builder->CreateStore(g_value, gvar_ptr);
@@ -1169,7 +1192,7 @@ namespace snowball {
                 /*Initializer=*/static_cast<llvm::Constant *>(g_value), // has initializer, specified below
                 /*Name=*/(ADD_MODULE_NAME_IF_EXISTS("::") p_node->name));
 
-            std::unique_ptr<ScopeValue*> scope_val = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Value*>(g_value)));
+            std::unique_ptr<ScopeValue*> scope_val = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Value*>(gvar_ptr)));
             (*scope_val)->isPublic = p_node->isPublic;
             SET_TO_GLOBAL_OR_CLASS(p_node->name, scope_val);
 
@@ -1218,7 +1241,6 @@ namespace snowball {
             }
 
             case TokenType::VALUE_FLOAT: {
-                // COMPILER_ERROR(TODO, "Floats are not yet ready!")
                 llvm::Type * f = get_llvm_type_from_sn_type(BuildinTypes::FLOAT, _builder);
                 return llvm::ConstantFP::get(f, std::stof(p_node->value));
             }

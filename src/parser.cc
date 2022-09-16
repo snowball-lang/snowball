@@ -614,7 +614,20 @@ namespace snowball {
         if (_current_token.type == TokenType::SYM_SEMI_COLLON) {
             func->is_foward = true;
             // next_token();
-        } else {
+        } else if (_current_token.type == TokenType::OP_ARROW) {
+
+            if (func->is_extern) {
+                PARSER_ERROR(SYNTAX_ERROR, "External functions can't have body blocks!")
+            }
+
+            ReturnNode* fake_ret = new ReturnNode();
+            fake_ret->value = _parse_expression();
+            fake_ret->parent = func;
+
+            BlockNode* body = new BlockNode();
+            func->body = new BlockNode();
+            func->body->exprs.push_back(fake_ret);
+        } else if (_current_token.type == TokenType::BRACKET_LCURLY) {
 
             if (func->is_extern) {
                 PARSER_ERROR(SYNTAX_ERROR, "External functions can't have body blocks!")
@@ -622,6 +635,8 @@ namespace snowball {
 
             BlockNode* body = _parse_block();
             func->body = body;
+        } else {
+            UNEXPECTED_TOK2("'{' or '=>'", "a function body")
         }
 
         _context.current_function = nullptr;

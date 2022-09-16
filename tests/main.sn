@@ -12,5 +12,7 @@ import Math
 
 fn main() Void {
 
-    System.println( Math.PI )
+    var a = 1.6 + 2
+    System.println(a)
+    System.println(Math.is_nan(Math.NaN))
 }

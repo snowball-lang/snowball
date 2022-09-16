@@ -168,6 +168,7 @@ namespace snowball {
 			// op
 			case '=': {
 				if (GET_CHAR(1) == '=') consume(TokenType::OP_EQEQ, 2);
+				else if (GET_CHAR(1) == '>') consume(TokenType::OP_ARROW, 2);
 				else consume(TokenType::OP_EQ);
 				break;
 			}
