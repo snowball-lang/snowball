@@ -149,7 +149,6 @@ namespace snowball {
                 api_context.is_test = _enabledTests;
 
                 API = new SNAPI(std::move(this), api_context);
-                Generics* generics_api = new Generics(std::move(this));
 
                 SHOW_STATUS(Logger::compiling(Logger::progress(0.60)))
                 link_std_classes();
@@ -163,7 +162,6 @@ namespace snowball {
                     builder,
                     _module.get(),
                     this->linked_libraries,
-                    generics_api,
                     _enabledTests
                 );
 
@@ -182,14 +180,6 @@ namespace snowball {
             }
 
             llvm::sys::DynamicLibrary::LoadLibraryPermanently(nullptr);
-
-            #if _SNOWBALL_SYMTABLE_DEBUG
-            PRINT_LINE("Enviroment:")
-            PRINT_LINE(LINE_SEPARATOR)
-
-            _enviroment->debug();
-            PRINT_LINE(LINE_SEPARATOR)
-            #endif
 
             #if _SNOWBALL_CAN_OPTIMIZE
             optimize();
@@ -343,13 +333,13 @@ namespace snowball {
     }
 
     void Compiler::cleanup() {
-            #if _SNOWBALL_SYMTABLE_DEBUG
-            PRINT_LINE("Enviroment:")
-            PRINT_LINE(LINE_SEPARATOR)
+        #if _SNOWBALL_SYMTABLE_DEBUG
+        PRINT_LINE("Enviroment:")
+        PRINT_LINE(LINE_SEPARATOR)
 
-            _enviroment->debug();
-            PRINT_LINE(LINE_SEPARATOR)
-            #endif
+        _enviroment->debug();
+        PRINT_LINE(LINE_SEPARATOR)
+        #endif
         _module.reset();
     }
 

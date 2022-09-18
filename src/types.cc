@@ -254,6 +254,23 @@ namespace snowball {
             return (args_equal && (p_name == p_name2) && (p_public == p_public2));
     }
 
+    std::string TypeChecker::args_to_string(std::vector<Type*> p_args) {
+        std::string result;
+
+        int index;
+        for (Type* arg : p_args) {
+
+            result += arg->to_string();
+            if ((p_args.size() > 1) && (index < (p_args.size() - 1)))
+                result += ", ";
+
+            index++;
+        }
+
+        return result;
+    }
+
+
     std::pair<std::vector<Type*>,bool> TypeChecker::deduce_template_args(
                 FunctionNode* def, std::vector<Type*> params, std::vector<Type*> gparams) {
         std::vector<Type*> deduced_types;

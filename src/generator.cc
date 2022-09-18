@@ -293,7 +293,7 @@ namespace snowball {
     llvm::Value* Generator::generate_module(ModuleNode* p_node) {
 
         // TODO: check if module already exists
-        ScopeValue* module_scope = new ScopeValue(new Scope());
+        ScopeValue* module_scope = new ScopeValue(new Scope(p_node->name, _source_info));
         auto class_struct = llvm::StructType::create(_builder->getContext(), p_node->name);
         class_struct->setBody({}, true);
         module_scope->llvm_struct = std::make_shared<llvm::StructType *>(class_struct);
@@ -416,7 +416,7 @@ namespace snowball {
             }
         }
 
-        ScopeValue* module_scope = new ScopeValue(new Scope());
+        ScopeValue* module_scope = new ScopeValue(new Scope(module_name, _source_info));
         auto class_struct = llvm::StructType::create(_builder->getContext(), module_name);
         class_struct->setBody({}, true);
         module_scope->llvm_struct = std::make_shared<llvm::StructType *>(class_struct);
@@ -464,7 +464,6 @@ namespace snowball {
     }
 
     llvm::Value* Generator::generate_new(NewNode* p_node) {
-        std::string method_name = "__init(";
         std::vector<Type*> arg_types;
         std::vector<llvm::Value*> args;
 
@@ -472,29 +471,26 @@ namespace snowball {
         for (Node* arg : p_node->arguments) {
             llvm::Value* result = generate(arg);
             arg_types.push_back(TypeChecker::to_type(TypeChecker::get_type_name(result->getType())).first);
-
             args.push_back(result);
-            method_name += TypeChecker::get_type_name(result->getType());
-
-            if ((p_node->arguments.size() > 1) && (arg_index < (p_node->arguments.size() - 1)))
-                method_name += ", ";
 
             arg_index++;
         }
 
-        method_name += ")";
-
         // TODO: check if there are generics
         std::string fname = GET_FUNCTION_FROM_CLASS(TypeChecker::to_mangle(p_node->method, {}).c_str(), "__init", arg_types, true);
-        ScopeValue* function = _enviroment->get(
-            fname,
-            p_node,
-            Logger::format("%s", fname.c_str())
-        );
-
-        if (function->type != ScopeType::FUNC) {
-            DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
-            throw CompilerError(Error::SYNTAX_ERROR, Logger::format("'%s' is not a function", p_node->method.c_str()), dbg_info);
+        ScopeValue* function;
+        if (_enviroment->item_exists(fname)) {
+            function = _enviroment->get(fname, p_node);
+        } else if (_enviroment->function_exists(fname)) {
+            paste_function(_enviroment->get_function(fname));
+            function = _enviroment->get(fname, p_node); // it will exist... right?
+        } else {
+            COMPILER_ERROR(
+                SYNTAX_ERROR,
+                Logger::format("No contructor found for %s with arguments [%s]",
+                    p_node->method.c_str(), TypeChecker::args_to_string(arg_types).c_str()
+                )
+            )
         }
 
         return _builder->CreateCall(*function->llvm_function, args);
@@ -542,7 +538,7 @@ namespace snowball {
     }
 
     llvm::Value* Generator::generate_call(CallNode* p_node) {
-        std::string method_name = p_node->method + "(";
+        std::string method_name = p_node->method + "("; // TODO: move "stringified" function to a typechecker function
         std::vector<Type*> arg_types;
         std::vector<std::string> arg_types_str;
         std::vector<llvm::Value*> args;
@@ -648,20 +644,14 @@ namespace snowball {
             } else {
                 private_method_exists = true;
             }
-        } else if (p_node->generics.size() > 0) {
-            auto [generic_function, succ] = _generics->get_generic(method_call, arg_types, p_node->generics, p_node);
-            if (succ && ((_context._current_module != nullptr && _context._current_module->module_name == base_struct) || (_context._current_class != nullptr && _context._current_class->name == base_struct) || generic_function.node->is_lop_level)) {
-                auto backup = _builder->GetInsertBlock();
+        } else if (_enviroment->function_exists(method_call)) {
+            paste_function(_enviroment->get_function(method_call));
+            ScopeValue* private_function = _enviroment->get(method_call, p_node); // it will exist... right?
 
-                generate(generic_function.node);
-                function = _enviroment->get(
-                    p_node->base == nullptr ?
-                    mangle(p_node->method, generic_function.args, false) :
-                    GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, generic_function.args, false), p_node);
-
-                _builder->SetInsertPoint(backup);
+            if ((_context._current_module != nullptr && _context._current_module->module_name == base_struct) || (_context._current_class != nullptr && _context._current_class->name == base_struct) || (private_function->parent_scope->name() == SN_GLOBAL_SCOPE)) {
+                function = private_function;
                 private_method_used = true;
-            } else if (succ) {
+            } else {
                 private_method_exists = true;
             }
         }
@@ -673,29 +663,14 @@ namespace snowball {
                 mangle(p_node->method, arg_types, true) :
                 GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, arg_types, true));
 
-            if (p_node->generics.size() > 0) {
-                auto [generic_function, succ] = _generics->get_generic(method_call, arg_types, p_node->generics, p_node);
-                if (succ) {
-                    auto backup = _builder->GetInsertBlock();
-
-                    generate(generic_function.node);
-                    function = _enviroment->get(
-                        p_node->base == nullptr ?
-                        mangle(p_node->method, generic_function.args, true) :
-                        GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, generic_function.args, true), p_node);
-
-                    _builder->SetInsertPoint(backup);
-                } else {
-                    FUNCTION_CALL_NOT_FOUND()
-                }
+            // Look for public
+            if (_enviroment->item_exists(method_call)) {
+                function = _enviroment->get(method_call, p_node);
+            } else if (_enviroment->function_exists(method_call)) {
+                paste_function(_enviroment->get_function(method_call));
+                function = _enviroment->get(method_call, p_node); // it will exist... right?
             } else {
-
-                // Look for public
-                if (_enviroment->item_exists(method_call)) {
-                    function = _enviroment->get(method_call, p_node);
-                } else {
-                    FUNCTION_CALL_NOT_FOUND()
-                }
+                FUNCTION_CALL_NOT_FOUND()
             }
         }
 
@@ -845,6 +820,7 @@ namespace snowball {
                 }
 
                 case OP_EQ: {
+                    // TODO: if same types (and __eq does not exist) just do _builder->CreateStore()
                     CALL_OPERATOR("__eq")
                     break;
                 }
@@ -935,37 +911,10 @@ namespace snowball {
     }
 
     llvm::Value* Generator::generate_function(FunctionNode* p_node) {
-
         #define IS_ENTRY_POINT() (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->is_lop_level)
 
         // Skip if the function contains a template
-        if (p_node->generics.size() > 0) {
-
-            std::vector<Type*> args;
-            for (ArgumentNode* argument : p_node->arguments) {
-                args.push_back(argument->arg_type);
-            }
-
-            // TODO: check if return type and arg types exist
-            _generics->add_generic(mangle(
-                (_context._current_class == nullptr ? p_node->name : Logger::format(
-                    "%s.%s", _context._current_class->name.c_str(),
-                    p_node->name.c_str()
-                )), args, p_node->is_public), args, p_node->return_type, p_node->generics, p_node);
-            return _builder->getInt1(0);
-        };
-
-        std::string llvm_error;
-        llvm::raw_string_ostream message_stream(llvm_error);
-
-        ScopeValue* returnType = TypeChecker::get_type(_enviroment, p_node->return_type, p_node);
-        auto retType =
-            IS_ENTRY_POINT()
-                ? get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder)
-                : TypeChecker::type2llvm(_builder, *returnType->llvm_struct);
-
         std::vector<Type*> arg_tnames;
-        std::vector<llvm::Type*> arg_types;
         for (ArgumentNode* argument : p_node->arguments) {
 
             // check if type exists
@@ -976,128 +925,33 @@ namespace snowball {
 
             llvm::StructType* type = *value->llvm_struct;
 
-            arg_types.push_back(TypeChecker::type2llvm(_builder, type));
             arg_tnames.push_back(TypeChecker::to_type(type->getName().str()).first);
         }
 
         if (_context._current_class != nullptr && p_node->name != "__init" && !p_node->is_static) {
             // We asume that the class has already been assigned
-            arg_types.insert(
-                arg_types.begin(),
-                ((llvm::Type*)*_enviroment->get(_context._current_class->name, p_node)->llvm_struct)->getPointerTo()
-            );
             arg_tnames.insert(arg_tnames.begin(), TypeChecker::to_type(_context._current_class->name).first);
         }
 
-        std::string fname = p_node->is_extern ? p_node->name : mangle(
+        std::string fname = ADD_MODULE_NAME_IF_EXISTS(".") (p_node->is_extern ? p_node->name : mangle(
 
                 (_context._current_class == nullptr ? p_node->name : Logger::format(
                     "%s.%s", _context._current_class->name.c_str(),
                     p_node->name.c_str()
-                )), arg_tnames, p_node->is_public);
+                )), arg_tnames, p_node->is_public));
 
-        auto prototype = llvm::FunctionType::get(retType, arg_types, p_node->has_vargs);
-        llvm::Function *function = llvm::Function::Create(
-            prototype,
-            llvm::Function::ExternalLinkage,
-            IS_ENTRY_POINT() ? _SNOWBALL_FUNCTION_ENTRY : fname,
-            _module);
+        Enviroment::FunctionStore store;
+        store.current_class = _context._current_class;
+        store.current_module = _context._current_module;
 
-        std::unique_ptr<ScopeValue*> func_scopev = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Function*>(function)));
-        (*func_scopev)->isStaticFunction = p_node->is_static;
-        (*func_scopev)->hasVArg = p_node->has_vargs;
-        (*func_scopev)->arguments = arg_tnames;
-        SET_TO_GLOBAL_OR_CLASS(mangle(
-                // ADD_MODULE_NAME_IF_EXISTS(".")
-                p_node->name, arg_tnames, p_node->is_public), func_scopev);
+        store.node = p_node;
 
-        Scope* current_scope = _enviroment->create_scope(p_node->name);
-
-        int parameter_index = _context._current_class != nullptr ? 0 : 1;
-        for (auto& arg : function->args()) {
-            std::string name;
-            if (_context._current_class != nullptr && p_node->name != "__init" && parameter_index == 0 && !p_node->is_static) /* self argument */ {
-                name = "self";
-            } else {
-                name = p_node->arguments.at(parameter_index == 0 ? 0 : parameter_index-1)->name;
-            }
-
-            if (_context._current_class != nullptr && parameter_index>0 && name == "self") {
-                COMPILER_ERROR(SYNTAX_ERROR, "Class method can't contain self as a parameter")
-            }
-
-            arg.setName(name);
-
-            std::unique_ptr<ScopeValue*> param_scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(&arg)));
-            current_scope->set(name, std::move(param_scope_value));
-
-            parameter_index++;
+        if (IS_ENTRY_POINT()) {
+            return paste_function(store);
         }
 
-        // BODY GENERATION
-
-        if (!p_node->is_foward) {
-            llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder->getContext(), "body", function);
-            _builder->SetInsertPoint(body);
-
-            if (_context._current_class != nullptr && p_node->name == "__init" && !p_node->is_static) {
-                generate_contructor_meta();
-            }
-
-            for (const auto& generic : p_node->generic_map) {
-                ScopeValue* scope_val = TypeChecker::get_type(_enviroment, generic.second, p_node);
-                if (!TypeChecker::is_class(scope_val)) {
-                    COMPILER_ERROR(SYNTAX_ERROR, Logger::format("%s does not point a class", generic.second->to_string().c_str()))
-                }
-
-                std::string name = generic.second->mangle();
-
-                if (_enviroment->item_exists(name)) {
-                    auto ty = *_enviroment->get(name, p_node)->llvm_struct;
-
-                    int size = _module->getDataLayout().getTypeStoreSize(ty);
-                    llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder->getInt32Ty(), size);
-
-                    llvm::Value* alloca_value = _builder->CreateCall(get_alloca(_module, _builder), {size_constant});
-                    llvm::Value* cast = _builder->CreatePointerCast(alloca_value, TypeChecker::type2llvm(_builder, ty), generic.first);
-
-                    std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(cast)));
-
-                    SET_TO_SCOPE_OR_CLASS(generic.first, std::move(scope_value))
-                    continue;
-                }
-
-                COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Type '%s' not found in generics", p_node->name))
-            }
-
-            for (auto expr : p_node->body->exprs) {
-                generate(expr);
-            }
-
-            if (body->size() == 0 || !body->back().isTerminator()) {
-                if (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->is_lop_level) {
-                    llvm::Type * i64 = get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder);
-                    _builder->CreateRet(llvm::ConstantInt::get(i64, 0));
-                } else if (_context._current_class != nullptr && p_node->name == "__init") {
-                    _builder->CreateRet(*current_scope->get("self", nullptr)->llvm_value);
-                } else if (retType->isVoidTy()) {
-                    _builder->CreateRet(nullptr);
-                } else {
-                    COMPILER_ERROR(FUNCTION_RET_ERR, Logger::format("Function '%s' does not have a return statement for all paths!", p_node->name.c_str()))
-                }
-            }
-        }
-
-        llvm::verifyFunction(*function, &message_stream);
-        if (!llvm_error.empty()) {
-            _module->print(llvm::outs(), nullptr);
-
-            COMPILER_ERROR(LLVM_INTERNAL, llvm_error)
-        }
-
-        _enviroment->delete_scope();
-
-        return function;
+        _enviroment->set_function(fname, store);
+        return _builder->getInt1(1);
 
         #undef IS_ENTRY_POINT
     }
@@ -1252,10 +1106,10 @@ namespace snowball {
 
     // utils
 
-    void Generator::generate_contructor_meta() {
-        ASSERT(_context._current_class != nullptr)
+    void Generator::generate_contructor_meta(ClassNode* current_class) {
+        ASSERT(current_class != nullptr)
 
-        llvm::StructType* type = *_enviroment->get(_context._current_class->name, _context._current_class)->llvm_struct;
+        llvm::StructType* type = *_enviroment->get(current_class->name, current_class)->llvm_struct;
         int size = _module->getDataLayout().getTypeStoreSize(type);
         llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder->getInt32Ty(), size);
 
@@ -1266,7 +1120,7 @@ namespace snowball {
         _enviroment->current_scope()->set("self", std::move(scope_value));
 
         int var_index = 0;
-        for (VarNode* var : _context._current_class->vars) {
+        for (VarNode* var : current_class->vars) {
             auto p_node = var; // for compiler errors
 
             auto var_type = TypeChecker::get_type(_enviroment, var->vtype, var);
@@ -1292,9 +1146,194 @@ namespace snowball {
         }
     }
 
+    llvm::Value* Generator::paste_function(Enviroment::FunctionStore store) {
+        #define IS_ENTRY_POINT() (store.node->name == _SNOWBALL_FUNCTION_ENTRY && store.node->is_lop_level)
+        #define _MODULE_NAME_IF_EXISTS(_sufix) (store.current_module != nullptr ? (store.current_module->module_name + _sufix) : "")
+        #define _ADD_MODULE_NAME_IF_EXISTS(_sufix) _MODULE_NAME_IF_EXISTS(_sufix) +
+        #define _SET_TO_GLOBAL_OR_CLASS(_name, value) \
+            if (store.current_class != nullptr) { \
+                _enviroment->get(_ADD_MODULE_NAME_IF_EXISTS(".") store.current_class->name, nullptr)->scope_value->set(_name, std::move(value)); \
+            } else if (store.current_module != nullptr) { \
+                store.current_module->scope_value->set(_name, std::move(value)); \
+            } else { \
+                _enviroment->global_scope()->set(_name, std::move(value)); \
+            }
+
+
+        auto bb_backup = _builder->GetInsertBlock();
+        auto cls_backup = _context._current_class;
+
+        _context._current_class = store.current_class;
+        // Skip if the function contains a template
+
+        std::string llvm_error;
+        llvm::raw_string_ostream message_stream(llvm_error);
+
+        ScopeValue* returnType = TypeChecker::get_type(_enviroment, store.node->return_type, store.node);
+        auto retType =
+            IS_ENTRY_POINT()
+                ? get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder)
+                : TypeChecker::type2llvm(_builder, *returnType->llvm_struct);
+
+        std::vector<Type*> arg_tnames;
+        std::vector<llvm::Type*> arg_types;
+        for (ArgumentNode* argument : store.node->arguments) {
+
+            // check if type exists
+            ScopeValue* value = TypeChecker::get_type(_enviroment, argument->arg_type, argument);
+            if (!TypeChecker::is_class(value)) {
+                FunctionNode* p_node = store.node; // for DBGInfo
+                COMPILER_ERROR(ARGUMENT_ERROR, Logger::format("'%s' must be a referece to a class", store.node->name.c_str()))
+            }
+
+            llvm::StructType* type = *value->llvm_struct;
+
+            arg_types.push_back(TypeChecker::type2llvm(_builder, type));
+            arg_tnames.push_back(TypeChecker::to_type(type->getName().str()).first);
+        }
+
+        if (store.current_class != nullptr && store.node->name != "__init" && !store.node->is_static) {
+            // We asume that the class has already been assigned
+            arg_types.insert(
+                arg_types.begin(),
+                ((llvm::Type*)*_enviroment->get(store.current_class->name, store.node)->llvm_struct)->getPointerTo()
+            );
+            arg_tnames.insert(arg_tnames.begin(), TypeChecker::to_type(store.current_class->name).first);
+        }
+
+        std::string fname = store.node->is_extern ? store.node->name : mangle((_ADD_MODULE_NAME_IF_EXISTS(".")
+
+                (store.current_class == nullptr ? store.node->name : Logger::format(
+                    "%s.%s", store.current_class->name.c_str(),
+                    store.node->name.c_str()
+                ))), arg_tnames, store.node->is_public);
+
+
+        auto prototype = llvm::FunctionType::get(retType, arg_types, store.node->has_vargs);
+        llvm::Function *function = llvm::Function::Create(
+            prototype,
+            llvm::Function::ExternalLinkage,
+            IS_ENTRY_POINT() ? _SNOWBALL_FUNCTION_ENTRY : fname,
+            _module);
+
+        std::unique_ptr<ScopeValue*> func_scopev = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Function*>(function)));
+        (*func_scopev)->isStaticFunction = store.node->is_static;
+        (*func_scopev)->hasVArg = store.node->has_vargs;
+        (*func_scopev)->arguments = arg_tnames;
+        _SET_TO_GLOBAL_OR_CLASS(mangle(
+                store.node->name, arg_tnames, store.node->is_public), func_scopev);
+
+        Scope* current_scope = _enviroment->create_scope(store.node->name);
+
+        int parameter_index = store.current_class != nullptr ? 0 : 1;
+        for (auto& arg : function->args()) {
+            std::string name;
+            if (store.current_class != nullptr && store.node->name != "__init" && parameter_index == 0 && !store.node->is_static) /* self argument */ {
+                name = "self";
+            } else {
+                name = store.node->arguments.at(parameter_index == 0 ? 0 : parameter_index-1)->name;
+            }
+
+            if (store.current_class != nullptr && parameter_index>0 && name == "self") {
+                FunctionNode* p_node = store.node; // for DBGInfo
+                COMPILER_ERROR(SYNTAX_ERROR, "Class method can't contain self as a parameter")
+            }
+
+            arg.setName(name);
+
+            std::unique_ptr<ScopeValue*> param_scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(&arg)));
+            current_scope->set(name, std::move(param_scope_value));
+
+            parameter_index++;
+        }
+
+        // BODY GENERATION
+
+        if (!store.node->is_foward) {
+            llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder->getContext(), "body", function);
+            _builder->SetInsertPoint(body);
+
+            if (store.current_class != nullptr && store.node->name == "__init" && !store.node->is_static) {
+                generate_contructor_meta(store.current_class);
+            }
+
+            for (const auto& generic : store.node->generic_map) {
+                ScopeValue* scope_val = TypeChecker::get_type(_enviroment, generic.second, store.node);
+                if (!TypeChecker::is_class(scope_val)) {
+                    FunctionNode* p_node = store.node; // for DBGInfo
+                    COMPILER_ERROR(SYNTAX_ERROR, Logger::format("%s does not point a class", generic.second->to_string().c_str()))
+                }
+
+                std::string name = generic.second->mangle();
+
+                if (_enviroment->item_exists(name)) {
+                    auto ty = *_enviroment->get(name, store.node)->llvm_struct;
+
+                    int size = _module->getDataLayout().getTypeStoreSize(ty);
+                    llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder->getInt32Ty(), size);
+
+                    llvm::Value* alloca_value = _builder->CreateCall(get_alloca(_module, _builder), {size_constant});
+                    llvm::Value* cast = _builder->CreatePointerCast(alloca_value, TypeChecker::type2llvm(_builder, ty), generic.first);
+
+                    std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(cast)));
+
+                    SET_TO_SCOPE_OR_CLASS(generic.first, std::move(scope_value))
+                    continue;
+                }
+
+                FunctionNode* p_node = store.node; // for DBGInfo
+                COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Type '%s' not found in generics", name.c_str()))
+            }
+
+            for (auto expr : store.node->body->exprs) {
+                generate(expr);
+            }
+
+            if (body->size() == 0 || !body->back().isTerminator()) {
+                if (IS_ENTRY_POINT()) {
+                    printf("HELLO\n");
+                    llvm::Type * i32 = _builder->getInt32Ty();
+                    _builder->CreateRet(llvm::ConstantInt::get(i32, 0));
+                } else if (store.current_class != nullptr && store.node->name == "__init") {
+                    _builder->CreateRet(*current_scope->get("self", nullptr)->llvm_value);
+                } else if (retType->isVoidTy()) {
+                    _builder->CreateRet(nullptr);
+                } else {
+                    FunctionNode* p_node = store.node; // for DBGInfo
+                    COMPILER_ERROR(FUNCTION_RET_ERR, Logger::format("Function '%s' does not have a return statement for all paths!", p_node->name.c_str()))
+                }
+            }
+        }
+
+        llvm::verifyFunction(*function, &message_stream);
+        if (!llvm_error.empty()) {
+            _module->print(llvm::outs(), nullptr);
+
+            FunctionNode* p_node = store.node; // for DBGInfo
+            COMPILER_ERROR(LLVM_INTERNAL, llvm_error)
+        }
+
+        _enviroment->delete_scope();
+        _builder->SetInsertPoint(bb_backup);
+
+        _context._current_class = cls_backup;
+        return function;
+
+        #undef _MODULE_NAME_IF_EXISTS
+        #undef _ADD_MODULE_NAME_IF_EXISTS
+        #undef _SET_TO_GLOBAL_OR_CLASS
+        #undef IS_ENTRY_POINT
+
+    }
+
     llvm::Value* Generator::convert_to_right_value(std::shared_ptr<llvm::IRBuilder<>> p_builder, llvm::Value* value) {
 
         auto type = value->getType();
         return p_builder->CreateLoad((type->isPointerTy()) ? type->getPointerElementType() : type, value);
     }
 }
+
+#undef MODULE_NAME_IF_EXISTS
+#undef ADD_MODULE_NAME_IF_EXISTS
+#undef SET_TO_GLOBAL_OR_CLASS
+#undef IS_ENTRY_POINT

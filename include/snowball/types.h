@@ -48,6 +48,7 @@ namespace snowball {
             static std::pair<std::vector<Type*>,bool> deduce_template_args(
                 FunctionNode* def, std::vector<Type*> params, std::vector<Type*> gparams);
 
+            static std::string args_to_string(std::vector<Type*> p_args);
             static std::pair<Type*, int> to_type(std::string p_type);
             static ScopeValue* get_type(Enviroment* p_enviroment, Type* p_type, Node* p_node = nullptr);
             static bool functions_equal(std::string p_name, std::string p_name2, std::vector<Type*> p_args, std::vector<Type*> p_args2, bool p_public, bool p_public2, bool has_varg);

@@ -13,6 +13,13 @@
 namespace snowball {
 
     class Enviroment {
+        public: // structs
+            struct FunctionStore {
+                FunctionNode* node;
+
+                ScopeValue* current_module = nullptr;
+                ClassNode* current_class = nullptr;
+            };
 
         public:
             Enviroment(SourceInfo* p_source_info);
@@ -28,6 +35,15 @@ namespace snowball {
             ScopeValue* get(std::string name, Node* p_node, std::string p_o_name = "");
             bool item_exists(std::string name);
 
+
+            // Make sure to call function_exists() first!
+            FunctionStore get_function(std::string name) { return this->_functions.at(name); }
+            bool function_exists(std::string name) {
+                return this->_functions.find(name) != this->_functions.end();
+            }
+
+            void set_function(std::string name, FunctionStore store) { this->_functions.emplace( name, store ); };
+
             #if _SNOWBALL_SYMTABLE_DEBUG
             void debug(Scope* current_scope = nullptr, int depth = 0);
             #endif
@@ -37,6 +53,8 @@ namespace snowball {
         private:
             SourceInfo* _source_info;
             std::vector<Scope*> _scopes;
+            std::map<std::string /* mangled names */, FunctionStore> _functions;
+
     };
 
 }

@@ -41,7 +41,7 @@ namespace snowball {
         }
 
         std::stringstream mangled_name;
-        mangled_name << "_S$"; // step #1
+        mangled_name << "_S#"; // step #1
 
         // Step #2
         for (std::string n : snowball_utils::split(name, ".")) {
@@ -73,7 +73,7 @@ namespace snowball {
 
         for (int index = 0; index < name.length();) {
             if (index == 0) {
-                if (name.substr(0, 3) != "_S$") {
+                if (name.substr(0, 3) != "_S#") {
                     return result;
                 }
 

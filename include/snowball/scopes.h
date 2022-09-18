@@ -21,7 +21,6 @@ namespace snowball {
     class Scope {
 
         public:
-            Scope() {};
             Scope(std::string p_scope_name, SourceInfo* p_source_info);
 
             ScopeValue* get(std::string p_name, Node* p_node, std::string p_o_name = "");
@@ -68,6 +67,13 @@ namespace snowball {
         bool isTopLevel = false;
         bool isStaticFunction = false;
         std::vector<Type*> arguments;
+
+        struct ScopeGeneric {
+            std::string name;
+            // TODO: default type
+        };
+
+        std::vector<ScopeGeneric> generics;
 
         // Function Containers
         std::vector<std::unique_ptr<ScopeValue*>> instances;
