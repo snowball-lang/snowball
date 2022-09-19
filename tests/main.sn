@@ -12,7 +12,9 @@ import Math
 
 fn main() Void {
 
-    var a = 1.6 + 2
-    System.println(a)
+    System.println(Math.NaN)
     System.println(Math.is_nan(Math.NaN))
+    System.println(Math.is_infinite(2 as f64))
+    System.println(Math.Inf)
+    System.println(Math.is_nan(5.6 as f64))
 }

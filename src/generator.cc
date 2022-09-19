@@ -636,6 +636,7 @@ namespace snowball {
         // First, look for private methods
         bool private_method_used = false;
         bool private_method_exists = false;
+
         if (_enviroment->item_exists(method_call)) {
             ScopeValue* private_function = _enviroment->get(method_call, p_node); // it will exist... right?
             if ((_context._current_module != nullptr && _context._current_module->module_name == base_struct) || (_context._current_class != nullptr && _context._current_class->name == base_struct) || (private_function->parent_scope->name() == SN_GLOBAL_SCOPE)) {
@@ -933,12 +934,12 @@ namespace snowball {
             arg_tnames.insert(arg_tnames.begin(), TypeChecker::to_type(_context._current_class->name).first);
         }
 
-        std::string fname = ADD_MODULE_NAME_IF_EXISTS(".") (p_node->is_extern ? p_node->name : mangle(
+        std::string fname = ADD_MODULE_NAME_IF_EXISTS(".") mangle(
 
                 (_context._current_class == nullptr ? p_node->name : Logger::format(
                     "%s.%s", _context._current_class->name.c_str(),
                     p_node->name.c_str()
-                )), arg_tnames, p_node->is_public));
+                )), arg_tnames, p_node->is_public);
 
         Enviroment::FunctionStore store;
         store.current_class = _context._current_class;
@@ -1162,8 +1163,10 @@ namespace snowball {
 
         auto bb_backup = _builder->GetInsertBlock();
         auto cls_backup = _context._current_class;
+        auto mod_backup = _context._current_module;
 
         _context._current_class = store.current_class;
+        _context._current_module = store.current_module;
         // Skip if the function contains a template
 
         std::string llvm_error;
@@ -1317,6 +1320,7 @@ namespace snowball {
         _builder->SetInsertPoint(bb_backup);
 
         _context._current_class = cls_backup;
+        _context._current_module = mod_backup;
         return function;
 
         #undef _MODULE_NAME_IF_EXISTS

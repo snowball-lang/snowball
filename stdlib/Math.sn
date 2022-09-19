@@ -1,16 +1,15 @@
+extern fn isnan(f64) Bool;
+extern fn strtod(String, i32) f64; // TODO
+extern fn isinf(f64) Bool;
 
 // TODO: add it as a macro when preprocesor is done
 pub var PI = 3.14159265358979323846
 
-pub var INF = 0x7FF0000000000000 as f32
+pub var Inf = strtod("Inf", 0);
 
-// TODO: nan does not work
-pub var NaN = 0x7FF8000000000000 as f64
+// TODO: nanf and nanl
+pub var NaN = strtod("NaN", 0)
 
-pub fn is_nan(x: f64) Bool => x != x
-
-pub fn is_infinite() Bool {
-    // TODO
-    return true
-}
+pub fn is_nan(x: f64) Bool => isnan(x)
+pub fn is_infinite(x: f64) Bool => isinf(x)
 
