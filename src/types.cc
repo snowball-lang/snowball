@@ -270,6 +270,15 @@ namespace snowball {
         return result;
     }
 
+    std::vector<Type*> TypeChecker::args2types(std::vector<ArgumentNode*> p_args) {
+        std::vector<Type*> types;
+
+        for (auto arg : p_args) {
+            types.push_back(arg->arg_type);
+        }
+
+        return types;
+    }
 
     std::pair<std::vector<Type*>,bool> TypeChecker::deduce_template_args(
                 FunctionNode* def, std::vector<Type*> params, std::vector<Type*> gparams) {
@@ -278,22 +287,19 @@ namespace snowball {
         for (int i = 0; i < def->generics.size(); i++)
         {
             auto garg = def->generics[i];
-            // We have a generic type parameter garg
-            // 1. Look up the idx where the generic type is used in the args
-            // 2. Look up the type of the arg at the idx in the function call expr.
-            // 3. The type of the arg in the function call expr is the deduced type
+            auto it = std::find_if(def->arguments.begin(), def->arguments.end(), [&](ArgumentNode* arg) {
+                return arg->arg_type->equals(garg);
+            });
 
-            // -> 1.
-            auto it = std::find_if(def->generics.begin(), def->generics.end(), [&](Type* arg) {
-                return arg->equals(garg);
-                });
-
-            // -> 2.
-            if (it != def->generics.end())
+            if (it != def->arguments.end())
             {
-                int arg_idx = std::distance(def->generics.begin(), it);
+                int arg_idx = std::distance(def->arguments.begin(), it);
                 auto deduced_type = params[arg_idx];
-                // -> 3.
+
+                if (garg_idx < gparams.size() && (!deduced_type->equals(gparams[garg_idx]))) {
+                    return { {},false };
+                }
+
                 deduced_types.push_back(deduced_type);
             }
 

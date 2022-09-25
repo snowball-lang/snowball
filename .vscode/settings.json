@@ -93,6 +93,7 @@
         "__bits": "cpp",
         "unordered_set": "cpp",
         "*.def": "cpp",
-        "source_location": "cpp"
+        "source_location": "cpp",
+        "charconv": "cpp"
     }
 }

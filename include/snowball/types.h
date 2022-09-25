@@ -12,6 +12,7 @@ namespace snowball {
 
     class Node;
     class FunctionNode;
+    class ArgumentNode;
 
     class ScopeValue;
     class Enviroment;
@@ -43,6 +44,7 @@ namespace snowball {
             static std::string to_mangle(std::string p_name, std::vector<Type*> p_generics);
             static llvm::Type* type2llvm(std::shared_ptr<llvm::IRBuilder<>> p_builder, llvm::Type* p_type);
 
+            static std::vector<Type*> args2types(std::vector<ArgumentNode*> p_args);
             static std::string get_type_name(llvm::Type* p_ty);
 
             static std::pair<std::vector<Type*>,bool> deduce_template_args(
@@ -51,7 +53,7 @@ namespace snowball {
             static std::string args_to_string(std::vector<Type*> p_args);
             static std::pair<Type*, int> to_type(std::string p_type);
             static ScopeValue* get_type(Enviroment* p_enviroment, Type* p_type, Node* p_node = nullptr);
-            static bool functions_equal(std::string p_name, std::string p_name2, std::vector<Type*> p_args, std::vector<Type*> p_args2, bool p_public, bool p_public2, bool has_varg);
+            static bool functions_equal(std::string p_name, std::string p_name2, std::vector<Type*> p_args, std::vector<Type*> p_args2, bool p_public, bool p_public2, bool has_varg=false);
     };
 
     struct Type {

@@ -80,7 +80,7 @@ namespace snowball {
             llvm::Value* generate_const_value(ConstantValue* p_node);
 
             // utils
-            llvm::Value* paste_function(Enviroment::FunctionStore p_node);
+            llvm::Value* paste_function(Enviroment::FunctionStore* p_node);
             void generate_contructor_meta(ClassNode* current_class);
 
         public:

@@ -6,6 +6,7 @@
 #include "snowball/utils/mangle.h"
 #include "snowball/utils/utils.h"
 
+#include <cstddef>
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/IR/Type.h>
 
@@ -94,6 +95,29 @@ namespace snowball {
         }
 
         return false;
+    }
+
+    Enviroment::FunctionStore* Enviroment::find_function_if(std::string name, std::function<bool(Enviroment::FunctionStore*)> cb) {
+        if (_functions.find(name) == _functions.end()) {
+            return nullptr;
+        }
+
+        auto stores = (*_functions.find(name)).second;
+        for (auto store : stores) {
+            if (cb(store)) {
+                return store;
+            }
+        }
+
+        return nullptr;
+    }
+
+    void Enviroment::set_function(std::string name, Enviroment::FunctionStore* store) {
+        if (_functions.find(name) == _functions.end()) {
+            this->_functions.emplace( name, std::vector<Enviroment::FunctionStore*>{store} );
+        } else {
+            (*_functions.find(name)).second.push_back(store);
+        }
     }
 
     Scope* Enviroment::global_scope() {

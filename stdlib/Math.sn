@@ -13,3 +13,6 @@ pub var NaN = strtod("NaN", 0)
 pub fn is_nan(x: f64) Bool => isnan(x)
 pub fn is_infinite(x: f64) Bool => isinf(x)
 
+pub fn sin(x: f32) f32 => x / 180 * PI
+pub fn cos(x: f32) f32 => sin(90 - x)
+
