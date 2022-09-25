@@ -7,6 +7,8 @@
 #include "enviroment.h"
 #include "source_info.h"
 
+#include "../exec/cli.h"
+
 #include "vendor/toml.hpp"
 
 #include <llvm/IR/Module.h>
@@ -46,6 +48,7 @@ namespace snowball {
 
             int execute(std::string p_output);
             void enable_tests() { _enabledTests = true; }
+            void set_optimization(exec::Options::Optimization p_level) { _opt_level = p_level; }
 
             // Get
             SourceInfo* get_source_info() { return _source_info; }
@@ -81,6 +84,8 @@ namespace snowball {
             Generator* _generator;
 
             Enviroment* _enviroment;
+
+            exec::Options::Optimization _opt_level = exec::Options::Optimization::OPTIMIZE_O0;
 
             // methods
             void link_std_classes();

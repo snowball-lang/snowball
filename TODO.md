@@ -17,6 +17,7 @@
 
 ### Known Bugs
 
+- [ ] Generics for class functions
 - [ ] Compiler errors/Warnings don't work
 - [ ] Some "built in type" constructors are not found (sometimes)
 
@@ -28,7 +29,7 @@
 
 - [ ] global variables
 - [ ] Attributes
-- [ ] Add a templating system
+- [ ] Add a generic system
     - [x] Functions
     - [ ] Classes
     - [ ] Default types
@@ -57,13 +58,7 @@
     - [ ] Inheritance
     - [x] Add `new` keyword support
     - [ ] Add all default override methods
-        - [ ] __init
-        - [ ] __sum
-        - [ ] __sub
-        - [ ] __div
-        - [ ] __str
-        - [ ] __repr
-        - [ ] __eqeq
+
 
 ### Done ✓
 

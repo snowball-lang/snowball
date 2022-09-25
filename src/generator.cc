@@ -1373,7 +1373,6 @@ namespace snowball {
 
             if (body->size() == 0 || !body->back().isTerminator()) {
                 if (IS_ENTRY_POINT()) {
-                    printf("HELLO\n");
                     llvm::Type * i32 = _builder->getInt32Ty();
                     _builder->CreateRet(llvm::ConstantInt::get(i32, 0));
                 } else if (store->current_class != nullptr && store->node->name == "__init") {

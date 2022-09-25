@@ -37,6 +37,7 @@ namespace snowball {
 
                 Compiler* compiler = new Compiler(content, filename);
                 compiler->initialize();
+                compiler->set_optimization(p_opts.opt);
 
                 // TODO: false if --no-output is passed
                 compiler->compile(true);

@@ -37,6 +37,7 @@ namespace snowball {
 
                 Compiler* compiler = new Compiler(content, filename);
                 compiler->initialize();
+                compiler->set_optimization(p_opts.opt);
 
                 if (p_opts.is_test) {
                     compiler->enable_tests();

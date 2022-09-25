@@ -317,18 +317,21 @@ namespace snowball {
                                         c_gscc_analysis_manager, module_analysis_manager);
 
         // todo: let user decide
-        // llvm::OptimizationLevel level;
-        // switch(_opt_level)
-        // {
-        //     case OPTIMIZE_O0: level = llvm::OptimizationLevel::O0; break;
-        //     case OPTIMIZE_O1: level = llvm::OptimizationLevel::O1; break;
-        //     case OPTIMIZE_O2: level = llvm::OptimizationLevel::O2; break;
-        //     case OPTIMIZE_O3: level = llvm::OptimizationLevel::O3; break;
-        //     case OPTIMIZE_Os: level = llvm::OptimizationLevel::Os; break;
-        //     case OPTIMIZE_Oz: level = llvm::OptimizationLevel::Oz; break;
-        //     default: THROW_INTERNAL_ERROR("during code optimization");
-        // }
-        llvm::ModulePassManager MPM = pass_builder.buildPerModuleDefaultPipeline(llvm::OptimizationLevel::O3);
+        llvm::OptimizationLevel level;
+        switch(_opt_level)
+        {
+            case exec::Options::Optimization::OPTIMIZE_O0: level = llvm::OptimizationLevel::O0; break;
+            case exec::Options::Optimization::OPTIMIZE_O1: level = llvm::OptimizationLevel::O1; break;
+            case exec::Options::Optimization::OPTIMIZE_O2: level = llvm::OptimizationLevel::O2; break;
+            case exec::Options::Optimization::OPTIMIZE_O3: level = llvm::OptimizationLevel::O3; break;
+            case exec::Options::Optimization::OPTIMIZE_Os: level = llvm::OptimizationLevel::Os; break;
+            case exec::Options::Optimization::OPTIMIZE_Oz: level = llvm::OptimizationLevel::Oz; break;
+            default: throw SNError(BUG, "during code optimization");
+        }
+
+        if (level == llvm::OptimizationLevel::O0) { return; }
+
+        llvm::ModulePassManager MPM = pass_builder.buildPerModuleDefaultPipeline(level);
         MPM.run(*_module.get(), module_analysis_manager);
     }
 

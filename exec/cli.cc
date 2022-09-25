@@ -46,13 +46,56 @@ namespace snowball {
                         } else {
                             throw SNError(Error::ARGUMENT_ERROR, "Valid build output types are: exec, lib, llvm-ir");
                         }
+                    } else if (IF_ANY_ARG("--optimization", "-o")) {
+                        CHECK_ARG("an optimization level")
+                        NEXT_ARGUMENT()
+
+                        if (current_arg == "0") {
+                            opts.build_opts.opt = Options::Optimization::OPTIMIZE_O0;
+                        } else if (current_arg == "1") {
+                            opts.build_opts.opt = Options::Optimization::OPTIMIZE_O1;
+                        } else if (current_arg == "2") {
+                            opts.build_opts.opt = Options::Optimization::OPTIMIZE_O2;
+                        } else if (current_arg == "3") {
+                            opts.build_opts.opt = Options::Optimization::OPTIMIZE_O3;
+                        } else if (current_arg == "s") {
+                            opts.build_opts.opt = Options::Optimization::OPTIMIZE_Os;
+                        } else if (current_arg == "z") {
+                            opts.build_opts.opt = Options::Optimization::OPTIMIZE_Oz;
+                        } else {
+                            throw SNError(Error::ARGUMENT_ERROR, "Valid optimization levels are: 0, 1, 2, 3, s, z");
+                        }
                     } else {
                         throw SNError(Error::ARGUMENT_ERROR, Logger::format("Unexpected argument for the build command: %s", current_arg.c_str()));
                     }
                 }
             } else if (current_arg == "run") {
                 opts.command = Options::Command::RUN;
-                // TODO?
+
+                while (current_index < args.size() - 1) {
+                    NEXT_ARGUMENT();
+                    
+                    if (IF_ANY_ARG("--optimization", "-o")) {
+                        CHECK_ARG("an optimization level")
+                        NEXT_ARGUMENT()
+
+                        if (current_arg == "0") {
+                            opts.run_opts.opt = Options::Optimization::OPTIMIZE_O0;
+                        } else if (current_arg == "1") {
+                            opts.run_opts.opt = Options::Optimization::OPTIMIZE_O1;
+                        } else if (current_arg == "2") {
+                            opts.run_opts.opt = Options::Optimization::OPTIMIZE_O2;
+                        } else if (current_arg == "3") {
+                            opts.run_opts.opt = Options::Optimization::OPTIMIZE_O3;
+                        } else if (current_arg == "s") {
+                            opts.run_opts.opt = Options::Optimization::OPTIMIZE_Os;
+                        } else if (current_arg == "z") {
+                            opts.run_opts.opt = Options::Optimization::OPTIMIZE_Oz;
+                        } else {
+                            throw SNError(Error::ARGUMENT_ERROR, "Valid optimization levels are: 0, 1, 2, 3, s, z");
+                        }
+                    }
+                }
             } else if (current_arg == "test") {
                 opts.command = Options::Command::TEST;
                 // TODO

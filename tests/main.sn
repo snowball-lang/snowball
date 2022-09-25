@@ -9,10 +9,17 @@
 // import "tests/strings"
 import System
 
+
 fn hello<T, T2>(d: T, f: T2) Void {
+    System.println(d)
+    adios(f)
+}
+
+fn adios(d: String) Void {
     System.println(d)
 }
 
 fn main() Void {
-    hello<String, Int>("d")
+    hello("d", "adios")
 }
+

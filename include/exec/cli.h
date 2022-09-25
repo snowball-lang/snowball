@@ -16,12 +16,22 @@ namespace snowball {
                 LLVM_IR
             };
 
-            struct RunOptions {
+            enum Optimization {
+                OPTIMIZE_O0,
+                OPTIMIZE_O1,
+                OPTIMIZE_O2,
+                OPTIMIZE_O3,
+                OPTIMIZE_Os,
+                OPTIMIZE_Oz
+            };
 
+            struct RunOptions {
+                Optimization opt = OPTIMIZE_O1;
             } run_opts;
 
             struct BuildOptions {
                 bool is_test = false;
+                Optimization opt = OPTIMIZE_O1;
                 EmitType emit_type = EXECUTABLE;
             } build_opts;
 

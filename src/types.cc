@@ -282,7 +282,7 @@ namespace snowball {
 
     std::pair<std::vector<Type*>,bool> TypeChecker::deduce_template_args(
                 FunctionNode* def, std::vector<Type*> params, std::vector<Type*> gparams) {
-        std::vector<Type*> deduced_types;
+        std::vector<Type*> deduced_types = ((def->generics.size() == 0) ? params : gparams);
         int garg_idx = 0; // The first given generic argument of the func call expr
         for (int i = 0; i < def->generics.size(); i++)
         {
