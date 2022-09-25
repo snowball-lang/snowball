@@ -23,7 +23,7 @@ namespace snowball {
     void Logger::success(std::string message) { printf("%ssuccess%s: %s\n", BGRN, RESET, message.c_str()); }
 
     void Logger::message(std::string topic, std::string message) { std::cout
-     << BGRN << std::setw(10)
+     << BGRN << std::setw(15)
      << std::fixed << topic << RESET << ' ' << message << std::endl; }
 
     // status

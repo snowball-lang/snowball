@@ -23,7 +23,7 @@ using namespace std::chrono;
     "}\n\n"\
     /* TODO: add #[cfg(test)] */ \
     "\nmod tests {\n" \
-    "   #[test]\n" \
+    "   @[test]\n" \
     "    fn test_my_lib() {\n" \
             /* TODO: implement this in the actual language */ \
     "        Assertion::assert(supper::my_export() == \"Hello, World\")\n" \
@@ -46,11 +46,10 @@ namespace snowball {
     namespace exec {
         namespace commands {
 
-            void init_create_cfg(bool yes) {
+            void init_create_cfg(bool yes, std::string entry) {
                 std::ofstream outfile (CONFIGURATION_FILE);
 
                 std::string name = "amazing-snowball-project";
-                std::string main = "src/main.sn";
                 std::string version = "1.0.0";
 
                 // TODO: ask questions if p_opts.yes is false
@@ -59,7 +58,7 @@ namespace snowball {
 
                 toml << "\n[package]";
                 toml << Logger::format("\nname = \"%s\"", name.c_str());
-                toml << Logger::format("\nmain = \"%s\"", main.c_str());
+                toml << Logger::format("\nmain = \"%s\"", entry.c_str());
                 toml << Logger::format("\nversion = \"%s\"", version.c_str());
 
                 outfile << toml.str() << std::endl;
@@ -73,7 +72,7 @@ namespace snowball {
                 auto start = high_resolution_clock::now();
 
                 if (p_opts.cfg) {
-                    init_create_cfg(p_opts.yes);
+                    init_create_cfg(p_opts.yes, EXECUTABLE_ENTRY);
                     return 0;
                 } else if (p_opts.lib) {
 
@@ -83,7 +82,7 @@ namespace snowball {
                     if (!fs::exists("src")) fs::create_directory("src");
 
                     if (!p_opts.skip_cfg)
-                        init_create_cfg(p_opts.yes);
+                        init_create_cfg(p_opts.yes, LIBRARY_ENTRY);
 
                     std::ofstream outfile (LIBRARY_ENTRY);
                     outfile << LIBRARY_MAIN << std::endl;
@@ -94,7 +93,7 @@ namespace snowball {
 
                     if (!fs::exists("src")) fs::create_directory("src");
                     if (!p_opts.skip_cfg)
-                        init_create_cfg(p_opts.yes);
+                        init_create_cfg(p_opts.yes, EXECUTABLE_ENTRY);
 
                     std::ofstream outfile (EXECUTABLE_ENTRY);
                     outfile << EXECUTABLE_MAIN << std::endl;
@@ -110,6 +109,7 @@ namespace snowball {
 
                 Logger::message("Finished", Logger::format("snowball project in %ims 🐱", duration));
 
+                Logger::rlog("\n");
                 Logger::info("Execute `snowball help` to get a manual about the project.");
 
             }

@@ -139,11 +139,13 @@ namespace snowball {
 
                     if (main_function) {
                         main_function->deleteBody();
+                    } else {
+                        llvm::FunctionType* function_type = llvm::FunctionType::get(builder->getInt32Ty(), {});
+                        main_function = (llvm::Function*)mod->getOrInsertFunction(_SNOWBALL_FUNCTION_ENTRY, function_type).getCallee();
                     }
 
                     llvm::BasicBlock *body = llvm::BasicBlock::Create(builder->getContext(), "body", main_function);
                     builder->SetInsertPoint(body);
-
 
                     auto puts = get_puts(mod, builder);
 
