@@ -6,6 +6,9 @@
 #include <fstream>
 #include <sstream>
 
+#include <chrono>
+
+using namespace std::chrono;
 
 #ifndef __SNOWBALL_EXEC_INIT_CMD_H_
 #define __SNOWBALL_EXEC_INIT_CMD_H_
@@ -61,15 +64,20 @@ namespace snowball {
 
                 outfile << toml.str() << std::endl;
                 outfile.close();
+
+                Logger::message("Configuration", Logger::format("created configuration file (%s)", CONFIGURATION_FILE));
             }
 
             // TODO: Output messages
             int init(exec::Options::InitOptions p_opts) {
+                auto start = high_resolution_clock::now();
 
                 if (p_opts.cfg) {
                     init_create_cfg(p_opts.yes);
                     return 0;
                 } else if (p_opts.lib) {
+
+                    Logger::message("Initalizing", Logger::format("creating snowball project [library]", CONFIGURATION_FILE));
 
                     Logger::warning("Library example is not yet supported by current snowball!");
                     if (!fs::exists("src")) fs::create_directory("src");
@@ -82,6 +90,8 @@ namespace snowball {
                     outfile.close();
                 } else {
 
+                    Logger::message("Initalizing", Logger::format("creating snowball project [executable]", CONFIGURATION_FILE));
+
                     if (!fs::exists("src")) fs::create_directory("src");
                     if (!p_opts.skip_cfg)
                         init_create_cfg(p_opts.yes);
@@ -90,6 +100,18 @@ namespace snowball {
                     outfile << EXECUTABLE_MAIN << std::endl;
                     outfile.close();
                 }
+
+                auto stop = high_resolution_clock::now();
+
+                // Get duration. Substart timepoints to
+                // get duration. To cast it to proper unit
+                // use duration cast method
+                auto duration = duration_cast<milliseconds>(stop - start).count();
+
+                Logger::message("Finished", Logger::format("snowball project in %ims 🐱", duration));
+
+                Logger::info("Execute `snowball help` to get a manual about the project.");
+
             }
         }
     }

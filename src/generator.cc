@@ -11,8 +11,8 @@
 #include "snowball/utils/mangle.h"
 
 #include <cstdio>
-#include <llvm-14/llvm/IR/Constants.h>
-#include <llvm-14/llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Constants.h>
+#include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Intrinsics.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Verifier.h>
@@ -206,7 +206,40 @@ namespace snowball {
 
                     if (attr->start(_api->context)) {
                         auto generated = generate(p_node->node);
-                        attr->end(generated, _api);
+
+                        if (generated->getType()->isPointerTy() ?
+                            generated->getType()->getPointerElementType()->isFunctionTy() :
+                            generated->getType()->isFunctionTy()) {
+                            Attribute::ResponseValue response;
+                            response.type = Attribute::ResponseValue::ResponseType::LLVM_FUNCTION;
+                            response.function.llvm_value = generated;
+
+                            auto result = unmangle(generated->getName().str());
+                            Enviroment::FunctionStore* function_store;
+
+
+                            if ((function_store = _enviroment->find_function_if(result.name, [=](auto store) -> bool {
+                                if (store->node->is_public) return false;
+                                if ((store->node->arguments.size() <= result.arguments.size()) && store->node->has_vargs) {}
+                                else if (store->node->arguments.size() != result.arguments.size()) return false;
+                                return TypeChecker::functions_equal(
+                                    store->node->name,
+                                    store->node->name,
+                                    TypeChecker::args2types(store->node->arguments),
+                                    result.arguments,
+                                    result.isPublic,
+                                    store->node->is_public,
+                                    store->node->has_vargs);
+                            }))) {
+                                response.function.store = function_store;
+                            } else {
+                                COMPILER_ERROR(BUG, "Coudn't find function in attribute")
+                            }
+
+                            attr->end(response, _api);
+                        } else {
+                            COMPILER_ERROR(BUG, "Unsuported type from attribute")
+                        }
                     }
 
                     break;
@@ -648,10 +681,9 @@ namespace snowball {
 
         // Todo: check if method is private / public
         std::string method_call =
-            ADD_MODULE_NAME_IF_EXISTS(".")
             (p_node->base == nullptr ?
-            mangle(p_node->method, arg_types) :
-            GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, arg_types));
+            mangle(ADD_MODULE_NAME_IF_EXISTS(".") p_node->method, arg_types) :
+            GET_FUNCTION_FROM_CLASS( (ADD_MODULE_NAME_IF_EXISTS(".") base_struct).c_str(), p_node->method, arg_types));
 
         ScopeValue* function;
         Enviroment::FunctionStore* function_store;
@@ -706,10 +738,9 @@ namespace snowball {
 
         if (!private_method_used) {
             method_call =
-                ADD_MODULE_NAME_IF_EXISTS(".")
                 (p_node->base == nullptr ?
-                mangle(p_node->method, arg_types, true) :
-                GET_FUNCTION_FROM_CLASS(base_struct.c_str(), p_node->method, arg_types, true));
+                mangle(ADD_MODULE_NAME_IF_EXISTS(".") p_node->method, arg_types, true) :
+                GET_FUNCTION_FROM_CLASS((ADD_MODULE_NAME_IF_EXISTS(".") base_struct).c_str(), p_node->method, arg_types, true));
 
 
             // Look for public
@@ -991,6 +1022,8 @@ namespace snowball {
         // TODO: check if generics name already exist as a class or smth
 
         std::vector<Type*> arg_tnames;
+        std::vector<llvm::Type*> arg_types;
+
         for (ArgumentNode* argument : p_node->arguments) {
 
             // check if argument is actualy a generic
@@ -1006,6 +1039,8 @@ namespace snowball {
                     COMPILER_ERROR(ARGUMENT_ERROR, Logger::format("'%s' must be a referece to a class", p_node->name.c_str()))
                 }
 
+                llvm::StructType* type = *value->llvm_struct;
+                arg_types.push_back(TypeChecker::type2llvm(_builder, type));
                 arg_tnames.push_back(argument->arg_type);
             } else {
                 arg_tnames.push_back(*it);
@@ -1014,6 +1049,11 @@ namespace snowball {
 
         if (_context._current_class != nullptr && p_node->name != "__init" && !p_node->is_static) {
             // We asume that the class has already been assigned
+            arg_types.insert(
+                arg_types.begin(),
+                ((llvm::Type*)*_enviroment->get(_context._current_class->name, p_node)->llvm_struct)->getPointerTo()
+            );
+
             arg_tnames.insert(arg_tnames.begin(), TypeChecker::to_type(_context._current_class->name).first);
         }
 
@@ -1031,7 +1071,30 @@ namespace snowball {
         }
 
         _enviroment->set_function(fname, store);
-        return _builder->getInt1(1);
+
+        // Function prototype for return statement
+
+        ScopeValue* returnType = TypeChecker::get_type(_enviroment, store->node->return_type, store->node);
+        auto retType =
+            IS_ENTRY_POINT()
+                ? get_llvm_type_from_sn_type(BuildinTypes::NUMBER, _builder)
+                : TypeChecker::type2llvm(_builder, *returnType->llvm_struct);
+
+        auto prototype = llvm::FunctionType::get(retType, arg_types, store->node->has_vargs);
+        llvm::Function *function = llvm::Function::Create(
+            prototype,
+            llvm::Function::ExternalLinkage,
+            IS_ENTRY_POINT() ? _SNOWBALL_FUNCTION_ENTRY : (
+                store->node->is_extern ? store->node->name : mangle((ADD_MODULE_NAME_IF_EXISTS(".")
+
+                (store->current_class == nullptr ? store->node->name : Logger::format(
+                    "%s.%s", store->current_class->name.c_str(),
+                    store->node->name.c_str()
+                ))), arg_tnames, store->node->is_public)
+            ),
+            _module);
+
+        return function;
 
         #undef IS_ENTRY_POINT
     }
@@ -1283,20 +1346,16 @@ namespace snowball {
             arg_tnames.insert(arg_tnames.begin(), TypeChecker::to_type(store->current_class->name).first);
         }
 
-        std::string fname = store->node->is_extern ? store->node->name : mangle((_ADD_MODULE_NAME_IF_EXISTS(".")
+        std::string fname = IS_ENTRY_POINT() ? _SNOWBALL_FUNCTION_ENTRY : (store->node->is_extern ? store->node->name : mangle((_ADD_MODULE_NAME_IF_EXISTS(".")
 
                 (store->current_class == nullptr ? store->node->name : Logger::format(
                     "%s.%s", store->current_class->name.c_str(),
                     store->node->name.c_str()
-                ))), arg_tnames, store->node->is_public);
+                ))), arg_tnames, store->node->is_public));
 
 
         auto prototype = llvm::FunctionType::get(retType, arg_types, store->node->has_vargs);
-        llvm::Function *function = llvm::Function::Create(
-            prototype,
-            llvm::Function::ExternalLinkage,
-            IS_ENTRY_POINT() ? _SNOWBALL_FUNCTION_ENTRY : fname,
-            _module);
+        auto function = (llvm::Function*)_module->getOrInsertFunction(fname, prototype).getCallee();
 
         std::unique_ptr<ScopeValue*> func_scopev = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Function*>(function)));
         (*func_scopev)->isStaticFunction = store->node->is_static;

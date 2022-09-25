@@ -23,3 +23,10 @@ fn main() Void {
     hello("d", "adios")
 }
 
+
+mod tests {
+    @[test]
+    fn test_call() Void {
+        
+    }
+}

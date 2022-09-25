@@ -51,8 +51,9 @@ namespace snowball {
             void set_optimization(exec::Options::Optimization p_level) { _opt_level = p_level; }
 
             // Get
-            SourceInfo* get_source_info() { return _source_info; }
-            Enviroment* get_enviroment() { return _enviroment; }
+            SourceInfo* get_source_info() const { return _source_info; }
+            Enviroment* get_enviroment() const { return _enviroment; }
+            Generator* get_generator() const { return _generator; }
             llvm::Module* get_module() const { return _module.get(); }
 
             ~Compiler() {};
