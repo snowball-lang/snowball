@@ -25,7 +25,76 @@ namespace snowball {
 
             current_arg = args[0];
 
-            if (current_arg == "build") {
+            if (current_arg == "help") {
+                if (current_index < args.size() - 1) {
+                    NEXT_ARGUMENT();
+
+                    if (IF_ARG("build")) {
+                        Logger::log("Snowball (C) MIT");
+                        Logger::log("Usage: snowball build [options]\n");
+                        Logger::log("Help:");
+                        Logger::log("  Build your snowball project\n");
+                        Logger::log("Options:");
+                        Logger::log("  --emit_type {type}        - Select the output format");
+                        Logger::log("  --test [-t]               - Build project as it was for testing");
+                        Logger::log("  --optimization [-o] {opt} - Optimize your project at a certain level");
+                        Logger::log("");
+                        Logger::log("Emit types:");
+                        Logger::log("  exec                      - Build your project as an executable");
+                        Logger::log("  lib                       - Build a shared library from your project");
+                        Logger::log("  llvm-ir                   - Emit the llvm-ir code to file");
+                        Logger::log("");
+                        Logger::log("Optimization levels:");
+                        Logger::log("  O0                        - Disable as many optimizations as possible");
+                        Logger::log("  O1 (default)              - Optimize quickly without destroying debuggability");
+                        Logger::log("  O2                        - Like O3 without triggering significant incremental compile time or code size growth");
+                        Logger::log("  O3                        - Optimize for fast execution as much as possible");
+                        Logger::log("  Os                        - Similar to O2 but tries to optimize for small code size instead of fast execution");
+                        Logger::log("  Oz                        - A very specialized mode that will optimize for code size at any and all costs");
+                    } else if (IF_ARG("run")) {
+                        Logger::log("Snowball (C) MIT");
+                        Logger::log("Usage: snowball run [options]\n");
+                        Logger::log("Help:");
+                        Logger::log("  Build and execute your snowball project\n");
+                        Logger::log("Options:");
+                        Logger::log("  --optimization [-o] {opt} - Optimize your project at a certain level");
+                        Logger::log("");
+                        Logger::log("Optimization levels:");
+                        Logger::log("  O0                        - Disable as many optimizations as possible");
+                        Logger::log("  O1 (default)              - Optimize quickly without destroying debuggability");
+                        Logger::log("  O2                        - Like O3 without triggering significant incremental compile time or code size growth");
+                        Logger::log("  O3                        - Optimize for fast execution as much as possible");
+                        Logger::log("  Os                        - Similar to O2 but tries to optimize for small code size instead of fast execution");
+                        Logger::log("  Oz                        - A very specialized mode that will optimize for code size at any and all costs");
+                    } else if (IF_ARG("test")) {
+                        Logger::log("Snowball (C) MIT");
+                        Logger::log("Usage: snowball test [options]\n");
+                        Logger::log("Help:");
+                        Logger::log("  Build and execute your unit tests\n");
+                        Logger::info("You can get your tests as an executable by executing:\n   -> `snowball build test`");
+                    } else if (IF_ARG("init")) {
+                        Logger::log("Snowball (C) MIT");
+                        Logger::log("Usage: snowball init [options]\n");
+                        Logger::log("Help:");
+                        Logger::log("  Create a new project in the current directory\n");
+                        Logger::log("Options:");
+                        Logger::log("  --yes (-y)        - Stop asking me you stupid bot!");
+                        Logger::log("  --lib (-l)        - Create a project designed as a library");
+                        Logger::log("  --cfg (-c)        - Create only a configuration file");
+                        Logger::log("  --skip-cfg        - Create the project without a config file (errors if `--cfg` is passed)");
+                        Logger::log("");
+                        Logger::info("You can create a new folder by executing:\n   -> `snowball new {name}`");
+                    } else {
+                        throw SNError(ARGUMENT_ERROR, Logger::format("Command '%s' not found.", current_arg.c_str()));
+                    }
+
+                } else {
+                    help();
+                }
+
+                exit(0);
+
+            } else if (current_arg == "build") {
                 opts.command = Options::Command::BUILD;
 
                 while (current_index < args.size() - 1) {
@@ -50,20 +119,20 @@ namespace snowball {
                         CHECK_ARG("an optimization level")
                         NEXT_ARGUMENT()
 
-                        if (current_arg == "0") {
+                        if (current_arg == "O0") {
                             opts.build_opts.opt = Options::Optimization::OPTIMIZE_O0;
-                        } else if (current_arg == "1") {
+                        } else if (current_arg == "O1") {
                             opts.build_opts.opt = Options::Optimization::OPTIMIZE_O1;
-                        } else if (current_arg == "2") {
+                        } else if (current_arg == "O2") {
                             opts.build_opts.opt = Options::Optimization::OPTIMIZE_O2;
-                        } else if (current_arg == "3") {
+                        } else if (current_arg == "O3") {
                             opts.build_opts.opt = Options::Optimization::OPTIMIZE_O3;
-                        } else if (current_arg == "s") {
+                        } else if (current_arg == "Os") {
                             opts.build_opts.opt = Options::Optimization::OPTIMIZE_Os;
-                        } else if (current_arg == "z") {
+                        } else if (current_arg == "Oz") {
                             opts.build_opts.opt = Options::Optimization::OPTIMIZE_Oz;
                         } else {
-                            throw SNError(Error::ARGUMENT_ERROR, "Valid optimization levels are: 0, 1, 2, 3, s, z");
+                            throw SNError(Error::ARGUMENT_ERROR, "Valid optimization levels are: O0, O1, O2, O3, Os, Oz");
                         }
                     } else {
                         throw SNError(Error::ARGUMENT_ERROR, Logger::format("Unexpected argument for the build command: %s", current_arg.c_str()));
@@ -79,20 +148,20 @@ namespace snowball {
                         CHECK_ARG("an optimization level")
                         NEXT_ARGUMENT()
 
-                        if (current_arg == "0") {
+                        if (current_arg == "O0") {
                             opts.run_opts.opt = Options::Optimization::OPTIMIZE_O0;
-                        } else if (current_arg == "1") {
+                        } else if (current_arg == "O1") {
                             opts.run_opts.opt = Options::Optimization::OPTIMIZE_O1;
-                        } else if (current_arg == "2") {
+                        } else if (current_arg == "O2") {
                             opts.run_opts.opt = Options::Optimization::OPTIMIZE_O2;
-                        } else if (current_arg == "3") {
+                        } else if (current_arg == "O3") {
                             opts.run_opts.opt = Options::Optimization::OPTIMIZE_O3;
-                        } else if (current_arg == "s") {
+                        } else if (current_arg == "Os") {
                             opts.run_opts.opt = Options::Optimization::OPTIMIZE_Os;
-                        } else if (current_arg == "z") {
+                        } else if (current_arg == "Oz") {
                             opts.run_opts.opt = Options::Optimization::OPTIMIZE_Oz;
                         } else {
-                            throw SNError(Error::ARGUMENT_ERROR, "Valid optimization levels are: 0, 1, 2, 3, s, z");
+                            throw SNError(Error::ARGUMENT_ERROR, "Valid optimization levels are: O0, O1, O2, O3, Os, Oz");
                         }
                     }
                 }
