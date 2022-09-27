@@ -7,6 +7,9 @@
 #include "snowball/utils/mangle.h"
 #include "snowball/vendor/toml.hpp"
 
+#include <chrono>
+
+using namespace std::chrono;
 
 #ifndef __SNOWBALL_EXEC_BUILD_CMD_H_
 #define __SNOWBALL_EXEC_BUILD_CMD_H_
@@ -29,6 +32,24 @@ namespace snowball {
                     return EXIT_FAILURE;
                 }
 
+                std::string build_type;
+                if (p_opts.is_test) {
+                    build_type = "test";
+                } else if (p_opts.emit_type == Options::EmitType::EXECUTABLE) {
+                    build_type = "executable";
+                } else if (p_opts.emit_type == Options::EmitType::LLVM_IR) {
+                    build_type = "llvm-ir";
+                } else if (p_opts.emit_type == Options::EmitType::OBJECT) {
+                    build_type = "library";
+                } else {
+                    throw SNError(BUG, Logger::format("Unhandled emit type for build process ('%i')", p_opts.emit_type));
+                }
+
+                Logger::message("Compiling", Logger::format("%s v%s [%s]",
+                    ((std::string)(parsed_config["package"]["name"].value_or<std::string>("<anonnimus>"))).c_str(),
+                    ((std::string)(parsed_config["package"]["version"].value_or<std::string>("<unknown>"))).c_str(),
+                    (build_type.c_str())));
+
                 std::string content( (std::istreambuf_iterator<char>(ifs) ),
                     (std::istreambuf_iterator<char>()    ) );
 
@@ -43,8 +64,19 @@ namespace snowball {
                     compiler->enable_tests();
                 }
 
+                auto start = high_resolution_clock::now();
+
                 // TODO: false if --no-output is passed
                 compiler->compile(true);
+                auto stop = high_resolution_clock::now();
+
+                // Get duration. Substart timepoints to
+                // get duration. To cast it to proper unit
+                // use duration cast method
+                auto duration = duration_cast<milliseconds>(stop - start).count();
+
+                Logger::message("Finished", Logger::format("build target(s) in %ims", duration));
+                Logger::log("");
 
                 int status;
                 if (p_opts.emit_type == exec::Options::EmitType::OBJECT) {
