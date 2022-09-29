@@ -44,8 +44,8 @@ end
 
 languages = []
 
-languages << Language.new("snc", "snowball (compiled)", :compiled, "snowball fib.sn -o fib", "./fib")
-languages << Language.new("snj", "snowball (JIT)", :interpreted, "", "snowball -j fib.sn")
+languages << Language.new("snc", "snowball (compiled)", :compiled, "snowball build -o 03", "./.sn/bin/out.o")
+languages << Language.new("snr", "snowball (from run)", :interpreted, "", "snowball run -o 03")
 
 languages << Language.new("c", "C", :compiled, "gcc -O3 -o fib fib.c", "./fib")
 languages << Language.new("cpp", "C++", :compiled, "clang++ -O3 -o fib fib.cpp", "./fib")

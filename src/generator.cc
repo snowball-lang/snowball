@@ -362,14 +362,6 @@ namespace snowball {
         llvm::Value* inital_value = generate(p_node->stmt);
         GET_BOOL_VALUE(condition, inital_value)
 
-        llvm::Value* cond = _builder->CreateICmpEQ(
-            condition,
-            llvm::ConstantInt::get(
-                get_llvm_type_from_sn_type(BuildinTypes::BOOL, _builder),
-                1
-            )
-        );
-
         llvm::Function *TheFunction = _builder->GetInsertBlock()->getParent();
         llvm::BasicBlock* IfBB = llvm::BasicBlock::Create(_builder->getContext(), "btrue", TheFunction);
         llvm::BasicBlock* ElseBB;
@@ -380,7 +372,7 @@ namespace snowball {
 
         llvm::BasicBlock* ContinueBB = llvm::BasicBlock::Create(_builder->getContext(), "end", TheFunction);
 
-        _builder->CreateCondBr(cond, IfBB, ELSE_STMT_EXISTS() ? ElseBB : ContinueBB);
+        _builder->CreateCondBr(condition, IfBB, ELSE_STMT_EXISTS() ? ElseBB : ContinueBB);
 
         // Generate if statement
         _builder->SetInsertPoint(IfBB);
@@ -969,7 +961,7 @@ namespace snowball {
                         return _builder->CreateFCmpOLE(left, new_right);
                     } else if ((TypeChecker::is_number(left_type) || TypeChecker::is_float(left_type) || TypeChecker::is_bool(left_type)) &&
                     (TypeChecker::is_number(new_right_type) || TypeChecker::is_float(new_right_type) || TypeChecker::is_bool(new_right_type))) {
-                        return _builder->CreateICmpSLE(left, new_right);
+                        return _builder->CreateICmpULE(left, new_right);
                     }
 
                     CALL_OPERATOR("__lteq")

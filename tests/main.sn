@@ -1,6 +1,6 @@
 import System
 
-fn fib(n: i32) i32 {
+fn fib(n: i64) i64 {
     if n <= 1 {
         return n
     }
@@ -9,5 +9,6 @@ fn fib(n: i32) i32 {
 }
 
 fn main() Int {
-    System.println(fib(47))
+    // TODO: output number is wrong!?!?!??!
+    System.println(fib(47 as i64))
 }

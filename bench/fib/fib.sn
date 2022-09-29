@@ -1,6 +1,6 @@
 import System
 
-fn fib(n: Int) Int {
+fn fib(n: i64) i64 {
     if n <= 1 {
         return n
     }
@@ -9,5 +9,5 @@ fn fib(n: Int) Int {
 }
 
 fn main() Int {
-    System.println(fib(47))
+    System.println(fib(47 as i64))
 }
