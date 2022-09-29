@@ -22,5 +22,5 @@ jobs:
             sudo make install
       - name: Runing unit tests
         run: |
-            snowball -t tests/
+            snowball test
 
