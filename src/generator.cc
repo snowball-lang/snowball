@@ -390,7 +390,9 @@ namespace snowball {
             generate(node);
         }
 
-        _builder->CreateBr(ContinueBB);
+        if (IfBB->size() == 0 || !IfBB->back().isTerminator()) {
+            _builder->CreateBr(ContinueBB);
+        }
 
         _enviroment->delete_scope();
 
@@ -403,7 +405,9 @@ namespace snowball {
                 generate(node);
             }
 
-            _builder->CreateBr(ContinueBB);
+            if (ElseBB->size() == 0 || !ElseBB->back().isTerminator()) {
+                _builder->CreateBr(ContinueBB);
+            }
 
             _enviroment->delete_scope();
         }
@@ -1447,8 +1451,6 @@ namespace snowball {
 
         llvm::verifyFunction(*function, &message_stream);
         if (!llvm_error.empty()) {
-            _module->print(llvm::outs(), nullptr);
-
             FunctionNode* p_node = store->node; // for DBGInfo
             COMPILER_ERROR(LLVM_INTERNAL, llvm_error)
         }

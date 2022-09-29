@@ -290,8 +290,20 @@ namespace snowball {
         throw SNError(Error::IO_ERROR, Logger::format("Project configuration not found (%s)\n%shelp%s: try runing 'snowball init --cfg'", name.c_str(), BGRN, RESET));
     }
 
-    int Compiler::execute(std::string p_output) {
-        throw SNError(Error::TODO, "Execute from executable");
+    int Compiler::emit_llvmir(std::string p_output, bool p_pmessage) {
+        std::error_code EC;
+        llvm::raw_fd_ostream dest(p_output, EC, llvm::sys::fs::OF_None);
+
+        if (EC) {
+            throw SNError(Error::IO_ERROR, Logger::format("Could not open file: %s", EC.message().c_str()));
+        }
+
+        _module->print(dest, nullptr);
+
+        if (p_pmessage)
+            Logger::success(Logger::format("Snowball project transpiled to llvm IR code! 🎉\n", BGRN, RESET, p_output.c_str()));
+
+        return EXIT_SUCCESS;
     }
 
     void Compiler::optimize() {

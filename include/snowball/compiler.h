@@ -46,7 +46,7 @@ namespace snowball {
             int emit_binary(std::string p_output, bool p_pmessage = true);
             int emit_object(std::string p_output, bool p_pmessage = true);
 
-            int execute(std::string p_output);
+            int emit_llvmir(std::string p_output, bool p_pmessage = true);
             void enable_tests() { _enabledTests = true; }
             void set_optimization(exec::Options::Optimization p_level) { _opt_level = p_level; }
 

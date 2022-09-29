@@ -54,7 +54,9 @@ namespace snowball {
                     (std::istreambuf_iterator<char>()    ) );
 
                 // TODO: check for output
-                std::string output = _SNOWBALL_OUT_DEFAULT;
+                std::string output = p_opts.emit_type == exec::Options::EmitType::LLVM_IR
+                    ? _SNOWBALL_LLIR_OUT_DEFAULT
+                    : _SNOWBALL_OUT_DEFAULT;
 
                 Compiler* compiler = new Compiler(content, filename);
                 compiler->initialize();
@@ -81,6 +83,8 @@ namespace snowball {
                 int status;
                 if (p_opts.emit_type == exec::Options::EmitType::OBJECT) {
                     status = compiler->emit_object(output);
+                } else if (p_opts.emit_type == exec::Options::EmitType::LLVM_IR) {
+                    status = compiler->emit_llvmir(output);
                 } else {
                     status = compiler->emit_binary(output);
                 }
