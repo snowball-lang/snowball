@@ -69,8 +69,9 @@ namespace snowball {
                 case TokenType::KWORD_PRIVATE: {
                     if (
                         peek(0, true).type != TokenType::KWORD_FUNC
-                        && peek(0, true).type != TokenType::KWORD_VAR) {
-                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\" or \"var\" after pub/priv declaration");
+                        && peek(0, true).type != TokenType::KWORD_VAR
+                        && peek(0, true).type != TokenType::KWORD_EXTERN) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\", \"var\" or \"extern\" after pub/priv declaration");
                     }
 
                     break;
@@ -500,6 +501,9 @@ namespace snowball {
         Token pk = peek(-3, true);
         if (pk.type == TokenType::KWORD_EXTERN) {
             func->is_extern = true;
+            if (peek(-4, true).type == TokenType::KWORD_PUBLIC || peek(-4, true).type == TokenType::KWORD_PRIVATE ) {
+                func->is_public = peek(-4, true).type == TokenType::KWORD_PUBLIC;
+            }
         } else if (pk.type == TokenType::KWORD_STATIC) {
             func->is_static = true;
             if (peek(-4, true).type == TokenType::KWORD_PUBLIC || peek(-4, true).type == TokenType::KWORD_PRIVATE ) {
@@ -991,7 +995,7 @@ namespace snowball {
 
             for (int i = 0; i < (int)expressions.size(); i++) {
                 BinaryOp* expression = static_cast<BinaryOp*>(expressions[i]);
-                if (expression->type != Node::Ty::OPERATOR) {
+                if (expression->type != Node::Ty::OPERATOR || i == 0) {
                     continue;
                 }
 
@@ -1119,7 +1123,7 @@ namespace snowball {
                 }
             } else {
                 ASSERT(next_op >= 1 && next_op < (int)expressions.size() - 1)
-                ASSERT((!(expressions[(size_t)next_op - 1]->type == Node::Ty::OPERATOR)) && (!(expressions[(size_t)next_op + 1]->type == Node::Ty::OPERATOR)));
+                ASSERT(!(expressions[(size_t)next_op + 1]->type == Node::Ty::OPERATOR));
 
                 BinaryOp* op_node = new BinaryOp(((BinaryOp*)expressions[(size_t)next_op])->op_type);
 

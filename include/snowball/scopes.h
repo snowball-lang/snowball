@@ -43,6 +43,7 @@ namespace snowball {
     };
 
     enum ScopeType {
+        UNKNOWN = -1,
         SCOPE,
         CLASS,
         MODULE,
@@ -53,7 +54,7 @@ namespace snowball {
 
     // TODO: cleaner structs with childs
     typedef struct ScopeValue {
-        ScopeType type;
+        ScopeType type = UNKNOWN;
         Scope* parent_scope;
 
         std::shared_ptr<llvm::Value*> llvm_value;
@@ -123,6 +124,8 @@ namespace snowball {
             type = ScopeType::SCOPE;
             scope_value = p_value;
         }
+
+        ScopeValue() {}
     } ScopeValue;
 
 }

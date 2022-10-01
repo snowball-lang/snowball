@@ -1,14 +1,24 @@
 import System
+import Math
 
-fn fib(n: i64) i64 {
-    if n <= 1 {
-        return n
+class Parent {
+
+}
+
+class Child : Parent {
+    priv var MAGIC_N: f64 = 30
+
+    pub fn __init() {
+        System.println(Math.inf)
     }
 
-    return fib(n-1) + fib(n-2)
+    pub fn sin() f32 {
+        return Math.sin(self.MAGIC_N)
+    }
 }
 
 fn main() Int {
-    // TODO: output number is wrong!?!?!??!
-    System.println(fib(47 as i64))
+    var c = new Child()
+
+    System.println(c.sin())
 }

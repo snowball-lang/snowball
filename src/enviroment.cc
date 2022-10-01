@@ -14,6 +14,7 @@
 #include <numeric>
 #include <sstream>
 #include <algorithm>
+#include <string.h>
 
 namespace snowball {
     Enviroment::Enviroment(SourceInfo* p_source_info) : _source_info(p_source_info) {
@@ -22,7 +23,6 @@ namespace snowball {
     }
 
     ScopeValue* Enviroment::get(std::string name, Node* p_node, std::string p_o_name) {
-
         if (p_o_name.empty()) p_o_name = name;
 
         size_t pos_start = 0, pos_end, delim_len = 1;
@@ -97,14 +97,14 @@ namespace snowball {
         return false;
     }
 
-    Enviroment::FunctionStore* Enviroment::find_function_if(std::string name, std::function<bool(Enviroment::FunctionStore*)> cb) {
+    Enviroment::FunctionStore* Enviroment::find_function_if(std::string name, std::function<bool(const Enviroment::FunctionStore)> cb) {
         if (_functions.find(name) == _functions.end()) {
             return nullptr;
         }
 
         auto stores = (*_functions.find(name)).second;
         for (auto store : stores) {
-            if (cb(store)) {
+            if (cb(*store)) {
                 return store;
             }
         }
@@ -113,6 +113,9 @@ namespace snowball {
     }
 
     void Enviroment::set_function(std::string name, Enviroment::FunctionStore* store) {
+        auto unmangled = unmangle(name);
+
+        if (unmangled.isMangled) name = unmangled.name;
         if (_functions.find(name) == _functions.end()) {
             this->_functions.emplace( name, std::vector<Enviroment::FunctionStore*>{store} );
         } else {

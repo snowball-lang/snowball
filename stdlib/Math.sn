@@ -2,17 +2,15 @@ extern fn isnan(f64) Bool;
 extern fn strtod(String, i32) f64; // TODO
 extern fn isinf(f64) Bool;
 
-// TODO: add it as a macro when preprocesor is done
-pub var PI = 3.14159265358979323846
+pub extern fn sin(f64) f64;
+pub extern fn cos(f64) f64;
 
-pub var Inf = strtod("Inf", 0);
+pub var PI = 3.14159265358979323846
+pub var inf = strtod("Inf", 0)
 
 // TODO: nanf and nanl
-pub var NaN = strtod("NaN", 0)
+pub var nan = strtod("NaN", 0)
 
 pub fn is_nan(x: f64) Bool => isnan(x)
 pub fn is_infinite(x: f64) Bool => isinf(x)
-
-pub fn sin(x: f32) f32 => x / 180 * PI
-pub fn cos(x: f32) f32 => sin(90 - x)
 

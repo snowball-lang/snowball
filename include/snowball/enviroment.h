@@ -9,7 +9,6 @@
 #define __SNOWBALL_ENVIROMENT_H_
 
 #define SN_GLOBAL_SCOPE "$sn_global_scope"
-
 namespace snowball {
 
     class Enviroment {
@@ -37,7 +36,7 @@ namespace snowball {
 
 
             // Make sure to call function_exists() first!
-            Enviroment::FunctionStore* find_function_if(std::string name, std::function<bool(Enviroment::FunctionStore*)> cb);
+            Enviroment::FunctionStore* find_function_if(std::string name, std::function<bool(const Enviroment::FunctionStore)> cb);
             void set_function(std::string name, FunctionStore* store);
 
             #if _SNOWBALL_SYMTABLE_DEBUG
