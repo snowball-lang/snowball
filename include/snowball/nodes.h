@@ -78,6 +78,7 @@ namespace snowball {
 			INDEX,
 			MAPPED_INDEX,
 			OPERATOR,
+			OPERATOR_OVERRIDE,
 
 			// control flow
 			RETURN,
@@ -168,14 +169,12 @@ namespace snowball {
 		std::vector<ArgumentNode *> arguments;
 
 		std::vector<Type*> generics;
-		std::map<std::string, Type*> generic_map;
 
 		bool is_static = false;
 		bool has_vargs = false;
 		bool is_foward = false;
 		bool is_extern = false;
 		bool is_public = false;
-		bool has_return = false;
 		bool is_lop_level = false;
 
 		FunctionNode() {
@@ -183,6 +182,67 @@ namespace snowball {
 		};
 
 		~FunctionNode() {};
+	};
+
+	struct OperatorNode : public Node {
+		BlockNode* body;
+
+		std::string name;
+		Type* return_type;
+		std::vector<ArgumentNode *> arguments;
+
+		std::vector<Type*> generics;
+
+		bool is_public = false;
+
+		enum OpType {
+			EQ,
+			EQEQ,
+			PLUS,
+			PLUSEQ,
+			MINUS,
+			MINUSEQ,
+			MUL,
+			MULEQ,
+			DIV,
+			DIVEQ,
+			MOD,
+			MOD_EQ,
+			LT,
+			LTEQ,
+			GT,
+			GTEQ,
+			AND,
+			OR,
+			NOT,
+			NOTEQ,
+			BIT_NOT,
+			BIT_LSHIFT,
+			BIT_LSHIFT_EQ,
+			BIT_RSHIFT,
+			BIT_RSHIFT_EQ,
+			BIT_OR,
+			BIT_OR_EQ,
+			BIT_AND,
+			BIT_AND_EQ,
+			BIT_XOR,
+			BIT_XOR_EQ,
+
+			// other operators
+			CONSTRUCTOR,
+			DESTRUCTOR, // TODO
+			CALL,
+
+			// operator types
+			STRING,
+			BOOL
+		} op_type;
+
+		OperatorNode() {
+			type = Ty::OPERATOR_OVERRIDE;
+		};
+
+		~OperatorNode() {};
 	};
 
 	struct AttributeNode : public Node {
@@ -304,6 +364,7 @@ namespace snowball {
 
 		std::vector<VarNode*> vars;
 		std::vector<FunctionNode*> functions;
+		std::vector<OperatorNode*> operators;
 
 		// TODO: generics
 		std::vector<Type*> generics;

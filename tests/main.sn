@@ -1,23 +1,9 @@
 import System
 import Math
 
-class Parent {
-
-}
-
 class Child : Parent {
-    priv var MAGIC_N: f64 = 30
+    operator +(n2: i32) {
 
-    pub fn __init() {
-        System.println(Math.inf)
-    }
-
-    pub fn sin() f32 {
-        return Math.sin(self.MAGIC_N)
-    }
-
-    pub fn __sum(n: i32) f32 {
-        return Math.sin(n + self.MAGIC_N)
     }
 }
 

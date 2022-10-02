@@ -1462,34 +1462,6 @@ namespace snowball {
                 generate_contructor_meta(store->current_class);
             }
 
-            for (const auto& generic : store->node->generic_map) {
-                ScopeValue* scope_val = TypeChecker::get_type(_enviroment, generic.second, store->node);
-                if (!TypeChecker::is_class(scope_val)) {
-                    FunctionNode* p_node = store->node; // for DBGInfo
-                    COMPILER_ERROR(SYNTAX_ERROR, Logger::format("%s does not point a class", generic.second->to_string().c_str()))
-                }
-
-                std::string name = generic.second->mangle();
-
-                if (_enviroment->item_exists(name)) {
-                    auto ty = *_enviroment->get(name, store->node)->llvm_struct;
-
-                    int size = _module->getDataLayout().getTypeStoreSize(ty);
-                    llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder->getInt32Ty(), size);
-
-                    llvm::Value* alloca_value = _builder->CreateCall(get_alloca(_module, _builder), {size_constant});
-                    llvm::Value* cast = _builder->CreatePointerCast(alloca_value, TypeChecker::type2llvm(_builder, ty), generic.first);
-
-                    std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(cast)));
-
-                    SET_TO_SCOPE_OR_CLASS(generic.first, std::move(scope_value))
-                    continue;
-                }
-
-                FunctionNode* p_node = store->node; // for DBGInfo
-                COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Type '%s' not found in generics", name.c_str()))
-            }
-
             for (auto expr : store->node->body->exprs) {
                 generate(expr);
             }

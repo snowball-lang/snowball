@@ -407,15 +407,21 @@ namespace snowball {
                     if (
                         peek(0, true).type != TokenType::KWORD_FUNC
                         && peek(0, true).type != TokenType::KWORD_VAR
-                        && peek(0, true).type != TokenType::KWORD_STATIC) {
-                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\", \"var\" or \"static\" after pub/priv declaration");
+                        && peek(0, true).type != TokenType::KWORD_STATIC
+                        && peek(0, true).type != TokenType::KWORD_OPERATOR) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\", \"var\", \"operator\" or \"static\" after pub/priv declaration");
                     }
                     break;
                 }
 
                 case TokenType::KWORD_VAR: {
-                    VarNode* func = _parse_variable();
-                    cls->vars.push_back(func);
+                    VarNode* var = _parse_variable();
+                    cls->vars.push_back(var);
+                } break;
+
+                case TokenType::KWORD_OPERATOR: {
+                    OperatorNode* op = _parse_operator();
+                    cls->operators.push_back(op);
                 } break;
 
                 case TokenType::KWORD_FUNC: {
@@ -424,7 +430,7 @@ namespace snowball {
                 } break;
 
                 default:
-                    PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("'%s' is not allowed inside function blocks", _current_token.to_string().c_str()))
+                    PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("'%s' is not allowed inside class blocks", _current_token.to_string().c_str()))
             }
         }
 
@@ -436,6 +442,60 @@ namespace snowball {
 
         _context.current_class = top_clas;
         return cls;
+    }
+
+    OperatorNode* Parser::_parse_operator() {
+        ASSERT(_current_token.type == TokenType::KWORD_OPERATOR)
+
+        OperatorNode* op = new OperatorNode();
+
+        if (peek(-2, true).type == TokenType::KWORD_PUBLIC) {
+            op->is_public = true;
+        }
+
+        next_token();
+
+        // TODO
+        switch (_current_token.type) {
+            #define OP_CASE(m_op) case TokenType::m_op: {op = OperatorNode::OpType::m_op; break;}
+                OP_CASE(OP_EQ);
+                OP_CASE(OP_EQEQ);
+                OP_CASE(OP_PLUS);
+                OP_CASE(OP_PLUSEQ);
+                OP_CASE(OP_MINUS);
+                OP_CASE(OP_MINUSEQ);
+                OP_CASE(OP_MUL);
+                OP_CASE(OP_MULEQ);
+                OP_CASE(OP_DIV);
+                OP_CASE(OP_DIVEQ);
+                OP_CASE(OP_MOD);
+                OP_CASE(OP_MOD_EQ);
+                OP_CASE(OP_LT);
+                OP_CASE(OP_LTEQ);
+                OP_CASE(OP_GT);
+                OP_CASE(OP_GTEQ);
+                OP_CASE(OP_AND);
+                OP_CASE(OP_OR);
+                OP_CASE(OP_NOT);
+                OP_CASE(OP_NOTEQ);
+                OP_CASE(OP_BIT_NOT);
+                OP_CASE(OP_BIT_LSHIFT);
+                OP_CASE(OP_BIT_LSHIFT_EQ);
+                OP_CASE(OP_BIT_RSHIFT);
+                OP_CASE(OP_BIT_RSHIFT_EQ);
+                OP_CASE(OP_BIT_OR);
+                OP_CASE(OP_BIT_OR_EQ);
+                OP_CASE(OP_BIT_AND);
+                OP_CASE(OP_BIT_AND_EQ);
+                OP_CASE(OP_BIT_XOR);
+                OP_CASE(OP_BIT_XOR_EQ);
+
+            #undef OP_CASE
+
+                default: valid = false;
+            }
+
+        return op;
     }
 
     VarNode* Parser::_parse_variable() {
@@ -705,8 +765,6 @@ namespace snowball {
 
                     ret->pos = _pos;
                     ret->width = (uint32_t)_width;
-
-                    _context.current_function->has_return = true;
                     stmts.push_back(ret);
                     break;
                 }
