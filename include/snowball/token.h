@@ -163,6 +163,7 @@ namespace snowball {
         KWORD_NULL,        // Symbol: null
         KWORD_ENUM,        // Symbol: enum
         KWORD_FUNC,        // Symbol: fn
+        KWORD_OPERATOR,    // Symbol: operator
         KWORD_TRUE,        // Symbol: true
         KWORD_ELSE,        // Symbol: else
         KWORD_CASE,        // Symbol: case
@@ -277,6 +278,7 @@ namespace snowball {
                 case TokenType::KWORD_AS:           return _SNOWBALL_KEYWORD__AS;
                 case TokenType::KWORD_ENUM:         return _SNOWBALL_KEYWORD__ENUM;
                 case TokenType::KWORD_FUNC:         return _SNOWBALL_KEYWORD__FUNCTION;
+                case TokenType::KWORD_OPERATOR:     return _SNOWBALL_KEYWORD__OPERATOR;
                 case TokenType::KWORD_VAR:          return _SNOWBALL_KEYWORD__VARIABLE;
                 case TokenType::KWORD_CONST:        return _SNOWBALL_KEYWORD__CONSTANT;
                 case TokenType::KWORD_TRUE:         return _SNOWBALL_KEYWORD__TRUE;
