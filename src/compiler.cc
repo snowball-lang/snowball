@@ -244,7 +244,7 @@ namespace snowball {
         }
 
         if (p_pmessage)
-            Logger::success(Logger::format("Snowball project file successfully compiled! 🥳", BGRN, RESET, p_output.c_str()));
+            Logger::success(Logger::format("Snowball project successfully compiled! 🥳", BGRN, RESET, p_output.c_str()));
 
         // clean up
         DEBUG_CODEGEN("Cleaning up object file... (%s)", objfile.c_str());

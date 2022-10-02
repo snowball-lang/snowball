@@ -15,10 +15,14 @@ class Child : Parent {
     pub fn sin() f32 {
         return Math.sin(self.MAGIC_N)
     }
+
+    pub fn __sum(n: i32) f32 {
+        return Math.sin(n + self.MAGIC_N)
+    }
 }
 
 fn main() Int {
     var c = new Child()
 
-    System.println(c.sin())
+    System.println(c + 6)
 }

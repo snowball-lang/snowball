@@ -17,9 +17,9 @@
 
 ### Known Bugs
 
+- [ ] Check if class function is already defined
 - [ ] Generics for class functions
 - [ ] Compiler errors/Warnings don't work
-- [ ] Some "built in type" constructors are not found (sometimes)
 
 ### None important
 - [ ] Generate class function to scope before generating blocks
@@ -27,6 +27,7 @@
 
 ### In Progress
 
+- [ ] rework for operators
 - [ ] global variables
 - [ ] Attributes
 - [ ] Add a generic system
@@ -101,3 +102,4 @@
 - [x] Int class
     - [x] Different types of integers
 - [x] String class
+- [x] Some "built in type" constructors are not found (sometimes)
