@@ -282,7 +282,7 @@ namespace snowball {
                     return p_prop.name == p_node->member->name;
                 }) - properties.begin();
 
-                if (pos >= properties.size()) {
+                if (pos >= (properties.size())) {
 
                     // TODO: index error
                     COMPILER_ERROR(VARIABLE_ERROR, Logger::format(
@@ -299,7 +299,7 @@ namespace snowball {
                 }
 
                 // We asume it's a pointer since raw types does not have any attriute
-                auto GEP = _builder->CreateInBoundsGEP(gen_result->getType()->getPointerElementType(), gen_result, {llvm::ConstantInt::get(_builder->getInt32Ty(), 0), llvm::ConstantInt::get(_builder->getInt32Ty(), pos)});
+                auto GEP = _builder->CreateInBoundsGEP(gen_result->getType()->getPointerElementType(), gen_result, {llvm::ConstantInt::get(_builder->getInt32Ty(), 0), llvm::ConstantInt::get(_builder->getInt32Ty(), pos+value->parents.size())});
                 return convert_to_right_value(_builder, GEP);
             }
 
@@ -572,7 +572,7 @@ namespace snowball {
             }
 
             class_scope_val->parents.push_back(parent);
-            var_types.push_back(TypeChecker::type2llvm(_builder, (llvm::Type*)(*type->llvm_struct)));
+            var_types.insert(var_types.begin(), TypeChecker::type2llvm(_builder, (llvm::Type*)(*type->llvm_struct)));
         }
 
         std::unique_ptr<ScopeValue*> class_value = std::make_unique<ScopeValue*>(class_scope_val);
@@ -700,7 +700,6 @@ namespace snowball {
         // First, look for private methods
         bool private_method_used = false;
         bool private_method_exists = false;
-        DUMP_S(FUNCTION_NAME().c_str())
         if (_enviroment->item_exists(method_call)) {
             ScopeValue* private_function = _enviroment->get(method_call, p_node); // it will exist... right?
             if ((_context._current_module != nullptr && _context._current_module->module_name == base_struct) || (_context._current_class != nullptr && _context._current_class->name == base_struct) || (private_function->parent_scope->name() == SN_GLOBAL_SCOPE)) {
@@ -1176,8 +1175,6 @@ namespace snowball {
         if (p_node->isGlobal) {
             if (!(p_node->value->type == Node::Ty::CONST_VALUE)) {
                 auto mangled_name = ((std::string)"_GLOBAL__I") + mangle("$SN.$GlobalInit$");
-
-
                 auto fn = _module->getFunction(mangled_name);
 
                 if (!fn) {
@@ -1195,12 +1192,12 @@ namespace snowball {
                         /*isConstant=*/true,
                         /*Linkage=*/llvm::GlobalValue::AppendingLinkage,
                         /*Initializer=*/llvm::ConstantArray::get(llvm::ArrayType::get(ctors_ty, 1),
-                        llvm::ConstantStruct::get(ctors_ty, {
-                            llvm::ConstantInt::get(_builder->getInt32Ty(), 65535),
-                            fn,
-                            llvm::ConstantPointerNull::get(_builder->getInt8PtrTy())
-                        })
-                    ), // has initializer, specified below
+                            llvm::ConstantStruct::get(ctors_ty, {
+                                llvm::ConstantInt::get(_builder->getInt32Ty(), 65535),
+                                fn,
+                                llvm::ConstantPointerNull::get(_builder->getInt8PtrTy())
+                            })
+                        ), // has initializer, specified below
                         /*Name=*/"llvm.global_ctors");
 
                     ctors_gvar->setSection(".ctor");
@@ -1327,7 +1324,7 @@ namespace snowball {
         std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value *>(pointerCast)));
         _enviroment->current_scope()->set("self", std::move(scope_value));
 
-        int var_index = 0;
+        int var_index = current_class->parents.size();
         for (VarNode* var : current_class->vars) {
             auto p_node = var; // for compiler errors
 
@@ -1426,6 +1423,7 @@ namespace snowball {
         std::unique_ptr<ScopeValue*> func_scopev = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Function*>(function)));
         (*func_scopev)->isStaticFunction = store->node->is_static;
         (*func_scopev)->hasVArg = store->node->has_vargs;
+        (*func_scopev)->isPublic = store->node->is_public;
         (*func_scopev)->arguments = arg_tnames;
         _SET_TO_GLOBAL_OR_CLASS(mangle(
                 store->node->name, arg_tnames, store->node->is_public), func_scopev);

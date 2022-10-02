@@ -42,7 +42,6 @@ namespace snowball {
     }
 
     std::pair<Type*, int> TypeChecker::to_type(std::string p_type) {
-        DUMP_S(p_type.c_str())
         ASSERT(p_type.at(0) == '@')
 
         std::string name;
