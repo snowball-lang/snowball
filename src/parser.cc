@@ -447,6 +447,16 @@ namespace snowball {
     OperatorNode* Parser::_parse_operator() {
         ASSERT(_current_token.type == TokenType::KWORD_OPERATOR)
 
+        struct compareArgs
+        {
+            ArgumentNode* key;
+            compareArgs(ArgumentNode* i): key(i) {}
+
+            bool operator()(ArgumentNode* i) {
+                return (i->name == key->name);
+            }
+        };
+
         OperatorNode* op = new OperatorNode();
 
         if (peek(-2, true).type == TokenType::KWORD_PUBLIC) {
@@ -455,45 +465,153 @@ namespace snowball {
 
         next_token();
 
+        bool valid = true;
+        OperatorNode::OpType op_type;
+
         // TODO
         switch (_current_token.type) {
-            #define OP_CASE(m_op) case TokenType::m_op: {op = OperatorNode::OpType::m_op; break;}
-                OP_CASE(OP_EQ);
-                OP_CASE(OP_EQEQ);
-                OP_CASE(OP_PLUS);
-                OP_CASE(OP_PLUSEQ);
-                OP_CASE(OP_MINUS);
-                OP_CASE(OP_MINUSEQ);
-                OP_CASE(OP_MUL);
-                OP_CASE(OP_MULEQ);
-                OP_CASE(OP_DIV);
-                OP_CASE(OP_DIVEQ);
-                OP_CASE(OP_MOD);
-                OP_CASE(OP_MOD_EQ);
-                OP_CASE(OP_LT);
-                OP_CASE(OP_LTEQ);
-                OP_CASE(OP_GT);
-                OP_CASE(OP_GTEQ);
-                OP_CASE(OP_AND);
-                OP_CASE(OP_OR);
-                OP_CASE(OP_NOT);
-                OP_CASE(OP_NOTEQ);
-                OP_CASE(OP_BIT_NOT);
-                OP_CASE(OP_BIT_LSHIFT);
-                OP_CASE(OP_BIT_LSHIFT_EQ);
-                OP_CASE(OP_BIT_RSHIFT);
-                OP_CASE(OP_BIT_RSHIFT_EQ);
-                OP_CASE(OP_BIT_OR);
-                OP_CASE(OP_BIT_OR_EQ);
-                OP_CASE(OP_BIT_AND);
-                OP_CASE(OP_BIT_AND_EQ);
-                OP_CASE(OP_BIT_XOR);
-                OP_CASE(OP_BIT_XOR_EQ);
+            #define OP_CASE(m_tk, m_op) case TokenType::m_tk: {op_type = OperatorNode::OpType::m_op; break;}
+                OP_CASE(OP_EQ, EQ);
+                OP_CASE(OP_EQEQ, EQEQ);
+                OP_CASE(OP_PLUS, PLUS);
+                OP_CASE(OP_PLUSEQ, PLUSEQ);
+                OP_CASE(OP_MINUS, MINUS);
+                OP_CASE(OP_MINUSEQ, MINUSEQ);
+                OP_CASE(OP_MUL, MUL);
+                OP_CASE(OP_MULEQ, MULEQ);
+                OP_CASE(OP_DIV, DIV);
+                OP_CASE(OP_DIVEQ, DIVEQ);
+                OP_CASE(OP_MOD, MOD);
+                OP_CASE(OP_MOD_EQ, MOD_EQ);
+                OP_CASE(OP_LT, LT);
+                OP_CASE(OP_LTEQ, LTEQ);
+                OP_CASE(OP_GT, GT);
+                OP_CASE(OP_GTEQ, GTEQ);
+                OP_CASE(OP_AND, AND);
+                OP_CASE(OP_OR, OR);
+                OP_CASE(OP_NOT, NOT);
+                OP_CASE(OP_NOTEQ, NOTEQ);
+                OP_CASE(OP_BIT_NOT, BIT_NOT);
+                OP_CASE(OP_BIT_LSHIFT, BIT_LSHIFT);
+                OP_CASE(OP_BIT_LSHIFT_EQ, BIT_LSHIFT_EQ);
+                OP_CASE(OP_BIT_RSHIFT, BIT_RSHIFT);
+                OP_CASE(OP_BIT_RSHIFT_EQ, BIT_RSHIFT_EQ);
+                OP_CASE(OP_BIT_OR, BIT_OR);
+                OP_CASE(OP_BIT_OR_EQ, BIT_OR_EQ);
+                OP_CASE(OP_BIT_AND, BIT_AND);
+                OP_CASE(OP_BIT_AND_EQ, BIT_AND_EQ);
+                OP_CASE(OP_BIT_XOR, BIT_XOR);
+                OP_CASE(OP_BIT_XOR_EQ, BIT_XOR_EQ);
+
+                OP_CASE(KWORD_NEW, CONSTRUCTOR);
+
+                case TokenType::BRACKET_LPARENT: {
+                    if (peek().type == TokenType::BRACKET_RPARENT) {
+                        next_token();
+
+                        op_type = OperatorNode::OpType::CALL;
+                        break;
+                    }
+                }
+
+                // TODO: string and bool and destructor
 
             #undef OP_CASE
 
-                default: valid = false;
+            default: valid = false;
+        }
+
+        if (!valid) {
+            UNEXPECTED_TOK2("a valid operator", "operator overload")
+        }
+
+        // TODO: rest of function parsing
+        next_token();
+
+        if (_current_token.type == TokenType::OP_LT) {
+            std::vector<Type*> generics = _parse_generic_expr();
+            op->generics = generics;
+        }
+
+        std::vector<ArgumentNode*> arguments;
+
+        // TODO: check for args
+        if (_current_token.type == TokenType::BRACKET_LPARENT) {
+            next_token();
+            while (true) {
+                if (_current_token.type == TokenType::IDENTIFIER) {
+                    // Argument structure: (name: type, name2: type2 = default, ...argv)
+                    // TODO: argv, default
+
+                    std::string name = _current_token.to_string();
+                    Type* arg_type;
+
+                    next_token(); // consume name
+
+                    CONSUME(":", SYM_COLLON, "argument statement")
+
+                    ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "<type>", "argument type declaration")
+                    arg_type = _parse_type();
+
+                    ArgumentNode* argument = new ArgumentNode(name, arg_type);
+
+                    if (std::any_of(arguments.begin(), arguments.end(), compareArgs(argument))) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("duplicate argument '%s' in function definition", argument->name.c_str()))
+                    }
+
+                    arguments.push_back(argument);
+
+                    // cleanup
+                    if (_current_token.type == TokenType::SYM_COMMA) {
+                        next_token();
+                    } else if (_current_token.type == TokenType::BRACKET_RPARENT) {
+                        next_token(); break;
+                    } else {
+                        UNEXPECTED_TOK("a comma")
+                    }
+                } else if (_current_token.type == TokenType::BRACKET_RPARENT) {
+                    next_token();
+                    break;
+                } else {
+                    UNEXPECTED_TOK("An identifier or a ')'")
+                }
             }
+        } else {
+            UNEXPECTED_TOK("')'")
+        }
+
+        DUMP_S(_current_token.to_string().c_str())
+        Type* return_type;
+
+        if (!(_context.current_class != nullptr && op_type == OperatorNode::OpType::CONSTRUCTOR)) {
+            ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "Identifier", "Function return type")
+            return_type = _parse_type();
+        } else {
+            return_type = new Type(_context.current_class->name);
+        }
+
+        op->arguments = arguments;
+        op->op_type = op_type;
+        op->return_type = return_type;
+
+        _context.current_function = op;
+
+        if (_current_token.type == TokenType::OP_ARROW) {
+            ReturnNode* fake_ret = new ReturnNode();
+            fake_ret->value = _parse_expression();
+            fake_ret->parent = op;
+
+            BlockNode* body = new BlockNode();
+            op->body = new BlockNode();
+            op->body->exprs.push_back(fake_ret);
+        } else if (_current_token.type == TokenType::BRACKET_LCURLY) {
+            BlockNode* body = _parse_block();
+            op->body = body;
+        } else {
+            UNEXPECTED_TOK2("'{' or '=>'", "a function body")
+        }
+
+        _context.current_function = nullptr;
 
         return op;
     }
@@ -560,6 +678,7 @@ namespace snowball {
 
         Token pk = peek(-3, true);
         if (pk.type == TokenType::KWORD_EXTERN) {
+
             func->is_extern = true;
             if (peek(-4, true).type == TokenType::KWORD_PUBLIC || peek(-4, true).type == TokenType::KWORD_PRIVATE ) {
                 func->is_public = peek(-4, true).type == TokenType::KWORD_PUBLIC;
@@ -659,14 +778,11 @@ namespace snowball {
 
         Type* return_type;
 
-        // Consume an arrow
-        // TODO: if there is no arrow, return type is Void
-        // TODO: if it is a constructor, return type is the parent Class
-        if (!(_context.current_class != nullptr && func->name == "__init")) {
+        if (_current_token.type == TokenType::BRACKET_LCURLY || _current_token.type == TokenType::OP_ARROW) {
+            return_type = new Type("Void");
+        } else {
             ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "Identifier", "Function return type")
             return_type = _parse_type();
-        } else {
-            return_type = new Type(_context.current_class->name);
         }
 
 

@@ -184,7 +184,7 @@ namespace snowball {
 		~FunctionNode() {};
 	};
 
-	struct OperatorNode : public Node {
+	struct OperatorNode : public FunctionNode {
 		BlockNode* body;
 
 		std::string name;

@@ -1,8 +1,12 @@
 import System
 import Math
 
-class Child : Parent {
-    operator +(n2: i32) {
+class Child {
+    operator new() {
+
+    }
+
+    operator +(n2: i32) Int {
 
     }
 }
