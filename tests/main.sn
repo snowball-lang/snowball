@@ -2,17 +2,24 @@ import System
 import Math
 
 class Child {
-    operator new() {
+    priv var d: Int = 34
+    pub operator new() {
 
     }
 
-    operator +(n2: i32) Int {
-
+    pub operator +(n2: i32) Int {
+        return self.d + n2
     }
 }
 
 fn main() Int {
-    var c = new Child()
+    var a = new Child()
+    var b = a + 6
+    var c = Math.sin(b as f64)
 
-    System.println(c + 6)
+    var e = Math.inf + c
+    if e > 100 {
+        System.println("This works?")
+    }
+
 }

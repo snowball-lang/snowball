@@ -185,16 +185,6 @@ namespace snowball {
 	};
 
 	struct OperatorNode : public FunctionNode {
-		BlockNode* body;
-
-		std::string name;
-		Type* return_type;
-		std::vector<ArgumentNode *> arguments;
-
-		std::vector<Type*> generics;
-
-		bool is_public = false;
-
 		enum OpType {
 			EQ,
 			EQEQ,

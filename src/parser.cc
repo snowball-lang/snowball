@@ -580,7 +580,6 @@ namespace snowball {
             UNEXPECTED_TOK("')'")
         }
 
-        DUMP_S(_current_token.to_string().c_str())
         Type* return_type;
 
         if (!(_context.current_class != nullptr && op_type == OperatorNode::OpType::CONSTRUCTOR)) {
@@ -593,6 +592,8 @@ namespace snowball {
         op->arguments = arguments;
         op->op_type = op_type;
         op->return_type = return_type;
+
+        op->name = op2str(op->op_type);
 
         _context.current_function = op;
 

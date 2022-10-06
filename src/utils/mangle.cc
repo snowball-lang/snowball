@@ -12,28 +12,60 @@
 
 namespace snowball {
 
-    /*=======================================
-    * Mangling in snowball.
-    * ---------------------------
-    * rules:
-    *  1. if the name is being mangled, the
-    *     function's name must be prefixed with
-    *     `_M`.
-    *  2. After the rule number 1, the function
-    *     name must contain the following:
-    *       "N{LENGTH OF VARIABLE NAME}{NAME}"
-    *     we must declare the length for the
-    *     variable to avoid any confusion.
-    *  3. After the variable name, we need to
-    *     set the arguments. By following this
-    *     template:
-    *       "A{LENGTH OF ARGUMENT}{TYPE OF ARGUMENt}"
-    *     the template can be repeated as much
-    *     times as the function has arguments.
-    *     This is used so that the generator can
-    *     identify witch parameters this function
-    *     is uses.
-    *=======================================*/
+
+
+    std::string op2str(OperatorNode::OpType op) {
+        switch (op)
+        {
+            #define HANDLE(ty, str) case OperatorNode::OpType::ty: { return str; };
+
+            HANDLE(EQ, "Eq")
+            HANDLE(EQEQ, "DbEq")
+            HANDLE(PLUS, "Pl")
+            HANDLE(PLUSEQ, "PlEq")
+            HANDLE(MINUS, "Mn")
+            HANDLE(MINUSEQ, "MnEq")
+            HANDLE(MUL, "Ml")
+            HANDLE(MULEQ, "MlEq")
+            HANDLE(DIV, "Di")
+            HANDLE(DIVEQ, "DiEq")
+            HANDLE(MOD, "Md")
+            HANDLE(MOD_EQ, "MdEq")
+            HANDLE(LT, "Lt")
+            HANDLE(LTEQ, "LtEq")
+            HANDLE(GT, "Gt")
+            HANDLE(GTEQ, "GtEq")
+            HANDLE(AND, "An")
+            HANDLE(OR, "O")
+            HANDLE(NOT, "Nt")
+            HANDLE(NOTEQ, "NtE")
+
+            HANDLE(BIT_NOT, "BNt")
+			HANDLE(BIT_LSHIFT, "BLsShft")
+			HANDLE(BIT_LSHIFT_EQ, "BLsShftEq")
+			HANDLE(BIT_RSHIFT, "BRshft")
+			HANDLE(BIT_RSHIFT_EQ, "BRshftEq")
+			HANDLE(BIT_OR, "BOr")
+			HANDLE(BIT_OR_EQ, "BOrEq")
+			HANDLE(BIT_AND, "BAnd")
+			HANDLE(BIT_AND_EQ, "BAndEq")
+			HANDLE(BIT_XOR, "BXor")
+			HANDLE(BIT_XOR_EQ, "BXorEq")
+
+			HANDLE(CONSTRUCTOR, "NwC")
+			HANDLE(DESTRUCTOR, "Dle")
+			HANDLE(CALL, "Cll")
+
+			HANDLE(STRING, "StrC")
+			HANDLE(BOOL, "BlC")
+
+            #undef HANDLE
+
+            default:
+                throw SNError(BUG, Logger::format("Op type not handled: %i", op));
+        }
+    }
+
     std::string mangle(std::string name, std::vector<Type*> arguments, bool is_public, bool is_class) {
 
         if (is_class) {

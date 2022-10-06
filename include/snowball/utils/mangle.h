@@ -2,6 +2,7 @@
 #include <string>
 
 #include "../types.h"
+#include "../nodes.h"
 
 #ifndef __SNOWBALL_UTILS__MANGLE_H_
 #define __SNOWBALL_UTILS__MANGLE_H_
@@ -17,10 +18,11 @@ namespace snowball {
         std::string name;
         std::vector<Type*> arguments;
         std::string return_type;
-
     };
 
+
     unmangledResult unmangle(std::string name, std::string separator = ".");
+    std::string op2str(OperatorNode::OpType op);
     std::string mangle(std::string name, std::vector<Type*> arguments = {}, bool is_public = false, bool is_class = false);
 }
 

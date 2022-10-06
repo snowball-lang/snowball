@@ -74,6 +74,7 @@ namespace snowball {
             llvm::Value* generate_return(ReturnNode* p_node);
             llvm::Value* generate_function(FunctionNode* p_node);
             llvm::Value* generate_variable_decl(VarNode* p_node);
+            llvm::Value* generate_operator(OperatorNode* p_node);
             llvm::Value* generate_attribute(AttributeNode* p_node);
             llvm::Value* generate_if_stmt(IfStatementNode *p_node);
             llvm::Value* generate_identifier(IdentifierNode* p_node);
