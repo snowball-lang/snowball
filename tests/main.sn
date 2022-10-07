@@ -1,25 +1,39 @@
 import System
 import Math
+import OS
 
-class Child {
-    priv var d: Int = 34
+class MyClass {
     pub operator new() {
 
     }
 
     pub operator +(n2: i32) Int {
-        return self.d + n2
+        return 8
+    }
+}
+
+mod tests {
+    @[test]
+    fn hello() Void {
+
+    }
+
+    @[test]
+    fn adios() Void {
+
     }
 }
 
 fn main() Int {
-    var a = new Child()
+    var a = new MyClass()
     var b = a + 6
     var c = Math.sin(b as f64)
 
     var e = Math.inf + c
-    if e > 100 {
+    if e > Math.inf {
         System.println("This works?")
     }
 
+    System.println(e)
+    System.println(OS.name())
 }

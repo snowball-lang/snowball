@@ -1360,7 +1360,7 @@ namespace snowball {
                     continue;
                 }
 
-                UNEXPECTED_TOK2("A comma or a >", "a generic expression")
+                UNEXPECTED_TOK2("a comma or a >", "a generic expression")
             } else if (_current_token.type == TokenType::OP_GT) {
                 next_token();
                 break;

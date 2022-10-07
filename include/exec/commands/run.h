@@ -45,7 +45,10 @@ namespace snowball {
 
                 compiler->cleanup();
 
-                return system(output.c_str());
+                int result = system(output.c_str());
+                remove(output.c_str());
+
+                return result;
             }
         }
     }

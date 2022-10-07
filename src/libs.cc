@@ -11,11 +11,11 @@ namespace fs = std::filesystem;
 namespace snowball {
 
     bool Library::is_snowball_lib(std::string name) {
-        return ((name == "System") || (name == "Math") || (name == "Os") || (name == "Path"));
+        return ((name == "System") || (name == "Math") || (name == "OS") || (name == "Path"));
     }
 
     bool Library::snlib_is_object(std::string name) {
-        return ((name == "Os") || (name == "System"));
+        return ((name == "OS") || (name == "System"));
     }
 
     std::string Library::get_sn_lib_src(std::string name) {
