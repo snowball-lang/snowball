@@ -155,6 +155,10 @@ namespace snowball {
         return get_type_name(p_type) == INT32_TYPE->mangle();
     }
 
+    std::string TypeChecker::string_mangle(std::string p_type) {
+        return (new Type(p_type))->mangle();
+    }
+
     std::string TypeChecker::get_type_name(llvm::Type* p_ty) {
 
         llvm::Type* base_type = p_ty->isPointerTy() ?

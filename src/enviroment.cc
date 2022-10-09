@@ -38,8 +38,10 @@ namespace snowball {
         parts.push_back (name.substr (pos_start));
         if (parts.size() > 1) {
             ScopeValue* scope = get(parts[0], p_node, p_o_name);
-            if (scope->type == ScopeType::SCOPE || scope->type == ScopeType::CLASS || scope->type == ScopeType::MODULE) {
+            if (scope->type == ScopeType::SCOPE || scope->type == ScopeType::NAMESPACE || scope->type == ScopeType::CLASS || scope->type == ScopeType::MODULE) {
                 return scope->scope_value->get(snowball_utils::join(++parts.begin(), parts.end(), "."), p_node, p_o_name);
+            } else {
+                throw SNError(BUG, "Invalid Scope type Enviroment::get");
             }
         }
 

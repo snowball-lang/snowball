@@ -18,9 +18,8 @@ mod tests {
 
     }
 
-    @[test]
-    fn adios() Void {
-
+    pub fn adios() Void {
+        System::println("hello")
     }
 }
 
@@ -33,6 +32,8 @@ fn main() Int {
     if e > Math.inf {
         System.println("This works?")
     }
+
+    tests::adios()
 
     System.println(e)
     System.println(OS.name())

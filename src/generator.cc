@@ -30,6 +30,10 @@
 
 #define MODULE_NAME_IF_EXISTS(_sufix) (_context._current_module != nullptr ? (_context._current_module->module_name + _sufix) : "")
 #define ADD_MODULE_NAME_IF_EXISTS(_sufix) MODULE_NAME_IF_EXISTS(_sufix) +
+
+#define NAMESPACE_NAME_IF_EXISTS(_sufix) (_context._current_namespace != nullptr ? (_context._current_namespace->module_name + _sufix) : "")
+#define ADD_NAMESPACE_NAME_IF_EXISTS(_sufix) NAMESPACE_NAME_IF_EXISTS(_sufix) +
+
 #define SET_TO_SCOPE_OR_CLASS(_name, value) \
     if (_context._current_class != nullptr) { \
         _enviroment->get(_context._current_class->name, nullptr)->scope_value->set(_name, std::move(value)); \
@@ -453,21 +457,25 @@ namespace snowball {
     llvm::Value* Generator::generate_module(ModuleNode* p_node) {
 
         // TODO: check if module already exists
-        ScopeValue* module_scope = new ScopeValue(new Scope(p_node->name, _source_info));
-        auto class_struct = llvm::StructType::create(_builder->getContext(), p_node->name);
+        auto module_name = TypeChecker::string_mangle(p_node->name);
+
+        ScopeValue* module_scope = new ScopeValue(new Scope(module_name, _source_info));
+        auto class_struct = llvm::StructType::create(_builder->getContext(), module_name);
         class_struct->setBody({}, true);
         module_scope->llvm_struct = std::make_shared<llvm::StructType *>(class_struct);
-        module_scope->module_name = (new Type(p_node->name))->mangle();
+        module_scope->module_name = module_name;
         module_scope->type = ScopeType::MODULE;
+        module_scope->type = ScopeType::NAMESPACE;
 
-        _context._current_module = module_scope;
+        auto namespace_bk = _context._current_namespace;
+        _context._current_namespace = module_scope;
         _enviroment->global_scope()->set(module_scope->module_name, std::make_unique<ScopeValue*>(module_scope));
 
         for (Node* node : p_node->nodes) {
             generate(node);
         }
 
-        _context._current_module = nullptr;
+        _context._current_namespace = namespace_bk;
 
         // Just return anything
         return llvm::ConstantInt::get(_builder->getInt8Ty(), 0);
@@ -879,8 +887,10 @@ namespace snowball {
                 COMPILER_ERROR(TYPE_ERROR, Logger::format("Coudn't deduce arguments for '%s'", p_node->method.c_str()))
             }
 
+            DUMP_S(FUNCTION_NAME().c_str())
+
             paste_function(function_store);
-            ScopeValue* private_function = _enviroment->get(method_call, p_node); // it will exist... right?
+            ScopeValue* private_function = _enviroment->get(method_call, nullptr); // it will exist... right?
 
             if ((_context._current_module != nullptr && _context._current_module->module_name == base_struct) || (_context._current_class != nullptr && _context._current_class->name == base_struct) || (private_function->parent_scope->name() == SN_GLOBAL_SCOPE)) {
                 function = private_function;
@@ -895,6 +905,7 @@ namespace snowball {
                 (p_node->base == nullptr ?
                 mangle(ADD_MODULE_NAME_IF_EXISTS(".") p_node->method, arg_types, true) :
                 GET_FUNCTION_FROM_CLASS((ADD_MODULE_NAME_IF_EXISTS(".") base_struct).c_str(), p_node->method, arg_types, true));
+
 
             // Look for public
             if (_enviroment->item_exists(method_call)) {
@@ -1018,6 +1029,7 @@ namespace snowball {
         switch (value->type)
         {
             case ScopeType::MODULE:
+            case ScopeType::NAMESPACE:
             case ScopeType::CLASS: {
                 llvm::StructType* type = *value->llvm_struct;
                 auto alloca = _builder->CreateAlloca(type);
@@ -1285,17 +1297,18 @@ namespace snowball {
         Enviroment::FunctionStore* store = new Enviroment::FunctionStore();
         store->current_class = _context._current_class;
         store->current_module = _context._current_module;
+        store->current_namespace = _context._current_namespace;
 
         store->node = p_node;
 
         std::string fname = ADD_MODULE_NAME_IF_EXISTS(".") (_context._current_class == nullptr? p_node->name :
             (
-                mangle((ADD_MODULE_NAME_IF_EXISTS(".")
+                mangle((ADD_MODULE_NAME_IF_EXISTS(".") (ADD_NAMESPACE_NAME_IF_EXISTS(".")
 
                 (store->current_class == nullptr ? store->node->name : Logger::format(
                     "%s.%s", store->current_class->name.c_str(),
                     store->node->name.c_str()
-                ))), arg_tnames, store->node->is_public)
+                )))), arg_tnames, store->node->is_public)
             ));
 
         if (IS_ENTRY_POINT()) {
@@ -1318,11 +1331,12 @@ namespace snowball {
             llvm::Function::ExternalLinkage,
             IS_ENTRY_POINT() ? _SNOWBALL_FUNCTION_ENTRY : (
                 store->node->is_extern ? store->node->name : mangle((ADD_MODULE_NAME_IF_EXISTS(".")
+                (ADD_NAMESPACE_NAME_IF_EXISTS(".")
 
                 (store->current_class == nullptr ? store->node->name : Logger::format(
                     "%s.%s", store->current_class->name.c_str(),
                     store->node->name.c_str()
-                ))), arg_tnames, store->node->is_public)
+                )))), arg_tnames, store->node->is_public)
             ),
             _module);
 
@@ -1528,6 +1542,8 @@ namespace snowball {
         #define _SET_TO_GLOBAL_OR_CLASS(_name, value) \
             if (store->current_class != nullptr) { \
                 _enviroment->get(_ADD_MODULE_NAME_IF_EXISTS(".") store->current_class->name, nullptr)->scope_value->set(_name, std::move(value)); \
+            } else if (store->current_namespace != nullptr) { \
+                store->current_namespace->scope_value->set(_name, std::move(value)); \
             } else if (store->current_module != nullptr) { \
                 store->current_module->scope_value->set(_name, std::move(value)); \
             } else { \
@@ -1537,9 +1553,11 @@ namespace snowball {
         auto bb_backup = _builder->GetInsertBlock();
         auto cls_backup = _context._current_class;
         auto mod_backup = _context._current_module;
+        auto namespace_backup = _context._current_namespace;
 
         _context._current_class = store->current_class;
         _context._current_module = store->current_module;
+        _context._current_namespace = store->current_namespace;
         // Skip if the function contains a template
 
         std::string llvm_error;
@@ -1577,7 +1595,9 @@ namespace snowball {
             arg_tnames.insert(arg_tnames.begin(), TypeChecker::to_type(store->current_class->name).first);
         }
 
-        std::string fname = IS_ENTRY_POINT() ? _SNOWBALL_FUNCTION_ENTRY : (store->node->is_extern ? store->node->name : mangle((_ADD_MODULE_NAME_IF_EXISTS(".")
+        std::string fname = IS_ENTRY_POINT() ? _SNOWBALL_FUNCTION_ENTRY : (store->node->is_extern ? store->node->name : mangle(
+            (_ADD_MODULE_NAME_IF_EXISTS(".")
+                ADD_NAMESPACE_NAME_IF_EXISTS(".")
 
                 (store->current_class == nullptr ? store->node->name : Logger::format(
                     "%s.%s", store->current_class->name.c_str(),
@@ -1663,6 +1683,7 @@ namespace snowball {
 
         _context._current_class = cls_backup;
         _context._current_module = mod_backup;
+        _context._current_namespace = namespace_backup;
         return function;
 
         #undef _MODULE_NAME_IF_EXISTS

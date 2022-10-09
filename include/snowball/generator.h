@@ -58,6 +58,7 @@ namespace snowball {
             // some context
             struct {
                 ScopeValue* _current_module = nullptr;
+                ScopeValue* _current_namespace = nullptr;
                 ClassNode* _current_class = nullptr;
             } _context;
 

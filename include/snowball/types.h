@@ -47,6 +47,8 @@ namespace snowball {
             static std::vector<Type*> args2types(std::vector<ArgumentNode*> p_args);
             static std::string get_type_name(llvm::Type* p_ty);
 
+            static std::string string_mangle(std::string p_type);
+
             static std::pair<std::vector<Type*>,bool> deduce_template_args(
                 FunctionNode* def, std::vector<Type*> params, std::vector<Type*> gparams);
 

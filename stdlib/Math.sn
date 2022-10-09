@@ -1,3 +1,4 @@
+
 extern fn isnan(f64) Bool;
 extern fn strtod(String, i32) f64; // TODO
 extern fn isinf(f64) Bool;
