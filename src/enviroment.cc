@@ -79,7 +79,7 @@ namespace snowball {
         if (parts.size() > 1) {
             if (item_exists(parts[0])) {
                 ScopeValue* scope = get(parts[0], nullptr);
-                if (scope->type == ScopeType::SCOPE || scope->type == ScopeType::CLASS || scope->type == ScopeType::MODULE) {
+                if (scope->type == ScopeType::SCOPE || scope->type == ScopeType::NAMESPACE || scope->type == ScopeType::CLASS || scope->type == ScopeType::MODULE) {
                     return scope->scope_value->item_exists(snowball_utils::join(++parts.begin(), parts.end(), "."));
                 }
             }

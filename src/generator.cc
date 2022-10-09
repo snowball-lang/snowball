@@ -440,6 +440,59 @@ namespace snowball {
                 return generate(new IdentifierNode((value->module_name + ".") + p_node->member->name));
             }
 
+            case ScopeType::NAMESPACE: {
+                // TODO: custom error if no member exists
+                std::string name = (value->module_name + ".") + TypeChecker::string_mangle(p_node->member->name);
+
+                ScopeValue* result = nullptr;
+                if (_enviroment->item_exists((value->module_name + ".") + p_node->member->name)) {
+                    result = _enviroment->get((value->module_name + ".") + p_node->member->name, p_node);
+                } else if (_enviroment->item_exists(name)) {
+                    result = _enviroment->get(name, p_node);
+                } else {
+                    COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Namespace '%s' does not contain member '%s'", TypeChecker::to_type(value->module_name).first->to_string().c_str(), p_node->member->name.c_str()))
+                }
+
+                switch (result->type) {
+                    case ScopeType::MODULE:
+                    case ScopeType::CLASS:
+                    case ScopeType::NAMESPACE: {
+                        llvm::StructType* type = *result->llvm_struct;
+                        auto alloca = _builder->CreateAlloca(type);
+                        alloca->eraseFromParent();
+                        return alloca;
+                    }
+
+                    case ScopeType::FUNC:
+                        return (llvm::Value*)(*result->llvm_function);
+
+                    case ScopeType::LLVM: {
+                        llvm::Value* llvalue = *result->llvm_value;
+                        if (llvm::GlobalValue* G = llvm::dyn_cast<llvm::GlobalValue>(llvalue)) {
+
+                            if (p_node->member->name.find(".") != std::string::npos) {
+                                std::string split = snowball_utils::split(p_node->member->name, ".").at(0);
+                                if ((_context._current_module == nullptr ? true : _context._current_module->module_name != split)) {
+                                    if (!value->isPublic) {
+                                        COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Trying to access a private variable from '%s'", split.c_str()))
+                                    }
+                                }
+                            }
+
+                            return convert_to_right_value(_builder, G);
+                        }
+
+                        return llvalue;
+                    }
+
+                    default: {
+                        COMPILER_ERROR(BUG, Logger::format("Invalid Scope Value (idnt: %s, ty: %i).", p_node->member->name.c_str(), value->type))
+                    }
+                }
+
+                return nullptr;
+            }
+
             case ScopeType::FUNC: {
                 COMPILER_ERROR(TODO, "Function index!")
             }
@@ -460,20 +513,29 @@ namespace snowball {
         auto module_name = TypeChecker::string_mangle(p_node->name);
 
         ScopeValue* module_scope = new ScopeValue(new Scope(module_name, _source_info));
-        auto class_struct = llvm::StructType::create(_builder->getContext(), module_name);
+        auto class_struct = llvm::StructType::create(_builder->getContext(),  ADD_NAMESPACE_NAME_IF_EXISTS(".") module_name);
         class_struct->setBody({}, true);
         module_scope->llvm_struct = std::make_shared<llvm::StructType *>(class_struct);
-        module_scope->module_name = module_name;
+        module_scope->module_name = ADD_NAMESPACE_NAME_IF_EXISTS(".") module_name;
         module_scope->type = ScopeType::MODULE;
         module_scope->type = ScopeType::NAMESPACE;
 
+        if (_context._current_namespace != nullptr) {
+            _enviroment->get((ADD_MODULE_NAME_IF_EXISTS(".") _context._current_namespace->module_name), nullptr)->scope_value->set(module_name, std::make_unique<ScopeValue*>(module_scope));
+        } else if (_context._current_module != nullptr) {
+            _enviroment->get(MODULE_NAME_IF_EXISTS("."), nullptr)->scope_value->set(module_name, std::make_unique<ScopeValue*>(module_scope));
+        } else {
+            _enviroment->global_scope()->set(module_scope->module_name, std::make_unique<ScopeValue*>(module_scope));
+        }
+
         auto namespace_bk = _context._current_namespace;
         _context._current_namespace = module_scope;
-        _enviroment->global_scope()->set(module_scope->module_name, std::make_unique<ScopeValue*>(module_scope));
 
+        _enviroment->create_scope(module_name);
         for (Node* node : p_node->nodes) {
             generate(node);
         }
+        _enviroment->delete_scope();
 
         _context._current_namespace = namespace_bk;
 
@@ -1060,7 +1122,7 @@ namespace snowball {
             }
 
             default: {
-                COMPILER_ERROR(BUG, Logger::format("Invalid Scope Value (idnt: %s).", p_node->name.c_str()))
+                COMPILER_ERROR(BUG, Logger::format("Invalid Scope Value (idnt: %s, ty: %i).", p_node->name.c_str(), value->type))
             }
         }
     }

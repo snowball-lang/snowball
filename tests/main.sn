@@ -18,8 +18,15 @@ mod tests {
 
     }
 
+    mod inner {mod inner {mod inner {mod inner {
+        pub fn inner() {
+            System::println("inner")
+        }
+    }}}}
+
     pub fn adios() Void {
         System::println("hello")
+        inner::inner::inner::inner()
     }
 }
 
@@ -33,7 +40,8 @@ fn main() Int {
         System.println("This works?")
     }
 
-    tests::adios()
+    // tests::adios()
+    tests::inner::inner::inner::inner::inner()
 
     System.println(e)
     System.println(OS.name())
