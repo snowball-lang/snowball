@@ -26,7 +26,7 @@ mod tests {
 
     pub fn adios() Void {
         System::println("hello")
-        inner::inner::inner::inner()
+        inner::inner::inner::inner::inner()
     }
 }
 
@@ -40,7 +40,7 @@ fn main() Int {
         System.println("This works?")
     }
 
-    // tests::adios()
+    tests::adios()
     tests::inner::inner::inner::inner::inner()
 
     System.println(e)

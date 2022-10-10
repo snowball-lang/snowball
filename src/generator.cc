@@ -520,18 +520,22 @@ namespace snowball {
         module_scope->type = ScopeType::MODULE;
         module_scope->type = ScopeType::NAMESPACE;
 
+
         if (_context._current_namespace != nullptr) {
             _enviroment->get((ADD_MODULE_NAME_IF_EXISTS(".") _context._current_namespace->module_name), nullptr)->scope_value->set(module_name, std::make_unique<ScopeValue*>(module_scope));
+            _enviroment->current_scope()->set(module_name, std::make_unique<ScopeValue*>(module_scope));
         } else if (_context._current_module != nullptr) {
             _enviroment->get(MODULE_NAME_IF_EXISTS("."), nullptr)->scope_value->set(module_name, std::make_unique<ScopeValue*>(module_scope));
+            _enviroment->current_scope()->set(module_name, std::make_unique<ScopeValue*>(module_scope));
         } else {
-            _enviroment->global_scope()->set(module_scope->module_name, std::make_unique<ScopeValue*>(module_scope));
+            _enviroment->global_scope()->set(module_name, std::make_unique<ScopeValue*>(module_scope));
         }
 
         auto namespace_bk = _context._current_namespace;
         _context._current_namespace = module_scope;
 
         _enviroment->create_scope(module_name);
+
         for (Node* node : p_node->nodes) {
             generate(node);
         }
@@ -1067,21 +1071,21 @@ namespace snowball {
         if (_enviroment->item_exists(p_node->name)) {
             value = _enviroment->get(p_node->name, p_node);
 
-            if (!(_context._current_module == nullptr && value->parent_scope->name() == SN_GLOBAL_SCOPE)) {
+            if (!(_context._current_module != nullptr && value->parent_scope->name() == SN_GLOBAL_SCOPE)) {
                 found_value = true;
             }
         } else if (_enviroment->item_exists(name)) {
             value = _enviroment->get(name, p_node);
 
-            if (!(_context._current_module == nullptr && value->parent_scope->name() == SN_GLOBAL_SCOPE)) {
+            if (!(_context._current_module != nullptr && value->parent_scope->name() == SN_GLOBAL_SCOPE)) {
                 found_value = true;
             }
         }
 
-        if ((!found_value) && _enviroment->item_exists(ADD_MODULE_NAME_IF_EXISTS(".") p_node->name)) {
-            value = _enviroment->get(ADD_MODULE_NAME_IF_EXISTS(".") p_node->name, p_node);
-        } else if ((!found_value) && _enviroment->item_exists(ADD_MODULE_NAME_IF_EXISTS(".") name)) {
-            value = _enviroment->get(ADD_MODULE_NAME_IF_EXISTS(".") name, p_node);
+        if ((!found_value) && _enviroment->item_exists(ADD_MODULE_NAME_IF_EXISTS(".") ADD_NAMESPACE_NAME_IF_EXISTS(".") p_node->name)) {
+            value = _enviroment->get(ADD_MODULE_NAME_IF_EXISTS(".") ADD_NAMESPACE_NAME_IF_EXISTS(".") p_node->name, p_node);
+        } else if ((!found_value) && _enviroment->item_exists(ADD_MODULE_NAME_IF_EXISTS(".") ADD_NAMESPACE_NAME_IF_EXISTS(".") name)) {
+            value = _enviroment->get(ADD_MODULE_NAME_IF_EXISTS(".") ADD_NAMESPACE_NAME_IF_EXISTS(".") name, p_node);
         } else {
             if (!found_value) {
                 COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Identifier %s does not exist!", p_node->name.c_str()))
