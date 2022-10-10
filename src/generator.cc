@@ -953,8 +953,6 @@ namespace snowball {
                 COMPILER_ERROR(TYPE_ERROR, Logger::format("Coudn't deduce arguments for '%s'", p_node->method.c_str()))
             }
 
-            DUMP_S(FUNCTION_NAME().c_str())
-
             paste_function(function_store);
             ScopeValue* private_function = _enviroment->get(method_call, nullptr); // it will exist... right?
 
