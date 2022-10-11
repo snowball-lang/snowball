@@ -99,6 +99,8 @@ namespace snowball {
                 builder->SetInsertPoint(&block);
 
                 tests.push_back(p_value->getName().str());
+
+                // TODO: unmangled base name
                 llvm::Constant* string_value = builder->CreateGlobalStringPtr(unmangle(p_value->getName().str(), "::").name, ".test::alloca");
 
                 auto test_fn = get_test_fn(mod, builder);
@@ -111,8 +113,8 @@ namespace snowball {
                 builder->SetInsertPoint(backup);
                 auto test_call = builder->CreateCall(fn);
 
-                llvm::BasicBlock* IfBB = llvm::BasicBlock::Create(builder->getContext(), "btrue", backup->getParent());
-                llvm::BasicBlock* ContinueBB = llvm::BasicBlock::Create(builder->getContext(), "end", backup->getParent());
+                llvm::BasicBlock* IfBB = llvm::BasicBlock::Create(builder->getContext(), "bb", backup->getParent());
+                llvm::BasicBlock* ContinueBB = llvm::BasicBlock::Create(builder->getContext(), "bb", backup->getParent());
 
                 builder->CreateCondBr(builder->CreateICmpEQ(test_call, builder->getInt32(1)), IfBB, ContinueBB);
 

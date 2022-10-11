@@ -350,7 +350,6 @@ namespace snowball {
                             Enviroment::FunctionStore* function_store;
 
                             if ((function_store = _enviroment->find_function_if(result.name, [=](auto store) -> bool {
-                                if (store.node->is_public) return false;
                                 if ((store.node->arguments.size() <= result.arguments.size()) && store.node->has_vargs) {}
                                 else if (store.node->arguments.size() != result.arguments.size()) return false;
                                 return TypeChecker::functions_equal(
@@ -808,7 +807,7 @@ namespace snowball {
     llvm::Value* Generator::generate_call(CallNode* p_node) {
         #define FUNCTION_NAME() ( \
             ADD_MODULE_NAME_IF_EXISTS(".") ( \
-                (!((!base_struct.empty()) && (class_value->type == ScopeType::CLASS || class_value->type == ScopeType::MODULE))) ? \
+                (!((!base_struct.empty()) && (class_value->type == ScopeType::CLASS || class_value->type == ScopeType::NAMESPACE || class_value->type == ScopeType::MODULE))) ? \
                     p_node->method : \
                     Logger::format("%s.%s", base_struct.c_str(), p_node->method.c_str()) \
             ) \
@@ -1365,7 +1364,7 @@ namespace snowball {
 
         store->node = p_node;
 
-        std::string fname = ADD_MODULE_NAME_IF_EXISTS(".") (_context._current_class == nullptr? p_node->name :
+        std::string fname = ADD_MODULE_NAME_IF_EXISTS(".") ADD_NAMESPACE_NAME_IF_EXISTS(".") (_context._current_class == nullptr? p_node->name :
             (
                 mangle((ADD_MODULE_NAME_IF_EXISTS(".") (ADD_NAMESPACE_NAME_IF_EXISTS(".")
 
