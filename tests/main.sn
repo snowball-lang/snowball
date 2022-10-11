@@ -8,7 +8,7 @@ class MyClass {
     }
 
     pub operator +(n2: i32) Int {
-        return 8
+        return n2 + 8
     }
 }
 
@@ -33,6 +33,8 @@ mod tests {
 fn main() Int {
     var a = new MyClass()
     var b = a + 6
+    var s = "hello"
+
     var c = Math.sin(b as f64)
 
     var e = Math.inf + c
@@ -44,5 +46,6 @@ fn main() Int {
     tests::inner::inner::inner::inner::inner()
 
     System.println(e)
+    System.println(s + ", world!")
     System.println(OS.name())
 }

@@ -16,16 +16,15 @@
 #include "snowball/constants.h"
 #include "snowball/utils/api.h"
 
-// TODO: make them mangle?
-extern "C" int sn_String__eqeq(char* self, char* second) {
+int String::_eqeq(char* self, char* second) {
     return strcmp(self, second) == 0;
 }
 
-extern "C" int sn_String__bool(char* self) {
+int String::_bool(char* self) {
     return strlen(self) > 0;
 }
 
-extern "C" char* sn_String__sum(char* self, char* sum) {
+char* String::_sum(char* self, char* sum) {
 
     char *result = (char*)malloc(strlen(self) + strlen(sum) + 1); // +1 for the null-terminator
     // in real code you would check for errors in malloc here
@@ -40,15 +39,15 @@ void register_string(snowball::SNAPI* API) {
         llvm::Type* class_type = snowball::get_llvm_type_from_sn_type(snowball::BuildinTypes::STRING, API->compiler->builder);
         llvm::Type* bool_class = snowball::get_llvm_type_from_sn_type(snowball::BuildinTypes::BOOL, API->compiler->builder);
 
-        METHOD("__bool", bool_class, {METHOD_ARGUMENT(snowball::STRING_TYPE, class_type)}, "sn_String__bool")
-        METHOD("__sum",  class_type, {
+        OEPRATOR(snowball::OperatorType::BOOL, bool_class, {METHOD_ARGUMENT(snowball::STRING_TYPE, class_type)}, "_ZN6String5_boolEPc")
+        OEPRATOR(snowball::OperatorType::PLUS,  class_type, {
             METHOD_ARGUMENT(snowball::STRING_TYPE, class_type),
             METHOD_ARGUMENT(snowball::STRING_TYPE, class_type)
-        }, "sn_String__sum")
+        }, "_ZN6String4_sumEPcS0_")
 
-        METHOD("__eqeq",  bool_class, {
+        OEPRATOR(snowball::OperatorType::EQEQ,  bool_class, {
             METHOD_ARGUMENT(snowball::STRING_TYPE, class_type),
             METHOD_ARGUMENT(snowball::STRING_TYPE, class_type)
-        }, "sn_String__eqeq")
+        }, "_ZN6String5_eqeqEPcS0_")
     });
 }

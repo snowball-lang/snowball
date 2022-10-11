@@ -95,5 +95,6 @@
         "*.def": "cpp",
         "source_location": "cpp",
         "charconv": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }

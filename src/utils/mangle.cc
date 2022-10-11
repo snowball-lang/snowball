@@ -14,10 +14,10 @@ namespace snowball {
 
 
 
-    std::string op2str(OperatorNode::OpType op) {
+    std::string op2str(OperatorType op) {
         switch (op)
         {
-            #define HANDLE(ty, str) case OperatorNode::OpType::ty: { return str; };
+            #define HANDLE(ty, str) case OperatorType::ty: { return str; };
 
             HANDLE(EQ, "Eq")
             HANDLE(EQEQ, "DbEq")

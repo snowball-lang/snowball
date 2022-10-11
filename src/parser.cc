@@ -466,11 +466,11 @@ namespace snowball {
         next_token();
 
         bool valid = true;
-        OperatorNode::OpType op_type;
+        OperatorType op_type;
 
         // TODO
         switch (_current_token.type) {
-            #define OP_CASE(m_tk, m_op) case TokenType::m_tk: {op_type = OperatorNode::OpType::m_op; break;}
+            #define OP_CASE(m_tk, m_op) case TokenType::m_tk: {op_type = OperatorType::m_op; break;}
                 OP_CASE(OP_EQ, EQ);
                 OP_CASE(OP_EQEQ, EQEQ);
                 OP_CASE(OP_PLUS, PLUS);
@@ -509,7 +509,7 @@ namespace snowball {
                     if (peek().type == TokenType::BRACKET_RPARENT) {
                         next_token();
 
-                        op_type = OperatorNode::OpType::CALL;
+                        op_type = OperatorType::CALL;
                         break;
                     }
                 }
@@ -582,7 +582,7 @@ namespace snowball {
 
         Type* return_type;
 
-        if (!(_context.current_class != nullptr && op_type == OperatorNode::OpType::CONSTRUCTOR)) {
+        if (!(_context.current_class != nullptr && op_type == OperatorType::CONSTRUCTOR)) {
             ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "Identifier", "Function return type")
             return_type = _parse_type();
         } else {
@@ -1016,10 +1016,10 @@ namespace snowball {
                 next_token();
                 expression = new NewNode(_parse_function_call());
             } else if (IF_TOKEN(OP_NOT) || IF_TOKEN(OP_PLUS) || IF_TOKEN(OP_MINUS) || IF_TOKEN(OP_BIT_NOT)) {
-                if (tk.type == TokenType::OP_NOT)          expressions.push_back(new BinaryOp(OpType::OP_NOT))      ;
-                else if (tk.type == TokenType::OP_PLUS)    expressions.push_back(new BinaryOp(OpType::OP_POSITIVE)) ;
-                else if (tk.type == TokenType::OP_MINUS)   expressions.push_back(new BinaryOp(OpType::OP_NEGATIVE)) ;
-                else if (tk.type == TokenType::OP_BIT_NOT) expressions.push_back(new BinaryOp(OpType::OP_BIT_NOT))  ;
+                if (tk.type == TokenType::OP_NOT)          expressions.push_back(new BinaryOp(BinaryOp::OpType::OP_NOT))      ;
+                else if (tk.type == TokenType::OP_PLUS)    expressions.push_back(new BinaryOp(BinaryOp::OpType::OP_POSITIVE)) ;
+                else if (tk.type == TokenType::OP_MINUS)   expressions.push_back(new BinaryOp(BinaryOp::OpType::OP_NEGATIVE)) ;
+                else if (tk.type == TokenType::OP_BIT_NOT) expressions.push_back(new BinaryOp(BinaryOp::OpType::OP_BIT_NOT))  ;
 
                 continue;
             } else if (IF_TOKEN(IDENTIFIER)) {
@@ -1082,11 +1082,11 @@ namespace snowball {
             expressions.emplace_back(expression);
             tk = peek();
 
-            OpType op;
+            BinaryOp::OpType op;
             bool valid = true;
 
             switch (tk.type) {
-            #define OP_CASE(m_op) case TokenType::m_op: {op = OpType::m_op; break;}
+            #define OP_CASE(m_op) case TokenType::m_op: {op = BinaryOp::OpType::m_op; break;}
                 OP_CASE(OP_EQ);
                 OP_CASE(OP_EQEQ);
                 OP_CASE(OP_PLUS);
@@ -1176,88 +1176,88 @@ namespace snowball {
 
                 int precedence = -1;
                 switch (expression->op_type) {
-                    case OpType::OP_NOT:
-                    case OpType::OP_BIT_NOT:
-                    case OpType::OP_POSITIVE:
-                    case OpType::OP_NEGATIVE: {
+                    case BinaryOp::OpType::OP_NOT:
+                    case BinaryOp::OpType::OP_BIT_NOT:
+                    case BinaryOp::OpType::OP_POSITIVE:
+                    case BinaryOp::OpType::OP_NEGATIVE: {
                         precedence = 0;
                         break;
                     }
 
-                    case OpType::OP_MUL:
-                    case OpType::OP_DIV:
-                    case OpType::OP_MOD: {
+                    case BinaryOp::OpType::OP_MUL:
+                    case BinaryOp::OpType::OP_DIV:
+                    case BinaryOp::OpType::OP_MOD: {
                         precedence = 1;
                         break;
                     }
 
-                    case OpType::OP_PLUS:
-                    case OpType::OP_MINUS: {
+                    case BinaryOp::OpType::OP_PLUS:
+                    case BinaryOp::OpType::OP_MINUS: {
                         precedence = 2;
                         break;
                     }
 
-                    case OpType::OP_BIT_LSHIFT:
-                    case OpType::OP_BIT_RSHIFT: {
+                    case BinaryOp::OpType::OP_BIT_LSHIFT:
+                    case BinaryOp::OpType::OP_BIT_RSHIFT: {
                         precedence = 3;
                         break;
                     }
 
-                    case OpType::OP_LT:
-                    case OpType::OP_LTEQ:
-                    case OpType::OP_GT:
-                    case OpType::OP_GTEQ: {
+                    case BinaryOp::OpType::OP_LT:
+                    case BinaryOp::OpType::OP_LTEQ:
+                    case BinaryOp::OpType::OP_GT:
+                    case BinaryOp::OpType::OP_GTEQ: {
                         precedence = 4;
                         break;
                     }
 
-                    case OpType::OP_EQEQ:
-                    case OpType::OP_NOTEQ: {
+                    case BinaryOp::OpType::OP_EQEQ:
+                    case BinaryOp::OpType::OP_NOTEQ: {
                         precedence = 5;
                         break;
                     }
 
-                    case OpType::OP_BIT_AND: {
+                    case BinaryOp::OpType::OP_BIT_AND: {
                         precedence = 6;
                         break;
                     }
 
-                    case OpType::OP_BIT_XOR: {
+                    case BinaryOp::OpType::OP_BIT_XOR: {
                         precedence = 7;
                         break;
                     }
 
-                    case OpType::OP_BIT_OR: {
+                    case BinaryOp::OpType::OP_BIT_OR: {
                         precedence = 8;
                         break;
                     }
 
-                    case OpType::OP_AND: {
+                    case BinaryOp::OpType::OP_AND: {
                         precedence = 9;
                         break;
                     }
 
-                    case OpType::OP_OR: {
+                    case BinaryOp::OpType::OP_OR: {
                         precedence = 10;
                         break;
                     }
 
-                    case OpType::OP_EQ:
-                    case OpType::OP_PLUSEQ:
-                    case OpType::OP_MINUSEQ:
-                    case OpType::OP_MULEQ:
-                    case OpType::OP_DIVEQ:
-                    case OpType::OP_MOD_EQ:
-                    case OpType::OP_BIT_LSHIFT_EQ:
-                    case OpType::OP_BIT_RSHIFT_EQ:
-                    case OpType::OP_BIT_AND_EQ:
-                    case OpType::OP_BIT_XOR_EQ:
-                    case OpType::OP_BIT_OR_EQ: {
+                    case BinaryOp::OpType::OP_EQ:
+                    case BinaryOp::OpType::OP_PLUSEQ:
+                    case BinaryOp::OpType::OP_MINUSEQ:
+                    case BinaryOp::OpType::OP_MULEQ:
+                    case BinaryOp::OpType::OP_DIVEQ:
+                    case BinaryOp::OpType::OP_MOD_EQ:
+                    case BinaryOp::OpType::OP_BIT_LSHIFT_EQ:
+                    case BinaryOp::OpType::OP_BIT_RSHIFT_EQ:
+                    case BinaryOp::OpType::OP_BIT_AND_EQ:
+                    case BinaryOp::OpType::OP_BIT_XOR_EQ:
+                    case BinaryOp::OpType::OP_BIT_OR_EQ: {
                         precedence = 11;
                         break;
                     }
 
-                    case OpType::NONE: {
+                    case BinaryOp::OpType::NONE: {
                         precedence = -1;
                         break;
                     }
@@ -1266,12 +1266,12 @@ namespace snowball {
                 if (precedence < min_precedence) {
                     min_precedence = precedence;
                     next_op = i;
-                    OpType op = expression->op_type;
+                    auto op = expression->op_type;
                     unary = (
-                        op == OpType::OP_NOT      ||
-                        op == OpType::OP_BIT_NOT  ||
-                        op == OpType::OP_POSITIVE ||
-                        op == OpType::OP_NEGATIVE );
+                        op == BinaryOp::OpType::OP_NOT      ||
+                        op == BinaryOp::OpType::OP_BIT_NOT  ||
+                        op == BinaryOp::OpType::OP_POSITIVE ||
+                        op == BinaryOp::OpType::OP_NEGATIVE );
                     // break;
                 }
             }
@@ -1297,7 +1297,7 @@ namespace snowball {
 
                 }
             } else {
-                ASSERT(next_op >= 1 && next_op < (int)expressions.size() - 1)
+                ASSERT(next_op >= 1 && next_op < (int)expressions.size())
                 ASSERT(!(expressions[(size_t)next_op + 1]->type == Node::Ty::OPERATOR));
 
                 BinaryOp* op_node = new BinaryOp(((BinaryOp*)expressions[(size_t)next_op])->op_type);

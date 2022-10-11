@@ -9,6 +9,7 @@
 
 #include "snowball/utils/utils.h"
 #include "snowball/utils/mangle.h"
+#include "snowball/operators.h"
 
 #include <cstdio>
 #include <llvm/IR/Constants.h>
@@ -96,7 +97,7 @@
         function = *_enviroment->get( \
         GET_FUNCTION_FROM_CLASS( \
             TypeChecker::get_type_name(left_type).c_str(), \
-            method, \
+            Logger::format("#%s", op2str(opty).c_str()), \
             __u.arguments, \
             __u.isPublic \
         ), p_node, Logger::format( \
@@ -347,7 +348,6 @@ namespace snowball {
 
                             auto result = unmangle(generated->getName().str());
                             Enviroment::FunctionStore* function_store;
-
 
                             if ((function_store = _enviroment->find_function_if(result.name, [=](auto store) -> bool {
                                 if (store.node->is_public) return false;
@@ -711,10 +711,10 @@ namespace snowball {
         // TODO: check if class exist and throw custom error
         #define FNAME() GET_FUNCTION_FROM_CLASS(\
             (ADD_MODULE_NAME_IF_EXISTS(".") class_type->mangle()).c_str(), \
-                (((std::string)"#") + op2str(OperatorNode::OpType::CONSTRUCTOR)).c_str(), arg_types, true)
+                (((std::string)"#") + op2str(OperatorType::CONSTRUCTOR)).c_str(), arg_types, true)
         #define FNAME_NO_MANGLE() GET_FUNCTION_FROM_CLASS_NO_MANGLE( \
             (ADD_MODULE_NAME_IF_EXISTS(".") class_type->mangle()), \
-                (((std::string)"#") + op2str(OperatorNode::OpType::CONSTRUCTOR)))
+                (((std::string)"#") + op2str(OperatorType::CONSTRUCTOR)))
 
         Enviroment::FunctionStore* function_store;
         llvm::Function* function;
@@ -1148,12 +1148,12 @@ namespace snowball {
             llvm::Function* function;
             switch (p_node->op_type)
             {
-                case OP_NOT: {
+                case BinaryOp::OpType::OP_NOT: {
                     if (TypeChecker::is_bool(left_type) || TypeChecker::is_number(left_type)) {
                         return _builder->CreateNot(left);
                     }
 
-                    CALL_UNARY_OPERATOR(OperatorNode::OpType::NOT)
+                    CALL_UNARY_OPERATOR(OperatorType::NOT)
                     break;
                 }
 
@@ -1174,7 +1174,7 @@ namespace snowball {
             llvm::Function* function;
             switch (p_node->op_type)
             {
-                case OP_PLUS: {
+                case BinaryOp::OpType::OP_PLUS: {
                     llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right).first;
                     llvm::Type* new_right_type = new_right->getType();
 
@@ -1185,17 +1185,17 @@ namespace snowball {
                         return _builder->CreateAdd(left, new_right);
                     }
 
-                    CALL_OPERATOR(OperatorNode::OpType::PLUS)
+                    CALL_OPERATOR(OperatorType::PLUS)
                     break;
                 }
 
-                case OP_EQ: {
+                case BinaryOp::OpType::OP_EQ: {
                     // TODO: if same types (and __eq does not exist) just do _builder->CreateStore()
-                    CALL_OPERATOR(OperatorNode::OpType::EQ)
+                    CALL_OPERATOR(OperatorType::EQ)
                     break;
                 }
 
-                case OP_EQEQ: {
+                case BinaryOp::OpType::OP_EQEQ: {
                     llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right).first;
                     llvm::Type* new_right_type = new_right->getType();
 
@@ -1205,11 +1205,11 @@ namespace snowball {
                         return _builder->CreateICmpEQ(left, new_right);
                     }
 
-                    CALL_OPERATOR(OperatorNode::OpType::EQEQ)
+                    CALL_OPERATOR(OperatorType::EQEQ)
                     break;
                 }
 
-                case OP_NOTEQ: {
+                case BinaryOp::OpType::OP_NOTEQ: {
                     llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right).first;
                     llvm::Type* new_right_type = new_right->getType();
 
@@ -1219,11 +1219,11 @@ namespace snowball {
                         return _builder->CreateICmpNE(left, new_right);
                     }
 
-                    CALL_OPERATOR(OperatorNode::OpType::NOTEQ)
+                    CALL_OPERATOR(OperatorType::NOTEQ)
                     break;
                 }
 
-                case OP_LTEQ: {
+                case BinaryOp::OpType::OP_LTEQ: {
                     llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right).first;
                     llvm::Type* new_right_type = new_right->getType();
 
@@ -1234,11 +1234,11 @@ namespace snowball {
                         return _builder->CreateICmpULE(left, new_right);
                     }
 
-                    CALL_OPERATOR(OperatorNode::OpType::LTEQ)
+                    CALL_OPERATOR(OperatorType::LTEQ)
                     break;
                 }
 
-                case OP_MINUS: {
+                case BinaryOp::OpType::OP_MINUS: {
                     llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right).first;
                     llvm::Type* new_right_type = new_right->getType();
 
@@ -1250,11 +1250,11 @@ namespace snowball {
                     }
 
 
-                    CALL_OPERATOR(OperatorNode::OpType::MINUS)
+                    CALL_OPERATOR(OperatorType::MINUS)
                     break;
                 }
 
-                case OP_MUL: {
+                case BinaryOp::OpType::OP_MUL: {
                     llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right).first;
                     llvm::Type* new_right_type = new_right->getType();
 
@@ -1265,11 +1265,11 @@ namespace snowball {
                         return _builder->CreateMul(left, new_right);
                     }
 
-                    CALL_OPERATOR(OperatorNode::OpType::MUL)
+                    CALL_OPERATOR(OperatorType::MUL)
                     break;
                 }
 
-                case OP_DIV: {
+                case BinaryOp::OpType::OP_DIV: {
                     llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right).first;
                     llvm::Type* new_right_type = new_right->getType();
 
@@ -1281,11 +1281,11 @@ namespace snowball {
                     }
 
 
-                    CALL_OPERATOR(OperatorNode::OpType::DIV)
+                    CALL_OPERATOR(OperatorType::DIV)
                     break;
                 }
 
-                case OP_GT: {
+                case BinaryOp::OpType::OP_GT: {
                     llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right).first;
                     llvm::Type* new_right_type = new_right->getType();
 
@@ -1297,7 +1297,7 @@ namespace snowball {
                     }
 
 
-                    CALL_OPERATOR(OperatorNode::OpType::GT)
+                    CALL_OPERATOR(OperatorType::GT)
                     break;
                 }
 
@@ -1650,7 +1650,7 @@ namespace snowball {
             arg_tnames.push_back(TypeChecker::to_type(type->getName().str()).first);
         }
 
-        if (store->current_class != nullptr && store->node->name != op2str(OperatorNode::OpType::CONSTRUCTOR) && !store->node->is_static) {
+        if (store->current_class != nullptr && store->node->name != op2str(OperatorType::CONSTRUCTOR) && !store->node->is_static) {
             // We asume that the class has already been assigned
             arg_types.insert(
                 arg_types.begin(),
@@ -1710,7 +1710,7 @@ namespace snowball {
             llvm::BasicBlock *body = llvm::BasicBlock::Create(_builder->getContext(), "body", function);
             _builder->SetInsertPoint(body);
 
-            if (store->current_class != nullptr && store->node->name == op2str(OperatorNode::OpType::CONSTRUCTOR) && !store->node->is_static) {
+            if (store->current_class != nullptr && store->node->name == op2str(OperatorType::CONSTRUCTOR) && !store->node->is_static) {
                 generate_contructor_meta(store->current_class);
             }
 
@@ -1724,7 +1724,7 @@ namespace snowball {
                 if (IS_ENTRY_POINT()) {
                     llvm::Type * i32 = _builder->getInt32Ty();
                     _builder->CreateRet(llvm::ConstantInt::get(i32, 0));
-                } else if (store->current_class != nullptr && store->node->name == op2str(OperatorNode::OpType::CONSTRUCTOR)) {
+                } else if (store->current_class != nullptr && store->node->name == op2str(OperatorType::CONSTRUCTOR)) {
                     _builder->CreateRet(*current_scope->get("self", nullptr)->llvm_value);
                 } else if (retType->isVoidTy()) {
                     _builder->CreateRet(nullptr);

@@ -6,7 +6,11 @@ extern fn isinf(f64) Bool;
 pub extern fn sin(f64) f64;
 pub extern fn cos(f64) f64;
 
-pub var PI = 3.14159265358979323846
+// TODO: constants
+pub var PI = 3.141592653589793238462643383279502884197
+pub var logpi = 1.144729885849400174143427351353058711647
+pub var sqrtpi = 1.772453850905516027298167483341145182798
+
 pub var inf = strtod("Inf", 0)
 
 // TODO: nanf and nanl

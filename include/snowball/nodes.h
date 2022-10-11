@@ -6,52 +6,13 @@
 
 #include "token.h"
 #include "types.h"
+#include "operators.h"
 #include "llvm/IR/Value.h"
 
 #ifndef __SNOWBALL_NODE_H_
 #define __SNOWBALL_NODE_H_
 
 namespace snowball {
-
-	enum OpType {
-		OP_EQ,
-		OP_EQEQ,
-		OP_PLUS,
-		OP_PLUSEQ,
-		OP_MINUS,
-		OP_MINUSEQ,
-		OP_MUL,
-		OP_MULEQ,
-		OP_DIV,
-		OP_DIVEQ,
-		OP_MOD,
-		OP_MOD_EQ,
-		OP_LT,
-		OP_LTEQ,
-		OP_GT,
-		OP_GTEQ,
-		OP_AND,
-		OP_OR,
-		OP_NOT,
-		OP_NOTEQ,
-
-		OP_BIT_NOT,
-		OP_BIT_LSHIFT,
-		OP_BIT_LSHIFT_EQ,
-		OP_BIT_RSHIFT,
-		OP_BIT_RSHIFT_EQ,
-		OP_BIT_OR,
-		OP_BIT_OR_EQ,
-		OP_BIT_AND,
-		OP_BIT_AND_EQ,
-		OP_BIT_XOR,
-		OP_BIT_XOR_EQ,
-
-		OP_POSITIVE,
-		OP_NEGATIVE,
-
-		NONE,
-	};
 
     typedef struct Node {
         enum class Ty {
@@ -185,48 +146,7 @@ namespace snowball {
 	};
 
 	struct OperatorNode : public FunctionNode {
-		enum OpType {
-			EQ,
-			EQEQ,
-			PLUS,
-			PLUSEQ,
-			MINUS,
-			MINUSEQ,
-			MUL,
-			MULEQ,
-			DIV,
-			DIVEQ,
-			MOD,
-			MOD_EQ,
-			LT,
-			LTEQ,
-			GT,
-			GTEQ,
-			AND,
-			OR,
-			NOT,
-			NOTEQ,
-			BIT_NOT,
-			BIT_LSHIFT,
-			BIT_LSHIFT_EQ,
-			BIT_RSHIFT,
-			BIT_RSHIFT_EQ,
-			BIT_OR,
-			BIT_OR_EQ,
-			BIT_AND,
-			BIT_AND_EQ,
-			BIT_XOR,
-			BIT_XOR_EQ,
-
-			// other operators
-			CONSTRUCTOR,
-			DESTRUCTOR, // TODO
-			CALL,
-
-			// operator types
-			STRING,
-			BOOL
-		} op_type;
+		OperatorType op_type;
 
 		OperatorNode() {
 			type = Ty::OPERATOR_OVERRIDE;
@@ -381,6 +301,46 @@ namespace snowball {
 	};
 
 	struct BinaryOp : public Node {
+
+		enum OpType {
+			OP_EQ,
+			OP_EQEQ,
+			OP_PLUS,
+			OP_PLUSEQ,
+			OP_MINUS,
+			OP_MINUSEQ,
+			OP_MUL,
+			OP_MULEQ,
+			OP_DIV,
+			OP_DIVEQ,
+			OP_MOD,
+			OP_MOD_EQ,
+			OP_LT,
+			OP_LTEQ,
+			OP_GT,
+			OP_GTEQ,
+			OP_AND,
+			OP_OR,
+			OP_NOT,
+			OP_NOTEQ,
+
+			OP_BIT_NOT,
+			OP_BIT_LSHIFT,
+			OP_BIT_LSHIFT_EQ,
+			OP_BIT_RSHIFT,
+			OP_BIT_RSHIFT_EQ,
+			OP_BIT_OR,
+			OP_BIT_OR_EQ,
+			OP_BIT_AND,
+			OP_BIT_AND_EQ,
+			OP_BIT_XOR,
+			OP_BIT_XOR_EQ,
+
+			OP_POSITIVE,
+			OP_NEGATIVE,
+
+			NONE,
+		};
 
 		Node* left;
 		Node* right;

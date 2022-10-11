@@ -15,6 +15,14 @@ struct System {
     static void println(float   __msg);
     static void println(double  __msg);
 
+    static void print(char*   __msg);
+    static void print(bool    __msg);
+    static void print(int16_t __msg);
+    static void print(int32_t __msg);
+    static void print(int64_t __msg);
+    static void print(float   __msg);
+    static void print(double  __msg);
+
     static char* input();
     static void exit(int code);
 };

@@ -19,7 +19,7 @@ namespace snowball {
 
     class Type;
 
-    enum BuildinTypes {
+    enum class BuildinTypes {
         BOOL,
         NUMBER,
         FLOAT,
