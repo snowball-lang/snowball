@@ -46,6 +46,7 @@ namespace snowball {
             ImportNode* _parse_import();
             ModuleNode* _parse_module();
             ReturnNode* _parse_return();
+            OperatorNode* _parse_operator();
             FunctionNode* _parse_function();
             IfStatementNode* _parse_ifstmt();
             CallNode* _parse_function_call();

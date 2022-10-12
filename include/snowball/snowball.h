@@ -15,6 +15,7 @@
 #include "constants.h"
 #include "dbg_info.h"
 #include "compiler.h"
+#include "operators.h"
 #include "generator.h"
 #include "enviroment.h"
 #include "attributes.h"

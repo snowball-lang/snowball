@@ -3,6 +3,7 @@
 #define __SNOWBALL_API_UTILS_H_
 
 #define CLASS __c
+#define OEPRATOR(opty, ret, ...) API->create_class_method(CLASS, opty, ret, std::vector<std::pair<snowball::Type*, llvm::Type*>> __VA_ARGS__);
 #define METHOD(name, ret, ...) API->create_class_method(CLASS, name, ret, std::vector<std::pair<snowball::Type*, llvm::Type*>> __VA_ARGS__);
 #define METHOD_ARGUMENT(name, ty) std::make_pair(name, ty)
 

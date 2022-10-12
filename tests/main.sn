@@ -1,28 +1,51 @@
 import System
 import Math
+import OS
 
-class Parent {
+class MyClass {
+    pub operator new() {
 
+    }
+
+    pub operator +(n2: i32) Int {
+        return n2 + 8
+    }
 }
 
-class Child : Parent {
-    priv var MAGIC_N: f64 = 30
+mod tests {
+    @[test]
+    fn hello() Void {
 
-    pub fn __init() {
-        System.println(Math.inf)
     }
 
-    pub fn sin() f32 {
-        return Math.sin(self.MAGIC_N)
-    }
+    mod inner {mod inner {mod inner {mod inner {
+        pub fn inner() {
+            System::println("inner")
+        }
+    }}}}
 
-    pub fn __sum(n: i32) f32 {
-        return Math.sin(n + self.MAGIC_N)
+    pub fn adios() Void {
+        System::println("hello")
+        inner::inner::inner::inner::inner()
     }
 }
 
 fn main() Int {
-    var c = new Child()
+    var a = new MyClass()
+    var b = a + 6
+    var s = "hello"
 
-    System.println(c + 6)
+    var c = Math.sin(b as f64)
+
+    var e = Math.inf + c
+    if e > Math.inf {
+        System.println("This works?")
+    }
+
+    tests::adios()
+    tests::inner::inner::inner::inner::inner()
+
+    System.println(e)
+    System.println(s + ", world!")
+    System.println(OS.name())
 }

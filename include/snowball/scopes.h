@@ -49,6 +49,7 @@ namespace snowball {
         MODULE,
         FUNC,
         LLVM,
+        NAMESPACE,
         FUNC_CONTAINER,
     };
 

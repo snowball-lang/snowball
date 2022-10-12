@@ -32,6 +32,14 @@ void System::println(int64_t __msg) { printf("%ld\n", __msg); }
 void System::println(float   __msg) { printf("%f\n",  __msg); }
 void System::println(double  __msg) { printf("%f\n",  __msg); }
 
+void System::print(char*   __msg) { printf("%s",  __msg); }
+void System::print(bool    __msg) { printf("%i",  __msg); }
+void System::print(int16_t __msg) { printf("%d",  __msg); }
+void System::print(int32_t __msg) { printf("%d",  __msg); }
+void System::print(int64_t __msg) { printf("%ln", __msg); }
+void System::print(float   __msg) { printf("%f",  __msg); }
+void System::print(double  __msg) { printf("%f",  __msg); }
+
 char* System::input() {
     int size = 10;
     char *str;
@@ -78,6 +86,14 @@ extern "C" snowball::ScopeValue* sn_export(snowball::SNAPI* API) {
         METHOD("println", void_type, { METHOD_ARGUMENT(snowball::INT64_TYPE, int64_type) },    "_ZN6System7printlnEl")
         METHOD("println", void_type, { METHOD_ARGUMENT(snowball::FLOAT32_TYPE, float_type) },  "_ZN6System7printlnEf")
         METHOD("println", void_type, { METHOD_ARGUMENT(snowball::FLOAT64_TYPE, double_type) }, "_ZN6System7printlnEd")
+
+        METHOD("print", void_type, { METHOD_ARGUMENT(snowball::STRING_TYPE, string_type) },  "_ZN6System5printEPc")
+        METHOD("print", void_type, { METHOD_ARGUMENT(snowball::BOOL_TYPE, bool_type) },      "_ZN6System5printEb")
+        METHOD("print", void_type, { METHOD_ARGUMENT(snowball::INT16_TYPE, int16_type) },    "_ZN6System5printEs")
+        METHOD("print", void_type, { METHOD_ARGUMENT(snowball::INT32_TYPE, int32_type) },    "_ZN6System5printEi")
+        METHOD("print", void_type, { METHOD_ARGUMENT(snowball::INT64_TYPE, int64_type) },    "_ZN6System5printEl")
+        METHOD("print", void_type, { METHOD_ARGUMENT(snowball::FLOAT32_TYPE, float_type) },  "_ZN6System5printEf")
+        METHOD("print", void_type, { METHOD_ARGUMENT(snowball::FLOAT64_TYPE, double_type) }, "_ZN6System5printEd")
 
         METHOD("input", string_type, { /* TODO: default string for prompts */ }, "_ZN6System5inputEv")
         METHOD("exit", string_type, { METHOD_ARGUMENT(snowball::INT32_TYPE, int32_type) /* TODO: default code = 0 */ }, "_ZN6System4exitEi")

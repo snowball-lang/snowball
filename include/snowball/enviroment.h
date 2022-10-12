@@ -17,6 +17,7 @@ namespace snowball {
                 FunctionNode* node;
 
                 ScopeValue* current_module = nullptr;
+                ScopeValue* current_namespace = nullptr;
                 ClassNode* current_class = nullptr;
             };
 

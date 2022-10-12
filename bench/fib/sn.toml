@@ -1,0 +1,5 @@
+
+[package]
+main = "fib.sn"
+name = "fib bench mark"
+version = "1.0.0"

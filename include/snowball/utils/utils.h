@@ -9,6 +9,9 @@
 #define ASSERT(x) assert(x);
 #define GET_FUNCTION_FROM_CLASS(class, function, ...) \
     Logger::format("%s.%s", class, mangle(function, __VA_ARGS__).c_str())
+#define GET_FUNCTION_FROM_CLASS_NO_MANGLE(class, function) \
+    Logger::format("%s.%s", class.c_str(), function.c_str())
+
 
 namespace snowball_utils {
     #if 0

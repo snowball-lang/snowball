@@ -19,7 +19,7 @@ namespace snowball {
 
     class Type;
 
-    enum BuildinTypes {
+    enum class BuildinTypes {
         BOOL,
         NUMBER,
         FLOAT,
@@ -41,11 +41,13 @@ namespace snowball {
             static bool is_class(ScopeValue* p_value);
             static std::string to_mangle(Type* p_type);
             static bool is_number(llvm::Type* p_type);
-            static std::string to_mangle(std::string p_name, std::vector<Type*> p_generics);
+            static std::string to_mangle(std::string p_name, std::vector<Type*> p_generics = {});
             static llvm::Type* type2llvm(std::shared_ptr<llvm::IRBuilder<>> p_builder, llvm::Type* p_type);
 
             static std::vector<Type*> args2types(std::vector<ArgumentNode*> p_args);
             static std::string get_type_name(llvm::Type* p_ty);
+
+            static std::string string_mangle(std::string p_type);
 
             static std::pair<std::vector<Type*>,bool> deduce_template_args(
                 FunctionNode* def, std::vector<Type*> params, std::vector<Type*> gparams);
@@ -58,7 +60,7 @@ namespace snowball {
 
     struct Type {
         std::string name;
-        std::vector<Type*> generics;
+        std::vector<Type*> generics = {};
 
         bool is_array = false;
 
