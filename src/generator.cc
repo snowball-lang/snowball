@@ -706,6 +706,9 @@ namespace snowball {
 
         Type* class_type = new Type(p_node->method);
 
+        // Check if type exists
+        TypeChecker::get_type(_enviroment, new Type(ADD_MODULE_NAME_IF_EXISTS(".") p_node->method), p_node);
+
         // TODO: check if there are generics
         // TODO: check if class exist and throw custom error
         #define FNAME() GET_FUNCTION_FROM_CLASS(\

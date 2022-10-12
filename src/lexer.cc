@@ -248,7 +248,7 @@ namespace snowball {
 
 						switch (c) {
 							case 0:
-								lexer_error(Error::UNEXPECTED_EOF, "unexpected EOF while parsing a String scape.");
+								lexer_error(Error::UNEXPECTED_EOF, "unexpected EOF while lexing a string scape.");
 								break;
 							case '\\': str += '\\'; EAT_CHAR(2); break;
 							case '\'': str += '\''; EAT_CHAR(2); break;
@@ -261,7 +261,7 @@ namespace snowball {
 								lexer_error(Error::SYNTAX_ERROR, "invalid escape character", 2);
 						}
 					} else if (GET_CHAR(0) == 0) {
-						lexer_error(Error::UNEXPECTED_EOF, "unexpected EOF while parsing String.");
+						lexer_error(Error::UNEXPECTED_EOF, "unexpected EOF while lexing string.");
 						break;
 					} else {
 						str += GET_CHAR(0);

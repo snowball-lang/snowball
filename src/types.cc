@@ -84,7 +84,7 @@ namespace snowball {
     }
 
     ScopeValue* TypeChecker::get_type(Enviroment* p_enviroment, Type* p_type, Node* p_node) {
-        return p_enviroment->get(to_mangle(p_type), p_node);
+        return p_enviroment->get(to_mangle(p_type), p_node, p_type->to_string());
     }
 
     bool TypeChecker::both_number(llvm::Type* p_left, llvm::Type* p_right, bool p_allow_bools) {

@@ -1,51 +1,7 @@
 import System
-import Math
-import OS
 
-class MyClass {
-    pub operator new() {
-
-    }
-
-    pub operator +(n2: i32) Int {
-        return n2 + 8
-    }
-}
-
-mod tests {
-    @[test]
-    fn hello() Void {
-
-    }
-
-    mod inner {mod inner {mod inner {mod inner {
-        pub fn inner() {
-            System::println("inner")
-        }
-    }}}}
-
-    pub fn adios() Void {
-        System::println("hello")
-        inner::inner::inner::inner::inner()
-    }
-}
 
 fn main() Int {
     var a = new MyClass()
-    var b = a + 6
-    var s = "hello"
 
-    var c = Math.sin(b as f64)
-
-    var e = Math.inf + c
-    if e > Math.inf {
-        System.println("This works?")
-    }
-
-    tests::adios()
-    tests::inner::inner::inner::inner::inner()
-
-    System.println(e)
-    System.println(s + ", world!")
-    System.println(OS.name())
 }
