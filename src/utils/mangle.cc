@@ -97,7 +97,7 @@ namespace snowball {
         return mangled_name.str();
     }
 
-    unmangledResult unmangle(std::string name, std::string separator) {
+    unmangledResult unmangle(std::string name, std::string separator, bool for_output) {
         unmangledResult result;
         // result.name = name;
 
@@ -133,9 +133,14 @@ namespace snowball {
                 int length = std::stoi(_length.str());
 
                 std::string extracted = name.substr(index, length);
+
+                if (for_output && extracted.substr(0, 1) == "@") {
+                    extracted = TypeChecker::to_type(extracted).first->to_string();
+                }
+
                 index += length;
 
-                if (result.name == "") {
+                if (result.name.empty()) {
                     result.name = extracted;
                     continue;
                 }

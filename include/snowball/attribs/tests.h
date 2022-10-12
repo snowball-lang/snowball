@@ -101,7 +101,7 @@ namespace snowball {
                 tests.push_back(p_value->getName().str());
 
                 // TODO: unmangled base name
-                llvm::Constant* string_value = builder->CreateGlobalStringPtr(unmangle(p_value->getName().str(), "::").name, ".test::alloca");
+                llvm::Constant* string_value = builder->CreateGlobalStringPtr(unmangle(p_value->getName().str(), "::", true).name, ".test::alloca");
 
                 auto test_fn = get_test_fn(mod, builder);
 

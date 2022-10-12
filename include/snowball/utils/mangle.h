@@ -22,7 +22,7 @@ namespace snowball {
     };
 
 
-    unmangledResult unmangle(std::string name, std::string separator = ".");
+    unmangledResult unmangle(std::string name, std::string separator = ".", bool for_output = false);
     std::string op2str(OperatorType op);
     std::string mangle(std::string name, std::vector<Type*> arguments = {}, bool is_public = false, bool is_class = false);
 }
