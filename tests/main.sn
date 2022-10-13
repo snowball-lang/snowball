@@ -1,7 +1,8 @@
 import System
+import OS
 
 
 fn main() Int {
-    var a = new MyClass()
-    
+
+    System.println(OS.name())
 }
