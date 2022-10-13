@@ -3,5 +3,5 @@ import System
 
 fn main() Int {
     var a = new MyClass()
-
+    
 }

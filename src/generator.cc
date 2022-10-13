@@ -1377,7 +1377,7 @@ namespace snowball {
                 )))), arg_tnames, store->node->is_public)
             ));
 
-        if (IS_ENTRY_POINT()) {
+        if (IS_ENTRY_POINT()&& (!_tests_enabled)) {
             return paste_function(store);
         }
 

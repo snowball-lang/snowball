@@ -143,7 +143,7 @@ namespace snowball {
 
                 while (current_index < args.size() - 1) {
                     NEXT_ARGUMENT();
-                    
+
                     if (IF_ANY_ARG("--optimization", "-o")) {
                         CHECK_ARG("an optimization level")
                         NEXT_ARGUMENT()
@@ -168,6 +168,7 @@ namespace snowball {
             } else if (current_arg == "test") {
                 opts.command = Options::Command::TEST;
                 // TODO
+                // TODO: optimization level for tests
             } else if (current_arg == "init") {
                 opts.command = Options::Command::INIT;
 
