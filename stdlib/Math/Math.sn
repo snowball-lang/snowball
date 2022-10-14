@@ -1,0 +1,47 @@
+
+extern fn isnan(f64) Bool;
+extern fn strtod(String, i32) f64; // TODO
+extern fn isinf(f64) Bool;
+extern fn atan2(f64, f64) f64;
+
+pub extern fn sin(f64) f64;
+pub extern fn cos(f64) f64;
+
+pub extern fn cosh(f64) f64;
+pub extern fn sinh(f64) f64;
+
+pub extern fn acos(f64) f64;
+pub extern fn asin(f64) f64;
+
+pub extern fn frexp(f64, i32) f64;
+pub extern fn ldexp(f64, Int) f64;
+
+pub extern fn log(f64) f64;
+
+pub extern fn sqrt(f64) f64;
+pub extern fn ceil(f64) f64;
+pub extern fn fabs(f64) f64;
+
+pub extern fn floor(f64) f64;
+pub extern fn log10(f64) f64;
+
+pub extern fn modf(f64, f64) f64;
+pub extern fn fmod(f64, f64) f64;
+pub extern fn pow(f64, f64) f64;
+
+pub extern fn atan(f64) f64;
+pub fn atan(n1: f64, n2: f64) f64 => atan2(n1, n2);
+
+// constants
+pub var PI = 3.141592653589793238462643383279502884197
+pub var logpi = 1.144729885849400174143427351353058711647
+pub var sqrtpi = 1.772453850905516027298167483341145182798
+
+pub var inf = strtod("Inf", 0)
+
+// TODO: nanf and nanl
+pub var nan = strtod("NaN", 0)
+
+pub fn is_nan(x: f64) Bool => isnan(x)
+pub fn is_infinite(x: f64) Bool => isinf(x)
+

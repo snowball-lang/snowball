@@ -20,7 +20,7 @@
 #include "snowball/constants.h"
 #include "snowball/utils/api.h"
 
-#include "OS.h"
+#include "../_include/OS.h"
 
 // == Exports
 

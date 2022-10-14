@@ -1,8 +1,7 @@
 import System
-import OS
-
+import Math
 
 fn main() Int {
 
-    System.println(OS.name())
+    System.println(Math.acos(5.5 as f64))
 }

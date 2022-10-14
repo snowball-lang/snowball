@@ -92,14 +92,14 @@ if(NOT BUILD_SHARED_LIBS)
 endif()
 
 ##################################################    StdLib   ##################################################
-file(GLOB std_c_files "stdlib/*.cc")
+file(GLOB std_c_files "stdlib/*/*.cc")
 foreach(file ${std_c_files})
   get_filename_component(lib_name ${file} NAME_WE )
 
     # TODO: see if this can be cleaner
   set (LIB_FILE
     ${file}
-    "stdlib/${lib_name}.h")
+    "stdlib/_include/${lib_name}.h")
 
   set (lib_name "Snowball${lib_name}")
 
@@ -112,7 +112,7 @@ foreach(file ${std_c_files})
     RUNTIME  DESTINATION ${STATICLIB_DIR}/)
 endforeach()
 
-file(GLOB std_sn_files "stdlib/*.sn")
+file(GLOB std_sn_files "stdlib/*/*.sn")
 install(FILES ${std_sn_files} DESTINATION ${STATICLIB_DIR}/${_SNOWBALL_LIBRARY_DIR})
 
 
