@@ -33,15 +33,15 @@ pub extern fn atan(f64) f64;
 pub fn atan(n1: f64, n2: f64) f64 => atan2(n1, n2);
 
 // constants
-pub var PI = 3.141592653589793238462643383279502884197
-pub var logpi = 1.144729885849400174143427351353058711647
-pub var sqrtpi = 1.772453850905516027298167483341145182798
+pub var PI = 3.141592653589793238462643383279502884197;
+pub var logpi = 1.144729885849400174143427351353058711647;
+pub var sqrtpi = 1.772453850905516027298167483341145182798;
 
-pub var inf = strtod("Inf", 0)
+pub var inf = strtod("Inf", 0);
 
 // TODO: nanf and nanl
-pub var nan = strtod("NaN", 0)
+pub var nan = strtod("NaN", 0);
 
-pub fn is_nan(x: f64) Bool => isnan(x)
-pub fn is_infinite(x: f64) Bool => isinf(x)
+pub fn is_nan(x: f64) Bool => isnan(x);
+pub fn is_infinite(x: f64) Bool => isinf(x);
 

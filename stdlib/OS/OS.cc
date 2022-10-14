@@ -67,6 +67,9 @@ char* OS::name() {
     return (char*)PLATFORM_NAME;
 }
 
+int OS::syscall(char* p_cmd) {
+    return system(p_cmd);
+}
 
 // == Definitions
 extern "C" snowball::ScopeValue* sn_export(snowball::SNAPI* API) {

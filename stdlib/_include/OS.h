@@ -8,4 +8,5 @@
 
 struct OS {
     static char* name();
+    static int syscall(char* p_cmd);
 };

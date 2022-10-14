@@ -1,7 +1,7 @@
 import System
-import Math
+import Os
 
 fn main() Int {
 
-    System.println(Math.acos(5.5 as f64))
+    System.println("suck my balls " + OS.name() )
 }
