@@ -1,7 +1,10 @@
 import System
-import Os
+import Math
+
+fn hello() Void {
+    System.println("hmm")
+}
 
 fn main() Int {
-
-    System.println("suck my balls " + OS.name() )
+    hello()
 }

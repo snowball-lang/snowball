@@ -79,7 +79,7 @@ extern "C" snowball::ScopeValue* sn_export(snowball::SNAPI* API) {
         llvm::Type* int32_type = API->compiler->builder->getInt32Ty();
         llvm::Type* int64_type = API->compiler->builder->getInt64Ty();
 
-        METHOD("println", void_type, { METHOD_ARGUMENT(snowball::STRING_TYPE, string_type) },  "_ZN6System7printlnEPc")
+        METHOD("println", void_type, { METHOD_ARGUMENT(snowball::STRING_TYPE, string_type) },  "puts")
         METHOD("println", void_type, { METHOD_ARGUMENT(snowball::BOOL_TYPE, bool_type) },      "_ZN6System7printlnEb")
         METHOD("println", void_type, { METHOD_ARGUMENT(snowball::INT16_TYPE, int16_type) },    "_ZN6System7printlnEs")
         METHOD("println", void_type, { METHOD_ARGUMENT(snowball::INT32_TYPE, int32_type) },    "_ZN6System7printlnEi")

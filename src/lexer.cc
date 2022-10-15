@@ -26,8 +26,6 @@
 #define IS_HEX_CHAR(c) ( IS_NUM(c) || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F') )
 #define IS_TEXT(c) ( (c == '_') || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') )
 
-
-
 namespace snowball {
 	/*=======================================
    	 * Lexer constructor. used to set some
@@ -82,6 +80,7 @@ namespace snowball {
 		#endif
     }
 
+
 	/*=======================================
    	 * Tokenize the current character and add
 	 * it to the Token's array
@@ -90,6 +89,9 @@ namespace snowball {
 	 * 	iteration of Lexer::tokenize()
 	 *=======================================*/
     void Lexer::tokenize_char() {
+		// TODO: disable if output is set to off
+		Logger::compiling(Logger::progress((float)char_ptr / _source_info->source_length));
+
         switch (GET_CHAR(0))
         {
             case 0:
