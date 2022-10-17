@@ -12,6 +12,7 @@
 #include <llvm/IR/Function.h>
 
 namespace snowball {
+
     Scope::Scope(std::string p_scope_name, SourceInfo* p_source_info)
         : _source_info(p_source_info), _scope_name(p_scope_name) {
         }
@@ -44,7 +45,7 @@ namespace snowball {
             for (int i = 0; i < (*_it->second)->instances.size(); i++) {
                 ScopeValue* scope_value = *(*_it->second)->instances[i];
                 // TODO: check for argv and default values
-                if (TypeChecker::functions_equal(result.name, result.name, result.arguments, scope_value->arguments, result.isPublic, scope_value->isPublic, scope_value->hasVArg)) {
+                if (TypeChecker::functions_equal(result.name, result.name, result.arguments, scope_value->arguments, result.isPublic, scope_value->isPublic, scope_value->hasVArg).first) {
                     return true;
                 }
             }
@@ -94,14 +95,40 @@ namespace snowball {
 
         std::map<std::string, std::unique_ptr<ScopeValue*>>::iterator _it = this->_data.find(unmangled.name);
         if (_it != this->_data.end() && unmangled.isMangled && unmangled.isFunction && (*_it->second)->type == ScopeType::FUNC_CONTAINER) {
+
+            std::vector<std::pair<ScopeValue*, /* exact match = */ bool>> functions;
             for (int i = 0; i < (*_it->second)->instances.size(); i++) {
                 ScopeValue* scope_value = *(*_it->second)->instances[i];
 
+                auto equality = TypeChecker::functions_equal(unmangled.name, unmangled.name, unmangled.arguments, scope_value->arguments, unmangled.isPublic, scope_value->isPublic, scope_value->hasVArg);
+
                 // TODO: (re-write) check for argv and default values
-                if (TypeChecker::functions_equal(unmangled.name, unmangled.name, unmangled.arguments, scope_value->arguments, unmangled.isPublic, scope_value->isPublic, scope_value->hasVArg)) {
-                    return scope_value;
+                if (equality.first) {
+                    functions.push_back({scope_value, equality.second});
                 }
             }
+
+            bool has_exact_match = false;
+
+            ScopeValue* result;
+            for (auto f : functions) {
+                if (f.second) {
+                    result = f.first;
+                    has_exact_match = true;
+
+                    break;
+                }
+            }
+
+            if (functions.size() > 1 && !(has_exact_match)) {
+                DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
+                throw CompilerError(VARIABLE_ERROR, Logger::format("call to '%s' is ambiguous", p_o_name.c_str()), dbg_info);
+            }
+
+            if (!has_exact_match)
+                result = functions.at(0).first;
+
+            return result;
         }
 
         return *_data.find(p_name)->second;

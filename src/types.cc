@@ -92,8 +92,17 @@ namespace snowball {
               (is_number(p_right) || (is_bool(p_right) && p_allow_bools));
     }
 
+    bool TypeChecker::both_number(Type* p_left, Type* p_right, bool p_allow_bools) {
+        return (is_number(p_left) || (is_bool(p_left) && p_allow_bools)) &&
+              (is_number(p_right) || (is_bool(p_right) && p_allow_bools));
+    }
+
     bool TypeChecker::is_float(llvm::Type* p_type) {
         return p_type->isFloatTy() || p_type->isDoubleTy();
+    }
+
+    bool TypeChecker::is_float(Type* p_type) {
+        return p_type->equals(FLOAT32_TYPE) || p_type->equals(FLOAT64_TYPE);
     }
 
     bool TypeChecker::has_less_width(llvm::IntegerType* p_src, llvm::IntegerType* p_comp) {
@@ -105,6 +114,11 @@ namespace snowball {
     //       function for integer types.
     bool TypeChecker::is_castable(llvm::Type* p_left, llvm::Type* p_right) {
         // TODO: check for inheritance of classes
+        return false;
+    }
+
+    bool TypeChecker::is_castable(Type* p_left, Type* p_right) {
+        // TODO: ^^^
         return false;
     }
 
@@ -153,6 +167,15 @@ namespace snowball {
 
         // Int is supposed to represent as i32
         return get_type_name(p_type) == INT32_TYPE->mangle();
+    }
+
+    bool TypeChecker::is_number(Type* p_type) {
+        return p_type->equals(INT16_TYPE) || p_type->equals(INT32_TYPE)
+               || p_type->equals(INT64_TYPE) || p_type->equals(NUMBER_TYPE);
+    }
+
+    bool TypeChecker::is_bool(Type* p_type) {
+        return p_type->equals(BOOL_TYPE);
     }
 
     std::string TypeChecker::string_mangle(std::string p_type) {
@@ -224,7 +247,7 @@ namespace snowball {
     }
 
     bool TypeChecker::is_class(ScopeValue* p_value) { return p_value->type == ScopeType::CLASS; }
-    bool TypeChecker::functions_equal(
+    std::pair<bool, bool> TypeChecker::functions_equal(
         std::string p_name,
         std::string p_name2,
 
@@ -239,6 +262,7 @@ namespace snowball {
             // check if both functions have 0 arguments or if the function call has less
             // arguments than the declaration
             bool args_equal = ((p_args.size() == p_args2.size()) && (p_args.size() == 0));
+            bool exact_match = false;
 
             // Iterate each argument and check if they match types.
             // We only iterate only if the function call has the same
@@ -251,11 +275,27 @@ namespace snowball {
                         break;
                     }
 
-                    args_equal = p_args.at(i)->equals(p_args2.at(i));
+                    auto arg1 = p_args.at(i);
+                    auto arg2 = p_args2.at(i);
+
+                    if (arg1->equals(arg2)) {
+                        args_equal = true;
+                        exact_match = true;
+                    } else if ((is_float(arg1) && is_number(arg2))
+                        || (is_number(arg1) && is_float(arg2))
+                        || (is_float(arg1) && is_float(arg2))
+                        || (both_number(arg1, arg2, true))
+                        || (is_castable(arg1, arg2))
+                    ) {
+                        args_equal = true;
+                        exact_match = false;
+                    } else {
+                        args_equal = false;
+                    }
                 }
             }
 
-            return (args_equal && (p_name == p_name2) && (p_public == p_public2));
+            return {(args_equal && (p_name == p_name2) && (p_public == p_public2)), exact_match};
     }
 
     std::string TypeChecker::args_to_string(std::vector<Type*> p_args) {
@@ -328,6 +368,10 @@ namespace snowball {
             }
         }
         return { deduced_types,true };
+    }
+
+    Type* TypeChecker::llvm2type(llvm::Type* p_type) {
+        return to_type(get_type_name(p_type)).first;
     }
 
     llvm::Function* get_alloca(llvm::Module* p_module, std::shared_ptr<llvm::IRBuilder<>> p_builder) {

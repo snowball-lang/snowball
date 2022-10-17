@@ -37,7 +37,7 @@ namespace snowball {
 
 
             // Make sure to call function_exists() first!
-            Enviroment::FunctionStore* find_function_if(std::string name, std::function<bool(const Enviroment::FunctionStore)> cb);
+            Enviroment::FunctionStore* find_function_if(std::string name, std::function<std::pair<bool, bool>(const Enviroment::FunctionStore)> cb, Node* p_node);
             void set_function(std::string name, FunctionStore* store);
 
             #if _SNOWBALL_SYMTABLE_DEBUG

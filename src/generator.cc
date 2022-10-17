@@ -78,12 +78,12 @@
         TypeChecker::to_type(TypeChecker::get_type_name(right_type)).first \
     })); \
     __u.isPublic = true; \
-    auto __f = _enviroment->find_function_if(FNAME_NO_MANGLE(opty), [=](auto store) -> bool { \
+    auto __f = _enviroment->find_function_if(FNAME_NO_MANGLE(opty), [=](auto store) -> std::pair<bool, bool> { \
         auto node_args = store.node->arguments; \
         ArgumentNode* arg = new ArgumentNode("self", TypeChecker::to_type(TypeChecker::get_type_name(left_type)).first); \
         node_args.insert(node_args.begin(), arg); \
         if ((node_args.size() <= __u.arguments.size()) && store.node->has_vargs) {} \
-        else if (node_args.size() != __u.arguments.size()) return false; \
+        else if (node_args.size() != __u.arguments.size()) return {false, false}; \
         return TypeChecker::functions_equal( \
             store.node->name, \
             store.node->name, \
@@ -92,7 +92,7 @@
             __u.isPublic, \
             store.node->is_public, \
             store.node->has_vargs); \
-    }); \
+    }, p_node); \
     if (__f == nullptr) { \
         function = *_enviroment->get( \
         GET_FUNCTION_FROM_CLASS( \
@@ -117,12 +117,12 @@
         TypeChecker::to_type(TypeChecker::get_type_name(left_type)).first, \
     })); \
     __u.isPublic = true; \
-    auto __f = _enviroment->find_function_if(FNAME_NO_MANGLE(opty), [=](auto store) -> bool { \
+    auto __f = _enviroment->find_function_if(FNAME_NO_MANGLE(opty), [=](auto store) -> std::pair<bool, bool> { \
         auto node_args = store.node->arguments; \
         ArgumentNode* arg = new ArgumentNode("self", TypeChecker::to_type(TypeChecker::get_type_name(left_type)).first); \
         node_args.insert(node_args.begin(), arg); \
         if ((node_args.size() <= __u.arguments.size()) && store.node->has_vargs) {} \
-        else if (node_args.size() != __u.arguments.size()) return false; \
+        else if (node_args.size() != __u.arguments.size()) return {false, false}; \
         return TypeChecker::functions_equal( \
             store.node->name, \
             store.node->name, \
@@ -131,7 +131,7 @@
             __u.isPublic, \
             store.node->is_public, \
             store.node->has_vargs); \
-    }); \
+    }, p_node); \
     if (__f == nullptr) { \
         function = *_enviroment->get( \
         GET_FUNCTION_FROM_CLASS( \
@@ -349,9 +349,9 @@ namespace snowball {
                             auto result = unmangle(generated->getName().str());
                             Enviroment::FunctionStore* function_store;
 
-                            if ((function_store = _enviroment->find_function_if(result.name, [=](auto store) -> bool {
+                            if ((function_store = _enviroment->find_function_if(result.name, [=](auto store) -> std::pair<bool, bool> {
                                 if ((store.node->arguments.size() <= result.arguments.size()) && store.node->has_vargs) {}
-                                else if (store.node->arguments.size() != result.arguments.size()) return false;
+                                else if (store.node->arguments.size() != result.arguments.size()) return {false, false};
                                 return TypeChecker::functions_equal(
                                     store.node->name,
                                     store.node->name,
@@ -360,7 +360,7 @@ namespace snowball {
                                     result.isPublic,
                                     store.node->is_public,
                                     store.node->has_vargs);
-                            }))) {
+                            }, p_node))) {
                                 response.function.store = function_store;
                             } else {
                                 COMPILER_ERROR(BUG, "Coudn't find function in attribute")
@@ -724,9 +724,9 @@ namespace snowball {
         auto unmangled = unmangle(mangle(FNAME()));
         unmangled.isPublic = true;
 
-        auto fn = _enviroment->find_function_if(FNAME_NO_MANGLE(), [=](auto store) -> bool {
+        auto fn = _enviroment->find_function_if(FNAME_NO_MANGLE(), [=](auto store) -> std::pair<bool, bool> {
             if ((store.node->arguments.size() <= unmangled.arguments.size()) && store.node->has_vargs) {}
-            else if (store.node->arguments.size() != unmangled.arguments.size()) return false;
+            else if (store.node->arguments.size() != unmangled.arguments.size()) return {false, false};
             return TypeChecker::functions_equal(
                 store.node->name,
                 store.node->name,
@@ -735,7 +735,7 @@ namespace snowball {
                 unmangled.isPublic,
                 store.node->is_public,
                 store.node->has_vargs);
-        });
+        }, p_node);
 
         if (fn == nullptr) {
             function = *_enviroment->get(
@@ -924,7 +924,7 @@ namespace snowball {
             } else {
                 private_method_exists = true;
             }
-        } else if ((function_store = _enviroment->find_function_if(FUNCTION_NAME(), [=](auto store) -> bool {
+        } else if ((function_store = _enviroment->find_function_if(FUNCTION_NAME(), [=](auto store) -> std::pair<bool, bool> {
             auto node_args = store.node->arguments;
 
             if ((!base_struct.empty()) && class_value->type == ScopeType::CLASS) {
@@ -932,10 +932,10 @@ namespace snowball {
                 node_args.insert(node_args.begin(), arg);
             }
 
-            if (store.node->is_public) return false;
+            if (store.node->is_public) return {false, false};
             if ((node_args.size() <= arg_types.size()) && store.node->has_vargs) {}
-            else if (node_args.size() != arg_types.size()) return false;
-            if (!store.node->generics.empty()) return true;// If it's generic, return it because it is the only function with the specified name and argument amount in the list (this might be a canditate)
+            else if (node_args.size() != arg_types.size()) return {false, false};
+            if (!store.node->generics.empty()) return {true, true};// If it's generic, return it because it is the only function with the specified name and argument amount in the list (this might be a canditate)
             return TypeChecker::functions_equal(
                 store.node->name,
                 store.node->name,
@@ -944,16 +944,25 @@ namespace snowball {
                 false,
                 store.node->is_public,
                 store.node->has_vargs);
-        }))) {
+        }, p_node))) {
 
-            auto [args, succ] = TypeChecker::deduce_template_args(function_store->node, arg_types, p_node->generics);
+            auto [_args, succ] = TypeChecker::deduce_template_args(function_store->node, arg_types, p_node->generics);
             if (succ) {
                 for (int i = 0; i < function_store->node->arguments.size(); i++) {
-                    function_store->node->arguments[i]->arg_type = args[i];
+
+                    ScopeValue* arg_ty = TypeChecker::get_type(_enviroment, function_store->node->arguments[i]->arg_type, p_node);
+                    if (!TypeChecker::is_class(arg_ty)) {
+                        COMPILER_ERROR(TYPE_ERROR, Logger::format("Type %s does not point to a valid type.", _args[i]->to_string().c_str()))
+                    }
+
+                    auto [new_type, succ] = TypeChecker::implicit_cast(_builder, (*arg_ty->llvm_struct), args[i]);
+                    function_store->node->arguments[i]->arg_type = TypeChecker::llvm2type(new_type->getType());
                 }
             } else {
                 COMPILER_ERROR(TYPE_ERROR, Logger::format("Coudn't deduce arguments for '%s'", p_node->method.c_str()))
             }
+
+            ASSERT(arg_types.size() <= function_store->node->arguments.size())
 
             paste_function(function_store);
             ScopeValue* private_function = _enviroment->get(method_call, nullptr); // it will exist... right?
@@ -976,7 +985,7 @@ namespace snowball {
             // Look for public
             if (_enviroment->item_exists(method_call)) {
                 function = _enviroment->get(method_call, p_node);
-            } else if ((function_store = _enviroment->find_function_if(FUNCTION_NAME(), [=](auto store) -> bool {
+            } else if ((function_store = _enviroment->find_function_if(FUNCTION_NAME(), [=](auto store) -> std::pair<bool, bool> {
                 // TODO: check if generic is private
                 auto node_args = store.node->arguments;
 
@@ -988,8 +997,8 @@ namespace snowball {
                 }
 
                 if ((node_args.size() <= arg_types.size()) && store.node->has_vargs) {}
-                else if (node_args.size() != arg_types.size()) return false;
-                if (!store.node->generics.empty()) return true;// If it's generic, return it because it is the only function with the specified name and argument amount in the list (this might be a canditate)
+                else if (node_args.size() != arg_types.size()) return {false, false};
+                if (!store.node->generics.empty()) return {true, true};// If it's generic, return it because it is the only function with the specified name and argument amount in the list (this might be a canditate)
                 return TypeChecker::functions_equal(
                     store.node->name,
                     store.node->name,
@@ -998,16 +1007,32 @@ namespace snowball {
                     true,
                     store.node->is_public,
                     store.node->has_vargs);
-            }))) {
+            }, p_node))) {
 
-                auto [args, succ] = TypeChecker::deduce_template_args(function_store->node, arg_types, p_node->generics);
+                auto [_args, succ] = TypeChecker::deduce_template_args(function_store->node, arg_types, p_node->generics);
                 if (succ) {
                     for (int i = 0; i < function_store->node->arguments.size(); i++) {
-                        function_store->node->arguments[i]->arg_type = args[i];
+
+                        ScopeValue* arg_ty = TypeChecker::get_type(_enviroment, function_store->node->arguments[i]->arg_type, p_node);
+                        if (!TypeChecker::is_class(arg_ty)) {
+                            COMPILER_ERROR(TYPE_ERROR, Logger::format("Type %s does not point to a valid type.", _args[i]->to_string().c_str()))
+                        }
+
+                        auto real_type = TypeChecker::type2llvm(_builder, *arg_ty->llvm_struct);
+
+                        auto [new_value, succ] = TypeChecker::implicit_cast(_builder,  real_type, args[i]);
+                        if (!succ) {
+                            COMPILER_ERROR(BUG, Logger::format("Unexpected error while casting '%i' and '%i'", real_type->getTypeID(), args[i]->getType()->getTypeID()))
+                        }
+
+                        args[i] = new_value;
+                        function_store->node->arguments[i]->arg_type = TypeChecker::llvm2type(new_value->getType());
                     }
                 } else {
                     COMPILER_ERROR(TYPE_ERROR, Logger::format("Coudn't deduce arguments for '%s'", p_node->method.c_str()))
                 }
+
+                ASSERT(arg_types.size() <= function_store->node->arguments.size())
 
                 paste_function(function_store);
 

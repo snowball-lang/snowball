@@ -7,6 +7,7 @@
 #include "snowball/utils/utils.h"
 
 #include <cstddef>
+#include <llvm-14/llvm/IR/Instructions.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/IR/Type.h>
 
@@ -99,19 +100,44 @@ namespace snowball {
         return false;
     }
 
-    Enviroment::FunctionStore* Enviroment::find_function_if(std::string name, std::function<bool(const Enviroment::FunctionStore)> cb) {
+    Enviroment::FunctionStore* Enviroment::find_function_if(std::string name, std::function<std::pair<bool, bool>(Enviroment::FunctionStore)> cb, Node* p_node) {
         if (_functions.find(name) == _functions.end()) {
             return nullptr;
         }
 
         auto stores = (*_functions.find(name)).second;
+        std::vector<std::pair<FunctionStore*, /* exact match = */ bool>> functions;
+
         for (auto store : stores) {
-            if (cb(*store)) {
-                return store;
+            auto f = cb(*store);
+            if (f.first) {
+                functions.push_back({ store, f.second });
             }
         }
 
-        return nullptr;
+        bool has_exact_match = false;
+
+        FunctionStore* result;
+        for (auto f : functions) {
+            if (f.second) {
+                result = f.first;
+                has_exact_match = true;
+
+                break;
+            }
+        }
+
+        if (functions.size() > 1 && !(has_exact_match)) {
+            DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
+            throw CompilerError(VARIABLE_ERROR, Logger::format("call to '%s' is ambiguous", name.c_str()), dbg_info);
+        } else if (functions.size() == 0) {
+            return nullptr;
+        }
+
+        if (!has_exact_match)
+            result = functions.at(0).first;
+
+        return result;
     }
 
     void Enviroment::set_function(std::string name, Enviroment::FunctionStore* store) {

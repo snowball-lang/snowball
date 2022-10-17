@@ -5,13 +5,7 @@
 - [ ] handle if function returns void, it can't be used as variable
 - [ ] test for all operators
 - [ ] default return type
-- [ ] change location for OPTypes struct inside BinOP node
-- [ ] change all compiler error to call macro COMPILER_ERROR
 - [ ] Add readonly variables for classes
-- [ ] change commands to separated folder/file
-    - [ ] compile
-    - [ ] REPL
-    - [ ] unit testing
 - [ ] check if class has been initialized
 - [ ] call public function or private `e.g. (pub)function()`
 
@@ -19,10 +13,10 @@
 
 - [ ] Check if class function is already defined
 - [ ] Generics for class functions
+- [ ] Generic functions 'type "x" doe snot exist!'
 - [ ] Compiler errors/Warnings don't work
 
 ### None important
-- [ ] Generate class function to scope before generating blocks
 - [ ] Add a Any type
 
 ### In Progress
@@ -34,10 +28,10 @@
     - [x] Functions
     - [ ] Classes
     - [ ] Default types
-    - [ ] Infer types without explicitly typing it
+    - [x] Infer types without explicitly typing it
 - [ ] Modules
     - [ ] if library ends with .so, dlopen
-    - [ ] check entry with a snowball.json
+    - [ ] check entry with a *.json
     - [x] add a System class for I/O
     - [x] add system/local modules support
     - [ ] custom variable/selected imports
@@ -57,6 +51,9 @@
         - [x] Self variable
     - [x] Call static methods
     - [ ] Inheritance
+        - [x] generate struct with parent fields
+        - [ ] Generate parent's functions/variables if they don't exist
+        - [ ] virtual tables/functions
     - [x] Add `new` keyword support
     - [ ] Add all default override methods
 
@@ -67,6 +64,7 @@
 - [x] Function mangling
 - [x] Function creation
     - [x] Function arguments
+- [x] change location for OPTypes struct inside BinOP node
 - [x] Comments
     - [x] Normal
     - [x] Multilines
@@ -75,6 +73,8 @@
     - [x] parse return statemnt
     - [x] generate return stmt
     - [x] check if type of return is equal to function's return type
+- [x] Generate class function to scope before generating blocks
+- [x] change all compiler error to call macro COMPILER_ERROR
 - [x] Perform function calls
     - [x] pass arguments
     - [x] pass self argument if it is a class
@@ -103,3 +103,7 @@
     - [x] Different types of integers
 - [x] String class
 - [x] Some "built in type" constructors are not found (sometimes)
+- [x] change commands to separated folder/file
+    - [x] compile
+    - [x] build
+    - [x] unit testing

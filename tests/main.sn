@@ -1,10 +1,17 @@
 import System
-import Math
 
-fn hello() Void {
-    System.println("hmm")
+pub fn hello(i: f32) Void {
+    System.println(i)
+}
+
+pub fn hello(i: i64) Void {
+    System.println(i)
+}
+
+pub fn hello<T>(i: T) Void {
+    System.println(i)
 }
 
 fn main() Int {
-    hello()
+    hello("6.5")
 }
