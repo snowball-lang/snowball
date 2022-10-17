@@ -26,6 +26,6 @@ jobs:
       - name: Runing Bench (fib)
         run: |
             cd bench/fib
-            chmod +x ./run.sh
-            ./run.sh
+            chmod +x ./run.rb
+            ./run.rb
 
