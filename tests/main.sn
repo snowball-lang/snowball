@@ -1,17 +1,30 @@
 import System
 
-pub fn hello(i: f32) Void {
-    System.println(i)
-}
+class Vector {
 
-pub fn hello(i: i64) Void {
-    System.println(i)
-}
+    priv var x: Int = 0
+    priv var y: Int = 0
 
-pub fn hello<T>(i: T) Void {
-    System.println(i)
+    pub operator new(x: Int, y: Int) {
+        // self.x = x
+        // self.y = y
+    }
+
+    // JS equivalent: const __sum = (this, vec2) => new Vector(...)
+    // overrides operator +
+    pub operator +(vec2: Vector) Vector =>
+        new Vector(self.x + vec2.x, self.y + vec2.y)
+
+    // TODO
+    // pub operator str() String {
+    //     return "Vector(x=${self.x} y=${self.y})"
+    // }
 }
 
 fn main() Int {
-    hello("6.5")
+    var vec1 = new Vector(1,2)
+    var vec2 = new Vector(10,22)
+
+    System.println("wad")
+    return 0
 }

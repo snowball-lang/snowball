@@ -36,7 +36,7 @@ void System::print(char*   __msg) { printf("%s",  __msg); }
 void System::print(bool    __msg) { printf("%i",  __msg); }
 void System::print(int16_t __msg) { printf("%d",  __msg); }
 void System::print(int32_t __msg) { printf("%d",  __msg); }
-void System::print(int64_t __msg) { printf("%ln", __msg); }
+void System::print(int64_t __msg) { printf("%ld", __msg); }
 void System::print(float   __msg) { printf("%f",  __msg); }
 void System::print(double  __msg) { printf("%f",  __msg); }
 

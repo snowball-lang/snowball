@@ -112,6 +112,7 @@ namespace snowball {
                 Logger::rlog("\n");
                 Logger::info("Execute `snowball help` to get a manual about the project.");
 
+                return 0;
             }
         }
     }

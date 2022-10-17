@@ -36,28 +36,29 @@ import System
 
 class Vector {
 
-    priv Int x;
-    priv Int y;
+    priv var x: Int = 0
+    priv var y: Int = 0
 
-    pub fn __init(self, x: Int, y: Int) {
-        self.x, self.y = x, y;        
+    pub operator new(x: Int, y: Int) {
+        self.x = x
+        self.y = y
     }
-    
+
     // JS equivalent: const __sum = (this, vec2) => new Vector(...)
     // overrides operator +
-    pub fn __sum(self, vec2: Vector) -> Vector = 
+    pub operator +(vec2: Vector) Vector =>
         new Vector(self.x + vec2.x, self.y + vec2.y)
-    
-    pub fn __str(self) -> String {
+
+    pub operator str() String {
         return "Vector(x=${self.x} y=${self.y})"
     }
 }
 
-fn main(args: Array<String>) -> Int {
-    let vec1 = new Vector(1,2)
-    let vec2 = new Vector(10,22)
-    
-    System.print(vec1 + vec2)
+fn main() Int {
+    var vec1 = new Vector(1,2)
+    var vec2 = new Vector(10,22)
+
+    System.println(vec1 + vec2)
     return 0
 }
 ```
