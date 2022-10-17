@@ -21,8 +21,7 @@
 
 ### In Progress
 
-- [ ] rework for operators
-- [ ] global variables
+- [ ] Add all operators missing
 - [ ] Attributes
 - [ ] Add a generic system
     - [x] Functions
@@ -62,6 +61,8 @@
 
 - [x] Variables
 - [x] Function mangling
+- [x] rework for operators
+- [x] global variables
 - [x] Function creation
     - [x] Function arguments
 - [x] change location for OPTypes struct inside BinOP node
