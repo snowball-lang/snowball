@@ -7,7 +7,7 @@
 #include "snowball/utils/utils.h"
 
 #include <cstddef>
-#include <llvm-14/llvm/IR/Instructions.h>
+#include <llvm/IR/Instructions.h>
 #include <llvm/Support/raw_ostream.h>
 #include <llvm/IR/Type.h>
 

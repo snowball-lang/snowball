@@ -50,8 +50,6 @@ languages << Language.new("snr", "snowball (from run)", :interpreted, "", "snowb
 languages << Language.new("c", "C", :compiled, "gcc -O3 -o fib fib.c", "./fib")
 languages << Language.new("cpp", "C++", :compiled, "clang++ -O3 -o fib fib.cpp", "./fib")
 
-languages << Language.new("php", "Php", :interpreted, "", "php fib.php")
-
 languages << Language.new("py", "Python", :interpreted, "", "python fib.py")
 languages << Language.new("py3", "Python3", :interpreted, "", "python3 fib.py")
 
