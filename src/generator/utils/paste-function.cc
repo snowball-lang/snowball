@@ -90,7 +90,7 @@ namespace snowball {
             arg_tnames.insert(arg_tnames.begin(), TypeChecker::to_type(store->current_class->name).first);
         }
 
-        std::string fname = IS_ENTRY_POINT() ? _SNOWBALL_FUNCTION_ENTRY : (store->node->is_extern ? store->node->name : mangle(
+        std::string fname = IS_ENTRY_POINT() ? _SNOWBALL_FUNCTION_ENTRY : (store->node->is_extern ? store->node->extern_name : mangle(
             (_ADD_MODULE_NAME_IF_EXISTS(".")
                 ADD_NAMESPACE_NAME_IF_EXISTS(".")
 
@@ -152,6 +152,7 @@ namespace snowball {
             auto bb = _builder->GetInsertBlock();
 
             if (bb->size() == 0 || !bb->back().isTerminator()) {
+                // TODO: return 0 if it's a number
                 if (IS_ENTRY_POINT()) {
                     llvm::Type * i32 = _builder->getInt32Ty();
                     _builder->CreateRet(llvm::ConstantInt::get(i32, 0));

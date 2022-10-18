@@ -102,9 +102,12 @@ namespace snowball {
                 return generate_operator(static_cast<OperatorNode *>(p_node));
             }
 
+            case Node::Ty::TERNARY: {
+                return generate_ternary(static_cast<TernaryOperator *>(p_node));
+            }
+
             default:
-                DBGSourceInfo* dbg_info = new DBGSourceInfo((SourceInfo*)_source_info, p_node->pos, p_node->width);
-                throw Warning(Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, p_node->type, RESET, BOLD), dbg_info);
+                COMPILER_ERROR(BUG, Logger::format("Node with type %s%i%s%s is not yet supported", BCYN, p_node->type, RESET, BOLD));
         }
     }
 }

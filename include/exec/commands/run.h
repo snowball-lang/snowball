@@ -40,7 +40,7 @@ namespace snowball {
                 compiler->set_optimization(p_opts.opt);
 
                 // TODO: false if --no-output is passed
-                compiler->compile(true);
+                compiler->compile(!p_opts.silent);
                 compiler->emit_binary(output, false);
 
                 compiler->cleanup();

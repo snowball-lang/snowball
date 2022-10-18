@@ -38,6 +38,12 @@
 #include <llvm/ExecutionEngine/GenericValue.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
 
+// Function passes
+#include <llvm/Transforms/InstCombine/InstCombine.h>
+#include <llvm/Transforms/Scalar/Reassociate.h>
+#include <llvm/Transforms/Scalar/GVN.h>
+#include <llvm/Transforms/Scalar.h>
+
 #include "snowball/api.h"
 #include "snowball/types.h"
 #include "snowball/lexer.h"
@@ -345,6 +351,18 @@ namespace snowball {
 
         llvm::ModulePassManager MPM = pass_builder.buildPerModuleDefaultPipeline(level);
         MPM.run(*_module.get(), module_analysis_manager);
+
+        llvm::legacy::FunctionPassManager fpm(_module.get());
+
+        fpm.add(new llvm::InstructionCombiningPass());
+        fpm.add(llvm::createCFGSimplificationPass());
+
+        fpm.doInitialization();
+        for (auto& function : _module->functions()) {
+            fpm.run(function);
+        }
+
+        fpm.doFinalization();
     }
 
     void Compiler::cleanup() {

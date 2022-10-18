@@ -177,8 +177,15 @@ namespace snowball {
                         COMPILER_ERROR(TYPE_ERROR, Logger::format("Type %s does not point to a valid type.", _args[i]->to_string().c_str()))
                     }
 
-                    auto [new_type, succ] = TypeChecker::implicit_cast(_builder, (*arg_ty->llvm_struct), args[i]);
-                    function_store->node->arguments[i]->arg_type = TypeChecker::llvm2type(new_type->getType());
+                    auto real_type = TypeChecker::type2llvm(_builder, *arg_ty->llvm_struct);
+
+                    auto [new_value, succ] = TypeChecker::implicit_cast(_builder,  real_type, args[i]);
+                    if (!succ) {
+                        COMPILER_ERROR(BUG, Logger::format("Unexpected error while casting '%i' and '%i'", real_type->getTypeID(), args[i]->getType()->getTypeID()))
+                    }
+
+                    args[i] = new_value;
+                    function_store->node->arguments[i]->arg_type = TypeChecker::llvm2type(new_value->getType());
                 }
             } else {
                 COMPILER_ERROR(TYPE_ERROR, Logger::format("Coudn't deduce arguments for '%s'", p_node->method.c_str()))

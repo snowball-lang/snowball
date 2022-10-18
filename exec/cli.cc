@@ -102,6 +102,8 @@ namespace snowball {
 
                     if (IF_ANY_ARG("--test", "-t")) {
                         opts.build_opts.is_test = true;
+                    } else if (IF_ANY_ARG("--silent", "-s")) {
+                        opts.build_opts.silent = true;
                     } else if (IF_ARG("--emit_type")) {
                         CHECK_ARG("an output type")
                         NEXT_ARGUMENT()
@@ -163,10 +165,25 @@ namespace snowball {
                         } else {
                             throw SNError(Error::ARGUMENT_ERROR, "Valid optimization levels are: O0, O1, O2, O3, Os, Oz");
                         }
+                    } else if (IF_ANY_ARG("--silent", "-s")) {
+                        opts.run_opts.silent = true;
+                    } else {
+                        throw SNError(Error::ARGUMENT_ERROR, Logger::format("Unexpected argument for the build command: %s", current_arg.c_str()));
                     }
                 }
             } else if (current_arg == "test") {
                 opts.command = Options::Command::TEST;
+
+                while (current_index < args.size() - 1) {
+                    NEXT_ARGUMENT();
+
+                    if (IF_ANY_ARG("--silent", "-s")) {
+                        opts.test_opts.silent = true;
+                    } else {
+                        throw SNError(Error::ARGUMENT_ERROR, Logger::format("Unexpected argument for the build command: %s", current_arg.c_str()));
+                    }
+                }
+
                 // TODO
                 // TODO: optimization level for tests
             } else if (current_arg == "init") {

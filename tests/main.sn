@@ -1,30 +1,33 @@
 import System
+import Math
 
-class Vector {
+// class Vector {
 
-    priv var x: Int = 0
-    priv var y: Int = 0
+//     priv var x: Int = 0
+//     priv var y: Int = 0
 
-    pub operator new(x: Int, y: Int) {
-        // self.x = x
-        // self.y = y
-    }
+//     pub operator new(x: Int, y: Int) {
+//         System::println(a )
+//         // self.x = x
+//         // self.y = y
+//     }
 
-    // JS equivalent: const __sum = (this, vec2) => new Vector(...)
-    // overrides operator +
-    pub operator +(vec2: Vector) Vector =>
-        new Vector(self.x + vec2.x, self.y + vec2.y)
+//     // JS equivalent: const __sum = (this, vec2) => new Vector(...)
+//     // overrides operator +
+//     pub operator +(vec2: Vector) Vector =>
+//         new Vector(self.x + vec2.x, self.y + vec2.y)
 
-    // TODO
-    // pub operator str() String {
-    //     return "Vector(x=${self.x} y=${self.y})"
-    // }
+//     // TODO
+//     // pub operator str() String {
+//     //     return "Vector(x=${self.x} y=${self.y})"
+//     // }
+// }
+
+fn difference(a: i32, b: i32) i32 {
+  return Math.abs(a - b)
 }
 
 fn main() Int {
-    var vec1 = new Vector(1,2)
-    var vec2 = new Vector(10,22)
-
-    System.println("wad")
-    return 0
+    var a = 5
+    System.println(difference(3, 5))
 }

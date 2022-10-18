@@ -69,7 +69,7 @@ namespace snowball {
                 auto start = high_resolution_clock::now();
 
                 // TODO: false if --no-output is passed
-                compiler->compile(true);
+                compiler->compile(!p_opts.silent);
                 auto stop = high_resolution_clock::now();
 
                 // Get duration. Substart timepoints to

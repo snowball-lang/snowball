@@ -21,6 +21,7 @@ namespace snowball {
 			IMPORT,
 			CAST,
 			CLASS,
+			TERNARY,
 			ENUM,
 			FUNCTION,
 			BLOCK,
@@ -126,6 +127,8 @@ namespace snowball {
 		BlockNode* body;
 
 		std::string name;
+		std::string extern_name; // only used for extern functions
+
 		Type* return_type;
 		std::vector<ArgumentNode *> arguments;
 
@@ -153,6 +156,20 @@ namespace snowball {
 		};
 
 		~OperatorNode() {};
+	};
+
+	// this gets it's own node.
+	struct TernaryOperator : public Node {
+		Node* expr = nullptr;
+
+		Node* btrue = nullptr;
+		Node* bfalse = nullptr;
+
+		TernaryOperator() {
+			type = Ty::TERNARY;
+		};
+
+		~TernaryOperator() {};
 	};
 
 	struct AttributeNode : public Node {

@@ -27,12 +27,15 @@ namespace snowball {
 
             struct RunOptions {
                 Optimization opt = OPTIMIZE_O1;
+                bool silent = false;
             } run_opts;
 
             struct BuildOptions {
                 bool is_test = false;
                 Optimization opt = OPTIMIZE_O1;
                 EmitType emit_type = EXECUTABLE;
+
+                bool silent = false;
             } build_opts;
 
             struct ExplainOptions {
@@ -41,7 +44,7 @@ namespace snowball {
             } explain_opts;
 
             struct TestOptions {
-                // TODO
+                bool silent = false;
             } test_opts;
 
             struct InitOptions {

@@ -88,6 +88,7 @@ namespace snowball {
         _enviroment->set_function(fname, store);
 
         // Function prototype for return statement
+        // TODO: operators can't be extern
 
         ScopeValue* returnType = TypeChecker::get_type(_enviroment, store->node->return_type, store->node);
         auto retType = TypeChecker::type2llvm(_builder, *returnType->llvm_struct);
@@ -96,8 +97,7 @@ namespace snowball {
         llvm::Function *function = llvm::Function::Create(
             prototype,
             llvm::Function::ExternalLinkage,
-            (
-                store->node->is_extern ? store->node->name : mangle((ADD_MODULE_NAME_IF_EXISTS(".")
+            (mangle((ADD_MODULE_NAME_IF_EXISTS(".")
 
                 (store->current_class == nullptr ? store->node->name : Logger::format(
                     "%s.#%s", store->current_class->name.c_str(),

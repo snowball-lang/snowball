@@ -8,6 +8,7 @@ endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 find_package(LLVM REQUIRED CONFIG)
 add_definitions(${LLVM_DEFINITIONS})
+message(STATUS ${LLVM_CONFIG})
 
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
@@ -32,7 +33,6 @@ file(GLOB_RECURSE EXEC_SOURCES exec/*.cc exec/*.cc exec/*.c)
 set (EXEC_FILES
   ${EXEC_HEADERS}
   ${EXEC_SOURCES})
-
 
 # Map llvm components
 llvm_map_components_to_libnames(llvm_libs
@@ -74,6 +74,19 @@ add_compile_definitions(STATICLIB_DIR="${STATICLIB_DIR}/")
 
 add_compile_definitions(_SNOWBALL_LIBRARY_DIR="${_SNOWBALL_LIBRARY_DIR}")
 
+set(CONFIG_NAME "llvm-config")
+if (NOT "${LLVM_CONFIG_EXECUTABLE}" STREQUAL "")
+  set(CONFIG_NAME "${LLVM_CONFIG_EXECUTABLE}")
+  unset(LLVM_CONFIG_EXECUTABLE CACHE)
+endif()
+find_program(LLVM_CONFIG_EXECUTABLE NAMES "${CONFIG_NAME}" "${CONFIG_NAME}-14")
+
+execute_process(COMMAND ${CONFIG_NAME} --ldflags OUTPUT_VARIABLE LLVM_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+string(REPLACE "\n" " " LLVM_LDFLAGS "${LLVM_LDFLAGS} ${LLVM_LDFLAGS2}")
+string(STRIP ${LLVM_LDFLAGS} LLVM_LDFLAGS)
+
+message(STATUS "${LLVM_LDFLAGS}")
+add_compile_definitions(LLVM_LDFLAGS="${LLVM_LDFLAGS}")
 add_compile_definitions(LIBC_VERSION="${_LIBC_VERSION}")
 
 target_include_directories(${PROJECT_NAME} PUBLIC

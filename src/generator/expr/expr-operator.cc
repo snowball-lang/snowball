@@ -50,11 +50,25 @@ namespace snowball {
             switch (p_node->op_type)
             {
                 case BinaryOp::OpType::OP_NOT: {
-                    if (TypeChecker::is_bool(left_type) || TypeChecker::is_number(left_type)) {
+                    if (TypeChecker::is_float(left_type) || TypeChecker::is_bool(left_type) || TypeChecker::is_number(left_type)) {
                         return _builder->CreateNot(left);
                     }
 
                     CALL_UNARY_OPERATOR(OperatorType::NOT)
+                    break;
+                }
+
+                case BinaryOp::OpType::OP_NEGATIVE: {
+                    if (TypeChecker::is_bool(left_type) || TypeChecker::is_number(left_type)) {
+                        return _builder->CreateNeg(left);
+                    } else if (TypeChecker::is_float(left_type)) {
+                        return _builder->CreateFNeg(left);
+                    }
+
+                    // note:
+                    //   operator -() = unary
+                    //   operator -(p_comp) = subtraction
+                    CALL_UNARY_OPERATOR(OperatorType::MINUS)
                     break;
                 }
 
@@ -206,6 +220,22 @@ namespace snowball {
 
 
                     CALL_OPERATOR(OperatorType::GT)
+                    break;
+                }
+
+                case BinaryOp::OpType::OP_LT: {
+                    llvm::Value* new_right = TypeChecker::implicit_cast(_builder, left_type, right).first;
+                    llvm::Type* new_right_type = new_right->getType();
+
+                    if (TypeChecker::is_float(new_right_type) && TypeChecker::is_float(left_type)) {
+                        return _builder->CreateFCmpOLT(left, new_right);
+                    } else if ((TypeChecker::is_number(left_type) || TypeChecker::is_float(left_type) || TypeChecker::is_bool(left_type)) &&
+                    (TypeChecker::is_number(new_right_type) || TypeChecker::is_float(new_right_type) || TypeChecker::is_bool(new_right_type))) {
+                        return _builder->CreateICmpSLT(left, new_right);
+                    }
+
+
+                    CALL_OPERATOR(OperatorType::LT)
                     break;
                 }
 

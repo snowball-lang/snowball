@@ -694,8 +694,28 @@ namespace snowball {
         }
 
         // Find function's name
-        ASSERT_TOKEN(_current_token, TokenType::IDENTIFIER, "an identifier")
-        func->name = _current_token.to_string();
+        if (_current_token.type == TokenType::IDENTIFIER) {
+            ASSERT_TOKEN(_current_token, TokenType::IDENTIFIER, "an identifier")
+            func->name = _current_token.to_string();
+            func->extern_name = func->name;
+        } else if (_current_token.type == TokenType::VALUE_STRING && func->is_extern) {
+            func->extern_name = _current_token.to_string().substr(1, _current_token.to_string().size() - 2);
+
+            next_token();
+            ASSERT_TOKEN(_current_token, TokenType::KWORD_AS, "'as' keyword")
+
+            next_token();
+
+            ASSERT_TOKEN(_current_token, TokenType::IDENTIFIER, "an identifier")
+            func->name = _current_token.to_string();
+
+        } else {
+            if (func->is_extern) {
+                UNEXPECTED_TOK2("an identifier or a string constant", "extern function declaration")
+            } else {
+                UNEXPECTED_TOK2("an identifier", "extern function declaration")
+            }
+        }
 
         next_token();
 
@@ -959,6 +979,8 @@ namespace snowball {
         std::vector<Type*> generics;
         bool has_generics = false;
         if (_current_token.type == TokenType::OP_LT) {
+            ASSERT(peek().type == TokenType::SYM_QUESTION)
+
             has_generics = true;
             generics = _parse_generic_expr();
         }
@@ -1004,7 +1026,7 @@ namespace snowball {
         std::vector<Node *> expressions;
 
         while (true) {
-            Node* expression;
+            Node* expression = nullptr;
             next_token();
 
             Token tk = _current_token;
@@ -1023,7 +1045,7 @@ namespace snowball {
 
                 continue;
             } else if (IF_TOKEN(IDENTIFIER)) {
-                if (peek(0, true).type == TokenType::BRACKET_LPARENT || peek(0, true).type == TokenType::OP_LT) {
+                if (peek(0, true).type == TokenType::BRACKET_LPARENT || (peek(0, true).type == TokenType::OP_LT && peek(1, true).type == TokenType::SYM_QUESTION)) {
                     expression = _parse_function_call();
                 } else {
                     expression = new IdentifierNode(tk);
@@ -1043,6 +1065,10 @@ namespace snowball {
                     ASSERT_TOKEN_EOF(tk, TokenType::IDENTIFIER, "an identifier", "function index/call")
 
                     if (peek().type == TokenType::BRACKET_LPARENT || peek().type == TokenType::OP_LT)  {
+                        if (peek().type == TokenType::OP_LT && !(peek(1, true).type == TokenType::SYM_QUESTION)) {
+                            continue;
+                        }
+
                         CallNode* call = _parse_function_call();
 
                         call->base = expression;
@@ -1055,11 +1081,15 @@ namespace snowball {
 
                         expression = index;
                     }
-                } if (tk.type == TokenType::SYM_COLCOL) { // same thing but calling static function
+                } else if (tk.type == TokenType::SYM_COLCOL) { // same thing but calling static function
                     next_token(1);
                     ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "static function index/call")
 
                     if (peek(0, true).type == TokenType::BRACKET_LPARENT || peek(0, true).type == TokenType::OP_LT)  {
+                        if (peek().type == TokenType::OP_LT && !(peek(1, true).type == TokenType::SYM_QUESTION)) {
+                            continue;
+                        }
+
                         CallNode* call = _parse_function_call();
 
                         call->base = expression;
@@ -1074,6 +1104,31 @@ namespace snowball {
 
                         expression = index;
                     }
+                } else if (tk.type == TokenType::SYM_QUESTION) {
+                    // if (tk.type == TokenType::SYM_QUESTION) {
+                    //     new TernaryOperator();
+                    // }
+
+                    if (expression == nullptr) {
+                        PARSER_ERROR(SYNTAX_ERROR, "expected expression")
+                    }
+
+                    auto ternary_operator = new TernaryOperator();
+
+                    ternary_operator->expr = expression;
+
+
+                    next_token();
+                    ASSERT_TOKEN2(_current_token, TokenType::SYM_QUESTION, "?", "ternary operator")
+
+                    ternary_operator->btrue = _parse_expression();
+
+                    next_token();
+                    ASSERT_TOKEN2(_current_token, TokenType::SYM_COLLON, ":", "ternary operator")
+                    
+                    ternary_operator->bfalse = _parse_expression();
+
+                    expression = ternary_operator;
                 } else {
                     break;
                 }
@@ -1170,7 +1225,7 @@ namespace snowball {
 
             for (int i = 0; i < (int)expressions.size(); i++) {
                 BinaryOp* expression = static_cast<BinaryOp*>(expressions[i]);
-                if (expression->type != Node::Ty::OPERATOR || i == 0) {
+                if (expression->type != Node::Ty::OPERATOR || (expression->type != Node::Ty::OPERATOR && i == 0)) {
                     continue;
                 }
 
@@ -1335,6 +1390,10 @@ namespace snowball {
         next_token();
 
         if (_current_token.type == TokenType::OP_LT) {
+            if (peek(0, true).type != TokenType::SYM_QUESTION) {
+                PARSER_ERROR(BUG, "unexpected non-generics on type")
+            }
+
             type_generics = _parse_generic_expr();
         }
 
@@ -1343,6 +1402,7 @@ namespace snowball {
 
     std::vector<Type*> Parser::_parse_generic_expr() {
         ASSERT(_current_token.type == TokenType::OP_LT)
+        ASSERT(peek().type == TokenType::SYM_QUESTION)
         std::vector<Type*> types;
 
         while (true) {

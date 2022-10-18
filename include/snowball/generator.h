@@ -48,7 +48,7 @@
     } else if (__ty->isDoubleTy() || __ty->isFloatTy()) { \
         __v = _builder->CreateFCmpOEQ(__v, llvm::ConstantFP::get(__ty, 1.0)); \
     } else if (!TypeChecker::is_bool(__ty)) { \
-        auto __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS(__tys.c_str(), "__bool", {TypeChecker::to_type(__tys).first}, true), p_node, Logger::format("%s.__bool(self)", __tys.c_str()))->llvm_function; \
+        auto __c = *_enviroment->get(GET_FUNCTION_FROM_CLASS(__tys.c_str(), Logger::format("#%s", op2str(OperatorType::BOOL).c_str()), {TypeChecker::to_type(__tys).first}, true), p_node, Logger::format("bool operator for '%s' (self)", __tys.c_str()))->llvm_function; \
         __v = _builder->CreateCall(__c, {__v}); \
     } \
     llvm::Value* ret = __v;
@@ -211,6 +211,7 @@ namespace snowball {
             llvm::Value* generate_class(ClassNode* p_node);
             llvm::Value* generate_block(BlockNode * p_node);
             llvm::Value* generate_import(ImportNode* p_node);
+            llvm::Value* generate_ternary(TernaryOperator* p_node);
             llvm::Value* generate_operator(BinaryOp* p_node);
             llvm::Value* generate_module(ModuleNode* p_node);
             llvm::Value* generate_return(ReturnNode* p_node);

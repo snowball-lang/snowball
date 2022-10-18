@@ -109,7 +109,7 @@ namespace snowball {
             prototype,
             llvm::Function::ExternalLinkage,
             IS_ENTRY_POINT() ? _SNOWBALL_FUNCTION_ENTRY : (
-                store->node->is_extern ? store->node->name : mangle((ADD_MODULE_NAME_IF_EXISTS(".")
+                store->node->is_extern ? store->node->extern_name : mangle((ADD_MODULE_NAME_IF_EXISTS(".")
                 (ADD_NAMESPACE_NAME_IF_EXISTS(".")
 
                 (store->current_class == nullptr ? store->node->name : Logger::format(

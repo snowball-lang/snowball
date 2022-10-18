@@ -49,12 +49,13 @@ namespace snowball {
                 auto start = high_resolution_clock::now();
 
                 // TODO: false if --no-output is passed
-                compiler->compile(true);
-                compiler->emit_binary(output, false);
-
-                compiler->cleanup();
+                compiler->compile(!p_opts.silent);
 
                 auto stop = high_resolution_clock::now();
+
+                compiler->emit_binary(output, false);
+                compiler->cleanup();
+
 
                 // Get duration. Substart timepoints to
                 // get duration. To cast it to proper unit

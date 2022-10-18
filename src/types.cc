@@ -106,7 +106,7 @@ namespace snowball {
     }
 
     bool TypeChecker::has_less_width(llvm::IntegerType* p_src, llvm::IntegerType* p_comp) {
-        return p_src->getBitWidth() < p_comp->getBitWidth();
+        return p_src->getBitWidth() > p_comp->getBitWidth();
     }
 
     // NOTE: the function returns false if types contain integer types
