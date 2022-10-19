@@ -66,6 +66,7 @@ namespace snowball {
 
         class_struct->setBody(var_types);
 
+        p_node->_llvm_struct = class_struct;
         _context._current_class = p_node;
         _context._current_class->name = class_type->mangle();
 

@@ -1,28 +1,6 @@
 import System
 import Limits
 
-// class Vector {
-
-//     priv var x: Int = 0
-//     priv var y: Int = 0
-
-//     pub operator new(x: Int, y: Int) {
-//         System::println(a )
-//         // self.x = x
-//         // self.y = y
-//     }
-
-//     // JS equivalent: const __sum = (this, vec2) => new Vector(...)
-//     // overrides operator +
-//     pub operator +(vec2: Vector) Vector =>
-//         new Vector(self.x + vec2.x, self.y + vec2.y)
-
-//     // TODO
-//     // pub operator str() String {
-//     //     return "Vector(x=${self.x} y=${self.y})"
-//     // }
-// }
-
 
 mod t {
   pub fn hello() {

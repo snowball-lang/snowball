@@ -28,6 +28,8 @@
 
 #include <dlfcn.h>
 
+#define NULL_OR_NTEQ(thing, struct, comp) (thing == nullptr || struct != comp)
+
 namespace snowball {
     llvm::Value* Generator::generate_index(IndexNode* p_node) {
         llvm::Value* gen_result = generate(p_node->base); // TODO: check if base points to a type
@@ -52,7 +54,7 @@ namespace snowball {
                         BBLU, p_node->member->name.c_str(), RESET))
                 }
 
-                if ((!properties.at(pos).is_public) && _context._current_class == nullptr) {
+                if ((!properties.at(pos).is_public) && _context._current_class->_llvm_struct != (*value->llvm_struct)) {
                     COMPILER_ERROR(VARIABLE_ERROR, Logger::format(
                         "Trying to access member private %s%s%s from class %s%s%s!",
                         BBLU, p_node->member->name.c_str(), RESET,
@@ -81,11 +83,10 @@ namespace snowball {
                     case ScopeType::CLASS:
                     case ScopeType::NAMESPACE: {
 
-                        // TODO: check if namespaces are actually the same.
                         if ((
-                            (_context._current_module == nullptr && result->type == ScopeType::MODULE) ||
-                            (_context._current_class == nullptr && result->type == ScopeType::CLASS ) ||
-                            (_context._current_namespace == nullptr && result->type == ScopeType::NAMESPACE)) && !result->isPublic) {
+                            (NULL_OR_NTEQ(_context._current_module,      (*_context._current_module->llvm_struct), (*result->llvm_struct)) && result->type == ScopeType::MODULE) ||
+                            (NULL_OR_NTEQ(_context._current_class,       _context._current_class->_llvm_struct, (*result->llvm_struct)) && result->type == ScopeType::CLASS ) ||
+                            (NULL_OR_NTEQ(_context._current_namespace,   (*_context._current_namespace->llvm_struct), (*result->llvm_struct)) && result->type == ScopeType::NAMESPACE)) && !result->isPublic) {
                             COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Trying to access a private variable from '%s'", value->module_name.c_str()))
                         }
 
@@ -104,7 +105,7 @@ namespace snowball {
 
                             if (p_node->member->name.find(".") != std::string::npos) {
                                 std::string split = snowball_utils::split(p_node->member->name, ".").at(0);
-                                if ((_context._current_module == nullptr ? true : _context._current_module->module_name != split)) {
+                                if (((NULL_OR_NTEQ(_context._current_module, (*_context._current_module->llvm_struct), (*result->llvm_struct)) ? true : _context._current_namespace->module_name != split))) {
                                     if (!value->isPublic) {
                                         COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Trying to access a private variable from '%s'", split.c_str()))
                                     }
@@ -144,9 +145,9 @@ namespace snowball {
                     case ScopeType::NAMESPACE: {
 
                         if ((
-                            (_context._current_module == nullptr && result->type == ScopeType::MODULE) ||
-                            (_context._current_class == nullptr && result->type == ScopeType::CLASS ) ||
-                            (_context._current_namespace == nullptr && result->type == ScopeType::NAMESPACE)) && !result->isPublic) {
+                            (NULL_OR_NTEQ(_context._current_module,      (*_context._current_module->llvm_struct), (*result->llvm_struct)) && result->type == ScopeType::MODULE) ||
+                            (NULL_OR_NTEQ(_context._current_class,       _context._current_class->_llvm_struct, (*result->llvm_struct)) && result->type == ScopeType::CLASS ) ||
+                            (NULL_OR_NTEQ(_context._current_namespace,   (*_context._current_namespace->llvm_struct), (*result->llvm_struct)) && result->type == ScopeType::NAMESPACE)) && !result->isPublic) {
                             COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Trying to access a private variable from '%s'", value->module_name.c_str()))
                         }
 
@@ -159,9 +160,9 @@ namespace snowball {
                     case ScopeType::FUNC:
 
                         if ((
-                            (_context._current_module == nullptr && result->type == ScopeType::MODULE) ||
-                            (_context._current_class == nullptr && result->type == ScopeType::CLASS ) ||
-                            (_context._current_namespace == nullptr && result->type == ScopeType::NAMESPACE)) && !result->isPublic) {
+                            (NULL_OR_NTEQ(_context._current_module,      (*_context._current_module->llvm_struct), (*result->llvm_struct)) && result->type == ScopeType::MODULE) ||
+                            (NULL_OR_NTEQ(_context._current_class,       _context._current_class->_llvm_struct, (*result->llvm_struct)) && result->type == ScopeType::CLASS ) ||
+                            (NULL_OR_NTEQ(_context._current_namespace,   (*_context._current_namespace->llvm_struct), (*result->llvm_struct)) && result->type == ScopeType::NAMESPACE)) && !result->isPublic) {
                             COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Trying to access a private function from '%s'", value->module_name.c_str()))
                         }
 
@@ -173,7 +174,7 @@ namespace snowball {
 
                             if (p_node->member->name.find(".") != std::string::npos) {
                                 std::string split = snowball_utils::split(p_node->member->name, ".").at(0);
-                                if ((_context._current_namespace == nullptr ? true : _context._current_namespace->module_name != split)) {
+                                if (((NULL_OR_NTEQ(_context._current_module, (*_context._current_module->llvm_struct), (*result->llvm_struct)) ? true : _context._current_namespace->module_name != split))) {
                                     if (!value->isPublic) {
                                         COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Trying to access a private variable from '%s'", split.c_str()))
                                     }

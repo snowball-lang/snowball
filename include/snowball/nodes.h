@@ -299,6 +299,9 @@ namespace snowball {
 		std::vector<Type*> generics;
 		std::vector<Type*> parents;
 
+		// note: only used as context on the generator
+		llvm::StructType* _llvm_struct = nullptr;
+
 		ClassNode() {
 			type = Ty::CLASS;
 		};
