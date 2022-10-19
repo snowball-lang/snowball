@@ -11,7 +11,7 @@ namespace fs = std::filesystem;
 namespace snowball {
 
     bool Library::is_snowball_lib(std::string name) {
-        return ((name == "System") || (name == "Math") || (name == "OS") || (name == "Path"));
+        return ((name == "System") || (name == "Math") || (name == "Limits") || (name == "OS") || (name == "Path"));
     }
 
     bool Library::snlib_is_object(std::string name) {

@@ -13,7 +13,10 @@
 
 - [ ] Check if class function is already defined
 - [ ] Generics for class functions
-- [ ] Generic functions 'type "x" doe snot exist!'
+- [ ] Check if namespaces/modules are the same while checking if var/func is private
+    - [ ] Index node
+    - [ ] identifier node
+- [ ] Generic functions 'type "T" doe snot exist!'
 - [ ] Compiler errors/Warnings don't work
 
 ### None important

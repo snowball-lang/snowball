@@ -1,5 +1,5 @@
 import System
-import Math
+import Limits
 
 // class Vector {
 
@@ -23,11 +23,15 @@ import Math
 //     // }
 // }
 
-fn difference(a: i32, b: i32) i32 {
-  return Math.abs(a - b)
+
+mod t {
+  pub fn hello() {
+    System.println(Limits::int32::max)
+  }
 }
 
+
 fn main() Int {
-    var a = 5
-    System.println(difference(3, 5))
+    var x = 5
+    t::hello()
 }

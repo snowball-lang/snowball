@@ -60,7 +60,7 @@ namespace snowball {
 
                 case BinaryOp::OpType::OP_NEGATIVE: {
                     if (TypeChecker::is_bool(left_type) || TypeChecker::is_number(left_type)) {
-                        return _builder->CreateNeg(left);
+                        return _builder->CreateNSWSub(_builder->getInt32(0), left);
                     } else if (TypeChecker::is_float(left_type)) {
                         return _builder->CreateFNeg(left);
                     }

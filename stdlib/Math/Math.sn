@@ -67,13 +67,12 @@ pub fn tan(x: f64) f64 => sin(x) / cos(x)
 ////////////////////////////////////////////////////
 ///// . ABS
 ////////////////////////////////////////////////////
-pub fn abs(x: i16) i16 => x < 0 ? -x : x
-pub fn abs(x: i32) i32 => x < 0 ? -x : x
-pub fn abs(x: i64) i64 => x < 0 ? -x : x
+pub fn abs(x: i16) i16 => (x < 0) ? -x : x
+pub fn abs(x: i32) i32 => (x < 0) ? -x : x
+pub fn abs(x: i64) i64 => (x < 0) ? -x : x
 
 pub extern fn "llvm.fabs.f32" as abs(f32) f32;
 pub extern fn "llvm.fabs.f64" as abs(f64) f64;
-
 
 ////////////////////////////////////////////////////
 ///// . TTRUNC METHODS

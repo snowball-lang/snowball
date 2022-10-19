@@ -193,7 +193,10 @@ namespace snowball {
 
             ASSERT(arg_types.size() <= function_store->node->arguments.size())
 
+            auto bk_scopes = _enviroment->save_state();
             paste_function(function_store);
+            _enviroment->restore_state(bk_scopes);
+
             ScopeValue* private_function = _enviroment->get(method_call, nullptr); // it will exist... right?
 
             if ((_context._current_module != nullptr && _context._current_module->module_name == base_struct) || (_context._current_class != nullptr && _context._current_class->name == base_struct) || (private_function->parent_scope->name() == SN_GLOBAL_SCOPE)) {
@@ -263,7 +266,9 @@ namespace snowball {
 
                 ASSERT(arg_types.size() <= function_store->node->arguments.size())
 
+                auto bk_scopes = _enviroment->save_state();
                 paste_function(function_store);
+                _enviroment->restore_state(bk_scopes);
 
                 // TODO: error, function not found if it is extern
                 function = _enviroment->get(method_call, p_node); // it will exist... right?

@@ -67,6 +67,8 @@ namespace snowball {
 		std::string name;
 		std::vector<Node*> nodes;
 
+		bool isPublic = false;
+
 		ModuleNode() {
 			type = Ty::MODULE;
 		};

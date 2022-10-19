@@ -66,6 +66,7 @@ namespace snowball {
 
         std::vector<Type*> arg_tnames;
         std::vector<llvm::Type*> arg_types;
+
         for (ArgumentNode* argument : store->node->arguments) {
 
             // check if type exists

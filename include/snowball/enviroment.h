@@ -35,6 +35,14 @@ namespace snowball {
             ScopeValue* get(std::string name, Node* p_node, std::string p_o_name = "");
             bool item_exists(std::string name);
 
+            // When a function call, we generate a function.
+            // This creates problem since the new function inherits
+            // from the old function. This functions are used to remove
+            // all scopes (except global) then, execute the new function
+            // and restore the last scope.
+            // note: save state will also remove all scopes (except global)
+            std::vector<Scope*> save_state();
+            void restore_state(std::vector<Scope*> p_scopes);
 
             // Make sure to call function_exists() first!
             Enviroment::FunctionStore* find_function_if(std::string name, std::function<std::pair<bool, bool>(const Enviroment::FunctionStore)> cb, Node* p_node);

@@ -69,9 +69,10 @@ namespace snowball {
                 case TokenType::KWORD_PRIVATE: {
                     if (
                         peek(0, true).type != TokenType::KWORD_FUNC
+                        && peek(0, true).type != TokenType::KWORD_MOD
                         && peek(0, true).type != TokenType::KWORD_VAR
                         && peek(0, true).type != TokenType::KWORD_EXTERN) {
-                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\", \"var\" or \"extern\" after pub/priv declaration");
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\", \"mod\", \"var\" or \"extern\" after pub/priv declaration");
                     }
 
                     break;
@@ -151,6 +152,10 @@ namespace snowball {
         ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "identifier", "a module body")
         node->name = _current_token.to_string(); next_token();
 
+        if (peek(-4, true).type == TokenType::KWORD_PUBLIC) {
+            node->isPublic = true;
+        }
+
         ASSERT_TOKEN_EOF(_current_token, TokenType::BRACKET_LCURLY, "{", "a class body")
         while (true) {
             next_token();
@@ -189,8 +194,9 @@ namespace snowball {
                 case TokenType::KWORD_PRIVATE: {
                     if (
                         peek(0, true).type != TokenType::KWORD_FUNC
+                        && peek(0, true).type != TokenType::KWORD_MOD
                         && peek(0, true).type != TokenType::KWORD_VAR) {
-                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\" or \"var\" after pub/priv declaration");
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\", \"mod\" or \"var\" after pub/priv declaration");
                     }
 
                     break;
@@ -372,6 +378,7 @@ namespace snowball {
         next_token();
 
         if (_current_token.type == TokenType::OP_LT) {
+            ASSERT_TOKEN2(peek(), TokenType::SYM_QUESTION, "?", "generic expression inside class")
             std::vector<Type*> generics = _parse_generic_expr();
             cls->generics = generics;
         }
@@ -529,6 +536,7 @@ namespace snowball {
         next_token();
 
         if (_current_token.type == TokenType::OP_LT) {
+            ASSERT_TOKEN2(peek(), TokenType::SYM_QUESTION, "?", "generic expression inside class")
             std::vector<Type*> generics = _parse_generic_expr();
             op->generics = generics;
         }
@@ -583,7 +591,11 @@ namespace snowball {
         Type* return_type;
 
         if (!(_context.current_class != nullptr && op_type == OperatorType::CONSTRUCTOR)) {
-            ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "Identifier", "Function return type")
+            if (_current_token.type == TokenType::BRACKET_LCURLY) {
+                return_type = VOID_TYPE;
+            } else {
+                ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "Identifier", "Function return type")
+            }
             return_type = _parse_type();
         } else {
             return_type = new Type(_context.current_class->name);
@@ -632,7 +644,7 @@ namespace snowball {
         var->name = _current_token.to_string();
         next_token();
 
-        if ((_context.current_class != nullptr && _context.current_function == nullptr) || peek(0, true).type == TokenType::SYM_COLLON) {
+        if ((_context.current_class != nullptr && _context.current_function == nullptr) || _current_token.type == TokenType::SYM_COLLON) {
             CONSUME(":", SYM_COLLON, "a variable declaration")
             ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "a variable declaration")
 
@@ -1032,7 +1044,13 @@ namespace snowball {
             Token tk = _current_token;
 
             #define IF_TOKEN(comp) TOKEN_EQUAL(tk, comp)
-            if (IF_TOKEN(VALUE_BOOL) || IF_TOKEN(VALUE_NULL) || IF_TOKEN(VALUE_FLOAT) || IF_TOKEN(VALUE_NUMBER) || IF_TOKEN(VALUE_STRING) || IF_TOKEN(VALUE_UNDEFINED)) {
+            if (IF_TOKEN(BRACKET_LPARENT)) {
+                expression = _parse_expression(false);
+
+                next_token();
+                ASSERT_TOKEN2(_current_token, TokenType::BRACKET_RPARENT, "}", "expression")
+
+		    } else if (IF_TOKEN(VALUE_BOOL) || IF_TOKEN(VALUE_NULL) || IF_TOKEN(VALUE_FLOAT) || IF_TOKEN(VALUE_NUMBER) || IF_TOKEN(VALUE_STRING) || IF_TOKEN(VALUE_UNDEFINED)) {
                 expression = new ConstantValue(tk.type, tk.to_string());
             } else if (IF_TOKEN(KWORD_NEW)) {
                 next_token();
@@ -1403,6 +1421,8 @@ namespace snowball {
     std::vector<Type*> Parser::_parse_generic_expr() {
         ASSERT(_current_token.type == TokenType::OP_LT)
         ASSERT(peek().type == TokenType::SYM_QUESTION)
+        next_token();
+
         std::vector<Type*> types;
 
         while (true) {

@@ -29,6 +29,8 @@
 #define SET_TO_GLOBAL_OR_CLASS(_name, value) \
     if (_context._current_class != nullptr) { \
         _enviroment->get(ADD_MODULE_NAME_IF_EXISTS(".") _context._current_class->name, nullptr)->scope_value->set(_name, std::move(value)); \
+    } else if (_context._current_namespace != nullptr) { \
+        _context._current_namespace->scope_value->set(_name, std::move(value)); \
     } else if (_context._current_module != nullptr) { \
         _context._current_module->scope_value->set(_name, std::move(value)); \
     } else { \

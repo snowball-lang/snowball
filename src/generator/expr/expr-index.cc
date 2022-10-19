@@ -65,9 +65,64 @@ namespace snowball {
             }
 
             case ScopeType::MODULE: {
-                // TODO: custom error if no member exists
-                // TODO: module variables?
-                return generate(new IdentifierNode((value->module_name + ".") + p_node->member->name));
+                std::string name = (value->module_name + ".") + TypeChecker::string_mangle(p_node->member->name);
+
+                ScopeValue* result = nullptr;
+                if (_enviroment->item_exists((value->module_name + ".") + p_node->member->name)) {
+                    result = _enviroment->get((value->module_name + ".") + p_node->member->name, p_node);
+                } else if (_enviroment->item_exists(name)) {
+                    result = _enviroment->get(name, p_node);
+                } else {
+                    COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Module '%s' does not contain member '%s'", TypeChecker::to_type(value->module_name).first->to_string().c_str(), p_node->member->name.c_str()))
+                }
+
+                switch (result->type) {
+                    case ScopeType::MODULE:
+                    case ScopeType::CLASS:
+                    case ScopeType::NAMESPACE: {
+
+                        // TODO: check if namespaces are actually the same.
+                        if ((
+                            (_context._current_module == nullptr && result->type == ScopeType::MODULE) ||
+                            (_context._current_class == nullptr && result->type == ScopeType::CLASS ) ||
+                            (_context._current_namespace == nullptr && result->type == ScopeType::NAMESPACE)) && !result->isPublic) {
+                            COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Trying to access a private variable from '%s'", value->module_name.c_str()))
+                        }
+
+                        llvm::StructType* type = *result->llvm_struct;
+                        auto alloca = _builder->CreateAlloca(type);
+                        alloca->eraseFromParent();
+                        return alloca;
+                    }
+
+                    case ScopeType::FUNC:
+                        return (llvm::Value*)(*result->llvm_function);
+
+                    case ScopeType::LLVM: {
+                        llvm::Value* llvalue = *result->llvm_value;
+                        if (llvm::GlobalValue* G = llvm::dyn_cast<llvm::GlobalValue>(llvalue)) {
+
+                            if (p_node->member->name.find(".") != std::string::npos) {
+                                std::string split = snowball_utils::split(p_node->member->name, ".").at(0);
+                                if ((_context._current_module == nullptr ? true : _context._current_module->module_name != split)) {
+                                    if (!value->isPublic) {
+                                        COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Trying to access a private variable from '%s'", split.c_str()))
+                                    }
+                                }
+                            }
+
+                            return convert_to_right_value(_builder, G);
+                        }
+
+                        return llvalue;
+                    }
+
+                    default: {
+                        COMPILER_ERROR(BUG, Logger::format("Invalid Scope Value (idnt: %s, ty: %i).", p_node->member->name.c_str(), value->type))
+                    }
+                }
+
+                return nullptr;
             }
 
             case ScopeType::NAMESPACE: {
@@ -87,6 +142,14 @@ namespace snowball {
                     case ScopeType::MODULE:
                     case ScopeType::CLASS:
                     case ScopeType::NAMESPACE: {
+
+                        if ((
+                            (_context._current_module == nullptr && result->type == ScopeType::MODULE) ||
+                            (_context._current_class == nullptr && result->type == ScopeType::CLASS ) ||
+                            (_context._current_namespace == nullptr && result->type == ScopeType::NAMESPACE)) && !result->isPublic) {
+                            COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Trying to access a private variable from '%s'", value->module_name.c_str()))
+                        }
+
                         llvm::StructType* type = *result->llvm_struct;
                         auto alloca = _builder->CreateAlloca(type);
                         alloca->eraseFromParent();
@@ -94,6 +157,14 @@ namespace snowball {
                     }
 
                     case ScopeType::FUNC:
+
+                        if ((
+                            (_context._current_module == nullptr && result->type == ScopeType::MODULE) ||
+                            (_context._current_class == nullptr && result->type == ScopeType::CLASS ) ||
+                            (_context._current_namespace == nullptr && result->type == ScopeType::NAMESPACE)) && !result->isPublic) {
+                            COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Trying to access a private function from '%s'", value->module_name.c_str()))
+                        }
+
                         return (llvm::Value*)(*result->llvm_function);
 
                     case ScopeType::LLVM: {
@@ -102,7 +173,7 @@ namespace snowball {
 
                             if (p_node->member->name.find(".") != std::string::npos) {
                                 std::string split = snowball_utils::split(p_node->member->name, ".").at(0);
-                                if ((_context._current_module == nullptr ? true : _context._current_module->module_name != split)) {
+                                if ((_context._current_namespace == nullptr ? true : _context._current_namespace->module_name != split)) {
                                     if (!value->isPublic) {
                                         COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Trying to access a private variable from '%s'", split.c_str()))
                                     }

@@ -56,7 +56,7 @@ namespace snowball {
             value = _enviroment->get(ADD_MODULE_NAME_IF_EXISTS(".") ADD_NAMESPACE_NAME_IF_EXISTS(".") name, p_node);
         } else {
             if (!found_value) {
-                COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Identifier %s does not exist!", p_node->name.c_str()))
+                COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Identifier '%s' does not exist!", p_node->name.c_str()))
             }
         }
 

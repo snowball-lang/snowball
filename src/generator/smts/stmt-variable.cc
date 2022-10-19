@@ -89,7 +89,7 @@ namespace snowball {
                     /*isConstant=*/false,
                     /*Linkage=*/llvm::GlobalValue::CommonLinkage,
                     /*Initializer=*/0, // has initializer, specified below
-                    /*Name=*/(ADD_MODULE_NAME_IF_EXISTS("::") p_node->name));
+                    /*Name=*/(ADD_MODULE_NAME_IF_EXISTS("::") ADD_NAMESPACE_NAME_IF_EXISTS("::") p_node->name));
 
                 gvar_ptr->setInitializer(llvm::Constant::getNullValue(g_type));
 
@@ -116,7 +116,7 @@ namespace snowball {
                 /*isConstant=*/false,
                 /*Linkage=*/llvm::GlobalValue::ExternalLinkage,
                 /*Initializer=*/static_cast<llvm::Constant *>(g_value), // has initializer, specified below
-                /*Name=*/(ADD_MODULE_NAME_IF_EXISTS("::") p_node->name));
+                /*Name=*/(ADD_MODULE_NAME_IF_EXISTS("::") ADD_NAMESPACE_NAME_IF_EXISTS("::") p_node->name));
 
             std::unique_ptr<ScopeValue*> scope_val = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Value*>(gvar_ptr)));
             (*scope_val)->isPublic = p_node->isPublic;

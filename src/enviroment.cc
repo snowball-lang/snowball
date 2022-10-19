@@ -23,6 +23,26 @@ namespace snowball {
         _scopes.push_back(global_scope);
     }
 
+    std::vector<Scope*> Enviroment::save_state() {
+        std::vector<Scope*> state = _scopes;
+        state.erase(state.begin());
+
+        auto global = global_scope();
+        _scopes = { global };
+
+        return state;
+    }
+
+    void Enviroment::restore_state(std::vector<Scope*> p_scopes) {
+        std::vector<Scope*> state = {global_scope()};
+
+        for (auto scope : p_scopes) {
+            state.push_back(scope);
+        }
+
+        _scopes = state;
+    }
+
     ScopeValue* Enviroment::get(std::string name, Node* p_node, std::string p_o_name) {
         if (p_o_name.empty()) p_o_name = name;
 
