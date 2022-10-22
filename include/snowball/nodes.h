@@ -60,6 +60,8 @@ namespace snowball {
 		std::pair<int, int> pos;
         uint32_t width = 1; // width of the node ^^^^ (dbg).
 
+		bool is_op = false;
+
 		virtual ~Node() = default;
     } Node;
 

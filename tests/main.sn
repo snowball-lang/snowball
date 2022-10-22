@@ -4,7 +4,7 @@ import Limits
 
 mod t {
   pub fn hello() {
-    System.println(Limits::int32::max)
+    System.println(3 + 4 * 2)
   }
 }
 

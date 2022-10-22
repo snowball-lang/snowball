@@ -1061,6 +1061,8 @@ namespace snowball {
                 else if (tk.type == TokenType::OP_MINUS)   expressions.push_back(new BinaryOp(BinaryOp::OpType::OP_NEGATIVE)) ;
                 else if (tk.type == TokenType::OP_BIT_NOT) expressions.push_back(new BinaryOp(BinaryOp::OpType::OP_BIT_NOT))  ;
 
+                expressions.back()->is_op = true;
+
                 continue;
             } else if (IF_TOKEN(IDENTIFIER)) {
                 if (peek(0, true).type == TokenType::BRACKET_LPARENT || (peek(0, true).type == TokenType::OP_LT && peek(1, true).type == TokenType::SYM_QUESTION)) {
@@ -1199,7 +1201,10 @@ namespace snowball {
 
             if (valid) {
                 next_token(); // Eat peeked token.
-                expressions.push_back(new BinaryOp(op));
+                auto bop = new BinaryOp(op);
+                bop->is_op = true;
+
+                expressions.push_back(bop);
             } else {
 
                 // Casting will be done with the "as" keyword.
@@ -1243,7 +1248,7 @@ namespace snowball {
 
             for (int i = 0; i < (int)expressions.size(); i++) {
                 BinaryOp* expression = static_cast<BinaryOp*>(expressions[i]);
-                if (expression->type != Node::Ty::OPERATOR || (expression->type != Node::Ty::OPERATOR && i == 0)) {
+                if (!expression->is_op) {
                     continue;
                 }
 
@@ -1354,7 +1359,7 @@ namespace snowball {
             if (unary) {
 
                 int next_expr = next_op;
-                while (expressions[next_expr]->type == Node::Ty::OPERATOR) {
+                while (expressions[next_expr]->is_op) {
                     if (++next_expr == expressions.size()) {
                         PARSER_ERROR(Error::SYNTAX_ERROR, "expected an expression.");
                     }
@@ -1370,19 +1375,20 @@ namespace snowball {
 
                 }
             } else {
-                ASSERT(next_op >= 1 && next_op < (int)expressions.size())
-                ASSERT(!(expressions[(size_t)next_op + 1]->type == Node::Ty::OPERATOR));
+
+                ASSERT(next_op >= 1 && next_op < (int)expressions.size() - 1)
+                ASSERT(!(expressions[(size_t)next_op + 1]->is_op) && !(expressions[(size_t)next_op - 1]->is_op));
 
                 BinaryOp* op_node = new BinaryOp(((BinaryOp*)expressions[(size_t)next_op])->op_type);
 
-                if (expressions[(size_t)next_op - 1]->type == Node::Ty::OPERATOR) {
+                if (expressions[(size_t)next_op - 1]->is_op) {
                     if (BinaryOp::is_assignment((BinaryOp*)expressions[(size_t)next_op - 1])) {
                         PARSER_ERROR(Error::SYNTAX_ERROR, "unexpected assignment.")
                     }
                 }
 
-                if (expressions[(size_t)next_op + 1]->type == Node::Ty::OPERATOR) {
-                    if (BinaryOp::is_assignment((BinaryOp*)expressions[(size_t)next_op - 1])) {
+                if (expressions[(size_t)next_op + 1]->is_op) {
+                    if (BinaryOp::is_assignment((BinaryOp*)expressions[(size_t)next_op + 1])) {
                         PARSER_ERROR(Error::SYNTAX_ERROR, "unexpected assignment.")
                     }
                 }
@@ -1390,7 +1396,7 @@ namespace snowball {
                 op_node->left = expressions[(size_t)next_op - 1];
                 op_node->right = expressions[(size_t)next_op + 1];
 
-                expressions.at((next_op - 1)) = op_node;
+                expressions.at((size_t)next_op - 1) = op_node;
 
                 expressions.erase(expressions.begin() + next_op);
                 expressions.erase(expressions.begin() + next_op);
