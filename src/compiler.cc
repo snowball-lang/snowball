@@ -246,7 +246,7 @@ namespace snowball {
         if(ldstatus)
         {
             remove(objfile.c_str());
-            throw SNError(IO_ERROR, Logger::format("Linking error. Linking with " LD_PATH " failed with code %d", ldstatus));
+            throw SNError(LINKER_ERR, Logger::format("Linking with " LD_PATH " failed with code %d", ldstatus));
         }
 
         if (p_pmessage)

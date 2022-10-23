@@ -19,6 +19,7 @@ jobs:
             cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr .
       - name: Build/Install Snowball
         run: |
+            sh ./build_scripts/release.sh
             sudo make install
       - name: Test Snowball before bench
         run: |

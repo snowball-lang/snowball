@@ -82,7 +82,5 @@ namespace snowball {
                 COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Attribute name not found: %s", node_attrs.name.c_str()))
             }
         }
-
-        COMPILER_ERROR(BUG, "unreachable attr block")
     }
 }

@@ -1,15 +1,4 @@
-import System
-import Limits
-
-
-mod t {
-  pub fn hello() {
-    System.println(3 + 4 * 2)
-  }
-}
-
 
 fn main() Int {
-    var x = 5
-    t::hello()
+
 }
