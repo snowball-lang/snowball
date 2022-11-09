@@ -409,14 +409,24 @@ namespace snowball {
                     }
                 } break;
 
+                case TokenType::KWORD_VIRTUAL: {
+                    PARSER_ERROR(Error::TODO, "Virtual not yet supported")
+                    if (peek(0, true).type == TokenType::KWORD_STATIC) {
+                        PARSER_ERROR(Error::ARGUMENT_ERROR, "Virtual methods can't be static!");
+                    } else if (peek(0, true).type != TokenType::KWORD_FUNC && peek(0, true).type != TokenType::KWORD_VAR) {
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\" or \"var\" after virtual declaration");
+                    }
+                } break;
+
                 case TokenType::KWORD_PUBLIC:
                 case TokenType::KWORD_PRIVATE: {
                     if (
                         peek(0, true).type != TokenType::KWORD_FUNC
                         && peek(0, true).type != TokenType::KWORD_VAR
+                        && peek(0, true).type != TokenType::KWORD_VIRTUAL
                         && peek(0, true).type != TokenType::KWORD_STATIC
                         && peek(0, true).type != TokenType::KWORD_OPERATOR) {
-                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\", \"var\", \"operator\" or \"static\" after pub/priv declaration");
+                        PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\", \"virt\", \"var\", \"operator\" or \"static\" after pub/priv declaration");
                     }
                     break;
                 }
@@ -1050,7 +1060,7 @@ namespace snowball {
                 next_token();
                 ASSERT_TOKEN2(_current_token, TokenType::BRACKET_RPARENT, "}", "expression")
 
-		    } else if (IF_TOKEN(VALUE_BOOL) || IF_TOKEN(VALUE_NULL) || IF_TOKEN(VALUE_FLOAT) || IF_TOKEN(VALUE_NUMBER) || IF_TOKEN(VALUE_STRING) || IF_TOKEN(VALUE_UNDEFINED)) {
+		    } else if (IF_TOKEN(VALUE_BOOL) || IF_TOKEN(VALUE_NULL) || IF_TOKEN(VALUE_NULL) || IF_TOKEN(VALUE_FLOAT) || IF_TOKEN(VALUE_NUMBER) || IF_TOKEN(VALUE_STRING) || IF_TOKEN(VALUE_UNDEFINED)) {
                 expression = new ConstantValue(tk.type, tk.to_string());
             } else if (IF_TOKEN(KWORD_NEW)) {
                 next_token();

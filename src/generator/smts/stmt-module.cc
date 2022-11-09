@@ -45,7 +45,7 @@ namespace snowball {
         module_scope->isPublic = p_node->isPublic;
 
         if (_context._current_namespace != nullptr) {
-            _enviroment->get((ADD_MODULE_NAME_IF_EXISTS(".") _context._current_namespace->module_name), nullptr)->scope_value->set(module_name, std::make_unique<ScopeValue*>(module_scope));
+            _enviroment->get((_context._current_namespace->module_name), nullptr)->scope_value->set(module_name, std::make_unique<ScopeValue*>(module_scope));
             _enviroment->current_scope()->set(module_name, std::make_unique<ScopeValue*>(module_scope));
         } else if (_context._current_module != nullptr) {
             _enviroment->get(_context._current_module->module_name, nullptr)->scope_value->set(module_name, std::make_unique<ScopeValue*>(module_scope));

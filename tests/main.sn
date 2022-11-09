@@ -1,4 +1,7 @@
 
-fn main() Int {
+import Math
+import System
 
+fn main() Int {
+    System.println(Math.sin(5.5))
 }

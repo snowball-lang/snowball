@@ -30,12 +30,10 @@
 
 namespace snowball {
     llvm::Value* Generator::generate_call(CallNode* p_node) {
-        #define FUNCTION_NAME() ( \
-            ADD_MODULE_NAME_IF_EXISTS(".") ( \
-                (!((!base_struct.empty()) && (class_value->type == ScopeType::CLASS || class_value->type == ScopeType::NAMESPACE || class_value->type == ScopeType::MODULE))) ? \
-                    p_node->method : \
-                    Logger::format("%s.%s", base_struct.c_str(), p_node->method.c_str()) \
-            ) \
+        #define FUNCTION_NAME() ADD_MODULE_NAME_IF_EXISTS(".") ADD_NAMESPACE_NAME_IF_EXISTS(".") ( \
+            (!((!base_struct.empty()) && (class_value->type == ScopeType::CLASS || class_value->type == ScopeType::MODULE))) ? \
+                p_node->method : \
+                Logger::format("%s.%s", base_struct.c_str(), p_node->method.c_str()) \
         )
 
         std::string method_name = p_node->method + "("; // TODO: move "stringified" function to a typechecker function
@@ -43,7 +41,7 @@ namespace snowball {
         std::vector<std::string> arg_types_str;
         std::vector<llvm::Value*> args;
 
-        std::string base_struct = MODULE_NAME_IF_EXISTS("");
+        std::string base_struct;
         llvm::Value* base_value;
         ScopeValue* class_value = new ScopeValue();
 
@@ -111,8 +109,9 @@ namespace snowball {
         }
 
         int arg_index = 0;
-        for (Node* arg : p_node->arguments) {
+        for (auto arg : p_node->arguments) {
             llvm::Value* result = generate(arg);
+
             arg_types.push_back(TypeChecker::to_type(TypeChecker::get_type_name(result->getType())).first);
 
             args.push_back(result);
@@ -128,7 +127,7 @@ namespace snowball {
 
         // Todo: check if method is private / public
         std::string method_call =
-            ADD_MODULE_NAME_IF_EXISTS(".") (p_node->base == nullptr ?
+            (p_node->base == nullptr ?
             mangle( p_node->method, arg_types) :
             GET_FUNCTION_FROM_CLASS( base_struct.c_str(), p_node->method, arg_types));
 
@@ -140,7 +139,7 @@ namespace snowball {
         bool private_method_exists = false;
         if (_enviroment->item_exists(method_call)) {
             ScopeValue* private_function = _enviroment->get(method_call, p_node); // it will exist... right?
-            if ((_context._current_module != nullptr && _context._current_module->module_name == base_struct) || (_context._current_class != nullptr && _context._current_class->name == base_struct) || (private_function->parent_scope->name() == SN_GLOBAL_SCOPE)) {
+            if ((_context._current_module != nullptr && _context._current_module->module_name == base_struct) || (_context._current_class != nullptr && _context._current_class->name == base_struct) || (private_function->parent_scope->name() == _enviroment->global_scope()->name())) {
                 function = private_function;
                 private_method_used = true;
             } else {
@@ -199,7 +198,7 @@ namespace snowball {
 
             ScopeValue* private_function = _enviroment->get(method_call, nullptr); // it will exist... right?
 
-            if ((_context._current_module != nullptr && _context._current_module->module_name == base_struct) || (_context._current_class != nullptr && _context._current_class->name == base_struct) || (private_function->parent_scope->name() == SN_GLOBAL_SCOPE)) {
+            if ((_context._current_module != nullptr && _context._current_module->module_name == base_struct) || (_context._current_class != nullptr && _context._current_class->name == base_struct) || (private_function->parent_scope->name() == _enviroment->global_scope()->name())) {
                 function = private_function;
                 private_method_used = true;
             } else {
@@ -210,8 +209,8 @@ namespace snowball {
         if (!private_method_used) {
             method_call =
                 (p_node->base == nullptr ?
-                mangle(ADD_MODULE_NAME_IF_EXISTS(".") p_node->method, arg_types, true) :
-                GET_FUNCTION_FROM_CLASS((ADD_MODULE_NAME_IF_EXISTS(".") base_struct).c_str(), p_node->method, arg_types, true));
+                mangle(p_node->method, arg_types, true) :
+                GET_FUNCTION_FROM_CLASS((base_struct).c_str(), p_node->method, arg_types, true));
 
 
             // Look for public

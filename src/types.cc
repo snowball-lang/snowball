@@ -214,6 +214,7 @@ namespace snowball {
         } else if (base_type->isDoubleTy()) {
             return FLOAT64_TYPE->mangle();
         } else if (base_type->isStructTy()) {
+            
             return base_type->getStructName().str();
         }
 

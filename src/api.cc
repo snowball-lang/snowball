@@ -142,6 +142,13 @@ namespace snowball {
     }
 
     void SNAPI::add_to_enviroment(std::string p_name, std::unique_ptr<ScopeValue*> p_scope_value) {
+        if (_init_mode) {
+            // Init mode means that types and built in functions are set. This scope shall
+            // remain inmutable and there for, it's not considered as global scope.
+            compiler->get_enviroment()->global_types()->set(p_name, std::move(p_scope_value));
+            return;
+        }
+
         compiler->get_enviroment()->current_scope()->set(p_name, std::move(p_scope_value));
     }
 }

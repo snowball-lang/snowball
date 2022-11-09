@@ -36,7 +36,7 @@ namespace snowball {
         // TODO: class name mangled if module exists
         Scope* class_scope = new Scope(p_node->name, _source_info);
 
-        auto class_struct = llvm::StructType::create(_builder->getContext(), ADD_MODULE_NAME_IF_EXISTS(".") class_type->mangle());
+        auto class_struct = llvm::StructType::create(_builder->getContext(), class_type->mangle());
         ScopeValue* class_scope_val = new ScopeValue(class_scope, std::make_shared<llvm::StructType*>(class_struct));
 
         std::vector<llvm::Type*> var_types;

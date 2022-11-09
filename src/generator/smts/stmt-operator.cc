@@ -75,9 +75,9 @@ namespace snowball {
 
         store->node = p_node;
 
-        std::string fname = ADD_MODULE_NAME_IF_EXISTS(".")
+        std::string fname =
             (
-                mangle((ADD_MODULE_NAME_IF_EXISTS(".")
+                mangle((
 
                 Logger::format(
                     "%s.#%s", store->current_class->name.c_str(),
@@ -97,12 +97,12 @@ namespace snowball {
         llvm::Function *function = llvm::Function::Create(
             prototype,
             llvm::Function::ExternalLinkage,
-            (mangle((ADD_MODULE_NAME_IF_EXISTS(".")
+            (mangle(
 
                 (store->current_class == nullptr ? store->node->name : Logger::format(
                     "%s.#%s", store->current_class->name.c_str(),
                     store->node->name.c_str()
-                ))), arg_tnames, store->node->is_public)
+                )), arg_tnames, store->node->is_public)
             ),
             _module);
 

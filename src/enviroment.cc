@@ -19,22 +19,35 @@
 
 namespace snowball {
     Enviroment::Enviroment(SourceInfo* p_source_info) : _source_info(p_source_info) {
+        Scope* global_types = new Scope(SN_GLOBAL_TYPES, _source_info);
         Scope* global_scope = new Scope(SN_GLOBAL_SCOPE, _source_info);
+
+        _scopes.push_back(global_types);
         _scopes.push_back(global_scope);
     }
 
-    std::vector<Scope*> Enviroment::save_state() {
+    std::vector<Scope*> Enviroment::save_state(bool save_global) {
         std::vector<Scope*> state = _scopes;
         state.erase(state.begin());
 
-        auto global = global_scope();
-        _scopes = { global };
+        auto types = global_types();
+        std::vector<Scope*> final_state = { types };
 
+        if (save_global) {
+            state.erase(state.begin());
+            final_state.push_back(global_scope());
+        }
+
+        _scopes = final_state;
         return state;
     }
 
-    void Enviroment::restore_state(std::vector<Scope*> p_scopes) {
-        std::vector<Scope*> state = {global_scope()};
+    void Enviroment::restore_state(std::vector<Scope*> p_scopes, bool with_global) {
+        std::vector<Scope*> state = {global_types()};
+
+        if (with_global) {
+            state.push_back(global_scope());
+        }
 
         for (auto scope : p_scopes) {
             state.push_back(scope);
@@ -171,8 +184,12 @@ namespace snowball {
         }
     }
 
-    Scope* Enviroment::global_scope() {
+    Scope* Enviroment::global_types() {
         return _scopes.at(0);
+    }
+
+    Scope* Enviroment::global_scope() {
+        return _scopes.at(1);
     }
 
     Scope* Enviroment::current_scope() {
