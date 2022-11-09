@@ -126,6 +126,8 @@ namespace snowball {
             }
 
             if (c_str[index] == '$') {
+                int initial_index = (index+1);
+
                 std::stringstream _length;
                 _length << c_str[index + 1];
                 index += 2;
@@ -137,9 +139,10 @@ namespace snowball {
 
                 int length = std::stoi(_length.str());
 
-                std::string extracted = name.substr(index, length);
+                std::string extracted = name.substr((initial_index+1), _length.str().size() + length - 1);
 
                 if (for_output) {
+                    extracted = name.substr((initial_index), _length.str().size() + length);
                     extracted = TypeChecker::to_type(extracted).first->to_string();
                 }
 

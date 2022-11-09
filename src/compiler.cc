@@ -180,7 +180,7 @@ namespace snowball {
                 for (auto attr : API->get_attributes()) {
                     attr->after_compile(API);
                 }
-                
+
                 SHOW_STATUS(Logger::compiling(Logger::progress(0.85)))
 
             }

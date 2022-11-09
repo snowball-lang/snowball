@@ -142,7 +142,6 @@ namespace snowball {
 
             _context._current_module = module_bk;
             _source_info = source_bk;
-            _api->context.is_crate = true;
 
             _enviroment->delete_scope();
 
@@ -153,6 +152,8 @@ namespace snowball {
             _enviroment->current_scope()->set(module_name, std::make_unique<ScopeValue*>(module_scope));
 
         }
+
+        _api->context.is_crate = true;
 
         // We don't need to return anything as "import" can't be in assigments.
         return llvm::ConstantInt::get(_builder->getInt8Ty(), 0);

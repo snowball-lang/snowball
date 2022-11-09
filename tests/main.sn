@@ -3,14 +3,20 @@ import Math
 import System
 
 fn hey(n: String) String {
-    if n == "hey" {
-        return "sup"
-    }
+    // if n == "hey" {
+    //     return "sup"
+    // }
 
     return "not ok"
 }
 
-fn main() Int {
+
+@[test]
+fn test() Void {
+    hey("d")
+}
+
+pub fn main() Void {
     System.println(Math.sin(5.5))
     System.println(hey(System.input()))
 }
