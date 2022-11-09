@@ -83,10 +83,12 @@ namespace snowball {
         }
 
         // Step #3
+        if (arguments.size() > 0) mangled_name << "Av";
         for(Type* argument : arguments) {
             std::string mangled = TypeChecker::to_mangle(argument);
             mangled_name << mangled;
         }
+        if (arguments.size() > 0) mangled_name << "Ev";
 
         if (is_public) {
             mangled_name << "P";
@@ -100,6 +102,9 @@ namespace snowball {
     unmangledResult unmangle(std::string name, std::string separator, bool for_output) {
         unmangledResult result;
         // result.name = name;
+
+        bool keep_parsing_args = true;
+        bool is_parsing_args = false;
 
         if (!(name.size() > 4)) return result;
 
@@ -134,7 +139,7 @@ namespace snowball {
 
                 std::string extracted = name.substr(index, length);
 
-                if (for_output && extracted.substr(0, 1) == "@") {
+                if (for_output) {
                     extracted = TypeChecker::to_type(extracted).first->to_string();
                 }
 
@@ -153,14 +158,41 @@ namespace snowball {
                 index++;
             }
 
-            while (c_str[index] == '@') {
-                std::string tname = name.substr(index);
-                tname.pop_back();
+            if (c_str[index] == 'A' || c_str[index+1] == 'v') {
+                is_parsing_args = true;
+                index += 2;
+            }
 
-                auto [type, len] = TypeChecker::to_type(tname);
-                index += (len);
+            while (keep_parsing_args && is_parsing_args) {
+                if (c_str[index] == 'E' || c_str[index+1] == 'v') {
+                    is_parsing_args = false;
+                    keep_parsing_args = false;
 
-                result.arguments.push_back(type);
+                    index += 2;
+                    break;
+                } else {
+                    int initial_index = index;
+
+                    std::stringstream _length;
+                    _length << c_str[index];
+
+                    index++;
+
+                    while (c_str[index] >= '0' && c_str[index] <= '9') {
+                        _length << c_str[index];
+                        index++;
+                    }
+
+                    int length = std::stoi(_length.str());
+
+                    std::string tname = name.substr(initial_index, _length.str().size() + length+1);
+                    tname.pop_back();
+
+                    auto [type, len] = TypeChecker::to_type(tname);
+                    index += (len-1);
+
+                    result.arguments.push_back(type);
+                }
             }
         }
 

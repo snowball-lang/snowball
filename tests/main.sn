@@ -2,6 +2,15 @@
 import Math
 import System
 
+fn hey(n: String) String {
+    if n == "hey" {
+        return "sup"
+    }
+
+    return "not ok"
+}
+
 fn main() Int {
     System.println(Math.sin(5.5))
+    System.println(hey(System.input()))
 }
