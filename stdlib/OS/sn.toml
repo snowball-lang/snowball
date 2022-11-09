@@ -1,5 +1,5 @@
 
 [package]
 main = "tests/main.sn"
-name = "main"
+name = "OS core module"
 version = "1.0.0"

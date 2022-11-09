@@ -86,11 +86,10 @@ namespace snowball {
         //  that the path has not been found
         if (!sn_lib_found) {
 
-
             // Save the latest state of the enviroment and set the module
             // as a new global. note that global != global types.
             auto scope_state = _enviroment->save_state(false);
-            auto module_data = _enviroment->create_scope(Logger::format("$current_module:%s", module_name.c_str()));
+            auto module_data = _enviroment->create_scope(Logger::format("$current_module:%s", module_path.c_str()));
 
             ScopeValue* module_scope = new ScopeValue(module_data);
 
