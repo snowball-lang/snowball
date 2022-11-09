@@ -16,7 +16,7 @@ jobs:
           version: "14.0"
       - name: Build CMake config
         run: |
-            cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr .
+            sh ./build_scripts/release.sh
       - name: Build/Install Snowball
         run: |
             sudo make install

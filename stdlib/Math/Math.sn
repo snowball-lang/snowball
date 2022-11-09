@@ -11,7 +11,7 @@ extern fn atan2(f64, f64) f64;
 ////////////////////////////////////////////////////
 ///// . SIN/COS
 ////////////////////////////////////////////////////
-pub extern fn "llvm.sin.f32" as sin(f32) f32;
+extern fn "llvm.sin.f32" as sin(f32) f32;
 pub extern fn "llvm.sin.f64" as sin(f64) f64;
 
 pub extern fn "llvm.cos.f32" as cos(f32) f32;

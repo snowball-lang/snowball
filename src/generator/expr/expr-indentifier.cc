@@ -33,7 +33,7 @@ namespace snowball {
     llvm::Value* Generator::generate_identifier(IdentifierNode* p_node) {
 
         ScopeValue* value;
-        std::string name = ADD_MODULE_NAME_IF_EXISTS(".") (new Type(p_node->name))->mangle();
+        std::string name = (new Type(p_node->name))->mangle();
 
         bool found_value = false;
         if (_enviroment->item_exists(p_node->name)) {
@@ -50,14 +50,8 @@ namespace snowball {
             }
         }
 
-        if ((!found_value) && _enviroment->item_exists(ADD_MODULE_NAME_IF_EXISTS(".") ADD_NAMESPACE_NAME_IF_EXISTS(".") p_node->name)) {
-            value = _enviroment->get(ADD_MODULE_NAME_IF_EXISTS(".") ADD_NAMESPACE_NAME_IF_EXISTS(".") p_node->name, p_node);
-        } else if ((!found_value) && _enviroment->item_exists(ADD_MODULE_NAME_IF_EXISTS(".") ADD_NAMESPACE_NAME_IF_EXISTS(".") name)) {
-            value = _enviroment->get(ADD_MODULE_NAME_IF_EXISTS(".") ADD_NAMESPACE_NAME_IF_EXISTS(".") name, p_node);
-        } else {
-            if (!found_value) {
-                COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Identifier '%s' does not exist!", p_node->name.c_str()))
-            }
+        if (!found_value) {
+            COMPILER_ERROR(VARIABLE_ERROR, Logger::format("Identifier '%s' does not exist!", p_node->name.c_str()))
         }
 
         switch (value->type)

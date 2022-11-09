@@ -32,13 +32,13 @@
 namespace snowball {
     llvm::Value* Generator::generate_operator(BinaryOp* p_node) {
         #define FNAME(opty) GET_FUNCTION_FROM_CLASS(\
-            (ADD_MODULE_NAME_IF_EXISTS(".") TypeChecker::get_type_name(left_type)).c_str(), \
+            (TypeChecker::get_type_name(left_type)).c_str(), \
                 (((std::string)"#") + op2str(opty)).c_str(), { \
                     TypeChecker::to_type(TypeChecker::get_type_name(left_type)).first, \
                     TypeChecker::to_type(TypeChecker::get_type_name(right_type)).first \
                 }, true)
         #define FNAME_NO_MANGLE(opty) GET_FUNCTION_FROM_CLASS_NO_MANGLE( \
-            (ADD_MODULE_NAME_IF_EXISTS(".") TypeChecker::get_type_name(left_type)), \
+            (TypeChecker::get_type_name(left_type)), \
                 (((std::string)"#") + op2str(opty)))
 
         llvm::Value* left = generate(p_node->left);

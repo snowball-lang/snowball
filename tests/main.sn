@@ -1,15 +1,16 @@
+
+import Math
 import System
-import Limits
 
+fn hey(n: String) String {
+    if n == "hey" {
+        return "sup"
+    }
 
-mod t {
-  pub fn hello() {
-    System.println(3 + 4 * 2)
-  }
+    return "not ok"
 }
 
-
 fn main() Int {
-    var x = 5
-    t::hello()
+    System.println(Math.sin(5.5))
+    System.println(hey(System.input()))
 }

@@ -24,7 +24,7 @@ namespace snowball {
 
     std::string TypeChecker::to_mangle(std::string p_name, std::vector<Type*> p_generics) {
         std::stringstream result;
-        result << "@";
+        // result << "@";
         result << p_name.size();
         result << p_name;
 
@@ -42,12 +42,12 @@ namespace snowball {
     }
 
     std::pair<Type*, int> TypeChecker::to_type(std::string p_type) {
-        ASSERT(p_type.at(0) == '@')
+        // ASSERT(p_type.at(0) == '@')
 
         std::string name;
         std::vector<Type*> generics;
 
-        int index = 1;
+        int index = 0;
 
         std::stringstream _length;
         _length << p_type[index];
@@ -66,7 +66,7 @@ namespace snowball {
         if (p_type[index+1] == '[') {
             index++;
 
-            while (p_type[index] == '@') {
+            while (p_type[index] != ']') {
                 auto [type, next_index] = to_type(p_type.substr(index, p_type.length()-1));
                 index += next_index;
                 generics.push_back(type);
@@ -214,6 +214,7 @@ namespace snowball {
         } else if (base_type->isDoubleTy()) {
             return FLOAT64_TYPE->mangle();
         } else if (base_type->isStructTy()) {
+            
             return base_type->getStructName().str();
         }
 

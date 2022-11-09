@@ -83,6 +83,6 @@ namespace snowball {
             }
         }
 
-        COMPILER_ERROR(BUG, "unreachable attr block")
+        return nullptr;
     }
 }

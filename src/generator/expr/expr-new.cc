@@ -46,15 +46,15 @@ namespace snowball {
         Type* class_type = new Type(p_node->method);
 
         // Check if type exists
-        TypeChecker::get_type(_enviroment, new Type(ADD_MODULE_NAME_IF_EXISTS(".") p_node->method), p_node);
+        TypeChecker::get_type(_enviroment, new Type(p_node->method), p_node);
 
         // TODO: check if there are generics
         // TODO: check if class exist and throw custom error
         #define FNAME() GET_FUNCTION_FROM_CLASS(\
-            (ADD_MODULE_NAME_IF_EXISTS(".") class_type->mangle()).c_str(), \
+            (class_type->mangle()).c_str(), \
                 (((std::string)"#") + op2str(OperatorType::CONSTRUCTOR)).c_str(), arg_types, true)
         #define FNAME_NO_MANGLE() GET_FUNCTION_FROM_CLASS_NO_MANGLE( \
-            (ADD_MODULE_NAME_IF_EXISTS(".") class_type->mangle()), \
+            (class_type->mangle()), \
                 (((std::string)"#") + op2str(OperatorType::CONSTRUCTOR)))
 
         Enviroment::FunctionStore* function_store;

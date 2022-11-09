@@ -25,6 +25,7 @@ namespace snowball {
         COMPILER_ERROR, // note: not the same as "compile time error"
 
         LLVM_INTERNAL,
+        LINKER_ERR,
 
         BUG,
         TODO

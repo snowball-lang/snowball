@@ -33,7 +33,7 @@ namespace snowball {
     void Generator::generate_contructor_meta(ClassNode* current_class) {
         ASSERT(current_class != nullptr)
 
-        llvm::StructType* type = *_enviroment->get(ADD_MODULE_NAME_IF_EXISTS(".") ADD_NAMESPACE_NAME_IF_EXISTS(".") current_class->name, current_class)->llvm_struct;
+        llvm::StructType* type = *_enviroment->get(ADD_NAMESPACE_NAME_IF_EXISTS(".") current_class->name, current_class)->llvm_struct;
         int size = _module->getDataLayout().getTypeStoreSize(type);
         llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder->getInt32Ty(), size);
 

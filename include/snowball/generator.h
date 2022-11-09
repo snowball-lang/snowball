@@ -28,7 +28,7 @@
 
 #define SET_TO_GLOBAL_OR_CLASS(_name, value) \
     if (_context._current_class != nullptr) { \
-        _enviroment->get(ADD_MODULE_NAME_IF_EXISTS(".") _context._current_class->name, nullptr)->scope_value->set(_name, std::move(value)); \
+        _enviroment->get(_context._current_class->name, nullptr)->scope_value->set(_name, std::move(value)); \
     } else if (_context._current_namespace != nullptr) { \
         _context._current_namespace->scope_value->set(_name, std::move(value)); \
     } else if (_context._current_module != nullptr) { \
@@ -62,7 +62,7 @@
         TypeChecker::to_type(TypeChecker::get_type_name(right_type)).first \
     })); \
     __u.isPublic = true; \
-    auto __f = _enviroment->find_function_if(FNAME_NO_MANGLE(opty), [=](auto store) -> std::pair<bool, bool> { \
+    auto __f = _enviroment->find_function_if(method, [=](auto store) -> std::pair<bool, bool> { \
         auto node_args = store.node->arguments; \
         ArgumentNode* arg = new ArgumentNode("self", TypeChecker::to_type(TypeChecker::get_type_name(left_type)).first); \
         node_args.insert(node_args.begin(), arg); \

@@ -19,6 +19,7 @@ namespace snowball {
         RET_ERROR_IF_CODE(Error::ARGUMENT_ERROR,      "Argument Error")
         RET_ERROR_IF_CODE(Error::FUNCTION_RET_ERR,    "Function Return Error")
         RET_ERROR_IF_CODE(Error::CONFIGURATION_ERROR, "Configuration Error")
+        RET_ERROR_IF_CODE(Error::LINKER_ERR,          "Linker Error")
 
         return "Error";
     }
