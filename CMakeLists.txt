@@ -125,7 +125,19 @@ foreach(file ${std_c_files})
     RUNTIME  DESTINATION ${STATICLIB_DIR}/)
 endforeach()
 
-file(GLOB std_sn_files "stdlib/*/*.sn")
+macro( add_recursive retVal dir ext excl)
+    # Store unfiltered list of files into temporary list
+    file( GLOB_RECURSE _tmp_list ${dir}/${ext})
+    # Resulted list is initially empty. Copy all needed elements into it.
+    set(${retval} "")
+    foreach(f ${_tmp_list})
+        if(NOT f MATCHES ${excl})
+            list(APPEND ${retVal} ${f})
+        endif()
+    endforeach()
+endmacro( add_recursive )
+
+add_recursive(std_sn_files "./stdlib" "*/*.sn" "/_tests/")
 install(FILES ${std_sn_files} DESTINATION ${STATICLIB_DIR}/${_SNOWBALL_LIBRARY_DIR})
 
 

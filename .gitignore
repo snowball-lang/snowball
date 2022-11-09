@@ -35,6 +35,8 @@ bin/
 debug/
 obj/
 
+Release/
+
 Makefile
 snowball
 !include/snowball/
