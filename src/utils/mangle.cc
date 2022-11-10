@@ -76,11 +76,12 @@ namespace snowball {
         mangled_name << "_S#"; // step #1
 
         // Step #2
+        mangled_name << "NSc";
         for (std::string n : snowball_utils::split(name, ".")) {
-            mangled_name << "$";
             mangled_name << n.size();
             mangled_name << n;
         }
+        mangled_name << "Nes";
 
         // Step #3
         if (arguments.size() > 0) mangled_name << "Av";
@@ -106,6 +107,9 @@ namespace snowball {
         bool keep_parsing_args = true;
         bool is_parsing_args = false;
 
+        bool keep_parsing_name = true;
+        bool is_parsing_name = false;
+
         if (!(name.size() > 4)) return result;
 
         for (int index = 0; index < name.length();) {
@@ -125,49 +129,62 @@ namespace snowball {
                 result.isFunction = false;
             }
 
-            if (c_str[index] == '$') {
-                int initial_index = (index+1);
-
-                std::stringstream _length;
-                _length << c_str[index + 1];
-                index += 2;
-
-                while (c_str[index] >= '0' && c_str[index] <= '9') {
-                    _length << c_str[index];
-                    index++;
-                }
-
-                int length = std::stoi(_length.str());
-
-                std::string extracted = name.substr((initial_index+1), _length.str().size() + length - 1);
-
-                if (for_output) {
-                    extracted = name.substr((initial_index), _length.str().size() + length);
-                    extracted = TypeChecker::to_type(extracted).first->to_string();
-                }
-
-                index += length;
-
-                if (result.name.empty()) {
-                    result.name = extracted;
-                    continue;
-                }
-
-                result.name += separator + extracted;
-            }
-
             if (c_str[index] == 'P' || c_str[index] == 'I') {
                 result.isPublic = c_str[index] == 'P';
                 index++;
             }
 
-            if (c_str[index] == 'A' || c_str[index+1] == 'v') {
+            if (c_str[index] == 'N' && c_str[index+1] == 'S' && c_str[index+2] == 'c') {
+                is_parsing_name = true;
+                index += 3;
+            }
+
+            while (keep_parsing_name && is_parsing_name) {
+                if (c_str[index] == 'N' && c_str[index+1] == 'e' && c_str[index+2] == 's') {
+                    is_parsing_name = false;
+                    keep_parsing_name = false;
+
+                    index += 3;
+                    break;
+                } else {
+                    int initial_index = (index);
+
+                    std::stringstream _length;
+                    _length << c_str[index];
+                    index++;
+
+                    while (c_str[index] >= '0' && c_str[index] <= '9') {
+                        _length << c_str[index];
+                        index++;
+                    }
+
+                    int length = std::stoi(_length.str());
+
+                    std::string extracted = name.substr((initial_index+1), _length.str().size() + length - 1);
+
+                    if (for_output) {
+                        extracted = name.substr((initial_index), _length.str().size() + length);
+                        extracted = TypeChecker::to_type(extracted).first->to_string();
+                    }
+
+                    index += length;
+
+                    if (result.name.empty()) {
+                        result.name = extracted;
+                        continue;
+                    }
+
+                    result.name += separator + extracted;
+                }
+            }
+
+            if (c_str[index] == 'A' && c_str[index+1] == 'v') {
                 is_parsing_args = true;
                 index += 2;
             }
 
             while (keep_parsing_args && is_parsing_args) {
-                if (c_str[index] == 'E' || c_str[index+1] == 'v') {
+                if (c_str[index] == 'E' && c_str[index+1] == 'v') {
                     is_parsing_args = false;
                     keep_parsing_args = false;
 
