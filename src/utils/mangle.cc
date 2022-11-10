@@ -79,6 +79,7 @@ namespace snowball {
         mangled_name << "NSc";
         for (std::string n : snowball_utils::split(name, ".")) {
             mangled_name << n.size();
+            mangled_name << "n";
             mangled_name << n;
         }
         mangled_name << "Nes";
@@ -158,9 +159,10 @@ namespace snowball {
                         index++;
                     }
 
+                    index++;
                     int length = std::stoi(_length.str());
 
-                    std::string extracted = name.substr((initial_index+1), _length.str().size() + length - 1);
+                    std::string extracted = name.substr((initial_index+2), _length.str().size() + length - 1);
 
                     if (for_output) {
                         extracted = name.substr((initial_index), _length.str().size() + length);

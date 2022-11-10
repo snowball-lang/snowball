@@ -143,6 +143,7 @@ namespace snowball {
 		bool is_foward = false;
 		bool is_extern = false;
 		bool is_public = false;
+		bool is_virtual = false;
 		bool is_lop_level = false;
 
 		FunctionNode() {

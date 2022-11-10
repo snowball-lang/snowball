@@ -81,10 +81,12 @@ namespace snowball {
         std::vector<std::unique_ptr<ScopeValue*>> instances;
 
         // Class params
+        bool has_vtable = false;
         std::vector<Type*> parents;
 
         struct ClassPropertie {
             std::string name;
+            llvm::Type* type;
             bool is_public;
         };
 

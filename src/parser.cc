@@ -410,7 +410,7 @@ namespace snowball {
                 } break;
 
                 case TokenType::KWORD_VIRTUAL: {
-                    PARSER_ERROR(Error::TODO, "Virtual not yet supported")
+                    // PARSER_ERROR(Error::TODO, "Virtual not yet supported")
                     if (peek(0, true).type == TokenType::KWORD_STATIC) {
                         PARSER_ERROR(Error::ARGUMENT_ERROR, "Virtual methods can't be static!");
                     } else if (peek(0, true).type != TokenType::KWORD_FUNC && peek(0, true).type != TokenType::KWORD_VAR) {
@@ -426,6 +426,7 @@ namespace snowball {
                         && peek(0, true).type != TokenType::KWORD_VIRTUAL
                         && peek(0, true).type != TokenType::KWORD_STATIC
                         && peek(0, true).type != TokenType::KWORD_OPERATOR) {
+                            DUMP(peek().type)
                         PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\", \"virt\", \"var\", \"operator\" or \"static\" after pub/priv declaration");
                     }
                     break;
@@ -708,6 +709,11 @@ namespace snowball {
             }
         } else if (pk.type == TokenType::KWORD_STATIC) {
             func->is_static = true;
+            if (peek(-4, true).type == TokenType::KWORD_PUBLIC || peek(-4, true).type == TokenType::KWORD_PRIVATE ) {
+                func->is_public = peek(-4, true).type == TokenType::KWORD_PUBLIC;
+            }
+        } else if (pk.type == TokenType::KWORD_VIRTUAL) {
+            func->is_virtual = true;
             if (peek(-4, true).type == TokenType::KWORD_PUBLIC || peek(-4, true).type == TokenType::KWORD_PRIVATE ) {
                 func->is_public = peek(-4, true).type == TokenType::KWORD_PUBLIC;
             }

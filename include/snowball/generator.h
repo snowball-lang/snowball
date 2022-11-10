@@ -217,7 +217,7 @@ namespace snowball {
             llvm::Value* generate_operator(BinaryOp* p_node);
             llvm::Value* generate_module(ModuleNode* p_node);
             llvm::Value* generate_return(ReturnNode* p_node);
-            llvm::Value* generate_function(FunctionNode* p_node);
+            llvm::Value* generate_function(FunctionNode* p_node, bool generate = false);
             llvm::Value* generate_variable_decl(VarNode* p_node);
             llvm::Value* generate_operator(OperatorNode* p_node);
             llvm::Value* generate_attribute(AttributeNode* p_node);

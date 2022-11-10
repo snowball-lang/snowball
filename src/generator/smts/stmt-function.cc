@@ -30,7 +30,7 @@
 #include <dlfcn.h>
 
 namespace snowball {
-    llvm::Value* Generator::generate_function(FunctionNode* p_node) {
+    llvm::Value* Generator::generate_function(FunctionNode* p_node, bool generate) {
         #define IS_ENTRY_POINT() (p_node->name == _SNOWBALL_FUNCTION_ENTRY && p_node->is_lop_level)
 
         // Skip if the function contains a template
@@ -90,7 +90,7 @@ namespace snowball {
                 )))), arg_tnames, store->node->is_public)
             ));
 
-        if (IS_ENTRY_POINT()&& (!_tests_enabled)) {
+        if ((IS_ENTRY_POINT() && (!_tests_enabled)) || generate) {
             return paste_function(store);
         }
 
