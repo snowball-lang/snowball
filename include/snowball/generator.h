@@ -133,27 +133,6 @@
         function = (llvm::Function*)paste_function(__f); \
     }
 
-#define FUNCTION_CALL_NOT_FOUND() \
-    if (private_method_exists) { \
-        COMPILER_ERROR(\
-            VARIABLE_ERROR,\
-            Logger::format("Function named '%s' is a private method that can't be accessed outside it's class or module",\
-                p_node->base != nullptr ?\
-                    Logger::format("%s.%s", base_struct.c_str(), method_name.c_str()).c_str()\
-                    : method_name.c_str()\
-            )\
-        )\
-    } else {\
-        COMPILER_ERROR(\
-            VARIABLE_ERROR,\
-            Logger::format("No function found with name: %s",\
-                p_node->base != nullptr ?\
-                    Logger::format("%s.%s", base_struct.c_str(), method_name.c_str()).c_str()\
-                    : method_name.c_str()\
-            )\
-        )\
-    }
-
 namespace snowball {
 
     class SNAPI;

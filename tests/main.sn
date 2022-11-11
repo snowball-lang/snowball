@@ -15,4 +15,5 @@ class Hello {
 
 pub fn main() Void {
     new Hello()
+    System.println(Math.atan(25, 25))
 }
