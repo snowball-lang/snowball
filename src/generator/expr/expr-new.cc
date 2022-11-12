@@ -46,7 +46,12 @@ namespace snowball {
         Type* class_type = new Type(p_node->method);
 
         // Check if type exists
-        TypeChecker::get_type(_enviroment, new Type(p_node->method), p_node);
+        auto scope_value = _enviroment->get(class_type->mangle(), p_node);
+        if (scope_value->type == ScopeType::LLVM) {
+            class_type = TypeChecker::to_type(TypeChecker::get_type_name((*scope_value->llvm_value)->getType())).first;
+        } else if (!TypeChecker::is_class(scope_value)) {
+            COMPILER_ERROR(TYPE_ERROR, "Can't call new operator on non-class types")
+        }
 
         // TODO: check if there are generics
         // TODO: check if class exist and throw custom error

@@ -23,8 +23,9 @@ namespace snowball {
     }
 
     std::string TypeChecker::to_mangle(std::string p_name, std::vector<Type*> p_generics) {
+        if (p_name == NUMBER_TYPE->name) { p_name = INT32_TYPE->name; }
+
         std::stringstream result;
-        // result << "@";
         result << p_name.size();
         result << p_name;
 
@@ -83,8 +84,9 @@ namespace snowball {
         return {new Type(name, generics), index};
     }
 
-    ScopeValue* TypeChecker::get_type(Enviroment* p_enviroment, Type* p_type, Node* p_node) {
-        return p_enviroment->get(to_mangle(p_type), p_node, p_type->to_string());
+    ScopeValue* TypeChecker::get_type(Enviroment* p_enviroment, Type* p_type, Node* p_node, std::string p_err) {
+        if (p_err.empty()) p_err = Logger::format("Type %s", p_type->to_string().c_str());
+        return p_enviroment->get(p_type->mangle(), p_node, p_err);
     }
 
     bool TypeChecker::both_number(llvm::Type* p_left, llvm::Type* p_right, bool p_allow_bools) {
@@ -125,7 +127,11 @@ namespace snowball {
     std::pair<llvm::Value*, bool> TypeChecker::implicit_cast(std::shared_ptr<llvm::IRBuilder<>> p_builder, llvm::Type* p_left, llvm::Value* p_right) {
 
         // TODO: if left or right is float, convert the other side to float.
-        llvm::Type* right_type = p_right->getType();
+        DUMP_S(TypeChecker::get_type_name(p_left).c_str())
+        DUMP_S(TypeChecker::get_type_name(p_right->getType()).c_str())
+
+        p_left = TypeChecker::type2llvm(p_builder, p_left);
+        llvm::Type* right_type = TypeChecker::type2llvm(p_builder, p_right->getType());
 
         if (right_type == p_left) return {p_right, true};
 
@@ -214,8 +220,15 @@ namespace snowball {
         } else if (base_type->isDoubleTy()) {
             return FLOAT64_TYPE->mangle();
         } else if (base_type->isStructTy()) {
-            
-            return base_type->getStructName().str();
+            auto struct_name = base_type->getStructName().str();
+
+            if (struct_name.rfind(_SN_CLASS_PREFIX, 0) == 0) {
+                return struct_name.substr(strlen(_SN_CLASS_PREFIX));
+            } else if (struct_name.rfind(_SN_STRUCT_PREFIX, 0) == 0) {
+                return struct_name.substr(strlen(_SN_STRUCT_PREFIX));
+            }
+
+            return struct_name;
         }
 
         throw SNError(Error::BUG, Logger::format("Type with ID %i could not be decided!", base_type->getTypeID()));
@@ -325,9 +338,12 @@ namespace snowball {
         return types;
     }
 
-    std::pair<std::vector<Type*>,bool> TypeChecker::deduce_template_args(
+    std::tuple<std::map<std::string, Type*>,std::vector<Type*>,bool> TypeChecker::deduce_template_args(
                 FunctionNode* def, std::vector<Type*> params, std::vector<Type*> gparams) {
-        std::vector<Type*> deduced_types = ((def->generics.size() == 0) ? params : gparams);
+
+        std::vector<Type*> deduced_types;
+        std::map<std::string, Type*> generic_map;
+
         int garg_idx = 0; // The first given generic argument of the func call expr
         for (int i = 0; i < def->generics.size(); i++)
         {
@@ -342,9 +358,10 @@ namespace snowball {
                 auto deduced_type = params[arg_idx];
 
                 if (garg_idx < gparams.size() && (!deduced_type->equals(gparams[garg_idx]))) {
-                    return { {},false };
+                    return { {},{},false };
                 }
 
+                generic_map.insert({ garg->name, deduced_type });
                 deduced_types.push_back(deduced_type);
             }
 
@@ -352,6 +369,9 @@ namespace snowball {
             // See if it was given
             else if (garg_idx < gparams.size())
             {
+
+                generic_map.insert({ garg->name, gparams[garg_idx] });
+
                 auto type_spec = gparams[garg_idx];
                 deduced_types.push_back(type_spec);
             }
@@ -365,10 +385,10 @@ namespace snowball {
 
             else
             {
-                return { {},false };
+                return { {},{},false };
             }
         }
-        return { deduced_types,true };
+        return { generic_map,deduced_types,true };
     }
 
     Type* TypeChecker::llvm2type(llvm::Type* p_type) {

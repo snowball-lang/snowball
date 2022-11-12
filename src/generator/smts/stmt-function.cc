@@ -44,7 +44,7 @@ namespace snowball {
 
             // check if argument is actualy a generic
             auto it = std::find_if(p_node->generics.begin(), p_node->generics.end(), [&](Type* arg) {
-                return arg->equals(argument->arg_type);
+                return arg->equals(argument->arg_type, false);
             });
 
             if (it == p_node->generics.end()) {
@@ -59,6 +59,7 @@ namespace snowball {
                 arg_types.push_back(TypeChecker::type2llvm(_builder, type));
                 arg_tnames.push_back(argument->arg_type);
             } else {
+                arg_types.push_back(_builder->getInt8PtrTy());
                 arg_tnames.push_back(*it);
             }
         }
@@ -80,24 +81,25 @@ namespace snowball {
 
         store->node = p_node;
 
-        std::string fname = ADD_MODULE_NAME_IF_EXISTS(".") ADD_NAMESPACE_NAME_IF_EXISTS(".") (_context._current_class == nullptr? p_node->name :
-            (
-                mangle(((ADD_MODULE_NAME_IF_EXISTS(".") ADD_NAMESPACE_NAME_IF_EXISTS(".")
+        std::string fname = mangle(
+            /* name = */ (ADD_MODULE_NAME_IF_EXISTS(".") ADD_NAMESPACE_NAME_IF_EXISTS(".")
 
                 (store->current_class == nullptr ? store->node->name : Logger::format(
                     "%s.%s", store->current_class->name.c_str(),
                     store->node->name.c_str()
-                )))), arg_tnames, store->node->is_public)
-            ));
+                ))),
+
+            /* args = */ arg_tnames,
+            /* is_public = */ store->node->is_public
+        );
+
+        _enviroment->set_function(fname, store);
 
         if ((IS_ENTRY_POINT() && (!_tests_enabled)) || generate) {
             return paste_function(store);
         }
 
-        _enviroment->set_function(fname, store);
-
         // Function prototype for return statement
-
         ScopeValue* returnType = TypeChecker::get_type(_enviroment, store->node->return_type, store->node);
         auto retType =
             IS_ENTRY_POINT()
@@ -105,9 +107,7 @@ namespace snowball {
                 : TypeChecker::type2llvm(_builder, *returnType->llvm_struct);
 
         auto prototype = llvm::FunctionType::get(retType, arg_types, store->node->has_vargs);
-        llvm::Function *function = llvm::Function::Create(
-            prototype,
-            llvm::Function::ExternalLinkage,
+        auto function = _module->getOrInsertFunction(
             IS_ENTRY_POINT() ? _SNOWBALL_FUNCTION_ENTRY : (
                 store->node->is_extern ? store->node->extern_name : mangle((
                 (ADD_MODULE_NAME_IF_EXISTS(".") ADD_NAMESPACE_NAME_IF_EXISTS(".")
@@ -117,7 +117,7 @@ namespace snowball {
                     store->node->name.c_str()
                 )))), arg_tnames, store->node->is_public)
             ),
-            _module);
+            prototype).getCallee();
 
         return function;
 

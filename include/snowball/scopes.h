@@ -70,6 +70,8 @@ namespace snowball {
         bool isStaticFunction = false;
         std::vector<Type*> arguments;
 
+        int possition_in_vtable = 0;
+
         struct ScopeGeneric {
             std::string name;
             // TODO: default type
@@ -81,6 +83,7 @@ namespace snowball {
         std::vector<std::unique_ptr<ScopeValue*>> instances;
 
         // Class params
+        llvm::Value* vtable;
         bool has_vtable = false;
         std::vector<Type*> parents;
 

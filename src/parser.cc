@@ -378,8 +378,7 @@ namespace snowball {
         next_token();
 
         if (_current_token.type == TokenType::OP_LT) {
-            ASSERT_TOKEN2(peek(), TokenType::SYM_QUESTION, "?", "generic expression inside class")
-            std::vector<Type*> generics = _parse_generic_expr();
+            std::vector<Type*> generics = _parse_generic_decl();
             cls->generics = generics;
         }
 
@@ -426,7 +425,6 @@ namespace snowball {
                         && peek(0, true).type != TokenType::KWORD_VIRTUAL
                         && peek(0, true).type != TokenType::KWORD_STATIC
                         && peek(0, true).type != TokenType::KWORD_OPERATOR) {
-                            DUMP(peek().type)
                         PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\", \"virt\", \"var\", \"operator\" or \"static\" after pub/priv declaration");
                     }
                     break;
@@ -546,8 +544,8 @@ namespace snowball {
         // TODO: rest of function parsing
         next_token();
 
-        if (_current_token.type == TokenType::OP_LT) {
-            ASSERT_TOKEN2(peek(), TokenType::SYM_QUESTION, "?", "generic expression inside class")
+        if (_current_token.type == TokenType::OP_NOT) {
+            ASSERT_TOKEN2(peek(), TokenType::OP_LT, "<", "generic expression inside class")
             std::vector<Type*> generics = _parse_generic_expr();
             op->generics = generics;
         }
@@ -753,7 +751,7 @@ namespace snowball {
                 PARSER_ERROR(SYNTAX_ERROR, "Can't define an extern function with generics")
             }
 
-            std::vector<Type*> generics = _parse_generic_expr();
+            auto generics = _parse_generic_decl();
             func->generics = generics;
         }
 
@@ -1006,8 +1004,8 @@ namespace snowball {
 
         std::vector<Type*> generics;
         bool has_generics = false;
-        if (_current_token.type == TokenType::OP_LT) {
-            ASSERT(peek().type == TokenType::SYM_QUESTION)
+        if (_current_token.type == TokenType::OP_NOT) {
+            ASSERT(peek().type == TokenType::OP_LT)
 
             has_generics = true;
             generics = _parse_generic_expr();
@@ -1081,7 +1079,10 @@ namespace snowball {
 
                 continue;
             } else if (IF_TOKEN(IDENTIFIER)) {
-                if (peek(0, true).type == TokenType::BRACKET_LPARENT || (peek(0, true).type == TokenType::OP_LT && peek(1, true).type == TokenType::SYM_QUESTION)) {
+                if (peek(0, true).type == TokenType::BRACKET_LPARENT ||
+                    (peek(0, true).type == TokenType::OP_NOT
+                        && peek(1, true).type == TokenType::OP_LT)) {
+
                     expression = _parse_function_call();
                 } else {
                     expression = new IdentifierNode(tk);
@@ -1100,8 +1101,8 @@ namespace snowball {
 
                     ASSERT_TOKEN_EOF(tk, TokenType::IDENTIFIER, "an identifier", "function index/call")
 
-                    if (peek().type == TokenType::BRACKET_LPARENT || peek().type == TokenType::OP_LT)  {
-                        if (peek().type == TokenType::OP_LT && !(peek(1, true).type == TokenType::SYM_QUESTION)) {
+                    if (peek().type == TokenType::BRACKET_LPARENT || peek().type == TokenType::OP_NOT)  {
+                        if (peek().type == TokenType::OP_NOT && !(peek(1, true).type == TokenType::OP_LT)) {
                             continue;
                         }
 
@@ -1121,8 +1122,8 @@ namespace snowball {
                     next_token(1);
                     ASSERT_TOKEN_EOF(_current_token, TokenType::IDENTIFIER, "an identifier", "static function index/call")
 
-                    if (peek(0, true).type == TokenType::BRACKET_LPARENT || peek(0, true).type == TokenType::OP_LT)  {
-                        if (peek().type == TokenType::OP_LT && !(peek(1, true).type == TokenType::SYM_QUESTION)) {
+                    if (peek(0, true).type == TokenType::BRACKET_LPARENT || peek(0, true).type == TokenType::OP_NOT)  {
+                        if (peek().type == TokenType::OP_NOT && !(peek(1, true).type == TokenType::OP_LT)) {
                             continue;
                         }
 
@@ -1141,9 +1142,6 @@ namespace snowball {
                         expression = index;
                     }
                 } else if (tk.type == TokenType::SYM_QUESTION) {
-                    // if (tk.type == TokenType::SYM_QUESTION) {
-                    //     new TernaryOperator();
-                    // }
 
                     if (expression == nullptr) {
                         PARSER_ERROR(SYNTAX_ERROR, "expected expression")
@@ -1429,8 +1427,8 @@ namespace snowball {
         std::vector<Type*> type_generics;
         next_token();
 
-        if (_current_token.type == TokenType::OP_LT) {
-            if (peek(0, true).type != TokenType::SYM_QUESTION) {
+        if (_current_token.type == TokenType::OP_NOT) {
+            if (peek(0, true).type != TokenType::OP_LT) {
                 PARSER_ERROR(BUG, "unexpected non-generics on type")
             }
 
@@ -1441,8 +1439,14 @@ namespace snowball {
     }
 
     std::vector<Type*> Parser::_parse_generic_expr() {
-        ASSERT(_current_token.type == TokenType::OP_LT)
-        ASSERT(peek().type == TokenType::SYM_QUESTION)
+        // we've modified our generic thing to be Foo!<...>, so there shouldn't
+		// be any ambiguity left. once we see '!' and '<' we know for sure.
+		//? as long as we don't make '!' a postfix operator...
+		//? for now, we'll leave in the try-and-restore mechanism.
+
+        ASSERT(_current_token.type == TokenType::OP_NOT)
+        ASSERT(peek().type == TokenType::OP_LT)
+
         next_token();
 
         std::vector<Type*> types;
@@ -1468,6 +1472,40 @@ namespace snowball {
                 break;
             } else {
                 UNEXPECTED_TOK("a vaid generic expression")
+            }
+        }
+
+        return types;
+    }
+
+
+    std::vector<Type*> Parser::_parse_generic_decl() {
+        ASSERT(_current_token.type == TokenType::OP_LT)
+
+        std::vector<Type*> types;
+
+        while (true) {
+            next_token();
+
+            if (_current_token.type == TokenType::_EOF) {
+                PARSER_ERROR(Error::UNEXPECTED_EOF, "Found EOF while parsing generic declaration")
+            } else if (_current_token.type == TokenType::IDENTIFIER) {
+                types.push_back(new Type(_current_token.value));
+                next_token();
+
+                if (_current_token.type == TokenType::OP_GT) {
+                    next_token();
+                    break;
+                } else if (_current_token.type == TokenType::SYM_COMMA && peek(0, true).type == TokenType::IDENTIFIER) {
+                    continue;
+                }
+
+                UNEXPECTED_TOK2("a comma or a >", "a generic declaration")
+            } else if (_current_token.type == TokenType::OP_GT) {
+                next_token();
+                break;
+            } else {
+                UNEXPECTED_TOK("a vaid generic declaration")
             }
         }
 

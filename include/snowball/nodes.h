@@ -146,6 +146,11 @@ namespace snowball {
 		bool is_virtual = false;
 		bool is_lop_level = false;
 
+		// Custom context
+		llvm::Value* _vtable = nullptr;
+        int _possition_in_vtable = 0;
+		std::map<std::string, Type*> _generic_map;
+
 		FunctionNode() {
 			type = Ty::FUNCTION;
 		};

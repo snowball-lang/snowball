@@ -126,11 +126,13 @@ namespace snowball {
         } else {
             llvm::Value* value = generate(p_node->value);
             auto* alloca = _builder->CreateAlloca (value->getType(), nullptr, p_node->name );
+            auto store = _builder->CreateStore (value, alloca, /*isVolatile=*/false);
+            auto load = _builder->CreateLoad(alloca->getType()->getPointerElementType(), alloca);
 
-            std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(value)));
+            std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value*>(load)));
             _enviroment->current_scope()->set(p_node->name, std::move(scope_value));
 
-            return _builder->CreateStore (value, alloca, /*isVolatile=*/false);
+            return load;
         }
 
     }

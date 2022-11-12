@@ -83,12 +83,10 @@ namespace snowball {
         std::string C_name = p_pointer.empty() ? Logger::format("sn_%s__%s", TypeChecker::to_type(p_class->scope_value->name()).first->name.c_str(), p_name.c_str()) : p_pointer;
         auto function_prototype = llvm::FunctionType::get(p_return_type, arguments, false);
         auto function =
-            llvm::Function::Create(
-                function_prototype,
-                llvm::Function::ExternalLinkage,
+            (llvm::Function*)compiler->get_module()->getOrInsertFunction(
                 C_name,
-                compiler->get_module()
-            );
+                function_prototype
+            ).getCallee();
 
         std::shared_ptr<llvm::Function*> function_ptr = std::make_shared<llvm::Function*>(function);
         std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(function_ptr));
@@ -120,12 +118,10 @@ namespace snowball {
         std::string C_name = p_pointer.empty() ? Logger::format("sn_%s__%s", TypeChecker::to_type(p_class->scope_value->name()).first->name.c_str(), str_op.c_str()) : p_pointer;
         auto function_prototype = llvm::FunctionType::get(p_return_type, arguments, false);
         auto function =
-            llvm::Function::Create(
-                function_prototype,
-                llvm::Function::ExternalLinkage,
+            (llvm::Function*)compiler->get_module()->getOrInsertFunction(
                 C_name,
-                compiler->get_module()
-            );
+                function_prototype
+            ).getCallee();
 
         std::shared_ptr<llvm::Function*> function_ptr = std::make_shared<llvm::Function*>(function);
         std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(function_ptr));

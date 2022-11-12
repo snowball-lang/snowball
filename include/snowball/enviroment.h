@@ -57,6 +57,8 @@ namespace snowball {
 
             ~Enviroment() {};
 
+            std::map<std::string, ScopeValue*> modules;
+
         private:
             SourceInfo* _source_info;
             std::vector<Scope*> _scopes;

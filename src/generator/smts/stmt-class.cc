@@ -33,12 +33,13 @@
 namespace snowball {
     llvm::Value* Generator::generate_class(ClassNode* p_node) {
         Type* class_type = new Type(p_node->name);
+        std::string struct_name = (ADD_MODULE_NAME_IF_EXISTS("::") ADD_NAMESPACE_NAME_IF_EXISTS("::") /*+*/ class_type->mangle());
 
         // TODO: check for generics
         // TODO: class name mangled if module exists
         Scope* class_scope = new Scope(p_node->name, _source_info);
 
-        auto class_struct = llvm::StructType::create(_builder->getContext(), class_type->mangle());
+        auto class_struct = llvm::StructType::create(_builder->getContext(), "struct." + struct_name);
         ScopeValue* class_scope_val = new ScopeValue(class_scope, std::make_shared<llvm::StructType*>(class_struct));
 
         std::vector<llvm::Type*> var_types;
@@ -84,25 +85,32 @@ namespace snowball {
         _context._current_class->name = class_type->mangle();
 
         std::vector<FunctionNode*> virtual_functions;
+        int possition_in_vtable = 0;
         for (FunctionNode* func : p_node->functions) {
             if (func->is_virtual) {
+                func->_possition_in_vtable = possition_in_vtable;
                 virtual_functions.push_back(func);
+                possition_in_vtable++;
             }
         }
 
         if (virtual_functions.size() > 0) {
             class_scope_val->has_vtable = true;
-            std::string struct_name = (ADD_MODULE_NAME_IF_EXISTS("::") ADD_NAMESPACE_NAME_IF_EXISTS("::") /*+*/ class_type->mangle());
             auto vtable = create_virtual_table(_module, struct_name, class_scope, virtual_functions, [&](FunctionNode* fn) -> llvm::Function* {
                 return (llvm::Function*)generate_function(fn);
             });
 
-            var_types.insert(var_types.begin(), vtable);
+            var_types.insert(var_types.begin(), vtable->getType());
+            class_scope_val->vtable = vtable;
         }
 
         class_struct->setBody(var_types);
 
         for (FunctionNode* func : p_node->functions) {
+
+            if (func->is_virtual)
+                func->_vtable = class_scope_val->vtable;
+
             generate_function(func, func->is_virtual);
         }
 
@@ -114,8 +122,8 @@ namespace snowball {
         return (llvm::Value*)class_struct;
     }
 
-    llvm::StructType* create_virtual_table(llvm::Module* module, std::string p_className, Scope* p_class, std::vector<FunctionNode*> p_nodes, std::function<llvm::Function* (FunctionNode*)> p_callback) {
-        auto stuct_name = Logger::format("struct._Vt#%s", p_className.c_str());
+    llvm::Value* create_virtual_table(llvm::Module* module, std::string p_className, Scope* p_class, std::vector<FunctionNode*> p_nodes, std::function<llvm::Function* (FunctionNode*)> p_callback) {
+        auto stuct_name = Logger::format(_SN_VTABLE_PREFIX "_Vt%sNf%iSt", p_className.c_str(), p_nodes.size());
 
         std::vector<llvm::Type*> types;
         std::vector<llvm::Constant*> functions;
@@ -136,6 +144,6 @@ namespace snowball {
         llvm::GlobalVariable *vTable = module->getNamedGlobal(stuct_name);
         vTable->setInitializer(llvm::ConstantStruct::get(vtable, functions));
 
-        return vtable;
+        return vTable;
     }
 }

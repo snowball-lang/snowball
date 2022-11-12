@@ -77,6 +77,13 @@ namespace snowball {
         if (temp != "") {
             split_path.push_back(temp);
         }
-        return split_path.back();
+
+        auto name = split_path.back();
+        size_t lastindex = name.find_last_of(".");
+
+        if (lastindex != std::string::npos)
+            name = name.substr(0, lastindex);
+
+        return name;
     }
 }

@@ -13,6 +13,7 @@
 
 - [ ] Check if class function is already defined
 - [ ] Generics for class functions
+- [ ] Generics kinda not work when there are arguments.
 - [ ] Check if namespaces/modules are the same while checking if var/func is private
     - [ ] Index node
     - [ ] identifier node

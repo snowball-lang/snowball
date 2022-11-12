@@ -33,7 +33,8 @@ namespace snowball {
     void Generator::generate_contructor_meta(ClassNode* current_class) {
         ASSERT(current_class != nullptr)
 
-        llvm::StructType* type = *_enviroment->get(ADD_NAMESPACE_NAME_IF_EXISTS(".") current_class->name, current_class)->llvm_struct;
+        auto class_scope = _enviroment->get(current_class->name, current_class);
+        auto type = *class_scope->llvm_struct;
         int size = _module->getDataLayout().getTypeStoreSize(type);
         llvm::ConstantInt* size_constant = llvm::ConstantInt::get(_builder->getInt32Ty(), size);
 
@@ -43,7 +44,12 @@ namespace snowball {
         std::unique_ptr<ScopeValue*> scope_value = std::make_unique<ScopeValue*>(new ScopeValue(std::make_unique<llvm::Value *>(pointerCast)));
         _enviroment->current_scope()->set("self", std::move(scope_value));
 
-        int var_index = current_class->parents.size();
+        if (class_scope->has_vtable) {
+            llvm::Value* pointer = _builder->CreateInBoundsGEP(pointerCast->getType()->getPointerElementType(), pointerCast, {llvm::ConstantInt::get(_builder->getInt32Ty(), 0), llvm::ConstantInt::get(_builder->getInt32Ty(), 0)});
+            _builder->CreateStore(class_scope->vtable, pointer);
+        }
+
+        int var_index = current_class->parents.size() + class_scope->has_vtable;
         for (VarNode* var : current_class->vars) {
             auto p_node = var; // for compiler errors
 

@@ -204,12 +204,19 @@ typedef int32_t                                 snowball_int_t;
 #define _SNOWBALL_KEYWORD__CONSTANT         "const"
 #define _SNOWBALL_KEYWORD__UNDEFINED        "undefined"
 
+// LLVM IR constants
+#define _SN_CLASS_PREFIX                    "class."
+#define _SN_STRUCT_PREFIX                   "struct."
+#define _SN_VTABLE_PREFIX                   "vtable."
+
 // Compiler lines
+#if 0
 #define _SNOWBALL_COMPILER_ENTRY            "Snowball " _SNOWBALL_VERSION " (" _SNOWBALL_BUILD_TYPE ": " _SNOWBALL_BUILD_DATE ", " _SNOWBALL_BUILD_TIME ")"
 #define _SNOWBALL_COMPILER_ENTRY_BK         "\
 Snowball " _SNOWBALL_VERSION " (" _SNOWBALL_BUILD_TYPE ": " _SNOWBALL_BUILD_DATE ", " _SNOWBALL_BUILD_TIME ")\n\
 Type \"help\", \"copyright\", \"credits\" or \"license\" for more information.\
 "
+#endif
 
 // Licenses
 #define _SNOWBALL_LICENSE_NAME              "MIT"

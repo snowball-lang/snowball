@@ -87,7 +87,7 @@ extern "C" snowball::ScopeValue* sn_export(snowball::SNAPI* API) {
         METHOD("println", void_type, { METHOD_ARGUMENT(snowball::FLOAT32_TYPE, float_type) },  "_ZN6System7printlnEf")
         METHOD("println", void_type, { METHOD_ARGUMENT(snowball::FLOAT64_TYPE, double_type) }, "_ZN6System7printlnEd")
 
-        METHOD("print", void_type, { METHOD_ARGUMENT(snowball::STRING_TYPE, string_type) },  "_ZN6System5printEPc")
+        METHOD("print", void_type, { METHOD_ARGUMENT(snowball::STRING_TYPE, string_type) },  "puts")
         METHOD("print", void_type, { METHOD_ARGUMENT(snowball::BOOL_TYPE, bool_type) },      "_ZN6System5printEb")
         METHOD("print", void_type, { METHOD_ARGUMENT(snowball::INT16_TYPE, int16_type) },    "_ZN6System5printEs")
         METHOD("print", void_type, { METHOD_ARGUMENT(snowball::INT32_TYPE, int32_type) },    "_ZN6System5printEi")

@@ -2,6 +2,8 @@
 #include <memory>
 #include <algorithm>
 
+#include <map>
+
 #include "constants.h"
 #include <llvm/IR/IRBuilder.h>
 
@@ -64,12 +66,12 @@ namespace snowball {
 
             static std::string string_mangle(std::string p_type);
 
-            static std::pair<std::vector<Type*>,bool> deduce_template_args(
+            static std::tuple<std::map<std::string, Type*>,std::vector<Type*>,bool> deduce_template_args(
                 FunctionNode* def, std::vector<Type*> params, std::vector<Type*> gparams);
 
             static std::string args_to_string(std::vector<Type*> p_args);
             static std::pair<Type*, int> to_type(std::string p_type);
-            static ScopeValue* get_type(Enviroment* p_enviroment, Type* p_type, Node* p_node = nullptr);
+            static ScopeValue* get_type(Enviroment* p_enviroment, Type* p_type, Node* p_node = nullptr, std::string p_err = "");
             static std::pair<bool, bool> functions_equal(std::string p_name, std::string p_name2, std::vector<Type*> p_args, std::vector<Type*> p_args2, bool p_public, bool p_public2, bool has_varg=false);
     };
 
@@ -87,7 +89,9 @@ namespace snowball {
             return TypeChecker::to_mangle((Type*)this);
         }
 
-        bool equals(Type* p_comp) const {
+        bool equals(Type* p_comp, bool with_generics = true) const {
+            if (!with_generics) return name == p_comp->name;
+
             bool gens_equal = p_comp->generics.size() == 0;
 
             if (p_comp->generics.size() == generics.size()) {

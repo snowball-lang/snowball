@@ -55,6 +55,7 @@ namespace snowball {
 
             Type* _parse_type();
             std::vector<Type*> _parse_generic_expr();
+            std::vector<Type*> _parse_generic_decl();
 
             // Variables
             Lexer* _lexer;

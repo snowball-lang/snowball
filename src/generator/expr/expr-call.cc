@@ -137,22 +137,18 @@ namespace snowball {
         bool function_is_used = false;
         bool private_method_exists = false;
 
-        // TODO: IF FUNCTION IS INSIDE A MODULE,
-        // SET THE MODULE TO CONTEXT AND SET IT'S SCOPES,
-        // THIS IS VERY IMPORTANT.
-
         for (int i = 0; i < 2; i++) {
             bool can_private = !i;
 
             method_call =
                 (p_node->base == nullptr ?
-                mangle(p_node->method, arg_types, can_private) :
-                GET_FUNCTION_FROM_CLASS((base_struct).c_str(), p_node->method, arg_types, can_private));
+                mangle(p_node->method, arg_types, !can_private) :
+                GET_FUNCTION_FROM_CLASS((base_struct).c_str(), p_node->method, arg_types, !can_private));
 
             if (_enviroment->item_exists(method_call)) {
                 function = _enviroment->get(method_call, p_node);
 
-                if (!(can_private)) {
+                if (can_private) {
                     if ((_context._current_module != nullptr && _context._current_module->module_name == base_struct) || (_context._current_class != nullptr && _context._current_class->name == base_struct) || (function->parent_scope->name() == _enviroment->global_scope()->name())) {
                         function_is_used = true;
                     } else {
@@ -171,7 +167,7 @@ namespace snowball {
                     node_args.insert(node_args.begin(), arg);
                 }
 
-                if ((!can_private) && store.node->is_public) return {false, false};
+                if (can_private && store.node->is_public) return {false, false};
                 if ((node_args.size() <= arg_types.size()) && store.node->has_vargs) {}
                 else if (node_args.size() != arg_types.size()) return {false, false};
                 if (!store.node->generics.empty()) return {true, true};// If it's generic, return it because it is the only function with the specified name and argument amount in the list (this might be a canditate)
@@ -180,16 +176,18 @@ namespace snowball {
                     store.node->name,
                     TypeChecker::args2types(node_args),
                     arg_types,
-                    can_private,
+                    !can_private,
                     store.node->is_public,
                     store.node->has_vargs);
             }, p_node))) {
 
-                auto [_args, succ] = TypeChecker::deduce_template_args(function_store->node, arg_types, p_node->generics);
+                auto [_map, _args, succ] = TypeChecker::deduce_template_args(function_store->node, arg_types, p_node->generics);
                 if (succ) {
+                    function_store->node->_generic_map = _map;
+
                     for (int i = 0; i < function_store->node->arguments.size(); i++) {
 
-                        ScopeValue* arg_ty = TypeChecker::get_type(_enviroment, function_store->node->arguments[i]->arg_type, p_node);
+                        ScopeValue* arg_ty = TypeChecker::get_type(_enviroment, _args[i], p_node);
                         if (!TypeChecker::is_class(arg_ty)) {
                             COMPILER_ERROR(TYPE_ERROR, Logger::format("Type %s does not point to a valid type.", _args[i]->to_string().c_str()))
                         }
@@ -208,15 +206,24 @@ namespace snowball {
                     COMPILER_ERROR(TYPE_ERROR, Logger::format("Coudn't deduce arguments for '%s'", p_node->method.c_str()))
                 }
 
-                ASSERT(arg_types.size() <= function_store->node->arguments.size())
+                if (class_value->type == ScopeType::MODULE) {
 
-                auto bk_scopes = _enviroment->save_state();
-                paste_function(function_store);
-                _enviroment->restore_state(bk_scopes);
+                    auto bk_scopes = _enviroment->save_state(false);
+                    _enviroment->create_scope(class_value->scope_value);
 
-                function = _enviroment->get(method_call, p_node); // it will exist... right?
+                    paste_function(function_store);
 
-                if (!(can_private)) {
+                    _enviroment->restore_state(bk_scopes);
+                } else {
+                    auto bk_scopes = _enviroment->save_state();
+                    paste_function(function_store);
+                    _enviroment->restore_state(bk_scopes);
+                }
+
+                function = _enviroment->get(method_call, nullptr); // it will exist... right?
+
+                if (can_private) {
+                    // TODO: change module name for module ID
                     if ((_context._current_module != nullptr && _context._current_module->module_name == base_struct) || (_context._current_class != nullptr && _context._current_class->name == base_struct) || (function->parent_scope->name() == _enviroment->global_scope()->name())) {
                         function_is_used = true;
                     } else {
@@ -226,6 +233,9 @@ namespace snowball {
                     function_is_used = true;
                 }
             }
+
+            if (function_is_used)
+                break;
         }
 
         // checking for errors!
@@ -254,6 +264,30 @@ namespace snowball {
         }
 
         ASSERT(args.size() == arg_types.size())
+
+        // Check if function is virtual and if it's inside a class
+        if (function->has_vtable) {
+            ASSERT(class_value->type == ScopeType::CLASS)
+
+            // Get the vtable stored inside function's class
+            // note: It should always be at position 0
+            auto gep = _builder->CreateStructGEP(
+                base_value
+                    ->getType()->getPointerElementType() /* get type of element on heap*/,
+                base_value, 0);
+
+            // Create a load instruction for our vtable and fetch
+            // the correct function inside it.
+            auto vTablePtr = _builder->CreateLoad(gep->getType()->getPointerElementType(), gep);
+            auto calleeMethodPtr =
+                _builder->CreateStructGEP(vTablePtr->getType()->getPointerElementType(),
+                                        vTablePtr,  function->possition_in_vtable);
+
+            // Load the function and call it.
+            auto calleeMethod = (llvm::Function*)_builder->CreateLoad(calleeMethodPtr->getType()->getPointerElementType(), calleeMethodPtr);
+            return _builder->CreateCall((llvm::FunctionType*)calleeMethod->getType()->getPointerElementType(), calleeMethod, args);
+        }
+
         return _builder->CreateCall(*function->llvm_function, args);
 
         #undef FUNCTION_NAME

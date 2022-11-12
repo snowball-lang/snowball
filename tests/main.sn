@@ -1,6 +1,10 @@
 
-import Math
 import System
+
+fn hello<T>() {
+    System.print((new T()).hey())
+}
+
 
 class Hello {
 
@@ -8,12 +12,20 @@ class Hello {
 
     }
 
-    pub virt fn hello() {
+    pub fn hey() String {
+        return "sup"
+    }
 
+    pub virt fn hello() {
+        System.println("hello")
     }
 }
 
 pub fn main() Void {
-    new Hello()
-    System.println(Math.atan(25, 25))
+
+
+    hello!<Hello>()
+
+    var h = new Hello()
+    h.hello()
 }

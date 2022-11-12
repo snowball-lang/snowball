@@ -105,14 +105,44 @@ namespace snowball {
         auto function = (llvm::Function*)_module->getOrInsertFunction(fname, prototype).getCallee();
 
         std::unique_ptr<ScopeValue*> func_scopev = std::make_unique<ScopeValue*>(new ScopeValue(std::make_shared<llvm::Function*>(function)));
+
         (*func_scopev)->isStaticFunction = store->node->is_static;
         (*func_scopev)->hasVArg = store->node->has_vargs;
         (*func_scopev)->isPublic = store->node->is_public;
         (*func_scopev)->arguments = arg_tnames;
+        (*func_scopev)->has_vtable = store->node->is_virtual;
+        (*func_scopev)->vtable = store->node->_vtable;
+        (*func_scopev)->possition_in_vtable = store->node->_possition_in_vtable;
+
         _SET_TO_GLOBAL_OR_CLASS(mangle(
                 store->node->name, arg_tnames, store->node->is_public), func_scopev);
 
         Scope* current_scope = _enviroment->create_scope(store->node->name);
+
+        for (const auto& generic : store->node->_generic_map) {
+            FunctionNode* p_node = store->node; // for DBGInfo
+
+            ScopeValue* scope_val = TypeChecker::get_type(_enviroment, generic.second, store->node, Logger::format(
+                "Generic (%s) type %s", generic.first.c_str(), generic.second->to_string().c_str()
+            ));
+
+            if (!TypeChecker::is_class(scope_val)) {
+                COMPILER_ERROR(SYNTAX_ERROR, Logger::format("%s does not point a class", generic.second->to_string().c_str()))
+            }
+
+            auto ty = TypeChecker::type2llvm(_builder, *scope_val->llvm_struct);
+
+            int size = _module->getDataLayout().getTypeStoreSize(ty);
+            auto size_constant = _builder->getInt32(size);
+
+            auto alloca_value = _builder->CreateCall(get_alloca(_module, _builder), size_constant);
+            auto cast = _builder->CreatePointerCast(alloca_value, ty, generic.first);
+
+            auto scope_value = new ScopeValue(std::make_unique<llvm::Value*>(cast));
+            current_scope->set(TypeChecker::string_mangle(generic.first), std::make_unique<ScopeValue*>(scope_value));
+
+            continue;
+        }
 
         int parameter_index = (store->current_class != nullptr && store->node->name != op2str(OperatorType::CONSTRUCTOR)) ? 0 : 1;
         for (auto& arg : function->args()) {
