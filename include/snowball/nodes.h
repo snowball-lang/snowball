@@ -304,11 +304,12 @@ namespace snowball {
 		std::vector<OperatorNode*> operators;
 
 		// TODO: generics
+		Type* parent;
 		std::vector<Type*> generics;
-		std::vector<Type*> parents;
 
 		// note: only used as context on the generator
 		llvm::StructType* _llvm_struct = nullptr;
+		int _parent_props_count = 0;
 
 		ClassNode() {
 			type = Ty::CLASS;

@@ -49,7 +49,8 @@ namespace snowball {
             _builder->CreateStore(class_scope->vtable, pointer);
         }
 
-        int var_index = current_class->parents.size() + class_scope->has_vtable;
+        int var_index = class_scope->has_vtable + current_class->_parent_props_count;
+
         for (VarNode* var : current_class->vars) {
             auto p_node = var; // for compiler errors
 
@@ -69,8 +70,13 @@ namespace snowball {
                 value = cast;
             }
 
-            llvm::Value* pointer = _builder->CreateInBoundsGEP(pointerCast->getType()->getPointerElementType(), pointerCast, {llvm::ConstantInt::get(_builder->getInt32Ty(), 0), llvm::ConstantInt::get(_builder->getInt32Ty(), var_index)});
-            // llvm::Value* load = convert_to_right_value(_builder, pointer);
+            llvm::Value* pointer = _builder->CreateInBoundsGEP(
+                pointerCast->getType()->getPointerElementType(),
+                pointerCast,
+                {
+                    llvm::ConstantInt::get(_builder->getInt32Ty(), 0),
+                    llvm::ConstantInt::get(_builder->getInt32Ty(), var_index)
+                });
 
             _builder->CreateStore(value, pointer);
 

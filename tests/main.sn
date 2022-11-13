@@ -1,31 +1,28 @@
 
 import System
 
-fn hello<T>() {
-    System.print((new T()).hey())
-}
 
-
-class Hello {
-
-    pub operator new() {
-
-    }
-
-    pub fn hey() String {
-        return "sup"
-    }
+class Parent {
+    pub var hello: String = ""
+    pub operator new() {}
 
     pub virt fn hello() {
-        System.println("hello")
+        System.println("parent")
+    }
+}
+
+class Child : Parent {
+    // pub var hello: String = "hey"
+
+    pub operator new() {}
+
+    pub virt fn hello() {
+        System.println(self.hello)
     }
 }
 
 pub fn main() Void {
 
-
-    hello!<Hello>()
-
-    var h = new Hello()
+    var h = new Child()
     h.hello()
 }

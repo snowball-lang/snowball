@@ -85,7 +85,7 @@ namespace snowball {
         // Class params
         llvm::Value* vtable;
         bool has_vtable = false;
-        std::vector<Type*> parents;
+        Type* parents;
 
         struct ClassPropertie {
             std::string name;

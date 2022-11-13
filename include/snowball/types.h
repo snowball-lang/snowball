@@ -82,7 +82,7 @@ namespace snowball {
         bool is_array = false;
 
         std::string to_string() const {
-            return name; // TODO: generics or array
+            return this->name; // TODO: generics or array
         }
 
         std::string mangle() const {

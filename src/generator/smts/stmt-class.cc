@@ -55,25 +55,32 @@ namespace snowball {
             var_types.push_back(_type);
         }
 
-        for (auto parent : p_node->parents) {
-            ScopeValue* type = TypeChecker::get_type(_enviroment, parent, p_node);
+        if (p_node->parent != nullptr) {
+            ScopeValue* type = TypeChecker::get_type(_enviroment, p_node->parent, p_node);
             if (!TypeChecker::is_class(type)) {
-                COMPILER_ERROR(TYPE_ERROR, Logger::format("'%s' does not reference a class", parent->name.c_str()))
+                COMPILER_ERROR(TYPE_ERROR, Logger::format("'%s' does not reference a class", p_node->parent->name.c_str()))
             }
 
             for (auto var_propertie : type->properties) {
-                // TODO: check for same types from parent to child
-                if (std::find_if(class_scope_val->properties.begin(), class_scope_val->properties.end(),
-                    [&](const ScopeValue::ClassPropertie p) -> bool { return p.name == var_propertie.name; }) != class_scope_val->properties.end()) {
+                auto parent_property = std::find_if(class_scope_val->properties.begin(), class_scope_val->properties.end(),
+                    [&](const ScopeValue::ClassPropertie p) -> bool { return p.name == var_propertie.name; });
 
-                        // we know that they point to a class
-                        ScopeValue* type = TypeChecker::get_type(_enviroment, parent, p_node);
+                if (parent_property == class_scope_val->properties.end()) {
 
-                        auto _type = TypeChecker::type2llvm(_builder, (llvm::Type*)(*type->llvm_struct));
+                    auto _type = TypeChecker::type2llvm(_builder, var_propertie.type);
 
-                        class_scope_val->properties.insert(class_scope_val->properties.begin(), var_propertie);
-                        var_types.insert(var_types.begin(), _type);
+                    class_scope_val->properties.insert(class_scope_val->properties.begin(), var_propertie);
+                    var_types.insert(var_types.begin(), _type);
+
+                    p_node->_parent_props_count++;
+                } else {
+                    if (parent_property->type != var_propertie.type) {
+                        auto p1_name = TypeChecker::llvm2type(var_propertie.type)->to_string();
+                        auto p2_name = TypeChecker::llvm2type(parent_property->type)->to_string();
+
+                        COMPILER_ERROR(TYPE_ERROR, Logger::format("Conflict types between '%s' (from parent) and '%s'", p1_name.c_str(), p2_name.c_str()))
                     }
+                }
             }
         }
 

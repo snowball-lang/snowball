@@ -62,7 +62,7 @@ namespace snowball {
                 }
 
                 // We asume it's a pointer since raw types does not have any attriute
-                auto GEP = _builder->CreateInBoundsGEP(gen_result->getType()->getPointerElementType(), gen_result, {llvm::ConstantInt::get(_builder->getInt32Ty(), 0), llvm::ConstantInt::get(_builder->getInt32Ty(), pos+((int)value->has_vtable)+value->parents.size())});
+                auto GEP = _builder->CreateInBoundsGEP(gen_result->getType()->getPointerElementType(), gen_result, {llvm::ConstantInt::get(_builder->getInt32Ty(), 0), llvm::ConstantInt::get(_builder->getInt32Ty(), pos+((int)value->has_vtable))});
                 return convert_to_right_value(_builder, GEP);
             }
 

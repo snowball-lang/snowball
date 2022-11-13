@@ -86,6 +86,7 @@ namespace snowball {
 
     ScopeValue* TypeChecker::get_type(Enviroment* p_enviroment, Type* p_type, Node* p_node, std::string p_err) {
         if (p_err.empty()) p_err = Logger::format("Type %s", p_type->to_string().c_str());
+        DUMP_S(p_type->to_string().c_str())
         return p_enviroment->get(p_type->mangle(), p_node, p_err);
     }
 
