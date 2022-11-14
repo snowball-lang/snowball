@@ -4,7 +4,7 @@ import System
 
 class Parent {
     pub var hello: String = ""
-    pub operator new() {}
+    Padrent() {}
 
     pub virt fn hello() {
         System.println("parent")
@@ -14,7 +14,7 @@ class Parent {
 class Child : Parent {
     // pub var hello: String = "hey"
 
-    pub operator new() {}
+    pub Child() {}
 
     pub virt fn hello() {
         System.println(self.hello)

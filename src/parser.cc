@@ -395,6 +395,10 @@ namespace snowball {
         _context.current_class = cls;
         while (true) {
             next_token();
+
+            #define IS_CONSTRUCTOR(tk) tk.type == TokenType::IDENTIFIER && tk.value == cls->name
+            #define SET_TOKEN() _current_token = peek(0);
+
             switch (_current_token.type)
             {
                 case TokenType::BRACKET_RCURLY: {
@@ -403,16 +407,18 @@ namespace snowball {
                 }
 
                 case TokenType::KWORD_STATIC: {
-                    if (peek(0, true).type != TokenType::KWORD_FUNC && peek(0, true).type != TokenType::KWORD_VAR) {
+                    if (peek().type != TokenType::KWORD_FUNC && peek().type != TokenType::KWORD_VAR) {
                         PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\" or \"var\" after static");
                     }
                 } break;
 
                 case TokenType::KWORD_VIRTUAL: {
                     // PARSER_ERROR(Error::TODO, "Virtual not yet supported")
-                    if (peek(0, true).type == TokenType::KWORD_STATIC) {
+                    if (peek().type == TokenType::KWORD_STATIC) {
+                        SET_TOKEN()
                         PARSER_ERROR(Error::ARGUMENT_ERROR, "Virtual methods can't be static!");
-                    } else if (peek(0, true).type != TokenType::KWORD_FUNC && peek(0, true).type != TokenType::KWORD_VAR) {
+                    } else if (peek().type != TokenType::KWORD_FUNC && peek().type != TokenType::KWORD_VAR) {
+                        SET_TOKEN()
                         PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\" or \"var\" after virtual declaration");
                     }
                 } break;
@@ -420,11 +426,13 @@ namespace snowball {
                 case TokenType::KWORD_PUBLIC:
                 case TokenType::KWORD_PRIVATE: {
                     if (
-                        peek(0, true).type != TokenType::KWORD_FUNC
-                        && peek(0, true).type != TokenType::KWORD_VAR
-                        && peek(0, true).type != TokenType::KWORD_VIRTUAL
-                        && peek(0, true).type != TokenType::KWORD_STATIC
-                        && peek(0, true).type != TokenType::KWORD_OPERATOR) {
+                        peek().type != TokenType::KWORD_FUNC
+                        && peek().type != TokenType::KWORD_VAR
+                        && peek().type != TokenType::KWORD_VIRTUAL
+                        && peek().type != TokenType::KWORD_STATIC
+                        && peek().type != TokenType::KWORD_OPERATOR
+                        && (!(IS_CONSTRUCTOR(peek())))) {
+                        SET_TOKEN()
                         PARSER_ERROR(Error::SYNTAX_ERROR, "expected keyword \"func\", \"virt\", \"var\", \"operator\" or \"static\" after pub/priv declaration");
                     }
                     break;
@@ -445,9 +453,20 @@ namespace snowball {
                     cls->functions.push_back(func);
                 } break;
 
+                case TokenType::IDENTIFIER: {
+                    if (IS_CONSTRUCTOR(_current_token)) {
+                        // TODO: parse constructor
+                        break;
+                    }
+
+                    // fall through
+                }
+
                 default:
                     PARSER_ERROR(Error::SYNTAX_ERROR, Logger::format("'%s' is not allowed inside class blocks", _current_token.to_string().c_str()))
             }
+
+            #undef IS_CONSTRUCTOR
         }
 
         // TODO: this does not work if class has 2 duplicate variables
@@ -518,8 +537,6 @@ namespace snowball {
                 OP_CASE(OP_BIT_AND_EQ, BIT_AND_EQ);
                 OP_CASE(OP_BIT_XOR, BIT_XOR);
                 OP_CASE(OP_BIT_XOR_EQ, BIT_XOR_EQ);
-
-                OP_CASE(KWORD_NEW, CONSTRUCTOR);
 
                 case TokenType::BRACKET_LPARENT: {
                     if (peek().type == TokenType::BRACKET_RPARENT) {
