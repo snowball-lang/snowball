@@ -1,0 +1,53 @@
+class TestCase {
+    pub TestCase() {
+
+    }
+
+    pub fn hello() i32 {
+        return 2
+    }
+
+    pub fn tmp<T>(d: T) String {
+        return t + "hey"
+    }
+
+    pub static fn static_fn() i32 {
+        return 3
+    }
+
+    pub static fn hello() i32 {
+        return TestCase::static_fn()
+    }
+
+    pub operator +() String {
+        return "hello"
+    }
+}
+
+@[test("create a new instance of a class")]
+fn instance() Bool {
+    var T = new TestCase()
+    return true
+}
+
+@[test("call class function")]
+fn call_fn() Bool {
+    var t = new TestCase()
+    return t.hello() == 2
+}
+
+@[test("call class static function")]
+fn call_static() Bool {
+    return TestCase::static_fn() == 3
+}
+
+@[test("call static function from static method (with static overide)")]
+fn call_static_override() Bool {
+    return TestCase::hello() == 3
+}
+
+@[test("Class method call with generics")]
+fn class_method_generics() Bool {
+    var t = new TestCase()
+    return t.tmp<String>("3") == "3"
+}

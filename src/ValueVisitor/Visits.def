@@ -1,0 +1,18 @@
+
+#ifndef VISIT
+#error "VISIT(n) should be defined!"
+#define VISIT(v) // for linting
+#endif
+
+VISIT(Func)
+VISIT(Block)
+VISIT(StringValue)
+VISIT(NumberValue)
+VISIT(BooleanValue)
+VISIT(FloatValue)
+VISIT(NullValue)
+VISIT(Variable)
+VISIT(Call)
+VISIT(ValueExtract)
+VISIT(Return)
+VISIT(Argument)

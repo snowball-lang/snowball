@@ -1,0 +1,5 @@
+
+[package]
+main = "test_core_sn.test.sn"
+name = "Core modules"
+version = "1.0.0"

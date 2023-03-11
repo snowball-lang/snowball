@@ -1,0 +1,95 @@
+
+
+////////////////////////////////////////////////////
+///// . PRIVATE IMPORTS
+////////////////////////////////////////////////////
+extern fn isnan(f64) Bool;
+extern fn strtod(String, i32) f64; // TODO
+extern fn isinf(f64) Bool;
+extern fn atan2(f64, f64) f64;
+
+////////////////////////////////////////////////////
+///// . SIN/COS
+////////////////////////////////////////////////////
+extern fn "llvm.sin.f32" as sin(f32) f32;
+pub extern fn "llvm.sin.f64" as sin(f64) f64;
+
+pub extern fn "llvm.cos.f32" as cos(f32) f32;
+pub extern fn "llvm.cos.f64" as cos(f64) f64;
+
+pub extern fn cosh(f64) f64;
+pub extern fn sinh(f64) f64;
+
+pub extern fn acos(f64) f64;
+pub extern fn asin(f64) f64;
+
+////////////////////////////////////////////////////
+///// . LOG
+////////////////////////////////////////////////////
+
+pub extern fn "llvm.log.f32" as log(f32) f32;
+pub extern fn "llvm.log.f64" as log(f64) f64;
+
+pub extern fn "llvm.log10.f32" as log10(f32) f32;
+pub extern fn "llvm.log10.f64" as log10(f64) f64;
+
+pub extern fn "llvm.log2.f32" as log2(f32) f32;
+pub extern fn "llvm.log2.f64" as log2(f64) f64;
+
+////////////////////////////////////////////////////
+///// . OTHER MATH OPERATORS
+////////////////////////////////////////////////////
+pub extern fn frexp(f64, i32) f64;
+pub extern fn ldexp(f64, i32) f64;
+
+pub extern fn sqrt(f64) f64;
+
+pub extern fn "llvm.floor.f32" as floor(f32) f32;
+pub extern fn "llvm.floor.f64" as floor(f64) f64;
+
+pub extern fn "llvm.ceil.f32" as ceil(f32) f32;
+pub extern fn "llvm.ceil.f64" as ceil(f64) f64;
+
+pub extern fn modf(f64, f64) f64;
+pub extern fn fmod(f64, f64) f64;
+pub extern fn pow(f64, f64) f64;
+
+
+////////////////////////////////////////////////////
+///// . TAN/ATAN
+////////////////////////////////////////////////////
+pub extern fn atan(f64) f64;
+pub fn atan(n1: f64, n2: f64) f64 => atan2(n1, n2);
+
+pub fn tan(x: f32) f32 => sin(x) / cos(x)
+pub fn tan(x: f64) f64 => sin(x) / cos(x)
+
+////////////////////////////////////////////////////
+///// . ABS
+////////////////////////////////////////////////////
+pub fn abs(x: i16) i16 => (x < 0) ? -x : x
+pub fn abs(x: i32) i32 => (x < 0) ? -x : x
+pub fn abs(x: i64) i64 => (x < 0) ? -x : x
+
+pub extern fn "llvm.fabs.f32" as abs(f32) f32;
+pub extern fn "llvm.fabs.f64" as abs(f64) f64;
+
+////////////////////////////////////////////////////
+///// . TTRUNC METHODS
+////////////////////////////////////////////////////
+pub extern fn "llvm.trunc.f32" as trunc(f32) f32;
+pub extern fn "llvm.trunc.f64" as trunc(f64) f64;
+
+// constants
+pub var PI = 3.141592653589793238462643383279502884197;
+pub var logpi = 1.144729885849400174143427351353058711647;
+pub var sqrtpi = 1.772453850905516027298167483341145182798;
+
+pub var inf = strtod("Inf", 0);
+
+// TODO: nanf and nanl
+pub var nan = strtod("NaN", 0);
+
+pub fn is_nan(x: f64) Bool => isnan(x);
+pub fn is_infinite(x: f64) Bool => isinf(x);
+

@@ -1,0 +1,17 @@
+IndentWidth: 4
+TabWidth: 4
+BasedOnStyle: LLVM
+UseTab: Never
+AlignConsecutiveAssignments: true
+AlignConsecutiveMacros: true
+AlignTrailingComments: true
+AllowShortFunctionsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+IncludeBlocks: Regroup
+IndentCaseLabels: true
+IndentPPDirectives: None
+ReferenceAlignment: Left
+SortIncludes: CaseSensitive
+SortUsingDeclarations: Lexicographic
+MaxEmptyLinesToKeep: 1

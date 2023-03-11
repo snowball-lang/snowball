@@ -1,0 +1,23 @@
+pub mod String
+{
+	pub var min = -128
+	pub var max =  127
+}
+
+pub mod int16
+{
+	pub var min: i16 = -32768
+	pub var max: i16 =  32767
+}
+
+pub mod int32
+{
+	pub var min: i32 = -2147483648
+	pub var max: i32 =  2147483647
+}
+
+pub mod int64
+{
+	pub var min: i64 = -9223372036854775808
+	pub var max: i64 =  9223372036854775807
+}

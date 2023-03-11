@@ -1,0 +1,12 @@
+
+#ifndef VISIT
+#define VISIT(v) v,
+#endif
+
+VISIT(String)
+VISIT(Number)
+VISIT(Float)
+VISIT(Bool)
+VISIT(Null)
+
+#undef VISIT

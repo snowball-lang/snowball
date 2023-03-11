@@ -1,0 +1,20 @@
+
+#ifndef ACCEPT
+#error ACCEPT needs to be defined!
+#define ACCEPT(n) // For linting
+#endif
+
+ACCEPT(Block)
+
+ACCEPT(Expression::ConstantValue)
+ACCEPT(Expression::FunctionCall)
+ACCEPT(Expression::Identifier)
+ACCEPT(Expression::GenericIdentifier)
+ACCEPT(Expression::Index)
+ACCEPT(Expression::TypeRef)
+
+ACCEPT(Statement::Return)
+ACCEPT(Statement::VariableDecl)
+ACCEPT(Statement::ClassDef)
+ACCEPT(Statement::ImportStmt)
+ACCEPT(Statement::FunctionDef)

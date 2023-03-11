@@ -1,0 +1,12 @@
+
+class Exception {
+    priv var _msg: String = ""
+
+    pub Exception(_m: String) {
+        self._msg = _m;
+    }
+
+    pub fn what() String {
+        return self._msg;
+    }
+}

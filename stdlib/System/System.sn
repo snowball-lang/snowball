@@ -1,0 +1,30 @@
+
+extern fn "sn.core.libs.System.input" as _input() String;
+
+// == Exports
+
+pub extern fn exit(i32);
+pub fn exit() { exit(0) }
+
+pub extern fn printf(String, ...) i32;
+
+pub fn println(__m: String) i32 { return printf("%s\n",  __m) }
+pub fn println(__m: bool  ) i32 { return printf("%i\n",  __m) }
+pub fn println(__m: i16   ) i32 { return printf("%i\n",  __m) }
+pub fn println(__m: i32   ) i32 { return printf("%d\n",  __m) }
+pub fn println(__m: i64   ) i32 { return printf("%ld\n", __m) }
+pub fn println(__m: f32   ) i32 { return printf("%f\n",  __m) }
+pub fn println(__m: f64   ) i32 { return printf("%f\n",  __m) }
+
+pub fn print(__m: String) i32 { return printf("%s",  __m) }
+pub fn print(__m: bool  ) i32 { return printf("%i",  __m) }
+pub fn print(__m: i16   ) i32 { return printf("%d",  __m) }
+pub fn print(__m: i32   ) i32 { return printf("%d",  __m) }
+pub fn print(__m: i64   ) i32 { return printf("%ld", __m) }
+pub fn print(__m: f32   ) i32 { return printf("%f",  __m) }
+pub fn print(__m: f64   ) i32 { return printf("%f",  __m) }
+
+pub fn input(__p: String = "") String {
+    print(__p)
+    return _input()
+}
