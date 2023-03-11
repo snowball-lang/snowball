@@ -1,0 +1,95 @@
+/**
+ * @file Common bindings for the C standard library
+ */
+
+/**
+ * @brief Allocates size bytes of uninitialized storage.
+ * @param size(i32) - number of bytes to allocate
+ * @return cobj - a pointer that is suitably aligned for
+ *  any object type with fundamental alignment.
+ * @note(1) If size is zero, the behavior of malloc is implementation-defined.
+ *  For example, a null pointer may be returned. Alternatively, a non-null
+ *  pointer may be returned; but such a pointer should not be dereferenced,
+ *  and should be passed to free to avoid memory leaks.
+ * @note(2) malloc is thread-safe: it behaves as though only accessing the memory
+ *  locations visible through its argument, and not any static storage.
+ */
+pub extern fn malloc(i32) cobj;
+/**
+ * @brief Reallocates the given area of memory.
+ * If ptr is not NULL, it must be previously allocated by malloc(),
+ *  calloc() or realloc() and not yet freed with a call to free or
+ *  realloc. Otherwise, the results are undefined.
+ *
+ * @param ptr(cobj) - pointer to the memory area to be reallocated
+ * @param new_size(i32) - new size of the array in bytes
+ *
+ * @return i32 - On success, returns the pointer to the beginning of newly allocated
+ *  memory. To avoid a memory leak, the returned pointer must be deallocated with free()
+ *  or realloc(). The original pointer ptr is invalidated and any access to it is undefined
+ *  behavior (even if reallocation was in-place).
+ *
+ *  On failure, returns a null pointer. The original pointer ptr remains valid and may need
+ *  to be deallocated with free() or realloc().
+ *
+ * @note if new_size is zero, the behavior is implementation defined (null pointer may be
+ *  returned (in which case the old memory block may or may not be freed), or some non-null
+ *  pointer may be returned that may not be used to access storage).
+ */
+pub extern fn realloc(cobj, i32) cobj;
+/**
+ * @brief Deallocates the space previously allocated by malloc(), calloc() or realloc().
+ * @param ptr(cobj) - pointer to the memory to deallocate
+ *
+ * @note(1) The behavior is undefined if the value of ptr does not equal a value returned
+ *  earlier by malloc(), calloc(), realloc()
+ * @note(2) The function accepts (and does nothing with) the null pointer to reduce the amount
+ *  of special-casing. Whether allocation succeeds or not, the pointer returned by an allocation
+ *  function can be passed to free().
+ * @note(3) free is thread-safe: it behaves as though only accessing the memory locations
+ *  visible through its argument, and not any static storage.
+ *
+ * @return (none)
+ */
+pub extern fn free(cobj) void;
+
+/**
+ * @brief Writes every character from the null-terminated string str and one additional newline
+ *  character '\n' to the output stream stdout, as if by repeatedly executing @fn fputc.
+ * @param str(String) This is the string to be written.
+ * @return (i32) If successful, non-negative value is returned. On error, the function returns EOF.
+ *
+ * @note(1) The puts function appends the newline character to the output, while fputs function does not.
+ * @note(2) Different implementations return different non-negative numbers: some return the last character
+ *  written, some return the number of characters written (or INT_MAX if the string was longer than that),
+ *  some simply return a non-negative constant.
+ * @note(3) A typical cause of failure for puts is running out of space on the file system, when stdout is
+ *  redirected to a file.
+ */
+pub extern fn puts(String) i32;
+/**
+ * @brief Writes a character to the standard output (stdout).
+ * @param character(i32) - The `i32` promotion of the character to be written.
+ *  The value is internally converted to an `unsigned i32` when written.
+ * @return On success, the character written is returned.
+ *  If a writing error occurs, EOF is returned.
+ */
+pub extern fn putchar(i32) i32;
+/**
+ * @brief Reads the next character from stdin.
+ * @return The obtained character on success or EOF on failure.
+ */
+pub extern fn getchar() i32;
+/**
+ * @brief Writes the string pointed by format to the standard output (stdout). If format includes format
+ *  specifiers (subsequences beginning with %), the additional arguments following format are formatted and inserted
+ *  in the resulting string replacing their respective specifiers.
+ * @return On success, the total number of characters written is returned.
+ */
+pub extern fn printf(String, ...) i32;
+/**
+ * @brief Causes normal program termination to occur.
+ * @param exit_code(i32) - exit status of the program
+ * @note(1) The behavior is undefined if a program calls exit more than once.
+ */
+pub extern fn exit(i32);

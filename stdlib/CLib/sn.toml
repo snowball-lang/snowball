@@ -1,0 +1,5 @@
+
+[package]
+main = "tests/main.sn"
+name = "C bindings core module"
+version = "1.0.0"

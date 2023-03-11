@@ -1,29 +1,116 @@
 
+use Core::CLib
 extern fn "sn.core.libs.System.input" as _input() String;
 
-// == Exports
+/**
+ * @brief Causes normal program termination to occur.
+ * @param exit_code(i32) - exit status of the program
+ * @note(1) The behavior is undefined if a program calls exit more than once.
+ *
+ * @c Core::CLib::exit
+ */
+pub fn exit(exitCode: i32 = 0) { CLib::exit(exitCode); }
+/**
+ * @brief Utility function to print a new line to stdout.
+ */
+pub fn printNewLine() { putchar("\n"); }
+/**
+ * @brief Writes a string to @param stream and it also writes a new line
+ *  additionally
+ * @param __m(String) - string to print
+ * @return On success, the total number of characters written is returned.
+ */
+pub fn println(__m: String) i32 {
+    let ret = print(__m)
+    printNewLine();
+    return ret;
+}
+/**
+ * @brief Writes a bool to @param stream and it also writes a new line
+ *  additionally
+ * @param __m(bool) - bool to print
+ * @return On success, the total number of characters written is returned.
+ */
+pub fn println(__m: bool) i32 {
+    let ret = print(__m)
+    printNewLine();
 
-pub extern fn exit(i32);
-pub fn exit() { exit(0) }
+    return ret;
+}
+/**
+ * @brief Writes a 16-bit allocated integer to @param stream and it also writes a new line
+ *  additionally
+ * @param __m(String) - i16 to print
+ * @return On success, the total number of characters written is returned.
+ */
+pub fn println(__m: i16) i32 {
+    let ret = print(__m)
+    printNewLine();
 
-pub extern fn printf(String, ...) i32;
+    return ret;
+}
+/**
+ * @brief Writes a i32-bit allocated integer to @param stream and it also writes a new line
+ *  additionally
+ * @param __m(String) - i32 to print
+ * @return On success, the total number of characters written is returned.
+ */
+pub fn println(__m: i32) i32 {
+    let ret = print(__m)
+    printNewLine();
 
-pub fn println(__m: String) i32 { return printf("%s\n",  __m) }
-pub fn println(__m: bool  ) i32 { return printf("%i\n",  __m) }
-pub fn println(__m: i16   ) i32 { return printf("%i\n",  __m) }
-pub fn println(__m: i32   ) i32 { return printf("%d\n",  __m) }
-pub fn println(__m: i64   ) i32 { return printf("%ld\n", __m) }
-pub fn println(__m: f32   ) i32 { return printf("%f\n",  __m) }
-pub fn println(__m: f64   ) i32 { return printf("%f\n",  __m) }
+    return ret;
+}
+/**
+ * @brief Writes a i64-bit allocated integer to @param stream and it also writes a new line
+ *  additionally
+ * @param __m(String) - i64 to print
+ * @return On success, the total number of characters written is returned.
+ */
+pub fn println(__m: i64) i32 {
+    let ret = print(__m)  
+    printNewLine();
 
-pub fn print(__m: String) i32 { return printf("%s",  __m) }
-pub fn print(__m: bool  ) i32 { return printf("%i",  __m) }
-pub fn print(__m: i16   ) i32 { return printf("%d",  __m) }
-pub fn print(__m: i32   ) i32 { return printf("%d",  __m) }
-pub fn print(__m: i64   ) i32 { return printf("%ld", __m) }
-pub fn print(__m: f32   ) i32 { return printf("%f",  __m) }
-pub fn print(__m: f64   ) i32 { return printf("%f",  __m) }
+    return ret;
+}
+/**
+ * @brief Writes a f32-bit allocated float to @param stream and it also writes a new line
+ *  additionally
+ * @param __m(String) - f32 to print
+ * @return On success, the total number of characters written is returned.
+ */
+pub fn println(__m: f32) i32 {
+    let ret = print(__m)
+    printNewLine();
 
+    return ret;
+}
+/**
+ * @brief Writes a f64-bit allocated real to @param stream and it also writes a new line
+ *  additionally
+ * @param __m(String) - f64 to print
+ * @return On success, the total number of characters written is returned.
+ */
+pub fn println(__m: f64) i32 {
+    let ret = print(__m)  
+    printNewLine();
+
+    return ret;
+}
+
+
+pub fn print(__m: String) i32 { return CLib::printf("%s",  __m) }
+pub fn print(__m: bool  ) i32 { return CLib::printf("%i",  __m) }
+pub fn print(__m: i16   ) i32 { return CLib::printf("%d",  __m) }
+pub fn print(__m: i32   ) i32 { return CLib::printf("%d",  __m) }
+pub fn print(__m: i64   ) i32 { return CLib::printf("%ld", __m) }
+pub fn print(__m: f32   ) i32 { return CLib::printf("%f",  __m) }
+pub fn print(__m: f64   ) i32 { return CLib::printf("%f",  __m) }
+
+/**
+ * @brief Used to take user input. By default, it returns the user input in form of a string.
+ * @param __p(String) - prompt to print
+ */
 pub fn input(__p: String = "") String {
     print(__p)
     return _input()
