@@ -1,5 +1,6 @@
-#include "../../Transformer.h"
 #include "../../../ir/values/Cast.h"
+
+#include "../../Transformer.h"
 
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;

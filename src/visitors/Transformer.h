@@ -239,6 +239,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     void transformMainFunction(ptr<Statement::FunctionDef> p_node);
     /// @brief append a new module to the global generated modules list
     void addModule(std::shared_ptr<ir::Module> m);
+
   public:
     Transformer(std::shared_ptr<ir::Module> mod, ptr<SourceInfo> srci);
 
@@ -251,7 +252,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     std::shared_ptr<types::Type> transformType(ptr<Expression::TypeRef> ty);
     /// @return a list of generated modules through the whole project
     std::vector<std::shared_ptr<ir::Module>> getModules() const;
-    
+
 #include "../ast/syntax/accepts.def"
 
     // Default destructor

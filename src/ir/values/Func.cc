@@ -76,13 +76,14 @@ std::string Func::getMangle() {
         hasParent() ? parent->getMangledName() : module->getUniqueName();
     auto name = identifier;
 
-    std::string prefix =
-        (utils::startsWith(base, _SN_MANGLE_PREFIX) ? base
-                                                    : (_SN_MANGLE_PREFIX + base)) +
-        +"&" + std::to_string(name.size()) + name // Function name with modules
-        + "Cv" + std::to_string(getId());         // disambiguator
+    std::string prefix = (utils::startsWith(base, _SN_MANGLE_PREFIX)
+                              ? base
+                              : (_SN_MANGLE_PREFIX + base)) +
+                         +"&" + std::to_string(name.size()) +
+                         name // Function name with modules
+                         + "Cv" + std::to_string(getId()); // disambiguator
 
-    std::string mangledArgs = "Sa";               // Start args tag
+    std::string mangledArgs = "Sa";                        // Start args tag
 
     int argCounter = 1;
     for (auto a : arguments) {

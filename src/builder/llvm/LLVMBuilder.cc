@@ -142,8 +142,7 @@ void LLVMBuilder::codegen() {
     };
 
     generateModule(iModule);
-    for (auto m : iModule->getModules())
-        generateModule(m);
+    for (auto m : iModule->getModules()) generateModule(m);
 }
 #undef LOOP_FUNCTIONS
 

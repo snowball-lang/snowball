@@ -6,7 +6,7 @@
 namespace snowball::Syntax {
 
 TransformContext::TransformContext(std::shared_ptr<ir::Module> mod)
- : AcceptorExtend() {
+    : AcceptorExtend() {
     module  = mod;
     cache   = new Cache();
     imports = std::make_unique<services::ImportService>();
@@ -53,7 +53,9 @@ std::shared_ptr<transform::ContextState> TransformContext::saveState() {
     auto s = *this->stack;
     s.pop_back();
 
-    return std::make_shared<transform::ContextState>(std::make_shared<transform::ContextState::StackType>(s), this->module, currentClass);
+    return std::make_shared<transform::ContextState>(
+        std::make_shared<transform::ContextState::StackType>(s), this->module,
+        currentClass);
 }
 
 /// @brief set a state to the current context

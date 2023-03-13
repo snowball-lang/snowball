@@ -348,7 +348,8 @@ void Lexer::tokenize_char() {
                 } else {
                     str += GET_CHAR(0);
                     if (GET_CHAR(0) == '\n') {
-                        lexer_error(Error::SYNTAX_ERROR, "Characters can't contain new lines!");
+                        lexer_error(Error::SYNTAX_ERROR,
+                                    "Characters can't contain new lines!");
                     } else {
                         EAT_CHAR(1);
                     }
@@ -357,7 +358,8 @@ void Lexer::tokenize_char() {
             EAT_CHAR(1);
 
             if (str.size() != 1) {
-                lexer_error(Error::SYNTAX_ERROR, "Character values can only have a length of 1!");
+                lexer_error(Error::SYNTAX_ERROR,
+                            "Character values can only have a length of 1!");
             }
 
             Token tk;

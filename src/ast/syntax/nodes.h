@@ -124,8 +124,7 @@ struct Cast : public AcceptorExtend<Cast, Base> {
   public:
     using AcceptorExtend::AcceptorExtend;
 
-    Cast(ptr<Base> value, ptr<TypeRef> ty)
-        : type(ty), value(value){};
+    Cast(ptr<Base> value, ptr<TypeRef> ty) : type(ty), value(value){};
 
     /// @return The value to cast
     auto getValue() { return value; }

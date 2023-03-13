@@ -1,8 +1,8 @@
 
 #include "../exec/cli.h"
 #include "common.h"
-#include "ir/module/Module.h"
 #include "ir/module/MainModule.h"
+#include "ir/module/Module.h"
 #include "lexer.h"
 #include "source_info.h"
 #include "vendor/toml.hpp"

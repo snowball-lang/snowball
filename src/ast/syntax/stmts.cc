@@ -71,8 +71,7 @@ ptr<Expression::Base> Return::getValue() const { return value; }
 
 ClassDef::ClassDef(std::string name, ptr<Expression::TypeRef> extends,
                    Privacy::Status prvc)
-    : name(name), extends(extends), AcceptorExtend<ClassDef, Privacy>(prvc) {
-}
+    : name(name), extends(extends), AcceptorExtend<ClassDef, Privacy>(prvc) {}
 void ClassDef::addFunction(ptr<FunctionDef> fnDef) {
     functions.push_back(fnDef);
 }

@@ -38,7 +38,8 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
 
     ctx->cache->setFunction(uuid, p_node, ctx->saveState());
     // TODO: generate IF the following condition AND it has the inline attribute
-    // if ((p_node->getGenerics().size() == 0) && ((ctx->getCurrentClass() == nullptr || (ctx->getCurrentClass()->getGenerics().size() == 0)))) {
+    // if ((p_node->getGenerics().size() == 0) && ((ctx->getCurrentClass() ==
+    // nullptr || (ctx->getCurrentClass()->getGenerics().size() == 0)))) {
     //     transformFunction({p_node, ctx->saveState()}, {});
     // }
 }

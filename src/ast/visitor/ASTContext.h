@@ -41,7 +41,8 @@ template <typename T> class ASTContext {
      *   if-stmt scope > fn scope > global scope
      *      (no vars)     (var a)   (types, etc)
      */
-    std::shared_ptr<std::deque<Scope>> stack = std::make_shared<std::deque<Scope>>();
+    std::shared_ptr<std::deque<Scope>> stack =
+        std::make_shared<std::deque<Scope>>();
 
   public:
     ASTContext() {
@@ -92,7 +93,7 @@ template <typename T> class ASTContext {
      * @return {item or nullptr, if found}
      */
     virtual std::pair<Item, bool> getInScope(const std::string name,
-                                              Scope& s) const {
+                                             Scope& s) const {
         auto val = s.find(name);
         if (val != s.end()) {
             return {val->second, true};

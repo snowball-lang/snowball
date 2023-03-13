@@ -1,7 +1,7 @@
 #include "../../../lexer.h"
 #include "../../../parser/Parser.h"
-#include "../../Transformer.h"
 #include "../../TransformState.h"
+#include "../../Transformer.h"
 #include "../../TypeChecker.h"
 
 #include <fstream>
@@ -25,9 +25,10 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     auto uuid = ctx->imports->getModuleUUID(filePath);
     auto exportName =
         ctx->imports->getExportName(filePath, p_node->getExportSymbol());
-    auto mod           = std::make_shared<ir::Module>(exportName, uuid);
-    auto st = std::make_shared<ContextState::StackType>();
-    auto state = std::shared_ptr<ContextState>(new ContextState(st, mod, nullptr));
+    auto mod = std::make_shared<ir::Module>(exportName, uuid);
+    auto st  = std::make_shared<ContextState::StackType>();
+    auto state =
+        std::shared_ptr<ContextState>(new ContextState(st, mod, nullptr));
 
     ctx->withState(state, [filePath = filePath, this]() mutable {
         std::ifstream ifs(filePath.string());

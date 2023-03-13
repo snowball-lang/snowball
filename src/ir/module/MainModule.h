@@ -45,7 +45,9 @@ class MainModule : public Module {
     /// @return true because it's the entry point
     bool isMain() override { return true; }
     /// @return a list of generated modules through the whole project
-    std::vector<std::shared_ptr<ir::Module>> getModules() const { return modules; }
+    std::vector<std::shared_ptr<ir::Module>> getModules() const {
+        return modules;
+    }
     /// @brief add all the modules to the global generated modules list
     void setModules(std::vector<std::shared_ptr<ir::Module>> m) { modules = m; }
 };

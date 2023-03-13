@@ -2,9 +2,9 @@
 #include "../../ValueVisitor/Visitor.h"
 #include "../../ast/types/FunctionType.h"
 #include "../../ir/id.h"
+#include "../../ir/module/MainModule.h"
 #include "../../ir/values/Func.h"
 #include "../../ir/values/Value.h"
-#include "../../ir/module/MainModule.h"
 
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/IR/DIBuilder.h"

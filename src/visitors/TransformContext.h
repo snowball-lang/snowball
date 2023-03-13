@@ -156,7 +156,8 @@ class TransformContext
     /// @brief set a state to the current context
     void setState(std::shared_ptr<transform::ContextState> s);
     /// @brief Execute function with saved state
-    void withState(std::shared_ptr<transform::ContextState> s, std::function<void()> cb);
+    void withState(std::shared_ptr<transform::ContextState> s,
+                   std::function<void()> cb);
 };
 
 } // namespace Syntax

@@ -50,7 +50,8 @@ class Functions {
     std::map<std::string, std::shared_ptr<transform::Item>> createdFunctions;
     /// @brief A map of states used for generated functions.
     /// @note this can be used for things such as; default arguments
-    std::unordered_map<id_t, std::shared_ptr<transform::ContextState>> functionStates;
+    std::unordered_map<id_t, std::shared_ptr<transform::ContextState>>
+        functionStates;
 
   public:
     /// @brief Set a new function overload

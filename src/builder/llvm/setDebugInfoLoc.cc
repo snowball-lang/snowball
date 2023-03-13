@@ -17,8 +17,8 @@ void LLVMBuilder::setDebugInfoLoc(ptr<ir::Value> v) {
     // TODO: handle inside functions
     auto info = v->getDBGInfo();
     if (auto f = ctx->getCurrentFunction()) {
-        auto loc = llvm::DILocation::get(
-            *context, info->line, info->pos.second, f->getSubprogram());
+        auto loc = llvm::DILocation::get(*context, info->line, info->pos.second,
+                                         f->getSubprogram());
 
         builder->SetCurrentDebugLocation(loc);
         return;
