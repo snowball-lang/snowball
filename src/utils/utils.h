@@ -87,7 +87,7 @@ snowball::ptr<Desired> cast(Current curr) {
 
 template <typename Desired, typename Current>
 std::shared_ptr<Desired> dyn_cast(std::shared_ptr<Current> curr) {
-    return std::dynamic_pointer_cast<Current>(curr);
+    return std::dynamic_pointer_cast<Desired>(curr);
 }
 
 template <typename Key, typename Value>

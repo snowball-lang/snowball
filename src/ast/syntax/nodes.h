@@ -106,6 +106,36 @@ struct ConstantValue : public AcceptorExtend<ConstantValue, Base> {
 };
 
 /**
+ * @brief A representation of a cast for a value to a
+ *  certain type.
+ * @example of converting an integer to a float 32
+ *  1 | 123 as f32
+ *    | ^^^ ^^ ^^^ - cast to f32
+ *    | |   |___ cast operator
+ *    | |_____ value to cast from
+ */
+struct Cast : public AcceptorExtend<Cast, Base> {
+  private:
+    /// @brief Value that's needed to be casted
+    ptr<Base> value;
+    /// @brief Result type thats casted to
+    ptr<TypeRef> type;
+
+  public:
+    using AcceptorExtend::AcceptorExtend;
+
+    Cast(ptr<Base> value, ptr<TypeRef> ty)
+        : type(ty), value(value){};
+
+    /// @return The value to cast
+    auto getValue() { return value; }
+    /// @brief get the type trying to be casted to
+    auto getType() { return type; }
+
+    ACCEPT()
+};
+
+/**
  * Representation of a function call. Functions aren't generated
  * until it's being called.
  *

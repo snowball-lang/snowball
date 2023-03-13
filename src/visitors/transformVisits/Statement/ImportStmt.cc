@@ -1,9 +1,11 @@
 #include "../../../lexer.h"
 #include "../../../parser/Parser.h"
 #include "../../Transformer.h"
+#include "../../TransformState.h"
 #include "../../TypeChecker.h"
 
 #include <fstream>
+#include <tuple>
 
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
@@ -24,11 +26,8 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     auto exportName =
         ctx->imports->getExportName(filePath, p_node->getExportSymbol());
     auto mod           = std::make_shared<ir::Module>(exportName, uuid);
-    ContextState state = {
-        .stack        = {},
-        .module       = mod,
-        .currentClass = nullptr,
-    };
+    auto st = std::make_shared<ContextState::StackType>();
+    auto state = std::shared_ptr<ContextState>(new ContextState(st, mod, nullptr));
 
     ctx->withState(state, [filePath = filePath, this]() mutable {
         std::ifstream ifs(filePath.string());

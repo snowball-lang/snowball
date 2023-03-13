@@ -9,6 +9,7 @@
 #include "../ir/values/Func.h"
 #include "../ir/values/Return.h"
 #include "../ir/values/Value.h"
+#include "../ir/values/Cast.h"
 
 #include <assert.h>
 #include <string>
@@ -25,7 +26,10 @@ TypeChecker::TypeChecker(std::shared_ptr<ir::Module> mod)
 VISIT(Func) {
     auto backup = ctx->getCurrentFunction();
     ctx->setCurrentFunction(p_node);
-    p_node->getBody()->visit(this);
+    auto body = p_node->getBody();
+    if (body)
+        body->visit(this);
+
     ctx->setCurrentFunction(backup);
 }
 
@@ -68,6 +72,32 @@ VISIT(Argument) {
 }
 
 VISIT(ValueExtract) { /* noop */
+}
+
+VISIT(Cast) {
+    auto v = p_node->getExpr();
+    auto t = p_node->getCastType();
+    assert(t->is(p_node->getType()));
+
+    if ((utils::dyn_cast<types::NumericType>(v->getType()) == nullptr) && (utils::dyn_cast<types::NumericType>(t) != nullptr)) {
+        Syntax::E<TYPE_ERROR>(p_node,
+                              FMT("Can't create a casting operator from a non-numerical type ('%s') "
+                                  "to a numerical ('%s')!",
+                                  t->getPrettyName().c_str(),
+                                  v->getType()->getPrettyName().c_str()));
+    } else if ((utils::dyn_cast<types::NumericType>(v->getType()) != nullptr) && (utils::dyn_cast<types::NumericType>(t) == nullptr)) {
+        Syntax::E<TYPE_ERROR>(p_node,
+                              FMT("Can't create a casting operator from a numerical type ('%s') "
+                                  "to a non-numerical type ('%s')!",
+                                  t->getPrettyName().c_str(),
+                                  v->getType()->getPrettyName().c_str()));
+    } else if (!v->getType()->canCast(t)) {
+        Syntax::E<TYPE_ERROR>(p_node,
+                              FMT("Can't create a casting operator from value ('%s') "
+                                  "to type '%s'!",
+                                  t->getPrettyName().c_str(),
+                                  v->getType()->getPrettyName().c_str()));
+    }
 }
 
 VISIT(Return) {

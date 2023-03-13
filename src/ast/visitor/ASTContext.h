@@ -41,7 +41,7 @@ template <typename T> class ASTContext {
      *   if-stmt scope > fn scope > global scope
      *      (no vars)     (var a)   (types, etc)
      */
-    std::deque<Scope> stack;
+    std::shared_ptr<std::deque<Scope>> stack = std::make_shared<std::deque<Scope>>();
 
   public:
     ASTContext() {
@@ -58,7 +58,7 @@ template <typename T> class ASTContext {
      * @param item Item to be stored
      */
     virtual void addItem(std::string name, Item& item) {
-        auto f   = stack.front();
+        auto f   = stack->front();
         auto val = f.find(name);
 
         if (val != f.end()) {
@@ -66,7 +66,7 @@ template <typename T> class ASTContext {
                                         item->toString().c_str()));
         }
 
-        stack.front().emplace(std::make_pair(name, item));
+        stack->front().emplace(std::make_pair(name, item));
     }
 
     /**
@@ -76,8 +76,8 @@ template <typename T> class ASTContext {
      * @return {item or nullptr, if found}
      */
     virtual std::pair<Item, bool> getItem(const std::string name) const {
-        for (auto s : stack) {
-            auto [val, found] = getIntScope(name, s);
+        for (auto s : *stack) {
+            auto [val, found] = getInScope(name, s);
             if (found) return {val, true};
         }
 
@@ -91,7 +91,7 @@ template <typename T> class ASTContext {
      * @param s scope where search is performed
      * @return {item or nullptr, if found}
      */
-    virtual std::pair<Item, bool> getIntScope(const std::string name,
+    virtual std::pair<Item, bool> getInScope(const std::string name,
                                               Scope& s) const {
         auto val = s.find(name);
         if (val != s.end()) {
@@ -101,13 +101,13 @@ template <typename T> class ASTContext {
         return {std::unique_ptr<T>(nullptr), false};
     }
     /// @return the current scope the programm is into
-    virtual Scope& currentScope() { return stack.front(); }
+    virtual Scope& currentScope() { return stack->front(); }
     /// @return the global scope
-    virtual Scope& globalScope() { return stack.at(stack.size() - 2); }
+    virtual Scope& globalScope() { return stack->at(stack->size() - 2); }
     /// @brief Create a new scope and append it.
     virtual void addScope() {
         Scope newScope{};
-        stack.insert(stack.begin(), newScope);
+        stack->insert(stack->begin(), newScope);
     }
     /// @brief Run a function inside a scope
     virtual Scope withScope(std::function<void()> func) {
@@ -121,8 +121,8 @@ template <typename T> class ASTContext {
      * @return Scope The deleted scope
      */
     virtual Scope delScope() {
-        auto s = stack.front();
-        stack.pop_front();
+        auto s = stack->front();
+        stack->pop_front();
 
         return s;
     }

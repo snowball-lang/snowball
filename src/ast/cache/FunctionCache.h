@@ -40,7 +40,7 @@ class Functions {
      */
     struct FunctionStore {
         ptr<Statement::FunctionDef> function = nullptr;
-        transform::ContextState state;
+        std::shared_ptr<transform::ContextState> state;
     };
 
   protected:
@@ -50,19 +50,19 @@ class Functions {
     std::map<std::string, std::shared_ptr<transform::Item>> createdFunctions;
     /// @brief A map of states used for generated functions.
     /// @note this can be used for things such as; default arguments
-    std::unordered_map<id_t, transform::ContextState> functionStates;
+    std::unordered_map<id_t, std::shared_ptr<transform::ContextState>> functionStates;
 
   public:
     /// @brief Set a new function overload
     void setFunction(const std::string& name, ptr<Statement::FunctionDef> p_fn,
-                     transform::ContextState state);
+                     std::shared_ptr<transform::ContextState> state);
     /// @return All function overloads for a function
     std::optional<std::vector<FunctionStore>>
     getFunction(const std::string name);
     /// @return Get the current state of an already defined function.
-    transform::ContextState& getFunctionState(id_t id);
+    std::shared_ptr<transform::ContextState>& getFunctionState(id_t id);
     /// @brief defined a new state where the function has been generated from
-    void setFunctionState(id_t id, transform::ContextState& s);
+    void setFunctionState(id_t id, std::shared_ptr<transform::ContextState>& s);
     /// @brief Set a new transformed function
     /// @c Transformer::addFunction
     void setTransformedFunction(const std::string& uuid,

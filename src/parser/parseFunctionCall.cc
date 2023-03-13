@@ -32,6 +32,7 @@ Parser::parseFunctionCall(ptr<Syntax::Expression::Base> callee) {
             if (is<TokenType::SYM_COMMA>(pk)) next();
             continue;
         } else {
+            next();
             createError<SYNTAX_ERROR>(
                 "Expected a ',' or a ')' but found '%s' instead",
                 m_current.to_string().c_str());

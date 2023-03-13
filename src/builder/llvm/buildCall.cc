@@ -19,17 +19,8 @@ void LLVMBuilder::visit(ptr<ir::Call> call) {
             call->getArguments(),
             [&](std::shared_ptr<ir::Value> arg) { return build(arg.get()); });
 
-    llvm::FunctionCallee llvmCallee;
-    if (callee->getType()->isPointerTy()) {
-        llvmCallee = llvm::FunctionCallee(
-            (ptr<llvm::FunctionType>)callee->getType(), callee);
-    } else {
-        llvmCallee = llvm::cast<llvm::Function>(callee);
-    }
-
     // TODO: invoke if it's inside a try block
-    auto val    = builder->CreateCall(llvmCallee, args);
-    this->value = val;
+    this->value = builder->CreateCall(llvm::cast<llvm::Function>(callee), args);
 }
 
 } // namespace codegen

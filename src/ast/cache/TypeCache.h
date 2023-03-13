@@ -38,7 +38,7 @@ class Types {
      */
     struct TypeStore {
         ptr<Statement::ClassDef> type = nullptr;
-        snowball::Syntax::transform::ContextState state;
+        std::shared_ptr<transform::ContextState> state;
     };
 
   protected:
@@ -50,7 +50,7 @@ class Types {
   public:
     /// @brief Set a new type to the cache
     void setType(const std::string& uuid, ptr<Statement::ClassDef> p_fn,
-                 transform::ContextState state);
+                 std::shared_ptr<transform::ContextState> state);
     /// @brief add a new generated class to the cache
     void setTransformedType(const std::string& uuid,
                             std::shared_ptr<transform::Item> p_fn);

@@ -8,7 +8,7 @@ namespace Syntax {
 namespace cacheComponents {
 
 void Types::setType(const std::string& uuid, ptr<Statement::ClassDef> p_fn,
-                    transform::ContextState state) {
+                    std::shared_ptr<transform::ContextState> state) {
     types[uuid] = {p_fn, state};
 }
 

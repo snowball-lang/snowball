@@ -74,7 +74,7 @@ pub extern fn puts(String) i32;
  * @return On success, the character written is returned.
  *  If a writing error occurs, EOF is returned.
  */
-pub extern fn putchar(i32) i32;
+pub extern fn putchar(i8) i32;
 /**
  * @brief Reads the next character from stdin.
  * @return The obtained character on success or EOF on failure.

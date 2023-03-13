@@ -74,6 +74,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
         Ok                = 0x00,
         NoMatchesFound    = 0x01,
         AmbiguityConflict = 0x02,
+        _Unknown          = -0x01
     };
     /**
      * Deduce a function from it's template arguments and it's call arguments.

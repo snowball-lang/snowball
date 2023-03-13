@@ -296,6 +296,80 @@ void Lexer::tokenize_char() {
             break;
         }
 
+        case '\'': {
+            EAT_CHAR(1);
+            std::string str;
+            while (GET_CHAR(0) != '\'') {
+                if (GET_CHAR(0) == '\\') {
+                    char c = GET_CHAR(1);
+
+                    switch (c) {
+                        case 0:
+                            lexer_error(
+                                Error::UNEXPECTED_EOF,
+                                "unexpected EOF while lexing a string scape.");
+                            break;
+                        case '\\':
+                            str += '\\';
+                            EAT_CHAR(2);
+                            break;
+                        case '\'':
+                            str += '\'';
+                            EAT_CHAR(2);
+                            break;
+                        case 't':
+                            str += '\t';
+                            EAT_CHAR(2);
+                            break;
+                        case 'n':
+                            str += '\n';
+                            EAT_CHAR(2);
+                            break;
+                        case '"':
+                            str += '"';
+                            EAT_CHAR(2);
+                            break;
+                        case 'r':
+                            str += '\r';
+                            EAT_CHAR(2);
+                            break;
+                        case '\n':
+                            EAT_CHAR(1);
+                            EAT_LINE();
+                            break;
+                        default:
+                            lexer_error(Error::SYNTAX_ERROR,
+                                        "invalid escape character", 2);
+                    }
+                } else if (GET_CHAR(0) == 0) {
+                    lexer_error(Error::UNEXPECTED_EOF,
+                                "unexpected EOF while lexing character.");
+                    break;
+                } else {
+                    str += GET_CHAR(0);
+                    if (GET_CHAR(0) == '\n') {
+                        lexer_error(Error::SYNTAX_ERROR, "Characters can't contain new lines!");
+                    } else {
+                        EAT_CHAR(1);
+                    }
+                }
+            }
+            EAT_CHAR(1);
+
+            if (str.size() != 1) {
+                lexer_error(Error::SYNTAX_ERROR, "Character values can only have a length of 1!");
+            }
+
+            Token tk;
+            tk.type  = TokenType::VALUE_CHAR;
+            tk.value = str; // method name may be builtin func
+            tk.col   = cur_col - ((int)str.size() + (2 /* speech marks */));
+            tk.line  = cur_line;
+            tokens.emplace_back(tk);
+
+            break;
+        }
+
         case '"': {
             EAT_CHAR(1);
             std::string str;

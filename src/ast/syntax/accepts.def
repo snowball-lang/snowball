@@ -12,6 +12,7 @@ ACCEPT(Expression::Identifier)
 ACCEPT(Expression::GenericIdentifier)
 ACCEPT(Expression::Index)
 ACCEPT(Expression::TypeRef)
+ACCEPT(Expression::Cast)
 
 ACCEPT(Statement::Return)
 ACCEPT(Statement::VariableDecl)

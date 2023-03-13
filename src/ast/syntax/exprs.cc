@@ -62,6 +62,7 @@ std::string GenericIdentifier::getNiceName() const {
 ConstantValue::ConstantType ConstantValue::deduceType(TokenType ty) {
     switch (ty) {
         CASE(VALUE_STRING, String)
+        CASE(VALUE_CHAR, Char)
         CASE(VALUE_FLOAT, Float)
         CASE(VALUE_NUMBER, Number)
         CASE(VALUE_NULL, Null)

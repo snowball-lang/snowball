@@ -5,7 +5,8 @@
 
 namespace snowball::Syntax {
 
-TransformContext::TransformContext(std::shared_ptr<ir::Module> mod) {
+TransformContext::TransformContext(std::shared_ptr<ir::Module> mod)
+ : AcceptorExtend() {
     module  = mod;
     cache   = new Cache();
     imports = std::make_unique<services::ImportService>();
@@ -45,32 +46,29 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod) {
     addItem(raw_COBTy->getName(), cobjTy);
 
     addItem(types::Int32Type::TYPE_ALIAS, i32Ty);
-
-    addScope();
 };
 
 /// @brief get a saved state of the context
-transform::ContextState TransformContext::saveState() {
-    auto s = this->stack;
+std::shared_ptr<transform::ContextState> TransformContext::saveState() {
+    auto s = *this->stack;
     s.pop_back();
 
-    return transform::ContextState{
-        .stack = s, .module = this->module, .currentClass = currentClass};
+    return std::make_shared<transform::ContextState>(std::make_shared<transform::ContextState::StackType>(s), this->module, currentClass);
 }
 
 /// @brief set a state to the current context
-void TransformContext::setState(transform::ContextState s) {
-    auto glob = this->stack.back();
-    auto st   = s.stack;
-    st.emplace_back(glob);
+void TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
+    auto glob = this->stack->back();
+    auto st   = s->stack;
+    st->emplace_back(glob);
 
     this->stack        = st;
-    this->module       = s.module;
-    this->currentClass = s.currentClass;
+    this->module       = s->module;
+    this->currentClass = s->currentClass;
 }
 
 /// @brief Execute function with saved state
-void TransformContext::withState(transform::ContextState s,
+void TransformContext::withState(std::shared_ptr<transform::ContextState> s,
                                  std::function<void()> cb) {
     auto saved = this->saveState();
 

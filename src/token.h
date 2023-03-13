@@ -1,5 +1,6 @@
 
 #include "constants.h"
+#include "logger.h"
 
 #include <string>
 #include <utility>
@@ -38,6 +39,7 @@ enum class TokenType {
     VALUE_NULL,
     VALUE_BOOL,
     VALUE_STRING,
+    VALUE_CHAR,
 
     /*
     | Symbols
@@ -399,6 +401,8 @@ struct Token {
 
             case TokenType::VALUE_STRING:
                 return std::string("\"") + value + "\"";
+            case TokenType::VALUE_CHAR:
+                return FMT("'%s'", value.c_str());
 
             // Other
             case TokenType::UNKNOWN:

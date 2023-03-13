@@ -41,7 +41,7 @@ ptr<Syntax::Expression::Base> Parser::parseExpr(bool allowAssign) {
 
         auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
         if (TOKEN(VALUE_NUMBER) || TOKEN(VALUE_NULL) || TOKEN(VALUE_FLOAT) ||
-            TOKEN(VALUE_STRING)) {
+            TOKEN(VALUE_STRING) || TOKEN(VALUE_CHAR)) {
 
             auto ty =
                 Syntax::Expression::ConstantValue::deduceType(m_current.type);
@@ -76,9 +76,22 @@ ptr<Syntax::Expression::Base> Parser::parseExpr(bool allowAssign) {
                 auto dbgInfo = new DBGSourceInfo(
                     m_source_info, expr->getDBGInfo()->pos,
                     expr->getDBGInfo()->width + index->getDBGInfo()->width +
-                        ((isStatic + 1) * 2));
+                        (isStatic + 4));
                 expr =
                     Syntax::N<Syntax::Expression::Index>(expr, index, isStatic);
+                expr->setDBGInfo(dbgInfo);
+            } else if (is<TokenType::KWORD_AS>(tk)) {
+                next(1);
+                assert_tok<TokenType::IDENTIFIER>("a type reference");
+                auto ty = parseType();
+                prev();
+
+                auto dbgInfo = new DBGSourceInfo(
+                    m_source_info, expr->getDBGInfo()->pos,
+                    expr->getDBGInfo()->width + expr->getDBGInfo()->width + 2 + ty->getDBGInfo()->width);
+
+                expr =
+                    Syntax::N<Syntax::Expression::Cast>(expr, ty);
                 expr->setDBGInfo(dbgInfo);
             } else {
                 break;

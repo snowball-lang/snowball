@@ -5,5 +5,5 @@ use Core::System
 pub fn main() i32 {
     let b  = 2
     System::input()
-    System::input("hey")
+    System::println(b)
 }

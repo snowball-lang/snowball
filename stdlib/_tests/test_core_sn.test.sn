@@ -1,4 +1,0 @@
-
-import "../Math/tests/main.sn" as Math
-import "../Limits/tests/main.sn" as Limits
-import "../Exceptions/tests/main.sn" as Exceptions

@@ -27,6 +27,11 @@ ptr<Syntax::Block> Parser::parseBlock(std::vector<TokenType> termination) {
                 break;
             }
 
+            case TokenType::SYM_SEMI_COLLON: {
+                next();
+                break;
+            }
+
             case TokenType::KWORD_VAR: {
                 next();
                 stmts.push_back(parseVariable());

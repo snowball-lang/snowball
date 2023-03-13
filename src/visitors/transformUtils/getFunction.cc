@@ -115,6 +115,9 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
                     Expression::FunctionCall::getArgumentsAsString(arguments)
                         .c_str()));
         }
+
+        [[fallthrough]];
+        case _Unknown: {}
     }
 
     assert(false && "BUG: unhandled getFunction res case.");

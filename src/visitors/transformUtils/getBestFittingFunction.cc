@@ -95,7 +95,7 @@ Transformer::getBestFittingFunction(
         genericIterator++;
     }
 
-    if (((matchedFunctions.size() > 0) && (!exactFunctionExists) &&
+    if (((matchedFunctions.size() > 1) && (!exactFunctionExists) &&
          (genericIndex == -1)) ||
         (genericCount > 1)) {
         return {{nullptr}, {}, FunctionFetchResponse::AmbiguityConflict};

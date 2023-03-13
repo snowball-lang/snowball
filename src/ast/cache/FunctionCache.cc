@@ -8,13 +8,13 @@ namespace snowball {
 namespace Syntax {
 namespace cacheComponents {
 
-transform::ContextState& Functions::getFunctionState(id_t id)
+std::shared_ptr<transform::ContextState>& Functions::getFunctionState(id_t id)
     { return functionStates.at(id); }
-void Functions::setFunctionState(id_t id, transform::ContextState& s)
+void Functions::setFunctionState(id_t id, std::shared_ptr<transform::ContextState>& s)
     { functionStates[id] = s; }
 void Functions::setFunction(const std::string& name,
                             ptr<Statement::FunctionDef> p_fn,
-                            transform::ContextState state) {
+                            std::shared_ptr<transform::ContextState> state) {
     functions[name].push_back({p_fn, state});
 }
 

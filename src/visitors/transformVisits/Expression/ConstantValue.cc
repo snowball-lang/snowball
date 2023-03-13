@@ -64,6 +64,16 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
             break;
         }
 
+        CASE (Char) : {
+            auto str = p_node->getValue();
+
+            str   = str.substr(1, str.size() - 2);
+            auto ascii = (int)str[0];
+            value = ctx->module->N<ir::NumberValue>(p_node->getDBGInfo(), ascii);
+            value->setType(ctx->getInt8Type());
+            break;
+        }
+
         default: {
             E<BUG>(FMT("Undefined constant type (%i)", p_node->getType()));
         }

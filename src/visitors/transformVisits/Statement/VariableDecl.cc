@@ -15,8 +15,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
     auto isMutable     = p_node->isMutable();
 
     assert(definedType == nullptr && "TODO: cast for desired type");
-
-    if (ctx->getIntScope(variableName, ctx->currentScope()).second) {
+    if (ctx->getInScope(variableName, ctx->currentScope()).second) {
         E<VARIABLE_ERROR>(p_node, FMT("Variable with name '%s' is already "
                                       "defined in the current scope!",
                                       variableName.c_str()));

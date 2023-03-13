@@ -99,7 +99,8 @@
         "stdlib.h": "c",
         "cxxabi.h": "c",
         "stdbool.h": "c",
-        "typeindex": "cpp"
+        "typeindex": "cpp",
+        "any": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "todo-tree.tree.scanMode": "workspace"
