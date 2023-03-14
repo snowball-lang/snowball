@@ -79,3 +79,9 @@ fn primitiveTypePrintln<PrimitiveType>(msg: PrimitiveType) i32 {
 
     return ret;
 }
+
+priv class Hello {
+    pub:static fn hello2() {
+
+    }
+}
