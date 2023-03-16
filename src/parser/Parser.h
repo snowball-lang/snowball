@@ -136,7 +136,7 @@ class Parser {
      * arrowfn       ::=  [decorators] "fn" funcname "(" [parameter_list] ")"
      * type "=>" stmt
      */
-    ptr<Syntax::Statement::FunctionDef> parseFunction();
+    ptr<Syntax::Statement::FunctionDef> parseFunction(bool isConstructor = false);
 
     /**
      * params        ::=  "<" [param_args] ">"

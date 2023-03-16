@@ -1,15 +1,14 @@
-
-
 use Core::System
 
-fn mf() String {
-    return bigBalls
+class Hello {
+pub:
+    Hello() {
+
+    }
 }
 
-
 pub fn main() i32 {
-    let b  = 2
+    let b = 2
     System::input()
     System::println(b)
-    mf()
 }

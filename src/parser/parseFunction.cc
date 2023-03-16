@@ -17,9 +17,11 @@ using namespace snowball::Syntax::Statement;
 
 namespace snowball::parser {
 
-ptr<FunctionDef> Parser::parseFunction() {
-    assert(is<TokenType::KWORD_FUNC>());
-    next();
+ptr<FunctionDef> Parser::parseFunction(bool isConstructor) {
+    assert(is<TokenType::KWORD_FUNC>() || (is<TokenType::IDENTIFIER>() && isConstructor));
+
+    if (!isConstructor)
+        next();
 
     bool isExtern  = false;
     bool isPublic  = false;
