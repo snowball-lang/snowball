@@ -118,15 +118,17 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
             E<TYPE_ERROR>(dbgInfo, "Can't use function pointer as index base!");
         } else {
             E<VARIABLE_ERROR>(dbgInfo,
-                              FMT("Identifier '%s' not found!",
-                                  baseIdentifier->getIdentifier().c_str()));
+                              FMT("Cannot find identifier `%s`!",
+                                  baseIdentifier->getIdentifier().c_str()),
+                                  "this name is not defined");
         }
 
         assert(false && "BUG: unhandled index value");
     } else if (!isStatic) {
         assert(false && "TODO: non-static index");
     } else if (auto x = utils::cast<Expression::Index>(base)) {
-        auto [v,t,fs,ovs,mod,c] = getFromIndex(base->getDBGInfo(), x, x->isStatic);
+        auto [v, t, fs, ovs, mod, c] =
+            getFromIndex(base->getDBGInfo(), x, x->isStatic);
 
         if (v && (!isStatic)) {
             getFromType(v.value()->getType());
@@ -154,6 +156,7 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
         else if (ovs || fs) {
             E<TYPE_ERROR>(dbgInfo, "Can't use function pointer as index base!");
         } else {
+            // TODO: include base name
             E<VARIABLE_ERROR>(dbgInfo,
                               FMT("Identifier '%s' not found!",
                                   baseIdentifier->getIdentifier().c_str()));

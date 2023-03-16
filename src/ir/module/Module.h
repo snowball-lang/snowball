@@ -33,7 +33,8 @@ class Module : public AcceptorExtend<Module, SrcObject>,
     std::shared_ptr<Module> parent = nullptr;
 
   public:
-    Module(std::string name, std::string uuid = "", std::shared_ptr<Module> parent = nullptr);
+    Module(std::string name, std::string uuid = "",
+           std::shared_ptr<Module> parent = nullptr);
 
     /// @return module's name
     std::string getName() const;

@@ -13,9 +13,9 @@
 namespace snowball {
 namespace Syntax {
 
-template <Error e, class Val> void E(Val item, std::string msg) {
+template <Error e, class Val> void E(Val item, std::string msg, std::string info = "") {
     auto i = item->getDBGInfo();
-    throw CompilerError(e, msg, i);
+    throw CompilerError(e, msg, i, info);
 }
 
 template <Error e> void E(std::string msg) { throw SNError(e, msg); }

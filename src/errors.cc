@@ -5,7 +5,29 @@
 
 namespace snowball {
 namespace errors {
-const char *get_error(Error code) {
+
+void NiceError::print_error() const {
+    Logger::error(FMT("(%s%s%s) %s%s%s", RED, get_error(error), RESET, BOLD,
+                        message.c_str(), RESET));
+    Logger::elog(FMT("%s     ╭─[%s%s%s%s:%i:%i%s%s]%s", BLK, RESET, BBLU,
+                        cb_dbg_info->getSourceInfo()->getPath().c_str(), BBLK,
+                        cb_dbg_info->line, cb_dbg_info->pos.second, RESET, BLK, RESET));
+    Logger::elog(FMT("%s     │%s", BLK, RESET));
+    if (cb_dbg_info->line - 1 >=
+        1) // first line may not be available to log
+        Logger::elog(FMT("  %s%2i │ %s%s", BLK, cb_dbg_info->line - 1,
+                            RESET, cb_dbg_info->line_before.c_str()));
+    Logger::elog(FMT(" %s>%2i │ %s%s\n     %s│%s %s%s %s%s",
+                        BLK, cb_dbg_info->line, RESET,
+                        cb_dbg_info->line_str.c_str(), BLK, RESET, BRED,
+                        cb_dbg_info->get_pos_str().c_str(), info.c_str(), RESET));
+    Logger::elog(FMT("  %s%2i │ %s%s", BLK, cb_dbg_info->line + 1, RESET,
+                        cb_dbg_info->line_after.c_str()));
+    Logger::elog(FMT("%s     │", BLK));
+    Logger::elog(FMT("   ──╯%s", RESET));
+};
+
+ptr<const char> get_error(Error code) {
     RET_ERROR_IF_CODE(Error::BUG, "BUG")
     RET_ERROR_IF_CODE(Error::TODO, "TODO")
     RET_ERROR_IF_CODE(Error::WARNING, "Warning")

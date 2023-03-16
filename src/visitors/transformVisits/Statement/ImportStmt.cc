@@ -25,12 +25,12 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     auto uuid = ctx->imports->getModuleUUID(filePath);
     auto exportName =
         ctx->imports->getExportName(filePath, p_node->getExportSymbol());
-    auto niceFullName =  package + "::" + utils::join(path.begin(), path.end(), "::");
+    auto niceFullName =
+        package + "::" + utils::join(path.begin(), path.end(), "::");
     auto mod = std::make_shared<ir::Module>(niceFullName, uuid);
     auto st  = std::make_shared<ContextState::StackType>();
     auto state =
         std::shared_ptr<ContextState>(new ContextState(st, mod, nullptr));
-
 
     ctx->withState(state, [filePath = filePath, this]() mutable {
         std::ifstream ifs(filePath.string());

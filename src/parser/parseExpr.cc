@@ -76,7 +76,7 @@ ptr<Syntax::Expression::Base> Parser::parseExpr(bool allowAssign) {
                 auto dbgInfo = new DBGSourceInfo(
                     m_source_info, expr->getDBGInfo()->pos,
                     expr->getDBGInfo()->width + index->getDBGInfo()->width +
-                        (isStatic+1));
+                        (isStatic + 1));
                 expr =
                     Syntax::N<Syntax::Expression::Index>(expr, index, isStatic);
                 expr->setDBGInfo(dbgInfo);

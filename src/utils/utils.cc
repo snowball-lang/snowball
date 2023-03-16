@@ -85,7 +85,7 @@ bool startsWith(const std::string& str, const std::string& comp) {
     return str.rfind(comp, 0) == 0;
 }
 
-std::string utf8_substr(const std::string& str, unsigned int start,
+std::string utf8_substr(const std::string str, unsigned int start,
                         unsigned int leng) {
     if (leng == 0) {
         return "";
@@ -123,7 +123,8 @@ std::string utf8_substr(const std::string& str, unsigned int start,
     if (min == std::string::npos || max == std::string::npos) {
         return "";
     }
-    return str.substr(min, max - 1);
+    auto s = str.substr(min, leng+1);
+    return s;
 }
 
 std::string itos(int i) // convert int to string

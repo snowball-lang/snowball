@@ -52,70 +52,32 @@ class SNError {
     std::string message;
 };
 
-class LexerError : public SNError {
-  public:
-    LexerError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info)
-        : SNError(code, err) {
-        cb_dbg_info = p_cb_dbg_info;
-    };
-
-    virtual void print_error() const {
-        Logger::error(FMT("(%s%s%s) %s%s%s", RED, get_error(error), RESET, BOLD,
-                          message.c_str(), RESET));
-        Logger::elog(FMT("%s     |%s", BBLK, RESET));
-
-        if (cb_dbg_info->line - 1 >=
-            1) // first line may not be available to log
-            Logger::elog(FMT("%s  %2i | %s%s", BBLK, cb_dbg_info->line - 1,
-                             RESET, cb_dbg_info->line_before.c_str()));
-        Logger::elog(FMT(" %s>%s%2i | %s%s\n   %s  |%s %s%s%s", BRED, BBLK,
-                         cb_dbg_info->line, RESET,
-                         cb_dbg_info->line_str.c_str(), BBLK, RESET, BRED,
-                         cb_dbg_info->get_pos_str().c_str(), RESET));
-        Logger::elog(FMT("%s  %2i | %s%s", BBLK, cb_dbg_info->line + 1, RESET,
-                         cb_dbg_info->line_after.c_str()));
-
-        Logger::elog(FMT("\n  %sat %s%s%s:%i:%i%s", BBLK, BBLU,
-                         cb_dbg_info->getSourceInfo()->getPath().c_str(), BBLK,
-                         cb_dbg_info->line, cb_dbg_info->pos.second, RESET));
-    };
-
-    virtual ~LexerError(){};
-
-  private:
-    DBGSourceInfo *cb_dbg_info;
+class NiceError : public SNError {
+protected:
+    ptr<DBGSourceInfo> cb_dbg_info;
+    const std::string info;
+public:
+  NiceError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info, const std::string& info = "") :
+    SNError(code, err), cb_dbg_info(p_cb_dbg_info), info(info) {};
+  virtual void print_error() const override;
 };
 
-class ParserError : public SNError {
+class LexerError : public NiceError {
   public:
-    ParserError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info)
-        : SNError(code, err) {
-        cb_dbg_info = p_cb_dbg_info;
+    LexerError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info)
+        : NiceError(code, err, p_cb_dbg_info) {
     };
 
-    virtual void print_error() const {
-        Logger::error(FMT("(%s%s%s) %s%s%s", RED, get_error(error), RESET, BOLD,
-                          message.c_str(), RESET));
-        if (cb_dbg_info->line - 1 >=
-            1) // first line may not be available to log
-            Logger::elog(FMT("%s   %2i | %s%s", BBLK, cb_dbg_info->line - 1,
-                             RESET, cb_dbg_info->line_before.c_str()));
-        Logger::elog(FMT(" %s> %s%2i | %s%s\n   %s   |%s %s%s%s", BRED, BBLK,
-                         cb_dbg_info->line, RESET,
-                         cb_dbg_info->line_str.c_str(), BBLK, RESET, BRED,
-                         cb_dbg_info->get_pos_str().c_str(), RESET));
-        Logger::elog(FMT("%s   %2i | %s%s", BBLK, cb_dbg_info->line + 1, RESET,
-                         cb_dbg_info->line_after.c_str()));
+    virtual ~LexerError() {};
+};
 
-        Logger::elog(FMT("\n    %sat %s%s%s:%i:%i%s", BBLK, BBLU,
-                         cb_dbg_info->getSourceInfo()->getPath().c_str(), BBLK,
-                         cb_dbg_info->line, cb_dbg_info->pos.second, RESET));
+class ParserError : public NiceError {
+  public:
+    ParserError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info, const std::string& info = "")
+        : NiceError(code, err, p_cb_dbg_info, info) {
     };
 
     virtual ~ParserError(){};
-
-  private:
-    DBGSourceInfo *cb_dbg_info;
 };
 
 class Warning : public SNError {
@@ -151,37 +113,13 @@ class Warning : public SNError {
     DBGSourceInfo *cb_dbg_info;
 };
 
-class CompilerError : public SNError {
+class CompilerError : public NiceError {
   public:
-    CompilerError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info)
-        : SNError(code, err) {
-        cb_dbg_info = p_cb_dbg_info;
-    };
-
-    virtual void print_error() const {
-        Logger::error(FMT("(%s%s%s) %s%s%s", RED, get_error(error), RESET, BOLD,
-                          message.c_str(), RESET));
-
-        if (cb_dbg_info->line - 1 >=
-            1) // first line may not be available to log
-            Logger::elog(FMT("%s  %2i | %s%s", BBLK, cb_dbg_info->line - 1,
-                             RESET, cb_dbg_info->line_before.c_str()));
-        Logger::elog(FMT("  %s%2i%s | %s%s\n   %s  |%s %s%s%s", BRED,
-                         cb_dbg_info->line, BBLK, RESET,
-                         cb_dbg_info->line_str.c_str(), BBLK, RESET, BRED,
-                         cb_dbg_info->get_pos_str().c_str(), RESET));
-        Logger::elog(FMT("%s  %2i | %s%s", BBLK, cb_dbg_info->line + 1, RESET,
-                         cb_dbg_info->line_after.c_str()));
-
-        Logger::elog(FMT("\n  %sat %s%s%s:%i:%i%s", BBLK, BBLU,
-                         cb_dbg_info->getSourceInfo()->getPath().c_str(), BBLK,
-                         cb_dbg_info->line, cb_dbg_info->pos.second, RESET));
+    CompilerError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info, const std::string& info = "")
+        : NiceError(code, err, p_cb_dbg_info, info) {
     };
 
     virtual ~CompilerError(){};
-
-  private:
-    DBGSourceInfo *cb_dbg_info;
 };
 } // namespace errors
 
