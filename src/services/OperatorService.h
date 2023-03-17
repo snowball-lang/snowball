@@ -19,7 +19,7 @@ namespace services {
 class OperatorService {
 public:
 
-#define OPERATOR(o, n) o = n,
+#define OPERATOR(o, n, s) o = n,
     /**
      * @brief A list containing all of the possible overload-able
      *  operators that a class can define.
@@ -28,6 +28,11 @@ public:
 #include "../defs/operators.def"
     };
 #undef OPERATOR
+    /**
+     * @brief A list containing the respective operator identifier
+     *  as a list of strings
+     */
+    static const std::vector<std::string> operators;
 
 public:
     /// @brief Get the respective operator identifier
@@ -36,6 +41,12 @@ public:
     ///  prepended to it.
     static std::string getOperatorMangle(OperatorType id);
 };
+
+#define OPERATOR(o, n, s) s,
+inline const std::vector<std::string> OperatorService::operators = {
+#include "../defs/operators.def"
+    };
+#undef OPERATOR
 
 } // namespace services
 } // namespace snowball

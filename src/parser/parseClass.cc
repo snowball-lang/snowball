@@ -2,6 +2,7 @@
 #include "../common.h"
 #include "../token.h"
 #include "./Parser.h"
+#include "../services/OperatorService.h"
 
 #include <assert.h>
 #define IS_CONSTRUCTOR(tk) is<TokenType::IDENTIFIER>(tk) && tk.value == name
@@ -92,7 +93,7 @@ ptr<Syntax::Statement::ClassDef> Parser::parseClass() {
                     auto func = parseFunction(true);
                     func->setPrivacy(
                         Syntax::Statement::Privacy::fromInt(!inPrivateScope));
-                    func->setName();
+                    func->setName(services::OperatorService::getOperatorMangle(services::OperatorService::CONSTRUCTOR));
                     cls->addFunction(func);
                     break;
                 }
