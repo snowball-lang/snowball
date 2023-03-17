@@ -173,6 +173,10 @@ ptr<FunctionDef> Parser::parseFunction(bool isConstructor) {
 
     ptr<Syntax::Expression::TypeRef> returnType = nullptr;
     if (is<TokenType::IDENTIFIER>()) {
+        if (isConstructor) {
+            createError<SYNTAX_ERROR>("Contructor can't have return types.", "Contructor declarations dont need to have a return type!");
+        }
+
         returnType = parseType();
     } else {
         auto info  = new DBGSourceInfo(m_source_info, m_current.get_pos(),
@@ -186,6 +190,7 @@ ptr<FunctionDef> Parser::parseFunction(bool isConstructor) {
     bool hasBlock = false;
 
     if (isExtern) {
+        // TODO: external functions can have bodies!
         assert_tok<TokenType::SYM_SEMI_COLLON>("';'");
     } else {
         assert_tok<TokenType::BRACKET_LCURLY>("'{'");

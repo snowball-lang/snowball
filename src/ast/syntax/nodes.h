@@ -68,7 +68,7 @@ struct ConstantValue : public AcceptorExtend<ConstantValue, Base> {
      * differentiate from the other ones.
      */
     enum ConstantType {
-#include "../../constantTypes/ct.def"
+#include "../../defs/ct.def"
     };
 
   private:
@@ -323,10 +323,12 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
     bool _static = false;
 
   public:
-    FunctionDef(std::string name, Privacy::Status prvc = PRIVATE);
+    FunctionDef(const std::string name, Privacy::Status prvc = PRIVATE);
 
     /// @brief Get function's identifier
     std::string getName();
+    /// @brief Set a function name
+    void setName(const std::string name);
 
     /// @return iterator to the first arg
     auto argBegin() { return args.begin(); }

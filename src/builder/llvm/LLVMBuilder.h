@@ -151,7 +151,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
     using AcceptorExtend::AcceptorExtend;
 
 #define VISIT(n) void visit(ptr<ir::n>) override;
-#include "../../ValueVisitor/Visits.def"
+#include "../../defs/visits.def"
 #undef VISIT
 
   private:

@@ -89,7 +89,11 @@ ptr<Syntax::Statement::ClassDef> Parser::parseClass() {
             // note: This case should be always at the bottom!
             case TokenType::IDENTIFIER: {
                 if (IS_CONSTRUCTOR(m_current)) {
-                    assert(false && "TODO: constructor parsing!");
+                    auto func = parseFunction(true);
+                    func->setPrivacy(
+                        Syntax::Statement::Privacy::fromInt(!inPrivateScope));
+                    func->setName();
+                    cls->addFunction(func);
                     break;
                 }
             }

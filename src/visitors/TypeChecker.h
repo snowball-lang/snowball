@@ -73,7 +73,7 @@ class TypeChecker : public AcceptorExtend<TypeChecker, codegen::ValueVisitor> {
     void visit(ptr<ir::Value> v) { v->visit(this); }
 
 #define VISIT(n) void visit(ptr<ir::n>) override;
-#include "../ValueVisitor/Visits.def"
+#include "../defs/visits.def"
 #undef VISIT
 };
 

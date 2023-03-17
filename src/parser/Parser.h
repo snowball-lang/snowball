@@ -35,18 +35,17 @@ class Parser {
     /// @brief Utility function to throw errors
     template <Error E, class... Args>
     [[nodiscard]] auto createError(std::pair<int, int> location,
-                                   std::string message, Args&&...args) const {
+                                   std::string message, const std::string info = "", Args&&...args) const {
         auto dbg_info =
             new DBGSourceInfo(m_source_info, {m_current.line, m_current.col},
                               std::forward<Args>(args)...);
-        throw ParserError(E, message, dbg_info);
+        throw ParserError(E, message, dbg_info, info);
     }
 
-    template <Error E, class... Args>
-    [[nodiscard]] auto createError(std::string fmt, Args&&...args) const {
-        auto message = FMT(fmt.c_str(), std::forward<Args>(args)...);
+    template <Error E>
+    [[nodiscard]] auto createError(const std::string msg, std::string info = "") const {
         createError<E>(std::pair<int, int>(m_current.line, m_current.col),
-                       message, m_current.to_string().size());
+                       msg, info, m_current.to_string().size());
     }
 
   public:

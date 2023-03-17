@@ -9,7 +9,7 @@ namespace ir {
 class Value;
 
 #define VISIT(n) class n;
-#include "Visits.def"
+#include "../defs/visits.def"
 #undef VISIT
 
 } // namespace ir
@@ -34,7 +34,7 @@ class ValueVisitor {
     virtual void codegen() = 0;
 
 #define VISIT(n) virtual void visit(ptr<ir::n>) = 0;
-#include "Visits.def"
+#include "../defs/visits.def"
 #undef VISIT
 };
 

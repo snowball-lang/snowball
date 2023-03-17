@@ -19,7 +19,7 @@ namespace ir {
 class ConstantValue : public AcceptorExtend<ConstantValue, Value> {
   public:
     enum ConstantType {
-#include "../../constantTypes/ct.def"
+#include "../../defs/ct.def"
     };
 
     ConstantValue(ConstantType ty) : type(ty) {}

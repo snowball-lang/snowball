@@ -253,7 +253,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     /// @return a list of generated modules through the whole project
     std::vector<std::shared_ptr<ir::Module>> getModules() const;
 
-#include "../ast/syntax/accepts.def"
+#include "../defs/accepts.def"
 
     // Default destructor
     ~Transformer() noexcept = default;

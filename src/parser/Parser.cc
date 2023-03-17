@@ -63,8 +63,8 @@ std::vector<Syntax::Node *> Parser::parse() {
             }
 
             default:
-                createError<SYNTAX_ERROR>("Unexpected token found: %s%s%s", BLU,
-                                          m_current.to_string().c_str(), RESET);
+                createError<SYNTAX_ERROR>(FMT("Unexpected token found: %s%s%s", BLU,
+                                          m_current.to_string().c_str(), RESET));
         }
 
         if (keep_parsing) next();

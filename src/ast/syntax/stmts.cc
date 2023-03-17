@@ -39,7 +39,7 @@ void FunctionDef::setRetType(ptr<Expression::TypeRef> p_type) {
     retType = p_type;
 }
 std::string FunctionDef::getName() { return name; }
-
+void FunctionDef::setName(const std::string name) { this->name = name; }
 bool FunctionDef::isVariadic() { return variadic; }
 void FunctionDef::setVariadic(bool v) { variadic = v; }
 bool FunctionDef::isStatic() { return _static; }

@@ -23,7 +23,7 @@ class Visitor : public SrcObject {
     Visitor(ptr<SourceInfo> srci) : SrcObject(srci){};
     virtual void visit(std::vector<ptr<Node>>);
 
-#include "../syntax/accepts.def"
+#include "../../defs/accepts.def"
 };
 
 } // namespace Syntax
