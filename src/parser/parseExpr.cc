@@ -67,8 +67,7 @@ ptr<Syntax::Expression::Base> Parser::parseExpr(bool allowAssign) {
             } else if (is<TokenType::SYM_COLCOL>(tk) ||
                        is<TokenType::SYM_DOT>(tk)) {
                 auto isStatic = is<TokenType::SYM_COLCOL>(tk);
-                next();
-                next();
+                next(1);
 
                 assert_tok<TokenType::IDENTIFIER>("an identifier");
                 auto index = parseIdentifier(dbg);
@@ -93,6 +92,12 @@ ptr<Syntax::Expression::Base> Parser::parseExpr(bool allowAssign) {
 
                 expr = Syntax::N<Syntax::Expression::Cast>(expr, ty);
                 expr->setDBGInfo(dbgInfo);
+            } else if (is<TokenType::KWORD_NEW>(tk)) {
+                next(1);
+                auto ty = parseType();
+                auto call = parseFunctionCall(ty);
+
+                assert(false && "new");
             } else {
                 break;
             }
