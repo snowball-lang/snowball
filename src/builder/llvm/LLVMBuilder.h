@@ -177,6 +177,11 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      */
     ptr<llvm::Type> getLLVMType(ptr<types::Type> t);
     /**
+     * @brief A allocates a new object inside the LLVM IR code and cast it
+     *  into the desired type.
+    */
+    ptr<llvm::Value> allocateObject(std::shared_ptr<types::DefinedType> ty);
+    /**
      * @brief Utility function to the actual `getLLVMType`
      * function. This is just a workaround to avoid shared
      * pointers.
@@ -216,6 +221,12 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      *  location breakpoint
      */
     void setDebugInfoLoc(ptr<ir::Value> v);
+    /**
+     * @brief Creates (if it does not exist) or fetches a function declaration
+     *  used to allocate new bytes into memory.
+     * @example This can be used to create a new instance of an object.
+     */
+    ptr<llvm::Function> getAllocaFunction();
     /**
      * @brief Generate the current value given
      *

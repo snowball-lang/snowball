@@ -44,6 +44,7 @@ Func::Func(std::string identifier, std::shared_ptr<Block> body,
     setArgs(arguments);
 }
 
+std::string Func::getIdentifier() { return identifier; }
 std::string Func::getName() {
     if (services::OperatorService::isOperator(identifier) && hasParent()) {
         auto op = services::OperatorService::operatorID(identifier);

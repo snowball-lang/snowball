@@ -12,6 +12,11 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ptr<ir::Func> func) {
+    if (auto it = funcs.find(func->getId()); it != funcs.end()) {
+        this->value = it->second;
+        return;
+    }
+
     setDebugInfoLoc(func);
     auto fn = createLLVMFunction(func);
 
