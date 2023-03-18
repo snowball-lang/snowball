@@ -66,8 +66,36 @@ ptr<llvm::DIType> LLVMBuilder::getDIType(ptr<types::Type> ty) {
         auto subroutineType = dbg.builder->createSubroutineType(
             llvm::MDTuple::get(*context, argTypes));
         return subroutineType;
+    } else if (auto c = cast<types::DefinedType>(ty)) {
+        // TODO: add "VTableHolder" as argument
+        auto dbgInfo = c->getDBGInfo();
+        auto file = dbg.getFile(dbgInfo->getSourceInfo()->getPath());
+
+        auto fields = c->getFields();
+        if (auto p = c->getParent()) {
+            auto pFields = p->getFields();
+            fields.insert(fields.begin(), pFields.begin(), pFields.end());
+        }
+
+        std::vector<ptr<llvm::Metadata>> generatedFields;
+        ptr<llvm::DIType> parentDIType = nullptr;
+        if (auto p = c->getParent()) {
+            parentDIType = getDIType(c->getParent().get());
+        }
+
+        auto debugType = dbg.builder->createStructType(file, c->getPrettyName(), file, dbgInfo->line, /* TODO: */0, 0, llvm::DINode::FlagZero, parentDIType, dbg.builder->getOrCreateArray(generatedFields));
+
+        generatedFields = vector_iterate<ptr<types::DefinedType::ClassField>, ptr<llvm::Metadata>>(fields, [&](ptr<types::DefinedType::ClassField> t) {
+            // TODO: custom line for fields?
+            return dbg.builder->createMemberType(
+                debugType, t->name, file, dbgInfo->line,
+                layout.getTypeAllocSizeInBits(getLLVMType(t->type)),
+                /*AlignInBits=*/0, 0,
+                llvm::DINode::FlagZero, getDIType(t->type.get()));
+        });
+
     } else {
-        Syntax::E<BUG>(FMT("Undefined type! ('%s')", ty->getName().c_str()));
+        Syntax::E<BUG>(FMT("Undefined type! (dbg) ('%s')", ty->getName().c_str()));
     }
 
     return nullptr; // to avoid warnings

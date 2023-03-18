@@ -20,7 +20,8 @@ void LLVMBuilder::visit(ptr<ir::Call> call) {
             [&](std::shared_ptr<ir::Value> arg) { return build(arg.get()); });
 
     // TODO: invoke if it's inside a try block
-    this->value = builder->CreateCall(llvm::cast<llvm::Function>(callee), args);
+    auto f = llvm::cast<llvm::Function>(callee);
+    this->value = builder->CreateCall(f, args);
 }
 
 } // namespace codegen

@@ -13,6 +13,7 @@ ACCEPT(Expression::GenericIdentifier)
 ACCEPT(Expression::Index)
 ACCEPT(Expression::TypeRef)
 ACCEPT(Expression::Cast)
+ACCEPT(Expression::NewInstance)
 
 ACCEPT(Statement::Return)
 ACCEPT(Statement::VariableDecl)

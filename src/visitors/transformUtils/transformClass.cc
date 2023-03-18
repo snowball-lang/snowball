@@ -24,8 +24,12 @@ Transformer::transformClass(const std::string& uuid,
         // TODO: maybe not reset completly, add nested classes in the future
         ctx->setCurrentClass(nullptr);
 
-        auto basedName = getNameWithBase(ty->getName());
+        std::shared_ptr<types::DefinedType> parentType = nullptr;
+        if (auto x = ty->getParent()) {
+            parentType = utils::dyn_cast<types::DefinedType>(transformType(x));
+        }
 
+        auto basedName = getNameWithBase(ty->getName());
         auto fields = vector_iterate<ptr<Statement::VariableDecl>,
                                      ptr<types::DefinedType::ClassField>>(
             ty->getVariables(), [&](auto v) {
@@ -45,7 +49,10 @@ Transformer::transformClass(const std::string& uuid,
             utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
 
         transformedType = std::make_shared<types::DefinedType>(
-            basedName, uuid, ctx->module, fields, generics);
+            basedName, uuid, ctx->module, fields, parentType, generics);
+
+        transformedType->setDBGInfo(ty->getDBGInfo());
+        transformedType->setSourceInfo(ty->getSourceInfo());
         ctx->setCurrentClass(transformedType);
 
         auto item = std::make_shared<transform::Item>(transformedType);

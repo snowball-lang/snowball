@@ -163,6 +163,16 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
         }
 
         assert(false && "TODO: index index");
+    } else if (auto x = utils::cast<Expression::TypeRef>(base)) {
+        auto ty = transformType(x);
+
+        if (ty && (!isStatic)) {
+            E<TYPE_ERROR>(
+                dbgInfo,
+                "Can't use type references for method calls / accesses!");
+        } else if (ty) {
+            return getFromType(ty);
+        }
     } else {
         E<SYNTAX_ERROR>(dbgInfo,
                         "Static acces/method call can only be used with "

@@ -50,6 +50,13 @@ ptr<Syntax::Expression::Base> Parser::parseExpr(bool allowAssign) {
                 ty, m_current.to_string());
         } else if (TOKEN(IDENTIFIER)) {
             expr = parseIdentifier(dbg);
+        }  else if (TOKEN(KWORD_NEW)) {
+            next();
+            auto ty = parseType();
+            auto call = parseFunctionCall(ty);
+
+            expr = Syntax::N<Syntax::Expression::NewInstance>(call, ty);
+            expr->setDBGInfo(call->getDBGInfo());
         } else {
             createError<SYNTAX_ERROR>(
                 "Expected a valid expression but got '%s'",
@@ -92,12 +99,6 @@ ptr<Syntax::Expression::Base> Parser::parseExpr(bool allowAssign) {
 
                 expr = Syntax::N<Syntax::Expression::Cast>(expr, ty);
                 expr->setDBGInfo(dbgInfo);
-            } else if (is<TokenType::KWORD_NEW>(tk)) {
-                next(1);
-                auto ty = parseType();
-                auto call = parseFunctionCall(ty);
-
-                assert(false && "new");
             } else {
                 break;
             }

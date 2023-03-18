@@ -42,6 +42,26 @@ ptr<llvm::Type> LLVMBuilder::getLLVMType(ptr<types::Type> t) {
 
     else if (auto f = cast<types::FunctionType>(t)) {
         return getLLVMFunctionType(f)->getPointerTo();
+    } else if (auto c = cast<types::DefinedType>(t)) {
+        if (auto it = types.find(c->getId()); it != types.end()) {
+            return it->second->getPointerTo();
+        }
+
+        auto fields = c->getFields();
+        if (auto p = c->getParent()) {
+            auto pFields = p->getFields();
+            fields.insert(fields.begin(), pFields.begin(), pFields.end());
+        }
+
+        auto generatedFields = vector_iterate<ptr<types::DefinedType::ClassField>, ptr<llvm::Type>>(fields, [&](ptr<types::DefinedType::ClassField> t) {
+            return getLLVMType(t->type);
+        });
+
+        auto s = llvm::StructType::create(*context, _SN_CLASS_PREFIX + c->getMangledName());
+        s->setBody(generatedFields);
+        types.insert({c->getId(), s});
+
+        return s->getPointerTo();
     } else {
         Syntax::E<BUG>(FMT("Undefined type! ('%s')", t->getName().c_str()));
     }

@@ -94,6 +94,7 @@ ptr<Syntax::Statement::ClassDef> Parser::parseClass() {
                     func->setPrivacy(
                         Syntax::Statement::Privacy::fromInt(!inPrivateScope));
                     func->setName(services::OperatorService::getOperatorMangle(services::OperatorService::CONSTRUCTOR));
+                    func->setStatic();
                     cls->addFunction(func);
                     break;
                 }

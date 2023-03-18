@@ -19,7 +19,7 @@ namespace services {
 class OperatorService {
 public:
 
-#define OPERATOR(o, n, s) o = n,
+#define OPERATOR(o, n, s, p) o = n,
     /**
      * @brief A list containing all of the possible overload-able
      *  operators that a class can define.
@@ -33,6 +33,11 @@ public:
      *  as a list of strings
      */
     static const std::vector<std::string> operators;
+    /**
+     * @brief A vector that contains the corresponding operator
+     *  names (nice names for output)
+     */
+    static const std::vector<std::string> operatorNames;
 
 public:
     /// @brief Get the respective operator identifier
@@ -40,10 +45,21 @@ public:
     /// @brief Get operator identifier but with an "#"
     ///  prepended to it.
     static std::string getOperatorMangle(OperatorType id);
+    /// @brief Check if a name is a operator-like name
+    static bool isOperator(const std::string& name);
+    /// @brief Operator ID to constructor
+    static const std::string& operatorID(OperatorType id);
+    /// @return the corresponding ID from a @param name
+    static OperatorType operatorID(const std::string& name);
 };
 
-#define OPERATOR(o, n, s) s,
+#define OPERATOR(o, n, s, p) s,
 inline const std::vector<std::string> OperatorService::operators = {
+#include "../defs/operators.def"
+    };
+#undef OPERATOR
+#define OPERATOR(o, n, s, p) p,
+inline const std::vector<std::string> OperatorService::operatorNames = {
 #include "../defs/operators.def"
     };
 #undef OPERATOR

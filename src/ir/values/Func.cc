@@ -2,6 +2,7 @@
 #include "Func.h"
 
 #include "../../utils/utils.h"
+#include "../../services/OperatorService.h"
 #include "Argument.h"
 
 #include <llvm-14/llvm/ADT/StringExtras.h>
@@ -43,7 +44,14 @@ Func::Func(std::string identifier, std::shared_ptr<Block> body,
     setArgs(arguments);
 }
 
-std::string Func::getName() { return identifier; }
+std::string Func::getName() {
+    if (services::OperatorService::isOperator(identifier) && hasParent()) {
+        auto op = services::OperatorService::operatorID(identifier);
+        return services::OperatorService::operatorID(op);
+    }
+
+    return identifier;
+}
 
 Func::FunctionArgs Func::getArgs(bool ignoreSelf) const {
     auto argv = arguments;

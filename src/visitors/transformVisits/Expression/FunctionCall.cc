@@ -16,10 +16,11 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 -> std::pair<std::shared_ptr<ir::Value>,
                              std::shared_ptr<types::Type>> {
                 a->accept(this);
+                auto lkj = utils::cast<Expression::Identifier>(a);
                 return {this->value, this->value->getType()};
             });
 
-    auto callee                   = p_node->getCallee();
+    auto callee = p_node->getCallee();
     std::shared_ptr<ir::Value> fn = nullptr;
     if (auto x = utils::cast<Expression::Identifier>(callee)) {
         auto g        = utils::cast<Expression::GenericIdentifier>(callee);

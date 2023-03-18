@@ -64,7 +64,9 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
     // A global map to keep track of all processed
     // functions.
     std::map<ir::id_t, ptr<llvm::Function>> funcs;
-
+    // Some sort of cache to prevent struct-like types
+    // from being generated over and over again.
+    std::map<ir::id_t, ptr<llvm::Type>> types;
     // Internal module given by the internal representation
     // of the program.
     std::shared_ptr<ir::MainModule> iModule;
@@ -117,13 +119,10 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
     // LLVM IR module that acts as a top level container of
     // all other LLVM Intermediate Representation (IR) objects
     std::unique_ptr<llvm::Module> module;
-
     // An unique pointer for an instruction builder.
     std::unique_ptr<llvm::IRBuilder<>> builder;
-
     // LLVM context for the module
     std::unique_ptr<llvm::LLVMContext> context;
-
     // Last compiled (generated) value
     ptr<llvm::Value> value;
 

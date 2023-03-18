@@ -18,8 +18,9 @@ namespace types {
 DefinedType::DefinedType(const std::string& name, const std::string uuid,
                          std::shared_ptr<ir::Module> module,
                          std::vector<ptr<ClassField>> fields,
+                         std::shared_ptr<DefinedType> parent,
                          std::vector<std::shared_ptr<Type>> generics)
-    : AcceptorExtend(Kind::CLASS, name), uuid(uuid), module(module),
+    : AcceptorExtend(Kind::CLASS, name), uuid(uuid), parent(parent), module(module),
       fields(fields), generics(generics) {}
 
 DefinedType::ClassField::ClassField(const std::string& name,

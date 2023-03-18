@@ -173,11 +173,44 @@ struct FunctionCall : public AcceptorExtend<FunctionCall, Base> {
     auto getCallee() { return callee; }
     /// @return Call instruction arguments
     auto& getArguments() { return arguments; }
+    /// @brief Set a new call expression to this call
+    void setCallee(ptr<Base> c) { callee = c; }
 
   public:
     /// @return string representation of a function call arguments
     static std::string
     getArgumentsAsString(const std::vector<std::shared_ptr<types::Type>> args);
+
+    ACCEPT()
+};
+
+/**
+ * @brief It represents the "new" operator to create a new
+ *  instance of a class.
+ * @note What it actually does it just calls the new operator
+ *  as a static function and creates a new allocation of that
+ *  type.
+ * @example
+ *   _c = alloca [type]
+ *   c = [type]::[new operator](_c)
+ */
+struct NewInstance : public AcceptorExtend<Cast, Base> {
+  private:
+    /// @brief Value that's needed to be casted
+    ptr<FunctionCall> call;
+    /// @brief Result type thats casted to
+    ptr<TypeRef> type;
+
+  public:
+    using AcceptorExtend::AcceptorExtend;
+
+    NewInstance(ptr<FunctionCall> call, ptr<TypeRef> ty)
+      : type(ty), call(call){};
+
+    /// @return Get the call value from the operator
+    auto getCall() { return call; }
+    /// @brief Get the type trying to be initialized
+    auto getType() { return type; }
 
     ACCEPT()
 };

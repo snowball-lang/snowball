@@ -28,7 +28,7 @@ namespace types {
  * a new initialization of the object is required.
  */
 class DefinedType : public AcceptorExtend<DefinedType, Type>,
-                    public ir::IdMixin {
+                    public ir::IdMixin, public DBGObject {
   public:
     /**
      * @brief A class field represents all of the "elements" a
@@ -58,11 +58,14 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     std::string uuid;
     /// @brief A module where the type is defined.
     std::shared_ptr<ir::Module> module;
+    /// @brief Parent class where the class in inherited from
+    std::shared_ptr<DefinedType> parent = nullptr;
 
   public:
     DefinedType(const std::string& name, const std::string uuid,
                 std::shared_ptr<ir::Module> module,
                 std::vector<ptr<ClassField>> fields         = {},
+                std::shared_ptr<DefinedType> parent         = nullptr,
                 std::vector<std::shared_ptr<Type>> generics = {});
 
     /**
@@ -102,7 +105,13 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     std::string getUUID() const;
     /// @return the generic list defined for this type
     auto getGenerics() const { return generics; }
-
+    /// @return the parent class it inherits from
+    /// @note It may be std::nullptr if it does not inherit from
+    ///  anything!
+    auto getParent() const { return parent; }
+    /// @return A list containing all the fields declared for the class
+    /// @note It does not include the parent fields!
+    auto getFields() const { return fields; }
     /// @c Type::toRef() for information about this function.
     /// @note It essentially does the same thing except it adds
     ///  generics if needed

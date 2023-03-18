@@ -20,8 +20,9 @@ ptr<llvm::Function> LLVMBuilder::createLLVMFunction(ptr<ir::Func> func) {
 
     auto name = func->getMangle();
 
-    auto fn     = module->getOrInsertFunction(name, fnType);
-    auto callee = llvm::cast<llvm::Function>(fn.getCallee());
+    auto fn = llvm::Function::Create(fnType, llvm::Function::ExternalLinkage,
+                                         name, module.get());
+    auto callee = (ptr<llvm::Function>)(fn);
 
     if (!ir::Func::isExternal(func->getMangle()) ||
         func->getMangle() == "main") {

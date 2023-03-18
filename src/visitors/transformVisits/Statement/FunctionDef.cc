@@ -1,4 +1,5 @@
 #include "../../Transformer.h"
+#include "../../../services/OperatorService.h"
 
 #include <cstring>
 
@@ -34,6 +35,13 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     if (auto x = ctx->cache->getFunction(uuid)) {
         // assert(false && "func exists");
         // TODO: check for already existing functions
+    }
+
+    if (services::OperatorService::getOperatorMangle(services::OperatorService::CONSTRUCTOR) == name) {
+        auto c = ctx->getCurrentClass();
+        assert(c != nullptr);
+
+        p_node->setRetType(c->toRef());
     }
 
     ctx->cache->setFunction(uuid, p_node, ctx->saveState());
