@@ -53,29 +53,30 @@ class SNError {
 };
 
 class NiceError : public SNError {
-protected:
+  protected:
     ptr<DBGSourceInfo> cb_dbg_info;
     const std::string info;
-public:
-  NiceError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info, const std::string& info = "") :
-    SNError(code, err), cb_dbg_info(p_cb_dbg_info), info(info) {};
-  virtual void print_error() const override;
+
+  public:
+    NiceError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info,
+              const std::string& info = "")
+        : SNError(code, err), cb_dbg_info(p_cb_dbg_info), info(info){};
+    virtual void print_error() const override;
 };
 
 class LexerError : public NiceError {
   public:
     LexerError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info)
-        : NiceError(code, err, p_cb_dbg_info) {
-    };
+        : NiceError(code, err, p_cb_dbg_info){};
 
-    virtual ~LexerError() {};
+    virtual ~LexerError(){};
 };
 
 class ParserError : public NiceError {
   public:
-    ParserError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info, const std::string& info = "")
-        : NiceError(code, err, p_cb_dbg_info, info) {
-    };
+    ParserError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info,
+                const std::string& info = "")
+        : NiceError(code, err, p_cb_dbg_info, info){};
 
     virtual ~ParserError(){};
 };
@@ -115,9 +116,9 @@ class Warning : public SNError {
 
 class CompilerError : public NiceError {
   public:
-    CompilerError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info, const std::string& info = "")
-        : NiceError(code, err, p_cb_dbg_info, info) {
-    };
+    CompilerError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info,
+                  const std::string& info = "")
+        : NiceError(code, err, p_cb_dbg_info, info){};
 
     virtual ~CompilerError(){};
 };

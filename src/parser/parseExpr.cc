@@ -50,9 +50,9 @@ ptr<Syntax::Expression::Base> Parser::parseExpr(bool allowAssign) {
                 ty, m_current.to_string());
         } else if (TOKEN(IDENTIFIER)) {
             expr = parseIdentifier(dbg);
-        }  else if (TOKEN(KWORD_NEW)) {
+        } else if (TOKEN(KWORD_NEW)) {
             next();
-            auto ty = parseType();
+            auto ty   = parseType();
             auto call = parseFunctionCall(ty);
 
             expr = Syntax::N<Syntax::Expression::NewInstance>(call, ty);

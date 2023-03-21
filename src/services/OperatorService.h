@@ -1,8 +1,8 @@
 
 #include "../common.h"
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #ifndef __SNOWBALL_SERVICES_OPERATORS_H_
 #define __SNOWBALL_SERVICES_OPERATORS_H_
@@ -17,8 +17,7 @@ namespace services {
  *  utility-related things
  */
 class OperatorService {
-public:
-
+  public:
 #define OPERATOR(o, n, s, p) o = n,
     /**
      * @brief A list containing all of the possible overload-able
@@ -39,7 +38,7 @@ public:
      */
     static const std::vector<std::string> operatorNames;
 
-public:
+  public:
     /// @brief Get the respective operator identifier
     static std::string getOperatorId(OperatorType id);
     /// @brief Get operator identifier but with an "#"
@@ -56,12 +55,12 @@ public:
 #define OPERATOR(o, n, s, p) s,
 inline const std::vector<std::string> OperatorService::operators = {
 #include "../defs/operators.def"
-    };
+};
 #undef OPERATOR
 #define OPERATOR(o, n, s, p) p,
 inline const std::vector<std::string> OperatorService::operatorNames = {
 #include "../defs/operators.def"
-    };
+};
 #undef OPERATOR
 
 } // namespace services

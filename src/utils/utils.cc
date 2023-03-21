@@ -123,7 +123,7 @@ std::string utf8_substr(const std::string str, unsigned int start,
     if (min == std::string::npos || max == std::string::npos) {
         return "";
     }
-    auto s = str.substr(min, leng+1);
+    auto s = str.substr(min, leng + 1);
     return s;
 }
 

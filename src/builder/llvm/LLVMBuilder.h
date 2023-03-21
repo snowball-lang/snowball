@@ -179,7 +179,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
     /**
      * @brief A allocates a new object inside the LLVM IR code and cast it
      *  into the desired type.
-    */
+     */
     ptr<llvm::Value> allocateObject(std::shared_ptr<types::DefinedType> ty);
     /**
      * @brief Utility function to the actual `getLLVMType`

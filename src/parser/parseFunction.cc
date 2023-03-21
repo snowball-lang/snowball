@@ -18,10 +18,10 @@ using namespace snowball::Syntax::Statement;
 namespace snowball::parser {
 
 ptr<FunctionDef> Parser::parseFunction(bool isConstructor) {
-    assert(is<TokenType::KWORD_FUNC>() || (is<TokenType::IDENTIFIER>() && isConstructor));
+    assert(is<TokenType::KWORD_FUNC>() ||
+           (is<TokenType::IDENTIFIER>() && isConstructor));
 
-    if (!isConstructor)
-        next();
+    if (!isConstructor) next();
 
     bool isExtern  = false;
     bool isPublic  = false;
@@ -174,7 +174,9 @@ ptr<FunctionDef> Parser::parseFunction(bool isConstructor) {
     ptr<Syntax::Expression::TypeRef> returnType = nullptr;
     if (is<TokenType::IDENTIFIER>()) {
         if (isConstructor) {
-            createError<SYNTAX_ERROR>("Contructor can't have return types.", "Contructor declarations dont need to have a return type!");
+            createError<SYNTAX_ERROR>(
+                "Contructor can't have return types.",
+                "Constructors return type default to the parent's class type!");
         }
 
         returnType = parseType();

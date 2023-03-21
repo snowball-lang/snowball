@@ -1,5 +1,5 @@
-#include "../../Transformer.h"
 #include "../../../services/OperatorService.h"
+#include "../../Transformer.h"
 
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
@@ -12,7 +12,9 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
     auto expr = call->getCallee();
 
     assert(utils::cast<Expression::TypeRef>(expr));
-    auto ident = Syntax::N<Expression::Identifier>(services::OperatorService::getOperatorMangle(services::OperatorService::CONSTRUCTOR));
+    auto ident = Syntax::N<Expression::Identifier>(
+        services::OperatorService::getOperatorMangle(
+            services::OperatorService::CONSTRUCTOR));
     auto index = Syntax::N<Expression::Index>(expr, ident, true);
 
     ident->setDBGInfo(expr->getDBGInfo());

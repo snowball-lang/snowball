@@ -1,5 +1,5 @@
-#include "../../Transformer.h"
 #include "../../../services/OperatorService.h"
+#include "../../Transformer.h"
 
 #include <cstring>
 
@@ -37,7 +37,8 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
         // TODO: check for already existing functions
     }
 
-    if (services::OperatorService::getOperatorMangle(services::OperatorService::CONSTRUCTOR) == name) {
+    if (services::OperatorService::getOperatorMangle(
+            services::OperatorService::CONSTRUCTOR) == name) {
         auto c = ctx->getCurrentClass();
         assert(c != nullptr);
 

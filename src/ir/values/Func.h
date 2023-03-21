@@ -154,6 +154,8 @@ class Func : public AcceptorExtend<Func, Value>,
     void setStatic(bool s = false) { _static = s; }
     /// @return whether or not the function is static
     auto isStatic() { return _static; }
+    /// @return true if the function is a class contructor
+    bool isConstructor();
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

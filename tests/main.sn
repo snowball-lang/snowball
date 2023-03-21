@@ -3,7 +3,7 @@ use Core::System
 class Hello {
 pub:
     Hello() {
-
+        return 2
     }
 }
 

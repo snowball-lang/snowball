@@ -70,9 +70,8 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
         return;
     }
 
-    E<VARIABLE_ERROR>(p_node, FMT("Cannot find identifier `%s`!",
-                                  name.c_str()),
-                                  "this name is not defined");
+    E<VARIABLE_ERROR>(p_node, FMT("Cannot find identifier `%s`!", name.c_str()),
+                      "this name is not defined");
 }
 
 } // namespace Syntax

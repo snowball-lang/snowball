@@ -30,7 +30,7 @@ Transformer::transformClass(const std::string& uuid,
         }
 
         auto basedName = getNameWithBase(ty->getName());
-        auto fields = vector_iterate<ptr<Statement::VariableDecl>,
+        auto fields    = vector_iterate<ptr<Statement::VariableDecl>,
                                      ptr<types::DefinedType::ClassField>>(
             ty->getVariables(), [&](auto v) {
                 auto varTy = transformType(v->getDefinedType());

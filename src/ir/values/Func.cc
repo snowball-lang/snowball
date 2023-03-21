@@ -1,8 +1,8 @@
 
 #include "Func.h"
 
-#include "../../utils/utils.h"
 #include "../../services/OperatorService.h"
+#include "../../utils/utils.h"
 #include "Argument.h"
 
 #include <llvm-14/llvm/ADT/StringExtras.h>
@@ -42,6 +42,12 @@ Func::Func(std::string identifier, std::shared_ptr<Block> body,
 
     setBody(body);
     setArgs(arguments);
+}
+
+bool Func::isConstructor() {
+    return (services::OperatorService::getOperatorMangle(
+                services::OperatorService::CONSTRUCTOR) == identifier) &&
+           hasParent();
 }
 
 std::string Func::getIdentifier() { return identifier; }

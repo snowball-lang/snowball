@@ -205,7 +205,7 @@ struct NewInstance : public AcceptorExtend<Cast, Base> {
     using AcceptorExtend::AcceptorExtend;
 
     NewInstance(ptr<FunctionCall> call, ptr<TypeRef> ty)
-      : type(ty), call(call){};
+        : type(ty), call(call){};
 
     /// @return Get the call value from the operator
     auto getCall() { return call; }

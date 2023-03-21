@@ -34,8 +34,9 @@ class Parser {
   private:
     /// @brief Utility function to throw errors
     template <Error E, class... Args>
-    [[nodiscard]] auto createError(std::pair<int, int> location,
-                                   std::string message, const std::string info = "", Args&&...args) const {
+    [[nodiscard]] auto
+    createError(std::pair<int, int> location, std::string message,
+                const std::string info = "", Args&&...args) const {
         auto dbg_info =
             new DBGSourceInfo(m_source_info, {m_current.line, m_current.col},
                               std::forward<Args>(args)...);
@@ -43,9 +44,10 @@ class Parser {
     }
 
     template <Error E>
-    [[nodiscard]] auto createError(const std::string msg, std::string info = "") const {
-        createError<E>(std::pair<int, int>(m_current.line, m_current.col),
-                       msg, info, m_current.to_string().size());
+    [[nodiscard]] auto createError(const std::string msg,
+                                   std::string info = "") const {
+        createError<E>(std::pair<int, int>(m_current.line, m_current.col), msg,
+                       info, m_current.to_string().size());
     }
 
   public:
@@ -135,7 +137,8 @@ class Parser {
      * arrowfn       ::=  [decorators] "fn" funcname "(" [parameter_list] ")"
      * type "=>" stmt
      */
-    ptr<Syntax::Statement::FunctionDef> parseFunction(bool isConstructor = false);
+    ptr<Syntax::Statement::FunctionDef>
+    parseFunction(bool isConstructor = false);
 
     /**
      * params        ::=  "<" [param_args] ">"
@@ -216,7 +219,9 @@ class Parser {
     /**
      * expr          ::=  [constant_value] |
      *                    [function_call]  |
-     *                    [index_node]
+     *                    [index_node]     |
+     *                    [new_instance]
+     * new_instance  ::=  "new" [type_ref][call]
      *
      * @param allowAssign Whether or not allow the assign operator.
      */

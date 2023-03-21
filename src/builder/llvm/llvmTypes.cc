@@ -53,11 +53,15 @@ ptr<llvm::Type> LLVMBuilder::getLLVMType(ptr<types::Type> t) {
             fields.insert(fields.begin(), pFields.begin(), pFields.end());
         }
 
-        auto generatedFields = vector_iterate<ptr<types::DefinedType::ClassField>, ptr<llvm::Type>>(fields, [&](ptr<types::DefinedType::ClassField> t) {
-            return getLLVMType(t->type);
-        });
+        auto generatedFields =
+            vector_iterate<ptr<types::DefinedType::ClassField>,
+                           ptr<llvm::Type>>(
+                fields, [&](ptr<types::DefinedType::ClassField> t) {
+                    return getLLVMType(t->type);
+                });
 
-        auto s = llvm::StructType::create(*context, _SN_CLASS_PREFIX + c->getMangledName());
+        auto s = llvm::StructType::create(*context, _SN_CLASS_PREFIX +
+                                                        c->getMangledName());
         s->setBody(generatedFields);
         types.insert({c->getId(), s});
 

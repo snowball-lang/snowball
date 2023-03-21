@@ -11,6 +11,7 @@ namespace snowball::parser {
 
 ptr<Syntax::Statement::Return> Parser::parseReturn() {
     assert(is<TokenType::KWORD_RETURN>());
+
     auto info = DBGSourceInfo::fromToken(m_source_info, m_current);
 
     auto expr = parseExpr(false);

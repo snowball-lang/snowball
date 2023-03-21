@@ -20,8 +20,9 @@ Module::Module(const std::string name, const std::string uuid,
                std::shared_ptr<Module> parent)
     : name(name), uniqueName(uuid.empty() ? name : uuid), parent() {}
 
-std::string Module::getName() const
-    { return (parent == nullptr ? "" : parent->getName() + "::") + name; }
+std::string Module::getName() const {
+    return (parent == nullptr ? "" : parent->getName() + "::") + name;
+}
 std::string Module::getUniqueName() const { return uniqueName; }
 
 } // namespace ir

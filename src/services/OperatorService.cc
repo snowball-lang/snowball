@@ -1,5 +1,6 @@
 
 #include "OperatorService.h"
+
 #include <algorithm>
 #include <cassert>
 
@@ -18,10 +19,11 @@ const std::string& OperatorService::operatorID(OperatorType id) {
     return operatorNames.at(id);
 }
 
-OperatorService::OperatorType OperatorService::operatorID(const std::string& n) {
+OperatorService::OperatorType
+OperatorService::operatorID(const std::string& n) {
     std::string name = n;
     if (isOperator(name)) {
-        name = name.substr(1, name.size()-1);
+        name = name.substr(1, name.size() - 1);
     }
 
     auto it = std::find(operators.begin(), operators.end(), name);
@@ -30,7 +32,8 @@ OperatorService::OperatorType OperatorService::operatorID(const std::string& n) 
     return (OperatorService::OperatorType)std::distance(operators.begin(), it);
 }
 
-std::string OperatorService::getOperatorMangle(OperatorService::OperatorType id) {
+std::string
+OperatorService::getOperatorMangle(OperatorService::OperatorType id) {
     return "#" + getOperatorId(id);
 }
 

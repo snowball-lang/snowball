@@ -28,7 +28,8 @@ namespace types {
  * a new initialization of the object is required.
  */
 class DefinedType : public AcceptorExtend<DefinedType, Type>,
-                    public ir::IdMixin, public DBGObject {
+                    public ir::IdMixin,
+                    public DBGObject {
   public:
     /**
      * @brief A class field represents all of the "elements" a
