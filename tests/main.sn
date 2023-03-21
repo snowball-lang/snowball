@@ -2,14 +2,9 @@ use Core::System
 
 class Hello {
 pub:
-    Hello() {
-        return 2
-    }
+    Hello() {}
 }
 
 pub fn main() i32 {
-    let b = 2;
     new Hello();
-    System::input()
-    System::println(b)
 }
