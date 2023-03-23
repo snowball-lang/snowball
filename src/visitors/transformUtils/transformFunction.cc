@@ -45,15 +45,25 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
             fn->setPrivacy(node->getPrivacy());
             fn->setStatic(node->isStatic());
 
-            ir::Func::FunctionArgs newArgs;
+            ir::Func::FunctionArgs newArgs = {};
+
+            if (fn->isConstructor()) {
+
+                auto a = ctx->module->N<ir::Argument>(
+                    node->getDBGInfo(), "self", 0, nullptr);
+                a->setType(ctx->getCurrentClass());
+
+                newArgs.emplace(newArgs.begin(), std::make_pair("self", a));
+            }
+
             for (int i = 0; i < node->getArgs().size(); i++) {
                 auto arg = node->getArgs().at(i);
 
                 auto a = ctx->module->N<ir::Argument>(
-                    node->getDBGInfo(), arg->getName(), i,
+                    node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
                     arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
                 a->setType(transformType(arg->getType()));
-                newArgs.insert({arg->getName(), a});
+                newArgs.insert(newArgs.end(), {arg->getName(), a});
             }
 
             fn->setArgs(newArgs);

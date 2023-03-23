@@ -24,7 +24,7 @@ class Func : public AcceptorExtend<Func, Value>,
              public AcceptorExtend<Func, Syntax::Statement::GenericContainer> {
   public:
     // Utility types
-    using FunctionArgs = std::map<std::string, std::shared_ptr<Argument>>;
+    using FunctionArgs = std::list<std::pair<std::string, std::shared_ptr<Argument>>>;
 
   private:
     // When a function is variadic, it means that

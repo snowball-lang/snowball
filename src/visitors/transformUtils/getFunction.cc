@@ -59,7 +59,7 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
         for (auto f : *functions) {
             auto args       = f->getArgs(true);
             size_t numArgs  = arguments.size();
-            auto argsVector = utils::map_to_vector(args);
+            auto argsVector = utils::list_to_vector(args);
 
             if (ir::Func::argumentSizesEqual(argsVector, arguments,
                                              f->isVariadic())) {

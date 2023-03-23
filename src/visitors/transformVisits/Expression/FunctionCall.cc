@@ -56,7 +56,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
             E<TYPE_ERROR>(p_node, FMT("Can't access class method '%s' "
                                       "that's not static as if it was one!",
                                       c->getNiceName().c_str()));
-        } else if ((!x->isStatic) && !c->isStatic()) {
+        } else if ((!x->isStatic) && c->isStatic()) {
             E<TYPE_ERROR>(p_node, FMT("Can't access static class method '%s' "
                                       "as with a non-static index expression!",
                                       c->getNiceName().c_str()));
@@ -97,7 +97,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     if (auto func = std::dynamic_pointer_cast<ir::Func>(fn)) {
         // Check for default arguments
         auto args = func->getArgs();
-        if (argTypes.size() < args.size()) {
+        if (argTypes.size() < (args.size() - func->hasParent())) {
             int default_arg_count = 0;
             for (auto arg : args) {
                 if (arg.second->hasDefaultValue()) {
@@ -105,7 +105,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 }
             }
 
-            if ((args.size() - default_arg_count) <= argTypes.size()) {
+            if (((args.size() - default_arg_count) - func->hasParent()) <= (argTypes.size() - func->hasParent())) {
 
                 ctx->withState(
                     ctx->cache->getFunctionState(func->getId()), [&]() {
@@ -135,8 +135,14 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                                     call->setArguments(argValues);
                                 }
                             } else {
+                                if (arg->first == "self") {
+                                    // We skip the "self" argument inside a method (or constructor) since it's
+                                    // a weird situation where you pass an argument implicitly.
+                                    continue;
+                                }
+
                                 E<TYPE_ERROR>(
-                                    p_node, "Function call missing arguments!");
+                                    p_node, FMT("Could not get value for argument '%s'!", arg->first.c_str()));
                             }
                         }
                     });

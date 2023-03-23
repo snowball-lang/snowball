@@ -92,7 +92,7 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
             getFromIdentifier(dbgInfo, baseIdentifier->getIdentifier());
 
         if (val && (!isStatic)) {
-            getFromType(val.value()->getType());
+            return getFromType(val.value()->getType());
         } else if (val) {
             E<TYPE_ERROR>(dbgInfo, "Static method call / accesses can only be "
                                    "used with types, not values!");
@@ -131,7 +131,7 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
             getFromIndex(base->getDBGInfo(), x, x->isStatic);
 
         if (v && (!isStatic)) {
-            getFromType(v.value()->getType());
+            return getFromType(v.value()->getType());
         } else if (v) {
             E<TYPE_ERROR>(dbgInfo, "Static method call / accesses can only be "
                                    "used with types, not values!");

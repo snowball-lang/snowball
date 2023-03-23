@@ -62,7 +62,7 @@ std::string Func::getName() {
 
 Func::FunctionArgs Func::getArgs(bool ignoreSelf) const {
     auto argv = arguments;
-    if (ignoreSelf && argv.size() > 0 && (argv.find("self") != argv.end()) &&
+    if (ignoreSelf && argv.size() > 0 && (hasParent() && (!_static)) &&
         hasParent()) {
         argv.erase(argv.begin());
     }

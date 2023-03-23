@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <functional>
+#include <list>
 #include <map>
 #include <sstream>
 #include <string>
@@ -80,6 +81,18 @@ std::vector<Return> map(std::map<Key, Val> p_map,
     return vec;
 }
 
+template <typename Key, typename Val, typename Return = Val>
+std::vector<Return> map(std::list<std::pair<Key, Val>> p_map,
+                        std::function<Return(std::pair<Key, Val>)> cb) {
+    std::vector<Return> vec;
+
+    for (auto item : p_map) {
+        vec.push_back(cb(item));
+    }
+
+    return vec;
+}
+
 template <typename Desired, typename Current>
 snowball::ptr<Desired> cast(Current curr) {
     return dynamic_cast<ptr<Desired>>(curr);
@@ -90,14 +103,21 @@ std::shared_ptr<Desired> dyn_cast(std::shared_ptr<Current> curr) {
     return std::dynamic_pointer_cast<Desired>(curr);
 }
 
-template <typename Key, typename Value>
-std::vector<Value> map_to_vector(std::map<Key, Value> m) {
-    std::vector<Value> vec;
-    for (auto i : m) {
+template <typename T, typename R>
+std::vector<R> _x_to_vec(T x) {
+    std::vector<R> vec;
+    for (auto i : x) {
         vec.push_back(i.second);
     }
     return vec;
 }
+
+template <typename Key, typename Value>
+std::vector<Value> map_to_vector(std::map<Key, Value> m)
+    { _x_to_vec<std::map<Key, Value>, Value>(m); }
+template <typename Key, typename Value>
+std::vector<Value> list_to_vector(std::list<std::pair<Key, Value>> l)
+    { _x_to_vec<std::list<std::pair<Key, Value>>, Value>(l); }
 
 } // namespace utils
 } // namespace snowball

@@ -2,9 +2,12 @@ use Core::System
 
 class Hello {
 pub:
-    Hello() {}
+    Hello(x: String) {}
+// priv:
+    fn hello() {}
 }
 
 pub fn main() i32 {
-    new Hello();
+    let a = new Hello("");
+    a.hello()
 }

@@ -106,8 +106,8 @@ void LLVMBuilder::buildBodiedFunction(ptr<llvm::Function> llvmFn,
             builder->CreateRetVoid();
         } else if (fn->isConstructor()) {
             // note: 0 should be always the "self" parameter
-            // assert(!llvmFn->args().empty());
-            // builder->CreateRet(llvmFn->getArg(0));
+            assert(!llvmFn->args().empty());
+            builder->CreateRet(llvmFn->getArg(0));
         } else {
             // TODO: warning
             builder->CreateRet(llvm::Constant::getNullValue(returnType));
