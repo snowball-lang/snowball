@@ -14,29 +14,23 @@
 namespace snowball {
 namespace ir {
 
-/// @brief Representation of a variable declaration in the IR
-/// Variable declarations can be then used as a way to store values
-/// and access them when needed.
+/// @brief Representation of a variable access inside the IR.
 class Variable : public IdMixin, public AcceptorExtend<Variable, Value> {
     // Identifier we use to fetch the variable
     std::string identifier;
-    // Value stored into the current variable
-    std::shared_ptr<Value> value;
-    // Whether or not the variable is mutable
-    bool _isMutable = false;
+    // If the variable is marked as an argument, we can make certain
+    // actions for this specific occasion.
+    bool _isArgument = false;
 
   public:
     // Create a new variable declaration
-    Variable(const std::string& identifier, std::shared_ptr<Value> value,
-             bool isMutable = false)
-        : identifier(identifier), value(value), _isMutable(isMutable){};
+    Variable(const std::string& identifier, bool isArgument = false)
+        : identifier(identifier), _isArgument(isArgument) {};
 
     /// @return Variable identifier
     auto getIdentifier() const { return identifier; }
-    /// @return respective value stored into the current variable
-    auto getValue() const { return value; }
-    /// @return true if the variable is mutable
-    auto isMutable() { return _isMutable; }
+    /// @return Wether or not the variable points to an argument
+    auto isArgument() { return _isArgument; }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

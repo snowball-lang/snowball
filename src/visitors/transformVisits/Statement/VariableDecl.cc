@@ -22,18 +22,24 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
     }
 
     variableValue->accept(this);
-    auto var = ctx->module->N<ir::Variable>(p_node->getDBGInfo(), variableName,
+    auto varDecl = ctx->module->N<ir::VariableDeclaration>(p_node->getDBGInfo(), variableName,
                                             this->value, isMutable);
+    auto var = ctx->module->N<ir::Variable>(p_node->getDBGInfo(), variableName);
 
+    varDecl->setType(this->value->getType());
     var->setType(this->value->getType());
 
     auto shared = var;
     auto item =
         std::make_shared<transform::Item>(transform::Item::Type::VALUE, shared);
+
+    auto sharedDecl = varDecl;
+    auto itemDecl =
+        std::make_shared<transform::Item>(transform::Item::Type::VALUE, sharedDecl);
     ctx->addItem(variableName, item);
 
     if (auto f = ctx->getCurrentFunction().get()) {
-        f->addSymbol(shared);
+        f->addSymbol(sharedDecl);
     } else {
         assert(false && "TODO: global variables");
     }

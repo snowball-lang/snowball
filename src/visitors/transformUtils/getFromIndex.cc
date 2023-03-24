@@ -7,13 +7,14 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::tuple<
+std::pair<std::tuple<
     std::optional<std::shared_ptr<ir::Value>>,
     std::optional<std::shared_ptr<types::Type>>,
     std::optional<std::vector<std::shared_ptr<ir::Func>>>,
     std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
     std::optional<std::shared_ptr<ir::Module>>,
-    bool /* Accept private members */>
+    bool /* Accept private members */>,
+    std::optional<std::shared_ptr<ir::Value>>>
 Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
                           ptr<Expression::Index> index, bool isStatic) {
 
@@ -92,7 +93,7 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
             getFromIdentifier(dbgInfo, baseIdentifier->getIdentifier());
 
         if (val && (!isStatic)) {
-            return getFromType(val.value()->getType());
+            return {getFromType(val.value()->getType()), val.value()};
         } else if (val) {
             E<TYPE_ERROR>(dbgInfo, "Static method call / accesses can only be "
                                    "used with types, not values!");
@@ -103,7 +104,7 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
                 dbgInfo,
                 "Module members must be accessed by using static indexes!");
         } else if (mod) {
-            return getFromModule(*mod);
+            return {getFromModule(*mod), std::nullopt};
         }
 
         else if (type && (!isStatic)) {
@@ -111,7 +112,7 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
                 dbgInfo,
                 "Can't use type references for method calls / accesses!");
         } else if (type) {
-            return getFromType(*type);
+            return {getFromType(*type), std::nullopt};
         }
 
         else if (overloads || funcs) {
@@ -127,11 +128,12 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
     } else if (!isStatic) {
         assert(false && "TODO: non-static index");
     } else if (auto x = utils::cast<Expression::Index>(base)) {
-        auto [v, t, fs, ovs, mod, c] =
+        auto [r, b] =
             getFromIndex(base->getDBGInfo(), x, x->isStatic);
+        auto [v, t, fs, ovs, mod, c] = r;
 
         if (v && (!isStatic)) {
-            return getFromType(v.value()->getType());
+            return {getFromType(v.value()->getType()), v.value()};
         } else if (v) {
             E<TYPE_ERROR>(dbgInfo, "Static method call / accesses can only be "
                                    "used with types, not values!");
@@ -142,7 +144,7 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
                 dbgInfo,
                 "Module members must be accessed by using static indexes!");
         } else if (mod) {
-            return getFromModule(*mod);
+            return {getFromModule(*mod), std::nullopt};
         }
 
         else if (t && (!isStatic)) {
@@ -150,7 +152,7 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
                 dbgInfo,
                 "Can't use type references for method calls / accesses!");
         } else if (t) {
-            return getFromType(*t);
+            return {getFromType(*t), std::nullopt};
         }
 
         else if (ovs || fs) {
@@ -171,7 +173,7 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
                 dbgInfo,
                 "Can't use type references for method calls / accesses!");
         } else if (ty) {
-            return getFromType(ty);
+            return {getFromType(ty), std::nullopt};
         }
     } else {
         E<SYNTAX_ERROR>(dbgInfo,
@@ -179,8 +181,8 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
                         "(generic or not) indentifiers!");
     }
 
-    return {std::nullopt, std::nullopt, std::nullopt,
-            std::nullopt, std::nullopt, false};
+    return {{std::nullopt, std::nullopt, std::nullopt,
+            std::nullopt, std::nullopt, false}, std::nullopt};
 }
 } // namespace Syntax
 } // namespace snowball

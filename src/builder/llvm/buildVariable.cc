@@ -1,5 +1,5 @@
 
-#include "../../ir/values/Argument.h"
+#include "../../ir/values/Variable.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 
@@ -10,18 +10,9 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ptr<ir::Variable> variable) {
-    ptr<llvm::Value> store = nullptr;
-
-    if (auto a = utils::cast<ir::Argument>(variable->getValue().get())) {
-        auto id = a->getId();
-        store   = ctx->getSymbol(id);
-    } else {
-        auto id = variable->getId();
-        store   = ctx->getSymbol(id);
-    }
-
-    auto generatedValue = build(variable->getValue().get());
-    builder->CreateStore(generatedValue, store);
+    // note: "x - 1" because ir::Variable (x + 1) gets created after VariableDeclaration (x).
+    auto store = ctx->getSymbol(variable->getId() - 1);
+    this->value = builder->CreateLoad(getLLVMType(variable->getType()), store);
 }
 
 } // namespace codegen

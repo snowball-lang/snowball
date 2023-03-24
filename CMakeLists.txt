@@ -26,7 +26,7 @@ set (PROJECT_FILES
   ${PROJECT_EXPORT_HPP}
   ${LLVM_INCLUDE_DIRS})
 
-file(GLOB_RECURSE RUNTIME_SOURCES runtime/*.cc runtime/*.c)
+file(GLOB_RECURSE RUNTIME_SOURCES runtime/**/*.cc runtime/**/*.c runtime/gc/*.c)
 set (RUNTIME_FILES
   ${RUNTIME_SOURCES})
 

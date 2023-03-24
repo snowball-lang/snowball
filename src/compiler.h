@@ -30,6 +30,7 @@ class Compiler {
     std::string _path;
 
     std::string _cwd;
+    exec::Options::Optimization opt_level;
 
     ptr<SourceInfo> _source_info;
     bool _initialized  = false;
@@ -58,10 +59,10 @@ class Compiler {
 
     // TODO
     int emit_binary(std::string, bool = true);
-    int emit_object(std::string, bool = true) { return 0; }
+    int emit_object(std::string, bool = true);
     int emit_llvmir(std::string, bool = true) { return 0; }
 
-    void set_optimization(exec::Options::Optimization) {}
+    void set_optimization(exec::Options::Optimization o) { opt_level = o; }
 
   private:
     // methods

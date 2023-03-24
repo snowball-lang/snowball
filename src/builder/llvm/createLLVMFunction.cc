@@ -1,10 +1,12 @@
 
 #include "../../utils/utils.h"
+#include "../../ast/errors/error.h"
 #include "LLVMBuilder.h"
 
-#include <llvm-14/llvm/IR/DerivedTypes.h>
-#include <llvm-14/llvm/IR/Type.h>
-#include <llvm-14/llvm/IR/Value.h>
+#include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Type.h>
+#include <llvm/IR/Value.h>
+#include <llvm/IR/Verifier.h>
 
 using namespace snowball::utils;
 
@@ -26,7 +28,8 @@ ptr<llvm::Function> LLVMBuilder::createLLVMFunction(ptr<ir::Func> func) {
 
     if (!ir::Func::isExternal(func->getMangle()) ||
         func->getMangle() == "main") {
-        callee->setSubprogram(getDISubprogramForFunc(func));
+        auto DISubprogram = getDISubprogramForFunc(func);
+        callee->setSubprogram(DISubprogram);
     }
 
     return callee;

@@ -29,6 +29,10 @@ class IdMixin {
 
     /// @return the node's id.
     virtual id_t getId() const { return id; }
+    /// @brief Set a "constant" ID to the IDMixin object it inherits
+    ///  from.
+    /// @note This must be used wisely and not very often!
+    virtual void setId(id_t i) { id = i; }
 };
 
 } // namespace ir

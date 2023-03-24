@@ -29,7 +29,16 @@ DefinedType::ClassField::ClassField(const std::string& name,
 std::string DefinedType::getUUID() const { return uuid; }
 std::shared_ptr<ir::Module> DefinedType::getModule() const { return module; }
 
-bool DefinedType::is(ptr<DefinedType> other) { assert(false); }
+bool DefinedType::is(ptr<DefinedType> other) {
+    auto otherArgs = other->getGenerics();
+    bool argumentsEqual =
+        std::all_of(otherArgs.begin(), otherArgs.end(),
+                    [&, idx = 0](std::shared_ptr<Type> i) mutable {
+                        return generics.at(idx)->is(i);
+                        idx++;
+                    });
+    return (other->getUUID() == uuid) && argumentsEqual;
+}
 
 std::string DefinedType::getPrettyName() const {
     auto base = module->isMain() ? "" : module->getName() + "::";

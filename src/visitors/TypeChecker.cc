@@ -10,6 +10,7 @@
 #include "../ir/values/Func.h"
 #include "../ir/values/Return.h"
 #include "../ir/values/Value.h"
+#include "../ir/values/VariableDeclaration.h"
 
 #include <assert.h>
 #include <string>
@@ -56,11 +57,17 @@ VISIT(Call) {
     }
 }
 
-VISIT(Variable) {
+VISIT(VariableDeclaration) {
     auto val = p_node->getValue();
     val->visit(this);
 
     cantBeVoid(p_node, val->getType(),
+               FMT("Value used for variable '%s' has a value with 'void' type!",
+                   p_node->getIdentifier().c_str()));
+}
+
+VISIT(Variable) {
+    cantBeVoid(p_node, p_node->getType(),
                FMT("Value used for variable '%s' has a value with 'void' type!",
                    p_node->getIdentifier().c_str()));
 }

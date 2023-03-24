@@ -7,7 +7,12 @@ pub:
     fn hello() {}
 }
 
+fn h(d: String) String {
+    return d
+}
+
 pub fn main() i32 {
     let a = new Hello("");
     a.hello()
+
 }

@@ -1,11 +1,13 @@
 
 #include "LLVMBuilder.h"
+#include "../../errors.h"
 
 #include "llvm/InitializePasses.h"
 #include "llvm/PassRegistry.h"
 #include "llvm/Support/TargetSelect.h"
 
-#include <llvm-14/llvm/IR/Value.h>
+#include <llvm/IR/Value.h>
+#include <llvm/IR/Verifier.h>
 
 namespace snowball {
 namespace codegen {
@@ -66,7 +68,7 @@ std::unique_ptr<llvm::Module> LLVMBuilder::newModule() {
     auto m =
         std::make_unique<llvm::Module>("snowball compiled project", *context);
 
-    auto target = llvm::EngineBuilder().selectTarget();
+    target = llvm::EngineBuilder().selectTarget();
 
     m->setDataLayout(target->createDataLayout());
     m->setTargetTriple(target->getTargetTriple().str());
@@ -143,6 +145,13 @@ void LLVMBuilder::codegen() {
 
     generateModule(iModule);
     for (auto m : iModule->getModules()) generateModule(m);
+
+    std::string module_error_string;
+    llvm::raw_string_ostream module_error_stream(module_error_string);
+    llvm::verifyModule(*module.get(), &module_error_stream);
+
+    if (!module_error_string.empty())
+        throw SNError(Error::LLVM_INTERNAL, module_error_string);
 }
 #undef LOOP_FUNCTIONS
 

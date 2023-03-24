@@ -214,13 +214,14 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * @return It may return a value, a type pointer or a vector containing
      * function overloads
      */
-    std::tuple<
+    std::pair<std::tuple<
         std::optional<std::shared_ptr<ir::Value>>,
         std::optional<std::shared_ptr<types::Type>>,
         std::optional<std::vector<std::shared_ptr<ir::Func>>>,
         std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
         std::optional<std::shared_ptr<ir::Module>>,
-        bool /* Accept private members */>
+        bool /* Accept private members */>,
+        std::optional<std::shared_ptr<ir::Value>>>
     getFromIndex(ptr<DBGSourceInfo> dbgInfo, ptr<Expression::Index> index,
                  bool isStatic);
     /**

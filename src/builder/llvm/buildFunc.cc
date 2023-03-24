@@ -1,7 +1,7 @@
 
-#include "../../ast/errors/error.h"
 #include "../../ir/values/Argument.h"
 #include "../../utils/utils.h"
+#include "../../errors.h"
 #include "LLVMBuilder.h"
 
 #include <llvm-14/llvm/IR/Type.h>
@@ -27,6 +27,7 @@ void LLVMBuilder::visit(ptr<ir::Func> func) {
 void LLVMBuilder::buildBodiedFunction(ptr<llvm::Function> llvmFn,
                                       ptr<ir::Func> fn) {
     ctx->setCurrentFunction(llvmFn);
+    setDebugInfoLoc(fn);
 
     auto returnType = getLLVMType(fn->getRetTy());
 
@@ -97,6 +98,7 @@ void LLVMBuilder::buildBodiedFunction(ptr<llvm::Function> llvmFn,
 
     // Codegen for the current body
     fn->getBody()->visit(this);
+    setDebugInfoLoc(nullptr);
 
     // Create return type
     if ((!builder->GetInsertBlock()->getInstList().back().isTerminator()) ||
@@ -116,6 +118,16 @@ void LLVMBuilder::buildBodiedFunction(ptr<llvm::Function> llvmFn,
 
     // mark: clean up
     ctx->clearCurrentFunction();
+
+    auto DISubprogram = llvmFn->getSubprogram();
+    dbg.builder->finalizeSubprogram(DISubprogram);
+
+    std::string module_error_string;
+    llvm::raw_string_ostream module_error_stream(module_error_string);
+    llvm::verifyFunction(*llvmFn, &module_error_stream);
+
+    if (!module_error_string.empty())
+        throw SNError(Error::LLVM_INTERNAL, module_error_string);
 }
 
 } // namespace codegen

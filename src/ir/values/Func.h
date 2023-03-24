@@ -7,6 +7,7 @@
 #include "Body.h"
 #include "Value.h"
 #include "Variable.h"
+#include "VariableDeclaration.h"
 
 #include <cassert>
 #include <map>
@@ -58,7 +59,7 @@ class Func : public AcceptorExtend<Func, Value>,
     // This is so that we allocate a new variable at the start
     // of the function. We do this to avoid any kind of errors
     // such as; allocating new memory each time we iterate in a loop.
-    std::vector<std::shared_ptr<Variable>> symbols;
+    std::vector<std::shared_ptr<VariableDeclaration>> symbols;
 
     // This is how the function will be exported. If the name is empty,
     // snowball will mangle the name accordingly but if it's not, this
@@ -125,9 +126,9 @@ class Func : public AcceptorExtend<Func, Value>,
     auto& getRetTy() const { return retTy; }
 
     /// @brief Set a return type to a function
-    void addSymbol(std::shared_ptr<Variable> v) { symbols.emplace_back(v); }
+    void addSymbol(std::shared_ptr<VariableDeclaration> v) { symbols.emplace_back(v); }
     /// @return Get function's return type.
-    std::vector<std::shared_ptr<Variable>>& getSymbols() {
+    std::vector<std::shared_ptr<VariableDeclaration>>& getSymbols() {
         assert(!isDeclaration());
         return symbols;
     }

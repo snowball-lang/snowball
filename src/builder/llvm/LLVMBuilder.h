@@ -5,6 +5,7 @@
 #include "../../ir/module/MainModule.h"
 #include "../../ir/values/Func.h"
 #include "../../ir/values/Value.h"
+#include "../../../exec/cli.h"
 
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/IR/DIBuilder.h"
@@ -14,6 +15,7 @@
 #include "llvm/IR/LLVMContext.h"
 
 #include <cstdint>
+#include <llvm-14/llvm/Target/TargetMachine.h>
 #include <map>
 #include <memory>
 
@@ -125,11 +127,12 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
     std::unique_ptr<llvm::LLVMContext> context;
     // Last compiled (generated) value
     ptr<llvm::Value> value;
+    // Target machine that the module will be compiled into
+    ptr<llvm::TargetMachine> target;
 
   public:
     // Create a new instance of a llvm builder
     LLVMBuilder(std::shared_ptr<ir::MainModule> mod);
-
     /**
      * @brief Dump the LLVM IR code to stdout.
      *
@@ -137,7 +140,6 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      * purposes.
      */
     void dump();
-
     /**
      * @brief Start the codegen process
      *
@@ -145,6 +147,18 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      * that can then be compiled to many more things.
      */
     void codegen() override;
+    /**
+     * @brief It executes the built in LLVM-IR optimization passes into the resultant
+     *  module
+     * @note If the optimization level has been to '0', it will obiously will not execute
+     *  those optimization passes
+     */
+    void optimizeModule(exec::Options::Optimization o);
+    /**
+     * @brief Compile the LLVM-IR code into an object file into the desired
+     *  file.
+     */
+    int emitObjectFile(std::string out, bool log);
 
     // mark: build functions
     using AcceptorExtend::AcceptorExtend;

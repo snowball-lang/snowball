@@ -82,14 +82,15 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
                 ctx->withScope([&]() {
                     int argIndex = 0;
                     for (auto arg : newArgs) {
-                        auto var = ctx->module->N<ir::Variable>(
-                            node->getDBGInfo(), arg.first, arg.second, false);
+                        auto ref = ctx->module->N<ir::Variable>(
+                            node->getDBGInfo(), arg.first, true);
 
-                        var->setType(arg.second->getType());
-                        auto item = std::make_shared<transform::Item>(
-                            transform::Item::Type::VALUE, var);
+                        ref->setType(arg.second->getType());
+                        auto refItem = std::make_shared<transform::Item>(
+                            transform::Item::Type::VALUE, ref);
 
-                        ctx->addItem(arg.first, item);
+                        ref->setId(arg.second->getId());
+                        ctx->addItem(arg.first, refItem);
                         argIndex++;
                     }
 

@@ -38,7 +38,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                              ? g->getGenerics()
                              : std::vector<ptr<Expression::TypeRef>>{});
     } else if (auto x = utils::cast<Expression::Index>(callee)) {
-        auto r = getFromIndex(x->getDBGInfo(), x, x->isStatic);
+        auto [r, b] = getFromIndex(x->getDBGInfo(), x, x->isStatic);
 
         auto g = utils::cast<Expression::GenericIdentifier>(x->getBase());
         auto generics = (g != nullptr)
@@ -60,6 +60,11 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
             E<TYPE_ERROR>(p_node, FMT("Can't access static class method '%s' "
                                       "as with a non-static index expression!",
                                       c->getNiceName().c_str()));
+        }
+
+        if (b.has_value()) {
+            argValues.insert(argValues.begin(), *b);
+            argTypes.insert(argTypes.begin(), (*b)->getType());
         }
 
         fn = c;
