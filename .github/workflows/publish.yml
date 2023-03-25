@@ -35,7 +35,7 @@ jobs:
       if: success()
       uses: actions/create-release@v1
       with:
-        tag_name: v${{ github.ref }}
+        tag_name: ${{ github.ref }}
         release_name: Release ${{ github.ref }}
         body: This is the first release
       env:
@@ -44,7 +44,7 @@ jobs:
       if: success()
       uses: actions/upload-release-asset@v1
       with:
-        upload_url: ${{ steps.build.outputs.upload_url }}
+        upload_url: ${{ steps.release.outputs.upload_url }}
         asset_path: ./snowball.tar.gz
         asset_name: snowball.tar.gz
         asset_content_type: application/gzip
