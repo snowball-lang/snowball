@@ -1,9 +1,7 @@
 name: Build and Release
 on:
-  pull_request:
-    branches:
-      - releases
-    types: [closed]
+  release:
+    types: [created]
 
 jobs:
   build:
@@ -13,11 +11,13 @@ jobs:
         os: [ubuntu-latest, macos-latest, centos-latest, fedora-latest]
         cmake: [3.10, 3.11, 3.12]
     steps:
-    - name: "Get upload_url"
-      run: echo "::set-output name=upload_url::https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$(jq --raw-output '.release.id' $GITHUB_EVENT_PATH)/assets{?name,label}"
-      id: release
     - uses: actions/checkout@v2
     - uses: actions/checkout@v3
+    - name: Get release
+      id: get_release
+      uses: bruceadams/get-release@v1.3.2
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
     - name: Install LLVM and Clang
       uses: KyleMayes/install-llvm-action@v1
       with:
@@ -44,7 +44,7 @@ jobs:
       if: success()
       uses: actions/upload-release-asset@v1
       with:
-        upload_url: ${{ steps.release.outputs.upload_url }}
+        upload_url: ${{ steps.get_release.outputs.upload_url }}
         asset_path: ./snowball.tar.gz
         asset_name: snowball.tar.gz
         asset_content_type: application/gzip
