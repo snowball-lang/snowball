@@ -69,6 +69,7 @@ add_library(SnowballRuntime SHARED ${RUNTIME_FILES})
 add_executable(snowballexe ${EXEC_FILES})
 target_link_libraries(snowballexe PUBLIC ${PROJECT_NAME})
 set_target_properties(snowballexe PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+set_target_properties(snowball PROPERTIES OUTPUT_NAME "Snowball")
 
 set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES /usr/local/lib ${CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES})
 

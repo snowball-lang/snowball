@@ -27,6 +27,7 @@ jobs:
         export CXX="g++"
         sh ./build_scripts/release.sh -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_CC_COMPILER=/usr/bin/gcc
         mv libSnowballRuntime.so ./bin/Release/
+        mv libSnowball.so ./bin/Release/
     - name: Archive
       run: |
         mkdir release

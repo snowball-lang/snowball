@@ -20,6 +20,7 @@ cd $SNOWBALL_INSTALL_DIR
 curl -L https://github.com/snowball-lang/snowball/releases/latest/download/"$SNOWBALL_BUILD_ARCHIVE" | tar zxvf - --strip-components=1
 
 sudo mv libSnowballRuntime.so $LIB_FOLDER
+sudo mv libSnowball.so $LIB_FOLDER
 
 EXPORT_COMMAND="$(pwd)/bin"
 echo "PATH export command:"
