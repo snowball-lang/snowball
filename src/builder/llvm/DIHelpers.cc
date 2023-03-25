@@ -37,7 +37,7 @@ ptr<llvm::DIType> LLVMBuilder::getDIType(ptr<types::Type> ty) {
 
     if (cast<types::Int64Type>(ty) || cast<types::Int32Type>(ty) ||
         cast<types::Int16Type>(ty) || cast<types::Int8Type>(ty) ||
-        cast<types::BoolType>(ty)  || cast<types::CharType>(ty) ) {
+        cast<types::BoolType>(ty) || cast<types::CharType>(ty)) {
         return dbg.builder->createBasicType(
             ty->getName(), layout.getTypeAllocSizeInBits(llvmType),
             llvm::dwarf::DW_ATE_signed);

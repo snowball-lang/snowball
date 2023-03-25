@@ -22,11 +22,11 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
     }
 
     variableValue->accept(this);
-    auto varDecl = ctx->module->N<ir::VariableDeclaration>(p_node->getDBGInfo(), variableName,
-                                            this->value, isMutable);
+    auto varDecl = ctx->module->N<ir::VariableDeclaration>(
+        p_node->getDBGInfo(), variableName, this->value, isMutable);
     varDecl->setType(this->value->getType());
-    auto itemDecl =
-        std::make_shared<transform::Item>(transform::Item::Type::VALUE, varDecl);
+    auto itemDecl = std::make_shared<transform::Item>(
+        transform::Item::Type::VALUE, varDecl);
 
     auto var = ctx->module->N<ir::Variable>(p_node->getDBGInfo(), variableName);
     var->setType(this->value->getType());
@@ -43,7 +43,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
         assert(false && "TODO: global variables");
     }
 
-    this->value = var;
+    this->value = varDecl;
 }
 
 } // namespace Syntax

@@ -17,7 +17,8 @@ namespace ir {
 /// @brief Representation of a variable declaration in the IR
 /// Variable declarations can be then used as a way to store values
 /// and access them when needed.
-class VariableDeclaration : public IdMixin, public AcceptorExtend<Variable, Value> {
+class VariableDeclaration : public IdMixin,
+                            public AcceptorExtend<Variable, Value> {
     // Identifier we use to fetch the variable
     std::string identifier;
     // Value stored into the current variable
@@ -27,8 +28,8 @@ class VariableDeclaration : public IdMixin, public AcceptorExtend<Variable, Valu
 
   public:
     // Create a new variable declaration
-    VariableDeclaration(const std::string& identifier, std::shared_ptr<Value> value,
-             bool isMutable = false)
+    VariableDeclaration(const std::string& identifier,
+                        std::shared_ptr<Value> value, bool isMutable = false)
         : identifier(identifier), value(value), _isMutable(isMutable){};
 
     /// @return Variable identifier

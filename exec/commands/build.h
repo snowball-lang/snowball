@@ -22,13 +22,15 @@ int build(exec::Options::BuildOptions p_opts) {
 
     toml::parse_result parsed_config = Compiler::get_config();
 
-    std::string filename = (std::string)(
-        parsed_config["package"]["main"].value_or<std::string>(fs::current_path() / "src" / "main.sn"));
+    std::string filename =
+        (std::string)(parsed_config["package"]["main"].value_or<std::string>(
+            fs::current_path() / "src" / "main.sn"));
 
     std::ifstream ifs(filename);
     if (ifs.fail()) {
-        SNError(Error::IO_ERROR,
-                FMT("Package main file not found in snowball project! \n\t(searching for: '%s')", filename.c_str()))
+        SNError(Error::IO_ERROR, FMT("Package main file not found in snowball "
+                                     "project! \n\t(searching for: '%s')",
+                                     filename.c_str()))
             .print_error();
         return EXIT_FAILURE;
     }

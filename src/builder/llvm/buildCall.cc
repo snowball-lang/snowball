@@ -20,10 +20,10 @@ void LLVMBuilder::visit(ptr<ir::Call> call) {
             call->getArguments(),
             [&](std::shared_ptr<ir::Value> arg) { return build(arg.get()); });
 
-    if (auto constructor = utils::dyn_cast<ir::Func>(call->getCallee());
-        constructor->isConstructor()) {
-        assert(constructor->hasParent());
-        auto p = constructor->getParent();
+    if (auto c = utils::dyn_cast<ir::Func>(call->getCallee());
+        c->isConstructor()) {
+        assert(c->hasParent());
+        auto p = c->getParent();
 
         args.insert(args.begin(), allocateObject(p));
     }

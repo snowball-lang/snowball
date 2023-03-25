@@ -1,3 +1,4 @@
+#include "../../../ir/values/Call.h"
 #include "../../../services/OperatorService.h"
 #include "../../Transformer.h"
 
@@ -18,10 +19,19 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
     auto index = Syntax::N<Expression::Index>(expr, ident, true);
 
     ident->setDBGInfo(expr->getDBGInfo());
-    index->setDBGInfo(expr->getDBGInfo());
 
     call->setCallee(index);
     call->accept(this);
+
+    auto c = utils::dyn_cast<ir::Call>(this->value);
+    assert(c != nullptr);
+
+    // Make a copy of the value
+    auto v = ctx->module->N<ir::Call>(p_node->getDBGInfo(), c->getCallee(),
+                                      c->getArguments());
+    v->setType(c->getType());
+
+    this->value = v;
 }
 
 } // namespace Syntax

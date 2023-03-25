@@ -1,6 +1,6 @@
 
-#include "../../utils/utils.h"
 #include "../../ast/errors/error.h"
+#include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 
 #include <llvm/IR/DerivedTypes.h>

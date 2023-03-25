@@ -110,7 +110,8 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 }
             }
 
-            if (((args.size() - default_arg_count) - func->hasParent()) <= (argTypes.size() - func->hasParent())) {
+            if (((args.size() - default_arg_count) - func->hasParent()) <=
+                (argTypes.size() - func->hasParent())) {
 
                 ctx->withState(
                     ctx->cache->getFunctionState(func->getId()), [&]() {
@@ -141,13 +142,16 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                                 }
                             } else {
                                 if (arg->first == "self") {
-                                    // We skip the "self" argument inside a method (or constructor) since it's
-                                    // a weird situation where you pass an argument implicitly.
+                                    // We skip the "self" argument inside a
+                                    // method (or constructor) since it's a
+                                    // weird situation where you pass an
+                                    // argument implicitly.
                                     continue;
                                 }
 
-                                E<TYPE_ERROR>(
-                                    p_node, FMT("Could not get value for argument '%s'!", arg->first.c_str()));
+                                E<TYPE_ERROR>(p_node, FMT("Could not get value "
+                                                          "for argument '%s'!",
+                                                          arg->first.c_str()));
                             }
                         }
                     });

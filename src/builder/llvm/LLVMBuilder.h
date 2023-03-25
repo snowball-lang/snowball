@@ -1,11 +1,11 @@
 
+#include "../../../exec/cli.h"
 #include "../../ValueVisitor/Visitor.h"
 #include "../../ast/types/FunctionType.h"
 #include "../../ir/id.h"
 #include "../../ir/module/MainModule.h"
 #include "../../ir/values/Func.h"
 #include "../../ir/values/Value.h"
-#include "../../../exec/cli.h"
 
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/IR/DIBuilder.h"
@@ -148,10 +148,10 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      */
     void codegen() override;
     /**
-     * @brief It executes the built in LLVM-IR optimization passes into the resultant
-     *  module
-     * @note If the optimization level has been to '0', it will obiously will not execute
-     *  those optimization passes
+     * @brief It executes the built in LLVM-IR optimization passes into the
+     * resultant module
+     * @note If the optimization level has been to '0', it will obiously will
+     * not execute those optimization passes
      */
     void optimizeModule(exec::Options::Optimization o);
     /**

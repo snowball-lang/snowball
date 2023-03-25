@@ -1,38 +1,37 @@
 
+#include "../../../common.h"
 #include "../../../utils/utils.h"
 #include "../LLVMBuilder.h"
-#include "../../../common.h"
 
 #include <llvm-14/llvm/IR/Type.h>
 #include <llvm-14/llvm/IR/Value.h>
-#include <llvm/Passes/OptimizationLevel.h>
-#include <llvm/Transforms/InstCombine/InstCombine.h>
-#include <llvm/Transforms/Scalar/Reassociate.h>
-#include <llvm/Transforms/Scalar/GVN.h>
-#include <llvm/Transforms/Scalar.h>
-#include <llvm/Support/CodeGen.h>
-#include <llvm/Support/Host.h>
-#include <llvm/Support/FileSystem.h>
-#include <llvm/IR/Module.h>
 #include <llvm/ADT/SmallVector.h>
-#include <llvm/IR/Verifier.h>
-#include <llvm/IR/IRPrintingPasses.h>
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/CallingConv.h>
 #include <llvm/IR/Constants.h>
+#include <llvm/IR/DebugInfo.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/GlobalVariable.h>
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/IRPrintingPasses.h>
 #include <llvm/IR/InlineAsm.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/LLVMContext.h>
-#include <llvm/IR/IRBuilder.h>
-#include <llvm/Passes/PassBuilder.h>
-#include <llvm/Support/FormattedStream.h>
-#include <llvm/IR/DebugInfo.h>
-
-#include <llvm/Transforms/IPO.h>
 #include <llvm/IR/LegacyPassManager.h>
+#include <llvm/IR/Module.h>
+#include <llvm/IR/Verifier.h>
+#include <llvm/Passes/OptimizationLevel.h>
+#include <llvm/Passes/PassBuilder.h>
+#include <llvm/Support/CodeGen.h>
+#include <llvm/Support/FileSystem.h>
+#include <llvm/Support/FormattedStream.h>
+#include <llvm/Support/Host.h>
+#include <llvm/Transforms/IPO.h>
+#include <llvm/Transforms/InstCombine/InstCombine.h>
+#include <llvm/Transforms/Scalar.h>
+#include <llvm/Transforms/Scalar/GVN.h>
+#include <llvm/Transforms/Scalar/Reassociate.h>
 
 namespace snowball {
 
@@ -40,9 +39,9 @@ namespace {
 void applyDebugTransformations(snowball::ptr<llvm::Module> module, bool debug) {
     if (debug) {
         // remove tail calls and fix linkage for stack traces
-        for (auto &f : *module) {
+        for (auto& f : *module) {
 #ifdef __APPLE__
-           f.setLinkage(llvm::GlobalValue::ExternalLinkage);
+            f.setLinkage(llvm::GlobalValue::ExternalLinkage);
 #endif
             if (!f.hasFnAttribute(llvm::Attribute::AttrKind::AlwaysInline))
                 f.addFnAttr(llvm::Attribute::AttrKind::NoInline);
@@ -54,7 +53,7 @@ void applyDebugTransformations(snowball::ptr<llvm::Module> module, bool debug) {
         llvm::StripDebugInfo(*module);
     }
 }
-}
+} // namespace
 
 namespace codegen {
 
@@ -82,22 +81,35 @@ void LLVMBuilder::optimizeModule(exec::Options::Optimization o) {
     llvm::TargetLibraryInfoImpl tlii(moduleTriple);
 
     // cross register them too?
-    pass_builder.crossRegisterProxies(loop_analysis_manager, function_analysis_manager,
-                                    c_gscc_analysis_manager, module_analysis_manager);
-    function_analysis_manager.registerPass([&] { return llvm::TargetLibraryAnalysis(tlii); });
-
+    pass_builder.crossRegisterProxies(
+        loop_analysis_manager, function_analysis_manager,
+        c_gscc_analysis_manager, module_analysis_manager);
+    function_analysis_manager.registerPass(
+        [&] { return llvm::TargetLibraryAnalysis(tlii); });
 
     // todo: let user decide
     llvm::OptimizationLevel level;
-    switch(o)
-    {
-        case exec::Options::Optimization::OPTIMIZE_O0: level = llvm::OptimizationLevel::O0; break;
-        case exec::Options::Optimization::OPTIMIZE_O1: level = llvm::OptimizationLevel::O1; break;
-        case exec::Options::Optimization::OPTIMIZE_O2: level = llvm::OptimizationLevel::O2; break;
-        case exec::Options::Optimization::OPTIMIZE_O3: level = llvm::OptimizationLevel::O3; break;
-        case exec::Options::Optimization::OPTIMIZE_Os: level = llvm::OptimizationLevel::Os; break;
-        case exec::Options::Optimization::OPTIMIZE_Oz: level = llvm::OptimizationLevel::Oz; break;
-        default: assert(false && "during code optimization");
+    switch (o) {
+        case exec::Options::Optimization::OPTIMIZE_O0:
+            level = llvm::OptimizationLevel::O0;
+            break;
+        case exec::Options::Optimization::OPTIMIZE_O1:
+            level = llvm::OptimizationLevel::O1;
+            break;
+        case exec::Options::Optimization::OPTIMIZE_O2:
+            level = llvm::OptimizationLevel::O2;
+            break;
+        case exec::Options::Optimization::OPTIMIZE_O3:
+            level = llvm::OptimizationLevel::O3;
+            break;
+        case exec::Options::Optimization::OPTIMIZE_Os:
+            level = llvm::OptimizationLevel::Os;
+            break;
+        case exec::Options::Optimization::OPTIMIZE_Oz:
+            level = llvm::OptimizationLevel::Oz;
+            break;
+        default:
+            assert(false && "during code optimization");
     }
 
     if (level == llvm::OptimizationLevel::O0) {

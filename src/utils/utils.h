@@ -103,8 +103,7 @@ std::shared_ptr<Desired> dyn_cast(std::shared_ptr<Current> curr) {
     return std::dynamic_pointer_cast<Desired>(curr);
 }
 
-template <typename T, typename R>
-std::vector<R> _x_to_vec(T x) {
+template <typename T, typename R> std::vector<R> _x_to_vec(T x) {
     std::vector<R> vec;
     for (auto i : x) {
         vec.push_back(i.second);
@@ -113,11 +112,13 @@ std::vector<R> _x_to_vec(T x) {
 }
 
 template <typename Key, typename Value>
-std::vector<Value> map_to_vector(std::map<Key, Value> m)
-    { return _x_to_vec<std::map<Key, Value>, Value>(m); }
+std::vector<Value> map_to_vector(std::map<Key, Value> m) {
+    return _x_to_vec<std::map<Key, Value>, Value>(m);
+}
 template <typename Key, typename Value>
-std::vector<Value> list_to_vector(std::list<std::pair<Key, Value>> l)
-    { return _x_to_vec<std::list<std::pair<Key, Value>>, Value>(l); }
+std::vector<Value> list_to_vector(std::list<std::pair<Key, Value>> l) {
+    return _x_to_vec<std::list<std::pair<Key, Value>>, Value>(l);
+}
 
 } // namespace utils
 } // namespace snowball

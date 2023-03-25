@@ -7,13 +7,14 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::pair<std::tuple<
-    std::optional<std::shared_ptr<ir::Value>>,
-    std::optional<std::shared_ptr<types::Type>>,
-    std::optional<std::vector<std::shared_ptr<ir::Func>>>,
-    std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
-    std::optional<std::shared_ptr<ir::Module>>,
-    bool /* Accept private members */>,
+std::pair<
+    std::tuple<
+        std::optional<std::shared_ptr<ir::Value>>,
+        std::optional<std::shared_ptr<types::Type>>,
+        std::optional<std::vector<std::shared_ptr<ir::Func>>>,
+        std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+        std::optional<std::shared_ptr<ir::Module>>,
+        bool /* Accept private members */>,
     std::optional<std::shared_ptr<ir::Value>>>
 Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
                           ptr<Expression::Index> index, bool isStatic) {
@@ -128,8 +129,7 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
     } else if (!isStatic) {
         assert(false && "TODO: non-static index");
     } else if (auto x = utils::cast<Expression::Index>(base)) {
-        auto [r, b] =
-            getFromIndex(base->getDBGInfo(), x, x->isStatic);
+        auto [r, b] = getFromIndex(base->getDBGInfo(), x, x->isStatic);
         auto [v, t, fs, ovs, mod, c] = r;
 
         if (v && (!isStatic)) {
@@ -181,8 +181,9 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
                         "(generic or not) indentifiers!");
     }
 
-    return {{std::nullopt, std::nullopt, std::nullopt,
-            std::nullopt, std::nullopt, false}, std::nullopt};
+    return {{std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+             std::nullopt, false},
+            std::nullopt};
 }
 } // namespace Syntax
 } // namespace snowball

@@ -9,7 +9,8 @@ namespace Syntax {
 SN_TRANSFORMER_VISIT(Statement::Return) {
 
     if (auto f = ctx->getCurrentFunction(); f->isConstructor()) {
-        E<SYNTAX_ERROR>(p_node, "You can't return a value inside a constructor function!",
+        E<SYNTAX_ERROR>(
+            p_node, "You can't return a value inside a constructor function!",
             "Constructors can't contain return statements");
     }
 

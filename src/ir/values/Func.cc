@@ -5,7 +5,6 @@
 #include "../../utils/utils.h"
 #include "Argument.h"
 
-#include <llvm-14/llvm/ADT/StringExtras.h>
 #include <string>
 
 namespace snowball {

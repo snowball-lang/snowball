@@ -1,6 +1,6 @@
 
-#include "../../ir/values/VariableDeclaration.h"
 #include "../../ir/values/Argument.h"
+#include "../../ir/values/VariableDeclaration.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 

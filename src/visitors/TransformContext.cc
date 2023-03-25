@@ -12,9 +12,9 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod)
     imports = std::make_unique<services::ImportService>();
 
     // Set all of the built in primitive types into the global stack
-#define DEFINE_TYPE(t) \
-    auto raw_##t = std::make_shared<types::t>(); \
-    auto _##t = std::make_shared<transform::Item>(raw_##t); \
+#define DEFINE_TYPE(t)                                                         \
+    auto raw_##t = std::make_shared<types::t>();                               \
+    auto _##t    = std::make_shared<transform::Item>(raw_##t);                 \
     addItem(raw_##t->getName(), _##t);
 
     DEFINE_TYPE(BoolType)

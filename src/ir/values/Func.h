@@ -25,7 +25,8 @@ class Func : public AcceptorExtend<Func, Value>,
              public AcceptorExtend<Func, Syntax::Statement::GenericContainer> {
   public:
     // Utility types
-    using FunctionArgs = std::list<std::pair<std::string, std::shared_ptr<Argument>>>;
+    using FunctionArgs =
+        std::list<std::pair<std::string, std::shared_ptr<Argument>>>;
 
   private:
     // When a function is variadic, it means that
@@ -126,7 +127,9 @@ class Func : public AcceptorExtend<Func, Value>,
     auto& getRetTy() const { return retTy; }
 
     /// @brief Set a return type to a function
-    void addSymbol(std::shared_ptr<VariableDeclaration> v) { symbols.emplace_back(v); }
+    void addSymbol(std::shared_ptr<VariableDeclaration> v) {
+        symbols.emplace_back(v);
+    }
     /// @return Get function's return type.
     std::vector<std::shared_ptr<VariableDeclaration>>& getSymbols() {
         assert(!isDeclaration());

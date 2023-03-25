@@ -15,12 +15,12 @@ void NiceError::print_error() const {
                      RESET));
     Logger::elog(FMT("%s     │%s", BLK, RESET));
     if (cb_dbg_info->line - 1 >= 1) // first line may not be available to log
-        Logger::elog(FMT("  %s%2i%s │ %s%s", BBLK, cb_dbg_info->line - 1, BLK, BWHT,
-                         cb_dbg_info->line_before.c_str()));
+        Logger::elog(FMT("  %s%2i%s │ %s%s", BBLK, cb_dbg_info->line - 1, BLK,
+                         BWHT, cb_dbg_info->line_before.c_str()));
     Logger::elog(FMT(" %s>%2i%s │ %s%s\n     %s│%s %s%s %s%s", BBLK,
-                     cb_dbg_info->line, BLK, BWHT, cb_dbg_info->line_str.c_str(),
-                     BLK, RESET, BRED, cb_dbg_info->get_pos_str().c_str(),
-                     info.c_str(), RESET));
+                     cb_dbg_info->line, BLK, BWHT,
+                     cb_dbg_info->line_str.c_str(), BLK, RESET, BRED,
+                     cb_dbg_info->get_pos_str().c_str(), info.c_str(), RESET));
     Logger::elog(FMT("  %s%2i%s │ %s%s", BBLK, cb_dbg_info->line + 1, BLK, BWHT,
                      cb_dbg_info->line_after.c_str()));
     Logger::elog(FMT("%s     │", BLK));
