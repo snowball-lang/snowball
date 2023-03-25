@@ -12,6 +12,14 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, centos-latest, fedora-latest]
         cmake: [3.10, 3.11, 3.12]
+    outputs:
+      version: ${{ steps.step_version.outputs.version }}
+      upload_url: ${{ steps.step_upload_url.outputs.upload_url }}
+      - id: step_version
+        run: echo "::set-output name=version::${{ steps.package_version.outputs.version }}"
+        
+      - id: step_upload_url
+        run: echo "::set-output name=upload_url::${{ steps.create_release.outputs.upload_url }}"
     steps:
     - uses: actions/checkout@v2
     - uses: actions/checkout@v3

@@ -23,16 +23,15 @@ namespace fs = std::filesystem;
 namespace snowball {
 Compiler::Compiler(std::string p_code, std::string p_path) {
     _code = p_code;
-    _path = fs::current_path() / p_path;
-
     _cwd = fs::current_path();
+    _path = _path / p_path;
 }
 
 void Compiler::initialize() {
     _initialized = true;
     create_source_info();
 
-    config_folder = fs::current_path() / ".sn";
+    config_folder = _cwd / ".sn";
     if (!fs::exists(config_folder)) fs::create_directory(config_folder);
     if (!fs::exists(config_folder / "bin"))
         fs::create_directory(config_folder / "bin");

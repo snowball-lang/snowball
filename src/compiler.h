@@ -27,9 +27,9 @@ namespace snowball {
 class Compiler {
     // variables
     std::string _code;
-    std::string _path;
+    fs::path _path;
 
-    std::string _cwd;
+    fs::path _cwd;
     exec::Options::Optimization opt_level;
 
     ptr<SourceInfo> _source_info;
