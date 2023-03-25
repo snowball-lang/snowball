@@ -128,7 +128,7 @@ void LLVMBuilder::buildBodiedFunction(ptr<llvm::Function> llvmFn,
 
     if (!module_error_string.empty()) {
 #ifdef _SNOWBALL_BYTECODE_DEBUG
-        module->dump();
+        dump();
 #endif
         throw SNError(Error::LLVM_INTERNAL, module_error_string);
     }
