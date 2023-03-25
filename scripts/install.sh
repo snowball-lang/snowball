@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -e
-set -o pipefail
 
 SNOWBALL_INSTALL_DIR=~/.snowball
 OS=$(uname -s | awk '{print tolower($0)}')
