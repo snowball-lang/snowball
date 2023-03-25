@@ -26,21 +26,27 @@ jobs:
       run: |
         sh ./build_scripts/release.sh
         make
-    - name: Create release
+    - name: Archive
+      run: |
+        mkdir release
+        cp ./bin/Release release/
+        tar -czvf snowball.tar.gz release/
+    - name: Create Release
+      if: success()
       uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v${{ matrix.cmake }}-${{ matrix.distro }}-${{ matrix.os }}
-        release_name: v${{ matrix.cmake }}-${{ matrix.distro }}-${{ matrix.os }} binaries
-        draft: false
-        prerelease: false
-    - name: Upload binaries
-      uses: actions/upload-release-asset@v1
+        tag_name: v${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: This is the first release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload Release Asset
+      if: success()
+      uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.build.outputs.upload_url }}
-        asset_path: ./bin/Release
-        asset_name: snowball-${{ matrix.cmake }}-${{ matrix.distro }}-${{ matrix.os }}
-        asset_content_type: application/octet-stream
+        asset_path: ./snowball.tar.gz
+        asset_name: snowball.tar.gz
+        asset_content_type: application/gzip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

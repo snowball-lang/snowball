@@ -1,3 +1,3 @@
 mkdir -p bin/Release
 cmake -DLLVM_TOOL_POLLY_BUILD=OFF -DCLANG_ENABLE_OPAQUE_POINTERS=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_BUILD_TYPE=Release -DEXECUTABLE_OUTPUT_PATH="bin/Release" .
-cmake --build .
+cmake --build . --config Release
