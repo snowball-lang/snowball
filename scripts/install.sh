@@ -94,8 +94,6 @@ update_config_file() {
                 echo "Error: Cannot find a writable zsh config file" 1>&2
                 exit 1
             fi
-            
-            source zshrc
             ;;
         *bash)
             local bashrc="$HOME/.bashrc"
@@ -108,8 +106,6 @@ update_config_file() {
                 echo "Error: Cannot find a writable bash config file" 1>&2
                 exit 1
             fi
-
-            source bashrc
             ;;
         *)
             echo "Error: Unknown shell type $shell" 1>&2
@@ -126,4 +122,6 @@ fi
 update_config_file "$shell"
 
 echo "Snowball successfully installed at: $(pwd)"
+echo "Open a new terminal session or update your PATH to use snowball"
+
 echo "Happy coding! 🐱"
