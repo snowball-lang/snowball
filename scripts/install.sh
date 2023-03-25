@@ -2,7 +2,7 @@
 set -e
 
 # function to check if a file exists and is writable
-function check_file_writable {
+check_file_writable() {
     local file="$1"
     if [[ -e "$file" ]]; then
         if [[ -w "$file" ]]; then
@@ -18,7 +18,7 @@ function check_file_writable {
 }
 
 # function to prompt the user for input
-function prompt_user {
+prompt_user() {
     local message="$1"
     local default_value="$2"
     local allowed_values="$3"
@@ -36,7 +36,7 @@ function prompt_user {
 }
 
 # function to add the command to the PATH in the config file
-function add_command_to_path {
+add_command_to_path() {
     local config_file="$1"
     
     if grep -q "$COMMAND_TO_EXPORT" "$config_file"; then
@@ -55,7 +55,7 @@ function add_command_to_path {
 }
 
 # function to update the appropriate config file based on the shell
-function update_config_file {
+update_config_file() {
     local shell="$1"
     
     case "$shell" in
@@ -110,7 +110,7 @@ EXPORT_COMMAND="export PATH=$(pwd)/bin:\$PATH"
 echo "PATH export command:"
 echo "  $EXPORT_COMMAND"
 
-local shell="$SHELL"
+shell="$SHELL"
 if [[ -z "$shell" ]]; then
     shell=$(ps -p $$ -o args= | awk '{print $1}')
 fi
