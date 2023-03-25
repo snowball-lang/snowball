@@ -1,5 +1,4 @@
 name: Build and Release
-
 on:
   pull_request:
     branches:
@@ -11,9 +10,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, centos-latest, fedora-latest]
         cmake: [3.10, 3.11, 3.12]
-        distro: [ubuntu:20.04, ubuntu:18.04, debian:11, debian:10, centos:8, centos:7, fedora:34, fedora:33]
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
