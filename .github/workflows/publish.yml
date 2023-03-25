@@ -30,7 +30,9 @@ jobs:
     - name: Archive
       run: |
         mkdir release
+        mkdir -p release/bin
         cp -a ./bin/Release/. release/
+        mv release/snowball release/bin/snowball
         cp -r ./stdlib release/
         tar -czvf snowball.tar.gz release/
     - name: Upload Release Asset
