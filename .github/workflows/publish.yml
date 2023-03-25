@@ -23,8 +23,6 @@ jobs:
         version: "14.0"
     - name: Build project
       run: |
-        export CC=clang
-        export CXX=clang++
         sh ./build_scripts/release.sh
         make
     - name: Archive
