@@ -25,7 +25,7 @@ Compiler::Compiler(std::string p_code, std::string p_path) {
     _code = p_code;
     _path = fs::current_path() / p_path;
 
-    _cwd = get_current_dir_name();
+    _cwd = fs::current_path();
 }
 
 void Compiler::initialize() {
