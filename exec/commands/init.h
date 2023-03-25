@@ -16,12 +16,12 @@ using namespace std::chrono;
 
 #define LIBRARY_ENTRY "src/lib.sn"
 #define LIBRARY_MAIN                                                           \
-    "import Assertion\n\n"                                                     \
+    "use Core::Assertion\n\n"                                                     \
     "pub fn my_export() String {\n"                                            \
     "    return \"Hello, World\"\n"                                            \
     "}\n\n" /* TODO: add #[cfg(test)] */                                       \
     "\nmod tests {\n"                                                          \
-    "   @[test]\n"                                                             \
+    "   #[test]\n"                                                             \
     "    fn test_my_lib() {\n" /* TODO: implement this in the actual language  \
                                 */                                             \
     "        Assertion::assert(supper::my_export() == \"Hello, World\")\n"     \
@@ -30,10 +30,10 @@ using namespace std::chrono;
 
 #define EXECUTABLE_ENTRY "src/main.sn"
 #define EXECUTABLE_MAIN                                                        \
-    "import System\n"                                                          \
+    "use Core::System\n"                                                          \
                                                                                \
     "\nfn main() Void {\n"                                                     \
-    "   System.println(\"Hello, World\")\n"                                    \
+    "   System::println(\"Hello, World\")\n"                                    \
     "}"
 
 #define CONFIGURATION_FILE "sn.toml"
