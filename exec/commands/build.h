@@ -7,6 +7,7 @@
 #include "vendor/toml.hpp"
 
 #include <chrono>
+#include <string>
 #include <filesystem>
 
 using namespace std::chrono;
@@ -19,11 +20,21 @@ namespace snowball {
 namespace exec {
 namespace commands {
 int build(exec::Options::BuildOptions p_opts) {
+    std::string filename = p_opts.file;
+    std::string package_name = "<single file>";
+    std::string package_version = "<unknown version>";
 
-    toml::parse_result parsed_config = Compiler::get_config();
-    std::string filename =
-        p_opts.file.empty() ? (std::string)(parsed_config["package"]["main"].value_or<std::string>(
-            (fs::current_path() / "src" / "main.sn"))) : p_opts.file;
+
+    if (p_opts.file.empty()) {
+        toml::parse_result parsed_config = Compiler::get_config();
+        filename =
+            p_opts.file.empty() ? (std::string)(parsed_config["package"]["main"].value_or<std::string>(
+                (fs::current_path() / "src" / "main.sn"))) : p_opts.file;
+        package_name = (std::string)(parsed_config["package"]["name"]
+                               .value_or<std::string>("<anonnimus>"));
+        package_version = parsed_config["package"]["version"]
+                               .value_or<std::string>("<unknown>");
+    }
 
     std::ifstream ifs(filename);
     if (ifs.fail()) {
@@ -51,12 +62,8 @@ int build(exec::Options::BuildOptions p_opts) {
     Logger::message(
         "Compiling",
         FMT("%s v%s [%s]",
-            ((std::string)(parsed_config["package"]["name"]
-                               .value_or<std::string>("<anonnimus>")))
-                .c_str(),
-            ((std::string)(parsed_config["package"]["version"]
-                               .value_or<std::string>("<unknown>")))
-                .c_str(),
+            package_name.c_str(),
+            package_version.c_str(),
             (build_type.c_str())));
 
     std::string content((std::istreambuf_iterator<char>(ifs)),
