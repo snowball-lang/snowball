@@ -6,6 +6,7 @@ OS=$(uname -s | awk '{print tolower($0)}')
 ARCH=$(uname -m)
 
 LIB_FOLDER="/usr/lib"
+YES="$1"
 
 if [ "$OS" != "linux" ] && [ "$OS" != "darwin" ]; then
   echo "error: Pre-built binaries only exist for Linux and macOS." >&2
@@ -35,7 +36,6 @@ check_file_writable() {
             return 1
         fi
     else
-        echo "Error: $file does not exist"
         return 1
     fi
 }
@@ -69,7 +69,7 @@ add_command_to_path() {
 
     local add_to_path=$(prompt_user "Do you want to add $EXPORT_COMMAND to PATH in $config_file? [y/n]: " "y" "yn")
     
-    if [[ "$add_to_path" == "y" ]]; then
+    if [[ "$add_to_path" == "y" || "$YES" == "-y" ]]; then
         echo "Updating $config_file ..."
         echo "" >> "$config_file"
         echo "export PATH=\"\$PATH:$EXPORT_COMMAND\"" >> "$config_file"
