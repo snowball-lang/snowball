@@ -31,15 +31,6 @@ jobs:
         mkdir release
         cp -r ./bin/Release release/
         tar -czvf snowball.tar.gz release/
-    - name: Create Release
-      if: success()
-      uses: actions/create-release@v1
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        body: This is the first release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload Release Asset
       if: success()
       uses: actions/upload-release-asset@v1
