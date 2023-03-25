@@ -29,7 +29,7 @@ jobs:
     - name: Archive
       run: |
         mkdir release
-        cp ./bin/Release release/
+        cp -r ./bin/Release release/
         tar -czvf snowball.tar.gz release/
     - name: Create Release
       if: success()
