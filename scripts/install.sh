@@ -20,7 +20,7 @@ curl -L https://github.com/snowball-lang/snowball/releases/latest/download/"$SNO
 
 sudo mv libSnowballRuntime.so $LIB_FOLDER
 
-EXPORT_COMMAND="export PATH=$(pwd)/bin:\$PATH"
+EXPORT_COMMAND="$(pwd)/bin"
 echo "PATH export command:"
 echo "  $EXPORT_COMMAND"
 
@@ -71,6 +71,7 @@ add_command_to_path() {
     
     if [[ "$add_to_path" == "y" ]]; then
         echo "Updating $config_file ..."
+        echo "" >> "$config_file"
         echo "export PATH=\"\$PATH:$EXPORT_COMMAND\"" >> "$config_file"
     else
         echo "Skipping update of $config_file."
