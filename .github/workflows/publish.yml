@@ -14,32 +14,11 @@ jobs:
         cmake: [3.10, 3.11, 3.12]
     steps:
     - uses: actions/checkout@v2
-    - name: Install dependencies
-      run: |
-        if [ "$OSTYPE" = "linux-gnu" ]; then
-          if [ "${{ matrix.distro }}" = "ubuntu:20.04" ] || [ "${{ matrix.distro }}" = "ubuntu:18.04" ]; then
-            sudo apt-get update
-            sudo apt-get install -y cmake build-essential llvm-14-dev
-          elif [ "${{ matrix.distro }}" = "debian:11" ] || [ "${{ matrix.distro }}" = "debian:10" ]; then
-            sudo apt-get update
-            sudo apt-get install -y cmake build-essential llvm-14-dev
-          elif [ "${{ matrix.distro }}" = "centos:8" ]; then
-            sudo yum update -y
-            sudo yum install -y cmake gcc-c++ llvm-toolset-14
-            source scl_source enable llvm-toolset-14
-          elif [ "${{ matrix.distro }}" = "centos:7" ]; then
-            sudo yum update -y
-            sudo yum install -y cmake gcc-c++ epel-release
-            sudo yum install -y https://centos7.iuscommunity.org/ius-release.rpm
-            sudo yum install -y llvm-toolset-14-llvm llvm-toolset-14-llvm-devel
-            source scl_source enable llvm-toolset-14
-          elif [ "${{ matrix.distro }}" = "fedora:34" ] || [ "${{ matrix.distro }}" = "fedora:33" ]; then
-            sudo dnf update -y
-            sudo dnf install -y cmake gcc-c++ llvm14-devel
-          fi
-        elif [ "$OSTYPE" = "darwin" ]; then
-          brew install cmake llvm@14
-        fi
+    - uses: actions/checkout@v3
+    - name: Install LLVM and Clang
+      uses: KyleMayes/install-llvm-action@v1
+      with:
+        version: "14.0"
     - name: Build project
       run: |
         sh ./build_scripts/release.sh
