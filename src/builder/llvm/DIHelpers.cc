@@ -84,7 +84,7 @@ ptr<llvm::DIType> LLVMBuilder::getDIType(ptr<types::Type> ty) {
         }
 
         auto debugType = dbg.builder->createClassType(
-            file, c->getPrettyName(), file, dbgInfo->line, /* TODO: */ 0, 0,
+            file, c->getPrettyName(), file, dbgInfo->line, /* TODO: */ 0, 0, 0,
             llvm::DINode::FlagZero, parentDIType,
             dbg.builder->getOrCreateArray(generatedFields));
 
