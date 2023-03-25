@@ -152,6 +152,11 @@ Options CLI::parse() {
                 opts.build_opts.is_test = true;
             } else if (IF_ANY_ARG("--silent", "-s")) {
                 opts.build_opts.silent = true;
+            } else if (IF_ANY_ARG("--file", "-f")) {
+                CHECK_ARG("an input file")
+                NEXT_ARGUMENT()
+
+                opts.build_opts.file = current_arg;
             } else if (IF_ARG("--emit_type")) {
                 CHECK_ARG("an output type")
                 NEXT_ARGUMENT()
@@ -224,6 +229,10 @@ Options CLI::parse() {
                 }
             } else if (IF_ANY_ARG("--silent", "-s")) {
                 opts.run_opts.silent = true;
+            } else if (IF_ANY_ARG("--file", "-f")) {
+                CHECK_ARG("an input file")
+                NEXT_ARGUMENT()
+                opts.run_opts.file = current_arg;
             } else {
                 throw SNError(
                     Error::ARGUMENT_ERROR,

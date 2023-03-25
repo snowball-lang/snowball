@@ -24,6 +24,8 @@ struct Options {
     struct RunOptions {
         Optimization opt = OPTIMIZE_O1;
         bool silent      = false;
+
+        std::string file = "";
     } run_opts;
 
     struct BuildOptions {
@@ -32,6 +34,7 @@ struct Options {
         EmitType emit_type = EXECUTABLE;
 
         bool silent = false;
+        std::string file = "";
     } build_opts;
 
     struct ExplainOptions {

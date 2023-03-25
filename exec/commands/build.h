@@ -21,10 +21,11 @@ namespace commands {
 int build(exec::Options::BuildOptions p_opts) {
 
     toml::parse_result parsed_config = Compiler::get_config();
-
     std::string filename =
-        (std::string)(parsed_config["package"]["main"].value_or<std::string>(
-            fs::current_path() / "src" / "main.sn"));
+        p_opts.file.empty() ? (std::string)(parsed_config["package"]["main"].value_or<std::string>(
+            (fs::current_path() / "src" / "main.sn"))) : p_opts.file;
+
+    DUMP_S(filename.c_str())
 
     std::ifstream ifs(filename);
     if (ifs.fail()) {
