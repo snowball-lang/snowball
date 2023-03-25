@@ -6,6 +6,8 @@ SNOWBALL_INSTALL_DIR=~/.snowball
 OS=$(uname -s | awk '{print tolower($0)}')
 ARCH=$(uname -m)
 
+LIB_FOLDER="/usr/lib"
+
 if [ "$OS" != "linux" ] && [ "$OS" != "darwin" ]; then
   echo "error: Pre-built binaries only exist for Linux and macOS." >&2
   exit 1
@@ -16,6 +18,8 @@ SNOWBALL_BUILD_ARCHIVE=snowball-$OS-$ARCH.tar.gz
 mkdir -p $SNOWBALL_INSTALL_DIR
 cd $SNOWBALL_INSTALL_DIR
 curl -L https://github.com/snowball-lang/snowball/releases/latest/download/"$SNOWBALL_BUILD_ARCHIVE" | tar zxvf - --strip-components=1
+
+sudo mv libSnowballRuntime.so $LIB_FOLDER
 
 EXPORT_COMMAND="export PATH=$(pwd)/bin:\$PATH"
 echo "PATH export command:"

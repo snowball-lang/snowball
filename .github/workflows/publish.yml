@@ -23,9 +23,9 @@ jobs:
         version: "14.0"
     - name: Build project
       run: |
-        export CC=gcc
-        export CXX=g++
-        sh ./build_scripts/release.sh
+        export CC="gcc"
+        export CXX="g++"
+        sh ./build_scripts/release.sh -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_CC_COMPILER=/usr/bin/gcc
         make
     - name: Archive
       run: |
