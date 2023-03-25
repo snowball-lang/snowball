@@ -23,12 +23,15 @@ jobs:
         version: "14.0"
     - name: Build project
       run: |
+        export CC=gcc
+        export CXX=g++
         sh ./build_scripts/release.sh
         make
     - name: Archive
       run: |
         mkdir release
-        cp -r ./bin/Release release/
+        cp -a ./bin/Release/. release/
+        cp -r ./stdlib release/
         tar -czvf snowball.tar.gz release/
     - name: Upload Release Asset
       if: success()
