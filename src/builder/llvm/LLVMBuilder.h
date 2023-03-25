@@ -15,7 +15,7 @@
 #include "llvm/IR/LLVMContext.h"
 
 #include <cstdint>
-#include <llvm-14/llvm/Target/TargetMachine.h>
+#include <llvm/Target/TargetMachine.h>
 #include <map>
 #include <memory>
 

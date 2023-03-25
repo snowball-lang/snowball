@@ -4,9 +4,9 @@
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 
-#include <llvm-14/llvm/IR/Type.h>
-#include <llvm-14/llvm/IR/Value.h>
-#include <llvm-14/llvm/IR/Verifier.h>
+#include <llvm/IR/Type.h>
+#include <llvm/IR/Value.h>
+#include <llvm/IR/Verifier.h>
 
 namespace snowball {
 namespace codegen {

@@ -1,8 +1,8 @@
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 
-#include <llvm-14/llvm/IR/Type.h>
-#include <llvm-14/llvm/IR/Value.h>
+#include <llvm/IR/Type.h>
+#include <llvm/IR/Value.h>
 
 namespace snowball {
 namespace codegen {
