@@ -83,7 +83,7 @@ ptr<llvm::DIType> LLVMBuilder::getDIType(ptr<types::Type> ty) {
             parentDIType = getDIType(c->getParent().get());
         }
 
-        auto debugType = dbg.builder->createStructType(
+        auto debugType = dbg.builder->createClassType(
             file, c->getPrettyName(), file, dbgInfo->line, /* TODO: */ 0, 0,
             llvm::DINode::FlagZero, parentDIType,
             dbg.builder->getOrCreateArray(generatedFields));
@@ -99,11 +99,13 @@ ptr<llvm::DIType> LLVMBuilder::getDIType(ptr<types::Type> ty) {
                     getDIType(t->type.get()));
             });
 
+        return debugType;
     } else {
         Syntax::E<BUG>(
             FMT("Undefined type! (dbg) ('%s')", ty->getName().c_str()));
     }
 
+    assert(false);
     return nullptr; // to avoid warnings
 }
 

@@ -28,14 +28,37 @@
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/Passes/PassBuilder.h>
 #include <llvm/Support/FormattedStream.h>
+#include <llvm/IR/DebugInfo.h>
 
 #include <llvm/Transforms/IPO.h>
 #include <llvm/IR/LegacyPassManager.h>
+
+namespace {
+void applyDebugTransformations(llvm::Module *module, bool debug) {
+    if (debug) {
+        // remove tail calls and fix linkage for stack traces
+        for (auto &f : *module) {
+#ifdef __APPLE__
+           f.setLinkage(llvm::GlobalValue::ExternalLinkage);
+#endif
+            if (!f.hasFnAttribute(llvm::Attribute::AttrKind::AlwaysInline))
+                f.addFnAttr(llvm::Attribute::AttrKind::NoInline);
+            f.addFnAttr("no-frame-pointer-elim", "true");
+            f.addFnAttr("no-frame-pointer-elim-non-leaf");
+            f.addFnAttr("no-jump-tables", "false");
+        }
+    } else {
+        llvm::StripDebugInfo(*module);
+    }
+}
+}
 
 namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::optimizeModule(exec::Options::Optimization o) {
+    applyDebugTransformations(module.get(), o == exec::Options::OPTIMIZE_O0);
+
     llvm::LoopAnalysisManager loop_analysis_manager;
     llvm::FunctionAnalysisManager function_analysis_manager;
     llvm::CGSCCAnalysisManager c_gscc_analysis_manager;
@@ -53,9 +76,14 @@ void LLVMBuilder::optimizeModule(exec::Options::Optimization o) {
     pass_builder.registerFunctionAnalyses(function_analysis_manager);
     pass_builder.registerLoopAnalyses(loop_analysis_manager);
 
+    llvm::Triple moduleTriple(module->getTargetTriple());
+    llvm::TargetLibraryInfoImpl tlii(moduleTriple);
+
     // cross register them too?
     pass_builder.crossRegisterProxies(loop_analysis_manager, function_analysis_manager,
                                     c_gscc_analysis_manager, module_analysis_manager);
+    function_analysis_manager.registerPass([&] { return llvm::TargetLibraryAnalysis(tlii); });
+
 
     // todo: let user decide
     llvm::OptimizationLevel level;
@@ -70,22 +98,17 @@ void LLVMBuilder::optimizeModule(exec::Options::Optimization o) {
         default: assert(false && "during code optimization");
     }
 
-    if (level == llvm::OptimizationLevel::O0) { return; }
-
-    llvm::ModulePassManager MPM = pass_builder.buildPerModuleDefaultPipeline(level);
-    MPM.run(*module.get(), module_analysis_manager);
-
-    llvm::legacy::FunctionPassManager fpm(module.get());
-
-    fpm.add(new llvm::InstructionCombiningPass());
-    fpm.add(llvm::createCFGSimplificationPass());
-
-    fpm.doInitialization();
-    for (auto& function : module->functions()) {
-        fpm.run(function);
+    if (level == llvm::OptimizationLevel::O0) {
+        llvm::ModulePassManager mpm =
+            pass_builder.buildO0DefaultPipeline(llvm::OptimizationLevel::O0);
+        mpm.run(*module, module_analysis_manager);
+    } else {
+        llvm::ModulePassManager mpm =
+            pass_builder.buildPerModuleDefaultPipeline(level);
+        mpm.run(*module, module_analysis_manager);
     }
 
-    fpm.doFinalization();
+    applyDebugTransformations(module.get(), o == exec::Options::OPTIMIZE_O0);
 }
 
 } // namespace codegen

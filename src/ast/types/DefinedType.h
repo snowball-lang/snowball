@@ -80,8 +80,8 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
      *  return false.
      */
     virtual bool is(ptr<Type> other) override {
-        if (auto f = utils::cast<DefinedType>(other)) {
-            return is(f);
+        if (auto c = utils::cast<DefinedType>(other)) {
+            return is(c);
         }
 
         return false;

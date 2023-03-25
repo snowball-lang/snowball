@@ -146,6 +146,8 @@ void LLVMBuilder::codegen() {
     generateModule(iModule);
     for (auto m : iModule->getModules()) generateModule(m);
 
+    dbg.builder->finalize();
+
     std::string module_error_string;
     llvm::raw_string_ostream module_error_stream(module_error_string);
     llvm::verifyModule(*module.get(), &module_error_stream);
