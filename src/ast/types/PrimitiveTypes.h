@@ -10,6 +10,7 @@
 
 #define SN_BOOL_TYPE  "bool"
 #define SN_STR_TYPE   "String"
+#define SN_CHR_TYPE   "char"
 #define SN_INT64_TYPE "i64"
 #define SN_INT32_TYPE "i32"
 #define SN_INT16_TYPE "i16"
@@ -82,6 +83,12 @@ class BoolType : public AcceptorExtend<BoolType, NumericType> {
 class StringType : public AcceptorExtend<StringType, PrimitiveType> {
   public:
     StringType() : AcceptorExtend(SN_STR_TYPE) {}
+};
+
+/// @brief String (represents int 8 pointer)
+class CharType : public AcceptorExtend<CharType, NumericType> {
+  public:
+    CharType() : AcceptorExtend(SN_CHR_TYPE) {}
 };
 
 /// @brief Float 64 (represents 64-bit floating point)

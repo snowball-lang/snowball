@@ -38,6 +38,8 @@ ptr<llvm::Type> LLVMBuilder::getLLVMType(ptr<types::Type> t) {
         return builder->getInt1Ty();
     } else if (cast<types::VoidType>(t)) {
         return builder->getVoidTy();
+    } else if (cast<types::CharType>(t)) {
+        return builder->getInt8Ty();
     }
 
     else if (auto f = cast<types::FunctionType>(t)) {

@@ -12,40 +12,26 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod)
     imports = std::make_unique<services::ImportService>();
 
     // Set all of the built in primitive types into the global stack
-    auto raw_boolTy   = std::make_shared<types::BoolType>();
-    auto raw_f64Ty    = std::make_shared<types::Float64Type>();
-    auto raw_f32Ty    = std::make_shared<types::Float32Type>();
-    auto raw_i64Ty    = std::make_shared<types::Int64Type>();
-    auto raw_i32Ty    = std::make_shared<types::Int32Type>();
-    auto raw_i16Ty    = std::make_shared<types::Int16Type>();
-    auto raw_int8Ty   = std::make_shared<types::Int8Type>();
-    auto raw_StringTy = std::make_shared<types::StringType>();
-    auto raw_COBTy    = std::make_shared<types::CObjectType>();
-    auto raw_voidTy   = std::make_shared<types::VoidType>();
+#define DEFINE_TYPE(t) \
+    auto raw_##t = std::make_shared<types::t>(); \
+    auto _##t = std::make_shared<transform::Item>(raw_##t); \
+    addItem(raw_##t->getName(), _##t);
 
-    auto boolTy   = std::make_shared<transform::Item>(raw_boolTy);
-    auto f64Ty    = std::make_shared<transform::Item>(raw_f64Ty);
-    auto f32Ty    = std::make_shared<transform::Item>(raw_f32Ty);
-    auto i64Ty    = std::make_shared<transform::Item>(raw_i64Ty);
-    auto i32Ty    = std::make_shared<transform::Item>(raw_i32Ty);
-    auto i16Ty    = std::make_shared<transform::Item>(raw_i16Ty);
-    auto int8Ty   = std::make_shared<transform::Item>(raw_int8Ty);
-    auto StringTy = std::make_shared<transform::Item>(raw_StringTy);
-    auto cobjTy   = std::make_shared<transform::Item>(raw_COBTy);
-    auto VoidTy   = std::make_shared<transform::Item>(raw_voidTy);
+    DEFINE_TYPE(BoolType)
+    DEFINE_TYPE(Float64Type)
+    DEFINE_TYPE(Float32Type)
+    DEFINE_TYPE(Int64Type)
+    DEFINE_TYPE(Int32Type)
+    DEFINE_TYPE(Int16Type)
+    DEFINE_TYPE(Int8Type)
+    DEFINE_TYPE(StringType)
+    DEFINE_TYPE(CObjectType)
+    DEFINE_TYPE(VoidType)
+    DEFINE_TYPE(CharType)
 
-    addItem(raw_boolTy->getName(), boolTy);
-    addItem(raw_f64Ty->getName(), f64Ty);
-    addItem(raw_f32Ty->getName(), f32Ty);
-    addItem(raw_i64Ty->getName(), i64Ty);
-    addItem(raw_i32Ty->getName(), i32Ty);
-    addItem(raw_i16Ty->getName(), i16Ty);
-    addItem(raw_int8Ty->getName(), int8Ty);
-    addItem(raw_StringTy->getName(), StringTy);
-    addItem(raw_voidTy->getName(), VoidTy);
-    addItem(raw_COBTy->getName(), cobjTy);
+#undef DEFINE_TYPE
 
-    addItem(types::Int32Type::TYPE_ALIAS, i32Ty);
+    addItem(types::Int32Type::TYPE_ALIAS, _Int32Type);
 };
 
 /// @brief get a saved state of the context

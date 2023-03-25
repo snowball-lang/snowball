@@ -126,8 +126,12 @@ void LLVMBuilder::buildBodiedFunction(ptr<llvm::Function> llvmFn,
     llvm::raw_string_ostream module_error_stream(module_error_string);
     llvm::verifyFunction(*llvmFn, &module_error_stream);
 
-    if (!module_error_string.empty())
+    if (!module_error_string.empty()) {
+#ifdef _SNOWBALL_BYTECODE_DEBUG
+        module->dump();
+#endif
         throw SNError(Error::LLVM_INTERNAL, module_error_string);
+    }
 }
 
 } // namespace codegen

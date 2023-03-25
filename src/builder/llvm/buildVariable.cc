@@ -10,8 +10,7 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ptr<ir::Variable> variable) {
-    // note: "x - 1" because ir::Variable (x + 1) gets created after VariableDeclaration (x).
-    auto store = ctx->getSymbol(variable->getId() - 1);
+    auto store = ctx->getSymbol(variable->getId());
     this->value = builder->CreateLoad(getLLVMType(variable->getType()), store);
 }
 

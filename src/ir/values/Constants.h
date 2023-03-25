@@ -91,6 +91,21 @@ class BooleanValue : public AcceptorExtend<BooleanValue, ConstantValue> {
     SN_GENERATOR_VISITS
 };
 
+/// @brief Constant representation of a character (8-bit ints)
+class CharValue : public AcceptorExtend<BooleanValue, ConstantValue> {
+    // Value stored from the AST
+    char value;
+
+  public:
+    // Create a new boolean value for the IR
+    CharValue(char value) : AcceptorExtend(Char), value(value) {}
+
+    // Get the boolean value.
+    auto getConstantValue() const { return value; }
+    // Set a visit handler for the generators
+    SN_GENERATOR_VISITS
+};
+
 /// @brief Constant representation of a null
 class NullValue : public AcceptorExtend<NullValue, ConstantValue> {
   public:

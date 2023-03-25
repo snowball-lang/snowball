@@ -41,6 +41,7 @@ VISIT(BooleanValue) { /* noop */
 }
 VISIT(FloatValue) {   /* noop */
 }
+VISIT(CharValue) { /* noop */ }
 VISIT(NullValue) {    /* noop */
 }
 

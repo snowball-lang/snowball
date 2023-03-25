@@ -60,6 +60,10 @@ class TransformContext
     std::shared_ptr<types::Type> getStringType() {
         return getPrimitiveType(SN_STR_TYPE);
     }
+    /// @brief Get the char primitive type
+    std::shared_ptr<types::Type> getCharType() {
+        return getPrimitiveType(SN_CHR_TYPE);
+    }
     /// @brief Get the equivalent of `void*` type in C
     std::shared_ptr<types::Type> getCObjectType() {
         return getPrimitiveType(SN_COB_TYPE);

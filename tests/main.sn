@@ -4,7 +4,9 @@ class Hello {
 pub:
     Hello(x: String) {}
 // priv:
-    fn hello() {}
+    fn hello() {
+        System::println("hello")
+    }
 }
 
 fn h(d: String) String {

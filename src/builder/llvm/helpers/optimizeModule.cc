@@ -1,6 +1,7 @@
 
 #include "../../../utils/utils.h"
 #include "../LLVMBuilder.h"
+#include "../../../common.h"
 
 #include <llvm-14/llvm/IR/Type.h>
 #include <llvm-14/llvm/IR/Value.h>
@@ -33,8 +34,10 @@
 #include <llvm/Transforms/IPO.h>
 #include <llvm/IR/LegacyPassManager.h>
 
+namespace snowball {
+
 namespace {
-void applyDebugTransformations(llvm::Module *module, bool debug) {
+void applyDebugTransformations(snowball::ptr<llvm::Module> module, bool debug) {
     if (debug) {
         // remove tail calls and fix linkage for stack traces
         for (auto &f : *module) {
@@ -53,7 +56,6 @@ void applyDebugTransformations(llvm::Module *module, bool debug) {
 }
 }
 
-namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::optimizeModule(exec::Options::Optimization o) {
