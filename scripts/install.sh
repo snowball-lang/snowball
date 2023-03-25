@@ -1,23 +1,27 @@
 #!/usr/bin/env bash
-set -eu
+set -e
+set -o pipefail
 
-log() {
-    echo "[snowball installer]: $@"
-}
+SNOWBALL_INSTALL_DIR=~/.snowball
+OS=$(uname -s | awk '{print tolower($0)}')
+ARCH=$(uname -m)
 
-log cloning project
-git clone --quiet https://github.com/snowball-lang/snowball.git
-cd ./snowball
+if [ "$OS" != "linux" ] && [ "$OS" != "darwin" ]; then
+  echo "error: Pre-built binaries only exist for Linux and macOS." >&2
+  exit 1
+fi
 
-log compiling project
-cmake . $@ > /dev/null
-make > /dev/null
+SNOWBALL_BUILD_ARCHIVE=snowball-$OS-$ARCH.tar.gz
 
-log installing snowball
-sudo make install
+mkdir -p $SNOWBALL_INSTALL_DIR
+cd $SNOWBALL_INSTALL_DIR
+curl -L https://github.com/snowball-lang/snowball/releases/latest/download/"$SNOWBALL_BUILD_ARCHIVE" | tar zxvf - --strip-components=1
 
-log cleaning
-cd ..
-rm -rf ./snowball
+EXPORT_COMMAND="export PATH=$(pwd)/bin:\$PATH"
+echo "PATH export command:"
+echo "  $EXPORT_COMMAND"
+
+echo "Snowball successfully installed at: $(pwd)"
+echo "Open a new terminal session or update your PATH to use snowball"
 
 echo "Happy coding! 🐱"
