@@ -12,15 +12,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, centos-latest, fedora-latest]
         cmake: [3.10, 3.11, 3.12]
-    outputs:
-      version: ${{ steps.step_version.outputs.version }}
-      upload_url: ${{ steps.step_upload_url.outputs.upload_url }}
-      - id: step_version
-        run: echo "::set-output name=version::${{ steps.package_version.outputs.version }}"
-        
-      - id: step_upload_url
-        run: echo "::set-output name=upload_url::${{ steps.create_release.outputs.upload_url }}"
     steps:
+    - name: "Get upload_url"
+      run: echo "::set-output name=upload_url::https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$(jq --raw-output '.release.id' $GITHUB_EVENT_PATH)/assets{?name,label}"
+      id: release
     - uses: actions/checkout@v2
     - uses: actions/checkout@v3
     - name: Install LLVM and Clang
@@ -45,7 +40,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        upload_url: ${{ steps.build.outputs.upload_url }}
         asset_path: ./bin/Release
         asset_name: snowball-${{ matrix.cmake }}-${{ matrix.distro }}-${{ matrix.os }}
         asset_content_type: application/octet-stream
