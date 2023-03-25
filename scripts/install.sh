@@ -1,6 +1,29 @@
 #!/usr/bin/env bash
 set -e
 
+SNOWBALL_INSTALL_DIR=~/.snowball
+OS=$(uname -s | awk '{print tolower($0)}')
+ARCH=$(uname -m)
+
+LIB_FOLDER="/usr/lib"
+
+if [ "$OS" != "linux" ] && [ "$OS" != "darwin" ]; then
+  echo "error: Pre-built binaries only exist for Linux and macOS." >&2
+  exit 1
+fi
+
+SNOWBALL_BUILD_ARCHIVE=snowball-$OS.tar.gz
+
+mkdir -p $SNOWBALL_INSTALL_DIR
+cd $SNOWBALL_INSTALL_DIR
+curl -L https://github.com/snowball-lang/snowball/releases/latest/download/"$SNOWBALL_BUILD_ARCHIVE" | tar zxvf - --strip-components=1
+
+sudo mv libSnowballRuntime.so $LIB_FOLDER
+
+EXPORT_COMMAND="export PATH=$(pwd)/bin:\$PATH"
+echo "PATH export command:"
+echo "  $EXPORT_COMMAND"
+
 # function to check if a file exists and is writable
 check_file_writable() {
     local file="$1"
@@ -38,17 +61,17 @@ prompt_user() {
 # function to add the command to the PATH in the config file
 add_command_to_path() {
     local config_file="$1"
-    
-    if grep -q "$COMMAND_TO_EXPORT" "$config_file"; then
+
+    if grep -q "$EXPORT_COMMAND" "$config_file"; then
         echo "PATH already updated in $config_file; skipping update."
         return
     fi
-    
-    local add_to_path=$(prompt_user "Do you want to add $COMMAND_TO_EXPORT to PATH in $config_file? [y/n]: " "y" "yn")
+
+    local add_to_path=$(prompt_user "Do you want to add $EXPORT_COMMAND to PATH in $config_file? [y/n]: " "y" "yn")
     
     if [[ "$add_to_path" == "y" ]]; then
         echo "Updating $config_file ..."
-        echo "export PATH=\"\$PATH:$COMMAND_TO_EXPORT\"" >> "$config_file"
+        echo "export PATH=\"\$PATH:$EXPORT_COMMAND\"" >> "$config_file"
     else
         echo "Skipping update of $config_file."
     fi
@@ -57,7 +80,7 @@ add_command_to_path() {
 # function to update the appropriate config file based on the shell
 update_config_file() {
     local shell="$1"
-    
+
     case "$shell" in
         *zsh)
             local zshrc="$HOME/.zshrc"
@@ -86,29 +109,6 @@ update_config_file() {
             ;;
     esac
 }
-
-SNOWBALL_INSTALL_DIR=~/.snowball
-OS=$(uname -s | awk '{print tolower($0)}')
-ARCH=$(uname -m)
-
-LIB_FOLDER="/usr/lib"
-
-if [ "$OS" != "linux" ] && [ "$OS" != "darwin" ]; then
-  echo "error: Pre-built binaries only exist for Linux and macOS." >&2
-  exit 1
-fi
-
-SNOWBALL_BUILD_ARCHIVE=snowball-$OS.tar.gz
-
-mkdir -p $SNOWBALL_INSTALL_DIR
-cd $SNOWBALL_INSTALL_DIR
-curl -L https://github.com/snowball-lang/snowball/releases/latest/download/"$SNOWBALL_BUILD_ARCHIVE" | tar zxvf - --strip-components=1
-
-sudo mv libSnowballRuntime.so $LIB_FOLDER
-
-EXPORT_COMMAND="export PATH=$(pwd)/bin:\$PATH"
-echo "PATH export command:"
-echo "  $EXPORT_COMMAND"
 
 shell="$SHELL"
 if [[ -z "$shell" ]]; then
