@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, centos-latest, fedora-latest]
+        os: [ubuntu-latest, macos-latest]
         cmake: [3.10, 3.11, 3.12]
     steps:
     - uses: actions/checkout@v2
@@ -24,6 +24,8 @@ jobs:
         version: "14.0"
     - name: Build project
       run: |
+        export CC=clang
+        export CXX=clang++
         sh ./build_scripts/release.sh
         make
     - name: Archive
@@ -37,7 +39,7 @@ jobs:
       with:
         upload_url: ${{ steps.get_release.outputs.upload_url }}
         asset_path: ./snowball.tar.gz
-        asset_name: snowball-${{ matrix.os }}.tar.gz
+        asset_name: snowball-${{ matrix.os = ubuntu-latest && "linux" || "darwin" }}.tar.gz
         asset_content_type: application/gzip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
