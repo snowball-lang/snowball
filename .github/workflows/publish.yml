@@ -10,7 +10,9 @@ jobs:
       image: quay.io/pypa/manylinux2014_x86_64
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        # TODO: macos
+        # os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
     steps:
     - uses: docker-practice/actions-setup-docker@master
       timeout-minutes: 12
