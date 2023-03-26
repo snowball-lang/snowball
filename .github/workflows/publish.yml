@@ -33,11 +33,11 @@ jobs:
       run: |
         yum -y update
         yum install devtoolset-9-toolchain -y
-        scl enable devtoolset-9 bash 
+        scl enable devtoolset-9 bash
 
-        export CC="/usr/bin/gcc"
-        export CXX="/usr/bin/g++"
-        sh ./build_scripts/release.sh -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_CC_COMPILER=/usr/bin/gcc
+        export CC="gcc"
+        export CXX="g++"
+        sh ./build_scripts/release.sh
         mv libSnowballRuntime.so ./bin/Release/
         mv libSnowball.so ./bin/Release/
     - name: Archive
