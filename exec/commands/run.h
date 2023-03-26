@@ -42,7 +42,7 @@ int run(exec::Options::RunOptions p_opts) {
     compiler->set_optimization(p_opts.opt);
 
     // TODO: false if --no-output is passed
-    compiler->compile(!p_opts.silent);
+    compiler->compile(p_opts.silent);
     compiler->emit_binary(output, false);
 
     compiler->cleanup();

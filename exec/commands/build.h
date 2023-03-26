@@ -85,7 +85,7 @@ int build(exec::Options::BuildOptions p_opts) {
     auto start = high_resolution_clock::now();
 
     // TODO: false if --no-output is passed
-    compiler->compile(!p_opts.silent);
+    compiler->compile(p_opts.silent);
     auto stop = high_resolution_clock::now();
 
     // Get duration. Substart timepoints to
