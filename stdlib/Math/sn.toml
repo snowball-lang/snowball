@@ -1,5 +1,0 @@
-
-[package]
-main = "tests/main.sn"
-name = "Math core module"
-version = "1.0.0"
