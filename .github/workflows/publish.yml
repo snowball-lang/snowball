@@ -31,8 +31,8 @@ jobs:
         version: "14.0"
     - name: Build project
       run: |
-        # yum -y update
-        # yum -y install gcc-c++
+        yum -y update
+        yum -y install gcc-c++
 
         export CC="/usr/bin/gcc"
         export CXX="/usr/bin/g++"
