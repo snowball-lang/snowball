@@ -80,7 +80,7 @@ endforeach()
 execute_process(COMMAND gcc -dumpversion OUTPUT_VARIABLE _LIBC_VERSION)
 string(REGEX REPLACE "\n" "" _LIBC_VERSION "${_LIBC_VERSION}")
 
-set (STATICLIB_DIR "~/.snowball")
+set (STATICLIB_DIR "/.snowball")
 set (_SNOWBALL_LIBRARY_DIR "libs")
 
 # add_compile_definitions(CC_PATH="/usr/bin/clang")
@@ -176,4 +176,4 @@ install(TARGETS snowballexe EXPORT MyLibConfig
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
-install(FILES ${std_sn_files} DESTINATION ${STATICLIB_DIR}/${_SNOWBALL_LIBRARY_DIR})
+install(FILES ${std_sn_files} DESTINATION ~/${STATICLIB_DIR}/${_SNOWBALL_LIBRARY_DIR})

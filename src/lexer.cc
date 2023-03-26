@@ -92,8 +92,6 @@ void Lexer::tokenize() {
  **/
 void Lexer::tokenize_char() {
     // TODO: disable if output is set to off
-    Logger::compiling(
-        Logger::progress((float)char_ptr / _source_info->source_length));
 
     switch (GET_CHAR(0)) {
         case 0:
