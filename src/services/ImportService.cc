@@ -39,6 +39,10 @@ ImportService::getImportPath(const std::string package,
     auto packagePath = getPackagePath(package);
     bool isPackage   = package == "$";
 
+    if (package == "Core") {
+        packagePath /= package; // Again: Core::System = [Core]/System/System.sn
+    }
+
     fs::path definedPath;
     for (auto p : path) {
         definedPath /= p;
