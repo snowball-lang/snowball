@@ -68,8 +68,7 @@ add_command_to_path() {
         return
     fi
 
-    local add_to_path=$(prompt_user "Do you want to add $EXPORT_COMMAND to PATH in $config_file? [y/n]: " "y" "yn")
-    
+    read -p "Do you want to add $EXPORT_COMMAND to PATH in $config_file? [y/n]: " add_to_path
     if [[ "$add_to_path" == "y" || "$YES" == "-y" ]]; then
         echo "Updating $config_file ..."
         echo "" >> "$config_file"
