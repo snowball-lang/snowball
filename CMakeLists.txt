@@ -80,7 +80,7 @@ endforeach()
 execute_process(COMMAND gcc -dumpversion OUTPUT_VARIABLE _LIBC_VERSION)
 string(REGEX REPLACE "\n" "" _LIBC_VERSION "${_LIBC_VERSION}")
 
-set (STATICLIB_DIR "/.snowball")
+set (STATICLIB_DIR "~/.snowball")
 set (_SNOWBALL_LIBRARY_DIR "libs")
 
 # add_compile_definitions(CC_PATH="/usr/bin/clang")

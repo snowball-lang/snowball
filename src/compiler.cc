@@ -44,7 +44,7 @@ void Compiler::compile(bool verbose) {
     }
 
 #define SHOW_STATUS(status)                                                    \
-    if (verbose) status;
+    if (!verbose) status;
 
     chdir(((fs::path)_path).parent_path().c_str());
     SHOW_STATUS(Logger::compiling(Logger::progress(0)));
