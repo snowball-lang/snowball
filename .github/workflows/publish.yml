@@ -13,6 +13,10 @@ jobs:
         # TODO: macos
         # os: [ubuntu-latest, macos-latest]
         os: [ubuntu-latest]
+        include:
+          - runs-on: ubuntu-latest
+            compiler: gcc
+            gcc: 8
     steps:
     - uses: actions/checkout@v2
     - uses: actions/checkout@v3
@@ -25,13 +29,11 @@ jobs:
       uses: KyleMayes/install-llvm-action@v1
       with:
         version: "14.0"
-    - name: Set up GCC
-      uses: egor-tensin/setup-gcc@v1
-      with:
-        version: latest
-        platform: x64
     - name: Build project
       run: |
+        # yum -y update
+        # yum -y install gcc-c++
+
         export CC="/usr/bin/gcc"
         export CXX="/usr/bin/g++"
         sh ./build_scripts/release.sh -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_CC_COMPILER=/usr/bin/gcc
