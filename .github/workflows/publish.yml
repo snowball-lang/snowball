@@ -27,8 +27,10 @@ jobs:
         version: "14.0"
     - name: Build project
       run: |
-        export CC="gcc"
-        export CXX="g++"
+        sudo apt install gcc g++ -y
+
+        export CC="/usr/bin/gcc"
+        export CXX="/usr/bin/g++"
         sh ./build_scripts/release.sh -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_CC_COMPILER=/usr/bin/gcc
         mv libSnowballRuntime.so ./bin/Release/
         mv libSnowball.so ./bin/Release/
