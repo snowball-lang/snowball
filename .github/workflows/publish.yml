@@ -34,7 +34,7 @@ jobs:
         mkdir -p release/bin
         cp -a ./bin/Release/. release/
         mv release/snowball release/bin/snowball
-        cp -r ./stdlib release/
+        cp -R ./stdlib release/libs
         tar -czvf snowball.tar.gz release/
     - name: Upload Release Asset
       if: success()
