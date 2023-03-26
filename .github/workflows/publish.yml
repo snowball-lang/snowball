@@ -27,7 +27,7 @@ jobs:
         version: "14.0"
     - name: Build project
       run: |
-        apt install gcc g++ -y
+        yum -y install gcc-c++
 
         export CC="/usr/bin/gcc"
         export CXX="/usr/bin/g++"
