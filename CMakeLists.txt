@@ -6,6 +6,14 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "User path" FORCE)
 endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GLIB REQUIRED glib-2.0)
+
+include_directories(${GLIB_INCLUDE_DIRS})
+link_directories(${GLIB_LIBRARY_DIRS})
+add_definitions(${GLIB_CFLAGS_OTHER})
+find_package(PkgConfig REQUIRED)
+
 find_package(LLVM REQUIRED CONFIG)
 add_definitions(${LLVM_DEFINITIONS})
 message(STATUS ${LLVM_CONFIG})
@@ -67,7 +75,7 @@ llvm_map_components_to_libnames(llvm_libs
 add_library(snowball SHARED ${PROJECT_FILES})
 add_library(SnowballRuntime SHARED ${RUNTIME_FILES})
 add_executable(snowballexe ${EXEC_FILES})
-target_link_libraries(snowballexe PUBLIC ${PROJECT_NAME})
+target_link_libraries(snowballexe PUBLIC ${PROJECT_NAME} ${GLIB_LIBRARIES})
 set_target_properties(snowballexe PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
 set_target_properties(snowball PROPERTIES OUTPUT_NAME "Snowball")
 
@@ -111,7 +119,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<INSTALL_INTERFACE:include> PRIVATE source)
     target_include_directories(${PROJECT_NAME} PUBLIC ${LLVM_INCLUDE_DIRS} ${PROJECT_INCLUDE_DIRS})
-    target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES})
+    target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES})
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
 set_target_properties     (${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
@@ -131,7 +139,7 @@ foreach(file ${std_c_files})
   set (lib_name "Snowball${lib_name}")
 
   add_library(${lib_name} SHARED ${file})
-  target_link_libraries(${lib_name} PUBLIC ${PROJECT_NAME})
+  target_link_libraries(${lib_name} PUBLIC ${PROJECT_NAME} ${GLIB_LIBRARIES})
 
   install(TARGETS ${lib_name} EXPORT MyLibConfig
     ARCHIVE  DESTINATION ${STATICLIB_DIR}/
