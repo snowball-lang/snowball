@@ -7,17 +7,18 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     container:
-      image: quay.io/pypa/manylinux_2_24_${{ matrix.manylinux-type-target }}
+      image: quay.io/pypa/manylinux_2_24_${{ matrix.arch }}
     strategy:
       matrix:
         # TODO: macos
         # os: [ubuntu-latest, macos-11]
-        os: [ubuntu-20.04]
-        include:
-          - runs-on: ubuntu-20.04
-            compiler: gcc
-            gcc: 8
-        manylinux-type-target: [x86_64, i686, aarch64, ppc64le, s390x]
+        ubuntu:
+          os: ubuntu-20.04
+          arch: [x86_64, i686, aarch64, ppc64le, s390x]
+        # windows:
+        #   os: windows-latest
+        #   arch: [x64, arm64]
+
     steps:
     - uses: actions/checkout@v3
     - name: Get release
@@ -54,7 +55,7 @@ jobs:
       with:
         upload_url: ${{ steps.get_release.outputs.upload_url }}
         asset_path: ./snowball.tar.gz
-        asset_name: snowball-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'darwin' }}-${{ matrix.manylinux-type-target }}.tar.gz
+        asset_name: snowball-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'darwin' }}-${{ matrix.arch }}.tar.gz
         asset_content_type: application/gzip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
