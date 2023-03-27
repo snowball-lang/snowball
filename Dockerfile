@@ -5,14 +5,15 @@ FROM "docker.io/$ARCH/ubuntu:20.04"
 WORKDIR /app
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update
+RUN apt-get install -y \
     cmake \
     git \
     build-essential \
-        llvm-14 \
+    llvm-14 \
     llvm-14-dev \
     gcc \
-    g++ 
+    g++
 
 # Copy the source code into the container
 COPY . .
