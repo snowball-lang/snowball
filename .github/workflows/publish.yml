@@ -6,61 +6,51 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    container:
-      image: quay.io/pypa/manylinux_2_24_${{ matrix.arch }}
     strategy:
       matrix:
-        os:
-          - ubuntu-20.04
-          # - windows-latest
-        arch:
-          ubuntu:
-            - x86_64
-            - i686
-            - aarch64
-            - ppc64le
-            - s390x
-          # windows:
-          #   - x64
-          #   - arm64
-
+        include:
+          - distro: ubuntu-20.04
+            arch: [x86_64, i686, aarch64, ppc64le, s390x]
+    container:
+      image: docker.io/${{ matrix.arch }}/ubuntu:latest
+      options: --rm
     steps:
-    - uses: actions/checkout@v3
-    - name: Get release
-      id: get_release
-      uses: bruceadams/get-release@v1.3.2
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-    - name: Install LLVM and Clang
-      uses: KyleMayes/install-llvm-action@v1
-      with:
-        version: "14.0"
-    - name: Build project
-      run: |
-        yum -y update
-        yum install devtoolset-9-toolchain -y
-        scl enable devtoolset-9 bash
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-        export CC="gcc"
-        export CXX="g++"
-        sh ./build_scripts/release.sh
-        mv libSnowballRuntime.so ./bin/Release/
-        mv libSnowball.so ./bin/Release/
-    - name: Archive
-      run: |
-        mkdir release
-        mkdir -p release/bin
-        cp -a ./bin/Release/. release/
-        mv release/snowball release/bin/snowball
-        cp -R ./stdlib release/libs
-        tar -czvf snowball.tar.gz release/
-    - name: Upload Release Asset
-      if: success()
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.get_release.outputs.upload_url }}
-        asset_path: ./snowball.tar.gz
-        asset_name: snowball-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'darwin' }}-${{ matrix.arch }}.tar.gz
-        asset_content_type: application/gzip
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and test
+        run: |
+          docker build --build-arg ARCH=${{ matrix.arch }} -t myproject:${{ matrix.arch }} .
+
+      - name: Copy binaries
+        uses: docker://docker
+        with:
+          args: cp myproject:${{ matrix.arch }}/app/bin bin/
+
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Move files to release
+        run: |
+          mv libSnowballRuntime.so ./bin/Release/
+          mv libSnowball.so ./bin/Release/
+      - name: Archive
+        run: |
+          mkdir release
+          mkdir -p release/bin
+          cp -a ./bin/Release/. release/
+          mv release/snowball release/bin/snowball
+          cp -R ./stdlib release/libs
+          tar -czvf snowball.tar.gz release/
+      - name: Upload Release Asset
+        if: success()
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./snowball.tar.gz
+          asset_name: snowball-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'darwin' }}-${{ matrix.manylinux-type-target }}.tar.gz
+          asset_content_type: application/gzip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
