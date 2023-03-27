@@ -10,14 +10,19 @@ jobs:
       image: quay.io/pypa/manylinux_2_24_${{ matrix.arch }}
     strategy:
       matrix:
-        # TODO: macos
-        # os: [ubuntu-latest, macos-11]
-        ubuntu:
-          os: ubuntu-20.04
-          arch: [x86_64, i686, aarch64, ppc64le, s390x]
-        # windows:
-        #   os: windows-latest
-        #   arch: [x64, arm64]
+        os:
+          - ubuntu-20.04
+          # - windows-latest
+        arch:
+          ubuntu:
+            - x86_64
+            - i686
+            - aarch64
+            - ppc64le
+            - s390x
+          # windows:
+          #   - x64
+          #   - arm64
 
     steps:
     - uses: actions/checkout@v3
