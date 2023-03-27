@@ -7,7 +7,7 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     container:
-      image: quay.io/pypa/manylinux2014_${{ matrix.manylinux-type-target }}
+      image: quay.io/pypa/manylinux_2_24_${{ matrix.manylinux-type-target }}
     strategy:
       matrix:
         # TODO: macos
@@ -17,9 +17,8 @@ jobs:
           - runs-on: ubuntu-20.04
             compiler: gcc
             gcc: 8
-        manylinux-type-target: [x86_64, aarch64]
+        manylinux-type-target: [x86_64, i686, aarch64, ppc64le, s390x]
     steps:
-    - uses: actions/checkout@v2
     - uses: actions/checkout@v3
     - name: Get release
       id: get_release
