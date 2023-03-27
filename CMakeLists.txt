@@ -133,19 +133,6 @@ if(NOT BUILD_SHARED_LIBS)
 endif()
 
 ##################################################    StdLib   ##################################################
-file(GLOB std_c_files "stdlib/*/*.cc")
-foreach(file ${std_c_files})
-  get_filename_component(lib_name ${file} NAME_WE )
-  set (lib_name "Snowball${lib_name}")
-
-  add_library(${lib_name} SHARED ${file})
-  target_link_libraries(${lib_name} PUBLIC ${PROJECT_NAME} ${GLIB_LIBRARIES})
-
-  install(TARGETS ${lib_name} EXPORT MyLibConfig
-    ARCHIVE  DESTINATION ${STATICLIB_DIR}/
-    LIBRARY  DESTINATION ${STATICLIB_DIR}/
-    RUNTIME  DESTINATION ${STATICLIB_DIR}/)
-endforeach()
 
 macro( add_recursive retVal dir ext excl)
 #Store unfiltered list of files into temporary list
@@ -159,7 +146,7 @@ macro( add_recursive retVal dir ext excl)
     endforeach()
 endmacro( add_recursive )
 
-add_recursive(std_sn_files "./stdlib" "*/*.sn" "/_tests/")
+add_recursive(std_sn_files "./stdlib" "*.sn" "/_tests/")
 
 ##################################################    Postbuild   ##################################################
 include               (GenerateExportHeader)
@@ -184,4 +171,5 @@ install(TARGETS snowballexe EXPORT MyLibConfig
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
-install(FILES ${std_sn_files} DESTINATION ~/${STATICLIB_DIR}/${_SNOWBALL_LIBRARY_DIR})
+
+install(FILES ${std_sn_files} DESTINATION ${HOME_DIR}/${STATICLIB_DIR}/${_SNOWBALL_LIBRARY_DIR})

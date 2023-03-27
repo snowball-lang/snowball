@@ -6,6 +6,9 @@
 #include "utils/utils.h"
 #include "vendor/toml.hpp"
 
+#include <stddef.h>
+#include <unistd.h>
+
 #ifndef __SNOWBALL_EXEC_RUN_CMD_H_
 #define __SNOWBALL_EXEC_RUN_CMD_H_
 
@@ -37,7 +40,7 @@ int run(exec::Options::RunOptions p_opts) {
     // TODO: check for output
     std::string output = fs::current_path() / _SNOWBALL_OUT_DEFAULT;
 
-    Compiler *compiler = new Compiler(content, filename);
+    auto compiler = new Compiler(content, filename);
     compiler->initialize();
     compiler->set_optimization(p_opts.opt);
 
@@ -47,9 +50,10 @@ int run(exec::Options::RunOptions p_opts) {
 
     compiler->cleanup();
 
-    int result = system(output.c_str());
-    remove(output.c_str());
+    char* args[] = {strdup(output.c_str()), NULL};
+    int result = execvp(args[0], args);
 
+    // This shoudnt be executed
     return result;
 }
 } // namespace commands
