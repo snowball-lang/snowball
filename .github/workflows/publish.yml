@@ -16,7 +16,7 @@ jobs:
 
       - name: Build and test
         run: |
-          docker build --rm --build-arg ARCH=${{ matrix.arch }} -it myproject:${{ matrix.arch }} .
+          docker build --rm --build-arg ARCH=${{ matrix.arch }} --platform linux/${{ matrix.arch }} -t myproject:${{ matrix.arch }} . /bin/bash
 
       - name: Copy binaries
         uses: docker://docker
