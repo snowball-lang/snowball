@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.distro }}
     strategy:
       matrix:
-        distro: ubuntu-20.04
+        distro: [ubuntu-20.04]
         arch: [x86_64, i686, aarch64, ppc64le, s390x]
     container:
       image: docker.io/${{ matrix.arch }}/ubuntu:latest
