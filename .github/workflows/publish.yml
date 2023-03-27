@@ -14,9 +14,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build and test
+      - name: Build docker
         run: |
-          docker build --rm --build-arg ARCH=${{ matrix.arch }} --platform linux/${{ matrix.arch }} -t myproject:${{ matrix.arch }} . /bin/bash
+          docker build --rm --platform linux/${{ matrix.arch }} -t myproject:${{ matrix.arch }} --build-arg ARCH=${{ matrix.arch }} .
 
       - name: Copy binaries
         uses: docker://docker
