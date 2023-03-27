@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.distro }}
     strategy:
       matrix:
         include:
@@ -50,7 +50,7 @@ jobs:
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: ./snowball.tar.gz
-          asset_name: snowball-${{ matrix.os == 'ubuntu-latest' && 'linux' || 'darwin' }}-${{ matrix.manylinux-type-target }}.tar.gz
+          asset_name: snowball-${{ matrix.distro == 'ubuntu-latest' && 'linux' || 'darwin' }}-${{ matrix.manylinux-type-target }}.tar.gz
           asset_content_type: application/gzip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
