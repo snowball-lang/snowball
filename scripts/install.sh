@@ -13,7 +13,7 @@ if [ "$OS" != "linux" ] && [ "$OS" != "darwin" ]; then
   exit 1
 fi
 
-SNOWBALL_BUILD_ARCHIVE=snowball-$OS.tar.gz
+SNOWBALL_BUILD_ARCHIVE=snowball-$OS-$ARCH.tar.gz
 
 mkdir -p $SNOWBALL_INSTALL_DIR
 cd $SNOWBALL_INSTALL_DIR
