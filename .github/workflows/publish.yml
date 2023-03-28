@@ -10,13 +10,28 @@ jobs:
       matrix:
         distro: [ubuntu-20.04]
         arch: [x86_64, amd64, arm32v7, arm64v8, ppc64le, s390x]
+        include:
+          - arch: x86_64
+            platform: linux/amd64
+          - arch: amd64
+            platform: linux/amd64
+          - arch: arm32v7
+            platform: linux/arm/v7
+          - arch: arm64v8
+            platform: linux/arm64/v8
+          - arch: ppc64le
+            platform: linux/ppc64le
+          - arch: s390x
+            platform: linux/s390x
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Build docker
         run: |
-          docker build --rm --platform linux/${{ matrix.arch }} -t myproject:${{ matrix.arch }} --build-arg ARCH=${{ matrix.arch }} .
+          docker build --rm --platform=${{ matrix.platform }} -t myproject:${{ matrix.arch }} \
+            --build-arg BUILDPLATFORM=${{ matrix.platform }} \
+            --build-arg ARCH=${{ matrix.arch == 'x86_64' && 'ubuntu' || matrix.arch }}/ubuntu .
 
       - name: Copy binaries
         uses: docker://docker
