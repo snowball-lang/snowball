@@ -12,7 +12,7 @@ set -e
 
 label=snowball-"$DIST"-"$ARCH"
 
-sh build_scripts/release.sh
+sh build_scripts/release.sh -DCMAKE_CXX_COMPILER=/usr/bin/g++
 
 mv libSnowballRuntime.so ./bin/Release/
 mv libSnowball.so ./bin/Release/
