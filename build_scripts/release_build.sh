@@ -37,7 +37,7 @@ if [ ! -f "$dockerfile" ]; then
     exit 3
 fi
 
-export CXX="/usr/bin/g++"
+export CXX="/usr/bin/g++-9"
 
 # build image to cache dependencies
 docker build -t "$image" -f "$dockerfile" --build-arg UID="$uid" containers/"$DIST"
