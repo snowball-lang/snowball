@@ -6,8 +6,7 @@ FROM --platform=$BUILDPLATFORM "docker.io/$ARCH:20.04"
 WORKDIR /app
 
 # Install dependencies
-RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata
-RUN apt-get update
+RUN apt-get -y update
 RUN apt-get install -y \
     cmake \
     git \
