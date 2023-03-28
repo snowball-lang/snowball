@@ -31,7 +31,7 @@ jobs:
         run: |
           docker buildx build --rm --platform ${{ matrix.platform }} -t myproject:${{ matrix.arch }} \
             --build-arg BUILDPLATFORM=${{ matrix.platform }} \
-            --build-arg ARCH=${{ matrix.arch == 'x86_64' && 'ubuntu' || ${{ matrix.arch }}/ubuntu }} .
+            --build-arg ARCH=${{ matrix.arch == 'x86_64' && 'ubuntu' || 'matrix.arch/ubuntu' }} .
 
       - name: Copy binaries
         uses: docker://docker
