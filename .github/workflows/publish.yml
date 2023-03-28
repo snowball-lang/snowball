@@ -9,20 +9,12 @@ jobs:
     strategy:
       matrix:
         distro: [ubuntu-20.04]
-        arch: [x86_64, amd64, arm32v7, arm64v8, ppc64le, s390x]
+        arch: [x86_64, amd64]
         include:
           - arch: x86_64
             platform: linux/amd64
           - arch: amd64
             platform: linux/amd64
-          - arch: arm32v7
-            platform: linux/arm/v7
-          - arch: arm64v8
-            platform: linux/arm64/v8
-          - arch: ppc64le
-            platform: linux/ppc64le
-          - arch: s390x
-            platform: linux/s390x
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
