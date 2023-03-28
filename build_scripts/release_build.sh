@@ -20,9 +20,9 @@ cd "$(readlink -f "$(dirname "$0")")"
 # needed to keep user ID in and outside Docker in sync to be able to write to workspace directory
 uid="$(id -u)"
 image=cmake-build/"$DIST":"$ARCH"-uid"$uid"
-dockerfile="$DIST"/Dockerfile."$ARCH"
+dockerfile=containers/"$DIST"/Dockerfile."$ARCH"
 
-if [ ! -d "$DIST" ]; then
+if [ ! -d "containers/$DIST" ]; then
     error "Unknown dist: $DIST"
     exit 2
 fi
@@ -53,3 +53,4 @@ EXTRA_ARGS=()
 docker run --rm -i "${EXTRA_ARGS[@]}" -e DOCKER=1 -v "$(readlink -f .)":/ws "$image" bash -xc "cd /ws && bash build_scripts/build-snowball.sh"
 
 ls
+ls cmake-build/
