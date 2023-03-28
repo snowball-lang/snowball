@@ -4,10 +4,12 @@ ENV ARCH=armhf DIST=linux
 
 SHELL ["/bin/bash", "-x", "-c"]
 
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get update && apt-get -f install && \
     apt-get install -y gcc-9 g++-9 wget curl patchelf vim-common fuse \
         libfuse2 libtool autoconf automake zlib1g-dev libjpeg-dev libpng-dev \
-        git libssl-dev sudo
+        git libssl-dev sudo cmake make
 
 RUN wget https://apt.llvm.org/llvm.sh
 RUN chmod +x llvm.sh
