@@ -30,13 +30,6 @@ if [ "$DIST" == "common" ]; then
     exit 2
 fi
 
-# the version detection magic on the CI relies on the filename scheme to contain a fixed number of dashes
-# therefore, we need to enforce that distro directory names contain no dashes
-if echo "$DIST" | grep -q '\-'; then
-    error "\"$DIST\" is an invalid name"
-    exit 2
-fi
-
 if [ ! -f "$dockerfile" ]; then
     error "Dockerfile $dockerfile could not be found"
     exit 3
