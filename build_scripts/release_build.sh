@@ -38,7 +38,7 @@ if [ ! -f "$dockerfile" ]; then
 fi
 
 # build image to cache dependencies
-docker build -t "$image" -f "$dockerfile" --build-arg UID="$uid" "$DIST"
+docker build -t "$image" -f "$dockerfile" --build-arg UID="$uid" containers/"$DIST"
 
 # run build inside this image
 EXTRA_ARGS=()
