@@ -8,20 +8,11 @@ fi
 set -x
 set -e
 
-cleanup () {
-    if [ -d "$BUILD_DIR" ]; then
-        rm -rf "$BUILD_DIR"
-    fi
-}
-
-trap cleanup EXIT
-
 # check out latest tag
-git checkout "$(git rev-list --tags --max-count=1)"
 
 label=snowball-"$DIST"-"$ARCH"
 
-sh build_scipts/release.sh
+sh build_scripts/release.sh
 
 mv libSnowballRuntime.so ./bin/Release/
 mv libSnowball.so ./bin/Release/
