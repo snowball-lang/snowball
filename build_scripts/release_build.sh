@@ -15,8 +15,6 @@ error() {
     tput sgr0
 }
 
-cd "$(readlink -f "$(dirname "$0")")"
-
 # needed to keep user ID in and outside Docker in sync to be able to write to workspace directory
 uid="$(id -u)"
 image=cmake-build/"$DIST":"$ARCH"-uid"$uid"
