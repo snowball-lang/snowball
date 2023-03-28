@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get -f install && \
     apt-get install -y gcc-9 g++-9 wget curl patchelf vim-common fuse \
         libfuse2 libtool autoconf automake zlib1g-dev libjpeg-dev libpng-dev \
-        git libssl-dev sudo cmake make pkg-config cmake-data
+        git libssl-dev sudo cmake make pkg-config cmake-data libglib2.0-dev
 
 RUN apt-get install lsb-release wget software-properties-common gnupg -y
 RUN wget https://apt.llvm.org/llvm.sh
