@@ -5,56 +5,46 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.distro }}
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        distro: [ubuntu-20.04]
-        arch: [x86_64, amd64]
-        include:
-          - arch: x86_64
-            platform: linux/amd64
-          - arch: amd64
-            platform: linux/amd64
+        strategy:
+          matrix:
+            include:
+              - ARCH: 'x86_64'
+                DIST: 'ubuntu-20.04'
+              - ARCH: 'aarch64'
+                DIST: 'ubuntu-20.04'
+              - ARCH: 'armhf'
+                DIST: 'ubuntu-20.04'
+    name: Build ${{ matrix.DIST }}  (${{ matrix.ARCH }})
+    env:
+      DIST: ${{ matrix.DIST }}
+      ARCH: ${{ matrix.ARCH }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build docker
-        run: |
-          ARCH_TYPE="${{ matrix.arch }}"
-          docker build --rm --platform="${{ matrix.platform }}" -t myproject:${{ matrix.arch }} \
-            --build-arg BUILDPLATFORM="${{ matrix.platform }}" \
-            --build-arg ARCH="${{ matrix.arch == 'x86_64' && 'ubuntu' || '${ARCH_TYPE}/ubuntu' }}" .
+      - uses: actions/checkout@v2
 
-      - name: Copy binaries
-        uses: docker://docker
-        with:
-          args: cp myproject:${{ matrix.arch }}/app/bin bin/
+      - name: Set up QEMU integration for Docker
+        run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+      - name: Build in Docker
+        run: bash -ex build_scripts/release_build.sh
 
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.3.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - name: Move files to release
-        run: |
-          mv libSnowballRuntime.so ./bin/Release/
-          mv libSnowball.so ./bin/Release/
-      - name: Archive
-        run: |
-          mkdir release
-          mkdir -p release/bin
-          cp -a ./bin/Release/. release/
-          mv release/snowball release/bin/snowball
-          cp -R ./stdlib release/libs
-          tar -czvf snowball.tar.gz release/
       - name: Upload Release Asset
         if: success()
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./snowball.tar.gz
-          asset_name: snowball-${{ matrix.distro == 'ubuntu-latest' && 'linux' || 'darwin' }}-${{ matrix.manylinux-type-target }}.tar.gz
+          asset_path: ./snowball-${{ matrix.manylinux-type-target }}.tar.gz
+          asset_name: snowball-${{ matrix.DIST == 'ubuntu-20.04' && 'linux' || 'darwin' }}-${{ matrix.manylinux-type-target }}.tar.gz
           asset_content_type: application/gzip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
