@@ -4,8 +4,8 @@ ENV ARCH=armhf DIST=linux
 
 SHELL ["/bin/bash", "-x", "-c"]
 
-RUN apt-get update && \
-    apt-get install -y build-essential-9 wget curl patchelf vim-common fuse \
+RUN apt-get update && apt-get -f install && \
+    apt-get install -y gcc-9 g++-9 wget curl patchelf vim-common fuse \
         libfuse2 libtool autoconf automake zlib1g-dev libjpeg-dev libpng-dev \
         git libssl-dev sudo
 
