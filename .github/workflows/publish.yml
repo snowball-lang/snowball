@@ -13,8 +13,8 @@ jobs:
             DIST: 'ubuntu-20.04'
           - ARCH: 'aarch64'
             DIST: 'ubuntu-20.04'
-          - ARCH: 'i386'
-            DIST: 'ubuntu-20.04'
+          # - ARCH: 'i386'
+          #   DIST: 'ubuntu-20.04'
     name: Build ${{ matrix.DIST }}  (${{ matrix.ARCH }})
     env:
       DIST: ${{ matrix.DIST }}

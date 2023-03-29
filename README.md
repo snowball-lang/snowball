@@ -27,6 +27,10 @@ Features:
 
 It has a lot more features that can be explored! You can check them out in the [documentation]().
 
+## Instalation
+
+Linux and macOS users, you are in luck! You can use this simple command to download snowball and get started.
+
 ## How does snowball feel?
 
 Here is an example of a class in snowball.
