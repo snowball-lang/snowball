@@ -27,54 +27,71 @@ Features:
 
 It has a lot more features that can be explored! You can check them out in the [documentation]().
 
-## Instalation
+## Getting Started with Snowball
 
-Linux and macOS users, you are in luck! You can use this simple command to download snowball and get started.
+### Installation
+
+Before we get started, you'll need to have snowball installed into your compuiter. Linux and macOS users, you are in luck! You can use this simple command to download snowball and get started.
+
+```
+curl -fsSL https://raw.githubusercontent.com/snowball-lang/snowball/dev/scripts/install.sh | bash -s
+```
+
+### Writing Your First Snowball Program
+
+First, you will need a new snowball project. For that, create a new directory and execute the following command:
+
+```
+mkdir myProject
+cd myProject
+
+snowball init
+```
+
+### Executing snowball code
+
+In order to execute snowball code, you can run the following command to build **and** run the program:
+
+```
+snowball run
+```
 
 ## How does snowball feel?
 
 Here is an example of a class in snowball.
 
 ```rs
-import System
+use Core::System
 
 class Vector {
 
-    priv var x: Int = 0
-    priv var y: Int = 0
+    priv let x: i32 = 0
+    priv let y: i32 = 0
 
-    pub operator new(x: Int, y: Int) {
+  pub:
+    Vector(x: Int, y: Int) {
         self.x = x
         self.y = y
     }
 
     // JS equivalent: const __sum = (this, vec2) => new Vector(...)
     // overrides operator +
-    pub operator +(vec2: Vector) Vector =>
+    operator +(vec2: Vector) Vector =>
         new Vector(self.x + vec2.x, self.y + vec2.y)
 
-    pub operator str() String {
+    operator str() String {
         return "Vector(x=${self.x} y=${self.y})"
     }
 }
 
 fn main() Int {
-    var vec1 = new Vector(1,2)
-    var vec2 = new Vector(10,22)
+    let vec1 = new Vector(1,2)
+    let vec2 = new Vector(10,22)
 
-    System.println(vec1 + vec2)
+    System::println(vec1 + vec2)
     return 0
 }
 ```
-
-## Installation
-
-If you whant to try snowball, the first thing you should do is to install it localy.
-
-1. Clone the repository using `git clone https://github.com/snowball-lang/snowball`
-2. Go into the project directory
-3. Run `make`.
-4. An executable file called `bin/snowball`, you can run `sudo make install` to add the executables to the bin's folder.
 
 ## Roadmap
 
