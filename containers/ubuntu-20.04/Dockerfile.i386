@@ -1,4 +1,4 @@
-FROM i386/ubuntu:bionic
+FROM i386/ubuntu:20.04
 
 ENV ARCH=armhf DIST=linux
 
