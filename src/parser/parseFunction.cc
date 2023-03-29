@@ -211,6 +211,7 @@ ptr<FunctionDef> Parser::parseFunction(bool isConstructor) {
         fn = Syntax::N<FunctionDef>(name);
     }
 
+    fn->setVirtual(isVirtual);
     fn->setVariadic(isVarArg);
     fn->setPrivacy(privacy);
     fn->setArgs(arguments);

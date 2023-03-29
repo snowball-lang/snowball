@@ -28,6 +28,8 @@ DefinedType::ClassField::ClassField(const std::string& name,
     : name(name), type(type), Syntax::Statement::Privacy(privacy) {}
 std::string DefinedType::getUUID() const { return uuid; }
 std::shared_ptr<ir::Module> DefinedType::getModule() const { return module; }
+int DefinedType::getVtableSize() { return vtableSize; }
+int DefinedType::addVtableItem() { return vtableSize++; }
 
 bool DefinedType::is(ptr<DefinedType> other) {
     auto otherArgs = other->getGenerics();

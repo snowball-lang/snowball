@@ -16,7 +16,6 @@ Transformer::transformClass(const std::string& uuid,
     }
 
     // TODO: check if typeRef generics match class generics
-
     std::shared_ptr<types::DefinedType> transformedType;
     ctx->withState(classStore.state, [&]() {
         auto backupClass = ctx->getCurrentClass();
@@ -56,7 +55,6 @@ Transformer::transformClass(const std::string& uuid,
         ctx->setCurrentClass(transformedType);
 
         auto item = std::make_shared<transform::Item>(transformedType);
-
         ctx->cache->setTransformedType(uuid, item);
         for (auto fn : ty->getFunctions()) {
             fn->accept(this);

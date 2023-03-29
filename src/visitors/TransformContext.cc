@@ -52,7 +52,7 @@ void TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
 
     this->stack        = st;
     this->module       = s->module;
-    this->currentClass = s->currentClass;
+    setCurrentClass(s->currentClass);
 }
 
 /// @brief Execute function with saved state

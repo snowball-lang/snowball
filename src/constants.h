@@ -209,6 +209,7 @@ typedef int32_t snowball_int_t;
 #define _SNOWBALL_KEYWORD__CLASS    "class"
 #define _SNOWBALL_KEYWORD__PRIVATE  "priv"
 #define _SNOWBALL_KEYWORD__PUBLIC   "pub"
+#define _SNOWBALL_KEYWORD__VIRTUAL  "virt"
 #define _SNOWBALL_KEYWORD__FALSE    "false"
 #define _SNOWBALL_KEYWORD__WHILE    "while"
 #define _SNOWBALL_KEYWORD__BREAK    "break"

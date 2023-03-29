@@ -45,10 +45,15 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
             fn->setPrivacy(node->getPrivacy());
             fn->setStatic(node->isStatic());
 
+            if (auto c = ctx->getCurrentClass()) {
+                if (node->isVirtual()) {
+                    fn->setVirtualIndex(c->addVtableItem());
+                }
+            }
+
             ir::Func::FunctionArgs newArgs = {};
 
             if (fn->isConstructor()) {
-
                 auto a = ctx->module->N<ir::Argument>(node->getDBGInfo(),
                                                       "self", 0, nullptr);
                 a->setType(ctx->getCurrentClass());

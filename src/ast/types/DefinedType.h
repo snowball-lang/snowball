@@ -3,9 +3,11 @@
 #include "../../constants.h"
 #include "../../ir/id.h"
 #include "../../ir/module/Module.h"
+#include "../../ir/values/Func.h"
 #include "../../utils/utils.h"
 #include "../syntax/common.h"
 #include "../syntax/nodes.h"
+
 #include "Type.h"
 
 #include <memory>
@@ -61,6 +63,10 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     std::shared_ptr<ir::Module> module;
     /// @brief Parent class where the class in inherited from
     std::shared_ptr<DefinedType> parent = nullptr;
+    /// @brief Represents the size of the virtual symbol
+    int vtableSize = 0;
+    /// @brief VTable holding all it's functions
+    std::vector<ir::Func> vtable;
 
   public:
     DefinedType(const std::string& name, const std::string uuid,
@@ -104,6 +110,10 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     std::string getMangledName() const override;
     /// @return UUID of the class that can be used as UUID base
     std::string getUUID() const;
+    /// @return The size of the class virtual table
+    int getVtableSize();
+    /// @brief Increase the size of the virtual table
+    int addVtableItem();
     /// @return the generic list defined for this type
     auto getGenerics() const { return generics; }
     /// @return the parent class it inherits from

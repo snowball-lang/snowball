@@ -83,6 +83,16 @@ ptr<Syntax::Statement::ClassDef> Parser::parseClass() {
                 cls->addFunction(func);
             } break;
 
+            case TokenType::KWORD_VIRTUAL: {
+                if (peek().type == TokenType::KWORD_STATIC) {
+                    next();
+                    createError<ARGUMENT_ERROR>("Virtual methods can't be static!");
+                } else if (peek().type != TokenType::KWORD_FUNC) {
+                    next();
+                    createError<SYNTAX_ERROR>("Expected keyword \"func\" after virtual declaration!");
+                }
+            } break;
+
             case TokenType::BRACKET_RCURLY: {
                 return cls;
             }

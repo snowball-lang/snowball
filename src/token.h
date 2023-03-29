@@ -325,6 +325,8 @@ struct Token {
                 return _SNOWBALL_KEYWORD__MODULE;
             case TokenType::KWORD_PUBLIC:
                 return _SNOWBALL_KEYWORD__PUBLIC;
+            case TokenType::KWORD_VIRTUAL:
+                return _SNOWBALL_KEYWORD__VIRTUAL;
             case TokenType::KWORD_PRIVATE:
                 return _SNOWBALL_KEYWORD__PRIVATE;
             case TokenType::KWORD_IMPORT:

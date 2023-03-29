@@ -29,44 +29,53 @@ class Func : public AcceptorExtend<Func, Value>,
         std::list<std::pair<std::string, std::shared_ptr<Argument>>>;
 
   private:
-    // When a function is variadic, it means that
-    // it can take a variable number of arguments.
+    /// When a function is variadic, it means that
+    /// it can take a variable number of arguments.
     bool variadic = false;
+    /// A virtual function is a member function of a
+    /// class that can be overridden in a derived class.
+    /// When a virtual function is called through a pointer
+    /// or reference to the base class, the implementation
+    /// of the derived class is invoked instead of the
+    /// implementation of the base class.
+    /// @note If it's equal to "-1" that means that it does
+    ///  not form part of a virtual table.
+    int virtualIndex = -1;
 
-    // These are used to use the function without
-    // actually setting the body inside it, it's
-    // just a forward declaration.
+    /// These are used to use the function without
+    /// actually setting the body inside it, it's
+    /// just a forward declaration.
     bool declaration = false;
-    // Function's identifier
+    /// Function's identifier
     std::string identifier;
-    // Function's return type
+    /// Function's return type
     std::shared_ptr<types::Type> retTy;
     /// @brief Parent class that this function is defined
     ///  in.
     std::shared_ptr<types::DefinedType> parent = nullptr;
 
-    // Function parameters are the names listed in
-    // the function definition. Function arguments
-    // are the real values passed to (and received by)
-    // the function.
+    /// Function parameters are the names listed in
+    /// the function definition. Function arguments
+    /// are the real values passed to (and received by)
+    /// the function.
     FunctionArgs arguments;
 
-    // There are the instructions executed inside
-    // the function. note: if there is non, this means
-    // that the function could be potentially a declaration
+    /// There are the instructions executed inside
+    /// the function. note: if there is non, this means
+    /// that the function could be potentially a declaration
     std::shared_ptr<Block> body;
 
-    // A list of variables used *anywhere* around the function.
-    // This is so that we allocate a new variable at the start
-    // of the function. We do this to avoid any kind of errors
-    // such as; allocating new memory each time we iterate in a loop.
+    /// A list of variables used *anywhere* around the function.
+    /// This is so that we allocate a new variable at the start
+    /// of the function. We do this to avoid any kind of errors
+    /// such as; allocating new memory each time we iterate in a loop.
     std::vector<std::shared_ptr<VariableDeclaration>> symbols;
 
-    // This is how the function will be exported. If the name is empty,
-    // snowball will mangle the name accordingly but if it's not, this
-    // string will be used as an external identifier. This is used for
-    // things such as; declaring the function entry point and declaring
-    // external functions
+    /// This is how the function will be exported. If the name is empty,
+    /// snowball will mangle the name accordingly but if it's not, this
+    /// string will be used as an external identifier. This is used for
+    /// things such as; declaring the function entry point and declaring
+    /// external functions
     std::string externalName;
 
     /// Whether or not this function is declared as private or as public.
@@ -140,6 +149,15 @@ class Func : public AcceptorExtend<Func, Value>,
     /// @return whether or not the function is defiend within a
     ///  parent scope.
     bool hasParent() const { return parent != nullptr; }
+
+    /// @brief Get the index were the function is located at inside the
+    ///  virtual table.
+    auto getVirtualIndex() const
+        { assert(inVirtualTable()); return virtualIndex; }
+    /// @return Check if the function is part of a virtual table.
+    bool inVirtualTable() const { return virtualIndex != -1; }
+    /// @brief Set a new virtual table index.
+    void setVirtualIndex(int x = -1) { virtualIndex = x; }
 
     /// @brief Set an external name to the function
     /// @c externalName

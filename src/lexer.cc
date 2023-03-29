@@ -596,6 +596,8 @@ void Lexer::tokenize_char() {
                     tk.type = TokenType::KWORD_PRIVATE;
                 } else if (identifier == _SNOWBALL_KEYWORD__PUBLIC) {
                     tk.type = TokenType::KWORD_PUBLIC;
+                } else if (identifier == _SNOWBALL_KEYWORD__VIRTUAL) {
+                    tk.type = TokenType::KWORD_VIRTUAL;
                 } else if (identifier == _SNOWBALL_KEYWORD__RETURN) {
                     tk.type = TokenType::KWORD_RETURN;
                 } else if (identifier == _SNOWBALL_KEYWORD__DEFAULT) {

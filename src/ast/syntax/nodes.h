@@ -354,6 +354,9 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
     bool variadic = false;
     /// If the function is declared as static or not.
     bool _static = false;
+    // Declaration of wether or not the function is declared
+    // as virtual.
+    bool _virtual = false;
 
   public:
     FunctionDef(const std::string name, Privacy::Status prvc = PRIVATE);
@@ -382,6 +385,11 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
     bool isVariadic();
     /// @brief Mark if the function is variadic or not
     void setVariadic(bool v = true);
+
+    /// @return of wether or not the function is declared as virtual.
+    bool isVirtual();
+    /// @brief Mark if the function if it's virtual or not
+    void setVirtual(bool v = true);
 
     /// @return `true` if the function is declared as static
     bool isStatic();
