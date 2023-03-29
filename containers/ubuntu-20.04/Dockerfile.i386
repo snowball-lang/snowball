@@ -1,4 +1,4 @@
-FROM i386/debian:oldstable
+FROM i386/ubuntu:bionic
 
 ENV ARCH=armhf DIST=linux
 
