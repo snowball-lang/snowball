@@ -3,7 +3,6 @@
 #include "../../constants.h"
 #include "../../ir/id.h"
 #include "../../ir/module/Module.h"
-#include "../../ir/values/Func.h"
 #include "../../utils/utils.h"
 #include "../syntax/common.h"
 #include "../syntax/nodes.h"
@@ -19,6 +18,8 @@
 
 namespace snowball {
 namespace types {
+
+class FunctionType;
 
 /**
  * @brief Defined types.
@@ -63,10 +64,8 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     std::shared_ptr<ir::Module> module;
     /// @brief Parent class where the class in inherited from
     std::shared_ptr<DefinedType> parent = nullptr;
-    /// @brief Represents the size of the virtual symbol
-    int vtableSize = 0;
     /// @brief VTable holding all it's functions
-    std::vector<ir::Func> vtable;
+    std::vector<std::shared_ptr<ir::Func>> classVtable;
 
   public:
     DefinedType(const std::string& name, const std::string uuid,
@@ -113,7 +112,9 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     /// @return The size of the class virtual table
     int getVtableSize();
     /// @brief Increase the size of the virtual table
-    int addVtableItem();
+    int addVtableItem(std::shared_ptr<ir::Func> f);
+    /// @return a vector containing all the functions in a vtable
+    std::vector<std::shared_ptr<ir::Func>> getVTable() const;
     /// @return the generic list defined for this type
     auto getGenerics() const { return generics; }
     /// @return the parent class it inherits from

@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <sstream>
 
 namespace snowball {
 namespace types {
@@ -28,8 +29,11 @@ DefinedType::ClassField::ClassField(const std::string& name,
     : name(name), type(type), Syntax::Statement::Privacy(privacy) {}
 std::string DefinedType::getUUID() const { return uuid; }
 std::shared_ptr<ir::Module> DefinedType::getModule() const { return module; }
-int DefinedType::getVtableSize() { return vtableSize; }
-int DefinedType::addVtableItem() { return vtableSize++; }
+int DefinedType::getVtableSize() { return classVtable.size(); }
+int DefinedType::addVtableItem(std::shared_ptr<ir::Func> f)
+    { classVtable.push_back(f); return getVtableSize() - 1; }
+std::vector<std::shared_ptr<ir::Func>> DefinedType::getVTable()
+    const { return classVtable; }
 
 bool DefinedType::is(ptr<DefinedType> other) {
     auto otherArgs = other->getGenerics();
@@ -62,12 +66,12 @@ std::string DefinedType::getPrettyName() const {
 
 std::string DefinedType::getMangledName() const {
     auto base = module->getUniqueName();
-
-    std::string prefix =
-        (utils::startsWith(base, _SN_MANGLE_PREFIX) ? base
-                                                    : _SN_MANGLE_PREFIX) +
-        "&" + std::to_string(name.size()) + name // Class name with modules
-        + "Cv" + std::to_string(getId());        // disambiguator
+    auto _tyID = static_cast<ir::id_t>(getId());
+    std::stringstream sstm;
+    sstm << (utils::startsWith(base, _SN_MANGLE_PREFIX) ? base
+                                                    : _SN_MANGLE_PREFIX) <<
+        "&" << name.size() << name << "Cv" << _tyID;
+    auto prefix = sstm.str();     // disambiguator
 
     std::string mangledArgs;                     // Start args tag
     if (generics.size() > 0) {

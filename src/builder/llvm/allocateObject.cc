@@ -15,6 +15,20 @@ LLVMBuilder::allocateObject(std::shared_ptr<types::DefinedType> ty) {
         getAllocaFunction(),
         {builder->getInt32(dataLayout.getTypeAllocSize(llvmType))});
     auto cast = builder->CreatePointerCast(allocation, llvmType);
+
+    ptr<llvm::Value> vtablePointer = nullptr;
+    if (auto v = ctx->getVtable(ty->getId())) {
+        vtablePointer = v;
+    } else {
+        auto t = ctx->getVtableTy(ty->getId());
+        assert(t != nullptr);
+
+        vtablePointer = createVirtualTable(ty.get(), t);
+    }
+
+    auto pointer = builder->CreateInBoundsGEP(llvmType->getPointerElementType(), cast, {builder->getInt32(0), builder->getInt32(0)});
+    builder->CreateStore(vtablePointer, pointer);
+
     return cast;
 }
 

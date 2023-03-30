@@ -47,7 +47,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
 
             if (auto c = ctx->getCurrentClass()) {
                 if (node->isVirtual()) {
-                    fn->setVirtualIndex(c->addVtableItem());
+                    fn->setVirtualIndex(c->addVtableItem(fn));
                 }
             }
 

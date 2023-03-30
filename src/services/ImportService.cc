@@ -48,8 +48,6 @@ ImportService::getImportPath(const std::string package,
     bool exists       = false;
     std::string foundExt;
 
-
-    DUMP_S(fullPath.string().c_str())
     for (auto ext : extensions) {
         if (exists) {
             return {"", "Multiple paths found without an extension defined"};

@@ -8,7 +8,7 @@
 namespace snowball {
 namespace ir {
 
-using id_t = std::int64_t;
+using id_t = std::uint64_t;
 
 /// Mixin class for IR nodes that need ids.
 class IdMixin {
