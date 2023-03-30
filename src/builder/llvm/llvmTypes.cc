@@ -79,7 +79,7 @@ ptr<llvm::Type> LLVMBuilder::getLLVMType(ptr<types::Type> t) {
             auto vtable = llvm::StructType::create(module->getContext(), structName);
 
             vtable->setBody(types);
-            generatedFields.insert(generatedFields.begin(), vtable);
+            generatedFields.insert(generatedFields.begin(), vtable->getPointerTo());
 
             ctx->addVtableTy(c->getId(), vtable);
         }
