@@ -14,12 +14,14 @@ namespace codegen {
 
 void LLVMBuilder::visit(ptr<ir::Call> call) {
     auto callee = build(call->getCallee().get());
+    setDebugInfoLoc(call);
 
     auto args =
         utils::vector_iterate<std::shared_ptr<ir::Value>, ptr<llvm::Value>>(
             call->getArguments(),
             [&](std::shared_ptr<ir::Value> arg) { return build(arg.get()); });
 
+    setDebugInfoLoc(call);
     if (auto c = utils::dyn_cast<ir::Func>(call->getCallee());
         c->isConstructor()) {
         assert(c->hasParent());
