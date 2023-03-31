@@ -26,6 +26,25 @@ void LLVMBuilder::visit(ptr<ir::Call> call) {
         auto p = c->getParent();
 
         args.insert(args.begin(), allocateObject(p));
+    } else if (auto c = utils::dyn_cast<ir::Func>(call->getCallee());
+        c->inVirtualTable()) {
+        assert(c->hasParent());
+
+        auto index = c->getVirtualIndex();
+        auto parent = c->getParent();
+
+        auto f = llvm::cast<llvm::Function>(callee);
+        auto parentValue = args.at(/* self = */0);
+
+        auto vtable = builder->CreateStructGEP(parentValue->getType()->getPointerElementType(), parentValue, 0);
+
+        auto loadedVtable = builder->CreateLoad(vtable->getType()->getPointerElementType(), vtable);
+        auto pointer = builder->CreateStructGEP(loadedVtable->getType()->getPointerElementType(), loadedVtable, index);
+        pointer->getType()->dump();
+
+        auto pointerLoad = builder->CreateLoad(pointer->getType()->getPointerElementType(), pointer);
+        this->value = builder->CreateCall((ptr<llvm::FunctionType>)pointerLoad->getType()->getPointerElementType(), (ptr<llvm::Function>)pointerLoad, args);
+        return;
     }
 
     // TODO: invoke if it's inside a try block

@@ -5,6 +5,7 @@
         "atomic": "cpp",
         "bit": "cpp",
         "*.tcc": "cpp",
+        "sn": "cpp",
         "bitset": "cpp",
         "cctype": "cpp",
         "chrono": "cpp",

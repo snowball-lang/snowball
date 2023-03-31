@@ -7,6 +7,10 @@ pub:
     virt fn hello() {
         System::println("hello")
     }
+
+    fn hey() {
+        System::println("hey")
+    }
 }
 
 fn h(d: String) String {
@@ -16,5 +20,6 @@ fn h(d: String) String {
 pub fn main() i32 {
     let a = new Hello("");
     a.hello()
+    a.hey()
 
 }

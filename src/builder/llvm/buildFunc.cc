@@ -98,7 +98,7 @@ void LLVMBuilder::buildBodiedFunction(ptr<llvm::Function> llvmFn,
 
     // Codegen for the current body
     fn->getBody()->visit(this);
-    setDebugInfoLoc(nullptr);
+    setDebugInfoLoc(nullptr); 
 
     // Create return type
     if ((!builder->GetInsertBlock()->getInstList().back().isTerminator()) ||
