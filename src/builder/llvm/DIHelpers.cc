@@ -3,6 +3,7 @@
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 
+#include <llvm-14/llvm/BinaryFormat/Dwarf.h>
 #include <llvm/IR/DebugInfoMetadata.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
@@ -23,7 +24,7 @@ ptr<llvm::DISubprogram> LLVMBuilder::getDISubprogramForFunc(ptr<ir::Func> x) {
     llvm::DISubprogram *subprogram = dbg.builder->createFunction(
         file, baseName, x->getMangle(), file, srcInfo->line,
         llvm::cast<llvm::DISubroutineType>(subroutineType),
-        /*ScopeLine=*/0, llvm::DINode::FlagZero,
+        /*ScopeLine=*/0, llvm::DINode::FlagPrototyped,
         llvm::DISubprogram::toSPFlags(/*IsLocalToUnit=*/true,
                                       /*IsDefinition=*/true,
                                       /*IsOptimized=*/!dbg.debug));
@@ -45,8 +46,10 @@ ptr<llvm::DIType> LLVMBuilder::getDIType(ptr<types::Type> ty) {
         return dbg.builder->createPointerType(getDIType(new types::Int8Type()),
                                               8);
     } else if (cast<types::StringType>(ty)) {
-        return dbg.builder->createStringType(
-            ty->getName(), layout.getTypeAllocSizeInBits(llvmType));
+        return dbg.builder->createPointerType(
+            dbg.builder->createBasicType("String", 8, llvm::dwarf::DW_ATE_signed_char),
+            64
+        );
     } else if (cast<types::Float32Type>(ty) || cast<types::Float64Type>(ty)) {
         return dbg.builder->createBasicType(
             ty->getName(), layout.getTypeAllocSizeInBits(llvmType),

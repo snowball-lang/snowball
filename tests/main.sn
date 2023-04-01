@@ -23,7 +23,7 @@ fn h(d: String) String {
 
 pub fn main() i32 {
     let b: i32 ;
-    // b = 2
+    b = 2
     let a = new Hello(b);
     a.hello()
     a.hey()
