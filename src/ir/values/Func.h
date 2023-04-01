@@ -152,8 +152,10 @@ class Func : public AcceptorExtend<Func, Value>,
 
     /// @brief Get the index were the function is located at inside the
     ///  virtual table.
-    auto getVirtualIndex() const
-        { assert(inVirtualTable()); return virtualIndex; }
+    auto getVirtualIndex() const {
+        assert(inVirtualTable());
+        return virtualIndex;
+    }
     /// @return Check if the function is part of a virtual table.
     bool inVirtualTable() const { return virtualIndex != -1; }
     /// @brief Set a new virtual table index.

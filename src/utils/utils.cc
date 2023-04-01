@@ -36,7 +36,7 @@ std::string get_exe_folder() {
 #endif
 
 std::string get_lib_folder() {
-    fs::path home = getenv("HOME");
+    fs::path home       = getenv("HOME");
     fs::path exe_folder = home / (std::string)STATICLIB_DIR;
     fs::path full_path  = exe_folder / _SNOWBALL_LIBRARY_DIR;
 

@@ -5,8 +5,8 @@
 #include <assert.h>
 #include <optional>
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 #ifndef __SNOWBALL_AST_FUNCTION_CACHE_H_
 #define __SNOWBALL_AST_FUNCTION_CACHE_H_

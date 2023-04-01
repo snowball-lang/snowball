@@ -2,6 +2,8 @@
 #include "../common.h"
 #include "../token.h"
 #include "./Parser.h"
+#include "../services/OperatorService.h"
+#include "../utils/utils.h"
 
 #include <assert.h>
 #define TOKEN(comp) is<TokenType::comp>()
@@ -104,32 +106,68 @@ ptr<Syntax::Expression::Base> Parser::parseExpr(bool allowAssign) {
             }
         }
 
-        exprs.emplace_back(expr);
         bool valid = true;
+        exprs.emplace_back(expr);
+        services::OperatorService::OperatorType op_type;
 
         tk = peek();
+#define OP_CASE(m_tk, m_op) case TokenType::m_tk: {op_type = services::OperatorService::OperatorType::m_op; break;}
         switch (tk.type) {
-            default:
-                valid = false;
+            OP_CASE(OP_EQ, EQ);
+            OP_CASE(OP_EQEQ, EQEQ);
+            OP_CASE(OP_PLUS, PLUS);
+            OP_CASE(OP_PLUSEQ, PLUSEQ);
+            OP_CASE(OP_MINUS, MINUS);
+            OP_CASE(OP_MINUSEQ, MINUSEQ);
+            OP_CASE(OP_MUL, MUL);
+            OP_CASE(OP_MULEQ, MULEQ);
+            OP_CASE(OP_DIV, DIV);
+            OP_CASE(OP_DIVEQ, DIVEQ);
+            OP_CASE(OP_MOD, MOD);
+            OP_CASE(OP_MOD_EQ, MOD_EQ);
+            OP_CASE(OP_LT, LT);
+            OP_CASE(OP_LTEQ, LTEQ);
+            OP_CASE(OP_GT, GT);
+            OP_CASE(OP_GTEQ, GTEQ);
+            OP_CASE(OP_AND, AND);
+            OP_CASE(OP_OR, OR);
+            OP_CASE(OP_NOT, NOT);
+            OP_CASE(OP_NOTEQ, NOTEQ);
+            OP_CASE(OP_BIT_NOT, BIT_NOT);
+            OP_CASE(OP_BIT_LSHIFT, BIT_LSHIFT);
+            OP_CASE(OP_BIT_LSHIFT_EQ, BIT_LSHIFT_EQ);
+            OP_CASE(OP_BIT_RSHIFT, BIT_RSHIFT);
+            OP_CASE(OP_BIT_RSHIFT_EQ, BIT_RSHIFT_EQ);
+            OP_CASE(OP_BIT_OR, BIT_OR);
+            OP_CASE(OP_BIT_OR_EQ, BIT_OR_EQ);
+            OP_CASE(OP_BIT_AND, BIT_AND);
+            OP_CASE(OP_BIT_AND_EQ, BIT_AND_EQ);
+            OP_CASE(OP_BIT_XOR, BIT_XOR);
+            OP_CASE(OP_BIT_XOR_EQ, BIT_XOR_EQ);
+            default: valid = false;
+#undef OP_CASE
         }
 
+
         if (valid) {
-            // TODO:
-            assert(false && "TODO: not valid expr");
+            next(); // Eat peeked token.
+            auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
+            auto bop = Syntax::N<Syntax::Expression::BinaryOp>(op_type);
+            bop->isOperator = true;
+            bop->setDBGInfo(dbg);
+
+            exprs.push_back(bop);
         } else {
             break;
         }
     }
 
     auto expr = buildOperatorTree(exprs);
-
-#if 0 // TODO:
-    if (false/* TODO: check if it's an operator node */) {
-        if (!allowAssign && BinaryOperator::is_assignment(expr)) {
-            allowAssign(Error::SYNTAX_ERROR, "assignment is not allowed inside expression.");
+    if (auto x = utils::cast<Syntax::Expression::BinaryOp>(expr)) {
+        if (!allowAssign && Syntax::Expression::BinaryOp::is_assignment(x)) {
+            createError<SYNTAX_ERROR>(expr->getDBGInfo()->pos, "assignment is not allowed inside expression.", "", x->to_string().size());
         }
     }
-#endif
 
     return expr; // to remove warnings
 }

@@ -2,7 +2,11 @@ use Core::System
 
 class Hello {
 pub:
-    Hello(x: String) {}
+    // let h: String;
+    Hello(x: i32) {
+        // System::println(self.h)
+    }
+
 // priv:
     virt fn hello() {
         System::println("hello")
@@ -18,7 +22,9 @@ fn h(d: String) String {
 }
 
 pub fn main() i32 {
-    let a = new Hello("");
+    let b: i32 ;
+    // b = 2
+    let a = new Hello(b);
     a.hello()
     a.hey()
 

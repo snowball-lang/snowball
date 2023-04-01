@@ -6,7 +6,6 @@
 #include "../../utils/utils.h"
 #include "../syntax/common.h"
 #include "../syntax/nodes.h"
-
 #include "Type.h"
 
 #include <memory>

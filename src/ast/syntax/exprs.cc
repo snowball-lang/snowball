@@ -12,19 +12,62 @@ namespace Expression {
 
 TypeRef::TypeRef(std::string p_name, ptr<snowball::DBGSourceInfo> p_dbg,
                  std::vector<TypeRef *> p_generics)
-    : generics(p_generics), types::Type(REF, p_name) {
-    setDBGInfo(p_dbg);
-}
-
+    : generics(p_generics), types::Type(REF, p_name)
+    { setDBGInfo(p_dbg); }
 void TypeRef::setGenerics(std::vector<ptr<TypeRef>> g) { generics = g; }
-std::vector<ptr<Expression::TypeRef>> GenericIdentifier::getGenerics() const {
-    return generics;
-}
+std::vector<ptr<Expression::TypeRef>> GenericIdentifier::getGenerics() const
+    { return generics; }
 std::vector<TypeRef *> TypeRef::getGenerics() { return this->generics; }
-
 Param::Param(std::string name, TypeRef *type, Status generic)
     : name(name), type(type), status(generic) {
     assert(generic <= 1 && generic >= 0 && "Invalid param status");
+}
+bool BinaryOp::is_assignment(ptr<BinaryOp> p_node) {
+    OpType p_op_type = p_node->op_type;
+
+    return p_op_type == OpType::EQ || p_op_type == OpType::PLUSEQ ||
+            p_op_type == OpType::MINUSEQ ||
+            p_op_type == OpType::MULEQ || p_op_type == OpType::DIVEQ ||
+            p_op_type == OpType::MOD_EQ ||
+            p_op_type == OpType::BIT_LSHIFT_EQ ||
+            p_op_type == OpType::BIT_RSHIFT_EQ ||
+            p_op_type == OpType::BIT_OR_EQ ||
+            p_op_type == OpType::BIT_AND_EQ ||
+            p_op_type == OpType::BIT_XOR_EQ;
+}
+std::string BinaryOp::to_string() const {
+#define OP_CASE(op, symbol) case OpType::op: return symbol;
+#define OP_DEFAULT default: assert(false);
+
+    switch (op_type) {
+        OP_CASE(GT, ">") OP_CASE(LT, "<")
+        OP_CASE(GTEQ, ">=") OP_CASE(EQEQ, "==")
+        OP_CASE(LTEQ, "<=") OP_CASE(NOTEQ, "!=")
+
+        // Mathematical symbols
+        OP_CASE(MOD, "%") OP_CASE(DIV, "/")
+        OP_CASE(MUL, "*") OP_CASE(UPLUS, "+")
+        OP_CASE(PLUS, "+") OP_CASE(MINUS, "-")
+        OP_CASE(UMINUS, "-") OP_CASE(MULEQ, "*=")
+        OP_CASE(DIVEQ, "/=") OP_CASE(PLUSEQ, "+=")
+        OP_CASE(MOD_EQ, "%=") OP_CASE(MINUSEQ, "-=")
+
+        // Assignment
+        OP_CASE(EQ, "=") OP_CASE(OR, "||")
+        OP_CASE(AND, "&&") OP_CASE(NOT, "!")
+
+        // Bitwise operations
+        OP_CASE(BIT_OR, "|") OP_CASE(BIT_NOT, "~")
+        OP_CASE(BIT_AND, "&") OP_CASE(BIT_XOR, "^")
+        OP_CASE(BIT_OR_EQ, "|=") OP_CASE(BIT_LSHIFT, "<<")
+        OP_CASE(BIT_RSHIFT, ">>") OP_CASE(BIT_AND_EQ, "&=")
+        OP_CASE(BIT_XOR_EQ, "^=") OP_CASE(BIT_LSHIFT_EQ, "<<=")
+        OP_CASE(BIT_RSHIFT_EQ, ">>=")
+
+        OP_DEFAULT
+    }
+#undef OP_CASE
+#undef OP_DEFAULT
 }
 
 std::string FunctionCall::getArgumentsAsString(

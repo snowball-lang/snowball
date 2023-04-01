@@ -62,14 +62,18 @@ class LLVMBuilderContext {
     /// @brief Clear the symbol table
     void clearSymbols() { return symbols.clear(); }
     /// @return Add a new vtable to the vtable map
-    void addVtable(ir::id_t i, ptr<llvm::GlobalVariable> s) { vtables.emplace(i, s); }
+    void addVtable(ir::id_t i, ptr<llvm::GlobalVariable> s) {
+        vtables.emplace(i, s);
+    }
     /// @brief Get the corresponding vtable to an id
     auto getVtable(ir::id_t i) -> ptr<llvm::GlobalVariable> {
         auto item = vtables.find(i);
         return item == vtables.end() ? nullptr : item->second;
     }
     /// @return Add a new vtable to the vtable map
-    void addVtableTy(ir::id_t i, ptr<llvm::StructType> s) { vtableType.emplace(i, s); }
+    void addVtableTy(ir::id_t i, ptr<llvm::StructType> s) {
+        vtableType.emplace(i, s);
+    }
     /// @brief Get the corresponding vtable to an id
     auto getVtableTy(ir::id_t i) -> ptr<llvm::StructType> {
         auto item = vtableType.find(i);
@@ -220,7 +224,9 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      * @brief It creates a new struct type and a new constant struct value for
      *  a virtual table for @param ty
      */
-    ptr<llvm::GlobalVariable> createVirtualTable(ptr<types::DefinedType> ty, ptr<llvm::StructType> vtableType);
+    ptr<llvm::GlobalVariable>
+    createVirtualTable(ptr<types::DefinedType> ty,
+                       ptr<llvm::StructType> vtableType);
     /**
      * @brief Utility function to the actual `getLLVMType`
      * function. This is just a workaround to avoid shared

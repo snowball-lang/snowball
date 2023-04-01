@@ -27,7 +27,6 @@ void LLVMBuilder::visit(ptr<ir::Func> func) {
 void LLVMBuilder::buildBodiedFunction(ptr<llvm::Function> llvmFn,
                                       ptr<ir::Func> fn) {
     ctx->setCurrentFunction(llvmFn);
-    setDebugInfoLoc(fn);
 
     auto returnType = getLLVMType(fn->getRetTy());
 
@@ -36,6 +35,7 @@ void LLVMBuilder::buildBodiedFunction(ptr<llvm::Function> llvmFn,
 
     // mark: entry block
     builder->SetInsertPoint(entry);
+    setDebugInfoLoc(nullptr);
 
     auto fnArgs       = fn->getArgs();
     auto llvmArgsIter = llvmFn->arg_begin();

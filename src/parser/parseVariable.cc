@@ -22,8 +22,23 @@ ptr<Syntax::Statement::VariableDecl> Parser::parseVariable() {
     // TODO: actually find type definition
     ptr<Syntax::Expression::TypeRef> typeDef = nullptr;
 
-    assert_tok<TokenType::OP_EQ>("'='");
-    auto value = parseExpr();
+    if (is<TokenType::SYM_COLLON>()) {
+        next();
+        typeDef = parseType();
+    }
+
+    ptr<Syntax::Expression::Base> value = nullptr;
+    if (is<TokenType::OP_EQ>()) {
+        value = parseExpr();
+    } else if (!is<TokenType::SYM_SEMI_COLLON>()) {
+        createError<SYNTAX_ERROR>("Invalid variable declaration syntax!",
+                                  "Expected '=' for a variable declaration");
+    } else if (typeDef == nullptr) {
+        createError<SYNTAX_ERROR>(
+            "Undeclared type for uninitialized variable declaration!",
+            "Variable declarations must have type definition if it's not "
+            "initialized");
+    }
 
     auto v = Syntax::N<Syntax::Statement::VariableDecl>(name, value, isMutable);
     v->setDefinedType(typeDef);

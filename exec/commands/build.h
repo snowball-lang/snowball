@@ -7,8 +7,8 @@
 #include "vendor/toml.hpp"
 
 #include <chrono>
-#include <string>
 #include <filesystem>
+#include <string>
 
 using namespace std::chrono;
 namespace fs = std::filesystem;
@@ -20,20 +20,24 @@ namespace snowball {
 namespace exec {
 namespace commands {
 int build(exec::Options::BuildOptions p_opts) {
-    std::string filename = p_opts.file;
-    std::string package_name = "<single file>";
+    std::string filename        = p_opts.file;
+    std::string package_name    = "<single file>";
     std::string package_version = "<unknown version>";
-
 
     if (p_opts.file.empty()) {
         toml::parse_result parsed_config = Compiler::get_config();
         filename =
-            p_opts.file.empty() ? (std::string)(parsed_config["package"]["main"].value_or<std::string>(
-                (fs::current_path() / "src" / "main.sn"))) : p_opts.file;
-        package_name = (std::string)(parsed_config["package"]["name"]
-                               .value_or<std::string>("<anonnimus>"));
-        package_version = parsed_config["package"]["version"]
-                               .value_or<std::string>("<unknown>");
+            p_opts.file.empty()
+                ? (std::string)(
+                      parsed_config["package"]["main"].value_or<std::string>(
+                          (fs::current_path() / "src" / "main.sn")))
+                : p_opts.file;
+        package_name = (std::string)(
+            parsed_config["package"]["name"].value_or<std::string>(
+                "<anonnimus>"));
+        package_version =
+            parsed_config["package"]["version"].value_or<std::string>(
+                "<unknown>");
     }
 
     std::ifstream ifs(filename);
@@ -59,12 +63,9 @@ int build(exec::Options::BuildOptions p_opts) {
                                p_opts.emit_type));
     }
 
-    Logger::message(
-        "Compiling",
-        FMT("%s v%s [%s]",
-            package_name.c_str(),
-            package_version.c_str(),
-            (build_type.c_str())));
+    Logger::message("Compiling",
+                    FMT("%s v%s [%s]", package_name.c_str(),
+                        package_version.c_str(), (build_type.c_str())));
 
     std::string content((std::istreambuf_iterator<char>(ifs)),
                         (std::istreambuf_iterator<char>()));

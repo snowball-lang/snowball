@@ -88,8 +88,9 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
                     int argIndex = 0;
                     for (auto arg : newArgs) {
                         auto ref = ctx->module->N<ir::Variable>(
-                            node->getDBGInfo(), arg.first, true);
+                            node->getDBGInfo(), arg.first, true, true);
 
+                        ref->setInitID(arg.second->getId());
                         ref->setType(arg.second->getType());
                         auto refItem = std::make_shared<transform::Item>(
                             transform::Item::Type::VALUE, ref);

@@ -3,6 +3,7 @@
 #include "../../common.h"
 #include "../types/Type.h"
 #include "common.h"
+#include "../../services/OperatorService.h"
 
 #include <string>
 #include <vector>
@@ -289,6 +290,39 @@ struct GenericIdentifier
     ACCEPT()
 };
 
+/**
+ * @struct BinaryOp
+ * @brief Represents a binary operator expression node.
+ * @extends AcceptorExtend<BinaryOp, Base>
+ */
+struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
+    using OpType = services::OperatorService::OperatorType;
+
+    ptr<Base> left;     ///< Left node
+    ptr<Base> right;    ///< Right node
+    OpType op_type;     ///< The type of operator
+    bool unary = false; ///< Whether it's a unary operator
+
+    /**
+     * @brief Determines if the operator is an assignment operator.
+     * @param p_node The operator expression node.
+     * @return Whether it's an assignment operator.
+     */
+    static bool is_assignment(ptr<BinaryOp> p_node);
+    /**
+     * @brief Converts the operator type to a string.
+     * @return The string representation of the operator.
+     */
+    std::string to_string() const;
+    ACCEPT()
+
+    BinaryOp(OpType t) : op_type(t)
+      { unary =
+        (op_type == OpType::NOT || op_type == OpType::BIT_NOT ||
+         op_type == OpType::UPLUS || op_type == OpType::UMINUS); };
+    ~BinaryOp() noexcept = default;
+};
+
 }; // namespace Expression
 
 /**
@@ -409,11 +443,11 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
  */
 struct VariableDecl : public AcceptorExtend<VariableDecl, Base> {
 
-    // Variables's identifier
+    /// @brief Variables's identifier
     std::string name;
-    // Function's return type
+    /// @brief Function's return type
     ptr<Expression::Base> value;
-    // Whether the variable can change or not
+    /// @brief Whether the variable can change or not
     bool _mutable = false;
     /**
      * @brief User defined type
@@ -442,6 +476,8 @@ struct VariableDecl : public AcceptorExtend<VariableDecl, Base> {
     ptr<Expression::TypeRef> getDefinedType();
     /// @brief declare a defined type for the variable
     void setDefinedType(ptr<Expression::TypeRef> t);
+    /// @return true if the variable has been initialied
+    bool isInitialized();
 
     // Set an acceptance call
     ACCEPT()

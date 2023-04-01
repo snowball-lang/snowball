@@ -29,7 +29,7 @@ class Parser {
 
   public:
     Parser(std::vector<Token> p_tokens, ptr<SourceInfo> p_source_info);
-    ~Parser() = default;
+    ~Parser() noexcept = default;
 
   private:
     /// @brief Utility function to throw errors
@@ -38,7 +38,7 @@ class Parser {
     createError(std::pair<int, int> location, std::string message,
                 const std::string info = "", Args&&...args) const {
         auto dbg_info =
-            new DBGSourceInfo(m_source_info, {m_current.line, m_current.col},
+            new DBGSourceInfo(m_source_info, location,
                               std::forward<Args>(args)...);
         throw ParserError(E, message, dbg_info, info);
     }

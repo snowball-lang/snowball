@@ -60,6 +60,7 @@ VariableDecl::VariableDecl(const std::string& name, ptr<Expression::Base> value,
                            bool isMutable)
     : name(name), value(value), _mutable(isMutable){};
 
+bool VariableDecl::isInitialized() { return value != nullptr; }
 std::string VariableDecl::getName() const { return name; }
 ptr<Expression::Base> VariableDecl::getValue() { return value; }
 bool VariableDecl::isMutable() { return _mutable; }

@@ -50,8 +50,8 @@ void TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
     auto st   = s->stack;
     st->emplace_back(glob);
 
-    this->stack        = st;
-    this->module       = s->module;
+    this->stack  = st;
+    this->module = s->module;
     setCurrentClass(s->currentClass);
 }
 

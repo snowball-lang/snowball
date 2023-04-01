@@ -23,7 +23,7 @@ namespace fs = std::filesystem;
 namespace snowball {
 Compiler::Compiler(std::string p_code, std::string p_path) {
     _code = p_code;
-    _cwd = fs::current_path();
+    _cwd  = fs::current_path();
     _path = _path / p_path;
 }
 

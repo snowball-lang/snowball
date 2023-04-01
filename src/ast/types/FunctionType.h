@@ -1,8 +1,8 @@
 
 #include "../../common.h"
 #include "../../constants.h"
-#include "../../utils/utils.h"
 #include "../../ir/values/Func.h"
+#include "../../utils/utils.h"
 #include "Type.h"
 
 #include <memory>

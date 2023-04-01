@@ -115,9 +115,7 @@ ptr<llvm::DIFile> LLVMBuilder::DebugInfo::getFile(const std::string& path) {
     return builder->createFile(filename, directory);
 }
 
-void LLVMBuilder::dump() {
-    module->print(llvm::errs(), nullptr);
-}
+void LLVMBuilder::dump() { module->print(llvm::errs(), nullptr); }
 
 #define ITERATE_FUNCTIONS                                                      \
     for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn)

@@ -33,7 +33,7 @@ struct Options {
         Optimization opt   = OPTIMIZE_O1;
         EmitType emit_type = EXECUTABLE;
 
-        bool silent = false;
+        bool silent      = false;
         std::string file = "";
     } build_opts;
 

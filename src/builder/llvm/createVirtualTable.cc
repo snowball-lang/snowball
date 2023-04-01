@@ -14,7 +14,9 @@
 namespace snowball {
 namespace codegen {
 
-ptr<llvm::GlobalVariable> LLVMBuilder::createVirtualTable(ptr<types::DefinedType> ty, ptr<llvm::StructType> vtableType) {
+ptr<llvm::GlobalVariable>
+LLVMBuilder::createVirtualTable(ptr<types::DefinedType> ty,
+                                ptr<llvm::StructType> vtableType) {
     auto structName = (std::string)_SN_VTABLE_PREFIX + ty->getMangledName();
 
     std::vector<ptr<llvm::Constant>> functions;

@@ -233,6 +233,11 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     getFromIdentifier(ptr<DBGSourceInfo> dbgInfo, const std::string identifier,
                       std::vector<ptr<Expression::TypeRef>> generics = {},
                       const std::string uuid                         = "");
+    /**
+     * @brief Utility method to transform identifier nodes into a valid set
+     *  of arguments for @fn getFromIdentifier
+     */
+    StoreType getFromIdentifier(ptr<Expression::Identifier> s);
     /// @brief Give an identifier it's base.
     /// @example Hello -> Module::Class::Hello
     std::string getNameWithBase(const std::string name);

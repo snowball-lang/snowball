@@ -21,8 +21,11 @@ int run(exec::Options::RunOptions p_opts) {
     if (p_opts.file.empty()) {
         toml::parse_result parsed_config = Compiler::get_config();
         filename =
-            p_opts.file.empty() ? (std::string)(parsed_config["package"]["main"].value_or<std::string>(
-                (fs::current_path() / "src" / "main.sn"))) : p_opts.file;
+            p_opts.file.empty()
+                ? (std::string)(
+                      parsed_config["package"]["main"].value_or<std::string>(
+                          (fs::current_path() / "src" / "main.sn")))
+                : p_opts.file;
     }
 
     std::ifstream ifs(filename);
@@ -50,8 +53,8 @@ int run(exec::Options::RunOptions p_opts) {
 
     compiler->cleanup();
 
-    char* args[] = {strdup(output.c_str()), NULL};
-    int result = execvp(args[0], args);
+    char *args[] = {strdup(output.c_str()), NULL};
+    int result   = execvp(args[0], args);
 
     // This shoudnt be executed
     return result;

@@ -14,6 +14,7 @@ ACCEPT(Expression::Index)
 ACCEPT(Expression::TypeRef)
 ACCEPT(Expression::Cast)
 ACCEPT(Expression::NewInstance)
+ACCEPT(Expression::BinaryOp)
 
 ACCEPT(Statement::Return)
 ACCEPT(Statement::VariableDecl)

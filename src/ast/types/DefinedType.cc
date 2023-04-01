@@ -9,9 +9,9 @@
 #include "Type.h"
 
 #include <memory>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
 namespace snowball {
 namespace types {
@@ -30,10 +30,13 @@ DefinedType::ClassField::ClassField(const std::string& name,
 std::string DefinedType::getUUID() const { return uuid; }
 std::shared_ptr<ir::Module> DefinedType::getModule() const { return module; }
 int DefinedType::getVtableSize() { return classVtable.size(); }
-int DefinedType::addVtableItem(std::shared_ptr<ir::Func> f)
-    { classVtable.push_back(f); return getVtableSize() - 1; }
-std::vector<std::shared_ptr<ir::Func>> DefinedType::getVTable()
-    const { return classVtable; }
+int DefinedType::addVtableItem(std::shared_ptr<ir::Func> f) {
+    classVtable.push_back(f);
+    return getVtableSize() - 1;
+}
+std::vector<std::shared_ptr<ir::Func>> DefinedType::getVTable() const {
+    return classVtable;
+}
 
 bool DefinedType::is(ptr<DefinedType> other) {
     auto otherArgs = other->getGenerics();
@@ -65,15 +68,15 @@ std::string DefinedType::getPrettyName() const {
 }
 
 std::string DefinedType::getMangledName() const {
-    auto base = module->getUniqueName();
+    auto base  = module->getUniqueName();
     auto _tyID = static_cast<ir::id_t>(getId());
     std::stringstream sstm;
     sstm << (utils::startsWith(base, _SN_MANGLE_PREFIX) ? base
-                                                    : _SN_MANGLE_PREFIX) <<
-        "&" << name.size() << name << "Cv" << _tyID;
-    auto prefix = sstm.str();     // disambiguator
+                                                        : _SN_MANGLE_PREFIX)
+         << "&" << name.size() << name << "Cv" << _tyID;
+    auto prefix = sstm.str(); // disambiguator
 
-    std::string mangledArgs;                     // Start args tag
+    std::string mangledArgs;  // Start args tag
     if (generics.size() > 0) {
         mangledArgs = "ClsGSt";
 

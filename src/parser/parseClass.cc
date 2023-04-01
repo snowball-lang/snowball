@@ -86,10 +86,12 @@ ptr<Syntax::Statement::ClassDef> Parser::parseClass() {
             case TokenType::KWORD_VIRTUAL: {
                 if (peek().type == TokenType::KWORD_STATIC) {
                     next();
-                    createError<ARGUMENT_ERROR>("Virtual methods can't be static!");
+                    createError<ARGUMENT_ERROR>(
+                        "Virtual methods can't be static!");
                 } else if (peek().type != TokenType::KWORD_FUNC) {
                     next();
-                    createError<SYNTAX_ERROR>("Expected keyword \"func\" after virtual declaration!");
+                    createError<SYNTAX_ERROR>(
+                        "Expected keyword \"func\" after virtual declaration!");
                 }
             } break;
 

@@ -16,7 +16,7 @@ using namespace std::chrono;
 
 #define LIBRARY_ENTRY "src/lib.sn"
 #define LIBRARY_MAIN                                                           \
-    "use Core::Assertion\n\n"                                                     \
+    "use Core::Assertion\n\n"                                                  \
     "pub fn my_export() String {\n"                                            \
     "    return \"Hello, World\"\n"                                            \
     "}\n\n" /* TODO: add #[cfg(test)] */                                       \
@@ -30,10 +30,10 @@ using namespace std::chrono;
 
 #define EXECUTABLE_ENTRY "src/main.sn"
 #define EXECUTABLE_MAIN                                                        \
-    "use Core::System\n"                                                          \
+    "use Core::System\n"                                                       \
                                                                                \
     "\nfn main() Void {\n"                                                     \
-    "   System::println(\"Hello, World\")\n"                                    \
+    "   System::println(\"Hello, World\")\n"                                   \
     "}"
 
 #define CONFIGURATION_FILE "sn.toml"

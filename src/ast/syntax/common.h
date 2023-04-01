@@ -23,6 +23,10 @@ struct Node : public DBGObject {
     ~Node() noexcept = default;
 
     virtual void accept(Syntax::Visitor *v) = 0;
+
+    /// @brief A flag that tells if the current node is
+    ///  an operator
+    bool isOperator = false;
 };
 
 /**
