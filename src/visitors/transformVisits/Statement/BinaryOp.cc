@@ -1,4 +1,5 @@
 #include "../../Transformer.h"
+
 #include <optional>
 
 using namespace snowball::utils;
@@ -13,14 +14,21 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
         if (auto i = utils::cast<Expression::Identifier>(p_node->left)) {
             auto [v, ty, fns, ovs, mod] = getFromIdentifier(i);
 
-            if (v == std::nullopt && ty == std::nullopt && fns == std::nullopt && ovs == std::nullopt && mod == std::nullopt) {
-                E<VARIABLE_ERROR>(p_node, FMT("Cannot find identifier `%s`!", i->getIdentifier().c_str()),
-                    "this name is not defined");
+            if (v == std::nullopt && ty == std::nullopt &&
+                fns == std::nullopt && ovs == std::nullopt &&
+                mod == std::nullopt) {
+                E<VARIABLE_ERROR>(p_node,
+                                  FMT("Cannot find identifier `%s`!",
+                                      i->getIdentifier().c_str()),
+                                  "this name is not defined");
             }
 
-            if (v == std::nullopt || (utils::dyn_cast<ir::Variable>(v.value()) == nullptr)) {
-                E<SYNTAX_ERROR>(p_node, "You can only assign values to variables!",
-                    FMT("Value '%s' is not a variable!", i->getIdentifier().c_str()));
+            if (v == std::nullopt ||
+                (utils::dyn_cast<ir::Variable>(v.value()) == nullptr)) {
+                E<SYNTAX_ERROR>(p_node,
+                                "You can only assign values to variables!",
+                                FMT("Value '%s' is not a variable!",
+                                    i->getIdentifier().c_str()));
             }
 
             auto var = utils::dyn_cast<ir::Variable>(v.value());
@@ -29,7 +37,8 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
                 auto variableValue = p_node->right;
                 variableValue->accept(this);
                 auto varDecl = ctx->module->N<ir::VariableDeclaration>(
-                    p_node->getDBGInfo(), var->getIdentifier(), this->value, /* TODO: */ false);
+                    p_node->getDBGInfo(), var->getIdentifier(), this->value,
+                    /* TODO: */ false);
                 varDecl->setType(this->value->getType());
                 auto itemDecl = std::make_shared<transform::Item>(
                     transform::Item::Type::VALUE, varDecl);
@@ -45,10 +54,11 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
                 return;
             }
         } else {
-            E<SYNTAX_ERROR>(p_node, "Can only use identifiers or indexes for variable assigment!");
+            E<SYNTAX_ERROR>(
+                p_node,
+                "Can only use identifiers or indexes for variable assigment!");
         }
     }
-
 
     assert(false && "TODO: operators");
 }

@@ -30,7 +30,8 @@ class Variable : public IdMixin, public AcceptorExtend<Variable, Value> {
     // Create a new variable declaration
     Variable(const std::string& identifier, bool initialized = false,
              bool isArgument = false)
-        : identifier(identifier), _isArgument(isArgument), initialized(initialized) {};
+        : identifier(identifier), _isArgument(isArgument),
+          initialized(initialized){};
 
     /// @return Variable identifier
     auto getIdentifier() const { return identifier; }

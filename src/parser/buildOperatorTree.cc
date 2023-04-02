@@ -1,9 +1,9 @@
 
 #include "../common.h"
-#include "../token.h"
-#include "./Parser.h"
 #include "../services/OperatorService.h"
+#include "../token.h"
 #include "../utils/utils.h"
+#include "./Parser.h"
 
 #include <assert.h>
 
@@ -14,12 +14,13 @@ Parser::buildOperatorTree(std::vector<ptr<Syntax::Expression::Base>>& exprs) {
     assert(exprs.size() > 0);
 
     while (exprs.size() > 1) {
-        int next_op = -1;
+        int next_op        = -1;
         int min_precedence = 0xFFFFF;
-        bool unary = false;
+        bool unary         = false;
 
         for (int i = 0; i < (int)exprs.size(); i++) {
-            auto expression = static_cast<ptr<Syntax::Expression::BinaryOp>>(exprs[i]);
+            auto expression =
+                static_cast<ptr<Syntax::Expression::BinaryOp>>(exprs[i]);
             if (!expression->isOperator) {
                 continue;
             }
@@ -115,13 +116,12 @@ Parser::buildOperatorTree(std::vector<ptr<Syntax::Expression::Base>>& exprs) {
 
             if (precedence < min_precedence) {
                 min_precedence = precedence;
-                next_op = i;
-                auto op = expression->op_type;
-                unary = (
-                    op == Syntax::Expression::BinaryOp::OpType::NOT      ||
-                    op == Syntax::Expression::BinaryOp::OpType::BIT_NOT  ||
-                    op == Syntax::Expression::BinaryOp::OpType::UPLUS ||
-                    op == Syntax::Expression::BinaryOp::OpType::UMINUS );
+                next_op        = i;
+                auto op        = expression->op_type;
+                unary = (op == Syntax::Expression::BinaryOp::OpType::NOT ||
+                         op == Syntax::Expression::BinaryOp::OpType::BIT_NOT ||
+                         op == Syntax::Expression::BinaryOp::OpType::UPLUS ||
+                         op == Syntax::Expression::BinaryOp::OpType::UMINUS);
                 // break;
             }
         }
@@ -133,12 +133,15 @@ Parser::buildOperatorTree(std::vector<ptr<Syntax::Expression::Base>>& exprs) {
             int next_expr = next_op;
             while (exprs[next_expr]->isOperator) {
                 if (++next_expr == exprs.size()) {
-                    createError<SYNTAX_ERROR>(exprs[next_expr]->getDBGInfo()->pos, "expected an expression.", "", 1);
+                    createError<SYNTAX_ERROR>(
+                        exprs[next_expr]->getDBGInfo()->pos,
+                        "expected an expression.", "", 1);
                 }
             }
 
             for (int i = next_expr - 1; i >= next_op; i--) {
-                auto e = utils::cast<Syntax::Expression::BinaryOp>(exprs[(size_t)i]);
+                auto e =
+                    utils::cast<Syntax::Expression::BinaryOp>(exprs[(size_t)i]);
                 auto op_node = new Syntax::Expression::BinaryOp(e->op_type);
                 op_node->setDBGInfo(e->getDBGInfo());
 
@@ -146,30 +149,39 @@ Parser::buildOperatorTree(std::vector<ptr<Syntax::Expression::Base>>& exprs) {
 
                 exprs.at(i) = op_node;
                 exprs.erase(exprs.begin() + i + 1);
-
             }
         } else {
 
             ASSERT(next_op >= 1 && next_op < (int)exprs.size() - 1)
-            ASSERT(!(exprs[(size_t)next_op + 1]->isOperator) && !(exprs[(size_t)next_op - 1]->isOperator));
+            ASSERT(!(exprs[(size_t)next_op + 1]->isOperator) &&
+                   !(exprs[(size_t)next_op - 1]->isOperator));
 
-            auto e = utils::cast<Syntax::Expression::BinaryOp>(exprs[(size_t)next_op]);
+            auto e = utils::cast<Syntax::Expression::BinaryOp>(
+                exprs[(size_t)next_op]);
             auto op_node = new Syntax::Expression::BinaryOp(e->op_type);
             op_node->setDBGInfo(e->getDBGInfo());
 
             if (exprs[(size_t)next_op - 1]->isOperator) {
-                if (Syntax::Expression::BinaryOp::is_assignment((Syntax::Expression::BinaryOp*)exprs[(size_t)next_op - 1])) {
-                    createError<SYNTAX_ERROR>(exprs[(size_t)next_op - 1]->getDBGInfo()->pos, "unexpected assignment.", "", 1);
+                if (Syntax::Expression::BinaryOp::is_assignment(
+                        (Syntax::Expression::BinaryOp *)
+                            exprs[(size_t)next_op - 1])) {
+                    createError<SYNTAX_ERROR>(
+                        exprs[(size_t)next_op - 1]->getDBGInfo()->pos,
+                        "unexpected assignment.", "", 1);
                 }
             }
 
             if (exprs[(size_t)next_op + 1]->isOperator) {
-                if (Syntax::Expression::BinaryOp::is_assignment((Syntax::Expression::BinaryOp*)exprs[(size_t)next_op + 1])) {
-                    createError<SYNTAX_ERROR>(exprs[(size_t)next_op + 1]->getDBGInfo()->pos, "unexpected assignment.", "", 1);
+                if (Syntax::Expression::BinaryOp::is_assignment(
+                        (Syntax::Expression::BinaryOp *)
+                            exprs[(size_t)next_op + 1])) {
+                    createError<SYNTAX_ERROR>(
+                        exprs[(size_t)next_op + 1]->getDBGInfo()->pos,
+                        "unexpected assignment.", "", 1);
                 }
             }
 
-            op_node->left = exprs[(size_t)next_op - 1];
+            op_node->left  = exprs[(size_t)next_op - 1];
             op_node->right = exprs[(size_t)next_op + 1];
 
             exprs.at((size_t)next_op - 1) = op_node;
@@ -178,7 +190,6 @@ Parser::buildOperatorTree(std::vector<ptr<Syntax::Expression::Base>>& exprs) {
             exprs.erase(exprs.begin() + next_op);
         }
     }
-
 
     return exprs[0];
 }

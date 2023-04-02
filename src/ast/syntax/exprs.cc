@@ -12,16 +12,18 @@ namespace Expression {
 
 TypeRef::TypeRef(std::string p_name, ptr<snowball::DBGSourceInfo> p_dbg,
                  std::vector<TypeRef *> p_generics)
-    : generics(p_generics), types::Type(REF, p_name)
-    { setDBGInfo(p_dbg); }
+    : generics(p_generics), types::Type(REF, p_name) {
+    setDBGInfo(p_dbg);
+}
 void TypeRef::setGenerics(std::vector<ptr<TypeRef>> g) { generics = g; }
-std::vector<ptr<Expression::TypeRef>> GenericIdentifier::getGenerics() const
-    { return generics; }
+std::vector<ptr<Expression::TypeRef>> GenericIdentifier::getGenerics() const {
+    return generics;
+}
 std::vector<TypeRef *> TypeRef::getGenerics() { return this->generics; }
 Param::Param(std::string name, TypeRef *type, Status generic)
     : name(name), type(type), status(generic) {
     assert(generic <= 1 && generic >= 0 && "Invalid param status");
-}
+} // clang-format off
 bool BinaryOp::is_assignment(ptr<BinaryOp> p_node) {
     OpType p_op_type = p_node->op_type;
 
@@ -68,7 +70,7 @@ std::string BinaryOp::to_string() const {
     }
 #undef OP_CASE
 #undef OP_DEFAULT
-}
+} // clang-format on
 
 std::string FunctionCall::getArgumentsAsString(
     const std::vector<std::shared_ptr<types::Type>> args) {

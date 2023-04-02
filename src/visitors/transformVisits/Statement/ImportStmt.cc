@@ -22,44 +22,52 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
         E<IO_ERROR>(p_node, error);
     }
 
-    auto uuid = ctx->imports->getModuleUUID(filePath);
+    auto uuid = package == "Core" ? ctx->imports->CORE_UUID + path[0]
+                                  : ctx->imports->getModuleUUID(filePath);
     auto exportName =
         ctx->imports->getExportName(filePath, p_node->getExportSymbol());
-    auto niceFullName =
-        package + "::" + utils::join(path.begin(), path.end(), "::");
-    auto mod = std::make_shared<ir::Module>(niceFullName, uuid);
-    auto st  = std::make_shared<ContextState::StackType>();
-    auto state =
-        std::shared_ptr<ContextState>(new ContextState(st, mod, nullptr));
 
-    ctx->withState(state, [filePath = filePath, this]() mutable {
-        std::ifstream ifs(filePath.string());
-        assert(!ifs.fail());
+    if (auto m = ctx->imports->cache->getModule(filePath)) {
+        auto item = std::make_shared<Item>(m.value());
+        ctx->addItem(exportName, item);
+    } else {
+        auto niceFullName =
+            package + "::" + utils::join(path.begin(), path.end(), "::");
+        auto mod = std::make_shared<ir::Module>(niceFullName, uuid);
+        auto st  = std::make_shared<ContextState::StackType>();
+        auto state =
+            std::shared_ptr<ContextState>(new ContextState(st, mod, nullptr));
 
-        std::string content((std::istreambuf_iterator<char>(ifs)),
-                            (std::istreambuf_iterator<char>()));
+        ctx->withState(state, [filePath = filePath, this]() mutable {
+            std::ifstream ifs(filePath.string());
+            assert(!ifs.fail());
 
-        auto srcInfo = new SourceInfo(content, filePath);
-        auto lexer   = new Lexer(srcInfo);
-        lexer->tokenize();
+            std::string content((std::istreambuf_iterator<char>(ifs)),
+                                (std::istreambuf_iterator<char>()));
 
-        if (lexer->tokens.size() != 0) {
-            auto parser = new parser::Parser(lexer->tokens, srcInfo);
-            auto ast    = parser->parse();
-            ctx->module->setSourceInfo(srcInfo);
+            auto srcInfo = new SourceInfo(content, filePath);
+            auto lexer   = new Lexer(srcInfo);
+            lexer->tokenize();
 
-            visit(ast);
+            if (lexer->tokens.size() != 0) {
+                auto parser = new parser::Parser(lexer->tokens, srcInfo);
+                auto ast    = parser->parse();
+                ctx->module->setSourceInfo(srcInfo);
 
-            auto typeChecker = new codegen::TypeChecker(ctx->module);
-            typeChecker->codegen();
+                visit(ast);
 
-            // TODO: set a new module to the import cache
-            addModule(ctx->module);
-        }
-    });
+                auto typeChecker = new codegen::TypeChecker(ctx->module);
+                typeChecker->codegen();
 
-    auto item = std::make_shared<Item>(mod);
-    ctx->addItem(exportName, item);
+                // TODO: set a new module to the import cache
+                addModule(ctx->module);
+                ctx->imports->cache->addModule(filePath, ctx->module);
+            }
+        });
+
+        auto item = std::make_shared<Item>(mod);
+        ctx->addItem(exportName, item);
+    }
 }
 
 } // namespace Syntax

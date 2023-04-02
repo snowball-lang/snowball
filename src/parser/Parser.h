@@ -37,9 +37,8 @@ class Parser {
     [[nodiscard]] auto
     createError(std::pair<int, int> location, std::string message,
                 const std::string info = "", Args&&...args) const {
-        auto dbg_info =
-            new DBGSourceInfo(m_source_info, location,
-                              std::forward<Args>(args)...);
+        auto dbg_info = new DBGSourceInfo(m_source_info, location,
+                                          std::forward<Args>(args)...);
         throw ParserError(E, message, dbg_info, info);
     }
 

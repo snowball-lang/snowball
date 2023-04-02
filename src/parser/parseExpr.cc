@@ -1,9 +1,9 @@
 
 #include "../common.h"
-#include "../token.h"
-#include "./Parser.h"
 #include "../services/OperatorService.h"
+#include "../token.h"
 #include "../utils/utils.h"
+#include "./Parser.h"
 
 #include <assert.h>
 #define TOKEN(comp) is<TokenType::comp>()
@@ -111,7 +111,11 @@ ptr<Syntax::Expression::Base> Parser::parseExpr(bool allowAssign) {
         services::OperatorService::OperatorType op_type;
 
         tk = peek();
-#define OP_CASE(m_tk, m_op) case TokenType::m_tk: {op_type = services::OperatorService::OperatorType::m_op; break;}
+#define OP_CASE(m_tk, m_op)                                                    \
+    case TokenType::m_tk: {                                                    \
+        op_type = services::OperatorService::OperatorType::m_op;               \
+        break;                                                                 \
+    }
         switch (tk.type) {
             OP_CASE(OP_EQ, EQ);
             OP_CASE(OP_EQEQ, EQEQ);
@@ -144,10 +148,10 @@ ptr<Syntax::Expression::Base> Parser::parseExpr(bool allowAssign) {
             OP_CASE(OP_BIT_AND_EQ, BIT_AND_EQ);
             OP_CASE(OP_BIT_XOR, BIT_XOR);
             OP_CASE(OP_BIT_XOR_EQ, BIT_XOR_EQ);
-            default: valid = false;
+            default:
+                valid = false;
 #undef OP_CASE
         }
-
 
         if (valid) {
             next(); // Eat peeked token.
@@ -165,7 +169,10 @@ ptr<Syntax::Expression::Base> Parser::parseExpr(bool allowAssign) {
     auto expr = buildOperatorTree(exprs);
     if (auto x = utils::cast<Syntax::Expression::BinaryOp>(expr)) {
         if (!allowAssign && Syntax::Expression::BinaryOp::is_assignment(x)) {
-            createError<SYNTAX_ERROR>(expr->getDBGInfo()->pos, "assignment is not allowed inside expression.", "", x->to_string().size());
+            createError<SYNTAX_ERROR>(
+                expr->getDBGInfo()->pos,
+                "assignment is not allowed inside expression.", "",
+                x->to_string().size());
         }
     }
 

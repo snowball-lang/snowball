@@ -9,12 +9,13 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-Transformer::StoreType Transformer::getFromIdentifier(ptr<Expression::Identifier> s) {
-    auto g = utils::cast<Expression::GenericIdentifier>(s);
-    auto generics = (g != nullptr)
-                        ? g->getGenerics()
-                        : std::vector<ptr<Expression::TypeRef>>{};
-    return getFromIdentifier(s->getDBGInfo(), s->getIdentifier(), generics); }
+Transformer::StoreType
+Transformer::getFromIdentifier(ptr<Expression::Identifier> s) {
+    auto g        = utils::cast<Expression::GenericIdentifier>(s);
+    auto generics = (g != nullptr) ? g->getGenerics()
+                                   : std::vector<ptr<Expression::TypeRef>>{};
+    return getFromIdentifier(s->getDBGInfo(), s->getIdentifier(), generics);
+}
 Transformer::StoreType Transformer::getFromIdentifier(
     ptr<DBGSourceInfo> dbgInfo, const std::string identifier,
     std::vector<ptr<Expression::TypeRef>> generics, const std::string p_uuid) {

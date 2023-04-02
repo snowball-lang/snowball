@@ -47,9 +47,9 @@ ptr<llvm::DIType> LLVMBuilder::getDIType(ptr<types::Type> ty) {
                                               8);
     } else if (cast<types::StringType>(ty)) {
         return dbg.builder->createPointerType(
-            dbg.builder->createBasicType("String", 8, llvm::dwarf::DW_ATE_signed_char),
-            64
-        );
+            dbg.builder->createBasicType("String", 8,
+                                         llvm::dwarf::DW_ATE_signed_char),
+            64);
     } else if (cast<types::Float32Type>(ty) || cast<types::Float64Type>(ty)) {
         return dbg.builder->createBasicType(
             ty->getName(), layout.getTypeAllocSizeInBits(llvmType),

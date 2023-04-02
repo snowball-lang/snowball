@@ -1,9 +1,9 @@
 
 #include "../../DBGSourceInfo.h"
 #include "../../common.h"
+#include "../../services/OperatorService.h"
 #include "../types/Type.h"
 #include "common.h"
-#include "../../services/OperatorService.h"
 
 #include <string>
 #include <vector>
@@ -316,10 +316,10 @@ struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
     std::string to_string() const;
     ACCEPT()
 
-    BinaryOp(OpType t) : op_type(t)
-      { unary =
-        (op_type == OpType::NOT || op_type == OpType::BIT_NOT ||
-         op_type == OpType::UPLUS || op_type == OpType::UMINUS); };
+    BinaryOp(OpType t) : op_type(t) {
+        unary = (op_type == OpType::NOT || op_type == OpType::BIT_NOT ||
+                 op_type == OpType::UPLUS || op_type == OpType::UMINUS);
+    };
     ~BinaryOp() noexcept = default;
 };
 

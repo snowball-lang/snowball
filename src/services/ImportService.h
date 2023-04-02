@@ -15,10 +15,12 @@ class ImportService {
   public:
     /// @brief A cache containing all of the alread-generated modules
     ///  used at compile time.
-    ptr<ImportCache> cache;
+    ptr<ImportCache> cache = new ImportCache();
     /// @brief A list of possible pre-defined file extensions used to search
     ///  if no extension has been defined.
     const std::vector<std::string> extensions = {".sn", /* TODO */};
+    /// @brief Core library custom UUID
+    static const std::string CORE_UUID;
 
   public:
     /**
