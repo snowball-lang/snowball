@@ -22,8 +22,7 @@ std::string get_exe_folder();
 
 std::string itos(int i);
 std::string get_lib_folder();
-std::string utf8_substr(const std::string str, unsigned int start,
-                        unsigned int leng);
+std::string getUTF8FromIndex(const std::string& s, const int index);
 std::vector<std::string> split(std::string str, std::string token);
 bool endsWith(const std::string& mainStr, const std::string& toMatch);
 bool startsWith(const std::string& str, const std::string& comp);

@@ -7,8 +7,7 @@ namespace snowball {
 namespace errors {
 
 void NiceError::print_error() const {
-    Logger::error(FMT("(%s%s%s) %s%s%s", RED, get_error(error), RESET, BOLD,
-                      message.c_str(), RESET));
+    Logger::log("");
     Logger::elog(FMT("%s     ╭─[%s%s%s%s:%i:%i%s%s]%s", BLK, RESET, BBLU,
                      cb_dbg_info->getSourceInfo()->getPath().c_str(), BBLK,
                      cb_dbg_info->line, cb_dbg_info->pos.second, RESET, BLK,
@@ -25,6 +24,9 @@ void NiceError::print_error() const {
                      cb_dbg_info->line_after.c_str()));
     Logger::elog(FMT("%s     │", BLK));
     Logger::elog(FMT("   ──╯%s", RESET));
+
+    Logger::error(FMT("(%s%s%s) %s%s%s", RED, get_error(error), RESET, BOLD,
+                      message.c_str(), RESET));
 };
 
 ptr<const char> get_error(Error code) {
