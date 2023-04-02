@@ -56,19 +56,13 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     // Transformed value from the last call
     std::shared_ptr<ir::Value> value;
     /**
-     * @brief Function fetch response .
-     * This is used after we fetched a function from
-     * our stack/cache.
+     * Function fetch response.
      *
-     * There can be several different
-     * errors such as: no matches found (0x01) and
-     * ambiguos function types (0x02).
+     * This enum is used to represent the response of a function fetch operation,
+     * which can result in several different errors, such as "no matches found"
+     * (0x01) and "ambiguous function types" (0x02).
      *
-     * This is a better
-     * way to get the error reason instead of just using
-     * booleans.
-     *
-     * @note Ok (0x00) is not actually an error.
+     * @note An Ok response (0x00) is not actually an error.
      */
     enum FunctionFetchResponse {
         Ok                = 0x00,
@@ -77,21 +71,25 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
         _Unknown          = -0x01
     };
     /**
-     * Deduce a function from it's template arguments and it's call arguments.
-     * @example
-     *   myFunction<T>(a: T);
-     *   --------------------------
-     *   myFunction<String>("hello") -> myFunction<String> | success
-     *   myFunction("hello")         -> myFunction<String> | success
-     *   myFunction<String>(6)       -> error: types dont match
-     *   --------------------------
-     *   myOtherFunction<T = String>()
-     *   --------------------------
-     *   myOtherFunction<i32>()      -> myFunction<i32>    | success
-     *   myOtherFunction()           -> myFunction<String> | success
+     * Deduce a function from its template arguments and its call arguments.
      *
-     * @return pair: deduced argument types, message (empty string if there was
-     * success)
+     * @param s           A FunctionStore object representing the function to deduce.
+     * @param arguments   A vector of shared pointers to Type objects representing the call arguments.
+     * @param generics    A vector of shared pointers to Type objects representing the template arguments (default: empty vector).
+     *
+     * @example
+     * myFunction<T>(a: T);
+     * --------------------------
+     * myFunction<String>("hello") -> myFunction<String> (success)
+     * myFunction("hello")         -> myFunction<String> (success)
+     * myFunction<String>(6)       -> error: types don't match
+     *
+     * myOtherFunction<T = String>()
+     * --------------------------
+     * myOtherFunction<i32>()      -> myFunction<i32>    (success)
+     * myOtherFunction()           -> myFunction<String> (success)
+     *
+     * @return A pair of the deduced argument types and a message indicating any errors (empty string if there was success).
      */
     std::pair<std::vector<std::shared_ptr<types::Type>>, std::string>
     deduceFunction(
@@ -134,6 +132,19 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      */
     bool typeGenericsMatch(ptr<Expression::TypeRef> ty,
                            std::shared_ptr<types::DefinedType> comp);
+    /**
+     * Check if the body of a function returns a value.
+     *
+     * This function takes a vector of Node pointers as input, representing
+     * the statements in the body of a function. It then checks whether the
+     * function returns a value by examining the AST inside a body.
+     *
+     * @param exprs A vector of Node pointers representing the statements in
+     *              the body of a function.
+     *
+     * @return      A boolean indicating whether the function returns a value.
+     */
+    bool bodyReturns(std::vector<ptr<Node>> exprs);
     /**
      * @brief Fetch a function and get it's most fitting overload.
      *
@@ -181,11 +192,14 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      */
     bool isInClassContext(std::shared_ptr<types::Type> ty);
     /**
-     * @brief It checks if the current module has a valid (or private) context
-     * to
-     *  @param mod
+     * Check if the current module has a valid (or private) context.
      *
-     * @c isInClassContext
+     * @param mod               A shared pointer to an ir::Module object representing
+     *  the module to check.
+     * @param isInClassContext  A boolean flag indicating whether the check should
+     *  consider the current context to be a class context.
+     *
+     * @return True if the module has a valid context, false otherwise.
      */
     bool isInModuleContext(std::shared_ptr<ir::Module> mod);
     /**

@@ -18,14 +18,14 @@ pub:
 }
 
 fn h(d: String) String {
-    return d
+    // return d
 }
 
 pub fn main() i32 {
-    let b: i32 ;
-    b = 2
+    let b: i32 = 5;
+    // b = 2
     let a = new Hello(b);
     a.hello()
     a.hey()
-
+    h("a")
 }
