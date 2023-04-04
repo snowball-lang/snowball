@@ -119,6 +119,11 @@ std::vector<Value> list_to_vector(std::list<std::pair<Key, Value>> l) {
     return _x_to_vec<std::list<std::pair<Key, Value>>, Value>(l);
 }
 
+template <typename T, typename X>
+void assert_value_type(X value) {
+    static_assert(std::is_same<T, X>::value, "value types must be the same!");
+}
+
 } // namespace utils
 } // namespace snowball
 

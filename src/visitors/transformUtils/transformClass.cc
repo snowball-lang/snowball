@@ -28,17 +28,19 @@ Transformer::transformClass(const std::string& uuid,
             parentType = utils::dyn_cast<types::DefinedType>(transformType(x));
         }
 
+        auto generics = vector_iterate<ptr<Expression::TypeRef>,
+                                       std::shared_ptr<types::Type>>(
+            typeRef->getGenerics(), [&](auto t) { return transformType(t); });
+
         auto basedName = getNameWithBase(ty->getName());
-        auto fields    = vector_iterate<ptr<Statement::VariableDecl>,
+        auto baseFields    = vector_iterate<ptr<Statement::VariableDecl>,
                                      ptr<types::DefinedType::ClassField>>(
             ty->getVariables(), [&](auto v) {
                 auto varTy = transformType(v->getDefinedType());
                 return new types::DefinedType::ClassField(v->getName(), varTy);
             });
 
-        auto generics = vector_iterate<ptr<Expression::TypeRef>,
-                                       std::shared_ptr<types::Type>>(
-            typeRef->getGenerics(), [&](auto t) { return transformType(t); });
+        auto fields = getMemberList(ty->getVariables(), baseFields, parentType);
 
         auto baseUuid      = ctx->createIdentifierName(ty->getName());
         auto existantTypes = ctx->cache->getTransformedType(uuid);

@@ -111,6 +111,19 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
         const std::vector<std::shared_ptr<types::Type>>& generics,
         const std::vector<std::shared_ptr<types::Type>>& deducedTypes);
     /**
+     * Generates a list of members that a `DefinedType` can have in C++.
+     *
+     * The list includes both the class's own fields and the fields inherited from its parent
+     * (if any). If the child class has a member with the same name as the parent class's member,
+     * the parent member is kept but only if their types match. If the types don't match, an error
+     * is thrown.
+     *
+     * @param type a pointer to the `DefinedType` to generate the list for.
+     * @return a vector containing all the class's fields, including the inherited ones.
+     */
+    std::vector<ptr<types::DefinedType::ClassField>>
+        getMemberList(std::vector<ptr<Syntax::Statement::VariableDecl>> fieldNodes, std::vector<ptr<types::DefinedType::ClassField>> fields, std::shared_ptr<types::DefinedType> parent);
+    /**
      * Generate a function if it exists on the function cache,
      * if it was already generated, we can just return the already
      * generated function.

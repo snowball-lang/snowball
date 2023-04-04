@@ -1,6 +1,7 @@
 
 #include "../../DBGSourceInfo.h"
 #include "../../common.h"
+#include "../../utils/utils.h"
 #include "../../services/OperatorService.h"
 #include "../types/Type.h"
 #include "common.h"
@@ -232,7 +233,14 @@ struct Identifier : public AcceptorExtend<Identifier, Base> {
 
     /// @return Get respective identifier vaSyntax::Expression::Identifierlue
     auto getIdentifier() { return identifier; }
-    virtual std::string getNiceName() const { return identifier; }
+    virtual std::string getNiceName() const {
+      if (utils::startsWith(identifier, "#")) {
+        auto i = services::OperatorService::operatorID(identifier);
+        return services::OperatorService::getOperatorId(i);
+      }
+
+      return identifier;
+    }
 
     ACCEPT()
 };

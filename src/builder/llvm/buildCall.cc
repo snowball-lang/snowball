@@ -23,13 +23,13 @@ void LLVMBuilder::visit(ptr<ir::Call> call) {
 
     setDebugInfoLoc(call);
     if (auto c = utils::dyn_cast<ir::Func>(call->getCallee());
-        c->isConstructor()) {
+        c != nullptr && c->isConstructor()) {
         assert(c->hasParent());
         auto p = c->getParent();
 
         args.insert(args.begin(), allocateObject(p));
     } else if (auto c = utils::dyn_cast<ir::Func>(call->getCallee());
-               c->inVirtualTable()) {
+               c != nullptr && c->inVirtualTable()) {
         assert(c->hasParent());
 
         auto index  = c->getVirtualIndex();
@@ -58,8 +58,8 @@ void LLVMBuilder::visit(ptr<ir::Call> call) {
     }
 
     // TODO: invoke if it's inside a try block
-    auto f      = llvm::cast<llvm::Function>(callee);
-    this->value = builder->CreateCall(f, args);
+    this->value = builder->CreateCall((ptr<llvm::FunctionType>)callee->getType()
+        ->getPointerElementType(), callee, args);
 }
 
 } // namespace codegen
