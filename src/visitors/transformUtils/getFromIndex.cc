@@ -1,5 +1,6 @@
 
 #include "../Transformer.h"
+#include "../../ir/values/IndexExtract.h"
 
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
@@ -19,7 +20,7 @@ std::pair<
 Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
                           ptr<Expression::Index> index, bool isStatic) {
 
-    auto getFromType = [&](std::shared_ptr<types::Type> type)
+    auto getFromType = [&](std::shared_ptr<types::Type> type, std::shared_ptr<ir::Value> value = nullptr)
         -> std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                       std::optional<std::shared_ptr<types::Type>>,
                       std::optional<std::vector<std::shared_ptr<ir::Func>>>,
@@ -30,25 +31,49 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
         if (auto x = std::dynamic_pointer_cast<types::DefinedType>(type)) {
             auto g = utils::cast<Expression::GenericIdentifier>(
                 index->getIdentifier());
+            auto name = index->getIdentifier()->getIdentifier();
             auto generics = (g != nullptr)
                                 ? g->getGenerics()
                                 : std::vector<ptr<Expression::TypeRef>>{};
 
             auto fullUUID               = x->getUUID();
             auto [v, ty, fns, ovs, mod] = getFromIdentifier(
-                dbgInfo, index->getIdentifier()->getIdentifier(), generics,
+                dbgInfo, name, generics,
                 fullUUID);
 
-            if (!v.has_value() && !ty.has_value() && !fns.has_value() &&
+            std::optional<std::shared_ptr<ir::Value>> indexValue;
+            if (!isStatic) {
+                auto fields = x->getFields();
+                bool fieldFound = false;
+                auto fieldValue = std::find_if(fields.begin(), fields.end(), [&](ptr<types::DefinedType::ClassField> f) {
+                    bool e = f->name == name;
+                    fieldFound = e;
+                    return fieldFound;
+                });
+
+                if (fieldFound) {
+                    assert(v == std::nullopt);
+                    assert(value != nullptr);
+
+                    indexValue = ctx->module->N<ir::IndexExtract>(dbgInfo, value, std::distance(fields.begin(), fieldValue));
+                    indexValue->get()->setType((*fieldValue)->type);
+                }
+            }
+
+            if (indexValue == std::nullopt) {
+                indexValue = v;
+            }
+
+            if (!indexValue.has_value() && !ty.has_value() && !fns.has_value() &&
                 !ovs.has_value() && !mod.has_value()) {
                 E<VARIABLE_ERROR>(
                     dbgInfo,
                     FMT("Coudn't find '%s' inside type '%s'!",
-                        index->getIdentifier()->getIdentifier().c_str(),
+                        name.c_str(),
                         x->getPrettyName().c_str()));
             }
 
-            return {v, ty, fns, ovs, mod, isInClassContext(x)};
+            return {indexValue, ty, fns, ovs, mod, isInClassContext(x)};
         } else {
             assert(false && "TODO: static non-defined type");
         }
@@ -94,7 +119,7 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
             getFromIdentifier(dbgInfo, baseIdentifier->getIdentifier());
 
         if (val && (!isStatic)) {
-            return {getFromType(val.value()->getType()), val.value()};
+            return {getFromType(val.value()->getType(), *val), val.value()};
         } else if (val) {
             E<TYPE_ERROR>(dbgInfo, "Static method call / accesses can only be "
                                    "used with types, not values!");
@@ -133,9 +158,9 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
         auto [v, t, fs, ovs, mod, c] = r;
 
         if (v && (!isStatic)) {
-            return {getFromType(v.value()->getType()), v.value()};
+            return {getFromType(v.value()->getType(), *v), v.value()};
         } else if (v) {
-            E<TYPE_ERROR>(dbgInfo, "Static method call / accesses can only be "
+            E<TYPE_ERROR>(dbgInfo, "Static method index can only be "
                                    "used with types, not values!");
         }
 

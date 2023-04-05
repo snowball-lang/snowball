@@ -30,7 +30,6 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
     auto v = ctx->module->N<ir::Call>(p_node->getDBGInfo(), c->getCallee(),
                                       c->getArguments());
     v->setType(c->getType());
-
     this->value = v;
 }
 

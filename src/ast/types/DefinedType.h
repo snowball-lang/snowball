@@ -123,6 +123,8 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     /// @return A list containing all the fields declared for the class
     /// @note It does not include the parent fields!
     auto getFields() const { return fields; }
+    /// @brief Append a new field (ClassField) to the list
+    void addField(ptr<ClassField> f);
     /// @c Type::toRef() for information about this function.
     /// @note It essentially does the same thing except it adds
     ///  generics if needed

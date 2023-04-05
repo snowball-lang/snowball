@@ -28,6 +28,7 @@ DefinedType::ClassField::ClassField(const std::string& name,
                                     std::shared_ptr<Type> type, Privacy privacy)
     : name(name), type(type), Syntax::Statement::Privacy(privacy) {}
 std::string DefinedType::getUUID() const { return uuid; }
+void DefinedType::addField(ptr<ClassField> f) { fields.emplace_back(f); }
 std::shared_ptr<ir::Module> DefinedType::getModule() const { return module; }
 int DefinedType::getVtableSize() { return classVtable.size(); }
 int DefinedType::addVtableItem(std::shared_ptr<ir::Func> f) {

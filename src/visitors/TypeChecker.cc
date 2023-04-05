@@ -11,6 +11,7 @@
 #include "../ir/values/Return.h"
 #include "../ir/values/Value.h"
 #include "../ir/values/VariableDeclaration.h"
+#include "../ir/values/IndexExtract.h"
 
 #include <assert.h>
 #include <string>
@@ -66,6 +67,11 @@ VISIT(VariableDeclaration) {
     cantBeVoid(p_node, val->getType(),
                FMT("Value used for variable '%s' has a value with 'void' type!",
                    p_node->getIdentifier().c_str()));
+}
+
+VISIT(IndexExtract) {
+    cantBeVoid(p_node, p_node->getType(),
+               "Value used for index extraction has a value with 'void' type!");
 }
 
 VISIT(Variable) {

@@ -1,4 +1,5 @@
 #include "../../Transformer.h"
+#include "../../../ir/values/IndexExtract.h"
 
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
@@ -26,24 +27,27 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
     if (value) {
         // TODO: it should not be getValue, it should have it's own value
         auto val    = *value;
-        auto casted = std::dynamic_pointer_cast<ir::Variable>(val);
-        assert(casted != nullptr);
+        if (auto casted = utils::dyn_cast<ir::Variable>(val)) {
+            assert(casted != nullptr);
 
-        if (!casted->isInitialized()) {
-            E<VARIABLE_ERROR>(
-                p_node,
-                FMT("Variable '%s' is used before being assigned.",
-                    casted->getIdentifier().c_str()),
-                FMT("Variable '%s' has been declared but not assigned!.",
-                    casted->getIdentifier().c_str()));
+            if (!casted->isInitialized()) {
+                E<VARIABLE_ERROR>(
+                    p_node,
+                    FMT("Variable '%s' is used before being assigned.",
+                        casted->getIdentifier().c_str()),
+                    FMT("Variable '%s' has been declared but not assigned!.",
+                        casted->getIdentifier().c_str()));
+            }
+
+            // TODO: check for variable privacy
+            auto var =
+                ctx->module->N<ir::ValueExtract>(p_node->getDBGInfo(), casted);
+            var->setType(casted->getType());
+            this->value = var;
+            return;
         }
 
-        // TODO: check for variable privacy
-        auto var =
-            ctx->module->N<ir::ValueExtract>(p_node->getDBGInfo(), casted);
-        var->setType(casted->getType());
-
-        this->value = var;
+        this->value = val;
         return;
     } else if (type) {
         E<VARIABLE_ERROR>(p_node, "Can't use types as values!");
