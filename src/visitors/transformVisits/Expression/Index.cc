@@ -65,7 +65,6 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
             auto m = std::get<4>(r);
             utils::assert_value_type<std::shared_ptr<ir::Module>>(*m);
 
-            DUMP(m.has_value())
             inModule = m.has_value();
         } else if (auto b = utils::cast<Expression::Index>(p_node->getBase())) {
             auto [r, _] = getFromIndex(b->getDBGInfo(), b, b->isStatic);
@@ -81,6 +80,10 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
             E<TYPE_ERROR>(p_node, FMT("Can't access class method '%s' "
                                       "that's not static as if it was one!",
                                       function->getNiceName().c_str()));
+        } else if ((!function->isStatic()) &&
+            (!inModule)) {
+            E<TYPE_ERROR>(p_node, "Reference to non-static member function must be called.",
+                "did you mean to call it with no arguments?");
         } else if ((!p_node->isStatic) && function->isStatic()) {
             E<TYPE_ERROR>(p_node, FMT("Can't access static class method '%s' "
                                       "as with a non-static index expression!",

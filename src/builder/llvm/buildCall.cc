@@ -46,7 +46,6 @@ void LLVMBuilder::visit(ptr<ir::Call> call) {
         auto pointer = builder->CreateStructGEP(
             loadedVtable->getType()->getPointerElementType(), loadedVtable,
             index);
-        pointer->getType()->dump();
 
         auto pointerLoad = builder->CreateLoad(
             pointer->getType()->getPointerElementType(), pointer);

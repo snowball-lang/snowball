@@ -44,7 +44,6 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
             auto m = std::get<4>(r);
             utils::assert_value_type<std::shared_ptr<ir::Module>>(*m);
 
-            DUMP(m.has_value())
             inModule = m.has_value();
         } else if (auto b = utils::cast<Expression::Index>(x->getBase())) {
             auto [r, _] = getFromIndex(b->getDBGInfo(), b, b->isStatic);
