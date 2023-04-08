@@ -30,21 +30,15 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
         if (auto casted = utils::dyn_cast<ir::Variable>(val)) {
             assert(casted != nullptr);
 
-            if (!casted->isInitialized()) {
-                E<VARIABLE_ERROR>(
-                    p_node,
-                    FMT("Variable '%s' is used before being assigned.",
-                        casted->getIdentifier().c_str()),
-                    FMT("Variable '%s' has been declared but not assigned!.",
-                        casted->getIdentifier().c_str()));
-            }
-
             // TODO: check for variable privacy
             auto var =
                 ctx->module->N<ir::ValueExtract>(p_node->getDBGInfo(), casted);
             var->setType(casted->getType());
             this->value = var;
             return;
+        } else if (auto indexExtract = utils::dyn_cast<ir::IndexExtract>(val)) {
+        } else {
+            assert(false);
         }
 
         this->value = val;
@@ -67,13 +61,13 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
         if (auto b = utils::cast<Expression::Identifier>(p_node->getBase())) {
             auto r = getFromIdentifier(b);
             auto m = std::get<4>(r);
-            utils::assert_value_type<std::shared_ptr<ir::Module>>(*m);
+            utils::assert_value_type<std::shared_ptr<ir::Module>&, decltype(*m)>();
 
             inModule = m.has_value();
         } else if (auto b = utils::cast<Expression::Index>(p_node->getBase())) {
             auto [r, _] = getFromIndex(b->getDBGInfo(), b, b->isStatic);
             auto m = std::get<4>(r);
-            utils::assert_value_type<std::shared_ptr<ir::Module>>(*m);
+            utils::assert_value_type<std::shared_ptr<ir::Module>&, decltype(*m)>();
 
             inModule = m.has_value();
         }

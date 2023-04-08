@@ -21,6 +21,8 @@
 
 🔍 So why not dive in and explore Snowball's capabilities? For more information, check out the [installation guide](#installation). Happy coding!
 
+* [Discord](https://discord.gg/YPgym7cwYr)
+
 ## Getting Started with Snowball
 
 ### Installation
@@ -116,3 +118,4 @@ Follow this links and tell us your thoughts, ask questions and be part of the Sn
 
 * GitHub : https://github.com/snowball-lang/snowball
 * ORG    : https://github.com/snowball-lang
+* Discord: https://discord.gg/YPgym7cwYr

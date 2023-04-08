@@ -42,13 +42,13 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         if (auto b = utils::cast<Expression::Identifier>(x->getBase())) {
             auto r = getFromIdentifier(b);
             auto m = std::get<4>(r);
-            utils::assert_value_type<std::shared_ptr<ir::Module>>(*m);
+            utils::assert_value_type<std::shared_ptr<ir::Module>&, decltype(*m)>();
 
             inModule = m.has_value();
         } else if (auto b = utils::cast<Expression::Index>(x->getBase())) {
             auto [r, _] = getFromIndex(b->getDBGInfo(), b, b->isStatic);
             auto m = std::get<4>(r);
-            utils::assert_value_type<std::shared_ptr<ir::Module>>(*m);
+            utils::assert_value_type<std::shared_ptr<ir::Module>&, decltype(*m)>();
 
             inModule = m.has_value();
         }

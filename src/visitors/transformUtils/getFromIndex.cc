@@ -55,7 +55,7 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
                     assert(v == std::nullopt);
                     assert(value != nullptr);
 
-                    indexValue = ctx->module->N<ir::IndexExtract>(dbgInfo, value, std::distance(fields.begin(), fieldValue));
+                    indexValue = ctx->module->N<ir::IndexExtract>(dbgInfo, value, *fieldValue, std::distance(fields.begin(), fieldValue));
                     indexValue->get()->setType((*fieldValue)->type);
                 }
             }

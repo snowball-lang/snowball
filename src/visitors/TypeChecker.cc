@@ -12,6 +12,7 @@
 #include "../ir/values/Value.h"
 #include "../ir/values/VariableDeclaration.h"
 #include "../ir/values/IndexExtract.h"
+#include "../ir/values/Conditional.h"
 
 #include <assert.h>
 #include <string>
@@ -87,6 +88,9 @@ VISIT(Argument) {
 
 VISIT(ValueExtract) { /* noop */
 }
+
+
+VISIT(Conditional) { assert(false); }
 
 VISIT(Cast) {
     auto v = p_node->getExpr();

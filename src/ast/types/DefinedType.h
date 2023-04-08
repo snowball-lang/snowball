@@ -46,6 +46,8 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
 
         const std::string name;
         const std::shared_ptr<Type> type;
+
+        bool initialized = false;
     };
 
     friend AcceptorExtend;

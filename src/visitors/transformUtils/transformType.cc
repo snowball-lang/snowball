@@ -25,8 +25,7 @@ Transformer::transformType(ptr<Expression::TypeRef> ty) {
                     return transformed;
                 }
             }
-        }
-        if (auto x = ctx->cache->getType(uuid)) {
+        } else if (auto x = ctx->cache->getType(uuid)) {
             auto cls = *x;
 
             // TODO: check for default generic types

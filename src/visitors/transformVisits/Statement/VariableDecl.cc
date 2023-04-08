@@ -22,14 +22,16 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
     }
 
     auto var = ctx->module->N<ir::Variable>(p_node->getDBGInfo(), variableName,
-                                            p_node->isInitialized());
+                                            false);
     auto item =
         std::make_shared<transform::Item>(transform::Item::Type::VALUE, var);
 
+    // TODO: it should always be declared
     if (p_node->isInitialized()) {
         variableValue->accept(this);
         auto varDecl = ctx->module->N<ir::VariableDeclaration>(
             p_node->getDBGInfo(), variableName, this->value, isMutable);
+        varDecl->setId(var->getId());
         varDecl->setType(this->value->getType());
         auto itemDecl = std::make_shared<transform::Item>(
             transform::Item::Type::VALUE, varDecl);
@@ -57,7 +59,6 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
         }
 
         var->setType(this->value->getType());
-        var->setInitID(varDecl->getId());
     } else {
         var->setType(definedType);
         this->value = var;

@@ -88,9 +88,8 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
                     int argIndex = 0;
                     for (auto arg : newArgs) {
                         auto ref = ctx->module->N<ir::Variable>(
-                            node->getDBGInfo(), arg.first, true, true);
+                            node->getDBGInfo(), arg.first, true);
 
-                        ref->setInitID(arg.second->getId());
                         ref->setType(arg.second->getType());
                         auto refItem = std::make_shared<transform::Item>(
                             transform::Item::Type::VALUE, ref);
@@ -101,10 +100,6 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
                     }
 
                     auto body = bodiedFn->getBody();
-                    if (!bodyReturns(body->getStmts()) && !((utils::dyn_cast<types::NumericType>(returnType)) || (utils::dyn_cast<types::VoidType>(returnType)))
-                     && !fn->isConstructor()) {
-                        E<TYPE_ERROR>(node, "Function lacks ending return statement!", "Function does not return on all paths!");
-                    }
 
                     body->accept(this);
                     auto functionBody =

@@ -29,12 +29,20 @@ namespace snowball {
 namespace Syntax {
 
 /**
- * The transformer is an AST visitor that iterates
- * through the AST and translates (or transforms)
- * all nodes into instructions.
+ * @class Transformer
+ * @brief AST visitor that transforms nodes into instructions.
  *
- * This will be much more easyer to analize and
- * generate the program.
+ * The Transformer class is an AST visitor that iterates through the AST and
+ * translates (or transforms) all nodes into instructions. The resulting
+ * instruction sequence can be used for various purposes, such as code
+ * generation, program optimization, or program analysis.
+ *
+ * @note This class assumes that the input AST is valid and conforms to the
+ * expected syntax and structure. Any errors or inconsistencies in the AST may
+ * result in incorrect or incomplete transformation results.
+ *
+ * @note This class extends the AcceptorExtend class and implements the Visitor
+ * interface.
  */
 class Transformer : public AcceptorExtend<Transformer, Visitor> {
     /// @brief a list of generated modules through the whole project
@@ -145,19 +153,6 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      */
     bool typeGenericsMatch(ptr<Expression::TypeRef> ty,
                            std::shared_ptr<types::DefinedType> comp);
-    /**
-     * Check if the body of a function returns a value.
-     *
-     * This function takes a vector of Node pointers as input, representing
-     * the statements in the body of a function. It then checks whether the
-     * function returns a value by examining the AST inside a body.
-     *
-     * @param exprs A vector of Node pointers representing the statements in
-     *              the body of a function.
-     *
-     * @return      A boolean indicating whether the function returns a value.
-     */
-    bool bodyReturns(std::vector<ptr<Node>> exprs);
     /**
      * @brief Fetch a function and get it's most fitting overload.
      *
@@ -295,5 +290,5 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
 } // namespace Syntax
 } // namespace snowball
 
-#undef VISIT
+#undef ACCEPT
 #endif // __SNOWBALL_TRANSFORM_H_

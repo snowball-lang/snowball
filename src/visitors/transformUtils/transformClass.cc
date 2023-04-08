@@ -45,19 +45,19 @@ Transformer::transformClass(const std::string& uuid,
         auto baseUuid      = ctx->createIdentifierName(ty->getName());
         auto existantTypes = ctx->cache->getTransformedType(uuid);
 
-        auto uuid =
+        auto _uuid =
             baseUuid + ":" +
             utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
 
         transformedType = std::make_shared<types::DefinedType>(
-            basedName, uuid, ctx->module, fields, parentType, generics);
+            basedName, _uuid, ctx->module, fields, parentType, generics);
 
         transformedType->setDBGInfo(ty->getDBGInfo());
         transformedType->setSourceInfo(ty->getSourceInfo());
         ctx->setCurrentClass(transformedType);
 
         auto item = std::make_shared<transform::Item>(transformedType);
-        ctx->cache->setTransformedType(uuid, item);
+        ctx->cache->setTransformedType(_uuid, item);
         for (auto fn : ty->getFunctions()) {
             fn->accept(this);
         }

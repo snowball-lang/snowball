@@ -17,15 +17,6 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
         auto casted = std::dynamic_pointer_cast<ir::Variable>(val);
         assert(casted != nullptr);
 
-        if (!casted->isInitialized()) {
-            E<VARIABLE_ERROR>(
-                p_node,
-                FMT("Variable '%s' is used before being assigned.",
-                    name.c_str()),
-                FMT("Variable '%s' has been declared but not assigned!.",
-                    name.c_str()));
-        }
-
         auto var =
             ctx->module->N<ir::ValueExtract>(p_node->getDBGInfo(), casted);
         var->setType(casted->getType());

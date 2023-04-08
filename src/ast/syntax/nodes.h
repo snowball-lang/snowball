@@ -544,6 +544,39 @@ struct ClassDef : public AcceptorExtend<ClassDef, Base>,
 };
 
 /**
+ * @brief Representation of a conditional block or "if statement" in the AST.
+ * This contains instructions that are executed inside of it if a condition is met,
+ * if not, the "else" statement is executed if it exists.
+ */
+struct Conditional : public AcceptorExtend<Conditional, Base> {
+
+    // Instructions stored inside a block
+    ptr<Block> insts;
+    // the expression to be evaluated
+    ptr<Expression::Base> cond;
+    // The "else" statement block if the condition is false
+    ptr<Block> elseBlock;
+
+  public:
+    explicit Conditional(ptr<Expression::Base> cond, ptr<Block> insts,
+        ptr<Block> elseBlock = nullptr) : cond(cond), insts(insts), elseBlock(elseBlock)
+        {};
+
+    /// @return body block instructions to execute
+    //   if the condition is met
+    auto getBlock() { return insts; }
+    /// @return the expression to be evaluated
+    auto getCondition() { return cond; }
+
+    /// @return Get "else" statement
+    auto getElse() { return elseBlock; }
+
+    // Set a visit handler for the generators
+    ACCEPT()
+};
+
+
+/**
  * Import statement. Imports functions, classes and symbols from other
  *  files / modules.
  */
