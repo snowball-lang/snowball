@@ -4,10 +4,10 @@
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 
-#include <llvm/IR/GlobalVariable.h>
-#include <llvm/IR/Metadata.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>
+#include <llvm/IR/GlobalVariable.h>
+#include <llvm/IR/Metadata.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 

@@ -39,8 +39,8 @@ std::string getUTF8FromIndex(const std::string& s, const int index) {
     std::string result;
     unsigned char c = s[index];
 
-    if (c & 0x80) { // check if it's a multi-byte sequence
-        if ((c & 0xE0) == 0xC0) { // 2-byte sequence
+    if (c & 0x80) {                      // check if it's a multi-byte sequence
+        if ((c & 0xE0) == 0xC0) {        // 2-byte sequence
             result = s.substr(index, 2);
         } else if ((c & 0xF0) == 0xE0) { // 3-byte sequence
             result = s.substr(index, 3);
@@ -53,7 +53,6 @@ std::string getUTF8FromIndex(const std::string& s, const int index) {
 
     return result;
 }
-
 
 std::string get_lib_folder() {
     fs::path home       = getenv("HOME");

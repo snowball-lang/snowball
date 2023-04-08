@@ -32,9 +32,9 @@ Transformer::transformClass(const std::string& uuid,
                                        std::shared_ptr<types::Type>>(
             typeRef->getGenerics(), [&](auto t) { return transformType(t); });
 
-        auto basedName = getNameWithBase(ty->getName());
-        auto baseFields    = vector_iterate<ptr<Statement::VariableDecl>,
-                                     ptr<types::DefinedType::ClassField>>(
+        auto basedName  = getNameWithBase(ty->getName());
+        auto baseFields = vector_iterate<ptr<Statement::VariableDecl>,
+                                         ptr<types::DefinedType::ClassField>>(
             ty->getVariables(), [&](auto v) {
                 auto varTy = transformType(v->getDefinedType());
                 return new types::DefinedType::ClassField(v->getName(), varTy);

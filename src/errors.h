@@ -17,6 +17,7 @@ enum Error {
     SYNTAX_ERROR,
     UNDEFINED_VARIABLE,
     UNEXPECTED_EOF,
+    REFERENCE_ERROR,
     WARNING,
     VARIABLE_ERROR,
     CONFIGURATION_ERROR,
@@ -66,7 +67,8 @@ class NiceError : public SNError {
 
 class LexerError : public NiceError {
   public:
-    LexerError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info, const std::string& info = "")
+    LexerError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info,
+               const std::string& info = "")
         : NiceError(code, err, p_cb_dbg_info, info){};
 
     virtual ~LexerError(){};

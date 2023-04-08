@@ -42,13 +42,15 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         if (auto b = utils::cast<Expression::Identifier>(x->getBase())) {
             auto r = getFromIdentifier(b);
             auto m = std::get<4>(r);
-            utils::assert_value_type<std::shared_ptr<ir::Module>&, decltype(*m)>();
+            utils::assert_value_type<std::shared_ptr<ir::Module>&,
+                                     decltype(*m)>();
 
             inModule = m.has_value();
         } else if (auto b = utils::cast<Expression::Index>(x->getBase())) {
             auto [r, _] = getFromIndex(b->getDBGInfo(), b, b->isStatic);
-            auto m = std::get<4>(r);
-            utils::assert_value_type<std::shared_ptr<ir::Module>&, decltype(*m)>();
+            auto m      = std::get<4>(r);
+            utils::assert_value_type<std::shared_ptr<ir::Module>&,
+                                     decltype(*m)>();
 
             inModule = m.has_value();
         }
@@ -66,9 +68,9 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                                     ? g->getGenerics()
                                     : std::vector<ptr<Expression::TypeRef>>{});
 
-        // TODO: actually check if base is a module with: "getFromIdentifier" of the module
-        if ((x->isStatic && (!c->isStatic())) &&
-            (!inModule)) {
+        // TODO: actually check if base is a module with: "getFromIdentifier" of
+        // the module
+        if ((x->isStatic && (!c->isStatic())) && (!inModule)) {
             E<TYPE_ERROR>(p_node, FMT("Can't access class method '%s' "
                                       "that's not static as if it was one!",
                                       c->getNiceName().c_str()));

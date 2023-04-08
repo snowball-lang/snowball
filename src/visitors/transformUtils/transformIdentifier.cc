@@ -64,17 +64,16 @@ Transformer::StoreType Transformer::getFromIdentifier(
                 std::dynamic_pointer_cast<types::DefinedType>(t->getType());
             assert(t != nullptr);
             if (typeGenericsMatch(ty, transformed)) {
-                return {std::nullopt,
-                transformed,
-                std::nullopt, std::nullopt, std::nullopt};
+                return {std::nullopt, transformed, std::nullopt, std::nullopt,
+                        std::nullopt};
             }
         }
     } else if (auto t = ctx->cache->getType(uuid)) {
         auto ty = new Expression::TypeRef(identifier, dbgInfo, generics);
-        return {std::nullopt,
-                utils::dyn_cast<types::Type>(
-                    transformClass(uuid, t.value(), ty)),
-                std::nullopt, std::nullopt, std::nullopt};
+        return {
+            std::nullopt,
+            utils::dyn_cast<types::Type>(transformClass(uuid, t.value(), ty)),
+            std::nullopt, std::nullopt, std::nullopt};
     }
 
     std::optional<std::vector<cacheComponents::Functions::FunctionStore>>

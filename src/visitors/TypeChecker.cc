@@ -7,12 +7,12 @@
 #include "../ast/types/PrimitiveTypes.h"
 #include "../ir/values/Call.h"
 #include "../ir/values/Cast.h"
+#include "../ir/values/Conditional.h"
 #include "../ir/values/Func.h"
+#include "../ir/values/IndexExtract.h"
 #include "../ir/values/Return.h"
 #include "../ir/values/Value.h"
 #include "../ir/values/VariableDeclaration.h"
-#include "../ir/values/IndexExtract.h"
-#include "../ir/values/Conditional.h"
 
 #include <assert.h>
 #include <string>
@@ -88,7 +88,6 @@ VISIT(Argument) {
 
 VISIT(ValueExtract) { /* noop */
 }
-
 
 VISIT(Conditional) { assert(false); }
 

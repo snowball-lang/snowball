@@ -57,8 +57,9 @@ void LLVMBuilder::visit(ptr<ir::Call> call) {
     }
 
     // TODO: invoke if it's inside a try block
-    this->value = builder->CreateCall((ptr<llvm::FunctionType>)callee->getType()
-        ->getPointerElementType(), callee, args);
+    this->value = builder->CreateCall(
+        (ptr<llvm::FunctionType>)callee->getType()->getPointerElementType(),
+        callee, args);
 }
 
 } // namespace codegen

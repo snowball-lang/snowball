@@ -95,7 +95,6 @@ ptr<Syntax::Statement::ClassDef> Parser::parseClass() {
                 }
             } break;
 
-
             case TokenType::KWORD_VAR: {
                 cls->addVariable(parseVariable());
                 assert_tok<TokenType::SYM_SEMI_COLLON>("a ';'");

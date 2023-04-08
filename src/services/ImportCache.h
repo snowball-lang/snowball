@@ -2,8 +2,8 @@
 #include "../ir/module/Module.h"
 
 #include <filesystem>
-#include <optional>
 #include <map>
+#include <optional>
 
 #ifndef __SNOWBALL_IMPORT_CACHE_H_
 #define __SNOWBALL_IMPORT_CACHE_H_
@@ -18,8 +18,7 @@ namespace services {
 class ImportCache {
     /// @brief A map containing the stored modules.
     /// @note The map key is a full abstract path.
-    std::map<std::filesystem::path, std::shared_ptr<ir::Module>>
-        modules;
+    std::map<std::filesystem::path, std::shared_ptr<ir::Module>> modules;
 
   public:
     ImportCache() noexcept = default;
