@@ -60,6 +60,19 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
 
         var->setType(this->value->getType());
     } else {
+        auto varDecl = ctx->module->N<ir::VariableDeclaration>(
+            p_node->getDBGInfo(), variableName, nullptr, isMutable);
+        varDecl->setId(var->getId());
+        varDecl->setType(definedType);
+        auto itemDecl = std::make_shared<transform::Item>(
+            transform::Item::Type::VALUE, varDecl);
+
+        if (auto f = ctx->getCurrentFunction().get()) {
+            f->addSymbol(varDecl);
+        } else {
+            assert(false && "TODO: global variables");
+        }
+
         var->setType(definedType);
         this->value = var;
     }

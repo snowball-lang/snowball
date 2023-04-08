@@ -26,11 +26,11 @@ void DefiniteAssigment::asBlock(std::function<void()> cb) {
 }
 
 std::optional<
-    std::pair<Statement::VariableDecl, DefiniteAssigment::ReferenceStatus>>
+    std::pair<std::string, DefiniteAssigment::ReferenceStatus>>
 DefiniteAssigment::getIdentifier(std::string x) {
     for (auto s : scopes) {
         for (auto i : s) {
-            if (i.first.getName() == x) {
+            if (i.first == x) {
                 return i;
             }
         }

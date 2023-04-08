@@ -19,6 +19,8 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <deque>
+#include <unordered_map>
 
 #ifndef __SNOWBALL_DEFINITE_ASSIGMENT_ANALYZER_H_
 #define __SNOWBALL_DEFINITE_ASSIGMENT_ANALYZER_H_
@@ -78,7 +80,7 @@ class DefiniteAssigment : public Analyzer {
      * This member variable is part of the DefiniteAssigment class and is used
      * in the implementation of the definite assignment analysis algorithm.
      */
-    using Scope = std::map<Statement::VariableDecl, ReferenceStatus>;
+    using Scope = std::unordered_map<std::string, ReferenceStatus>;
     /**
      * A list that represents the stack of variable scopes in the analyzed
      * program.
@@ -101,7 +103,7 @@ class DefiniteAssigment : public Analyzer {
      * in the implementation of the definite assignment analysis algorithm to
      * keep track of the current variable scopes in the program.
      */
-    std::list<Scope> scopes;
+    std::deque<Scope> scopes;
     /**
      * A struct that represents the state of the current scope in the program.
      *
@@ -167,7 +169,7 @@ class DefiniteAssigment : public Analyzer {
      * an empty optional is returned.
      */
     std::optional<
-        std::pair<Statement::VariableDecl, DefiniteAssigment::ReferenceStatus>>
+        std::pair<std::string, DefiniteAssigment::ReferenceStatus>>
     getIdentifier(std::string x);
 
 #include "../../defs/accepts.def"
