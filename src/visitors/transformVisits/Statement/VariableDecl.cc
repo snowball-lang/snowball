@@ -21,8 +21,8 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
                                       variableName.c_str()));
     }
 
-    auto var = ctx->module->N<ir::Variable>(p_node->getDBGInfo(), variableName,
-                                            false);
+    auto var =
+        ctx->module->N<ir::Variable>(p_node->getDBGInfo(), variableName, false);
     auto item =
         std::make_shared<transform::Item>(transform::Item::Type::VALUE, var);
 

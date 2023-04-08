@@ -66,9 +66,9 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     /**
      * Function fetch response.
      *
-     * This enum is used to represent the response of a function fetch operation,
-     * which can result in several different errors, such as "no matches found"
-     * (0x01) and "ambiguous function types" (0x02).
+     * This enum is used to represent the response of a function fetch
+     * operation, which can result in several different errors, such as "no
+     * matches found" (0x01) and "ambiguous function types" (0x02).
      *
      * @note An Ok response (0x00) is not actually an error.
      */
@@ -81,9 +81,12 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     /**
      * Deduce a function from its template arguments and its call arguments.
      *
-     * @param s           A FunctionStore object representing the function to deduce.
-     * @param arguments   A vector of shared pointers to Type objects representing the call arguments.
-     * @param generics    A vector of shared pointers to Type objects representing the template arguments (default: empty vector).
+     * @param s           A FunctionStore object representing the function to
+     * deduce.
+     * @param arguments   A vector of shared pointers to Type objects
+     * representing the call arguments.
+     * @param generics    A vector of shared pointers to Type objects
+     * representing the template arguments (default: empty vector).
      *
      * @example
      * myFunction<T>(a: T);
@@ -97,7 +100,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * myOtherFunction<i32>()      -> myFunction<i32>    (success)
      * myOtherFunction()           -> myFunction<String> (success)
      *
-     * @return A pair of the deduced argument types and a message indicating any errors (empty string if there was success).
+     * @return A pair of the deduced argument types and a message indicating any
+     * errors (empty string if there was success).
      */
     std::pair<std::vector<std::shared_ptr<types::Type>>, std::string>
     deduceFunction(
@@ -121,16 +125,19 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     /**
      * Generates a list of members that a `DefinedType` can have in C++.
      *
-     * The list includes both the class's own fields and the fields inherited from its parent
-     * (if any). If the child class has a member with the same name as the parent class's member,
-     * the parent member is kept but only if their types match. If the types don't match, an error
-     * is thrown.
+     * The list includes both the class's own fields and the fields inherited
+     * from its parent (if any). If the child class has a member with the same
+     * name as the parent class's member, the parent member is kept but only if
+     * their types match. If the types don't match, an error is thrown.
      *
      * @param type a pointer to the `DefinedType` to generate the list for.
-     * @return a vector containing all the class's fields, including the inherited ones.
+     * @return a vector containing all the class's fields, including the
+     * inherited ones.
      */
     std::vector<ptr<types::DefinedType::ClassField>>
-        getMemberList(std::vector<ptr<Syntax::Statement::VariableDecl>> fieldNodes, std::vector<ptr<types::DefinedType::ClassField>> fields, std::shared_ptr<types::DefinedType> parent);
+    getMemberList(std::vector<ptr<Syntax::Statement::VariableDecl>> fieldNodes,
+                  std::vector<ptr<types::DefinedType::ClassField>> fields,
+                  std::shared_ptr<types::DefinedType> parent);
     /**
      * Generate a function if it exists on the function cache,
      * if it was already generated, we can just return the already
@@ -202,10 +209,10 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     /**
      * Check if the current module has a valid (or private) context.
      *
-     * @param mod               A shared pointer to an ir::Module object representing
-     *  the module to check.
-     * @param isInClassContext  A boolean flag indicating whether the check should
-     *  consider the current context to be a class context.
+     * @param mod               A shared pointer to an ir::Module object
+     * representing the module to check.
+     * @param isInClassContext  A boolean flag indicating whether the check
+     * should consider the current context to be a class context.
      *
      * @return True if the module has a valid context, false otherwise.
      */

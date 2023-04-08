@@ -17,9 +17,10 @@ ptr<llvm::DISubprogram> LLVMBuilder::getDISubprogramForFunc(ptr<ir::Func> x) {
     auto srcInfo = x->getDBGInfo();
 
     auto file = dbg.getFile(srcInfo->getSourceInfo()->getPath());
-    auto derivedType = llvm::cast<llvm::DIDerivedType>(getDIType(x->getType().get()));
+    auto derivedType =
+        llvm::cast<llvm::DIDerivedType>(getDIType(x->getType().get()));
     auto subroutineType =
-      llvm::cast<llvm::DISubroutineType>(derivedType->getRawBaseType());
+        llvm::cast<llvm::DISubroutineType>(derivedType->getRawBaseType());
 
     std::string baseName = x->getNiceName();
 
@@ -70,7 +71,8 @@ ptr<llvm::DIType> LLVMBuilder::getDIType(ptr<types::Type> ty) {
 
         auto subroutineType = dbg.builder->createSubroutineType(
             llvm::MDTuple::get(*context, argTypes));
-        return dbg.builder->createPointerType(subroutineType, layout.getTypeAllocSizeInBits(llvmType));
+        return dbg.builder->createPointerType(
+            subroutineType, layout.getTypeAllocSizeInBits(llvmType));
     } else if (auto c = cast<types::DefinedType>(ty)) {
         // TODO: add "VTableHolder" as argument
         auto dbgInfo = c->getDBGInfo();

@@ -1,6 +1,6 @@
 
-#include "../Transformer.h"
 #include "../../ir/values/IndexExtract.h"
+#include "../Transformer.h"
 
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
@@ -20,7 +20,8 @@ std::pair<
 Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
                           ptr<Expression::Index> index, bool isStatic) {
 
-    auto getFromType = [&](std::shared_ptr<types::Type> type, std::shared_ptr<ir::Value> value = nullptr)
+    auto getFromType = [&](std::shared_ptr<types::Type> type,
+                           std::shared_ptr<ir::Value> value = nullptr)
         -> std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                       std::optional<std::shared_ptr<types::Type>>,
                       std::optional<std::vector<std::shared_ptr<ir::Func>>>,
@@ -31,31 +32,34 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
         if (auto x = std::dynamic_pointer_cast<types::DefinedType>(type)) {
             auto g = utils::cast<Expression::GenericIdentifier>(
                 index->getIdentifier());
-            auto name = index->getIdentifier()->getIdentifier();
+            auto name     = index->getIdentifier()->getIdentifier();
             auto generics = (g != nullptr)
                                 ? g->getGenerics()
                                 : std::vector<ptr<Expression::TypeRef>>{};
 
-            auto fullUUID               = x->getUUID();
-            auto [v, ty, fns, ovs, mod] = getFromIdentifier(
-                dbgInfo, name, generics,
-                fullUUID);
+            auto fullUUID = x->getUUID();
+            auto [v, ty, fns, ovs, mod] =
+                getFromIdentifier(dbgInfo, name, generics, fullUUID);
 
             std::optional<std::shared_ptr<ir::Value>> indexValue;
             if (!isStatic) {
-                auto fields = x->getFields();
+                auto fields     = x->getFields();
                 bool fieldFound = false;
-                auto fieldValue = std::find_if(fields.begin(), fields.end(), [&](ptr<types::DefinedType::ClassField> f) {
-                    bool e = f->name == name;
-                    fieldFound = e;
-                    return fieldFound;
-                });
+                auto fieldValue =
+                    std::find_if(fields.begin(), fields.end(),
+                                 [&](ptr<types::DefinedType::ClassField> f) {
+                                     bool e     = f->name == name;
+                                     fieldFound = e;
+                                     return fieldFound;
+                                 });
 
                 if (fieldFound) {
                     assert(v == std::nullopt);
                     assert(value != nullptr);
 
-                    indexValue = ctx->module->N<ir::IndexExtract>(dbgInfo, value, *fieldValue, std::distance(fields.begin(), fieldValue));
+                    indexValue = ctx->module->N<ir::IndexExtract>(
+                        dbgInfo, value, *fieldValue,
+                        std::distance(fields.begin(), fieldValue));
                     indexValue->get()->setType((*fieldValue)->type);
                 }
             }
@@ -64,13 +68,11 @@ Transformer::getFromIndex(ptr<DBGSourceInfo> dbgInfo,
                 indexValue = v;
             }
 
-            if (!indexValue.has_value() && !ty.has_value() && !fns.has_value() &&
-                !ovs.has_value() && !mod.has_value()) {
+            if (!indexValue.has_value() && !ty.has_value() &&
+                !fns.has_value() && !ovs.has_value() && !mod.has_value()) {
                 E<VARIABLE_ERROR>(
-                    dbgInfo,
-                    FMT("Coudn't find '%s' inside type '%s'!",
-                        name.c_str(),
-                        x->getPrettyName().c_str()));
+                    dbgInfo, FMT("Coudn't find '%s' inside type '%s'!",
+                                 name.c_str(), x->getPrettyName().c_str()));
             }
 
             return {indexValue, ty, fns, ovs, mod, isInClassContext(x)};

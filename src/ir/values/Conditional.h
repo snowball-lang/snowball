@@ -16,8 +16,8 @@ namespace ir {
 
 /**
  * @brief Representation of a conditional block or "if statement" in the IR.
- * This contains instructions that are executed inside of it if a condition is met,
- * if not, the "else" statement is executed if it exists.
+ * This contains instructions that are executed inside of it if a condition is
+ * met, if not, the "else" statement is executed if it exists.
  */
 class Conditional : public AcceptorExtend<Func, Value> {
 
@@ -29,9 +29,10 @@ class Conditional : public AcceptorExtend<Func, Value> {
     std::shared_ptr<Block> elseBlock;
 
   public:
-    explicit Conditional(std::shared_ptr<Value> cond, std::shared_ptr<Block> insts,
-        std::shared_ptr<Block> elseBlock = nullptr) : cond(cond), insts(insts), elseBlock(elseBlock)
-        {};
+    explicit Conditional(std::shared_ptr<Value> cond,
+                         std::shared_ptr<Block> insts,
+                         std::shared_ptr<Block> elseBlock = nullptr)
+        : cond(cond), insts(insts), elseBlock(elseBlock){};
 
     /// @return body block instructions to execute
     //   if the condition is met

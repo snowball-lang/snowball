@@ -9,6 +9,8 @@
 #include "utils/utils.h"
 #include "visitors/Transformer.h"
 #include "visitors/TypeChecker.h"
+#include "visitors/Analyzer.h"
+#include "visitors/analyzers/DefiniteAssigment.h"
 
 #include <filesystem>
 #include <fstream>
@@ -64,6 +66,14 @@ void Compiler::compile(bool verbose) {
             auto mainModule = std::make_shared<ir::MainModule>();
 
             mainModule->setSourceInfo(_source_info);
+
+            std::vector<ptr<Syntax::Analyzer>> passes = {
+                new Syntax::DefiniteAssigment(_source_info)
+            };
+
+            for (auto pass : passes) {
+                pass->run(ast);
+            }
 
             auto simplifier = new Syntax::Transformer(
                 mainModule->downcasted_shared_from_this<ir::Module>(),

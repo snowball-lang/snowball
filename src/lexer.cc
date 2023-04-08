@@ -628,9 +628,11 @@ void Lexer::tokenize_char() {
                 break;
             }
 
-            auto c = utils::getUTF8FromIndex(_source_info->getSource(), char_ptr);
+            auto c =
+                utils::getUTF8FromIndex(_source_info->getSource(), char_ptr);
             if (c == "🐒") {
-                lexer_error(Error::SYNTAX_ERROR, "Unexpected MONKE found!", 1, "🐒🐒🐒🐒🐒🐒");
+                lexer_error(Error::SYNTAX_ERROR, "Unexpected MONKE found!", 1,
+                            "🐒🐒🐒🐒🐒🐒");
             } else {
                 lexer_error(Error::SYNTAX_ERROR,
                             FMT("Unexpected character found '%s' while lexing.",
@@ -681,7 +683,8 @@ void Lexer::consume(TokenType p_tk, int p_eat_size) {
  * Used to create a new Debug Source Info
  * and throw a new LexerError.
  *=======================================*/
-void Lexer::lexer_error(Error m_error, std::string m_msg, int char_length, const std::string& info) {
+void Lexer::lexer_error(Error m_error, std::string m_msg, int char_length,
+                        const std::string& info) {
     DBGSourceInfo *dbg_info =
         new DBGSourceInfo((SourceInfo *)_source_info,
                           std::pair<int, int>(cur_line, cur_col), char_length);

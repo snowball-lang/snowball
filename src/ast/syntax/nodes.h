@@ -1,8 +1,8 @@
 
 #include "../../DBGSourceInfo.h"
 #include "../../common.h"
-#include "../../utils/utils.h"
 #include "../../services/OperatorService.h"
+#include "../../utils/utils.h"
 #include "../types/Type.h"
 #include "common.h"
 
@@ -234,12 +234,12 @@ struct Identifier : public AcceptorExtend<Identifier, Base> {
     /// @return Get respective identifier vaSyntax::Expression::Identifierlue
     auto getIdentifier() { return identifier; }
     virtual std::string getNiceName() const {
-      if (utils::startsWith(identifier, "#")) {
-        auto i = services::OperatorService::operatorID(identifier);
-        return services::OperatorService::getOperatorId(i);
-      }
+        if (utils::startsWith(identifier, "#")) {
+            auto i = services::OperatorService::operatorID(identifier);
+            return services::OperatorService::getOperatorId(i);
+        }
 
-      return identifier;
+        return identifier;
     }
 
     ACCEPT()
@@ -545,8 +545,8 @@ struct ClassDef : public AcceptorExtend<ClassDef, Base>,
 
 /**
  * @brief Representation of a conditional block or "if statement" in the AST.
- * This contains instructions that are executed inside of it if a condition is met,
- * if not, the "else" statement is executed if it exists.
+ * This contains instructions that are executed inside of it if a condition is
+ * met, if not, the "else" statement is executed if it exists.
  */
 struct Conditional : public AcceptorExtend<Conditional, Base> {
 
@@ -559,8 +559,8 @@ struct Conditional : public AcceptorExtend<Conditional, Base> {
 
   public:
     explicit Conditional(ptr<Expression::Base> cond, ptr<Block> insts,
-        ptr<Block> elseBlock = nullptr) : cond(cond), insts(insts), elseBlock(elseBlock)
-        {};
+                         ptr<Block> elseBlock = nullptr)
+        : cond(cond), insts(insts), elseBlock(elseBlock){};
 
     /// @return body block instructions to execute
     //   if the condition is met
@@ -574,7 +574,6 @@ struct Conditional : public AcceptorExtend<Conditional, Base> {
     // Set a visit handler for the generators
     ACCEPT()
 };
-
 
 /**
  * Import statement. Imports functions, classes and symbols from other

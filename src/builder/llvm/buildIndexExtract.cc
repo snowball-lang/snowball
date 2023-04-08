@@ -15,7 +15,8 @@ void LLVMBuilder::visit(ptr<ir::IndexExtract> index) {
     // table.
     // TODO: support for structs without vtable.
     auto i = index->getIndex() + 1;
-    auto g = builder->CreateStructGEP(v->getType()->getPointerElementType(), v, i);
+    auto g =
+        builder->CreateStructGEP(v->getType()->getPointerElementType(), v, i);
     this->value = builder->CreateLoad(g->getType()->getPointerElementType(), g);
 }
 
