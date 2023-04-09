@@ -10,7 +10,7 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ptr<ir::Variable> variable) {
-    auto store  = ctx->getSymbol(variable->getId() - variable->isArgument());
+    auto store  = ctx->getSymbol(variable->getId() + variable->isArgument());
     this->value = builder->CreateLoad(getLLVMType(variable->getType()), store);
 }
 

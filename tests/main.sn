@@ -5,7 +5,7 @@ pub:
     let h: String;
 
     Hello(x: i32) {
-        // System::println(self.h)
+        System::println(self.h)
     }
 
 // priv:
@@ -18,9 +18,9 @@ pub:
     }
 }
 
-// fn h(d: String) i32 {
-//     // return d
-// }
+fn h(d: String) i32 {
+    return d
+}
 
 pub fn main() i32 {
     let a = new Hello(2)
@@ -31,8 +31,7 @@ pub fn main() i32 {
     // }
 
     // c(b)
-    new Hello("awd");
-    // Hello::hello()
-    // a.hey()
+    Hello::hello()
+    a.hey()
     // h("a")
 }

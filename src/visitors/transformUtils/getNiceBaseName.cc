@@ -8,13 +8,15 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::string Transformer::getNiceBaseName(std::tuple<
+std::string Transformer::getNiceBaseName(
+    std::tuple<
         std::optional<std::shared_ptr<ir::Value>>,
         std::optional<std::shared_ptr<types::Type>>,
         std::optional<std::vector<std::shared_ptr<ir::Func>>>,
         std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
         std::optional<std::shared_ptr<ir::Module>>,
-        bool /* (Ignore) Accept private members */> base) {
+        bool /* (Ignore) Accept private members */>
+        base) {
 
     if (auto x = std::get<0>(base)) {
         return x.value()->getType()->getPrettyName();

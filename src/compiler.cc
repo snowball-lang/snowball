@@ -7,9 +7,9 @@
 #include "lexer.h"
 #include "parser/Parser.h"
 #include "utils/utils.h"
+#include "visitors/Analyzer.h"
 #include "visitors/Transformer.h"
 #include "visitors/TypeChecker.h"
-#include "visitors/Analyzer.h"
 #include "visitors/analyzers/DefiniteAssigment.h"
 
 #include <filesystem>
@@ -68,12 +68,7 @@ void Compiler::compile(bool verbose) {
             mainModule->setSourceInfo(_source_info);
 
             std::vector<ptr<Syntax::Analyzer>> passes = {
-                new Syntax::DefiniteAssigment(_source_info)
-            };
-
-            for (auto pass : passes) {
-                pass->run(ast);
-            }
+                new Syntax::DefiniteAssigment(_source_info)};
 
             auto simplifier = new Syntax::Transformer(
                 mainModule->downcasted_shared_from_this<ir::Module>(),
@@ -82,16 +77,21 @@ void Compiler::compile(bool verbose) {
 
             SHOW_STATUS(Logger::compiling(Logger::progress(0.60)))
 
+            for (auto pass : passes) {
+                pass->run(ast);
+            }
+
+            SHOW_STATUS(Logger::compiling(Logger::progress(0.70)))
+
             auto typeChecker = new codegen::TypeChecker(mainModule);
             typeChecker->codegen();
 
-            SHOW_STATUS(Logger::compiling(Logger::progress(0.70)))
+            SHOW_STATUS(Logger::compiling(Logger::progress(0.80)))
 
             mainModule->setModules(simplifier->getModules());
             module = mainModule;
 
-            SHOW_STATUS(Logger::compiling(Logger::progress(0.80)))
-            SHOW_STATUS(Logger::compiling(Logger::progress(0.85)))
+            SHOW_STATUS(Logger::compiling(Logger::progress(0.90)))
 
             SHOW_STATUS(Logger::reset_status())
         }

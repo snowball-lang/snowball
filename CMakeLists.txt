@@ -38,7 +38,7 @@ file(GLOB_RECURSE RUNTIME_SOURCES runtime/**/*.cc runtime/**/*.c runtime/gc/*.c)
 set (RUNTIME_FILES
   ${RUNTIME_SOURCES})
 
-file(GLOB_RECURSE EXEC_HEADERS include/exec/*.h include/exec/*.hpp)
+file(GLOB_RECURSE EXEC_HEADERS exec/*.h exec/*.hpp)
 file(GLOB_RECURSE EXEC_SOURCES exec/*.cc exec/*.cc exec/*.c)
 set (EXEC_FILES
   ${EXEC_HEADERS}

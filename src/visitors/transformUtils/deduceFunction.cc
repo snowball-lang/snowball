@@ -12,7 +12,8 @@ std::optional<std::shared_ptr<types::Type>> Transformer::deduceFunctionType(
     const std::vector<std::shared_ptr<types::Type>>& arguments,
     const std::vector<std::shared_ptr<types::Type>>& generics,
     const std::vector<std::shared_ptr<types::Type>>& deducedTypes) {
-    // I'm pretty sure this function works, but I'm a programmer, not a magician.
+    // I'm pretty sure this function works, but I'm a programmer, not a
+    // magician.
 
     // See if a generic parameter was given
     const auto genericsSize = generics.size();

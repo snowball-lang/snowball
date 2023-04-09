@@ -220,16 +220,32 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     /**
      * Returns a nicely formatted base name for the given set of components.
      *
-     * @param base A tuple containing the components to use when constructing the base name.
+     * @param base A tuple containing the components to use when constructing
+     * the base name.
      * @return A string containing the constructed base name.
      */
-    std::string getNiceBaseName(std::tuple<
-        std::optional<std::shared_ptr<ir::Value>>,
-        std::optional<std::shared_ptr<types::Type>>,
-        std::optional<std::vector<std::shared_ptr<ir::Func>>>,
-        std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
-        std::optional<std::shared_ptr<ir::Module>>,
-        bool /* (Ignore) Accept private members */> base);
+    std::string getNiceBaseName(
+        std::tuple<std::optional<std::shared_ptr<ir::Value>>,
+                   std::optional<std::shared_ptr<types::Type>>,
+                   std::optional<std::vector<std::shared_ptr<ir::Func>>>,
+                   std::optional<
+                       std::vector<cacheComponents::Functions::FunctionStore>>,
+                   std::optional<std::shared_ptr<ir::Module>>,
+                   bool /* (Ignore) Accept private members */>
+            base);
+    /**
+     * Check if the body of a function returns a value.
+     *
+     * This function takes a vector of Node pointers as input, representing
+     * the statements in the body of a function. It then checks whether the
+     * function returns a value by examining the AST inside a body.
+     *
+     * @param exprs A vector of Node pointers representing the statements in
+     *              the body of a function.
+     *
+     * @return      A boolean indicating whether the function returns a value.
+     */
+    bool bodyReturns(std::vector<ptr<Node>> exprs);
     /**
      * @brief Creates a type.
      *

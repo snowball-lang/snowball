@@ -4,6 +4,9 @@
 #include "../../Transformer.h"
 #include "../../TypeChecker.h"
 
+#include "../../Analyzer.h"
+#include "../../analyzers/DefiniteAssigment.h"
+
 #include <fstream>
 #include <tuple>
 
@@ -55,6 +58,13 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
                 ctx->module->setSourceInfo(srcInfo);
 
                 visit(ast);
+
+                std::vector<ptr<Syntax::Analyzer>> passes = {
+                    new Syntax::DefiniteAssigment(srcInfo)};
+
+                for (auto pass : passes) {
+                    pass->run(ast);
+                }
 
                 auto typeChecker = new codegen::TypeChecker(ctx->module);
                 typeChecker->codegen();

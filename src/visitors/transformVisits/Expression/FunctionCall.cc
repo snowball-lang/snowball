@@ -30,12 +30,11 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
 
         auto r =
             getFromIdentifier(x->getDBGInfo(), x->getIdentifier(), generics);
-        auto rTuple =
-            std::tuple_cat(r, std::make_tuple(true));
-        fn = getFunction(p_node, rTuple, x->getNiceName(), argTypes,
+        auto rTuple = std::tuple_cat(r, std::make_tuple(true));
+        fn          = getFunction(p_node, rTuple, x->getNiceName(), argTypes,
                          (g != nullptr)
-                             ? g->getGenerics()
-                             : std::vector<ptr<Expression::TypeRef>>{});
+                                      ? g->getGenerics()
+                                      : std::vector<ptr<Expression::TypeRef>>{});
     } else if (auto x = utils::cast<Expression::Index>(callee)) {
         bool inModule = false;
         std::string baseName;
@@ -47,7 +46,8 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                                      decltype(*m)>();
 
             inModule = m.has_value();
-            auto ir = std::tuple_cat(r, std::make_tuple(false));;
+            auto ir  = std::tuple_cat(r, std::make_tuple(false));
+            ;
 
             baseName = getNiceBaseName(ir) + "::";
         } else if (auto b = utils::cast<Expression::Index>(x->getBase())) {

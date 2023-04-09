@@ -101,6 +101,11 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
 
                     auto body = bodiedFn->getBody();
 
+                    if (!bodyReturns(body->getStmts()) && !((utils::dyn_cast<types::NumericType>(returnType)) || (utils::dyn_cast<types::VoidType>(returnType)))
+                     && !fn->isConstructor()) {
+                        E<TYPE_ERROR>(node, "Function lacks ending return statement!", "Function does not return on all paths!");
+                    }
+
                     body->accept(this);
                     auto functionBody =
                         std::dynamic_pointer_cast<ir::Block>(this->value);

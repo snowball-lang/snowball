@@ -21,7 +21,8 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::Cast) {
 }
 
 SN_DEFINITE_ASSIGMENT_VISIT(Expression::Index) {
-    p_node->getBase()->accept(this);
+    if (p_node->isStatic)
+        p_node->getBase()->accept(this);
 }
 
 SN_DEFINITE_ASSIGMENT_VISIT(Expression::GenericIdentifier) {
@@ -35,9 +36,12 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::FunctionCall) {
 }
 
 SN_DEFINITE_ASSIGMENT_VISIT(Statement::ClassDef) {
+    auto bk = this->insideClass;
+    this->insideClass = true;
     for (auto fn : p_node->getFunctions()) {
         fn->accept(this);
     }
+    this->insideClass = bk;
 }
 
 } // namespace Syntax
