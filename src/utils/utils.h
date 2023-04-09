@@ -41,6 +41,7 @@ std::string join(Iter begin, Iter end, std::string const& separator) {
 template <typename StTy, typename Vec1>
 std::vector<Vec1> vector_iterate(std::vector<StTy> p_vec,
                                  std::function<Vec1(StTy)> p_function) {
+    // Why did the programmer quit his job? He didn't get arrays.
     std::vector<Vec1> vec;
 
     for (auto item : p_vec) {
