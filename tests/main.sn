@@ -25,9 +25,12 @@
 pub fn main() i32 {
     // let a = new Hello(2)
     let b: i32;
-    // b = 2
 
-    // c(b)
+    {
+        b = 2
+    }
+
+    c(b)
     // let a = new Hello(b);
     // Hello::hello()
     // a.hey()
