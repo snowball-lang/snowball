@@ -462,7 +462,8 @@ static void handle_crash(int sig) {
 	std::string _execpath = _get_exec_path();
 
 	// Dump the backtrace to stderr with a message to the user
-	fprintf(stderr, "Oh no! Fluffy got into the code and caused an error!\n");
+	fprintf(stderr, "%s: Snowball crashed!\n", __FUNCTION__);
+	fprintf(stderr, "%s: Oh no! Fluffy got into the code and caused an error!\n", __FUNCTION__);
 	fprintf(stderr, "%s: Program crashed with signal %d\n", __FUNCTION__, sig);
 
 	fprintf(stderr, "Dumping the backtrace.\n");
