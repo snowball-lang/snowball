@@ -31,21 +31,25 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         auto r =
             getFromIdentifier(x->getDBGInfo(), x->getIdentifier(), generics);
         auto rTuple =
-            std::make_tuple(std::get<0>(r), std::get<1>(r), std::get<2>(r),
-                            std::get<3>(r), std::get<4>(r), true);
+            std::tuple_cat(r, std::make_tuple(true));
         fn = getFunction(p_node, rTuple, x->getNiceName(), argTypes,
                          (g != nullptr)
                              ? g->getGenerics()
                              : std::vector<ptr<Expression::TypeRef>>{});
     } else if (auto x = utils::cast<Expression::Index>(callee)) {
         bool inModule = false;
-        if (auto b = utils::cast<Expression::Identifier>(x->getBase())) {
+        std::string baseName;
+        auto indexBase = x->getBase();
+        if (auto b = utils::cast<Expression::Identifier>(indexBase)) {
             auto r = getFromIdentifier(b);
             auto m = std::get<4>(r);
             utils::assert_value_type<std::shared_ptr<ir::Module>&,
                                      decltype(*m)>();
 
             inModule = m.has_value();
+            auto ir = std::tuple_cat(r, std::make_tuple(false));;
+
+            baseName = getNiceBaseName(ir) + "::";
         } else if (auto b = utils::cast<Expression::Index>(x->getBase())) {
             auto [r, _] = getFromIndex(b->getDBGInfo(), b, b->isStatic);
             auto m      = std::get<4>(r);
@@ -53,6 +57,9 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                                      decltype(*m)>();
 
             inModule = m.has_value();
+            baseName = getNiceBaseName(r) + "::";
+        } else if (auto b = utils::cast<Expression::TypeRef>(x->getBase())) {
+            baseName = b->getPrettyName() + "::";
         }
 
         auto [r, b] = getFromIndex(x->getDBGInfo(), x, x->isStatic);
@@ -62,7 +69,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                             ? g->getGenerics()
                             : std::vector<ptr<Expression::TypeRef>>{};
 
-        auto name = x->getIdentifier()->getNiceName();
+        auto name = baseName + x->getIdentifier()->getNiceName();
         auto c    = getFunction(p_node, r, name, argTypes,
                              (g != nullptr)
                                     ? g->getGenerics()

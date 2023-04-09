@@ -226,22 +226,23 @@ struct Identifier : public AcceptorExtend<Identifier, Base> {
     std::string identifier;
 
   public:
-    using AcceptorExtend::AcceptorExtend;
+    // using AcceptorExtend::AcceptorExtend;
 
     Identifier(const std::string& identifier)
         : identifier(identifier), AcceptorExtend(){};
 
-    /// @return Get respective identifier vaSyntax::Expression::Identifierlue
+    /// @return Get respective identifier Syntax::Expression::Identifierlue
     auto getIdentifier() { return identifier; }
     virtual std::string getNiceName() const {
         if (utils::startsWith(identifier, "#")) {
             auto i = services::OperatorService::operatorID(identifier);
-            return services::OperatorService::getOperatorId(i);
+            return services::OperatorService::operatorName(i);
         }
 
         return identifier;
     }
 
+    virtual ~Identifier() noexcept = default;
     ACCEPT()
 };
 

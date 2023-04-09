@@ -47,7 +47,7 @@ class OperatorService {
     /// @brief Check if a name is a operator-like name
     static bool isOperator(const std::string& name);
     /// @brief Operator ID to constructor
-    static const std::string& operatorID(OperatorType id);
+    static const std::string& operatorName(OperatorType id);
     /// @return the corresponding ID from a @param name
     static OperatorType operatorID(const std::string& name);
 };

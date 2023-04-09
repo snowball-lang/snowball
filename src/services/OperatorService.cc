@@ -15,7 +15,7 @@ bool OperatorService::isOperator(const std::string& name) {
     return name.rfind("#", 0) == 0;
 }
 
-const std::string& OperatorService::operatorID(OperatorType id) {
+const std::string& OperatorService::operatorName(OperatorType id) {
     return operatorNames.at(id);
 }
 

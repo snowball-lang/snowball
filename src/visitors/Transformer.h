@@ -218,6 +218,19 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      */
     bool isInModuleContext(std::shared_ptr<ir::Module> mod);
     /**
+     * Returns a nicely formatted base name for the given set of components.
+     *
+     * @param base A tuple containing the components to use when constructing the base name.
+     * @return A string containing the constructed base name.
+     */
+    std::string getNiceBaseName(std::tuple<
+        std::optional<std::shared_ptr<ir::Value>>,
+        std::optional<std::shared_ptr<types::Type>>,
+        std::optional<std::vector<std::shared_ptr<ir::Func>>>,
+        std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+        std::optional<std::shared_ptr<ir::Module>>,
+        bool /* (Ignore) Accept private members */> base);
+    /**
      * @brief Creates a type.
      *
      * It creates a new user defined type and adds it to the already

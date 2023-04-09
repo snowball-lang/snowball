@@ -1,37 +1,37 @@
-// use Core::System
+use Core::System
 
-// class Hello {
-// pub:
-//     let h: String;
+class Hello {
+pub:
+    let h: String;
 
-//     Hello(x: i32) {
-//         // System::println(self.h)
-//     }
+    Hello(x: i32) {
+        // System::println(self.h)
+    }
 
-// // priv:
-//     static fn hello() {
-//         System::println("hello")
-//     }
+// priv:
+    static fn hello() {
+        System::println("hello")
+    }
 
-//     fn hey() {
-//         System::println("hey")
-//     }
-// }
+    fn hey() {
+        System::println("hey")
+    }
+}
 
 // fn h(d: String) i32 {
 //     // return d
 // }
 
 pub fn main() i32 {
-    // let a = new Hello(2)
+    let a = new Hello(2)
     let b: i32;
 
-    {
-        b = 2
-    }
+    // {
+    //     b = 2
+    // }
 
-    c(b)
-    // let a = new Hello(b);
+    // c(b)
+    new Hello("awd");
     // Hello::hello()
     // a.hey()
     // h("a")

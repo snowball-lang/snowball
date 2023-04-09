@@ -53,7 +53,7 @@ std::string Func::getIdentifier() { return identifier; }
 std::string Func::getName() {
     if (services::OperatorService::isOperator(identifier) && hasParent()) {
         auto op = services::OperatorService::operatorID(identifier);
-        return services::OperatorService::operatorID(op);
+        return services::OperatorService::operatorName(op);
     }
 
     return identifier;
