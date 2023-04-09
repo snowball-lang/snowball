@@ -19,11 +19,16 @@
 #include <string>
 #include <vector>
 
+#define SNOWBALL_INCLUDE_CRASH_HANDLER_MAIN
+#define SNOWBALL_CRASH_HANDLER_IMPLEMENTATION
+#include "crash_handler.h"
+
 using namespace snowball;
 using namespace std::chrono;
 using namespace snowball::utils;
 
-int main(int argc, char **argv) {
+int _main(int argc, char **argv) {
+
     try {
         if (argc == 1) {
             exec::CLI::help();
