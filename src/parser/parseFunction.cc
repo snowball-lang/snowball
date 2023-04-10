@@ -2,7 +2,7 @@
 #include "../ast/types/PrimitiveTypes.h"
 #include "../common.h"
 #include "../token.h"
-#include "./Parser.h"
+#include "Parser.h"
 
 #include <assert.h>
 
@@ -17,9 +17,10 @@ using namespace snowball::Syntax::Statement;
 
 namespace snowball::parser {
 
-FunctionDef* Parser::parseFunction(bool isConstructor) {
-    assert(is<TokenType::KWORD_FUNC>() ||
-           (is<TokenType::IDENTIFIER>() && isConstructor));
+FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator) {
+    assert((is<TokenType::KWORD_FUNC>() && (!isConstructor && !isOperator)) ||
+           (is<TokenType::IDENTIFIER>() && (isConstructor && !isOperator)) ||
+           (isOperator));
 
     if (!isConstructor) next();
 
@@ -51,43 +52,109 @@ FunctionDef* Parser::parseFunction(bool isConstructor) {
     auto dbg   = m_current.get_pos();
     auto width = 0;
 
-    // Get the function name
-    if (is<TokenType::IDENTIFIER>()) {
-        name  = m_current.to_string();
-        width = name.size();
+    if (isOperator) {
+        services::OperatorService::OperatorType opType;
+        switch (m_current.type) {
 
-        externName = name;
-    } else if (is<TokenType::VALUE_STRING>() && isExtern) {
-        // External functions can have the capacity of having 2 separate names.
-        // This can be useful for things such as accessing external functions
-        // that contians special characters.
-        //
-        // example:
-        //     extern fn "hello.world$woah" as my_fn() ...
-        //
-        // =========================================
+            case TokenType::OP_EQ: { opType = services::OperatorService::OperatorType::EQ; break; }
+            case TokenType::OP_EQEQ: { opType = services::OperatorService::OperatorType::EQEQ; break; }
+            case TokenType::OP_PLUS: { opType = services::OperatorService::OperatorType::PLUS; break; }
+            case TokenType::OP_PLUSEQ: { opType = services::OperatorService::OperatorType::PLUSEQ; break; }
+            case TokenType::OP_MINUS: { opType = services::OperatorService::OperatorType::MINUS; break; }
+            case TokenType::OP_MINUSEQ: { opType = services::OperatorService::OperatorType::MINUSEQ; break; }
+            case TokenType::OP_MUL: { opType = services::OperatorService::OperatorType::MUL; break; }
+            case TokenType::OP_MULEQ: { opType = services::OperatorService::OperatorType::MULEQ; break; }
+            case TokenType::OP_DIV: { opType = services::OperatorService::OperatorType::DIV; break; }
+            case TokenType::OP_DIVEQ: { opType = services::OperatorService::OperatorType::DIVEQ; break; }
+            case TokenType::OP_MOD: { opType = services::OperatorService::OperatorType::MOD; break; }
+            case TokenType::OP_MOD_EQ: { opType = services::OperatorService::OperatorType::MOD_EQ; break; }
+            case TokenType::OP_LT: { opType = services::OperatorService::OperatorType::LT; break; }
+            case TokenType::OP_LTEQ: { opType = services::OperatorService::OperatorType::LTEQ; break; }
+            case TokenType::OP_GT: { opType = services::OperatorService::OperatorType::GT; break; }
+            case TokenType::OP_GTEQ: { opType = services::OperatorService::OperatorType::GTEQ; break; }
+            case TokenType::OP_AND: { opType = services::OperatorService::OperatorType::AND; break; }
+            case TokenType::OP_OR: { opType = services::OperatorService::OperatorType::OR; break; }
+            case TokenType::OP_NOT: { opType = services::OperatorService::OperatorType::NOT; break; }
+            case TokenType::OP_NOTEQ: { opType = services::OperatorService::OperatorType::NOTEQ; break; }
+            case TokenType::OP_BIT_NOT: { opType = services::OperatorService::OperatorType::BIT_NOT; break; }
+            case TokenType::OP_BIT_LSHIFT: { opType = services::OperatorService::OperatorType::BIT_LSHIFT; break; }
+            case TokenType::OP_BIT_LSHIFT_EQ: { opType = services::OperatorService::OperatorType::BIT_LSHIFT_EQ; break; }
+            case TokenType::OP_BIT_RSHIFT: { opType = services::OperatorService::OperatorType::BIT_RSHIFT; break; }
+            case TokenType::OP_BIT_RSHIFT_EQ: { opType = services::OperatorService::OperatorType::BIT_RSHIFT_EQ; break; }
+            case TokenType::OP_BIT_OR: { opType = services::OperatorService::OperatorType::BIT_OR; break; }
+            case TokenType::OP_BIT_OR_EQ: { opType = services::OperatorService::OperatorType::BIT_OR_EQ; break; }
+            case TokenType::OP_BIT_AND: { opType = services::OperatorService::OperatorType::BIT_AND; break; }
+            case TokenType::OP_BIT_AND_EQ: { opType = services::OperatorService::OperatorType::BIT_AND_EQ; break; }
+            case TokenType::OP_BIT_XOR: { opType = services::OperatorService::OperatorType::BIT_XOR; break; }
+            case TokenType::OP_BIT_XOR_EQ: { opType = services::OperatorService::OperatorType::BIT_XOR_EQ; break; }
 
-        // We get a substring from the first and last
-        // characters. This is because string literals
-        // contains '"' inside them.
-        auto s     = m_current.to_string();
-        externName = s.substr(1, s.size() - 2);
+            case TokenType::IDENTIFIER: {
+                if (m_current.to_string() == "String") {
+                    opType = services::OperatorService::OperatorType::STRING; break;
+                } else if (m_current.to_string() == "bool") {
+                    opType = services::OperatorService::OperatorType::BOOL; break;
+                } else {
+                    goto snowballInvalidDefaultOperatorCase;
+                }
+            }
 
-        next();
-        consume<TokenType::KWORD_AS>("'as' keyword");
+            case TokenType::BRACKET_LPARENT: {
+                if (is<TokenType::BRACKET_RPARENT>(peek())) {
+                    opType = services::OperatorService::OperatorType::CALL;
+                    break;
+                }
 
-        dbg  = m_current.get_pos();
-        name = assert_tok<TokenType::IDENTIFIER>("an identifier").to_string();
+                goto snowballInvalidDefaultOperatorCase;
+            }
 
-        width = name.size();
+snowballInvalidDefaultOperatorCase:
+            default: {
+                createError<SYNTAX_ERROR>(FMT("Expected a valid operator type but instead got '%s'", m_current.to_string().c_str()));
+            }
+        }
+
+        if (opType == services::OperatorService::EQ) {
+            createError<SYNTAX_ERROR>("Can't overload the '=' operator!");
+        }
     } else {
-        std::string e =
-            isExtern ? "Expected an identifier or a string constant but got "
-                       "'%s' while parsing an extern function declaration"
-                     : "Expected an identifier but got '%s' while parsing a "
-                       "function declaration";
+        // Get the function name
+        if (is<TokenType::IDENTIFIER>()) {
+            name  = m_current.to_string();
+            width = name.size();
 
-        createError<SYNTAX_ERROR>(e, m_current.to_string().c_str());
+            externName = name;
+        } else if (is<TokenType::VALUE_STRING>() && isExtern) {
+            // External functions can have the capacity of having 2 separate names.
+            // This can be useful for things such as accessing external functions
+            // that contians special characters.
+            //
+            // example:
+            //     extern fn "hello.world$woah" as my_fn() ...
+            //
+            // =========================================
+
+            // We get a substring from the first and last
+            // characters. This is because string literals
+            // contains '"' inside them.
+            auto s     = m_current.to_string();
+            externName = s.substr(1, s.size() - 2);
+
+            next();
+            consume<TokenType::KWORD_AS>("'as' keyword");
+
+            dbg  = m_current.get_pos();
+            name = assert_tok<TokenType::IDENTIFIER>("an identifier").to_string();
+
+            width = name.size();
+        } else {
+            std::string e =
+                isExtern ? "Expected an identifier or a string constant but got "
+                        "'%s' while parsing an extern function declaration"
+                        : "Expected an identifier but got '%s' while parsing a "
+                        "function declaration";
+
+            createError<SYNTAX_ERROR>(e, m_current.to_string().c_str());
+        }
     }
 
     next();

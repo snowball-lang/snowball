@@ -30,7 +30,7 @@ std::vector<Syntax::Node *> Parser::parse() {
                     !is<TokenType::KWORD_CLASS>(peek()) &&
                     !is<TokenType::KWORD_EXTERN>(peek())) {
                     createError<SYNTAX_ERROR>(
-                        "expected keyword \"fn\", \"class\", \"mod\", \"var\" "
+                        "expected keyword \"fn\", \"class\", \"mod\", \"let\" "
                         "or "
                         "\"extern\" after pub/priv declaration");
                 }

@@ -143,7 +143,7 @@ class Parser {
      * type "=>" stmt
      */
     Syntax::Statement::FunctionDef*
-    parseFunction(bool isConstructor = false);
+    parseFunction(bool isConstructor = false, bool isOperator = false);
 
     /**
      * params        ::=  "<" [param_args] ">"

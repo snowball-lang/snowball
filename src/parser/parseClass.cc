@@ -68,16 +68,24 @@ Syntax::Statement::ClassDef* Parser::parseClass() {
             case TokenType::KWORD_STATIC: {
                 if (peek().type != TokenType::KWORD_FUNC &&
                     peek().type != TokenType::KWORD_VAR &&
+                    peek().type != TokenType::KWORD_OPERATOR &&
                     (!IS_CONSTRUCTOR(peek()))) {
                     next();
                     createError<SYNTAX_ERROR>(
-                        "expected keyword \"func\", \"let\" or a constructor "
+                        "expected keyword \"func\", \"let\", \"operator\" or a constructor "
                         "declaration after static member");
                 }
             } break;
 
             case TokenType::KWORD_FUNC: {
                 auto func = parseFunction();
+                func->setPrivacy(
+                    Syntax::Statement::Privacy::fromInt(!inPrivateScope));
+                cls->addFunction(func);
+            } break;
+
+            case TokenType::KWORD_OPERATOR: {
+                auto func = parseFunction(false, true);
                 func->setPrivacy(
                     Syntax::Statement::Privacy::fromInt(!inPrivateScope));
                 cls->addFunction(func);

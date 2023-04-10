@@ -16,10 +16,14 @@ pub:
     fn hey() {
         System::println("hey")
     }
+
+    operator +() {
+        
+    }
 }
 
 fn h(d: String) i32 {
-    return d
+    // return d
 }
 
 pub fn main() i32 {
