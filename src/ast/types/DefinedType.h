@@ -57,7 +57,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     ///  for this class
     std::vector<std::shared_ptr<Type>> generics;
     /// @brief a list of fields this class has
-    std::vector<ClassField*> fields;
+    std::vector<ClassField *> fields;
     /// @brief Definition of where in the stack this class is stored
     /// @example [module name].MyClass:2
     std::string uuid;
@@ -71,7 +71,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
   public:
     DefinedType(const std::string& name, const std::string uuid,
                 std::shared_ptr<ir::Module> module,
-                std::vector<ClassField*> fields         = {},
+                std::vector<ClassField *> fields            = {},
                 std::shared_ptr<DefinedType> parent         = nullptr,
                 std::vector<std::shared_ptr<Type>> generics = {});
 
@@ -85,7 +85,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
      *  primitive types, this function will automatically
      *  return false.
      */
-    virtual bool is(Type* other) override {
+    virtual bool is(Type *other) override {
         if (auto c = utils::cast<DefinedType>(other)) {
             return is(c);
         }
@@ -100,7 +100,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
      * @param other Type to check
      * @return true/false depending on the equality
      */
-    virtual bool is(DefinedType* other);
+    virtual bool is(DefinedType *other);
 
     /// @return module where the type is defined in
     std::shared_ptr<ir::Module> getModule() const;
@@ -126,11 +126,11 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     /// @note It does not include the parent fields!
     auto getFields() const { return fields; }
     /// @brief Append a new field (ClassField) to the list
-    void addField(ClassField* f);
+    void addField(ClassField *f);
     /// @c Type::toRef() for information about this function.
     /// @note It essentially does the same thing except it adds
     ///  generics if needed
-    Syntax::Expression::TypeRef* toRef() override;
+    Syntax::Expression::TypeRef *toRef() override;
 };
 
 };     // namespace types

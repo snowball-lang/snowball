@@ -8,7 +8,7 @@
 namespace snowball {
 namespace codegen {
 
-void LLVMBuilder::visit(ir::Conditional* c) { assert(false); }
+void LLVMBuilder::visit(ir::Conditional *c) { assert(false); }
 
 } // namespace codegen
 } // namespace snowball

@@ -40,7 +40,7 @@ class Functions {
      *  it was located at before being added to the cache.
      */
     struct FunctionStore {
-        Statement::FunctionDef* function = nullptr;
+        Statement::FunctionDef *function = nullptr;
         std::shared_ptr<transform::ContextState> state;
     };
 
@@ -56,7 +56,7 @@ class Functions {
 
   public:
     /// @brief Set a new function overload
-    void setFunction(const std::string& name, Statement::FunctionDef* p_fn,
+    void setFunction(const std::string& name, Statement::FunctionDef *p_fn,
                      std::shared_ptr<transform::ContextState> state);
     /// @return All function overloads for a function
     std::optional<std::vector<FunctionStore>>

@@ -10,11 +10,11 @@
 namespace snowball {
 namespace codegen {
 
-void LLVMBuilder::visit(ir::Return* ret) {
+void LLVMBuilder::visit(ir::Return *ret) {
 
     auto exprValue = ret->getExpr();
 
-    llvm::Value* val = nullptr;
+    llvm::Value *val = nullptr;
     if (exprValue != nullptr) {
         auto expr = build(exprValue.get());
         val       = builder->CreateRet(expr);

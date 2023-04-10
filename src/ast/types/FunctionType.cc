@@ -30,7 +30,7 @@ std::string FunctionType::getPrettyName() const {
     return FMT("function (%s) -> %s", stringArgs.c_str(), stringRet.c_str());
 }
 
-bool FunctionType::is(FunctionType* other) {
+bool FunctionType::is(FunctionType *other) {
     auto otherArgs = other->getArgs();
     bool argumentsEqual =
         std::all_of(otherArgs.begin(), otherArgs.end(),
@@ -56,7 +56,7 @@ std::string FunctionType::getMangledName() const {
     return result;
 }
 
-FunctionType* FunctionType::from(ir::Func* fn) {
+FunctionType *FunctionType::from(ir::Func *fn) {
     auto args = utils::map<std::string, std::shared_ptr<ir::Argument>,
                            std::shared_ptr<Type>>(
         fn->getArgs(), [&](auto map) -> auto { return map.second->getType(); });

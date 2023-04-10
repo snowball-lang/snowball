@@ -17,8 +17,8 @@ std::pair<
         std::optional<std::shared_ptr<ir::Module>>,
         bool /* Accept private members */>,
     std::optional<std::shared_ptr<ir::Value>>>
-Transformer::getFromIndex(DBGSourceInfo* dbgInfo,
-                          Expression::Index* index, bool isStatic) {
+Transformer::getFromIndex(DBGSourceInfo *dbgInfo, Expression::Index *index,
+                          bool isStatic) {
 
     auto getFromType = [&](std::shared_ptr<types::Type> type,
                            std::shared_ptr<ir::Value> value = nullptr)
@@ -47,7 +47,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo,
                 bool fieldFound = false;
                 auto fieldValue =
                     std::find_if(fields.begin(), fields.end(),
-                                 [&](types::DefinedType::ClassField* f) {
+                                 [&](types::DefinedType::ClassField *f) {
                                      bool e     = f->name == name;
                                      fieldFound = e;
                                      return fieldFound;
@@ -94,9 +94,8 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo,
                       bool /* Accept private members */> {
         auto g =
             utils::cast<Expression::GenericIdentifier>(index->getIdentifier());
-        auto generics = (g != nullptr)
-                            ? g->getGenerics()
-                            : std::vector<Expression::TypeRef *>{};
+        auto generics = (g != nullptr) ? g->getGenerics()
+                                       : std::vector<Expression::TypeRef *>{};
 
         auto fullUUID = m->getUniqueName();
         auto [v, ty, fns, ovs, mod] =
@@ -153,8 +152,6 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo,
         }
 
         assert(false && "BUG: unhandled index value");
-    } else if (!isStatic) {
-        assert(false && "TODO: non-static index");
     } else if (auto x = utils::cast<Expression::Index>(base)) {
         auto [r, b] = getFromIndex(base->getDBGInfo(), x, x->isStatic);
         auto [v, t, fs, ovs, mod, c] = r;

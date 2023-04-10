@@ -13,7 +13,7 @@ using namespace snowball::utils;
 namespace snowball {
 namespace codegen {
 
-llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
+llvm::DISubprogram *LLVMBuilder::getDISubprogramForFunc(ir::Func *x) {
     auto srcInfo = x->getDBGInfo();
 
     auto file = dbg.getFile(srcInfo->getSourceInfo()->getPath());
@@ -34,7 +34,7 @@ llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
     return subprogram;
 }
 
-llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
+llvm::DIType *LLVMBuilder::getDIType(types::Type *ty) {
     auto llvmType = getLLVMType(ty);
 
     auto& layout = module->getDataLayout();
@@ -62,7 +62,7 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     }
 
     else if (auto f = cast<types::FunctionType>(ty)) {
-        std::vector<llvm::Metadata*> argTypes = {
+        std::vector<llvm::Metadata *> argTypes = {
             getDIType(f->getRetType().get())};
 
         for (auto argType : f->getArgs()) {
@@ -84,8 +84,8 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
             fields.insert(fields.begin(), pFields.begin(), pFields.end());
         }
 
-        std::vector<llvm::Metadata*> generatedFields;
-        llvm::DIType* parentDIType = nullptr;
+        std::vector<llvm::Metadata *> generatedFields;
+        llvm::DIType *parentDIType = nullptr;
         if (auto p = c->getParent()) {
             parentDIType = getDIType(c->getParent().get());
         }
@@ -95,16 +95,16 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
             llvm::DINode::FlagZero, parentDIType,
             dbg.builder->getOrCreateArray(generatedFields));
 
-        generatedFields = vector_iterate<types::DefinedType::ClassField*,
-                                         llvm::Metadata*>(
-            fields, [&](types::DefinedType::ClassField* t) {
-                // TODO: custom line for fields?
-                return dbg.builder->createMemberType(
-                    debugType, t->name, file, dbgInfo->line,
-                    layout.getTypeAllocSizeInBits(getLLVMType(t->type)),
-                    /*AlignInBits=*/0, 0, llvm::DINode::FlagZero,
-                    getDIType(t->type.get()));
-            });
+        generatedFields =
+            vector_iterate<types::DefinedType::ClassField *, llvm::Metadata *>(
+                fields, [&](types::DefinedType::ClassField *t) {
+                    // TODO: custom line for fields?
+                    return dbg.builder->createMemberType(
+                        debugType, t->name, file, dbgInfo->line,
+                        layout.getTypeAllocSizeInBits(getLLVMType(t->type)),
+                        /*AlignInBits=*/0, 0, llvm::DINode::FlagZero,
+                        getDIType(t->type.get()));
+                });
 
         return debugType;
     } else {

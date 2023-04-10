@@ -7,7 +7,7 @@
 namespace snowball {
 namespace codegen {
 
-llvm::Value*
+llvm::Value *
 LLVMBuilder::allocateObject(std::shared_ptr<types::DefinedType> ty) {
     auto llvmType   = getLLVMType(ty);
     auto dataLayout = module->getDataLayout();
@@ -16,7 +16,7 @@ LLVMBuilder::allocateObject(std::shared_ptr<types::DefinedType> ty) {
         {builder->getInt32(dataLayout.getTypeAllocSize(llvmType))});
     auto cast = builder->CreatePointerCast(allocation, llvmType);
 
-    llvm::Value* vtablePointer = nullptr;
+    llvm::Value *vtablePointer = nullptr;
     if (auto v = ctx->getVtable(ty->getId())) {
         vtablePointer = v;
     } else {

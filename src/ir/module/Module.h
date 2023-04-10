@@ -55,7 +55,7 @@ class Module : public AcceptorExtend<Module, SrcObject>,
 
     /// @brief Utility function to create a new instruction
     template <typename DesiredType, typename... Args>
-    std::shared_ptr<DesiredType> N(DBGSourceInfo* dbg, Args&&...args) {
+    std::shared_ptr<DesiredType> N(DBGSourceInfo *dbg, Args&&...args) {
         auto ret = std::shared_ptr<DesiredType>(
             new DesiredType(std::forward<Args>(args)...));
         ret->setModule(shared_from_this());

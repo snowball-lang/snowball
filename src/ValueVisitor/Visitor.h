@@ -33,7 +33,7 @@ class ValueVisitor {
      */
     virtual void codegen() = 0;
 
-#define VISIT(n) virtual void visit(ir::n*) = 0;
+#define VISIT(n) virtual void visit(ir::n *) = 0;
 #include "../defs/visits.def"
 #undef VISIT
 };

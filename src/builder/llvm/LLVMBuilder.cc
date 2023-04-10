@@ -80,9 +80,9 @@ std::unique_ptr<llvm::Module> LLVMBuilder::newModule() {
     m->setSourceFileName(srcInfo->getPath());
 
     // debug info setup
-    dbg.builder            = std::make_unique<llvm::DIBuilder>(*m);
-    llvm::DIFile* file = dbg.getFile(srcInfo->getPath());
-    dbg.unit               = dbg.builder->createCompileUnit(
+    dbg.builder        = std::make_unique<llvm::DIBuilder>(*m);
+    llvm::DIFile *file = dbg.getFile(srcInfo->getPath());
+    dbg.unit           = dbg.builder->createCompileUnit(
         llvm::dwarf::DW_LANG_C, file, ("Snowball version " _SNOWBALL_VERSION),
         !dbg.debug, {},
         /*RV=*/0);
@@ -101,7 +101,7 @@ void LLVMBuilder::newContext() {
     context = std::make_unique<llvm::LLVMContext>();
 }
 
-llvm::DIFile* LLVMBuilder::DebugInfo::getFile(const std::string& path) {
+llvm::DIFile *LLVMBuilder::DebugInfo::getFile(const std::string& path) {
     std::string filename;
     std::string directory;
     auto pos = path.find_last_of("/");

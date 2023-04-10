@@ -9,7 +9,7 @@ namespace snowball {
 namespace Syntax {
 
 std::shared_ptr<types::Type>
-Transformer::transformType(Expression::TypeRef* ty) {
+Transformer::transformType(Expression::TypeRef *ty) {
     auto name          = ty->getPrettyName();
     auto [item, found] = ctx->getItem(name);
     if (!found) {

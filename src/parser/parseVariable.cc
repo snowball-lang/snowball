@@ -7,7 +7,7 @@
 
 namespace snowball::parser {
 
-Syntax::Statement::VariableDecl* Parser::parseVariable() {
+Syntax::Statement::VariableDecl *Parser::parseVariable() {
     assert(is<TokenType::KWORD_VAR>());
     next();
 
@@ -20,14 +20,14 @@ Syntax::Statement::VariableDecl* Parser::parseVariable() {
     auto name = token.to_string();
 
     // TODO: actually find type definition
-    Syntax::Expression::TypeRef* typeDef = nullptr;
+    Syntax::Expression::TypeRef *typeDef = nullptr;
 
     if (is<TokenType::SYM_COLLON>()) {
         next();
         typeDef = parseType();
     }
 
-    Syntax::Expression::Base* value = nullptr;
+    Syntax::Expression::Base *value = nullptr;
     if (is<TokenType::OP_EQ>()) {
         value = parseExpr();
     } else if (!is<TokenType::SYM_SEMI_COLLON>()) {

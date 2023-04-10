@@ -29,7 +29,7 @@ void NiceError::print_error() const {
                       message.c_str(), RESET));
 };
 
-const char* get_error(Error code) {
+const char *get_error(Error code) {
     RET_ERROR_IF_CODE(Error::BUG, "BUG")
     RET_ERROR_IF_CODE(Error::TODO, "TODO")
     RET_ERROR_IF_CODE(Error::WARNING, "Warning")

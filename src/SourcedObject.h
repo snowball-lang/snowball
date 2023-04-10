@@ -14,7 +14,7 @@ namespace snowball {
  */
 class SrcObject {
   protected:
-    SourceInfo* m_srci;
+    SourceInfo *m_srci;
 
   public:
     SrcObject() : m_srci(nullptr) {}

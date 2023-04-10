@@ -9,8 +9,8 @@
 
 namespace snowball::parser {
 
-Syntax::Expression::Base*
-Parser::buildOperatorTree(std::vector<Syntax::Expression::Base*>& exprs) {
+Syntax::Expression::Base *
+Parser::buildOperatorTree(std::vector<Syntax::Expression::Base *>& exprs) {
     assert(exprs.size() > 0);
 
     while (exprs.size() > 1) {
@@ -20,7 +20,7 @@ Parser::buildOperatorTree(std::vector<Syntax::Expression::Base*>& exprs) {
 
         for (int i = 0; i < (int)exprs.size(); i++) {
             auto expression =
-                static_cast<Syntax::Expression::BinaryOp*>(exprs[i]);
+                static_cast<Syntax::Expression::BinaryOp *>(exprs[i]);
             if (!expression->isOperator) {
                 continue;
             }

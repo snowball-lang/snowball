@@ -8,11 +8,11 @@ namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     auto [argValues, argTypes] =
-        utils::vectors_iterate<Syntax::Expression::Base*,
+        utils::vectors_iterate<Syntax::Expression::Base *,
                                std::shared_ptr<ir::Value>,
                                std::shared_ptr<types::Type>>(
             p_node->getArguments(),
-            [&](Syntax::Expression::Base* a)
+            [&](Syntax::Expression::Base *a)
                 -> std::pair<std::shared_ptr<ir::Value>,
                              std::shared_ptr<types::Type>> {
                 a->accept(this);
@@ -24,17 +24,15 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     std::shared_ptr<ir::Value> fn = nullptr;
     if (auto x = utils::cast<Expression::Identifier>(callee)) {
         auto g        = utils::cast<Expression::GenericIdentifier>(callee);
-        auto generics = (g != nullptr)
-                            ? g->getGenerics()
-                            : std::vector<Expression::TypeRef *>{};
+        auto generics = (g != nullptr) ? g->getGenerics()
+                                       : std::vector<Expression::TypeRef *>{};
 
         auto r =
             getFromIdentifier(x->getDBGInfo(), x->getIdentifier(), generics);
         auto rTuple = std::tuple_cat(r, std::make_tuple(true));
         fn          = getFunction(p_node, rTuple, x->getNiceName(), argTypes,
-                         (g != nullptr)
-                                      ? g->getGenerics()
-                                      : std::vector<Expression::TypeRef *>{});
+                         (g != nullptr) ? g->getGenerics()
+                                                 : std::vector<Expression::TypeRef *>{});
     } else if (auto x = utils::cast<Expression::Index>(callee)) {
         bool inModule = false;
         std::string baseName;
@@ -65,15 +63,14 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         auto [r, b] = getFromIndex(x->getDBGInfo(), x, x->isStatic);
 
         auto g = utils::cast<Expression::GenericIdentifier>(x->getBase());
-        auto generics = (g != nullptr)
-                            ? g->getGenerics()
-                            : std::vector<Expression::TypeRef *>{};
+        auto generics = (g != nullptr) ? g->getGenerics()
+                                       : std::vector<Expression::TypeRef *>{};
 
         auto name = baseName + x->getIdentifier()->getNiceName();
-        auto c    = getFunction(p_node, r, name, argTypes,
-                             (g != nullptr)
-                                    ? g->getGenerics()
-                                    : std::vector<Expression::TypeRef *>{});
+        auto c =
+            getFunction(p_node, r, name, argTypes,
+                        (g != nullptr) ? g->getGenerics()
+                                       : std::vector<Expression::TypeRef *>{});
 
         // TODO: actually check if base is a module with: "getFromIdentifier" of
         // the module

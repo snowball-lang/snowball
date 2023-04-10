@@ -25,12 +25,12 @@ class Argument : public IdMixin,
     /// @brief Argument name used to identify where it's pointing to
     std::string name = "";
     /// @brief default value used for the function
-    Syntax::Expression::Base* defaultValue = nullptr;
+    Syntax::Expression::Base *defaultValue = nullptr;
 
   public:
     auto operator=(Argument *&) = delete;
     explicit Argument(const std::string& name, int index = 0,
-                      Syntax::Expression::Base* defaultValue = nullptr)
+                      Syntax::Expression::Base *defaultValue = nullptr)
         : name(name), index(index), defaultValue(defaultValue){};
 
     /// @return Argument index on the list

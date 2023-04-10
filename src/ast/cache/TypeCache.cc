@@ -7,7 +7,7 @@ namespace snowball {
 namespace Syntax {
 namespace cacheComponents {
 
-void Types::setType(const std::string& uuid, Statement::ClassDef* p_fn,
+void Types::setType(const std::string& uuid, Statement::ClassDef *p_fn,
                     std::shared_ptr<transform::ContextState> state) {
     types[uuid] = {p_fn, state};
 }

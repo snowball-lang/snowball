@@ -17,7 +17,7 @@ using namespace snowball::Syntax::Statement;
 
 namespace snowball::parser {
 
-FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator) {
+FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
     assert((is<TokenType::KWORD_FUNC>() && (!isConstructor && !isOperator)) ||
            (is<TokenType::IDENTIFIER>() && (isConstructor && !isOperator)) ||
            (isOperator));
@@ -56,43 +56,138 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator) {
         services::OperatorService::OperatorType opType;
         switch (m_current.type) {
 
-            case TokenType::OP_EQ: { opType = services::OperatorService::OperatorType::EQ; break; }
-            case TokenType::OP_EQEQ: { opType = services::OperatorService::OperatorType::EQEQ; break; }
-            case TokenType::OP_PLUS: { opType = services::OperatorService::OperatorType::PLUS; break; }
-            case TokenType::OP_PLUSEQ: { opType = services::OperatorService::OperatorType::PLUSEQ; break; }
-            case TokenType::OP_MINUS: { opType = services::OperatorService::OperatorType::MINUS; break; }
-            case TokenType::OP_MINUSEQ: { opType = services::OperatorService::OperatorType::MINUSEQ; break; }
-            case TokenType::OP_MUL: { opType = services::OperatorService::OperatorType::MUL; break; }
-            case TokenType::OP_MULEQ: { opType = services::OperatorService::OperatorType::MULEQ; break; }
-            case TokenType::OP_DIV: { opType = services::OperatorService::OperatorType::DIV; break; }
-            case TokenType::OP_DIVEQ: { opType = services::OperatorService::OperatorType::DIVEQ; break; }
-            case TokenType::OP_MOD: { opType = services::OperatorService::OperatorType::MOD; break; }
-            case TokenType::OP_MOD_EQ: { opType = services::OperatorService::OperatorType::MOD_EQ; break; }
-            case TokenType::OP_LT: { opType = services::OperatorService::OperatorType::LT; break; }
-            case TokenType::OP_LTEQ: { opType = services::OperatorService::OperatorType::LTEQ; break; }
-            case TokenType::OP_GT: { opType = services::OperatorService::OperatorType::GT; break; }
-            case TokenType::OP_GTEQ: { opType = services::OperatorService::OperatorType::GTEQ; break; }
-            case TokenType::OP_AND: { opType = services::OperatorService::OperatorType::AND; break; }
-            case TokenType::OP_OR: { opType = services::OperatorService::OperatorType::OR; break; }
-            case TokenType::OP_NOT: { opType = services::OperatorService::OperatorType::NOT; break; }
-            case TokenType::OP_NOTEQ: { opType = services::OperatorService::OperatorType::NOTEQ; break; }
-            case TokenType::OP_BIT_NOT: { opType = services::OperatorService::OperatorType::BIT_NOT; break; }
-            case TokenType::OP_BIT_LSHIFT: { opType = services::OperatorService::OperatorType::BIT_LSHIFT; break; }
-            case TokenType::OP_BIT_LSHIFT_EQ: { opType = services::OperatorService::OperatorType::BIT_LSHIFT_EQ; break; }
-            case TokenType::OP_BIT_RSHIFT: { opType = services::OperatorService::OperatorType::BIT_RSHIFT; break; }
-            case TokenType::OP_BIT_RSHIFT_EQ: { opType = services::OperatorService::OperatorType::BIT_RSHIFT_EQ; break; }
-            case TokenType::OP_BIT_OR: { opType = services::OperatorService::OperatorType::BIT_OR; break; }
-            case TokenType::OP_BIT_OR_EQ: { opType = services::OperatorService::OperatorType::BIT_OR_EQ; break; }
-            case TokenType::OP_BIT_AND: { opType = services::OperatorService::OperatorType::BIT_AND; break; }
-            case TokenType::OP_BIT_AND_EQ: { opType = services::OperatorService::OperatorType::BIT_AND_EQ; break; }
-            case TokenType::OP_BIT_XOR: { opType = services::OperatorService::OperatorType::BIT_XOR; break; }
-            case TokenType::OP_BIT_XOR_EQ: { opType = services::OperatorService::OperatorType::BIT_XOR_EQ; break; }
+            case TokenType::OP_EQ: {
+                opType = services::OperatorService::OperatorType::EQ;
+                break;
+            }
+            case TokenType::OP_EQEQ: {
+                opType = services::OperatorService::OperatorType::EQEQ;
+                break;
+            }
+            case TokenType::OP_PLUS: {
+                opType = services::OperatorService::OperatorType::PLUS;
+                break;
+            }
+            case TokenType::OP_PLUSEQ: {
+                opType = services::OperatorService::OperatorType::PLUSEQ;
+                break;
+            }
+            case TokenType::OP_MINUS: {
+                opType = services::OperatorService::OperatorType::MINUS;
+                break;
+            }
+            case TokenType::OP_MINUSEQ: {
+                opType = services::OperatorService::OperatorType::MINUSEQ;
+                break;
+            }
+            case TokenType::OP_MUL: {
+                opType = services::OperatorService::OperatorType::MUL;
+                break;
+            }
+            case TokenType::OP_MULEQ: {
+                opType = services::OperatorService::OperatorType::MULEQ;
+                break;
+            }
+            case TokenType::OP_DIV: {
+                opType = services::OperatorService::OperatorType::DIV;
+                break;
+            }
+            case TokenType::OP_DIVEQ: {
+                opType = services::OperatorService::OperatorType::DIVEQ;
+                break;
+            }
+            case TokenType::OP_MOD: {
+                opType = services::OperatorService::OperatorType::MOD;
+                break;
+            }
+            case TokenType::OP_MOD_EQ: {
+                opType = services::OperatorService::OperatorType::MOD_EQ;
+                break;
+            }
+            case TokenType::OP_LT: {
+                opType = services::OperatorService::OperatorType::LT;
+                break;
+            }
+            case TokenType::OP_LTEQ: {
+                opType = services::OperatorService::OperatorType::LTEQ;
+                break;
+            }
+            case TokenType::OP_GT: {
+                opType = services::OperatorService::OperatorType::GT;
+                break;
+            }
+            case TokenType::OP_GTEQ: {
+                opType = services::OperatorService::OperatorType::GTEQ;
+                break;
+            }
+            case TokenType::OP_AND: {
+                opType = services::OperatorService::OperatorType::AND;
+                break;
+            }
+            case TokenType::OP_OR: {
+                opType = services::OperatorService::OperatorType::OR;
+                break;
+            }
+            case TokenType::OP_NOT: {
+                opType = services::OperatorService::OperatorType::NOT;
+                break;
+            }
+            case TokenType::OP_NOTEQ: {
+                opType = services::OperatorService::OperatorType::NOTEQ;
+                break;
+            }
+            case TokenType::OP_BIT_NOT: {
+                opType = services::OperatorService::OperatorType::BIT_NOT;
+                break;
+            }
+            case TokenType::OP_BIT_LSHIFT: {
+                opType = services::OperatorService::OperatorType::BIT_LSHIFT;
+                break;
+            }
+            case TokenType::OP_BIT_LSHIFT_EQ: {
+                opType = services::OperatorService::OperatorType::BIT_LSHIFT_EQ;
+                break;
+            }
+            case TokenType::OP_BIT_RSHIFT: {
+                opType = services::OperatorService::OperatorType::BIT_RSHIFT;
+                break;
+            }
+            case TokenType::OP_BIT_RSHIFT_EQ: {
+                opType = services::OperatorService::OperatorType::BIT_RSHIFT_EQ;
+                break;
+            }
+            case TokenType::OP_BIT_OR: {
+                opType = services::OperatorService::OperatorType::BIT_OR;
+                break;
+            }
+            case TokenType::OP_BIT_OR_EQ: {
+                opType = services::OperatorService::OperatorType::BIT_OR_EQ;
+                break;
+            }
+            case TokenType::OP_BIT_AND: {
+                opType = services::OperatorService::OperatorType::BIT_AND;
+                break;
+            }
+            case TokenType::OP_BIT_AND_EQ: {
+                opType = services::OperatorService::OperatorType::BIT_AND_EQ;
+                break;
+            }
+            case TokenType::OP_BIT_XOR: {
+                opType = services::OperatorService::OperatorType::BIT_XOR;
+                break;
+            }
+            case TokenType::OP_BIT_XOR_EQ: {
+                opType = services::OperatorService::OperatorType::BIT_XOR_EQ;
+                break;
+            }
 
             case TokenType::IDENTIFIER: {
                 if (m_current.to_string() == "String") {
-                    opType = services::OperatorService::OperatorType::STRING; break;
+                    opType = services::OperatorService::OperatorType::STRING;
+                    break;
                 } else if (m_current.to_string() == "bool") {
-                    opType = services::OperatorService::OperatorType::BOOL; break;
+                    opType = services::OperatorService::OperatorType::BOOL;
+                    break;
                 } else {
                     goto snowballInvalidDefaultOperatorCase;
                 }
@@ -107,9 +202,11 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator) {
                 goto snowballInvalidDefaultOperatorCase;
             }
 
-snowballInvalidDefaultOperatorCase:
+            snowballInvalidDefaultOperatorCase:
             default: {
-                createError<SYNTAX_ERROR>(FMT("Expected a valid operator type but instead got '%s'", m_current.to_string().c_str()));
+                createError<SYNTAX_ERROR>(
+                    FMT("Expected a valid operator type but instead got '%s'",
+                        m_current.to_string().c_str()));
             }
         }
 
@@ -124,9 +221,9 @@ snowballInvalidDefaultOperatorCase:
 
             externName = name;
         } else if (is<TokenType::VALUE_STRING>() && isExtern) {
-            // External functions can have the capacity of having 2 separate names.
-            // This can be useful for things such as accessing external functions
-            // that contians special characters.
+            // External functions can have the capacity of having 2 separate
+            // names. This can be useful for things such as accessing external
+            // functions that contians special characters.
             //
             // example:
             //     extern fn "hello.world$woah" as my_fn() ...
@@ -142,16 +239,18 @@ snowballInvalidDefaultOperatorCase:
             next();
             consume<TokenType::KWORD_AS>("'as' keyword");
 
-            dbg  = m_current.get_pos();
-            name = assert_tok<TokenType::IDENTIFIER>("an identifier").to_string();
+            dbg = m_current.get_pos();
+            name =
+                assert_tok<TokenType::IDENTIFIER>("an identifier").to_string();
 
             width = name.size();
         } else {
             std::string e =
-                isExtern ? "Expected an identifier or a string constant but got "
-                        "'%s' while parsing an extern function declaration"
-                        : "Expected an identifier but got '%s' while parsing a "
-                        "function declaration";
+                isExtern
+                    ? "Expected an identifier or a string constant but got "
+                      "'%s' while parsing an extern function declaration"
+                    : "Expected an identifier but got '%s' while parsing a "
+                      "function declaration";
 
             createError<SYNTAX_ERROR>(e, m_current.to_string().c_str());
         }
@@ -163,7 +262,7 @@ snowballInvalidDefaultOperatorCase:
     auto privacy = Syntax::Statement::Privacy::fromInt(isPublic);
 
     // Check for generic expressions
-    std::vector<Syntax::Expression::Param*> generics;
+    std::vector<Syntax::Expression::Param *> generics;
     if (is<TokenType::OP_LT>()) {
 
         if (isExtern) {
@@ -180,7 +279,7 @@ snowballInvalidDefaultOperatorCase:
     int argumentCount = 0;
     bool isVarArg     = false;
 
-    std::vector<Syntax::Expression::Param*> arguments;
+    std::vector<Syntax::Expression::Param *> arguments;
     while (true) {
         auto pk = peek();
 
@@ -238,7 +337,7 @@ snowballInvalidDefaultOperatorCase:
     next();
     consume<TokenType::BRACKET_RPARENT>("')'");
 
-    Syntax::Expression::TypeRef* returnType = nullptr;
+    Syntax::Expression::TypeRef *returnType = nullptr;
     if (is<TokenType::IDENTIFIER>()) {
         if (isConstructor) {
             createError<SYNTAX_ERROR>(
@@ -255,7 +354,7 @@ snowballInvalidDefaultOperatorCase:
 
     auto info = new DBGSourceInfo(m_source_info, dbg, width);
 
-    Syntax::Block* block;
+    Syntax::Block *block;
     bool hasBlock = false;
 
     if (isExtern) {
@@ -269,7 +368,7 @@ snowballInvalidDefaultOperatorCase:
         assert_tok<TokenType::BRACKET_RCURLY>("'}'");
     }
 
-    FunctionDef* fn = nullptr;
+    FunctionDef *fn = nullptr;
     if (isExtern) {
         fn = Syntax::N<ExternFnDef>(externName, name);
     } else if (hasBlock) {

@@ -10,12 +10,11 @@ using namespace snowball::Syntax::Expression;
 
 namespace snowball::parser {
 
-FunctionCall*
-Parser::parseFunctionCall(Syntax::Expression::Base* callee) {
+FunctionCall *Parser::parseFunctionCall(Syntax::Expression::Base *callee) {
     assert(callee != nullptr);
     assert(is<TokenType::BRACKET_LPARENT>());
 
-    std::vector<Base*> arguments;
+    std::vector<Base *> arguments;
     while (true) {
         auto pk = peek();
 

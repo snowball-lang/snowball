@@ -18,7 +18,7 @@
 #include <string>
 #include <vector>
 
-#define VISIT(Val) void TypeChecker::visit(ir::Val* p_node)
+#define VISIT(Val) void TypeChecker::visit(ir::Val *p_node)
 
 namespace snowball {
 namespace codegen {
@@ -172,8 +172,7 @@ void TypeChecker::codegen() {
     }
 }
 
-void TypeChecker::cantBeVoid(DBGObject* dbg,
-                             std::shared_ptr<types::Type> ty,
+void TypeChecker::cantBeVoid(DBGObject *dbg, std::shared_ptr<types::Type> ty,
                              const std::string& message) {
 
     if (std::dynamic_pointer_cast<types::VoidType>(ty)) {

@@ -20,8 +20,8 @@
 #ifndef __SNOWBALL_ANALYZER_H_
 #define __SNOWBALL_ANALYZER_H_
 
-#define ACCEPT(Node)            virtual void visit(Node* p_node) override {};
-#define SN_ANALYZER_VISIT(Node) void Analyzer::visit(Node* p_node)
+#define ACCEPT(Node)            virtual void visit(Node *p_node) override{};
+#define SN_ANALYZER_VISIT(Node) void Analyzer::visit(Node *p_node)
 
 namespace snowball {
 namespace Syntax {
@@ -44,7 +44,7 @@ class Analyzer : public AcceptorExtend<Analyzer, Visitor> {
 
 #include "../defs/accepts.def"
   public:
-    Analyzer(SourceInfo* srci) : AcceptorExtend(srci){};
+    Analyzer(SourceInfo *srci) : AcceptorExtend(srci){};
 
     /**
      * A function that executes a pass manager on a vector of syntax nodes.
@@ -59,7 +59,7 @@ class Analyzer : public AcceptorExtend<Analyzer, Visitor> {
      * @param nodes The vector of syntax nodes to be processed by the pass
      * manager.
      */
-    void run(std::vector<Syntax::Node*> nodes) {
+    void run(std::vector<Syntax::Node *> nodes) {
         for (auto n : nodes) {
             n->accept(this);
         }

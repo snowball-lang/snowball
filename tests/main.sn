@@ -18,7 +18,7 @@ pub:
     }
 
     operator +() {
-        
+
     }
 }
 
@@ -36,6 +36,6 @@ pub fn main() i32 {
 
     // c(b)
     Hello::hello()
-    a.hey()
+    a.hey(512 + 2)
     // h("a")
 }

@@ -93,9 +93,8 @@ std::vector<Return> map(std::list<std::pair<Key, Val>> p_map,
     return vec;
 }
 
-template <typename Desired, typename Current>
-Desired* cast(Current curr) {
-    return dynamic_cast<Desired*>(curr);
+template <typename Desired, typename Current> Desired *cast(Current curr) {
+    return dynamic_cast<Desired *>(curr);
 }
 
 template <typename Desired, typename Current>

@@ -1,7 +1,7 @@
 
 #include "../errors/error.h"
-#include "nodes.h"
 #include "common.h"
+#include "nodes.h"
 
 #include <assert.h>
 #include <string>
@@ -11,13 +11,13 @@ namespace snowball {
 namespace Syntax {
 namespace Expression {
 
-TypeRef::TypeRef(std::string p_name, snowball::DBGSourceInfo* p_dbg,
+TypeRef::TypeRef(std::string p_name, snowball::DBGSourceInfo *p_dbg,
                  std::vector<TypeRef *> p_generics)
     : generics(p_generics), types::Type(REF, p_name) {
     setDBGInfo(p_dbg);
 }
-void TypeRef::setGenerics(std::vector<TypeRef*> g) { generics = g; }
-std::vector<Expression::TypeRef*> GenericIdentifier::getGenerics() const {
+void TypeRef::setGenerics(std::vector<TypeRef *> g) { generics = g; }
+std::vector<Expression::TypeRef *> GenericIdentifier::getGenerics() const {
     return generics;
 }
 std::vector<TypeRef *> TypeRef::getGenerics() { return this->generics; }

@@ -25,9 +25,9 @@
 #ifndef __SNOWBALL_DEFINITE_ASSIGMENT_ANALYZER_H_
 #define __SNOWBALL_DEFINITE_ASSIGMENT_ANALYZER_H_
 
-#define ACCEPT(Node) virtual void visit(Node* p_node) override;
+#define ACCEPT(Node) virtual void visit(Node *p_node) override;
 #define SN_DEFINITE_ASSIGMENT_VISIT(Node)                                      \
-    void DefiniteAssigment::visit(Node* p_node)
+    void DefiniteAssigment::visit(Node *p_node)
 
 namespace snowball {
 namespace Syntax {
@@ -47,12 +47,13 @@ namespace Syntax {
  */
 class DefiniteAssigment : public Analyzer {
     /**
-     * @brief A boolean flag that indicates whether the current analysis is being performed
-     *        inside a class or not.
+     * @brief A boolean flag that indicates whether the current analysis is
+     * being performed inside a class or not.
      *
-     * This flag is used by the DefiniteAssigment class to keep track of whether the analysis
-     * is being performed inside a class. It is initially set to false when the DefiniteAssigment
-     * object is created, and is set to true when the analysis enters a class declaration.
+     * This flag is used by the DefiniteAssigment class to keep track of whether
+     * the analysis is being performed inside a class. It is initially set to
+     * false when the DefiniteAssigment object is created, and is set to true
+     * when the analysis enters a class declaration.
      */
     bool insideClass = false;
     /**
@@ -182,7 +183,7 @@ class DefiniteAssigment : public Analyzer {
 #include "../../defs/accepts.def"
   public:
     using Analyzer::Analyzer;
-    DefiniteAssigment(SourceInfo* srci) : Analyzer(srci){};
+    DefiniteAssigment(SourceInfo *srci) : Analyzer(srci){};
 
     // Default destructor
     ~DefiniteAssigment() noexcept = default;

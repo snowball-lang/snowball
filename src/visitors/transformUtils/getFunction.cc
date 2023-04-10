@@ -7,7 +7,7 @@ namespace snowball {
 namespace Syntax {
 
 std::shared_ptr<ir::Func> Transformer::getFunction(
-    DBGObject* dbgInfo,
+    DBGObject *dbgInfo,
     std::tuple<
         std::optional<std::shared_ptr<ir::Value>>,
         std::optional<std::shared_ptr<types::Type>>,

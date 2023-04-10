@@ -10,7 +10,7 @@
 #define __SNOWBALL_AST_VISITOR_H_
 
 #define ACCEPT(Node)                                                           \
-    virtual void visit(Node* p_node) {                                     \
+    virtual void visit(Node *p_node) {                                         \
         assert(false && "BUG: Visitor::visit called");                         \
     }
 
@@ -20,8 +20,8 @@ namespace Syntax {
 class Visitor : public SrcObject {
 
   public:
-    Visitor(SourceInfo* srci) : SrcObject(srci){};
-    virtual void visit(std::vector<Node*>);
+    Visitor(SourceInfo *srci) : SrcObject(srci){};
+    virtual void visit(std::vector<Node *>);
 
 #include "../../defs/accepts.def"
 };

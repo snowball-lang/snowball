@@ -18,7 +18,7 @@ namespace types {
 
 DefinedType::DefinedType(const std::string& name, const std::string uuid,
                          std::shared_ptr<ir::Module> module,
-                         std::vector<ClassField*> fields,
+                         std::vector<ClassField *> fields,
                          std::shared_ptr<DefinedType> parent,
                          std::vector<std::shared_ptr<Type>> generics)
     : AcceptorExtend(Kind::CLASS, name), uuid(uuid), parent(parent),
@@ -28,7 +28,7 @@ DefinedType::ClassField::ClassField(const std::string& name,
                                     std::shared_ptr<Type> type, Privacy privacy)
     : name(name), type(type), Syntax::Statement::Privacy(privacy) {}
 std::string DefinedType::getUUID() const { return uuid; }
-void DefinedType::addField(ClassField* f) { fields.emplace_back(f); }
+void DefinedType::addField(ClassField *f) { fields.emplace_back(f); }
 std::shared_ptr<ir::Module> DefinedType::getModule() const { return module; }
 int DefinedType::getVtableSize() { return classVtable.size(); }
 int DefinedType::addVtableItem(std::shared_ptr<ir::Func> f) {
@@ -39,7 +39,7 @@ std::vector<std::shared_ptr<ir::Func>> DefinedType::getVTable() const {
     return classVtable;
 }
 
-bool DefinedType::is(DefinedType* other) {
+bool DefinedType::is(DefinedType *other) {
     auto otherArgs = other->getGenerics();
     bool argumentsEqual =
         std::all_of(otherArgs.begin(), otherArgs.end(),
@@ -93,9 +93,9 @@ std::string DefinedType::getMangledName() const {
     return mangled;
 }
 
-Syntax::Expression::TypeRef* DefinedType::toRef() {
+Syntax::Expression::TypeRef *DefinedType::toRef() {
     auto tRef = Type::toRef();
-    std::vector<Syntax::Expression::TypeRef*> genericRef;
+    std::vector<Syntax::Expression::TypeRef *> genericRef;
     for (auto g : generics) {
         genericRef.push_back(g->toRef());
     }

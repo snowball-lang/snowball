@@ -14,12 +14,12 @@
 namespace snowball {
 namespace codegen {
 
-llvm::GlobalVariable*
-LLVMBuilder::createVirtualTable(types::DefinedType* ty,
-                                llvm::StructType* vtableType) {
+llvm::GlobalVariable *
+LLVMBuilder::createVirtualTable(types::DefinedType *ty,
+                                llvm::StructType *vtableType) {
     auto structName = (std::string)_SN_VTABLE_PREFIX + ty->getMangledName();
 
-    std::vector<llvm::Constant*> functions;
+    std::vector<llvm::Constant *> functions;
     for (auto fn : ty->getVTable()) {
         fn->visit(this);
         auto c = llvm::cast<llvm::Constant>(this->value);

@@ -10,10 +10,10 @@
 namespace snowball {
 namespace codegen {
 
-void LLVMBuilder::visit(ir::ValueExtract* extract) {
+void LLVMBuilder::visit(ir::ValueExtract *extract) {
     auto var = extract->getValue();
 
-    llvm::Value* value = nullptr;
+    llvm::Value *value = nullptr;
     if (auto f = std::dynamic_pointer_cast<ir::Func>(var)) {
         auto fn     = funcs.at(f->getId());
         this->value = fn;

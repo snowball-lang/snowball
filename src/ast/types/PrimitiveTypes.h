@@ -46,9 +46,7 @@ class NumericType : public AcceptorExtend<NumericType, PrimitiveType> {
 
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
-    bool canCast(Type* ty) override {
-        return NumericType::isNumericType(ty);
-    }
+    bool canCast(Type *ty) override { return NumericType::isNumericType(ty); }
 
   public:
     /**
@@ -58,7 +56,7 @@ class NumericType : public AcceptorExtend<NumericType, PrimitiveType> {
      *  floats: f64, f32,
      *  boolean: i1
      */
-    static bool isNumericType(Type* ty);
+    static bool isNumericType(Type *ty);
 };
 
 /// @brief Representation of a void type.

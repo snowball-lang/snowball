@@ -6,7 +6,7 @@
 namespace snowball {
 namespace parser {
 
-Syntax::Statement::ImportStmt* Parser::parseImportStatement() {
+Syntax::Statement::ImportStmt *Parser::parseImportStatement() {
     assert(is<TokenType::KWORD_IMPORT>());
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
 

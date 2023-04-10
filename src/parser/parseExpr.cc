@@ -8,19 +8,21 @@
 #include <assert.h>
 #define TOKEN(comp) is<TokenType::comp>()
 
+using Operators = snowball::services::OperatorService;
+
 namespace snowball::parser {
 
-Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
-    std::vector<Syntax::Expression::Base*> exprs;
+Syntax::Expression::Base *Parser::parseExpr(bool allowAssign) {
+    std::vector<Syntax::Expression::Base *> exprs;
 
     auto parseIdentifier =
-        [&](DBGSourceInfo* dbg) -> Syntax::Expression::Identifier* {
+        [&](DBGSourceInfo *dbg) -> Syntax::Expression::Identifier * {
         if (is<TokenType::OP_LT>(peek()) &&
             is<TokenType::SYM_QUESTION>(peek(1, true))) {
             auto name = m_current.to_string();
             next();
             auto generics = parseGenericExpr();
-            auto width = m_current.get_pos().second - dbg->pos.second;
+            auto width    = m_current.get_pos().second - dbg->pos.second;
 
             dbg->width = width;
             prev();
@@ -38,8 +40,8 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
     };
 
     while (true) {
-        auto tk                            = next();
-        Syntax::Expression::Base* expr = nullptr;
+        auto tk                        = next();
+        Syntax::Expression::Base *expr = nullptr;
 
         auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
         if (TOKEN(VALUE_NUMBER) || TOKEN(VALUE_NULL) || TOKEN(VALUE_FLOAT) ||
@@ -59,10 +61,28 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
 
             expr = Syntax::N<Syntax::Expression::NewInstance>(call, ty);
             expr->setDBGInfo(call->getDBGInfo());
+        } else if (TOKEN(OP_NOT) || TOKEN(OP_PLUS) || TOKEN(OP_MINUS) ||
+                   TOKEN(OP_BIT_NOT)) {
+            if (tk.type == TokenType::OP_NOT)
+                exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(
+                    Operators::OperatorType::NOT));
+            else if (tk.type == TokenType::OP_PLUS)
+                exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(
+                    Operators::OperatorType::UPLUS));
+            else if (tk.type == TokenType::OP_MINUS)
+                exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(
+                    Operators::OperatorType::UMINUS));
+            else if (tk.type == TokenType::OP_BIT_NOT)
+                exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(
+                    Operators::OperatorType::BIT_NOT));
+
+            exprs.back()->isOperator = true;
+
+            continue;
         } else {
             createError<SYNTAX_ERROR>(
-                "Expected a valid expression but got '%s'",
-                m_current.to_string().c_str());
+                FMT("Expected a valid expression but got '%s'",
+                    m_current.to_string().c_str()));
         }
 
         if (expr->getDBGInfo() == nullptr) expr->setDBGInfo(dbg);

@@ -12,12 +12,12 @@
 namespace snowball {
 namespace codegen {
 
-void LLVMBuilder::visit(ir::Call* call) {
+void LLVMBuilder::visit(ir::Call *call) {
     auto callee = build(call->getCallee().get());
     setDebugInfoLoc(call);
 
     auto args =
-        utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value*>(
+        utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value *>(
             call->getArguments(),
             [&](std::shared_ptr<ir::Value> arg) { return build(arg.get()); });
 
@@ -50,15 +50,15 @@ void LLVMBuilder::visit(ir::Call* call) {
         auto pointerLoad = builder->CreateLoad(
             pointer->getType()->getPointerElementType(), pointer);
         this->value =
-            builder->CreateCall((llvm::FunctionType*)pointerLoad->getType()
+            builder->CreateCall((llvm::FunctionType *)pointerLoad->getType()
                                     ->getPointerElementType(),
-                                (llvm::Function*)pointerLoad, args);
+                                (llvm::Function *)pointerLoad, args);
         return;
     }
 
     // TODO: invoke if it's inside a try block
     this->value = builder->CreateCall(
-        (llvm::FunctionType*)callee->getType()->getPointerElementType(),
+        (llvm::FunctionType *)callee->getType()->getPointerElementType(),
         callee, args);
 }
 

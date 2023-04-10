@@ -9,7 +9,7 @@
 namespace snowball {
 namespace codegen {
 
-void LLVMBuilder::visit(ir::IndexExtract* index) {
+void LLVMBuilder::visit(ir::IndexExtract *index) {
     auto v = build(index->getValue().get());
     // We add "1" becasue index #0 is a pointer to the virtual
     // table.

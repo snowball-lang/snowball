@@ -1,10 +1,9 @@
 #include "../../../lexer.h"
 #include "../../../parser/Parser.h"
+#include "../../Analyzer.h"
 #include "../../TransformState.h"
 #include "../../Transformer.h"
 #include "../../TypeChecker.h"
-
-#include "../../Analyzer.h"
 #include "../../analyzers/DefiniteAssigment.h"
 
 #include <fstream>
@@ -59,7 +58,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
 
                 visit(ast);
 
-                std::vector<Syntax::Analyzer*> passes = {
+                std::vector<Syntax::Analyzer *> passes = {
                     new Syntax::DefiniteAssigment(srcInfo)};
 
                 for (auto pass : passes) {

@@ -149,7 +149,7 @@ class TransformContext
   public:
     // The cache. Look at `class Cache` to know more
     // about it and what it does.
-    Cache* cache;
+    Cache *cache;
     // Controls, manages and caches modules used when
     // importying other files into the current program
     std::unique_ptr<services::ImportService> imports;

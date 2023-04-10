@@ -23,7 +23,7 @@ Transformer::getBestFittingFunction(
         if (ir::Func::argumentSizesEqual(getActualFunctionArgs(n), arguments,
                                          fn->isVariadic())) {
             auto genericArguments =
-                utils::vector_iterate<Expression::TypeRef*,
+                utils::vector_iterate<Expression::TypeRef *,
                                       std::shared_ptr<types::Type>>(
                     generics, [&](auto g) { return transformType(g); });
 

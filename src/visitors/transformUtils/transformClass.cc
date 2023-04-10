@@ -9,7 +9,7 @@ namespace Syntax {
 std::shared_ptr<types::DefinedType>
 Transformer::transformClass(const std::string& uuid,
                             cacheComponents::Types::TypeStore& classStore,
-                            Expression::TypeRef* typeRef) {
+                            Expression::TypeRef *typeRef) {
     auto ty = classStore.type;
     if (ty->getGenerics().size() > 0) {
         assert(false && "TODO: class generics");
@@ -28,13 +28,14 @@ Transformer::transformClass(const std::string& uuid,
             parentType = utils::dyn_cast<types::DefinedType>(transformType(x));
         }
 
-        auto generics = vector_iterate<Expression::TypeRef*,
-                                       std::shared_ptr<types::Type>>(
-            typeRef->getGenerics(), [&](auto t) { return transformType(t); });
+        auto generics =
+            vector_iterate<Expression::TypeRef *, std::shared_ptr<types::Type>>(
+                typeRef->getGenerics(),
+                [&](auto t) { return transformType(t); });
 
         auto basedName  = getNameWithBase(ty->getName());
-        auto baseFields = vector_iterate<Statement::VariableDecl*,
-                                         types::DefinedType::ClassField*>(
+        auto baseFields = vector_iterate<Statement::VariableDecl *,
+                                         types::DefinedType::ClassField *>(
             ty->getVariables(), [&](auto v) {
                 auto varTy = transformType(v->getDefinedType());
                 return new types::DefinedType::ClassField(v->getName(), varTy);

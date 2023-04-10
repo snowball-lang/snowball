@@ -10,8 +10,8 @@
 namespace snowball {
 namespace codegen {
 
-void LLVMBuilder::visit(ir::VariableDeclaration* variable) {
-    llvm::Value* store = nullptr;
+void LLVMBuilder::visit(ir::VariableDeclaration *variable) {
+    llvm::Value *store = nullptr;
 
     if (auto a = utils::cast<ir::Argument>(variable->getValue().get())) {
         auto id = a->getId();

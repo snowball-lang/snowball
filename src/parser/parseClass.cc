@@ -9,7 +9,7 @@
 
 namespace snowball::parser {
 
-Syntax::Statement::ClassDef* Parser::parseClass() {
+Syntax::Statement::ClassDef *Parser::parseClass() {
     assert(is<TokenType::KWORD_CLASS>());
     next(); // East "class"
 
@@ -22,8 +22,8 @@ Syntax::Statement::ClassDef* Parser::parseClass() {
         assert_tok<TokenType::IDENTIFIER>("class identifier").to_string();
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
 
-    Syntax::Expression::TypeRef* parentClass = nullptr;
-    std::vector<Syntax::Expression::TypeRef*> generics;
+    Syntax::Expression::TypeRef *parentClass = nullptr;
+    std::vector<Syntax::Expression::TypeRef *> generics;
 
     if (is<TokenType::OP_LT>(peek()) &&
         is<TokenType::SYM_QUESTION>(peek(1, true))) {
@@ -72,7 +72,8 @@ Syntax::Statement::ClassDef* Parser::parseClass() {
                     (!IS_CONSTRUCTOR(peek()))) {
                     next();
                     createError<SYNTAX_ERROR>(
-                        "expected keyword \"func\", \"let\", \"operator\" or a constructor "
+                        "expected keyword \"func\", \"let\", \"operator\" or a "
+                        "constructor "
                         "declaration after static member");
                 }
             } break;
