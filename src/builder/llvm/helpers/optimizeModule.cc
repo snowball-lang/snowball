@@ -36,7 +36,7 @@
 namespace snowball {
 
 namespace {
-void applyDebugTransformations(snowball::ptr<llvm::Module> module, bool debug) {
+void applyDebugTransformations(llvm::Module* module, bool debug) {
     if (debug) {
         // remove tail calls and fix linkage for stack traces
         for (auto& f : *module) {

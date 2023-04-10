@@ -37,7 +37,7 @@ class Types {
      *  it was located at before being added to the cache.
      */
     struct TypeStore {
-        ptr<Statement::ClassDef> type = nullptr;
+        Statement::ClassDef* type = nullptr;
         std::shared_ptr<transform::ContextState> state;
     };
 
@@ -49,7 +49,7 @@ class Types {
 
   public:
     /// @brief Set a new type to the cache
-    void setType(const std::string& uuid, ptr<Statement::ClassDef> p_fn,
+    void setType(const std::string& uuid, Statement::ClassDef* p_fn,
                  std::shared_ptr<transform::ContextState> state);
     /// @brief add a new generated class to the cache
     void setTransformedType(const std::string& uuid,

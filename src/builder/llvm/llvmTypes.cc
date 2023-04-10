@@ -13,11 +13,11 @@ using namespace snowball::utils;
 namespace snowball {
 namespace codegen {
 
-ptr<llvm::Type> LLVMBuilder::getLLVMType(std::shared_ptr<types::Type> t) {
+llvm::Type* LLVMBuilder::getLLVMType(std::shared_ptr<types::Type> t) {
     return getLLVMType(t.get());
 }
 
-ptr<llvm::Type> LLVMBuilder::getLLVMType(ptr<types::Type> t) {
+llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
     if (cast<types::Int64Type>(t)) {
         return builder->getInt64Ty();
     } else if (cast<types::Int32Type>(t)) {
@@ -56,9 +56,9 @@ ptr<llvm::Type> LLVMBuilder::getLLVMType(ptr<types::Type> t) {
         }
 
         auto generatedFields =
-            vector_iterate<ptr<types::DefinedType::ClassField>,
-                           ptr<llvm::Type>>(
-                fields, [&](ptr<types::DefinedType::ClassField> t) {
+            vector_iterate<types::DefinedType::ClassField*,
+                           llvm::Type*  >(
+                fields, [&](types::DefinedType::ClassField* t) {
                     return getLLVMType(t->type);
                 });
 
@@ -71,7 +71,7 @@ ptr<llvm::Type> LLVMBuilder::getLLVMType(ptr<types::Type> t) {
         } else {
             auto structName =
                 (std::string)_SN_VTABLE_PREFIX + c->getMangledName();
-            std::vector<ptr<llvm::Type>> types;
+            std::vector<llvm::Type*> types;
 
             for (auto fn : c->getVTable()) {
                 types.push_back(getLLVMType(fn->getType()));
@@ -96,10 +96,10 @@ ptr<llvm::Type> LLVMBuilder::getLLVMType(ptr<types::Type> t) {
     return nullptr; // to avoid warnings
 }
 
-ptr<llvm::FunctionType>
-LLVMBuilder::getLLVMFunctionType(ptr<types::FunctionType> fn) {
+llvm::FunctionType*
+LLVMBuilder::getLLVMFunctionType(types::FunctionType* fn) {
     auto argTypes =
-        vector_iterate<std::shared_ptr<types::Type>, ptr<llvm::Type>>(
+        vector_iterate<std::shared_ptr<types::Type>, llvm::Type*>(
             fn->getArgs(),
             [&](std::shared_ptr<types::Type> arg) { return getLLVMType(arg); });
 

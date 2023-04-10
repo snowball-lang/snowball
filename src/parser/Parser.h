@@ -25,10 +25,10 @@ class Parser {
     Token m_current;
     std::vector<Token> m_tokens;
 
-    ptr<SourceInfo> m_source_info;
+    SourceInfo* m_source_info;
 
   public:
-    Parser(std::vector<Token> p_tokens, ptr<SourceInfo> p_source_info);
+    Parser(std::vector<Token> p_tokens, SourceInfo* p_source_info);
     ~Parser() noexcept = default;
 
   private:
@@ -110,20 +110,26 @@ class Parser {
     // Decrement @var "m_tok_index" and
     // return the current token
     Token prev(int p_offset = 0);
-
-    /**
-     * This function gets a list of expressions (or nodes)
-     * and joins them into a single one. It also orders them
-     * so that snowball follows BIDMAS.
-     *
-     * e.g. NUMBER PLUS_OPERATOR NUMBER -> OPERATOR (l: NUMBER, r: NUMBER)
-     */
-    ptr<Syntax::Expression::Base>
-    buildOperatorTree(std::vector<ptr<Syntax::Expression::Base>>& exprs);
+  /**
+   * Joins a list of expressions into a single expression tree that
+   * follows the order of operations defined by BIDMAS (Brackets,
+   * Indices, Division, Multiplication, Addition, Subtraction).
+   *
+   * @param exprs A vector of pointers to Syntax::Expression::Base
+   *              objects to be joined and ordered.
+   * @return A pointer to a new Syntax::Expression::Base object
+   *         representing the expression tree.
+   *
+   * @example
+   *  - Input:  {NUMBER, PLUS_OPERATOR, NUMBER}
+   *  - Output: OperatorExpr(l: NUMBER, r: NUMBER, op: PLUS_OPERATOR)
+ */
+    Syntax::Expression::Base*
+    buildOperatorTree(std::vector<Syntax::Expression::Base*>& exprs);
 
   private:
     // Parsing functions
-    using NodeVec = std::vector<ptr<Syntax::Node>>;
+    using NodeVec = std::vector<Syntax::Node*>;
 
     /**
      * visibility    ::=  pub | priv
@@ -136,24 +142,24 @@ class Parser {
      * arrowfn       ::=  [decorators] "fn" funcname "(" [parameter_list] ")"
      * type "=>" stmt
      */
-    ptr<Syntax::Statement::FunctionDef>
+    Syntax::Statement::FunctionDef*
     parseFunction(bool isConstructor = false);
 
     /**
      * params        ::=  "<" [param_args] ">"
      * param_args    ::=  identifier ["=" default_type]
      */
-    std::vector<ptr<Syntax::Expression::Param>> parseGenericParams();
+    std::vector<Syntax::Expression::Param*> parseGenericParams();
 
     /**
      * generics_expr ::=  "<" [type] ["," [type]...] ">"
      */
-    std::vector<ptr<Syntax::Expression::TypeRef>> parseGenericExpr();
+    std::vector<Syntax::Expression::TypeRef*> parseGenericExpr();
 
     /**
      * type          ::=  identifier [generics_expr]
      */
-    ptr<Syntax::Expression::TypeRef> parseType();
+    Syntax::Expression::TypeRef* parseType();
 
     /**
      * variable      ::=  "let" ["mut"] identifier[: [type]] = [expr]
@@ -162,19 +168,19 @@ class Parser {
      *    let a = "hello"
      *    let b: i32 = 2.4
      */
-    ptr<Syntax::Statement::VariableDecl> parseVariable();
+    Syntax::Statement::VariableDecl* parseVariable();
 
     /**
      * block         ::=  "{" [body] "}"
      * body          ::=  [stmt] | [expr]
      */
-    ptr<Syntax::Block> parseBlock(std::vector<TokenType> termination = {
+    Syntax::Block* parseBlock(std::vector<TokenType> termination = {
                                       TokenType::BRACKET_RCURLY});
 
     /**
      * return stmt   ::=  "return" [stmt]
      */
-    ptr<Syntax::Statement::Return> parseReturn();
+    Syntax::Statement::Return* parseReturn();
 
     /**
      * visibility    ::=  pub | priv
@@ -196,7 +202,7 @@ class Parser {
      * class         ::=  [visibility] "class" [class_name]
      *                    [class_inherit] [class_body]
      */
-    ptr<Syntax::Statement::ClassDef> parseClass();
+    Syntax::Statement::ClassDef* parseClass();
 
     /**
      * function_call ::= [expr] "(" [args] ")"
@@ -204,8 +210,8 @@ class Parser {
      *
      * @param callee expression being called
      */
-    ptr<Syntax::Expression::FunctionCall>
-    parseFunctionCall(ptr<Syntax::Expression::Base> callee);
+    Syntax::Expression::FunctionCall*
+    parseFunctionCall(Syntax::Expression::Base* callee);
 
     /**
      * function_call ::= [expr] "(" [args] ")"
@@ -213,7 +219,7 @@ class Parser {
      *
      * @param callee expression being called
      */
-    ptr<Syntax::Statement::ImportStmt> parseImportStatement();
+    Syntax::Statement::ImportStmt* parseImportStatement();
 
     /**
      * expr          ::=  [constant_value] |
@@ -224,7 +230,7 @@ class Parser {
      *
      * @param allowAssign Whether or not allow the assign operator.
      */
-    ptr<Syntax::Expression::Base> parseExpr(bool allowAssign = true);
+    Syntax::Expression::Base* parseExpr(bool allowAssign = true);
 };
 
 } // namespace parser

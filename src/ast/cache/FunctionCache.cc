@@ -16,7 +16,7 @@ void Functions::setFunctionState(id_t id,
     functionStates[id] = s;
 }
 void Functions::setFunction(const std::string& name,
-                            ptr<Statement::FunctionDef> p_fn,
+                            Statement::FunctionDef* p_fn,
                             std::shared_ptr<transform::ContextState> state) {
     functions[name].push_back({p_fn, state});
 }

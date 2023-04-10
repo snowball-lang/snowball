@@ -9,7 +9,7 @@
 namespace snowball {
 namespace codegen {
 
-void LLVMBuilder::visit(ptr<ir::Cast> c) {
+void LLVMBuilder::visit(ir::Cast* c) {
     auto v             = build(c->getExpr().get());
     auto vTy           = c->getExpr()->getType();
     auto llvmValueType = getLLVMType(c->getExpr()->getType());

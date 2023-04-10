@@ -9,7 +9,7 @@
 
 namespace snowball::parser {
 
-ptr<Syntax::Statement::ClassDef> Parser::parseClass() {
+Syntax::Statement::ClassDef* Parser::parseClass() {
     assert(is<TokenType::KWORD_CLASS>());
     next(); // East "class"
 
@@ -22,8 +22,8 @@ ptr<Syntax::Statement::ClassDef> Parser::parseClass() {
         assert_tok<TokenType::IDENTIFIER>("class identifier").to_string();
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
 
-    ptr<Syntax::Expression::TypeRef> parentClass = nullptr;
-    std::vector<ptr<Syntax::Expression::TypeRef>> generics;
+    Syntax::Expression::TypeRef* parentClass = nullptr;
+    std::vector<Syntax::Expression::TypeRef*> generics;
 
     if (is<TokenType::OP_LT>(peek()) &&
         is<TokenType::SYM_QUESTION>(peek(1, true))) {

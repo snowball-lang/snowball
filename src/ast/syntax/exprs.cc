@@ -1,6 +1,7 @@
 
 #include "../errors/error.h"
 #include "nodes.h"
+#include "common.h"
 
 #include <assert.h>
 #include <string>
@@ -10,13 +11,13 @@ namespace snowball {
 namespace Syntax {
 namespace Expression {
 
-TypeRef::TypeRef(std::string p_name, ptr<snowball::DBGSourceInfo> p_dbg,
+TypeRef::TypeRef(std::string p_name, snowball::DBGSourceInfo* p_dbg,
                  std::vector<TypeRef *> p_generics)
     : generics(p_generics), types::Type(REF, p_name) {
     setDBGInfo(p_dbg);
 }
-void TypeRef::setGenerics(std::vector<ptr<TypeRef>> g) { generics = g; }
-std::vector<ptr<Expression::TypeRef>> GenericIdentifier::getGenerics() const {
+void TypeRef::setGenerics(std::vector<TypeRef*> g) { generics = g; }
+std::vector<Expression::TypeRef*> GenericIdentifier::getGenerics() const {
     return generics;
 }
 std::vector<TypeRef *> TypeRef::getGenerics() { return this->generics; }
@@ -24,7 +25,7 @@ Param::Param(std::string name, TypeRef *type, Status generic)
     : name(name), type(type), status(generic) {
     assert(generic <= 1 && generic >= 0 && "Invalid param status");
 } // clang-format off
-bool BinaryOp::is_assignment(ptr<BinaryOp> p_node) {
+bool BinaryOp::is_assignment(BinaryOp* p_node) {
     OpType p_op_type = p_node->op_type;
 
     return p_op_type == OpType::EQ || p_op_type == OpType::PLUSEQ ||

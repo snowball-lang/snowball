@@ -32,10 +32,10 @@ class Visitor;
 // In snowball, a block is composed of
 // a list of nodes.
 struct Block : AcceptorExtend<Block, Node> {
-    std::vector<ptr<Node>> stmts;
+    std::vector<Node*> stmts;
 
   public:
-    Block(std::vector<ptr<Node>> s) : AcceptorExtend(), stmts(s) {}
+    Block(std::vector<Node*> s) : AcceptorExtend(), stmts(s) {}
     ~Block() noexcept = default;
 
     // Aceptance for the AST visitor
@@ -119,14 +119,14 @@ struct ConstantValue : public AcceptorExtend<ConstantValue, Base> {
 struct Cast : public AcceptorExtend<Cast, Base> {
   private:
     /// @brief Value that's needed to be casted
-    ptr<Base> value;
+    Base* value;
     /// @brief Result type thats casted to
-    ptr<TypeRef> type;
+    TypeRef* type;
 
   public:
     using AcceptorExtend::AcceptorExtend;
 
-    Cast(ptr<Base> value, ptr<TypeRef> ty) : type(ty), value(value){};
+    Cast(Base* value, TypeRef* ty) : type(ty), value(value){};
 
     /// @return The value to cast
     auto getValue() { return value; }
@@ -160,15 +160,15 @@ struct FunctionCall : public AcceptorExtend<FunctionCall, Base> {
      *    <void return>()
      *    ^---------- '4' or 'type void' are not functions
      */
-    ptr<Base> callee;
+    Base* callee;
 
     /// @brief A list of arguments passed to the function
-    std::vector<ptr<Base>> arguments;
+    std::vector<Base*> arguments;
 
   public:
     using AcceptorExtend::AcceptorExtend;
 
-    FunctionCall(ptr<Base> callee, std::vector<ptr<Base>> arguments = {})
+    FunctionCall(Base* callee, std::vector<Base*> arguments = {})
         : callee(callee), arguments(arguments), AcceptorExtend(){};
 
     /// @return Get function's callee
@@ -176,7 +176,7 @@ struct FunctionCall : public AcceptorExtend<FunctionCall, Base> {
     /// @return Call instruction arguments
     auto& getArguments() { return arguments; }
     /// @brief Set a new call expression to this call
-    void setCallee(ptr<Base> c) { callee = c; }
+    void setCallee(Base* c) { callee = c; }
 
   public:
     /// @return string representation of a function call arguments
@@ -199,14 +199,14 @@ struct FunctionCall : public AcceptorExtend<FunctionCall, Base> {
 struct NewInstance : public AcceptorExtend<Cast, Base> {
   private:
     /// @brief Value that's needed to be casted
-    ptr<FunctionCall> call;
+    FunctionCall* call;
     /// @brief Result type thats casted to
-    ptr<TypeRef> type;
+    TypeRef* type;
 
   public:
     using AcceptorExtend::AcceptorExtend;
 
-    NewInstance(ptr<FunctionCall> call, ptr<TypeRef> ty)
+    NewInstance(FunctionCall* call, TypeRef* ty)
         : type(ty), call(call){};
 
     /// @return Get the call value from the operator
@@ -253,10 +253,10 @@ struct Identifier : public AcceptorExtend<Identifier, Base> {
  */
 struct Index : public AcceptorExtend<Index, Base> {
     /// Base value from where we are geting the value
-    ptr<Base> base;
+    Base* base;
     /// Identifier node that we are trying to extract.
     /// @note Identifier can also have generics!
-    ptr<Identifier> identifier;
+    Identifier* identifier;
 
   public:
     /// @brief Wether the extract is marked as static or not
@@ -264,7 +264,7 @@ struct Index : public AcceptorExtend<Index, Base> {
 
     using AcceptorExtend::AcceptorExtend;
 
-    Index(ptr<Base> base, ptr<Identifier> identifier, bool isStatic = false)
+    Index(Base* base, Identifier* identifier, bool isStatic = false)
         : base(base), isStatic(isStatic), identifier(identifier),
           AcceptorExtend(){};
 
@@ -283,17 +283,17 @@ struct GenericIdentifier
     : public AcceptorExtend<GenericIdentifier, Identifier> {
 
     /// @brief Generics stored into the identifier
-    std::vector<ptr<Expression::TypeRef>> generics;
+    std::vector<Expression::TypeRef *> generics;
 
   public:
     using AcceptorExtend::AcceptorExtend;
     GenericIdentifier(const std::string& idnt,
-                      std::vector<ptr<Expression::TypeRef>> generics = {})
+                      std::vector<Expression::TypeRef *> generics = {})
         : AcceptorExtend<GenericIdentifier, Identifier>(idnt),
           generics(generics){};
 
     /// @return generic list set to this identifier
-    std::vector<ptr<Expression::TypeRef>> getGenerics() const;
+    std::vector<Expression::TypeRef *> getGenerics() const;
     std::string getNiceName() const override;
 
     ACCEPT()
@@ -307,8 +307,8 @@ struct GenericIdentifier
 struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
     using OpType = services::OperatorService::OperatorType;
 
-    ptr<Base> left;     ///< Left node
-    ptr<Base> right;    ///< Right node
+    Base* left;     ///< Left node
+    Base* right;    ///< Right node
     OpType op_type;     ///< The type of operator
     bool unary = false; ///< Whether it's a unary operator
 
@@ -317,7 +317,7 @@ struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
      * @param p_node The operator expression node.
      * @return Whether it's an assignment operator.
      */
-    static bool is_assignment(ptr<BinaryOp> p_node);
+    static bool is_assignment(BinaryOp* p_node);
     /**
      * @brief Converts the operator type to a string.
      * @return The string representation of the operator.
@@ -389,9 +389,9 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
     // Function's identifier
     std::string name;
     // Arguments available for the functions
-    std::vector<ptr<Expression::Param>> args;
+    std::vector<Expression::Param*> args;
     // Function's return type
-    ptr<Expression::TypeRef> retType;
+    Expression::TypeRef* retType;
     // Whether or not function can take an infinite
     // number of arguments
     bool variadic = false;
@@ -415,14 +415,14 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
     auto argEnd() { return args.end(); }
 
     /// @return Argument list
-    std::vector<ptr<Expression::Param>> getArgs() const;
+    std::vector<Expression::Param*> getArgs() const;
     /// @brief Set a new argument list to the function
-    void setArgs(std::vector<ptr<Expression::Param>> p_args);
+    void setArgs(std::vector<Expression::Param*> p_args);
 
     /// @return Return type
-    ptr<Expression::TypeRef> getRetType() const;
+    Expression::TypeRef* getRetType() const;
     /// @brief Set a return type to the function
-    void setRetType(ptr<Expression::TypeRef> p_type);
+    void setRetType(Expression::TypeRef* p_type);
 
     /// @return Whether or not the function is marked as variadic
     bool isVariadic();
@@ -455,7 +455,7 @@ struct VariableDecl : public AcceptorExtend<VariableDecl, Base> {
     /// @brief Variables's identifier
     std::string name;
     /// @brief Function's return type
-    ptr<Expression::Base> value;
+    Expression::Base* value;
     /// @brief Whether the variable can change or not
     bool _mutable = false;
     /**
@@ -468,23 +468,23 @@ struct VariableDecl : public AcceptorExtend<VariableDecl, Base> {
      *   ----- it can also be written as:
      *   let a = 2 as f32
      */
-    ptr<Expression::TypeRef> definedType = nullptr;
+    Expression::TypeRef* definedType = nullptr;
 
   public:
-    VariableDecl(const std::string& name, ptr<Expression::Base> value = nullptr,
+    VariableDecl(const std::string& name, Expression::Base* value = nullptr,
                  bool isMutable = false);
 
     /// @brief Get the identifier assign to the variable
     std::string getName() const;
     /// @return the value holt by the variable
-    ptr<Expression::Base> getValue();
+    Expression::Base* getValue();
     /// @return Wether or not the variable is mutable
     bool isMutable();
     /// @return The desired type the programmer wants
     /// @note It might possibly be nullptr!
-    ptr<Expression::TypeRef> getDefinedType();
+    Expression::TypeRef* getDefinedType();
     /// @brief declare a defined type for the variable
-    void setDefinedType(ptr<Expression::TypeRef> t);
+    void setDefinedType(Expression::TypeRef* t);
     /// @return true if the variable has been initialied
     bool isInitialized();
 
@@ -504,32 +504,32 @@ struct ClassDef : public AcceptorExtend<ClassDef, Base>,
     /// @brief Defined functions to the class
     /// @note Although operators act like functions,
     ///  they are treated differently.
-    std::vector<ptr<FunctionDef>> functions;
+    std::vector<FunctionDef*> functions;
     /// @brief Class defined variables
-    std::vector<ptr<VariableDecl>> variables;
+    std::vector<VariableDecl*> variables;
     /// @brief Class inheritance parent
-    ptr<Expression::TypeRef> extends = nullptr;
+    Expression::TypeRef* extends = nullptr;
 
   public:
-    ClassDef(std::string name, ptr<Expression::TypeRef> extends = nullptr,
+    ClassDef(std::string name, Expression::TypeRef* extends = nullptr,
              Privacy::Status prvc = PRIVATE);
 
     /// @brief Get class name
     std::string getName() const;
 
     /// Add a function to the function list
-    void addFunction(ptr<FunctionDef> fnDef);
+    void addFunction(FunctionDef* fnDef);
     /// Declare a variable and store it to this class
-    void addVariable(ptr<VariableDecl> var);
+    void addVariable(VariableDecl* var);
 
     /// Iterator utilities
-    using FunctionIterator = std::vector<ptr<FunctionDef>>::iterator;
-    using VariableIterator = std::vector<ptr<VariableDecl>>::iterator;
+    using FunctionIterator = std::vector<FunctionDef*>::iterator;
+    using VariableIterator = std::vector<VariableDecl*>::iterator;
 
     /// @return A full list of declared functions
-    std::vector<ptr<FunctionDef>>& getFunctions();
+    std::vector<FunctionDef*>& getFunctions();
     /// @return All variables defined on the current class
-    std::vector<ptr<VariableDecl>>& getVariables();
+    std::vector<VariableDecl*>& getVariables();
 
     FunctionIterator funcStart();
     FunctionIterator funcEnd();
@@ -538,7 +538,7 @@ struct ClassDef : public AcceptorExtend<ClassDef, Base>,
     VariableIterator varEnd();
 
     /// @return the parent class being inherited on
-    ptr<Expression::TypeRef> getParent() const;
+    Expression::TypeRef* getParent() const;
 
     // Set an acceptance call
     ACCEPT()
@@ -552,15 +552,15 @@ struct ClassDef : public AcceptorExtend<ClassDef, Base>,
 struct Conditional : public AcceptorExtend<Conditional, Base> {
 
     // Instructions stored inside a block
-    ptr<Block> insts;
+    Block* insts;
     // the expression to be evaluated
-    ptr<Expression::Base> cond;
+    Expression::Base* cond;
     // The "else" statement block if the condition is false
-    ptr<Block> elseBlock;
+    Block* elseBlock;
 
   public:
-    explicit Conditional(ptr<Expression::Base> cond, ptr<Block> insts,
-                         ptr<Block> elseBlock = nullptr)
+    explicit Conditional(Expression::Base* cond, Block* insts,
+                         Block* elseBlock = nullptr)
         : cond(cond), insts(insts), elseBlock(elseBlock){};
 
     /// @return body block instructions to execute
@@ -644,13 +644,13 @@ struct ImportStmt : public AcceptorExtend<ImportStmt, Base> {
 struct Return : public AcceptorExtend<Return, Base> {
 
     // Function's return type
-    ptr<Expression::Base> value = nullptr;
+    Expression::Base* value = nullptr;
 
   public:
-    Return(ptr<Expression::Base> value);
+    Return(Expression::Base* value);
 
     /// @return the value holt by the variable
-    ptr<Expression::Base> getValue() const;
+    Expression::Base* getValue() const;
 
     // Set an acceptance call
     ACCEPT()
@@ -694,17 +694,17 @@ struct BodiedFunction : public AcceptorExtend<BodiedFunction, FunctionDef> {
 
     // Function's block. This block contains all the intructions
     // a function executes when it's called.
-    ptr<Block> block;
+    Block* block;
 
   public:
     using AcceptorExtend::AcceptorExtend;
 
     template <class... Args>
-    BodiedFunction(ptr<Block> block, Args&...args)
+    BodiedFunction(Block* block, Args&...args)
         : block(block), AcceptorExtend(std::forward<Args>(args)...){};
 
     /// @return Get function's body declaration.
-    ptr<Block> getBody() { return block; }
+    Block* getBody() { return block; }
 };
 
 }; // namespace Statement

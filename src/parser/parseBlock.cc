@@ -7,9 +7,9 @@
 
 namespace snowball::parser {
 
-ptr<Syntax::Block> Parser::parseBlock(std::vector<TokenType> termination) {
+Syntax::Block* Parser::parseBlock(std::vector<TokenType> termination) {
     assert(!is<TokenType::_EOF>());
-    std::vector<ptr<Syntax::Node>> stmts;
+    std::vector<Syntax::Node*> stmts;
 
     while (true) {
         auto pk = peek();

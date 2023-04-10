@@ -59,7 +59,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
 
                 visit(ast);
 
-                std::vector<ptr<Syntax::Analyzer>> passes = {
+                std::vector<Syntax::Analyzer*> passes = {
                     new Syntax::DefiniteAssigment(srcInfo)};
 
                 for (auto pass : passes) {

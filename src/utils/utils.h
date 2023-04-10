@@ -94,8 +94,8 @@ std::vector<Return> map(std::list<std::pair<Key, Val>> p_map,
 }
 
 template <typename Desired, typename Current>
-snowball::ptr<Desired> cast(Current curr) {
-    return dynamic_cast<ptr<Desired>>(curr);
+Desired* cast(Current curr) {
+    return dynamic_cast<Desired*>(curr);
 }
 
 template <typename Desired, typename Current>

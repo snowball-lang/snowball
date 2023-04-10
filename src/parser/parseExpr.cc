@@ -10,17 +10,17 @@
 
 namespace snowball::parser {
 
-ptr<Syntax::Expression::Base> Parser::parseExpr(bool allowAssign) {
-    std::vector<ptr<Syntax::Expression::Base>> exprs;
+Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
+    std::vector<Syntax::Expression::Base*> exprs;
 
     auto parseIdentifier =
-        [&](ptr<DBGSourceInfo> dbg) -> ptr<Syntax::Expression::Identifier> {
+        [&](DBGSourceInfo* dbg) -> Syntax::Expression::Identifier* {
         if (is<TokenType::OP_LT>(peek()) &&
             is<TokenType::SYM_QUESTION>(peek(1, true))) {
             auto name = m_current.to_string();
             next();
             auto generics = parseGenericExpr();
-            auto width    = m_current.get_pos().second - dbg->pos.second;
+            auto width = m_current.get_pos().second - dbg->pos.second;
 
             dbg->width = width;
             prev();
@@ -39,7 +39,7 @@ ptr<Syntax::Expression::Base> Parser::parseExpr(bool allowAssign) {
 
     while (true) {
         auto tk                            = next();
-        ptr<Syntax::Expression::Base> expr = nullptr;
+        Syntax::Expression::Base* expr = nullptr;
 
         auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
         if (TOKEN(VALUE_NUMBER) || TOKEN(VALUE_NULL) || TOKEN(VALUE_FLOAT) ||

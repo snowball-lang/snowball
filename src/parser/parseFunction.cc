@@ -17,7 +17,7 @@ using namespace snowball::Syntax::Statement;
 
 namespace snowball::parser {
 
-ptr<FunctionDef> Parser::parseFunction(bool isConstructor) {
+FunctionDef* Parser::parseFunction(bool isConstructor) {
     assert(is<TokenType::KWORD_FUNC>() ||
            (is<TokenType::IDENTIFIER>() && isConstructor));
 
@@ -96,7 +96,7 @@ ptr<FunctionDef> Parser::parseFunction(bool isConstructor) {
     auto privacy = Syntax::Statement::Privacy::fromInt(isPublic);
 
     // Check for generic expressions
-    std::vector<ptr<Syntax::Expression::Param>> generics;
+    std::vector<Syntax::Expression::Param*> generics;
     if (is<TokenType::OP_LT>()) {
 
         if (isExtern) {
@@ -113,7 +113,7 @@ ptr<FunctionDef> Parser::parseFunction(bool isConstructor) {
     int argumentCount = 0;
     bool isVarArg     = false;
 
-    std::vector<ptr<Syntax::Expression::Param>> arguments;
+    std::vector<Syntax::Expression::Param*> arguments;
     while (true) {
         auto pk = peek();
 
@@ -171,7 +171,7 @@ ptr<FunctionDef> Parser::parseFunction(bool isConstructor) {
     next();
     consume<TokenType::BRACKET_RPARENT>("')'");
 
-    ptr<Syntax::Expression::TypeRef> returnType = nullptr;
+    Syntax::Expression::TypeRef* returnType = nullptr;
     if (is<TokenType::IDENTIFIER>()) {
         if (isConstructor) {
             createError<SYNTAX_ERROR>(
@@ -188,7 +188,7 @@ ptr<FunctionDef> Parser::parseFunction(bool isConstructor) {
 
     auto info = new DBGSourceInfo(m_source_info, dbg, width);
 
-    ptr<Syntax::Block> block;
+    Syntax::Block* block;
     bool hasBlock = false;
 
     if (isExtern) {
@@ -202,7 +202,7 @@ ptr<FunctionDef> Parser::parseFunction(bool isConstructor) {
         assert_tok<TokenType::BRACKET_RCURLY>("'}'");
     }
 
-    ptr<FunctionDef> fn = nullptr;
+    FunctionDef* fn = nullptr;
     if (isExtern) {
         fn = Syntax::N<ExternFnDef>(externName, name);
     } else if (hasBlock) {

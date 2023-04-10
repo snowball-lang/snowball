@@ -47,7 +47,7 @@ class Type {
 
     /// @param other another type
     /// @return true if this type is equal to the argument type
-    virtual bool is(ptr<Type> other) { return getName() == other->getName(); }
+    virtual bool is(Type* other) { return getName() == other->getName(); }
     /// @brief normal Type::is but with std::shared_ptr support
     virtual bool is(std::shared_ptr<Type> other) { return is(other.get()); }
 
@@ -61,7 +61,7 @@ class Type {
     };
 
     /// @return if a type can be casted to this type
-    virtual bool canCast(ptr<Type> ty) { return false; }
+    virtual bool canCast(Type* ty) { return false; }
     /// @brief std::shared_ptr support for Type::canCast
     virtual bool canCast(std::shared_ptr<Type> t) { return canCast(t.get()); }
 
@@ -69,7 +69,7 @@ class Type {
     ///	This is useful for cases such as class methods where the first
     /// argument needs to be "self" (aka. A type reference to it's
     /// parent class)
-    virtual ptr<Syntax::Expression::TypeRef> toRef();
+    virtual Syntax::Expression::TypeRef* toRef();
 };
 };     // namespace types
 };     // namespace snowball

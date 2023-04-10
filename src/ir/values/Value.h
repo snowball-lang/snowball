@@ -9,7 +9,7 @@
 #define __SNOWBALL_VALUE_H_
 
 #define SN_GENERATOR_VISITS                                                    \
-    void visit(ptr<codegen::ValueVisitor> v) override { v->visit(this); };
+    void visit(codegen::ValueVisitor* v) override { v->visit(this); };
 
 /**
  * @brief Snowball values
@@ -37,7 +37,7 @@ class Value : public ModuleHolder, public DBGObject {
     virtual void setType(std::shared_ptr<types::Type> p_type) { type = p_type; }
 
     // Generate helper function
-    virtual void visit(ptr<codegen::ValueVisitor> v) = 0;
+    virtual void visit(codegen::ValueVisitor* v) = 0;
 };
 
 } // namespace ir

@@ -23,7 +23,7 @@ namespace ir {
 class MainModule : public Module {
 
     /// @brief Main function called to start the program.
-    ptr<Func> entryPoint;
+    Func* entryPoint;
     /// @brief a list of generated modules through the whole project
     std::vector<std::shared_ptr<ir::Module>> modules;
 

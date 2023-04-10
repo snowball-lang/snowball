@@ -32,7 +32,7 @@ class Compiler {
     fs::path _cwd;
     exec::Options::Optimization opt_level;
 
-    ptr<SourceInfo> _source_info;
+    SourceInfo* _source_info;
     bool _initialized  = false;
     bool _enabledTests = false;
 

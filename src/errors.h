@@ -55,7 +55,7 @@ class SNError {
 
 class NiceError : public SNError {
   protected:
-    ptr<DBGSourceInfo> cb_dbg_info;
+    DBGSourceInfo* cb_dbg_info;
     const std::string info;
 
   public:

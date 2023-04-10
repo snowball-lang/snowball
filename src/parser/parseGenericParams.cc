@@ -10,10 +10,10 @@ using namespace snowball::Syntax::Expression;
 
 namespace snowball::parser {
 
-std::vector<ptr<Syntax::Expression::Param>> Parser::parseGenericParams() {
+std::vector<Syntax::Expression::Param*> Parser::parseGenericParams() {
     assert(is<TokenType::OP_LT>());
 
-    std::vector<ptr<Syntax::Expression::Param>> params;
+    std::vector<Syntax::Expression::Param*> params;
 
     while (true) {
         next();

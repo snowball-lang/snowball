@@ -7,7 +7,7 @@ namespace snowball {
 namespace Syntax {
 
 std::shared_ptr<ir::Func> Transformer::getFunction(
-    ptr<DBGObject> dbgInfo,
+    DBGObject* dbgInfo,
     std::tuple<
         std::optional<std::shared_ptr<ir::Value>>,
         std::optional<std::shared_ptr<types::Type>>,
@@ -18,7 +18,7 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
         store,
     const std::string& name,
     const std::vector<std::shared_ptr<types::Type>>& arguments,
-    const std::vector<ptr<Expression::TypeRef>>& generics) {
+    const std::vector<Expression::TypeRef *>& generics) {
 
     auto [val, ty, functions, overloads, mod, canBePrivate] = store;
     auto checkIfContextEqual =

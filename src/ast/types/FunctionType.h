@@ -73,7 +73,7 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
      * actual function corresponding to a FunctionType and this
      * function will just have the purpose as a fallback.
      */
-    virtual bool is(ptr<Type> other) override {
+    virtual bool is(Type* other) override {
         if (auto f = utils::cast<FunctionType>(other)) {
             return is(f);
         }
@@ -88,7 +88,7 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
      * @param other Function type to check
      * @return true/false depending on the equality
      */
-    virtual bool is(ptr<FunctionType> other);
+    virtual bool is(FunctionType* other);
 
     /// @return function argument types
     std::vector<std::shared_ptr<Type>> getArgs() const { return args; }
@@ -110,9 +110,9 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
      * Create a function type based on the given node.
      *
      * @param fn Function value to process
-     * @return ptr<FunctionType> resultant type
+     * @return FunctionType* resultant type
      */
-    static ptr<FunctionType> from(ptr<ir::Func> fn);
+    static FunctionType* from(ir::Func* fn);
 };
 
 };     // namespace types

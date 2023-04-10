@@ -67,7 +67,7 @@ void Compiler::compile(bool verbose) {
 
             mainModule->setSourceInfo(_source_info);
 
-            std::vector<ptr<Syntax::Analyzer>> passes = {
+            std::vector<Syntax::Analyzer*> passes = {
                 new Syntax::DefiniteAssigment(_source_info)};
 
             auto simplifier = new Syntax::Transformer(

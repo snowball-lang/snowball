@@ -6,7 +6,7 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-bool Transformer::bodyReturns(std::vector<ptr<Node>> exprs) {
+bool Transformer::bodyReturns(std::vector<Node*> exprs) {
     for (auto expr : exprs) {
         if (cast<Statement::Return>(expr)) {
             return true;

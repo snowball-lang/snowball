@@ -12,7 +12,6 @@ class AcceptorExtend : public Parent {
 };
 
 template <typename T> using UniquePtr = std::unique_ptr<T>;
-template <typename T> using ptr       = T *;
 } // namespace snowball
 
 #endif // __SNOWBALL_COMMON_H_

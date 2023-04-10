@@ -7,11 +7,11 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::vector<ptr<types::DefinedType::ClassField>> Transformer::getMemberList(
-    std::vector<ptr<Syntax::Statement::VariableDecl>> fieldNodes,
-    std::vector<ptr<types::DefinedType::ClassField>> fields,
+std::vector<types::DefinedType::ClassField*> Transformer::getMemberList(
+    std::vector<Syntax::Statement::VariableDecl*> fieldNodes,
+    std::vector<types::DefinedType::ClassField*> fields,
     std::shared_ptr<types::DefinedType> parent) {
-    std::vector<ptr<types::DefinedType::ClassField>> member_list;
+    std::vector<types::DefinedType::ClassField*> member_list;
     assert(fields.size() == fieldNodes.size());
 
     // add parent members first
