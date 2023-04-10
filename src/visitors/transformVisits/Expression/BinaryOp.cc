@@ -10,7 +10,7 @@ namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
     auto opType = p_node->op_type;
-    assert(false && "TODO:");
+    // assert(false && "TODO:");
 
     if (p_node->unary) {
         assert(false && "TODO:");
@@ -21,7 +21,7 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
 
     auto ident = Syntax::N<Expression::Identifier>(
         services::OperatorService::getOperatorMangle(opType));
-    auto index = Syntax::N<Expression::Index>(left, ident, false);
+    auto index = Syntax::N<Expression::Index>(left, ident);
     std::vector<Expression::Base *> args = {right};
     auto call = Syntax::N<Expression::FunctionCall>(index, args);
 

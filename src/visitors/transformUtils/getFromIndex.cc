@@ -77,7 +77,30 @@ Transformer::getFromIndex(DBGSourceInfo *dbgInfo, Expression::Index *index,
 
             return {indexValue, ty, fns, ovs, mod, isInClassContext(x)};
         } else {
-            assert(false && "TODO: static non-defined type");
+            // Case: index from a (for example) constant. You can access
+            //  values from it so just check for functions
+            auto name = index->getIdentifier()->getIdentifier();
+            auto g = utils::cast<Expression::GenericIdentifier>(
+                index->getIdentifier());
+            auto generics = (g != nullptr)
+                    ? g->getGenerics()
+                    : std::vector<Expression::TypeRef *>{};
+
+            auto [v, ty, fns, ovs, mod] =
+                getFromIdentifier(dbgInfo, name, generics, type->getName());
+
+            if ((!fns.has_value()) && (!ovs.has_value())) {
+                if (utils::startsWith(name, "#")) {
+                    assert(false && "TODO: operator missing from builtin type!");
+                }
+
+                E<VARIABLE_ERROR>(
+                        dbgInfo, FMT("Coudn't find '%s' inside type '%s'!",
+                                    name.c_str(), type->getPrettyName().c_str()));
+            }
+
+            return { std::nullopt, std::nullopt, fns,
+                ovs, std::nullopt, false };
         }
 
         return {std::nullopt, std::nullopt, std::nullopt,
@@ -199,10 +222,15 @@ Transformer::getFromIndex(DBGSourceInfo *dbgInfo, Expression::Index *index,
         } else if (ty) {
             return {getFromType(ty), std::nullopt};
         }
+    } else if (!isStatic) {
+        // case: Integers, Strings, etc... index
+        base->accept(this);
+        auto v = this->value;
+        return {getFromType(v->getType(), v), v};
     } else {
         E<SYNTAX_ERROR>(dbgInfo,
                         "Static acces/method call can only be used with "
-                        "(generic or not) indentifiers!");
+                        "indentifiers!");
     }
 
     return {{std::nullopt, std::nullopt, std::nullopt, std::nullopt,

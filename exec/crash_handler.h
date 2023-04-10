@@ -477,7 +477,7 @@ static void handle_crash(int sig) {
     // Dump the backtrace to stderr with a message to the user
     fprintf(stderr, "%s: Snowball crashed!\n", __FUNCTION__);
     fprintf(stderr,
-            "%s: Oh no! Fluffy got into the code and caused an error!\n",
+            "%s: Oh no! Fluffy got into the code and caused an error! /ᐠ.ᆽ.ᐟ \\∫\n",
             __FUNCTION__);
     fprintf(stderr, "%s: Program crashed with signal %d\n", __FUNCTION__, sig);
 
