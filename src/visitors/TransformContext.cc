@@ -1,6 +1,8 @@
 
 #include "TransformContext.h"
 
+#include "../ast/types/FunctionType.h"
+#include "../ir/values/Argument.h"
 #include "TransformState.h"
 
 namespace snowball::Syntax {
@@ -30,6 +32,34 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod)
     DEFINE_TYPE(CharType)
 
 #undef DEFINE_TYPE
+
+    std::vector<std::shared_ptr<types::Type>> overloadTypes = {
+        raw_BoolType,  raw_Float64Type, raw_Float32Type,
+        raw_Int64Type, raw_Int32Type,   raw_Int16Type,
+        raw_Int8Type,  raw_StringType,  raw_CharType};
+
+    for (auto ty : overloadTypes) {
+        for (auto op : services::OperatorService::operators) {
+            auto fn       = std::make_shared<ir::Func>(op, true, false);
+            auto arg      = std::make_shared<ir::Argument>("other");
+            auto typeArgs = {ty};
+            auto type     = std::make_shared<types::FunctionType>(typeArgs, ty);
+
+            arg->setType(ty);
+
+            fn->setArgs({{"other", arg}});
+            fn->setType(type);
+            fn->setPrivacy(/* public */ false);
+
+            /// @see Transformer::defineFunction
+            auto name = ty->getName() + ".#" + fn->getName();
+            auto item = cache->getTransformedFunction(name);
+            if (item) assert(false);
+
+            auto i = std::make_shared<transform::Item>(fn);
+            cache->setTransformedFunction(name, i);
+        }
+    }
 
     addItem(types::Int32Type::TYPE_ALIAS, _Int32Type);
 };

@@ -21,7 +21,7 @@ void LLVMBuilder::visit(ir::Call *call) {
             call->getArguments(),
             [&](std::shared_ptr<ir::Value> arg) { return build(arg.get()); });
 
-    setDebugInfoLoc(call);
+    if () setDebugInfoLoc(call);
     if (auto c = utils::dyn_cast<ir::Func>(call->getCallee());
         c != nullptr && c->isConstructor()) {
         assert(c->hasParent());
