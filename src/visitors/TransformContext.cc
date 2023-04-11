@@ -40,7 +40,7 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod)
 
     for (auto ty : overloadTypes) {
         for (auto op : services::OperatorService::operators) {
-            auto fn       = std::make_shared<ir::Func>(op, true, false);
+            auto fn       = std::make_shared<ir::Func>("#" + op, true, false);
             auto arg      = std::make_shared<ir::Argument>("other");
             auto typeArgs = {ty};
             auto type     = std::make_shared<types::FunctionType>(typeArgs, ty);
@@ -52,7 +52,7 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod)
             fn->setPrivacy(/* public */ false);
 
             /// @see Transformer::defineFunction
-            auto name = ty->getName() + ".#" + fn->getName();
+            auto name = ty->getName() + "." + fn->getName(true);
             auto item = cache->getTransformedFunction(name);
             if (item) assert(false);
 

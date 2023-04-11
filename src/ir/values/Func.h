@@ -111,7 +111,7 @@ class Func : public AcceptorExtend<Func, Value>,
     std::string getIdentifier();
     /// @return The same as @fn getIdentifier but it also handles
     ///  operator names.
-    std::string getName();
+    std::string getName(bool ignoreOperators = false);
     /// @return mangled name for the function.
     std::string getMangle();
     /// @return Function's pretty name for debbuging

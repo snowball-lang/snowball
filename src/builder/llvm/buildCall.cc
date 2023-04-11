@@ -13,6 +13,8 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ir::Call *call) {
+    if (buildOperator(call)) return;
+
     auto callee = build(call->getCallee().get());
     setDebugInfoLoc(call);
 
@@ -21,7 +23,7 @@ void LLVMBuilder::visit(ir::Call *call) {
             call->getArguments(),
             [&](std::shared_ptr<ir::Value> arg) { return build(arg.get()); });
 
-    if () setDebugInfoLoc(call);
+    setDebugInfoLoc(call);
     if (auto c = utils::dyn_cast<ir::Func>(call->getCallee());
         c != nullptr && c->isConstructor()) {
         assert(c->hasParent());

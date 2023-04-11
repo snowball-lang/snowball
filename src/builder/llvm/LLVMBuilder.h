@@ -247,7 +247,16 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      * llvm function.
      */
     void buildBodiedFunction(llvm::Function *llvmFn, ir::Func *fn);
-    bool buildOperator(std::shared_ptr<ir::Call> call);
+    /**
+     * @brief Builds an operator call.
+     *
+     * @param call The IR call instruction to build.
+     * @return true if the operator was built successfully, false otherwise.
+     *
+     * This function builds an operator call using the given IR call instruction.
+     * It returns true if the operator was built successfully and false otherwise.
+     */
+    bool buildOperator(ir::Call* call);
     /**
      * @brief Get a wrapper for a function. Subprogram is considered
      * also as a function description.

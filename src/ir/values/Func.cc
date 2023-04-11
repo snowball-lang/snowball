@@ -50,8 +50,8 @@ bool Func::isConstructor() {
 }
 
 std::string Func::getIdentifier() { return identifier; }
-std::string Func::getName() {
-    if (services::OperatorService::isOperator(identifier) && hasParent()) {
+std::string Func::getName(bool ignoreOperators) {
+    if (services::OperatorService::isOperator(identifier) && (!ignoreOperators)) {
         auto op = services::OperatorService::operatorID(identifier);
         return services::OperatorService::operatorName(op);
     }

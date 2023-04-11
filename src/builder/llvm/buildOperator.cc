@@ -10,22 +10,23 @@
 namespace snowball {
 namespace codegen {
 
-bool LLVMBuilder::buildOperator(std::shared_ptr<ir::Call> call) {
+bool LLVMBuilder::buildOperator(ir::Call* call) {
     if (auto fn = utils::dyn_cast<ir::Func>(call->getCallee())) {
         auto args = call->getArguments();
-        if (utils::startsWith(fn->getName(), "#") && args.size() == 2) {
+        auto opName = fn->getName(true);
+        if (utils::startsWith(opName, "#") && args.size() == 2) {
             auto left  = build(args.at(0).get());
             auto right = build(args.at(1).get());
-            if (utils::dyn_cast<types::Int8Type>(args.at(0)) ||
-                utils::dyn_cast<types::Int16Type>(args.at(0)) ||
-                utils::dyn_cast<types::Int32Type>(args.at(0)) ||
-                utils::dyn_cast<types::Int64Type>(args.at(0)) ||
-                utils::dyn_cast<types::CharType>(args.at(0))) {
+            if (utils::dyn_cast<types::Int8Type>(args.at(0)->getType()) ||
+                utils::dyn_cast<types::Int16Type>(args.at(0)->getType()) ||
+                utils::dyn_cast<types::Int32Type>(args.at(0)->getType()) ||
+                utils::dyn_cast<types::Int64Type>(args.at(0)->getType()) ||
+                utils::dyn_cast<types::CharType>(args.at(0)->getType())) {
                 // this->value = builder->Create
-                switch (services::OperatorService::operatorID(fn->getName())) {
+                switch (services::OperatorService::operatorID(opName)) {
 #define OPERATOR_INSTANCE(x, f)                                                \
     case services::OperatorService::x:                                         \
-        builder->f(left, right);                                               \
+        this->value = builder->f(left, right);                                 \
         break;
                     OPERATOR_INSTANCE(EQEQ, CreateICmpEQ)
                     OPERATOR_INSTANCE(PLUS, CreateAdd)
@@ -52,9 +53,13 @@ bool LLVMBuilder::buildOperator(std::shared_ptr<ir::Call> call) {
                     default:
                         assert(false);
                 }
+
+                return true;
+
             } else {
                 assert(false && "Unhandled operator!");
             }
+
         }
     }
 
