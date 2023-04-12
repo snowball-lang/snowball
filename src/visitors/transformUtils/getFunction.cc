@@ -119,6 +119,8 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
             [[fallthrough]];
         case _Unknown: {
         }
+
+        default:assert(false);
     }
 
     assert(false && "BUG: unhandled getFunction res case.");

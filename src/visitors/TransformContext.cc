@@ -40,24 +40,30 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod)
 
     for (auto ty : overloadTypes) {
         for (auto op : services::OperatorService::operators) {
-            auto fn       = std::make_shared<ir::Func>("#" + op, true, false);
-            auto arg      = std::make_shared<ir::Argument>("other");
-            auto typeArgs = {ty};
-            auto type     = std::make_shared<types::FunctionType>(typeArgs, ty);
+            for (auto overload : overloadTypes) {
+                auto fn       = std::make_shared<ir::Func>("#" + op, true, false);
+                auto arg      = std::make_shared<ir::Argument>("other");
+                auto typeArgs = {overload};
+                auto type     = std::make_shared<types::FunctionType>(typeArgs, ty);
 
-            arg->setType(ty);
+                arg->setType(overload);
 
-            fn->setArgs({{"other", arg}});
-            fn->setType(type);
-            fn->setPrivacy(/* public */ false);
+                fn->setArgs({{"other", arg}});
+                fn->setType(type);
+                fn->setPrivacy(/* public */ false);
 
-            /// @see Transformer::defineFunction
-            auto name = ty->getName() + "." + fn->getName(true);
-            auto item = cache->getTransformedFunction(name);
-            if (item) assert(false);
+                /// @see Transformer::defineFunction
+                auto name = ty->getName() + "." + fn->getName(true);
+                auto item = cache->getTransformedFunction(name);
+                if (item) {
+                    assert((*item)->isFunc());
+                    (*item)->addFunction(fn);
+                    continue;
+                }
 
-            auto i = std::make_shared<transform::Item>(fn);
-            cache->setTransformedFunction(name, i);
+                auto i = std::make_shared<transform::Item>(fn);
+                cache->setTransformedFunction(name, i);
+            }
         }
     }
 

@@ -1,4 +1,5 @@
 #include "../../Transformer.h"
+#include "../../../ir/values/Cast.h"
 
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
@@ -105,7 +106,9 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 auto deduced = t->getArgs().at(i);
                 if (deduced->is(arg)) { /* ok */
                 } else if (deduced->canCast(arg)) {
-                    assert(false && "TODO: cast argument!");
+                    auto cast = ctx->module->N<ir::Cast>(nullptr, argValues.at(i), deduced);
+                    cast->setType(deduced);
+                    argValues.at(i) = cast;
                 } else {
                     E<TYPE_ERROR>(argValues.at(i),
                                   FMT("Can't assign value with type '%s' "
@@ -121,6 +124,8 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         assert(false && "TODO: other function values?!?!?");
     }
 
+    // Set an updated version of the call arguments
+    call->setArguments(argValues);
     if (auto func = std::dynamic_pointer_cast<ir::Func>(fn)) {
         // Check for default arguments
         auto args = func->getArgs();
