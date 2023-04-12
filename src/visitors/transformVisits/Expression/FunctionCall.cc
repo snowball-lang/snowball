@@ -106,8 +106,9 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 auto deduced = t->getArgs().at(i);
                 if (deduced->is(arg)) { /* ok */
                 } else if (deduced->canCast(arg)) {
-                    auto cast = ctx->module->N<ir::Cast>(nullptr, argValues.at(i), deduced);
-                    cast->setType(deduced);
+                    auto val = argValues.at(i);
+                    auto cast = ctx->module->N<ir::Cast>(nullptr, val, arg);
+                    cast->setType(arg);
                     argValues.at(i) = cast;
                 } else {
                     E<TYPE_ERROR>(argValues.at(i),
@@ -124,8 +125,6 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         assert(false && "TODO: other function values?!?!?");
     }
 
-    // Set an updated version of the call arguments
-    call->setArguments(argValues);
     if (auto func = std::dynamic_pointer_cast<ir::Func>(fn)) {
         // Check for default arguments
         auto args = func->getArgs();
@@ -186,8 +185,24 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 E<TYPE_ERROR>(p_node, "Function call missing arguments!");
             }
         }
+
+        if ((argValues.size() == 2) && utils::startsWith(func->getName(true), "#")) {
+            auto t = argValues.at(0)->getType();
+            auto val = argValues.at(1);
+            auto t2 = val->getType();
+            if (types::NumericType::isNumericType(t.get())) {
+                if (t->is(t2)) {}
+                else if (t->canCast(t2)) {
+                    auto cast = ctx->module->N<ir::Cast>(nullptr, val, t);
+                    cast->setType(t);
+                    argValues.at(1) = cast;
+                }
+            }
+        }
     }
 
+    // Set an updated version of the call arguments
+    call->setArguments(argValues);
     this->value = call;
 }
 

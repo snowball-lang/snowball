@@ -7,6 +7,11 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
+#define OPERATOR_INSTANCE(x, f)                                                \
+    case services::OperatorService::x:                                         \
+        this->value = builder->f(left, right);                                 \
+        break;
+
 namespace snowball {
 namespace codegen {
 
@@ -24,10 +29,6 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                 utils::dyn_cast<types::CharType>(args.at(0)->getType())) {
                 // this->value = builder->Create
                 switch (services::OperatorService::operatorID(opName)) {
-#define OPERATOR_INSTANCE(x, f)                                                \
-    case services::OperatorService::x:                                         \
-        this->value = builder->f(left, right);                                 \
-        break;
                     OPERATOR_INSTANCE(EQEQ, CreateICmpEQ)
                     OPERATOR_INSTANCE(PLUS, CreateAdd)
                     OPERATOR_INSTANCE(MINUS, CreateSub)
@@ -48,7 +49,37 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                     OPERATOR_INSTANCE(BIT_XOR, CreateXor)
                     OPERATOR_INSTANCE(BIT_XOR_EQ, CreateXor)
                     // TODO: remainder oeprators (!, +=, etc...)
-#undef OPERATOR_INSTANCE
+                    case services::OperatorService::EQ:
+                    default:
+                        assert(false);
+                }
+
+                return true;
+
+            } else if (utils::dyn_cast<types::Float32Type>(args.at(0)->getType()) ||
+                utils::dyn_cast<types::Float64Type>(args.at(0)->getType())) {
+                // this->value = builder->Create
+                switch (services::OperatorService::operatorID(opName)) {
+                    OPERATOR_INSTANCE(EQEQ, CreateFCmpUEQ)
+                    OPERATOR_INSTANCE(PLUS, CreateFAdd)
+                    OPERATOR_INSTANCE(MINUS, CreateFSub)
+                    OPERATOR_INSTANCE(MUL, CreateFMul)
+                    OPERATOR_INSTANCE(DIV, CreateFDiv)
+                    OPERATOR_INSTANCE(MOD, CreateFRem)
+                    OPERATOR_INSTANCE(AND, CreateAnd)
+                    OPERATOR_INSTANCE(OR, CreateOr)
+                    OPERATOR_INSTANCE(NOTEQ, CreateFCmpUNE)
+                    OPERATOR_INSTANCE(BIT_LSHIFT, CreateShl)
+                    OPERATOR_INSTANCE(BIT_LSHIFT_EQ, CreateShl)
+                    OPERATOR_INSTANCE(BIT_RSHIFT, CreateAShr)
+                    OPERATOR_INSTANCE(BIT_RSHIFT_EQ, CreateAShr)
+                    OPERATOR_INSTANCE(BIT_OR, CreateOr)
+                    OPERATOR_INSTANCE(BIT_OR_EQ, CreateOr)
+                    OPERATOR_INSTANCE(BIT_AND, CreateAnd)
+                    OPERATOR_INSTANCE(BIT_AND_EQ, CreateAnd)
+                    OPERATOR_INSTANCE(BIT_XOR, CreateXor)
+                    OPERATOR_INSTANCE(BIT_XOR_EQ, CreateXor)
+                    // TODO: remainder oeprators (!, +=, etc...)
                     case services::OperatorService::EQ:
                     default:
                         assert(false);

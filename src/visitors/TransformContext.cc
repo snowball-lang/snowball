@@ -43,7 +43,7 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod)
             for (auto overload : overloadTypes) {
                 auto fn       = std::make_shared<ir::Func>("#" + op, true, false);
                 auto arg      = std::make_shared<ir::Argument>("other");
-                auto typeArgs = {overload};
+                auto typeArgs = {ty, overload};
                 auto type     = std::make_shared<types::FunctionType>(typeArgs, ty);
 
                 arg->setType(overload);

@@ -36,6 +36,7 @@ pub fn main() i32 {
 
     // // c(b)
     // Hello::hello()
-    let c = 512.123 + 2.53 as i32
+    let b = 2
+    let c = 512.123 + b
     // h("a")
 }

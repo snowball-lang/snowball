@@ -61,6 +61,10 @@ FunctionType *FunctionType::from(ir::Func *fn) {
                            std::shared_ptr<Type>>(
         fn->getArgs(), [&](auto map) -> auto { return map.second->getType(); });
 
+    if (fn->hasParent()) {
+        args.insert(args.begin(), fn->getParent());
+    }
+
     auto ret = fn->getRetTy();
     return new FunctionType(args, ret, fn->isVariadic());
 }
