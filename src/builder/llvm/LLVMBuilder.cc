@@ -153,8 +153,12 @@ void LLVMBuilder::codegen() {
     llvm::raw_string_ostream module_error_stream(module_error_string);
     llvm::verifyModule(*module.get(), &module_error_stream);
 
-    if (!module_error_string.empty())
+    if (!module_error_string.empty()) {
+#ifdef _SNOWBALL_BYTECODE_DEBUG
+        dump();
+#endif
         throw SNError(Error::LLVM_INTERNAL, module_error_string);
+    }
 }
 #undef LOOP_FUNCTIONS
 

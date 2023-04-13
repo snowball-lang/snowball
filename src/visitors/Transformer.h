@@ -311,6 +311,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
 
     /// @return The resultant module.
     auto getModule() const;
+    /// @brief Transform all the nodes parsed
+    virtual void visit(std::vector<Node *>) override;
 
     /// @brief Transform a "parsed type" into a "real type"
     std::shared_ptr<types::Type> transformType(Expression::TypeRef *ty);

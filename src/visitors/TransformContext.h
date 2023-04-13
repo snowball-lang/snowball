@@ -153,6 +153,8 @@ class TransformContext
     // Controls, manages and caches modules used when
     // importying other files into the current program
     std::unique_ptr<services::ImportService> imports;
+    // A flag that shows if a function should be generated
+    bool generateFunction = false;
 
   public:
     /// @brief get a saved state of the context

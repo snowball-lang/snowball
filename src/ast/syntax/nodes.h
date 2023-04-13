@@ -382,6 +382,7 @@ struct Privacy {
  * it's respective rules
  */
 struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
+                     public AcceptorExtend<FunctionDef, AttributeHolder<Attributes::Fn>>,
                      public AcceptorExtend<FunctionDef, Privacy>,
                      public AcceptorExtend<FunctionDef, GenericContainer> {
 
@@ -704,6 +705,28 @@ struct BodiedFunction : public AcceptorExtend<BodiedFunction, FunctionDef> {
 
     /// @return Get function's body declaration.
     Block *getBody() { return block; }
+};
+
+/**
+ * An LLVM defined function is a function with a declared LLVM block.
+ * This block contains the instructions that will be
+ * executed once this function is called.
+ */
+struct LLVMFunction : public AcceptorExtend<LLVMFunction, FunctionDef> {
+
+    // Function's block. This block contains all the LLVM IR intructions
+    // a function executes when it's called.
+    std::string block;
+
+  public:
+    using AcceptorExtend::AcceptorExtend;
+
+    template <class... Args>
+    LLVMFunction(std::string block, Args&...args)
+        : block(block), AcceptorExtend(std::forward<Args>(args)...){};
+
+    /// @return Get function's body declaration.
+    auto getBody() { return block; }
 };
 
 }; // namespace Statement

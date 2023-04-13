@@ -32,6 +32,9 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
     std::string name;
     std::string externName;
 
+    std::vector<Attributes::Fn> attributes;
+    bool isLLVMFunction = false;
+
     // Check if the tokens behind the function keyword
     // have some meaning to this statement. For example,
     // you can have:
@@ -51,6 +54,33 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
 
     auto dbg   = m_current.get_pos();
     auto width = 0;
+
+    if (is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek())) {
+        next();
+
+        while (true) {
+            next();
+            assert_tok<TokenType::IDENTIFIER>("an identifier");
+
+            auto attr = m_current.to_string();
+            if (attr == "llvm_function") {
+                attributes.push_back(Attributes::Fn::LLVM_FUNC);
+                isLLVMFunction = true;
+            } else {
+                createError<ATTRIBUTE_ERROR>("Trying to use an undefined attribute!", FMT("Attribute '%s' is not defined!", attr.c_str()));
+            }
+
+            next();
+            if (is<TokenType::BRACKET_RSQUARED>()) {
+                next();
+                assert_tok<TokenType::BRACKET_RSQUARED>("']]'");
+                next();
+                break;
+            } else if (is<TokenType::SYM_COMMA>()) {} else {
+                assert_tok<TokenType::BRACKET_RSQUARED>("',' or ']]'");
+            }
+        }
+    }
 
     if (isOperator) {
         services::OperatorService::OperatorType opType;
@@ -232,7 +262,7 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
             //     extern fn "hello.world$woah" as my_fn() ...
             //
             // =========================================
-
+            //
             // We get a substring from the first and last
             // characters. This is because string literals
             // contains '"' inside them.
@@ -357,7 +387,8 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
 
     auto info = new DBGSourceInfo(m_source_info, dbg, width);
 
-    Syntax::Block *block;
+    Syntax::Block *block = nullptr;
+    std::string llvmCode;
     bool hasBlock = false;
 
     if (isExtern) {
@@ -365,19 +396,38 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
         assert_tok<TokenType::SYM_SEMI_COLLON>("';'");
     } else {
         assert_tok<TokenType::BRACKET_LCURLY>("'{'");
-        block    = parseBlock();
+        if (isLLVMFunction) {
+            next();
+            assert_tok<TokenType::VALUE_STRING>("a string with LLVM code");
+            auto s = m_current.to_string();
+            llvmCode = s.substr(1, s.size() - 2); // Ignore speech marks
+            next();
+        } else {
+            block = parseBlock();
+        }
+
         hasBlock = true;
 
         assert_tok<TokenType::BRACKET_RCURLY>("'}'");
     }
 
+    if (!hasBlock && isLLVMFunction) {
+        createError<SYNTAX_ERROR>("LLVM defined functions must have a body!");
+    }
+
     FunctionDef *fn = nullptr;
     if (isExtern) {
         fn = Syntax::N<ExternFnDef>(externName, name);
+    } else if (isLLVMFunction) {
+        fn = Syntax::N<LLVMFunction>(llvmCode, name);
     } else if (hasBlock) {
         fn = Syntax::N<BodiedFunction>(block, name);
     } else {
         fn = Syntax::N<FunctionDef>(name);
+    }
+
+    for (auto a : attributes) {
+        fn->addAttribute(a);
     }
 
     fn->setVirtual(isVirtual);

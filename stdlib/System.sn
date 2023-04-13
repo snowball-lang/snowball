@@ -9,51 +9,6 @@ use Core::CLib
  */
 pub fn exit(exitCode: i32 = 0) { CLib::exit(exitCode); }
 /**
- * @brief Prints a new line character to standard output.
- *
- * This function is a utility for printing a new line character to standard output.
- * It can be used to separate output on the terminal or console and improve readability.
- *
- * @note This function does not print any other characters besides the new line character.
- * If you need to print additional characters or a string, use the `println(...)` function instead.
- */
-pub fn printNewLine() { CLib::putchar('\n'); }
-/**
- * @brief Writes a string to @param stream and it also writes a new line
- *  additionally
- * @param msg string to print
- * @return On success, the total number of characters written is returned.
- */
-pub fn println(msg: String) i32 { primitiveTypePrintln(msg); }
-/**
- * @brief Writes a i32-bit allocated integer to @param stream and it also writes a new line
- *  additionally
- * @param msg i32 to print
- * @return On success, the total number of characters written is returned.
- */
-pub fn println(msg: i32) i32 { primitiveTypePrintln(msg); }
-/**
- * @brief Writes a i64-bit allocated integer to @param stream and it also writes a new line
- *  additionally
- * @param msg i64 to print
- * @return On success, the total number of characters written is returned.
- */
-pub fn println(msg: i64) i32 { primitiveTypePrintln(msg); }
-/**
- * @brief Writes a f32-bit allocated float to @param stream and it also writes a new line
- *  additionally
- * @param msg f32 to print
- * @return On success, the total number of characters written is returned.
- */
-pub fn println(msg: f32) i32 { primitiveTypePrintln(msg); }
-/**
- * @brief Writes a f64-bit allocated real to @param stream and it also writes a new line
- *  additionally
- * @param msg f64 to print
- * @return On success, the total number of characters written is returned.
- */
-pub fn println(msg: f64) i32 { primitiveTypePrintln(msg); }
-/**
  * Prints the given string message to standard output.
  *
  * @param msg the string message to print
@@ -109,7 +64,51 @@ pub fn print(msg: f32   ) i32 { return CLib::printf("%f",  msg); }
  * @return the number of characters printed
  */
 pub fn print(msg: f64   ) i32 { return CLib::printf("%f",  msg); }
-
+/**
+ * @brief Prints a new line character to standard output.
+ *
+ * This function is a utility for printing a new line character to standard output.
+ * It can be used to separate output on the terminal or console and improve readability.
+ *
+ * @note This function does not print any other characters besides the new line character.
+ * If you need to print additional characters or a string, use the `println(...)` function instead.
+ */
+pub fn printNewLine() { CLib::putchar('\n'); }
+/**
+ * @brief Writes a string to @param stream and it also writes a new line
+ *  additionally
+ * @param msg string to print
+ * @return On success, the total number of characters written is returned.
+ */
+pub fn println(msg: String) i32 { primitiveTypePrintln(msg); }
+/**
+ * @brief Writes a i32-bit allocated integer to @param stream and it also writes a new line
+ *  additionally
+ * @param msg i32 to print
+ * @return On success, the total number of characters written is returned.
+ */
+pub fn println(msg: i32) i32 { primitiveTypePrintln(msg); }
+/**
+ * @brief Writes a i64-bit allocated integer to @param stream and it also writes a new line
+ *  additionally
+ * @param msg i64 to print
+ * @return On success, the total number of characters written is returned.
+ */
+pub fn println(msg: i64) i32 { primitiveTypePrintln(msg); }
+/**
+ * @brief Writes a f32-bit allocated float to @param stream and it also writes a new line
+ *  additionally
+ * @param msg f32 to print
+ * @return On success, the total number of characters written is returned.
+ */
+pub fn println(msg: f32) i32 { primitiveTypePrintln(msg); }
+/**
+ * @brief Writes a f64-bit allocated real to @param stream and it also writes a new line
+ *  additionally
+ * @param msg f64 to print
+ * @return On success, the total number of characters written is returned.
+ */
+pub fn println(msg: f64) i32 { primitiveTypePrintln(msg); }
 /**
  * @brief Used to take user input. By default, it returns the user input in form of
  *  a string.

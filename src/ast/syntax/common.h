@@ -14,6 +14,13 @@
 #define ACCEPT() void accept(Syntax::Visitor *v) override;
 
 namespace snowball {
+
+namespace Attributes {
+enum Fn {
+  LLVM_FUNC,
+};
+}
+
 namespace Syntax {
 class Visitor;
 
@@ -103,6 +110,53 @@ struct Param {
 } // namespace Expression
 
 namespace Statement {
+
+/**
+ * A generic class that accepts an enum as a template parameter and stores and
+ *  checks attributes for a node.
+ *
+ * @tparam T The enum type representing the attributes that can be stored.
+ */
+template <typename T>
+class AttributeHolder {
+public:
+    /**
+     * Checks if a specific attribute is set for the node.
+     *
+     * @param attribute The attribute to check.
+     * @return True if the attribute is set, false otherwise.
+     */
+    bool hasAttribute(T attribute) const {
+        return (m_attributes & (1 << static_cast<int>(attribute))) != 0;
+    }
+    /**
+     * Sets the bit for a specific attribute in the `m_attributes` variable.
+     *
+     * @param attribute The attribute to add.
+     */
+    void addAttribute(T attribute) {
+        m_attributes |= (1 << static_cast<int>(attribute));
+    }
+    /**
+     * Clears the bit for a specific attribute in the `m_attributes` variable.
+     *
+     * @param attribute The attribute to remove.
+     */
+    void removeAttribute(T attribute) {
+        m_attributes &= ~(1 << static_cast<int>(attribute));
+    }
+    /**
+     * Clears all attributes for the node by setting `m_attributes` to zero.
+     */
+    void clearAttributes() {
+        m_attributes = 0;
+    }
+
+private:
+    /** The bit field storing the attributes for the node. */
+    unsigned int m_attributes = 0;
+};
+
 
 /**
  * This struct is used a sort of container

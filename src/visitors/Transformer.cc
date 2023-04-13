@@ -37,6 +37,20 @@ void Transformer::addModule(std::shared_ptr<ir::Module> m) {
     modules.push_back(m);
 }
 auto Transformer::getModule() const { return ctx->module; }
+void Transformer::visit(std::vector<Node *> p_nodes) {
+    AcceptorExtend::visit(p_nodes);
+
+    ctx->generateFunction = true;
+    for (auto node : p_nodes) {
+        if (utils::cast<Statement::BodiedFunction>(node)) {
+            node->accept(this);
+        } else if (auto x = utils::cast<Statement::LLVMFunction>(node)) {
+            assert(false && "TODO:");
+        }
+    }
+
+    ctx->generateFunction = false;
+}
 
 // mark: - noops
 

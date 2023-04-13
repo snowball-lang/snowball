@@ -46,6 +46,7 @@ const char *get_error(Error code) {
     RET_ERROR_IF_CODE(Error::CONFIGURATION_ERROR, "Configuration Error")
     RET_ERROR_IF_CODE(Error::LINKER_ERR, "Linker Error")
     RET_ERROR_IF_CODE(Error::REFERENCE_ERROR, "Reference Error")
+    RET_ERROR_IF_CODE(Error::ATTRIBUTE_ERROR, "Attribute Error")
 
     return "Error";
 }
