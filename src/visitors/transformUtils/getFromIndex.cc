@@ -54,7 +54,7 @@ Transformer::getFromIndex(DBGSourceInfo *dbgInfo, Expression::Index *index,
                                  });
 
                 if (fieldFound) {
-                    assert(v == std::nullopt);
+                    // assert(v == std::nullopt);
                     assert(value != nullptr);
 
                     indexValue = ctx->module->N<ir::IndexExtract>(
@@ -70,6 +70,7 @@ Transformer::getFromIndex(DBGSourceInfo *dbgInfo, Expression::Index *index,
 
             if (!indexValue.has_value() && !ty.has_value() &&
                 !fns.has_value() && !ovs.has_value() && !mod.has_value()) {
+                // TODO: operator
                 E<VARIABLE_ERROR>(
                     dbgInfo, FMT("Coudn't find '%s' inside type '%s'!",
                                  name.c_str(), x->getPrettyName().c_str()));
@@ -95,6 +96,7 @@ Transformer::getFromIndex(DBGSourceInfo *dbgInfo, Expression::Index *index,
                            "TODO: operator missing from builtin type!");
                 }
 
+                // TODO: operator
                 E<VARIABLE_ERROR>(
                     dbgInfo, FMT("Coudn't find '%s' inside type '%s'!",
                                  name.c_str(), type->getPrettyName().c_str()));
@@ -106,7 +108,7 @@ Transformer::getFromIndex(DBGSourceInfo *dbgInfo, Expression::Index *index,
         return {std::nullopt, std::nullopt, std::nullopt,
                 std::nullopt, std::nullopt, false};
     };
-
+    
     auto getFromModule = [&](std::shared_ptr<ir::Module> m)
         -> std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                       std::optional<std::shared_ptr<types::Type>>,
@@ -115,6 +117,8 @@ Transformer::getFromIndex(DBGSourceInfo *dbgInfo, Expression::Index *index,
                           cacheComponents::Functions::FunctionStore>>,
                       std::optional<std::shared_ptr<ir::Module>>,
                       bool /* Accept private members */> {
+        // TODO: dont allow operators for modules
+
         auto g =
             utils::cast<Expression::GenericIdentifier>(index->getIdentifier());
         auto generics = (g != nullptr) ? g->getGenerics()

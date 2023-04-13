@@ -89,6 +89,7 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
                 auto func = parseFunction(false, true);
                 func->setPrivacy(
                     Syntax::Statement::Privacy::fromInt(!inPrivateScope));
+                // func->setName()
                 cls->addFunction(func);
             } break;
 

@@ -213,6 +213,9 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
         if (opType == services::OperatorService::EQ) {
             createError<SYNTAX_ERROR>("Can't overload the '=' operator!");
         }
+
+        name = services::OperatorService::getOperatorMangle(opType);
+        externName = name;
     } else {
         // Get the function name
         if (is<TokenType::IDENTIFIER>()) {
@@ -252,7 +255,7 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
                     : "Expected an identifier but got '%s' while parsing a "
                       "function declaration";
 
-            createError<SYNTAX_ERROR>(e, m_current.to_string().c_str());
+            createError<SYNTAX_ERROR>(FMT(e.c_str(), m_current.to_string().c_str()));
         }
     }
 
@@ -289,7 +292,7 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
 
         next();
         if (isExtern && is<TokenType::IDENTIFIER>() &&
-            (!is<TokenType::SYM_COLCOL>())) {
+            (!is<TokenType::SYM_COLCOL>(peek()))) {
             assert_tok<TokenType::IDENTIFIER>("a type reference");
             auto type = parseType();
 
@@ -324,13 +327,13 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
             if (isVarArg)
                 createError<SYNTAX_ERROR>(
                     "Variadic arguments should be the last argument!");
-            if (!isExtern) prev();
+            // if (!isExtern) prev();
         } else if (is<TokenType::BRACKET_RPARENT>()) {
             prev();
         } else {
             createError<SYNTAX_ERROR>(
-                "Expected a ',' or a ')' but found '%s' instead",
-                m_current.to_string().c_str());
+                FMT("Expected a ',' or a ')' but found '%s' instead",
+                m_current.to_string().c_str()));
         }
     }
 
