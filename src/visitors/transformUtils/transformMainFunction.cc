@@ -34,7 +34,7 @@ void Transformer::transformMainFunction(Statement::FunctionDef *p_node) {
     // Create a new function value.
     // notes: The name will always be "main" and the function shall not have any
     // arguments.
-    auto fn = transformFunction({p_node, ctx->saveState()}, {});
+    auto fn = transformFunction({p_node, ctx->saveState()}, {}, true);
     fn->setExternalName("main");
 }
 

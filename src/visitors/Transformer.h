@@ -188,7 +188,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      */
     std::shared_ptr<ir::Func> transformFunction(
         cacheComponents::Functions::FunctionStore node,
-        const std::vector<std::shared_ptr<types::Type>>& deducedTypes);
+        const std::vector<std::shared_ptr<types::Type>>& deducedTypes,
+        bool isEntryPoint = false);
     /**
      * @brief Gets the `real` user defined list for the arguments.
      * This is because, when generating a function, we add the "self" paramter

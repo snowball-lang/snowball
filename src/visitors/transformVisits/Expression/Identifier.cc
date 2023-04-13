@@ -33,6 +33,7 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
 
         // There can only be 1 function overload without casting
         auto function = functions->at(0);
+
         auto var =
             ctx->module->N<ir::ValueExtract>(p_node->getDBGInfo(), function);
         var->setType(function->getType());
@@ -61,13 +62,7 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
                                   p_node->getIdentifier().c_str()));
         }
 
-        auto ptr = transformFunction(function, {});
-
-        auto var = ctx->module->N<ir::ValueExtract>(p_node->getDBGInfo(), ptr);
-        var->setType(ptr->getType());
-
-        this->value = var;
-        return;
+        assert(false);
     }
 
     E<VARIABLE_ERROR>(p_node, FMT("Cannot find identifier `%s`!", name.c_str()),

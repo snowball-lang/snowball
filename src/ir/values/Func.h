@@ -89,6 +89,11 @@ class Func : public AcceptorExtend<Func, Value>,
     /// @example Static function for a class
     bool _static = false;
 
+    /// @brief A boolean attribute that indicates whether the function is used.
+    /// This attribute is used inside "ir::Func" class to keep track of whether the
+    /// function is used or not.
+    /// @note The initial value of this attribute is false.
+    bool used = false;
   public:
 #define DEFAULT                                                                \
     bool declaration = false, bool variadic = false,                           \

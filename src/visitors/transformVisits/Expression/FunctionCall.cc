@@ -126,6 +126,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     }
 
     if (auto func = std::dynamic_pointer_cast<ir::Func>(fn)) {
+
         // Check for default arguments
         auto args = func->getArgs();
         if (argTypes.size() < (args.size() - func->hasParent())) {

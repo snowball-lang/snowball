@@ -8,7 +8,8 @@ namespace Syntax {
 
 std::shared_ptr<ir::Func> Transformer::transformFunction(
     Cache::FunctionStore fnStore,
-    const std::vector<std::shared_ptr<types::Type>>& deducedTypes) {
+    const std::vector<std::shared_ptr<types::Type>>& deducedTypes,
+    bool isEntryPoint) {
     auto node = fnStore.function;
 
     // get the function name and store it for readability
@@ -17,6 +18,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
     // Cast the function into a bodied one, if it's not bodied,
     // we will get nullptr as a result.
     auto bodiedFn = cast<Statement::BodiedFunction>(node);
+    bool isGeneric = node->getGenerics().size() > 0;
 
     std::shared_ptr<ir::Func> fn = nullptr;
     ctx->withState(fnStore.state, [&]() {

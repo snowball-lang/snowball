@@ -28,10 +28,12 @@ pub:
 //     ret i32 123, !dbg !18
 // "}
 
-fn awd<T>() {
-    let a = 23
-    a.awd();
-    return a.awd
+fn awd<T>(a: T) {
+
+}
+
+fn b() {
+
 }
 
 pub fn main() i32 {
@@ -50,5 +52,5 @@ pub fn main() i32 {
     System::println("hey")
     System::println(c)
 
-    // awd<?String>()
+    awd(b)
 }
