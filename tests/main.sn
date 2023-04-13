@@ -29,7 +29,8 @@ pub:
 // "}
 
 fn awd<T>() {
-    let a = new T();
+    let a = 23
+    a.awd();
     return a.awd
 }
 
@@ -49,5 +50,5 @@ pub fn main() i32 {
     System::println("hey")
     System::println(c)
 
-    awd<?String>()
+    // awd<?String>()
 }
