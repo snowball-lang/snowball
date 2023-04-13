@@ -22,11 +22,11 @@ pub:
     }
 }
 
-// fn [[llvm_function]] h(d: String) i32 {"
-//     %1 = alloca i8*, align 8
-//     store i8* getelementptr inbounds ([1 x i8], [1 x i8]* @.str, i64 0, i64 0), i8** %1, align 8
-//     ret i32 123, !dbg !18
-// "}
+fn [[llvm_function]] h(d: String) i32 {"
+    %1 = alloca i8*, align 8
+    store i8* getelementptr inbounds ([1 x i8], [1 x i8]* @.str, i64 0, i64 0), i8** %1, align 8
+    ret i32 123, !dbg !18
+"}
 
 fn awd<T>(a: T) {
 
