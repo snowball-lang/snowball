@@ -134,9 +134,17 @@ public:
      *
      * @param attribute The attribute to add.
      */
-    void addAttribute(T attribute) {
-        m_attributes |= (1 << static_cast<int>(attribute));
+    auto addAttribute(T attribute) {
+        return m_attributes |= (1 << static_cast<int>(attribute));
     }
+    /**
+     * Sets a new list of attributes to the current holder
+     */
+    void setAttributes(unsigned int attribute) { m_attributes = attribute; }
+    /**
+     * Returns the respective unsigned integer for the attributes
+     */
+    auto getAttributes() const { return m_attributes; }
     /**
      * Clears the bit for a specific attribute in the `m_attributes` variable.
      *

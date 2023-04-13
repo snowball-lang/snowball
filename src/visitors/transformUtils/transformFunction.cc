@@ -41,7 +41,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
 
             // Create a new function value and store it's return type.
             fn = ctx->module->N<ir::Func>(
-                node->getDBGInfo(), name, bodiedFn == nullptr,
+                node->getDBGInfo(), name, (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)),
                 node->isVariadic(), ctx->getCurrentClass());
             fn->setRetTy(returnType);
             fn->setPrivacy(node->getPrivacy());
@@ -53,6 +53,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
                 }
             }
 
+            fn->setAttributes(node->getAttributes());
             ir::Func::FunctionArgs newArgs = {};
 
             if (fn->isConstructor()) {
@@ -123,7 +124,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
                 assert(node->isExtern());
                 fn->setExternalName(e->getExternalName());
             } else if (auto e = utils::cast<Statement::LLVMFunction>(node)) {
-                assert(false);
+                fn->setLLVMBody(e->getBody());
             }
         });
 

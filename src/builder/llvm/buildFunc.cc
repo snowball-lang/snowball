@@ -24,7 +24,7 @@ void LLVMBuilder::visit(ir::Func *func) {
     this->value = fn;
 }
 
-void LLVMBuilder::buildBodiedFunction(llvm::Function *llvmFn, ir::Func *fn) {
+llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function *llvmFn, ir::Func *fn) {
     ctx->setCurrentFunction(llvmFn);
 
     auto returnType = getLLVMType(fn->getRetTy());
@@ -131,6 +131,8 @@ void LLVMBuilder::buildBodiedFunction(llvm::Function *llvmFn, ir::Func *fn) {
 #endif
         throw SNError(Error::LLVM_INTERNAL, module_error_string);
     }
+
+    return llvmFn;
 }
 
 } // namespace codegen

@@ -22,7 +22,8 @@ namespace ir {
 class Func : public AcceptorExtend<Func, Value>,
              public IdMixin,
              public AcceptorExtend<Func, Syntax::Statement::Privacy>,
-             public AcceptorExtend<Func, Syntax::Statement::GenericContainer> {
+             public AcceptorExtend<Func, Syntax::Statement::GenericContainer>,
+             public AcceptorExtend<Func, Syntax::Statement::AttributeHolder<Attributes::Fn>> {
   public:
     // Utility types
     using FunctionArgs =
@@ -64,6 +65,10 @@ class Func : public AcceptorExtend<Func, Value>,
     /// the function. note: if there is non, this means
     /// that the function could be potentially a declaration
     std::shared_ptr<Block> body;
+
+    /// There are the LLVM Ir instructions executed inside
+    /// the function
+    std::string llvmBody;
 
     /// A list of variables used *anywhere* around the function.
     /// This is so that we allocate a new variable at the start
@@ -127,6 +132,12 @@ class Func : public AcceptorExtend<Func, Value>,
     /// @return Get body from function
     auto getBody() const { return body; }
 
+    /// @brief Declare a new LLVM IR body
+    /// @param llvmBody the LLVM IR instructions
+    void setLLVMBody(std::string llvmBody) { this->llvmBody = llvmBody; }
+    /// @return the LLVM ir body for this function
+    auto getLLVMBody() { 
+        assert(!isDeclaration() && hasAttribute(Attributes::LLVM_FUNC)); return llvmBody; }
     /// @brief Set arguments to a function
     void setArgs(FunctionArgs p_args) { arguments = p_args; }
     /// @return Get arguments from function

@@ -246,7 +246,12 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      * thats why we need @param llvmFn as an already declared
      * llvm function.
      */
-    void buildBodiedFunction(llvm::Function *llvmFn, ir::Func *fn);
+    llvm::Function* buildBodiedFunction(llvm::Function *llvmFn, ir::Func *fn);
+    /**
+     * @brief It generates the LLVM IR contents that the user has
+     *  manually inserted by using "inline LLVM".
+     */
+    llvm::Function* buildLLVMFunction(llvm::Function *llvmFn, ir::Func *fn);
     /**
      * @brief Builds an operator call.
      *
