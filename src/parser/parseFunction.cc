@@ -397,11 +397,25 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
     } else {
         assert_tok<TokenType::BRACKET_LCURLY>("'{'");
         if (isLLVMFunction) {
-            next();
-            assert_tok<TokenType::VALUE_STRING>("a string with LLVM code");
-            auto s = m_current.to_string();
-            llvmCode = s.substr(1, s.size() - 2); // Ignore speech marks
-            next();
+            auto startPos = m_current.get_pos();
+
+            auto depth = 1;
+            while (depth != 0) {
+                next();
+
+                if (is<TokenType::BRACKET_LCURLY>()) {
+                    depth++;
+                } else if (is<TokenType::BRACKET_RCURLY>()) {
+                    depth--;
+                } else if (is<TokenType::_EOF>()) {
+                    createError<SYNTAX_ERROR>("Unterminated LLVM function block code!");
+                }
+            }
+
+            auto endPos = m_current.get_pos();
+
+            llvmCode = utils::getSubstringByRange(m_source_info->getSource(), startPos, endPos);
+            llvmCode = llvmCode.substr(1, llvmCode.size() - 1); // Ignore speech marks
         } else {
             block = parseBlock();
         }

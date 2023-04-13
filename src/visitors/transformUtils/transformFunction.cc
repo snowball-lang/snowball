@@ -122,6 +122,8 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
             } else if (auto e = utils::cast<Statement::ExternFnDef>(node)) {
                 assert(node->isExtern());
                 fn->setExternalName(e->getExternalName());
+            } else if (auto e = utils::cast<Statement::LLVMFunction>(node)) {
+                assert(false);
             }
         });
 

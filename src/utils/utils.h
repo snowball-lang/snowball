@@ -28,7 +28,8 @@ bool endsWith(const std::string& mainStr, const std::string& toMatch);
 bool startsWith(const std::string& str, const std::string& comp);
 void replaceAll(std::string& str, const std::string& from,
                 const std::string& to);
-
+std::string getSubstringByRange(const std::string& str,
+    const std::pair<int, int>& start, const std::pair<int, int>& end);
 template <typename Iter>
 // https://stackoverflow.com/questions/495021/why-can-templates-only-be-implemented-in-the-header-file
 std::string join(Iter begin, Iter end, std::string const& separator) {

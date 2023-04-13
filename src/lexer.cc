@@ -164,7 +164,6 @@ void Lexer::tokenize_char() {
         case ';':
             consume(TokenType::SYM_SEMI_COLLON);
             break;
-        // case '@': consume(TokenType::SYM_AT); break;
         case '#':
             consume(TokenType::SYM_HASH);
             break;
@@ -174,7 +173,9 @@ void Lexer::tokenize_char() {
         case '?':
             consume(TokenType::SYM_QUESTION);
             break;
-
+        case '@':
+            consume(TokenType::SYM_AT);
+            break;
         // brackets
         case '(':
             consume(TokenType::BRACKET_LPARENT);
