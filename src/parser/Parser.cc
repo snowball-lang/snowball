@@ -28,10 +28,11 @@ std::vector<Syntax::Node *> Parser::parse() {
                 if (!is<TokenType::KWORD_FUNC>(pk) &&
                     !is<TokenType::KWORD_MOD>(pk) &&
                     !is<TokenType::KWORD_VAR>(pk) &&
+                    !is<TokenType::KWORD_STATIC>(pk) &&
                     !is<TokenType::KWORD_CLASS>(pk) &&
                     !is<TokenType::KWORD_EXTERN>(pk)) {
                     createError<SYNTAX_ERROR>(
-                        "expected keyword \"fn\", \"class\", \"mod\", \"let\" "
+                        "expected keyword \"fn\", \"static\", \"class\", \"mod\", \"let\" "
                         "or "
                         "\"extern\" after pub/priv declaration");
                 }
@@ -43,7 +44,17 @@ std::vector<Syntax::Node *> Parser::parse() {
                 auto pk = peek();
                 if (!is<TokenType::KWORD_FUNC>(pk)) {
                     createError<SYNTAX_ERROR>(
-                        "expected keyword an extern function declaration");
+                        "expected 'fn' keyword after an extern function declaration");
+                }
+
+                break;
+            }
+
+            case TokenType::KWORD_STATIC: {
+                auto pk = peek();
+                if (!is<TokenType::KWORD_FUNC>(pk)) {
+                    createError<SYNTAX_ERROR>(
+                        "expected 'fn' keyword after a static function declaration");
                 }
 
                 break;

@@ -1,5 +1,5 @@
 
-num = 10000000
+num = 60000
 name = "tests/main.sn"
 
 with open(name, "w") as f:

@@ -7,63 +7,63 @@ use Core::CLib
  * @param exitCode The exit status of the program.
  * @note The behavior is undefined if a program calls exit more than once.
  */
-pub fn exit(exitCode: i32 = 0) { CLib::exit(exitCode); }
+pub static fn exit(exitCode: i32 = 0) { CLib::exit(exitCode); }
 /**
  * Prints the given string message to standard output.
  *
  * @param msg the string message to print
  * @return the number of characters printed
  */
-pub fn print(msg: String) i32 { return CLib::printf("%s",  msg); }
+pub static fn print(msg: String) i32 { return CLib::printf("%s",  msg); }
 /**
  * Prints the given boolean value to standard output.
  *
  * @param msg the boolean value to print
  * @return the number of characters printed
  */
-pub fn print(msg: bool  ) i32 { return CLib::printf("%i",  msg); }
+pub static fn print(msg: bool  ) i32 { return CLib::printf("%i",  msg); }
 /**
  * Prints the given 8-bit integer value to standard output.
  *
  * @param msg the 8-bit integer value to print
  * @return the number of characters printed
  */
-pub fn print(msg: i8    ) i32 { return print(msg as i32);        }
+pub static fn print(msg: i8    ) i32 { return print(msg as i32);        }
 /**
  * Prints the given 16-bit integer value to standard output.
  *
  * @param msg the 16-bit integer value to print
  * @return the number of characters printed
  */
-pub fn print(msg: i16   ) i32 { return print(msg as i32);        }
+pub static fn print(msg: i16   ) i32 { return print(msg as i32);        }
 /**
  * Prints the given 32-bit integer value to standard output.
  *
  * @param msg the 32-bit integer value to print
  * @return the number of characters printed
  */
-pub fn print(msg: i32   ) i32 { return CLib::printf("%i",  msg); }
+pub static fn print(msg: i32   ) i32 { return CLib::printf("%i",  msg); }
 /**
  * Prints the given 64-bit integer value to standard output.
  *
  * @param msg the 64-bit integer value to print
  * @return the number of characters printed
  */
-pub fn print(msg: i64   ) i32 { return CLib::printf("%ld", msg); }
+pub static fn print(msg: i64   ) i32 { return CLib::printf("%ld", msg); }
 /**
  * Prints the given single-precision floating-point value to standard output.
  *
  * @param msg the single-precision floating-point value to print
  * @return the number of characters printed
  */
-pub fn print(msg: f32   ) i32 { return CLib::printf("%f",  msg); }
+pub static fn print(msg: f32   ) i32 { return CLib::printf("%f",  msg); }
 /**
  * Prints the given double-precision floating-point value to standard output.
  *
  * @param msg the double-precision floating-point value to print
  * @return the number of characters printed
  */
-pub fn print(msg: f64   ) i32 { return CLib::printf("%f",  msg); }
+pub static fn print(msg: f64   ) i32 { return CLib::printf("%f",  msg); }
 /**
  * @brief Prints a new line character to standard output.
  *
@@ -73,49 +73,49 @@ pub fn print(msg: f64   ) i32 { return CLib::printf("%f",  msg); }
  * @note This function does not print any other characters besides the new line character.
  * If you need to print additional characters or a string, use the `println(...)` function instead.
  */
-pub fn printNewLine() { CLib::putchar('\n'); }
+pub static fn printNewLine() { CLib::putchar('\n'); }
 /**
  * @brief Writes a string to @param stream and it also writes a new line
  *  additionally
  * @param msg string to print
  * @return On success, the total number of characters written is returned.
  */
-pub fn println(msg: String) i32 { primitiveTypePrintln(msg); }
+pub static fn println(msg: String) i32 { primitiveTypePrintln(msg); }
 /**
  * @brief Writes a i32-bit allocated integer to @param stream and it also writes a new line
  *  additionally
  * @param msg i32 to print
  * @return On success, the total number of characters written is returned.
  */
-pub fn println(msg: i32) i32 { primitiveTypePrintln(msg); }
+pub static fn println(msg: i32) i32 { primitiveTypePrintln(msg); }
 /**
  * @brief Writes a i64-bit allocated integer to @param stream and it also writes a new line
  *  additionally
  * @param msg i64 to print
  * @return On success, the total number of characters written is returned.
  */
-pub fn println(msg: i64) i32 { primitiveTypePrintln(msg); }
+pub static fn println(msg: i64) i32 { primitiveTypePrintln(msg); }
 /**
  * @brief Writes a f32-bit allocated float to @param stream and it also writes a new line
  *  additionally
  * @param msg f32 to print
  * @return On success, the total number of characters written is returned.
  */
-pub fn println(msg: f32) i32 { primitiveTypePrintln(msg); }
+pub static fn println(msg: f32) i32 { primitiveTypePrintln(msg); }
 /**
  * @brief Writes a f64-bit allocated real to @param stream and it also writes a new line
  *  additionally
  * @param msg f64 to print
  * @return On success, the total number of characters written is returned.
  */
-pub fn println(msg: f64) i32 { primitiveTypePrintln(msg); }
+pub static fn println(msg: f64) i32 { primitiveTypePrintln(msg); }
 /**
  * @brief Used to take user input. By default, it returns the user input in form of
  *  a string.
  * @param __p prompt to print before input is requested
  * @return What the user entered in the stdin stream.
  */
-pub fn input(__p: String = "") String {
+pub static fn input(__p: String = "") String {
     print(__p)
     return _input()
 }
@@ -128,7 +128,7 @@ pub fn input(__p: String = "") String {
  *
  * @return void
  */
-pub fn poem() {
+pub static fn poem() {
     println("In the land of Snowball, where the code is king,
 A language of speed and security we bring.
 Object-oriented, it makes programming fun,
@@ -142,7 +142,8 @@ A language for all, just try it and you'll agree.
 Fast and secure, Snowball stands tall,
 With low-level speed that's the envy of all.
 So let your code run and your dreams take flight,
-In the land of Snowball, where everything's right.")
+In the land of Snowball, where everything's right.");
+    exit(222);
 }
 
 // - Mark: Private functions
@@ -161,7 +162,7 @@ extern fn "sn.core.libs.System.input" as _input() String;
  * @note This function relies on the `print()` and `printNewLine()` functions to perform the printing.
  * If you need more control over the output format, use those functions directly instead.
  */
-fn primitiveTypePrintln<PrimitiveType>(msg: PrimitiveType) i32 {
+static fn primitiveTypePrintln<PrimitiveType>(msg: PrimitiveType) i32 {
     let ret = print(msg);
     printNewLine();
 
