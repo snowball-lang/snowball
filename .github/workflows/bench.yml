@@ -28,6 +28,5 @@ jobs:
     - name: Execute fuzing bench
       run: |
           python3 tests/snowball-fuze.py
-          cat tests/main.sn
           snowball build -o O0 -s
 
