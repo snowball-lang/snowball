@@ -77,7 +77,7 @@ llvm::Function *LLVMBuilder::buildLLVMFunction(llvm::Function *llvmFn,
     func->setName(fn->getMangle());
 
     llvmFn->replaceAllUsesWith(llvmFn);
-    llvmFn->removeFromParent();
+    if (fn->isStatic() && (!fn->hasParent())) llvmFn->removeFromParent();
 
     setDebugInfoLoc(nullptr);
     return func;
