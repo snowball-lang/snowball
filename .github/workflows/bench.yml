@@ -24,8 +24,10 @@ jobs:
         export CXX="g++"
         sh ./build_scripts/dbg.sh -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_CC_COMPILER=/usr/bin/gcc
         sudo make install
+        sh ./build_scripts/install_stdlib.sh
     - name: Execute fuzing bench
       run: |
           python3 tests/snowball-fuze.py
+          cat tests/main.sn
           snowball build -o O0 -s
 
