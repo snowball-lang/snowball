@@ -124,6 +124,16 @@ template <typename T, class X> void assert_value_type() {
     static_assert(std::is_same<T, X>::value, "value types must be the same!");
 }
 
+#if _SNOWBALL_CODEGEN_DEBUG
+template <typename F, typename ... Ts>
+double _timer(F&& f, Ts&&...args)
+{
+    clock_t start = clock();
+    std::forward<F>(f)(std::forward<Ts>(args)...);
+    return static_cast<double>(clock() - start) / static_cast<double>(CLOCKS_PER_SEC);
+}
+#endif
+
 } // namespace utils
 } // namespace snowball
 

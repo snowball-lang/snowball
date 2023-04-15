@@ -36,7 +36,6 @@ class Lexer {
 
   private:
     // methods
-    void tokenize_char();
     void handle_eof(bool p_consume = true);
     void consume(TokenType p_tk, int p_eat_size = 1);
     void lexer_error(Error m_error, std::string m_msg, int char_length = 1,
@@ -44,6 +43,7 @@ class Lexer {
 
     // vars
     SourceInfo *_source_info;
+    std::string code;
 
     int cur_line = 1;
     int cur_col  = 1;

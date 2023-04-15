@@ -53,6 +53,7 @@ class Parser {
     /// @brief Parse from the lexer tree
     /// @return AST containing parsed node
     std::vector<Syntax::Node *> parse();
+    using NodeVec = std::vector<Syntax::Node *>;
 
   private:
     // Utility functions for parsing
@@ -129,8 +130,6 @@ class Parser {
 
   private:
     // Parsing functions
-    using NodeVec = std::vector<Syntax::Node *>;
-
     /**
      * visibility    ::=  pub | priv
      * funcname      ::=  identifier

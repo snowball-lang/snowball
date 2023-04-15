@@ -44,9 +44,12 @@ void Compiler::compile(bool verbose) {
         throw SNError(Error::COMPILER_ERROR,
                       "Compiler has not been initialized!");
     }
-
+#if _SNOWBALL_CODEGEN_DEBUG == 0
 #define SHOW_STATUS(status)                                                    \
     if (!verbose) status;
+#else
+#define SHOW_STATUS(_)
+#endif
 
     chdir(((fs::path)_path).parent_path().c_str());
     SHOW_STATUS(Logger::compiling(Logger::progress(0)));
@@ -54,13 +57,25 @@ void Compiler::compile(bool verbose) {
     /* ignore_goto_errors() */ {
         SHOW_STATUS(Logger::compiling(Logger::progress(0.30)))
         auto lexer = new Lexer(_source_info);
-        lexer->tokenize();
 
-        if (lexer->tokens.size() != 0) {
+#if _SNOWBALL_CODEGEN_DEBUG
+        std::vector<Token> tokens;
+        DEBUG_CODEGEN("Lexer: %fs", utils::_timer([&]{lexer->tokenize(); tokens = lexer->tokens;}));
+#else
+        lexer->tokenize();
+        auto tokens = lexer->tokens;
+#endif
+
+        if (tokens.size() != 0) {
             SHOW_STATUS(Logger::compiling(Logger::progress(0.50)))
 
-            auto parser = new parser::Parser(lexer->tokens, _source_info);
+            auto parser = new parser::Parser(tokens, _source_info);
+#if _SNOWBALL_CODEGEN_DEBUG
+            parser::Parser::NodeVec ast;
+            DEBUG_CODEGEN("Parser: %fs", utils::_timer([&]{ast = parser->parse();}));
+#else
             auto ast    = parser->parse();
+#endif
 
             SHOW_STATUS(Logger::compiling(Logger::progress(0.55)))
             auto mainModule = std::make_shared<ir::MainModule>();
@@ -73,18 +88,33 @@ void Compiler::compile(bool verbose) {
             auto simplifier = new Syntax::Transformer(
                 mainModule->downcasted_shared_from_this<ir::Module>(),
                 _source_info);
+
+#if _SNOWBALL_CODEGEN_DEBUG
+            DEBUG_CODEGEN("Simplifier: %fs", utils::_timer([&]{simplifier->visit(ast);}));
+#else
             simplifier->visit(ast);
+#endif
 
             SHOW_STATUS(Logger::compiling(Logger::progress(0.60)))
 
+#if _SNOWBALL_CODEGEN_DEBUG
+            DEBUG_CODEGEN("Passes: %fs", utils::_timer([&]{for (auto pass : passes)pass->run(ast);}));
+#else
             for (auto pass : passes) {
                 pass->run(ast);
             }
+#endif
 
             SHOW_STATUS(Logger::compiling(Logger::progress(0.70)))
 
             auto typeChecker = new codegen::TypeChecker(mainModule);
             typeChecker->codegen();
+
+#if _SNOWBALL_CODEGEN_DEBUG
+            DEBUG_CODEGEN("TypeChecker: %fs", utils::_timer([&]{typeChecker->codegen();}));
+#else
+            typeChecker->codegen();
+#endif
 
             SHOW_STATUS(Logger::compiling(Logger::progress(0.80)))
 
