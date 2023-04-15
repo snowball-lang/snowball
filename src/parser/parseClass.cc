@@ -66,10 +66,11 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
             } break;
 
             case TokenType::KWORD_STATIC: {
-                if (peek().type != TokenType::KWORD_FUNC &&
-                    peek().type != TokenType::KWORD_VAR &&
-                    peek().type != TokenType::KWORD_OPERATOR &&
-                    (!IS_CONSTRUCTOR(peek()))) {
+                auto pk = peek();
+                if (pk.type != TokenType::KWORD_FUNC &&
+                    pk.type != TokenType::KWORD_VAR &&
+                    pk.type != TokenType::KWORD_OPERATOR &&
+                    (!IS_CONSTRUCTOR(pk))) {
                     next();
                     createError<SYNTAX_ERROR>(
                         "expected keyword \"func\", \"let\", \"operator\" or a "
@@ -94,11 +95,12 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
             } break;
 
             case TokenType::KWORD_VIRTUAL: {
-                if (peek().type == TokenType::KWORD_STATIC) {
+                auto pk = peek();
+                if (pk.type == TokenType::KWORD_STATIC) {
                     next();
                     createError<ARGUMENT_ERROR>(
                         "Virtual methods can't be static!");
-                } else if (peek().type != TokenType::KWORD_FUNC) {
+                } else if (pk.type != TokenType::KWORD_FUNC) {
                     next();
                     createError<SYNTAX_ERROR>(
                         "Expected keyword \"func\" after virtual declaration!");

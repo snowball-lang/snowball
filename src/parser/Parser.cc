@@ -24,11 +24,12 @@ std::vector<Syntax::Node *> Parser::parse() {
 
             case TokenType::KWORD_PUBLIC:
             case TokenType::KWORD_PRIVATE: {
-                if (!is<TokenType::KWORD_FUNC>(peek()) &&
-                    !is<TokenType::KWORD_MOD>(peek()) &&
-                    !is<TokenType::KWORD_VAR>(peek()) &&
-                    !is<TokenType::KWORD_CLASS>(peek()) &&
-                    !is<TokenType::KWORD_EXTERN>(peek())) {
+                auto pk = peek();
+                if (!is<TokenType::KWORD_FUNC>(pk) &&
+                    !is<TokenType::KWORD_MOD>(pk) &&
+                    !is<TokenType::KWORD_VAR>(pk) &&
+                    !is<TokenType::KWORD_CLASS>(pk) &&
+                    !is<TokenType::KWORD_EXTERN>(pk)) {
                     createError<SYNTAX_ERROR>(
                         "expected keyword \"fn\", \"class\", \"mod\", \"let\" "
                         "or "
@@ -39,7 +40,8 @@ std::vector<Syntax::Node *> Parser::parse() {
             }
 
             case TokenType::KWORD_EXTERN: {
-                if (!is<TokenType::KWORD_FUNC>(peek())) {
+                auto pk = peek();
+                if (!is<TokenType::KWORD_FUNC>(pk)) {
                     createError<SYNTAX_ERROR>(
                         "expected keyword an extern function declaration");
                 }
