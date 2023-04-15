@@ -6,8 +6,9 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-#define IS_MAIN (name == "main" && p_node->getPrivacy() == Statement::Privacy::PUBLIC && \
-            ctx->module->isMain())
+#define IS_MAIN                                                                \
+    (name == "main" && p_node->getPrivacy() == Statement::Privacy::PUBLIC &&   \
+     ctx->module->isMain())
 
 namespace snowball {
 namespace Syntax {

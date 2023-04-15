@@ -1,5 +1,5 @@
 
-num = 147456
+num = 6000
 name = "tests/main.sn"
 
 with open(name, "w") as f:

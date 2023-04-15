@@ -34,7 +34,7 @@ FunctionCall *Parser::parseFunctionCall(Syntax::Expression::Base *callee) {
             next();
             createError<SYNTAX_ERROR>(
                 FMT("Expected a ',' or a ')' but found '%s' instead",
-                m_current.to_string().c_str()));
+                    m_current.to_string().c_str()));
         }
     }
 

@@ -120,7 +120,8 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
         case _Unknown: {
         }
 
-        default:assert(false);
+        default:
+            assert(false);
     }
 
     assert(false && "BUG: unhandled getFunction res case.");

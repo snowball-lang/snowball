@@ -60,7 +60,10 @@ void Compiler::compile(bool verbose) {
 
 #if _SNOWBALL_CODEGEN_DEBUG
         std::vector<Token> tokens;
-        DEBUG_CODEGEN("Lexer: %fs", utils::_timer([&]{lexer->tokenize(); tokens = lexer->tokens;}));
+        DEBUG_CODEGEN("Lexer: %fs", utils::_timer([&] {
+                          lexer->tokenize();
+                          tokens = lexer->tokens;
+                      }));
 #else
         lexer->tokenize();
         auto tokens = lexer->tokens;
@@ -72,9 +75,10 @@ void Compiler::compile(bool verbose) {
             auto parser = new parser::Parser(tokens, _source_info);
 #if _SNOWBALL_CODEGEN_DEBUG
             parser::Parser::NodeVec ast;
-            DEBUG_CODEGEN("Parser: %fs", utils::_timer([&]{ast = parser->parse();}));
+            DEBUG_CODEGEN("Parser: %fs",
+                          utils::_timer([&] { ast = parser->parse(); }));
 #else
-            auto ast    = parser->parse();
+            auto ast = parser->parse();
 #endif
 
             SHOW_STATUS(Logger::compiling(Logger::progress(0.55)))
@@ -90,7 +94,8 @@ void Compiler::compile(bool verbose) {
                 _source_info);
 
 #if _SNOWBALL_CODEGEN_DEBUG
-            DEBUG_CODEGEN("Simplifier: %fs", utils::_timer([&]{simplifier->visit(ast);}));
+            DEBUG_CODEGEN("Simplifier: %fs",
+                          utils::_timer([&] { simplifier->visit(ast); }));
 #else
             simplifier->visit(ast);
 #endif
@@ -98,7 +103,9 @@ void Compiler::compile(bool verbose) {
             SHOW_STATUS(Logger::compiling(Logger::progress(0.60)))
 
 #if _SNOWBALL_CODEGEN_DEBUG
-            DEBUG_CODEGEN("Passes: %fs", utils::_timer([&]{for (auto pass : passes)pass->run(ast);}));
+            DEBUG_CODEGEN("Passes: %fs", utils::_timer([&] {
+                              for (auto pass : passes) pass->run(ast);
+                          }));
 #else
             for (auto pass : passes) {
                 pass->run(ast);
@@ -111,7 +118,8 @@ void Compiler::compile(bool verbose) {
             typeChecker->codegen();
 
 #if _SNOWBALL_CODEGEN_DEBUG
-            DEBUG_CODEGEN("TypeChecker: %fs", utils::_timer([&]{typeChecker->codegen();}));
+            DEBUG_CODEGEN("TypeChecker: %fs",
+                          utils::_timer([&] { typeChecker->codegen(); }));
 #else
             typeChecker->codegen();
 #endif

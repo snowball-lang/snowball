@@ -17,7 +17,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
 
     // Cast the function into a bodied one, if it's not bodied,
     // we will get nullptr as a result.
-    auto bodiedFn = cast<Statement::BodiedFunction>(node);
+    auto bodiedFn  = cast<Statement::BodiedFunction>(node);
     bool isGeneric = node->getGenerics().size() > 0;
 
     std::shared_ptr<ir::Func> fn = nullptr;
@@ -41,7 +41,9 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
 
             // Create a new function value and store it's return type.
             fn = ctx->module->N<ir::Func>(
-                node->getDBGInfo(), name, (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)),
+                node->getDBGInfo(), name,
+                (bodiedFn == nullptr &&
+                 !node->hasAttribute(Attributes::LLVM_FUNC)),
                 node->isVariadic(), ctx->getCurrentClass());
             fn->setRetTy(returnType);
             fn->setPrivacy(node->getPrivacy());

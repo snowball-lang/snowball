@@ -6,14 +6,14 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
-#define IS_INTEGER(x) \
-    (utils::dyn_cast<types::Int8Type>(x) || \
-        utils::dyn_cast<types::Int16Type>(x) || \
-        utils::dyn_cast<types::Int32Type>(x) || \
-        utils::dyn_cast<types::Int64Type>(x))
-#define IS_FLOAT(x) \
-    (utils::dyn_cast<types::Float32Type>(x) || \
-        utils::dyn_cast<types::Float64Type>(x))
+#define IS_INTEGER(x)                                                          \
+    (utils::dyn_cast<types::Int8Type>(x) ||                                    \
+     utils::dyn_cast<types::Int16Type>(x) ||                                   \
+     utils::dyn_cast<types::Int32Type>(x) ||                                   \
+     utils::dyn_cast<types::Int64Type>(x))
+#define IS_FLOAT(x)                                                            \
+    (utils::dyn_cast<types::Float32Type>(x) ||                                 \
+     utils::dyn_cast<types::Float64Type>(x))
 
 namespace snowball {
 namespace codegen {

@@ -12,7 +12,7 @@
 #include <vector>
 
 #define GET_CHAR(m_off)                                                        \
-    (((size_t)char_ptr + m_off >= code.size())            \
+    (((size_t)char_ptr + m_off >= code.size())                                 \
          ? '\0'                                                                \
          : code.at((size_t)char_ptr + m_off))
 #define EAT_CHAR(m_num)                                                        \
@@ -82,10 +82,10 @@ void Lexer::tokenize() {
                             EAT_CHAR(2);
                             break;
                         } else if (GET_CHAR(0) == 0) {
-                            lexer_error(
-                                Error::UNEXPECTED_EOF,
-                                "Found an unexpected EOF while parsing a comment",
-                                1);
+                            lexer_error(Error::UNEXPECTED_EOF,
+                                        "Found an unexpected EOF while parsing "
+                                        "a comment",
+                                        1);
                         } else if (GET_CHAR(0) == '\n') {
                             EAT_LINE();
                         } else {
@@ -257,9 +257,9 @@ void Lexer::tokenize() {
 
                         switch (c) {
                             case 0:
-                                lexer_error(
-                                    Error::UNEXPECTED_EOF,
-                                    "unexpected EOF while lexing a string scape.");
+                                lexer_error(Error::UNEXPECTED_EOF,
+                                            "unexpected EOF while lexing a "
+                                            "string scape.");
                                 break;
                             case '\\':
                                 str += '\\';
@@ -310,8 +310,9 @@ void Lexer::tokenize() {
                 EAT_CHAR(1);
 
                 if (str.size() != 1) {
-                    lexer_error(Error::SYNTAX_ERROR,
-                                "Character values can only have a length of 1!");
+                    lexer_error(
+                        Error::SYNTAX_ERROR,
+                        "Character values can only have a length of 1!");
                 }
 
                 Token tk;
@@ -333,9 +334,9 @@ void Lexer::tokenize() {
 
                         switch (c) {
                             case 0:
-                                lexer_error(
-                                    Error::UNEXPECTED_EOF,
-                                    "unexpected EOF while lexing a string scape.");
+                                lexer_error(Error::UNEXPECTED_EOF,
+                                            "unexpected EOF while lexing a "
+                                            "string scape.");
                                 break;
                             case '\\':
                                 str += '\\';
@@ -423,8 +424,10 @@ void Lexer::tokenize() {
                     enum _ReadMode { INT, FLOAT, BIN, HEX };
                     _ReadMode mode = INT;
                     if (GET_CHAR(0) == '0') {
-                        if (GET_CHAR(1) == 'b' || GET_CHAR(1) == 'B') mode = BIN;
-                        if (GET_CHAR(1) == 'x' || GET_CHAR(1) == 'X') mode = HEX;
+                        if (GET_CHAR(1) == 'b' || GET_CHAR(1) == 'B')
+                            mode = BIN;
+                        if (GET_CHAR(1) == 'x' || GET_CHAR(1) == 'X')
+                            mode = HEX;
                     }
                     EAT_CHAR(1);
                     switch (mode) {
@@ -456,14 +459,16 @@ void Lexer::tokenize() {
                         } break;
 
                         default:
-                            lexer_error(Error::BUG,
-                                        FMT("Unreachable number mode \"%i\"", mode),
-                                        num.size());
+                            lexer_error(
+                                Error::BUG,
+                                FMT("Unreachable number mode \"%i\"", mode),
+                                num.size());
                     }
 
                     // "1." parsed as 1.0 which should be error.
                     if (num[num.size() - 1] == '.')
-                        lexer_error(Error::SYNTAX_ERROR, "invalid numeric value.");
+                        lexer_error(Error::SYNTAX_ERROR,
+                                    "invalid numeric value.");
 
                     Token tk;
                     tk.line  = cur_line;
@@ -565,7 +570,7 @@ void Lexer::tokenize() {
                     }
 
                     else if (identifier == _SNOWBALL_KEYWORD__TRUE ||
-                            identifier == _SNOWBALL_KEYWORD__FALSE) {
+                             identifier == _SNOWBALL_KEYWORD__FALSE) {
                         tk.type = TokenType::VALUE_BOOL;
                     } else {
                         tk.type = TokenType::IDENTIFIER;
@@ -580,16 +585,16 @@ void Lexer::tokenize() {
                     break;
                 }
 
-                auto c =
-                    utils::getUTF8FromIndex(code, char_ptr);
+                auto c = utils::getUTF8FromIndex(code, char_ptr);
                 if (c == "🐒") {
-                    lexer_error(Error::SYNTAX_ERROR, "Unexpected MONKE found!", 1,
-                                "🐒🐒🐒🐒🐒🐒");
+                    lexer_error(Error::SYNTAX_ERROR, "Unexpected MONKE found!",
+                                1, "🐒🐒🐒🐒🐒🐒");
                 } else {
-                    lexer_error(Error::SYNTAX_ERROR,
-                                FMT("Unexpected character found '%s' while lexing.",
-                                    c.c_str()),
-                                1);
+                    lexer_error(
+                        Error::SYNTAX_ERROR,
+                        FMT("Unexpected character found '%s' while lexing.",
+                            c.c_str()),
+                        1);
                 }
         }
     }

@@ -381,10 +381,11 @@ struct Privacy {
  * Function definition, check out parseFunction for
  * it's respective rules
  */
-struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
-                     public AcceptorExtend<FunctionDef, AttributeHolder<Attributes::Fn>>,
-                     public AcceptorExtend<FunctionDef, Privacy>,
-                     public AcceptorExtend<FunctionDef, GenericContainer> {
+struct FunctionDef
+    : public AcceptorExtend<FunctionDef, Base>,
+      public AcceptorExtend<FunctionDef, AttributeHolder<Attributes::Fn>>,
+      public AcceptorExtend<FunctionDef, Privacy>,
+      public AcceptorExtend<FunctionDef, GenericContainer> {
 
     // Function's identifier
     std::string name;

@@ -23,7 +23,8 @@ class Func : public AcceptorExtend<Func, Value>,
              public IdMixin,
              public AcceptorExtend<Func, Syntax::Statement::Privacy>,
              public AcceptorExtend<Func, Syntax::Statement::GenericContainer>,
-             public AcceptorExtend<Func, Syntax::Statement::AttributeHolder<Attributes::Fn>> {
+             public AcceptorExtend<
+                 Func, Syntax::Statement::AttributeHolder<Attributes::Fn>> {
   public:
     // Utility types
     using FunctionArgs =
@@ -95,10 +96,11 @@ class Func : public AcceptorExtend<Func, Value>,
     bool _static = false;
 
     /// @brief A boolean attribute that indicates whether the function is used.
-    /// This attribute is used inside "ir::Func" class to keep track of whether the
-    /// function is used or not.
+    /// This attribute is used inside "ir::Func" class to keep track of whether
+    /// the function is used or not.
     /// @note The initial value of this attribute is false.
     bool used = false;
+
   public:
 #define DEFAULT                                                                \
     bool declaration = false, bool variadic = false,                           \
@@ -136,8 +138,10 @@ class Func : public AcceptorExtend<Func, Value>,
     /// @param llvmBody the LLVM IR instructions
     void setLLVMBody(std::string llvmBody) { this->llvmBody = llvmBody; }
     /// @return the LLVM ir body for this function
-    auto getLLVMBody() { 
-        assert(!isDeclaration() && hasAttribute(Attributes::LLVM_FUNC)); return llvmBody; }
+    auto getLLVMBody() {
+        assert(!isDeclaration() && hasAttribute(Attributes::LLVM_FUNC));
+        return llvmBody;
+    }
     /// @brief Set arguments to a function
     void setArgs(FunctionArgs p_args) { arguments = p_args; }
     /// @return Get arguments from function

@@ -4,18 +4,19 @@
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 
+#include <llvm/AsmParser/Parser.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 #include <llvm/IR/Verifier.h>
-#include <llvm/Support/SourceMgr.h>
 #include <llvm/IRReader/IRReader.h>
-#include <llvm/AsmParser/Parser.h>
 #include <llvm/Linker/Linker.h>
+#include <llvm/Support/SourceMgr.h>
 
 namespace snowball {
 namespace codegen {
 
-llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function *llvmFn, ir::Func *fn) {
+llvm::Function *LLVMBuilder::buildLLVMFunction(llvm::Function *llvmFn,
+                                               ir::Func *fn) {
     ctx->setCurrentFunction(nullptr);
 
     // llvmFn->getDe
@@ -34,8 +35,7 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function *llvmFn, ir::Func 
         llvmFn->getArg(i)->getType()->print(buf);
         buf << " %" << l_front->first;
 
-        if (i < (args.size() - 1))
-            buf << ", ";
+        if (i < (args.size() - 1)) buf << ", ";
     }
 
     buf << ") { \nentry:\n\t";
@@ -49,7 +49,7 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function *llvmFn, ir::Func 
 
     llvm::SMDiagnostic err;
     std::unique_ptr<llvm::Module> sub =
-      llvm::parseIR(llvmBuffer->getMemBufferRef(), err, *context);
+        llvm::parseIR(llvmBuffer->getMemBufferRef(), err, *context);
     if (!sub) {
         std::string bufStr;
         llvm::raw_string_ostream buf(bufStr);
@@ -69,7 +69,8 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function *llvmFn, ir::Func 
     auto func = module->getFunction(fn->getMangle());
     assert(func && "function not linked in");
     func->setLinkage(llvm::GlobalValue::PrivateLinkage);
-    func->addFnAttr(llvm::Attribute::AttrKind::NoInline); // TODO: user decides, this is default
+    func->addFnAttr(llvm::Attribute::AttrKind::NoInline); // TODO: user decides,
+                                                          // this is default
     func->setSubprogram(getDISubprogramForFunc(fn));
 
     func->takeName(llvmFn);

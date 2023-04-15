@@ -17,8 +17,8 @@ namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     int numThreads = 4; // TODO: let user decide!
-    auto package = p_node->getPackage();
-    auto path    = p_node->getPath();
+    auto package   = p_node->getPackage();
+    auto path      = p_node->getPath();
     // TODO: extension
     auto [filePath, error] = ctx->imports->getImportPath(package, path);
     if (!error.empty()) {
@@ -41,7 +41,8 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
         auto state =
             std::shared_ptr<ContextState>(new ContextState(st, mod, nullptr));
 
-        ctx->withState(state, [numThreads=numThreads, filePath = filePath, this]() mutable {
+        ctx->withState(state, [numThreads = numThreads, filePath = filePath,
+                               this]() mutable {
             std::ifstream ifs(filePath.string());
             assert(!ifs.fail());
 
@@ -49,7 +50,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
                                 (std::istreambuf_iterator<char>()));
 
             auto srcInfo = new SourceInfo(content, filePath);
-            auto lexer = new Lexer(srcInfo);
+            auto lexer   = new Lexer(srcInfo);
             lexer->tokenize();
             auto tokens = lexer->tokens;
 

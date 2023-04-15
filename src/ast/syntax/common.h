@@ -17,7 +17,7 @@ namespace snowball {
 
 namespace Attributes {
 enum Fn {
-  LLVM_FUNC,
+    LLVM_FUNC,
 };
 }
 
@@ -117,9 +117,8 @@ namespace Statement {
  *
  * @tparam T The enum type representing the attributes that can be stored.
  */
-template <typename T>
-class AttributeHolder {
-public:
+template <typename T> class AttributeHolder {
+  public:
     /**
      * Checks if a specific attribute is set for the node.
      *
@@ -156,15 +155,12 @@ public:
     /**
      * Clears all attributes for the node by setting `m_attributes` to zero.
      */
-    void clearAttributes() {
-        m_attributes = 0;
-    }
+    void clearAttributes() { m_attributes = 0; }
 
-private:
+  private:
     /** The bit field storing the attributes for the node. */
     unsigned int m_attributes = 0;
 };
-
 
 /**
  * This struct is used a sort of container

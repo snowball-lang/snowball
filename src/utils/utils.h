@@ -29,7 +29,8 @@ bool startsWith(const std::string& str, const std::string& comp);
 void replaceAll(std::string& str, const std::string& from,
                 const std::string& to);
 std::string getSubstringByRange(const std::string& str,
-    const std::pair<int, int>& start, const std::pair<int, int>& end);
+                                const std::pair<int, int>& start,
+                                const std::pair<int, int>& end);
 template <typename Iter>
 // https://stackoverflow.com/questions/495021/why-can-templates-only-be-implemented-in-the-header-file
 std::string join(Iter begin, Iter end, std::string const& separator) {
@@ -125,12 +126,11 @@ template <typename T, class X> void assert_value_type() {
 }
 
 #if _SNOWBALL_CODEGEN_DEBUG
-template <typename F, typename ... Ts>
-double _timer(F&& f, Ts&&...args)
-{
+template <typename F, typename... Ts> double _timer(F&& f, Ts&&...args) {
     clock_t start = clock();
     std::forward<F>(f)(std::forward<Ts>(args)...);
-    return static_cast<double>(clock() - start) / static_cast<double>(CLOCKS_PER_SEC);
+    return static_cast<double>(clock() - start) /
+           static_cast<double>(CLOCKS_PER_SEC);
 }
 #endif
 

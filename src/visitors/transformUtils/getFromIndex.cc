@@ -108,7 +108,7 @@ Transformer::getFromIndex(DBGSourceInfo *dbgInfo, Expression::Index *index,
         return {std::nullopt, std::nullopt, std::nullopt,
                 std::nullopt, std::nullopt, false};
     };
-    
+
     auto getFromModule = [&](std::shared_ptr<ir::Module> m)
         -> std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                       std::optional<std::shared_ptr<types::Type>>,

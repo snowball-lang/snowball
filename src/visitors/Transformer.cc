@@ -43,7 +43,7 @@ void Transformer::visit(std::vector<Node *> p_nodes) {
     ctx->generateFunction = true;
     for (auto node : p_nodes) {
         if (utils::cast<Statement::BodiedFunction>(node) ||
-        utils::cast<Statement::LLVMFunction>(node)) {
+            utils::cast<Statement::LLVMFunction>(node)) {
             node->accept(this);
         }
     }

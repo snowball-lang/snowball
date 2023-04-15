@@ -15,9 +15,9 @@
 namespace snowball {
 namespace codegen {
 
-bool LLVMBuilder::buildOperator(ir::Call* call) {
+bool LLVMBuilder::buildOperator(ir::Call *call) {
     if (auto fn = utils::dyn_cast<ir::Func>(call->getCallee())) {
-        auto args = call->getArguments();
+        auto args   = call->getArguments();
         auto opName = fn->getName(true);
         if (utils::startsWith(opName, "#") && args.size() == 2) {
             auto left  = build(args.at(0).get());
@@ -56,8 +56,10 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
 
                 return true;
 
-            } else if (utils::dyn_cast<types::Float32Type>(args.at(0)->getType()) ||
-                utils::dyn_cast<types::Float64Type>(args.at(0)->getType())) {
+            } else if (utils::dyn_cast<types::Float32Type>(
+                           args.at(0)->getType()) ||
+                       utils::dyn_cast<types::Float64Type>(
+                           args.at(0)->getType())) {
                 // this->value = builder->Create
                 switch (services::OperatorService::operatorID(opName)) {
                     OPERATOR_INSTANCE(EQEQ, CreateFCmpUEQ)
@@ -90,7 +92,6 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             } else {
                 assert(false && "Unhandled operator!");
             }
-
         }
     }
 

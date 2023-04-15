@@ -55,7 +55,8 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
     auto dbg   = m_current.get_pos();
     auto width = 0;
 
-    if (is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek())) {
+    if (is<TokenType::BRACKET_LSQUARED>() &&
+        is<TokenType::BRACKET_LSQUARED>(peek())) {
         next();
 
         while (true) {
@@ -67,7 +68,9 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
                 attributes.push_back(Attributes::Fn::LLVM_FUNC);
                 isLLVMFunction = true;
             } else {
-                createError<ATTRIBUTE_ERROR>("Trying to use an undefined attribute!", FMT("Attribute '%s' is not defined!", attr.c_str()));
+                createError<ATTRIBUTE_ERROR>(
+                    "Trying to use an undefined attribute!",
+                    FMT("Attribute '%s' is not defined!", attr.c_str()));
             }
 
             next();
@@ -76,7 +79,8 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
                 assert_tok<TokenType::BRACKET_RSQUARED>("']]'");
                 next();
                 break;
-            } else if (is<TokenType::SYM_COMMA>()) {} else {
+            } else if (is<TokenType::SYM_COMMA>()) {
+            } else {
                 assert_tok<TokenType::BRACKET_RSQUARED>("',' or ']]'");
             }
         }
@@ -244,7 +248,7 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
             createError<SYNTAX_ERROR>("Can't overload the '=' operator!");
         }
 
-        name = services::OperatorService::getOperatorMangle(opType);
+        name       = services::OperatorService::getOperatorMangle(opType);
         externName = name;
     } else {
         // Get the function name
@@ -285,7 +289,8 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
                     : "Expected an identifier but got '%s' while parsing a "
                       "function declaration";
 
-            createError<SYNTAX_ERROR>(FMT(e.c_str(), m_current.to_string().c_str()));
+            createError<SYNTAX_ERROR>(
+                FMT(e.c_str(), m_current.to_string().c_str()));
         }
     }
 
@@ -363,7 +368,7 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
         } else {
             createError<SYNTAX_ERROR>(
                 FMT("Expected a ',' or a ')' but found '%s' instead",
-                m_current.to_string().c_str()));
+                    m_current.to_string().c_str()));
         }
     }
 
@@ -408,14 +413,17 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
                 } else if (is<TokenType::BRACKET_RCURLY>()) {
                     depth--;
                 } else if (is<TokenType::_EOF>()) {
-                    createError<SYNTAX_ERROR>("Unterminated LLVM function block code!");
+                    createError<SYNTAX_ERROR>(
+                        "Unterminated LLVM function block code!");
                 }
             }
 
             auto endPos = m_current.get_pos();
 
-            llvmCode = utils::getSubstringByRange(m_source_info->getSource(), startPos, endPos);
-            llvmCode = llvmCode.substr(1, llvmCode.size() - 1); // Ignore speech marks
+            llvmCode = utils::getSubstringByRange(m_source_info->getSource(),
+                                                  startPos, endPos);
+            llvmCode =
+                llvmCode.substr(1, llvmCode.size() - 1); // Ignore speech marks
         } else {
             block = parseBlock();
         }

@@ -246,22 +246,23 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      * thats why we need @param llvmFn as an already declared
      * llvm function.
      */
-    llvm::Function* buildBodiedFunction(llvm::Function *llvmFn, ir::Func *fn);
+    llvm::Function *buildBodiedFunction(llvm::Function *llvmFn, ir::Func *fn);
     /**
      * @brief It generates the LLVM IR contents that the user has
      *  manually inserted by using "inline LLVM".
      */
-    llvm::Function* buildLLVMFunction(llvm::Function *llvmFn, ir::Func *fn);
+    llvm::Function *buildLLVMFunction(llvm::Function *llvmFn, ir::Func *fn);
     /**
      * @brief Builds an operator call.
      *
      * @param call The IR call instruction to build.
      * @return true if the operator was built successfully, false otherwise.
      *
-     * This function builds an operator call using the given IR call instruction.
-     * It returns true if the operator was built successfully and false otherwise.
+     * This function builds an operator call using the given IR call
+     * instruction. It returns true if the operator was built successfully and
+     * false otherwise.
      */
-    bool buildOperator(ir::Call* call);
+    bool buildOperator(ir::Call *call);
     /**
      * @brief Get a wrapper for a function. Subprogram is considered
      * also as a function description.

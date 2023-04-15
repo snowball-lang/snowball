@@ -35,13 +35,16 @@ std::string get_exe_folder() {
 
 #endif
 
-std::string getSubstringByRange(const std::string& str, const std::pair<int, int>& start, const std::pair<int, int>& end) {
-    int startPos = 0;
-    int endPos = 0;
-    int currentLine = 1;
+std::string getSubstringByRange(const std::string& str,
+                                const std::pair<int, int>& start,
+                                const std::pair<int, int>& end) {
+    int startPos      = 0;
+    int endPos        = 0;
+    int currentLine   = 1;
     int currentColumn = 1;
 
-    // Iterate over the string to find the starting and ending positions of the substring
+    // Iterate over the string to find the starting and ending positions of the
+    // substring
     for (int i = 0; i < str.length(); i++) {
         if (currentLine == start.first && currentColumn == start.second) {
             startPos = i;

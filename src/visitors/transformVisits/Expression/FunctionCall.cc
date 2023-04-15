@@ -1,5 +1,5 @@
-#include "../../Transformer.h"
 #include "../../../ir/values/Cast.h"
+#include "../../Transformer.h"
 
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
@@ -106,7 +106,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 auto deduced = t->getArgs().at(i);
                 if (deduced->is(arg)) { /* ok */
                 } else if (deduced->canCast(arg)) {
-                    auto val = argValues.at(i);
+                    auto val  = argValues.at(i);
                     auto cast = ctx->module->N<ir::Cast>(nullptr, val, arg);
                     cast->setType(arg);
                     argValues.at(i) = cast;
@@ -187,13 +187,14 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
             }
         }
 
-        if ((argValues.size() == 2) && utils::startsWith(func->getName(true), "#")) {
-            auto t = argValues.at(0)->getType();
+        if ((argValues.size() == 2) &&
+            utils::startsWith(func->getName(true), "#")) {
+            auto t   = argValues.at(0)->getType();
             auto val = argValues.at(1);
-            auto t2 = val->getType();
+            auto t2  = val->getType();
             if (types::NumericType::isNumericType(t.get())) {
-                if (t->is(t2)) {}
-                else if (t->canCast(t2)) {
+                if (t->is(t2)) {
+                } else if (t->canCast(t2)) {
                     auto cast = ctx->module->N<ir::Cast>(nullptr, val, t);
                     cast->setType(t);
                     argValues.at(1) = cast;
