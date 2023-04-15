@@ -7,6 +7,7 @@ namespace snowball {
 namespace errors {
 
 void NiceError::print_error() const {
+    cb_dbg_info->prepare_for_error();
     Logger::log("");
     Logger::elog(FMT("%s     ╭─[%s%s%s%s:%i:%i%s%s]%s", BLK, RESET, BBLU,
                      cb_dbg_info->getSourceInfo()->getPath().c_str(), BBLK,

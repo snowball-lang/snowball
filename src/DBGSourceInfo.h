@@ -36,6 +36,7 @@ class DBGSourceInfo : public SrcObject {
 
   public:
     std::string get_pos_str() const;
+    void prepare_for_error();
     friend SrcObject;
 
     auto getDBGInfo() { return this; }

@@ -92,6 +92,8 @@ class Warning : public SNError {
     };
 
     virtual void print_error() const {
+        cb_dbg_info->prepare_for_error();
+
         Logger::warning(FMT("%s%s%s", BOLD, message.c_str(), RESET));
         Logger::elog(FMT("  %s-->%s %s:[%i:%i]", BBLU, RESET,
                          cb_dbg_info->getSourceInfo()->getPath().c_str(),
