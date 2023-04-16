@@ -18,6 +18,7 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
             services::OperatorService::CONSTRUCTOR));
     ident->setDBGInfo(expr->getDBGInfo());
     auto index = Syntax::N<Expression::Index>(expr, ident, true);
+    index->setDBGInfo(expr->getDBGInfo());
 
     call->setCallee(index);
     call->accept(this);

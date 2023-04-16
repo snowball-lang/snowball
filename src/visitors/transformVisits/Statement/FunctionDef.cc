@@ -16,6 +16,7 @@ namespace Syntax {
 SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     auto name = p_node->getName();
     if (!ctx->generateFunction && !(IS_MAIN)) {
+        assert(!services::OperatorService::isOperator(name));
         // Check if the function requirements match the main function
 
         auto uuid = ctx->createIdentifierName(name);
@@ -29,18 +30,11 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
             }
         }
 
+
         // Just set it to the function stack
         if (auto x = ctx->cache->getFunction(uuid)) {
             // assert(false && "func exists");
             // TODO: check for already existing functions
-        }
-
-        if (services::OperatorService::getOperatorMangle(
-                services::OperatorService::CONSTRUCTOR) == name) {
-            auto c = ctx->getCurrentClass();
-            assert(c != nullptr);
-
-            p_node->setRetType(c->toRef());
         }
 
         ctx->cache->setFunction(uuid, p_node, ctx->saveState());
@@ -52,7 +46,17 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
         return;
     }
 
+        DUMP_S(name.c_str());
+
     if (ctx->generateFunction && p_node->getGenerics().size() == 0) {
+
+        if (services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(name)) {
+            auto c = ctx->getCurrentClass();
+            assert(c != nullptr);
+
+            p_node->setRetType(c->toRef());
+        }
+
         transformFunction({p_node, ctx->saveState()}, {});
     }
 }

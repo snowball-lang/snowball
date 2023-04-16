@@ -28,7 +28,7 @@ pub:
 }
 
 pub fn main() i32 {
-    // let a = new Hello(2)
+    let a = new Hello(2)
     // let b: i32;
 
     // // {

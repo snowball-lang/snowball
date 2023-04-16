@@ -43,9 +43,8 @@ Func::Func(std::string identifier, std::shared_ptr<Block> body,
     setArgs(arguments);
 }
 
-bool Func::isConstructor() {
-    return (services::OperatorService::getOperatorMangle(
-                services::OperatorService::CONSTRUCTOR) == identifier) &&
+bool Func::isConstructor() const {
+    return (services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(identifier)) &&
            hasParent();
 }
 
@@ -62,8 +61,7 @@ std::string Func::getName(bool ignoreOperators) {
 
 Func::FunctionArgs Func::getArgs(bool ignoreSelf) const {
     auto argv = arguments;
-    if (ignoreSelf && argv.size() > 0 && (hasParent() && (!_static)) &&
-        hasParent()) {
+    if (ignoreSelf && argv.size() > 0 && ((hasParent() && (!_static)) || isConstructor())) {
         argv.erase(argv.begin());
     }
 

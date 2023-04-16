@@ -122,7 +122,7 @@ class TransformContext
      *      with the function trying to be defined.
      */
     void defineFunction(std::shared_ptr<ir::Func> fn) {
-        auto name = createIdentifierName(fn->getName());
+        auto name = createIdentifierName(fn->getName(true));
         auto item = cache->getTransformedFunction(name);
         if (item) {
             assert((*item)->isFunc());

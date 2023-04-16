@@ -199,7 +199,7 @@ class Func : public AcceptorExtend<Func, Value>,
     /// @return whether or not the function is static
     auto isStatic() { return _static; }
     /// @return true if the function is a class contructor
-    bool isConstructor();
+    bool isConstructor() const;
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

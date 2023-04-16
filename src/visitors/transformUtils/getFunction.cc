@@ -89,6 +89,16 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
     }
 
     if (!overloads.has_value()) {
+        if (functions.has_value()) {
+            E<VARIABLE_ERROR>(
+                dbgInfo,
+                FMT("No matches found for %s(%s)", name.c_str(),
+                    Expression::FunctionCall::getArgumentsAsString(arguments)
+                        .c_str()));
+            // TODO: throw a note that shuggest's it's correct types: only if there's one
+            //  overload
+        }
+
         E<VARIABLE_ERROR>(dbgInfo,
                           FMT("Function '%s' is not defined!", name.c_str()));
     }
