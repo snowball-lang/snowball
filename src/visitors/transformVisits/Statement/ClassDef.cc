@@ -11,7 +11,7 @@ SN_TRANSFORMER_VISIT(Statement::ClassDef) {
     auto uuid = ctx->createIdentifierName(name);
 
     auto state = ctx->saveState();
-    auto x = ctx->cache->getType(uuid);
+    auto x     = ctx->cache->getType(uuid);
 
     if (x.has_value() && (!ctx->generateFunction)) {
         E<VARIABLE_ERROR>(

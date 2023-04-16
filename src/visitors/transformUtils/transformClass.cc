@@ -28,10 +28,12 @@ Transformer::transformClass(const std::string& uuid,
             parentType = utils::dyn_cast<types::DefinedType>(transformType(x));
         }
 
-        auto generics =
-            typeRef != nullptr ? vector_iterate<Expression::TypeRef *, std::shared_ptr<types::Type>>(
-                typeRef->getGenerics(),
-                [&](auto t) { return transformType(t); }) : std::vector<std::shared_ptr<types::Type>>{};
+        auto generics = typeRef != nullptr
+                            ? vector_iterate<Expression::TypeRef *,
+                                             std::shared_ptr<types::Type>>(
+                                  typeRef->getGenerics(),
+                                  [&](auto t) { return transformType(t); })
+                            : std::vector<std::shared_ptr<types::Type>>{};
 
         auto basedName  = getNameWithBase(ty->getName());
         auto baseFields = vector_iterate<Statement::VariableDecl *,

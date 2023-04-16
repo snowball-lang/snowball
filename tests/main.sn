@@ -9,15 +9,15 @@ pub:
     }
 
 // priv:
-    static fn hello() {
+    static fn [[internal_linkage]] hello() {
         System::println("hello")
     }
 
-    fn hey() {
+    fn [[internal_linkage]] hey() {
         System::println("hey")
     }
 
-    operator +() {
+    operator [[internal_linkage]]    +() {
 
     }
 }

@@ -18,6 +18,7 @@ namespace snowball {
 namespace Attributes {
 enum Fn {
     LLVM_FUNC,
+    INTERNAL_LINKAGE,
 };
 }
 
