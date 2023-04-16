@@ -22,13 +22,6 @@ pub:
     }
 }
 
-static fn [[llvm_function]] hello(d: i32) i32 {
-    %x = alloca i32, align 8
-    store i32 %d, i32* %x, align 8
-    %balls = load i32, i32* %x
-    ret i32 %balls
-}
-
 pub fn main() i32 {
     // let a = new Hello(2)
     // let b: i32;

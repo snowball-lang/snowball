@@ -29,9 +29,9 @@ Transformer::transformClass(const std::string& uuid,
         }
 
         auto generics =
-            vector_iterate<Expression::TypeRef *, std::shared_ptr<types::Type>>(
+            typeRef != nullptr ? vector_iterate<Expression::TypeRef *, std::shared_ptr<types::Type>>(
                 typeRef->getGenerics(),
-                [&](auto t) { return transformType(t); });
+                [&](auto t) { return transformType(t); }) : std::vector<std::shared_ptr<types::Type>>{};
 
         auto basedName  = getNameWithBase(ty->getName());
         auto baseFields = vector_iterate<Statement::VariableDecl *,

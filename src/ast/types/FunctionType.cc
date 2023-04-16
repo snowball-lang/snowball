@@ -61,7 +61,7 @@ FunctionType *FunctionType::from(ir::Func *fn) {
                            std::shared_ptr<Type>>(
         fn->getArgs(), [&](auto map) -> auto { return map.second->getType(); });
 
-    if (fn->hasParent()) {
+    if (fn->hasParent() && (!fn->isStatic()) && services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(fn->getName())) {
         args.insert(args.begin(), fn->getParent());
     }
 

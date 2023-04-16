@@ -25,7 +25,6 @@ llvm::Function *LLVMBuilder::createLLVMFunction(ir::Func *func) {
     auto fn = llvm::Function::Create(fnType, (func->isStatic() && (!func->hasParent())) ?
          llvm::Function::InternalLinkage : llvm::Function::ExternalLinkage,
                                      name, module.get());
-    // fn->set
     auto callee = (llvm::Function *)(fn);
 
     if (!ir::Func::isExternal(func->getMangle()) ||

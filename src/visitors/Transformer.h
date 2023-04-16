@@ -267,7 +267,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     std::shared_ptr<types::DefinedType>
     transformClass(const std::string& uuid,
                    cacheComponents::Types::TypeStore& classStore,
-                   Expression::TypeRef *typeRef);
+                   Expression::TypeRef *typeRef = nullptr);
     /**
      * @brief Get a value from an index node.
      * @return It may return a value, a type pointer or a vector containing

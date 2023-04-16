@@ -12,7 +12,7 @@ std::string OperatorService::getOperatorId(OperatorService::OperatorType id) {
 }
 
 bool OperatorService::isOperator(const std::string& name) {
-    return name.rfind("#", 0) == 0;
+    return utils::startsWith(name, "#");
 }
 
 const std::string& OperatorService::operatorName(OperatorType id) {
