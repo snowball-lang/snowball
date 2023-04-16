@@ -3,6 +3,15 @@
 #error "LIBC_VERSION not defined! (e.g. \"8\")"
 #endif
 
+#ifdef _WIN32
+#define LD_ARGS()                                                              \
+    {                                                                          \
+        LD_PATH, "-dynamic-linker"
+            "-L" STATICLIB_DIR, LLVM_LDFLAGS,                                  \
+            "-L" STATICLIB_DIR "" _SNOWBALL_LIBRARY_DIR, p_input,              \
+            "-lSnowballRuntime", "-lc", "-lgcc", "-lm"                         \
+    }
+#else
 #define LD_ARGS()                                                              \
     {                                                                          \
         LD_PATH, "-dynamic-linker", "/lib64/ld-linux-x86-64.so.2",             \
@@ -17,3 +26,4 @@
             "-L" STATICLIB_DIR "" _SNOWBALL_LIBRARY_DIR, p_input,              \
             "-lSnowballRuntime", "-lc", "-lgcc", "-lm"                         \
     }
+#endif

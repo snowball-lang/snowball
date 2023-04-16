@@ -2,6 +2,19 @@ cmake_minimum_required(VERSION 3.16)
 project(snowball)
 include(FetchContent)
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  set(BUILD_FOR_WIN TRUE)
+else()
+  set(BUILD_FOR_WIN FALSE)
+endif()
+option(STATIC_BUILD "Build a static binary." ${BUILD_FOR_WIN})
+
+if (STATIC_BUILD)
+        set(CMAKE_EXE_LINKER_FLAGS "-static")
+        set(CMAKE_FIND_LIBRARY_SUFFIXES ".a" CONFIG)
+        set(BUILD_SHARED_LIBS OFF)
+endif()
+
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "User path" FORCE)
 endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -12,14 +25,23 @@ pkg_check_modules(GLIB REQUIRED glib-2.0)
 include_directories(${GLIB_INCLUDE_DIRS})
 link_directories(${GLIB_LIBRARY_DIRS})
 add_definitions(${GLIB_CFLAGS_OTHER})
-find_package(PkgConfig REQUIRED)
 
 find_package(LLVM REQUIRED CONFIG)
-add_definitions(${LLVM_DEFINITIONS})
-message(STATUS ${LLVM_CONFIG})
+set(LLVM_ENABLE_BACKTRACES OFF CACHE BOOL "" FORCE)
+set(LLVM_ENABLE_PER_TARGET_RUNTIME_DIR ON CACHE BOOL "" FORCE)
+set(LLVM_ENABLE_TERMINFO OFF CACHE BOOL "" FORCE)
+set(LLVM_ENABLE_ZLIB OFF CACHE BOOL "" FORCE)
+set(LLVM_INCLUDE_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(LLVM_INCLUDE_DOCS OFF CACHE BOOL "" FORCE)
 
+add_definitions(${LLVM_DEFINITIONS})
+
+message(STATUS ${LLVM_DEFINITIONS})
+message(STATUS ${LLVM_CONFIG})
+message(STATUS ${LLVM_ENABLE_ZLIB})
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+message(STATUS "Build a static binary (aka, for windows): ${BUILD_FOR_WIN}")
 set(CMAKE_CXX_STANDARD 17)
 file(GLOB_RECURSE PROJECT_SOURCES src/*.cc src/**/*cc src/*.c)
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
@@ -72,11 +94,22 @@ llvm_map_components_to_libnames(llvm_libs
 )
 
 ##################################################    Targets     ##################################################
-add_library(snowball SHARED ${PROJECT_FILES})
-add_library(SnowballRuntime SHARED ${RUNTIME_FILES})
+if (${BUILD_FOR_WIN})
+  add_library(snowball STATIC ${PROJECT_FILES})
+  add_library(SnowballRuntime STATIC ${RUNTIME_FILES})
+else()
+  add_library(snowball SHARED ${PROJECT_FILES})
+  add_library(SnowballRuntime SHARED ${RUNTIME_FILES})
+endif()
+
 add_executable(snowballexe ${EXEC_FILES})
 target_link_libraries(snowballexe PUBLIC ${PROJECT_NAME} ${GLIB_LIBRARIES})
-set_target_properties(snowballexe PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+
+if (${BUILD_FOR_WIN})
+  set_target_properties(snowballexe PROPERTIES OUTPUT_NAME ${PROJECT_NAME}.exe)
+else()
+  set_target_properties(snowballexe PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+endif()
 set_target_properties(snowball PROPERTIES OUTPUT_NAME "Snowball")
 
 set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES /usr/local/lib ${CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES})
@@ -91,8 +124,13 @@ string(REGEX REPLACE "\n" "" _LIBC_VERSION "${_LIBC_VERSION}")
 set (STATICLIB_DIR ".snowball")
 set (_SNOWBALL_LIBRARY_DIR "libs")
 
-# add_compile_definitions(CC_PATH="/usr/bin/clang")
-add_compile_definitions(LD_PATH="/usr/bin/ld")
+if (${BUILD_FOR_WIN})
+  add_compile_definitions(LD_PATH="ld")
+else()
+  add_compile_definitions(LD_PATH="/usr/bin/ld")
+endif()
+
+
 add_compile_definitions(STATICLIB_DIR="${STATICLIB_DIR}")
 
 add_compile_definitions(_SNOWBALL_LIBRARY_DIR="${_SNOWBALL_LIBRARY_DIR}")
@@ -120,6 +158,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<INSTALL_INTERFACE:include> PRIVATE source)
     target_include_directories(${PROJECT_NAME} PUBLIC ${LLVM_INCLUDE_DIRS} ${PROJECT_INCLUDE_DIRS})
     target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES})
+
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
 set_target_properties     (${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
