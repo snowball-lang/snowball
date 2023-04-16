@@ -44,7 +44,8 @@ Func::Func(std::string identifier, std::shared_ptr<Block> body,
 }
 
 bool Func::isConstructor() const {
-    return (services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(identifier)) &&
+    return (services::OperatorService::opEquals<
+               services::OperatorService::CONSTRUCTOR>(identifier)) &&
            hasParent();
 }
 
@@ -61,7 +62,8 @@ std::string Func::getName(bool ignoreOperators) {
 
 Func::FunctionArgs Func::getArgs(bool ignoreSelf) const {
     auto argv = arguments;
-    if (ignoreSelf && argv.size() > 0 && ((hasParent() && (!_static)) || isConstructor())) {
+    if (ignoreSelf && argv.size() > 0 &&
+        ((hasParent() && (!_static)) || isConstructor())) {
         argv.erase(argv.begin());
     }
 

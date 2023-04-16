@@ -95,7 +95,8 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
                 FMT("No matches found for %s(%s)", name.c_str(),
                     Expression::FunctionCall::getArgumentsAsString(arguments)
                         .c_str()));
-            // TODO: throw a note that shuggest's it's correct types: only if there's one
+            // TODO: throw a note that shuggest's it's correct types: only if
+            // there's one
             //  overload
         }
 

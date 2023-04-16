@@ -30,7 +30,6 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
             }
         }
 
-
         // Just set it to the function stack
         if (auto x = ctx->cache->getFunction(uuid)) {
             // assert(false && "func exists");
@@ -46,11 +45,10 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
         return;
     }
 
-        DUMP_S(name.c_str());
-
     if (ctx->generateFunction && p_node->getGenerics().size() == 0) {
 
-        if (services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(name)) {
+        if (services::OperatorService::opEquals<
+                services::OperatorService::CONSTRUCTOR>(name)) {
             auto c = ctx->getCurrentClass();
             assert(c != nullptr);
 
