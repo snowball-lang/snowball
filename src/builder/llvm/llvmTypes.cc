@@ -50,11 +50,6 @@ llvm::Type *LLVMBuilder::getLLVMType(types::Type *t) {
         }
 
         auto fields = c->getFields();
-        if (auto p = c->getParent()) {
-            auto pFields = p->getFields();
-            fields.insert(fields.begin(), pFields.begin(), pFields.end());
-        }
-
         auto generatedFields =
             vector_iterate<types::DefinedType::ClassField *, llvm::Type *>(
                 fields, [&](types::DefinedType::ClassField *t) {

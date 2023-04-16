@@ -1,23 +1,28 @@
 use Core::System
 
-class Hello {
+class Balls {
+    let b: i32;
+}
+
+class Hello: Balls {
 pub:
     let h: String;
 
     Hello(x: i32) {
         System::println(self.h)
+        System::println(self.b)
     }
 
 // priv:
-    static fn [[internal_linkage]] hello() {
+    static fn hello() {
         System::println("hello")
     }
 
-    fn [[internal_linkage]] hey() {
+    fn hey() {
         System::println("hey")
     }
 
-    operator [[internal_linkage]]    +() {
+    operator +() {
 
     }
 }

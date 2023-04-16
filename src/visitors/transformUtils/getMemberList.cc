@@ -16,8 +16,9 @@ std::vector<types::DefinedType::ClassField *> Transformer::getMemberList(
 
     // add parent members first
     if (parent) {
-        member_list.insert(member_list.end(), parent->getFields().begin(),
-                           parent->getFields().end());
+        auto parentFields = parent->getFields();
+        member_list.insert(member_list.begin(), parentFields.begin(),
+                           parentFields.end());
     }
 
     // add current class members

@@ -79,11 +79,6 @@ llvm::DIType *LLVMBuilder::getDIType(types::Type *ty) {
         auto file    = dbg.getFile(dbgInfo->getSourceInfo()->getPath());
 
         auto fields = c->getFields();
-        if (auto p = c->getParent()) {
-            auto pFields = p->getFields();
-            fields.insert(fields.begin(), pFields.begin(), pFields.end());
-        }
-
         std::vector<llvm::Metadata *> generatedFields;
         llvm::DIType *parentDIType = nullptr;
         if (auto p = c->getParent()) {
