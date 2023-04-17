@@ -38,18 +38,20 @@ void Transformer::addModule(std::shared_ptr<ir::Module> m) {
 }
 auto Transformer::getModule() const { return ctx->module; }
 void Transformer::visit(std::vector<Node *> p_nodes) {
-    AcceptorExtend::visit(p_nodes);
+    ctx->withScope([&] {
+        AcceptorExtend::visit(p_nodes);
 
-    ctx->generateFunction = true;
-    for (auto node : p_nodes) {
-        if (utils::cast<Statement::BodiedFunction>(node) ||
-            utils::cast<Statement::LLVMFunction>(node) ||
-            utils::cast<Statement::ClassDef>(node)) {
-            node->accept(this);
+        ctx->generateFunction = true;
+        for (auto node : p_nodes) {
+            if (utils::cast<Statement::BodiedFunction>(node) ||
+                utils::cast<Statement::LLVMFunction>(node) ||
+                utils::cast<Statement::ClassDef>(node)) {
+                node->accept(this);
+            }
         }
-    }
 
-    ctx->generateFunction = false;
+        ctx->generateFunction = false;
+    });
 }
 
 // mark: - noops
