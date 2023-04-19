@@ -39,7 +39,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
         if (auto f = ctx->getCurrentFunction().get()) {
             f->addSymbol(varDecl);
         } else {
-            assert(false && "TODO: global variables");
+            ctx->module->addVariable(varDecl);
         }
 
         if (definedType == nullptr || definedType->is(this->value->getType())) {
@@ -70,7 +70,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
         if (auto f = ctx->getCurrentFunction().get()) {
             f->addSymbol(varDecl);
         } else {
-            assert(false && "TODO: global variables");
+            ctx->module->addVariable(varDecl);
         }
 
         var->setType(definedType);

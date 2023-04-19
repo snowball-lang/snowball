@@ -4,6 +4,8 @@ class Balls {
     let b: i32;
 }
 
+let a = 213
+
 class Hello: Balls {
 pub:
     let h: String;

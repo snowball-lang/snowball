@@ -112,7 +112,7 @@ class DefiniteAssigment : public Analyzer {
      * in the implementation of the definite assignment analysis algorithm to
      * keep track of the current variable scopes in the program.
      */
-    std::deque<Scope> scopes;
+    std::deque<Scope> scopes = {/* global = */{}};
     /**
      * A struct that represents the state of the current scope in the program.
      *

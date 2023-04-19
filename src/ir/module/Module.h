@@ -4,6 +4,7 @@
 #include "../../common.h"
 
 #include <list>
+#include <unordered_map>
 
 #ifndef __SNOWBALL_MODULE_H_
 #define __SNOWBALL_MODULE_H_
@@ -12,6 +13,7 @@ namespace snowball {
 namespace ir {
 
 class Func;
+class VariableDeclaration;
 
 /// @brief The representation of a programm
 class Module : public AcceptorExtend<Module, SrcObject>,
@@ -32,6 +34,10 @@ class Module : public AcceptorExtend<Module, SrcObject>,
     // Parent module that contains this module.
     std::shared_ptr<Module> parent = nullptr;
 
+    // A list of declared variables used for this module
+    std::vector<std::shared_ptr<ir::VariableDeclaration>>
+        variables;
+
   public:
     Module(std::string name, std::string uuid = "",
            std::shared_ptr<Module> parent = nullptr);
@@ -45,13 +51,16 @@ class Module : public AcceptorExtend<Module, SrcObject>,
     virtual bool isMain() { return false; }
 
     // Return a list of defined functions used for our program
-    virtual std::vector<std::shared_ptr<ir::Func>> getFunctions() {
-        return functions;
-    }
-    // Return a list of defined functions used for our program
-    virtual void addFunction(std::shared_ptr<ir::Func> fn) {
-        functions.push_back(fn);
-    }
+    virtual std::vector<std::shared_ptr<ir::Func>> getFunctions()
+        const { return functions; }
+    // Push a new function to the module
+    virtual void addFunction(std::shared_ptr<ir::Func> fn)
+        { functions.push_back(fn); }
+    // Append a new variable to the variable list
+    virtual void addVariable(std::shared_ptr<ir::VariableDeclaration> v)
+        { variables.push_back(v); }
+    // Get a list of user-declared variables for this module
+    const auto getVariables() const { return variables; }
 
     /// @brief Utility function to create a new instruction
     template <typename DesiredType, typename... Args>

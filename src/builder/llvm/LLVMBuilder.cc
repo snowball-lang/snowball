@@ -126,6 +126,11 @@ void LLVMBuilder::dump() { module->print(llvm::errs(), nullptr); }
 void LLVMBuilder::codegen() {
 
     auto generateModule = [&](std::shared_ptr<ir::Module> m) {
+        // Generate all the variables defined in this module.
+        for (auto v : m->getVariables()) {
+            assert(false && "TODO:");
+        }
+
         // Generate the functions from the end to the front.
         auto functions = m->getFunctions();
 

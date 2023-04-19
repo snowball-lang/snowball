@@ -2,6 +2,9 @@
 #include "../../ast/types/DefinedType.h"
 #include "../Transformer.h"
 
+#include <optional>
+#include <tuple>
+
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 

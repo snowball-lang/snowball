@@ -7,7 +7,6 @@
 #include "../../ir/values/Func.h"
 #include "../../ir/values/Value.h"
 
-#include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/IR/DIBuilder.h"
 #include "llvm/IR/DebugInfoMetadata.h"
 #include "llvm/IR/Function.h"
@@ -272,6 +271,11 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      *  > This is a wrapper for a subprogram
      */
     llvm::DISubprogram *getDISubprogramForFunc(ir::Func *fn);
+    /**
+     * @brief
+     *
+     */
+    void addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var);
     /**
      * @brief Get the "debug-information" equivalent of a snowball type.
      * @param ty type to convert for the debugger.
