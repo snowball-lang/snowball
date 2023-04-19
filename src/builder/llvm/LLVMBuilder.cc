@@ -3,12 +3,14 @@
 
 #include "../../errors.h"
 
-#include "llvm/InitializePasses.h"
-#include "llvm/PassRegistry.h"
-#include "llvm/Support/TargetSelect.h"
+#include <llvm/InitializePasses.h>
+#include <llvm/PassRegistry.h>
+#include <llvm/Support/TargetSelect.h>
+#include <llvm/ExecutionEngine/ExecutionEngine.h>   
 
 #include <llvm/IR/Value.h>
 #include <llvm/IR/Verifier.h>
+#include <llvm/IR/DIBuilder.h>
 
 namespace snowball {
 namespace codegen {
