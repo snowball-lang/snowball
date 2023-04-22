@@ -130,7 +130,15 @@ void LLVMBuilder::codegen() {
     auto generateModule = [&](std::shared_ptr<ir::Module> m) {
         // Generate all the variables defined in this module.
         for (auto v : m->getVariables()) {
-            assert(false && "TODO:");
+            addGlobalVariable(v);
+        }
+
+        // Terminate the global ctor if exists
+        if (auto x = getGlobalCTOR(false)) {
+            auto& ctorBody = x->getEntryBlock();
+            builder->SetInsertPoint(ctorBody.back().getNextNode());
+
+            builder->CreateRetVoid();
         }
 
         // Generate the functions from the end to the front.
@@ -157,8 +165,11 @@ void LLVMBuilder::codegen() {
         }
     };
 
-    generateModule(iModule);
-    for (auto m : iModule->getModules()) generateModule(m);
+    auto mainModule = utils::dyn_cast<ir::MainModule>(iModule);
+    assert(mainModule);
+
+    generateModule(mainModule);
+    for (auto m : mainModule->getModules()) generateModule(m);
 
     dbg.builder->finalize();
 

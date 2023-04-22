@@ -95,7 +95,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
     std::map<ir::id_t, llvm::Type *> types;
     // Internal module given by the internal representation
     // of the program.
-    std::shared_ptr<ir::MainModule> iModule;
+    std::shared_ptr<ir::Module> iModule;
 
     // Context used all around the codegen process
     std::unique_ptr<LLVMBuilderContext> ctx =
@@ -272,10 +272,28 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      */
     llvm::DISubprogram *getDISubprogramForFunc(ir::Func *fn);
     /**
-     * @brief
+     * Add a global variable to the program.
      *
+     * This function adds the specified variable declaration to the global scope of
+     * the program. The variable can be accessed from any function within the program.
+     *
+     * @param var A shared pointer to the variable declaration to add.
      */
     void addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var);
+    /**
+     * Get the global constructor function.
+     *
+     * This function returns a pointer to the global constructor function for the
+     * current LLVM module. The global constructor is a special function that is
+     * called automatically when the program starts up, before the main function
+     * is called. The global constructor is typically used to initialize global
+     * variables or perform other initialization tasks that need to happen before
+     * the program can start running.
+     *
+     * @return A pointer to the global constructor function, or nullptr if no such
+     * function exists in the current LLVM module.
+     */
+    llvm::Function* getGlobalCTOR(bool createIfNone = true);
     /**
      * @brief Get the "debug-information" equivalent of a snowball type.
      * @param ty type to convert for the debugger.

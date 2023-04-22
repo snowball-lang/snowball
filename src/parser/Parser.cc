@@ -61,11 +61,10 @@ std::vector<Syntax::Node *> Parser::parse() {
                 break;
             }
 
-            // case TokenType::KWORD_VAR: {
-            //     assert(false);
-            //     global.push_back(parseVariable());
-            //     break;
-            // }
+            case TokenType::KWORD_VAR: {
+                global.push_back(parseVariable());
+                break;
+            }
 
             case TokenType::KWORD_FUNC: {
                 global.push_back(parseFunction());
