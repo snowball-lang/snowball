@@ -122,9 +122,7 @@ int main(int argc, char **argv) {
 int main(int argc, char **argv) {
     CrashHandler crash_handler;
     crash_handler.initialize();
-    _main(argc, argv);
-
-    return 0;
+    return _main(argc, argv);
 }
 
 #else
