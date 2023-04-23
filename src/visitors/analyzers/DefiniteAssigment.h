@@ -47,15 +47,10 @@ namespace Syntax {
  */
 class DefiniteAssigment : public Analyzer {
     /**
-     * @brief A boolean flag that indicates whether the current analysis is
-     * being performed inside a class or not.
-     *
-     * This flag is used by the DefiniteAssigment class to keep track of whether
-     * the analysis is being performed inside a class. It is initially set to
-     * false when the DefiniteAssigment object is created, and is set to true
-     * when the analysis enters a class declaration.
+     * @brief A context utility to make sure that the current node being
+     *  visited is inside a class.
      */
-    bool insideClass = false;
+    std::optional<Statement::ClassDef*> insideClass = std::nullopt;
     /**
      * An enumeration that defines the possible reference status values for a
      * variable in the analyzed program. The reference status indicates whether
@@ -71,7 +66,6 @@ class DefiniteAssigment : public Analyzer {
      * which performs definite assignment analysis on a given program.
      */
     enum ReferenceStatus { NotInitialized = 0x00, Initialized = 0x01 };
-
     /**
      * A map that associates each variable declared in the analyzed program
      * with its reference status. The reference status indicates whether the
@@ -165,12 +159,7 @@ class DefiniteAssigment : public Analyzer {
     void asBlock(std::function<void()> cb);
     /**
      * A function that returns the declaration statement and reference status of
-     * a variable with the given identifier.
-     *
-     * The getIdentifier function searches the current scope and its enclosing
-     * scopes for a variable declaration statement with the given identifier. If
-     * such a statement is found, it is returned as an optional pair with its
-     * corresponding reference status. Otherwise, an empty optional is returned.
+     * a variable with the given identifier from the class instance.
      *
      * @param x The identifier of the variable to look for.
      * @return An optional object that contains a pair of the declaration

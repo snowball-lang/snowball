@@ -20,10 +20,6 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::Cast) {
     p_node->getValue()->accept(this);
 }
 
-SN_DEFINITE_ASSIGMENT_VISIT(Expression::Index) {
-    if (p_node->isStatic) p_node->getBase()->accept(this);
-}
-
 SN_DEFINITE_ASSIGMENT_VISIT(Expression::GenericIdentifier) {
     utils::cast<Expression::Identifier>(p_node)->accept(this);
 }
@@ -35,8 +31,8 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::FunctionCall) {
 }
 
 SN_DEFINITE_ASSIGMENT_VISIT(Statement::ClassDef) {
-    auto bk           = this->insideClass;
-    this->insideClass = true;
+    auto bk = this->insideClass;
+    this->insideClass = p_node;
     for (auto fn : p_node->getFunctions()) {
         fn->accept(this);
     }

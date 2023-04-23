@@ -1,16 +1,18 @@
 use Core::System
 
 class Balls {
-    let b: i32;
+    let b: i32 = 1234;
 }
 
 let a = 213
 
 class Hello: Balls {
 pub:
-    let h: String;
+    let h: i32;
 
     Hello(x: i32) {
+        self.h = 231
+
         System::println(self.h)
         System::println(self.b)
     }

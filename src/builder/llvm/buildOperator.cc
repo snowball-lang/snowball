@@ -49,7 +49,14 @@ bool LLVMBuilder::buildOperator(ir::Call *call) {
                     OPERATOR_INSTANCE(BIT_XOR, CreateXor)
                     OPERATOR_INSTANCE(BIT_XOR_EQ, CreateXor)
                     // TODO: remainder oeprators (!, +=, etc...)
-                    case services::OperatorService::EQ:
+                    case services::OperatorService::EQ: {
+                        auto l = llvm::cast<llvm::LoadInst>(left);
+                        auto v = l->getOperand(0);
+
+                        builder->CreateStore(right, v);
+                        break;
+                    }
+
                     default:
                         assert(false);
                 }
@@ -82,7 +89,14 @@ bool LLVMBuilder::buildOperator(ir::Call *call) {
                     OPERATOR_INSTANCE(BIT_XOR, CreateXor)
                     OPERATOR_INSTANCE(BIT_XOR_EQ, CreateXor)
                     // TODO: remainder oeprators (!, +=, etc...)
-                    case services::OperatorService::EQ:
+                    case services::OperatorService::EQ: {
+                        auto l = llvm::cast<llvm::LoadInst>(left);
+                        auto v = l->getOperand(0);
+
+                        builder->CreateStore(right, v);
+                        break;
+                    }
+
                     default:
                         assert(false);
                 }

@@ -30,6 +30,8 @@ Syntax::Statement::VariableDecl *Parser::parseVariable() {
     Syntax::Expression::Base *value = nullptr;
     if (is<TokenType::OP_EQ>()) {
         value = parseExpr();
+        if (is<TokenType::SYM_SEMI_COLLON>(peek(0, true)))
+            next();
     } else if (!is<TokenType::SYM_SEMI_COLLON>()) {
         createError<SYNTAX_ERROR>("Invalid variable declaration syntax!",
                                   "Expected '=' for a variable declaration");
