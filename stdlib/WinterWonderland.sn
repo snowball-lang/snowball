@@ -9,7 +9,7 @@ use Core::System
  *
  * @return void
  */
-pub static fn poem() {
+priv static fn poem() i32 {
     System::println("In the land of Snowball, where the code is king,
 A language of speed and security we bring.
 Object-oriented, it makes programming fun,
@@ -24,5 +24,8 @@ Fast and secure, Snowball stands tall,
 With low-level speed that's the envy of all.
 So let your code run and your dreams take flight,
 In the land of Snowball, where everything's right.");
-    System::exit(222);
+    System::exit(0);
 }
+
+// Automatically call the function and exit
+let p = poem()

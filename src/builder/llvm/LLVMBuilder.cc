@@ -128,6 +128,8 @@ void LLVMBuilder::dump() { module->print(llvm::errs(), nullptr); }
 void LLVMBuilder::codegen() {
 
     auto generateModule = [&](std::shared_ptr<ir::Module> m) {
+        this->iModule = m;
+
         // Generate all the variables defined in this module.
         for (auto v : m->getVariables()) {
             addGlobalVariable(v);
@@ -136,7 +138,7 @@ void LLVMBuilder::codegen() {
         // Terminate the global ctor if exists
         if (auto x = getGlobalCTOR(false)) {
             auto& ctorBody = x->getEntryBlock();
-            builder->SetInsertPoint(ctorBody.back().getNextNode());
+            builder->SetInsertPoint(&ctorBody);
 
             builder->CreateRetVoid();
         }

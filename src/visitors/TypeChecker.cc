@@ -163,6 +163,11 @@ VISIT(Block) {
 }
 
 void TypeChecker::codegen() {
+    // Visit variables
+    for (auto v : module->getVariables()) {
+        visit(v.get());
+    }
+
     // Generate the functions from the end to the front.
     auto functions = module->getFunctions();
 

@@ -14,14 +14,16 @@ llvm::Function *LLVMBuilder::getGlobalCTOR(bool createIfNone) {
     auto mangle = (std::string)"_GLOBAL__I" + "$SN.$GlobalInit$" + iModule->getUniqueName();
     auto fn = module->getFunction(mangle);
 
-    if (!fn && createIfNone) {
+    if ((!fn) && createIfNone) {
         auto prototype = llvm::FunctionType::get(builder->getVoidTy(), {});
         fn = h.create<llvm::Function>(
                 prototype,
                 llvm::Function::ExternalLinkage,
                 mangle,
                 *module);
-    } else {
+    } else if (fn) {
+        return fn;
+    } else if (!fn && (!createIfNone)) {
         return nullptr;
     }
 

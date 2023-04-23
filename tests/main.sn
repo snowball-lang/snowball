@@ -1,44 +1,5 @@
-use Core::System
-
-class Balls {
-    let b: i32 = 1234;
-}
-
-let a = 213
-
-class Hello: Balls {
-pub:
-    let h: i32;
-
-    Hello(x: i32) {
-        self.h = 231
-
-        System::println(self.h)
-        System::println(self.b)
-    }
-
-// priv:
-    static fn hello() {
-        System::println("hello")
-    }
-
-    fn hey() {
-        System::println("hey")
-    }
-
-    operator +() {
-
-    }
-}
+use Core::WinterWonderland
 
 pub fn main() i32 {
-    let a = new Hello(2)
-    // let b: i32;
-
-    // // {
-    // //     b = 2
-    // // }
-
-    // // c(b)
-    // Hello::hello()
+    
 }

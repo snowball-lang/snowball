@@ -115,7 +115,6 @@ void Compiler::compile(bool verbose) {
             SHOW_STATUS(Logger::compiling(Logger::progress(0.70)))
 
             auto typeChecker = new codegen::TypeChecker(mainModule);
-            typeChecker->codegen();
 
 #if _SNOWBALL_CODEGEN_DEBUG
             DEBUG_CODEGEN("TypeChecker: %fs",

@@ -26,11 +26,11 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
     auto ctor = getGlobalCTOR();
 
     auto& ctorBody = ctor->getEntryBlock();
-    builder->SetInsertPoint(ctorBody.back().getNextNode());
+    builder->SetInsertPoint(&ctorBody);
 
     auto gvar = new llvm::GlobalVariable(/*Module=*/*module,
         /*Type=*/ty,
-        /*isConstant=*/!var->isMutable(),
+        /*isConstant=*/0,
         /*Linkage=*/llvm::GlobalValue::CommonLinkage,
         /*Initializer=*/0, // has initializer, specified below
         /*Name=*/name);
