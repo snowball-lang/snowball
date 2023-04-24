@@ -133,7 +133,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     Syntax::Expression::TypeRef *toRef() override;
 };
 
-};     // namespace types
-};     // namespace snowball
+}; // namespace types
+}; // namespace snowball
 
 #endif // __SNOWBALL_AST_DEFINED_TYPES_H_

@@ -115,7 +115,7 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
     static FunctionType *from(ir::Func *fn);
 };
 
-};     // namespace types
-};     // namespace snowball
+}; // namespace types
+}; // namespace snowball
 
 #endif // __SNOWBALL_AST_FUNCTION_TYPES_H_

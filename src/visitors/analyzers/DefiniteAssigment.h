@@ -50,7 +50,7 @@ class DefiniteAssigment : public Analyzer {
      * @brief A context utility to make sure that the current node being
      *  visited is inside a class.
      */
-    std::optional<Statement::ClassDef*> insideClass = std::nullopt;
+    std::optional<Statement::ClassDef *> insideClass = std::nullopt;
     /**
      * An enumeration that defines the possible reference status values for a
      * variable in the analyzed program. The reference status indicates whether
@@ -106,7 +106,7 @@ class DefiniteAssigment : public Analyzer {
      * in the implementation of the definite assignment analysis algorithm to
      * keep track of the current variable scopes in the program.
      */
-    std::deque<Scope> scopes = {/* global = */{}};
+    std::deque<Scope> scopes = {/* global = */ {}};
     /**
      * A struct that represents the state of the current scope in the program.
      *

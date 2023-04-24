@@ -77,7 +77,7 @@ std::string DefinedType::getMangledName() const {
          << "&" << name.size() << name << "Cv" << _tyID;
     auto prefix = sstm.str(); // disambiguator
 
-    std::string mangledArgs;  // Start args tag
+    std::string mangledArgs; // Start args tag
     if (generics.size() > 0) {
         mangledArgs = "ClsGSt";
 

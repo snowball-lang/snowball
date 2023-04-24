@@ -13,5 +13,5 @@ IndentCaseLabels: true
 IndentPPDirectives: None
 ReferenceAlignment: Left
 SortIncludes: CaseSensitive
-SortUsingDeclarations: Lexicographic
+# SortUsingDeclarations: Lexicographic
 MaxEmptyLinesToKeep: 1

@@ -131,10 +131,10 @@ enum class TokenType {
     OP_OR,  // Symbol: ||
 
     // Bitwise operations
-    OP_BIT_NOT,       // Symbol: ~
-    OP_BIT_OR,        // Symbol: |
-    OP_BIT_AND,       // Symbol: &
-    OP_BIT_XOR,       // Symbol: ^
+    OP_BIT_NOT, // Symbol: ~
+    OP_BIT_OR,  // Symbol: |
+    OP_BIT_AND, // Symbol: &
+    OP_BIT_XOR, // Symbol: ^
 
     OP_BIT_OR_EQ,     // Symbol: |=
     OP_BIT_RSHIFT,    // Symbol: >>

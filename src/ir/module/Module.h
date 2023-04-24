@@ -35,8 +35,7 @@ class Module : public AcceptorExtend<Module, SrcObject>,
     std::shared_ptr<Module> parent = nullptr;
 
     // A list of declared variables used for this module
-    std::vector<std::shared_ptr<ir::VariableDeclaration>>
-        variables;
+    std::vector<std::shared_ptr<ir::VariableDeclaration>> variables;
 
   public:
     Module(std::string name, std::string uuid = "",
@@ -51,14 +50,17 @@ class Module : public AcceptorExtend<Module, SrcObject>,
     virtual bool isMain() { return false; }
 
     // Return a list of defined functions used for our program
-    virtual std::vector<std::shared_ptr<ir::Func>> getFunctions()
-        const { return functions; }
+    virtual std::vector<std::shared_ptr<ir::Func>> getFunctions() const {
+        return functions;
+    }
     // Push a new function to the module
-    virtual void addFunction(std::shared_ptr<ir::Func> fn)
-        { functions.push_back(fn); }
+    virtual void addFunction(std::shared_ptr<ir::Func> fn) {
+        functions.push_back(fn);
+    }
     // Append a new variable to the variable list
-    virtual void addVariable(std::shared_ptr<ir::VariableDeclaration> v)
-        { variables.push_back(v); }
+    virtual void addVariable(std::shared_ptr<ir::VariableDeclaration> v) {
+        variables.push_back(v);
+    }
     // Get a list of user-declared variables for this module
     const auto getVariables() const { return variables; }
 

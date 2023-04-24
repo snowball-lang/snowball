@@ -46,7 +46,7 @@ bool FunctionType::is(FunctionType *other) {
 std::string FunctionType::getMangledName() const {
     std::string result = "_FntY."; // Function type indicator
     result += retTy->getMangledName();
-    result += "fAr";               // start of arguments list indicator
+    result += "fAr"; // start of arguments list indicator
 
     for (auto a : args) result += a->getMangledName();
 
@@ -59,7 +59,7 @@ std::string FunctionType::getMangledName() const {
 FunctionType *FunctionType::from(ir::Func *fn) {
     auto args = utils::map<std::string, std::shared_ptr<ir::Argument>,
                            std::shared_ptr<Type>>(
-        fn->getArgs(), [&](auto map) -> auto { return map.second->getType(); });
+        fn->getArgs(), [&](auto map) -> auto{ return map.second->getType(); });
 
     if (fn->hasParent() && (!fn->isStatic()) &&
         services::OperatorService::opEquals<

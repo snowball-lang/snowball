@@ -3,14 +3,13 @@
 
 #include "../../errors.h"
 
+#include <llvm/ExecutionEngine/ExecutionEngine.h>
+#include <llvm/IR/DIBuilder.h>
+#include <llvm/IR/Value.h>
+#include <llvm/IR/Verifier.h>
 #include <llvm/InitializePasses.h>
 #include <llvm/PassRegistry.h>
 #include <llvm/Support/TargetSelect.h>
-#include <llvm/ExecutionEngine/ExecutionEngine.h>   
-
-#include <llvm/IR/Value.h>
-#include <llvm/IR/Verifier.h>
-#include <llvm/IR/DIBuilder.h>
 
 namespace snowball {
 namespace codegen {
@@ -85,9 +84,9 @@ std::unique_ptr<llvm::Module> LLVMBuilder::newModule() {
     dbg.builder        = std::make_unique<llvm::DIBuilder>(*m);
     llvm::DIFile *file = dbg.getFile(srcInfo->getPath());
     dbg.unit           = dbg.builder->createCompileUnit(
-        llvm::dwarf::DW_LANG_C, file, ("Snowball version " _SNOWBALL_VERSION),
-        !dbg.debug, {},
-        /*RV=*/0);
+                  llvm::dwarf::DW_LANG_C, file, ("Snowball version " _SNOWBALL_VERSION),
+                  !dbg.debug, {},
+                  /*RV=*/0);
 
     m->addModuleFlag(llvm::Module::Warning, "Debug Info Version",
                      llvm::DEBUG_METADATA_VERSION);

@@ -7,15 +7,14 @@
 #include "../../ir/values/Func.h"
 #include "../../ir/values/Value.h"
 
-#include "llvm/IR/DIBuilder.h"
-#include "llvm/IR/DebugInfoMetadata.h"
-#include "llvm/IR/Function.h"
-#include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/LLVMContext.h"
-
 #include <cstdint>
 #include <llvm/IR/Constants.h>
+#include <llvm/IR/DIBuilder.h>
+#include <llvm/IR/DebugInfoMetadata.h>
 #include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/LLVMContext.h>
 #include <llvm/Target/TargetMachine.h>
 #include <map>
 #include <memory>
@@ -274,8 +273,9 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
     /**
      * Add a global variable to the program.
      *
-     * This function adds the specified variable declaration to the global scope of
-     * the program. The variable can be accessed from any function within the program.
+     * This function adds the specified variable declaration to the global scope
+     * of the program. The variable can be accessed from any function within the
+     * program.
      *
      * @param var A shared pointer to the variable declaration to add.
      */
@@ -283,17 +283,17 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
     /**
      * Get the global constructor function.
      *
-     * This function returns a pointer to the global constructor function for the
-     * current LLVM module. The global constructor is a special function that is
-     * called automatically when the program starts up, before the main function
-     * is called. The global constructor is typically used to initialize global
-     * variables or perform other initialization tasks that need to happen before
-     * the program can start running.
+     * This function returns a pointer to the global constructor function for
+     * the current LLVM module. The global constructor is a special function
+     * that is called automatically when the program starts up, before the main
+     * function is called. The global constructor is typically used to
+     * initialize global variables or perform other initialization tasks that
+     * need to happen before the program can start running.
      *
-     * @return A pointer to the global constructor function, or nullptr if no such
-     * function exists in the current LLVM module.
+     * @return A pointer to the global constructor function, or nullptr if no
+     * such function exists in the current LLVM module.
      */
-    llvm::Function* getGlobalCTOR(bool createIfNone = true);
+    llvm::Function *getGlobalCTOR(bool createIfNone = true);
     /**
      * @brief Get the "debug-information" equivalent of a snowball type.
      * @param ty type to convert for the debugger.

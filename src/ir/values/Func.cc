@@ -98,7 +98,7 @@ std::string Func::getMangle() {
                          name // Function name with modules
                          + "Cv" + std::to_string(getId()); // disambiguator
 
-    std::string mangledArgs = "Sa";                        // Start args tag
+    std::string mangledArgs = "Sa"; // Start args tag
 
     int argCounter = 1;
     for (auto a : arguments) {

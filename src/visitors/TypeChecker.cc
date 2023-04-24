@@ -35,17 +35,17 @@ VISIT(Func) {
     ctx->setCurrentFunction(backup);
 }
 
-VISIT(StringValue) {  /* noop */
+VISIT(StringValue) { /* noop */
 }
-VISIT(NumberValue) {  /* noop */
+VISIT(NumberValue) { /* noop */
 }
 VISIT(BooleanValue) { /* noop */
 }
-VISIT(FloatValue) {   /* noop */
+VISIT(FloatValue) { /* noop */
 }
-VISIT(CharValue) {    /* noop */
+VISIT(CharValue) { /* noop */
 }
-VISIT(NullValue) {    /* noop */
+VISIT(NullValue) { /* noop */
 }
 
 VISIT(Call) {

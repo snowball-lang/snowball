@@ -22,12 +22,12 @@ llvm::Function *LLVMBuilder::createLLVMFunction(ir::Func *func) {
 
     auto name = func->getMangle();
     auto fn   = llvm::Function::Create(
-        fnType,
+          fnType,
         ((func->isStatic() && (!func->hasParent())) ||
          func->hasAttribute(Attributes::INTERNAL_LINKAGE))
               ? llvm::Function::InternalLinkage
               : llvm::Function::ExternalLinkage,
-        name, module.get());
+          name, module.get());
     auto callee = (llvm::Function *)(fn);
 
     if (!ir::Func::isExternal(func->getMangle()) ||

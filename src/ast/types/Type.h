@@ -71,7 +71,7 @@ class Type {
     /// parent class)
     virtual Syntax::Expression::TypeRef *toRef();
 };
-};     // namespace types
-};     // namespace snowball
+}; // namespace types
+}; // namespace snowball
 
 #endif // __SNOWBALL_AST_BASE_TYPE_H_
