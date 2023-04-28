@@ -120,14 +120,14 @@ class Func : public AcceptorExtend<Func, Value>,
     bool isDeclaration() const { return declaration; }
 
     /// @return function's raw identifier
-    std::string getIdentifier();
+    virtual std::string getIdentifier();
     /// @return The same as @fn getIdentifier but it also handles
     ///  operator names.
-    std::string getName(bool ignoreOperators = false);
+    virtual std::string getName(bool ignoreOperators = false);
     /// @return mangled name for the function.
-    std::string getMangle();
+    virtual std::string getMangle();
     /// @return Function's pretty name for debbuging
-    std::string getNiceName();
+    virtual std::string getNiceName();
 
     /// @brief Set a body to a function
     void setBody(std::shared_ptr<Block> p_body) { body = p_body; }
@@ -204,6 +204,27 @@ class Func : public AcceptorExtend<Func, Value>,
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS
 
+  private:
+    /**
+     * @brief A generic class to check if a given type contains the
+     *  `hasDefaultValue` function. This class should be used as a
+     *  constexpr in order to execute certain instructions if the
+     *  function is existant or not
+     *
+     * @tparam T class to check if the function `hasDefaultValue`
+     *  exists
+     */
+    template <typename T> class hasDefaultValue {
+        typedef char one;
+        struct two { char x[2]; };
+
+        template <typename C> static one test( decltype(&C::hasDefaultValue) ) ;
+        template <typename C> static two test(...);
+
+      public:
+        enum { value = sizeof(test<T>(0)) == sizeof(char) };
+    };
+
   public:
     /**
      * @brief Static function to detect if it's external or not
@@ -228,12 +249,14 @@ class Func : public AcceptorExtend<Func, Value>,
 
         // Calculate the number of default arguments
         if (numFunctionArgs > numProvidedArgs) {
-            for (int i = numProvidedArgs; i < numFunctionArgs; i++) {
-                if (functionArgs.at(i)->hasDefaultValue()) {
-                    numDefaultArgs++;
-                } else {
-                    // If we encounter a non-default argument, stop counting
-                    break;
+            if constexpr (hasDefaultValue<T>::value) {
+                for (int i = numProvidedArgs; i < numFunctionArgs; i++) {
+                    if (functionArgs.at(i)->hasDefaultValue()) {
+                        numDefaultArgs++;
+                    } else {
+                        // If we encounter a non-default argument, stop counting
+                        break;
+                    }
                 }
             }
         }

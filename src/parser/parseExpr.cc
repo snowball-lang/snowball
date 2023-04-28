@@ -79,6 +79,10 @@ Syntax::Expression::Base *Parser::parseExpr(bool allowAssign) {
             exprs.back()->isOperator = true;
 
             continue;
+        } else if (TOKEN(KWORD_FUNC)) {
+            auto f = parseFunction(false, false, true);
+            expr = Syntax::N<Syntax::Expression::LambdaFunction>(utils::cast<Syntax::Statement::BodiedFunction>(f));
+            expr->setDBGInfo(f->getDBGInfo());
         } else {
             createError<SYNTAX_ERROR>(
                 FMT("Expected a valid expression but got '%s'",

@@ -15,6 +15,7 @@ namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     auto name = p_node->getName();
+
     if (!ctx->generateFunction && !(IS_MAIN)) {
         assert(!services::OperatorService::isOperator(name));
         // Check if the function requirements match the main function

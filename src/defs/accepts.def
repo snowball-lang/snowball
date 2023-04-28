@@ -15,6 +15,7 @@ ACCEPT(Expression::TypeRef)
 ACCEPT(Expression::Cast)
 ACCEPT(Expression::NewInstance)
 ACCEPT(Expression::BinaryOp)
+ACCEPT(Expression::LambdaFunction)
 
 ACCEPT(Statement::Return)
 ACCEPT(Statement::VariableDecl)

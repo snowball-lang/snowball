@@ -57,7 +57,7 @@ std::string Func::getName(bool ignoreOperators) {
         return services::OperatorService::operatorName(op);
     }
 
-    return identifier;
+    return getIdentifier();
 }
 
 Func::FunctionArgs Func::getArgs(bool ignoreSelf) const {
@@ -89,7 +89,11 @@ std::string Func::getMangle() {
     // TODO: add class to here
     auto base =
         hasParent() ? parent->getMangledName() : module->getUniqueName();
-    auto name = identifier;
+
+    auto name = getIdentifier();
+    if (utils::endsWith(name, _SNOWBALL_LAMBDA_FUNCTIONS)) {
+        name = name.substr(0, name.size()-(_SNOWBALL_LAMBDA_SIZE+1)) + ".$LmbdF";
+    }
 
     std::string prefix = (utils::startsWith(base, _SN_MANGLE_PREFIX)
                               ? base

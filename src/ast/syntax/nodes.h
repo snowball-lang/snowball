@@ -732,6 +732,34 @@ struct LLVMFunction : public AcceptorExtend<LLVMFunction, FunctionDef> {
 
 }; // namespace Statement
 
+namespace Expression {
+/**
+ * A struct representing a Lambda Function, which is derived from the AcceptorExtend class
+ * and inherits the BodiedFunction class. It provides a way to define an anonymous function
+ * that can be passed as an argument to another function or assigned to a variable.
+ *
+ * The LambdaFunction struct inherits the functionality of the AcceptorExtend and BodiedFunction
+ * classes, allowing it to be used as an acceptor of visitors and to have a body that can be
+ * evaluated when called.
+ */
+struct LambdaFunction : public AcceptorExtend<LambdaFunction, Expression::Base> {
+  public:
+    using AcceptorExtend::AcceptorExtend;
+
+    /* Function used inside the lambda since a lambda struct is
+      sor of used as an "Interface" for expressions */
+    Statement::BodiedFunction* func = nullptr;
+
+    /// @return the function assigned to this lambda interface
+    auto getFunc() { return func; }
+
+    LambdaFunction(Statement::BodiedFunction* func)
+        : AcceptorExtend(), func(func) {};
+
+    ACCEPT()
+};
+}
+
 /**
  * @brief Utility function to create a new node
  * @tparam ...Args arguments for the node

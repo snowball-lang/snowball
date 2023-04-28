@@ -17,12 +17,12 @@ using namespace snowball::Syntax::Statement;
 
 namespace snowball::parser {
 
-FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
+FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator, bool isLambda) {
     assert((is<TokenType::KWORD_FUNC>() && (!isConstructor && !isOperator)) ||
            (is<TokenType::IDENTIFIER>() && (isConstructor && !isOperator)) ||
            (isOperator));
 
-    if (!isConstructor) next();
+    if (!isConstructor && (!isLambda)) next();
 
     bool isExtern  = false;
     bool isPublic  = false;
@@ -252,7 +252,7 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator) {
 
         name       = services::OperatorService::getOperatorMangle(opType);
         externName = name;
-    } else {
+    } else if (isLambda) {} else {
         // Get the function name
         if (is<TokenType::IDENTIFIER>()) {
             name  = m_current.to_string();

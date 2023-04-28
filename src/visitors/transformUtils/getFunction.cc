@@ -35,15 +35,45 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
 
     if (val) {
         auto v = *val;
-        if (std::dynamic_pointer_cast<types::FunctionType>(v->getType()) ==
-            nullptr) {
+        auto fnType = utils::dyn_cast<types::FunctionType>(v->getType());
+        if (fnType == nullptr) {
             E<TYPE_ERROR>(
                 dbgInfo,
                 FMT("Value with name '%s' (with type: '%s') is not callable!",
                     name.c_str(), v->getType()->getPrettyName().c_str()));
         }
 
-        return std::reinterpret_pointer_cast<ir::Func>(v);
+        auto argsVector = fnType->getArgs();
+        size_t numArgs  = arguments.size();
+
+        if (ir::Func::argumentSizesEqual(argsVector, arguments,
+                                            fnType->isVariadic())) {
+            bool equal = true;
+            for (auto arg = argsVector.begin(); ((arg != argsVector.end()) && (equal));
+                    ++arg) {
+                auto i = std::distance(argsVector.begin(), arg);
+                if (i < numArgs) {
+                    equal = (*arg)->is(arguments.at(i));
+                } else {
+                    if (!fnType->isVariadic()) {
+                        equal = false;
+                        break;
+                    } else {
+                        equal = true;
+                    }
+                }
+            }
+
+            // TODO: check for ambiguous functions
+            if (equal) {
+                return std::reinterpret_pointer_cast<ir::Func>(v);
+            }
+        }
+
+        E<TYPE_ERROR>(
+            dbgInfo,
+            FMT("Call parameters to '%s' does not match it's function type ('%s')!",
+                name.c_str(), v->getType()->getPrettyName().c_str()));
     } else if (ty) {
         // TODO: Call smth like Type::operator ()(..args)
         E<TYPE_ERROR>(
