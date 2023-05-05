@@ -20,7 +20,6 @@ namespace fs = std::filesystem;
 namespace snowball {
 namespace utils {
 
-#if 0
 std::string get_exe_folder() {
 #ifdef _WIN32
         wchar_t path[MAX_PATH] = { 0 };
@@ -32,8 +31,6 @@ std::string get_exe_folder() {
         return std::string(result, (count > 0) ? count : 0);
 #endif
 }
-
-#endif
 
 std::string getSubstringByRange(const std::string& str,
                                 const std::pair<int, int>& start,

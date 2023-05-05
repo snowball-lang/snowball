@@ -16,10 +16,7 @@
 namespace snowball {
 namespace utils {
 
-#if 0
 std::string get_exe_folder();
-#endif
-
 std::string itos(int i);
 std::string get_lib_folder();
 std::string getUTF8FromIndex(const std::string& s, const int index);

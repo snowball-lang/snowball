@@ -51,7 +51,6 @@ Syntax::Expression::Base *Parser::parseExpr(bool allowAssign) {
             if (is<TokenType::IDENTIFIER>(peek())) {
                 next();
                 auto iPos = m_current.get_pos();
-                DUMP((atPos.first == iPos.first) && (atPos.second == (iPos.second-1)))
                 if ((atPos.first == iPos.first) && (atPos.second == (iPos.second-1))) {
                     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
 

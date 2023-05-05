@@ -23,7 +23,7 @@
 
 🔍 So why not dive in and explore Snowball's capabilities? For more information, check out the [installation guide](#installation). Happy coding!
 
-* [Discord](https://discord.gg/YPgym7cwYr)
+* [Discord](https://discord.gg/nnShMQzR4b)
 
 ## Getting Started with Snowball
 
@@ -63,8 +63,8 @@ use Core::System
 
 class Vector {
 
-    priv let x: i32 = 0
-    priv let y: i32 = 0
+    let x: i32 = 0
+    let y: i32 = 0
 
   pub:
     Vector(x: Int, y: Int) {
@@ -93,9 +93,7 @@ fn main() Int {
 
 ## Roadmap
 
-The TODO list can be found in [TODO.md](./TODO.md)
-
-See the [open issues]() for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/snowball-lang/snowball/issues) for a full list of proposed features (and known issues).
 
 ## Contributing
 

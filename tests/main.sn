@@ -1,12 +1,6 @@
 use Core::System
 
 pub fn main() i32 {
-    System::println(@FN);
-    System::println(@MANGLED_FN);
-    System::println(@SN_VERSION);
-    System::println(@FILE);
-    System::println(@FILE_LINE);
-    System::println(@MOD);
-    System::println(@COLUMN);
-    System::println(@LINE);
+    System::println(@SN_EXEC);
+    System::println(@SN_FOLDER);
 }

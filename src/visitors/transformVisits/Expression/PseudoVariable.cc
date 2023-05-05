@@ -1,9 +1,11 @@
 #include "../../../ir/values/Cast.h"
 
 #include "../../Transformer.h"
+#include <filesystem>
 
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
+namespace fs = std::filesystem;
 
 namespace snowball {
 namespace Syntax {
@@ -43,6 +45,10 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
         stringValue = std::to_string(p_node->getDBGInfo()->pos.second);
     } else if (pseudo == "SN_VERSION") {
         stringValue = _SNOWBALL_VERSION;
+    } else if (pseudo == "SN_EXEC") {
+        stringValue = get_exe_folder();
+    } else if (pseudo == "SN_FOLDER") {
+        stringValue = fs::path(get_exe_folder()).remove_filename();
     } else {
         E<PSEUDO_ERROR>(p_node, FMT("Pseudo variable with name '%s' hasn't been found!", pseudo.c_str()));
     }
