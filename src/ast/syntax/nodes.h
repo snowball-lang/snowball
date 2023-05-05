@@ -246,6 +246,22 @@ struct Identifier : public AcceptorExtend<Identifier, Base> {
 };
 
 /**
+ * @brief pseudo string variables are substituted at compile time.
+ *  These can be used as "information" variables that can be very
+ *  beneficial for the user.
+ */
+struct PseudoVariable : public AcceptorExtend<PseudoVariable, Base> {
+    std::string identifier;
+
+  public:
+    PseudoVariable(std::string identifier);
+    /// @return Get the pseudo variable identifier without the prefix
+    auto getIdentifier() { return identifier; }
+
+    ACCEPT()
+};
+
+/**
  * Representation of an index node. Index nodes can either be
  * static or not. It's decided by it's syntax. Using '.' means it's
  * not static but using '::' does imply that it's static.
@@ -734,31 +750,33 @@ struct LLVMFunction : public AcceptorExtend<LLVMFunction, FunctionDef> {
 
 namespace Expression {
 /**
- * A struct representing a Lambda Function, which is derived from the AcceptorExtend class
- * and inherits the BodiedFunction class. It provides a way to define an anonymous function
- * that can be passed as an argument to another function or assigned to a variable.
+ * A struct representing a Lambda Function, which is derived from the
+ * AcceptorExtend class and inherits the BodiedFunction class. It provides a way
+ * to define an anonymous function that can be passed as an argument to another
+ * function or assigned to a variable.
  *
- * The LambdaFunction struct inherits the functionality of the AcceptorExtend and BodiedFunction
- * classes, allowing it to be used as an acceptor of visitors and to have a body that can be
- * evaluated when called.
+ * The LambdaFunction struct inherits the functionality of the AcceptorExtend
+ * and BodiedFunction classes, allowing it to be used as an acceptor of visitors
+ * and to have a body that can be evaluated when called.
  */
-struct LambdaFunction : public AcceptorExtend<LambdaFunction, Expression::Base> {
+struct LambdaFunction
+    : public AcceptorExtend<LambdaFunction, Expression::Base> {
   public:
     using AcceptorExtend::AcceptorExtend;
 
     /* Function used inside the lambda since a lambda struct is
       sor of used as an "Interface" for expressions */
-    Statement::BodiedFunction* func = nullptr;
+    Statement::BodiedFunction *func = nullptr;
 
     /// @return the function assigned to this lambda interface
     auto getFunc() { return func; }
 
-    LambdaFunction(Statement::BodiedFunction* func)
-        : AcceptorExtend(), func(func) {};
+    LambdaFunction(Statement::BodiedFunction *func)
+        : AcceptorExtend(), func(func){};
 
     ACCEPT()
 };
-}
+} // namespace Expression
 
 /**
  * @brief Utility function to create a new node

@@ -216,9 +216,11 @@ class Func : public AcceptorExtend<Func, Value>,
      */
     template <typename T> class hasDefaultValue {
         typedef char one;
-        struct two { char x[2]; };
+        struct two {
+            char x[2];
+        };
 
-        template <typename C> static one test( decltype(&C::hasDefaultValue) ) ;
+        template <typename C> static one test(decltype(&C::hasDefaultValue));
         template <typename C> static two test(...);
 
       public:

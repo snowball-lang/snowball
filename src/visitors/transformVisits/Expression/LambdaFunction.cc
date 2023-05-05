@@ -9,6 +9,8 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
+    E<TODO>("Not implementing lambdas until next year!");
+
     auto node = p_node->getFunc();
 
     auto parent = ctx->getCurrentFunction();
@@ -18,12 +20,11 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
     auto returnType = transformType(node->getRetType());
 
     // Create a new function value and store it's return type.
-    char l[] = _SNOWBALL_LAMBDA_FUNCTIONS;
+    char l[]  = _SNOWBALL_LAMBDA_FUNCTIONS;
     auto name = parent->getName() + "::" + l + '\00';
-    std::shared_ptr<ir::Func> fn = ctx->module->N<ir::Func>(
-        node->getDBGInfo(), name,
-        false,
-        node->isVariadic(), ctx->getCurrentClass());
+    std::shared_ptr<ir::Func> fn =
+        ctx->module->N<ir::Func>(node->getDBGInfo(), name, false,
+                                 node->isVariadic(), ctx->getCurrentClass());
     fn->setRetTy(returnType);
     fn->setPrivacy(Statement::Privacy::PUBLIC);
     fn->setStatic(false);
@@ -55,8 +56,8 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
         ctx->withScope([&]() {
             int argIndex = 0;
             for (auto arg : newArgs) {
-                auto ref = ctx->module->N<ir::Variable>(
-                    node->getDBGInfo(), arg.first, true);
+                auto ref = ctx->module->N<ir::Variable>(node->getDBGInfo(),
+                                                        arg.first, true);
 
                 ref->setType(arg.second->getType());
                 auto refItem = std::make_shared<transform::Item>(
@@ -71,11 +72,10 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
 
             if (!bodyReturns(body->getStmts()) &&
                 !((utils::dyn_cast<types::NumericType>(returnType)) ||
-                    (utils::dyn_cast<types::VoidType>(returnType))) &&
+                  (utils::dyn_cast<types::VoidType>(returnType))) &&
                 !fn->isConstructor()) {
-                E<TYPE_ERROR>(node,
-                                "Function lacks ending return statement!",
-                                "Function does not return on all paths!");
+                E<TYPE_ERROR>(node, "Function lacks ending return statement!",
+                              "Function does not return on all paths!");
             }
 
             body->accept(this);

@@ -1,12 +1,12 @@
 use Core::System
 
-pub fn callback<DidntImplementFunctionTypesYetLolSry>(f: DidntImplementFunctionTypesYetLolSry) i32 {
-    return f(2);
-}
-
 pub fn main() i32 {
-    let b = 23;
-    let a = callback(fn (b: i32) i32 {
-        return b;
-    })
+    System::println(@FN);
+    System::println(@MANGLED_FN);
+    System::println(@SN_VERSION);
+    System::println(@FILE);
+    System::println(@FILE_LINE);
+    System::println(@MOD);
+    System::println(@COLUMN);
+    System::println(@LINE);
 }

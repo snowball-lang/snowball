@@ -11,6 +11,8 @@ namespace snowball {
 namespace Syntax {
 namespace Expression {
 
+PseudoVariable::PseudoVariable(std::string identifier)
+    : identifier(identifier) {};
 TypeRef::TypeRef(std::string p_name, snowball::DBGSourceInfo *p_dbg,
                  std::vector<TypeRef *> p_generics)
     : generics(p_generics), types::Type(REF, p_name) {

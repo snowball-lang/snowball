@@ -34,7 +34,7 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
     };
 
     if (val) {
-        auto v = *val;
+        auto v      = *val;
         auto fnType = utils::dyn_cast<types::FunctionType>(v->getType());
         if (fnType == nullptr) {
             E<TYPE_ERROR>(
@@ -47,10 +47,10 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
         size_t numArgs  = arguments.size();
 
         if (ir::Func::argumentSizesEqual(argsVector, arguments,
-                                            fnType->isVariadic())) {
+                                         fnType->isVariadic())) {
             bool equal = true;
-            for (auto arg = argsVector.begin(); ((arg != argsVector.end()) && (equal));
-                    ++arg) {
+            for (auto arg = argsVector.begin();
+                 ((arg != argsVector.end()) && (equal)); ++arg) {
                 auto i = std::distance(argsVector.begin(), arg);
                 if (i < numArgs) {
                     equal = (*arg)->is(arguments.at(i));
@@ -70,10 +70,10 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
             }
         }
 
-        E<TYPE_ERROR>(
-            dbgInfo,
-            FMT("Call parameters to '%s' does not match it's function type ('%s')!",
-                name.c_str(), v->getType()->getPrettyName().c_str()));
+        E<TYPE_ERROR>(dbgInfo,
+                      FMT("Call parameters to '%s' does not match it's "
+                          "function type ('%s')!",
+                          name.c_str(), v->getType()->getPrettyName().c_str()));
     } else if (ty) {
         // TODO: Call smth like Type::operator ()(..args)
         E<TYPE_ERROR>(

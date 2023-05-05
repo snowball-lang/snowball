@@ -92,7 +92,8 @@ std::string Func::getMangle() {
 
     auto name = getIdentifier();
     if (utils::endsWith(name, _SNOWBALL_LAMBDA_FUNCTIONS)) {
-        name = name.substr(0, name.size()-(_SNOWBALL_LAMBDA_SIZE+1)) + ".$LmbdF";
+        name = name.substr(0, name.size() - (_SNOWBALL_LAMBDA_SIZE + 1)) +
+               ".$LmbdF";
     }
 
     std::string prefix = (utils::startsWith(base, _SN_MANGLE_PREFIX)

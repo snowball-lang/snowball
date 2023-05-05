@@ -23,6 +23,7 @@ enum Error {
     CONFIGURATION_ERROR,
     ATTRIBUTE_ERROR,
     ARGUMENT_ERROR,
+    PSEUDO_ERROR,
     FUNCTION_RET_ERR,
     COMPILER_ERROR, // note: not the same as "compile time error"
 

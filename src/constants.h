@@ -230,9 +230,11 @@ typedef int32_t snowball_int_t;
 #define _SNOWBALL_KEYWORD__TRY      "try"
 #define _SNOWBALL_KEYWORD__CATCH    "catch"
 
-#define _SNOWBALL_LAMBDA_FUNCTIONS  \
-    { '(', 'l', 'a', 'm', 'b', 'd', 'a', ' ', \
-        'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ')', 0 }
+#define _SNOWBALL_LAMBDA_FUNCTIONS                                             \
+    {                                                                          \
+        '(', 'l', 'a', 'm', 'b', 'd', 'a', ' ', 'f', 'u', 'n', 'c', 't', 'i',  \
+            'o', 'n', ')', 0                                                   \
+    }
 #define _SNOWBALL_LAMBDA_SIZE 17
 
 // LLVM IR constants
