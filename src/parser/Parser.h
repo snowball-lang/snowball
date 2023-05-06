@@ -183,6 +183,11 @@ class Parser {
     Syntax::Statement::Return *parseReturn();
 
     /**
+     * while stmt   ::=  "while" [stmt] [block]
+     */
+    Syntax::Statement::WhileLoop *parseWhile();
+
+    /**
      * conditional   ::=  "if" [expr] [block]
      *                |   "if" [expr]: [expr]
      */

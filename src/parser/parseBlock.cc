@@ -38,6 +38,12 @@ Syntax::Block *Parser::parseBlock(std::vector<TokenType> termination) {
                 break;
             }
 
+            case TokenType::KWORD_WHILE: {
+                next();
+                stmts.push_back(parseWhile());
+                break;
+            }
+
             case TokenType::KWORD_IF: {
                 next();
                 stmts.push_back(parseConditional());

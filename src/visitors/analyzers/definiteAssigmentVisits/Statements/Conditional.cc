@@ -7,6 +7,8 @@ namespace snowball {
 namespace Syntax {
 
 SN_DEFINITE_ASSIGMENT_VISIT(Statement::Conditional) {
+    p_node->getCondition()->accept(this);
+
     std::vector<std::string> blockInited;
     asBlock([&] {
         for (auto i : p_node->getBlock()->getStmts()) {

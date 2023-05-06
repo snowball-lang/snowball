@@ -18,6 +18,7 @@ ACCEPT(Expression::BinaryOp)
 ACCEPT(Expression::LambdaFunction)
 ACCEPT(Expression::PseudoVariable)
 
+ACCEPT(Statement::WhileLoop)
 ACCEPT(Statement::Return)
 ACCEPT(Statement::VariableDecl)
 ACCEPT(Statement::ClassDef)
