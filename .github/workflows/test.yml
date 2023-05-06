@@ -1,7 +1,10 @@
 name: Test snowball
 on:
-  release:
-    types: [created]
+  label:
+    types:
+      - created
+  push:
+  pull_request:
 
 jobs:
   build:
