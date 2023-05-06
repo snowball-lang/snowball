@@ -1,7 +1,8 @@
 use Core::System
 
 pub fn main() i32 {
-    if true {
+    let a = 2;
+    while a < 4 {
         System::println("hello")
     }
 }

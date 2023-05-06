@@ -594,6 +594,34 @@ struct Conditional : public AcceptorExtend<Conditional, Base> {
 };
 
 /**
+ * A struct representing a while loop in a program. 
+ * It inherits from the AcceptorExtend class, which allows for 
+ * pattern matching and traversal of the while loop.
+ * It also inherits from the Base class, which provides 
+ * a common interface for all nodes in the program's AST.
+ */
+struct WhileLoop : public AcceptorExtend<WhileLoop, Base> {
+
+    // Instructions stored inside a block
+    Block *insts;
+    // the expression to be evaluated before each iteration
+    Expression::Base *cond;
+
+  public:
+    explicit WhileLoop(Expression::Base *cond, Block *insts)
+        : cond(cond), insts(insts) {};
+
+    /// @return body block instructions to execute
+    //   each iterator if the condition is truth
+    auto getBlock() const { return insts; }
+    /// @return the expression to be evaluated each iteration
+    auto getCondition() const { return cond; }
+
+    // Set a visit handler for the generators
+    ACCEPT()
+};
+
+/**
  * Import statement. Imports functions, classes and symbols from other
  *  files / modules.
  */
