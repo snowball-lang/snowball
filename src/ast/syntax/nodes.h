@@ -603,21 +603,21 @@ struct ImportStmt : public AcceptorExtend<ImportStmt, Base> {
     /// syntax into a vector of strings.
     /// @example of different import statements and how they are
     ///	 represented.
-    ///   | import std:System			      | {"System"}
-    ///   | import hello:myPath::secondPath   | {"myPath", "secondPath"}
-    ///   | import hello:myPath:..:helloAgain | {"myPath", "..", "helloAgain"}
+    ///   | use Core::System			            | {"System"}
+    ///   | use hello::myPath::secondPath   | {"myPath", "secondPath"}
+    ///   | use hello::myPath:..:helloAgain | {"myPath", "..", "helloAgain"}
     /// @note (1): Last path will be checked with all kind of different
     /// supported
     ///  extensions (sn, so, ...) and it's @c exportSymbol will be the name of
     ///  the last path.
     /// @note (2): The user can manually specify the path extension by doing the
     /// following:
-    ///   | import myModule:path:path2:myFile(sn)::{ myFunc }
+    ///   | use myModule::path:path2:myFile(so)::{ myFunc }
     std::vector<std::string> path;
     /// @brief place where searching the path from. This can be used
     ///  so we can decide from what package we need to import this.
     /// @example
-    ///  | import Core::System | package = "Core"
+    ///  | use Core::System | package = "Core"
     /// @note If the package name is `$` that means that it's being extracted
     ///  from the current module.
     std::string package;
