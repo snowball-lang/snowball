@@ -497,13 +497,7 @@ void Lexer::tokenize() {
                     tk.col   = cur_col - (int)identifier.size();
                     tk.line  = cur_line;
 
-                    if (identifier == _SNOWBALL_KEYWORD__NULL) {
-                        tk.type = TokenType::VALUE_NULL;
-                    } else if (identifier == _SNOWBALL_KEYWORD__OR) {
-                        tk.type = TokenType::OP_OR;
-                    } else if (identifier == _SNOWBALL_KEYWORD__AND) {
-                        tk.type = TokenType::OP_AND;
-                    } else if (identifier == _SNOWBALL_KEYWORD__NOT) {
+                    if (identifier == _SNOWBALL_KEYWORD__NOT) {
                         tk.type = TokenType::OP_NOT;
                     } else if (identifier == _SNOWBALL_KEYWORD__NEW) {
                         tk.type = TokenType::KWORD_NEW;
@@ -515,12 +509,8 @@ void Lexer::tokenize() {
                         tk.type = TokenType::KWORD_VAR;
                     } else if (identifier == _SNOWBALL_KEYWORD__FOR) {
                         tk.type = TokenType::KWORD_FOR;
-                    } else if (identifier == _SNOWBALL_KEYWORD__MODULE) {
-                        tk.type = TokenType::KWORD_MOD;
                     } else if (identifier == _SNOWBALL_KEYWORD__ENUM) {
                         tk.type = TokenType::KWORD_ENUM;
-                    } else if (identifier == _SNOWBALL_KEYWORD__THIS) {
-                        tk.type = TokenType::KWORD_THIS;
                     } else if (identifier == _SNOWBALL_KEYWORD__CASE) {
                         tk.type = TokenType::KWORD_CASE;
                     } else if (identifier == _SNOWBALL_KEYWORD__FUNCTION) {
@@ -549,8 +539,6 @@ void Lexer::tokenize() {
                         tk.type = TokenType::KWORD_STATIC;
                     } else if (identifier == _SNOWBALL_KEYWORD__IMPORT) {
                         tk.type = TokenType::KWORD_IMPORT;
-                    } else if (identifier == _SNOWBALL_KEYWORD__FROM) {
-                        tk.type = TokenType::KWORD_FROM;
                     } else if (identifier == _SNOWBALL_KEYWORD__PRIVATE) {
                         tk.type = TokenType::KWORD_PRIVATE;
                     } else if (identifier == _SNOWBALL_KEYWORD__PUBLIC) {

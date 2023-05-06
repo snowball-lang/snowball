@@ -106,16 +106,6 @@ class CharValue : public AcceptorExtend<BooleanValue, ConstantValue> {
     SN_GENERATOR_VISITS
 };
 
-/// @brief Constant representation of a null
-class NullValue : public AcceptorExtend<NullValue, ConstantValue> {
-  public:
-    // Create a new null value for the IR
-    NullValue() : AcceptorExtend(Null) {}
-
-    // Set a visit handler for the generators
-    SN_GENERATOR_VISITS
-};
-
 } // namespace ir
 } // namespace snowball
 

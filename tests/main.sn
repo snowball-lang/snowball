@@ -4,7 +4,4 @@ pub fn main() i32 {
     if true {
         System::println("hello")
     }
-
-    let x: i32;
-    System::println(x)
 }

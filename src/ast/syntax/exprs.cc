@@ -113,7 +113,6 @@ ConstantValue::ConstantType ConstantValue::deduceType(TokenType ty) {
         CASE(VALUE_CHAR, Char)
         CASE(VALUE_FLOAT, Float)
         CASE(VALUE_NUMBER, Number)
-        CASE(VALUE_NULL, Null)
         CASE(VALUE_BOOL, Bool)
 
         default:

@@ -7,7 +7,6 @@ VISIT(String)
 VISIT(Number)
 VISIT(Float)
 VISIT(Bool)
-VISIT(Null)
 VISIT(Char)
 
 #undef VISIT

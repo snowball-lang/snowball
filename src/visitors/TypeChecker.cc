@@ -89,7 +89,15 @@ VISIT(Argument) {
 VISIT(ValueExtract) { /* noop */
 }
 
-VISIT(Conditional) { assert(false); }
+VISIT(Conditional) {
+
+    p_node->getCondition()->visit(this);
+    p_node->getBlock()->visit(this);
+
+    if (auto x = p_node->getElse()) {
+        x->visit(this);
+    }
+}
 
 VISIT(Cast) {
     auto v = p_node->getExpr();

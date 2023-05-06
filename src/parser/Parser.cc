@@ -26,14 +26,12 @@ std::vector<Syntax::Node *> Parser::parse() {
             case TokenType::KWORD_PRIVATE: {
                 auto pk = peek();
                 if (!is<TokenType::KWORD_FUNC>(pk) &&
-                    !is<TokenType::KWORD_MOD>(pk) &&
                     !is<TokenType::KWORD_VAR>(pk) &&
                     !is<TokenType::KWORD_STATIC>(pk) &&
                     !is<TokenType::KWORD_CLASS>(pk) &&
                     !is<TokenType::KWORD_EXTERN>(pk)) {
                     createError<SYNTAX_ERROR>(
-                        "expected keyword \"fn\", \"static\", \"class\", "
-                        "\"mod\", \"let\" "
+                        "expected keyword \"fn\", \"static\", \"class\", \"let\" "
                         "or "
                         "\"extern\" after pub/priv declaration");
                 }

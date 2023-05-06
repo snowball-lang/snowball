@@ -208,6 +208,13 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      */
     bool isInClassContext(std::shared_ptr<types::Type> ty);
     /**
+     * Retrieves the boolean value of the given shared pointer to an ir::Value object.
+     *
+     * @param value A shared pointer to an ir::Value object to retrieve the boolean value from.
+     * @return A shared pointer to an ir::Value object representing the boolean value of the given value object.
+     */
+    std::shared_ptr<ir::Value> getBooleanValue(std::shared_ptr<ir::Value> value);
+    /**
      * Check if the current module has a valid (or private) context.
      *
      * @param mod               A shared pointer to an ir::Module object

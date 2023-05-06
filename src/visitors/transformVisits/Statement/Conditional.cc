@@ -1,4 +1,5 @@
 #include "../../Transformer.h"
+#include "../../../ir/values/Conditional.h"
 
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
@@ -14,7 +15,7 @@ SN_TRANSFORMER_VISIT(Statement::Conditional) {
     auto truthyBody =
         utils::dyn_cast<ir::Block>(this->value);
 
-    std::shared_ptr<Block> falsyBody = nullptr;
+    std::shared_ptr<ir::Block> falsyBody = nullptr;
     if (auto x = p_node->getElse()) {
         x->accept(this);
         falsyBody = utils::dyn_cast<ir::Block>(this->value);
@@ -22,7 +23,7 @@ SN_TRANSFORMER_VISIT(Statement::Conditional) {
 
     auto cond = ctx->module->N<ir::Conditional>(p_node->getDBGInfo(), expr,
         truthyBody, falsyBody);
-    this->value = cond;
+    this->value = utils::dyn_cast<ir::Value>(cond);
 }
 
 } // namespace Syntax

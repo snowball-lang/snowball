@@ -36,7 +36,6 @@ enum class TokenType {
     // Literal values
     VALUE_NUMBER,
     VALUE_FLOAT,
-    VALUE_NULL,
     VALUE_BOOL,
     VALUE_STRING,
     VALUE_CHAR,
@@ -153,22 +152,15 @@ enum class TokenType {
     | interpreter.
     */
     KWORD__START__POINT,  // All keywords must be grater than this
-    KWORD_MOD,            // Symbol: mod
     KWORD_IF,             // Symbol: if
-    KWORD_OR,             // Symbol: or
-    KWORD_VAR,            // Symbol: var
+    KWORD_VAR,            // Symbol: let
     KWORD_NEW,            // Symbol: new
-    KWORD_NOT,            // Symbol: not
     KWORD_FOR,            // Symbol: for
-    KWORD_AND,            // Symbol: and
     KWORD_ENUM,           // Symbol: enum
     KWORD_FUNC,           // Symbol: fn
     KWORD_OPERATOR,       // Symbol: operator
-    KWORD_TRUE,           // Symbol: true
     KWORD_ELSE,           // Symbol: else
     KWORD_CASE,           // Symbol: case
-    KWORD_THIS,           // Symbol: this
-    KWORD_FALSE,          // Symbol: false
     KWORD_BREAK,          // Symbol: break
     KWORD_CONST,          // Symbol: const
     KWORD_SUPER,          // Symbol: super
@@ -177,8 +169,7 @@ enum class TokenType {
     KWORD_VIRTUAL,        // Synbol: virtual
     KWORD_CLASS,          // Symbol: class
     KWORD_AS,             // Symbol: as
-    KWORD_IMPORT,         // Symbol: import
-    KWORD_FROM,           // Symbol: from
+    KWORD_IMPORT,         // Symbol: use
     KWORD_PUBLIC,         // Symbol: pub
     KWORD_SWITCH,         // Symbol: switch
     KWORD_STATIC,         // Symbol: static
@@ -321,8 +312,6 @@ struct Token {
                 return value;
 
             // Keywods
-            case TokenType::KWORD_MOD:
-                return _SNOWBALL_KEYWORD__MODULE;
             case TokenType::KWORD_PUBLIC:
                 return _SNOWBALL_KEYWORD__PUBLIC;
             case TokenType::KWORD_VIRTUAL:
@@ -331,8 +320,6 @@ struct Token {
                 return _SNOWBALL_KEYWORD__PRIVATE;
             case TokenType::KWORD_IMPORT:
                 return _SNOWBALL_KEYWORD__IMPORT;
-            case TokenType::KWORD_FROM:
-                return _SNOWBALL_KEYWORD__FROM;
             case TokenType::KWORD_CLASS:
                 return _SNOWBALL_KEYWORD__CLASS;
             case TokenType::KWORD_AS:
@@ -347,10 +334,6 @@ struct Token {
                 return _SNOWBALL_KEYWORD__VARIABLE;
             case TokenType::KWORD_CONST:
                 return _SNOWBALL_KEYWORD__CONSTANT;
-            case TokenType::KWORD_TRUE:
-                return _SNOWBALL_KEYWORD__TRUE;
-            case TokenType::KWORD_FALSE:
-                return _SNOWBALL_KEYWORD__FALSE;
             case TokenType::KWORD_IF:
                 return _SNOWBALL_KEYWORD__IF;
             case TokenType::KWORD_ELSE:
@@ -371,30 +354,20 @@ struct Token {
                 return _SNOWBALL_KEYWORD__CONTINUE;
             case TokenType::KWORD_STATIC:
                 return _SNOWBALL_KEYWORD__STATIC;
-            case TokenType::KWORD_THIS:
-                return _SNOWBALL_KEYWORD__THIS;
             case TokenType::KWORD_SUPER:
                 return _SNOWBALL_KEYWORD__SUPER;
             case TokenType::KWORD_RETURN:
                 return _SNOWBALL_KEYWORD__RETURN;
-            case TokenType::KWORD_AND:
-                return _SNOWBALL_KEYWORD__AND;
             case TokenType::KWORD_EXTERN:
                 return _SNOWBALL_KEYWORD__EXTERN;
-            case TokenType::KWORD_OR:
-                return _SNOWBALL_KEYWORD__OR;
             case TokenType::KWORD_NEW:
                 return _SNOWBALL_KEYWORD__NEW;
-            case TokenType::KWORD_NOT:
-                return _SNOWBALL_KEYWORD__NOT;
             case TokenType::KWORD_TRY:
                 return _SNOWBALL_KEYWORD__TRY;
             case TokenType::KWORD_CATCH:
                 return _SNOWBALL_KEYWORD__CATCH;
 
             // Literal values
-            case TokenType::VALUE_NULL:
-                return _SNOWBALL_KEYWORD__NULL;
 
             case TokenType::VALUE_NUMBER:
             case TokenType::VALUE_FLOAT:

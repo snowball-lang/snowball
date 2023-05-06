@@ -58,12 +58,6 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
             break;
         }
 
-        CASE(Null) : {
-            value = ctx->module->N<ir::NullValue>(p_node->getDBGInfo());
-            // TODO: set a null type
-            break;
-        }
-
         CASE(Char) : {
             auto str = p_node->getValue();
 

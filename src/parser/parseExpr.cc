@@ -64,7 +64,7 @@ Syntax::Expression::Base *Parser::parseExpr(bool allowAssign) {
         } else parseNormal = true;
 
         if (parseNormal) {
-            if (TOKEN(VALUE_NUMBER) || TOKEN(VALUE_NULL) || TOKEN(VALUE_FLOAT) ||
+            if (TOKEN(VALUE_NUMBER) || TOKEN(VALUE_FLOAT) ||
                 TOKEN(VALUE_STRING) || TOKEN(VALUE_CHAR) || TOKEN(VALUE_BOOL)) {
 
                 auto ty =
