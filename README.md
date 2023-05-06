@@ -5,7 +5,7 @@
 
 <p>
 
-  Snowball is a low-weight, dynamically typed, object oriented programming language with garbage collector and module system.
+  Snowball is a low-weight, statically typed, object oriented programming language with garbage collector and module system.
     <br />
     <a href=""><strong>Explore the docs »</strong></a>
     <br />
@@ -17,7 +17,7 @@
 
 ## About The Project
 
-👋 Greetings! Allow me to introduce you to Snowball, a dynamically-typed, low-weight, object-oriented programming language complete with a garbage collector and module system.
+👋 Greetings! Allow me to introduce you to Snowball, a statically-typed, low-weight, object-oriented programming language complete with a garbage collector and module system.
 
 🚀 With a myriad of features to offer, Snowball boasts object-oriented programming, memory safety, built-in functions for enhanced productivity, and faster execution than other languages. Plus, its garbage collector and unit testing make it a comprehensive tool for developers.
 
@@ -82,7 +82,7 @@ class Vector {
     }
 }
 
-fn main() Int {
+pub fn main() i32 {
     let vec1 = new Vector(1,2)
     let vec2 = new Vector(10,22)
 
@@ -118,4 +118,4 @@ Follow this links and tell us your thoughts, ask questions and be part of the Sn
 
 * GitHub : https://github.com/snowball-lang/snowball
 * ORG    : https://github.com/snowball-lang
-* Discord: https://discord.gg/YPgym7cwYr
+* Discord: https://discord.com/invite/nnShMQzR4b
