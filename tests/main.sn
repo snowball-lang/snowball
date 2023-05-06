@@ -1,8 +1,9 @@
 use Core::System
 
 pub fn main() i32 {
-    let a = 2;
+    let a = 0;
     while a < 4 {
         System::println("hello")
+        a = a + 1
     }
 }

@@ -12,6 +12,7 @@
 #include "../ir/values/IndexExtract.h"
 #include "../ir/values/Return.h"
 #include "../ir/values/Value.h"
+#include "../ir/values/WhileLoop.h"
 #include "../ir/values/VariableDeclaration.h"
 
 #include <assert.h>
@@ -44,8 +45,6 @@ VISIT(BooleanValue) { /* noop */
 VISIT(FloatValue) { /* noop */
 }
 VISIT(CharValue) { /* noop */
-}
-VISIT(NullValue) { /* noop */
 }
 
 VISIT(Call) {
@@ -87,6 +86,11 @@ VISIT(Argument) {
 }
 
 VISIT(ValueExtract) { /* noop */
+}
+
+VISIT(WhileLoop) {
+    p_node->getCondition()->visit(this);
+    p_node->getBlock()->visit(this);
 }
 
 VISIT(Conditional) {

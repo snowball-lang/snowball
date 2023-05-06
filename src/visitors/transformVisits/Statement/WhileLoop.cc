@@ -1,4 +1,5 @@
 #include "../../Transformer.h"
+#include "../../../ir/values/WhileLoop.h"
 
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
@@ -7,14 +8,15 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::WhileLoop) {
+    p_node->getCondition()->accept(this);
+    auto expr = getBooleanValue(this->value);
 
-    assert(false);
+    p_node->getBlock()->accept(this);
+    auto body =
+        utils::dyn_cast<ir::Block>(this->value);
 
-    // We shoudn't do this since return statements can't be use as
-    // values. We do this just in case we need it for some convinience
-    // ret->setType(returnValue->getType());
-
-    // this->value = ret;
+    auto cond = ctx->module->N<ir::WhileLoop>(p_node->getDBGInfo(), expr, body);
+    this->value = utils::dyn_cast<ir::Value>(cond);
 }
 
 } // namespace Syntax

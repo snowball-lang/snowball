@@ -31,9 +31,5 @@ void LLVMBuilder::visit(ir::FloatValue *value) {
                                         value->getConstantValue());
 }
 
-void LLVMBuilder::visit(ir::NullValue *value) {
-    assert(false && "TODO: null value");
-}
-
 } // namespace codegen
 } // namespace snowball

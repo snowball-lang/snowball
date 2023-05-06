@@ -48,6 +48,11 @@ bool LLVMBuilder::buildOperator(ir::Call *call) {
                     OPERATOR_INSTANCE(BIT_AND_EQ, CreateAnd)
                     OPERATOR_INSTANCE(BIT_XOR, CreateXor)
                     OPERATOR_INSTANCE(BIT_XOR_EQ, CreateXor)
+                    OPERATOR_INSTANCE(LT, CreateICmpSLT)
+                    OPERATOR_INSTANCE(GT, CreateICmpSGT)
+                    OPERATOR_INSTANCE(LTEQ, CreateICmpSLE)
+                    OPERATOR_INSTANCE(GTEQ, CreateICmpSGE)
+
                     // TODO: remainder oeprators (!, +=, etc...)
                     case services::OperatorService::EQ: {
                         auto l = llvm::cast<llvm::LoadInst>(left);
@@ -88,6 +93,11 @@ bool LLVMBuilder::buildOperator(ir::Call *call) {
                     OPERATOR_INSTANCE(BIT_AND_EQ, CreateAnd)
                     OPERATOR_INSTANCE(BIT_XOR, CreateXor)
                     OPERATOR_INSTANCE(BIT_XOR_EQ, CreateXor)
+                    OPERATOR_INSTANCE(LT, CreateFCmpOLT)
+                    OPERATOR_INSTANCE(GT, CreateFCmpOGT)
+                    OPERATOR_INSTANCE(LTEQ, CreateFCmpOLE)
+                    OPERATOR_INSTANCE(GTEQ, CreateFCmpOGE)
+
                     // TODO: remainder oeprators (!, +=, etc...)
                     case services::OperatorService::EQ: {
                         auto l = llvm::cast<llvm::LoadInst>(left);
