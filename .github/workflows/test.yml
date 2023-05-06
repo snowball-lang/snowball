@@ -31,4 +31,4 @@ jobs:
         run: bash -ex build_scripts/release_build.sh
 
       - name: Test snowball
-        run: # TODO: snowball test
+        run: echo "TODO" # TODO: snowball test
