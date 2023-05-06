@@ -183,6 +183,12 @@ class Parser {
     Syntax::Statement::Return *parseReturn();
 
     /**
+     * conditional   ::=  "if" [expr] [block]
+     *                |   "if" [expr]: [expr]
+     */
+    Syntax::Statement::Conditional *parseConditional();
+
+    /**
      * visibility    ::=  pub | priv
      * class_name    ::=  identifier
      * class_inherit ::=  "extends" [type]
@@ -191,7 +197,7 @@ class Parser {
      * constructor   ::=  [class_name == actual class name] [function_like]
      * constructor   ::=  "~" [class_name == actual class name] [function_like]
      *
-     * class_decls   ::=  [visibility]
+     * class_decls   ::=  [visibility] ":"
      *                |   [function_declaration] ";"
      *                |   [variable_declaration] ";"
      *                |   [operator_decl] ";"
