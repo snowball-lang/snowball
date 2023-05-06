@@ -10,7 +10,6 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::BinaryOp) {
     if (p_node->op_type == services::OperatorService::EQ) {
         if (auto i = utils::cast<Expression::Identifier>(p_node->left)) {
             if (auto x = getIdentifier(i->getIdentifier())) {
-
                 if (x->second == NotInitialized) {
                     this->scopes.front()[x->first] = Initialized;
                     this->state.inited.push_back(i->getIdentifier());
@@ -37,6 +36,11 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::BinaryOp) {
                     }
                 }
             }
+        }
+    } else {
+        p_node->left->accept(this);
+        if (!p_node->unary) {
+            p_node->right->accept(this);
         }
     }
 }
