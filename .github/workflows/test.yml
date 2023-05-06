@@ -1,31 +1,31 @@
+name: Test snowball
 on:
-  label:
-    types:
-      - created
-  push:
-  pull_request:
+  release:
+    types: [created]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        include:
+          - ARCH: 'x86_64'
+            DIST: 'ubuntu-20.04'
+          - ARCH: 'aarch64'
+            DIST: 'ubuntu-20.04'
+    name: Build ${{ matrix.DIST }}  (${{ matrix.ARCH }})
+    env:
+      DIST: ${{ matrix.DIST }}
+      ARCH: ${{ matrix.ARCH }}
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/checkout@v3
-    - name: Install LLVM and Clang
-      uses: KyleMayes/install-llvm-action@v1
-      with:
-        version: "14.0"
-    - name: Build project
-      run: |
-        export CC="gcc"
-        export CXX="g++"
-        sh ./build_scripts/release.sh -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_CC_COMPILER=/usr/bin/gcc
-        sudo make install
-    - name: Runing unit tests
-      run: |
-          # snowball test
-          echo "TODO"
+      - name: Checkout code
+        uses: actions/checkout@v2
 
+      - name: Set up QEMU integration for Docker
+        run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+      - name: Build in Docker
+        run: bash -ex build_scripts/release_build.sh
+
+      - name: Test snowball
+        run: # TODO: snowball test
