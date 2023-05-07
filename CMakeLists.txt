@@ -60,7 +60,8 @@ file(GLOB_RECURSE RUNTIME_SOURCES runtime/**/*.cc runtime/**/*.c runtime/gc/*.c)
 set (RUNTIME_FILES
   ${RUNTIME_SOURCES})
 
-file(GLOB_RECURSE EXEC_HEADERS exec/*.h exec/*.hpp)
+set(EXEC_HEADERS_DIR exec/)
+file(GLOB_RECURSE EXEC_HEADERS ${EXEC_HEADERS_DIR}/*.h ${EXEC_HEADERS_DIR}/*.hpp)
 file(GLOB_RECURSE EXEC_SOURCES exec/*.cc exec/*.cc exec/*.c)
 set (EXEC_FILES
   ${EXEC_HEADERS}
@@ -103,6 +104,7 @@ else()
 endif()
 
 add_executable(snowballexe ${EXEC_FILES})
+target_include_directories(snowballexe PUBLIC ${EXEC_HEADERS_DIR})
 target_link_libraries(snowballexe PUBLIC ${PROJECT_NAME} ${GLIB_LIBRARIES})
 
 if (${BUILD_FOR_WIN})
