@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-
 SNOWBALL_INSTALL_DIR=~/.snowball
 
 OS=$(uname -s | awk '{print tolower($0)}')
@@ -10,29 +9,102 @@ ARCH=$(uname -m)
 LIB_FOLDER="/usr/lib"
 YES="$1"
 
+if test -t 1; then
+
+    ncolors=$(tput colors)
+
+    if test -n "$ncolors" && test $ncolors -ge 8; then
+        bold="$(tput bold)"
+        underline="$(tput smul)"
+        standout="$(tput smso)"
+        normal="$(tput sgr0)"
+        black="${bold}$(tput setaf 0)"
+        red="${bold}$(tput setaf 1)"
+        green="${bold}$(tput setaf 2)"
+        yellow="${bold}$(tput setaf 3)"
+        blue="${bold}$(tput setaf 4)"
+        magenta="${bold}$(tput setaf 5)"
+        cyan="${bold}$(tput setaf 6)"
+    fi
+fi
+
+log() {
+  local now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  local output=/dev/stdout
+
+  if [ $# -eq 0 ]; then
+    log warn "LOGGER: missing log level; fallback to log as \"unknown\""
+    log unknown
+    return
+  fi
+
+  case $1 in
+    unknown)
+      level=unknown
+      color="$black"
+      ;;
+    info)
+      level=info
+      color="$green"
+      ;;
+    warn)
+      level=warn
+      color="$yellow"
+      ;;
+    error)
+      level=error
+      output=/dev/stderr
+      color="$red"
+      ;;
+    *)
+      log warn "LOGGER: unknown log level \"$1\"; fallback to log as \"unknown\""
+      log unknown $*
+      return
+  esac
+
+  if [ $# -eq 1 ]; then
+    if read line; then
+      printf " ${color}%s${normal}: %s\n" "$level" "$line"
+    fi < /dev/stdin
+    while read line; do
+      printf "  %s\n" "$line"
+    done < /dev/stdin
+  else
+    printf " ${color}%s${normal}: %s\n" "$level" "${*:2}"
+  fi >> $output
+}
+
+log info "Checking for valid operating system"
+
 if [ "$OS" != "linux" ] && [ "$OS" != "darwin" ]; then
   echo "error: Pre-built binaries only exist for Linux and macOS." >&2
   exit 1
 fi
 
+
 SNOWBALL_BUILD_ARCHIVE=snowball-$OS-$ARCH.tar.gz
+log info "Creating target directory: $SNOWBALL_INSTALL_DIR"
 
 mkdir -p $SNOWBALL_INSTALL_DIR
 cd $SNOWBALL_INSTALL_DIR
-curl -L https://github.com/snowball-lang/snowball/releases/latest/download/"$SNOWBALL_BUILD_ARCHIVE" | tar zxvf - --strip-components=1
+x=$(curl -L https://github.com/snowball-lang/snowball/releases/latest/download/"$SNOWBALL_BUILD_ARCHIVE" | tar zxvf - --strip-components=1)
+
+log info "Moving required shared libraries to lib folder"
+log warn "You may need to use 'sudo' password for this action"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-
-    sudo mv libSnowballRuntime.dylib $LIB_FOLDER
-    sudo mv libSnowball.dylib $LIB_FOLDER
+    mv libSnowballRuntime.dylib $LIB_FOLDER
+    mv libSnowball.dylib $LIB_FOLDER
 else
-    sudo mv libSnowballRuntime.so $LIB_FOLDER
-    sudo mv libSnowball.so $LIB_FOLDER
+    mv libSnowballRuntime.so $LIB_FOLDER
+    mv libSnowball.so $LIB_FOLDER
 fi
 
+log info "Exporting snowball to PATH"
+
 EXPORT_COMMAND="$(pwd)/bin"
-echo "PATH export command:"
-echo "  $EXPORT_COMMAND"
+log warn "PATH export command:"
+log warn "  $EXPORT_COMMAND"
 
 # function to check if a file exists and is writable
 check_file_writable() {
@@ -41,7 +113,7 @@ check_file_writable() {
         if [[ -w "$file" ]]; then
             return 0
         else
-            echo "Error: $file is not writable"
+            log error "$file is not writable"
             return 1
         fi
     else
@@ -72,17 +144,17 @@ add_command_to_path() {
     local config_file="$1"
 
     if grep -q "$EXPORT_COMMAND" "$config_file"; then
-        echo "PATH already updated in $config_file; skipping update."
+        log warn "PATH already updated in $config_file; skipping update."
         return
     fi
 
     read -p "Do you want to add $EXPORT_COMMAND to PATH in $config_file? [y/n]: " add_to_path
     if [[ "$add_to_path" == "y" || "$YES" == "-y" ]]; then
-        echo "Updating $config_file ..."
+        log info "Updating $config_file ..."
         echo "" >> "$config_file"
         echo "export PATH=\"\$PATH:$EXPORT_COMMAND\"" >> "$config_file"
     else
-        echo "Skipping update of $config_file."
+        log warn "Skipping update of $config_file."
     fi
 }
 
@@ -99,7 +171,7 @@ update_config_file() {
             elif check_file_writable "$zshenv"; then
                 add_command_to_path "$zshenv"
             else
-                echo "Error: Cannot find a writable zsh config file" 1>&2
+                log error "Cannot find a writable zsh config file"
                 exit 1
             fi
             ;;
@@ -111,25 +183,29 @@ update_config_file() {
             elif check_file_writable "$bashrc"; then
                 add_command_to_path "$bashrc"
             else
-                echo "Error: Cannot find a writable bash config file" 1>&2
+                log error "Cannot find a writable bash config file"
                 exit 1
             fi
             ;;
         *)
-            echo "Error: Unknown shell type $shell" 1>&2
+            log error "Unknown shell type $shell"
             exit 1
             ;;
     esac
 }
+
+log info "Detecting user default shell"
 
 shell="$SHELL"
 if [[ -z "$shell" ]]; then
     shell=$(ps -p $$ -o args= | awk '{print $1}')
 fi
 
+log info "Updating configuration file"
+
 update_config_file "$shell"
 
-echo "Snowball successfully installed at: $(pwd)"
-echo "Open a new terminal session or update your PATH to use snowball"
+log info "Snowball successfully installed at: $(pwd)"
+log info "Open a new terminal session or update your PATH to use snowball"
 
-echo "Happy coding! 🐱"
+log info "Happy coding! 🐱"
