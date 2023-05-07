@@ -45,4 +45,4 @@ jobs:
 
       - name: Execute tests
         run: |
-          snowball test
+          ./bin/Release/snowball test
