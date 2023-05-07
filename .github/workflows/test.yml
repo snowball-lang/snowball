@@ -8,27 +8,41 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.DIST }}
     strategy:
       matrix:
         include:
           - ARCH: 'x86_64'
             DIST: 'ubuntu-20.04'
+            NAME: 'linux'
           - ARCH: 'aarch64'
             DIST: 'ubuntu-20.04'
-    name: Build ${{ matrix.DIST }}  (${{ matrix.ARCH }})
+            NAME: 'linux'
+          - ARCH: 'arm64'
+            DIST: 'macos-11'
+            NAME: 'darwin'
+          # - ARCH: 'x86_64'
+          #   DIST: 'windows-latest'
+          # - ARCH: 'i386'
+          #   DIST: 'ubuntu-20.04'
+    name: Build ${{ matrix.NAME }} (${{ matrix.ARCH }}) [${{ matrix.DIST }}]
     env:
       DIST: ${{ matrix.DIST }}
       ARCH: ${{ matrix.ARCH }}
+      NAME: ${{ matrix.NAME }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Set up QEMU integration for Docker
-        run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+        run: |
+          if [[ "$OSTYPE" != "darwin"* ]]; then
+            docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          fi
 
       - name: Build in Docker
         run: bash -ex build_scripts/release_build.sh
 
-      - name: Test snowball
-        run: echo "TODO" # TODO: snowball test
+      - name: Execute tests
+        run: |
+          snowball test
