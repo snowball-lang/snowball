@@ -23,16 +23,11 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
 
     Syntax::Expression::TypeRef *parentClass = nullptr;
-    std::vector<Syntax::Expression::TypeRef *> generics;
+    Syntax::Statement::GenericContainer::GenericList generics;
 
-    if (is<TokenType::OP_LT>(peek()) &&
-        is<TokenType::SYM_QUESTION>(peek(1, true))) {
-        auto name = m_current.to_string();
+    if (is<TokenType::OP_LT>(peek())) {
         next();
-        auto generics = parseGenericExpr();
-        auto width    = m_current.get_pos().second - dbg->pos.second;
-
-        dbg->width = width;
+        generics = parseGenericParams();
         prev();
     }
 
@@ -48,6 +43,7 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
     auto cls = Syntax::N<Syntax::Statement::ClassDef>(
         name, parentClass, Syntax::Statement::Privacy::fromInt(isPublic));
 
+    cls->setGenerics(generics);
     cls->setDBGInfo(dbg);
 
     while (true) {

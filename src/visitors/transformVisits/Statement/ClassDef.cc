@@ -24,7 +24,7 @@ SN_TRANSFORMER_VISIT(Statement::ClassDef) {
         cacheComponents::Types::TypeStore store{.type = p_node, .state = state};
         transformClass(uuid, store);
         return;
-    } else if ((p_node->getGenerics().size() > 0) && (!ctx->generateFunction)) {
+    } else if ((p_node->getGenerics().size() > 0)) {
         ctx->cache->setType(uuid, p_node, state);
         return;
     }

@@ -1,7 +1,18 @@
 use Core::System
 
+class Balls<T> {
+    pub:
+    Balls(x: T) {
+        System::println(x)
+    }
+}
+
 pub fn main() i32 {
     let a = 0;
+
+    let b = new Balls<?String>("balls")
+    let x = new Balls<?i32>(2)
+
     while a < 4 {
         System::println("hello")
         a = a + 1

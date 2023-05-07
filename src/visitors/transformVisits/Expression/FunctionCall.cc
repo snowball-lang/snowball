@@ -140,7 +140,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 (argTypes.size() - func->hasParent())) {
 
                 ctx->withState(
-                    ctx->cache->getFunctionState(func->getId()), [&]() {
+                    ctx->cache->getFunctionState(func->getId()), [&argTypes=argTypes, this, call, args, &argValues=argValues, p_node]() {
                         // add default arguments
                         for (auto arg =
                                  std::next(args.begin(), argTypes.size());

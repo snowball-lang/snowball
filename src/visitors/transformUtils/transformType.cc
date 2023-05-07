@@ -11,9 +11,10 @@ namespace Syntax {
 std::shared_ptr<types::Type>
 Transformer::transformType(Expression::TypeRef *ty) {
     auto name          = ty->getPrettyName();
-    auto [item, found] = ctx->getItem(name);
+    auto id          = ty->getName();
+    auto [item, found] = ctx->getItem(id);
     if (!found) {
-        auto uuid = ctx->createIdentifierName(name, false);
+        auto uuid = ctx->createIdentifierName(id, false);
         if (auto x = ctx->cache->getTransformedType(uuid)) {
             std::shared_ptr<types::Type> lastType = nullptr;
             for (auto t : x.value()) {
@@ -25,7 +26,7 @@ Transformer::transformType(Expression::TypeRef *ty) {
                     return transformed;
                 }
             }
-        } else if (auto x = ctx->cache->getType(uuid)) {
+        } if (auto x = ctx->cache->getType(uuid)) {
             auto cls = *x;
 
             // TODO: check for default generic types
