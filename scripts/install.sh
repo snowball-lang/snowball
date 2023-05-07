@@ -205,6 +205,8 @@ log info "Updating configuration file"
 
 update_config_file "$shell"
 
+printf "\n    ${green}snowball-${OS}-${ARCH}${normal} - successfully installed with stdlib\n\n"
+
 log info "Snowball successfully installed at: $(pwd)"
 log info "Open a new terminal session or update your PATH to use snowball"
 
