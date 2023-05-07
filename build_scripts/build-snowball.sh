@@ -1,7 +1,7 @@
 #! /bin/bash
 
-if [[ "$ARCH" == "" ]] || [[ "$DIST" == "" ]]; then
-    echo "Usage: env ARCH=... DIST=... bash $0"
+if [[ "$ARCH" == "" ]] || [[ "$DIST" == "" ]] || [[ "$NAME" == "" ]]; then
+    echo "Usage: env ARCH=... DIST=... NAME=... bash $0"
     exit 2
 fi
 
@@ -10,7 +10,7 @@ set -e
 
 # check out latest tag
 
-label=snowball-"$DIST"-"$ARCH"
+label=snowball-"$NAME"-"$ARCH"
 
 bash build_scripts/release.sh
 

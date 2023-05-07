@@ -11,18 +11,22 @@ jobs:
         include:
           - ARCH: 'x86_64'
             DIST: 'ubuntu-20.04'
+            NAME: 'linux'
           - ARCH: 'aarch64'
             DIST: 'ubuntu-20.04'
+            NAME: 'linux'
           - ARCH: 'arm64'
             DIST: 'macos-11'
+            NAME: 'darwin'
           # - ARCH: 'x86_64'
           #   DIST: 'windows-latest'
           # - ARCH: 'i386'
           #   DIST: 'ubuntu-20.04'
-    name: Build ${{ matrix.DIST }}  (${{ matrix.ARCH }})
+    name: Build ${{ matrix.NAME }} (${{ matrix.ARCH }}) [${{ matrix.DIST }}]
     env:
       DIST: ${{ matrix.DIST }}
       ARCH: ${{ matrix.ARCH }}
+      NAME: ${{ matrix.NAME }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
