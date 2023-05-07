@@ -1,7 +1,9 @@
 #! /bin/bash
 
-if [[ "$ARCH" == "" ]] || [[ "$DIST" == "" ]]; then
-    echo "Usage: env ARCH=... DIST=... bash $0"
+echo Building for: "$NAME"
+
+if [[ "$ARCH" == "" ]] || [[ "$DIST" == "" ]] || [[ "$NAME" == "" ]]; then
+    echo "Usage: env ARCH=... DIST=... NAME=... bash $0"
     exit 1
 fi
 

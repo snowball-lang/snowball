@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 if [[ "$ARCH" == "" ]] || [[ "$DIST" == "" ]] || [[ "$NAME" == "" ]]; then
     echo "Usage: env ARCH=... DIST=... NAME=... bash $0"

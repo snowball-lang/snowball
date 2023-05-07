@@ -50,8 +50,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./snowball-${{ matrix.DIST == 'ubuntu-20.04' && 'linux' || 'darwin' }}-${{ matrix.ARCH }}.tar.gz
-          asset_name: snowball-${{ matrix.DIST == 'ubuntu-20.04' && 'linux' || 'darwin' }}-${{ matrix.ARCH }}.tar.gz
+          asset_path: ./snowball-${{ matrix.NAME }}-${{ matrix.ARCH }}.tar.gz
+          asset_name: snowball-${{ matrix.NAME }}-${{ matrix.ARCH }}.tar.gz
           asset_content_type: application/gzip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
