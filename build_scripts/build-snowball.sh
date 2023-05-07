@@ -12,8 +12,10 @@ set -e
 
 label=snowball-"$DIST"-"$ARCH"
 
-export C="/usr/bin/g++"
-export CXX="/usr/bin/g++-9"
+if [[ "$OSTYPE" != "darwin"* ]]; then
+    export C="/usr/bin/g++"
+    export CXX="/usr/bin/g++-9"
+fi
 
 sh build_scripts/release.sh -DCMAKE_CXX_COMPILER="/usr/bin/g++-9"
 
