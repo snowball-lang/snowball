@@ -12,7 +12,7 @@ set -e
 
 label=snowball-"$DIST"-"$ARCH"
 
-sh build_scripts/release.sh
+bash build_scripts/release.sh
 
 mv libSnowballRuntime.so ./bin/Release/
 mv libSnowball.so ./bin/Release/
