@@ -14,8 +14,13 @@ label=snowball-"$DIST"-"$ARCH"
 
 bash build_scripts/release.sh
 
-mv libSnowballRuntime.so ./bin/Release/
-mv libSnowball.so ./bin/Release/
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    mv libSnowballRuntime.dylib ./bin/Release/
+    mv libSnowball.dylib ./bin/Release/
+else
+    mv libSnowballRuntime.so ./bin/Release/
+    mv libSnowball.so ./bin/Release/
+fi
 
 mkdir release
 mkdir -p release/bin
