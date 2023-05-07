@@ -539,6 +539,8 @@ void Lexer::tokenize() {
                         tk.type = TokenType::KWORD_STATIC;
                     } else if (identifier == _SNOWBALL_KEYWORD__IMPORT) {
                         tk.type = TokenType::KWORD_IMPORT;
+                    } else if (identifier == _SNOWBALL_KEYWORD__DO) {
+                        tk.type = TokenType::KWORD_DO;
                     } else if (identifier == _SNOWBALL_KEYWORD__PRIVATE) {
                         tk.type = TokenType::KWORD_PRIVATE;
                     } else if (identifier == _SNOWBALL_KEYWORD__PUBLIC) {

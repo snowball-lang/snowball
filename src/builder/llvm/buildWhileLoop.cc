@@ -16,22 +16,39 @@ void LLVMBuilder::visit(ir::WhileLoop *c) {
     auto whileBB = h.create<llvm::BasicBlock>(*context, "", parent);
     auto continueBB = h.create<llvm::BasicBlock>(*context, "", parent);
 
-    builder->CreateBr(condBB);
+    if (c->isDoWhile()) {
+        builder->CreateBr(whileBB);
+        builder->SetInsertPoint(whileBB);
+        c->getBlock()->visit(this);
 
-    builder->SetInsertPoint(condBB);
-    auto cond = build(c->getCondition().get());
-    builder->CreateCondBr(cond, whileBB, continueBB);
+        if ((!builder->GetInsertBlock()->getInstList().back().isTerminator()) ||
+            builder->GetInsertBlock()->getInstList().size() == 0) {
+            builder->CreateBr(condBB);
+        }
 
-    builder->SetInsertPoint(whileBB);
-    c->getBlock()->visit(this);
+        builder->SetInsertPoint(condBB);
+        auto cond = build(c->getCondition().get());
+        builder->CreateCondBr(cond, whileBB, continueBB);
 
-    if ((!builder->GetInsertBlock()->getInstList().back().isTerminator()) ||
-        builder->GetInsertBlock()->getInstList().size() == 0) {
+
+        builder->SetInsertPoint(continueBB);
+    } else {
         builder->CreateBr(condBB);
+
+        builder->SetInsertPoint(condBB);
+        auto cond = build(c->getCondition().get());
+        builder->CreateCondBr(cond, whileBB, continueBB);
+
+        builder->SetInsertPoint(whileBB);
+        c->getBlock()->visit(this);
+
+        if ((!builder->GetInsertBlock()->getInstList().back().isTerminator()) ||
+            builder->GetInsertBlock()->getInstList().size() == 0) {
+            builder->CreateBr(condBB);
+        }
+
+        builder->SetInsertPoint(continueBB);
     }
-
-    builder->SetInsertPoint(continueBB);
-
 }
 
 } // namespace codegen

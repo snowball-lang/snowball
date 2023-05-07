@@ -15,7 +15,7 @@ SN_TRANSFORMER_VISIT(Statement::WhileLoop) {
     auto body =
         utils::dyn_cast<ir::Block>(this->value);
 
-    auto cond = ctx->module->N<ir::WhileLoop>(p_node->getDBGInfo(), expr, body);
+    auto cond = ctx->module->N<ir::WhileLoop>(p_node->getDBGInfo(), expr, body, p_node->isDoWhile());
     this->value = utils::dyn_cast<ir::Value>(cond);
 }
 

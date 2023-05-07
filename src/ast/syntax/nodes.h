@@ -594,28 +594,45 @@ struct Conditional : public AcceptorExtend<Conditional, Base> {
 };
 
 /**
- * A struct representing a while loop in a program. 
- * It inherits from the AcceptorExtend class, which allows for 
+ * A struct representing a while loop in a program.
+ * It inherits from the AcceptorExtend class, which allows for
  * pattern matching and traversal of the while loop.
- * It also inherits from the Base class, which provides 
+ * It also inherits from the Base class, which provides
  * a common interface for all nodes in the program's AST.
  */
 struct WhileLoop : public AcceptorExtend<WhileLoop, Base> {
 
     // Instructions stored inside a block
-    Block *insts;
+    Block *insts = nullptr;
     // the expression to be evaluated before each iteration
-    Expression::Base *cond;
+    Expression::Base *cond = nullptr;
+    /**
+     * It has the same characteristics as a while loop except that
+     *  it has some differentiations. As the name suggests, a do-while
+     *  executes the instructions block before doing the check. For example,
+     *  we can use it the following (PSEUDOCODE): this will execute "hello" 5 times.
+     * ```
+     * 1 | A = 0
+     * 2 | DO {
+     * 3 |   print("hello")
+     * 4 |   A += 1
+     * 5 | } WHILE (A < 4)
+     * ```
+     */
+    bool doWhile = false;
 
   public:
-    explicit WhileLoop(Expression::Base *cond, Block *insts)
-        : cond(cond), insts(insts) {};
+    explicit WhileLoop(Expression::Base *cond, Block *insts, bool isDoWhile = false)
+        : cond(cond), insts(insts), doWhile(isDoWhile) {};
 
     /// @return body block instructions to execute
     //   each iterator if the condition is truth
     auto getBlock() const { return insts; }
     /// @return the expression to be evaluated each iteration
     auto getCondition() const { return cond; }
+    /// @return If the condition should be checked before or after
+    ///  each iteration
+    auto isDoWhile() const { return doWhile; }
 
     // Set a visit handler for the generators
     ACCEPT()

@@ -17,4 +17,10 @@ pub fn main() i32 {
         System::println("hello")
         a = a + 1
     }
+
+    let c = 0;
+    do {
+        System::println("cya")
+        c = c + 1;
+    } while c < 4;
 }
