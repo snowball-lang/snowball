@@ -123,11 +123,8 @@ endforeach()
 execute_process(COMMAND gcc -dumpversion OUTPUT_VARIABLE _LIBC_VERSION)
 string(REGEX REPLACE "\n" "" _LIBC_VERSION "${_LIBC_VERSION}")
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set (STATICLIB_DIR "Library/Application Support/.snowball")
-else()
-  set (STATICLIB_DIR ".snowball")
-endif()
+
+set (STATICLIB_DIR ".snowball")
 set (_SNOWBALL_LIBRARY_DIR "libs")
 
 if (${BUILD_FOR_WIN})
@@ -219,4 +216,4 @@ install(TARGETS snowballexe EXPORT MyLibConfig
 # TODO: as a feature:
 # install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 
-install(FILES ${std_sn_files} DESTINATION ${HOME_DIR}/${STATICLIB_DIR}/${_SNOWBALL_LIBRARY_DIR})
+#install(FILES ${std_sn_files} DESTINATION ${HOME_DIR}/${STATICLIB_DIR}/${_SNOWBALL_LIBRARY_DIR})
