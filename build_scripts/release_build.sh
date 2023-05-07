@@ -16,6 +16,7 @@ error() {
 }
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
+    brew install llvm@14
     bash build_scripts/build-snowball.sh
 else
 
