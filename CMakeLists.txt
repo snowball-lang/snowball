@@ -124,7 +124,7 @@ execute_process(COMMAND gcc -dumpversion OUTPUT_VARIABLE _LIBC_VERSION)
 string(REGEX REPLACE "\n" "" _LIBC_VERSION "${_LIBC_VERSION}")
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set (STATICLIB_DIR "~/Library/Application Support/.snowball")
+  set (STATICLIB_DIR "Library/Application Support/.snowball")
 else()
   set (STATICLIB_DIR ".snowball")
 endif()
