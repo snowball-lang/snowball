@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-SNOWBALL_INSTALL_DIR=~/.snowball
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    SNOWBALL_INSTALL_DIR="~/Library/Application Support/.snowball"
+else
+    SNOWBALL_INSTALL_DIR=~/.snowball
+fi
 OS=$(uname -s | awk '{print tolower($0)}')
 ARCH=$(uname -m)
 
