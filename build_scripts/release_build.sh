@@ -18,7 +18,6 @@ error() {
 if [[ "$OSTYPE" == "darwin"* ]]; then
     brew install llvm@14
     export LLVM_DIR="/usr/local/opt/llvm@14/lib/cmake"
-    ls $LLVM_DIR
 
     bash build_scripts/build-snowball.sh
 else
@@ -44,6 +43,9 @@ else
         error "Dockerfile $dockerfile could not be found"
         exit 3
     fi
+
+    export C="/usr/bin/g++"
+    export CXX="/usr/bin/g++-9"
 
     # build image to cache dependencies
     docker build -t "$image" -f "$dockerfile" --build-arg UID="$uid" containers/"$DIST"
