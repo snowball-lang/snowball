@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 set -e
 
 SNOWBALL_INSTALL_DIR=~/.snowball
@@ -32,7 +32,6 @@ if test -t 1; then
 fi
 
 log() {
-  local now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
   local output=/dev/stdout
 
   if [ $# -eq 0 ]; then
