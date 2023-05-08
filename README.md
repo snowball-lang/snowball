@@ -32,7 +32,7 @@
 Before we get started, you'll need to have snowball installed into your compuiter. Linux and macOS users, you are in luck! You can use this simple command to download snowball and get started.
 
 ```
-curl -fsSL https://raw.githubusercontent.com/snowball-lang/snowball/dev/scripts/install.sh | bash -s
+curl -fsSL https://raw.githubusercontent.com/snowball-lang/snowball/dev/scripts/install.sh | sudo -E bash -s -- -y
 ```
 
 ### Writing Your First Snowball Program

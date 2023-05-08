@@ -20,11 +20,15 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(GLIB REQUIRED glib-2.0)
 
-include_directories(${GLIB_INCLUDE_DIRS})
-link_directories(${GLIB_LIBRARY_DIRS})
-add_definitions(${GLIB_CFLAGS_OTHER})
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+else()
+  pkg_check_modules(GLIB REQUIRED glib-2.0)
+
+  include_directories(${GLIB_INCLUDE_DIRS})
+  link_directories(${GLIB_LIBRARY_DIRS})
+  add_definitions(${GLIB_CFLAGS_OTHER})
+endif()
 
 find_package(LLVM REQUIRED CONFIG)
 set(LLVM_ENABLE_BACKTRACES OFF CACHE BOOL "" FORCE)
