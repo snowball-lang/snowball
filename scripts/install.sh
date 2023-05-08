@@ -150,8 +150,12 @@ add_command_to_path() {
         return
     fi
 
-    read -p "Do you want to add $EXPORT_COMMAND to PATH in $config_file? [y/n]: " add_to_path
-    if [[ "$add_to_path" == "y" || "$YES" == "-y" ]]; then
+    if [[ "$YES" == "-y" ]]; then
+        add_to_path="y"
+    else
+        read -p "Do you want to add $EXPORT_COMMAND to PATH in $config_file? [y/n]: " add_to_path
+    fi
+    if [[ "$add_to_path" == "y" ]]; then
         log info "Updating $config_file ..."
         echo "" >> "$config_file"
         echo "export PATH=\"\$PATH:$EXPORT_COMMAND\"" >> "$config_file"
