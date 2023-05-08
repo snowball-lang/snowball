@@ -199,9 +199,9 @@ update_config_file() {
 log info "Detecting user default shell"
 
 if [[ "$SNOWBALL_SHELL" == "" ]]; then
-    shell="$SNOWBALL_SHELL"
-else
     shell="$SHELL"
+else
+    shell="$SNOWBALL_SHELL"
 fi
 
 if [[ -z "$shell" ]]; then
