@@ -198,7 +198,12 @@ update_config_file() {
 
 log info "Detecting user default shell"
 
-shell="$SHELL"
+if [[ "$SNOWBALL_SHELL" == "" ]]; then
+    shell="$SNOWBALL_SHELL"
+else
+    shell="$SHELL"
+fi
+
 if [[ -z "$shell" ]]; then
     shell=$(ps -p $$ -o args= | awk '{print $1}')
 fi
