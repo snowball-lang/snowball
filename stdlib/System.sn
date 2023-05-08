@@ -1,10 +1,6 @@
 
 use Core::CLib
 
-pub class Heello {
-    pub: Heello() { println("hello") }
-}
-
 /**
  * @brief Causes the program to terminate with the specified exit code.
  *
