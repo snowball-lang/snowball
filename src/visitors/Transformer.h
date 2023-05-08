@@ -311,6 +311,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     void transformMainFunction(Statement::FunctionDef *p_node);
     /// @brief append a new module to the global generated modules list
     void addModule(std::shared_ptr<ir::Module> m);
+    /// @brief Transforms a special type. For example, the
+
 
   public:
     Transformer(std::shared_ptr<ir::Module> mod, SourceInfo *srci);

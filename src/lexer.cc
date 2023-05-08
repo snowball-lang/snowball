@@ -207,7 +207,11 @@ void Lexer::tokenize() {
                     if (GET_CHAR(2) == '=')
                         consume(TokenType::OP_BIT_RSHIFT_EQ, 3);
                     else
-                        consume(TokenType::OP_BIT_RSHIFT, 2);
+                        // TODO: (generics cant handle <type<hello<adios>>) consume(TokenType::OP_BIT_RSHIFT, 2);
+                        //                                              ^^
+                        // actually parse ">>" at parser when we encounter an operator
+                        {consume(TokenType::OP_GT);
+                        consume(TokenType::OP_GT);}
                 } else
                     consume(TokenType::OP_GT);
                 break;

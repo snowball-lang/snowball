@@ -17,6 +17,12 @@ TypeRef *Parser::parseType() {
     auto name = assert_tok<TokenType::IDENTIFIER>("a valid type").to_string();
 
     next();
+    while (is<TokenType::SYM_COLCOL>()) {
+        next();
+        name += "::" + assert_tok<TokenType::IDENTIFIER>("a valid type").to_string();
+        next();
+    }
+
     std::vector<TypeRef *> tparams;
 
     // lookup for "<?"

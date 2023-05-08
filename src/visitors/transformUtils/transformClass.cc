@@ -16,17 +16,6 @@ Transformer::transformClass(const std::string& uuid,
     std::shared_ptr<types::DefinedType> transformedType;
     ctx->withState(classStore.state, [&]() {
         ctx->withScope([&] {
-            auto genericTypes = typeRef->getGenerics();
-            auto classGenerics = ty->getGenerics();
-            for (int genericCount = 0; genericCount < genericTypes.size();
-                genericCount++) {
-                auto item = std::make_shared<transform::Item>(
-                    transformType(genericTypes.at(genericCount)));
-
-                ctx->addItem(classGenerics.at(genericCount)->getName(),
-                    item);
-            }
-
             auto backupClass = ctx->getCurrentClass();
 
             // TODO: maybe not reset completly, add nested classes in the future
@@ -43,6 +32,16 @@ Transformer::transformClass(const std::string& uuid,
                                     typeRef->getGenerics(),
                                     [&](auto t) { return transformType(t); })
                                 : std::vector<std::shared_ptr<types::Type>>{};
+
+            auto classGenerics = ty->getGenerics();
+            for (int genericCount = 0; genericCount < generics.size();
+                genericCount++) {
+                auto item = std::make_shared<transform::Item>(
+                    generics.at(genericCount));
+
+                ctx->addItem(classGenerics.at(genericCount)->getName(),
+                    item);
+            }
 
             auto basedName  = getNameWithBase(ty->getName());
             auto baseFields = vector_iterate<Statement::VariableDecl *,
@@ -70,6 +69,7 @@ Transformer::transformClass(const std::string& uuid,
 
             auto item = std::make_shared<transform::Item>(transformedType);
             ctx->cache->setTransformedType(_uuid, item);
+
             for (auto fn : ty->getFunctions()) {
                 fn->accept(this);
             }

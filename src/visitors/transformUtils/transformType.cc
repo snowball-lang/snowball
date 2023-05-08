@@ -11,7 +11,7 @@ namespace Syntax {
 std::shared_ptr<types::Type>
 Transformer::transformType(Expression::TypeRef *ty) {
     auto name          = ty->getPrettyName();
-    auto id          = ty->getName();
+    auto id            = ty->getName();
     auto [item, found] = ctx->getItem(id);
     if (!found) {
         auto uuid = ctx->createIdentifierName(id, false);

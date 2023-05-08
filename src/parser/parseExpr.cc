@@ -76,7 +76,7 @@ Syntax::Expression::Base *Parser::parseExpr(bool allowAssign) {
                 expr = parseIdentifier(dbg);
             } else if (TOKEN(KWORD_NEW)) {
                 next();
-                auto ty   = parseType();
+                auto ty = parseType();
                 auto call = parseFunctionCall(ty);
 
                 expr = Syntax::N<Syntax::Expression::NewInstance>(call, ty);

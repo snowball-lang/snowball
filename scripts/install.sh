@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 set -e
 
 SNOWBALL_INSTALL_DIR=~/.snowball
@@ -6,7 +6,10 @@ SNOWBALL_INSTALL_DIR=~/.snowball
 OS=$(uname -s | awk '{print tolower($0)}')
 ARCH=$(uname -m)
 
-LIB_FOLDER="/usr/lib"
+if [[ "$LIB_FOLDER" == "" ]]; then
+    LIB_FOLDER="/usr/local/lib"
+fi
+
 YES="$1"
 
 if test -t 1; then

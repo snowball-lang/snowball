@@ -7,11 +7,14 @@ class Balls<T> {
     }
 }
 
-pub fn main() i32 {
-    let a = 0;
+pub fn hello() String {
+    return ""
+}
 
-    let b = new Balls<?String>("balls")
-    let x = new Balls<?i32>(2)
+pub fn main() i32 {
+
+    let x = new System::Heello()
+    let f = new Balls<?Core::ReturnType<?hello>>("balls")
 
     while a < 4 {
         System::println("hello")
@@ -24,3 +27,5 @@ pub fn main() i32 {
         c = c + 1;
     } while c < 4;
 }
+
+
