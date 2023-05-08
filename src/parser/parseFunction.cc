@@ -332,7 +332,7 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator,
         next();
         if (isExtern && is<TokenType::IDENTIFIER>() &&
             (!is<TokenType::SYM_COLCOL>(peek()))) {
-            assert_tok<TokenType::IDENTIFIER>("a type reference");
+            throwIfNotType();
             auto type = parseType();
 
             auto arg = new Syntax::Expression::Param(
@@ -348,7 +348,7 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator,
 
             consume<TokenType::SYM_COLLON>("':'");
 
-            assert_tok<TokenType::IDENTIFIER>("an identifier");
+            throwIfNotType();
             auto type = parseType();
 
             auto arg = new Syntax::Expression::Param(name, type);
@@ -387,6 +387,7 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator,
                 "Constructors return type default to the parent's class type!");
         }
 
+        throwIfNotType();
         returnType = parseType();
     } else {
         auto info  = new DBGSourceInfo(m_source_info, m_current.get_pos(),

@@ -34,6 +34,7 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
     next();
     if (is<TokenType::SYM_COLLON>()) {
         next();
+        throwIfNotType();
         parentClass = parseType();
     }
 

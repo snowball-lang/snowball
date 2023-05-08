@@ -473,7 +473,7 @@ static void handle_crash(int sig) {
     std::string _execpath = _get_exec_path();
 
     // Dump the backtrace to stderr with a message to the user
-    fprintf(stderr, "%s: Snowball crashed!\n", __FUNCTION__);
+    fprintf(stderr, "\n\n---------------- [ CRASH REPORT ] ----------------\n\n%s: Snowball crashed!\n", __FUNCTION__);
     fprintf(
         stderr,
         "%s: Oh no! Fluffy got into the code and caused an error! /ᐠ.ᆽ.ᐟ \\∫\n",
@@ -538,7 +538,7 @@ static void handle_crash(int sig) {
 
         free(strings);
     }
-    fprintf(stderr, "-- END OF BACKTRACE --\n");
+    fprintf(stderr, "\n-------------- [ END OF BACKTRACE ] ---------------\n\n");
 
     // Abort to pass the error to the OS
     abort();

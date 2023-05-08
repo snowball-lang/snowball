@@ -517,6 +517,8 @@ void Lexer::tokenize() {
                         tk.type = TokenType::KWORD_ENUM;
                     } else if (identifier == _SNOWBALL_KEYWORD__CASE) {
                         tk.type = TokenType::KWORD_CASE;
+                    } else if (identifier == _SNOWBALL_KEYWORD__DECLTYPE) {
+                        tk.type = TokenType::KWORD_DECLTYPE;
                     } else if (identifier == _SNOWBALL_KEYWORD__FUNCTION) {
                         tk.type = TokenType::KWORD_FUNC;
                     } else if (identifier == _SNOWBALL_KEYWORD__OPERATOR) {

@@ -76,6 +76,8 @@ Syntax::Expression::Base *Parser::parseExpr(bool allowAssign) {
                 expr = parseIdentifier(dbg);
             } else if (TOKEN(KWORD_NEW)) {
                 next();
+                throwIfNotType();
+
                 auto ty = parseType();
                 auto call = parseFunctionCall(ty);
 
@@ -135,7 +137,8 @@ Syntax::Expression::Base *Parser::parseExpr(bool allowAssign) {
                     expr->setDBGInfo(dbgInfo);
                 } else if (is<TokenType::KWORD_AS>(tk)) {
                     next(1);
-                    assert_tok<TokenType::IDENTIFIER>("a type reference");
+                    throwIfNotType();
+
                     auto ty = parseType();
                     prev();
 

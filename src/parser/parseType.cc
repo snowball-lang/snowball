@@ -11,8 +11,25 @@ using namespace snowball::Syntax::Expression;
 namespace snowball::parser {
 
 TypeRef *Parser::parseType() {
-    assert(is<TokenType::IDENTIFIER>());
+    throwIfNotType();
+    assert(is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>());
     auto pos = m_current.get_pos();
+
+    if (is<TokenType::KWORD_DECLTYPE>()) {
+        auto w = m_current.get_width();
+
+        next();
+        assert_tok<TokenType::BRACKET_LPARENT>("'('");
+
+        auto expr = parseExpr();
+        next();
+
+        consume<TokenType::BRACKET_RPARENT>("')'");
+
+
+        auto dbg = new DBGSourceInfo(m_source_info, pos, w);
+        return Syntax::N<DeclType>(expr, dbg);
+    }
 
     auto name = assert_tok<TokenType::IDENTIFIER>("a valid type").to_string();
 

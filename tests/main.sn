@@ -7,14 +7,12 @@ class Balls<T> {
     }
 }
 
-pub fn hello() String {
+pub fn hello() i32 {
     return ""
 }
 
 pub fn main() i32 {
-
-    let x = new System::Heello()
-    // let f = new Balls<?Core::ReturnType<?hello>>("balls")
+    let f = new Balls<?decltype(hello)>("balls")
 
     let a = 2
     while a < 4 {

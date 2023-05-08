@@ -176,6 +176,7 @@ enum class TokenType {
     KWORD_STATIC,         // Symbol: static
     KWORD_RETURN,         // Symbol: return
     KWORD_PRIVATE,        // Symbol: priv
+    KWORD_DECLTYPE,       // Symbol: decltype
     KWORD_DEFAULT,        // Symbol: default
     KWORD_TRY,            // Symbol: try
     KWORD_CATCH,          // Symbol: catch
@@ -361,6 +362,8 @@ struct Token {
                 return _SNOWBALL_KEYWORD__SUPER;
             case TokenType::KWORD_RETURN:
                 return _SNOWBALL_KEYWORD__RETURN;
+            case TokenType::KWORD_DECLTYPE:
+                return _SNOWBALL_KEYWORD__DECLTYPE;
             case TokenType::KWORD_EXTERN:
                 return _SNOWBALL_KEYWORD__EXTERN;
             case TokenType::KWORD_NEW:

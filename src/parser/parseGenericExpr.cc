@@ -23,7 +23,7 @@ std::vector<TypeRef *> Parser::parseGenericExpr() {
         if (is<TokenType::_EOF>()) {
             createError<UNEXPECTED_EOF>(
                 "Found an unexpected EOF while parsing generic expression");
-        } else if (is<TokenType::IDENTIFIER>()) {
+        } else if (isTypeValid()) {
             // Generate a new parameter instance
             auto ty = parseType();
             types.push_back(ty);
@@ -42,8 +42,8 @@ std::vector<TypeRef *> Parser::parseGenericExpr() {
             break;
         } else {
             createError<SYNTAX_ERROR>(
-                "Expected a vaid generic exoression but got '%s'",
-                m_current.to_string().c_str());
+                FMT("Expected a vaid generic expression but got '%s'",
+                m_current.to_string().c_str()), "Not a valid generic expression");
         }
     }
 

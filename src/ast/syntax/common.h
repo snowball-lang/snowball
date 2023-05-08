@@ -54,7 +54,7 @@ struct TypeRef : public types::Type, public Base {
     std::vector<TypeRef *> generics;
 
   public:
-    TypeRef(std::string p_name, snowball::DBGSourceInfo *p_dbg,
+    TypeRef(std::string p_name, DBGSourceInfo *p_dbg,
             std::vector<TypeRef *> p_generics = {});
 
     /// @brief Get type's generics
@@ -64,8 +64,24 @@ struct TypeRef : public types::Type, public Base {
     std::string getPrettyName() const override;
     void setGenerics(std::vector<TypeRef *> g);
 
+    /// @return true if it's a delctype(...)
+    virtual bool isTypeDecl() { return false; }
+
     ACCEPT()
     ~TypeRef() noexcept = default;
+};
+
+struct DeclType : public TypeRef {
+    Base* value;
+
+  public:
+    DeclType(Base* value, DBGSourceInfo* srcInfo);
+
+    /// @return the expr value to get the type from
+    auto getExpr() { return value; }
+
+    bool isTypeDecl() override { return true; }
+    ~DeclType() noexcept = default;
 };
 
 /// Function signature parameter helper node (name: type).

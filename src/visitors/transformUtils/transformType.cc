@@ -9,28 +9,19 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-namespace {
-Expression::Base* typeFromString(Expression::TypeRef *ty) {
-    auto name = ty->getName();
-    auto rfind = name.rfind("::");
-    if (rfind != std::string::npos) {
-        auto rightType = name.substr(rfind+2);
-        auto leftType = name.substr(0, rfind);
-
-        auto ident = Syntax::N<Expression::Identifier>(rightType);
-        auto index = Syntax::N<Expression::Index>(typeFromString(Syntax::N<Expression::TypeRef>(leftType, ty->getDBGInfo())), ident, true);
-        index->setDBGInfo(ty->getDBGInfo());
-        return index;
-    }
-
-    auto ident = Syntax::N<Expression::Identifier>(ty->getName());
-    ident->setDBGInfo(ty->getDBGInfo());
-    return ident;
-}
-}
-
 std::shared_ptr<types::Type>
 Transformer::transformType(Expression::TypeRef *ty) {
+    if (ty->isTypeDecl()) {
+        auto decl = utils::cast<Expression::DeclType>(ty);
+        assert(decl);
+
+        decl->getExpr()->accept(this);
+        return this->value->getType();
+    }
+
+    // TODO: segfaults with "function types" refs
+    // when used as generics
+
     auto name          = ty->getPrettyName();
     auto id            = ty->getName();
 

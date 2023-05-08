@@ -59,14 +59,14 @@ class Parser {
     // Utility functions for parsing
 
     /// Check if the current token is a certain token type
-    template <TokenType Ty> bool is() { return m_current.type == Ty; }
+    template <TokenType Ty> bool is() const { return m_current.type == Ty; }
     // Check if a token type is a certain type
-    template <TokenType Ty> bool is(Token p_tok) { return p_tok.type == Ty; }
+    template <TokenType Ty> bool is(Token p_tok) const { return p_tok.type == Ty; }
     // Comparison between 2 token types
-    template <TokenType Ty> bool is(TokenType p_ty) { return p_ty == Ty; }
+    template <TokenType Ty> bool is(TokenType p_ty) const { return p_ty == Ty; }
 
     // Check if a token mactches any of 2 types
-    template <TokenType Ty, TokenType Ty2> bool is(Token p_tok) {
+    template <TokenType Ty, TokenType Ty2> bool is(Token p_tok) const {
         return p_tok.type == Ty || p_tok.type == Ty2;
     }
 
@@ -80,6 +80,24 @@ class Parser {
     template <TokenType Ty> Token consume(std::string expectation) {
         assert_tok<Ty>(expectation);
         return next();
+    }
+
+    /**
+     * @brief It checks if the current token is viable
+     *  for parsing a type.
+     */
+    bool isTypeValid() const { return is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>(); }
+
+    /**
+     * @brief Throws an error if the current token does
+     *  not match the @fn isTypeValid standard
+     */
+    void throwIfNotType() const {
+      if (!isTypeValid()) {
+        createError<SYNTAX_ERROR>(
+          FMT("Expected a valid type declaration but found '%s' instead",
+          m_current.to_string().c_str()), "Types cant start like this");
+      }
     }
 
     /**

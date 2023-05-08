@@ -50,7 +50,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
             auto ir  = std::tuple_cat(r, std::make_tuple(false));
 
             baseName = getNiceBaseName(ir) + "::";
-        } else if (auto b = utils::cast<Expression::Index>(x->getBase())) {
+        } else if (auto b = utils::cast<Expression::Index>(indexBase)) {
             auto [r, _] = getFromIndex(b->getDBGInfo(), b, b->isStatic);
             auto m      = std::get<4>(r);
             utils::assert_value_type<std::shared_ptr<ir::Module>&,
@@ -58,11 +58,11 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
 
             inModule = m.has_value();
             baseName = getNiceBaseName(r) + "::";
-        } else if (auto b = utils::cast<Expression::TypeRef>(x->getBase())) {
-            baseName = b->getPrettyName() + "::";
+        } else if (auto b = utils::cast<Expression::TypeRef>(indexBase)) {
+            baseName = transformType(b)->getPrettyName() + "::";
         }
 
-        auto g = utils::cast<Expression::GenericIdentifier>(x->getBase());
+        auto g = utils::cast<Expression::GenericIdentifier>(indexBase);
         auto generics = (g != nullptr) ? g->getGenerics()
                                        : std::vector<Expression::TypeRef *>{};
 

@@ -11,6 +11,8 @@ namespace snowball {
 namespace Syntax {
 namespace Expression {
 
+DeclType::DeclType(Base* value, DBGSourceInfo* srcInfo) : value(value),
+    TypeRef("$decltype", srcInfo) {};
 PseudoVariable::PseudoVariable(std::string identifier)
     : identifier(identifier) {};
 TypeRef::TypeRef(std::string p_name, snowball::DBGSourceInfo *p_dbg,
