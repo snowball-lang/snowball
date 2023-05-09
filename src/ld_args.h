@@ -15,12 +15,14 @@
     }
 #elif __APPLE__
 #define LD_ARGS()                                                              \
-    {                                                                          \
-        LD_PATH, "-arch", "x86_64", "/usr/lib/crt1.10.6.o", "/usr/lib/crti.o", \
-            "/usr/lib/crtn.o", "-L/usr/lib/gcc", "-L" STATICLIB_DIR,           \
-            LLVM_LDFLAGS,                                                      \
-            "-L" STATICLIB_DIR PATH_SEPARATOR _SNOWBALL_LIBRARY_DIR, p_input,  \
-            "-lSnowballRuntime", "-lc", "-lSystem", "-e", "main"               \
+    {                                                                              \
+        LD_PATH, "-macosx_version_min", "10.10.0",                                 \
+            "/usr/lib/crt1.10.5.o",                                                \
+            "/usr/lib/crti.o",                                                     \
+            "/usr/lib/system/libdyld.dylib",                                       \
+            "-L/usr/local/lib", LLVM_LDFLAGS,                                      \
+            "-L" STATICLIB_DIR PATH_SEPARATOR _SNOWBALL_LIBRARY_DIR, p_input,      \
+            "-lSnowballRuntime", "-lc", "-lSystem", "-lm", "/usr/lib/crtn.o"        \
     }
 #elif __linux__
 #define LD_ARGS()                                                              \
