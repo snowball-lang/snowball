@@ -1,7 +1,8 @@
 
 #include "../../DefiniteAssigment.h"
-#include <optional>
+
 #include <algorithm>
+#include <optional>
 
 namespace snowball {
 namespace Syntax {

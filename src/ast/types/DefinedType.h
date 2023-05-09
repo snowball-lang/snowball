@@ -31,7 +31,8 @@ class FunctionType;
  */
 class DefinedType : public AcceptorExtend<DefinedType, Type>,
                     public ir::IdMixin,
-                    public DBGObject {
+                    public DBGObject,
+                    public std::enable_shared_from_this<DefinedType> {
   public:
     /**
      * @brief A class field represents all of the "elements" a

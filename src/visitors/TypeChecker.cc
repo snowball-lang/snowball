@@ -12,8 +12,8 @@
 #include "../ir/values/IndexExtract.h"
 #include "../ir/values/Return.h"
 #include "../ir/values/Value.h"
-#include "../ir/values/WhileLoop.h"
 #include "../ir/values/VariableDeclaration.h"
+#include "../ir/values/WhileLoop.h"
 
 #include <assert.h>
 #include <string>

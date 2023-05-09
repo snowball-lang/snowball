@@ -15,7 +15,8 @@ Conditional *Parser::parseConditional() {
     auto info = DBGSourceInfo::fromToken(m_source_info, m_current);
     auto expr = parseExpr(false);
 
-    auto block = parseBlock(); prev();
+    auto block = parseBlock();
+    prev();
 
     auto node = Syntax::N<Conditional>(expr, block);
     node->setDBGInfo(info);

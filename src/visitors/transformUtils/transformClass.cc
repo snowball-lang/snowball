@@ -23,42 +23,45 @@ Transformer::transformClass(const std::string& uuid,
 
             std::shared_ptr<types::DefinedType> parentType = nullptr;
             if (auto x = ty->getParent()) {
-                parentType = utils::dyn_cast<types::DefinedType>(transformType(x));
+                parentType =
+                    utils::dyn_cast<types::DefinedType>(transformType(x));
             }
 
             auto generics = typeRef != nullptr
                                 ? vector_iterate<Expression::TypeRef *,
-                                                std::shared_ptr<types::Type>>(
-                                    typeRef->getGenerics(),
-                                    [&](auto t) { return transformType(t); })
+                                                 std::shared_ptr<types::Type>>(
+                                      typeRef->getGenerics(),
+                                      [&](auto t) { return transformType(t); })
                                 : std::vector<std::shared_ptr<types::Type>>{};
 
             auto classGenerics = ty->getGenerics();
             for (int genericCount = 0; genericCount < generics.size();
-                genericCount++) {
+                 genericCount++) {
                 auto item = std::make_shared<transform::Item>(
                     generics.at(genericCount));
 
-                ctx->addItem(classGenerics.at(genericCount)->getName(),
-                    item);
+                ctx->addItem(classGenerics.at(genericCount)->getName(), item);
             }
 
             auto basedName  = getNameWithBase(ty->getName());
             auto baseFields = vector_iterate<Statement::VariableDecl *,
-                                            types::DefinedType::ClassField *>(
+                                             types::DefinedType::ClassField *>(
                 ty->getVariables(), [&](auto v) {
                     auto varTy = transformType(v->getDefinedType());
-                    return new types::DefinedType::ClassField(v->getName(), varTy);
+                    return new types::DefinedType::ClassField(v->getName(),
+                                                              varTy);
                 });
 
-            auto fields = getMemberList(ty->getVariables(), baseFields, parentType);
+            auto fields =
+                getMemberList(ty->getVariables(), baseFields, parentType);
 
             auto baseUuid      = ctx->createIdentifierName(ty->getName());
             auto existantTypes = ctx->cache->getTransformedType(uuid);
 
             auto _uuid =
                 baseUuid + ":" +
-                utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
+                utils::itos(existantTypes.has_value() ? existantTypes->size()
+                                                      : 0);
 
             transformedType = std::make_shared<types::DefinedType>(
                 basedName, _uuid, ctx->module, fields, parentType, generics);

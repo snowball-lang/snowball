@@ -10,7 +10,7 @@
     (utils::dyn_cast<types::Int8Type>(x) ||                                    \
      utils::dyn_cast<types::Int16Type>(x) ||                                   \
      utils::dyn_cast<types::Int32Type>(x) ||                                   \
-     utils::dyn_cast<types::Int64Type>(x) || \
+     utils::dyn_cast<types::Int64Type>(x) ||                                   \
      utils::dyn_cast<types::BoolType>(x))
 #define IS_FLOAT(x)                                                            \
     (utils::dyn_cast<types::Float32Type>(x) ||                                 \

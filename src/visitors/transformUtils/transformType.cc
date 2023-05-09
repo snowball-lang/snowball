@@ -11,6 +11,11 @@ namespace Syntax {
 
 std::shared_ptr<types::Type>
 Transformer::transformType(Expression::TypeRef *ty) {
+
+    if (auto x = ty->_getInternalType()) {
+        return x;
+    }
+
     if (ty->isTypeDecl()) {
         auto decl = utils::cast<Expression::DeclType>(ty);
         assert(decl);
@@ -22,8 +27,8 @@ Transformer::transformType(Expression::TypeRef *ty) {
     // TODO: segfaults with "function types" refs
     // when used as generics
 
-    auto name          = ty->getPrettyName();
-    auto id            = ty->getName();
+    auto name = ty->getPrettyName();
+    auto id   = ty->getName();
 
     auto typeExpr = typeFromString(ty);
 
@@ -40,7 +45,8 @@ Transformer::transformType(Expression::TypeRef *ty) {
                     return transformed;
                 }
             }
-        } if (auto x = ctx->cache->getType(uuid)) {
+        }
+        if (auto x = ctx->cache->getType(uuid)) {
             auto cls = *x;
 
             // TODO: check for default generic types
@@ -71,9 +77,11 @@ Transformer::transformType(Expression::TypeRef *ty) {
             E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
         }
 
-        E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()), errorReason);
+        E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()),
+                      errorReason);
     } else if (auto x = utils::cast<Expression::Index>(typeExpr)) {
-        auto [_v, type, _o, _f, _m, canPrivate] = getFromIndex(ty->getDBGInfo(), x, true).first;
+        auto [_v, type, _o, _f, _m, canPrivate] =
+            getFromIndex(ty->getDBGInfo(), x, true).first;
 
         std::string errorReason;
         if (_v.has_value()) {
@@ -88,7 +96,8 @@ Transformer::transformType(Expression::TypeRef *ty) {
             E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
         }
 
-        E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()), errorReason);
+        E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()),
+                      errorReason);
     }
 
     if (ty->getGenerics().size() > 0) {

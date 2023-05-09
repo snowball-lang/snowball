@@ -1,30 +1,18 @@
 use Core::System
 
 class Balls<T> {
-    pub:
+  pub:
     Balls(x: T) {
-        System::println(x)
+        x()
     }
 }
 
-pub fn hello() i32 {
-    return ""
+pub fn hello() {
+    System::println("hello")
 }
 
 pub fn main() i32 {
-    let f = new Balls<?decltype(hello)>("balls")
-
-    let a = 2
-    while a < 4 {
-        System::println("hello")
-        a = a + 1
-    }
-
-    let c = 0;
-    do {
-        System::println("cya")
-        c = c + 1;
-    } while c < 4;
+    let f = new Balls<?decltype(hello)>(hello)
 }
 
 

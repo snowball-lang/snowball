@@ -208,12 +208,16 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      */
     bool isInClassContext(std::shared_ptr<types::Type> ty);
     /**
-     * Retrieves the boolean value of the given shared pointer to an ir::Value object.
+     * Retrieves the boolean value of the given shared pointer to an ir::Value
+     * object.
      *
-     * @param value A shared pointer to an ir::Value object to retrieve the boolean value from.
-     * @return A shared pointer to an ir::Value object representing the boolean value of the given value object.
+     * @param value A shared pointer to an ir::Value object to retrieve the
+     * boolean value from.
+     * @return A shared pointer to an ir::Value object representing the boolean
+     * value of the given value object.
      */
-    std::shared_ptr<ir::Value> getBooleanValue(std::shared_ptr<ir::Value> value);
+    std::shared_ptr<ir::Value>
+    getBooleanValue(std::shared_ptr<ir::Value> value);
     /**
      * Check if the current module has a valid (or private) context.
      *
@@ -313,7 +317,6 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     void addModule(std::shared_ptr<ir::Module> m);
     /// @brief Transforms a special type. For example, the
 
-
   public:
     Transformer(std::shared_ptr<ir::Module> mod, SourceInfo *srci);
 
@@ -336,15 +339,18 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
 };
 
 namespace {
-Expression::Base* typeFromString(Expression::TypeRef *ty) {
-    auto name = ty->getName();
+Expression::Base *typeFromString(Expression::TypeRef *ty) {
+    auto name  = ty->getName();
     auto rfind = name.rfind("::");
     if (rfind != std::string::npos) {
-        auto rightType = name.substr(rfind+2);
-        auto leftType = name.substr(0, rfind);
+        auto rightType = name.substr(rfind + 2);
+        auto leftType  = name.substr(0, rfind);
 
         auto ident = Syntax::N<Expression::Identifier>(rightType);
-        auto index = Syntax::N<Expression::Index>(typeFromString(Syntax::N<Expression::TypeRef>(leftType, ty->getDBGInfo())), ident, true);
+        auto index = Syntax::N<Expression::Index>(
+            typeFromString(
+                Syntax::N<Expression::TypeRef>(leftType, ty->getDBGInfo())),
+            ident, true);
         index->setDBGInfo(ty->getDBGInfo());
         return index;
     }
@@ -353,7 +359,7 @@ Expression::Base* typeFromString(Expression::TypeRef *ty) {
     ident->setDBGInfo(ty->getDBGInfo());
     return ident;
 }
-}
+} // namespace
 
 } // namespace Syntax
 } // namespace snowball

@@ -373,7 +373,7 @@ struct Token {
             case TokenType::KWORD_CATCH:
                 return _SNOWBALL_KEYWORD__CATCH;
 
-            // Literal values
+                // Literal values
 
             case TokenType::VALUE_NUMBER:
             case TokenType::VALUE_FLOAT:

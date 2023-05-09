@@ -11,15 +11,19 @@ namespace snowball {
 namespace Syntax {
 namespace Expression {
 
-DeclType::DeclType(Base* value, DBGSourceInfo* srcInfo) : value(value),
-    TypeRef("$decltype", srcInfo) {};
+DeclType::DeclType(Base *value, DBGSourceInfo *srcInfo)
+    : value(value), TypeRef("$decltype", srcInfo){};
 PseudoVariable::PseudoVariable(std::string identifier)
-    : identifier(identifier) {};
+    : identifier(identifier){};
 TypeRef::TypeRef(std::string p_name, snowball::DBGSourceInfo *p_dbg,
                  std::vector<TypeRef *> p_generics)
     : generics(p_generics), types::Type(REF, p_name) {
     setDBGInfo(p_dbg);
 }
+TypeRef::TypeRef(std::string p_name, DBGSourceInfo *p_dbg,
+            std::shared_ptr<types::Type> internalType)
+    : internalType(internalType), types::Type(REF, p_name)
+    {setDBGInfo(p_dbg);}
 void TypeRef::setGenerics(std::vector<TypeRef *> g) { generics = g; }
 std::vector<Expression::TypeRef *> GenericIdentifier::getGenerics() const {
     return generics;

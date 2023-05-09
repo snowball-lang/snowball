@@ -53,16 +53,27 @@ struct Base : public AcceptorExtend<Base, Node> {
 struct TypeRef : public types::Type, public Base {
     std::vector<TypeRef *> generics;
 
+    /// @brief Internal type when using @fn types::Type::toRef().
+    /// @note this shoudn't be used for normal usage!
+    std::shared_ptr<types::Type> internalType = nullptr;
+
   public:
     TypeRef(std::string p_name, DBGSourceInfo *p_dbg,
             std::vector<TypeRef *> p_generics = {});
+    TypeRef(std::string p_name, DBGSourceInfo *p_dbg,
+            std::shared_ptr<types::Type> internalType);
 
     /// @brief Get type's generics
     std::vector<TypeRef *> getGenerics();
     /// @return A good looking, human readable representation of
     ///  this type.
     std::string getPrettyName() const override;
+    /// @brief Set a generic list for this type
     void setGenerics(std::vector<TypeRef *> g);
+
+    /// @return Internal type when using @fn types::Type::toRef().
+    /// @note this shoudn't be used for normal usage!
+    auto _getInternalType() { return internalType; }
 
     /// @return true if it's a delctype(...)
     virtual bool isTypeDecl() { return false; }
@@ -72,10 +83,10 @@ struct TypeRef : public types::Type, public Base {
 };
 
 struct DeclType : public TypeRef {
-    Base* value;
+    Base *value;
 
   public:
-    DeclType(Base* value, DBGSourceInfo* srcInfo);
+    DeclType(Base *value, DBGSourceInfo *srcInfo);
 
     /// @return the expr value to get the type from
     auto getExpr() { return value; }

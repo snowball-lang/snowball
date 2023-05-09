@@ -94,7 +94,7 @@ std::string DefinedType::getMangledName() const {
 }
 
 Syntax::Expression::TypeRef *DefinedType::toRef() {
-    auto tRef = Syntax::TR(getUUID(), nullptr);
+    auto tRef = Syntax::TR(getUUID(), nullptr, shared_from_this());
     std::vector<Syntax::Expression::TypeRef *> genericRef;
     for (auto g : generics) {
         genericRef.push_back(g->toRef());

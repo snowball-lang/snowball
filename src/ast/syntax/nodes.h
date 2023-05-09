@@ -610,7 +610,8 @@ struct WhileLoop : public AcceptorExtend<WhileLoop, Base> {
      * It has the same characteristics as a while loop except that
      *  it has some differentiations. As the name suggests, a do-while
      *  executes the instructions block before doing the check. For example,
-     *  we can use it the following (PSEUDOCODE): this will execute "hello" 5 times.
+     *  we can use it the following (PSEUDOCODE): this will execute "hello" 5
+     * times.
      * ```
      * 1 | A = 0
      * 2 | DO {
@@ -622,8 +623,9 @@ struct WhileLoop : public AcceptorExtend<WhileLoop, Base> {
     bool doWhile = false;
 
   public:
-    explicit WhileLoop(Expression::Base *cond, Block *insts, bool isDoWhile = false)
-        : cond(cond), insts(insts), doWhile(isDoWhile) {};
+    explicit WhileLoop(Expression::Base *cond, Block *insts,
+                       bool isDoWhile = false)
+        : cond(cond), insts(insts), doWhile(isDoWhile){};
 
     /// @return body block instructions to execute
     //   each iterator if the condition is truth

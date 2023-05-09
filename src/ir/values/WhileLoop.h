@@ -17,14 +17,14 @@ namespace ir {
 /**
  * @class WhileLoop
  * @brief A class representing a while loop in the abstract syntax tree (AST).
- * @tparam AcceptorExtend<WhileLoop, Value> A template parameter indicating that the
- *         `WhileLoop` class is an acceptor that can accept visitors and extends the
+ * @tparam AcceptorExtend<WhileLoop, Value> A template parameter indicating that
+ * the `WhileLoop` class is an acceptor that can accept visitors and extends the
  *         `Value` class.
  *
  * This class represents a while loop statement in the AST. It is a subclass of
- * `AcceptorExtend` and extends the `Value` class. The `WhileLoop` class is used to
- * represent loops in the AST, where the loop condition is checked before each
- * iteration of the loop body.
+ * `AcceptorExtend` and extends the `Value` class. The `WhileLoop` class is used
+ * to represent loops in the AST, where the loop condition is checked before
+ * each iteration of the loop body.
  */
 class WhileLoop : public AcceptorExtend<WhileLoop, Value> {
 
@@ -38,9 +38,8 @@ class WhileLoop : public AcceptorExtend<WhileLoop, Value> {
 
   public:
     explicit WhileLoop(std::shared_ptr<Value> cond,
-                         std::shared_ptr<Block> insts,
-                         bool doWhile = false)
-        : cond(cond), insts(insts), doWhile(doWhile) {};
+                       std::shared_ptr<Block> insts, bool doWhile = false)
+        : cond(cond), insts(insts), doWhile(doWhile){};
 
     /// @return body block instructions to execute
     //   if the condition is met each iteration

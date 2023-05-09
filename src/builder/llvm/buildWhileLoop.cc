@@ -12,8 +12,8 @@ void LLVMBuilder::visit(ir::WhileLoop *c) {
     auto parent = ctx->getCurrentFunction();
     assert(parent);
 
-    auto condBB = h.create<llvm::BasicBlock>(*context, "", parent);
-    auto whileBB = h.create<llvm::BasicBlock>(*context, "", parent);
+    auto condBB     = h.create<llvm::BasicBlock>(*context, "", parent);
+    auto whileBB    = h.create<llvm::BasicBlock>(*context, "", parent);
     auto continueBB = h.create<llvm::BasicBlock>(*context, "", parent);
 
     if (c->isDoWhile()) {
@@ -29,7 +29,6 @@ void LLVMBuilder::visit(ir::WhileLoop *c) {
         builder->SetInsertPoint(condBB);
         auto cond = build(c->getCondition().get());
         builder->CreateCondBr(cond, whileBB, continueBB);
-
 
         builder->SetInsertPoint(continueBB);
     } else {

@@ -14,7 +14,8 @@ bool Transformer::bodyReturns(std::vector<Node *> exprs) {
             if (bodyReturns(b->getStmts())) return true;
         } else if (auto c = cast<Statement::Conditional>(expr)) {
             auto elseBlock = c->getElse();
-            if (bodyReturns(c->getBlock()->getStmts()) && elseBlock && bodyReturns(elseBlock->getStmts())) {
+            if (bodyReturns(c->getBlock()->getStmts()) && elseBlock &&
+                bodyReturns(elseBlock->getStmts())) {
                 return true;
             }
         }

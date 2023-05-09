@@ -26,7 +26,6 @@ TypeRef *Parser::parseType() {
 
         consume<TokenType::BRACKET_RPARENT>("')'");
 
-
         auto dbg = new DBGSourceInfo(m_source_info, pos, w);
         return Syntax::N<DeclType>(expr, dbg);
     }
@@ -36,7 +35,8 @@ TypeRef *Parser::parseType() {
     next();
     while (is<TokenType::SYM_COLCOL>()) {
         next();
-        name += "::" + assert_tok<TokenType::IDENTIFIER>("a valid type").to_string();
+        name += "::" +
+                assert_tok<TokenType::IDENTIFIER>("a valid type").to_string();
         next();
     }
 

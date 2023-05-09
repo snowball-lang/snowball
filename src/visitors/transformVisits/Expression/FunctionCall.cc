@@ -62,7 +62,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
             baseName = transformType(b)->getPrettyName() + "::";
         }
 
-        auto g = utils::cast<Expression::GenericIdentifier>(indexBase);
+        auto g        = utils::cast<Expression::GenericIdentifier>(indexBase);
         auto generics = (g != nullptr) ? g->getGenerics()
                                        : std::vector<Expression::TypeRef *>{};
 
@@ -140,7 +140,9 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 (argTypes.size() - func->hasParent())) {
 
                 ctx->withState(
-                    ctx->cache->getFunctionState(func->getId()), [&argTypes=argTypes, this, call, args, &argValues=argValues, p_node]() {
+                    ctx->cache->getFunctionState(func->getId()),
+                    [&argTypes  = argTypes, this, call, args,
+                     &argValues = argValues, p_node]() {
                         // add default arguments
                         for (auto arg =
                                  std::next(args.begin(), argTypes.size());
