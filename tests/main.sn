@@ -12,7 +12,8 @@ pub fn hello() {
 }
 
 pub fn main() i32 {
-    let f = new Balls<?decltype(hello)>(hello)
+    new System::Hello();
+    let f = new Balls<?Core::ReturnType<?decltype(hello)>>(hello)
 }
 
 

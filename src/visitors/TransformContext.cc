@@ -68,6 +68,21 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod)
     }
 
     addItem(types::Int32Type::TYPE_ALIAS, _Int32Type);
+
+    auto coreMod = std::make_shared<ir::Module>("Core", imports->CORE_UUID);
+    auto coreModItem = std::make_shared<transform::Item>(coreMod);
+    addItem("Core", coreModItem);
+
+    std::vector<std::string> coreBuiltins = {"ReturnType"};
+
+    for (auto builtin : coreBuiltins) {
+        auto baseUuid = imports->CORE_UUID + "." + builtin;
+        auto transformedType = std::make_shared<types::DefinedType>(
+            builtin.c_str(), baseUuid, coreMod);
+
+        auto item = std::make_shared<transform::Item>(transformedType);
+        cache->setTransformedType(baseUuid, item);
+    }
 };
 
 /// @brief get a saved state of the context

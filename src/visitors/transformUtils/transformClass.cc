@@ -62,7 +62,6 @@ Transformer::transformClass(const std::string& uuid,
                 baseUuid + ":" +
                 utils::itos(existantTypes.has_value() ? existantTypes->size()
                                                       : 0);
-
             transformedType = std::make_shared<types::DefinedType>(
                 basedName, _uuid, ctx->module, fields, parentType, generics);
 
@@ -72,7 +71,6 @@ Transformer::transformClass(const std::string& uuid,
 
             auto item = std::make_shared<transform::Item>(transformedType);
             ctx->cache->setTransformedType(_uuid, item);
-            ctx->addItem(ty->getName(), item);
 
             for (auto fn : ty->getFunctions()) {
                 fn->accept(this);

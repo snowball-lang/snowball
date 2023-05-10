@@ -3,7 +3,7 @@
 #error "LIBC_VERSION not defined! (e.g. \"8\")"
 #endif
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) ||              \
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) ||                 \
     defined(__NT__) // TODO: test this
 #define LD_ARGS()                                                              \
     {                                                                          \
@@ -15,14 +15,12 @@
     }
 #elif __APPLE__
 #define LD_ARGS()                                                              \
-    {                                                                              \
-        LD_PATH, "-macosx_version_min", "10.10.0",                                 \
-            "/usr/lib/crt1.10.5.o",                                                \
-            "/usr/lib/crti.o",                                                     \
-            "/usr/lib/system/libdyld.dylib",                                       \
-            "-L/usr/local/lib", LLVM_LDFLAGS,                                      \
-            "-L" STATICLIB_DIR PATH_SEPARATOR _SNOWBALL_LIBRARY_DIR, p_input,      \
-            "-lSnowballRuntime", "-lc", "-lSystem", "-lm", "/usr/lib/crtn.o"        \
+    {                                                                          \
+        LD_PATH, "-macosx_version_min", "10.10.0", "/usr/lib/crt1.o",          \
+            "/usr/lib/crti.o", "/usr/lib/system/libdyld.dylib",                \
+            "-L/usr/local/lib", LLVM_LDFLAGS,                                  \
+            "-L" STATICLIB_DIR PATH_SEPARATOR _SNOWBALL_LIBRARY_DIR, p_input,  \
+            "-lSnowballRuntime", "-lc", "-lSystem", "-lm", "/usr/lib/crtn.o"   \
     }
 #elif __linux__
 #define LD_ARGS()                                                              \

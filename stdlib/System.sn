@@ -1,6 +1,10 @@
 
 use Core::CLib
 
+class Hello {
+    pub: Hello() {  }
+}
+
 /**
  * @brief Causes the program to terminate with the specified exit code.
  *
