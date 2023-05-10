@@ -44,7 +44,7 @@ void Compiler::compile(bool verbose) {
         throw SNError(Error::COMPILER_ERROR,
                       "Compiler has not been initialized!");
     }
-#if _SNOWBALL_CODEGEN_DEBUG == 0
+#if  _SNOWBALL_TIMERS_DEBUG == 0
 #define SHOW_STATUS(status)                                                    \
     if (!verbose) status;
 #else
@@ -58,9 +58,9 @@ void Compiler::compile(bool verbose) {
         SHOW_STATUS(Logger::compiling(Logger::progress(0.30)))
         auto lexer = new Lexer(_source_info);
 
-#if _SNOWBALL_CODEGEN_DEBUG
+#if _SNOWBALL_TIMERS_DEBUG
         std::vector<Token> tokens;
-        DEBUG_CODEGEN("Lexer: %fs", utils::_timer([&] {
+        DEBUG_TIMER("Lexer: %fs", utils::_timer([&] {
                           lexer->tokenize();
                           tokens = lexer->tokens;
                       }));
@@ -73,9 +73,9 @@ void Compiler::compile(bool verbose) {
             SHOW_STATUS(Logger::compiling(Logger::progress(0.50)))
 
             auto parser = new parser::Parser(tokens, _source_info);
-#if _SNOWBALL_CODEGEN_DEBUG
+#if _SNOWBALL_TIMERS_DEBUG
             parser::Parser::NodeVec ast;
-            DEBUG_CODEGEN("Parser: %fs",
+            DEBUG_TIMER("Parser: %fs",
                           utils::_timer([&] { ast = parser->parse(); }));
 #else
             auto ast = parser->parse();
@@ -93,8 +93,8 @@ void Compiler::compile(bool verbose) {
                 mainModule->downcasted_shared_from_this<ir::Module>(),
                 _source_info);
 
-#if _SNOWBALL_CODEGEN_DEBUG
-            DEBUG_CODEGEN("Simplifier: %fs",
+#if _SNOWBALL_TIMERS_DEBUG
+            DEBUG_TIMER("Simplifier: %fs",
                           utils::_timer([&] { simplifier->visit(ast); }));
 #else
             simplifier->visit(ast);
@@ -102,8 +102,8 @@ void Compiler::compile(bool verbose) {
 
             SHOW_STATUS(Logger::compiling(Logger::progress(0.60)))
 
-#if _SNOWBALL_CODEGEN_DEBUG
-            DEBUG_CODEGEN("Passes: %fs", utils::_timer([&] {
+#if _SNOWBALL_TIMERS_DEBUG
+            DEBUG_TIMER("Passes: %fs", utils::_timer([&] {
                               for (auto pass : passes) pass->run(ast);
                           }));
 #else
@@ -116,8 +116,8 @@ void Compiler::compile(bool verbose) {
 
             auto typeChecker = new codegen::TypeChecker(mainModule);
 
-#if _SNOWBALL_CODEGEN_DEBUG
-            DEBUG_CODEGEN("TypeChecker: %fs",
+#if _SNOWBALL_TIMERS_DEBUG
+            DEBUG_TIMER("TypeChecker: %fs",
                           utils::_timer([&] { typeChecker->codegen(); }));
 #else
             typeChecker->codegen();
@@ -152,15 +152,7 @@ toml::parse_result Compiler::get_config() {
                       name.c_str(), BGRN, RESET));
 }
 
-void Compiler::cleanup() {
-#if _SNOWBALL_SYMTABLE_DEBUG
-    PRINT_LINE("Enviroment:")
-    PRINT_LINE(LINE_SEPARATOR)
-
-    // TODO:
-    PRINT_LINE(LINE_SEPARATOR)
-#endif
-}
+void Compiler::cleanup() {}
 
 int Compiler::emit_object(std::string out, bool log) {
     auto builder = new codegen::LLVMBuilder(module);

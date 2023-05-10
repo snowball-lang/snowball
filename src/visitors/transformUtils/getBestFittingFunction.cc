@@ -11,8 +11,7 @@ std::tuple<Cache::FunctionStore, std::vector<std::shared_ptr<types::Type>>,
 Transformer::getBestFittingFunction(
     const std::vector<Cache::FunctionStore>& overloads,
     const std::vector<std::shared_ptr<types::Type>>& arguments,
-    const std::vector<Expression::TypeRef *>& generics,
-    bool isIdentifier) {
+    const std::vector<Expression::TypeRef *>& generics, bool isIdentifier) {
 
     std::vector<std::pair<Cache::FunctionStore,
                           std::vector<std::shared_ptr<types::Type>>>>
@@ -22,7 +21,8 @@ Transformer::getBestFittingFunction(
         auto fn = n.function;
 
         if (ir::Func::argumentSizesEqual(getActualFunctionArgs(n), arguments,
-                                         fn->isVariadic()) || isIdentifier) {
+                                         fn->isVariadic()) ||
+            isIdentifier) {
             auto genericArguments =
                 utils::vector_iterate<Expression::TypeRef *,
                                       std::shared_ptr<types::Type>>(

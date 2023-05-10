@@ -134,8 +134,8 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
                           FMT("Function '%s' is not defined!", name.c_str()));
     }
 
-    auto [fn, args, res] =
-        getBestFittingFunction(overloads.value(), arguments, generics, isIdentifier);
+    auto [fn, args, res] = getBestFittingFunction(overloads.value(), arguments,
+                                                  generics, isIdentifier);
     switch (res) {
         case Ok: {
             return checkIfContextEqual(transformFunction(fn, args));

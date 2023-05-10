@@ -15,8 +15,10 @@ Transformer::transformType(Expression::TypeRef *ty) {
     auto name = ty->getPrettyName();
     auto id   = ty->getName();
 
-    if (auto x = transformSpecialType(ty)) { return x; }
-    
+    if (auto x = transformSpecialType(ty)) {
+        return x;
+    }
+
     if (auto x = ty->_getInternalType()) {
         return x;
     }

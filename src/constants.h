@@ -88,8 +88,9 @@ typedef int32_t snowball_int_t;
 #define _SNOWBALL_LEXER_DEBUG    0
 #define _SNOWBALL_PARSER_DEBUG   0
 #define _SNOWBALL_CODEGEN_DEBUG  0
-#define _SNOWBALL_BYTECODE_DEBUG 1
+#define _SNOWBALL_BYTECODE_DEBUG 0
 #define _SNOWBALL_SYMTABLE_DEBUG 0
+#define _SNOWBALL_TIMERS_DEBUG   1
 #define _SNOWBALL_FREE_DEBUG     0 // todo
 
 #define PRINT_LINE(...)                                                        \
@@ -109,8 +110,14 @@ typedef int32_t snowball_int_t;
 #define DEBUG_PARSER(...)
 #endif
 
+#if _SNOWBALL_TIMERS_DEBUG
+#define DEBUG_TIMER(...) PRINT_LINE(__VA_ARGS__)
+#else
+#define DEBUG_TIMER(...)
+#endif
+
 #if _SNOWBALL_SYMTABLE_DEBUG
-#define DEBUG_SYMTABLE(...)                                                    \
+#define DEBUG_SYMTABLE(depth, ...)                                             \
     printf("%*s", depth * 4, " ");                                             \
     PRINT_LINE(__VA_ARGS__)
 #else

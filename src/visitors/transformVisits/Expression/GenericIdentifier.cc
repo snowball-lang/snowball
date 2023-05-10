@@ -20,9 +20,10 @@ SN_TRANSFORMER_VISIT(Expression::GenericIdentifier) {
     if (value) {
         E<VARIABLE_ERROR>(p_node, "Values cant contain generics!");
     } else if (functions || overloads) {
-        auto c =
-            getFunction(p_node, {value, type, functions, overloads, mod, /*TODO: test this: */false}, name, {},
-                        p_node->getGenerics(), true);
+        auto c = getFunction(p_node,
+                             {value, type, functions, overloads, mod,
+                              /*TODO: test this: */ false},
+                             name, {}, p_node->getGenerics(), true);
 
         auto var = ctx->module->N<ir::ValueExtract>(p_node->getDBGInfo(), c);
         var->setType(c->getType());
