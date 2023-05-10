@@ -19,36 +19,20 @@ SN_TRANSFORMER_VISIT(Expression::GenericIdentifier) {
 
     if (value) {
         E<VARIABLE_ERROR>(p_node, "Values cant contain generics!");
-    } else if (functions) {
-        assert(false && "TODO: Function value with generic identifire!");
+    } else if (functions || overloads) {
+        auto c =
+            getFunction(p_node, {value, type, functions, overloads, mod, /*TODO: test this: */false}, name, {},
+                        p_node->getGenerics(), true);
+
+        auto var = ctx->module->N<ir::ValueExtract>(p_node->getDBGInfo(), c);
+        var->setType(c->getType());
+
+        this->value = var;
+        return;
     } else if (type) {
         E<VARIABLE_ERROR>(p_node, "Can't use types as values!");
     } else if (mod) {
         E<VARIABLE_ERROR>(p_node, "Can't use modules as values!");
-    } else if (overloads) {
-        // TODO: check if parent node is a cast
-        if (overloads->size() > 1) {
-            E<VARIABLE_ERROR>(
-                p_node,
-                FMT("Identifier points to a function with multiple overloads!",
-                    p_node->getIdentifier().c_str()));
-        }
-
-        // There can only be 1 function overload without casting
-        auto function = overloads->at(0);
-
-        auto [deduced, message] = deduceFunction(function, {}, generics);
-        if (!message.empty()) {
-            E<VARIABLE_ERROR>(p_node, message);
-        }
-
-        auto ptr = transformFunction(function, deduced);
-
-        auto var = ctx->module->N<ir::ValueExtract>(p_node->getDBGInfo(), ptr);
-        var->setType(ptr->getType());
-
-        this->value = var;
-        return;
     }
 
     assert(false && "BUG: Unhandled value type!");

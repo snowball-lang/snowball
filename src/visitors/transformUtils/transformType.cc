@@ -12,6 +12,11 @@ namespace Syntax {
 std::shared_ptr<types::Type>
 Transformer::transformType(Expression::TypeRef *ty) {
 
+    auto name = ty->getPrettyName();
+    auto id   = ty->getName();
+
+    if (auto x = transformSpecialType(ty)) { return x; }
+    
     if (auto x = ty->_getInternalType()) {
         return x;
     }
@@ -23,12 +28,6 @@ Transformer::transformType(Expression::TypeRef *ty) {
         decl->getExpr()->accept(this);
         return this->value->getType();
     }
-
-    // TODO: segfaults with "function types" refs
-    // when used as generics
-
-    auto name = ty->getPrettyName();
-    auto id   = ty->getName();
 
     auto typeExpr = typeFromString(ty);
 

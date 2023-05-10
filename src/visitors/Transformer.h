@@ -149,7 +149,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     getBestFittingFunction(
         const std::vector<cacheComponents::Functions::FunctionStore>& overloads,
         const std::vector<std::shared_ptr<types::Type>>& arguments,
-        const std::vector<Expression::TypeRef *>& generics = {});
+        const std::vector<Expression::TypeRef *>& generics = {},
+        bool isIdentifier = false);
     /**
      * @brief Compares if generics equal by checking both classes.
      * @note (1) This function will also generate the @param ty generics if
@@ -181,7 +182,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
             stores,
         const std::string& name,
         const std::vector<std::shared_ptr<types::Type>>& arguments,
-        const std::vector<Expression::TypeRef *>& generics = {});
+        const std::vector<Expression::TypeRef *>& generics = {},
+        bool isIdentifier = false);
     /**
      * @brief Transform a function that hasn't been generated yet.
      * @arg arguments - deduced arguments to unify
@@ -229,6 +231,19 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * @return True if the module has a valid context, false otherwise.
      */
     bool isInModuleContext(std::shared_ptr<ir::Module> mod);
+    /**
+     * Transforms a given special type reference into a shared pointer to Type.
+     *
+     * @param ty A pointer to the Expression::TypeRef that represents the special type.
+     * @return A shared pointer to the Type that corresponds to the special type.
+     *
+     * This function is used to transform a special type reference, represented by a pointer to
+     * an Expression::TypeRef, into a shared pointer to the corresponding Type. The Type returned
+     * by this function will be used to represent the special type in the rest of the program.
+     *
+     * @note It returns a null pointer of it didnt handle any special type!
+     */
+    std::shared_ptr<types::Type> transformSpecialType(Expression::TypeRef *ty);
     /**
      * Returns a nicely formatted base name for the given set of components.
      *

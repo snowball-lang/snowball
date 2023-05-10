@@ -16,12 +16,11 @@
 namespace snowball {
 namespace ir {
 
-Module::Module(const std::string name, const std::string uuid,
-               std::shared_ptr<Module> parent)
-    : name(name), uniqueName(uuid.empty() ? name : uuid), parent() {}
+Module::Module(const std::string name, const std::string uuid)
+    : name(name), uniqueName(uuid.empty() ? name : uuid) {}
 
 std::string Module::getName() const {
-    return (parent == nullptr ? "" : parent->getName() + "::") + name;
+    return name;
 }
 std::string Module::getUniqueName() const { return uniqueName; }
 

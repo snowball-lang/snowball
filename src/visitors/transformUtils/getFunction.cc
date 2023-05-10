@@ -18,7 +18,7 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
         store,
     const std::string& name,
     const std::vector<std::shared_ptr<types::Type>>& arguments,
-    const std::vector<Expression::TypeRef *>& generics) {
+    const std::vector<Expression::TypeRef *>& generics, bool isIdentifier) {
 
     auto [val, ty, functions, overloads, mod, canBePrivate] = store;
     auto checkIfContextEqual =
@@ -125,7 +125,7 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
                 FMT("No matches found for %s(%s)", name.c_str(),
                     Expression::FunctionCall::getArgumentsAsString(arguments)
                         .c_str()));
-            // TODO: throw a note that shuggest's it's correct types: only if
+            // TODO: throw a note that sugest's it's correct types: only if
             // there's one
             //  overload
         }
@@ -135,7 +135,7 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
     }
 
     auto [fn, args, res] =
-        getBestFittingFunction(overloads.value(), arguments, generics);
+        getBestFittingFunction(overloads.value(), arguments, generics, isIdentifier);
     switch (res) {
         case Ok: {
             return checkIfContextEqual(transformFunction(fn, args));

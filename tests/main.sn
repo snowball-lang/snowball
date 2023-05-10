@@ -3,17 +3,19 @@ use Core::System
 class Balls<T> {
   pub:
     Balls(x: T) {
-        x()
+        System::println(x)
     }
 }
 
-pub fn hello() {
-    System::println("hello")
+pub fn hello<T>(x: T) T {
+    return x
 }
 
 pub fn main() i32 {
+    System::println("-----------------")
     new System::Hello();
-    let f = new Balls<?Core::ReturnType<?decltype(hello)>>(hello)
+    let f = new Balls<?Core::ReturnType<?decltype(hello<?String>)>>(hello("hello"))
+    let x = new Balls<?Core::ReturnType<?decltype(hello<?i32>)>>(hello(69))
 }
 
 

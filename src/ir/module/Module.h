@@ -31,15 +31,11 @@ class Module : public AcceptorExtend<Module, SrcObject>,
     // be generated.
     std::vector<std::shared_ptr<ir::Func>> functions;
 
-    // Parent module that contains this module.
-    std::shared_ptr<Module> parent = nullptr;
-
     // A list of declared variables used for this module
     std::vector<std::shared_ptr<ir::VariableDeclaration>> variables;
 
   public:
-    Module(std::string name, std::string uuid = "",
-           std::shared_ptr<Module> parent = nullptr);
+    Module(std::string name, std::string uuid = "");
 
     /// @return module's name
     std::string getName() const;
