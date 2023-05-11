@@ -143,8 +143,13 @@ Transformer::getFromIndex(DBGSourceInfo *dbgInfo, Expression::Index *index,
     // Transform the base first
     auto base = index->getBase();
     if (auto baseIdentifier = utils::cast<Expression::Identifier>(base)) {
+        auto g = utils::cast<Syntax::Expression::GenericIdentifier>(baseIdentifier);
+        auto generics = (g != nullptr)
+            ? g->getGenerics()
+            : std::vector<Syntax::Expression::TypeRef *>{};
+
         auto [val, type, funcs, overloads, mod] =
-            getFromIdentifier(dbgInfo, baseIdentifier->getIdentifier());
+            getFromIdentifier(dbgInfo, baseIdentifier->getIdentifier(), generics);
 
         if (val && (!isStatic)) {
             return {getFromType(val.value()->getType(), *val), val.value()};
@@ -172,7 +177,7 @@ Transformer::getFromIndex(DBGSourceInfo *dbgInfo, Expression::Index *index,
         else if (overloads || funcs) {
             E<TYPE_ERROR>(dbgInfo, "Can't use function pointer as index base!");
         } else {
-            E<VARIABLE_ERROR>(dbgInfo,
+            E<VARIABLE_ERROR>(baseIdentifier->getDBGInfo(),
                               FMT("Cannot find identifier `%s`!",
                                   baseIdentifier->getIdentifier().c_str()),
                               "this name is not defined");

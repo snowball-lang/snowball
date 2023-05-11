@@ -9,6 +9,7 @@
 #include <iostream>
 #include <locale>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #define GET_CHAR(m_off)                                                        \

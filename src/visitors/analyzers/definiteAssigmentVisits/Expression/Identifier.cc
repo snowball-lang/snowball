@@ -21,9 +21,9 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::Identifier) {
         return;
     }
 
-    // E<VARIABLE_ERROR>(p_node->getDBGInfo(),
-    //                   FMT("Cannot find identifier `%s`!", x.c_str()),
-    //                   "this name is not defined");
+    E<VARIABLE_ERROR>(p_node->getDBGInfo(),
+                      FMT("Cannot find identifier `%s`!", x.c_str()),
+                      "this name is not defined");
 }
 
 } // namespace Syntax

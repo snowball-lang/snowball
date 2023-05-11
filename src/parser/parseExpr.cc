@@ -15,30 +15,6 @@ namespace snowball::parser {
 Syntax::Expression::Base *Parser::parseExpr(bool allowAssign) {
     std::vector<Syntax::Expression::Base *> exprs;
 
-    auto parseIdentifier =
-        [&](DBGSourceInfo *dbg) -> Syntax::Expression::Identifier * {
-        if (is<TokenType::OP_LT>(peek()) &&
-            is<TokenType::SYM_QUESTION>(peek(1, true))) {
-            auto name = m_current.to_string();
-            next();
-            auto generics = parseGenericExpr();
-            auto width    = m_current.get_pos().second - dbg->pos.second;
-
-            dbg->width = width;
-            prev();
-
-            auto i = Syntax::N<Syntax::Expression::GenericIdentifier>(name,
-                                                                      generics);
-            i->setDBGInfo(dbg);
-            return i;
-        } else {
-            auto i = Syntax::N<Syntax::Expression::Identifier>(
-                m_current.to_string());
-            i->setDBGInfo(dbg);
-            return i;
-        }
-    };
-
     while (true) {
         auto tk                        = next();
         Syntax::Expression::Base *expr = nullptr;
@@ -81,12 +57,14 @@ Syntax::Expression::Base *Parser::parseExpr(bool allowAssign) {
                 expr = Syntax::N<Syntax::Expression::ConstantValue>(
                     ty, m_current.to_string());
             } else if (TOKEN(IDENTIFIER)) {
-                expr = parseIdentifier(dbg);
+                expr = parseIdentifier();
             } else if (TOKEN(KWORD_NEW)) {
                 next();
                 throwIfNotType();
 
                 auto ty   = parseType();
+
+                assert_tok<TokenType::BRACKET_LPARENT>("'('");
                 auto call = parseFunctionCall(ty);
 
                 expr = Syntax::N<Syntax::Expression::NewInstance>(call, ty);
@@ -134,7 +112,7 @@ Syntax::Expression::Base *Parser::parseExpr(bool allowAssign) {
                     next(1);
 
                     assert_tok<TokenType::IDENTIFIER>("an identifier");
-                    auto index = parseIdentifier(dbg);
+                    auto index = parseIdentifier();
 
                     auto dbgInfo = new DBGSourceInfo(
                         m_source_info, expr->getDBGInfo()->pos,

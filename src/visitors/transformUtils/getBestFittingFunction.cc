@@ -28,13 +28,13 @@ Transformer::getBestFittingFunction(
                                       std::shared_ptr<types::Type>>(
                     generics, [&](auto g) { return transformType(g); });
 
-            auto [deducedArgs, success] =
+            auto [deducedArgs, errors] =
                 deduceFunction(n, arguments, genericArguments);
 
-            if (success.empty()) {
+            if (errors.empty()) {
                 functions.push_back({n, deducedArgs});
             } else {
-                E<TYPE_ERROR>(fn, success);
+                E<TYPE_ERROR>(fn, errors);
             }
         }
     }

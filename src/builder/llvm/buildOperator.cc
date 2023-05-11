@@ -19,7 +19,7 @@ bool LLVMBuilder::buildOperator(ir::Call *call) {
     if (auto fn = utils::dyn_cast<ir::Func>(call->getCallee())) {
         auto args   = call->getArguments();
         auto opName = fn->getName(true);
-        if (utils::startsWith(opName, "#") && args.size() == 2) {
+        if (services::OperatorService::isOperator(opName) && args.size() == 2) {
             auto left  = build(args.at(0).get());
             auto right = build(args.at(1).get());
             if (utils::dyn_cast<types::Int8Type>(args.at(0)->getType()) ||

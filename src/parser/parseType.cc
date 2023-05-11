@@ -21,7 +21,7 @@ TypeRef *Parser::parseType() {
         next();
         assert_tok<TokenType::BRACKET_LPARENT>("'('");
 
-        auto expr = parseExpr();
+        auto expr = parseExpr(false);
         next();
 
         consume<TokenType::BRACKET_RPARENT>("')'");
@@ -30,26 +30,39 @@ TypeRef *Parser::parseType() {
         return Syntax::N<DeclType>(expr, dbg);
     }
 
-    auto name = assert_tok<TokenType::IDENTIFIER>("a valid type").to_string();
+    auto ident = parseIdentifier();
+    Base* ast = ident;
+    auto name = ident->getIdentifier();
+
+    auto g = utils::cast<GenericIdentifier>(ast);
+    auto generics = (g != nullptr)
+        ? g->getGenerics()
+        : std::vector<TypeRef *>{};
 
     next();
+
     while (is<TokenType::SYM_COLCOL>()) {
         next();
-        name += "::" +
-                assert_tok<TokenType::IDENTIFIER>("a valid type").to_string();
+        auto i = parseIdentifier();
+        auto base = ast;
+        name += "::" + i->getIdentifier();
+
+        ast = Syntax::N<Index>(ast, i, true);
+        ast->setDBGInfo(i->getDBGInfo());
+
+        auto g = utils::cast<GenericIdentifier>(i);
+        generics = (g != nullptr)
+            ? g->getGenerics()
+            : std::vector<TypeRef *>{};
+
         next();
-    }
-
-    std::vector<TypeRef *> tparams;
-
-    // lookup for "<?"
-    if (is<TokenType::SYM_QUESTION>(peek()) && is<TokenType::OP_LT>()) {
-        tparams = parseGenericExpr();
     }
 
     auto dbg = new DBGSourceInfo(m_source_info, pos,
-                                 m_current.get_pos().second - pos.second - 1);
-    return Syntax::TR(name, dbg, tparams);
+                                 m_current.get_pos().second - pos.second);
+    auto t = Syntax::TR(ast, name, dbg);
+    t->setGenerics(generics);
+    return t;
 }
 
 } // namespace snowball::parser

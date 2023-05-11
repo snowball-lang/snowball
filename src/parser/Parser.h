@@ -45,8 +45,8 @@ class Parser {
     template <Error E>
     [[nodiscard]] auto createError(const std::string msg,
                                    std::string info = "") const {
-        createError<E>(std::pair<int, int>(m_current.line, m_current.col), msg,
-                       info, m_current.to_string().size());
+        auto pos = std::pair<int, int>(m_current.line, m_current.col);
+        createError<E>(pos, msg, info, m_current.to_string().size());
     }
 
   public:
@@ -254,6 +254,13 @@ class Parser {
      * @param callee expression being called
      */
     Syntax::Statement::ImportStmt *parseImportStatement();
+
+    /**
+     * identifier    ::= [A-Za-z0-9_] [?genericss expr]
+     *
+     * @return Syntax::Expression::Identifier* 
+     */
+    Syntax::Expression::Identifier* parseIdentifier();
 
     /**
      * expr          ::=  [constant_value] |

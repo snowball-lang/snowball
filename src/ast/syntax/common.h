@@ -57,11 +57,16 @@ struct TypeRef : public types::Type, public Base {
     /// @note this shoudn't be used for normal usage!
     std::shared_ptr<types::Type> internalType = nullptr;
 
+    /// @brief AST used to declare this TypeRef.
+    /// @note this shoudn't be used for normal usage!
+    Expression::Base* internalAST = nullptr;
+
   public:
     TypeRef(std::string p_name, DBGSourceInfo *p_dbg,
             std::vector<TypeRef *> p_generics = {});
     TypeRef(std::string p_name, DBGSourceInfo *p_dbg,
             std::shared_ptr<types::Type> internalType);
+    TypeRef(Expression::Base* p_ast, std::string p_name, DBGSourceInfo *p_dbg);
 
     /// @brief Get type's generics
     std::vector<TypeRef *> getGenerics();
@@ -74,6 +79,10 @@ struct TypeRef : public types::Type, public Base {
     /// @return Internal type when using @fn types::Type::toRef().
     /// @note this shoudn't be used for normal usage!
     auto _getInternalType() { return internalType; }
+
+    /// @return AST used to declare this TypeRef.
+    /// @note this shoudn't be used for normal usage!
+    auto _getInternalAST() { return internalAST; }
 
     /// @return true if it's a delctype(...)
     virtual bool isTypeDecl() { return false; }

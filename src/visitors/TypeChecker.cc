@@ -52,11 +52,19 @@ VISIT(Call) {
         a->visit(this);
     }
 
+    // TODO: check for operator sides being equal
+
     // TODO: add support for "callable" type, not just function type
     if (std::dynamic_pointer_cast<types::FunctionType>(
             p_node->getCallee()->getType()) == nullptr) {
         Syntax::E<TYPE_ERROR>(
             p_node, FMT("Value trying to be called is not callable!"));
+    }
+
+    if (auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee())) {
+        if (services::OperatorService::isOperator(fn->getName()) && p_node->getArguments().size() == 2) {
+            // TODO: check for operator sides being equal.
+        }
     }
 }
 

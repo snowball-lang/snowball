@@ -356,29 +356,6 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     ~Transformer() noexcept = default;
 };
 
-namespace {
-Expression::Base *typeFromString(Expression::TypeRef *ty) {
-    auto name  = ty->getName();
-    auto rfind = name.rfind("::");
-    if (rfind != std::string::npos) {
-        auto rightType = name.substr(rfind + 2);
-        auto leftType  = name.substr(0, rfind);
-
-        auto ident = Syntax::N<Expression::Identifier>(rightType);
-        auto index = Syntax::N<Expression::Index>(
-            typeFromString(
-                Syntax::N<Expression::TypeRef>(leftType, ty->getDBGInfo())),
-            ident, true);
-        index->setDBGInfo(ty->getDBGInfo());
-        return index;
-    }
-
-    auto ident = Syntax::N<Expression::Identifier>(ty->getName());
-    ident->setDBGInfo(ty->getDBGInfo());
-    return ident;
-}
-} // namespace
-
 } // namespace Syntax
 } // namespace snowball
 

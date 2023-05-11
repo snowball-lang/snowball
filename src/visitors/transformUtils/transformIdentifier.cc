@@ -68,7 +68,7 @@ Transformer::StoreType Transformer::getFromIdentifier(
                         std::nullopt};
             }
         }
-    } else if (auto t = ctx->cache->getType(uuid)) {
+    } if (auto t = ctx->cache->getType(uuid)) {
         auto ty = new Expression::TypeRef(identifier, dbgInfo, generics);
         return {
             std::nullopt,

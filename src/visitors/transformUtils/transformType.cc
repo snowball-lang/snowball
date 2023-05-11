@@ -31,8 +31,6 @@ Transformer::transformType(Expression::TypeRef *ty) {
         return this->value->getType();
     }
 
-    auto typeExpr = typeFromString(ty);
-
     {
         auto uuid = ctx->createIdentifierName(id, false);
         if (auto x = ctx->cache->getTransformedType(uuid)) {
@@ -63,7 +61,18 @@ Transformer::transformType(Expression::TypeRef *ty) {
         }
     }
 
-    if (auto x = utils::cast<Expression::Identifier>(typeExpr)) {
+    auto ast = ty->_getInternalAST();
+
+    if (ast == nullptr) {
+        if (ty->getGenerics().size() > 0) {
+            ast = Syntax::N<Expression::GenericIdentifier>(ty->getName(), ty->getGenerics());
+        } else {
+            ast = Syntax::N<Expression::Identifier>(ty->getName());
+        }
+        ast->setDBGInfo(ty->getDBGInfo());
+    }
+
+    if (auto x = utils::cast<Expression::Identifier>(ast)) {
         auto [_v, type, _o, _f, _m] = getFromIdentifier(x);
         std::string errorReason;
         if (_v.has_value()) {
@@ -80,7 +89,7 @@ Transformer::transformType(Expression::TypeRef *ty) {
 
         E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()),
                       errorReason);
-    } else if (auto x = utils::cast<Expression::Index>(typeExpr)) {
+    } else if (auto x = utils::cast<Expression::Index>(ast)) {
         auto [_v, type, _o, _f, _m, canPrivate] =
             getFromIndex(ty->getDBGInfo(), x, true).first;
 
@@ -99,10 +108,6 @@ Transformer::transformType(Expression::TypeRef *ty) {
 
         E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()),
                       errorReason);
-    }
-
-    if (ty->getGenerics().size() > 0) {
-        E<TYPE_ERROR>(ty, "This type does not need to have generics!");
     }
 
     assert(false);
