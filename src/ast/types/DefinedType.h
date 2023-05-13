@@ -132,6 +132,10 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     /// @note It essentially does the same thing except it adds
     ///  generics if needed
     Syntax::Expression::TypeRef *toRef() override;
+
+    /// @brief override function. All numeric types
+    ///  can cast to any other numeric types.
+    bool canCast(Type *ty) override;
 };
 
 }; // namespace types

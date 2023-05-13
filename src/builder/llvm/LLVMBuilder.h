@@ -246,6 +246,14 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      */
     llvm::Function *buildBodiedFunction(llvm::Function *llvmFn, ir::Func *fn);
     /**
+     * @brief Set a "personality" function attached to a snowball
+     *  generated function.
+     *
+     *  Personality functions can be really helpful in order to
+     *  implement an throw/catch exception runtime.
+     */
+    void setPersonalityFunction(llvm::Function *func);
+    /**
      * @brief It generates the LLVM IR contents that the user has
      *  manually inserted by using "inline LLVM".
      */

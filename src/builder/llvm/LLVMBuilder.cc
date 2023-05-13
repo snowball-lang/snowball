@@ -162,6 +162,8 @@ void LLVMBuilder::codegen() {
                 f->hasAttribute(Attributes::LLVM_FUNC)
                     ? buildLLVMFunction(llvmFn, f)
                     : buildBodiedFunction(llvmFn, f);
+
+                setPersonalityFunction(llvmFn);
             }
         }
     };

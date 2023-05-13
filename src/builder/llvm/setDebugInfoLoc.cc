@@ -14,7 +14,6 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::setDebugInfoLoc(ir::Value *v) {
-    // TODO: handle inside functions
     if (v) {
         auto info = v->getDBGInfo();
         if (auto f = ctx->getCurrentFunction();

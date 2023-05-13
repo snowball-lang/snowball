@@ -21,5 +21,5 @@ pub fn main() i32 {
     let f = new Balls<?Core::ReturnType<?decltype(hello<?String>)>>(hello("hello"))
     let x = new Balls<?Core::ReturnType<?decltype(hello<?i32>)>>(hello(69))
 
-    Balls<?String>::hell()
+    // new Balls<?String>("") as Balls<?i32>
 }
