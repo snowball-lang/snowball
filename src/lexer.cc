@@ -506,13 +506,9 @@ void Lexer::tokenize() {
                     tk.col   = cur_col - (int)identifier.size();
                     tk.line  = cur_line;
 
-                    if (identifier == _SNOWBALL_KEYWORD__NOT) {
-                        tk.type = TokenType::OP_NOT;
-                    } else if (identifier == _SNOWBALL_KEYWORD__NEW) {
+                    if (identifier == _SNOWBALL_KEYWORD__NEW) {
                         tk.type = TokenType::KWORD_NEW;
-                    }
-
-                    else if (identifier == _SNOWBALL_KEYWORD__IF) {
+                    } else if (identifier == _SNOWBALL_KEYWORD__IF) {
                         tk.type = TokenType::KWORD_IF;
                     } else if (identifier == _SNOWBALL_KEYWORD__VARIABLE) {
                         tk.type = TokenType::KWORD_VAR;

@@ -1,13 +1,14 @@
-import System
+use Core::System
 
 fn fib(n: i64) i64 {
     if n <= 1 {
+        let a = 2
         return n
     }
 
     return fib(n-1) + fib(n-2)
 }
 
-fn main() Int {
-    System.println(fib(47 as i64))
+pub fn main() i32 {
+    System::println(fib(47 as i64))
 }

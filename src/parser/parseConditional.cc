@@ -13,10 +13,9 @@ Conditional *Parser::parseConditional() {
     assert(is<TokenType::KWORD_IF>());
 
     auto info = DBGSourceInfo::fromToken(m_source_info, m_current);
-    auto expr = parseExpr(false);
+    auto expr = parseExpr(false); next();
 
     auto block = parseBlock();
-    prev();
 
     auto node = Syntax::N<Conditional>(expr, block);
     node->setDBGInfo(info);

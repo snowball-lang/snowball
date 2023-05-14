@@ -1,23 +1,13 @@
 use Core::System
 
-class Balls<T> {
-  pub:
-    Balls(x: T) {
+fn fib(n: i64) i64 {
+    if n <= 1 {
+        return n
     }
 
-    static fn hell() {
-
-    }
-}
-
-pub fn hello<T>(x: T) T {
-    return x
+    return fib(n-1) + fib(n-2)
 }
 
 pub fn main() i32 {
-    // // new System::Hello();
-    let f = new Balls<?Core::ReturnType<?decltype(hello<?String>)>>(hello("hello"))
-
-
-    // new Balls<?String>("") as Balls<?i32>
+    System::println(fib(47 as i64))
 }
