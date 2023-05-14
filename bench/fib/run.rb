@@ -46,8 +46,10 @@ languages = []
 
 languages << Language.new("sn", "snowball (compiled)", :compiled, "snowball build -f fib.sn -o O3", "./.sn/bin/out.o")
 
-languages << Language.new("c", "C", :compiled, "gcc -O3 -o fib fib.c", "./fib")
-languages << Language.new("cpp", "C++", :compiled, "clang++ -O3 -o fib fib.cpp", "./fib")
+languages << Language.new("c (gnu)", "C", :compiled, "gcc -O3 -o fib fib.c", "./fib")
+languages << Language.new("c (clang)", "C", :compiled, "clang-14 -O3 -o fib fib.c", "./fib")
+languages << Language.new("cpp (gnu)", "C++", :compiled, "g++ -O3 -o fib fib.cpp", "./fib")
+languages << Language.new("cpp (clang)", "C++", :compiled, "clang++-14 -O3 -o fib fib.cpp", "./fib")
 
 languages << Language.new("py3", "Python3", :interpreted, "", "python3 fib.py")
 

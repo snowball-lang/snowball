@@ -1,13 +1,11 @@
 use Core::System
 
-fn fib(n: i64) i64 {
-    if n <= 1 {
-        return n
+fn hello() {
+    asm {
+        mov arx, blah blah boring who tf cares about assembly
     }
-
-    return fib(n-1) + fib(n-2)
 }
 
 pub fn main() i32 {
-    System::println(fib(47 as i64))
+    hello()
 }

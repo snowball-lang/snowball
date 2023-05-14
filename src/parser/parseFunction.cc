@@ -70,6 +70,8 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator,
                 isLLVMFunction = true;
             } else if (attr == "internal_linkage") {
                 attributes.push_back(Attributes::Fn::INTERNAL_LINKAGE);
+            } else if (attr == "inline") {
+                attributes.push_back(Attributes::Fn::INLINE);
             } else {
                 createError<ATTRIBUTE_ERROR>(
                     "Trying to use an undefined attribute!",

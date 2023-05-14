@@ -28,7 +28,17 @@ llvm::Function *LLVMBuilder::createLLVMFunction(ir::Func *func) {
               ? llvm::Function::InternalLinkage
               : llvm::Function::ExternalLinkage,
           name, module.get());
-    auto callee = (llvm::Function *)(fn);
+
+    auto callee = (llvm::Function *)fn;
+
+    auto attrSet = callee->getAttributes();
+
+    if (func->hasAttribute(Attributes::INLINE)) {
+        auto newAttrSet = attrSet.addFnAttribute(
+            callee->getContext(), llvm::Attribute::AlwaysInline);
+        callee->setAttributes(newAttrSet);
+        // TODO: other attributes
+    }
 
     if (!ir::Func::isExternal(func->getMangle()) ||
         func->getMangle() == "main") {
