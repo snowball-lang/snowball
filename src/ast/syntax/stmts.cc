@@ -45,13 +45,6 @@ void FunctionDef::setStatic(bool s) { _static = s; }
 ImportStmt::ImportStmt(const std::vector<std::string> path,
                        const std::string package, ImportType ty)
     : path(path), package(package), type(ty){};
-std::vector<Expression::Param *> GenericContainer::getGenerics() const {
-    return generics;
-}
-void GenericContainer::setGenerics(GenericList list) {
-    generics = std::move(list);
-}
-
 VariableDecl::VariableDecl(const std::string& name, Expression::Base *value,
                            bool isMutable)
     : name(name), value(value), _mutable(isMutable){};

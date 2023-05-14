@@ -15,7 +15,8 @@ DeclType::DeclType(Base *value, DBGSourceInfo *srcInfo)
     : value(value), TypeRef("$decltype", srcInfo){};
 PseudoVariable::PseudoVariable(std::string identifier)
     : identifier(identifier){};
-TypeRef::TypeRef(Expression::Base* p_ast, std::string p_name, DBGSourceInfo *p_dbg)
+TypeRef::TypeRef(Expression::Base *p_ast, std::string p_name,
+                 DBGSourceInfo *p_dbg)
     : internalAST(p_ast), types::Type(REF, p_name) {
     setDBGInfo(p_dbg);
 }

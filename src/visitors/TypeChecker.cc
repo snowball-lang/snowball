@@ -62,7 +62,8 @@ VISIT(Call) {
     }
 
     if (auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee())) {
-        if (services::OperatorService::isOperator(fn->getName()) && p_node->getArguments().size() == 2) {
+        if (services::OperatorService::isOperator(fn->getName()) &&
+            p_node->getArguments().size() == 2) {
             // TODO: check for operator sides being equal.
         }
     }

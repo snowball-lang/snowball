@@ -65,7 +65,8 @@ Transformer::transformType(Expression::TypeRef *ty) {
 
     if (ast == nullptr) {
         if (ty->getGenerics().size() > 0) {
-            ast = Syntax::N<Expression::GenericIdentifier>(ty->getName(), ty->getGenerics());
+            ast = Syntax::N<Expression::GenericIdentifier>(ty->getName(),
+                                                           ty->getGenerics());
         } else {
             ast = Syntax::N<Expression::Identifier>(ty->getName());
         }

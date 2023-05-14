@@ -23,7 +23,7 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
 
     Syntax::Expression::TypeRef *parentClass = nullptr;
-    Syntax::Statement::GenericContainer::GenericList generics;
+    Syntax::Statement::GenericContainer<>::GenericList generics;
 
     if (is<TokenType::OP_LT>(peek())) {
         next();

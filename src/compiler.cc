@@ -44,7 +44,7 @@ void Compiler::compile(bool verbose) {
         throw SNError(Error::COMPILER_ERROR,
                       "Compiler has not been initialized!");
     }
-#if  _SNOWBALL_TIMERS_DEBUG == 0
+#if _SNOWBALL_TIMERS_DEBUG == 0
 #define SHOW_STATUS(status)                                                    \
     if (!verbose) status;
 #else
@@ -61,9 +61,9 @@ void Compiler::compile(bool verbose) {
 #if _SNOWBALL_TIMERS_DEBUG
         std::vector<Token> tokens;
         DEBUG_TIMER("Lexer: %fs", utils::_timer([&] {
-                          lexer->tokenize();
-                          tokens = lexer->tokens;
-                      }));
+                        lexer->tokenize();
+                        tokens = lexer->tokens;
+                    }));
 #else
         lexer->tokenize();
         auto tokens = lexer->tokens;
@@ -76,7 +76,7 @@ void Compiler::compile(bool verbose) {
 #if _SNOWBALL_TIMERS_DEBUG
             parser::Parser::NodeVec ast;
             DEBUG_TIMER("Parser: %fs",
-                          utils::_timer([&] { ast = parser->parse(); }));
+                        utils::_timer([&] { ast = parser->parse(); }));
 #else
             auto ast = parser->parse();
 #endif
@@ -95,7 +95,7 @@ void Compiler::compile(bool verbose) {
 
 #if _SNOWBALL_TIMERS_DEBUG
             DEBUG_TIMER("Simplifier: %fs",
-                          utils::_timer([&] { simplifier->visit(ast); }));
+                        utils::_timer([&] { simplifier->visit(ast); }));
 #else
             simplifier->visit(ast);
 #endif
@@ -104,8 +104,8 @@ void Compiler::compile(bool verbose) {
 
 #if _SNOWBALL_TIMERS_DEBUG
             DEBUG_TIMER("Passes: %fs", utils::_timer([&] {
-                              for (auto pass : passes) pass->run(ast);
-                          }));
+                            for (auto pass : passes) pass->run(ast);
+                        }));
 #else
             for (auto pass : passes) {
                 pass->run(ast);
@@ -118,7 +118,7 @@ void Compiler::compile(bool verbose) {
 
 #if _SNOWBALL_TIMERS_DEBUG
             DEBUG_TIMER("TypeChecker: %fs",
-                          utils::_timer([&] { typeChecker->codegen(); }));
+                        utils::_timer([&] { typeChecker->codegen(); }));
 #else
             typeChecker->codegen();
 #endif

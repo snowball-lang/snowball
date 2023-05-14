@@ -401,7 +401,7 @@ struct FunctionDef
     : public AcceptorExtend<FunctionDef, Base>,
       public AcceptorExtend<FunctionDef, AttributeHolder<Attributes::Fn>>,
       public AcceptorExtend<FunctionDef, Privacy>,
-      public AcceptorExtend<FunctionDef, GenericContainer> {
+      public AcceptorExtend<FunctionDef, GenericContainer<>> {
 
     // Function's identifier
     std::string name;
@@ -514,7 +514,7 @@ struct VariableDecl : public AcceptorExtend<VariableDecl, Base> {
  */
 struct ClassDef : public AcceptorExtend<ClassDef, Base>,
                   public AcceptorExtend<ClassDef, Privacy>,
-                  public AcceptorExtend<ClassDef, GenericContainer> {
+                  public AcceptorExtend<ClassDef, GenericContainer<>> {
 
     /// @brief Class identifier
     std::string name;

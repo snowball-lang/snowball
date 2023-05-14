@@ -19,12 +19,15 @@ namespace snowball {
 namespace ir {
 
 /// @brief Representation of a function in the IR
-class Func : public AcceptorExtend<Func, Value>,
-             public IdMixin,
-             public AcceptorExtend<Func, Syntax::Statement::Privacy>,
-             public AcceptorExtend<Func, Syntax::Statement::GenericContainer>,
-             public AcceptorExtend<
-                 Func, Syntax::Statement::AttributeHolder<Attributes::Fn>> {
+class Func
+    : public AcceptorExtend<Func, Value>,
+      public IdMixin,
+      public AcceptorExtend<Func, Syntax::Statement::Privacy>,
+      public AcceptorExtend<
+          Func, Syntax::Statement::GenericContainer<
+                    std::pair<std::string, std::shared_ptr<types::Type>>>>,
+      public AcceptorExtend<
+          Func, Syntax::Statement::AttributeHolder<Attributes::Fn>> {
   public:
     // Utility types
     using FunctionArgs =

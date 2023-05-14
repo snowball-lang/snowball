@@ -62,7 +62,7 @@ Syntax::Expression::Base *Parser::parseExpr(bool allowAssign) {
                 next();
                 throwIfNotType();
 
-                auto ty   = parseType();
+                auto ty = parseType();
 
                 assert_tok<TokenType::BRACKET_LPARENT>("'('");
                 auto call = parseFunctionCall(ty);

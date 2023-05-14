@@ -85,6 +85,7 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
             FMT("Silly billy, you can't call modules! ('%s')", name.c_str()));
     }
 
+    std::shared_ptr<ir::Func> foundFunction = nullptr;
     if (functions) {
         for (auto f : *functions) {
             auto args       = f->getArgs(true);
@@ -94,7 +95,7 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
             if (ir::Func::argumentSizesEqual(argsVector, arguments,
                                              f->isVariadic())) {
                 bool equal = true;
-                for (auto arg = args.begin(); ((arg != args.end()) && (equal));
+                for (auto arg = args.begin(); ((arg != args.end()) && equal);
                      ++arg) {
                     auto i = std::distance(args.begin(), arg);
                     if (i < numArgs) {
@@ -110,38 +111,53 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
                     }
                 }
 
-                // TODO: check for ambiguous functions
-                if (equal) {
-                    return checkIfContextEqual(f);
+                auto fnGenerics = f->getGenerics();
+                // TODO: allow variadic generics
+                if (fnGenerics.size() == generics.size()) {
+                    for (auto generic = fnGenerics.begin(); (generic != fnGenerics.end()) && equal;
+                        ++generic) {
+                        auto i = std::distance(fnGenerics.begin(), generic);
+                        equal = (*generic).second->is(generics.at(i));
+                    }
+
+                    // TODO: check for ambiguous functions
+                    if (equal) {
+                        foundFunction = f;
+                        break;
+                    }
                 }
             }
         }
     }
 
-    if (!overloads.has_value()) {
-        if (functions.has_value()) {
-            E<VARIABLE_ERROR>(
-                dbgInfo,
-                FMT("No matches found for %s(%s)", name.c_str(),
-                    Expression::FunctionCall::getArgumentsAsString(arguments)
-                        .c_str()));
-            // TODO: throw a note that sugest's it's correct types: only if
-            // there's one
-            //  overload
-        }
+    auto [fn, args, res] = getBestFittingFunction(
+        overloads.has_value() ? overloads.value()
+                              : std::vector<Cache::FunctionStore>{},
+        arguments, generics, isIdentifier);
 
-        E<VARIABLE_ERROR>(dbgInfo,
-                          FMT("Function '%s' is not defined!", name.c_str()));
-    }
-
-    auto [fn, args, res] = getBestFittingFunction(overloads.value(), arguments,
-                                                  generics, isIdentifier);
     switch (res) {
         case Ok: {
+
+            if (foundFunction != nullptr) {
+                return checkIfContextEqual(foundFunction);
+            }
+
             return checkIfContextEqual(transformFunction(fn, args));
         }
 
         case NoMatchesFound: {
+            if (foundFunction != nullptr) {
+                return checkIfContextEqual(foundFunction);
+            }
+
+            if ((!overloads.has_value()) && (!functions.has_value())) {
+                E<VARIABLE_ERROR>(dbgInfo, FMT("Function '%s' is not defined!",
+                                               name.c_str()));
+            }
+
+            // TODO: throw a note that sugest's it's correct types: only if
+            // there's one
+            //  overload
             E<VARIABLE_ERROR>(
                 dbgInfo,
                 FMT("No matches found for %s(%s)", name.c_str(),
@@ -155,10 +171,6 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
                 FMT("Function ambiguity for %s(%s)", name.c_str(),
                     Expression::FunctionCall::getArgumentsAsString(arguments)
                         .c_str()));
-        }
-
-            [[fallthrough]];
-        case _Unknown: {
         }
 
         default:

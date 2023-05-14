@@ -3,7 +3,6 @@ use Core::System
 class Balls<T> {
   pub:
     Balls(x: T) {
-        System::println(x)
     }
 
     static fn hell() {
@@ -16,10 +15,9 @@ pub fn hello<T>(x: T) T {
 }
 
 pub fn main() i32 {
-    System::println("-----------------")
     // // new System::Hello();
     let f = new Balls<?Core::ReturnType<?decltype(hello<?String>)>>(hello("hello"))
-    let x = new Balls<?Core::ReturnType<?decltype(hello<?i32>)>>(hello(69))
+
 
     // new Balls<?String>("") as Balls<?i32>
 }

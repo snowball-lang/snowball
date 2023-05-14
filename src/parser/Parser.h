@@ -258,9 +258,9 @@ class Parser {
     /**
      * identifier    ::= [A-Za-z0-9_] [?genericss expr]
      *
-     * @return Syntax::Expression::Identifier* 
+     * @return Syntax::Expression::Identifier*
      */
-    Syntax::Expression::Identifier* parseIdentifier();
+    Syntax::Expression::Identifier *parseIdentifier();
 
     /**
      * expr          ::=  [constant_value] |

@@ -27,13 +27,16 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
             // Transform generics
             // TODO: variadic generics?
             assert(deducedTypes.size() == node->getGenerics().size());
+            std::vector<std::pair<std::string, std::shared_ptr<types::Type>>>
+                fnGenerics;
             for (int genericCount = 0; genericCount < deducedTypes.size();
                  genericCount++) {
-                auto item = std::make_shared<transform::Item>(
-                    deducedTypes.at(genericCount));
+                auto name    = node->getGenerics().at(genericCount)->getName();
+                auto generic = deducedTypes.at(genericCount);
+                auto item    = std::make_shared<transform::Item>(generic);
 
-                ctx->addItem(node->getGenerics().at(genericCount)->getName(),
-                             item);
+                ctx->addItem(name, item);
+                fnGenerics.push_back({name, generic});
             }
 
             // Get the respective return type for this function
@@ -48,6 +51,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
             fn->setRetTy(returnType);
             fn->setPrivacy(node->getPrivacy());
             fn->setStatic(node->isStatic());
+            fn->setGenerics(fnGenerics);
 
             if (auto c = ctx->getCurrentClass()) {
                 if (node->isVirtual()) {

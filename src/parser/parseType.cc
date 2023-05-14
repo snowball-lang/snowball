@@ -31,36 +31,33 @@ TypeRef *Parser::parseType() {
     }
 
     auto ident = parseIdentifier();
-    Base* ast = ident;
-    auto name = ident->getIdentifier();
+    Base *ast  = ident;
+    auto name  = ident->getIdentifier();
 
     auto g = utils::cast<GenericIdentifier>(ast);
-    auto generics = (g != nullptr)
-        ? g->getGenerics()
-        : std::vector<TypeRef *>{};
+    auto generics =
+        (g != nullptr) ? g->getGenerics() : std::vector<TypeRef *>{};
 
     next();
 
     while (is<TokenType::SYM_COLCOL>()) {
         next();
-        auto i = parseIdentifier();
+        auto i    = parseIdentifier();
         auto base = ast;
         name += "::" + i->getIdentifier();
 
         ast = Syntax::N<Index>(ast, i, true);
         ast->setDBGInfo(i->getDBGInfo());
 
-        auto g = utils::cast<GenericIdentifier>(i);
-        generics = (g != nullptr)
-            ? g->getGenerics()
-            : std::vector<TypeRef *>{};
+        auto g   = utils::cast<GenericIdentifier>(i);
+        generics = (g != nullptr) ? g->getGenerics() : std::vector<TypeRef *>{};
 
         next();
     }
 
     auto dbg = new DBGSourceInfo(m_source_info, pos,
                                  m_current.get_pos().second - pos.second);
-    auto t = Syntax::TR(ast, name, dbg);
+    auto t   = Syntax::TR(ast, name, dbg);
     t->setGenerics(generics);
     return t;
 }

@@ -59,14 +59,14 @@ struct TypeRef : public types::Type, public Base {
 
     /// @brief AST used to declare this TypeRef.
     /// @note this shoudn't be used for normal usage!
-    Expression::Base* internalAST = nullptr;
+    Expression::Base *internalAST = nullptr;
 
   public:
     TypeRef(std::string p_name, DBGSourceInfo *p_dbg,
             std::vector<TypeRef *> p_generics = {});
     TypeRef(std::string p_name, DBGSourceInfo *p_dbg,
             std::shared_ptr<types::Type> internalType);
-    TypeRef(Expression::Base* p_ast, std::string p_name, DBGSourceInfo *p_dbg);
+    TypeRef(Expression::Base *p_ast, std::string p_name, DBGSourceInfo *p_dbg);
 
     /// @brief Get type's generics
     std::vector<TypeRef *> getGenerics();
@@ -206,17 +206,17 @@ template <typename T> class AttributeHolder {
  *
  * e.g. Functions, classes, etc...
  */
-struct GenericContainer {
+template <typename T = Expression::Param *> struct GenericContainer {
 
-    using GenericList = std::vector<Expression::Param *>;
+    using GenericList = std::vector<T>;
     GenericList generics;
 
   public:
     GenericContainer(){};
     GenericContainer(GenericList generics) : generics(generics){};
 
-    GenericList getGenerics() const;
-    void setGenerics(GenericList list);
+    GenericList getGenerics() const { return generics; }
+    void setGenerics(GenericList list) { generics = std::move(list); }
 
     /// @return iterator to the first generic
     auto genericsBegin() { return generics.begin(); }
