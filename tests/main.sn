@@ -1,9 +1,10 @@
 use Core::System
+// fuck me
+class Parent {
+}
 
-fn hello() {
-    asm {
-        mov arx, blah blah boring who tf cares about assembly
-    }
+class Child: Parent {
+
 }
 
 pub fn main() i32 {

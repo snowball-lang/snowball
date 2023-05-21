@@ -40,6 +40,7 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
 
     assert_tok<TokenType::BRACKET_LCURLY>("'{'");
     bool inPrivateScope = true;
+    bool hasConstructor = false;
 
     auto cls = Syntax::N<Syntax::Statement::ClassDef>(
         name, parentClass, Syntax::Statement::Privacy::fromInt(isPublic));
@@ -110,12 +111,17 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
             } break;
 
             case TokenType::BRACKET_RCURLY: {
+                if (!hasConstructor) {
+                    createError<SYNTAX_ERROR>(dbg->pos, FMT("Class '%s' requires at least one constructor!", cls->getName().c_str()), "", dbg->width);
+                }
+
                 return cls;
             }
 
             // note: This case should be always at the bottom!
             case TokenType::IDENTIFIER: {
                 if (IS_CONSTRUCTOR(m_current)) {
+                    hasConstructor = true;
                     auto func = parseFunction(true);
                     func->setPrivacy(
                         Syntax::Statement::Privacy::fromInt(!inPrivateScope));

@@ -1,9 +1,0 @@
-
-fn my_test() Int {
-    return 32
-}
-
-@[test]
-fn test() Bool {
-    return my_test() == 32
-}
