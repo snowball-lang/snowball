@@ -57,7 +57,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
             int argIndex = 0;
             for (auto arg : newArgs) {
                 auto ref = ctx->module->N<ir::Variable>(node->getDBGInfo(),
-                                                        arg.first, true);
+                                                        arg.first, true /* TODO: is mutable */);
 
                 ref->setType(arg.second->getType());
                 auto refItem = std::make_shared<transform::Item>(

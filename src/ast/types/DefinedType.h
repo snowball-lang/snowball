@@ -43,11 +43,12 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
      */
     struct ClassField : public Syntax::Statement::Privacy {
         explicit ClassField(const std::string& name, std::shared_ptr<Type> type,
-                            Privacy privacy = PRIVATE);
+                            Privacy privacy = PRIVATE, bool isMutable = false);
 
         const std::string name;
         const std::shared_ptr<Type> type;
 
+        bool isMutable = false;
         bool initialized = false;
     };
 

@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <string>
 #include <vector>
+#include <optional>
 
 #ifndef __SNOWBALL_TYPECHECKER_H_
 #define __SNOWBALL_TYPECHECKER_H_
@@ -47,6 +48,11 @@ class TypeChecker : public AcceptorExtend<TypeChecker, codegen::ValueVisitor> {
     // Context used to type check
     typecheck::Context *ctx = new typecheck::Context();
 
+    /**
+     * @brief Checks if a variable is mutable. If the IR value is not a variable
+     *  successor, it will return std::nullopt.
+     */
+    std::optional<bool> isMutable(std::shared_ptr<ir::Value> value);
     /**
      * Utility function to avoid using 'void' types
      * as values.

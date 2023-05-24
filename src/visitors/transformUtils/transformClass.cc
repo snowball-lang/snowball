@@ -49,7 +49,7 @@ Transformer::transformClass(const std::string& uuid,
                 ty->getVariables(), [&](auto v) {
                     auto varTy = transformType(v->getDefinedType());
                     return new types::DefinedType::ClassField(v->getName(),
-                                                              varTy);
+                                                              varTy, /*TODO: actually check this*/Statement::Privacy::PRIVATE, v->isMutable());
                 });
 
             auto fields =

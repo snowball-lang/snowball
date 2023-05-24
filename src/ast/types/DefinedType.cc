@@ -25,8 +25,8 @@ DefinedType::DefinedType(const std::string& name, const std::string uuid,
       module(module), fields(fields), generics(generics) {}
 
 DefinedType::ClassField::ClassField(const std::string& name,
-                                    std::shared_ptr<Type> type, Privacy privacy)
-    : name(name), type(type), Syntax::Statement::Privacy(privacy) {}
+                                    std::shared_ptr<Type> type, Privacy privacy, bool isMutable)
+    : name(name), type(type), Syntax::Statement::Privacy(privacy), isMutable(isMutable) {}
 std::string DefinedType::getUUID() const { return uuid; }
 void DefinedType::addField(ClassField *f) { fields.emplace_back(f); }
 std::shared_ptr<ir::Module> DefinedType::getModule() const { return module; }

@@ -10,7 +10,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/Debug/snowball",
-            "args": ["build"],
+            "args": ["build", "-o", "O0"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
@@ -30,7 +30,5 @@
             ],
             "logging": { "engineLogging": true }
         }
-
-
     ]
 }

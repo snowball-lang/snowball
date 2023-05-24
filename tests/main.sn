@@ -1,12 +1,17 @@
-use Core::System
-// fuck me
-class Parent {
-}
+// use Core::System
 
-class Child: Parent {
-
+class A {
+  pub:
+    let s: i32;
+    A() {
+        self.s = 0
+    }
 }
 
 pub fn main() i32 {
-    hello()
+    let a = 2
+
+    a = 5
+    let x = new A();
+    x.s = 69
 }

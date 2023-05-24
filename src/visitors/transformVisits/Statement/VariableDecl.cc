@@ -22,7 +22,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
     }
 
     auto var =
-        ctx->module->N<ir::Variable>(p_node->getDBGInfo(), variableName, false);
+        ctx->module->N<ir::Variable>(p_node->getDBGInfo(), variableName, false, isMutable);
     auto item =
         std::make_shared<transform::Item>(transform::Item::Type::VALUE, var);
 

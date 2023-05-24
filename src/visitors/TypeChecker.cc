@@ -18,6 +18,7 @@
 #include <assert.h>
 #include <string>
 #include <vector>
+#include <optional>
 
 #define VISIT(Val) void TypeChecker::visit(ir::Val *p_node)
 
@@ -48,7 +49,8 @@ VISIT(CharValue) { /* noop */
 }
 
 VISIT(Call) {
-    for (auto a : p_node->getArguments()) {
+    auto args = p_node->getArguments();
+    for (auto a : args) {
         a->visit(this);
     }
 
@@ -62,8 +64,14 @@ VISIT(Call) {
     }
 
     if (auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee())) {
-        if (services::OperatorService::isOperator(fn->getName()) &&
-            p_node->getArguments().size() == 2) {
+        if (services::OperatorService::isOperator(fn->getName(true)) &&
+            args.size() == 2) {
+            
+            if (services::OperatorService::opEquals<services::OperatorService::EQ>(fn->getName(true))) {
+                if (auto x = isMutable(args.at(0)); (x.has_value() && (!x.value()))) {
+                    Syntax::E<VARIABLE_ERROR>(p_node, "You can't assign a new value to a unmutable variable", "This variable is not mutable!");
+                }
+            }
             // TODO: check for operator sides being equal.
         }
     }
@@ -200,11 +208,24 @@ void TypeChecker::codegen() {
 
 void TypeChecker::cantBeVoid(DBGObject *dbg, std::shared_ptr<types::Type> ty,
                              const std::string& message) {
-
     if (std::dynamic_pointer_cast<types::VoidType>(ty)) {
         Syntax::E<TYPE_ERROR>(dbg, message);
     }
 }
+
+
+std::optional<bool> TypeChecker::isMutable(std::shared_ptr<ir::Value> value) {
+    if (auto x = utils::dyn_cast<ir::Variable>(value)) {
+        return x->isMutable();
+    } else if (auto x = utils::dyn_cast<ir::VariableDeclaration>(value)) {
+        assert(false);
+    } else if (auto x  = utils::dyn_cast<ir::IndexExtract>(value)) {
+        return x->getField()->isMutable;
+    }
+
+    return std::nullopt;
+}
+
 
 } // namespace codegen
 } // namespace snowball
