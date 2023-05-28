@@ -13,6 +13,8 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::BinaryOp) {
                 if (x->second == NotInitialized) {
                     this->scopes.front()[x->first] = Initialized;
                     this->state.inited.push_back(i->getIdentifier());
+
+                    p_node->isInitialization = true;
                 }
 
                 return;
@@ -33,6 +35,8 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::BinaryOp) {
                     if (v->second == NotInitialized) {
                         this->scopes.front()[v->first] = Initialized;
                         this->state.inited.push_back(v->first);
+    
+                        p_node->isInitialization = true;
                     }
                 }
             }

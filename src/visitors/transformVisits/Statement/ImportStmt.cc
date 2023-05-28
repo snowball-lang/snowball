@@ -59,7 +59,6 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
                 auto ast    = parser->parse();
                 ctx->module->setSourceInfo(srcInfo);
 
-                visit(ast);
 
                 std::vector<Syntax::Analyzer *> passes = {
                     new Syntax::DefiniteAssigment(srcInfo)};
@@ -67,6 +66,8 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
                 for (auto pass : passes) {
                     pass->run(ast);
                 }
+
+                visit(ast);
 
                 auto typeChecker = new codegen::TypeChecker(ctx->module);
                 typeChecker->codegen();

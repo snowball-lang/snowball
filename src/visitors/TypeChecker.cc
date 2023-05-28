@@ -69,7 +69,9 @@ VISIT(Call) {
             
             if (services::OperatorService::opEquals<services::OperatorService::EQ>(fn->getName(true))) {
                 if (auto x = isMutable(args.at(0)); (x.has_value() && (!x.value()))) {
-                    Syntax::E<VARIABLE_ERROR>(p_node, "You can't assign a new value to a unmutable variable", "This variable is not mutable!");
+                    if (!p_node->isInitialization) {
+                        Syntax::E<VARIABLE_ERROR>(p_node, "You can't assign a new value to a unmutable variable", "This variable is not mutable!");
+                    }
                 }
             }
             // TODO: check for operator sides being equal.

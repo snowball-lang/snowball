@@ -13,6 +13,10 @@ Syntax::Statement::VariableDecl *Parser::parseVariable() {
 
     // TODO: dinamic mutability
     bool isMutable = false;
+    if (is<TokenType::KWORD_MUTABLE>()) {
+        isMutable = true;
+        next();
+    }
 
     auto token = assert_tok<TokenType::IDENTIFIER>("an identifier");
     next(); // consume identifier

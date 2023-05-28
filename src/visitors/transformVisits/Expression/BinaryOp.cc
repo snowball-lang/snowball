@@ -25,6 +25,8 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
     std::vector<Expression::Base *> args = {right};
     auto call = Syntax::N<Expression::FunctionCall>(index, args);
 
+    call->isInitialization = p_node->isInitialization;
+
     ident->setDBGInfo(p_node->getDBGInfo());
     call->setDBGInfo(p_node->getDBGInfo());
     index->setDBGInfo(p_node->getDBGInfo());

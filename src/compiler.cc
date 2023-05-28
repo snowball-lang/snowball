@@ -89,19 +89,6 @@ void Compiler::compile(bool verbose) {
             std::vector<Syntax::Analyzer *> passes = {
                 new Syntax::DefiniteAssigment(_source_info)};
 
-            auto simplifier = new Syntax::Transformer(
-                mainModule->downcasted_shared_from_this<ir::Module>(),
-                _source_info);
-
-#if _SNOWBALL_TIMERS_DEBUG
-            DEBUG_TIMER("Simplifier: %fs",
-                        utils::_timer([&] { simplifier->visit(ast); }));
-#else
-            simplifier->visit(ast);
-#endif
-
-            SHOW_STATUS(Logger::compiling(Logger::progress(0.60)))
-
 #if _SNOWBALL_TIMERS_DEBUG
             DEBUG_TIMER("Passes: %fs", utils::_timer([&] {
                             for (auto pass : passes) pass->run(ast);
@@ -110,6 +97,17 @@ void Compiler::compile(bool verbose) {
             for (auto pass : passes) {
                 pass->run(ast);
             }
+#endif
+
+            SHOW_STATUS(Logger::compiling(Logger::progress(0.60)))
+            auto simplifier = new Syntax::Transformer(
+                mainModule->downcasted_shared_from_this<ir::Module>(),
+                _source_info);
+#if _SNOWBALL_TIMERS_DEBUG
+            DEBUG_TIMER("Simplifier: %fs",
+                        utils::_timer([&] { simplifier->visit(ast); }));
+#else
+            simplifier->visit(ast);
 #endif
 
             SHOW_STATUS(Logger::compiling(Logger::progress(0.70)))

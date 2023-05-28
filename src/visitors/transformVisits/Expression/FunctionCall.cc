@@ -206,6 +206,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
 
     // Set an updated version of the call arguments
     call->setArguments(argValues);
+    call->isInitialization = p_node->isInitialization;
     this->value = call;
 }
 

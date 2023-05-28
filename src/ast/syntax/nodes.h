@@ -161,9 +161,19 @@ struct FunctionCall : public AcceptorExtend<FunctionCall, Base> {
      *    ^---------- '4' or 'type void' are not functions
      */
     Base *callee;
-
     /// @brief A list of arguments passed to the function
     std::vector<Base *> arguments;
+    /**
+     * @brief A variable used to fix a special occation for
+     *  variable mutability. Uninitialized variables should
+     *  allow an initial assigment (but just once).
+     * @example
+     *  let a: i32;
+     *  a = 10 // ok
+     *  a = 20 // error
+     * @note It's a special variable for the OpType::EQ operator.
+     */
+    bool isInitialization = false;
 
   public:
     using AcceptorExtend::AcceptorExtend;
@@ -345,6 +355,19 @@ struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
                  op_type == OpType::UPLUS || op_type == OpType::UMINUS);
     };
     ~BinaryOp() noexcept = default;
+
+  public:
+    /**
+     * @brief A variable used to fix a special occation for
+     *  variable mutability. Uninitialized variables should
+     *  allow an initial assigment (but just once).
+     * @example
+     *  let a: i32;
+     *  a = 10 // ok
+     *  a = 20 // error
+     * @note It's a special variable for the OpType::EQ operator.
+     */
+    bool isInitialization = false;
 };
 
 }; // namespace Expression

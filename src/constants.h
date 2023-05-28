@@ -218,6 +218,7 @@ typedef int32_t snowball_int_t;
 #define _SNOWBALL_KEYWORD__SUPER    "super"
 #define _SNOWBALL_KEYWORD__STATIC   "static"
 #define _SNOWBALL_KEYWORD__IMPORT   "use"
+#define _SNOWBALL_KEYWORD__MUTABLE  "mut"
 #define _SNOWBALL_KEYWORD__DO       "do"
 #define _SNOWBALL_KEYWORD__RETURN   "return"
 #define _SNOWBALL_KEYWORD__DECLTYPE "decltype"

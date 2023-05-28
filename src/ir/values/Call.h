@@ -38,6 +38,19 @@ class Call : public AcceptorExtend<Call, Value> {
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS
+  
+  public:
+    /**
+     * @brief A variable used to fix a special occation for
+     *  variable mutability. Uninitialized variables should
+     *  allow an initial assigment (but just once).
+     * @example
+     *  let a: i32;
+     *  a = 10 // ok
+     *  a = 20 // error
+     * @note It's a special variable for the OpType::EQ operator.
+     */
+    bool isInitialization = false;
 };
 
 } // namespace ir
