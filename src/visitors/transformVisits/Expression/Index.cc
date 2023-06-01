@@ -16,7 +16,7 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
             std::shared_ptr<ir::Func> fn) -> std::shared_ptr<ir::Func> {
         if ((!canBePrivate) && fn->isPrivate()) {
             E<TYPE_ERROR>(p_node->getDBGInfo(),
-                          FMT("Function '%s' is a private method and "
+                          FMT("Variable '%s' is a private method and "
                               "it cant be accessed from this context!",
                               name.c_str()));
         }

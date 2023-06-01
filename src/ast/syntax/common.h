@@ -92,6 +92,13 @@ struct TypeRef : public types::Type, public Base {
     ~TypeRef() noexcept = default;
 };
 
+/**
+ * @class DeclType
+ * @brief A struct representing a declaration type that derives from TypeRef.
+ *
+ * This struct holds a pointer to a Base object and provides methods to access 
+ *  the expression value and determine if it is a type declaration.
+ */
 struct DeclType : public TypeRef {
     Base *value;
 
@@ -103,6 +110,19 @@ struct DeclType : public TypeRef {
 
     bool isTypeDecl() override { return true; }
     ~DeclType() noexcept = default;
+};
+
+struct PointerType : public TypeRef {
+    TypeRef *baseType;
+
+  public:
+    PointerType(TypeRef *baseType, DBGSourceInfo *srcInfo);
+
+    /// @return the expr value to get the type from
+    auto getBaseType() { return baseType; }
+
+    bool isTypeDecl() override { return true; }
+    ~PointerType() noexcept = default;
 };
 
 /// Function signature parameter helper node (name: type).

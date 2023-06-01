@@ -12,7 +12,9 @@ namespace Syntax {
 namespace Expression {
 
 DeclType::DeclType(Base *value, DBGSourceInfo *srcInfo)
-    : value(value), TypeRef("$decltype", srcInfo){};
+    : value(value), TypeRef("decltype(...)", srcInfo){};
+PointerType::PointerType(TypeRef *baseType, DBGSourceInfo *srcInfo)
+    : baseType(baseType), TypeRef(baseType->getName() + "*", srcInfo){};
 PseudoVariable::PseudoVariable(std::string identifier)
     : identifier(identifier){};
 TypeRef::TypeRef(Expression::Base *p_ast, std::string p_name,
