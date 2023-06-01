@@ -31,6 +31,15 @@ Transformer::transformType(Expression::TypeRef *ty) {
         return this->value->getType();
     }
 
+    if (ty->isPointerType()) {
+        auto pointer = utils::cast<Expression::PointerType>(ty);
+        assert(pointer);
+
+
+        // return ;
+        assert(false);
+    }
+
     {
         auto uuid = ctx->createIdentifierName(id, false);
         if (auto x = ctx->cache->getTransformedType(uuid)) {

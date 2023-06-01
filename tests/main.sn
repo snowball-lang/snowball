@@ -5,11 +5,10 @@ class A {
     let s: i32;
     A() {
         self.s = 0
-        "69".hello()
     }
 }
 
 pub fn main() i32 {
-    let x = new A();
+    let x: i32* = 2;
     // x.s = 69
 }

@@ -87,6 +87,8 @@ struct TypeRef : public types::Type, public Base {
 
     /// @return true if it's a delctype(...)
     virtual bool isTypeDecl() { return false; }
+    /// @return true if the type is a pointer
+    virtual bool isPointerType() { return false; }
 
     ACCEPT()
     ~TypeRef() noexcept = default;
@@ -107,8 +109,8 @@ struct DeclType : public TypeRef {
 
     /// @return the expr value to get the type from
     auto getExpr() { return value; }
-
     bool isTypeDecl() override { return true; }
+    
     ~DeclType() noexcept = default;
 };
 
@@ -120,8 +122,8 @@ struct PointerType : public TypeRef {
 
     /// @return the expr value to get the type from
     auto getBaseType() { return baseType; }
+    bool isPointerType() override { return true; }
 
-    bool isTypeDecl() override { return true; }
     ~PointerType() noexcept = default;
 };
 

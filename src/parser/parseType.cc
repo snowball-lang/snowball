@@ -59,6 +59,13 @@ TypeRef *Parser::parseType() {
                                  m_current.get_pos().second - pos.second);
     auto t   = Syntax::TR(ast, name, dbg);
     t->setGenerics(generics);
+
+    while (is<TokenType::OP_MUL>()) {
+        next();
+        auto base = t;
+        t = Syntax::N<PointerType>(base, dbg);
+    }
+
     return t;
 }
 
