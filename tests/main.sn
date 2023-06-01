@@ -9,6 +9,6 @@ class A {
 }
 
 pub fn main() i32 {
-    let x: i32* = 2;
+    let x = new A();
     // x.s = 69
 }

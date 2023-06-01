@@ -1,5 +1,6 @@
 
 #include "../ast/syntax/nodes.h"
+#include "../ast/types/PointerType.h"
 #include "../ast/types/DefinedType.h"
 #include "../ast/types/FunctionType.h"
 #include "../ast/visitor/Visitor.h"

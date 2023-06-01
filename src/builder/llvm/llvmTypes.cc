@@ -40,13 +40,15 @@ llvm::Type *LLVMBuilder::getLLVMType(types::Type *t) {
         return builder->getVoidTy();
     } else if (cast<types::CharType>(t)) {
         return builder->getInt8Ty();
+    } else if (auto x = cast<types::PointerType>(t)) {
+        return getLLVMType(x->getPointedType())->getPointerTo();
     }
 
     else if (auto f = cast<types::FunctionType>(t)) {
         return getLLVMFunctionType(f)->getPointerTo();
     } else if (auto c = cast<types::DefinedType>(t)) {
         if (auto it = types.find(c->getId()); it != types.end()) {
-            return it->second->getPointerTo();
+            return it->second;
         }
 
         auto fields = c->getFields();
@@ -82,7 +84,7 @@ llvm::Type *LLVMBuilder::getLLVMType(types::Type *t) {
         }
 
         s->setBody(generatedFields);
-        return s->getPointerTo();
+        return s;
     } else {
         Syntax::E<BUG>(FMT("Undefined type! ('%s')", t->getName().c_str()));
     }

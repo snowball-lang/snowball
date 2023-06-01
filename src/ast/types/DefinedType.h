@@ -31,8 +31,7 @@ class FunctionType;
  */
 class DefinedType : public AcceptorExtend<DefinedType, Type>,
                     public ir::IdMixin,
-                    public DBGObject,
-                    public std::enable_shared_from_this<DefinedType> {
+                    public DBGObject {
   public:
     /**
      * @brief A class field represents all of the "elements" a
@@ -136,7 +135,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
 
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
-    bool canCast(Type *ty) override;
+    bool canCast(Type *ty) const override;
 };
 
 }; // namespace types

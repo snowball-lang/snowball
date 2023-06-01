@@ -22,8 +22,7 @@ class FunctionType;
 
 class PointerType : public AcceptorExtend<PointerType, Type>,
                     public ir::IdMixin,
-                    public DBGObject,
-                    public std::enable_shared_from_this<PointerType> {
+                    public DBGObject {
     friend AcceptorExtend;
 
   private:
@@ -51,6 +50,9 @@ class PointerType : public AcceptorExtend<PointerType, Type>,
     /// @return The pointed type this type is pointing to
     /// @see PointerType::base
     std::shared_ptr<Type> getPointedType() const;
+    /// @return The base type being pointed.
+    /// @example i32**** -> i32
+    std::shared_ptr<Type> getBaseType() const;
 
     /// @c Type::toRef() for information about this function.
     /// @note It essentially does the same thing except it adds
@@ -59,7 +61,7 @@ class PointerType : public AcceptorExtend<PointerType, Type>,
 
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
-    bool canCast(Type *ty) override;
+    bool canCast(Type *ty) const override;
 };
 
 }; // namespace types

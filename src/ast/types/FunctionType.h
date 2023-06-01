@@ -106,6 +106,7 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
     std::string getPrettyName() const override;
     std::string getMangledName() const override;
 
+  public:
     /**
      * Create a function type based on the given node.
      *

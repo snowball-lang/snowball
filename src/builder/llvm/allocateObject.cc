@@ -9,7 +9,7 @@ namespace codegen {
 
 llvm::Value *
 LLVMBuilder::allocateObject(std::shared_ptr<types::DefinedType> ty) {
-    auto llvmType   = getLLVMType(ty);
+    auto llvmType   = getLLVMType(ty)->getPointerTo();
     auto dataLayout = module->getDataLayout();
     auto allocation = builder->CreateCall(
         getAllocaFunction(),

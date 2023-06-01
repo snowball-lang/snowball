@@ -27,7 +27,9 @@ class TypeRef;
 }; // namespace Syntax
 
 namespace types {
-class Type {
+class PointerType;
+
+class Type : public std::enable_shared_from_this<Type> {
   protected:
     // Type's name
     std::string name;
@@ -61,9 +63,13 @@ class Type {
     };
 
     /// @return if a type can be casted to this type
-    virtual bool canCast(Type *ty) { return false; }
+    virtual bool canCast(Type *ty) const { return false; }
     /// @brief std::shared_ptr support for Type::canCast
-    virtual bool canCast(std::shared_ptr<Type> t) { return canCast(t.get()); }
+    virtual bool canCast(std::shared_ptr<Type> t) const { return canCast(t.get()); }
+
+    /// @brief Create a *new* pointer type with this type as base 
+    /// @return a std::shared_ptr<PointerType> but casted into a `Type`
+    virtual std::shared_ptr<Type> getPointerTo();
 
     /// @brief Transform the type into a syntax type reference node.
     ///	This is useful for cases such as class methods where the first

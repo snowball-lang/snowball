@@ -2,12 +2,12 @@
 #include "../../../exec/cli.h"
 #include "../../ValueVisitor/Visitor.h"
 #include "../../ast/types/FunctionType.h"
+#include "../../ast/types/PointerType.h"
 #include "../../ir/id.h"
 #include "../../ir/module/MainModule.h"
 #include "../../ir/values/Func.h"
 #include "../../ir/values/Value.h"
 
-#include <cstdint>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/DIBuilder.h>
 #include <llvm/IR/DebugInfoMetadata.h>
@@ -16,8 +16,10 @@
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/Target/TargetMachine.h>
+
 #include <map>
 #include <memory>
+#include <cstdint>
 
 #ifndef __SNOWBALL_LLVM_BUILDER_H_
 #define __SNOWBALL_LLVM_BUILDER_H_

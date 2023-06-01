@@ -1,4 +1,5 @@
 #include "../Transformer.h"
+#include "../../ast/types/PointerType.h"
 
 #include <memory>
 #include <optional>
@@ -36,7 +37,7 @@ Transformer::transformType(Expression::TypeRef *ty) {
         assert(pointer);
 
         // return ;
-        assert(false);
+        return transformType(pointer->getBaseType())->getPointerTo();
     }
 
     {

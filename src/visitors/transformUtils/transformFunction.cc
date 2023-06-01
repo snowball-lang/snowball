@@ -65,8 +65,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
             if (fn->isConstructor()) {
                 auto a = ctx->module->N<ir::Argument>(node->getDBGInfo(),
                                                       "self", 0, nullptr);
-                a->setType(ctx->getCurrentClass());
-
+                a->setType(ctx->getCurrentClass()->getPointerTo());
                 newArgs.emplace(newArgs.begin(), std::make_pair("self", a));
             }
 

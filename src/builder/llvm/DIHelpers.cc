@@ -59,6 +59,9 @@ llvm::DIType *LLVMBuilder::getDIType(types::Type *ty) {
             llvm::dwarf::DW_ATE_float);
     } else if (cast<types::VoidType>(ty)) {
         return nullptr;
+    } else if (auto x = cast<types::PointerType>(ty)) {
+        auto type = getDIType(x->getPointedType().get());
+        return dbg.builder->createPointerType(type, layout.getTypeAllocSizeInBits(llvmType));
     }
 
     else if (auto f = cast<types::FunctionType>(ty)) {
