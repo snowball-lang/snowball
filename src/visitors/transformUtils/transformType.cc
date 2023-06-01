@@ -35,7 +35,6 @@ Transformer::transformType(Expression::TypeRef *ty) {
         auto pointer = utils::cast<Expression::PointerType>(ty);
         assert(pointer);
 
-
         // return ;
         assert(false);
     }

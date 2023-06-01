@@ -112,7 +112,11 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
 
             case TokenType::BRACKET_RCURLY: {
                 if (!hasConstructor) {
-                    createError<SYNTAX_ERROR>(dbg->pos, FMT("Class '%s' requires at least one constructor!", cls->getName().c_str()), "", dbg->width);
+                    createError<SYNTAX_ERROR>(
+                        dbg->pos,
+                        FMT("Class '%s' requires at least one constructor!",
+                            cls->getName().c_str()),
+                        "", dbg->width);
                 }
 
                 return cls;
@@ -122,7 +126,7 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
             case TokenType::IDENTIFIER: {
                 if (IS_CONSTRUCTOR(m_current)) {
                     hasConstructor = true;
-                    auto func = parseFunction(true);
+                    auto func      = parseFunction(true);
                     func->setPrivacy(
                         Syntax::Statement::Privacy::fromInt(!inPrivateScope));
                     func->setName(services::OperatorService::getOperatorMangle(

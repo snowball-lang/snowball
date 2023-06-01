@@ -16,9 +16,9 @@
 #include "../ir/values/WhileLoop.h"
 
 #include <assert.h>
+#include <optional>
 #include <string>
 #include <vector>
-#include <optional>
 
 #define VISIT(Val) void TypeChecker::visit(ir::Val *p_node)
 
@@ -66,11 +66,17 @@ VISIT(Call) {
     if (auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee())) {
         if (services::OperatorService::isOperator(fn->getName(true)) &&
             args.size() == 2) {
-            
-            if (services::OperatorService::opEquals<services::OperatorService::EQ>(fn->getName(true))) {
-                if (auto x = isMutable(args.at(0)); (x.has_value() && (!x.value()))) {
+
+            if (services::OperatorService::opEquals<
+                    services::OperatorService::EQ>(fn->getName(true))) {
+                if (auto x = isMutable(args.at(0));
+                    (x.has_value() && (!x.value()))) {
                     if (!p_node->isInitialization) {
-                        Syntax::E<VARIABLE_ERROR>(p_node, "You can't assign a new value to a unmutable variable", "This variable is not mutable!");
+                        Syntax::E<VARIABLE_ERROR>(
+                            p_node,
+                            "You can't assign a new value to a unmutable "
+                            "variable",
+                            "This variable is not mutable!");
                     }
                 }
             }
@@ -215,19 +221,17 @@ void TypeChecker::cantBeVoid(DBGObject *dbg, std::shared_ptr<types::Type> ty,
     }
 }
 
-
 std::optional<bool> TypeChecker::isMutable(std::shared_ptr<ir::Value> value) {
     if (auto x = utils::dyn_cast<ir::Variable>(value)) {
         return x->isMutable();
     } else if (auto x = utils::dyn_cast<ir::VariableDeclaration>(value)) {
         assert(false);
-    } else if (auto x  = utils::dyn_cast<ir::IndexExtract>(value)) {
+    } else if (auto x = utils::dyn_cast<ir::IndexExtract>(value)) {
         return x->getField()->isMutable;
     }
 
     return std::nullopt;
 }
-
 
 } // namespace codegen
 } // namespace snowball

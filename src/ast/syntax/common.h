@@ -98,7 +98,7 @@ struct TypeRef : public types::Type, public Base {
  * @class DeclType
  * @brief A struct representing a declaration type that derives from TypeRef.
  *
- * This struct holds a pointer to a Base object and provides methods to access 
+ * This struct holds a pointer to a Base object and provides methods to access
  *  the expression value and determine if it is a type declaration.
  */
 struct DeclType : public TypeRef {
@@ -110,7 +110,7 @@ struct DeclType : public TypeRef {
     /// @return the expr value to get the type from
     auto getExpr() { return value; }
     bool isTypeDecl() override { return true; }
-    
+
     ~DeclType() noexcept = default;
 };
 

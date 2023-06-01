@@ -44,13 +44,16 @@ Transformer::transformClass(const std::string& uuid,
             }
 
             auto basedName  = getNameWithBase(ty->getName());
-            auto baseFields = vector_iterate<Statement::VariableDecl *,
-                                             types::DefinedType::ClassField *>(
-                ty->getVariables(), [&](auto v) {
-                    auto varTy = transformType(v->getDefinedType());
-                    return new types::DefinedType::ClassField(v->getName(),
-                                                              varTy, /*TODO: actually check this*/Statement::Privacy::PRIVATE, v->isMutable());
-                });
+            auto baseFields = vector_iterate<
+                Statement::VariableDecl *,
+                types::DefinedType::ClassField
+                    *>(ty->getVariables(), [&](auto v) {
+                auto varTy = transformType(v->getDefinedType());
+                return new types::DefinedType::ClassField(
+                    v->getName(), varTy,
+                    /*TODO: actually check this*/ Statement::Privacy::PRIVATE,
+                    v->isMutable());
+            });
 
             auto fields =
                 getMemberList(ty->getVariables(), baseFields, parentType);

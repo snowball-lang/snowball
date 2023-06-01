@@ -38,7 +38,7 @@ class Call : public AcceptorExtend<Call, Value> {
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS
-  
+
   public:
     /**
      * @brief A variable used to fix a special occation for

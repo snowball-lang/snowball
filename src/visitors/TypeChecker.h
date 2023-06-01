@@ -4,9 +4,9 @@
 #include "../ir/values/Value.h"
 
 #include <assert.h>
+#include <optional>
 #include <string>
 #include <vector>
-#include <optional>
 
 #ifndef __SNOWBALL_TYPECHECKER_H_
 #define __SNOWBALL_TYPECHECKER_H_

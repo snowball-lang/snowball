@@ -114,10 +114,10 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
                 auto fnGenerics = f->getGenerics();
                 // TODO: allow variadic generics
                 if (fnGenerics.size() == generics.size()) {
-                    for (auto generic = fnGenerics.begin(); (generic != fnGenerics.end()) && equal;
-                        ++generic) {
+                    for (auto generic = fnGenerics.begin();
+                         (generic != fnGenerics.end()) && equal; ++generic) {
                         auto i = std::distance(fnGenerics.begin(), generic);
-                        equal = (*generic).second->is(generics.at(i));
+                        equal  = (*generic).second->is(generics.at(i));
                     }
 
                     // TODO: check for ambiguous functions

@@ -59,7 +59,6 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
                 auto ast    = parser->parse();
                 ctx->module->setSourceInfo(srcInfo);
 
-
                 std::vector<Syntax::Analyzer *> passes = {
                     new Syntax::DefiniteAssigment(srcInfo)};
 

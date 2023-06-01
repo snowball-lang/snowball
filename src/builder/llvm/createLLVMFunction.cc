@@ -34,8 +34,8 @@ llvm::Function *LLVMBuilder::createLLVMFunction(ir::Func *func) {
     auto attrSet = callee->getAttributes();
 
     if (func->hasAttribute(Attributes::INLINE)) {
-        auto newAttrSet = attrSet.addFnAttribute(
-            callee->getContext(), llvm::Attribute::AlwaysInline);
+        auto newAttrSet = attrSet.addFnAttribute(callee->getContext(),
+                                                 llvm::Attribute::AlwaysInline);
         callee->setAttributes(newAttrSet);
         // TODO: other attributes
     }

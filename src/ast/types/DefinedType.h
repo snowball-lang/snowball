@@ -48,7 +48,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
         const std::string name;
         const std::shared_ptr<Type> type;
 
-        bool isMutable = false;
+        bool isMutable   = false;
         bool initialized = false;
     };
 
