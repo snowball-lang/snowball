@@ -41,11 +41,12 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::BinaryOp) {
                 }
             }
         }
-    } else {
-        p_node->left->accept(this);
-        if (!p_node->unary) {
-            p_node->right->accept(this);
-        }
+
+    }
+    
+    p_node->left->accept(this);
+    if (!p_node->unary) {
+        p_node->right->accept(this);
     }
 }
 

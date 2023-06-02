@@ -222,6 +222,11 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     std::shared_ptr<ir::Value>
     getBooleanValue(std::shared_ptr<ir::Value> value);
     /**
+     * @brief It imports and generates the core runtime classes and functions
+     *  for basic snowball functionality.
+     */
+    void initializeCoreRuntime();
+    /**
      * Check if the current module has a valid (or private) context.
      *
      * @param mod               A shared pointer to an ir::Module object

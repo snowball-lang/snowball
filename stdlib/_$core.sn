@@ -1,0 +1,39 @@
+
+class Iterable<_IteratorType> {
+    Iterable() {}
+}
+
+class Array<_StoreType>: Iterable<?_StoreType> {
+    Array() {}
+}
+
+/**
+ * @class String
+ * @brief A class representing a string of characters.
+ *
+ * The String class provides various operations and functionalities
+ * for working with strings of characters. It supports common string
+ * manipulation operations such as concatenation, substring extraction,
+ * length calculation, and more.
+ *
+ * @note The String class is designed to be efficient and memory-safe.
+ *       It automatically manages the memory allocation and deallocation
+ *       required for storing and manipulating strings.
+ */
+class String<_CharType = char*>: Iterable<?_CharType> {
+  pub:
+    /**
+     * @brief Default constructor.
+     *
+     * Constructs an empty string.
+     */
+    String() {
+        self.size = 0;
+        self.data = new Array<?_CharType>();
+    }
+
+  priv:
+    
+    let mut size: i32;
+    let data: Array<?_CharType>*;
+}

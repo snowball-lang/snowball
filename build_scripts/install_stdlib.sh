@@ -1,4 +1,4 @@
-
+set -x
 SNOWBALL_INSTALL_DIR=~/.snowball
 
 mkdir -p "$SNOWBALL_INSTALL_DIR"/libs

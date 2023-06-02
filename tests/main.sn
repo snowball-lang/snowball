@@ -1,14 +1,3 @@
-// use Core::System
-
-class A {
-  pub:
-    let s: i32;
-    A() {
-        self.s = 0
-    }
-}
 
 pub fn main() i32 {
-    let x = new A();
-    // x.s = 69
 }

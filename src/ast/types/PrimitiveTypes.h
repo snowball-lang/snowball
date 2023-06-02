@@ -78,12 +78,6 @@ class BoolType : public AcceptorExtend<BoolType, NumericType> {
 };
 
 /// @brief String (represents int 8 pointer)
-class StringType : public AcceptorExtend<StringType, PrimitiveType> {
-  public:
-    StringType() : AcceptorExtend(SN_STR_TYPE) {}
-};
-
-/// @brief String (represents int 8 pointer)
 class CharType : public AcceptorExtend<CharType, NumericType> {
   public:
     CharType() : AcceptorExtend(SN_CHR_TYPE) {}

@@ -36,7 +36,8 @@ std::vector<Syntax::Expression::Param *> Parser::parseGenericParams() {
 
             // "=" [default_type]
             if (is<TokenType::OP_EQ>()) {
-                createError<TODO>("Default types for generics");
+                next();
+                default_ty = parseType();
             }
 
             // Generate a new parameter instance

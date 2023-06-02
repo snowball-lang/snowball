@@ -26,7 +26,6 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod)
     DEFINE_TYPE(Int32Type)
     DEFINE_TYPE(Int16Type)
     DEFINE_TYPE(Int8Type)
-    DEFINE_TYPE(StringType)
     DEFINE_TYPE(CObjectType)
     DEFINE_TYPE(VoidType)
     DEFINE_TYPE(CharType)
@@ -36,7 +35,7 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod)
     std::vector<std::shared_ptr<types::Type>> overloadTypes = {
         raw_BoolType,  raw_Float64Type, raw_Float32Type,
         raw_Int64Type, raw_Int32Type,   raw_Int16Type,
-        raw_Int8Type,  raw_StringType,  raw_CharType};
+        raw_Int8Type,  raw_CharType};
 
     for (auto ty : overloadTypes) {
         for (auto op : services::OperatorService::operators) {
