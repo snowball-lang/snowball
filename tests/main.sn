@@ -1,3 +1,15 @@
 
+class A {
+  pub:
+    let a: i32;
+    A() {
+        self.a = 24124
+    }
+
+    
+}
+
 pub fn main() i32 {
+    let a: A = new A{};
+    let b: A* = new A();
 }

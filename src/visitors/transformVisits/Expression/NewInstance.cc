@@ -26,10 +26,14 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
     auto c = utils::dyn_cast<ir::Call>(this->value);
     assert(c != nullptr);
 
+    auto typeRef = utils::cast<Expression::TypeRef>(expr);
+    auto type = transformType(typeRef);
+
     // Make a copy of the value
-    auto v = ctx->module->N<ir::Call>(p_node->getDBGInfo(), c->getCallee(),
+    auto v = ctx->module->N<ir::ObjectInitialization>(p_node->getDBGInfo(), c->getCallee(),
                                       c->getArguments());
-    v->setType(c->getType());
+    v->initializeAtHeap = p_node->atHeap();
+    v->setType(v->initializeAtHeap ? type->getPointerTo() : type);
     this->value = v;
 }
 

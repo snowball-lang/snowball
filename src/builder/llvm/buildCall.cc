@@ -26,10 +26,26 @@ void LLVMBuilder::visit(ir::Call *call) {
     setDebugInfoLoc(call);
     if (auto c = utils::dyn_cast<ir::Func>(call->getCallee());
         c != nullptr && c->isConstructor()) {
+        auto instance = utils::cast<ir::ObjectInitialization>(call);
+
+        assert(instance);
         assert(c->hasParent());
+
         auto p = c->getParent();
 
-        args.insert(args.begin(), allocateObject(p));
+        llvm::Value* object = nullptr;
+        if (instance->initializeAtHeap) {
+            object = allocateObject(p);
+        } else {
+            object = builder->CreateAlloca(getLLVMType(instance->getType()));
+        }
+
+        args.insert(args.begin(), object);
+        builder->CreateCall(
+            (llvm::FunctionType *)callee->getType()->getPointerElementType(),
+            callee, args);
+        this->value = builder->CreateLoad(getLLVMType(instance->getType().get()), object);
+        return;
     } else if (auto c = utils::dyn_cast<ir::Func>(call->getCallee());
                c != nullptr && c->inVirtualTable()) {
         assert(c->hasParent());

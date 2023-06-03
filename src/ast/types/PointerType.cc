@@ -17,7 +17,7 @@ namespace snowball {
 namespace types {
 
 PointerType::PointerType(std::shared_ptr<Type> base)
-    : AcceptorExtend(Kind::TYPE, name), base(base) {}
+    : AcceptorExtend(Kind::TYPE, base->getName() + "*"), base(base) {}
 std::shared_ptr<Type> PointerType::getPointedType() const { return base; }
 std::string PointerType::getPrettyName() const {
     auto baseName = base->getPrettyName();

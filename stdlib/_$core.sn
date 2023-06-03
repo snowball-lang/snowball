@@ -29,11 +29,11 @@ class String<_CharType = char*>: Iterable<?_CharType> {
      */
     String() {
         self.size = 0;
-        self.data = new Array<?_CharType>();
+        self.data = new Array<?_CharType>{};
     }
 
   priv:
     
     let mut size: i32;
-    let data: Array<?_CharType>*;
+    let data: Array<?_CharType>;
 }

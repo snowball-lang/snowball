@@ -47,15 +47,6 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     }
 
     if (ctx->generateFunction && p_node->getGenerics().size() == 0) {
-
-        if (services::OperatorService::opEquals<
-                services::OperatorService::CONSTRUCTOR>(name)) {
-            auto c = ctx->getCurrentClass();
-            assert(c != nullptr);
-
-            p_node->setRetType(c->getPointerTo()->toRef());
-        }
-
         transformFunction({p_node, ctx->saveState()}, {});
     }
 }

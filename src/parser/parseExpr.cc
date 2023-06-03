@@ -60,14 +60,19 @@ Syntax::Expression::Base *Parser::parseExpr(bool allowAssign) {
                 expr = parseIdentifier();
             } else if (TOKEN(KWORD_NEW)) {
                 next();
-                throwIfNotType();
 
                 auto ty = parseType();
+                bool toTheHeap = true;
 
-                assert_tok<TokenType::BRACKET_LPARENT>("'('");
-                auto call = parseFunctionCall(ty);
+                if (is<TokenType::BRACKET_LCURLY>()) {
+                    toTheHeap = false;
+                } else {
+                    assert_tok<TokenType::BRACKET_LPARENT>("'(' or '{'");
+                }
 
-                expr = Syntax::N<Syntax::Expression::NewInstance>(call, ty);
+                auto call = parseFunctionCall(ty, toTheHeap ? TokenType::BRACKET_RPARENT : TokenType::BRACKET_RCURLY, toTheHeap ? ")" : "}");
+
+                expr = Syntax::N<Syntax::Expression::NewInstance>(call, ty, toTheHeap);
                 expr->setDBGInfo(call->getDBGInfo());
             } else if (TOKEN(OP_NOT) || TOKEN(OP_PLUS) || TOKEN(OP_MINUS) ||
                        TOKEN(OP_BIT_NOT)) {

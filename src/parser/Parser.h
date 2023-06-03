@@ -245,7 +245,9 @@ class Parser {
      * @param callee expression being called
      */
     Syntax::Expression::FunctionCall *
-    parseFunctionCall(Syntax::Expression::Base *callee);
+    parseFunctionCall(Syntax::Expression::Base *callee, 
+                      TokenType terminator = TokenType::BRACKET_RPARENT, 
+                      std::string terminatorString = ")");
 
     /**
      * function_call ::= [expr] "(" [args] ")"

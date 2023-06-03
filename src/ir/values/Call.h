@@ -53,6 +53,21 @@ class Call : public AcceptorExtend<Call, Value> {
     bool isInitialization = false;
 };
 
+/**
+ * @brief Representation of the `new` operator
+ */
+class ObjectInitialization : public AcceptorExtend<ObjectInitialization, Call> {
+    friend Call;
+
+  public:
+    explicit ObjectInitialization(std::shared_ptr<Value> callee,
+                  std::vector<std::shared_ptr<Value>> args = {})
+        : AcceptorExtend(callee, args) {}
+
+    /// @brief Wether to initialize the object at stack or heap.
+    bool initializeAtHeap = true; 
+};
+
 } // namespace ir
 } // namespace snowball
 

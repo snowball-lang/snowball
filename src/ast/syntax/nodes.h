@@ -206,22 +206,28 @@ struct FunctionCall : public AcceptorExtend<FunctionCall, Base> {
  *   _c = alloca [type]
  *   c = [type]::[new operator](_c)
  */
-struct NewInstance : public AcceptorExtend<Cast, Base> {
+struct NewInstance : public AcceptorExtend<NewInstance, Base> {
   private:
     /// @brief Value that's needed to be casted
     FunctionCall *call;
     /// @brief Result type thats casted to
     TypeRef *type;
+    /// @brief Wether or not the `new` operator should create
+    ///  the instance on the heap or on the stack.
+    bool createAtHeap = true;
 
   public:
     using AcceptorExtend::AcceptorExtend;
 
-    NewInstance(FunctionCall *call, TypeRef *ty) : type(ty), call(call){};
+    NewInstance(FunctionCall *call, TypeRef *ty, bool createAtHeap = true) 
+      : type(ty), call(call), createAtHeap(createAtHeap) {};
 
     /// @return Get the call value from the operator
     auto getCall() { return call; }
     /// @brief Get the type trying to be initialized
     auto getType() { return type; }
+    /// @see NewInstance::createAtHeap
+    auto atHeap() { return createAtHeap; }
 
     ACCEPT()
 };

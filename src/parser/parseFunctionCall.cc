@@ -10,15 +10,14 @@ using namespace snowball::Syntax::Expression;
 
 namespace snowball::parser {
 
-FunctionCall *Parser::parseFunctionCall(Syntax::Expression::Base *callee) {
+FunctionCall *Parser::parseFunctionCall(Syntax::Expression::Base *callee, TokenType terminator, std::string terminatorString) {
     assert(callee != nullptr);
-    assert(is<TokenType::BRACKET_LPARENT>());
 
     std::vector<Base *> arguments;
     while (true) {
         auto pk = peek();
 
-        if (is<TokenType::BRACKET_RPARENT>(pk)) {
+        if (terminator == pk.type) {
             break;
         }
 
@@ -27,14 +26,14 @@ FunctionCall *Parser::parseFunctionCall(Syntax::Expression::Base *callee) {
 
         pk = peek();
         if (is<TokenType::SYM_COMMA>(pk) ||
-            is<TokenType::BRACKET_RPARENT>(pk)) {
+            terminator == pk.type) {
             if (is<TokenType::SYM_COMMA>(pk)) next();
             continue;
         } else {
             next();
             createError<SYNTAX_ERROR>(
-                FMT("Expected a ',' or a ')' but found '%s' instead",
-                    m_current.to_string().c_str()));
+                FMT("Expected a ',' or a '%s' but found '%s' instead",
+                    terminatorString.c_str(), pk.to_string().c_str()));
         }
     }
 
