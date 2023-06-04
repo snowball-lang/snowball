@@ -170,6 +170,7 @@ enum class TokenType {
     KWORD_CLASS,          // Symbol: class
     KWORD_AS,             // Symbol: as
     KWORD_IMPORT,         // Symbol: use
+    KWORD_TYPEDEF,        // Symbol: type
     KWORD_MUTABLE,        // Symbol: mut
     KWORD_DO,             // Symbol: do
     KWORD_PUBLIC,         // Symbol: pub
@@ -323,6 +324,8 @@ struct Token {
                 return _SNOWBALL_KEYWORD__PRIVATE;
             case TokenType::KWORD_IMPORT:
                 return _SNOWBALL_KEYWORD__IMPORT;
+            case TokenType::KWORD_TYPEDEF:
+                return _SNOWBALL_KEYWORD__TYPEDEF;
             case TokenType::KWORD_MUTABLE:
                 return _SNOWBALL_KEYWORD__MUTABLE;
             case TokenType::KWORD_DO:

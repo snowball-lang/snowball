@@ -56,7 +56,8 @@ llvm::DIType *LLVMBuilder::getDIType(types::Type *ty) {
         return nullptr;
     } else if (auto x = cast<types::PointerType>(ty)) {
         auto type = getDIType(x->getPointedType().get());
-        return dbg.builder->createPointerType(type, layout.getTypeAllocSizeInBits(llvmType));
+        return dbg.builder->createPointerType(
+            type, layout.getTypeAllocSizeInBits(llvmType));
     }
 
     else if (auto f = cast<types::FunctionType>(ty)) {

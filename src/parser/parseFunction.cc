@@ -221,10 +221,7 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator,
             }
 
             case TokenType::IDENTIFIER: {
-                if (m_current.to_string() == "String") {
-                    opType = services::OperatorService::OperatorType::STRING;
-                    break;
-                } else if (m_current.to_string() == "bool") {
+                if (m_current.to_string() == "bool") {
                     opType = services::OperatorService::OperatorType::BOOL;
                     break;
                 } else {

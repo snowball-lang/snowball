@@ -10,7 +10,9 @@ using namespace snowball::Syntax::Expression;
 
 namespace snowball::parser {
 
-FunctionCall *Parser::parseFunctionCall(Syntax::Expression::Base *callee, TokenType terminator, std::string terminatorString) {
+FunctionCall *Parser::parseFunctionCall(Syntax::Expression::Base *callee,
+                                        TokenType terminator,
+                                        std::string terminatorString) {
     assert(callee != nullptr);
 
     std::vector<Base *> arguments;
@@ -25,8 +27,7 @@ FunctionCall *Parser::parseFunctionCall(Syntax::Expression::Base *callee, TokenT
         arguments.push_back(val);
 
         pk = peek();
-        if (is<TokenType::SYM_COMMA>(pk) ||
-            terminator == pk.type) {
+        if (is<TokenType::SYM_COMMA>(pk) || terminator == pk.type) {
             if (is<TokenType::SYM_COMMA>(pk)) next();
             continue;
         } else {

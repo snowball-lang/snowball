@@ -1,8 +1,8 @@
 
 #include "Type.h"
-#include "PointerType.h"
 
 #include "../syntax/nodes.h"
+#include "PointerType.h"
 
 namespace snowball {
 namespace types {

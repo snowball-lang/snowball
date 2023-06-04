@@ -33,7 +33,7 @@ void LLVMBuilder::visit(ir::Call *call) {
 
         auto p = c->getParent();
 
-        llvm::Value* object = nullptr;
+        llvm::Value *object = nullptr;
         if (instance->initializeAtHeap) {
             object = allocateObject(p);
         } else {
@@ -44,7 +44,8 @@ void LLVMBuilder::visit(ir::Call *call) {
         builder->CreateCall(
             (llvm::FunctionType *)callee->getType()->getPointerElementType(),
             callee, args);
-        this->value = builder->CreateLoad(getLLVMType(instance->getType().get()), object);
+        this->value =
+            builder->CreateLoad(getLLVMType(instance->getType().get()), object);
         return;
     } else if (auto c = utils::dyn_cast<ir::Func>(call->getCallee());
                c != nullptr && c->inVirtualTable()) {

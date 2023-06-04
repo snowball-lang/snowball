@@ -221,9 +221,9 @@ class Parser {
      * class_name    ::=  identifier
      * class_inherit ::=  "extends" [type]
      *
-     * operator_decl ::=  "operator" [op | "String" | "bool"] [function_like]
+     * operator_decl ::=  "operator" [op | "bool"] [function_like]
      * constructor   ::=  [class_name == actual class name] [function_like]
-     * constructor   ::=  "~" [class_name == actual class name] [function_like]
+     * destructor    ::=  "~" [class_name == actual class name] [function_like]
      *
      * class_decls   ::=  [visibility] ":"
      *                |   [function_declaration] ";"
@@ -245,8 +245,8 @@ class Parser {
      * @param callee expression being called
      */
     Syntax::Expression::FunctionCall *
-    parseFunctionCall(Syntax::Expression::Base *callee, 
-                      TokenType terminator = TokenType::BRACKET_RPARENT, 
+    parseFunctionCall(Syntax::Expression::Base *callee,
+                      TokenType terminator         = TokenType::BRACKET_RPARENT,
                       std::string terminatorString = ")");
 
     /**
@@ -274,6 +274,11 @@ class Parser {
      * @param allowAssign Whether or not allow the assign operator.
      */
     Syntax::Expression::Base *parseExpr(bool allowAssign = true);
+
+    /**
+     * alias         ::=  "type" <identifier> = <type> ;
+     */
+    Syntax::Statement::TypeAlias* parseTypeAlias();
 };
 
 } // namespace parser

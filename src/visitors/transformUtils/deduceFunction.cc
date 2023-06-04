@@ -37,7 +37,7 @@ std::optional<std::shared_ptr<types::Type>> Transformer::deduceFunctionType(
     // Check if the generic has a default type and non was found
     if (generic->type != nullptr) {
         return transformType(generic->type);
-    } 
+    }
 
     return std::nullopt;
 }

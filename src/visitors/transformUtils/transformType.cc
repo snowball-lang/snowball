@@ -1,5 +1,5 @@
-#include "../Transformer.h"
 #include "../../ast/types/PointerType.h"
+#include "../Transformer.h"
 
 #include <memory>
 #include <optional>

@@ -8,26 +8,26 @@ class Array<_StoreType>: Iterable<?_StoreType> {
 }
 
 /**
- * @class String
+ * @class StringView
  * @brief A class representing a string of characters.
  *
- * The String class provides various operations and functionalities
- * for working with strings of characters. It supports common string
+ * The StringView class provides various operations and functionalities
+ * for working with strings of characters. It supports common StringView
  * manipulation operations such as concatenation, substring extraction,
  * length calculation, and more.
  *
- * @note The String class is designed to be efficient and memory-safe.
+ * @note The StringView class is designed to be efficient and memory-safe.
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating strings.
  */
-class String<_CharType = char*>: Iterable<?_CharType> {
+class StringView<_CharType = char*>: Iterable<?_CharType> {
   pub:
     /**
      * @brief Default constructor.
      *
      * Constructs an empty string.
      */
-    String() {
+    StringView() {
         self.size = 0;
         self.data = new Array<?_CharType>{};
     }
@@ -37,3 +37,7 @@ class String<_CharType = char*>: Iterable<?_CharType> {
     let mut size: i32;
     let data: Array<?_CharType>;
 }
+
+type String = StringView<?char*>;
+// TODO (implement wchar): using WideString as StringView<?wchar*>
+

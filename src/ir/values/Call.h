@@ -61,11 +61,11 @@ class ObjectInitialization : public AcceptorExtend<ObjectInitialization, Call> {
 
   public:
     explicit ObjectInitialization(std::shared_ptr<Value> callee,
-                  std::vector<std::shared_ptr<Value>> args = {})
+                                  std::vector<std::shared_ptr<Value>> args = {})
         : AcceptorExtend(callee, args) {}
 
     /// @brief Wether to initialize the object at stack or heap.
-    bool initializeAtHeap = true; 
+    bool initializeAtHeap = true;
 };
 
 } // namespace ir

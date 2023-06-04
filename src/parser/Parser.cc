@@ -27,6 +27,7 @@ std::vector<Syntax::Node *> Parser::parse() {
                 auto pk = peek();
                 if (!is<TokenType::KWORD_FUNC>(pk) &&
                     !is<TokenType::KWORD_VAR>(pk) &&
+                    !is<TokenType::KWORD_TYPEDEF>(pk) &&
                     !is<TokenType::KWORD_STATIC>(pk) &&
                     !is<TokenType::KWORD_CLASS>(pk) &&
                     !is<TokenType::KWORD_EXTERN>(pk)) {
@@ -77,6 +78,11 @@ std::vector<Syntax::Node *> Parser::parse() {
 
             case TokenType::KWORD_IMPORT: {
                 global.push_back(parseImportStatement());
+                break;
+            }
+
+            case TokenType::KWORD_TYPEDEF: {
+                global.push_back(parseTypeAlias());
                 break;
             }
 
