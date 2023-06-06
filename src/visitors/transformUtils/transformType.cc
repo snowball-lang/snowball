@@ -1,6 +1,9 @@
 #include "../../ast/types/PointerType.h"
 #include "../Transformer.h"
 
+#include "../../utils/utils.h"
+#include "../../ast/syntax/common.h"
+
 #include <memory>
 #include <optional>
 
@@ -57,16 +60,27 @@ Transformer::transformType(Expression::TypeRef *ty) {
         if (auto x = ctx->cache->getType(uuid)) {
             auto cls = *x;
 
+            Statement::GenericContainer<>::GenericList generics;
+            // TODO: check if there's another way to avoid repetition of code
+
+            if (auto c = utils::cast<Statement::ClassDef>(cls.type)) {
+                generics = c->getGenerics();
+            } else if (auto c = utils::cast<Statement::TypeAlias>(cls.type)) {
+                generics = c->getGenerics();
+            } else {
+                assert(false);
+            }
+
             // TODO: check for default generic types
-            if (cls.type->getGenerics().size() != ty->getGenerics().size()) {
+            if (generics.size() != ty->getGenerics().size()) {
                 E<TYPE_ERROR>(ty,
                               FMT("Type '%s' require to have %i generic "
                                   "arguments but %i where given!",
-                                  name.c_str(), cls.type->getGenerics().size(),
+                                  name.c_str(), generics.size(),
                                   ty->getGenerics().size()));
             }
 
-            return transformClass(uuid, cls, ty);
+            return transformTypeFromBase(uuid, cls, ty);
         }
     }
 

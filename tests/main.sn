@@ -4,12 +4,11 @@ class A {
     let a: i32;
     A() {
         self.a = 24124
-    }
-
-    
+    }    
 }
 
+type x = i32;
+
 pub fn main() i32 {
-    let a: A = new A{};
-    let b: A* = new A();
+    let b: x = 2;
 }

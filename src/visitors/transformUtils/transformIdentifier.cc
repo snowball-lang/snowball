@@ -73,7 +73,7 @@ Transformer::StoreType Transformer::getFromIdentifier(
         auto ty = new Expression::TypeRef(identifier, dbgInfo, generics);
         return {
             std::nullopt,
-            utils::dyn_cast<types::Type>(transformClass(uuid, t.value(), ty)),
+            transformTypeFromBase(uuid, t.value(), ty),
             std::nullopt, std::nullopt, std::nullopt};
     }
 

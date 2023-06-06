@@ -10,7 +10,8 @@ std::shared_ptr<types::DefinedType>
 Transformer::transformClass(const std::string& uuid,
                             cacheComponents::Types::TypeStore& classStore,
                             Expression::TypeRef *typeRef) {
-    auto ty = classStore.type;
+    auto ty = utils::cast<Statement::ClassDef>(classStore.type);
+    assert(ty);
 
     // TODO: check if typeRef generics match class generics
     std::shared_ptr<types::DefinedType> transformedType;
@@ -20,12 +21,6 @@ Transformer::transformClass(const std::string& uuid,
 
             // TODO: maybe not reset completly, add nested classes in the future
             ctx->setCurrentClass(nullptr);
-
-            std::shared_ptr<types::DefinedType> parentType = nullptr;
-            if (auto x = ty->getParent()) {
-                parentType =
-                    utils::dyn_cast<types::DefinedType>(transformType(x));
-            }
 
             auto generics = typeRef != nullptr
                                 ? vector_iterate<Expression::TypeRef *,
@@ -41,6 +36,13 @@ Transformer::transformClass(const std::string& uuid,
                     generics.at(genericCount));
 
                 ctx->addItem(classGenerics.at(genericCount)->getName(), item);
+            }
+
+            std::shared_ptr<types::DefinedType> parentType = nullptr;
+            if (auto x = ty->getParent()) {
+                // TODO: check if it's actually a defined type
+                parentType =
+                    utils::dyn_cast<types::DefinedType>(transformType(x));
             }
 
             auto basedName  = getNameWithBase(ty->getName());

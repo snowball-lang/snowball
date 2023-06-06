@@ -2,7 +2,6 @@
 #include "../Transformer.h"
 
 #include <algorithm>
-#include <llvm/IR/Attributes.h>
 
 namespace snowball {
 namespace Syntax {
