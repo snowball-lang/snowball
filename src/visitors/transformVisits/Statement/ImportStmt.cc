@@ -4,7 +4,7 @@
 #include "../../TransformState.h"
 #include "../../Transformer.h"
 #include "../../TypeChecker.h"
-#include "../../analyzers/DefiniteAssigment.h"
+#include "../../analyzers/DefinitveAssigment.h"
 
 #include <fstream>
 #include <tuple>

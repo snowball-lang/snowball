@@ -10,7 +10,7 @@
 #include "visitors/Analyzer.h"
 #include "visitors/Transformer.h"
 #include "visitors/TypeChecker.h"
-#include "visitors/analyzers/DefiniteAssigment.h"
+#include "visitors/analyzers/DefinitveAssigment.h"
 
 #include <filesystem>
 #include <fstream>

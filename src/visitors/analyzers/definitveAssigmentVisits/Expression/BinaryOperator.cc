@@ -1,7 +1,7 @@
 
 #include "../../../../ast/errors/error.h"
 #include "../../../../errors.h"
-#include "../../DefiniteAssigment.h"
+#include "../../DefinitveAssigment.h"
 
 namespace snowball {
 namespace Syntax {

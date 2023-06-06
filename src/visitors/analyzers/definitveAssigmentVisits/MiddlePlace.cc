@@ -1,5 +1,5 @@
 
-#include "../DefiniteAssigment.h"
+#include "../DefinitveAssigment.h"
 
 namespace snowball {
 namespace Syntax {
