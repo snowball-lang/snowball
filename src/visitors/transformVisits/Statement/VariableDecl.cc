@@ -47,7 +47,8 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
         } else {
             if (definedType->canCast(this->value->getType())) {
                 auto v      = ctx->module->N<ir::Cast>(p_node->getDBGInfo(),
-                                                  this->value, definedType);
+                                                  this->value, definedType);                            
+                v->setType(definedType);
                 this->value = v;
             } else {
                 E<VARIABLE_ERROR>(

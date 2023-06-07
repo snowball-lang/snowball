@@ -161,7 +161,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * cache.
      */
     bool typeGenericsMatch(Expression::TypeRef *ty,
-                           std::shared_ptr<types::DefinedType> comp);
+                           std::shared_ptr<types::Type> comp);
     /**
      * @brief Fetch a function and get it's most fitting overload.
      *

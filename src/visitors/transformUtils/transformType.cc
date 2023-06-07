@@ -46,17 +46,17 @@ Transformer::transformType(Expression::TypeRef *ty) {
     {
         auto uuid = ctx->createIdentifierName(id, false);
         if (auto x = ctx->cache->getTransformedType(uuid)) {
-            std::shared_ptr<types::Type> lastType = nullptr;
             for (auto t : x.value()) {
                 assert(t->isType());
-                auto transformed =
-                    std::dynamic_pointer_cast<types::DefinedType>(t->getType());
+                auto transformed = t->getType();
                 assert(t != nullptr);
+                
                 if (typeGenericsMatch(ty, transformed)) {
                     return transformed;
                 }
             }
         }
+
         if (auto x = ctx->cache->getType(uuid)) {
             auto cls = *x;
 
@@ -71,12 +71,20 @@ Transformer::transformType(Expression::TypeRef *ty) {
                 assert(false);
             }
 
+            auto requiredArguments = 0;
+            for (auto arg : generics) {
+                // Check for if there's no default type
+                if (arg->type == nullptr) {
+                    requiredArguments++;
+                }
+            }
+
             // TODO: check for default generic types
-            if (generics.size() != ty->getGenerics().size()) {
+            if (ty->getGenerics().size() < requiredArguments) {
                 E<TYPE_ERROR>(ty,
                               FMT("Type '%s' require to have %i generic "
-                                  "arguments but %i where given!",
-                                  name.c_str(), generics.size(),
+                                  "argument(s) but %i where given!",
+                                  name.c_str(), requiredArguments,
                                   ty->getGenerics().size()));
             }
 

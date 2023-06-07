@@ -34,7 +34,8 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
                 auto name    = node->getGenerics().at(genericCount)->getName();
                 auto generic = deducedTypes.at(genericCount);
                 auto item    = std::make_shared<transform::Item>(generic);
-
+                // TODO:
+                // item->setDBGInfo(generic->getDBGInfo());
                 ctx->addItem(name, item);
                 fnGenerics.push_back({name, generic});
             }

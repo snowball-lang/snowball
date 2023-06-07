@@ -1,9 +1,11 @@
 
 class Iterable<_IteratorType> {
+  pub:
     Iterable() {}
 }
 
 class Array<_StoreType>: Iterable<?_StoreType> {
+  pub:
     Array() {}
 }
 
@@ -38,6 +40,6 @@ class StringView<_CharType = char*>: Iterable<?_CharType> {
     let data: Array<?_CharType>;
 }
 
-type String = StringView<?char*>;
+type String = StringView<?>;
 // TODO (implement wchar): using WideString as StringView<?wchar*>
 

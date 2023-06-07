@@ -9,6 +9,11 @@ class A {
 
 type x = i32;
 
+fn a<T>() {
+    let x: T = 69;
+}
+
 pub fn main() i32 {
     let b: x = 2;
+    a<?f32>()
 }
