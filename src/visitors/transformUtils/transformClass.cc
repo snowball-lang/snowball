@@ -98,6 +98,33 @@ Transformer::transformClass(const std::string& uuid,
                 fn->accept(this);
             }
 
+            {
+                // Set the default '=' operator for the class 
+                auto fn  = std::make_shared<ir::Func>(services::OperatorService::getOperatorMangle(
+                    services::OperatorService::EQ
+                ), true, false);
+                auto arg = std::make_shared<ir::Argument>("other");
+                auto typeArgs = std::vector<std::shared_ptr<types::Type>>{transformedType, transformedType};
+                auto type = std::make_shared<types::FunctionType>(typeArgs, transformedType);
+
+                arg->setType(transformedType);
+
+                fn->setArgs({{"other", arg}});
+                fn->setType(type);
+                fn->setPrivacy(/* public */ false);
+
+                /// @see Transformer::defineFunction
+                auto name = ctx->createIdentifierName(fn->getName(true));
+                auto item = ctx->cache->getTransformedFunction(name);
+                if (item) {
+                    assert((*item)->isFunc());
+                    (*item)->addFunction(fn);
+                } else {
+                    auto i = std::make_shared<transform::Item>(fn);
+                    ctx->cache->setTransformedFunction(name, i);
+                }
+            }
+
             ctx->setCurrentClass(backupClass);
         });
     });

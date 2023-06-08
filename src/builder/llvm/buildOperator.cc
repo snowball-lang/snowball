@@ -114,7 +114,20 @@ bool LLVMBuilder::buildOperator(ir::Call *call) {
                 return true;
 
             } else {
-                assert(false && "Unhandled operator!");
+                switch (services::OperatorService::operatorID(opName)) {
+                    case services::OperatorService::EQ: {
+                        auto l = llvm::cast<llvm::LoadInst>(left);
+                        auto v = l->getOperand(0);
+
+                        builder->CreateStore(right, v);
+                        break;
+                    }
+
+                    default:
+                        assert(false);
+                }
+
+                return true;
             }
         }
     }
