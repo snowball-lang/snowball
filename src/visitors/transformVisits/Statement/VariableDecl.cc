@@ -14,6 +14,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
     auto variableName  = p_node->getName();
     auto variableValue = p_node->getValue();
     auto isMutable     = p_node->isMutable();
+    assert(p_node->isInitialized() || definedType != nullptr);
 
     if (ctx->getInScope(variableName, ctx->currentScope()).second) {
         E<VARIABLE_ERROR>(p_node, FMT("Variable with name '%s' is already "

@@ -1,7 +1,7 @@
 
-class A {
+class A<T> {
   pub:
-    let a: i32;
+    let a: T;
     A() {
         self.a = 24124
     }    
@@ -15,6 +15,6 @@ fn a<T>() {
 type x<T> = A<?T>;
 
 pub fn main() i32 {
-    let x: x;
+    let gx: x<?i32>;
     a<?f32>()
 }

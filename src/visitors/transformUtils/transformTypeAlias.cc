@@ -7,7 +7,7 @@ namespace snowball {
 using namespace utils;
 namespace Syntax {
 
-std::shared_ptr<types::DefinedType> Transformer::transformTypeAlias(const std::string& uuid,
+std::shared_ptr<types::Type> Transformer::transformTypeAlias(const std::string& uuid,
                         cacheComponents::Types::TypeStore& base,
                         Expression::TypeRef *typeRef) {
     auto ty = utils::cast<Statement::TypeAlias>(base.type);
@@ -24,7 +24,7 @@ std::shared_ptr<types::DefinedType> Transformer::transformTypeAlias(const std::s
                         : std::vector<std::shared_ptr<types::Type>>{};
 
     // TODO: check if typeRef generics match class generics
-    std::shared_ptr<types::DefinedType> transformedType;
+    std::shared_ptr<types::Type> transformedType;
     ctx->withState(base.state, [&]() {
         ctx->withScope([&] {
             auto backupClass = ctx->getCurrentClass();
@@ -51,7 +51,7 @@ std::shared_ptr<types::DefinedType> Transformer::transformTypeAlias(const std::s
                 ctx->addItem(generic->getName(), item);
             }
 
-            transformType(ty->getType());
+            transformedType = transformType(ty->getType());
         });
     });
 

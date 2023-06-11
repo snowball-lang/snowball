@@ -29,6 +29,7 @@ Transformer::transformType(Expression::TypeRef *ty) {
         } else {
             ast = Syntax::N<Expression::Identifier>(ty->getName());
         }
+        
         ast->setDBGInfo(ty->getDBGInfo());
     }
 
@@ -94,13 +95,15 @@ Transformer::transformType(Expression::TypeRef *ty) {
         auto pointer = utils::cast<Expression::PointerType>(ty);
         assert(pointer);
 
-        // return ;
         return transformType(pointer->getBaseType())->getPointerTo();
     }
 
     {
         auto uuid = ctx->createIdentifierName(id, false);
+        bool existsWithGenerics = false;
+
         if (auto x = ctx->cache->getTransformedType(uuid)) {
+            existsWithGenerics = true;
             for (auto t : x.value()) {
                 assert(t->isType());
                 auto transformed = t->getType();
@@ -115,6 +118,10 @@ Transformer::transformType(Expression::TypeRef *ty) {
         if (auto x = ctx->cache->getType(uuid)) {
             auto cls = *x;
             return transformTypeFromBase(uuid, cls, ty);
+        }
+
+        if (existsWithGenerics) {
+            E<TYPE_ERROR>(ty, FMT("Type '%s' requires to have no template parameters but at least one has been given?", name.c_str()));
         }
     }
 

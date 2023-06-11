@@ -166,7 +166,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * @brief It generates a type alias based on the `TypeRef` given to us.
      * @note It also executes some checks such as generic checks and more
     */
-    std::shared_ptr<types::DefinedType> transformTypeAlias(const std::string& uuid,
+    std::shared_ptr<types::Type> transformTypeAlias(const std::string& uuid,
                             cacheComponents::Types::TypeStore& base,
                             Expression::TypeRef* typeRef);
     /**
