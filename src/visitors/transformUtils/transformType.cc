@@ -114,34 +114,6 @@ Transformer::transformType(Expression::TypeRef *ty) {
 
         if (auto x = ctx->cache->getType(uuid)) {
             auto cls = *x;
-
-            Statement::GenericContainer<>::GenericList generics;
-            // TODO: check if there's another way to avoid repetition of code
-
-            if (auto c = utils::cast<Statement::ClassDef>(cls.type)) {
-                generics = c->getGenerics();
-            } else if (auto c = utils::cast<Statement::TypeAlias>(cls.type)) {
-                generics = c->getGenerics();
-            } else {
-                assert(false);
-            }
-
-            auto requiredArguments = 0;
-            for (auto arg : generics) {
-                // Check for if there's no default type
-                if (arg->type == nullptr) {
-                    requiredArguments++;
-                }
-            }
-
-            // TODO: check for default generic types
-            if (ty->getGenerics().size() < requiredArguments) {
-                E<TYPE_ERROR>(ty, FMT("Type '%s' require to have %i generic "
-                                      "argument(s) but %i where given!",
-                                      name.c_str(), requiredArguments,
-                                      ty->getGenerics().size()));
-            }
-
             return transformTypeFromBase(uuid, cls, ty);
         }
     }

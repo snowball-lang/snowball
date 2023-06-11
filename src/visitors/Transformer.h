@@ -163,6 +163,13 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     bool typeGenericsMatch(Expression::TypeRef *ty,
                            std::shared_ptr<types::Type> comp);
     /**
+     * @brief It generates a type alias based on the `TypeRef` given to us.
+     * @note It also executes some checks such as generic checks and more
+    */
+    std::shared_ptr<types::DefinedType> transformTypeAlias(const std::string& uuid,
+                            cacheComponents::Types::TypeStore& base,
+                            Expression::TypeRef* typeRef);
+    /**
      * @brief Fetch a function and get it's most fitting overload.
      *
      * The way we fetch a function is by firstly check on the cache
