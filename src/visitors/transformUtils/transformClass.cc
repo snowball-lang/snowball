@@ -14,18 +14,20 @@ Transformer::transformClass(const std::string& uuid,
     assert(ty);
 
     // These are the generics generated outside of the class context.
-    // for example, this "Test" type woudn't be fetched inside the class context:
+    // for example, this "Test" type woudn't be fetched inside the class
+    // context:
     //
     //   class Hello<T> { ... }
     //   Hello<?Test> // Test is not being transformed from the "Hello context".
     //
-    // Note that the default class generics WILL be generated inside the class context.
+    // Note that the default class generics WILL be generated inside the class
+    // context.
     auto generics = typeRef != nullptr
-        ? vector_iterate<Expression::TypeRef *,
-                            std::shared_ptr<types::Type>>(
-                typeRef->getGenerics(),
-                [&](auto t) { return transformType(t); })
-        : std::vector<std::shared_ptr<types::Type>>{};
+                        ? vector_iterate<Expression::TypeRef *,
+                                         std::shared_ptr<types::Type>>(
+                              typeRef->getGenerics(),
+                              [&](auto t) { return transformType(t); })
+                        : std::vector<std::shared_ptr<types::Type>>{};
 
     // TODO: check if typeRef generics match class generics
     std::shared_ptr<types::DefinedType> transformedType;
@@ -48,7 +50,7 @@ Transformer::transformClass(const std::string& uuid,
             for (int genericCount = 0; genericCount < generics.size();
                  genericCount++) {
                 auto generic = classGenerics.at(genericCount);
-                auto item = std::make_shared<transform::Item>(
+                auto item    = std::make_shared<transform::Item>(
                     generics.at(genericCount));
                 // TODO:
                 // item->setDBGInfo(generic->getDBGInfo());
@@ -99,13 +101,16 @@ Transformer::transformClass(const std::string& uuid,
             }
 
             {
-                // Set the default '=' operator for the class 
-                auto fn  = std::make_shared<ir::Func>(services::OperatorService::getOperatorMangle(
-                    services::OperatorService::EQ
-                ), true, false);
-                auto arg = std::make_shared<ir::Argument>("other");
-                auto typeArgs = std::vector<std::shared_ptr<types::Type>>{transformedType, transformedType};
-                auto type = std::make_shared<types::FunctionType>(typeArgs, transformedType);
+                // Set the default '=' operator for the class
+                auto fn = std::make_shared<ir::Func>(
+                    services::OperatorService::getOperatorMangle(
+                        services::OperatorService::EQ),
+                    true, false);
+                auto arg      = std::make_shared<ir::Argument>("other");
+                auto typeArgs = std::vector<std::shared_ptr<types::Type>>{
+                    transformedType, transformedType};
+                auto type = std::make_shared<types::FunctionType>(
+                    typeArgs, transformedType);
 
                 arg->setType(transformedType);
 

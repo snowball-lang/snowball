@@ -85,7 +85,7 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
             E<TYPE_ERROR>(
                 p_node,
                 "Reference to non-static member function must be called.",
-                "did you mean to call it with no arguments?");
+                {.info = "did you mean to call it with no arguments?"});
         } else if ((!p_node->isStatic) && function->isStatic()) {
             E<TYPE_ERROR>(p_node, FMT("Can't access static class method '%s' "
                                       "as with a non-static index expression!",
@@ -101,7 +101,7 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
     }
 
     E<VARIABLE_ERROR>(p_node, "Cannot find index value!",
-                      "this name is not defined");
+                      {.info = "this name is not defined"});
 }
 
 } // namespace Syntax

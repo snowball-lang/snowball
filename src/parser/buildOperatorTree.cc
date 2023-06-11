@@ -135,7 +135,7 @@ Parser::buildOperatorTree(std::vector<Syntax::Expression::Base *>& exprs) {
                 if (++next_expr == exprs.size()) {
                     createError<SYNTAX_ERROR>(
                         exprs[next_expr]->getDBGInfo()->pos,
-                        "expected an expression.", "", 1);
+                        "expected an expression.", {}, 1);
                 }
             }
 
@@ -167,7 +167,7 @@ Parser::buildOperatorTree(std::vector<Syntax::Expression::Base *>& exprs) {
                             exprs[(size_t)next_op - 1])) {
                     createError<SYNTAX_ERROR>(
                         exprs[(size_t)next_op - 1]->getDBGInfo()->pos,
-                        "unexpected assignment.", "", 1);
+                        "unexpected assignment.", {}, 1);
                 }
             }
 
@@ -177,7 +177,7 @@ Parser::buildOperatorTree(std::vector<Syntax::Expression::Base *>& exprs) {
                             exprs[(size_t)next_op + 1])) {
                     createError<SYNTAX_ERROR>(
                         exprs[(size_t)next_op + 1]->getDBGInfo()->pos,
-                        "unexpected assignment.", "", 1);
+                        "unexpected assignment.", {}, 1);
                 }
             }
 

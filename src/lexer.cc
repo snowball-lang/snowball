@@ -83,10 +83,16 @@ void Lexer::tokenize() {
                             EAT_CHAR(2);
                             break;
                         } else if (GET_CHAR(0) == 0) {
-                            lexer_error(Error::UNEXPECTED_EOF,
-                                        "Found an unexpected EOF while parsing "
-                                        "a comment",
-                                        1);
+                            lexer_error(
+                                Error::UNEXPECTED_EOF,
+                                "Found an unexpected EOF while parsing "
+                                "a comment",
+                                1,
+                                {.help = "It seems that a multiline comment in "
+                                         "your code is not properly closed. \n"
+                                         "Make sure to add the closing symbol "
+                                         "\"*/\" at the end of the comment to "
+                                         "\nproperly close it."});
                         } else if (GET_CHAR(0) == '\n') {
                             EAT_LINE();
                         } else {
@@ -180,7 +186,7 @@ void Lexer::tokenize() {
                 break;
             }
             case '\\':
-                lexer_error(Error::SYNTAX_ERROR, "invalid character '\\'.", 1);
+                lexer_error(Error::SYNTAX_ERROR, "invalid character '\\'.", 1, { .info = "This character is not recognized!" });
                 break;
             case '%': {
                 if (GET_CHAR(1) == '=')
@@ -265,10 +271,12 @@ void Lexer::tokenize() {
                         char c = GET_CHAR(1);
 
                         switch (c) {
-                            case 0:
+                            case 0: // TODO: show the start of string location
                                 lexer_error(Error::UNEXPECTED_EOF,
-                                            "unexpected EOF while lexing a "
-                                            "string scape.");
+                                            "Unexpected EOF while lexing a "
+                                            "string scape!",
+                                            1,
+                                            { .info = "Coudn't find scape here!", .help = "The string in your code contains an incomplete escape sequence. Make sure to provide the \nnecessary escape character or complete the escape sequence before the end\n of the string. For example, you can add a backslash (\"\") \nbefore the closing quotation mark (\") to\n properly escape it." });
                                 break;
                             case '\\':
                                 str += '\\';
@@ -304,7 +312,9 @@ void Lexer::tokenize() {
                         }
                     } else if (GET_CHAR(0) == 0) {
                         lexer_error(Error::UNEXPECTED_EOF,
-                                    "unexpected EOF while lexing character.");
+                                    "Unexpected EOF while lexing character!",
+                                    1,
+                                    { .info = "No ending of the string found!", .help = "It appears that the character declaration in your code is incomplete. \nMake sure to provide a valid character between the single quotes (\'\'). Choose a\n valid character and close the declaration with a single quote (') to resolve this issue." });
                         break;
                     } else {
                         str += GET_CHAR(0);
@@ -381,7 +391,9 @@ void Lexer::tokenize() {
                         }
                     } else if (GET_CHAR(0) == 0) {
                         lexer_error(Error::UNEXPECTED_EOF,
-                                    "unexpected EOF while lexing string.");
+                                    "Unexpected EOF while lexing character!",
+                                    1,
+                                    { .info = "No ending of the string found!", .help = "It appears that the character declaration in your code is incomplete. \nMake sure to provide a valid character between the double quotes (\"\"). \nChoose a valid character and close the declaration with a double quote \n(\") to resolve this issue." });
                         break;
                     } else {
                         str += GET_CHAR(0);
@@ -589,7 +601,7 @@ void Lexer::tokenize() {
                 auto c = utils::getUTF8FromIndex(code, char_ptr);
                 if (c == "🐒") {
                     lexer_error(Error::SYNTAX_ERROR, "Unexpected MONKE found!",
-                                1, "🐒🐒🐒🐒🐒🐒");
+                                1, {.info = "🐒🐒🐒🐒🐒🐒", .help = "This is just an easter egg!"});
                 } else {
                     lexer_error(
                         Error::SYNTAX_ERROR,
@@ -654,7 +666,7 @@ void Lexer::consume(TokenType p_tk, int p_eat_size) {
 }
 
 void Lexer::lexer_error(Error m_error, std::string m_msg, int char_length,
-                        const std::string& info) {
+                        ErrorInfo info) {
     DBGSourceInfo *dbg_info =
         new DBGSourceInfo((SourceInfo *)_source_info,
                           std::pair<int, int>(cur_line, cur_col), char_length);

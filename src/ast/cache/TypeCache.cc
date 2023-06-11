@@ -9,7 +9,8 @@ namespace cacheComponents {
 
 void Types::setType(const std::string& uuid, Statement::Base *p_ty,
                     std::shared_ptr<transform::ContextState> state) {
-    assert(utils::cast<Statement::ClassDef>(p_ty) || utils::cast<Statement::TypeAlias>(p_ty));
+    assert(utils::cast<Statement::ClassDef>(p_ty) ||
+           utils::cast<Statement::TypeAlias>(p_ty));
     types[uuid] = {p_ty, state};
 }
 

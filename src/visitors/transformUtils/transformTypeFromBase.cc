@@ -4,10 +4,10 @@
 namespace snowball {
 namespace Syntax {
 
-std::shared_ptr<types::Type> Transformer::transformTypeFromBase(
-        const std::string& uuid,
-        cacheComponents::Types::TypeStore& base, 
-        Expression::TypeRef* typeRef) {
+std::shared_ptr<types::Type>
+Transformer::transformTypeFromBase(const std::string& uuid,
+                                   cacheComponents::Types::TypeStore& base,
+                                   Expression::TypeRef *typeRef) {
 
     if (auto x = utils::cast<Statement::TypeAlias>(base.type)) {
         assert(false && "TODO: type alias");

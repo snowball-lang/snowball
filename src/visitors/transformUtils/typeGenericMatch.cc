@@ -14,7 +14,9 @@ bool Transformer::typeGenericsMatch(Expression::TypeRef *ty,
     }
 
     auto compAsDefinedType = utils::dyn_cast<types::DefinedType>(comp);
-    auto compGenerics = compAsDefinedType == nullptr ? std::vector<std::shared_ptr<types::Type>>{} : compAsDefinedType->getGenerics();
+    auto compGenerics      = compAsDefinedType == nullptr
+                                 ? std::vector<std::shared_ptr<types::Type>>{}
+                                 : compAsDefinedType->getGenerics();
 
     bool theyEqual = true;
     bool sizeEqual = generatedGenerics.size() == compGenerics.size();
@@ -22,8 +24,7 @@ bool Transformer::typeGenericsMatch(Expression::TypeRef *ty,
     int gIndex = 0;
     while (theyEqual && sizeEqual && (generatedGenerics.size() > 0) &&
            (gIndex < generatedGenerics.size())) {
-        theyEqual =
-            generatedGenerics.at(gIndex)->is(compGenerics.at(gIndex));
+        theyEqual = generatedGenerics.at(gIndex)->is(compGenerics.at(gIndex));
         gIndex++;
     }
 

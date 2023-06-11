@@ -216,7 +216,7 @@ Syntax::Expression::Base *Parser::parseExpr(bool allowAssign) {
         if (!allowAssign && Syntax::Expression::BinaryOp::is_assignment(x)) {
             createError<SYNTAX_ERROR>(
                 expr->getDBGInfo()->pos,
-                "assignment is not allowed inside expression.", "",
+                "assignment is not allowed inside expression.", {},
                 x->to_string().size());
         }
     }

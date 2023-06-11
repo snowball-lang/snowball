@@ -60,7 +60,7 @@ std::vector<Syntax::Expression::Param *> Parser::parseGenericParams() {
             createError<SYNTAX_ERROR>(
                 FMT("Expected a vaid generic declaration but got '%s'",
                     m_current.to_string().c_str()),
-                "Unexpected token here");
+                {.info = "Unexpected token here"});
         }
     }
 

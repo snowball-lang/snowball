@@ -14,8 +14,9 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::Identifier) {
             E<VARIABLE_ERROR>(
                 p_node->getDBGInfo(),
                 FMT("Variable '%s' is used before being assigned.", x.c_str()),
-                FMT("Variable '%s' has been declared but not assigned!",
-                    x.c_str()));
+                {.info =
+                     FMT("Variable '%s' has been declared but not assigned!",
+                         x.c_str())});
         }
 
         return;
@@ -23,7 +24,7 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::Identifier) {
 
     E<VARIABLE_ERROR>(p_node->getDBGInfo(),
                       FMT("Cannot find identifier `%s`!", x.c_str()),
-                      "this name is not defined");
+                      {.info = "this name is not defined"});
 }
 
 } // namespace Syntax

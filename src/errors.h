@@ -37,6 +37,14 @@ enum Error {
 namespace errors {
 const char *get_error(Error code);
 
+struct ErrorInfo {
+    const std::string info        = "";
+    const std::string explanation = "";
+
+    const std::string help     = "";
+    const std::string consider = "";
+};
+
 class SNError {
   public:
     SNError(Error code, std::string err) {
@@ -58,11 +66,11 @@ class SNError {
 class NiceError : public SNError {
   protected:
     DBGSourceInfo *cb_dbg_info;
-    const std::string info;
+    ErrorInfo info;
 
   public:
     NiceError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info,
-              const std::string& info = "")
+              ErrorInfo info = {})
         : SNError(code, err), cb_dbg_info(p_cb_dbg_info), info(info){};
     virtual void print_error() const override;
 };
@@ -70,7 +78,7 @@ class NiceError : public SNError {
 class LexerError : public NiceError {
   public:
     LexerError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info,
-               const std::string& info = "")
+               ErrorInfo info = {})
         : NiceError(code, err, p_cb_dbg_info, info){};
 
     virtual ~LexerError(){};
@@ -79,63 +87,29 @@ class LexerError : public NiceError {
 class ParserError : public NiceError {
   public:
     ParserError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info,
-                const std::string& info = "")
+                ErrorInfo info = {})
         : NiceError(code, err, p_cb_dbg_info, info){};
 
     virtual ~ParserError(){};
 };
 
-class Warning : public SNError {
-  public:
-    Warning(std::string warn, DBGSourceInfo *p_cb_dbg_info)
-        : SNError(Error::WARNING, warn) {
-        cb_dbg_info = p_cb_dbg_info;
-    };
-
-    virtual void print_error() const {
-        cb_dbg_info->prepare_for_error();
-
-        Logger::warning(FMT("%s%s%s", BOLD, message.c_str(), RESET));
-        Logger::elog(FMT("  %s-->%s %s:[%i:%i]", BBLU, RESET,
-                         cb_dbg_info->getSourceInfo()->getPath().c_str(),
-                         cb_dbg_info->line, cb_dbg_info->pos.second, WHT));
-        Logger::elog(FMT("%s    |%s", BBLU, RESET));
-
-        if (cb_dbg_info->line - 1 >=
-            1) // first line may not be available to log
-            Logger::elog(FMT("%s %2i | %s%s", BBLU, cb_dbg_info->line - 1,
-                             RESET, cb_dbg_info->line_before.c_str()));
-        Logger::elog(FMT("%s %2i | %s%s/%s %s\n   %s|%s %s|_%s%s%s%s", BBLU,
-                         cb_dbg_info->line, RESET, BYEL, RESET,
-                         cb_dbg_info->line_str.c_str(), BBLU, RESET, BYEL,
-                         RESET, BYEL, cb_dbg_info->get_pos_str().c_str(),
-                         RESET));
-        Logger::elog(FMT("%s %2i | %s%s\n", BBLU, cb_dbg_info->line + 1, RESET,
-                         cb_dbg_info->line_after.c_str()));
-    };
-
-    virtual ~Warning(){};
-
-  private:
-    DBGSourceInfo *cb_dbg_info;
-};
-
 class CompilerError : public NiceError {
   public:
     CompilerError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info,
-                  const std::string& info = "")
+                  ErrorInfo info = {})
         : NiceError(code, err, p_cb_dbg_info, info){};
 
     virtual ~CompilerError(){};
 };
+
 } // namespace errors
 
 using LexerError    = errors::LexerError;
 using ParserError   = errors::ParserError;
 using CompilerError = errors::CompilerError;
-using Warning       = errors::Warning;
 
-using SNError = errors::SNError;
+using SNError   = errors::SNError;
+using ErrorInfo = errors::ErrorInfo;
 
 } // namespace snowball
 

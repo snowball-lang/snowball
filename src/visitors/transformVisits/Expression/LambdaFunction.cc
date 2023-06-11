@@ -74,8 +74,9 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
                 !((utils::dyn_cast<types::NumericType>(returnType)) ||
                   (utils::dyn_cast<types::VoidType>(returnType))) &&
                 !fn->isConstructor()) {
-                E<TYPE_ERROR>(node, "Function lacks ending return statement!",
-                              "Function does not return on all paths!");
+                E<TYPE_ERROR>(
+                    node, "Function lacks ending return statement!",
+                    {.info = "Function does not return on all paths!"});
             }
 
             body->accept(this);

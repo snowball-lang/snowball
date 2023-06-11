@@ -1,8 +1,7 @@
-#include "../../ast/types/PointerType.h"
-#include "../Transformer.h"
-
-#include "../../utils/utils.h"
 #include "../../ast/syntax/common.h"
+#include "../../ast/types/PointerType.h"
+#include "../../utils/utils.h"
+#include "../Transformer.h"
 
 #include <memory>
 #include <optional>
@@ -50,7 +49,7 @@ Transformer::transformType(Expression::TypeRef *ty) {
                 assert(t->isType());
                 auto transformed = t->getType();
                 assert(t != nullptr);
-                
+
                 if (typeGenericsMatch(ty, transformed)) {
                     return transformed;
                 }
@@ -81,11 +80,10 @@ Transformer::transformType(Expression::TypeRef *ty) {
 
             // TODO: check for default generic types
             if (ty->getGenerics().size() < requiredArguments) {
-                E<TYPE_ERROR>(ty,
-                              FMT("Type '%s' require to have %i generic "
-                                  "argument(s) but %i where given!",
-                                  name.c_str(), requiredArguments,
-                                  ty->getGenerics().size()));
+                E<TYPE_ERROR>(ty, FMT("Type '%s' require to have %i generic "
+                                      "argument(s) but %i where given!",
+                                      name.c_str(), requiredArguments,
+                                      ty->getGenerics().size()));
             }
 
             return transformTypeFromBase(uuid, cls, ty);
@@ -120,7 +118,7 @@ Transformer::transformType(Expression::TypeRef *ty) {
         }
 
         E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()),
-                      errorReason);
+                      {.info = errorReason});
     } else if (auto x = utils::cast<Expression::Index>(ast)) {
         auto [_v, type, _o, _f, _m, canPrivate] =
             getFromIndex(ty->getDBGInfo(), x, true).first;
@@ -139,7 +137,7 @@ Transformer::transformType(Expression::TypeRef *ty) {
         }
 
         E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()),
-                      errorReason);
+                      {.info = errorReason});
     }
 
     assert(false);

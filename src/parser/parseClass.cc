@@ -116,7 +116,7 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
                         dbg->pos,
                         FMT("Class '%s' requires at least one constructor!",
                             cls->getName().c_str()),
-                        "", dbg->width);
+                        {}, dbg->width);
                 }
 
                 return cls;

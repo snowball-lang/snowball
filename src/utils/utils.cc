@@ -106,8 +106,8 @@ void replaceAll(std::string& str, const std::string& from,
     }
 }
 
-std::vector<std::string> split(std::string str, std::string token) {
-    std::vector<std::string> result;
+std::list<std::string> split(std::string str, std::string token) {
+    std::list<std::string> result;
     while (str.size()) {
         int index = str.find(token);
         if (index != std::string::npos) {

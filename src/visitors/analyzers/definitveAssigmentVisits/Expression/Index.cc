@@ -16,13 +16,14 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::Index) {
 
             if (auto variable = getIdentifier("$self::" + x->getIdentifier())) {
                 if (variable->second == NotInitialized) {
-                    E<VARIABLE_ERROR>(p_node->getDBGInfo(),
-                                      FMT("Class variable '%s' is used before "
-                                          "being assigned.",
-                                          x->getIdentifier().c_str()),
-                                      FMT("Class variable 'self::%s' has been "
-                                          "declared but not assigned!.",
-                                          x->getIdentifier().c_str()));
+                    E<VARIABLE_ERROR>(
+                        p_node->getDBGInfo(),
+                        FMT("Class variable '%s' is used before "
+                            "being assigned.",
+                            x->getIdentifier().c_str()),
+                        {.info = FMT("Class variable 'self::%s' has been "
+                                     "declared but not assigned!.",
+                                     x->getIdentifier().c_str())});
                 }
 
                 return;

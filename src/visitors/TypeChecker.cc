@@ -76,7 +76,7 @@ VISIT(Call) {
                             p_node,
                             "You can't assign a new value to a unmutable "
                             "variable",
-                            "This variable is not mutable!");
+                            {.info = "This variable is not mutable!"});
                     }
                 }
             }

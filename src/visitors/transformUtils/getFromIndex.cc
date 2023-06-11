@@ -185,7 +185,7 @@ Transformer::getFromIndex(DBGSourceInfo *dbgInfo, Expression::Index *index,
             E<VARIABLE_ERROR>(baseIdentifier->getDBGInfo(),
                               FMT("Cannot find identifier `%s`!",
                                   baseIdentifier->getIdentifier().c_str()),
-                              "this name is not defined");
+                              {.info = "this name is not defined"});
         }
 
         assert(false && "BUG: unhandled index value");

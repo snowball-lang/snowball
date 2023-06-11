@@ -75,7 +75,8 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator,
             } else {
                 createError<ATTRIBUTE_ERROR>(
                     "Trying to use an undefined attribute!",
-                    FMT("Attribute '%s' is not defined!", attr.c_str()));
+                    {.info =
+                         FMT("Attribute '%s' is not defined!", attr.c_str())});
             }
 
             next();
@@ -383,7 +384,8 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator,
         if (isConstructor) {
             createError<SYNTAX_ERROR>(
                 "Contructor can't have return types.",
-                "Constructors return type default to the parent's class type!");
+                {.info = "Constructors return type default to the parent's "
+                         "class type!"});
         }
 
         throwIfNotType();

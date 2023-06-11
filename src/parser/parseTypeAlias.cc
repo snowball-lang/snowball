@@ -26,7 +26,7 @@ Syntax::Statement::TypeAlias *Parser::parseTypeAlias() {
     auto type = parseType();
 
     auto privacy = Syntax::Statement::Privacy::fromInt(isPublic);
-    auto node = Syntax::N<Syntax::Statement::TypeAlias>(name, type);
+    auto node    = Syntax::N<Syntax::Statement::TypeAlias>(name, type);
 
     node->setPrivacy(privacy);
     node->setDBGInfo(dbg);

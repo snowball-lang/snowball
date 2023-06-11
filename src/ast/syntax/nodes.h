@@ -593,10 +593,10 @@ struct ClassDef : public AcceptorExtend<ClassDef, Base>,
 /**
  * @struct TypeAlias
  * @brief Representation of a type alias declaration inside the AST.
- * 
+ *
  * Type aliases can be used to solve a variaety of different problems
  *  such as to avoid writing long types.
- * 
+ *
  * @example
  *    type HelloWorld = My::Super::Long:Class:Name::With<?Generics>*
  */
@@ -604,14 +604,14 @@ struct TypeAlias : public AcceptorExtend<TypeAlias, Base>,
                    public AcceptorExtend<TypeAlias, Privacy>,
                    public AcceptorExtend<TypeAlias, GenericContainer<>> {
 
-    /// @brief Name of the alias to be exported as 
+    /// @brief Name of the alias to be exported as
     std::string identifier;
     /// @brief The type being refered by the alias
-    Expression::TypeRef* type;
+    Expression::TypeRef *type;
 
   public:
-    explicit TypeAlias(const std::string& identifier, Expression::TypeRef* type)
-        : identifier(identifier), type(type) {};
+    explicit TypeAlias(const std::string& identifier, Expression::TypeRef *type)
+        : identifier(identifier), type(type){};
 
     /// @return The name of the alias to be exported as
     auto getIdentifier() { return identifier; }

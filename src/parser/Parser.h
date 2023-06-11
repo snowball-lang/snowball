@@ -34,9 +34,9 @@ class Parser {
   private:
     /// @brief Utility function to throw errors
     template <Error E, class... Args>
-    [[nodiscard]] auto
-    createError(std::pair<int, int> location, std::string message,
-                const std::string info = "", Args&&...args) const {
+    [[nodiscard]] auto createError(std::pair<int, int> location,
+                                   std::string message, ErrorInfo info = {},
+                                   Args&&...args) const {
         auto dbg_info = new DBGSourceInfo(m_source_info, location,
                                           std::forward<Args>(args)...);
         throw ParserError(E, message, dbg_info, info);
@@ -44,7 +44,7 @@ class Parser {
 
     template <Error E>
     [[nodiscard]] auto createError(const std::string msg,
-                                   std::string info = "") const {
+                                   ErrorInfo info = {}) const {
         auto pos = std::pair<int, int>(m_current.line, m_current.col);
         createError<E>(pos, msg, info, m_current.to_string().size());
     }
@@ -101,7 +101,7 @@ class Parser {
             createError<SYNTAX_ERROR>(
                 FMT("Expected a valid type declaration but found '%s' instead",
                     m_current.to_string().c_str()),
-                "Types cant start like this");
+                {.info = "Types cant start like this"});
         }
     }
 
@@ -278,7 +278,7 @@ class Parser {
     /**
      * alias         ::=  "type" <identifier> = <type> ;
      */
-    Syntax::Statement::TypeAlias* parseTypeAlias();
+    Syntax::Statement::TypeAlias *parseTypeAlias();
 };
 
 } // namespace parser
