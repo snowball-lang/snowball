@@ -23,6 +23,8 @@ void LLVMBuilder::addGlobalVariable(
             /*Initializer=*/0, // has initializer, specified below
             /*Name=*/name);
         gvar->setInitializer(llvm::cast<llvm::Constant>(c));
+        ctx->addSymbol(var->getId(), gvar);
+
         return;
     }
 
@@ -40,6 +42,8 @@ void LLVMBuilder::addGlobalVariable(
         /*Name=*/name);
 
     gvar->setInitializer(llvm::Constant::getNullValue(ty));
+    ctx->addSymbol(var->getId(), gvar);
+
     auto val = build(var->getValue().get());
 
     builder->CreateStore(val, gvar);

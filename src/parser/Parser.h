@@ -116,7 +116,7 @@ class Parser {
     template <TokenType Ty> Token assert_tok(std::string expectation) {
         if (!is<Ty>()) {
             createError<SYNTAX_ERROR>(
-                FMT("Expected %s but got %s", expectation.c_str(),
+                FMT("Expected %s but got '%s'", expectation.c_str(),
                     (is<TokenType::_EOF>(m_current) ? "an unexpected EOF"
                                                     : m_current.to_string())
                         .c_str()));

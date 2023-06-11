@@ -18,6 +18,62 @@ Transformer::transformType(Expression::TypeRef *ty) {
     auto name = ty->getPrettyName();
     auto id   = ty->getName();
 
+    std::shared_ptr<types::Type> returnedType = nullptr;
+
+    auto ast = ty->_getInternalAST();
+
+    if (ast == nullptr) {
+        if (ty->getGenerics().size() > 0) {
+            ast = Syntax::N<Expression::GenericIdentifier>(ty->getName(),
+                                                           ty->getGenerics());
+        } else {
+            ast = Syntax::N<Expression::Identifier>(ty->getName());
+        }
+        ast->setDBGInfo(ty->getDBGInfo());
+    }
+
+    if (auto x = utils::cast<Expression::Identifier>(ast)) {
+        auto [_v, type, _o, _f, _m] = getFromIdentifier(x);
+        
+        std::string errorReason;
+        if (_v.has_value()) {
+            errorReason = "This is a value, not a type!";
+        } else if (_o.has_value() || _f.has_value()) {
+            errorReason = "This is a function, not a type!";
+        } else if (_m.has_value()) {
+            errorReason = "This is a module, not a type!";
+        } else if (type.has_value()) {
+            returnedType = *type;
+            goto continueTypeFetch;
+        } else {
+            goto continueTypeFetch;
+        }
+
+        E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()),
+                      {.info = errorReason});
+    } else if (auto x = utils::cast<Expression::Index>(ast)) {
+        auto [_v, type, _o, _f, _m, canPrivate] =
+            getFromIndex(ty->getDBGInfo(), x, true).first;
+
+        std::string errorReason;
+        if (_v.has_value()) {
+            errorReason = "This is a value, not a type!";
+        } else if (_o.has_value() || _f.has_value()) {
+            errorReason = "This is a function, not a type!";
+        } else if (_m.has_value()) {
+            errorReason = "This is a module, not a type!";
+        } else if (type.has_value()) {
+            returnedType = *type;
+            goto continueTypeFetch;
+        } else {
+            goto continueTypeFetch;
+        }
+
+        E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()),
+                {.info = errorReason});
+    }
+
+  continueTypeFetch:
     if (auto x = transformSpecialType(ty)) {
         return x;
     }
@@ -90,57 +146,11 @@ Transformer::transformType(Expression::TypeRef *ty) {
         }
     }
 
-    auto ast = ty->_getInternalAST();
-
-    if (ast == nullptr) {
-        if (ty->getGenerics().size() > 0) {
-            ast = Syntax::N<Expression::GenericIdentifier>(ty->getName(),
-                                                           ty->getGenerics());
-        } else {
-            ast = Syntax::N<Expression::Identifier>(ty->getName());
-        }
-        ast->setDBGInfo(ty->getDBGInfo());
+    if (returnedType == nullptr) {
+        E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
     }
-
-    if (auto x = utils::cast<Expression::Identifier>(ast)) {
-        auto [_v, type, _o, _f, _m] = getFromIdentifier(x);
-        std::string errorReason;
-        if (_v.has_value()) {
-            errorReason = "This is a value, not a type!";
-        } else if (_o.has_value() || _f.has_value()) {
-            errorReason = "This is a function, not a type!";
-        } else if (_m.has_value()) {
-            errorReason = "This is a module, not a type!";
-        } else if (type.has_value()) {
-            return *type;
-        } else {
-            E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
-        }
-
-        E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()),
-                      {.info = errorReason});
-    } else if (auto x = utils::cast<Expression::Index>(ast)) {
-        auto [_v, type, _o, _f, _m, canPrivate] =
-            getFromIndex(ty->getDBGInfo(), x, true).first;
-
-        std::string errorReason;
-        if (_v.has_value()) {
-            errorReason = "This is a value, not a type!";
-        } else if (_o.has_value() || _f.has_value()) {
-            errorReason = "This is a function, not a type!";
-        } else if (_m.has_value()) {
-            errorReason = "This is a module, not a type!";
-        } else if (type.has_value()) {
-            return *type;
-        } else {
-            E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
-        }
-
-        E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()),
-                      {.info = errorReason});
-    }
-
-    assert(false);
+    
+    return returnedType;
 }
 
 } // namespace Syntax

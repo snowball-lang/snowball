@@ -19,8 +19,14 @@ Syntax::Statement::TypeAlias *Parser::parseTypeAlias() {
 
     auto name =
         assert_tok<TokenType::IDENTIFIER>("class identifier").to_string();
-    next();
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
+    Syntax::Statement::GenericContainer<>::GenericList generics;
+
+    next();
+
+    if (is<TokenType::OP_LT>()) {
+        generics = parseGenericParams();
+    }
 
     consume<TokenType::OP_EQ>("'='");
     auto type = parseType();
@@ -30,6 +36,8 @@ Syntax::Statement::TypeAlias *Parser::parseTypeAlias() {
 
     node->setPrivacy(privacy);
     node->setDBGInfo(dbg);
+
+    node->setGenerics(generics);
 
     return node;
 }

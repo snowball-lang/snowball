@@ -10,7 +10,7 @@ namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Expression::NewInstance) {
     auto call = p_node->getCall();
-    auto expr = call->getCallee();
+    auto expr = p_node->getType();
 
     assert(utils::cast<Expression::TypeRef>(expr));
     auto ident = Syntax::N<Expression::Identifier>(

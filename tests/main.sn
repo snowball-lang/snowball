@@ -7,14 +7,14 @@ class A {
     }    
 }
 
-type x = i32;
 
 fn a<T>() {
     let x: T = 69;
 }
 
-type x = i32;
+type x<T> = A<?T>;
+
 pub fn main() i32 {
-    let b: x = 2;
+    let x: x;
     a<?f32>()
 }

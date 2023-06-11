@@ -13,7 +13,7 @@ SN_TRANSFORMER_VISIT(Statement::TypeAlias) {
     auto state = ctx->saveState();
     auto x     = ctx->cache->getType(uuid);
 
-    if (x.has_value() && (!ctx->generateFunction)) {
+    if (x.has_value() && (!ctx->generateFunction) || ctx->cache->getTransformedType(uuid).has_value()) {
         E<VARIABLE_ERROR>(p_node, FMT("Type alias with name '%s' is already "
                                       "defined in the current scope!",
                                       name.c_str()));
