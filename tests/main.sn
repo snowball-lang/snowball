@@ -1,20 +1,27 @@
 
-class A<T> {
+class A {
   pub:
-    let a: T;
     A() {
-        self.a = 24124
+    }
+
+    virt fn hello() {
     }    
 }
 
+class B: A {
+  pub:
+    B() {
+    }
 
-fn a<T>() {
-    let x: T = 69;
+    // TODO: replace this with A::hello if it is not declared
+    //virt fn hello() {
+    //}    
 }
 
-type x<T> = A<?T>;
-
 pub fn main() i32 {
-    let gx: x<?i32>;
-    a<?f32>()
+    let a = new A();
+    let b = new B();
+
+    a.hello();
+    //b.hello();
 }

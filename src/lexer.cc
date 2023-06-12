@@ -186,7 +186,8 @@ void Lexer::tokenize() {
                 break;
             }
             case '\\':
-                lexer_error(Error::SYNTAX_ERROR, "invalid character '\\'.", 1, { .info = "This character is not recognized!" });
+                lexer_error(Error::SYNTAX_ERROR, "invalid character '\\'.", 1,
+                            {.info = "This character is not recognized!"});
                 break;
             case '%': {
                 if (GET_CHAR(1) == '=')
@@ -272,11 +273,22 @@ void Lexer::tokenize() {
 
                         switch (c) {
                             case 0: // TODO: show the start of string location
-                                lexer_error(Error::UNEXPECTED_EOF,
-                                            "Unexpected EOF while lexing a "
-                                            "string scape!",
-                                            1,
-                                            { .info = "Coudn't find scape here!", .help = "The string in your code contains an incomplete escape sequence. Make sure to provide the \nnecessary escape character or complete the escape sequence before the end\n of the string. For example, you can add a backslash (\"\") \nbefore the closing quotation mark (\") to\n properly escape it." });
+                                lexer_error(
+                                    Error::UNEXPECTED_EOF,
+                                    "Unexpected EOF while lexing a "
+                                    "string scape!",
+                                    1,
+                                    {.info = "Coudn't find scape here!",
+                                     .help =
+                                         "The string in your code contains an "
+                                         "incomplete escape sequence. Make "
+                                         "sure to provide the \nnecessary "
+                                         "escape character or complete the "
+                                         "escape sequence before the end\n of "
+                                         "the string. For example, you can add "
+                                         "a backslash (\"\") \nbefore the "
+                                         "closing quotation mark (\") to\n "
+                                         "properly escape it."});
                                 break;
                             case '\\':
                                 str += '\\';
@@ -311,10 +323,17 @@ void Lexer::tokenize() {
                                             "invalid escape character", 2);
                         }
                     } else if (GET_CHAR(0) == 0) {
-                        lexer_error(Error::UNEXPECTED_EOF,
-                                    "Unexpected EOF while lexing character!",
-                                    1,
-                                    { .info = "No ending of the string found!", .help = "It appears that the character declaration in your code is incomplete. \nMake sure to provide a valid character between the single quotes (\'\'). Choose a\n valid character and close the declaration with a single quote (') to resolve this issue." });
+                        lexer_error(
+                            Error::UNEXPECTED_EOF,
+                            "Unexpected EOF while lexing character!", 1,
+                            {.info = "No ending of the string found!",
+                             .help =
+                                 "It appears that the character declaration in "
+                                 "your code is incomplete. \nMake sure to "
+                                 "provide a valid character between the single "
+                                 "quotes (\'\'). Choose a\n valid character "
+                                 "and close the declaration with a single "
+                                 "quote (') to resolve this issue."});
                         break;
                     } else {
                         str += GET_CHAR(0);
@@ -390,10 +409,17 @@ void Lexer::tokenize() {
                                             "invalid escape character", 2);
                         }
                     } else if (GET_CHAR(0) == 0) {
-                        lexer_error(Error::UNEXPECTED_EOF,
-                                    "Unexpected EOF while lexing character!",
-                                    1,
-                                    { .info = "No ending of the string found!", .help = "It appears that the character declaration in your code is incomplete. \nMake sure to provide a valid character between the double quotes (\"\"). \nChoose a valid character and close the declaration with a double quote \n(\") to resolve this issue." });
+                        lexer_error(
+                            Error::UNEXPECTED_EOF,
+                            "Unexpected EOF while lexing character!", 1,
+                            {.info = "No ending of the string found!",
+                             .help =
+                                 "It appears that the character declaration in "
+                                 "your code is incomplete. \nMake sure to "
+                                 "provide a valid character between the double "
+                                 "quotes (\"\"). \nChoose a valid character "
+                                 "and close the declaration with a double "
+                                 "quote \n(\") to resolve this issue."});
                         break;
                     } else {
                         str += GET_CHAR(0);
@@ -601,7 +627,9 @@ void Lexer::tokenize() {
                 auto c = utils::getUTF8FromIndex(code, char_ptr);
                 if (c == "🐒") {
                     lexer_error(Error::SYNTAX_ERROR, "Unexpected MONKE found!",
-                                1, {.info = "🐒🐒🐒🐒🐒🐒", .help = "This is just an easter egg!"});
+                                1,
+                                {.info = "🐒🐒🐒🐒🐒🐒",
+                                 .help = "This is just an easter egg!"});
                 } else {
                     lexer_error(
                         Error::SYNTAX_ERROR,

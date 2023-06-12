@@ -4,9 +4,9 @@ class Iterable<_IteratorType> {
     Iterable() {}
 }
 
-class Array<_StoreType>: Iterable<?_StoreType> {
+class Vector<_StoreType>: Iterable<?_StoreType> {
   pub:
-    Array() {}
+    Vector() {}
 }
 
 /**
@@ -31,13 +31,13 @@ class StringView<_CharType = char*>: Iterable<?_CharType> {
      */
     StringView() {
         self.size = 0;
-        self.data = new Array<?_CharType>{};
+        self.data = new Vector<?_CharType>{};
     }
 
   priv:
     
     let mut size: i32;
-    let data: Array<?_CharType>;
+    let data: Vector<?_CharType>;
 }
 
 type String = StringView<?>;

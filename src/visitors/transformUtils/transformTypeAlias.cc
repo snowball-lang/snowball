@@ -1,15 +1,16 @@
 
-#include "../Transformer.h"
 #include "../../utils/utils.h"
+#include "../Transformer.h"
 
 namespace snowball {
 
 using namespace utils;
 namespace Syntax {
 
-std::shared_ptr<types::Type> Transformer::transformTypeAlias(const std::string& uuid,
-                        cacheComponents::Types::TypeStore& base,
-                        Expression::TypeRef *typeRef) {
+std::shared_ptr<types::Type>
+Transformer::transformTypeAlias(const std::string& uuid,
+                                cacheComponents::Types::TypeStore& base,
+                                Expression::TypeRef *typeRef) {
     auto ty = utils::cast<Statement::TypeAlias>(base.type);
     assert(ty);
 

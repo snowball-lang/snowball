@@ -10,26 +10,30 @@ using namespace snowball::Syntax::transform;
     (name == "main" && p_node->getPrivacy() == Statement::Privacy::PUBLIC &&   \
      ctx->module->isMain())
 
+#define ADD_SELF_ARG                                                           \
+    if (auto c = ctx->getCurrentClass()) {                                     \
+        if (!p_node->isStatic()) {                                             \
+            auto args = p_node->getArgs();                                     \
+            auto self =                                                        \
+                new Expression::Param("self", c->getPointerTo()->toRef());     \
+                                                                               \
+            args.insert(args.begin(), self);                                   \
+            p_node->setArgs(args);                                             \
+        }                                                                      \
+    }
+
 namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     auto name = p_node->getName();
+    ADD_SELF_ARG
 
-    if (!ctx->generateFunction && !(IS_MAIN)) {
+    if (!ctx->generateFunction && !IS_MAIN) {
         assert(!services::OperatorService::isOperator(name));
         // Check if the function requirements match the main function
 
         auto uuid = ctx->createIdentifierName(name);
-        if (auto c = ctx->getCurrentClass()) {
-            if (!p_node->isStatic()) {
-                auto args = p_node->getArgs();
-                auto self = new Expression::Param("self", c->toRef());
-
-                args.insert(args.begin(), self);
-                p_node->setArgs(args);
-            }
-        }
 
         // Just set it to the function stack
         if (auto x = ctx->cache->getFunction(uuid)) {

@@ -29,13 +29,13 @@ Transformer::transformType(Expression::TypeRef *ty) {
         } else {
             ast = Syntax::N<Expression::Identifier>(ty->getName());
         }
-        
+
         ast->setDBGInfo(ty->getDBGInfo());
     }
 
     if (auto x = utils::cast<Expression::Identifier>(ast)) {
         auto [_v, type, _o, _f, _m] = getFromIdentifier(x);
-        
+
         std::string errorReason;
         if (_v.has_value()) {
             errorReason = "This is a value, not a type!";
@@ -71,10 +71,10 @@ Transformer::transformType(Expression::TypeRef *ty) {
         }
 
         E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()),
-                {.info = errorReason});
+                      {.info = errorReason});
     }
 
-  continueTypeFetch:
+continueTypeFetch:
     if (auto x = transformSpecialType(ty)) {
         return x;
     }
@@ -99,7 +99,7 @@ Transformer::transformType(Expression::TypeRef *ty) {
     }
 
     {
-        auto uuid = ctx->createIdentifierName(id, false);
+        auto uuid               = ctx->createIdentifierName(id, false);
         bool existsWithGenerics = false;
 
         if (auto x = ctx->cache->getTransformedType(uuid)) {
@@ -121,14 +121,16 @@ Transformer::transformType(Expression::TypeRef *ty) {
         }
 
         if (existsWithGenerics) {
-            E<TYPE_ERROR>(ty, FMT("Type '%s' requires to have no template parameters but at least one has been given?", name.c_str()));
+            E<TYPE_ERROR>(ty, FMT("Type '%s' requires to have no template "
+                                  "parameters but at least one has been given?",
+                                  name.c_str()));
         }
     }
 
     if (returnedType == nullptr) {
         E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
     }
-    
+
     return returnedType;
 }
 

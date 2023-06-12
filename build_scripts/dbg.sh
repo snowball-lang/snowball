@@ -1,3 +1,4 @@
+set -ex
 mkdir -p bin/Debug
 cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_BUILD_TYPE=Debug \
 -DLLVM_ENABLE_BACKTRACES=OFF \

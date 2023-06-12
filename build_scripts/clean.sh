@@ -1,4 +1,6 @@
 #!/usr/bin/bash
+set -ex
+
 cmake --build . --target clean
 rm -rf ./_deps
 rm -rf ./.cache

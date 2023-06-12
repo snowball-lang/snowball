@@ -106,7 +106,18 @@ Syntax::Expression::TypeRef *DefinedType::toRef() {
     return tRef;
 }
 
-bool DefinedType::canCast(Type *ty) const { assert(false && "TODO"); }
+bool DefinedType::canCast(Type *ty) const {
+    if (auto x = utils::cast<DefinedType>(ty)) {
+        return canCast(x);
+    }
+
+    return false;
+}
+
+bool DefinedType::canCast(DefinedType *ty) const {
+    assert(false && "TODO:");
+    return false;
+}
 
 }; // namespace types
 }; // namespace snowball

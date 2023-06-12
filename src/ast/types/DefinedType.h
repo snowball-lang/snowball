@@ -133,9 +133,9 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     ///  generics if needed
     Syntax::Expression::TypeRef *toRef() override;
 
-    /// @brief override function. All numeric types
-    ///  can cast to any other numeric types.
+    /// @brief override function.
     bool canCast(Type *ty) const override;
+    virtual bool canCast(DefinedType *ty) const;
 };
 
 }; // namespace types

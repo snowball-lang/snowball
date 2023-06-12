@@ -124,7 +124,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         assert(false && "TODO: other function values?!?!?");
     }
 
-    if (auto func = std::dynamic_pointer_cast<ir::Func>(fn)) {
+    if (auto func = utils::dyn_cast<ir::Func>(fn)) {
 
         // Check for default arguments
         auto args = func->getArgs();
