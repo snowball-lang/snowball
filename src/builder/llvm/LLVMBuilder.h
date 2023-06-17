@@ -61,18 +61,14 @@ class LLVMBuilderContext {
     /// @brief Clear the symbol table
     void clearSymbols() { return symbols.clear(); }
     /// @return Add a new vtable to the vtable map
-    void addVtable(ir::id_t i, llvm::GlobalVariable *s) {
-        vtables.emplace(i, s);
-    }
+    void addVtable(ir::id_t i, llvm::GlobalVariable *s) { vtables.emplace(i, s); }
     /// @brief Get the corresponding vtable to an id
     auto getVtable(ir::id_t i) -> llvm::GlobalVariable * {
         auto item = vtables.find(i);
         return item == vtables.end() ? nullptr : item->second;
     }
     /// @return Add a new vtable to the vtable map
-    void addVtableTy(ir::id_t i, llvm::StructType *s) {
-        vtableType.emplace(i, s);
-    }
+    void addVtableTy(ir::id_t i, llvm::StructType *s) { vtableType.emplace(i, s); }
     /// @brief Get the corresponding vtable to an id
     auto getVtableTy(ir::id_t i) -> llvm::StructType * {
         auto item = vtableType.find(i);
@@ -98,8 +94,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
     std::shared_ptr<ir::Module> iModule;
 
     // Context used all around the codegen process
-    std::unique_ptr<LLVMBuilderContext> ctx =
-        std::make_unique<LLVMBuilderContext>();
+    std::unique_ptr<LLVMBuilderContext> ctx = std::make_unique<LLVMBuilderContext>();
 
     /**
      * Struct containing all debug information
@@ -127,8 +122,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
          * Create a new llvm value.
          * @return Created llvm value.
          */
-        template <typename Inst, class... Args>
-        static Inst *create(Args&&...args) {
+        template <typename Inst, class... Args> static Inst *create(Args&&...args) {
             return Inst::Create(std::forward<Args>(args)...);
         }
 
@@ -136,8 +130,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
          * Create a new llvm instruction.
          * @return Created llvm struction.
          */
-        template <typename Inst, class... Args>
-        static Inst *insert(Args&&...args) {
+        template <typename Inst, class... Args> static Inst *insert(Args&&...args) {
             return new Inst(std::forward<Args>(args)...);
         }
     } h;

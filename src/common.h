@@ -5,8 +5,7 @@
 #define __SNOWBALL_COMMON_H_
 
 namespace snowball {
-template <typename Derived, typename Parent>
-class AcceptorExtend : public Parent {
+template <typename Derived, typename Parent> class AcceptorExtend : public Parent {
   public:
     using Parent::Parent;
 };

@@ -15,7 +15,7 @@ void DefiniteAssigment::withScope(std::function<void()> cb) {
 
 void DefiniteAssigment::withState(std::function<void()> cb) {
     auto currentState = this->state;
-    this->state       = {.inited = {}};
+    this->state = {.inited = {}};
 
     cb();
     this->state = currentState;

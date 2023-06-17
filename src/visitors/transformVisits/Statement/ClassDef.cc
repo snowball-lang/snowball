@@ -11,14 +11,13 @@ SN_TRANSFORMER_VISIT(Statement::ClassDef) {
     auto uuid = ctx->createIdentifierName(name);
 
     auto state = ctx->saveState();
-    auto x     = ctx->cache->getType(uuid);
+    auto x = ctx->cache->getType(uuid);
 
     if (x.has_value() && (!ctx->generateFunction) ||
         (ctx->cache->getTransformedType(uuid) != std::nullopt)) {
         E<VARIABLE_ERROR>(
-            p_node,
-            FMT("Class with name '%s' is already defined in the current scope!",
-                name.c_str()));
+            p_node, FMT("Class with name '%s' is already defined in the current scope!",
+                        name.c_str()));
     } else if ((!x.has_value()) && (p_node->getGenerics().size() == 0)) {
         if (!ctx->generateFunction) return;
         assert(ctx->cache->getTransformedType(uuid) == std::nullopt);

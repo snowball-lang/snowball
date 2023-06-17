@@ -13,8 +13,8 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
     auto expr = p_node->getType();
 
     assert(utils::cast<Expression::TypeRef>(expr));
-    auto ident = Syntax::N<Expression::Identifier>(
-        services::OperatorService::getOperatorMangle(
+    auto ident =
+        Syntax::N<Expression::Identifier>(services::OperatorService::getOperatorMangle(
             services::OperatorService::CONSTRUCTOR));
     ident->setDBGInfo(expr->getDBGInfo());
     auto index = Syntax::N<Expression::Index>(expr, ident, true);
@@ -27,7 +27,7 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
     assert(c != nullptr);
 
     auto typeRef = utils::cast<Expression::TypeRef>(expr);
-    auto type    = transformType(typeRef);
+    auto type = transformType(typeRef);
 
     // Make a copy of the value
     auto v = ctx->module->N<ir::ObjectInitialization>(

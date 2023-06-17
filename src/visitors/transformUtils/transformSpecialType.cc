@@ -5,13 +5,12 @@
 #include <llvm/IR/Attributes.h>
 
 #define STYPE_INSTANCE(x) if (n == x)
-#define ASSERT_GENERICS(n, t)                                                  \
-    auto generics = ty->getGenerics();                                         \
-    if (generics.size() != n) {                                                \
-        E<TYPE_ERROR>(                                                         \
-            ty->getDBGInfo(),                                                  \
-            FMT("Expected '%i' generics for '%s' but got '%i' instead", n,     \
-                t.c_str(), generics.size()));                                  \
+#define ASSERT_GENERICS(n, t)                                                          \
+    auto generics = ty->getGenerics();                                                 \
+    if (generics.size() != n) {                                                        \
+        E<TYPE_ERROR>(ty->getDBGInfo(),                                                \
+                      FMT("Expected '%i' generics for '%s' but got '%i' instead", n,   \
+                          t.c_str(), generics.size()));                                \
     }
 
 namespace snowball {
@@ -27,8 +26,8 @@ Transformer::transformSpecialType(Expression::TypeRef *ty) {
         ASSERT_GENERICS(1, FUNCTION_RETURN_STYPE)
 
         auto generic = generics.at(0);
-        auto type    = transformType(generic);
-        auto fnType  = utils::dyn_cast<types::FunctionType>(type);
+        auto type = transformType(generic);
+        auto fnType = utils::dyn_cast<types::FunctionType>(type);
         if (fnType) {
             return fnType->getRetType();
         }

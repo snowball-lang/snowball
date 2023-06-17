@@ -50,9 +50,7 @@ class Module : public AcceptorExtend<Module, SrcObject>,
         return functions;
     }
     // Push a new function to the module
-    virtual void addFunction(std::shared_ptr<ir::Func> fn) {
-        functions.push_back(fn);
-    }
+    virtual void addFunction(std::shared_ptr<ir::Func> fn) { functions.push_back(fn); }
     // Append a new variable to the variable list
     virtual void addVariable(std::shared_ptr<ir::VariableDeclaration> v) {
         variables.push_back(v);
@@ -63,8 +61,8 @@ class Module : public AcceptorExtend<Module, SrcObject>,
     /// @brief Utility function to create a new instruction
     template <typename DesiredType, typename... Args>
     std::shared_ptr<DesiredType> N(DBGSourceInfo *dbg, Args&&...args) {
-        auto ret = std::shared_ptr<DesiredType>(
-            new DesiredType(std::forward<Args>(args)...));
+        auto ret =
+            std::shared_ptr<DesiredType>(new DesiredType(std::forward<Args>(args)...));
         ret->setModule(shared_from_this());
         ret->setSourceInfo(getSourceInfo());
         ret->setDBGInfo(dbg);

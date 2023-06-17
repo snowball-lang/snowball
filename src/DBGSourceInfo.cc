@@ -10,13 +10,13 @@ namespace snowball {
 DBGSourceInfo::DBGSourceInfo(SourceInfo *p_source_info, uint32_t p_line)
     : SrcObject(p_source_info), line(p_line) {}
 
-DBGSourceInfo::DBGSourceInfo(SourceInfo *p_source_info,
-                             std::pair<int, int> p_pos, uint32_t p_width)
+DBGSourceInfo::DBGSourceInfo(SourceInfo *p_source_info, std::pair<int, int> p_pos,
+                             uint32_t p_width)
     : pos(p_pos), line((uint32_t)p_pos.first), width(p_width),
       SrcObject(p_source_info) {}
 
 void DBGSourceInfo::prepare_for_error() {
-    uint64_t cur_line  = 1;
+    uint64_t cur_line = 1;
     const auto& source = m_srci->getSource();
 
     for (auto c : source) {
@@ -39,7 +39,7 @@ std::string DBGSourceInfo::get_pos_str() const {
 
     std::stringstream ss_pos;
     size_t cur_col = 0;
-    bool done      = false;
+    bool done = false;
     for (size_t i = 0; i < line_str.size(); i++) {
         cur_col++;
         if (cur_col == pos.second) {

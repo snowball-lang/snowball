@@ -35,9 +35,7 @@ Transformer::Transformer(std::shared_ptr<ir::Module> mod, SourceInfo *srci)
 std::vector<std::shared_ptr<ir::Module>> Transformer::getModules() const {
     return modules;
 }
-void Transformer::addModule(std::shared_ptr<ir::Module> m) {
-    modules.push_back(m);
-}
+void Transformer::addModule(std::shared_ptr<ir::Module> m) { modules.push_back(m); }
 auto Transformer::getModule() const { return ctx->module; }
 void Transformer::visit(std::vector<Node *> p_nodes) {
     ctx->withScope([&] {

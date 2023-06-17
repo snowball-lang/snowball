@@ -38,17 +38,17 @@ namespace errors {
 const char *get_error(Error code);
 
 struct ErrorInfo {
-    const std::string info        = "";
+    const std::string info = "";
     const std::string explanation = "";
 
-    const std::string help     = "";
+    const std::string help = "";
     const std::string consider = "";
 };
 
 class SNError {
   public:
     SNError(Error code, std::string err) {
-        error   = code;
+        error = code;
         message = err;
     };
 
@@ -104,11 +104,11 @@ class CompilerError : public NiceError {
 
 } // namespace errors
 
-using LexerError    = errors::LexerError;
-using ParserError   = errors::ParserError;
+using LexerError = errors::LexerError;
+using ParserError = errors::ParserError;
 using CompilerError = errors::CompilerError;
 
-using SNError   = errors::SNError;
+using SNError = errors::SNError;
 using ErrorInfo = errors::ErrorInfo;
 
 } // namespace snowball

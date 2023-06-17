@@ -20,11 +20,10 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
     auto returnType = transformType(node->getRetType());
 
     // Create a new function value and store it's return type.
-    char l[]  = _SNOWBALL_LAMBDA_FUNCTIONS;
+    char l[] = _SNOWBALL_LAMBDA_FUNCTIONS;
     auto name = parent->getName() + "::" + l + '\00';
-    std::shared_ptr<ir::Func> fn =
-        ctx->module->N<ir::Func>(node->getDBGInfo(), name, false,
-                                 node->isVariadic(), ctx->getCurrentClass());
+    std::shared_ptr<ir::Func> fn = ctx->module->N<ir::Func>(
+        node->getDBGInfo(), name, false, node->isVariadic(), ctx->getCurrentClass());
     fn->setRetTy(returnType);
     fn->setPrivacy(Statement::Privacy::PUBLIC);
     fn->setStatic(false);
@@ -56,8 +55,8 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
         ctx->withScope([&]() {
             int argIndex = 0;
             for (auto arg : newArgs) {
-                auto ref = ctx->module->N<ir::Variable>(
-                    node->getDBGInfo(), arg.first, true /* TODO: is mutable */);
+                auto ref = ctx->module->N<ir::Variable>(node->getDBGInfo(), arg.first,
+                                                        true /* TODO: is mutable */);
 
                 ref->setType(arg.second->getType());
                 auto refItem = std::make_shared<transform::Item>(
@@ -74,14 +73,12 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
                 !((utils::dyn_cast<types::NumericType>(returnType)) ||
                   (utils::dyn_cast<types::VoidType>(returnType))) &&
                 !fn->isConstructor()) {
-                E<TYPE_ERROR>(
-                    node, "Function lacks ending return statement!",
-                    {.info = "Function does not return on all paths!"});
+                E<TYPE_ERROR>(node, "Function lacks ending return statement!",
+                              {.info = "Function does not return on all paths!"});
             }
 
             body->accept(this);
-            auto functionBody =
-                std::dynamic_pointer_cast<ir::Block>(this->value);
+            auto functionBody = std::dynamic_pointer_cast<ir::Block>(this->value);
             fn->setBody(functionBody);
         });
 

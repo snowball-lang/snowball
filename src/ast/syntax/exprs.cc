@@ -15,10 +15,8 @@ DeclType::DeclType(Base *value, DBGSourceInfo *srcInfo)
     : value(value), TypeRef("decltype(...)", srcInfo){};
 PointerType::PointerType(TypeRef *baseType, DBGSourceInfo *srcInfo)
     : baseType(baseType), TypeRef(baseType->getName() + "*", srcInfo){};
-PseudoVariable::PseudoVariable(std::string identifier)
-    : identifier(identifier){};
-TypeRef::TypeRef(Expression::Base *p_ast, std::string p_name,
-                 DBGSourceInfo *p_dbg)
+PseudoVariable::PseudoVariable(std::string identifier) : identifier(identifier){};
+TypeRef::TypeRef(Expression::Base *p_ast, std::string p_name, DBGSourceInfo *p_dbg)
     : internalAST(p_ast), types::Type(REF, p_name) {
     setDBGInfo(p_dbg);
 }
@@ -118,8 +116,8 @@ std::string GenericIdentifier::getNiceName() const {
     return identifier + (gIndex > 0 ? gens + ">" : "");
 }
 
-#define CASE(t, r)                                                             \
-    case TokenType::t:                                                         \
+#define CASE(t, r)                                                                     \
+    case TokenType::t:                                                                 \
         return r;
 ConstantValue::ConstantType ConstantValue::deduceType(TokenType ty) {
     switch (ty) {

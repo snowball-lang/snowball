@@ -15,10 +15,10 @@ void LLVMBuilder::visit(ir::VariableDeclaration *variable) {
 
     if (auto a = utils::cast<ir::Argument>(variable->getValue().get())) {
         auto id = a->getId();
-        store   = ctx->getSymbol(id);
+        store = ctx->getSymbol(id);
     } else {
         auto id = variable->getId();
-        store   = ctx->getSymbol(id);
+        store = ctx->getSymbol(id);
     }
 
     auto generatedValue = build(variable->getValue().get());

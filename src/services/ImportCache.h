@@ -26,8 +26,7 @@ class ImportCache {
     /// @brief Set a new module to the map
     void addModule(std::filesystem::path p, std::shared_ptr<ir::Module> m);
     /// @return a shared pointer to a module if it exists inside the map
-    std::optional<std::shared_ptr<ir::Module>>
-    getModule(std::filesystem::path p);
+    std::optional<std::shared_ptr<ir::Module>> getModule(std::filesystem::path p);
 
     ~ImportCache() noexcept = default;
 };

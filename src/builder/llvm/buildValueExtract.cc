@@ -15,7 +15,7 @@ void LLVMBuilder::visit(ir::ValueExtract *extract) {
 
     llvm::Value *value = nullptr;
     if (auto f = std::dynamic_pointer_cast<ir::Func>(var)) {
-        auto fn     = funcs.at(f->getId());
+        auto fn = funcs.at(f->getId());
         this->value = fn;
         return;
     } else if (auto v = std::dynamic_pointer_cast<ir::Variable>(var)) {
@@ -23,7 +23,7 @@ void LLVMBuilder::visit(ir::ValueExtract *extract) {
         // after ir::Variable (x). note(note argument): They are declared as
         // usual with normal ID incrementation
         auto id = v->getId() + v->isArgument();
-        value   = ctx->getSymbol(id);
+        value = ctx->getSymbol(id);
     } else {
         assert(false && "BUG: Value extract type not supported!");
     }

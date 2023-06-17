@@ -21,7 +21,7 @@ class SourceInfo {
     std::string getPath() const { return _path; };
 
     const int source_length = 0;
-    ~SourceInfo() noexcept  = default;
+    ~SourceInfo() noexcept = default;
 
   private:
     std::string _code;

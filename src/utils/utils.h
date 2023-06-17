@@ -23,8 +23,7 @@ std::string getUTF8FromIndex(const std::string& s, const int index);
 std::list<std::string> split(std::string str, std::string token);
 bool endsWith(const std::string& mainStr, const std::string& toMatch);
 bool startsWith(const std::string& str, const std::string& comp);
-void replaceAll(std::string& str, const std::string& from,
-                const std::string& to);
+void replaceAll(std::string& str, const std::string& from, const std::string& to);
 std::string getSubstringByRange(const std::string& str,
                                 const std::pair<int, int>& start,
                                 const std::pair<int, int>& end);
@@ -126,8 +125,7 @@ template <typename T, class X> void assert_value_type() {
 template <typename F, typename... Ts> double _timer(F&& f, Ts&&...args) {
     clock_t start = clock();
     std::forward<F>(f)(std::forward<Ts>(args)...);
-    return static_cast<double>(clock() - start) /
-           static_cast<double>(CLOCKS_PER_SEC);
+    return static_cast<double>(clock() - start) / static_cast<double>(CLOCKS_PER_SEC);
 }
 #endif
 

@@ -17,8 +17,7 @@ llvm::DISubprogram *LLVMBuilder::getDISubprogramForFunc(ir::Func *x) {
     auto srcInfo = x->getDBGInfo();
 
     auto file = dbg.getFile(srcInfo->getSourceInfo()->getPath());
-    auto derivedType =
-        llvm::cast<llvm::DIDerivedType>(getDIType(x->getType().get()));
+    auto derivedType = llvm::cast<llvm::DIDerivedType>(getDIType(x->getType().get()));
     auto subroutineType =
         llvm::cast<llvm::DISubroutineType>(derivedType->getRawBaseType());
 
@@ -42,40 +41,38 @@ llvm::DIType *LLVMBuilder::getDIType(types::Type *ty) {
     if (cast<types::Int64Type>(ty) || cast<types::Int32Type>(ty) ||
         cast<types::Int16Type>(ty) || cast<types::Int8Type>(ty) ||
         cast<types::BoolType>(ty) || cast<types::CharType>(ty)) {
-        return dbg.builder->createBasicType(
-            ty->getName(), layout.getTypeAllocSizeInBits(llvmType),
-            llvm::dwarf::DW_ATE_signed);
+        return dbg.builder->createBasicType(ty->getName(),
+                                            layout.getTypeAllocSizeInBits(llvmType),
+                                            llvm::dwarf::DW_ATE_signed);
     } else if (cast<types::CObjectType>(ty)) {
-        return dbg.builder->createPointerType(getDIType(new types::Int8Type()),
-                                              8);
+        return dbg.builder->createPointerType(getDIType(new types::Int8Type()), 8);
     } else if (cast<types::Float32Type>(ty) || cast<types::Float64Type>(ty)) {
-        return dbg.builder->createBasicType(
-            ty->getName(), layout.getTypeAllocSizeInBits(llvmType),
-            llvm::dwarf::DW_ATE_float);
+        return dbg.builder->createBasicType(ty->getName(),
+                                            layout.getTypeAllocSizeInBits(llvmType),
+                                            llvm::dwarf::DW_ATE_float);
     } else if (cast<types::VoidType>(ty)) {
         return nullptr;
     } else if (auto x = cast<types::PointerType>(ty)) {
         auto type = getDIType(x->getPointedType().get());
-        return dbg.builder->createPointerType(
-            type, layout.getTypeAllocSizeInBits(llvmType));
+        return dbg.builder->createPointerType(type,
+                                              layout.getTypeAllocSizeInBits(llvmType));
     }
 
     else if (auto f = cast<types::FunctionType>(ty)) {
-        std::vector<llvm::Metadata *> argTypes = {
-            getDIType(f->getRetType().get())};
+        std::vector<llvm::Metadata *> argTypes = {getDIType(f->getRetType().get())};
 
         for (auto argType : f->getArgs()) {
             argTypes.push_back(getDIType(argType.get()));
         }
 
-        auto subroutineType = dbg.builder->createSubroutineType(
-            llvm::MDTuple::get(*context, argTypes));
-        return dbg.builder->createPointerType(
-            subroutineType, layout.getTypeAllocSizeInBits(llvmType));
+        auto subroutineType =
+            dbg.builder->createSubroutineType(llvm::MDTuple::get(*context, argTypes));
+        return dbg.builder->createPointerType(subroutineType,
+                                              layout.getTypeAllocSizeInBits(llvmType));
     } else if (auto c = cast<types::DefinedType>(ty)) {
         // TODO: add "VTableHolder" as argument
         auto dbgInfo = c->getDBGInfo();
-        auto file    = dbg.getFile(dbgInfo->getSourceInfo()->getPath());
+        auto file = dbg.getFile(dbgInfo->getSourceInfo()->getPath());
 
         auto fields = c->getFields();
         std::vector<llvm::Metadata *> generatedFields;
@@ -102,8 +99,7 @@ llvm::DIType *LLVMBuilder::getDIType(types::Type *ty) {
 
         return debugType;
     } else {
-        Syntax::E<BUG>(
-            FMT("Undefined type! (dbg) ('%s')", ty->getName().c_str()));
+        Syntax::E<BUG>(FMT("Undefined type! (dbg) ('%s')", ty->getName().c_str()));
     }
 
     assert(false);

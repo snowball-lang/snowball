@@ -71,13 +71,13 @@ const char *BHCYN = "\e[1;96m";
 const char *BHWHT = "\e[1;97m";
 
 // MORE CODES
-const char *RESET     = "\e[0m";
-const char *DIM       = "\e[22m";
-const char *BLINK     = "\e[5m";
-const char *HIDDEN    = "\e[8m";
-const char *REVERSE   = "\e[7m";
-const char *BOLD      = "\e[1m";
+const char *RESET = "\e[0m";
+const char *DIM = "\e[22m";
+const char *BLINK = "\e[5m";
+const char *HIDDEN = "\e[8m";
+const char *REVERSE = "\e[7m";
+const char *BOLD = "\e[1m";
 const char *UNDERLINE = "\e[4m";
-const char *STRIKE    = "\e[9m";
+const char *STRIKE = "\e[9m";
 
 } // namespace snowball

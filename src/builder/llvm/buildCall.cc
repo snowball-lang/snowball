@@ -18,10 +18,9 @@ void LLVMBuilder::visit(ir::Call *call) {
     auto callee = build(call->getCallee().get());
     setDebugInfoLoc(call);
 
-    auto args =
-        utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value *>(
-            call->getArguments(),
-            [&](std::shared_ptr<ir::Value> arg) { return build(arg.get()); });
+    auto args = utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value *>(
+        call->getArguments(),
+        [&](std::shared_ptr<ir::Value> arg) { return build(arg.get()); });
 
     setDebugInfoLoc(call);
     if (auto c = utils::dyn_cast<ir::Func>(call->getCallee());
@@ -42,8 +41,8 @@ void LLVMBuilder::visit(ir::Call *call) {
 
         args.insert(args.begin(), object);
         builder->CreateCall(
-            (llvm::FunctionType *)callee->getType()->getPointerElementType(),
-            callee, args);
+            (llvm::FunctionType *)callee->getType()->getPointerElementType(), callee,
+            args);
         this->value =
             builder->CreateLoad(getLLVMType(instance->getType().get()), object);
         return;
@@ -51,34 +50,31 @@ void LLVMBuilder::visit(ir::Call *call) {
                c != nullptr && c->inVirtualTable()) {
         assert(c->hasParent());
 
-        auto index  = c->getVirtualIndex();
+        auto index = c->getVirtualIndex();
         auto parent = c->getParent();
 
-        auto f           = llvm::cast<llvm::Function>(callee);
+        auto f = llvm::cast<llvm::Function>(callee);
         auto parentValue = args.at(/* self = */ 0);
 
         auto vtable = builder->CreateStructGEP(
             parentValue->getType()->getPointerElementType(), parentValue, 0);
 
-        auto loadedVtable = builder->CreateLoad(
-            vtable->getType()->getPointerElementType(), vtable);
+        auto loadedVtable =
+            builder->CreateLoad(vtable->getType()->getPointerElementType(), vtable);
         auto pointer = builder->CreateStructGEP(
-            loadedVtable->getType()->getPointerElementType(), loadedVtable,
-            index);
+            loadedVtable->getType()->getPointerElementType(), loadedVtable, index);
 
-        auto pointerLoad = builder->CreateLoad(
-            pointer->getType()->getPointerElementType(), pointer);
-        this->value =
-            builder->CreateCall((llvm::FunctionType *)pointerLoad->getType()
-                                    ->getPointerElementType(),
-                                (llvm::Function *)pointerLoad, args);
+        auto pointerLoad =
+            builder->CreateLoad(pointer->getType()->getPointerElementType(), pointer);
+        this->value = builder->CreateCall(
+            (llvm::FunctionType *)pointerLoad->getType()->getPointerElementType(),
+            (llvm::Function *)pointerLoad, args);
         return;
     }
 
     // TODO: invoke if it's inside a try block
     this->value = builder->CreateCall(
-        (llvm::FunctionType *)callee->getType()->getPointerElementType(),
-        callee, args);
+        (llvm::FunctionType *)callee->getType()->getPointerElementType(), callee, args);
 }
 
 } // namespace codegen

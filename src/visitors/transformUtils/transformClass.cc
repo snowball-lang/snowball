@@ -22,12 +22,11 @@ Transformer::transformClass(const std::string& uuid,
     //
     // Note that the default class generics WILL be generated inside the class
     // context.
-    auto generics = typeRef != nullptr
-                        ? vector_iterate<Expression::TypeRef *,
-                                         std::shared_ptr<types::Type>>(
-                              typeRef->getGenerics(),
-                              [&](auto t) { return transformType(t); })
-                        : std::vector<std::shared_ptr<types::Type>>{};
+    auto generics =
+        typeRef != nullptr
+            ? vector_iterate<Expression::TypeRef *, std::shared_ptr<types::Type>>(
+                  typeRef->getGenerics(), [&](auto t) { return transformType(t); })
+            : std::vector<std::shared_ptr<types::Type>>{};
 
     // TODO: check if typeRef generics match class generics
     std::shared_ptr<types::DefinedType> transformedType;
@@ -47,11 +46,10 @@ Transformer::transformClass(const std::string& uuid,
                 }
             }
 
-            for (int genericCount = 0; genericCount < generics.size();
-                 genericCount++) {
+            for (int genericCount = 0; genericCount < generics.size(); genericCount++) {
                 auto generic = classGenerics.at(genericCount);
-                auto item    = std::make_shared<transform::Item>(
-                    generics.at(genericCount));
+                auto item =
+                    std::make_shared<transform::Item>(generics.at(genericCount));
                 // TODO:
                 // item->setDBGInfo(generic->getDBGInfo());
                 ctx->addItem(generic->getName(), item);
@@ -60,32 +58,28 @@ Transformer::transformClass(const std::string& uuid,
             std::shared_ptr<types::DefinedType> parentType = nullptr;
             if (auto x = ty->getParent()) {
                 // TODO: check if it's actually a defined type
-                parentType =
-                    utils::dyn_cast<types::DefinedType>(transformType(x));
+                parentType = utils::dyn_cast<types::DefinedType>(transformType(x));
             }
 
-            auto basedName  = getNameWithBase(ty->getName());
-            auto baseFields = vector_iterate<
-                Statement::VariableDecl *,
-                types::DefinedType::ClassField
-                    *>(ty->getVariables(), [&](auto v) {
-                auto varTy = transformType(v->getDefinedType());
-                return new types::DefinedType::ClassField(
-                    v->getName(), varTy,
-                    /*TODO: actually check this*/ Statement::Privacy::PRIVATE,
-                    v->isMutable());
-            });
+            auto basedName = getNameWithBase(ty->getName());
+            auto baseFields = vector_iterate<Statement::VariableDecl *,
+                                             types::DefinedType::ClassField *>(
+                ty->getVariables(), [&](auto v) {
+                    auto varTy = transformType(v->getDefinedType());
+                    return new types::DefinedType::ClassField(
+                        v->getName(), varTy,
+                        /*TODO: actually check this*/ Statement::Privacy::PRIVATE,
+                        v->isMutable());
+                });
 
-            auto fields =
-                getMemberList(ty->getVariables(), baseFields, parentType);
+            auto fields = getMemberList(ty->getVariables(), baseFields, parentType);
 
-            auto baseUuid      = ctx->createIdentifierName(ty->getName());
+            auto baseUuid = ctx->createIdentifierName(ty->getName());
             auto existantTypes = ctx->cache->getTransformedType(uuid);
 
             auto _uuid =
                 baseUuid + ":" +
-                utils::itos(existantTypes.has_value() ? existantTypes->size()
-                                                      : 0);
+                utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
             transformedType = std::make_shared<types::DefinedType>(
                 basedName, _uuid, ctx->module, fields, parentType, generics);
 
@@ -106,11 +100,11 @@ Transformer::transformClass(const std::string& uuid,
                     services::OperatorService::getOperatorMangle(
                         services::OperatorService::EQ),
                     true, false);
-                auto arg      = std::make_shared<ir::Argument>("other");
+                auto arg = std::make_shared<ir::Argument>("other");
                 auto typeArgs = std::vector<std::shared_ptr<types::Type>>{
                     transformedType, transformedType};
-                auto type = std::make_shared<types::FunctionType>(
-                    typeArgs, transformedType);
+                auto type =
+                    std::make_shared<types::FunctionType>(typeArgs, transformedType);
 
                 arg->setType(transformedType);
 

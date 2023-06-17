@@ -43,8 +43,8 @@ void Logger::success(std::string message) {
 }
 
 void Logger::message(std::string topic, std::string message) {
-    std::cout << BGRN << std::setw(15) << std::fixed << topic << RESET << ' '
-              << message << std::endl;
+    std::cout << BGRN << std::setw(15) << std::fixed << topic << RESET << ' ' << message
+              << std::endl;
 }
 
 // status

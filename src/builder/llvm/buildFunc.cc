@@ -24,23 +24,22 @@ void LLVMBuilder::visit(ir::Func *func) {
     this->value = fn;
 }
 
-llvm::Function *LLVMBuilder::buildBodiedFunction(llvm::Function *llvmFn,
-                                                 ir::Func *fn) {
+llvm::Function *LLVMBuilder::buildBodiedFunction(llvm::Function *llvmFn, ir::Func *fn) {
     ctx->setCurrentFunction(llvmFn);
 
     auto returnType = getLLVMType(fn->getRetTy());
 
     auto entry = h.create<llvm::BasicBlock>(*context, "entry", llvmFn);
-    auto body  = h.create<llvm::BasicBlock>(*context, "body", llvmFn);
+    auto body = h.create<llvm::BasicBlock>(*context, "body", llvmFn);
 
     // mark: entry block
     builder->SetInsertPoint(entry);
     setDebugInfoLoc(nullptr);
 
-    auto fnArgs       = fn->getArgs();
+    auto fnArgs = fn->getArgs();
     auto llvmArgsIter = llvmFn->arg_begin();
     for (auto varIter = fnArgs.begin(); varIter != fnArgs.end(); ++varIter) {
-        auto var     = varIter->second;
+        auto var = varIter->second;
         auto storage = builder->CreateAlloca(getLLVMType(var->getType()));
         builder->CreateStore(llvmArgsIter, storage);
 
@@ -52,18 +51,17 @@ llvm::Function *LLVMBuilder::buildBodiedFunction(llvm::Function *llvmFn,
         ctx->addSymbol(var->getId() + 1, storage);
 
         // debug info
-        auto src     = var->getSourceInfo();
+        auto src = var->getSourceInfo();
         auto dbgInfo = var->getDBGInfo();
 
-        auto file     = dbg.getFile(src->getPath());
-        auto scope    = llvmFn->getSubprogram();
+        auto file = dbg.getFile(src->getPath());
+        auto scope = llvmFn->getSubprogram();
         auto debugVar = dbg.builder->createParameterVariable(
             scope, var->getName(), var->getIndex(), file, dbgInfo->line,
             getDIType(var->getType().get()), dbg.debug);
         dbg.builder->insertDeclare(
             storage, debugVar, dbg.builder->createExpression(),
-            llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second,
-                                  scope),
+            llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
             entry);
 
         ++llvmArgsIter;
@@ -72,22 +70,21 @@ llvm::Function *LLVMBuilder::buildBodiedFunction(llvm::Function *llvmFn,
     // Generate all the used variables
     for (auto v : fn->getSymbols()) {
         auto llvmType = getLLVMType(v->getType());
-        auto storage  = builder->CreateAlloca(llvmType);
+        auto storage = builder->CreateAlloca(llvmType);
         ctx->addSymbol(v->getId(), storage);
 
         // debug info
-        auto src     = v->getSourceInfo();
+        auto src = v->getSourceInfo();
         auto dbgInfo = v->getDBGInfo();
 
-        auto file     = dbg.getFile(src->getPath());
-        auto scope    = llvmFn->getSubprogram();
+        auto file = dbg.getFile(src->getPath());
+        auto scope = llvmFn->getSubprogram();
         auto debugVar = dbg.builder->createAutoVariable(
             scope, v->getIdentifier(), file, dbgInfo->line,
             getDIType(v->getType().get()), dbg.debug);
         dbg.builder->insertDeclare(
             storage, debugVar, dbg.builder->createExpression(),
-            llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second,
-                                  scope),
+            llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
             entry);
     }
 

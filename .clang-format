@@ -1,8 +1,8 @@
+---
 IndentWidth: 4
 TabWidth: 4
 BasedOnStyle: LLVM
 UseTab: Never
-AlignConsecutiveAssignments: true
 AlignConsecutiveMacros: true
 AlignTrailingComments: true
 AllowShortFunctionsOnASingleLine: true
@@ -15,3 +15,4 @@ ReferenceAlignment: Left
 SortIncludes: CaseSensitive
 # SortUsingDeclarations: Lexicographic
 MaxEmptyLinesToKeep: 1
+ColumnLimit: 88

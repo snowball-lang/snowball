@@ -89,8 +89,7 @@ struct ConstantValue : public AcceptorExtend<ConstantValue, Base> {
   public:
     using AcceptorExtend::AcceptorExtend;
 
-    ConstantValue(ConstantType type, std::string value)
-        : type(type), value(value){};
+    ConstantValue(ConstantType type, std::string value) : type(type), value(value){};
 
     /// @return Get constant value
     std::string getValue() { return value; }
@@ -296,8 +295,7 @@ struct Index : public AcceptorExtend<Index, Base> {
     using AcceptorExtend::AcceptorExtend;
 
     Index(Base *base, Identifier *identifier, bool isStatic = false)
-        : base(base), isStatic(isStatic), identifier(identifier),
-          AcceptorExtend(){};
+        : base(base), isStatic(isStatic), identifier(identifier), AcceptorExtend(){};
 
     /// @return Get respective base value
     auto getBase() { return base; }
@@ -310,8 +308,7 @@ struct Index : public AcceptorExtend<Index, Base> {
 /**
  * This is the same as an identifier except that it will contain generic
  */
-struct GenericIdentifier
-    : public AcceptorExtend<GenericIdentifier, Identifier> {
+struct GenericIdentifier : public AcceptorExtend<GenericIdentifier, Identifier> {
 
     /// @brief Generics stored into the identifier
     std::vector<Expression::TypeRef *> generics;
@@ -320,8 +317,7 @@ struct GenericIdentifier
     using AcceptorExtend::AcceptorExtend;
     GenericIdentifier(const std::string& idnt,
                       std::vector<Expression::TypeRef *> generics = {})
-        : AcceptorExtend<GenericIdentifier, Identifier>(idnt),
-          generics(generics){};
+        : AcceptorExtend<GenericIdentifier, Identifier>(idnt), generics(generics){};
 
     /// @return generic list set to this identifier
     std::vector<Expression::TypeRef *> getGenerics() const;
@@ -684,8 +680,7 @@ struct WhileLoop : public AcceptorExtend<WhileLoop, Base> {
     bool doWhile = false;
 
   public:
-    explicit WhileLoop(Expression::Base *cond, Block *insts,
-                       bool isDoWhile = false)
+    explicit WhileLoop(Expression::Base *cond, Block *insts, bool isDoWhile = false)
         : cond(cond), insts(insts), doWhile(isDoWhile){};
 
     /// @return body block instructions to execute
@@ -801,8 +796,7 @@ struct ExternFnDef : public AcceptorExtend<ExternFnDef, FunctionDef> {
 
     template <class... Args>
     ExternFnDef(std::string externalName, Args&...args)
-        : externalName(externalName),
-          AcceptorExtend(std::forward<Args>(args)...){};
+        : externalName(externalName), AcceptorExtend(std::forward<Args>(args)...){};
 
     // Whether the function is external, it is true in this case
     virtual bool isExtern() override { return true; }
@@ -867,8 +861,7 @@ namespace Expression {
  * and BodiedFunction classes, allowing it to be used as an acceptor of visitors
  * and to have a body that can be evaluated when called.
  */
-struct LambdaFunction
-    : public AcceptorExtend<LambdaFunction, Expression::Base> {
+struct LambdaFunction : public AcceptorExtend<LambdaFunction, Expression::Base> {
   public:
     using AcceptorExtend::AcceptorExtend;
 
@@ -879,8 +872,7 @@ struct LambdaFunction
     /// @return the function assigned to this lambda interface
     auto getFunc() { return func; }
 
-    LambdaFunction(Statement::BodiedFunction *func)
-        : AcceptorExtend(), func(func){};
+    LambdaFunction(Statement::BodiedFunction *func) : AcceptorExtend(), func(func){};
 
     ACCEPT()
 };
@@ -896,8 +888,7 @@ template <typename Inst, class... Args> Inst *N(Args&&...args) {
 
     // Our template parameter must
     // be inherited from Node
-    static_assert(std::is_base_of<Node, Inst>::value,
-                  "Inst must inherit from Node");
+    static_assert(std::is_base_of<Node, Inst>::value, "Inst must inherit from Node");
 
     auto n = new Inst(std::forward<Args>(args)...);
     return n;

@@ -67,8 +67,7 @@ LLVMBuilder::LLVMBuilder(std::shared_ptr<ir::MainModule> mod) : iModule(mod) {
 }
 
 std::unique_ptr<llvm::Module> LLVMBuilder::newModule() {
-    auto m =
-        std::make_unique<llvm::Module>("snowball compiled project", *context);
+    auto m = std::make_unique<llvm::Module>("snowball compiled project", *context);
 
     target = llvm::EngineBuilder().selectTarget();
 
@@ -81,12 +80,12 @@ std::unique_ptr<llvm::Module> LLVMBuilder::newModule() {
     m->setSourceFileName(srcInfo->getPath());
 
     // debug info setup
-    dbg.builder        = std::make_unique<llvm::DIBuilder>(*m);
+    dbg.builder = std::make_unique<llvm::DIBuilder>(*m);
     llvm::DIFile *file = dbg.getFile(srcInfo->getPath());
-    dbg.unit           = dbg.builder->createCompileUnit(
-                  llvm::dwarf::DW_LANG_C, file, ("Snowball version " _SNOWBALL_VERSION),
-                  !dbg.debug, {},
-                  /*RV=*/0);
+    dbg.unit = dbg.builder->createCompileUnit(llvm::dwarf::DW_LANG_C, file,
+                                              ("Snowball version " _SNOWBALL_VERSION),
+                                              !dbg.debug, {},
+                                              /*RV=*/0);
 
     m->addModuleFlag(llvm::Module::Warning, "Debug Info Version",
                      llvm::DEBUG_METADATA_VERSION);
@@ -98,19 +97,17 @@ std::unique_ptr<llvm::Module> LLVMBuilder::newModule() {
     return m;
 }
 
-void LLVMBuilder::newContext() {
-    context = std::make_unique<llvm::LLVMContext>();
-}
+void LLVMBuilder::newContext() { context = std::make_unique<llvm::LLVMContext>(); }
 
 llvm::DIFile *LLVMBuilder::DebugInfo::getFile(const std::string& path) {
     std::string filename;
     std::string directory;
     auto pos = path.find_last_of("/");
     if (pos != std::string::npos) {
-        filename  = path.substr(pos + 1);
+        filename = path.substr(pos + 1);
         directory = path.substr(0, pos);
     } else {
-        filename  = path;
+        filename = path;
         directory = ".";
     }
     return builder->createFile(filename, directory);
@@ -118,11 +115,11 @@ llvm::DIFile *LLVMBuilder::DebugInfo::getFile(const std::string& path) {
 
 void LLVMBuilder::dump() { module->print(llvm::errs(), nullptr); }
 
-#define ITERATE_FUNCTIONS                                                      \
+#define ITERATE_FUNCTIONS                                                              \
     for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn)
-#define IS_MAIN                                                                \
-    (fn->get()->getName() == "main" &&                                         \
-     fn->get()->getPrivacy() == Syntax::Statement::Privacy::PUBLIC &&          \
+#define IS_MAIN                                                                        \
+    (fn->get()->getName() == "main" &&                                                 \
+     fn->get()->getPrivacy() == Syntax::Statement::Privacy::PUBLIC &&                  \
      iModule->isMain())
 void LLVMBuilder::codegen() {
 
@@ -159,9 +156,8 @@ void LLVMBuilder::codegen() {
             auto f = fn->get();
             if (!f->isDeclaration()) {
                 auto llvmFn = funcs.at(f->getId());
-                f->hasAttribute(Attributes::LLVM_FUNC)
-                    ? buildLLVMFunction(llvmFn, f)
-                    : buildBodiedFunction(llvmFn, f);
+                f->hasAttribute(Attributes::LLVM_FUNC) ? buildLLVMFunction(llvmFn, f)
+                                                       : buildBodiedFunction(llvmFn, f);
 
                 setPersonalityFunction(llvmFn);
             }

@@ -24,15 +24,14 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::BinaryOp) {
                 p_node->getDBGInfo(),
                 FMT("Variable '%s' is used before being assigned.",
                     i->getIdentifier().c_str()),
-                {.info =
-                     FMT("Variable '%s' has been declared but not assigned!",
-                         i->getIdentifier().c_str())});
+                {.info = FMT("Variable '%s' has been declared but not assigned!",
+                             i->getIdentifier().c_str())});
         } else if (auto x = utils::cast<Expression::Index>(p_node->left)) {
             if (auto s = utils::cast<Expression::Identifier>(x->getBase());
                 s != nullptr && s->getIdentifier() == "self") {
 
-                if (auto v = getIdentifier(
-                        "$self::" + x->getIdentifier()->getIdentifier())) {
+                if (auto v = getIdentifier("$self::" +
+                                           x->getIdentifier()->getIdentifier())) {
                     if (v->second == NotInitialized) {
                         this->scopes.front()[v->first] = Initialized;
                         this->state.inited.push_back(v->first);

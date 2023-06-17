@@ -6,28 +6,26 @@
 
 #include <assert.h>
 
-#define CHECK_PRIVACY(var)                                                     \
-    var = true;                                                                \
-    if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(                 \
-            peek(-4, true))) {                                                 \
-        isPublic = is<TokenType::KWORD_PUBLIC>(peek(-4, true));                \
+#define CHECK_PRIVACY(var)                                                             \
+    var = true;                                                                        \
+    if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-4, true))) {       \
+        isPublic = is<TokenType::KWORD_PUBLIC>(peek(-4, true));                        \
     }
 
 using namespace snowball::Syntax::Statement;
 
 namespace snowball::parser {
 
-FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator,
-                                   bool isLambda) {
+FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator, bool isLambda) {
     assert((is<TokenType::KWORD_FUNC>() && (!isConstructor && !isOperator)) ||
            (is<TokenType::IDENTIFIER>() && (isConstructor && !isOperator)) ||
            (isOperator));
 
     if (!isConstructor && (!isLambda)) next();
 
-    bool isExtern  = false;
-    bool isPublic  = false;
-    bool isStatic  = false;
+    bool isExtern = false;
+    bool isPublic = false;
+    bool isStatic = false;
     bool isVirtual = false;
 
     std::string name;
@@ -53,11 +51,10 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator,
         isPublic = pk.type == TokenType::KWORD_PUBLIC;
     }
 
-    auto dbg   = m_current.get_pos();
+    auto dbg = m_current.get_pos();
     auto width = 0;
 
-    if (is<TokenType::BRACKET_LSQUARED>() &&
-        is<TokenType::BRACKET_LSQUARED>(peek())) {
+    if (is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek())) {
         next();
 
         while (true) {
@@ -75,8 +72,7 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator,
             } else {
                 createError<ATTRIBUTE_ERROR>(
                     "Trying to use an undefined attribute!",
-                    {.info =
-                         FMT("Attribute '%s' is not defined!", attr.c_str())});
+                    {.info = FMT("Attribute '%s' is not defined!", attr.c_str())});
             }
 
             next();
@@ -251,13 +247,13 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator,
             createError<SYNTAX_ERROR>("Can't overload the '=' operator!");
         }
 
-        name       = services::OperatorService::getOperatorMangle(opType);
+        name = services::OperatorService::getOperatorMangle(opType);
         externName = name;
     } else if (isLambda) {
     } else {
         // Get the function name
         if (is<TokenType::IDENTIFIER>()) {
-            name  = m_current.to_string();
+            name = m_current.to_string();
             width = name.size();
 
             externName = name;
@@ -274,27 +270,24 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator,
             // We get a substring from the first and last
             // characters. This is because string literals
             // contains '"' inside them.
-            auto s     = m_current.to_string();
+            auto s = m_current.to_string();
             externName = s.substr(1, s.size() - 2);
 
             next();
             consume<TokenType::KWORD_AS>("'as' keyword");
 
             dbg = m_current.get_pos();
-            name =
-                assert_tok<TokenType::IDENTIFIER>("an identifier").to_string();
+            name = assert_tok<TokenType::IDENTIFIER>("an identifier").to_string();
 
             width = name.size();
         } else {
-            std::string e =
-                isExtern
-                    ? "Expected an identifier or a string constant but got "
-                      "'%s' while parsing an extern function declaration"
-                    : "Expected an identifier but got '%s' while parsing a "
-                      "function declaration";
+            std::string e = isExtern
+                                ? "Expected an identifier or a string constant but got "
+                                  "'%s' while parsing an extern function declaration"
+                                : "Expected an identifier but got '%s' while parsing a "
+                                  "function declaration";
 
-            createError<SYNTAX_ERROR>(
-                FMT(e.c_str(), m_current.to_string().c_str()));
+            createError<SYNTAX_ERROR>(FMT(e.c_str(), m_current.to_string().c_str()));
         }
     }
 
@@ -313,13 +306,13 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator,
         }
 
         generics = parseGenericParams();
-        width    = (m_current.get_pos().second - dbg.second);
+        width = (m_current.get_pos().second - dbg.second);
     }
 
     assert_tok<TokenType::BRACKET_LPARENT>("'('");
 
     int argumentCount = 0;
-    bool isVarArg     = false;
+    bool isVarArg = false;
 
     std::vector<Syntax::Expression::Param *> arguments;
     while (true) {
@@ -391,8 +384,8 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator,
         throwIfNotType();
         returnType = parseType();
     } else {
-        auto info  = new DBGSourceInfo(m_source_info, m_current.get_pos(),
-                                       m_current.get_width());
+        auto info = new DBGSourceInfo(m_source_info, m_current.get_pos(),
+                                      m_current.get_width());
         returnType = new Syntax::Expression::TypeRef(SN_VOID_TYPE, info);
     }
 
@@ -419,17 +412,15 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator,
                 } else if (is<TokenType::BRACKET_RCURLY>()) {
                     depth--;
                 } else if (is<TokenType::_EOF>()) {
-                    createError<SYNTAX_ERROR>(
-                        "Unterminated LLVM function block code!");
+                    createError<SYNTAX_ERROR>("Unterminated LLVM function block code!");
                 }
             }
 
             auto endPos = m_current.get_pos();
 
-            llvmCode = utils::getSubstringByRange(m_source_info->getSource(),
-                                                  startPos, endPos);
-            llvmCode =
-                llvmCode.substr(1, llvmCode.size() - 1); // Ignore speech marks
+            llvmCode = utils::getSubstringByRange(m_source_info->getSource(), startPos,
+                                                  endPos);
+            llvmCode = llvmCode.substr(1, llvmCode.size() - 1); // Ignore speech marks
         } else {
             block = parseBlock();
         }

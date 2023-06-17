@@ -35,9 +35,9 @@ std::string get_exe_folder() {
 std::string getSubstringByRange(const std::string& str,
                                 const std::pair<int, int>& start,
                                 const std::pair<int, int>& end) {
-    int startPos      = 0;
-    int endPos        = 0;
-    int currentLine   = 1;
+    int startPos = 0;
+    int endPos = 0;
+    int currentLine = 1;
     int currentColumn = 1;
 
     // Iterate over the string to find the starting and ending positions of the
@@ -82,9 +82,9 @@ std::string getUTF8FromIndex(const std::string& s, const int index) {
 }
 
 std::string get_lib_folder() {
-    fs::path home       = getenv("HOME");
+    fs::path home = getenv("HOME");
     fs::path exe_folder = home / (std::string)STATICLIB_DIR;
-    fs::path full_path  = exe_folder / _SNOWBALL_LIBRARY_DIR;
+    fs::path full_path = exe_folder / _SNOWBALL_LIBRARY_DIR;
 
     bool filepathExists = fs::is_directory(full_path);
     if (!filepathExists) {
@@ -95,8 +95,7 @@ std::string get_lib_folder() {
     return full_path;
 }
 
-void replaceAll(std::string& str, const std::string& from,
-                const std::string& to) {
+void replaceAll(std::string& str, const std::string& from, const std::string& to) {
     if (from.empty()) return;
     size_t start_pos = 0;
     while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
@@ -124,8 +123,8 @@ std::list<std::string> split(std::string str, std::string token) {
 
 bool endsWith(const std::string& mainStr, const std::string& toMatch) {
     return (mainStr.size() >= toMatch.size() &&
-            mainStr.compare(mainStr.size() - toMatch.size(), toMatch.size(),
-                            toMatch) == 0);
+            mainStr.compare(mainStr.size() - toMatch.size(), toMatch.size(), toMatch) ==
+                0);
 }
 
 bool startsWith(const std::string& str, const std::string& comp) {

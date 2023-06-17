@@ -46,7 +46,7 @@ class Lexer {
     std::string code;
 
     int cur_line = 1;
-    int cur_col  = 1;
+    int cur_col = 1;
 
     int char_ptr = 0;
 };

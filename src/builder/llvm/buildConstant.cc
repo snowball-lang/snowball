@@ -10,8 +10,7 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ir::StringValue *value) {
-    this->value =
-        builder->CreateGlobalStringPtr(value->getConstantValue(), ".str");
+    this->value = builder->CreateGlobalStringPtr(value->getConstantValue(), ".str");
 }
 
 void LLVMBuilder::visit(ir::BooleanValue *value) {
@@ -27,8 +26,8 @@ void LLVMBuilder::visit(ir::NumberValue *value) {
 }
 
 void LLVMBuilder::visit(ir::FloatValue *value) {
-    this->value = llvm::ConstantFP::get(builder->getDoubleTy(),
-                                        value->getConstantValue());
+    this->value =
+        llvm::ConstantFP::get(builder->getDoubleTy(), value->getConstantValue());
 }
 
 } // namespace codegen

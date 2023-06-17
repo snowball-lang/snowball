@@ -59,18 +59,17 @@ VISIT(Call) {
     // TODO: add support for "callable" type, not just function type
     if (std::dynamic_pointer_cast<types::FunctionType>(
             p_node->getCallee()->getType()) == nullptr) {
-        Syntax::E<TYPE_ERROR>(
-            p_node, FMT("Value trying to be called is not callable!"));
+        Syntax::E<TYPE_ERROR>(p_node,
+                              FMT("Value trying to be called is not callable!"));
     }
 
     if (auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee())) {
         if (services::OperatorService::isOperator(fn->getName(true)) &&
             args.size() == 2) {
 
-            if (services::OperatorService::opEquals<
-                    services::OperatorService::EQ>(fn->getName(true))) {
-                if (auto x = isMutable(args.at(0));
-                    (x.has_value() && (!x.value()))) {
+            if (services::OperatorService::opEquals<services::OperatorService::EQ>(
+                    fn->getName(true))) {
+                if (auto x = isMutable(args.at(0)); (x.has_value() && (!x.value()))) {
                     if (!p_node->isInitialization) {
                         Syntax::E<VARIABLE_ERROR>(
                             p_node,
@@ -135,26 +134,24 @@ VISIT(Cast) {
 
     if ((utils::dyn_cast<types::NumericType>(v->getType()) == nullptr) &&
         (utils::dyn_cast<types::NumericType>(t) != nullptr)) {
-        Syntax::E<TYPE_ERROR>(p_node,
-                              FMT("Can't create a casting operator from a "
-                                  "non-numerical type ('%s') "
-                                  "to a numerical ('%s')!",
-                                  t->getPrettyName().c_str(),
-                                  v->getType()->getPrettyName().c_str()));
+        Syntax::E<TYPE_ERROR>(p_node, FMT("Can't create a casting operator from a "
+                                          "non-numerical type ('%s') "
+                                          "to a numerical ('%s')!",
+                                          t->getPrettyName().c_str(),
+                                          v->getType()->getPrettyName().c_str()));
     } else if ((utils::dyn_cast<types::NumericType>(v->getType()) != nullptr) &&
                (utils::dyn_cast<types::NumericType>(t) == nullptr)) {
         Syntax::E<TYPE_ERROR>(
             p_node,
             FMT("Can't create a casting operator from a numerical type ('%s') "
                 "to a non-numerical type ('%s')!",
-                t->getPrettyName().c_str(),
-                v->getType()->getPrettyName().c_str()));
+                t->getPrettyName().c_str(), v->getType()->getPrettyName().c_str()));
     } else if (!v->getType()->canCast(t)) {
-        Syntax::E<TYPE_ERROR>(
-            p_node, FMT("Can't create a casting operator from value ('%s') "
-                        "to type '%s'!",
-                        t->getPrettyName().c_str(),
-                        v->getType()->getPrettyName().c_str()));
+        Syntax::E<TYPE_ERROR>(p_node,
+                              FMT("Can't create a casting operator from value ('%s') "
+                                  "to type '%s'!",
+                                  t->getPrettyName().c_str(),
+                                  v->getType()->getPrettyName().c_str()));
     }
 }
 
@@ -166,30 +163,25 @@ VISIT(Return) {
         p_node->getExpr()->visit(this);
     }
 
-    if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) !=
-         nullptr) &&
+    if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) != nullptr) &&
         (p_node->getExpr() != nullptr)) {
-        Syntax::E<TYPE_ERROR>(p_node,
-                              FMT("Nonvalue returning function cant have a "
-                                  "return containing an expression (%s)!",
-                                  p_node->getType()->getPrettyName().c_str()));
+        Syntax::E<TYPE_ERROR>(p_node, FMT("Nonvalue returning function cant have a "
+                                          "return containing an expression (%s)!",
+                                          p_node->getType()->getPrettyName().c_str()));
     }
 
-    if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) ==
-         nullptr) &&
+    if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) == nullptr) &&
         (p_node->getExpr() == nullptr)) {
-        Syntax::E<TYPE_ERROR>(p_node,
-                              FMT("Can't return \"nothing\" in a function with "
-                                  "non-void return type (%s)!",
-                                  fn->getRetTy()->getPrettyName().c_str()));
+        Syntax::E<TYPE_ERROR>(p_node, FMT("Can't return \"nothing\" in a function with "
+                                          "non-void return type (%s)!",
+                                          fn->getRetTy()->getPrettyName().c_str()));
     }
 
     if (!fn->getRetTy()->is(p_node->getType())) {
-        Syntax::E<TYPE_ERROR>(p_node,
-                              FMT("Return type (%s) does not match parent "
-                                  "function's return type (%s)!",
-                                  p_node->getType()->getPrettyName().c_str(),
-                                  fn->getRetTy()->getPrettyName().c_str()));
+        Syntax::E<TYPE_ERROR>(p_node, FMT("Return type (%s) does not match parent "
+                                          "function's return type (%s)!",
+                                          p_node->getType()->getPrettyName().c_str(),
+                                          fn->getRetTy()->getPrettyName().c_str()));
     }
 }
 

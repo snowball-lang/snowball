@@ -11,7 +11,7 @@ SN_TRANSFORMER_VISIT(Statement::TypeAlias) {
     auto uuid = ctx->createIdentifierName(name);
 
     auto state = ctx->saveState();
-    auto x     = ctx->cache->getType(uuid);
+    auto x = ctx->cache->getType(uuid);
 
     if (x.has_value() && (!ctx->generateFunction) ||
         ctx->cache->getTransformedType(uuid).has_value()) {
@@ -22,8 +22,7 @@ SN_TRANSFORMER_VISIT(Statement::TypeAlias) {
         if (!ctx->generateFunction) return;
         assert(ctx->cache->getTransformedType(uuid) == std::nullopt);
 
-        auto item =
-            std::make_shared<transform::Item>(transformType(p_node->getType()));
+        auto item = std::make_shared<transform::Item>(transformType(p_node->getType()));
         ctx->cache->setTransformedType(uuid, item);
 
         return;

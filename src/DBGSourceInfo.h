@@ -23,11 +23,10 @@ namespace snowball {
 class DBGSourceInfo : public SrcObject {
   public:
     DBGSourceInfo(SourceInfo *source_info, uint32_t p_line);
-    DBGSourceInfo(SourceInfo *source_info, std::pair<int, int> p_pos,
-                  uint32_t p_width);
+    DBGSourceInfo(SourceInfo *source_info, std::pair<int, int> p_pos, uint32_t p_width);
 
     uint32_t width = 0;
-    uint32_t line  = 0;
+    uint32_t line = 0;
     std::pair<int, int> pos;
 
     std::string line_before;

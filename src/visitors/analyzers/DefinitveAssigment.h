@@ -25,9 +25,8 @@
 #ifndef __SNOWBALL_DEFINITE_ASSIGMENT_ANALYZER_H_
 #define __SNOWBALL_DEFINITE_ASSIGMENT_ANALYZER_H_
 
-#define ACCEPT(Node) virtual void visit(Node *p_node) override;
-#define SN_DEFINITE_ASSIGMENT_VISIT(Node)                                      \
-    void DefiniteAssigment::visit(Node *p_node)
+#define ACCEPT(Node)                      virtual void visit(Node *p_node) override;
+#define SN_DEFINITE_ASSIGMENT_VISIT(Node) void DefiniteAssigment::visit(Node *p_node)
 
 namespace snowball {
 namespace Syntax {

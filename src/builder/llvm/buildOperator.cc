@@ -7,9 +7,9 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
-#define OPERATOR_INSTANCE(x, f)                                                \
-    case services::OperatorService::x:                                         \
-        this->value = builder->f(left, right);                                 \
+#define OPERATOR_INSTANCE(x, f)                                                        \
+    case services::OperatorService::x:                                                 \
+        this->value = builder->f(left, right);                                         \
         break;
 
 namespace snowball {
@@ -17,10 +17,10 @@ namespace codegen {
 
 bool LLVMBuilder::buildOperator(ir::Call *call) {
     if (auto fn = utils::dyn_cast<ir::Func>(call->getCallee())) {
-        auto args   = call->getArguments();
+        auto args = call->getArguments();
         auto opName = fn->getName(true);
         if (services::OperatorService::isOperator(opName) && args.size() == 2) {
-            auto left  = build(args.at(0).get());
+            auto left = build(args.at(0).get());
             auto right = build(args.at(1).get());
             if (utils::dyn_cast<types::Int8Type>(args.at(0)->getType()) ||
                 utils::dyn_cast<types::Int16Type>(args.at(0)->getType()) ||
@@ -68,10 +68,8 @@ bool LLVMBuilder::buildOperator(ir::Call *call) {
 
                 return true;
 
-            } else if (utils::dyn_cast<types::Float32Type>(
-                           args.at(0)->getType()) ||
-                       utils::dyn_cast<types::Float64Type>(
-                           args.at(0)->getType())) {
+            } else if (utils::dyn_cast<types::Float32Type>(args.at(0)->getType()) ||
+                       utils::dyn_cast<types::Float64Type>(args.at(0)->getType())) {
                 // this->value = builder->Create
                 switch (services::OperatorService::operatorID(opName)) {
                     OPERATOR_INSTANCE(EQEQ, CreateFCmpUEQ)

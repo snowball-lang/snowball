@@ -28,9 +28,7 @@ FunctionDef::FunctionDef(std::string name, Privacy::Status prvc)
     : AcceptorExtend<FunctionDef, Privacy>(prvc), name(name) {}
 
 std::vector<Expression::Param *> FunctionDef::getArgs() const { return args; }
-void FunctionDef::setArgs(std::vector<Expression::Param *> p_args) {
-    args = p_args;
-}
+void FunctionDef::setArgs(std::vector<Expression::Param *> p_args) { args = p_args; }
 
 Expression::TypeRef *FunctionDef::getRetType() const { return retType; };
 void FunctionDef::setRetType(Expression::TypeRef *p_type) { retType = p_type; }
@@ -42,8 +40,8 @@ bool FunctionDef::isVariadic() { return variadic; }
 void FunctionDef::setVariadic(bool v) { variadic = v; }
 bool FunctionDef::isStatic() { return _static; }
 void FunctionDef::setStatic(bool s) { _static = s; }
-ImportStmt::ImportStmt(const std::vector<std::string> path,
-                       const std::string package, ImportType ty)
+ImportStmt::ImportStmt(const std::vector<std::string> path, const std::string package,
+                       ImportType ty)
     : path(path), package(package), type(ty){};
 VariableDecl::VariableDecl(const std::string& name, Expression::Base *value,
                            bool isMutable)
@@ -59,8 +57,7 @@ void VariableDecl::setDefinedType(Expression::TypeRef *t) { definedType = t; }
 Return::Return(Expression::Base *value) : value(value){};
 Expression::Base *Return::getValue() const { return value; }
 
-ClassDef::ClassDef(std::string name, Expression::TypeRef *extends,
-                   Privacy::Status prvc)
+ClassDef::ClassDef(std::string name, Expression::TypeRef *extends, Privacy::Status prvc)
     : name(name), extends(extends), AcceptorExtend<ClassDef, Privacy>(prvc) {}
 void ClassDef::addFunction(FunctionDef *fnDef) { functions.push_back(fnDef); }
 void ClassDef::addVariable(VariableDecl *var) { variables.push_back(var); }

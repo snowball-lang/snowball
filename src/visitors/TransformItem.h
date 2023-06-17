@@ -17,9 +17,9 @@ namespace transform {
 class Item : public DBGObject {
     // Using a type definition incase we need to
     // change it.
-    using ValuePtr    = std::shared_ptr<ir::Value>;
+    using ValuePtr = std::shared_ptr<ir::Value>;
     using FunctionPtr = std::shared_ptr<ir::Func>;
-    using TypePtr     = std::shared_ptr<types::Type>;
+    using TypePtr = std::shared_ptr<types::Type>;
 
     // This value is the actual value gotten from
     // the stack.

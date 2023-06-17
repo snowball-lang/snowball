@@ -46,9 +46,7 @@ class NumericType : public AcceptorExtend<NumericType, PrimitiveType> {
 
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
-    bool canCast(Type *ty) const override {
-        return NumericType::isNumericType(ty);
-    }
+    bool canCast(Type *ty) const override { return NumericType::isNumericType(ty); }
 
   public:
     /**

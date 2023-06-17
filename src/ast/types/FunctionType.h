@@ -55,9 +55,8 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
     bool variadic = false;
 
   public:
-    FunctionType(std::vector<std::shared_ptr<Type>> args,
-                 std::shared_ptr<Type> retTy, bool isVariadic = false,
-                 const std::string& name = "<fn type>")
+    FunctionType(std::vector<std::shared_ptr<Type>> args, std::shared_ptr<Type> retTy,
+                 bool isVariadic = false, const std::string& name = "<fn type>")
         : AcceptorExtend(Kind::TYPE, name), args(args), retTy(retTy),
           variadic(isVariadic) {}
 

@@ -23,13 +23,12 @@ std::optional<std::shared_ptr<types::Type>> Transformer::deduceFunctionType(
     }
 
     // Check if the generic is used inside the variables
-    const auto it =
-        std::find_if(fnArgs.begin(), fnArgs.end(), [&](const auto& arg) {
-            return arg->getType()->getName() == generic->getName();
-        });
+    const auto it = std::find_if(fnArgs.begin(), fnArgs.end(), [&](const auto& arg) {
+        return arg->getType()->getName() == generic->getName();
+    });
 
     if (it != fnArgs.end()) {
-        const auto argIdx      = std::distance(fnArgs.begin(), it);
+        const auto argIdx = std::distance(fnArgs.begin(), it);
         const auto deducedType = arguments[argIdx];
         return deducedType;
     }
@@ -43,18 +42,17 @@ std::optional<std::shared_ptr<types::Type>> Transformer::deduceFunctionType(
 }
 
 std::pair<std::vector<std::shared_ptr<types::Type>>, std::string>
-Transformer::deduceFunction(
-    cacheComponents::Functions::FunctionStore s,
-    const std::vector<std::shared_ptr<types::Type>>& arguments,
-    const std::vector<std::shared_ptr<types::Type>>& generics) {
+Transformer::deduceFunction(cacheComponents::Functions::FunctionStore s,
+                            const std::vector<std::shared_ptr<types::Type>>& arguments,
+                            const std::vector<std::shared_ptr<types::Type>>& generics) {
     auto function = s.function;
-    auto fnArgs   = getActualFunctionArgs(s);
+    auto fnArgs = getActualFunctionArgs(s);
 
     std::vector<std::shared_ptr<types::Type>> deducedTypes;
 
     for (const auto& generic : function->getGenerics()) {
-        const auto deducedType = deduceFunctionType(generic, fnArgs, arguments,
-                                                    generics, deducedTypes);
+        const auto deducedType =
+            deduceFunctionType(generic, fnArgs, arguments, generics, deducedTypes);
         if (deducedType.has_value()) {
             deducedTypes.push_back(deducedType.value());
         } else {

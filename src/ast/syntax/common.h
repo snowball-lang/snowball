@@ -28,7 +28,7 @@ class Visitor;
 
 struct Node : public DBGObject {
   public:
-    Node()           = default;
+    Node() = default;
     ~Node() noexcept = default;
 
     virtual void accept(Syntax::Visitor *v) = 0;

@@ -33,7 +33,7 @@ class Compiler {
     exec::Options::Optimization opt_level;
 
     SourceInfo *_source_info;
-    bool _initialized  = false;
+    bool _initialized = false;
     bool _enabledTests = false;
 
     std::shared_ptr<ir::MainModule> module;

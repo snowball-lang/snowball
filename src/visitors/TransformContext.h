@@ -24,8 +24,7 @@ namespace Syntax {
 class TransformContext
     : public AcceptorExtend<TransformContext, ASTContext<transform::Item>> {
     // Current function being generated
-    std::shared_ptr<ir::Func> currentFunction =
-        std::shared_ptr<ir::Func>(nullptr);
+    std::shared_ptr<ir::Func> currentFunction = std::shared_ptr<ir::Func>(nullptr);
     // Current class being transformed
     std::shared_ptr<types::DefinedType> currentClass =
         std::shared_ptr<types::DefinedType>(nullptr);
@@ -61,21 +60,15 @@ class TransformContext
         return getPrimitiveType(SN_STR_TYPE);
     }
     /// @brief Get the char primitive type
-    std::shared_ptr<types::Type> getCharType() {
-        return getPrimitiveType(SN_CHR_TYPE);
-    }
+    std::shared_ptr<types::Type> getCharType() { return getPrimitiveType(SN_CHR_TYPE); }
     /// @brief Get the equivalent of `void*` type in C
     std::shared_ptr<types::Type> getCObjectType() {
         return getPrimitiveType(SN_COB_TYPE);
     }
     /// @brief Get the float 64 primitive type
-    std::shared_ptr<types::Type> getF64Type() {
-        return getPrimitiveType(SN_F64_TYPE);
-    }
+    std::shared_ptr<types::Type> getF64Type() { return getPrimitiveType(SN_F64_TYPE); }
     /// @brief Get the float 32 primitive type
-    std::shared_ptr<types::Type> getF32Type() {
-        return getPrimitiveType(SN_F32_TYPE);
-    }
+    std::shared_ptr<types::Type> getF32Type() { return getPrimitiveType(SN_F32_TYPE); }
 
     /// @brief Get the int 64 primitive type
     std::shared_ptr<types::Type> getInt64Type() {
@@ -102,15 +95,11 @@ class TransformContext
     /// @return The current function being generated
     auto getCurrentFunction() { return currentFunction; }
     /// @brief Set a new function that's being generated
-    void setCurrentFunction(std::shared_ptr<ir::Func> f) {
-        currentFunction = f;
-    }
+    void setCurrentFunction(std::shared_ptr<ir::Func> f) { currentFunction = f; }
     /// @return Get the parent class being transformed
     auto getCurrentClass() { return currentClass; }
     /// @brief Defined the new type being generated
-    void setCurrentClass(std::shared_ptr<types::DefinedType> c) {
-        currentClass = c;
-    }
+    void setCurrentClass(std::shared_ptr<types::DefinedType> c) { currentClass = c; }
 
     /**
      * @brief Add function to stack.
@@ -141,8 +130,7 @@ class TransformContext
      * @param includeBase Include things like: modules, classes, etc
      * @return std::string UUID for the name.
      */
-    std::string createIdentifierName(const std::string name,
-                                     bool includeBase = true);
+    std::string createIdentifierName(const std::string name, bool includeBase = true);
 
     ~TransformContext() noexcept = default;
 

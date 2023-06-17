@@ -26,7 +26,7 @@ std::string TransformContext::createIdentifierName(const std::string name,
 
     if (!includeBase && !alreadyGenerated) {
         auto currentModule = module->getUniqueName();
-        result             = currentModule + "." + name;
+        result = currentModule + "." + name;
     }
 
     return result;

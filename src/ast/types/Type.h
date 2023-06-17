@@ -39,10 +39,9 @@ class Type : public std::enable_shared_from_this<Type> {
 
   public:
     explicit Type(Kind p_kind) : kind(p_kind) {}
-    explicit Type(Kind p_kind, std::string p_name)
-        : kind(p_kind), name(p_name) {}
+    explicit Type(Kind p_kind, std::string p_name) : kind(p_kind), name(p_name) {}
 
-    Type(const Type&)            = delete;
+    Type(const Type&) = delete;
     Type& operator=(const Type&) = delete;
 
     ~Type() noexcept = default;
@@ -65,9 +64,7 @@ class Type : public std::enable_shared_from_this<Type> {
     /// @return if a type can be casted to this type
     virtual bool canCast(Type *ty) const { return false; }
     /// @brief std::shared_ptr support for Type::canCast
-    virtual bool canCast(std::shared_ptr<Type> t) const {
-        return canCast(t.get());
-    }
+    virtual bool canCast(std::shared_ptr<Type> t) const { return canCast(t.get()); }
 
     /// @brief Create a *new* pointer type with this type as base
     /// @return a std::shared_ptr<PointerType> but casted into a `Type`

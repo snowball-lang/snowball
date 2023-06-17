@@ -8,12 +8,12 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
-    auto definedType   = p_node->getDefinedType() == nullptr
-                             ? nullptr
-                             : transformType(p_node->getDefinedType());
-    auto variableName  = p_node->getName();
+    auto definedType = p_node->getDefinedType() == nullptr
+                           ? nullptr
+                           : transformType(p_node->getDefinedType());
+    auto variableName = p_node->getName();
     auto variableValue = p_node->getValue();
-    auto isMutable     = p_node->isMutable();
+    auto isMutable = p_node->isMutable();
     assert(p_node->isInitialized() || definedType != nullptr);
 
     if (ctx->getInScope(variableName, ctx->currentScope()).second) {
@@ -22,10 +22,9 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
                                       variableName.c_str()));
     }
 
-    auto var = ctx->module->N<ir::Variable>(p_node->getDBGInfo(), variableName,
-                                            false, isMutable);
-    auto item =
-        std::make_shared<transform::Item>(transform::Item::Type::VALUE, var);
+    auto var = ctx->module->N<ir::Variable>(p_node->getDBGInfo(), variableName, false,
+                                            isMutable);
+    auto item = std::make_shared<transform::Item>(transform::Item::Type::VALUE, var);
 
     // TODO: it should always be declared
     if (p_node->isInitialized()) {
@@ -34,8 +33,8 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
             p_node->getDBGInfo(), variableName, this->value, isMutable);
         varDecl->setId(var->getId());
         varDecl->setType(this->value->getType());
-        auto itemDecl = std::make_shared<transform::Item>(
-            transform::Item::Type::VALUE, varDecl);
+        auto itemDecl =
+            std::make_shared<transform::Item>(transform::Item::Type::VALUE, varDecl);
 
         if (auto f = ctx->getCurrentFunction().get()) {
             f->addSymbol(varDecl);
@@ -47,16 +46,16 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
             this->value = varDecl;
         } else {
             if (definedType->canCast(this->value->getType())) {
-                auto v = ctx->module->N<ir::Cast>(p_node->getDBGInfo(),
-                                                  this->value, definedType);
+                auto v = ctx->module->N<ir::Cast>(p_node->getDBGInfo(), this->value,
+                                                  definedType);
                 v->setType(definedType);
                 this->value = v;
             } else {
-                E<VARIABLE_ERROR>(
-                    p_node, FMT("Can't assign value with type '%s' to "
-                                "the variable with type '%s'!",
-                                this->value->getType()->getPrettyName().c_str(),
-                                definedType->getPrettyName().c_str()));
+                E<VARIABLE_ERROR>(p_node,
+                                  FMT("Can't assign value with type '%s' to "
+                                      "the variable with type '%s'!",
+                                      this->value->getType()->getPrettyName().c_str(),
+                                      definedType->getPrettyName().c_str()));
             }
         }
 
@@ -66,8 +65,8 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
             p_node->getDBGInfo(), variableName, nullptr, isMutable);
         varDecl->setId(var->getId());
         varDecl->setType(definedType);
-        auto itemDecl = std::make_shared<transform::Item>(
-            transform::Item::Type::VALUE, varDecl);
+        auto itemDecl =
+            std::make_shared<transform::Item>(transform::Item::Type::VALUE, varDecl);
 
         if (auto f = ctx->getCurrentFunction().get()) {
             f->addSymbol(varDecl);

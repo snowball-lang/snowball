@@ -19,8 +19,7 @@ Syntax::Statement::ImportStmt *Parser::parseImportStatement() {
 
     consume<TokenType::SYM_COLCOL>("'::'");
     std::vector<std::string> paths;
-    paths.push_back(
-        assert_tok<TokenType::IDENTIFIER>("an identifier").to_string());
+    paths.push_back(assert_tok<TokenType::IDENTIFIER>("an identifier").to_string());
     next();
 
     while (is<TokenType::SYM_COLCOL>()) {

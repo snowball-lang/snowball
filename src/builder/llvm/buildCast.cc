@@ -6,25 +6,22 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
-#define IS_INTEGER(x)                                                          \
-    (utils::dyn_cast<types::Int8Type>(x) ||                                    \
-     utils::dyn_cast<types::Int16Type>(x) ||                                   \
-     utils::dyn_cast<types::Int32Type>(x) ||                                   \
-     utils::dyn_cast<types::Int64Type>(x) ||                                   \
+#define IS_INTEGER(x)                                                                  \
+    (utils::dyn_cast<types::Int8Type>(x) || utils::dyn_cast<types::Int16Type>(x) ||    \
+     utils::dyn_cast<types::Int32Type>(x) || utils::dyn_cast<types::Int64Type>(x) ||   \
      utils::dyn_cast<types::BoolType>(x))
-#define IS_FLOAT(x)                                                            \
-    (utils::dyn_cast<types::Float32Type>(x) ||                                 \
-     utils::dyn_cast<types::Float64Type>(x))
+#define IS_FLOAT(x)                                                                    \
+    (utils::dyn_cast<types::Float32Type>(x) || utils::dyn_cast<types::Float64Type>(x))
 
 namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ir::Cast *c) {
-    auto v             = build(c->getExpr().get());
-    auto vTy           = c->getExpr()->getType();
+    auto v = build(c->getExpr().get());
+    auto vTy = c->getExpr()->getType();
     auto llvmValueType = getLLVMType(vTy);
-    auto ty            = c->getCastType();
-    auto llvmType      = getLLVMType(ty);
+    auto ty = c->getCastType();
+    auto llvmType = getLLVMType(ty);
 
     // Check if both types are integers
     if (IS_INTEGER(vTy) && IS_INTEGER(ty)) {

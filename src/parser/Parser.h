@@ -34,17 +34,15 @@ class Parser {
   private:
     /// @brief Utility function to throw errors
     template <Error E, class... Args>
-    [[nodiscard]] auto createError(std::pair<int, int> location,
-                                   std::string message, ErrorInfo info = {},
-                                   Args&&...args) const {
-        auto dbg_info = new DBGSourceInfo(m_source_info, location,
-                                          std::forward<Args>(args)...);
+    [[nodiscard]] auto createError(std::pair<int, int> location, std::string message,
+                                   ErrorInfo info = {}, Args&&...args) const {
+        auto dbg_info =
+            new DBGSourceInfo(m_source_info, location, std::forward<Args>(args)...);
         throw ParserError(E, message, dbg_info, info);
     }
 
     template <Error E>
-    [[nodiscard]] auto createError(const std::string msg,
-                                   ErrorInfo info = {}) const {
+    [[nodiscard]] auto createError(const std::string msg, ErrorInfo info = {}) const {
         auto pos = std::pair<int, int>(m_current.line, m_current.col);
         createError<E>(pos, msg, info, m_current.to_string().size());
     }
@@ -61,9 +59,7 @@ class Parser {
     /// Check if the current token is a certain token type
     template <TokenType Ty> bool is() const { return m_current.type == Ty; }
     // Check if a token type is a certain type
-    template <TokenType Ty> bool is(Token p_tok) const {
-        return p_tok.type == Ty;
-    }
+    template <TokenType Ty> bool is(Token p_tok) const { return p_tok.type == Ty; }
     // Comparison between 2 token types
     template <TokenType Ty> bool is(TokenType p_ty) const { return p_ty == Ty; }
 
@@ -165,8 +161,8 @@ class Parser {
      * type "=>" stmt
      */
     Syntax::Statement::FunctionDef *parseFunction(bool isConstructor = false,
-                                                  bool isOperator    = false,
-                                                  bool isLambda      = false);
+                                                  bool isOperator = false,
+                                                  bool isLambda = false);
 
     /**
      * params        ::=  "<" [param_args] ">"
@@ -246,7 +242,7 @@ class Parser {
      */
     Syntax::Expression::FunctionCall *
     parseFunctionCall(Syntax::Expression::Base *callee,
-                      TokenType terminator         = TokenType::BRACKET_RPARENT,
+                      TokenType terminator = TokenType::BRACKET_RPARENT,
                       std::string terminatorString = ")");
 
     /**

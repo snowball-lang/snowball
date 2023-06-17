@@ -17,8 +17,8 @@ namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     int numThreads = 4; // TODO: let user decide!
-    auto package   = p_node->getPackage();
-    auto path      = p_node->getPath();
+    auto package = p_node->getPackage();
+    auto path = p_node->getPath();
     // TODO: extension
     auto [filePath, error] = ctx->imports->getImportPath(package, path);
     if (!error.empty()) {
@@ -27,8 +27,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
 
     auto uuid = package == "Core" ? ctx->imports->CORE_UUID + path[0]
                                   : ctx->imports->getModuleUUID(filePath);
-    auto exportName =
-        ctx->imports->getExportName(filePath, p_node->getExportSymbol());
+    auto exportName = ctx->imports->getExportName(filePath, p_node->getExportSymbol());
 
     if (auto m = ctx->imports->cache->getModule(filePath)) {
         auto item = std::make_shared<Item>(m.value());
@@ -37,45 +36,44 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
         auto niceFullName =
             package + "::" + utils::join(path.begin(), path.end(), "::");
         auto mod = std::make_shared<ir::Module>(niceFullName, uuid);
-        auto st  = std::make_shared<ContextState::StackType>();
-        auto state =
-            std::shared_ptr<ContextState>(new ContextState(st, mod, nullptr));
+        auto st = std::make_shared<ContextState::StackType>();
+        auto state = std::shared_ptr<ContextState>(new ContextState(st, mod, nullptr));
 
-        ctx->withState(state, [numThreads = numThreads, filePath = filePath,
-                               this]() mutable {
-            std::ifstream ifs(filePath.string());
-            assert(!ifs.fail());
+        ctx->withState(state,
+                       [numThreads = numThreads, filePath = filePath, this]() mutable {
+                           std::ifstream ifs(filePath.string());
+                           assert(!ifs.fail());
 
-            std::string content((std::istreambuf_iterator<char>(ifs)),
-                                (std::istreambuf_iterator<char>()));
+                           std::string content((std::istreambuf_iterator<char>(ifs)),
+                                               (std::istreambuf_iterator<char>()));
 
-            auto srcInfo = new SourceInfo(content, filePath);
-            auto lexer   = new Lexer(srcInfo);
-            lexer->tokenize();
-            auto tokens = lexer->tokens;
+                           auto srcInfo = new SourceInfo(content, filePath);
+                           auto lexer = new Lexer(srcInfo);
+                           lexer->tokenize();
+                           auto tokens = lexer->tokens;
 
-            if (tokens.size() != 0) {
-                auto parser = new parser::Parser(tokens, srcInfo);
-                auto ast    = parser->parse();
-                ctx->module->setSourceInfo(srcInfo);
+                           if (tokens.size() != 0) {
+                               auto parser = new parser::Parser(tokens, srcInfo);
+                               auto ast = parser->parse();
+                               ctx->module->setSourceInfo(srcInfo);
 
-                std::vector<Syntax::Analyzer *> passes = {
-                    new Syntax::DefiniteAssigment(srcInfo)};
+                               std::vector<Syntax::Analyzer *> passes = {
+                                   new Syntax::DefiniteAssigment(srcInfo)};
 
-                for (auto pass : passes) {
-                    pass->run(ast);
-                }
+                               for (auto pass : passes) {
+                                   pass->run(ast);
+                               }
 
-                visit(ast);
+                               visit(ast);
 
-                auto typeChecker = new codegen::TypeChecker(ctx->module);
-                typeChecker->codegen();
+                               auto typeChecker = new codegen::TypeChecker(ctx->module);
+                               typeChecker->codegen();
 
-                // TODO: set a new module to the import cache
-                addModule(ctx->module);
-                ctx->imports->cache->addModule(filePath, ctx->module);
-            }
-        });
+                               // TODO: set a new module to the import cache
+                               addModule(ctx->module);
+                               ctx->imports->cache->addModule(filePath, ctx->module);
+                           }
+                       });
 
         auto item = std::make_shared<Item>(mod);
         ctx->addItem(exportName, item);

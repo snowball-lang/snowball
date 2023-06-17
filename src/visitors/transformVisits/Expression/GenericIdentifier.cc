@@ -8,10 +8,10 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Expression::GenericIdentifier) {
-    auto generics = utils::vector_iterate<Expression::TypeRef *,
-                                          std::shared_ptr<types::Type>>(
-        p_node->getGenerics(),
-        [&](Expression::TypeRef *ty) { return transformType(ty); });
+    auto generics =
+        utils::vector_iterate<Expression::TypeRef *, std::shared_ptr<types::Type>>(
+            p_node->getGenerics(),
+            [&](Expression::TypeRef *ty) { return transformType(ty); });
 
     auto name = p_node->getIdentifier();
     auto [value, type, functions, overloads, mod] =

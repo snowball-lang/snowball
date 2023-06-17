@@ -8,13 +8,11 @@
 namespace snowball {
 namespace codegen {
 
-void LLVMBuilder::addGlobalVariable(
-    std::shared_ptr<ir::VariableDeclaration> var) {
+void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var) {
     auto ty = getLLVMType(var->getType());
-    std::string name =
-        "gvar." + iModule->getUniqueName() + "::" + var->getIdentifier();
+    std::string name = "gvar." + iModule->getUniqueName() + "::" + var->getIdentifier();
     if (utils::dyn_cast<ir::ConstantValue>(var->getValue())) {
-        auto c    = build(var->getValue().get());
+        auto c = build(var->getValue().get());
         auto gvar = new llvm::GlobalVariable(
             /*Module=*/*module,
             /*Type=*/ty,
@@ -48,11 +46,11 @@ void LLVMBuilder::addGlobalVariable(
 
     builder->CreateStore(val, gvar);
 
-    auto srcInfo  = var->getDBGInfo();
-    auto file     = dbg.getFile(var->getSourceInfo()->getPath());
+    auto srcInfo = var->getDBGInfo();
+    auto file = dbg.getFile(var->getSourceInfo()->getPath());
     auto debugVar = dbg.builder->createGlobalVariableExpression(
-        dbg.unit, var->getIdentifier(), var->getIdentifier(), file,
-        srcInfo->line, getDIType(var->getType().get()), false);
+        dbg.unit, var->getIdentifier(), var->getIdentifier(), file, srcInfo->line,
+        getDIType(var->getType().get()), false);
     gvar->addDebugInfo(debugVar);
 }
 

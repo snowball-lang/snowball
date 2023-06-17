@@ -15,18 +15,16 @@ Func::Func(std::string identifier, bool declaration, bool variadic,
     : declaration(declaration), variadic(variadic), identifier(identifier),
       parent(parent) {}
 
-Func::Func(std::string identifier, Func::FunctionArgs arguments,
-           bool declaration, bool variadic,
-           std::shared_ptr<types::DefinedType> parent)
+Func::Func(std::string identifier, Func::FunctionArgs arguments, bool declaration,
+           bool variadic, std::shared_ptr<types::DefinedType> parent)
     : declaration(declaration), variadic(variadic), identifier(identifier),
       parent(parent) {
 
     setArgs(arguments);
 }
 
-Func::Func(std::string identifier, std::shared_ptr<Block> body,
-           bool declaration, bool variadic,
-           std::shared_ptr<types::DefinedType> parent)
+Func::Func(std::string identifier, std::shared_ptr<Block> body, bool declaration,
+           bool variadic, std::shared_ptr<types::DefinedType> parent)
     : declaration(declaration), variadic(variadic), identifier(identifier),
       parent(parent) {
 
@@ -44,15 +42,14 @@ Func::Func(std::string identifier, std::shared_ptr<Block> body,
 }
 
 bool Func::isConstructor() const {
-    return (services::OperatorService::opEquals<
-               services::OperatorService::CONSTRUCTOR>(identifier)) &&
+    return (services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(
+               identifier)) &&
            hasParent();
 }
 
 std::string Func::getIdentifier() { return identifier; }
 std::string Func::getName(bool ignoreOperators) {
-    if (services::OperatorService::isOperator(identifier) &&
-        (!ignoreOperators)) {
+    if (services::OperatorService::isOperator(identifier) && (!ignoreOperators)) {
         auto op = services::OperatorService::operatorID(identifier);
         return services::OperatorService::operatorName(op);
     }
@@ -76,8 +73,8 @@ bool Func::isExternal(std::string name) {
 
 std::string Func::getNiceName() {
     auto moduleBase = module->isMain() ? "" : module->getName() + "::";
-    auto base       = hasParent() ? (parent->getPrettyName() + "::") : "";
-    auto n          = moduleBase + base + getName();
+    auto base = hasParent() ? (parent->getPrettyName() + "::") : "";
+    auto n = moduleBase + base + getName();
 
     return n;
 }
@@ -87,28 +84,25 @@ std::string Func::getMangle() {
     if (!externalName.empty()) return externalName;
 
     // TODO: add class to here
-    auto base =
-        hasParent() ? parent->getMangledName() : module->getUniqueName();
+    auto base = hasParent() ? parent->getMangledName() : module->getUniqueName();
 
     auto name = getIdentifier();
     if (utils::endsWith(name, _SNOWBALL_LAMBDA_FUNCTIONS)) {
-        name = name.substr(0, name.size() - (_SNOWBALL_LAMBDA_SIZE + 1)) +
-               ".$LmbdF";
+        name = name.substr(0, name.size() - (_SNOWBALL_LAMBDA_SIZE + 1)) + ".$LmbdF";
     }
 
-    std::string prefix = (utils::startsWith(base, _SN_MANGLE_PREFIX)
-                              ? base
-                              : (_SN_MANGLE_PREFIX + base)) +
-                         +"&" + std::to_string(name.size()) +
-                         name // Function name with modules
-                         + "Cv" + std::to_string(getId()); // disambiguator
+    std::string prefix =
+        (utils::startsWith(base, _SN_MANGLE_PREFIX) ? base
+                                                    : (_SN_MANGLE_PREFIX + base)) +
+        +"&" + std::to_string(name.size()) + name // Function name with modules
+        + "Cv" + std::to_string(getId());         // disambiguator
 
     std::string mangledArgs = "Sa"; // Start args tag
 
     int argCounter = 1;
     for (auto a : arguments) {
-        mangledArgs += "A" + std::to_string(argCounter) +
-                       a.second->getType()->getMangledName();
+        mangledArgs +=
+            "A" + std::to_string(argCounter) + a.second->getType()->getMangledName();
         argCounter++;
     }
 

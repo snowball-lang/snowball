@@ -7,16 +7,15 @@
 
 namespace snowball::Syntax {
 
-TransformContext::TransformContext(std::shared_ptr<ir::Module> mod)
-    : AcceptorExtend() {
-    module  = mod;
-    cache   = new Cache();
+TransformContext::TransformContext(std::shared_ptr<ir::Module> mod) : AcceptorExtend() {
+    module = mod;
+    cache = new Cache();
     imports = std::make_unique<services::ImportService>();
 
     // Set all of the built in primitive types into the global stack
-#define DEFINE_TYPE(t)                                                         \
-    auto raw_##t = std::make_shared<types::t>();                               \
-    auto _##t    = std::make_shared<transform::Item>(raw_##t);                 \
+#define DEFINE_TYPE(t)                                                                 \
+    auto raw_##t = std::make_shared<types::t>();                                       \
+    auto _##t = std::make_shared<transform::Item>(raw_##t);                            \
     addItem(raw_##t->getName(), _##t);
 
     DEFINE_TYPE(BoolType)
@@ -39,7 +38,7 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod)
     for (auto ty : overloadTypes) {
         for (auto op : services::OperatorService::operators) {
             for (auto overload : overloadTypes) {
-                auto fn  = std::make_shared<ir::Func>("#" + op, true, false);
+                auto fn = std::make_shared<ir::Func>("#" + op, true, false);
                 auto arg = std::make_shared<ir::Argument>("other");
                 auto typeArgs = {ty, overload};
                 auto type = std::make_shared<types::FunctionType>(typeArgs, ty);
@@ -67,16 +66,16 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod)
 
     addItem(types::Int32Type::TYPE_ALIAS, _Int32Type);
 
-    auto coreMod     = std::make_shared<ir::Module>("Core", imports->CORE_UUID);
+    auto coreMod = std::make_shared<ir::Module>("Core", imports->CORE_UUID);
     auto coreModItem = std::make_shared<transform::Item>(coreMod);
     addItem("Core", coreModItem);
 
     std::vector<std::string> coreBuiltins = {"ReturnType"};
 
     for (auto builtin : coreBuiltins) {
-        auto baseUuid        = imports->CORE_UUID + "." + builtin;
-        auto transformedType = std::make_shared<types::DefinedType>(
-            builtin.c_str(), baseUuid, coreMod);
+        auto baseUuid = imports->CORE_UUID + "." + builtin;
+        auto transformedType =
+            std::make_shared<types::DefinedType>(builtin.c_str(), baseUuid, coreMod);
 
         auto item = std::make_shared<transform::Item>(transformedType);
         cache->setTransformedType(baseUuid, item);
@@ -96,10 +95,10 @@ std::shared_ptr<transform::ContextState> TransformContext::saveState() {
 /// @brief set a state to the current context
 void TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
     auto glob = this->stack->back();
-    auto st   = s->stack;
+    auto st = s->stack;
     st->emplace_back(glob);
 
-    this->stack  = st;
+    this->stack = st;
     this->module = s->module;
     setCurrentClass(s->currentClass);
 }

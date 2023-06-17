@@ -13,8 +13,7 @@
 namespace snowball {
 namespace Syntax {
 
-template <Error e, class Val>
-void E(Val item, std::string msg, ErrorInfo info = {}) {
+template <Error e, class Val> void E(Val item, std::string msg, ErrorInfo info = {}) {
     auto i = item->getDBGInfo();
     throw CompilerError(e, msg, i, info);
 }

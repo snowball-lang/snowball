@@ -13,12 +13,11 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
 
     if (value) {
         // TODO: it should not be getValue, it should have it's own value
-        auto val    = *value;
+        auto val = *value;
         auto casted = std::dynamic_pointer_cast<ir::Variable>(val);
         assert(casted != nullptr);
 
-        auto var =
-            ctx->module->N<ir::ValueExtract>(p_node->getDBGInfo(), casted);
+        auto var = ctx->module->N<ir::ValueExtract>(p_node->getDBGInfo(), casted);
         var->setType(casted->getType());
 
         this->value = var;
@@ -34,8 +33,7 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
         // There can only be 1 function overload without casting
         auto function = functions->at(0);
 
-        auto var =
-            ctx->module->N<ir::ValueExtract>(p_node->getDBGInfo(), function);
+        auto var = ctx->module->N<ir::ValueExtract>(p_node->getDBGInfo(), function);
         var->setType(function->getType());
 
         this->value = var;
@@ -47,9 +45,8 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
     } else if (overloads) {
         if (overloads->size() > 1) {
             E<VARIABLE_ERROR>(
-                p_node,
-                FMT("Identifier points to a function with multiple overloads!",
-                    p_node->getIdentifier().c_str()));
+                p_node, FMT("Identifier points to a function with multiple overloads!",
+                            p_node->getIdentifier().c_str()));
         }
 
         // There can only be 1 function overload without casting
@@ -57,9 +54,8 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
 
         // TODO: maybe avoid this if the function has default generics?
         if (function.function->getGenerics().size() > 0) {
-            E<VARIABLE_ERROR>(p_node,
-                              FMT("Function '%s' requires to have generics!",
-                                  p_node->getIdentifier().c_str()));
+            E<VARIABLE_ERROR>(p_node, FMT("Function '%s' requires to have generics!",
+                                          p_node->getIdentifier().c_str()));
         }
 
         assert(false);

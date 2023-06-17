@@ -23,15 +23,12 @@ class Func
     : public AcceptorExtend<Func, Value>,
       public IdMixin,
       public AcceptorExtend<Func, Syntax::Statement::Privacy>,
-      public AcceptorExtend<
-          Func, Syntax::Statement::GenericContainer<
-                    std::pair<std::string, std::shared_ptr<types::Type>>>>,
-      public AcceptorExtend<
-          Func, Syntax::Statement::AttributeHolder<Attributes::Fn>> {
+      public AcceptorExtend<Func, Syntax::Statement::GenericContainer<std::pair<
+                                      std::string, std::shared_ptr<types::Type>>>>,
+      public AcceptorExtend<Func, Syntax::Statement::AttributeHolder<Attributes::Fn>> {
   public:
     // Utility types
-    using FunctionArgs =
-        std::list<std::pair<std::string, std::shared_ptr<Argument>>>;
+    using FunctionArgs = std::list<std::pair<std::string, std::shared_ptr<Argument>>>;
 
   private:
     /// When a function is variadic, it means that
@@ -105,8 +102,8 @@ class Func
     bool used = false;
 
   public:
-#define DEFAULT                                                                \
-    bool declaration = false, bool variadic = false,                           \
+#define DEFAULT                                                                        \
+    bool declaration = false, bool variadic = false,                                   \
          std::shared_ptr<types::DefinedType> ty = nullptr
 
     explicit Func(std::string identifier, DEFAULT);
@@ -159,9 +156,7 @@ class Func
     auto& getRetTy() const { return retTy; }
 
     /// @brief Set a return type to a function
-    void addSymbol(std::shared_ptr<VariableDeclaration> v) {
-        symbols.emplace_back(v);
-    }
+    void addSymbol(std::shared_ptr<VariableDeclaration> v) { symbols.emplace_back(v); }
     /// @return Get function's return type.
     std::vector<std::shared_ptr<VariableDeclaration>>& getSymbols() {
         assert(!isDeclaration());
@@ -244,13 +239,13 @@ class Func
      *  arguments can be greater that the function arguments.
      */
     template <typename T>
-    static bool argumentSizesEqual(
-        std::vector<T> functionArgs,
-        const std::vector<std::shared_ptr<types::Type>> arguments,
-        bool isVariadic = false) {
+    static bool
+    argumentSizesEqual(std::vector<T> functionArgs,
+                       const std::vector<std::shared_ptr<types::Type>> arguments,
+                       bool isVariadic = false) {
         int numFunctionArgs = functionArgs.size();
         int numProvidedArgs = arguments.size();
-        int numDefaultArgs  = 0;
+        int numDefaultArgs = 0;
 
         // Calculate the number of default arguments
         if (numFunctionArgs > numProvidedArgs) {

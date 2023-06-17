@@ -74,10 +74,10 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * @note An Ok response (0x00) is not actually an error.
      */
     enum FunctionFetchResponse {
-        Ok                = 0x00,
-        NoMatchesFound    = 0x01,
+        Ok = 0x00,
+        NoMatchesFound = 0x01,
         AmbiguityConflict = 0x02,
-        _Unknown          = -0x01
+        _Unknown = -0x01
     };
     /**
      * Deduce a function from its template arguments and its call arguments.
@@ -105,10 +105,9 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * errors (empty string if there was success).
      */
     std::pair<std::vector<std::shared_ptr<types::Type>>, std::string>
-    deduceFunction(
-        cacheComponents::Functions::FunctionStore s,
-        const std::vector<std::shared_ptr<types::Type>>& arguments,
-        const std::vector<std::shared_ptr<types::Type>>& generics = {});
+    deduceFunction(cacheComponents::Functions::FunctionStore s,
+                   const std::vector<std::shared_ptr<types::Type>>& arguments,
+                   const std::vector<std::shared_ptr<types::Type>>& generics = {});
     /**
      * @brief Deduces a type for a generic function.
      *
@@ -117,12 +116,12 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * find it inside the provided function arguments based on type names.
      *  @c deduceFunction
      */
-    std::optional<std::shared_ptr<types::Type>> deduceFunctionType(
-        snowball::Syntax::Expression::Param *generic,
-        const std::vector<Expression::Param *>& fnArgs,
-        const std::vector<std::shared_ptr<types::Type>>& arguments,
-        const std::vector<std::shared_ptr<types::Type>>& generics,
-        const std::vector<std::shared_ptr<types::Type>>& deducedTypes);
+    std::optional<std::shared_ptr<types::Type>>
+    deduceFunctionType(snowball::Syntax::Expression::Param *generic,
+                       const std::vector<Expression::Param *>& fnArgs,
+                       const std::vector<std::shared_ptr<types::Type>>& arguments,
+                       const std::vector<std::shared_ptr<types::Type>>& generics,
+                       const std::vector<std::shared_ptr<types::Type>>& deducedTypes);
     /**
      * Generates a list of members that a `DefinedType` can have in C++.
      *
@@ -151,7 +150,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
         const std::vector<cacheComponents::Functions::FunctionStore>& overloads,
         const std::vector<std::shared_ptr<types::Type>>& arguments,
         const std::vector<Expression::TypeRef *>& generics = {},
-        bool isIdentifier                                  = false);
+        bool isIdentifier = false);
     /**
      * @brief Compares if generics equal by checking both classes.
      * @note (1) This function will also generate the @param ty generics if
@@ -160,15 +159,13 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * reference from the AST and an **already-generated** type fetched from the
      * cache.
      */
-    bool typeGenericsMatch(Expression::TypeRef *ty,
-                           std::shared_ptr<types::Type> comp);
+    bool typeGenericsMatch(Expression::TypeRef *ty, std::shared_ptr<types::Type> comp);
     /**
      * @brief It generates a type alias based on the `TypeRef` given to us.
      * @note It also executes some checks such as generic checks and more
      */
     std::shared_ptr<types::Type>
-    transformTypeAlias(const std::string& uuid,
-                       cacheComponents::Types::TypeStore& base,
+    transformTypeAlias(const std::string& uuid, cacheComponents::Types::TypeStore& base,
                        Expression::TypeRef *typeRef);
     /**
      * @brief Fetch a function and get it's most fitting overload.
@@ -181,26 +178,26 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      */
     std::shared_ptr<ir::Func> getFunction(
         DBGObject *dbgInfo,
-        std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-                   std::optional<std::shared_ptr<types::Type>>,
-                   std::optional<std::vector<std::shared_ptr<ir::Func>>>,
-                   std::optional<
-                       std::vector<cacheComponents::Functions::FunctionStore>>,
-                   std::optional<std::shared_ptr<ir::Module>>,
-                   bool /* Accept private members */>
+        std::tuple<
+            std::optional<std::shared_ptr<ir::Value>>,
+            std::optional<std::shared_ptr<types::Type>>,
+            std::optional<std::vector<std::shared_ptr<ir::Func>>>,
+            std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+            std::optional<std::shared_ptr<ir::Module>>,
+            bool /* Accept private members */>
             stores,
         const std::string& name,
         const std::vector<std::shared_ptr<types::Type>>& arguments,
         const std::vector<Expression::TypeRef *>& generics = {},
-        bool isIdentifier                                  = false);
+        bool isIdentifier = false);
     /**
      * @brief Transform a function that hasn't been generated yet.
      * @arg arguments - deduced arguments to unify
      */
-    std::shared_ptr<ir::Func> transformFunction(
-        cacheComponents::Functions::FunctionStore node,
-        const std::vector<std::shared_ptr<types::Type>>& deducedTypes,
-        bool isEntryPoint = false);
+    std::shared_ptr<ir::Func>
+    transformFunction(cacheComponents::Functions::FunctionStore node,
+                      const std::vector<std::shared_ptr<types::Type>>& deducedTypes,
+                      bool isEntryPoint = false);
     /**
      * @brief Gets the `real` user defined list for the arguments.
      * This is because, when generating a function, we add the "self" paramter
@@ -227,8 +224,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * @return A shared pointer to an ir::Value object representing the boolean
      * value of the given value object.
      */
-    std::shared_ptr<ir::Value>
-    getBooleanValue(std::shared_ptr<ir::Value> value);
+    std::shared_ptr<ir::Value> getBooleanValue(std::shared_ptr<ir::Value> value);
     /**
      * @brief It imports and generates the core runtime classes and functions
      *  for basic snowball functionality.
@@ -284,13 +280,13 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * @return A string containing the constructed base name.
      */
     std::string getNiceBaseName(
-        std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-                   std::optional<std::shared_ptr<types::Type>>,
-                   std::optional<std::vector<std::shared_ptr<ir::Func>>>,
-                   std::optional<
-                       std::vector<cacheComponents::Functions::FunctionStore>>,
-                   std::optional<std::shared_ptr<ir::Module>>,
-                   bool /* (Ignore) Accept private members */>
+        std::tuple<
+            std::optional<std::shared_ptr<ir::Value>>,
+            std::optional<std::shared_ptr<types::Type>>,
+            std::optional<std::vector<std::shared_ptr<ir::Func>>>,
+            std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+            std::optional<std::shared_ptr<ir::Module>>,
+            bool /* (Ignore) Accept private members */>
             base);
     /**
      * Check if the body of a function returns a value.
@@ -331,25 +327,23 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * @return It may return a value, a type pointer or a vector containing
      * function overloads
      */
-    std::pair<std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-                         std::optional<std::shared_ptr<types::Type>>,
-                         std::optional<std::vector<std::shared_ptr<ir::Func>>>,
-                         std::optional<std::vector<
-                             cacheComponents::Functions::FunctionStore>>,
-                         std::optional<std::shared_ptr<ir::Module>>,
-                         bool /* Accept private members */>,
+    std::pair<std::tuple<
+                  std::optional<std::shared_ptr<ir::Value>>,
+                  std::optional<std::shared_ptr<types::Type>>,
+                  std::optional<std::vector<std::shared_ptr<ir::Func>>>,
+                  std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+                  std::optional<std::shared_ptr<ir::Module>>,
+                  bool /* Accept private members */>,
               std::optional<std::shared_ptr<ir::Value>>>
-    getFromIndex(DBGSourceInfo *dbgInfo, Expression::Index *index,
-                 bool isStatic);
+    getFromIndex(DBGSourceInfo *dbgInfo, Expression::Index *index, bool isStatic);
     /**
      * @brief Get a value from an identifier.
      * @return It may return a value, a type pointer or a vector containing
      * function overloads
      */
-    StoreType
-    getFromIdentifier(DBGSourceInfo *dbgInfo, const std::string identifier,
-                      std::vector<Expression::TypeRef *> generics = {},
-                      const std::string uuid                      = "");
+    StoreType getFromIdentifier(DBGSourceInfo *dbgInfo, const std::string identifier,
+                                std::vector<Expression::TypeRef *> generics = {},
+                                const std::string uuid = "");
     /**
      * @brief Utility method to transform identifier nodes into a valid set
      *  of arguments for @fn getFromIdentifier

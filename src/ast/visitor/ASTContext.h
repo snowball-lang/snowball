@@ -20,7 +20,7 @@ namespace Syntax {
 
 template <typename T> class ASTContext {
 
-    using Item  = std::shared_ptr<T>;
+    using Item = std::shared_ptr<T>;
     using Scope = std::map<std::string, Item>;
 
   protected:
@@ -41,8 +41,7 @@ template <typename T> class ASTContext {
      *   if-stmt scope > fn scope > global scope
      *      (no vars)     (var a)   (types, etc)
      */
-    std::shared_ptr<std::deque<Scope>> stack =
-        std::make_shared<std::deque<Scope>>();
+    std::shared_ptr<std::deque<Scope>> stack = std::make_shared<std::deque<Scope>>();
 
   public:
     ASTContext() {
@@ -60,7 +59,7 @@ template <typename T> class ASTContext {
      */
     virtual void addItem(std::string name, Item& item) {
         DEBUG_SYMTABLE(1, FMT("    Adding to scope: %s", name.c_str()).c_str())
-        auto f   = stack->front();
+        auto f = stack->front();
         auto val = f.find(name);
 
         if (val != f.end()) {
@@ -93,8 +92,7 @@ template <typename T> class ASTContext {
      * @param s scope where search is performed
      * @return {item or nullptr, if found}
      */
-    virtual std::pair<Item, bool> getInScope(const std::string name,
-                                             Scope& s) const {
+    virtual std::pair<Item, bool> getInScope(const std::string name, Scope& s) const {
         auto val = s.find(name);
         if (val != s.end()) {
             return {val->second, true};

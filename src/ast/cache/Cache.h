@@ -23,8 +23,7 @@ namespace Syntax {
  * it can't affect for the real one. It also adds
  * some extra context to the ast visitor.
  */
-class Cache : public cacheComponents::Functions,
-              public cacheComponents::Types {};
+class Cache : public cacheComponents::Functions, public cacheComponents::Types {};
 
 } // namespace Syntax
 } // namespace snowball

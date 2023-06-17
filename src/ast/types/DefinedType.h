@@ -47,7 +47,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
         const std::string name;
         const std::shared_ptr<Type> type;
 
-        bool isMutable   = false;
+        bool isMutable = false;
         bool initialized = false;
     };
 
@@ -72,8 +72,8 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
   public:
     DefinedType(const std::string& name, const std::string uuid,
                 std::shared_ptr<ir::Module> module,
-                std::vector<ClassField *> fields            = {},
-                std::shared_ptr<DefinedType> parent         = nullptr,
+                std::vector<ClassField *> fields = {},
+                std::shared_ptr<DefinedType> parent = nullptr,
                 std::vector<std::shared_ptr<Type>> generics = {});
 
     /**

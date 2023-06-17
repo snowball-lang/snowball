@@ -18,8 +18,7 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
         isPublic = is<TokenType::KWORD_PUBLIC>(peek(-4, true));
     }
 
-    auto name =
-        assert_tok<TokenType::IDENTIFIER>("class identifier").to_string();
+    auto name = assert_tok<TokenType::IDENTIFIER>("class identifier").to_string();
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
 
     Syntax::Expression::TypeRef *parentClass = nullptr;
@@ -67,8 +66,7 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
                 auto pk = peek();
                 if (pk.type != TokenType::KWORD_FUNC &&
                     pk.type != TokenType::KWORD_VAR &&
-                    pk.type != TokenType::KWORD_OPERATOR &&
-                    (!IS_CONSTRUCTOR(pk))) {
+                    pk.type != TokenType::KWORD_OPERATOR && (!IS_CONSTRUCTOR(pk))) {
                     next();
                     createError<SYNTAX_ERROR>(
                         "expected keyword \"func\", \"let\", \"operator\" or a "
@@ -79,15 +77,13 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
 
             case TokenType::KWORD_FUNC: {
                 auto func = parseFunction();
-                func->setPrivacy(
-                    Syntax::Statement::Privacy::fromInt(!inPrivateScope));
+                func->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
                 cls->addFunction(func);
             } break;
 
             case TokenType::KWORD_OPERATOR: {
                 auto func = parseFunction(false, true);
-                func->setPrivacy(
-                    Syntax::Statement::Privacy::fromInt(!inPrivateScope));
+                func->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
                 // func->setName()
                 cls->addFunction(func);
             } break;
@@ -96,8 +92,7 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
                 auto pk = peek();
                 if (pk.type == TokenType::KWORD_STATIC) {
                     next();
-                    createError<ARGUMENT_ERROR>(
-                        "Virtual methods can't be static!");
+                    createError<ARGUMENT_ERROR>("Virtual methods can't be static!");
                 } else if (pk.type != TokenType::KWORD_FUNC) {
                     next();
                     createError<SYNTAX_ERROR>(
@@ -126,7 +121,7 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
             case TokenType::IDENTIFIER: {
                 if (IS_CONSTRUCTOR(m_current)) {
                     hasConstructor = true;
-                    auto func      = parseFunction(true);
+                    auto func = parseFunction(true);
                     func->setPrivacy(
                         Syntax::Statement::Privacy::fromInt(!inPrivateScope));
                     func->setName(services::OperatorService::getOperatorMangle(
@@ -138,9 +133,9 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
             }
 
             default: {
-                createError<SYNTAX_ERROR>(FMT(
-                    "Unexpected token ('%s') found while parsing class body",
-                    m_current.to_string().c_str()));
+                createError<SYNTAX_ERROR>(
+                    FMT("Unexpected token ('%s') found while parsing class body",
+                        m_current.to_string().c_str()));
             }
         }
     }

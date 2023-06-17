@@ -81,9 +81,8 @@ void LLVMBuilder::optimizeModule(exec::Options::Optimization o) {
     llvm::TargetLibraryInfoImpl tlii(moduleTriple);
 
     // cross register them too?
-    pass_builder.crossRegisterProxies(
-        loop_analysis_manager, function_analysis_manager,
-        c_gscc_analysis_manager, module_analysis_manager);
+    pass_builder.crossRegisterProxies(loop_analysis_manager, function_analysis_manager,
+                                      c_gscc_analysis_manager, module_analysis_manager);
     function_analysis_manager.registerPass(
         [&] { return llvm::TargetLibraryAnalysis(tlii); });
 
@@ -117,8 +116,7 @@ void LLVMBuilder::optimizeModule(exec::Options::Optimization o) {
             pass_builder.buildO0DefaultPipeline(llvm::OptimizationLevel::O0);
         mpm.run(*module, module_analysis_manager);
     } else {
-        llvm::ModulePassManager mpm =
-            pass_builder.buildPerModuleDefaultPipeline(level);
+        llvm::ModulePassManager mpm = pass_builder.buildPerModuleDefaultPipeline(level);
         mpm.run(*module, module_analysis_manager);
     }
 

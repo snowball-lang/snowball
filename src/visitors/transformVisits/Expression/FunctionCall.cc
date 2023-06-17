@@ -9,52 +9,47 @@ namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     auto [argValues, argTypes] =
-        utils::vectors_iterate<Syntax::Expression::Base *,
-                               std::shared_ptr<ir::Value>,
+        utils::vectors_iterate<Syntax::Expression::Base *, std::shared_ptr<ir::Value>,
                                std::shared_ptr<types::Type>>(
             p_node->getArguments(),
             [&](Syntax::Expression::Base *a)
-                -> std::pair<std::shared_ptr<ir::Value>,
-                             std::shared_ptr<types::Type>> {
+                -> std::pair<std::shared_ptr<ir::Value>, std::shared_ptr<types::Type>> {
                 a->accept(this);
                 auto lkj = utils::cast<Expression::Identifier>(a);
                 return {this->value, this->value->getType()};
             });
 
-    auto callee                   = p_node->getCallee();
+    auto callee = p_node->getCallee();
     std::shared_ptr<ir::Value> fn = nullptr;
     if (auto x = utils::cast<Expression::Identifier>(callee)) {
-        auto g        = utils::cast<Expression::GenericIdentifier>(callee);
-        auto generics = (g != nullptr) ? g->getGenerics()
-                                       : std::vector<Expression::TypeRef *>{};
+        auto g = utils::cast<Expression::GenericIdentifier>(callee);
+        auto generics =
+            (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef *>{};
 
-        auto r =
-            getFromIdentifier(x->getDBGInfo(), x->getIdentifier(), generics);
+        auto r = getFromIdentifier(x->getDBGInfo(), x->getIdentifier(), generics);
         auto rTuple = std::tuple_cat(r, std::make_tuple(true));
-        fn          = getFunction(p_node, rTuple, x->getNiceName(), argTypes,
+        fn = getFunction(p_node, rTuple, x->getNiceName(), argTypes,
                          (g != nullptr) ? g->getGenerics()
-                                                 : std::vector<Expression::TypeRef *>{});
+                                        : std::vector<Expression::TypeRef *>{});
     } else if (auto x = utils::cast<Expression::Index>(callee)) {
         bool inModule = false;
         std::string baseName;
         auto indexBase = x->getBase();
-        auto [r, b]    = getFromIndex(x->getDBGInfo(), x, x->isStatic);
+        auto [r, b] = getFromIndex(x->getDBGInfo(), x, x->isStatic);
 
         if (auto b = utils::cast<Expression::Identifier>(indexBase)) {
             auto r = getFromIdentifier(b);
             auto m = std::get<4>(r);
-            utils::assert_value_type<std::shared_ptr<ir::Module>&,
-                                     decltype(*m)>();
+            utils::assert_value_type<std::shared_ptr<ir::Module>&, decltype(*m)>();
 
             inModule = m.has_value();
-            auto ir  = std::tuple_cat(r, std::make_tuple(false));
+            auto ir = std::tuple_cat(r, std::make_tuple(false));
 
             baseName = getNiceBaseName(ir) + "::";
         } else if (auto b = utils::cast<Expression::Index>(indexBase)) {
             auto [r, _] = getFromIndex(b->getDBGInfo(), b, b->isStatic);
-            auto m      = std::get<4>(r);
-            utils::assert_value_type<std::shared_ptr<ir::Module>&,
-                                     decltype(*m)>();
+            auto m = std::get<4>(r);
+            utils::assert_value_type<std::shared_ptr<ir::Module>&, decltype(*m)>();
 
             inModule = m.has_value();
             baseName = getNiceBaseName(r) + "::";
@@ -62,15 +57,14 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
             baseName = transformType(b)->getPrettyName() + "::";
         }
 
-        auto g        = utils::cast<Expression::GenericIdentifier>(indexBase);
-        auto generics = (g != nullptr) ? g->getGenerics()
-                                       : std::vector<Expression::TypeRef *>{};
+        auto g = utils::cast<Expression::GenericIdentifier>(indexBase);
+        auto generics =
+            (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef *>{};
 
         auto name = baseName + x->getIdentifier()->getNiceName();
-        auto c =
-            getFunction(p_node, r, name, argTypes,
-                        (g != nullptr) ? g->getGenerics()
-                                       : std::vector<Expression::TypeRef *>{});
+        auto c = getFunction(p_node, r, name, argTypes,
+                             (g != nullptr) ? g->getGenerics()
+                                            : std::vector<Expression::TypeRef *>{});
 
         // TODO: actually check if base is a module with: "getFromIdentifier" of
         // the module
@@ -96,16 +90,15 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     }
 
     auto call = ctx->module->N<ir::Call>(p_node->getDBGInfo(), fn, argValues);
-    if (auto t =
-            std::dynamic_pointer_cast<types::FunctionType>(fn->getType())) {
+    if (auto t = std::dynamic_pointer_cast<types::FunctionType>(fn->getType())) {
         if (((t->getArgs().size() <= argTypes.size()) ||
              (t->getArgs().size() <= argTypes.size() && t->isVariadic()))) {
             for (int i = 0; i < t->getArgs().size(); i++) {
-                auto arg     = argTypes.at(i);
+                auto arg = argTypes.at(i);
                 auto deduced = t->getArgs().at(i);
                 if (deduced->is(arg)) { /* ok */
                 } else if (deduced->canCast(arg)) {
-                    auto val  = argValues.at(i);
+                    auto val = argValues.at(i);
                     auto cast = ctx->module->N<ir::Cast>(nullptr, val, arg);
                     cast->setType(arg);
                     argValues.at(i) = cast;
@@ -141,27 +134,24 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
 
                 ctx->withState(
                     ctx->cache->getFunctionState(func->getId()),
-                    [&argTypes  = argTypes, this, call, args,
-                     &argValues = argValues, p_node]() {
+                    [&argTypes = argTypes, this, call, args, &argValues = argValues,
+                     p_node]() {
                         // add default arguments
-                        for (auto arg =
-                                 std::next(args.begin(), argTypes.size());
+                        for (auto arg = std::next(args.begin(), argTypes.size());
                              arg != args.end(); ++arg) {
                             if (arg->second->hasDefaultValue()) {
                                 arg->second->getDefaultValue()->accept(this);
                                 auto ty = this->value->getType();
                                 if (!arg->second->getType()->is(ty)) {
                                     if (!arg->second->getType()->canCast(ty)) {
-                                        E<TYPE_ERROR>(
-                                            arg->second,
-                                            FMT("Function default value does "
-                                                "not match argument ('%s') "
-                                                "type!",
-                                                arg->first.c_str()));
+                                        E<TYPE_ERROR>(arg->second,
+                                                      FMT("Function default value does "
+                                                          "not match argument ('%s') "
+                                                          "type!",
+                                                          arg->first.c_str()));
                                     }
 
-                                    assert(false &&
-                                           "TODO: cast default argument");
+                                    assert(false && "TODO: cast default argument");
                                 } else {
                                     argTypes.push_back(ty);
                                     argValues.push_back(this->value);
@@ -188,11 +178,10 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
             }
         }
 
-        if ((argValues.size() == 2) &&
-            utils::startsWith(func->getName(true), "#")) {
-            auto t   = argValues.at(0)->getType();
+        if ((argValues.size() == 2) && utils::startsWith(func->getName(true), "#")) {
+            auto t = argValues.at(0)->getType();
             auto val = argValues.at(1);
-            auto t2  = val->getType();
+            auto t2 = val->getType();
             if (types::NumericType::isNumericType(t.get())) {
                 if (t->is(t2)) {
                 } else if (t->canCast(t2)) {
@@ -207,7 +196,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     // Set an updated version of the call arguments
     call->setArguments(argValues);
     call->isInitialization = p_node->isInitialization;
-    this->value            = call;
+    this->value = call;
 }
 
 } // namespace Syntax

@@ -16,10 +16,9 @@ namespace codegen {
 void LLVMBuilder::setDebugInfoLoc(ir::Value *v) {
     if (v) {
         auto info = v->getDBGInfo();
-        if (auto f = ctx->getCurrentFunction();
-            (info != nullptr && f != nullptr)) {
-            auto loc = llvm::DILocation::get(
-                *context, info->line, info->pos.second, f->getSubprogram());
+        if (auto f = ctx->getCurrentFunction(); (info != nullptr && f != nullptr)) {
+            auto loc = llvm::DILocation::get(*context, info->line, info->pos.second,
+                                             f->getSubprogram());
 
             builder->SetCurrentDebugLocation(loc);
             return;

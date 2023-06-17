@@ -25,7 +25,7 @@ namespace fs = std::filesystem;
 namespace snowball {
 Compiler::Compiler(std::string p_code, std::string p_path) {
     _code = p_code;
-    _cwd  = fs::current_path();
+    _cwd = fs::current_path();
     _path = _path / p_path;
 }
 
@@ -35,17 +35,15 @@ void Compiler::initialize() {
 
     config_folder = _cwd / ".sn";
     if (!fs::exists(config_folder)) fs::create_directory(config_folder);
-    if (!fs::exists(config_folder / "bin"))
-        fs::create_directory(config_folder / "bin");
+    if (!fs::exists(config_folder / "bin")) fs::create_directory(config_folder / "bin");
 }
 
 void Compiler::compile(bool verbose) {
     if (!_initialized) {
-        throw SNError(Error::COMPILER_ERROR,
-                      "Compiler has not been initialized!");
+        throw SNError(Error::COMPILER_ERROR, "Compiler has not been initialized!");
     }
 #if _SNOWBALL_TIMERS_DEBUG == 0
-#define SHOW_STATUS(status)                                                    \
+#define SHOW_STATUS(status)                                                            \
     if (!verbose) status;
 #else
 #define SHOW_STATUS(_)
@@ -75,8 +73,7 @@ void Compiler::compile(bool verbose) {
             auto parser = new parser::Parser(tokens, _source_info);
 #if _SNOWBALL_TIMERS_DEBUG
             parser::Parser::NodeVec ast;
-            DEBUG_TIMER("Parser: %fs",
-                        utils::_timer([&] { ast = parser->parse(); }));
+            DEBUG_TIMER("Parser: %fs", utils::_timer([&] { ast = parser->parse(); }));
 #else
             auto ast = parser->parse();
 #endif
@@ -101,8 +98,7 @@ void Compiler::compile(bool verbose) {
 
             SHOW_STATUS(Logger::compiling(Logger::progress(0.60)))
             auto simplifier = new Syntax::Transformer(
-                mainModule->downcasted_shared_from_this<ir::Module>(),
-                _source_info);
+                mainModule->downcasted_shared_from_this<ir::Module>(), _source_info);
 #if _SNOWBALL_TIMERS_DEBUG
             DEBUG_TIMER("Simplifier: %fs",
                         utils::_timer([&] { simplifier->visit(ast); }));
@@ -173,7 +169,7 @@ int Compiler::emit_binary(std::string out, bool log) {
     // object file written, now invoke llc
     // int ldstatus = execl(LD_PATH, "", NULL);
     std::string ldcommand;
-    std::string p_input              = Logger::format("%s.so", out.c_str());
+    std::string p_input = Logger::format("%s.so", out.c_str());
     std::vector<std::string> ld_args = LD_ARGS();
 
     for (int i = 0; i < ld_args.size(); i++) {
@@ -192,22 +188,20 @@ int Compiler::emit_binary(std::string out, bool log) {
     ldcommand += " -o";
     ldcommand += out;
 
-    DEBUG_CODEGEN("Invoking linker (" LD_PATH " with stdlib at " STATICLIB_DIR
-                  ")");
+    DEBUG_CODEGEN("Invoking linker (" LD_PATH " with stdlib at " STATICLIB_DIR ")");
     DEBUG_CODEGEN("Linker command: %s", ldcommand.c_str());
 
     int ldstatus = system(ldcommand.c_str());
     if (ldstatus) {
         remove(objfile.c_str());
-        throw SNError(LINKER_ERR, Logger::format("Linking with " LD_PATH
-                                                 " failed with code %d",
-                                                 ldstatus));
+        throw SNError(
+            LINKER_ERR,
+            Logger::format("Linking with " LD_PATH " failed with code %d", ldstatus));
     }
 
     if (log)
-        Logger::success(
-            Logger::format("Snowball project successfully compiled! 🥳", BGRN,
-                           RESET, out.c_str()));
+        Logger::success(Logger::format("Snowball project successfully compiled! 🥳",
+                                       BGRN, RESET, out.c_str()));
 
     // clean up
     DEBUG_CODEGEN("Cleaning up object file... (%s)", objfile.c_str());
@@ -218,6 +212,6 @@ int Compiler::emit_binary(std::string out, bool log) {
 
 void Compiler::create_source_info() {
     SourceInfo *source_info = new SourceInfo(_code, _path);
-    _source_info            = source_info;
+    _source_info = source_info;
 }
 } // namespace snowball

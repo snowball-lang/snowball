@@ -18,8 +18,7 @@ namespace snowball {
 namespace types {
 
 std::string FunctionType::getPrettyName() const {
-    auto stringArgs =
-        Syntax::Expression::FunctionCall::getArgumentsAsString(args);
+    auto stringArgs = Syntax::Expression::FunctionCall::getArgumentsAsString(args);
     auto stringRet = retTy->getPrettyName();
 
     if (variadic) {
@@ -32,12 +31,11 @@ std::string FunctionType::getPrettyName() const {
 
 bool FunctionType::is(FunctionType *other) {
     auto otherArgs = other->getArgs();
-    bool argumentsEqual =
-        std::all_of(otherArgs.begin(), otherArgs.end(),
-                    [&, idx = 0](std::shared_ptr<Type> i) mutable {
-                        return args.at(idx)->is(i);
-                        idx++;
-                    });
+    bool argumentsEqual = std::all_of(otherArgs.begin(), otherArgs.end(),
+                                      [&, idx = 0](std::shared_ptr<Type> i) mutable {
+                                          return args.at(idx)->is(i);
+                                          idx++;
+                                      });
 
     auto returnEquals = retTy->is(other->getRetType());
     return returnEquals && argumentsEqual;
@@ -57,13 +55,13 @@ std::string FunctionType::getMangledName() const {
 }
 
 FunctionType *FunctionType::from(ir::Func *fn) {
-    auto args = utils::map<std::string, std::shared_ptr<ir::Argument>,
-                           std::shared_ptr<Type>>(
-        fn->getArgs(), [&](auto map) -> auto{ return map.second->getType(); });
+    auto args =
+        utils::map<std::string, std::shared_ptr<ir::Argument>, std::shared_ptr<Type>>(
+            fn->getArgs(), [&](auto map) -> auto{ return map.second->getType(); });
 
     if (fn->hasParent() && (!fn->isStatic()) &&
-        services::OperatorService::opEquals<
-            services::OperatorService::CONSTRUCTOR>(fn->getName())) {
+        services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(
+            fn->getName())) {
         args.insert(args.begin(), fn->getParent());
     }
 

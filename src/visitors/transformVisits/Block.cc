@@ -14,7 +14,7 @@ SN_TRANSFORMER_VISIT(Block) {
             insts.push_back(this->value);
         }
 
-        auto val    = ctx->module->N<ir::Block>(p_node->getDBGInfo(), insts);
+        auto val = ctx->module->N<ir::Block>(p_node->getDBGInfo(), insts);
         this->value = val;
     });
 }

@@ -25,8 +25,7 @@ std::vector<Syntax::Node *> Parser::parse() {
             case TokenType::KWORD_PUBLIC:
             case TokenType::KWORD_PRIVATE: {
                 auto pk = peek();
-                if (!is<TokenType::KWORD_FUNC>(pk) &&
-                    !is<TokenType::KWORD_VAR>(pk) &&
+                if (!is<TokenType::KWORD_FUNC>(pk) && !is<TokenType::KWORD_VAR>(pk) &&
                     !is<TokenType::KWORD_TYPEDEF>(pk) &&
                     !is<TokenType::KWORD_STATIC>(pk) &&
                     !is<TokenType::KWORD_CLASS>(pk) &&
@@ -87,9 +86,8 @@ std::vector<Syntax::Node *> Parser::parse() {
             }
 
             default:
-                createError<SYNTAX_ERROR>(
-                    FMT("Unexpected token found: %s%s%s", BLU,
-                        m_current.to_string().c_str(), RESET));
+                createError<SYNTAX_ERROR>(FMT("Unexpected token found: %s%s%s", BLU,
+                                              m_current.to_string().c_str(), RESET));
         }
 
         if (keep_parsing) next();

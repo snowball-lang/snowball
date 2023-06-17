@@ -21,12 +21,11 @@ DefinedType::DefinedType(const std::string& name, const std::string uuid,
                          std::vector<ClassField *> fields,
                          std::shared_ptr<DefinedType> parent,
                          std::vector<std::shared_ptr<Type>> generics)
-    : AcceptorExtend(Kind::CLASS, name), uuid(uuid), parent(parent),
-      module(module), fields(fields), generics(generics) {}
+    : AcceptorExtend(Kind::CLASS, name), uuid(uuid), parent(parent), module(module),
+      fields(fields), generics(generics) {}
 
-DefinedType::ClassField::ClassField(const std::string& name,
-                                    std::shared_ptr<Type> type, Privacy privacy,
-                                    bool isMutable)
+DefinedType::ClassField::ClassField(const std::string& name, std::shared_ptr<Type> type,
+                                    Privacy privacy, bool isMutable)
     : name(name), type(type), Syntax::Statement::Privacy(privacy),
       isMutable(isMutable) {}
 std::string DefinedType::getUUID() const { return uuid; }
@@ -43,18 +42,17 @@ std::vector<std::shared_ptr<ir::Func>> DefinedType::getVTable() const {
 
 bool DefinedType::is(DefinedType *other) {
     auto otherArgs = other->getGenerics();
-    bool argumentsEqual =
-        std::all_of(otherArgs.begin(), otherArgs.end(),
-                    [&, idx = 0](std::shared_ptr<Type> i) mutable {
-                        return generics.at(idx)->is(i);
-                        idx++;
-                    });
+    bool argumentsEqual = std::all_of(otherArgs.begin(), otherArgs.end(),
+                                      [&, idx = 0](std::shared_ptr<Type> i) mutable {
+                                          return generics.at(idx)->is(i);
+                                          idx++;
+                                      });
     return (other->getUUID() == uuid) && argumentsEqual;
 }
 
 std::string DefinedType::getPrettyName() const {
     auto base = module->isMain() ? "" : module->getName() + "::";
-    auto n    = base + getName();
+    auto n = base + getName();
 
     std::string genericString; // Start args tag
     if (generics.size() > 0) {
@@ -71,11 +69,10 @@ std::string DefinedType::getPrettyName() const {
 }
 
 std::string DefinedType::getMangledName() const {
-    auto base  = module->getUniqueName();
+    auto base = module->getUniqueName();
     auto _tyID = static_cast<ir::id_t>(getId());
     std::stringstream sstm;
-    sstm << (utils::startsWith(base, _SN_MANGLE_PREFIX) ? base
-                                                        : _SN_MANGLE_PREFIX)
+    sstm << (utils::startsWith(base, _SN_MANGLE_PREFIX) ? base : _SN_MANGLE_PREFIX)
          << "&" << name.size() << name << "Cv" << _tyID;
     auto prefix = sstm.str(); // disambiguator
 
@@ -85,8 +82,7 @@ std::string DefinedType::getMangledName() const {
 
         int argCounter = 1;
         for (auto g : generics) {
-            mangledArgs +=
-                "A" + std::to_string(argCounter) + g->getMangledName();
+            mangledArgs += "A" + std::to_string(argCounter) + g->getMangledName();
             argCounter++;
         }
     }

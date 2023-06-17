@@ -14,13 +14,12 @@ Parser::buildOperatorTree(std::vector<Syntax::Expression::Base *>& exprs) {
     assert(exprs.size() > 0);
 
     while (exprs.size() > 1) {
-        int next_op        = -1;
+        int next_op = -1;
         int min_precedence = 0xFFFFF;
-        bool unary         = false;
+        bool unary = false;
 
         for (int i = 0; i < (int)exprs.size(); i++) {
-            auto expression =
-                static_cast<Syntax::Expression::BinaryOp *>(exprs[i]);
+            auto expression = static_cast<Syntax::Expression::BinaryOp *>(exprs[i]);
             if (!expression->isOperator) {
                 continue;
             }
@@ -116,8 +115,8 @@ Parser::buildOperatorTree(std::vector<Syntax::Expression::Base *>& exprs) {
 
             if (precedence < min_precedence) {
                 min_precedence = precedence;
-                next_op        = i;
-                auto op        = expression->op_type;
+                next_op = i;
+                auto op = expression->op_type;
                 unary = (op == Syntax::Expression::BinaryOp::OpType::NOT ||
                          op == Syntax::Expression::BinaryOp::OpType::BIT_NOT ||
                          op == Syntax::Expression::BinaryOp::OpType::UPLUS ||
@@ -133,15 +132,13 @@ Parser::buildOperatorTree(std::vector<Syntax::Expression::Base *>& exprs) {
             int next_expr = next_op;
             while (exprs[next_expr]->isOperator) {
                 if (++next_expr == exprs.size()) {
-                    createError<SYNTAX_ERROR>(
-                        exprs[next_expr]->getDBGInfo()->pos,
-                        "expected an expression.", {}, 1);
+                    createError<SYNTAX_ERROR>(exprs[next_expr]->getDBGInfo()->pos,
+                                              "expected an expression.", {}, 1);
                 }
             }
 
             for (int i = next_expr - 1; i >= next_op; i--) {
-                auto e =
-                    utils::cast<Syntax::Expression::BinaryOp>(exprs[(size_t)i]);
+                auto e = utils::cast<Syntax::Expression::BinaryOp>(exprs[(size_t)i]);
                 auto op_node = new Syntax::Expression::BinaryOp(e->op_type);
                 op_node->setDBGInfo(e->getDBGInfo());
 
@@ -156,15 +153,13 @@ Parser::buildOperatorTree(std::vector<Syntax::Expression::Base *>& exprs) {
             ASSERT(!(exprs[(size_t)next_op + 1]->isOperator) &&
                    !(exprs[(size_t)next_op - 1]->isOperator));
 
-            auto e = utils::cast<Syntax::Expression::BinaryOp>(
-                exprs[(size_t)next_op]);
+            auto e = utils::cast<Syntax::Expression::BinaryOp>(exprs[(size_t)next_op]);
             auto op_node = new Syntax::Expression::BinaryOp(e->op_type);
             op_node->setDBGInfo(e->getDBGInfo());
 
             if (exprs[(size_t)next_op - 1]->isOperator) {
                 if (Syntax::Expression::BinaryOp::is_assignment(
-                        (Syntax::Expression::BinaryOp *)
-                            exprs[(size_t)next_op - 1])) {
+                        (Syntax::Expression::BinaryOp *)exprs[(size_t)next_op - 1])) {
                     createError<SYNTAX_ERROR>(
                         exprs[(size_t)next_op - 1]->getDBGInfo()->pos,
                         "unexpected assignment.", {}, 1);
@@ -173,15 +168,14 @@ Parser::buildOperatorTree(std::vector<Syntax::Expression::Base *>& exprs) {
 
             if (exprs[(size_t)next_op + 1]->isOperator) {
                 if (Syntax::Expression::BinaryOp::is_assignment(
-                        (Syntax::Expression::BinaryOp *)
-                            exprs[(size_t)next_op + 1])) {
+                        (Syntax::Expression::BinaryOp *)exprs[(size_t)next_op + 1])) {
                     createError<SYNTAX_ERROR>(
                         exprs[(size_t)next_op + 1]->getDBGInfo()->pos,
                         "unexpected assignment.", {}, 1);
                 }
             }
 
-            op_node->left  = exprs[(size_t)next_op - 1];
+            op_node->left = exprs[(size_t)next_op - 1];
             op_node->right = exprs[(size_t)next_op + 1];
 
             exprs.at((size_t)next_op - 1) = op_node;

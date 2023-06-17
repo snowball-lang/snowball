@@ -18,8 +18,7 @@ namespace ir {
 
 /// @brief This is just an utility class that we use in order to access
 ///  an argument.
-class Argument : public IdMixin,
-                 public AcceptorExtend<VariableDeclaration, Value> {
+class Argument : public IdMixin, public AcceptorExtend<VariableDeclaration, Value> {
     /// @brief Argument index respective to the parent function arg list
     int index = 0;
     /// @brief Argument name used to identify where it's pointing to

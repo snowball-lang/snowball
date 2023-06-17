@@ -8,16 +8,14 @@ namespace Syntax {
 
 std::shared_ptr<ir::Func> Transformer::getFunction(
     DBGObject *dbgInfo,
-    std::tuple<
-        std::optional<std::shared_ptr<ir::Value>>,
-        std::optional<std::shared_ptr<types::Type>>,
-        std::optional<std::vector<std::shared_ptr<ir::Func>>>,
-        std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
-        std::optional<std::shared_ptr<ir::Module>>,
-        bool /* Accept private members */>
+    std::tuple<std::optional<std::shared_ptr<ir::Value>>,
+               std::optional<std::shared_ptr<types::Type>>,
+               std::optional<std::vector<std::shared_ptr<ir::Func>>>,
+               std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+               std::optional<std::shared_ptr<ir::Module>>,
+               bool /* Accept private members */>
         store,
-    const std::string& name,
-    const std::vector<std::shared_ptr<types::Type>>& arguments,
+    const std::string& name, const std::vector<std::shared_ptr<types::Type>>& arguments,
     const std::vector<Expression::TypeRef *>& generics, bool isIdentifier) {
 
     auto [val, ty, functions, overloads, mod, canBePrivate] = store;
@@ -34,23 +32,21 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
     };
 
     if (val) {
-        auto v      = *val;
+        auto v = *val;
         auto fnType = utils::dyn_cast<types::FunctionType>(v->getType());
         if (fnType == nullptr) {
-            E<TYPE_ERROR>(
-                dbgInfo,
-                FMT("Value with name '%s' (with type: '%s') is not callable!",
-                    name.c_str(), v->getType()->getPrettyName().c_str()));
+            E<TYPE_ERROR>(dbgInfo,
+                          FMT("Value with name '%s' (with type: '%s') is not callable!",
+                              name.c_str(), v->getType()->getPrettyName().c_str()));
         }
 
         auto argsVector = fnType->getArgs();
-        size_t numArgs  = arguments.size();
+        size_t numArgs = arguments.size();
 
-        if (ir::Func::argumentSizesEqual(argsVector, arguments,
-                                         fnType->isVariadic())) {
+        if (ir::Func::argumentSizesEqual(argsVector, arguments, fnType->isVariadic())) {
             bool equal = true;
-            for (auto arg = argsVector.begin();
-                 ((arg != argsVector.end()) && (equal)); ++arg) {
+            for (auto arg = argsVector.begin(); ((arg != argsVector.end()) && (equal));
+                 ++arg) {
                 auto i = std::distance(argsVector.begin(), arg);
                 if (i < numArgs) {
                     equal = (*arg)->is(arguments.at(i));
@@ -77,26 +73,23 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
     } else if (ty) {
         // TODO: Call smth like Type::operator ()(..args)
         E<TYPE_ERROR>(
-            dbgInfo, FMT("Value with name '%s' is a type that can't be called!",
-                         name.c_str()));
-    } else if (mod) {
-        E<TYPE_ERROR>(
             dbgInfo,
-            FMT("Silly billy, you can't call modules! ('%s')", name.c_str()));
+            FMT("Value with name '%s' is a type that can't be called!", name.c_str()));
+    } else if (mod) {
+        E<TYPE_ERROR>(dbgInfo,
+                      FMT("Silly billy, you can't call modules! ('%s')", name.c_str()));
     }
 
     std::shared_ptr<ir::Func> foundFunction = nullptr;
     if (functions) {
         for (auto f : *functions) {
-            auto args       = f->getArgs(true);
-            size_t numArgs  = arguments.size();
+            auto args = f->getArgs(true);
+            size_t numArgs = arguments.size();
             auto argsVector = utils::list_to_vector(args);
 
-            if (ir::Func::argumentSizesEqual(argsVector, arguments,
-                                             f->isVariadic())) {
+            if (ir::Func::argumentSizesEqual(argsVector, arguments, f->isVariadic())) {
                 bool equal = true;
-                for (auto arg = args.begin(); ((arg != args.end()) && equal);
-                     ++arg) {
+                for (auto arg = args.begin(); ((arg != args.end()) && equal); ++arg) {
                     auto i = std::distance(args.begin(), arg);
                     if (i < numArgs) {
                         equal = arg->second->getType()->is(arguments.at(i));
@@ -117,7 +110,7 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
                     for (auto generic = fnGenerics.begin();
                          (generic != fnGenerics.end()) && equal; ++generic) {
                         auto i = std::distance(fnGenerics.begin(), generic);
-                        equal  = (*generic).second->is(generics.at(i));
+                        equal = (*generic).second->is(generics.at(i));
                     }
 
                     // TODO: check for ambiguous functions
@@ -131,8 +124,7 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
     }
 
     auto [fn, args, res] = getBestFittingFunction(
-        overloads.has_value() ? overloads.value()
-                              : std::vector<Cache::FunctionStore>{},
+        overloads.has_value() ? overloads.value() : std::vector<Cache::FunctionStore>{},
         arguments, generics, isIdentifier);
 
     switch (res) {
@@ -151,8 +143,8 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
             }
 
             if ((!overloads.has_value()) && (!functions.has_value())) {
-                E<VARIABLE_ERROR>(dbgInfo, FMT("Function '%s' is not defined!",
-                                               name.c_str()));
+                E<VARIABLE_ERROR>(dbgInfo,
+                                  FMT("Function '%s' is not defined!", name.c_str()));
             }
 
             // TODO: throw a note that sugest's it's correct types: only if
@@ -161,16 +153,14 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
             E<VARIABLE_ERROR>(
                 dbgInfo,
                 FMT("No matches found for %s(%s)", name.c_str(),
-                    Expression::FunctionCall::getArgumentsAsString(arguments)
-                        .c_str()));
+                    Expression::FunctionCall::getArgumentsAsString(arguments).c_str()));
         }
 
         case AmbiguityConflict: {
             E<TYPE_ERROR>(
                 dbgInfo,
                 FMT("Function ambiguity for %s(%s)", name.c_str(),
-                    Expression::FunctionCall::getArgumentsAsString(arguments)
-                        .c_str()));
+                    Expression::FunctionCall::getArgumentsAsString(arguments).c_str()));
         }
 
         default:

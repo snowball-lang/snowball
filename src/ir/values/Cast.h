@@ -26,8 +26,7 @@ class Cast : public AcceptorExtend<Cast, Value> {
     std::shared_ptr<types::Type> castType;
 
   public:
-    explicit Cast(std::shared_ptr<Value> expr,
-                  std::shared_ptr<types::Type> castType)
+    explicit Cast(std::shared_ptr<Value> expr, std::shared_ptr<types::Type> castType)
         : expr(expr), castType(castType){};
 
     /// @return value to cast

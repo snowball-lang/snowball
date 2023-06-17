@@ -40,8 +40,8 @@ int LLVMBuilder::emitObjectFile(std::string out, bool log) {
     llvm::raw_fd_ostream dest(out, EC, llvm::sys::fs::OF_None);
 
     if (EC) {
-        throw SNError(Error::IO_ERROR, Logger::format("Could not open file: %s",
-                                                      EC.message().c_str()));
+        throw SNError(Error::IO_ERROR,
+                      Logger::format("Could not open file: %s", EC.message().c_str()));
     }
 
     llvm::legacy::PassManager pass;
@@ -52,8 +52,7 @@ int LLVMBuilder::emitObjectFile(std::string out, bool log) {
                       "TargetMachine can't emit a file of this type");
     }
 
-    if (log)
-        Logger::success("Snowball project compiled to an object file! ✨\n");
+    if (log) Logger::success("Snowball project compiled to an object file! ✨\n");
 
     pass.run(*module.get());
     dest.flush();

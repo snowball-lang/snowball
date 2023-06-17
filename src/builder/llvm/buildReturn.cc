@@ -17,7 +17,7 @@ void LLVMBuilder::visit(ir::Return *ret) {
     llvm::Value *val = nullptr;
     if (exprValue != nullptr) {
         auto expr = build(exprValue.get());
-        val       = builder->CreateRet(expr);
+        val = builder->CreateRet(expr);
     } else {
         val = builder->CreateRetVoid();
     }

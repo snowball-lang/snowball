@@ -34,11 +34,10 @@ std::string ImportService::getModuleUUID(std::filesystem::path path) {
 }
 
 std::pair<fs::path, std::string>
-ImportService::getImportPath(const std::string package,
-                             std::vector<std::string> path,
+ImportService::getImportPath(const std::string package, std::vector<std::string> path,
                              const std::string extension) {
     auto packagePath = getPackagePath(package);
-    bool isPackage   = package == "$";
+    bool isPackage = package == "$";
 
     fs::path definedPath;
     for (auto p : path) {
@@ -46,7 +45,7 @@ ImportService::getImportPath(const std::string package,
     }
 
     fs::path fullPath = packagePath / definedPath;
-    bool exists       = false;
+    bool exists = false;
     std::string foundExt;
 
     for (auto ext : extensions) {
@@ -61,8 +60,7 @@ ImportService::getImportPath(const std::string package,
     }
 
     if (!exists) {
-        return {"", FMT("Coudn't find module imported from '%s'!",
-                        package.c_str())};
+        return {"", FMT("Coudn't find module imported from '%s'!", package.c_str())};
     }
 
     return {fullPath.string() + foundExt, ""};

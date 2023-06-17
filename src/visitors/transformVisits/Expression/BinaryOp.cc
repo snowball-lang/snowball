@@ -16,7 +16,7 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
         assert(false && "TODO:");
     }
 
-    auto left  = p_node->left;
+    auto left = p_node->left;
     auto right = p_node->right;
 
     auto ident = Syntax::N<Expression::Identifier>(
