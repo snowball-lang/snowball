@@ -52,7 +52,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
             fn->setStatic(node->isStatic());
             fn->setGenerics(fnGenerics);
 
-            if (auto c = ctx->getCurrentClass()) {
+            if (auto c = ctx->getCurrentClass(true)) {
                 if (node->isVirtual()) {
                     fn->setVirtualIndex(c->addVtableItem(fn));
                 }
@@ -64,7 +64,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
             if (fn->isConstructor()) {
                 auto a = ctx->module->N<ir::Argument>(node->getDBGInfo(), "self", 0,
                                                       nullptr);
-                a->setType(ctx->getCurrentClass()->getPointerTo());
+                a->setType(ctx->getCurrentClass(true)->getPointerTo());
                 newArgs.emplace(newArgs.begin(), std::make_pair("self", a));
             }
 

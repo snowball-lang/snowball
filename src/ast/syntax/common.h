@@ -153,6 +153,8 @@ struct Param {
 
     /// @brief Get parameter's type
     TypeRef *getType() const { return type; };
+    /// @brief Set parameter's type
+    void setType(TypeRef* ty) { type = ty; };
     /// @brief Set the default value to the parameter
     void setDefaultValue(Base *b) { defaultValue = b; }
 

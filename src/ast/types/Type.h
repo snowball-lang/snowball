@@ -48,9 +48,9 @@ class Type : public std::enable_shared_from_this<Type> {
 
     /// @param other another type
     /// @return true if this type is equal to the argument type
-    virtual bool is(Type *other) { return getName() == other->getName(); }
+    virtual bool is(Type *other) const { return getName() == other->getName(); }
     /// @brief normal Type::is but with std::shared_ptr support
-    virtual bool is(std::shared_ptr<Type> other) { return is(other.get()); }
+    virtual bool is(std::shared_ptr<Type> other) const { return is(other.get()); }
 
     /// @return current's type name
     virtual std::string getName() const { return name; }

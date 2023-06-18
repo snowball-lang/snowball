@@ -55,10 +55,26 @@ Transformer::transformClass(const std::string& uuid,
                 ctx->addItem(generic->getName(), item);
             }
 
+            auto baseUuid = ctx->createIdentifierName(ty->getName());
+            auto existantTypes = ctx->cache->getTransformedType(uuid);
+
+            auto _uuid =
+                baseUuid + ":" +
+                utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
+
             std::shared_ptr<types::DefinedType> parentType = nullptr;
             if (auto x = ty->getParent()) {
-                // TODO: check if it's actually a defined type
-                parentType = utils::dyn_cast<types::DefinedType>(transformType(x));
+                auto parent = transformType(x);
+                parentType = utils::dyn_cast<types::DefinedType>(parent);
+                if (!parentType) {
+                    E<TYPE_ERROR>(
+                        ty,
+                        FMT("Can't inherit from '%s'", parent->getPrettyName().c_str()),
+                        {.info = "This is not a defined type!",
+                         .help = "Classes can only inherit from other classes or "
+                                 "structs meaning\n that you can't inherit from `i32` "
+                                 "(for example) because it's\n a primitive type."});
+                }
             }
 
             auto basedName = getNameWithBase(ty->getName());
@@ -73,15 +89,8 @@ Transformer::transformClass(const std::string& uuid,
                 });
 
             auto fields = getMemberList(ty->getVariables(), baseFields, parentType);
-
-            auto baseUuid = ctx->createIdentifierName(ty->getName());
-            auto existantTypes = ctx->cache->getTransformedType(uuid);
-
-            auto _uuid =
-                baseUuid + ":" +
-                utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
             transformedType = std::make_shared<types::DefinedType>(
-                basedName, _uuid, ctx->module, fields, parentType, generics);
+                basedName, _uuid, ctx->module, ty, fields, parentType, generics);
 
             transformedType->setDBGInfo(ty->getDBGInfo());
             transformedType->setSourceInfo(ty->getSourceInfo());
@@ -122,6 +131,25 @@ Transformer::transformClass(const std::string& uuid,
                     auto i = std::make_shared<transform::Item>(fn);
                     ctx->cache->setTransformedFunction(name, i);
                 }
+            }
+
+            if (parentType != nullptr) {
+                auto backupCurrent = ctx->actuallCurrentClass;
+                auto backupUUID = ctx->baseUUIDOverride;
+                ctx->setCurrentClass(parentType);
+                ctx->actuallCurrentClass = transformedType;
+
+                ctx->baseUUIDOverride = _uuid;
+
+                // TODO: inherit parent functions all the way down to last base class
+                for (auto fn : parentType->getAST()->getFunctions()) {
+                    if (!services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(fn->getName())) {
+                        fn->accept(this);
+                    }
+                }
+
+                ctx->actuallCurrentClass = backupCurrent;
+                ctx->baseUUIDOverride = backupUUID;
             }
 
             ctx->setCurrentClass(backupClass);

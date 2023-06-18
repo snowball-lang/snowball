@@ -68,10 +68,13 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     std::shared_ptr<DefinedType> parent = nullptr;
     /// @brief VTable holding all it's functions
     std::vector<std::shared_ptr<ir::Func>> classVtable;
+    /// @brief The ast representation for the type
+    Syntax::Statement::ClassDef *ast = nullptr;
 
   public:
     DefinedType(const std::string& name, const std::string uuid,
                 std::shared_ptr<ir::Module> module,
+                Syntax::Statement::ClassDef *ast = nullptr,
                 std::vector<ClassField *> fields = {},
                 std::shared_ptr<DefinedType> parent = nullptr,
                 std::vector<std::shared_ptr<Type>> generics = {});
@@ -86,7 +89,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
      *  primitive types, this function will automatically
      *  return false.
      */
-    virtual bool is(Type *other) override {
+    virtual bool is(Type *other) const override {
         if (auto c = utils::cast<DefinedType>(other)) {
             return is(c);
         }
@@ -101,7 +104,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
      * @param other Type to check
      * @return true/false depending on the equality
      */
-    virtual bool is(DefinedType *other);
+    virtual bool is(DefinedType *other) const;
 
     /// @return module where the type is defined in
     std::shared_ptr<ir::Module> getModule() const;
@@ -111,6 +114,8 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     std::string getMangledName() const override;
     /// @return UUID of the class that can be used as UUID base
     std::string getUUID() const;
+    /// @return The ast representation for the type
+    Syntax::Statement::ClassDef *getAST() const;
     /// @return The size of the class virtual table
     int getVtableSize();
     /// @brief Increase the size of the virtual table

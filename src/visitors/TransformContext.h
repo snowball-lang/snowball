@@ -33,6 +33,16 @@ class TransformContext
     // Module given to us so we can
     // identify where in the program we are.
     std::shared_ptr<ir::Module> module = nullptr;
+    /// @brief Override for a base UUID to use instead
+    ///  of using current class or current module.
+    /// @note If it's empty, we will consider it as `unset`.
+    std::string baseUUIDOverride = "";
+    /// @brief The real class that the context is under. This 
+    ///  is useful (for example) when you want to generate functions
+    ///  that got inherited but still want it to "be part of" the parent  
+    ///  type.
+    std::shared_ptr<types::DefinedType> actuallCurrentClass =
+        std::shared_ptr<types::DefinedType>(nullptr);
 
   private:
     /// Utility function to get a primitive type
@@ -51,53 +61,38 @@ class TransformContext
     // Create a new instance of a context
     TransformContext(std::shared_ptr<ir::Module> mod);
 
+    // clang-format off
+
     /// @brief Get the bool primitive type
-    std::shared_ptr<types::Type> getBoolType() {
-        return getPrimitiveType(SN_BOOL_TYPE);
-    }
+    std::shared_ptr<types::Type> getBoolType() { return getPrimitiveType(SN_BOOL_TYPE); }
     /// @brief Get the string primitive type
-    std::shared_ptr<types::Type> getStringType() {
-        return getPrimitiveType(SN_STR_TYPE);
-    }
+    std::shared_ptr<types::Type> getStringType() { return getPrimitiveType(SN_STR_TYPE); }
     /// @brief Get the char primitive type
     std::shared_ptr<types::Type> getCharType() { return getPrimitiveType(SN_CHR_TYPE); }
     /// @brief Get the equivalent of `void*` type in C
-    std::shared_ptr<types::Type> getCObjectType() {
-        return getPrimitiveType(SN_COB_TYPE);
-    }
+    std::shared_ptr<types::Type> getCObjectType() { return getPrimitiveType(SN_COB_TYPE); }
     /// @brief Get the float 64 primitive type
     std::shared_ptr<types::Type> getF64Type() { return getPrimitiveType(SN_F64_TYPE); }
     /// @brief Get the float 32 primitive type
     std::shared_ptr<types::Type> getF32Type() { return getPrimitiveType(SN_F32_TYPE); }
-
     /// @brief Get the int 64 primitive type
-    std::shared_ptr<types::Type> getInt64Type() {
-        return getPrimitiveType(SN_INT64_TYPE);
-    }
+    std::shared_ptr<types::Type> getInt64Type() { return getPrimitiveType(SN_INT64_TYPE); }
     /// @brief Get the int 32 primitive type
-    std::shared_ptr<types::Type> getInt32Type() {
-        return getPrimitiveType(SN_INT32_TYPE);
-    }
+    std::shared_ptr<types::Type> getInt32Type() { return getPrimitiveType(SN_INT32_TYPE); }
     /// @brief Get the int 16 primitive type
-    std::shared_ptr<types::Type> getInt16Type() {
-        return getPrimitiveType(SN_INT16_TYPE);
-    }
+    std::shared_ptr<types::Type> getInt16Type() { return getPrimitiveType(SN_INT16_TYPE); }
     /// @brief Get the int 8 primitive type
-    std::shared_ptr<types::Type> getInt8Type() {
-        return getPrimitiveType(SN_INT8_TYPE);
-    }
-
+    std::shared_ptr<types::Type> getInt8Type() { return getPrimitiveType(SN_INT8_TYPE); }
     /// @brief Get the void type representation
-    std::shared_ptr<types::Type> getVoidType() {
-        return getPrimitiveType(SN_VOID_TYPE);
-    }
+    std::shared_ptr<types::Type> getVoidType() { return getPrimitiveType(SN_VOID_TYPE); }
+    // clang-format on
 
     /// @return The current function being generated
     auto getCurrentFunction() { return currentFunction; }
     /// @brief Set a new function that's being generated
     void setCurrentFunction(std::shared_ptr<ir::Func> f) { currentFunction = f; }
     /// @return Get the parent class being transformed
-    auto getCurrentClass() { return currentClass; }
+    auto getCurrentClass(bool actual = false) { return actual ? actuallCurrentClass == nullptr ? currentClass : actuallCurrentClass : currentClass; }
     /// @brief Defined the new type being generated
     void setCurrentClass(std::shared_ptr<types::DefinedType> c) { currentClass = c; }
 

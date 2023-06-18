@@ -18,17 +18,19 @@ namespace types {
 
 DefinedType::DefinedType(const std::string& name, const std::string uuid,
                          std::shared_ptr<ir::Module> module,
+                         Syntax::Statement::ClassDef *ast,
                          std::vector<ClassField *> fields,
                          std::shared_ptr<DefinedType> parent,
                          std::vector<std::shared_ptr<Type>> generics)
     : AcceptorExtend(Kind::CLASS, name), uuid(uuid), parent(parent), module(module),
-      fields(fields), generics(generics) {}
+      ast(ast), fields(fields), generics(generics) {}
 
 DefinedType::ClassField::ClassField(const std::string& name, std::shared_ptr<Type> type,
                                     Privacy privacy, bool isMutable)
     : name(name), type(type), Syntax::Statement::Privacy(privacy),
       isMutable(isMutable) {}
 std::string DefinedType::getUUID() const { return uuid; }
+Syntax::Statement::ClassDef *DefinedType::getAST() const { return ast; }
 void DefinedType::addField(ClassField *f) { fields.emplace_back(f); }
 std::shared_ptr<ir::Module> DefinedType::getModule() const { return module; }
 int DefinedType::getVtableSize() { return classVtable.size(); }
@@ -40,7 +42,7 @@ std::vector<std::shared_ptr<ir::Func>> DefinedType::getVTable() const {
     return classVtable;
 }
 
-bool DefinedType::is(DefinedType *other) {
+bool DefinedType::is(DefinedType *other) const {
     auto otherArgs = other->getGenerics();
     bool argumentsEqual = std::all_of(otherArgs.begin(), otherArgs.end(),
                                       [&, idx = 0](std::shared_ptr<Type> i) mutable {
@@ -111,7 +113,16 @@ bool DefinedType::canCast(Type *ty) const {
 }
 
 bool DefinedType::canCast(DefinedType *ty) const {
-    assert(false && "TODO:");
+    if (getParent() && (getParent()->is(ty) || getParent()->canCast(ty))) {
+        auto otherArgs = ty->getGenerics();
+        bool argumentsEqual = std::all_of(otherArgs.begin(), otherArgs.end(),
+                                        [&, idx = 0](std::shared_ptr<Type> i) mutable {
+                                            return generics.at(idx)->is(i);
+                                            idx++;
+                                        });
+        return argumentsEqual;
+    }
+
     return false;
 }
 

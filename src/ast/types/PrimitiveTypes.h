@@ -128,7 +128,7 @@ class Int32Type : public AcceptorExtend<Int32Type, NumericType> {
 
     Int32Type() : AcceptorExtend(SN_INT32_TYPE) {}
 
-    bool is(Type *other) override {
+    bool is(Type *other) const override {
         return (TYPE_ALIAS == other->getName()) || NumericType::is(other);
     }
 };

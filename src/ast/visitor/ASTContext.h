@@ -57,7 +57,7 @@ template <typename T> class ASTContext {
      * @param name Identifier for the item
      * @param item Item to be stored
      */
-    virtual void addItem(std::string name, Item& item) {
+    virtual void addItem(const std::string& name, Item& item) {
         DEBUG_SYMTABLE(1, FMT("    Adding to scope: %s", name.c_str()).c_str())
         auto f = stack->front();
         auto val = f.find(name);

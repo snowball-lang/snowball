@@ -1,10 +1,12 @@
+use Core::CLib
 
 class A {
   pub:
     A() {
     }
 
-    virt fn hello() {
+    fn hello() {
+      CLib::putchar('a')
     }    
 }
 
@@ -14,14 +16,12 @@ class B: A {
     }
 
     // TODO: replace this with A::hello if it is not declared
-    //virt fn hello() {
-    //}    
 }
 
 pub fn main() i32 {
-    let a = new A();
     let b = new B();
+    let a = new A();
 
     a.hello();
-    //b.hello();
+    b.hello();
 }

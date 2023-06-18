@@ -35,7 +35,7 @@ class PointerType : public AcceptorExtend<PointerType, Type>,
     /**
      * @param other another type to check.
      */
-    virtual bool is(Type *other) override {
+    virtual bool is(Type *other) const override {
         if (auto c = utils::cast<PointerType>(other)) {
             return base->is(c->getPointedType());
         }

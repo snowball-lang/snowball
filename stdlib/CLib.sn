@@ -86,7 +86,7 @@ pub extern fn getchar() char;
  *  in the resulting string replacing their respective specifiers.
  * @return On success, the total number of characters written is returned.
  */
-pub extern fn printf(String, ...) i32;
+pub extern fn printf(char*, ...) i32;
 /**
  * @brief Causes normal program termination to occur.
  * @param exit_code(i32) - exit status of the program
