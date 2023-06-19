@@ -115,11 +115,12 @@ bool DefinedType::canCast(Type *ty) const {
 bool DefinedType::canCast(DefinedType *ty) const {
     if (getParent() && (getParent()->is(ty) || getParent()->canCast(ty))) {
         auto otherArgs = ty->getGenerics();
-        bool argumentsEqual = std::all_of(otherArgs.begin(), otherArgs.end(),
-                                        [&, idx = 0](std::shared_ptr<Type> i) mutable {
-                                            return generics.at(idx)->is(i);
-                                            idx++;
-                                        });
+        bool argumentsEqual =
+            std::all_of(otherArgs.begin(), otherArgs.end(),
+                        [&, idx = 0](std::shared_ptr<Type> i) mutable {
+                            return generics.at(idx)->is(i);
+                            idx++;
+                        });
         return argumentsEqual;
     }
 

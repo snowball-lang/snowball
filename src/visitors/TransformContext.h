@@ -37,9 +37,9 @@ class TransformContext
     ///  of using current class or current module.
     /// @note If it's empty, we will consider it as `unset`.
     std::string baseUUIDOverride = "";
-    /// @brief The real class that the context is under. This 
+    /// @brief The real class that the context is under. This
     ///  is useful (for example) when you want to generate functions
-    ///  that got inherited but still want it to "be part of" the parent  
+    ///  that got inherited but still want it to "be part of" the parent
     ///  type.
     std::shared_ptr<types::DefinedType> actuallCurrentClass =
         std::shared_ptr<types::DefinedType>(nullptr);
@@ -92,7 +92,11 @@ class TransformContext
     /// @brief Set a new function that's being generated
     void setCurrentFunction(std::shared_ptr<ir::Func> f) { currentFunction = f; }
     /// @return Get the parent class being transformed
-    auto getCurrentClass(bool actual = false) { return actual ? actuallCurrentClass == nullptr ? currentClass : actuallCurrentClass : currentClass; }
+    auto getCurrentClass(bool actual = false) {
+        return actual
+                   ? actuallCurrentClass == nullptr ? currentClass : actuallCurrentClass
+                   : currentClass;
+    }
     /// @brief Defined the new type being generated
     void setCurrentClass(std::shared_ptr<types::DefinedType> c) { currentClass = c; }
 

@@ -105,5 +105,6 @@
         "stdint.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled",
-    "todo-tree.tree.scanMode": "workspace"
+    "todo-tree.tree.scanMode": "workspace",
+    "cmake.configureOnOpen": false
 }

@@ -39,41 +39,45 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
         auto st = std::make_shared<ContextState::StackType>();
         auto state = std::shared_ptr<ContextState>(new ContextState(st, mod, nullptr));
 
+        // clang-format off
         ctx->withState(state,
-                       [numThreads = numThreads, filePath = filePath, this]() mutable {
-                           std::ifstream ifs(filePath.string());
-                           assert(!ifs.fail());
+            [numThreads = numThreads, filePath = filePath, this]() mutable {
+                std::ifstream ifs(filePath.string());
+                assert(!ifs.fail());
 
-                           std::string content((std::istreambuf_iterator<char>(ifs)),
-                                               (std::istreambuf_iterator<char>()));
+                std::string content((std::istreambuf_iterator<char>(ifs)),
+                                    (std::istreambuf_iterator<char>()));
 
-                           auto srcInfo = new SourceInfo(content, filePath);
-                           auto lexer = new Lexer(srcInfo);
-                           lexer->tokenize();
-                           auto tokens = lexer->tokens;
+                auto srcInfo = new SourceInfo(content, filePath);
+                auto lexer = new Lexer(srcInfo);
+                lexer->tokenize();
+                auto tokens = lexer->tokens;
 
-                           if (tokens.size() != 0) {
-                               auto parser = new parser::Parser(tokens, srcInfo);
-                               auto ast = parser->parse();
-                               ctx->module->setSourceInfo(srcInfo);
+                if (tokens.size() != 0) {
+                    auto parser = new parser::Parser(tokens, srcInfo);
+                    auto ast = parser->parse();
+                    ctx->module->setSourceInfo(srcInfo);
 
-                               std::vector<Syntax::Analyzer *> passes = {
-                                   new Syntax::DefiniteAssigment(srcInfo)};
+                    visit(ast);
 
-                               for (auto pass : passes) {
-                                   pass->run(ast);
-                               }
+                    // TODO: make this a separate function to avoid any sort of "conflict" with the compiler's version of this algorithm
+                    std::vector<Syntax::Analyzer *> passes = {
+                        new Syntax::DefiniteAssigment(srcInfo)};
 
-                               visit(ast);
+                    for (auto pass : passes) {
+                        pass->run(ast);
+                    }
 
-                               auto typeChecker = new codegen::TypeChecker(ctx->module);
-                               typeChecker->codegen();
+                    auto typeChecker = new codegen::TypeChecker(ctx->module);
+                    typeChecker->codegen();
 
-                               // TODO: set a new module to the import cache
-                               addModule(ctx->module);
-                               ctx->imports->cache->addModule(filePath, ctx->module);
-                           }
-                       });
+                    // TODO: set a new module to the import cache
+                    addModule(ctx->module);
+                    ctx->imports->cache->addModule(filePath, ctx->module);
+                }
+        });
+
+        // clang-format on
 
         auto item = std::make_shared<Item>(mod);
         ctx->addItem(exportName, item);

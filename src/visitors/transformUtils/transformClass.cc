@@ -143,7 +143,8 @@ Transformer::transformClass(const std::string& uuid,
 
                 // TODO: inherit parent functions all the way down to last base class
                 for (auto fn : parentType->getAST()->getFunctions()) {
-                    if (!services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(fn->getName())) {
+                    if (!services::OperatorService::opEquals<
+                            services::OperatorService::CONSTRUCTOR>(fn->getName())) {
                         fn->accept(this);
                     }
                 }

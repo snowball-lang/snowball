@@ -11,7 +11,7 @@ using namespace snowball::Syntax::transform;
      ctx->module->isMain())
 
 #define ADD_SELF_ARG                                                                   \
-    if (auto c = ctx->getCurrentClass(true)) {                                             \
+    if (auto c = ctx->getCurrentClass(true)) {                                         \
         if (!p_node->isStatic()) {                                                     \
             auto args = p_node->getArgs();                                             \
             if (!(args.size() > 0 && args.at(0)->getName() == "self")) {               \
@@ -19,9 +19,9 @@ using namespace snowball::Syntax::transform;
                                                                                        \
                 args.insert(args.begin(), self);                                       \
                 p_node->setArgs(args);                                                 \
-            } else { \
-                args.at(0)->setType(c->getPointerTo()->toRef()); \
-            }                                                                      \
+            } else {                                                                   \
+                args.at(0)->setType(c->getPointerTo()->toRef());                       \
+            }                                                                          \
         }                                                                              \
     }
 
