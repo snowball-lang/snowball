@@ -37,7 +37,7 @@ class StringView<_CharType = char*>: Iterable<?_CharType> {
   priv:
     
     let mut size: i32;
-    let data: Vector<?_CharType>;
+    let mut data: Vector<?_CharType>;
 }
 
 type String = StringView<?>;

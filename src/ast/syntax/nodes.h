@@ -248,7 +248,7 @@ struct Identifier : public AcceptorExtend<Identifier, Base> {
     /// @return Get respective identifier Syntax::Expression::Identifierlue
     auto getIdentifier() { return identifier; }
     virtual std::string getNiceName() const {
-        if (utils::startsWith(identifier, "#")) {
+        if (services::OperatorService::isOperator(identifier)) {
             auto i = services::OperatorService::operatorID(identifier);
             return services::OperatorService::operatorName(i);
         }

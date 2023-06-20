@@ -89,7 +89,7 @@ Transformer::getFromIndex(DBGSourceInfo *dbgInfo, Expression::Index *index,
                 getFromIdentifier(dbgInfo, name, generics, type->getName());
 
             if ((!fns.has_value()) && (!ovs.has_value())) {
-                if (utils::startsWith(name, "#")) {
+                if (services::OperatorService::isOperator(name)) {
                     assert(false && "TODO: operator missing from builtin type!");
                 }
 

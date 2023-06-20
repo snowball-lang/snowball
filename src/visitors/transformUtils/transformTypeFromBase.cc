@@ -28,8 +28,7 @@ Transformer::transformTypeFromBase(const std::string& uuid,
         }
     }
 
-    // TODO: check for default generic types
-    if (typeRef->getGenerics().size() < requiredArguments) {
+    if (typeRef->getGenerics().size() < requiredArguments || typeRef->getGenerics().size() > generics.size()) {
         E<TYPE_ERROR>(typeRef, FMT("Type '%s' require to have %i generic "
                                    "argument(s) but %i where given!",
                                    typeRef->getPrettyName().c_str(), requiredArguments,

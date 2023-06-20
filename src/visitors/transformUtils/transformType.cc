@@ -126,10 +126,18 @@ continueTypeFetch:
         }
     }
 
-    if (returnedType == nullptr) {
+    if (returnedType == nullptr) 
         E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
+    if (!typeGenericsMatch(ty, returnedType)) {
+        auto compAsDefinedType = utils::dyn_cast<types::DefinedType>(returnedType);
+        auto compGenerics = compAsDefinedType == nullptr
+                                ? std::vector<std::shared_ptr<types::Type>>{}
+                                : compAsDefinedType->getGenerics();
+        E<TYPE_ERROR>(ty, FMT("Type '%s' require to have %i generic "
+                "argument(s) but %i where given!",
+                returnedType->getPrettyName().c_str(),
+                compGenerics.size(), ty->getGenerics().size()));  
     }
-
     return returnedType;
 }
 

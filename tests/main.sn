@@ -22,6 +22,6 @@ pub fn main() i32 {
     let b = new B();
     let a = new A();
 
-    a.hello();
-    b.hello();
+    a.hello(2);
+    b.hello(2);
 }

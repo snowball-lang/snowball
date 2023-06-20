@@ -178,7 +178,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
             }
         }
 
-        if ((argValues.size() == 2) && utils::startsWith(func->getName(true), "#")) {
+        if ((argValues.size() == 2) && services::OperatorService::isOperator(func->getName(true))) {
             auto t = argValues.at(0)->getType();
             auto val = argValues.at(1);
             auto t2 = val->getType();
