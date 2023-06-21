@@ -9,14 +9,22 @@
 namespace snowball {
 namespace errors {
 
-void NiceError::print_error() const {
+void NiceError::print_error(bool asTail) const {
     cb_dbg_info->prepare_for_error();
-    Logger::log("\n");
-    Logger::error(FMT("(%s%s%s) %s%s%s", BRED, get_error(error), RESET, BOLD,
-                      message.c_str(), RESET));
-    Logger::elog(FMT("%s      ╭─[%s%s%s%s:%i:%i%s%s]%s", BLK, RESET, BBLU,
-                     cb_dbg_info->getSourceInfo()->getPath().c_str(), BBLK,
-                     cb_dbg_info->line, cb_dbg_info->pos.second, RESET, BLK, RESET));
+
+    if (!asTail) {
+        Logger::log("\n");
+        Logger::error(FMT("(%s%s%s) %s%s%s", BRED, get_error(error), RESET, BOLD,
+                        message.c_str(), RESET));
+        Logger::elog(FMT("%s      ╭─[%s%s%s%s:%i:%i%s%s]%s", BLK, RESET, BBLU,
+                        cb_dbg_info->getSourceInfo()->getPath().c_str(), BBLK,
+                        cb_dbg_info->line, cb_dbg_info->pos.second, RESET, BLK, RESET));
+    } else {
+        Logger::elog(FMT("%s      ├─[%s%s%s%s:%i:%i%s%s]%s", BLK, RESET, BBLU,
+                        cb_dbg_info->getSourceInfo()->getPath().c_str(), BBLK,
+                        cb_dbg_info->line, cb_dbg_info->pos.second, RESET, BLK, RESET));
+    }
+
     Logger::elog(FMT("%s      │%s", BLK, RESET));
     Logger::elog(FMT("%s      │%s", BLK, RESET));
     if (cb_dbg_info->line - 1 >= 1) // first line may not be available to log
@@ -28,6 +36,29 @@ void NiceError::print_error() const {
                      RESET));
     Logger::elog(FMT("   %s%2i%s │ %s%s", BBLK, cb_dbg_info->line + 1, BLK, BWHT,
                      cb_dbg_info->line_after.c_str()));
+
+    if (!info.note.empty()) {
+        Logger::elog(FMT("%s      │", BLK));
+
+        auto lines = utils::split(info.note, "\n");
+
+        Logger::elog(
+            FMT("%s  note%s:%s %s", BCYN, BBLK, RESET, (*lines.begin()).c_str()));
+
+        lines.pop_front();
+        for (auto line : lines) {
+            Logger::elog(FMT("%s      │  %s%s", BBLK, RESET, line.c_str()));
+        }
+    }
+
+    if (auto x = info.tail) {
+        Logger::elog(FMT("%s      │", BLK));
+        Logger::elog(FMT("%s      │", BLK));
+        Logger::elog(FMT("%s      :", BLK));
+        Logger::elog(FMT("%s      │", BLK));
+
+        x->print_error(true);
+    }
 
     if (!info.help.empty()) {
         Logger::elog(FMT("%s      │", BLK));
@@ -44,8 +75,11 @@ void NiceError::print_error() const {
     }
 
     Logger::elog(FMT("%s      │", BLK));
-    Logger::elog(FMT("   ───╯%s", RESET));
-    Logger::log("\n");
+
+    if (!asTail) {
+        Logger::elog(FMT("   ───╯%s", RESET));
+        Logger::log("\n");
+    }
 };
 
 const char *get_error(Error code) {

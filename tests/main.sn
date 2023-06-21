@@ -5,6 +5,7 @@ class A {
     A() {
     }
 
+    // TODO: also test for 'x: f32' <- some funny things going on :)
     fn hello() {
       CLib::putchar('a')
     }    
@@ -20,8 +21,6 @@ class B: A {
 
 pub fn main() i32 {
     let b = new B();
-    let a = new A();
 
-    a.hello(2);
     b.hello(2);
 }

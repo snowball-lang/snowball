@@ -147,13 +147,39 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
                                   FMT("Function '%s' is not defined!", name.c_str()));
             }
 
+            CompilerError* tailErrors = nullptr;
+
+            #define ADD_FUNCTION_ERROR(id, idx) \
+                for (auto overload : functions.value()) { \
+                    auto err = EI<>(overload, "", { \
+                        .info = "A possible function overload" \
+                    }); \
+                    if (tailErrors == nullptr) { \ 
+                        tailErrors = err; \
+                        continue; \
+                    } \
+                    tailErrors->info.tail = err; \
+                } 
+
+            // TODO: check if this is necesary (just for functions)
+            //ADD_FUNCTION_ERROR(functions, overload)
+            ADD_FUNCTION_ERROR(overloads, overload.function)
+
+            #undef ADD_FUNCTION_ERROR
+
             // TODO: throw a note that sugest's it's correct types: only if
             // there's one
             //  overload
             E<VARIABLE_ERROR>(
                 dbgInfo,
                 FMT("No matches found for %s(%s)", name.c_str(),
-                    Expression::FunctionCall::getArgumentsAsString(arguments).c_str()));
+                    Expression::FunctionCall::getArgumentsAsString(arguments).c_str()),
+                {
+                    .info = "No function overloads found for this function!",
+                    .note = "The function does exist but it's arguments are not correctly defined.",
+                    .help = "The provided function name and arguments do not match any of the \navailable function overloads. Please ensure that you have correctly spelled the \nfunction name and provided the appropriate arguments. Additionally, check the \ndocumentation or function signature to confirm the correct syntax and parameter \ntypes.",
+                    .tail = tailErrors
+                });
         }
 
         case AmbiguityConflict: {

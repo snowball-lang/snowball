@@ -166,7 +166,7 @@ class Func
     auto getParent() const { return parent; }
     /// @return whether or not the function is defiend within a
     ///  parent scope.
-    bool hasParent() const { return parent != nullptr; }
+    bool hasParent() const { return getParent() != nullptr; }
 
     /// @brief Get the index were the function is located at inside the
     ///  virtual table.
@@ -261,8 +261,8 @@ class Func
             }
         }
 
-        return (numFunctionArgs - numDefaultArgs <= numProvidedArgs) ||
-               (functionArgs.size() <= arguments.size() && isVariadic);
+        return (numFunctionArgs - numDefaultArgs == numProvidedArgs) ||
+               (numFunctionArgs <= arguments.size() && isVariadic);
     }
 };
 

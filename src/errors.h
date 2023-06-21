@@ -6,6 +6,7 @@
 #include <exception>
 #include <stdexcept>
 #include <string>
+#include <optional>
 
 #ifndef __SNOWBALL_ERRORS_H_
 #define __SNOWBALL_ERRORS_H_
@@ -37,14 +38,6 @@ enum Error {
 namespace errors {
 const char *get_error(Error code);
 
-struct ErrorInfo {
-    const std::string info = "";
-    const std::string explanation = "";
-
-    const std::string help = "";
-    const std::string consider = "";
-};
-
 class SNError {
   public:
     SNError(Error code, std::string err) {
@@ -52,7 +45,7 @@ class SNError {
         message = err;
     };
 
-    virtual void print_error() const {
+    virtual void print_error(bool _ = false) const {
         Logger::error(FMT("(%s%s%s) %s%s%s", RED, get_error(error), RESET, BOLD,
                           message.c_str(), RESET));
     };
@@ -63,16 +56,26 @@ class SNError {
     std::string message;
 };
 
+struct ErrorInfo {
+    const std::string info = "";
+    const std::string note = "";
+
+    const std::string help = "";
+    const std::string consider = "";
+
+    SNError* tail = nullptr;
+};
+
 class NiceError : public SNError {
   protected:
     DBGSourceInfo *cb_dbg_info;
-    ErrorInfo info;
 
   public:
+    ErrorInfo info;
     NiceError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info,
               ErrorInfo info = {})
         : SNError(code, err), cb_dbg_info(p_cb_dbg_info), info(info){};
-    virtual void print_error() const override;
+    virtual void print_error(bool asTail = false) const override;
 };
 
 class LexerError : public NiceError {
