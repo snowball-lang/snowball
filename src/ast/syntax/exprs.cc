@@ -102,9 +102,7 @@ FunctionCall::getArgumentsAsString(const std::vector<std::shared_ptr<types::Type
     std::string result;
     for (auto arg = args.begin(); arg != args.end(); ++arg) {
         result += arg->get()->getPrettyName();
-        if (arg != args.end() && args.size() != 1) {
-            result += ", ";
-        }
+        if (arg != args.end() && args.size() != 1) { result += ", "; }
     }
 
     return result;
@@ -117,9 +115,7 @@ GenericIdentifier::getNiceName() const {
     int gIndex = 0;
     for (auto t : generics) {
         gens += t->getPrettyName();
-        if (gIndex != (generics.size() - 1)) {
-            gens += ", ";
-        }
+        if (gIndex != (generics.size() - 1)) { gens += ", "; }
 
         gIndex++;
     }
@@ -128,8 +124,7 @@ GenericIdentifier::getNiceName() const {
 }
 
 #define CASE(t, r)                                                                                 \
-    case TokenType::t:                                                                             \
-        return r;
+    case TokenType::t: return r;
 ConstantValue::ConstantType
 ConstantValue::deduceType(TokenType ty) {
     switch (ty) {
@@ -139,8 +134,7 @@ ConstantValue::deduceType(TokenType ty) {
         CASE(VALUE_NUMBER, Number)
         CASE(VALUE_BOOL, Bool)
 
-        default:
-            E<BUG>(FMT("Unknown token type, coudn't deduce! (ty: %i)", ty));
+        default: E<BUG>(FMT("Unknown token type, coudn't deduce! (ty: %i)", ty));
     }
 
     UNREACHABLE
@@ -154,9 +148,7 @@ TypeRef::getPrettyName() const {
     int gIndex = 0;
     for (auto t : generics) {
         gens += t->getPrettyName();
-        if (gIndex != (generics.size() - 1)) {
-            gens += ", ";
-        }
+        if (gIndex != (generics.size() - 1)) { gens += ", "; }
 
         gIndex++;
     }

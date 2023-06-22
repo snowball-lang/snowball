@@ -8,9 +8,7 @@
 #include <llvm/IR/Value.h>
 
 #define OPERATOR_INSTANCE(x, f)                                                                    \
-    case services::OperatorService::x:                                                             \
-        this->value = builder->f(left, right);                                                     \
-        break;
+    case services::OperatorService::x: this->value = builder->f(left, right); break;
 
 namespace snowball
 {
@@ -65,8 +63,7 @@ LLVMBuilder::buildOperator(ir::Call* call) {
                         break;
                     }
 
-                    default:
-                        assert(false);
+                    default: assert(false);
                 }
 
                 return true;
@@ -107,8 +104,7 @@ LLVMBuilder::buildOperator(ir::Call* call) {
                         break;
                     }
 
-                    default:
-                        assert(false);
+                    default: assert(false);
                 }
 
                 return true;
@@ -122,8 +118,7 @@ LLVMBuilder::buildOperator(ir::Call* call) {
                         break;
                     }
 
-                    default:
-                        assert(false);
+                    default: assert(false);
                 }
 
                 return true;

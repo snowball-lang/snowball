@@ -25,9 +25,7 @@ Parser::parseTypeAlias() {
 
     next();
 
-    if (is<TokenType::OP_LT>()) {
-        generics = parseGenericParams();
-    }
+    if (is<TokenType::OP_LT>()) { generics = parseGenericParams(); }
 
     consume<TokenType::OP_EQ>("'='");
     auto type = parseType();

@@ -209,176 +209,98 @@ struct Token {
     to_string() const {
         switch (type) {
             // Symbols
-            case TokenType::SYM_AT:
-                return "@";
-            case TokenType::SYM_DOT:
-                return ".";
-            case TokenType::SYM_HASH:
-                return "#";
-            case TokenType::SYM_COMMA:
-                return ",";
-            case TokenType::SYM_COLLON:
-                return ":";
-            case TokenType::SYM_DOLLAR:
-                return "$";
-            case TokenType::SYM_QUESTION:
-                return "?";
-            case TokenType::SYM_SEMI_COLLON:
-                return ";";
-            case TokenType::SYM_COLCOL:
-                return "::";
+            case TokenType::SYM_AT: return "@";
+            case TokenType::SYM_DOT: return ".";
+            case TokenType::SYM_HASH: return "#";
+            case TokenType::SYM_COMMA: return ",";
+            case TokenType::SYM_COLLON: return ":";
+            case TokenType::SYM_DOLLAR: return "$";
+            case TokenType::SYM_QUESTION: return "?";
+            case TokenType::SYM_SEMI_COLLON: return ";";
+            case TokenType::SYM_COLCOL: return "::";
 
             // Brackets
-            case TokenType::BRACKET_LCURLY:
-                return "{";
-            case TokenType::BRACKET_RCURLY:
-                return "}";
-            case TokenType::BRACKET_LPARENT:
-                return "(";
-            case TokenType::BRACKET_RPARENT:
-                return ")";
-            case TokenType::BRACKET_LSQUARED:
-                return "[";
-            case TokenType::BRACKET_RSQUARED:
-                return "]";
+            case TokenType::BRACKET_LCURLY: return "{";
+            case TokenType::BRACKET_RCURLY: return "}";
+            case TokenType::BRACKET_LPARENT: return "(";
+            case TokenType::BRACKET_RPARENT: return ")";
+            case TokenType::BRACKET_LSQUARED: return "[";
+            case TokenType::BRACKET_RSQUARED: return "]";
 
             // Equiality
-            case TokenType::OP_GT:
-                return ">";
-            case TokenType::OP_LT:
-                return "<";
-            case TokenType::OP_GTEQ:
-                return ">=";
-            case TokenType::OP_EQEQ:
-                return "==";
-            case TokenType::OP_LTEQ:
-                return "<=";
-            case TokenType::OP_NOTEQ:
-                return "!=";
-            case TokenType::OP_ARROW:
-                return "=>";
+            case TokenType::OP_GT: return ">";
+            case TokenType::OP_LT: return "<";
+            case TokenType::OP_GTEQ: return ">=";
+            case TokenType::OP_EQEQ: return "==";
+            case TokenType::OP_LTEQ: return "<=";
+            case TokenType::OP_NOTEQ: return "!=";
+            case TokenType::OP_ARROW: return "=>";
 
             // Mathematical symbols
-            case TokenType::OP_MOD:
-                return "%";
-            case TokenType::OP_DIV:
-                return "/";
-            case TokenType::OP_MUL:
-                return "*";
-            case TokenType::OP_PLUS:
-                return "+";
-            case TokenType::OP_MINUS:
-                return "-";
-            case TokenType::OP_MULEQ:
-                return "*=";
-            case TokenType::OP_DIVEQ:
-                return "/=";
-            case TokenType::OP_PLUSEQ:
-                return "+=";
-            case TokenType::OP_MOD_EQ:
-                return "%=";
-            case TokenType::OP_MINUSEQ:
-                return "-=";
+            case TokenType::OP_MOD: return "%";
+            case TokenType::OP_DIV: return "/";
+            case TokenType::OP_MUL: return "*";
+            case TokenType::OP_PLUS: return "+";
+            case TokenType::OP_MINUS: return "-";
+            case TokenType::OP_MULEQ: return "*=";
+            case TokenType::OP_DIVEQ: return "/=";
+            case TokenType::OP_PLUSEQ: return "+=";
+            case TokenType::OP_MOD_EQ: return "%=";
+            case TokenType::OP_MINUSEQ: return "-=";
 
             // Asignment
-            case TokenType::OP_EQ:
-                return "=";
-            case TokenType::OP_OR:
-                return "||";
-            case TokenType::OP_AND:
-                return "&&";
-            case TokenType::OP_NOT:
-                return "!";
+            case TokenType::OP_EQ: return "=";
+            case TokenType::OP_OR: return "||";
+            case TokenType::OP_AND: return "&&";
+            case TokenType::OP_NOT: return "!";
 
             // Bitwise operations
-            case TokenType::OP_BIT_OR:
-                return "|";
-            case TokenType::OP_BIT_NOT:
-                return "~";
-            case TokenType::OP_BIT_AND:
-                return "&";
-            case TokenType::OP_BIT_XOR:
-                return "^";
-            case TokenType::OP_BIT_OR_EQ:
-                return "|=";
-            case TokenType::OP_BIT_LSHIFT:
-                return "<<";
-            case TokenType::OP_BIT_RSHIFT:
-                return ">>";
-            case TokenType::OP_BIT_AND_EQ:
-                return "&=";
-            case TokenType::OP_BIT_XOR_EQ:
-                return "^=";
-            case TokenType::OP_BIT_LSHIFT_EQ:
-                return "<<=";
-            case TokenType::OP_BIT_RSHIFT_EQ:
-                return ">>=";
+            case TokenType::OP_BIT_OR: return "|";
+            case TokenType::OP_BIT_NOT: return "~";
+            case TokenType::OP_BIT_AND: return "&";
+            case TokenType::OP_BIT_XOR: return "^";
+            case TokenType::OP_BIT_OR_EQ: return "|=";
+            case TokenType::OP_BIT_LSHIFT: return "<<";
+            case TokenType::OP_BIT_RSHIFT: return ">>";
+            case TokenType::OP_BIT_AND_EQ: return "&=";
+            case TokenType::OP_BIT_XOR_EQ: return "^=";
+            case TokenType::OP_BIT_LSHIFT_EQ: return "<<=";
+            case TokenType::OP_BIT_RSHIFT_EQ: return ">>=";
 
             // Identifiers
-            case TokenType::IDENTIFIER:
-                return value;
+            case TokenType::IDENTIFIER: return value;
 
             // Keywods
-            case TokenType::KWORD_PUBLIC:
-                return _SNOWBALL_KEYWORD__PUBLIC;
-            case TokenType::KWORD_VIRTUAL:
-                return _SNOWBALL_KEYWORD__VIRTUAL;
-            case TokenType::KWORD_PRIVATE:
-                return _SNOWBALL_KEYWORD__PRIVATE;
-            case TokenType::KWORD_IMPORT:
-                return _SNOWBALL_KEYWORD__IMPORT;
-            case TokenType::KWORD_TYPEDEF:
-                return _SNOWBALL_KEYWORD__TYPEDEF;
-            case TokenType::KWORD_MUTABLE:
-                return _SNOWBALL_KEYWORD__MUTABLE;
-            case TokenType::KWORD_DO:
-                return _SNOWBALL_KEYWORD__DO;
-            case TokenType::KWORD_CLASS:
-                return _SNOWBALL_KEYWORD__CLASS;
-            case TokenType::KWORD_AS:
-                return _SNOWBALL_KEYWORD__AS;
-            case TokenType::KWORD_ENUM:
-                return _SNOWBALL_KEYWORD__ENUM;
-            case TokenType::KWORD_FUNC:
-                return _SNOWBALL_KEYWORD__FUNCTION;
-            case TokenType::KWORD_OPERATOR:
-                return _SNOWBALL_KEYWORD__OPERATOR;
-            case TokenType::KWORD_VAR:
-                return _SNOWBALL_KEYWORD__VARIABLE;
-            case TokenType::KWORD_CONST:
-                return _SNOWBALL_KEYWORD__CONSTANT;
-            case TokenType::KWORD_IF:
-                return _SNOWBALL_KEYWORD__IF;
-            case TokenType::KWORD_ELSE:
-                return _SNOWBALL_KEYWORD__ELSE;
-            case TokenType::KWORD_WHILE:
-                return _SNOWBALL_KEYWORD__WHILE;
-            case TokenType::KWORD_FOR:
-                return _SNOWBALL_KEYWORD__FOR;
-            case TokenType::KWORD_SWITCH:
-                return _SNOWBALL_KEYWORD__SWITCH;
-            case TokenType::KWORD_CASE:
-                return _SNOWBALL_KEYWORD__CASE;
-            case TokenType::KWORD_DEFAULT:
-                return _SNOWBALL_KEYWORD__DEFAULT;
-            case TokenType::KWORD_BREAK:
-                return _SNOWBALL_KEYWORD__BREAK;
-            case TokenType::KWORD_CONTINUE:
-                return _SNOWBALL_KEYWORD__CONTINUE;
-            case TokenType::KWORD_STATIC:
-                return _SNOWBALL_KEYWORD__STATIC;
-            case TokenType::KWORD_SUPER:
-                return _SNOWBALL_KEYWORD__SUPER;
-            case TokenType::KWORD_RETURN:
-                return _SNOWBALL_KEYWORD__RETURN;
-            case TokenType::KWORD_DECLTYPE:
-                return _SNOWBALL_KEYWORD__DECLTYPE;
-            case TokenType::KWORD_EXTERN:
-                return _SNOWBALL_KEYWORD__EXTERN;
-            case TokenType::KWORD_NEW:
-                return _SNOWBALL_KEYWORD__NEW;
-            case TokenType::KWORD_TRY:
-                return _SNOWBALL_KEYWORD__TRY;
+            case TokenType::KWORD_PUBLIC: return _SNOWBALL_KEYWORD__PUBLIC;
+            case TokenType::KWORD_VIRTUAL: return _SNOWBALL_KEYWORD__VIRTUAL;
+            case TokenType::KWORD_PRIVATE: return _SNOWBALL_KEYWORD__PRIVATE;
+            case TokenType::KWORD_IMPORT: return _SNOWBALL_KEYWORD__IMPORT;
+            case TokenType::KWORD_TYPEDEF: return _SNOWBALL_KEYWORD__TYPEDEF;
+            case TokenType::KWORD_MUTABLE: return _SNOWBALL_KEYWORD__MUTABLE;
+            case TokenType::KWORD_DO: return _SNOWBALL_KEYWORD__DO;
+            case TokenType::KWORD_CLASS: return _SNOWBALL_KEYWORD__CLASS;
+            case TokenType::KWORD_AS: return _SNOWBALL_KEYWORD__AS;
+            case TokenType::KWORD_ENUM: return _SNOWBALL_KEYWORD__ENUM;
+            case TokenType::KWORD_FUNC: return _SNOWBALL_KEYWORD__FUNCTION;
+            case TokenType::KWORD_OPERATOR: return _SNOWBALL_KEYWORD__OPERATOR;
+            case TokenType::KWORD_VAR: return _SNOWBALL_KEYWORD__VARIABLE;
+            case TokenType::KWORD_CONST: return _SNOWBALL_KEYWORD__CONSTANT;
+            case TokenType::KWORD_IF: return _SNOWBALL_KEYWORD__IF;
+            case TokenType::KWORD_ELSE: return _SNOWBALL_KEYWORD__ELSE;
+            case TokenType::KWORD_WHILE: return _SNOWBALL_KEYWORD__WHILE;
+            case TokenType::KWORD_FOR: return _SNOWBALL_KEYWORD__FOR;
+            case TokenType::KWORD_SWITCH: return _SNOWBALL_KEYWORD__SWITCH;
+            case TokenType::KWORD_CASE: return _SNOWBALL_KEYWORD__CASE;
+            case TokenType::KWORD_DEFAULT: return _SNOWBALL_KEYWORD__DEFAULT;
+            case TokenType::KWORD_BREAK: return _SNOWBALL_KEYWORD__BREAK;
+            case TokenType::KWORD_CONTINUE: return _SNOWBALL_KEYWORD__CONTINUE;
+            case TokenType::KWORD_STATIC: return _SNOWBALL_KEYWORD__STATIC;
+            case TokenType::KWORD_SUPER: return _SNOWBALL_KEYWORD__SUPER;
+            case TokenType::KWORD_RETURN: return _SNOWBALL_KEYWORD__RETURN;
+            case TokenType::KWORD_DECLTYPE: return _SNOWBALL_KEYWORD__DECLTYPE;
+            case TokenType::KWORD_EXTERN: return _SNOWBALL_KEYWORD__EXTERN;
+            case TokenType::KWORD_NEW: return _SNOWBALL_KEYWORD__NEW;
+            case TokenType::KWORD_TRY: return _SNOWBALL_KEYWORD__TRY;
             case TokenType::KWORD_CATCH:
                 return _SNOWBALL_KEYWORD__CATCH;
 
@@ -386,22 +308,16 @@ struct Token {
 
             case TokenType::VALUE_NUMBER:
             case TokenType::VALUE_FLOAT:
-            case TokenType::VALUE_BOOL:
-                return value;
+            case TokenType::VALUE_BOOL: return value;
 
-            case TokenType::VALUE_STRING:
-                return std::string("\"") + value + "\"";
-            case TokenType::VALUE_CHAR:
-                return FMT("'%s'", value.c_str());
+            case TokenType::VALUE_STRING: return std::string("\"") + value + "\"";
+            case TokenType::VALUE_CHAR: return FMT("'%s'", value.c_str());
 
             // Other
-            case TokenType::UNKNOWN:
-                return "<unknown>";
-            case TokenType::_EOF:
-                return "<EOF>";
+            case TokenType::UNKNOWN: return "<unknown>";
+            case TokenType::_EOF: return "<EOF>";
 
-            default:
-                return "<BUG>";
+            default: return "<BUG>";
         }
 
         // TODO: throw error: missed enum in switch case

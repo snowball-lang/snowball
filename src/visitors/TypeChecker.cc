@@ -52,9 +52,7 @@ VISIT(CharValue) { /* noop */
 
 VISIT(Call) {
     auto args = p_node->getArguments();
-    for (auto a : args) {
-        a->visit(this);
-    }
+    for (auto a : args) { a->visit(this); }
 
     // TODO: check for operator sides being equal
 
@@ -125,9 +123,7 @@ VISIT(Conditional) {
     p_node->getCondition()->visit(this);
     p_node->getBlock()->visit(this);
 
-    if (auto x = p_node->getElse()) {
-        x->visit(this);
-    }
+    if (auto x = p_node->getElse()) { x->visit(this); }
 }
 
 VISIT(Cast) {
@@ -164,9 +160,7 @@ VISIT(Return) {
     auto fn = ctx->getCurrentFunction();
     assert(fn != nullptr);
 
-    if (p_node->getExpr() != nullptr) {
-        p_node->getExpr()->visit(this);
-    }
+    if (p_node->getExpr() != nullptr) { p_node->getExpr()->visit(this); }
 
     if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) != nullptr) &&
         (p_node->getExpr() != nullptr)) {
@@ -194,33 +188,25 @@ VISIT(Return) {
 }
 
 VISIT(Block) {
-    for (auto i : p_node->getBlock()) {
-        i->visit(this);
-    }
+    for (auto i : p_node->getBlock()) { i->visit(this); }
 }
 
 void
 TypeChecker::codegen() {
     // Visit variables
-    for (auto v : module->getVariables()) {
-        visit(v.get());
-    }
+    for (auto v : module->getVariables()) { visit(v.get()); }
 
     // Generate the functions from the end to the front.
     auto functions = module->getFunctions();
 
     // Iterate every function with a reversed iterator.
-    for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn) {
-        visit(fn->get());
-    }
+    for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn) { visit(fn->get()); }
 }
 
 void
 TypeChecker::cantBeVoid(
         DBGObject* dbg, std::shared_ptr<types::Type> ty, const std::string& message) {
-    if (std::dynamic_pointer_cast<types::VoidType>(ty)) {
-        Syntax::E<TYPE_ERROR>(dbg, message);
-    }
+    if (std::dynamic_pointer_cast<types::VoidType>(ty)) { Syntax::E<TYPE_ERROR>(dbg, message); }
 }
 
 std::optional<bool>

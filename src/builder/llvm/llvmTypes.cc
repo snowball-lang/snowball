@@ -49,9 +49,7 @@ LLVMBuilder::getLLVMType(types::Type* t) {
     else if (auto f = cast<types::FunctionType>(t)) {
         return getLLVMFunctionType(f)->getPointerTo();
     } else if (auto c = cast<types::DefinedType>(t)) {
-        if (auto it = types.find(c->getId()); it != types.end()) {
-            return it->second;
-        }
+        if (auto it = types.find(c->getId()); it != types.end()) { return it->second; }
 
         auto fields = c->getFields();
         auto generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Type*>(
@@ -66,9 +64,7 @@ LLVMBuilder::getLLVMType(types::Type* t) {
             auto structName = (std::string)_SN_VTABLE_PREFIX + c->getMangledName();
             std::vector<llvm::Type*> types;
 
-            for (auto fn : c->getVTable()) {
-                types.push_back(getLLVMType(fn->getType()));
-            }
+            for (auto fn : c->getVTable()) { types.push_back(getLLVMType(fn->getType())); }
 
             auto vtable = llvm::StructType::create(module->getContext(), structName);
 

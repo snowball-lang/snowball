@@ -44,28 +44,20 @@ ImportService::getImportPath(const std::string package, std::vector<std::string>
     bool isPackage = package == "$";
 
     fs::path definedPath;
-    for (auto p : path) {
-        definedPath /= p;
-    }
+    for (auto p : path) { definedPath /= p; }
 
     fs::path fullPath = packagePath / definedPath;
     bool exists = false;
     std::string foundExt;
 
     for (auto ext : extensions) {
-        if (exists) {
-            return {"", "Multiple paths found without an extension defined"};
-        }
+        if (exists) { return {"", "Multiple paths found without an extension defined"}; }
 
         exists = access((fullPath.string() + ext).c_str(), F_OK) != -1;
-        if (exists) {
-            foundExt = ext;
-        }
+        if (exists) { foundExt = ext; }
     }
 
-    if (!exists) {
-        return {"", FMT("Coudn't find module imported from '%s'!", package.c_str())};
-    }
+    if (!exists) { return {"", FMT("Coudn't find module imported from '%s'!", package.c_str())}; }
 
     return {fullPath.string() + foundExt, ""};
 }

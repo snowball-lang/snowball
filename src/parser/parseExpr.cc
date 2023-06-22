@@ -185,8 +185,7 @@ Parser::parseExpr(bool allowAssign) {
             OP_CASE(OP_BIT_AND_EQ, BIT_AND_EQ);
             OP_CASE(OP_BIT_XOR, BIT_XOR);
             OP_CASE(OP_BIT_XOR_EQ, BIT_XOR_EQ);
-            default:
-                valid = false;
+            default: valid = false;
 #undef OP_CASE
         }
 

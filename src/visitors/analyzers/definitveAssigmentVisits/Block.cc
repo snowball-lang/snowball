@@ -9,9 +9,7 @@ namespace Syntax
 SN_DEFINITE_ASSIGMENT_VISIT(Block) {
     std::vector<std::string> blockInited;
     asBlock([&] {
-        for (auto i : p_node->getStmts()) {
-            i->accept(this);
-        }
+        for (auto i : p_node->getStmts()) { i->accept(this); }
 
         blockInited = this->state.inited;
     });

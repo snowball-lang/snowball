@@ -47,9 +47,7 @@ getSubstringByRange(const std::string& str,
     // Iterate over the string to find the starting and ending positions
     // of the substring
     for (int i = 0; i < str.length(); i++) {
-        if (currentLine == start.first && currentColumn == start.second) {
-            startPos = i;
-        }
+        if (currentLine == start.first && currentColumn == start.second) { startPos = i; }
         if (currentLine == end.first && currentColumn == end.second) {
             endPos = i;
             break;

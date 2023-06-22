@@ -36,9 +36,7 @@ Transformer::deduceFunctionType(snowball::Syntax::Expression::Param* generic,
     }
 
     // Check if the generic has a default type and non was found
-    if (generic->type != nullptr) {
-        return transformType(generic->type);
-    }
+    if (generic->type != nullptr) { return transformType(generic->type); }
 
     return std::nullopt;
 }

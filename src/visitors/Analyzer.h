@@ -65,9 +65,7 @@ class Analyzer : public AcceptorExtend<Analyzer, Visitor> {
      */
     void
     run(std::vector<Syntax::Node*> nodes) {
-        for (auto n : nodes) {
-            n->accept(this);
-        }
+        for (auto n : nodes) { n->accept(this); }
     }
 
     // Default destructor

@@ -44,18 +44,14 @@ PointerType::toRef() {
 
 std::shared_ptr<Type>
 PointerType::getBaseType() const {
-    if (auto c = utils::dyn_cast<PointerType>(base)) {
-        return c->getBaseType();
-    }
+    if (auto c = utils::dyn_cast<PointerType>(base)) { return c->getBaseType(); }
 
     return base;
 }
 
 bool
 PointerType::canCast(Type* ty) const {
-    if (auto c = utils::cast<PointerType>(ty)) {
-        return base->is(c->getPointedType());
-    }
+    if (auto c = utils::cast<PointerType>(ty)) { return base->is(c->getPointedType()); }
 
     return false;
 }

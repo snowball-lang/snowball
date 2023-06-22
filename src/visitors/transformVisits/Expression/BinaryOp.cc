@@ -14,9 +14,7 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
     auto opType = p_node->op_type;
     // assert(false && "TODO:");
 
-    if (p_node->unary) {
-        assert(false && "TODO:");
-    }
+    if (p_node->unary) { assert(false && "TODO:"); }
 
     auto left = p_node->left;
     auto right = p_node->right;

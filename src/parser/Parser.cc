@@ -105,9 +105,7 @@ Parser::next(int p_offset) {
         m_current = m_tokens.at(m_tok_index);
 
         return m_current;
-    } catch (std::out_of_range& _) {
-        createError<BUG>("Index error");
-    }
+    } catch (std::out_of_range& _) { createError<BUG>("Index error"); }
 
     return {};
 }
@@ -119,9 +117,7 @@ Parser::prev(int p_offset) {
         m_current = m_tokens.at(m_tok_index);
 
         return m_current;
-    } catch (std::out_of_range& _) {
-        createError<BUG>("Index error");
-    }
+    } catch (std::out_of_range& _) { createError<BUG>("Index error"); }
 
     return {};
 }

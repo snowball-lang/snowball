@@ -44,9 +44,7 @@ DBGSourceInfo::get_pos_str() const {
     for (size_t i = 0; i < line_str.size(); i++) {
         cur_col++;
         if (cur_col == pos.second) {
-            for (uint32_t i = 0; i < width; i++) {
-                ss_pos << '~';
-            }
+            for (uint32_t i = 0; i < width; i++) { ss_pos << '~'; }
             done = true;
             break;
         } else if (line_str[i] != '\t') {

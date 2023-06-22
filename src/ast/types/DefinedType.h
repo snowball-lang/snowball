@@ -96,9 +96,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>, public ir::IdMixin
      */
     virtual bool
     is(Type* other) const override {
-        if (auto c = utils::cast<DefinedType>(other)) {
-            return is(c);
-        }
+        if (auto c = utils::cast<DefinedType>(other)) { return is(c); }
 
         return false;
     }

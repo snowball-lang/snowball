@@ -112,9 +112,7 @@ main(int argc, char** argv) {
 #ifdef CRASH_HANDLER_EXCEPTION
     __try {
         return _main(argc, argv);
-    } __except (CrashHandlerException(GetExceptionInformation())) {
-        return 1;
-    }
+    } __except (CrashHandlerException(GetExceptionInformation())) { return 1; }
 #else
     return _main(argc, argv);
 #endif
@@ -236,9 +234,7 @@ CrashHandlerException(EXCEPTION_POINTERS* ep) {
     DWORD cbNeeded;
     std::vector<HMODULE> module_handles(1);
 
-    if (IsDebuggerPresent()) {
-        return EXCEPTION_CONTINUE_SEARCH;
-    }
+    if (IsDebuggerPresent()) { return EXCEPTION_CONTINUE_SEARCH; }
 
     fprintf(stderr, "%s: Program crashed\n", __FUNCTION__);
 
@@ -406,9 +402,7 @@ _execute(const std::string& p_path,
 
         char buf[65535];
 
-        while (fgets(buf, 65535, f)) {
-            (*r_pipe) += std::string(buf);
-        }
+        while (fgets(buf, 65535, f)) { (*r_pipe) += std::string(buf); }
         int rv = pclose(f);
         if (r_exitcode) *r_exitcode = rv;
 
@@ -540,9 +534,7 @@ handle_crash(int sig) {
             // Try to get the file/line number using addr2line
             int ret;
             int err = _execute("addr2line", args, true, nullptr, &output, &ret);
-            if (err == 0) {
-                output.erase(output.length() - 1, 1);
-            }
+            if (err == 0) { output.erase(output.length() - 1, 1); }
 
             if (output.find(" ??:") != std::string::npos) { // _start at ??:0 no symbol found
                 fprintf(stderr,

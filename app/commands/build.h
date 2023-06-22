@@ -79,9 +79,7 @@ build(app::Options::BuildOptions p_opts) {
     compiler->initialize();
     compiler->set_optimization(p_opts.opt);
 
-    if (p_opts.is_test) {
-        compiler->enable_tests();
-    }
+    if (p_opts.is_test) { compiler->enable_tests(); }
 
     auto start = high_resolution_clock::now();
 

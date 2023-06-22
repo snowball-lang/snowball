@@ -130,9 +130,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         if (argTypes.size() < (args.size() - func->hasParent())) {
             int default_arg_count = 0;
             for (auto arg : args) {
-                if (arg.second->hasDefaultValue()) {
-                    ++default_arg_count;
-                }
+                if (arg.second->hasDefaultValue()) { ++default_arg_count; }
             }
 
             if (((args.size() - default_arg_count) - func->hasParent()) <=

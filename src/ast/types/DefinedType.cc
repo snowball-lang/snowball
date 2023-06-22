@@ -90,9 +90,7 @@ DefinedType::getPrettyName() const {
     if (generics.size() > 0) {
         genericString = "<";
 
-        for (auto g : generics) {
-            genericString += g->getPrettyName();
-        }
+        for (auto g : generics) { genericString += g->getPrettyName(); }
 
         genericString += ">";
     }
@@ -128,9 +126,7 @@ Syntax::Expression::TypeRef*
 DefinedType::toRef() {
     auto tRef = Syntax::TR(getUUID(), nullptr, shared_from_this());
     std::vector<Syntax::Expression::TypeRef*> genericRef;
-    for (auto g : generics) {
-        genericRef.push_back(g->toRef());
-    }
+    for (auto g : generics) { genericRef.push_back(g->toRef()); }
 
     tRef->setGenerics(genericRef);
     return tRef;
@@ -138,9 +134,7 @@ DefinedType::toRef() {
 
 bool
 DefinedType::canCast(Type* ty) const {
-    if (auto x = utils::cast<DefinedType>(ty)) {
-        return canCast(x);
-    }
+    if (auto x = utils::cast<DefinedType>(ty)) { return canCast(x); }
 
     return false;
 }

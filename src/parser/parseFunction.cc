@@ -314,9 +314,7 @@ Parser::parseFunction(bool isConstructor, bool isOperator, bool isLambda) {
     while (true) {
         auto pk = peek();
 
-        if (is<TokenType::BRACKET_RPARENT>(pk)) {
-            break;
-        }
+        if (is<TokenType::BRACKET_RPARENT>(pk)) { break; }
 
         next();
         if (isExtern && is<TokenType::IDENTIFIER>() && (!is<TokenType::SYM_COLCOL>(peek()))) {
@@ -434,9 +432,7 @@ Parser::parseFunction(bool isConstructor, bool isOperator, bool isLambda) {
         fn = Syntax::N<FunctionDef>(name);
     }
 
-    for (auto a : attributes) {
-        fn->addAttribute(a);
-    }
+    for (auto a : attributes) { fn->addAttribute(a); }
 
     fn->setVirtual(isVirtual);
     fn->setVariadic(isVarArg);

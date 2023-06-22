@@ -69,9 +69,7 @@ typedef int32_t snowball_int_t;
 #endif
 
 #define UNREACHABLE                                                                                \
-    do {                                                                                           \
-        std::abort();                                                                              \
-    } while (0);
+    do { std::abort(); } while (0);
 
 // Debug
 #undef NDEBUG

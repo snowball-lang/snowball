@@ -26,9 +26,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
                           std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
                           std::optional<std::shared_ptr<ir::Module>>,
                           bool /* Accept private members */> {
-        if (auto x = utils::dyn_cast<types::PointerType>(type)) {
-            type = x->getBaseType();
-        }
+        if (auto x = utils::dyn_cast<types::PointerType>(type)) { type = x->getBaseType(); }
 
         if (auto x = utils::dyn_cast<types::DefinedType>(type)) {
             auto g = utils::cast<Expression::GenericIdentifier>(index->getIdentifier());
@@ -59,9 +57,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
                 }
             }
 
-            if (indexValue == std::nullopt) {
-                indexValue = v;
-            }
+            if (indexValue == std::nullopt) { indexValue = v; }
 
             if (!indexValue.has_value() && !ty.has_value() && !fns.has_value() &&
                 !ovs.has_value() && !mod.has_value()) {

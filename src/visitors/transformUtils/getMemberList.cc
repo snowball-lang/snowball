@@ -41,9 +41,7 @@ Transformer::getMemberList(std::vector<Syntax::Statement::VariableDecl*> fieldNo
                 break;
             }
         }
-        if (!exists) {
-            member_list.push_back(field);
-        }
+        if (!exists) { member_list.push_back(field); }
     }
 
     return member_list;

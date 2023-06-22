@@ -27,9 +27,7 @@ OperatorService::operatorName(OperatorType id) {
 OperatorService::OperatorType
 OperatorService::operatorID(const std::string& n) {
     std::string name = n;
-    if (isOperator(name)) {
-        name = name.substr(1, name.size() - 1);
-    }
+    if (isOperator(name)) { name = name.substr(1, name.size() - 1); }
 
     auto it = std::find(operators.begin(), operators.end(), name);
     assert(it != operators.end());

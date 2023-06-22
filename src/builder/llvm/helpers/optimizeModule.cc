@@ -95,26 +95,13 @@ LLVMBuilder::optimizeModule(app::Options::Optimization o) {
     // todo: let user decide
     llvm::OptimizationLevel level;
     switch (o) {
-        case app::Options::Optimization::OPTIMIZE_O0:
-            level = llvm::OptimizationLevel::O0;
-            break;
-        case app::Options::Optimization::OPTIMIZE_O1:
-            level = llvm::OptimizationLevel::O1;
-            break;
-        case app::Options::Optimization::OPTIMIZE_O2:
-            level = llvm::OptimizationLevel::O2;
-            break;
-        case app::Options::Optimization::OPTIMIZE_O3:
-            level = llvm::OptimizationLevel::O3;
-            break;
-        case app::Options::Optimization::OPTIMIZE_Os:
-            level = llvm::OptimizationLevel::Os;
-            break;
-        case app::Options::Optimization::OPTIMIZE_Oz:
-            level = llvm::OptimizationLevel::Oz;
-            break;
-        default:
-            assert(false && "during code optimization");
+        case app::Options::Optimization::OPTIMIZE_O0: level = llvm::OptimizationLevel::O0; break;
+        case app::Options::Optimization::OPTIMIZE_O1: level = llvm::OptimizationLevel::O1; break;
+        case app::Options::Optimization::OPTIMIZE_O2: level = llvm::OptimizationLevel::O2; break;
+        case app::Options::Optimization::OPTIMIZE_O3: level = llvm::OptimizationLevel::O3; break;
+        case app::Options::Optimization::OPTIMIZE_Os: level = llvm::OptimizationLevel::Os; break;
+        case app::Options::Optimization::OPTIMIZE_Oz: level = llvm::OptimizationLevel::Oz; break;
+        default: assert(false && "during code optimization");
     }
 
     if (level == llvm::OptimizationLevel::O0) {

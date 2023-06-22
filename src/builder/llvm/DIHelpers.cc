@@ -66,9 +66,7 @@ LLVMBuilder::getDIType(types::Type* ty) {
     else if (auto f = cast<types::FunctionType>(ty)) {
         std::vector<llvm::Metadata*> argTypes = {getDIType(f->getRetType().get())};
 
-        for (auto argType : f->getArgs()) {
-            argTypes.push_back(getDIType(argType.get()));
-        }
+        for (auto argType : f->getArgs()) { argTypes.push_back(getDIType(argType.get())); }
 
         auto subroutineType =
                 dbg.builder->createSubroutineType(llvm::MDTuple::get(*context, argTypes));
@@ -82,9 +80,7 @@ LLVMBuilder::getDIType(types::Type* ty) {
         auto fields = c->getFields();
         std::vector<llvm::Metadata*> generatedFields;
         llvm::DIType* parentDIType = nullptr;
-        if (auto p = c->getParent()) {
-            parentDIType = getDIType(c->getParent().get());
-        }
+        if (auto p = c->getParent()) { parentDIType = getDIType(c->getParent().get()); }
 
         auto debugType =
                 dbg.builder->createClassType(file,

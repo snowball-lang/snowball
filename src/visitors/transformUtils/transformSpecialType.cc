@@ -32,9 +32,7 @@ Transformer::transformSpecialType(Expression::TypeRef* ty) {
         auto generic = generics.at(0);
         auto type = transformType(generic);
         auto fnType = utils::dyn_cast<types::FunctionType>(type);
-        if (fnType) {
-            return fnType->getRetType();
-        }
+        if (fnType) { return fnType->getRetType(); }
 
         E<TYPE_ERROR>(ty,
                       FMT("Type '%i' expected first generic parameter to "

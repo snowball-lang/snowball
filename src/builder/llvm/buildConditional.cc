@@ -35,9 +35,7 @@ LLVMBuilder::visit(ir::Conditional* c) {
 
     builder->SetInsertPoint(falseBB);
 
-    if (auto x = c->getElse()) {
-        x->visit(this);
-    }
+    if (auto x = c->getElse()) { x->visit(this); }
 
     CREATE_CONTINUE((c->getElse() == nullptr))
     builder->SetInsertPoint(continueBB);

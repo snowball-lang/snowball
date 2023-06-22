@@ -21,9 +21,7 @@ Parser::parseFunctionCall(Syntax::Expression::Base* callee,
     while (true) {
         auto pk = peek();
 
-        if (terminator == pk.type) {
-            break;
-        }
+        if (terminator == pk.type) { break; }
 
         auto val = parseExpr(false);
         arguments.push_back(val);

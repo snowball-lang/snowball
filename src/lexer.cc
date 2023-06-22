@@ -45,27 +45,19 @@ Lexer::tokenize() {
     // char will also be added to the Token array
     while (char_ptr < (int)code.size()) {
         switch (GET_CHAR(0)) {
-            case 0:
-                handle_eof();
-                break;
+            case 0: handle_eof(); break;
 
             // Space, new lines and tabs
             case ' ':
-            case '\t':
-                EAT_CHAR(1);
-                break;
+            case '\t': EAT_CHAR(1); break;
 
-            case '\n':
-                EAT_LINE();
-                break;
+            case '\n': EAT_LINE(); break;
 
             case '/': {
                 if (GET_CHAR(1) == '/') { // comment
 
                     // Skip characters until we encounter _EOF or NEW_LINE
-                    while (GET_CHAR(0) != '\n' && GET_CHAR(0) != 0) {
-                        EAT_CHAR(1);
-                    }
+                    while (GET_CHAR(0) != '\n' && GET_CHAR(0) != 0) { EAT_CHAR(1); }
 
                     if (GET_CHAR(0) == '\n') {
                         EAT_LINE();
@@ -116,43 +108,19 @@ Lexer::tokenize() {
                     consume(TokenType::SYM_COLLON);
                 break;
             }
-            case ',':
-                consume(TokenType::SYM_COMMA);
-                break;
-            case ';':
-                consume(TokenType::SYM_SEMI_COLLON);
-                break;
-            case '#':
-                consume(TokenType::SYM_HASH);
-                break;
-            case '$':
-                consume(TokenType::SYM_DOLLAR);
-                break;
-            case '?':
-                consume(TokenType::SYM_QUESTION);
-                break;
-            case '@':
-                consume(TokenType::SYM_AT);
-                break;
+            case ',': consume(TokenType::SYM_COMMA); break;
+            case ';': consume(TokenType::SYM_SEMI_COLLON); break;
+            case '#': consume(TokenType::SYM_HASH); break;
+            case '$': consume(TokenType::SYM_DOLLAR); break;
+            case '?': consume(TokenType::SYM_QUESTION); break;
+            case '@': consume(TokenType::SYM_AT); break;
             // brackets
-            case '(':
-                consume(TokenType::BRACKET_LPARENT);
-                break;
-            case ')':
-                consume(TokenType::BRACKET_RPARENT);
-                break;
-            case '{':
-                consume(TokenType::BRACKET_LCURLY);
-                break;
-            case '}':
-                consume(TokenType::BRACKET_RCURLY);
-                break;
-            case '[':
-                consume(TokenType::BRACKET_LSQUARED);
-                break;
-            case ']':
-                consume(TokenType::BRACKET_RSQUARED);
-                break;
+            case '(': consume(TokenType::BRACKET_LPARENT); break;
+            case ')': consume(TokenType::BRACKET_RPARENT); break;
+            case '{': consume(TokenType::BRACKET_LCURLY); break;
+            case '}': consume(TokenType::BRACKET_RCURLY); break;
+            case '[': consume(TokenType::BRACKET_LSQUARED); break;
+            case ']': consume(TokenType::BRACKET_RSQUARED); break;
 
             // op
             case '=': {
@@ -237,9 +205,7 @@ Lexer::tokenize() {
                     consume(TokenType::OP_NOT);
                 break;
             }
-            case '~':
-                consume(TokenType::OP_BIT_NOT);
-                break;
+            case '~': consume(TokenType::OP_BIT_NOT); break;
             case '|': {
                 if (GET_CHAR(1) == '=')
                     consume(TokenType::OP_BIT_OR_EQ, 2);
@@ -272,7 +238,6 @@ Lexer::tokenize() {
                 while (GET_CHAR(0) != '\'') {
                     if (GET_CHAR(0) == '\\') {
                         char c = GET_CHAR(1);
-
                         switch (c) {
                             case 0: // TODO: show the start of string
                                     // location
@@ -695,9 +660,7 @@ Lexer::handle_eof(bool p_consume) {
     // Add token to the list of tokens
     tokens.emplace_back(tk);
 
-    if (p_consume) {
-        EAT_CHAR(1);
-    }
+    if (p_consume) { EAT_CHAR(1); }
 }
 
 void

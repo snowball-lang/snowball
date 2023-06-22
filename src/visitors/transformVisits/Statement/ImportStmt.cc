@@ -23,9 +23,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     auto path = p_node->getPath();
     // TODO: extension
     auto [filePath, error] = ctx->imports->getImportPath(package, path);
-    if (!error.empty()) {
-        E<IO_ERROR>(p_node, error);
-    }
+    if (!error.empty()) { E<IO_ERROR>(p_node, error); }
 
     auto uuid = package == "Core" ? ctx->imports->CORE_UUID + path[0]
                                   : ctx->imports->getModuleUUID(filePath);

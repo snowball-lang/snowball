@@ -56,9 +56,7 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
             fn->setGenerics(fnGenerics);
 
             if (auto c = ctx->getCurrentClass(true)) {
-                if (node->isVirtual()) {
-                    fn->setVirtualIndex(c->addVtableItem(fn));
-                }
+                if (node->isVirtual()) { fn->setVirtualIndex(c->addVtableItem(fn)); }
             }
 
             fn->setAttributes(node->getAttributes());

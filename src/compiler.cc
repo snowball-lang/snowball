@@ -102,9 +102,7 @@ Compiler::compile(bool verbose) {
                             for (auto pass : passes) pass->run(ast);
                         }));
 #else
-            for (auto pass : passes) {
-                pass->run(ast);
-            }
+            for (auto pass : passes) { pass->run(ast); }
 #endif
 
             SHOW_STATUS(Logger::compiling(Logger::progress(0.70)))
@@ -137,9 +135,7 @@ toml::parse_result
 Compiler::get_config() {
     std::string name = fs::current_path() / "sn.toml";
     std::ifstream f(name.c_str());
-    if (f.good()) {
-        return toml::parse_file(name);
-    }
+    if (f.good()) { return toml::parse_file(name); }
 
     throw SNError(Error::IO_ERROR,
                   FMT("Project configuration not found (%s)\n%shelp%s: try "

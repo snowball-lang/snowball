@@ -104,9 +104,7 @@ Transformer::transformClass(const std::string& uuid,
             auto item = std::make_shared<transform::Item>(transformedType);
             ctx->cache->setTransformedType(_uuid, item);
 
-            for (auto fn : ty->getFunctions()) {
-                fn->accept(this);
-            }
+            for (auto fn : ty->getFunctions()) { fn->accept(this); }
 
             {
                 // Set the default '=' operator for the class

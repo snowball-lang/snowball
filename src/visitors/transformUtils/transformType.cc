@@ -72,13 +72,9 @@ Transformer::transformType(Expression::TypeRef* ty) {
     }
 
 continueTypeFetch:
-    if (auto x = transformSpecialType(ty)) {
-        return x;
-    }
+    if (auto x = transformSpecialType(ty)) { return x; }
 
-    if (auto x = ty->_getInternalType()) {
-        return x;
-    }
+    if (auto x = ty->_getInternalType()) { return x; }
 
     if (ty->isTypeDecl()) {
         auto decl = utils::cast<Expression::DeclType>(ty);
@@ -106,9 +102,7 @@ continueTypeFetch:
                 auto transformed = t->getType();
                 assert(t != nullptr);
 
-                if (typeGenericsMatch(ty, transformed)) {
-                    return transformed;
-                }
+                if (typeGenericsMatch(ty, transformed)) { return transformed; }
             }
         }
 

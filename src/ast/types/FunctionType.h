@@ -77,9 +77,7 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
      */
     virtual bool
     is(Type* other) const override {
-        if (auto f = utils::cast<FunctionType>(other)) {
-            return is(f);
-        }
+        if (auto f = utils::cast<FunctionType>(other)) { return is(f); }
 
         return false;
     }

@@ -20,9 +20,7 @@ namespace app
 {
 CLI::CLI(int argc, char** argv) {
     // Start the index with 1 to ignore "snowball"
-    for (int i = 1; i < argc; i++) {
-        args.push_back(argv[i]);
-    }
+    for (int i = 1; i < argc; i++) { args.push_back(argv[i]); }
 }
 
 Options

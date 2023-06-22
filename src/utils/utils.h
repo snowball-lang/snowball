@@ -74,9 +74,7 @@ std::vector<Return>
 map(std::map<Key, Val> p_map, std::function<Return(std::pair<Key, Val>)> cb) {
     std::vector<Return> vec;
 
-    for (auto item : p_map) {
-        vec.push_back(cb(item));
-    }
+    for (auto item : p_map) { vec.push_back(cb(item)); }
 
     return vec;
 }
@@ -86,9 +84,7 @@ std::vector<Return>
 map(std::list<std::pair<Key, Val>> p_map, std::function<Return(std::pair<Key, Val>)> cb) {
     std::vector<Return> vec;
 
-    for (auto item : p_map) {
-        vec.push_back(cb(item));
-    }
+    for (auto item : p_map) { vec.push_back(cb(item)); }
 
     return vec;
 }
@@ -109,9 +105,7 @@ template <typename T, typename R>
 std::vector<R>
 _x_to_vec(T x) {
     std::vector<R> vec;
-    for (auto i : x) {
-        vec.push_back(i.second);
-    }
+    for (auto i : x) { vec.push_back(i.second); }
     return vec;
 }
 

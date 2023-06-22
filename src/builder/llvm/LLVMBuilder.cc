@@ -139,9 +139,7 @@ LLVMBuilder::codegen() {
         this->iModule = m;
 
         // Generate all the variables defined in this module.
-        for (auto v : m->getVariables()) {
-            addGlobalVariable(v);
-        }
+        for (auto v : m->getVariables()) { addGlobalVariable(v); }
 
         // Terminate the global ctor if exists
         if (auto x = getGlobalCTOR(false)) {

@@ -19,9 +19,7 @@ SN_DEFINITE_ASSIGMENT_VISIT(Statement::VariableDecl) {
                 {.info = FMT("Defined with the same name at the same scope level.", x.c_str())});
     }
 
-    if (p_node->isInitialized()) {
-        p_node->getValue()->accept(this);
-    }
+    if (p_node->isInitialized()) { p_node->getValue()->accept(this); }
 
     this->scopes.front().emplace(
             std::make_pair(x, p_node->isInitialized() ? Initialized : NotInitialized));

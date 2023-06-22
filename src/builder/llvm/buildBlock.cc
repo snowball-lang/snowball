@@ -13,9 +13,7 @@ namespace codegen
 
 void
 LLVMBuilder::visit(ir::Block* block) {
-    for (auto i : block->getBlock()) {
-        build(i.get());
-    }
+    for (auto i : block->getBlock()) { build(i.get()); }
 }
 
 } // namespace codegen

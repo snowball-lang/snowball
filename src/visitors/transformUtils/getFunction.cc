@@ -66,9 +66,7 @@ Transformer::getFunction(
             }
 
             // TODO: check for ambiguous functions
-            if (equal) {
-                return std::reinterpret_pointer_cast<ir::Func>(v);
-            }
+            if (equal) { return std::reinterpret_pointer_cast<ir::Func>(v); }
         }
 
         E<TYPE_ERROR>(dbgInfo,
@@ -192,8 +190,7 @@ Transformer::getFunction(
                               Expression::FunctionCall::getArgumentsAsString(arguments).c_str()));
         }
 
-        default:
-            assert(false);
+        default: assert(false);
     }
 
     assert(false && "BUG: unhandled getFunction res case.");

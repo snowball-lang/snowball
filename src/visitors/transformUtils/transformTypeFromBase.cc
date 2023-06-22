@@ -24,9 +24,7 @@ Transformer::transformTypeFromBase(const std::string& uuid,
     auto requiredArguments = 0;
     for (auto arg : generics) {
         // Check for if there's no default type
-        if (arg->type == nullptr) {
-            requiredArguments++;
-        }
+        if (arg->type == nullptr) { requiredArguments++; }
     }
 
     if (typeRef->getGenerics().size() < requiredArguments ||

@@ -74,13 +74,9 @@ Transformer::getFromIdentifier(DBGSourceInfo* dbgInfo,
     }
 
     std::optional<std::vector<cacheComponents::Functions::FunctionStore>> overloads = std::nullopt;
-    if (auto x = ctx->cache->getFunction(uuid)) {
-        overloads = x;
-    }
+    if (auto x = ctx->cache->getFunction(uuid)) { overloads = x; }
 
-    if (funcs || overloads) {
-        return {std::nullopt, std::nullopt, funcs, overloads, std::nullopt};
-    }
+    if (funcs || overloads) { return {std::nullopt, std::nullopt, funcs, overloads, std::nullopt}; }
 
     return {std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt};
 }
