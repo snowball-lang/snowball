@@ -25,7 +25,10 @@ enum Fn
 }
 
 namespace Syntax {
+
+// Forward declarations
 class Visitor;
+class WhereClause;
 
 struct Node : public DBGObject {
   public:

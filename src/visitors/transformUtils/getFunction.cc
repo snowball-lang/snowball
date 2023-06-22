@@ -143,8 +143,7 @@ Transformer::getFunction(
     for (auto overload : functions.value()) {                                                      \
         auto err = EI<>(overload, "", {.info = "A possible function overload"});                   \
         if (tailErrors == nullptr) {                                                               \
-            \ 
-                        tailErrors = err;                                                          \
+            tailErrors = err;                                                                      \
             continue;                                                                              \
         }                                                                                          \
         tailErrors->info.tail = err;                                                               \
