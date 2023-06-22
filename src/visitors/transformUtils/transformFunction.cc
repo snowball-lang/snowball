@@ -29,8 +29,11 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
             assert(deducedTypes.size() == node->getGenerics().size());
             std::vector<std::pair<std::string, std::shared_ptr<types::Type>>> fnGenerics;
             for (int genericCount = 0; genericCount < deducedTypes.size(); genericCount++) {
-                auto name = node->getGenerics().at(genericCount)->getName();
+                auto nodeGeneric = node->getGenerics().at(genericCount);
+                auto name = nodeGeneric->getName();
                 auto generic = deducedTypes.at(genericCount);
+
+                executeGenericTests(nodeGeneric->getWhereClause(), generic);
                 auto item = std::make_shared<transform::Item>(generic);
                 // TODO:
                 // item->setDBGInfo(generic->getDBGInfo());

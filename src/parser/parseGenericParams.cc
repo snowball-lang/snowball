@@ -26,8 +26,14 @@ Parser::parseGenericParams() {
             // value is a null pointer, meaning that
             // there are no default parameters defined.
             TypeRef* default_ty = nullptr;
+            // Statements to be executed in order to perform
+            // checks for the selected generics.
+            WhereClause* whereClause = nullptr;
             // Consume identifier
             next();
+            // Parse [where_clause]
+            if (is<TokenType::SYM_COLLON>())
+                whereClause = parseWhereClause();
             // "=" [default_type]
             if (is<TokenType::OP_EQ>()) {
                 next();
@@ -35,14 +41,14 @@ Parser::parseGenericParams() {
             }
             // Generate a new parameter instance
             auto param = new Param(name, default_ty, Param::Generic);
+            param->setWhereClause(whereClause);
             params.push_back(param);
             if (is<TokenType::OP_GT>()) {
-                next();
-                break;
+                next(); break;
             } else if (is<TokenType::SYM_COMMA>() && is<TokenType::IDENTIFIER>(peek(0, true))) {
                 continue;
             }
-            assert_tok<TokenType::OP_GT>("a comma or a >");
+            assert_tok<TokenType::OP_GT>("a ',', ':' or a '>'");
         } else if (is<TokenType::OP_GT>()) {
             next();
             break;

@@ -11,6 +11,7 @@
 #define __SNOWBALL_AST_COMMON_NODES_H_
 
 #include "../types/Type.h"
+
 #define ACCEPT() void accept(Syntax::Visitor* v) override;
 
 namespace snowball {
@@ -158,6 +159,42 @@ struct PointerType : public TypeRef {
     ~PointerType() noexcept = default;
 };
 
+/**
+ * @brief Represents a "where" clause in a program.
+ *
+ * The `WhereClause` struct is used to define constraints or conditions
+ * in a program. It is typically used in conjunction with templates or
+ * generic programming to restrict the types that can be used as arguments.
+ *
+ * @code rs
+ *  fn example<T: Sized + IsPointer>() { ... }
+ *                ^^^^^^^^^^^^^^^^^ 2 checks
+ * @endcode
+ */
+struct WhereClause {
+  public:
+    using ChecksVectorType = std::vector<TypeRef*>;
+
+  private:
+    /**
+     * @brief A vector containing the checks that should be executed
+     *  for each generic argument.
+     */
+    ChecksVectorType checks;
+
+  public:
+    WhereClause(ChecksVectorType checks) : checks(checks) { }
+    explicit WhereClause(TypeRef* check) : checks(ChecksVectorType{checks}) { }
+
+    /// @return The checks to perform
+    auto
+    getChecks() {
+        return checks;
+    }
+
+    ~WhereClause() = default;
+};
+
 /// Function signature parameter helper node (name: type).
 struct Param {
     // Parameter's name.
@@ -169,7 +206,10 @@ struct Param {
     TypeRef* type = nullptr;
     /// @brief default value used for the function
     Syntax::Expression::Base* defaultValue = nullptr;
-
+    /// @brief The where clause for the parameter- 
+    /// @note This only should be for generic parameters!
+    WhereClause* whereClause = nullptr;
+    /// @brief Parameter status (aka: parameter type) 
     enum Status
     {
         Normal,
@@ -186,8 +226,7 @@ struct Param {
     getStatus() {
         return status;
     }
-
-    /// @brief Get parameter's type
+    /// @return The parameter's type
     TypeRef*
     getType() const {
         return type;
@@ -202,7 +241,6 @@ struct Param {
     setDefaultValue(Base* b) {
         defaultValue = b;
     }
-
     /// @brief Parameter's name
     std::string
     getName() const {
@@ -220,6 +258,18 @@ struct Param {
         assert(hasDefaultValue());
         return defaultValue;
     }
+    /// @return The where clause for this generic parameter
+    auto
+    getWhereClause() const {
+        assert(status == Generic);
+        return whereClause;
+    };
+    /// @brief Set The where clause for this generic parameter
+    void
+    setWhereClause(WhereClause* clause) {
+        assert(status == Generic);
+        whereClause = clause;
+    };
 };
 } // namespace Expression
 

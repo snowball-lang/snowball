@@ -315,6 +315,14 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      */
     bool bodyReturns(std::vector<Node*> exprs);
     /**
+     * It executes a variaety of user-defined tests for a class/function/...
+     * generics. If there are no tests, it does not do anything.
+     * 
+     * @note If any test fail, an error would be reported meaning that if 
+     *  the program is still being executed all tests had passed. 
+    */
+    void executeGenericTests(Syntax::Expression::WhereClause* clause, std::shared_ptr<types::Type> generic);
+    /**
      * @brief Creates a type.
      *
      * It creates a new user defined type and adds it to the already

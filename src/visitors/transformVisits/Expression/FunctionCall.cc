@@ -8,6 +8,9 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
+    auto callBackUp = ctx->latestCall;
+    ctx->latestCall = p_node;
+
     auto [argValues, argTypes] = utils::vectors_iterate<Syntax::Expression::Base*,
                                                         std::shared_ptr<ir::Value>,
                                                         std::shared_ptr<types::Type>>(
@@ -203,6 +206,8 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     call->setArguments(argValues);
     call->isInitialization = p_node->isInitialization;
     this->value = call;
+
+    ctx->latestCall = callBackUp;
 }
 
 } // namespace Syntax

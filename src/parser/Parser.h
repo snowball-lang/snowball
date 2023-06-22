@@ -184,23 +184,19 @@ class Parser {
      */
     Syntax::Statement::FunctionDef*
     parseFunction(bool isConstructor = false, bool isOperator = false, bool isLambda = false);
-
     /**
      * params        ::=  "<" [param_args] ">"
      * param_args    ::=  identifier ["=" default_type]
      */
     std::vector<Syntax::Expression::Param*> parseGenericParams();
-
     /**
      * generics_expr ::=  "<" [type] ["," [type]...] ">"
      */
     std::vector<Syntax::Expression::TypeRef*> parseGenericExpr();
-
     /**
      * type          ::=  identifier [generics_expr]
      */
     Syntax::Expression::TypeRef* parseType();
-
     /**
      * variable      ::=  "let" ["mut"] identifier[: [type]] = [expr]
      *
@@ -209,29 +205,24 @@ class Parser {
      *    let b: i32 = 2.4
      */
     Syntax::Statement::VariableDecl* parseVariable();
-
     /**
      * block         ::=  "{" [body] "}"
      * body          ::=  [stmt] | [expr]
      */
     Syntax::Block* parseBlock(std::vector<TokenType> termination = {TokenType::BRACKET_RCURLY});
-
     /**
      * return stmt   ::=  "return" [stmt]
      */
     Syntax::Statement::Return* parseReturn();
-
     /**
      * while stmt   ::=  "while" [stmt] [block]
      */
     Syntax::Statement::WhileLoop* parseWhile();
-
     /**
      * conditional   ::=  "if" [expr] [block]
      *                |   "if" [expr]: [expr]
      */
     Syntax::Statement::Conditional* parseConditional();
-
     /**
      * visibility    ::=  pub | priv
      * class_name    ::=  identifier
@@ -254,7 +245,6 @@ class Parser {
      *                    [class_inherit] [class_body]
      */
     Syntax::Statement::ClassDef* parseClass();
-
     /**
      * function_call ::= [expr] "(" [args] ")"
      * arguments     ::= [[expr] "," ...]
@@ -265,7 +255,6 @@ class Parser {
     parseFunctionCall(Syntax::Expression::Base* callee,
                       TokenType terminator = TokenType::BRACKET_RPARENT,
                       std::string terminatorString = ")");
-
     /**
      * function_call ::= [expr] "(" [args] ")"
      * arguments     ::= [[expr] "," ...]
@@ -273,14 +262,12 @@ class Parser {
      * @param callee expression being called
      */
     Syntax::Statement::ImportStmt* parseImportStatement();
-
     /**
      * identifier    ::= [A-Za-z0-9_] [?genericss expr]
      *
      * @return Syntax::Expression::Identifier*
      */
     Syntax::Expression::Identifier* parseIdentifier();
-
     /**
      * expr          ::=  [constant_value] |
      *                    [function_call]  |
@@ -291,11 +278,16 @@ class Parser {
      * @param allowAssign Whether or not allow the assign operator.
      */
     Syntax::Expression::Base* parseExpr(bool allowAssign = true);
-
     /**
      * alias         ::=  "type" <identifier> = <type> ;
      */
     Syntax::Statement::TypeAlias* parseTypeAlias();
+    /**
+     * clause        ::=  ... ":" [expressions]
+     * expressions   ::=  [expr ( "+" ...)]
+     * expr          ::=  <type>
+    */
+    Syntax::Expression::WhereClause* parseWhereClause();
 };
 
 } // namespace parser

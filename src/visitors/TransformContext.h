@@ -41,6 +41,11 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     ///  type.
     std::shared_ptr<types::DefinedType> actuallCurrentClass =
             std::shared_ptr<types::DefinedType>(nullptr);
+    /// @brief A node representing the last call being transformed sort of
+    ///  like the first call in a backtrace list
+    /// @todo maybe make it a list and display all of the calls if a flag like
+    ///  "--show-full-backtrace" is set.
+    Expression::FunctionCall* latestCall = nullptr;
 
   private:
     /// Utility function to get a primitive type
@@ -130,7 +135,6 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
         auto i = std::make_shared<transform::Item>(fn);
         cache->setTransformedFunction(name, i);
     }
-
     /**
      * @brief Create an unique identifier name
      *
@@ -139,6 +143,12 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
      * @return std::string UUID for the name.
      */
     std::string createIdentifierName(const std::string name, bool includeBase = true);
+    /**
+     * @brief It creates an error tail from a certain dbg node
+    */
+    template<typename T> auto createErrorTail(T x, ErrorInfo info = {}) {
+      return Syntax::EI<Error::BUG>(x, "", info);
+    } 
 
     ~TransformContext() noexcept = default;
 
