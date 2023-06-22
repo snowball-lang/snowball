@@ -70,7 +70,8 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod) : AcceptorEx
     auto coreModItem = std::make_shared<transform::Item>(coreMod);
     addItem("Core", coreModItem);
 
-    std::vector<std::string> coreBuiltins = {"ReturnType", "Sized"};
+    std::vector<std::string> coreBuiltins = {"ReturnType", "Sized", "IsNumeric", "IsPointer",
+                                             "CastableTo"};
 
     for (auto builtin : coreBuiltins) {
         auto baseUuid = imports->CORE_UUID + "." + builtin;

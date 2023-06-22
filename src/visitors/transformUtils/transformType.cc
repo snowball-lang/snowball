@@ -18,6 +18,7 @@ Transformer::transformType(Expression::TypeRef* ty) {
     auto id = ty->getName();
 
     std::shared_ptr<types::Type> returnedType = nullptr;
+    if (auto x = transformSpecialType(ty)) { return x; }
 
     auto ast = ty->_getInternalAST();
 
@@ -70,8 +71,7 @@ Transformer::transformType(Expression::TypeRef* ty) {
     }
 
 continueTypeFetch:
-    if (auto x = transformSpecialType(ty)) { return x; }
-
+    // TODO: maybe move up in the function to prevent problems with generics?
     if (auto x = ty->_getInternalType()) { return x; }
 
     if (ty->isTypeDecl()) {

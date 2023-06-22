@@ -286,7 +286,7 @@ class Parser {
      * clause        ::=  ... ":" [expressions]
      * expressions   ::=  [expr ( "+" ...)]
      * expr          ::=  <type>
-    */
+     */
     Syntax::Expression::WhereClause* parseWhereClause();
 };
 

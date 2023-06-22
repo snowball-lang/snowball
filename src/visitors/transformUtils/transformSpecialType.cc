@@ -9,9 +9,7 @@
     auto generics = ty->getGenerics();                                                             \
     if (generics.size() != n) {                                                                    \
         E<TYPE_ERROR>(ty->getDBGInfo(),                                                            \
-                      FMT("Expected '%i' generics for '%s' but got '%i' instead",                  \
-                          n,                                                                       \
-                          t.c_str(),                                                               \
+                      FMT("Expected '%i' generics for '%s' but got '%i' instead", n, t.c_str(),    \
                           generics.size()));                                                       \
     }
 
@@ -20,6 +18,9 @@ namespace Syntax {
 
 inline const std::string FUNCTION_RETURN_STYPE = "Core::ReturnType";
 inline const std::string SIZED_TYPE_CHECK_STYPE = "Core::Sized";
+inline const std::string IS_NUMERIC_CHECK_STYPE = "Core::IsNumeric";
+inline const std::string IS_POINTER_CHECK_STYPE = "Core::IsPointer";
+inline const std::string CASTABLE_TO_CHECK_STYPE = "Core::CastableTo";
 
 std::shared_ptr<types::Type>
 Transformer::transformSpecialType(Expression::TypeRef* ty) {
@@ -42,24 +43,88 @@ Transformer::transformSpecialType(Expression::TypeRef* ty) {
 
     STYPE_INSTANCE(SIZED_TYPE_CHECK_STYPE) {
         ASSERT_GENERICS(1, SIZED_TYPE_CHECK_STYPE)
-        
+
         auto generic = generics.at(0);
         auto type = transformType(generic);
-        auto isVoid = utils::dyn_cast<types::VoidType>(type);
 
         // TODO: check for other instances
-        if (utils::dyn_cast<types::VoidType>(type)) { 
+        if (utils::dyn_cast<types::VoidType>(type)) {
             E<TYPE_ERROR>(ty,
-                FMT("Type '%s' is expected to contain a known size at compile time but found '%s'.",
-                    SIZED_TYPE_CHECK_STYPE.c_str(),
-                    type->getPrettyName().c_str()), ErrorInfo {
-                    // TODO: instead of showing the call, show somthing like:
-                    //  typeGenerationBacktrace.at(1)
-                    //.tail = ctx->createErrorTail(ctx->latestCall)
-                });
+                          FMT("Type '%s' is expected to contain a known size at compile time but "
+                              "found '%s'.",
+                              SIZED_TYPE_CHECK_STYPE.c_str(),
+                              type->getPrettyName().c_str()),
+                          ErrorInfo{
+                                  // TODO: instead of showing the call, show somthing like (for all
+                                  // the errors here and some generic related errors):
+                                  //  typeGenerationBacktrace.at(1)
+                                  //.tail = ctx->createErrorTail(ctx->latestCall)
+                          });
         }
 
         return type;
+    }
+
+    STYPE_INSTANCE(IS_NUMERIC_CHECK_STYPE) {
+        ASSERT_GENERICS(1, IS_NUMERIC_CHECK_STYPE)
+
+        auto generic = generics.at(0);
+        auto type = transformType(generic);
+
+        // TODO: check for other instances
+        if (auto x = utils::dyn_cast<types::PrimitiveType>(type);
+            !((x == nullptr) || types::NumericType::isNumericType(x.get()))) {
+            E<TYPE_ERROR>(ty,
+                          FMT("Type '%s' is expected to be a numeric type but found '%s'!",
+                              IS_NUMERIC_CHECK_STYPE.c_str(),
+                              type->getPrettyName().c_str()));
+        }
+
+        return type;
+    }
+
+    STYPE_INSTANCE(IS_POINTER_CHECK_STYPE) {
+        ASSERT_GENERICS(1, IS_POINTER_CHECK_STYPE)
+
+        auto generic = generics.at(0);
+        auto type = transformType(generic);
+
+        // TODO: check for other instances
+        if (!utils::dyn_cast<types::PointerType>(type)) {
+            E<TYPE_ERROR>(ty,
+                          FMT("Type '%s' is expected to contain a pointer type but found '%s'.",
+                              IS_POINTER_CHECK_STYPE.c_str(),
+                              type->getPrettyName().c_str()),
+                          ErrorInfo{
+                                  // TODO: instead of showing the call, show somthing like (for all
+                                  // the errors here and some generic related errors):
+                                  //  typeGenerationBacktrace.at(1)
+                                  //.tail = ctx->createErrorTail(ctx->latestCall)
+                          });
+        }
+
+        return type;
+    }
+
+    STYPE_INSTANCE(CASTABLE_TO_CHECK_STYPE) {
+        ASSERT_GENERICS(2, CASTABLE_TO_CHECK_STYPE)
+
+        auto child = generics.at(0);
+        auto parent = generics.at(1);
+
+        auto childType = transformType(child);
+        auto parentType = transformType(parent);
+
+        // TODO: check for other instances
+        if (!childType->canCast(parentType)) {
+            E<TYPE_ERROR>(
+                    ty,
+                    FMT("Type '%s' expected type '%s' to be able to cast to '%s' but it can't!",
+                        IS_POINTER_CHECK_STYPE.c_str(), childType->getPrettyName().c_str(),
+                        parentType->getPrettyName().c_str()));
+        }
+
+        return childType;
     }
 
     return nullptr;

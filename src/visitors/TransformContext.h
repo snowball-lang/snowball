@@ -145,10 +145,12 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     std::string createIdentifierName(const std::string name, bool includeBase = true);
     /**
      * @brief It creates an error tail from a certain dbg node
-    */
-    template<typename T> auto createErrorTail(T x, ErrorInfo info = {}) {
-      return Syntax::EI<Error::BUG>(x, "", info);
-    } 
+     */
+    template <typename T>
+    auto
+    createErrorTail(T x, ErrorInfo info = {}) {
+        return Syntax::EI<Error::BUG>(x, "", info);
+    }
 
     ~TransformContext() noexcept = default;
 

@@ -2,11 +2,11 @@ use Core::CLib
 
 // TODO: Error occurs when the funtion is already generated and we only check for arg->is(...) on non-generated function overloads instead of both non and generated functions 
 
-fn hello<T: Core::Sized>() {
+fn hello<T: Core::CastableTo<?f32>>() {
   CLib::putchar('a')
 }    
 
 
 pub fn main() i32 {
-    hello<?void>();
+    hello<?i32>();
 }

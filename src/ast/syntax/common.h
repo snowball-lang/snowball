@@ -206,10 +206,10 @@ struct Param {
     TypeRef* type = nullptr;
     /// @brief default value used for the function
     Syntax::Expression::Base* defaultValue = nullptr;
-    /// @brief The where clause for the parameter- 
+    /// @brief The where clause for the parameter-
     /// @note This only should be for generic parameters!
     WhereClause* whereClause = nullptr;
-    /// @brief Parameter status (aka: parameter type) 
+    /// @brief Parameter status (aka: parameter type)
     enum Status
     {
         Normal,

@@ -32,8 +32,7 @@ Parser::parseGenericParams() {
             // Consume identifier
             next();
             // Parse [where_clause]
-            if (is<TokenType::SYM_COLLON>())
-                whereClause = parseWhereClause();
+            if (is<TokenType::SYM_COLLON>()) whereClause = parseWhereClause();
             // "=" [default_type]
             if (is<TokenType::OP_EQ>()) {
                 next();
@@ -44,7 +43,8 @@ Parser::parseGenericParams() {
             param->setWhereClause(whereClause);
             params.push_back(param);
             if (is<TokenType::OP_GT>()) {
-                next(); break;
+                next();
+                break;
             } else if (is<TokenType::SYM_COMMA>() && is<TokenType::IDENTIFIER>(peek(0, true))) {
                 continue;
             }
