@@ -11,15 +11,16 @@
 #ifndef __SNOWBALL_RETURN_VALUE_H_
 #define __SNOWBALL_RETURN_VALUE_H_
 
-namespace snowball {
-namespace ir {
+namespace snowball
+{
+namespace ir
+{
 
 /**
  * @brief Representation of a return statement
  *  in the IR.
  */
 class Return : public AcceptorExtend<Return, Value> {
-
     // Expression used as value for the return statement
     std::shared_ptr<Value> expr = nullptr;
 
@@ -31,7 +32,10 @@ class Return : public AcceptorExtend<Return, Value> {
      * @note The value may be std::nullptr because
      *  the user might do `return;` for void functions
      */
-    auto getExpr() { return expr; }
+    auto
+    getExpr() {
+        return expr;
+    }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

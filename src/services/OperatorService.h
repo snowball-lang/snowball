@@ -8,8 +8,10 @@
 #ifndef __SNOWBALL_SERVICES_OPERATORS_H_
 #define __SNOWBALL_SERVICES_OPERATORS_H_
 
-namespace snowball {
-namespace services {
+namespace snowball
+{
+namespace services
+{
 
 /**
  * @brief It manages all of the operator-related
@@ -24,7 +26,8 @@ class OperatorService {
      * @brief A list containing all of the possible overload-able
      *  operators that a class can define.
      */
-    enum OperatorType {
+    enum OperatorType
+    {
 #include "../defs/operators.def"
     };
 #undef OPERATOR
@@ -52,7 +55,9 @@ class OperatorService {
     /// @return the corresponding ID from a @param name
     static OperatorType operatorID(const std::string& name);
     /// @brief Check if a name has equality towards an operator ID
-    template <OperatorType op> static bool opEquals(const std::string& name) {
+    template <OperatorType op>
+    static bool
+    opEquals(const std::string& name) {
         return (isOperator(name) && operatorID(name) == op);
     }
 };

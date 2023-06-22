@@ -7,9 +7,11 @@
 #include <assert.h>
 
 using namespace snowball::Syntax::Statement;
-namespace snowball::parser {
+namespace snowball::parser
+{
 
-Conditional *Parser::parseConditional() {
+Conditional*
+Parser::parseConditional() {
     assert(is<TokenType::KWORD_IF>());
 
     auto info = DBGSourceInfo::fromToken(m_source_info, m_current);

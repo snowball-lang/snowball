@@ -3,17 +3,20 @@
 
 #include "../token.h"
 
-namespace snowball {
-namespace parser {
+namespace snowball
+{
+namespace parser
+{
 
-Parser::Parser(std::vector<Token> p_tokens, SourceInfo *p_source_info)
+Parser::Parser(std::vector<Token> p_tokens, SourceInfo* p_source_info)
     : m_tokens(p_tokens), m_source_info(p_source_info) {
     m_current = m_tokens.at(m_tok_index);
 }
 
-std::vector<Syntax::Node *> Parser::parse() {
+std::vector<Syntax::Node*>
+Parser::parse() {
     bool keep_parsing = true;
-    std::vector<Syntax::Node *> global;
+    std::vector<Syntax::Node*> global;
 
     while (keep_parsing) {
         switch (m_current.type) {
@@ -26,15 +29,12 @@ std::vector<Syntax::Node *> Parser::parse() {
             case TokenType::KWORD_PRIVATE: {
                 auto pk = peek();
                 if (!is<TokenType::KWORD_FUNC>(pk) && !is<TokenType::KWORD_VAR>(pk) &&
-                    !is<TokenType::KWORD_TYPEDEF>(pk) &&
-                    !is<TokenType::KWORD_STATIC>(pk) &&
-                    !is<TokenType::KWORD_CLASS>(pk) &&
-                    !is<TokenType::KWORD_EXTERN>(pk)) {
-                    createError<SYNTAX_ERROR>(
-                        "expected keyword \"fn\", \"static\", \"class\", "
-                        "\"let\" "
-                        "or "
-                        "\"extern\" after pub/priv declaration");
+                    !is<TokenType::KWORD_TYPEDEF>(pk) && !is<TokenType::KWORD_STATIC>(pk) &&
+                    !is<TokenType::KWORD_CLASS>(pk) && !is<TokenType::KWORD_EXTERN>(pk)) {
+                    createError<SYNTAX_ERROR>("expected keyword \"fn\", \"static\", \"class\", "
+                                              "\"let\" "
+                                              "or "
+                                              "\"extern\" after pub/priv declaration");
                 }
 
                 break;
@@ -86,8 +86,10 @@ std::vector<Syntax::Node *> Parser::parse() {
             }
 
             default:
-                createError<SYNTAX_ERROR>(FMT("Unexpected token found: %s%s%s", BLU,
-                                              m_current.to_string().c_str(), RESET));
+                createError<SYNTAX_ERROR>(FMT("Unexpected token found: %s%s%s",
+                                              BLU,
+                                              m_current.to_string().c_str(),
+                                              RESET));
         }
 
         if (keep_parsing) next();
@@ -96,7 +98,8 @@ std::vector<Syntax::Node *> Parser::parse() {
     return global;
 }
 
-Token Parser::next(int p_offset) {
+Token
+Parser::next(int p_offset) {
     try {
         m_tok_index += (p_offset + 1);
         m_current = m_tokens.at(m_tok_index);
@@ -109,7 +112,8 @@ Token Parser::next(int p_offset) {
     return {};
 }
 
-Token Parser::prev(int p_offset) {
+Token
+Parser::prev(int p_offset) {
     try {
         m_tok_index -= (p_offset + 1);
         m_current = m_tokens.at(m_tok_index);
@@ -122,10 +126,10 @@ Token Parser::prev(int p_offset) {
     return {};
 }
 
-Token Parser::peek(int p_offset, bool p_safe) {
+Token
+Parser::peek(int p_offset, bool p_safe) {
     Token tmp = {TokenType::_EOF};
-    if ((m_tok_index + 1) + p_offset < 0 ||
-        (m_tok_index + 1) + p_offset >= (int)m_tokens.size()) {
+    if ((m_tok_index + 1) + p_offset < 0 || (m_tok_index + 1) + p_offset >= (int)m_tokens.size()) {
         if (p_safe)
             return tmp;
         else

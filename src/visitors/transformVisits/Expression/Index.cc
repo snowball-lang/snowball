@@ -4,16 +4,17 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
 SN_TRANSFORMER_VISIT(Expression::Index) {
     auto [r, _] = getFromIndex(p_node->getDBGInfo(), p_node, p_node->isStatic);
     auto [value, type, functions, overloads, mod, canBePrivate] = r;
     auto name = p_node->getIdentifier()->getNiceName();
-    auto checkIfContextEqual =
-        [&p_node = p_node, name = name, canBePrivate = canBePrivate](
-            std::shared_ptr<ir::Func> fn) -> std::shared_ptr<ir::Func> {
+    auto checkIfContextEqual = [&p_node = p_node, name = name, canBePrivate = canBePrivate](
+                                       std::shared_ptr<ir::Func> fn) -> std::shared_ptr<ir::Func> {
         if ((!canBePrivate) && fn->isPrivate()) {
             E<TYPE_ERROR>(p_node->getDBGInfo(),
                           FMT("Variable '%s' is a private method and "
@@ -25,7 +26,8 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
     };
 
     if (value) {
-        // TODO: it should not be getValue, it should have it's own value
+        // TODO: it should not be getValue, it should have it's own
+        // value
         auto val = *value;
         if (auto casted = utils::dyn_cast<ir::Variable>(val)) {
             assert(casted != nullptr);
@@ -49,8 +51,7 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
     } else if (overloads || functions) {
         if ((overloads.has_value() && overloads->size() > 1) ||
             (functions.has_value() && functions->size() > 1)) {
-            E<VARIABLE_ERROR>(p_node,
-                              "Index points to a function with multiple overloads!");
+            E<VARIABLE_ERROR>(p_node, "Index points to a function with multiple overloads!");
         }
 
         // There can only be 1 function overload without casting
@@ -71,20 +72,23 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
             inModule = m.has_value();
         }
 
-        // TODO: actually check if base is a module with: "getFromIdentifier" of
-        // the module
+        // TODO: actually check if base is a module with:
+        // "getFromIdentifier" of the module
         if ((p_node->isStatic && (!function->isStatic())) && (!inModule)) {
-            E<TYPE_ERROR>(p_node, FMT("Can't access class method '%s' "
-                                      "that's not static as if it was one!",
-                                      function->getNiceName().c_str()));
+            E<TYPE_ERROR>(p_node,
+                          FMT("Can't access class method '%s' "
+                              "that's not static as if it was one!",
+                              function->getNiceName().c_str()));
         } else if ((!function->isStatic()) && (!inModule)) {
             E<TYPE_ERROR>(p_node,
-                          "Reference to non-static member function must be called.",
+                          "Reference to non-static member function must be "
+                          "called.",
                           {.info = "did you mean to call it with no arguments?"});
         } else if ((!p_node->isStatic) && function->isStatic()) {
-            E<TYPE_ERROR>(p_node, FMT("Can't access static class method '%s' "
-                                      "as with a non-static index expression!",
-                                      function->getNiceName().c_str()));
+            E<TYPE_ERROR>(p_node,
+                          FMT("Can't access static class method '%s' "
+                              "as with a non-static index expression!",
+                              function->getNiceName().c_str()));
         }
 
         auto var = ctx->module->N<ir::ValueExtract>(p_node->getDBGInfo(), function);
@@ -94,8 +98,7 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
         return;
     }
 
-    E<VARIABLE_ERROR>(p_node, "Cannot find index value!",
-                      {.info = "this name is not defined"});
+    E<VARIABLE_ERROR>(p_node, "Cannot find index value!", {.info = "this name is not defined"});
 }
 
 } // namespace Syntax

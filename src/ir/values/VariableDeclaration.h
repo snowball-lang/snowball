@@ -11,8 +11,10 @@
 #ifndef __SNOWBALL_VARIABLE_DECL_VALUE_H_
 #define __SNOWBALL_VARIABLE_DECL_VALUE_H_
 
-namespace snowball {
-namespace ir {
+namespace snowball
+{
+namespace ir
+{
 
 /// @brief Representation of a variable declaration in the IR
 /// Variable declarations can be then used as a way to store values
@@ -32,11 +34,20 @@ class VariableDeclaration : public IdMixin, public AcceptorExtend<Variable, Valu
         : identifier(identifier), value(value), _isMutable(isMutable){};
 
     /// @return Variable identifier
-    auto getIdentifier() const { return identifier; }
+    auto
+    getIdentifier() const {
+        return identifier;
+    }
     /// @return respective value stored into the current variable
-    auto getValue() const { return value; }
+    auto
+    getValue() const {
+        return value;
+    }
     /// @return true if the variable is mutable
-    auto isMutable() { return _isMutable; }
+    auto
+    isMutable() {
+        return _isMutable;
+    }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

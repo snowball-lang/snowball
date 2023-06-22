@@ -6,10 +6,13 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
-namespace snowball {
-namespace codegen {
+namespace snowball
+{
+namespace codegen
+{
 
-void LLVMBuilder::visit(ir::Block *block) {
+void
+LLVMBuilder::visit(ir::Block* block) {
     for (auto i : block->getBlock()) {
         build(i.get());
     }

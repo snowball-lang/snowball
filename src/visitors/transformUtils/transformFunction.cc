@@ -3,12 +3,15 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
-std::shared_ptr<ir::Func> Transformer::transformFunction(
-    Cache::FunctionStore fnStore,
-    const std::vector<std::shared_ptr<types::Type>>& deducedTypes, bool isEntryPoint) {
+std::shared_ptr<ir::Func>
+Transformer::transformFunction(Cache::FunctionStore fnStore,
+                               const std::vector<std::shared_ptr<types::Type>>& deducedTypes,
+                               bool isEntryPoint) {
     auto node = fnStore.function;
 
     // get the function name and store it for readability
@@ -26,10 +29,8 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
             // Transform generics
             // TODO: variadic generics?
             assert(deducedTypes.size() == node->getGenerics().size());
-            std::vector<std::pair<std::string, std::shared_ptr<types::Type>>>
-                fnGenerics;
-            for (int genericCount = 0; genericCount < deducedTypes.size();
-                 genericCount++) {
+            std::vector<std::pair<std::string, std::shared_ptr<types::Type>>> fnGenerics;
+            for (int genericCount = 0; genericCount < deducedTypes.size(); genericCount++) {
                 auto name = node->getGenerics().at(genericCount)->getName();
                 auto generic = deducedTypes.at(genericCount);
                 auto item = std::make_shared<transform::Item>(generic);
@@ -44,9 +45,11 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
 
             // Create a new function value and store it's return type.
             fn = ctx->module->N<ir::Func>(
-                node->getDBGInfo(), name,
-                (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)),
-                node->isVariadic(), ctx->getCurrentClass());
+                    node->getDBGInfo(),
+                    name,
+                    (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)),
+                    node->isVariadic(),
+                    ctx->getCurrentClass());
             fn->setRetTy(returnType);
             fn->setPrivacy(node->getPrivacy());
             fn->setStatic(node->isStatic());
@@ -62,8 +65,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
             ir::Func::FunctionArgs newArgs = {};
 
             if (fn->isConstructor()) {
-                auto a = ctx->module->N<ir::Argument>(node->getDBGInfo(), "self", 0,
-                                                      nullptr);
+                auto a = ctx->module->N<ir::Argument>(node->getDBGInfo(), "self", 0, nullptr);
                 a->setType(ctx->getCurrentClass(true)->getPointerTo());
                 newArgs.emplace(newArgs.begin(), std::make_pair("self", a));
             }
@@ -72,8 +74,10 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
                 auto arg = node->getArgs().at(i);
 
                 auto a = ctx->module->N<ir::Argument>(
-                    node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
-                    arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
+                        node->getDBGInfo(),
+                        arg->getName(),
+                        fn->isConstructor() + i,
+                        arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
                 a->setType(transformType(arg->getType()));
                 newArgs.insert(newArgs.end(), {arg->getName(), a});
             }
@@ -95,11 +99,11 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
                     int argIndex = 0;
                     for (auto arg : newArgs) {
                         auto ref = ctx->module->N<ir::Variable>(
-                            node->getDBGInfo(), arg.first, true /* TODO: is mutable */);
+                                node->getDBGInfo(), arg.first, true /* TODO: is mutable */);
 
                         ref->setType(arg.second->getType());
                         auto refItem = std::make_shared<transform::Item>(
-                            transform::Item::Type::VALUE, ref);
+                                transform::Item::Type::VALUE, ref);
 
                         ref->setId(arg.second->getId());
                         ctx->addItem(arg.first, refItem);
@@ -112,14 +116,14 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
                         !((utils::dyn_cast<types::NumericType>(returnType)) ||
                           (utils::dyn_cast<types::VoidType>(returnType))) &&
                         !fn->isConstructor()) {
-                        E<TYPE_ERROR>(
-                            node, "Function lacks ending return statement!",
-                            {.info = "Function does not return on all paths!"});
+                        E<TYPE_ERROR>(node,
+                                      "Function lacks ending return statement!",
+                                      {.info = "Function does not return on all "
+                                               "paths!"});
                     }
 
                     body->accept(this);
-                    auto functionBody =
-                        std::dynamic_pointer_cast<ir::Block>(this->value);
+                    auto functionBody = std::dynamic_pointer_cast<ir::Block>(this->value);
                     fn->setBody(functionBody);
                 });
 

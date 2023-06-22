@@ -9,9 +9,12 @@
 #ifndef __SNOWBALL_TRANSFORM_STATE_H_
 #define __SNOWBALL_TRANSFORM_STATE_H_
 
-namespace snowball {
-namespace Syntax {
-namespace transform {
+namespace snowball
+{
+namespace Syntax
+{
+namespace transform
+{
 
 /// @brief Representation of a saved state for the context
 struct ContextState : std::enable_shared_from_this<ContextState> {
@@ -23,7 +26,7 @@ struct ContextState : std::enable_shared_from_this<ContextState> {
     explicit ContextState(std::shared_ptr<StackType> s = {},
                           std::shared_ptr<ir::Module> module = nullptr,
                           std::shared_ptr<types::DefinedType> currentClass = nullptr)
-        : stack(s), module(module), currentClass(currentClass) {}
+        : stack(s), module(module), currentClass(currentClass) { }
 };
 } // namespace transform
 } // namespace Syntax

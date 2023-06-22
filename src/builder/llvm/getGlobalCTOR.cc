@@ -7,18 +7,19 @@
 #include <llvm/IR/Value.h>
 #include <llvm/Transforms/Utils/ModuleUtils.h>
 
-namespace snowball {
-namespace codegen {
+namespace snowball
+{
+namespace codegen
+{
 
-llvm::Function *LLVMBuilder::getGlobalCTOR(bool createIfNone) {
-    auto mangle =
-        (std::string) "_GLOBAL__I" + "$SN.$GlobalInit$" + iModule->getUniqueName();
+llvm::Function*
+LLVMBuilder::getGlobalCTOR(bool createIfNone) {
+    auto mangle = (std::string) "_GLOBAL__I" + "$SN.$GlobalInit$" + iModule->getUniqueName();
     auto fn = module->getFunction(mangle);
 
     if ((!fn) && createIfNone) {
         auto prototype = llvm::FunctionType::get(builder->getVoidTy(), {});
-        fn = h.create<llvm::Function>(prototype, llvm::Function::ExternalLinkage,
-                                      mangle, *module);
+        fn = h.create<llvm::Function>(prototype, llvm::Function::ExternalLinkage, mangle, *module);
     } else if (fn) {
         return fn;
     } else if (!fn && (!createIfNone)) {

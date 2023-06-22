@@ -20,13 +20,15 @@
 #include <string>
 #include <vector>
 
-#define VISIT(Val) void TypeChecker::visit(ir::Val *p_node)
+#define VISIT(Val) void TypeChecker::visit(ir::Val* p_node)
 
-namespace snowball {
-namespace codegen {
+namespace snowball
+{
+namespace codegen
+{
 
 TypeChecker::TypeChecker(std::shared_ptr<ir::Module> mod)
-    : AcceptorExtend<TypeChecker, ValueVisitor>(), module(mod) {}
+    : AcceptorExtend<TypeChecker, ValueVisitor>(), module(mod) { }
 
 VISIT(Func) {
     auto backup = ctx->getCurrentFunction();
@@ -57,25 +59,21 @@ VISIT(Call) {
     // TODO: check for operator sides being equal
 
     // TODO: add support for "callable" type, not just function type
-    if (std::dynamic_pointer_cast<types::FunctionType>(
-            p_node->getCallee()->getType()) == nullptr) {
-        Syntax::E<TYPE_ERROR>(p_node,
-                              FMT("Value trying to be called is not callable!"));
+    if (std::dynamic_pointer_cast<types::FunctionType>(p_node->getCallee()->getType()) == nullptr) {
+        Syntax::E<TYPE_ERROR>(p_node, FMT("Value trying to be called is not callable!"));
     }
 
     if (auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee())) {
-        if (services::OperatorService::isOperator(fn->getName(true)) &&
-            args.size() == 2) {
-
+        if (services::OperatorService::isOperator(fn->getName(true)) && args.size() == 2) {
             if (services::OperatorService::opEquals<services::OperatorService::EQ>(
-                    fn->getName(true))) {
+                        fn->getName(true))) {
                 if (auto x = isMutable(args.at(0)); (x.has_value() && (!x.value()))) {
                     if (!p_node->isInitialization) {
-                        Syntax::E<VARIABLE_ERROR>(
-                            p_node,
-                            "You can't assign a new value to a unmutable "
-                            "variable",
-                            {.info = "This variable is not mutable!"});
+                        Syntax::E<VARIABLE_ERROR>(p_node,
+                                                  "You can't assign a new value to a "
+                                                  "unmutable "
+                                                  "variable",
+                                                  {.info = "This variable is not mutable!"});
                     }
                 }
             }
@@ -88,19 +86,25 @@ VISIT(VariableDeclaration) {
     auto val = p_node->getValue();
     val->visit(this);
 
-    cantBeVoid(p_node, val->getType(),
-               FMT("Value used for variable '%s' has a value with 'void' type!",
+    cantBeVoid(p_node,
+               val->getType(),
+               FMT("Value used for variable '%s' has a value with 'void' "
+                   "type!",
                    p_node->getIdentifier().c_str()));
 }
 
 VISIT(IndexExtract) {
-    cantBeVoid(p_node, p_node->getType(),
-               "Value used for index extraction has a value with 'void' type!");
+    cantBeVoid(p_node,
+               p_node->getType(),
+               "Value used for index extraction has a value with 'void' "
+               "type!");
 }
 
 VISIT(Variable) {
-    cantBeVoid(p_node, p_node->getType(),
-               FMT("Value used for variable '%s' has a value with 'void' type!",
+    cantBeVoid(p_node,
+               p_node->getType(),
+               FMT("Value used for variable '%s' has a value with 'void' "
+                   "type!",
                    p_node->getIdentifier().c_str()));
 }
 
@@ -118,7 +122,6 @@ VISIT(WhileLoop) {
 }
 
 VISIT(Conditional) {
-
     p_node->getCondition()->visit(this);
     p_node->getBlock()->visit(this);
 
@@ -134,18 +137,20 @@ VISIT(Cast) {
 
     if ((utils::dyn_cast<types::NumericType>(v->getType()) == nullptr) &&
         (utils::dyn_cast<types::NumericType>(t) != nullptr)) {
-        Syntax::E<TYPE_ERROR>(p_node, FMT("Can't create a casting operator from a "
-                                          "non-numerical type ('%s') "
-                                          "to a numerical ('%s')!",
-                                          t->getPrettyName().c_str(),
-                                          v->getType()->getPrettyName().c_str()));
+        Syntax::E<TYPE_ERROR>(p_node,
+                              FMT("Can't create a casting operator from a "
+                                  "non-numerical type ('%s') "
+                                  "to a numerical ('%s')!",
+                                  t->getPrettyName().c_str(),
+                                  v->getType()->getPrettyName().c_str()));
     } else if ((utils::dyn_cast<types::NumericType>(v->getType()) != nullptr) &&
                (utils::dyn_cast<types::NumericType>(t) == nullptr)) {
-        Syntax::E<TYPE_ERROR>(
-            p_node,
-            FMT("Can't create a casting operator from a numerical type ('%s') "
-                "to a non-numerical type ('%s')!",
-                t->getPrettyName().c_str(), v->getType()->getPrettyName().c_str()));
+        Syntax::E<TYPE_ERROR>(p_node,
+                              FMT("Can't create a casting operator from a "
+                                  "numerical type ('%s') "
+                                  "to a non-numerical type ('%s')!",
+                                  t->getPrettyName().c_str(),
+                                  v->getType()->getPrettyName().c_str()));
     } else if (!v->getType()->canCast(t)) {
         Syntax::E<TYPE_ERROR>(p_node,
                               FMT("Can't create a casting operator from value ('%s') "
@@ -165,23 +170,26 @@ VISIT(Return) {
 
     if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) != nullptr) &&
         (p_node->getExpr() != nullptr)) {
-        Syntax::E<TYPE_ERROR>(p_node, FMT("Nonvalue returning function cant have a "
-                                          "return containing an expression (%s)!",
-                                          p_node->getType()->getPrettyName().c_str()));
+        Syntax::E<TYPE_ERROR>(p_node,
+                              FMT("Nonvalue returning function cant have a "
+                                  "return containing an expression (%s)!",
+                                  p_node->getType()->getPrettyName().c_str()));
     }
 
     if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) == nullptr) &&
         (p_node->getExpr() == nullptr)) {
-        Syntax::E<TYPE_ERROR>(p_node, FMT("Can't return \"nothing\" in a function with "
-                                          "non-void return type (%s)!",
-                                          fn->getRetTy()->getPrettyName().c_str()));
+        Syntax::E<TYPE_ERROR>(p_node,
+                              FMT("Can't return \"nothing\" in a function with "
+                                  "non-void return type (%s)!",
+                                  fn->getRetTy()->getPrettyName().c_str()));
     }
 
     if (!fn->getRetTy()->is(p_node->getType())) {
-        Syntax::E<TYPE_ERROR>(p_node, FMT("Return type (%s) does not match parent "
-                                          "function's return type (%s)!",
-                                          p_node->getType()->getPrettyName().c_str(),
-                                          fn->getRetTy()->getPrettyName().c_str()));
+        Syntax::E<TYPE_ERROR>(p_node,
+                              FMT("Return type (%s) does not match parent "
+                                  "function's return type (%s)!",
+                                  p_node->getType()->getPrettyName().c_str(),
+                                  fn->getRetTy()->getPrettyName().c_str()));
     }
 }
 
@@ -191,7 +199,8 @@ VISIT(Block) {
     }
 }
 
-void TypeChecker::codegen() {
+void
+TypeChecker::codegen() {
     // Visit variables
     for (auto v : module->getVariables()) {
         visit(v.get());
@@ -206,14 +215,16 @@ void TypeChecker::codegen() {
     }
 }
 
-void TypeChecker::cantBeVoid(DBGObject *dbg, std::shared_ptr<types::Type> ty,
-                             const std::string& message) {
+void
+TypeChecker::cantBeVoid(
+        DBGObject* dbg, std::shared_ptr<types::Type> ty, const std::string& message) {
     if (std::dynamic_pointer_cast<types::VoidType>(ty)) {
         Syntax::E<TYPE_ERROR>(dbg, message);
     }
 }
 
-std::optional<bool> TypeChecker::isMutable(std::shared_ptr<ir::Value> value) {
+std::optional<bool>
+TypeChecker::isMutable(std::shared_ptr<ir::Value> value) {
     if (auto x = utils::dyn_cast<ir::Variable>(value)) {
         return x->isMutable();
     } else if (auto x = utils::dyn_cast<ir::VariableDeclaration>(value)) {

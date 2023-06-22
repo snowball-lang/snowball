@@ -6,10 +6,13 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
-namespace snowball {
-namespace codegen {
+namespace snowball
+{
+namespace codegen
+{
 
-void LLVMBuilder::visit(ir::Argument *arg) {
+void
+LLVMBuilder::visit(ir::Argument* arg) {
     this->value = ctx->getSymbol(arg->getId());
 }
 

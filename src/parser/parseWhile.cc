@@ -8,15 +8,17 @@
 
 using namespace snowball::Syntax::Statement;
 
-namespace snowball::parser {
+namespace snowball::parser
+{
 
-WhileLoop *Parser::parseWhile() {
+WhileLoop*
+Parser::parseWhile() {
     assert(is<TokenType::KWORD_WHILE>() || is<TokenType::KWORD_DO>());
     auto token = m_current;
 
     bool isDoWhile = is<TokenType::KWORD_DO>(token);
-    Syntax::Expression::Base *expr = nullptr;
-    Syntax::Block *block = nullptr;
+    Syntax::Expression::Base* expr = nullptr;
+    Syntax::Block* block = nullptr;
 
     if (!isDoWhile) {
         expr = parseExpr(false);

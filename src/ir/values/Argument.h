@@ -13,8 +13,10 @@
 #ifndef __SNOWBALL_ARGUMENT_VALUE_H_
 #define __SNOWBALL_ARGUMENT_VALUE_H_
 
-namespace snowball {
-namespace ir {
+namespace snowball
+{
+namespace ir
+{
 
 /// @brief This is just an utility class that we use in order to access
 ///  an argument.
@@ -24,22 +26,33 @@ class Argument : public IdMixin, public AcceptorExtend<VariableDeclaration, Valu
     /// @brief Argument name used to identify where it's pointing to
     std::string name = "";
     /// @brief default value used for the function
-    Syntax::Expression::Base *defaultValue = nullptr;
+    Syntax::Expression::Base* defaultValue = nullptr;
 
   public:
-    auto operator=(Argument *&) = delete;
-    explicit Argument(const std::string& name, int index = 0,
-                      Syntax::Expression::Base *defaultValue = nullptr)
+    auto operator=(Argument*&) = delete;
+    explicit Argument(const std::string& name,
+                      int index = 0,
+                      Syntax::Expression::Base* defaultValue = nullptr)
         : name(name), index(index), defaultValue(defaultValue){};
 
     /// @return Argument index on the list
-    auto getIndex() { return index; }
+    auto
+    getIndex() {
+        return index;
+    }
     /// @return Argument index on the list
-    auto getName() { return name; }
+    auto
+    getName() {
+        return name;
+    }
     /// @brief check if the function contains a default value
-    bool hasDefaultValue() { return defaultValue != nullptr; }
+    bool
+    hasDefaultValue() {
+        return defaultValue != nullptr;
+    }
     /// @return default value if it exists
-    auto getDefaultValue() {
+    auto
+    getDefaultValue() {
         assert(hasDefaultValue());
         return defaultValue;
     }

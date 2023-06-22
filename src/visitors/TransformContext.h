@@ -16,18 +16,18 @@
 
 #include "../ast/cache/Cache.h"
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
 // This class gives context to the "Transformer" ast visitor
 // and it also gives the ability to do stack management.
-class TransformContext
-    : public AcceptorExtend<TransformContext, ASTContext<transform::Item>> {
+class TransformContext : public AcceptorExtend<TransformContext, ASTContext<transform::Item>> {
     // Current function being generated
     std::shared_ptr<ir::Func> currentFunction = std::shared_ptr<ir::Func>(nullptr);
     // Current class being transformed
-    std::shared_ptr<types::DefinedType> currentClass =
-        std::shared_ptr<types::DefinedType>(nullptr);
+    std::shared_ptr<types::DefinedType> currentClass = std::shared_ptr<types::DefinedType>(nullptr);
 
   public:
     // Module given to us so we can
@@ -42,13 +42,14 @@ class TransformContext
     ///  that got inherited but still want it to "be part of" the parent
     ///  type.
     std::shared_ptr<types::DefinedType> actuallCurrentClass =
-        std::shared_ptr<types::DefinedType>(nullptr);
+            std::shared_ptr<types::DefinedType>(nullptr);
 
   private:
     /// Utility function to get a primitive type
     /// @param name Type name to search for
     /// @return Primitive type shared pointer
-    std::shared_ptr<types::Type> getPrimitiveType(const std::string name) {
+    std::shared_ptr<types::Type>
+    getPrimitiveType(const std::string name) {
         auto [ty, found] = getItem(name);
 
         assert(found);
@@ -88,17 +89,26 @@ class TransformContext
     // clang-format on
 
     /// @return The current function being generated
-    auto getCurrentFunction() { return currentFunction; }
+    auto
+    getCurrentFunction() {
+        return currentFunction;
+    }
     /// @brief Set a new function that's being generated
-    void setCurrentFunction(std::shared_ptr<ir::Func> f) { currentFunction = f; }
+    void
+    setCurrentFunction(std::shared_ptr<ir::Func> f) {
+        currentFunction = f;
+    }
     /// @return Get the parent class being transformed
-    auto getCurrentClass(bool actual = false) {
-        return actual
-                   ? actuallCurrentClass == nullptr ? currentClass : actuallCurrentClass
-                   : currentClass;
+    auto
+    getCurrentClass(bool actual = false) {
+        return actual ? actuallCurrentClass == nullptr ? currentClass : actuallCurrentClass
+                      : currentClass;
     }
     /// @brief Defined the new type being generated
-    void setCurrentClass(std::shared_ptr<types::DefinedType> c) { currentClass = c; }
+    void
+    setCurrentClass(std::shared_ptr<types::DefinedType> c) {
+        currentClass = c;
+    }
 
     /**
      * @brief Add function to stack.
@@ -109,7 +119,8 @@ class TransformContext
      *   3. (does not exist) Create a new item initialized
      *      with the function trying to be defined.
      */
-    void defineFunction(std::shared_ptr<ir::Func> fn) {
+    void
+    defineFunction(std::shared_ptr<ir::Func> fn) {
         auto name = createIdentifierName(fn->getName(true));
         auto item = cache->getTransformedFunction(name);
         if (item) {
@@ -136,7 +147,7 @@ class TransformContext
   public:
     // The cache. Look at `class Cache` to know more
     // about it and what it does.
-    Cache *cache;
+    Cache* cache;
     // Controls, manages and caches modules used when
     // importying other files into the current program
     std::unique_ptr<services::ImportService> imports;
@@ -149,8 +160,7 @@ class TransformContext
     /// @brief set a state to the current context
     void setState(std::shared_ptr<transform::ContextState> s);
     /// @brief Execute function with saved state
-    void withState(std::shared_ptr<transform::ContextState> s,
-                   std::function<void()> cb);
+    void withState(std::shared_ptr<transform::ContextState> s, std::function<void()> cb);
 };
 
 } // namespace Syntax

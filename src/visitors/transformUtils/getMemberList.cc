@@ -4,21 +4,24 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
-std::vector<types::DefinedType::ClassField *>
-Transformer::getMemberList(std::vector<Syntax::Statement::VariableDecl *> fieldNodes,
-                           std::vector<types::DefinedType::ClassField *> fields,
-                           std::shared_ptr<types::DefinedType> parent) {
-    std::vector<types::DefinedType::ClassField *> member_list;
+std::vector<types::DefinedType::ClassField*>
+Transformer::getMemberList(std::vector<Syntax::Statement::VariableDecl*> fieldNodes,
+                           std::vector<types::DefinedType::ClassField*>
+                                   fields,
+                           std::shared_ptr<types::DefinedType>
+                                   parent) {
+    std::vector<types::DefinedType::ClassField*> member_list;
     assert(fields.size() == fieldNodes.size());
 
     // add parent members first
     if (parent) {
         auto parentFields = parent->getFields();
-        member_list.insert(member_list.begin(), parentFields.begin(),
-                           parentFields.end());
+        member_list.insert(member_list.begin(), parentFields.begin(), parentFields.end());
     }
 
     // add current class members
@@ -32,7 +35,8 @@ Transformer::getMemberList(std::vector<Syntax::Statement::VariableDecl *> fieldN
                 if (!field->type->is(member->type)) {
                     E<TYPE_ERROR>(fieldNodes.at(i),
                                   "Member with the same name '" + field->name +
-                                      "' exists in parent with a different type.");
+                                          "' exists in parent with a different "
+                                          "type.");
                 }
                 break;
             }

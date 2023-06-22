@@ -12,19 +12,25 @@
 #ifndef __SNOWBALL_CONSTANT_VALUES_H_
 #define __SNOWBALL_CONSTANT_VALUES_H_
 
-namespace snowball {
-namespace ir {
+namespace snowball
+{
+namespace ir
+{
 
 /// @brief Representation of a constant value in the IR
 class ConstantValue : public AcceptorExtend<ConstantValue, Value> {
   public:
-    enum ConstantType {
+    enum ConstantType
+    {
 #include "../../defs/ct.def"
     };
 
-    ConstantValue(ConstantType ty) : type(ty) {}
+    ConstantValue(ConstantType ty) : type(ty) { }
     // Get constant value's type
-    auto getConstantType() { return type; }
+    auto
+    getConstantType() {
+        return type;
+    }
 
   private:
     // Type value to differentiate between constantss
@@ -38,10 +44,13 @@ class StringValue : public AcceptorExtend<StringValue, ConstantValue> {
 
   public:
     // Create a new string value for the IR
-    StringValue(std::string value) : AcceptorExtend(String), value(value) {}
+    StringValue(std::string value) : AcceptorExtend(String), value(value) { }
 
     // Get the string value.
-    auto getConstantValue() const { return value; }
+    auto
+    getConstantValue() const {
+        return value;
+    }
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS
 };
@@ -53,10 +62,13 @@ class NumberValue : public AcceptorExtend<NumberValue, ConstantValue> {
 
   public:
     // Create a new number constant for the IR
-    NumberValue(snowball_int_t value) : AcceptorExtend(Number), value(value) {}
+    NumberValue(snowball_int_t value) : AcceptorExtend(Number), value(value) { }
 
     // Get the number value.
-    auto getConstantValue() const { return value; }
+    auto
+    getConstantValue() const {
+        return value;
+    }
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS
 };
@@ -68,10 +80,13 @@ class FloatValue : public AcceptorExtend<FloatValue, ConstantValue> {
 
   public:
     // Create a new floating number for the IR
-    FloatValue(double value) : AcceptorExtend(Float), value(value) {}
+    FloatValue(double value) : AcceptorExtend(Float), value(value) { }
 
     // Get the number value.
-    auto getConstantValue() const { return value; }
+    auto
+    getConstantValue() const {
+        return value;
+    }
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS
 };
@@ -83,10 +98,13 @@ class BooleanValue : public AcceptorExtend<BooleanValue, ConstantValue> {
 
   public:
     // Create a new boolean value for the IR
-    BooleanValue(bool value) : AcceptorExtend(String), value(value) {}
+    BooleanValue(bool value) : AcceptorExtend(String), value(value) { }
 
     // Get the boolean value.
-    auto getConstantValue() const { return value; }
+    auto
+    getConstantValue() const {
+        return value;
+    }
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS
 };
@@ -98,10 +116,13 @@ class CharValue : public AcceptorExtend<BooleanValue, ConstantValue> {
 
   public:
     // Create a new boolean value for the IR
-    CharValue(char value) : AcceptorExtend(Char), value(value) {}
+    CharValue(char value) : AcceptorExtend(Char), value(value) { }
 
     // Get the boolean value.
-    auto getConstantValue() const { return value; }
+    auto
+    getConstantValue() const {
+        return value;
+    }
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS
 };

@@ -6,20 +6,21 @@
 
 #include <assert.h>
 
-#define CHECK_PRIVACY(var)                                                             \
-    var = true;                                                                        \
-    if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-4, true))) {       \
-        isPublic = is<TokenType::KWORD_PUBLIC>(peek(-4, true));                        \
+#define CHECK_PRIVACY(var)                                                                         \
+    var = true;                                                                                    \
+    if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-4, true))) {                   \
+        isPublic = is<TokenType::KWORD_PUBLIC>(peek(-4, true));                                    \
     }
 
 using namespace snowball::Syntax::Statement;
 
-namespace snowball::parser {
+namespace snowball::parser
+{
 
-FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator, bool isLambda) {
+FunctionDef*
+Parser::parseFunction(bool isConstructor, bool isOperator, bool isLambda) {
     assert((is<TokenType::KWORD_FUNC>() && (!isConstructor && !isOperator)) ||
-           (is<TokenType::IDENTIFIER>() && (isConstructor && !isOperator)) ||
-           (isOperator));
+           (is<TokenType::IDENTIFIER>() && (isConstructor && !isOperator)) || (isOperator));
 
     if (!isConstructor && (!isLambda)) next();
 
@@ -71,8 +72,8 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
                 attributes.push_back(Attributes::Fn::INLINE);
             } else {
                 createError<ATTRIBUTE_ERROR>(
-                    "Trying to use an undefined attribute!",
-                    {.info = FMT("Attribute '%s' is not defined!", attr.c_str())});
+                        "Trying to use an undefined attribute!",
+                        {.info = FMT("Attribute '%s' is not defined!", attr.c_str())});
             }
 
             next();
@@ -91,7 +92,6 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     if (isOperator) {
         services::OperatorService::OperatorType opType;
         switch (m_current.type) {
-
             case TokenType::OP_EQ: {
                 opType = services::OperatorService::OperatorType::EQ;
                 break;
@@ -237,9 +237,8 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
 
             snowballInvalidDefaultOperatorCase:
             default: {
-                createError<SYNTAX_ERROR>(
-                    FMT("Expected a valid operator type but instead got '%s'",
-                        m_current.to_string().c_str()));
+                createError<SYNTAX_ERROR>(FMT("Expected a valid operator type but instead got '%s'",
+                                              m_current.to_string().c_str()));
             }
         }
 
@@ -259,8 +258,8 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
             externName = name;
         } else if (is<TokenType::VALUE_STRING>() && isExtern) {
             // External functions can have the capacity of having 2 separate
-            // names. This can be useful for things such as accessing external
-            // functions that contians special characters.
+            // names. This can be useful for things such as accessing
+            // external functions that contians special characters.
             //
             // example:
             //     extern fn "hello.world$woah" as my_fn() ...
@@ -281,11 +280,10 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
 
             width = name.size();
         } else {
-            std::string e = isExtern
-                                ? "Expected an identifier or a string constant but got "
-                                  "'%s' while parsing an extern function declaration"
-                                : "Expected an identifier but got '%s' while parsing a "
-                                  "function declaration";
+            std::string e = isExtern ? "Expected an identifier or a string constant but got "
+                                       "'%s' while parsing an extern function declaration"
+                                     : "Expected an identifier but got '%s' while parsing a "
+                                       "function declaration";
 
             createError<SYNTAX_ERROR>(FMT(e.c_str(), m_current.to_string().c_str()));
         }
@@ -297,12 +295,10 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     auto privacy = Syntax::Statement::Privacy::fromInt(isPublic);
 
     // Check for generic expressions
-    std::vector<Syntax::Expression::Param *> generics;
+    std::vector<Syntax::Expression::Param*> generics;
     if (is<TokenType::OP_LT>()) {
-
         if (isExtern) {
-            createError<SYNTAX_ERROR>(
-                "Can't define an external function with generics");
+            createError<SYNTAX_ERROR>("Can't define an external function with generics");
         }
 
         generics = parseGenericParams();
@@ -314,7 +310,7 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     int argumentCount = 0;
     bool isVarArg = false;
 
-    std::vector<Syntax::Expression::Param *> arguments;
+    std::vector<Syntax::Expression::Param*> arguments;
     while (true) {
         auto pk = peek();
 
@@ -323,13 +319,11 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
         }
 
         next();
-        if (isExtern && is<TokenType::IDENTIFIER>() &&
-            (!is<TokenType::SYM_COLCOL>(peek()))) {
+        if (isExtern && is<TokenType::IDENTIFIER>() && (!is<TokenType::SYM_COLCOL>(peek()))) {
             throwIfNotType();
             auto type = parseType();
 
-            auto arg = new Syntax::Expression::Param(
-                FMT("$extern-arg-%i", argumentCount), type);
+            auto arg = new Syntax::Expression::Param(FMT("$extern-arg-%i", argumentCount), type);
             arguments.push_back(arg);
         } else if (is<TokenType::SYM_DOT>() && is<TokenType::SYM_DOT>(peek()) &&
                    is<TokenType::SYM_DOT>(peek(1, true))) {
@@ -357,41 +351,37 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
         argumentCount++;
         if (is<TokenType::SYM_COMMA>()) {
             if (isVarArg)
-                createError<SYNTAX_ERROR>(
-                    "Variadic arguments should be the last argument!");
+                createError<SYNTAX_ERROR>("Variadic arguments should be the last argument!");
             // if (!isExtern) prev();
         } else if (is<TokenType::BRACKET_RPARENT>()) {
             prev();
         } else {
-            createError<SYNTAX_ERROR>(
-                FMT("Expected a ',' or a ')' but found '%s' instead",
-                    m_current.to_string().c_str()));
+            createError<SYNTAX_ERROR>(FMT("Expected a ',' or a ')' but found '%s' instead",
+                                          m_current.to_string().c_str()));
         }
     }
 
     next();
     consume<TokenType::BRACKET_RPARENT>("')'");
 
-    Syntax::Expression::TypeRef *returnType = nullptr;
+    Syntax::Expression::TypeRef* returnType = nullptr;
     if (is<TokenType::IDENTIFIER>()) {
         if (isConstructor) {
-            createError<SYNTAX_ERROR>(
-                "Contructor can't have return types.",
-                {.info = "Constructors return type default to the parent's "
-                         "class type!"});
+            createError<SYNTAX_ERROR>("Contructor can't have return types.",
+                                      {.info = "Constructors return type default to the parent's "
+                                               "class type!"});
         }
 
         throwIfNotType();
         returnType = parseType();
     } else {
-        auto info = new DBGSourceInfo(m_source_info, m_current.get_pos(),
-                                      m_current.get_width());
+        auto info = new DBGSourceInfo(m_source_info, m_current.get_pos(), m_current.get_width());
         returnType = new Syntax::Expression::TypeRef(SN_VOID_TYPE, info);
     }
 
     auto info = new DBGSourceInfo(m_source_info, dbg, width);
 
-    Syntax::Block *block = nullptr;
+    Syntax::Block* block = nullptr;
     std::string llvmCode;
     bool hasBlock = false;
 
@@ -418,8 +408,7 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
 
             auto endPos = m_current.get_pos();
 
-            llvmCode = utils::getSubstringByRange(m_source_info->getSource(), startPos,
-                                                  endPos);
+            llvmCode = utils::getSubstringByRange(m_source_info->getSource(), startPos, endPos);
             llvmCode = llvmCode.substr(1, llvmCode.size() - 1); // Ignore speech marks
         } else {
             block = parseBlock();
@@ -434,7 +423,7 @@ FunctionDef *Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
         createError<SYNTAX_ERROR>("LLVM defined functions must have a body!");
     }
 
-    FunctionDef *fn = nullptr;
+    FunctionDef* fn = nullptr;
     if (isExtern) {
         fn = Syntax::N<ExternFnDef>(externName, name);
     } else if (isLLVMFunction) {

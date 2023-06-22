@@ -7,9 +7,11 @@
 #include <assert.h>
 #define IS_CONSTRUCTOR(tk) is<TokenType::IDENTIFIER>(tk) && tk.value == name
 
-namespace snowball::parser {
+namespace snowball::parser
+{
 
-Syntax::Statement::ClassDef *Parser::parseClass() {
+Syntax::Statement::ClassDef*
+Parser::parseClass() {
     assert(is<TokenType::KWORD_CLASS>());
     next(); // East "class"
 
@@ -21,7 +23,7 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
     auto name = assert_tok<TokenType::IDENTIFIER>("class identifier").to_string();
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
 
-    Syntax::Expression::TypeRef *parentClass = nullptr;
+    Syntax::Expression::TypeRef* parentClass = nullptr;
     Syntax::Statement::GenericContainer<>::GenericList generics;
 
     if (is<TokenType::OP_LT>(peek())) {
@@ -42,7 +44,7 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
     bool hasConstructor = false;
 
     auto cls = Syntax::N<Syntax::Statement::ClassDef>(
-        name, parentClass, Syntax::Statement::Privacy::fromInt(isPublic));
+            name, parentClass, Syntax::Statement::Privacy::fromInt(isPublic));
 
     cls->setGenerics(generics);
     cls->setDBGInfo(dbg);
@@ -64,14 +66,13 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
 
             case TokenType::KWORD_STATIC: {
                 auto pk = peek();
-                if (pk.type != TokenType::KWORD_FUNC &&
-                    pk.type != TokenType::KWORD_VAR &&
+                if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_VAR &&
                     pk.type != TokenType::KWORD_OPERATOR && (!IS_CONSTRUCTOR(pk))) {
                     next();
                     createError<SYNTAX_ERROR>(
-                        "expected keyword \"func\", \"let\", \"operator\" or a "
-                        "constructor "
-                        "declaration after static member");
+                            "expected keyword \"func\", \"let\", \"operator\" or a "
+                            "constructor "
+                            "declaration after static member");
                 }
             } break;
 
@@ -96,7 +97,7 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
                 } else if (pk.type != TokenType::KWORD_FUNC) {
                     next();
                     createError<SYNTAX_ERROR>(
-                        "Expected keyword \"func\" after virtual declaration!");
+                            "Expected keyword \"func\" after virtual declaration!");
                 }
             } break;
 
@@ -107,11 +108,11 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
 
             case TokenType::BRACKET_RCURLY: {
                 if (!hasConstructor) {
-                    createError<SYNTAX_ERROR>(
-                        dbg->pos,
-                        FMT("Class '%s' requires at least one constructor!",
-                            cls->getName().c_str()),
-                        {}, dbg->width);
+                    createError<SYNTAX_ERROR>(dbg->pos,
+                                              FMT("Class '%s' requires at least one constructor!",
+                                                  cls->getName().c_str()),
+                                              {},
+                                              dbg->width);
                 }
 
                 return cls;
@@ -122,10 +123,9 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
                 if (IS_CONSTRUCTOR(m_current)) {
                     hasConstructor = true;
                     auto func = parseFunction(true);
-                    func->setPrivacy(
-                        Syntax::Statement::Privacy::fromInt(!inPrivateScope));
+                    func->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
                     func->setName(services::OperatorService::getOperatorMangle(
-                        services::OperatorService::CONSTRUCTOR));
+                            services::OperatorService::CONSTRUCTOR));
                     func->setStatic();
                     cls->addFunction(func);
                     break;
@@ -134,8 +134,8 @@ Syntax::Statement::ClassDef *Parser::parseClass() {
 
             default: {
                 createError<SYNTAX_ERROR>(
-                    FMT("Unexpected token ('%s') found while parsing class body",
-                        m_current.to_string().c_str()));
+                        FMT("Unexpected token ('%s') found while parsing class body",
+                            m_current.to_string().c_str()));
             }
         }
     }

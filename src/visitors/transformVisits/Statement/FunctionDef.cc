@@ -6,27 +6,28 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-#define IS_MAIN                                                                        \
-    (name == "main" && p_node->getPrivacy() == Statement::Privacy::PUBLIC &&           \
-     ctx->module->isMain())
+#define IS_MAIN                                                                                    \
+    (name == "main" && p_node->getPrivacy() == Statement::Privacy::PUBLIC && ctx->module->isMain())
 
-#define ADD_SELF_ARG                                                                   \
-    if (auto c = ctx->getCurrentClass(true)) {                                         \
-        if (!p_node->isStatic()) {                                                     \
-            auto args = p_node->getArgs();                                             \
-            if (!(args.size() > 0 && args.at(0)->getName() == "self")) {               \
-                auto self = new Expression::Param("self", c->getPointerTo()->toRef()); \
-                                                                                       \
-                args.insert(args.begin(), self);                                       \
-                p_node->setArgs(args);                                                 \
-            } else {                                                                   \
-                args.at(0)->setType(c->getPointerTo()->toRef());                       \
-            }                                                                          \
-        }                                                                              \
+#define ADD_SELF_ARG                                                                               \
+    if (auto c = ctx->getCurrentClass(true)) {                                                     \
+        if (!p_node->isStatic()) {                                                                 \
+            auto args = p_node->getArgs();                                                         \
+            if (!(args.size() > 0 && args.at(0)->getName() == "self")) {                           \
+                auto self = new Expression::Param("self", c->getPointerTo()->toRef());             \
+                                                                                                   \
+                args.insert(args.begin(), self);                                                   \
+                p_node->setArgs(args);                                                             \
+            } else {                                                                               \
+                args.at(0)->setType(c->getPointerTo()->toRef());                                   \
+            }                                                                                      \
+        }                                                                                          \
     }
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
 SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     auto name = p_node->getName();

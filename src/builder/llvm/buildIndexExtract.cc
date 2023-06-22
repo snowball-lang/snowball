@@ -7,10 +7,13 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
-namespace snowball {
-namespace codegen {
+namespace snowball
+{
+namespace codegen
+{
 
-void LLVMBuilder::visit(ir::IndexExtract *index) {
+void
+LLVMBuilder::visit(ir::IndexExtract* index) {
     auto baseType = getLLVMType(index->getValue()->getType());
     auto v = build(index->getValue().get());
     // We add "1" becasue index #0 is a pointer to the virtual

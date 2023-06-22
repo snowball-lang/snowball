@@ -15,17 +15,19 @@
 
 #ifndef __SNOWBALL_FUNC_VAL_H_
 #define __SNOWBALL_FUNC_VAL_H_
-namespace snowball {
-namespace ir {
+namespace snowball
+{
+namespace ir
+{
 
 /// @brief Representation of a function in the IR
-class Func
-    : public AcceptorExtend<Func, Value>,
-      public IdMixin,
-      public AcceptorExtend<Func, Syntax::Statement::Privacy>,
-      public AcceptorExtend<Func, Syntax::Statement::GenericContainer<std::pair<
-                                      std::string, std::shared_ptr<types::Type>>>>,
-      public AcceptorExtend<Func, Syntax::Statement::AttributeHolder<Attributes::Fn>> {
+class Func : public AcceptorExtend<Func, Value>,
+             public IdMixin,
+             public AcceptorExtend<Func, Syntax::Statement::Privacy>,
+             public AcceptorExtend<Func,
+                                   Syntax::Statement::GenericContainer<
+                                           std::pair<std::string, std::shared_ptr<types::Type>>>>,
+             public AcceptorExtend<Func, Syntax::Statement::AttributeHolder<Attributes::Fn>> {
   public:
     // Utility types
     using FunctionArgs = std::list<std::pair<std::string, std::shared_ptr<Argument>>>;
@@ -84,40 +86,46 @@ class Func
     /// external functions
     std::string externalName;
 
-    /// Whether or not this function is declared as private or as public.
-    /// This comes really handy because it lets us to know if we can access
-    /// this function from a certain context.
+    /// Whether or not this function is declared as private or as
+    /// public. This comes really handy because it lets us to know if we
+    /// can access this function from a certain context.
     bool definedAsPrivate = true;
 
-    /// Functions can be declared static too! We have this utility variable
-    /// to determine if the function is declared as one. Being declared as
-    /// static may bring different meanings.
+    /// Functions can be declared static too! We have this utility
+    /// variable to determine if the function is declared as one. Being
+    /// declared as static may bring different meanings.
     /// @example Static function for a class
     bool _static = false;
 
-    /// @brief A boolean attribute that indicates whether the function is used.
-    /// This attribute is used inside "ir::Func" class to keep track of whether
-    /// the function is used or not.
+    /// @brief A boolean attribute that indicates whether the function
+    /// is used. This attribute is used inside "ir::Func" class to keep
+    /// track of whether the function is used or not.
     /// @note The initial value of this attribute is false.
     bool used = false;
 
   public:
-#define DEFAULT                                                                        \
-    bool declaration = false, bool variadic = false,                                   \
+#define DEFAULT                                                                                    \
+    bool declaration = false, bool variadic = false,                                               \
          std::shared_ptr<types::DefinedType> ty = nullptr
 
     explicit Func(std::string identifier, DEFAULT);
     explicit Func(std::string identifier, FunctionArgs arguments, DEFAULT);
     explicit Func(std::string identifier, std::shared_ptr<Block> body, DEFAULT);
-    explicit Func(std::string identifier, std::shared_ptr<Block> body,
-                  FunctionArgs arguments, DEFAULT);
+    explicit Func(
+            std::string identifier, std::shared_ptr<Block> body, FunctionArgs arguments, DEFAULT);
 
 #undef DEFAULT
 
     /// @return Whether the function is variadic
-    bool isVariadic() const { return variadic; }
+    bool
+    isVariadic() const {
+        return variadic;
+    }
     /// @return Whether the function is variadic
-    bool isDeclaration() const { return declaration; }
+    bool
+    isDeclaration() const {
+        return declaration;
+    }
 
     /// @return function's raw identifier
     virtual std::string getIdentifier();
@@ -130,72 +138,126 @@ class Func
     virtual std::string getNiceName();
 
     /// @brief Set a body to a function
-    void setBody(std::shared_ptr<Block> p_body) { body = p_body; }
+    void
+    setBody(std::shared_ptr<Block> p_body) {
+        body = p_body;
+    }
     /// @return Get body from function
-    auto getBody() const { return body; }
+    auto
+    getBody() const {
+        return body;
+    }
 
     /// @brief Declare a new LLVM IR body
     /// @param llvmBody the LLVM IR instructions
-    void setLLVMBody(std::string llvmBody) { this->llvmBody = llvmBody; }
+    void
+    setLLVMBody(std::string llvmBody) {
+        this->llvmBody = llvmBody;
+    }
     /// @return the LLVM ir body for this function
-    auto getLLVMBody() {
+    auto
+    getLLVMBody() {
         assert(!isDeclaration() && hasAttribute(Attributes::LLVM_FUNC));
         return llvmBody;
     }
     /// @brief Set arguments to a function
-    void setArgs(FunctionArgs p_args) { arguments = p_args; }
+    void
+    setArgs(FunctionArgs p_args) {
+        arguments = p_args;
+    }
     /// @return Get arguments from function
-    /// @param ignoreSelf removes the `self` paramter (aka. the first / class
-    /// parameter)
+    /// @param ignoreSelf removes the `self` paramter (aka. the first /
+    /// class parameter)
     ///  if it's set to `true`.
     FunctionArgs getArgs(bool ignoreSelf = false) const;
 
     /// @brief Set a return type to a function
-    void setRetTy(std::shared_ptr<types::Type> p_ret) { retTy = p_ret; }
+    void
+    setRetTy(std::shared_ptr<types::Type> p_ret) {
+        retTy = p_ret;
+    }
     /// @return Get function's return type.
-    auto& getRetTy() const { return retTy; }
+    auto&
+    getRetTy() const {
+        return retTy;
+    }
 
     /// @brief Set a return type to a function
-    void addSymbol(std::shared_ptr<VariableDeclaration> v) { symbols.emplace_back(v); }
+    void
+    addSymbol(std::shared_ptr<VariableDeclaration> v) {
+        symbols.emplace_back(v);
+    }
     /// @return Get function's return type.
-    std::vector<std::shared_ptr<VariableDeclaration>>& getSymbols() {
+    std::vector<std::shared_ptr<VariableDeclaration>>&
+    getSymbols() {
         assert(!isDeclaration());
         return symbols;
     }
     /// @brief get from what parent this function is declared inside
-    auto getParent() const { return parent; }
+    auto
+    getParent() const {
+        return parent;
+    }
     /// @return whether or not the function is defiend within a
     ///  parent scope.
-    bool hasParent() const { return getParent() != nullptr; }
+    bool
+    hasParent() const {
+        return getParent() != nullptr;
+    }
 
     /// @brief Get the index were the function is located at inside the
     ///  virtual table.
-    auto getVirtualIndex() const {
+    auto
+    getVirtualIndex() const {
         assert(inVirtualTable());
         return virtualIndex;
     }
     /// @return Check if the function is part of a virtual table.
-    bool inVirtualTable() const { return virtualIndex != -1; }
+    bool
+    inVirtualTable() const {
+        return virtualIndex != -1;
+    }
     /// @brief Set a new virtual table index.
-    void setVirtualIndex(int x = -1) { virtualIndex = x; }
+    void
+    setVirtualIndex(int x = -1) {
+        virtualIndex = x;
+    }
 
     /// @brief Set an external name to the function
     /// @c externalName
-    void setExternalName(std::string n) { externalName = n; }
+    void
+    setExternalName(std::string n) {
+        externalName = n;
+    }
     /// @return if the function is private or public.
     /// @note isPublic and isPrivate are just utility functions to know
     ///  the functions privacy but they both do essentially the same.
-    auto isPublic() { return !definedAsPrivate; }
-    auto isPrivate() { return definedAsPrivate; }
+    auto
+    isPublic() {
+        return !definedAsPrivate;
+    }
+    auto
+    isPrivate() {
+        return definedAsPrivate;
+    }
     /// @brief set function's privacy.
     /// @note If the function is declared as private, @param p
     ///  must be `true`.
     /// @c isPublic @c isPrivate @c definedAsPrivate
-    void setPrivacy(bool p) { definedAsPrivate = p; }
+    void
+    setPrivacy(bool p) {
+        definedAsPrivate = p;
+    }
     /// @brief Declare the function as static or not
-    void setStatic(bool s = false) { _static = s; }
+    void
+    setStatic(bool s = false) {
+        _static = s;
+    }
     /// @return whether or not the function is static
-    auto isStatic() { return _static; }
+    auto
+    isStatic() {
+        return _static;
+    }
     /// @return true if the function is a class contructor
     bool isConstructor() const;
 
@@ -212,17 +274,23 @@ class Func
      * @tparam T class to check if the function `hasDefaultValue`
      *  exists
      */
-    template <typename T> class hasDefaultValue {
+    template <typename T>
+    class hasDefaultValue {
         typedef char one;
         struct two {
             char x[2];
         };
 
-        template <typename C> static one test(decltype(&C::hasDefaultValue));
-        template <typename C> static two test(...);
+        template <typename C>
+        static one test(decltype(&C::hasDefaultValue));
+        template <typename C>
+        static two test(...);
 
       public:
-        enum { value = sizeof(test<T>(0)) == sizeof(char) };
+        enum
+        {
+            value = sizeof(test<T>(0)) == sizeof(char)
+        };
     };
 
   public:
@@ -241,7 +309,8 @@ class Func
     template <typename T>
     static bool
     argumentSizesEqual(std::vector<T> functionArgs,
-                       const std::vector<std::shared_ptr<types::Type>> arguments,
+                       const std::vector<std::shared_ptr<types::Type>>
+                               arguments,
                        bool isVariadic = false) {
         int numFunctionArgs = functionArgs.size();
         int numProvidedArgs = arguments.size();
@@ -254,7 +323,8 @@ class Func
                     if (functionArgs.at(i)->hasDefaultValue()) {
                         numDefaultArgs++;
                     } else {
-                        // If we encounter a non-default argument, stop counting
+                        // If we encounter a non-default argument, stop
+                        // counting
                         break;
                     }
                 }
@@ -262,7 +332,7 @@ class Func
         }
 
         return (numFunctionArgs - numDefaultArgs == numProvidedArgs) ||
-               (numFunctionArgs <= arguments.size() && isVariadic);
+                (numFunctionArgs <= arguments.size() && isVariadic);
     }
 };
 

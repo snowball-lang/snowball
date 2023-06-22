@@ -3,15 +3,17 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
-std::optional<std::shared_ptr<types::Type>> Transformer::deduceFunctionType(
-    snowball::Syntax::Expression::Param *generic,
-    const std::vector<Expression::Param *>& fnArgs,
-    const std::vector<std::shared_ptr<types::Type>>& arguments,
-    const std::vector<std::shared_ptr<types::Type>>& generics,
-    const std::vector<std::shared_ptr<types::Type>>& deducedTypes) {
+std::optional<std::shared_ptr<types::Type>>
+Transformer::deduceFunctionType(snowball::Syntax::Expression::Param* generic,
+                                const std::vector<Expression::Param*>& fnArgs,
+                                const std::vector<std::shared_ptr<types::Type>>& arguments,
+                                const std::vector<std::shared_ptr<types::Type>>& generics,
+                                const std::vector<std::shared_ptr<types::Type>>& deducedTypes) {
     // I'm pretty sure this function works, but I'm a programmer, not a
     // magician.
 
@@ -52,13 +54,12 @@ Transformer::deduceFunction(cacheComponents::Functions::FunctionStore s,
 
     for (const auto& generic : function->getGenerics()) {
         const auto deducedType =
-            deduceFunctionType(generic, fnArgs, arguments, generics, deducedTypes);
+                deduceFunctionType(generic, fnArgs, arguments, generics, deducedTypes);
         if (deducedType.has_value()) {
             deducedTypes.push_back(deducedType.value());
         } else {
             return {{},
-                    FMT("Cannot deduce type '%s' in function call!",
-                        generic->getName().c_str())};
+                    FMT("Cannot deduce type '%s' in function call!", generic->getName().c_str())};
         }
     }
 

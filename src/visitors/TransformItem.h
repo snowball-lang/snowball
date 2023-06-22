@@ -7,9 +7,12 @@
 #ifndef __SNOWBALL_TRANSFORM_ITEM_H_
 #define __SNOWBALL_TRANSFORM_ITEM_H_
 
-namespace snowball {
-namespace Syntax {
-namespace transform {
+namespace snowball
+{
+namespace Syntax
+{
+namespace transform
+{
 
 // TransfiormItem is the value stored/fetched
 // from the stack. It can either represent a
@@ -42,16 +45,18 @@ class Item : public DBGObject {
      * of cache.
      *
      * @note Functions stored in here where already generated from
-     *  before meaning that it will not contain any generics information.
+     *  before meaning that it will not contain any generics
+     * information.
      *
-     * Another problem we encountered with function overloading is that
-     * if we opted by storing them into the stack as single items,
-     * the only way so that we can make them unique would be by storing
-     * functions with it's mangled verion acting as identifier.
+     * Another problem we encountered with function overloading is
+     * that if we opted by storing them into the stack as single
+     * items, the only way so that we can make them unique would be
+     * by storing functions with it's mangled verion acting as
+     * identifier.
      *
      * This would be a very bad life decition since we will need to
-     * mangled functions that hasn't been generated yet, creating a whole
-     * new world where bugs and errors can be stored.
+     * mangled functions that hasn't been generated yet, creating a
+     * whole new world where bugs and errors can be stored.
      *
      * @example
      *   fn hello(i32)
@@ -68,7 +73,13 @@ class Item : public DBGObject {
   public:
     // The type used to represent what this
     // item holds as value.
-    enum Type { TYPE, FUNC, VALUE, MODULE } type;
+    enum Type
+    {
+        TYPE,
+        FUNC,
+        VALUE,
+        MODULE
+    } type;
 
     // Constructors and destructors for the
     // item.
@@ -80,39 +91,57 @@ class Item : public DBGObject {
     Item(std::shared_ptr<ir::Module> m) : module(m), type(MODULE){};
 
     // Utility functions to identify the item
-    bool isType() { return type == TYPE; }
-    bool isFunc() { return type == FUNC; }
-    bool isVal() { return type == VALUE; }
-    bool isModule() { return type == MODULE; }
+    bool
+    isType() {
+        return type == TYPE;
+    }
+    bool
+    isFunc() {
+        return type == FUNC;
+    }
+    bool
+    isVal() {
+        return type == VALUE;
+    }
+    bool
+    isModule() {
+        return type == MODULE;
+    }
 
     /// @return The module stored inside this item
-    auto getModule() const {
+    auto
+    getModule() const {
         assert(type == MODULE);
         return module;
     }
     /// @return The value stored inside this item
-    auto getValue() const {
+    auto
+    getValue() const {
         assert(type == VALUE);
         return value;
     }
     /// @return The type being represented as an item on the stack.
-    auto getType() const {
+    auto
+    getType() const {
         assert(type == TYPE);
         return tyVal;
     }
 
     /// @return a full list of functions stored in this item
-    auto& getFunctions() {
+    auto&
+    getFunctions() {
         assert(type == FUNC);
         return functions;
     }
     /// @brief append a new function pointer to this item.
-    void addFunction(FunctionPtr fn) {
+    void
+    addFunction(FunctionPtr fn) {
         assert(type == FUNC);
         functions.emplace_back(fn);
     }
 
-    std::string toString() { /*TODO:*/
+    std::string
+    toString() { /*TODO:*/
         return "<TODO: transform item name>";
     };
 };

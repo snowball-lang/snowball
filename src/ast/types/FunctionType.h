@@ -41,11 +41,12 @@
  *     but in snowball, we also some take more things into consideration
  *     whether `f(x) = g(x)` or `f(x) != g(x)`.
  */
-namespace snowball {
-namespace types {
+namespace snowball
+{
+namespace types
+{
 
 class FunctionType : public AcceptorExtend<FunctionType, Type> {
-
     // Function's argument type.
     std::vector<std::shared_ptr<Type>> args;
     // Function's return type.
@@ -55,10 +56,12 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
     bool variadic = false;
 
   public:
-    FunctionType(std::vector<std::shared_ptr<Type>> args, std::shared_ptr<Type> retTy,
-                 bool isVariadic = false, const std::string& name = "<fn type>")
-        : AcceptorExtend(Kind::TYPE, name), args(args), retTy(retTy),
-          variadic(isVariadic) {}
+    FunctionType(std::vector<std::shared_ptr<Type>> args,
+                 std::shared_ptr<Type>
+                         retTy,
+                 bool isVariadic = false,
+                 const std::string& name = "<fn type>")
+        : AcceptorExtend(Kind::TYPE, name), args(args), retTy(retTy), variadic(isVariadic) { }
 
     /**
      * @param other another (non-functional) type.
@@ -72,7 +75,8 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
      * actual function corresponding to a FunctionType and this
      * function will just have the purpose as a fallback.
      */
-    virtual bool is(Type *other) const override {
+    virtual bool
+    is(Type* other) const override {
         if (auto f = utils::cast<FunctionType>(other)) {
             return is(f);
         }
@@ -87,14 +91,23 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
      * @param other Function type to check
      * @return true/false depending on the equality
      */
-    virtual bool is(FunctionType *other);
+    virtual bool is(FunctionType* other);
 
     /// @return function argument types
-    std::vector<std::shared_ptr<Type>> getArgs() const { return args; }
+    std::vector<std::shared_ptr<Type>>
+    getArgs() const {
+        return args;
+    }
     /// @return function return types
-    std::shared_ptr<Type> getRetType() const { return retTy; }
+    std::shared_ptr<Type>
+    getRetType() const {
+        return retTy;
+    }
     /// @return If the function is declared as variadic
-    bool isVariadic() { return variadic; }
+    bool
+    isVariadic() {
+        return variadic;
+    }
 
     // std::string getName() const override; // TODO:
 
@@ -112,7 +125,7 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
      * @param fn Function value to process
      * @return FunctionType* resultant type
      */
-    static FunctionType *from(ir::Func *fn);
+    static FunctionType* from(ir::Func* fn);
 };
 
 }; // namespace types

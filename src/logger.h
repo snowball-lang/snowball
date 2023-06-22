@@ -9,7 +9,8 @@
 #define VSNPRINTF_BUFF_SIZE 8192
 #define FMT(...)            Logger::format(__VA_ARGS__)
 
-namespace snowball {
+namespace snowball
+{
 
 class Logger {
   public:
@@ -31,7 +32,7 @@ class Logger {
     static void compiling(std::string message);
 
     static std::string progress(float progress = 0);
-    static std::string format(const char *p_format, ...);
+    static std::string format(const char* p_format, ...);
 };
 } // namespace snowball
 

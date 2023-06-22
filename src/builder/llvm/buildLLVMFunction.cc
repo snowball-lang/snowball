@@ -12,10 +12,13 @@
 #include <llvm/Linker/Linker.h>
 #include <llvm/Support/SourceMgr.h>
 
-namespace snowball {
-namespace codegen {
+namespace snowball
+{
+namespace codegen
+{
 
-llvm::Function *LLVMBuilder::buildLLVMFunction(llvm::Function *llvmFn, ir::Func *fn) {
+llvm::Function*
+LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func* fn) {
     ctx->setCurrentFunction(nullptr);
 
     // llvmFn->getDe
@@ -47,8 +50,7 @@ llvm::Function *LLVMBuilder::buildLLVMFunction(llvm::Function *llvmFn, ir::Func 
     auto llvmBuffer = llvm::MemoryBuffer::getMemBuffer(code);
 
     llvm::SMDiagnostic err;
-    std::unique_ptr<llvm::Module> sub =
-        llvm::parseIR(llvmBuffer->getMemBufferRef(), err, *context);
+    std::unique_ptr<llvm::Module> sub = llvm::parseIR(llvmBuffer->getMemBufferRef(), err, *context);
     if (!sub) {
         std::string bufStr;
         llvm::raw_string_ostream buf(bufStr);

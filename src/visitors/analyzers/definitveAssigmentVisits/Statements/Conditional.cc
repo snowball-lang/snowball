@@ -4,8 +4,10 @@
 #include <algorithm>
 #include <optional>
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
 SN_DEFINITE_ASSIGMENT_VISIT(Statement::Conditional) {
     p_node->getCondition()->accept(this);
@@ -31,8 +33,7 @@ SN_DEFINITE_ASSIGMENT_VISIT(Statement::Conditional) {
 
         for (auto id : blockInited) {
             auto var = getIdentifier(id);
-            if ((std::find(elseInited.begin(), elseInited.end(), id) !=
-                 elseInited.end()) &&
+            if ((std::find(elseInited.begin(), elseInited.end(), id) != elseInited.end()) &&
                 var != std::nullopt) {
                 if (var.value().second == NotInitialized) {
                     this->state.inited.push_back(id);

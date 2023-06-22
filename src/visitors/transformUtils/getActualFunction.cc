@@ -4,10 +4,12 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
-std::vector<Expression::Param *>
+std::vector<Expression::Param*>
 Transformer::getActualFunctionArgs(cacheComponents::Functions::FunctionStore node) {
     auto args = node.function->getArgs();
     if ((node.state->currentClass != nullptr) && (!node.function->isStatic()) &&

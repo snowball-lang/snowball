@@ -29,11 +29,13 @@
  *
  * There are: null, int, string, float, etc...
  */
-namespace snowball {
-namespace types {
+namespace snowball
+{
+namespace types
+{
 class PrimitiveType : public AcceptorExtend<PrimitiveType, Type> {
   public:
-    PrimitiveType(std::string p_name) : AcceptorExtend(Kind::TYPE, p_name) {}
+    PrimitiveType(std::string p_name) : AcceptorExtend(Kind::TYPE, p_name) { }
 };
 
 /**
@@ -46,7 +48,10 @@ class NumericType : public AcceptorExtend<NumericType, PrimitiveType> {
 
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
-    bool canCast(Type *ty) const override { return NumericType::isNumericType(ty); }
+    bool
+    canCast(Type* ty) const override {
+        return NumericType::isNumericType(ty);
+    }
 
   public:
     /**
@@ -56,61 +61,61 @@ class NumericType : public AcceptorExtend<NumericType, PrimitiveType> {
      *  floats: f64, f32,
      *  boolean: i1
      */
-    static bool isNumericType(Type *ty);
+    static bool isNumericType(Type* ty);
 };
 
 /// @brief Representation of a void type.
 class VoidType : public AcceptorExtend<VoidType, PrimitiveType> {
   public:
-    VoidType() : AcceptorExtend(SN_VOID_TYPE) {}
+    VoidType() : AcceptorExtend(SN_VOID_TYPE) { }
 };
 
 /// @brief C object pointer type (it's the equivalent of `void*` in C)
 class CObjectType : public AcceptorExtend<CObjectType, PrimitiveType> {
   public:
-    CObjectType() : AcceptorExtend(SN_COB_TYPE) {}
+    CObjectType() : AcceptorExtend(SN_COB_TYPE) { }
 };
 
 /// @brief Bool (represents 1-bit signed integer)
 class BoolType : public AcceptorExtend<BoolType, NumericType> {
   public:
-    BoolType() : AcceptorExtend(SN_BOOL_TYPE) {}
+    BoolType() : AcceptorExtend(SN_BOOL_TYPE) { }
 };
 
 /// @brief String (represents int 8 pointer)
 class CharType : public AcceptorExtend<CharType, NumericType> {
   public:
-    CharType() : AcceptorExtend(SN_CHR_TYPE) {}
+    CharType() : AcceptorExtend(SN_CHR_TYPE) { }
 };
 
 /// @brief Float 64 (represents 64-bit floating point)
 class Float64Type : public AcceptorExtend<Float64Type, NumericType> {
   public:
-    Float64Type() : AcceptorExtend(SN_F64_TYPE) {}
+    Float64Type() : AcceptorExtend(SN_F64_TYPE) { }
 };
 
 /// @brief Float 32 (represents 32-bit floating point)
 class Float32Type : public AcceptorExtend<Float32Type, NumericType> {
   public:
-    Float32Type() : AcceptorExtend(SN_F32_TYPE) {}
+    Float32Type() : AcceptorExtend(SN_F32_TYPE) { }
 };
 
 /// @brief Int 64 (represents 64-bit signed integer)
 class Int64Type : public AcceptorExtend<Int64Type, NumericType> {
   public:
-    Int64Type() : AcceptorExtend(SN_INT64_TYPE) {}
+    Int64Type() : AcceptorExtend(SN_INT64_TYPE) { }
 };
 
 /// @brief Int 16 (represents 16-bit signed integer)
 class Int16Type : public AcceptorExtend<Int16Type, NumericType> {
   public:
-    Int16Type() : AcceptorExtend(SN_INT16_TYPE) {}
+    Int16Type() : AcceptorExtend(SN_INT16_TYPE) { }
 };
 
 /// @brief Int 8 (represents 8-bit signed integer)
 class Int8Type : public AcceptorExtend<Int8Type, NumericType> {
   public:
-    Int8Type() : AcceptorExtend(SN_INT8_TYPE) {}
+    Int8Type() : AcceptorExtend(SN_INT8_TYPE) { }
 };
 
 /**
@@ -126,14 +131,15 @@ class Int32Type : public AcceptorExtend<Int32Type, NumericType> {
   public:
     static const std::string TYPE_ALIAS;
 
-    Int32Type() : AcceptorExtend(SN_INT32_TYPE) {}
+    Int32Type() : AcceptorExtend(SN_INT32_TYPE) { }
 
-    bool is(Type *other) const override {
+    bool
+    is(Type* other) const override {
         return (TYPE_ALIAS == other->getName()) || NumericType::is(other);
     }
 };
 
-inline const std::string Int32Type::TYPE_ALIAS = "Int";
+inline const std::string Int32Type::TYPE_ALIAS = "int";
 }; // namespace types
 }; // namespace snowball
 

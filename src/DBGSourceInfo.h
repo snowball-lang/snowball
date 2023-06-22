@@ -9,7 +9,8 @@
 #ifndef __SNOWBALL_DBG_INFO_H_
 #define __SNOWBALL_DBG_INFO_H_
 
-namespace snowball {
+namespace snowball
+{
 
 /**
  * DBGSource info is used by the error handling
@@ -22,8 +23,8 @@ namespace snowball {
  */
 class DBGSourceInfo : public SrcObject {
   public:
-    DBGSourceInfo(SourceInfo *source_info, uint32_t p_line);
-    DBGSourceInfo(SourceInfo *source_info, std::pair<int, int> p_pos, uint32_t p_width);
+    DBGSourceInfo(SourceInfo* source_info, uint32_t p_line);
+    DBGSourceInfo(SourceInfo* source_info, std::pair<int, int> p_pos, uint32_t p_width);
 
     uint32_t width = 0;
     uint32_t line = 0;
@@ -38,13 +39,17 @@ class DBGSourceInfo : public SrcObject {
     void prepare_for_error();
     friend SrcObject;
 
-    auto getDBGInfo() { return this; }
+    auto
+    getDBGInfo() {
+        return this;
+    }
 
     /**
      * @brief Create a new instance  of dbg source info
      * using a token as reference.
      */
-    static auto fromToken(SourceInfo *i, Token tk) {
+    static auto
+    fromToken(SourceInfo* i, Token tk) {
         return new DBGSourceInfo(i, tk.get_pos(), tk.get_width());
     }
 };
@@ -60,16 +65,16 @@ class DBGSourceInfo : public SrcObject {
  */
 class DBGObject : public SrcObject {
   protected:
-    DBGSourceInfo *dbg = nullptr;
+    DBGSourceInfo* dbg = nullptr;
 
   public:
     /// @brief Contruct a new DBGObject
     DBGObject();
 
     /// @return Debug information
-    virtual DBGSourceInfo *getDBGInfo();
+    virtual DBGSourceInfo* getDBGInfo();
     /// @brief Set a new dbg object
-    virtual void setDBGInfo(DBGSourceInfo *i);
+    virtual void setDBGInfo(DBGSourceInfo* i);
 };
 } // namespace snowball
 

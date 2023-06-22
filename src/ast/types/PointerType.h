@@ -15,14 +15,14 @@
 #ifndef __SNOWBALL_AST_POINTER_TYPES_H_
 #define __SNOWBALL_AST_POINTER_TYPES_H_
 
-namespace snowball {
-namespace types {
+namespace snowball
+{
+namespace types
+{
 
 class FunctionType;
 
-class PointerType : public AcceptorExtend<PointerType, Type>,
-                    public ir::IdMixin,
-                    public DBGObject {
+class PointerType : public AcceptorExtend<PointerType, Type>, public ir::IdMixin, public DBGObject {
     friend AcceptorExtend;
 
   private:
@@ -35,7 +35,8 @@ class PointerType : public AcceptorExtend<PointerType, Type>,
     /**
      * @param other another type to check.
      */
-    virtual bool is(Type *other) const override {
+    virtual bool
+    is(Type* other) const override {
         if (auto c = utils::cast<PointerType>(other)) {
             return base->is(c->getPointedType());
         }
@@ -57,11 +58,11 @@ class PointerType : public AcceptorExtend<PointerType, Type>,
     /// @c Type::toRef() for information about this function.
     /// @note It essentially does the same thing except it adds
     ///  generics if needed
-    Syntax::Expression::TypeRef *toRef() override;
+    Syntax::Expression::TypeRef* toRef() override;
 
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
-    bool canCast(Type *ty) const override;
+    bool canCast(Type* ty) const override;
 };
 
 }; // namespace types

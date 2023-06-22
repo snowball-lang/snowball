@@ -22,14 +22,16 @@
 namespace fs = std::filesystem;
 #define SN_MODULE_NAME "llvm_snowball_compile_mod_"
 
-namespace snowball {
+namespace snowball
+{
 Compiler::Compiler(std::string p_code, std::string p_path) {
     _code = p_code;
     _cwd = fs::current_path();
     _path = _path / p_path;
 }
 
-void Compiler::initialize() {
+void
+Compiler::initialize() {
     _initialized = true;
     create_source_info();
 
@@ -38,12 +40,13 @@ void Compiler::initialize() {
     if (!fs::exists(config_folder / "bin")) fs::create_directory(config_folder / "bin");
 }
 
-void Compiler::compile(bool verbose) {
+void
+Compiler::compile(bool verbose) {
     if (!_initialized) {
         throw SNError(Error::COMPILER_ERROR, "Compiler has not been initialized!");
     }
 #if _SNOWBALL_TIMERS_DEBUG == 0
-#define SHOW_STATUS(status)                                                            \
+#define SHOW_STATUS(status)                                                                        \
     if (!verbose) status;
 #else
 #define SHOW_STATUS(_)
@@ -84,17 +87,15 @@ void Compiler::compile(bool verbose) {
             mainModule->setSourceInfo(_source_info);
 
             auto simplifier = new Syntax::Transformer(
-                mainModule->downcasted_shared_from_this<ir::Module>(), _source_info);
+                    mainModule->downcasted_shared_from_this<ir::Module>(), _source_info);
 #if _SNOWBALL_TIMERS_DEBUG
-            DEBUG_TIMER("Simplifier: %fs",
-                        utils::_timer([&] { simplifier->visit(ast); }));
+            DEBUG_TIMER("Simplifier: %fs", utils::_timer([&] { simplifier->visit(ast); }));
 #else
             simplifier->visit(ast);
 #endif
 
             SHOW_STATUS(Logger::compiling(Logger::progress(0.60)))
-            std::vector<Syntax::Analyzer *> passes = {
-                new Syntax::DefiniteAssigment(_source_info)};
+            std::vector<Syntax::Analyzer*> passes = {new Syntax::DefiniteAssigment(_source_info)};
 
 #if _SNOWBALL_TIMERS_DEBUG
             DEBUG_TIMER("Passes: %fs", utils::_timer([&] {
@@ -111,8 +112,7 @@ void Compiler::compile(bool verbose) {
             auto typeChecker = new codegen::TypeChecker(mainModule);
 
 #if _SNOWBALL_TIMERS_DEBUG
-            DEBUG_TIMER("TypeChecker: %fs",
-                        utils::_timer([&] { typeChecker->codegen(); }));
+            DEBUG_TIMER("TypeChecker: %fs", utils::_timer([&] { typeChecker->codegen(); }));
 #else
             typeChecker->codegen();
 #endif
@@ -133,7 +133,8 @@ void Compiler::compile(bool verbose) {
 #undef SHOW_STATUS
 }
 
-toml::parse_result Compiler::get_config() {
+toml::parse_result
+Compiler::get_config() {
     std::string name = fs::current_path() / "sn.toml";
     std::ifstream f(name.c_str());
     if (f.good()) {
@@ -143,12 +144,16 @@ toml::parse_result Compiler::get_config() {
     throw SNError(Error::IO_ERROR,
                   FMT("Project configuration not found (%s)\n%shelp%s: try "
                       "runing 'snowball init --cfg'",
-                      name.c_str(), BGRN, RESET));
+                      name.c_str(),
+                      BGRN,
+                      RESET));
 }
 
-void Compiler::cleanup() {}
+void
+Compiler::cleanup() { }
 
-int Compiler::emit_object(std::string out, bool log) {
+int
+Compiler::emit_object(std::string out, bool log) {
     auto builder = new codegen::LLVMBuilder(module);
     builder->codegen();
     builder->optimizeModule(opt_level);
@@ -160,7 +165,22 @@ int Compiler::emit_object(std::string out, bool log) {
     return builder->emitObjectFile(out, log);
 }
 
-int Compiler::emit_binary(std::string out, bool log) {
+int
+Compiler::emit_llvmir(std::string p_output, bool p_pmessage) {
+    auto builder = new codegen::LLVMBuilder(module);
+    builder->codegen();
+    std::error_code EC;
+    llvm::raw_fd_ostream dest(p_output, EC);
+    if (EC)
+        throw SNError(Error::IO_ERROR,
+                      Logger::format("Could not open file: %s", EC.message().c_str()));
+    builder->print(dest);
+    if (p_pmessage) Logger::success("Snowball project transpiled to llvm IR code! 🎉\n");
+    return EXIT_SUCCESS;
+}
+
+int
+Compiler::emit_binary(std::string out, bool log) {
     std::string objfile = Logger::format("%s.so", out.c_str());
     DEBUG_CODEGEN("Emitting object file... (%s)", objfile.c_str());
     int objstatus = emit_object(objfile, false);
@@ -194,14 +214,13 @@ int Compiler::emit_binary(std::string out, bool log) {
     int ldstatus = system(ldcommand.c_str());
     if (ldstatus) {
         remove(objfile.c_str());
-        throw SNError(
-            LINKER_ERR,
-            Logger::format("Linking with " LD_PATH " failed with code %d", ldstatus));
+        throw SNError(LINKER_ERR,
+                      Logger::format("Linking with " LD_PATH " failed with code %d", ldstatus));
     }
 
     if (log)
-        Logger::success(Logger::format("Snowball project successfully compiled! 🥳",
-                                       BGRN, RESET, out.c_str()));
+        Logger::success(Logger::format(
+                "Snowball project successfully compiled! 🥳", BGRN, RESET, out.c_str()));
 
     // clean up
     DEBUG_CODEGEN("Cleaning up object file... (%s)", objfile.c_str());
@@ -210,8 +229,9 @@ int Compiler::emit_binary(std::string out, bool log) {
     return EXIT_SUCCESS;
 }
 
-void Compiler::create_source_info() {
-    SourceInfo *source_info = new SourceInfo(_code, _path);
+void
+Compiler::create_source_info() {
+    SourceInfo* source_info = new SourceInfo(_code, _path);
     _source_info = source_info;
 }
 } // namespace snowball

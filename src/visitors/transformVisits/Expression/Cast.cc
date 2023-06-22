@@ -5,8 +5,10 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
 SN_TRANSFORMER_VISIT(Expression::Cast) {
     p_node->getValue()->accept(this);

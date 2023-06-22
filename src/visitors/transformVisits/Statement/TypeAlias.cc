@@ -3,8 +3,10 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
 SN_TRANSFORMER_VISIT(Statement::TypeAlias) {
     auto name = p_node->getIdentifier();
@@ -15,9 +17,10 @@ SN_TRANSFORMER_VISIT(Statement::TypeAlias) {
 
     if (x.has_value() && (!ctx->generateFunction) ||
         ctx->cache->getTransformedType(uuid).has_value()) {
-        E<VARIABLE_ERROR>(p_node, FMT("Type alias with name '%s' is already "
-                                      "defined in the current scope!",
-                                      name.c_str()));
+        E<VARIABLE_ERROR>(p_node,
+                          FMT("Type alias with name '%s' is already "
+                              "defined in the current scope!",
+                              name.c_str()));
     } else if ((!x.has_value()) && (p_node->getGenerics().size() == 0)) {
         if (!ctx->generateFunction) return;
         assert(ctx->cache->getTransformedType(uuid) == std::nullopt);

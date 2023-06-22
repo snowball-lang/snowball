@@ -1,5 +1,5 @@
 
-#include "../exec/cli.h"
+#include "../app/cli.h"
 #include "common.h"
 #include "ir/module/MainModule.h"
 #include "ir/module/Module.h"
@@ -14,7 +14,8 @@ namespace fs = std::filesystem;
 #ifndef __SNOWBALL_COMPILER_H_
 #define __SNOWBALL_COMPILER_H_
 
-namespace snowball {
+namespace snowball
+{
 
 /**
  * @brief snowball Compiler
@@ -30,9 +31,9 @@ class Compiler {
     fs::path _path;
 
     fs::path _cwd;
-    exec::Options::Optimization opt_level;
+    app::Options::Optimization opt_level;
 
-    SourceInfo *_source_info;
+    SourceInfo* _source_info;
     bool _initialized = false;
     bool _enabledTests = false;
 
@@ -47,10 +48,16 @@ class Compiler {
     void cleanup();
 
     static toml::parse_result get_config();
-    void enable_tests() { _enabledTests = true; }
+    void
+    enable_tests() {
+        _enabledTests = true;
+    }
 
     // Get
-    SourceInfo *getSource_info() const { return _source_info; }
+    SourceInfo*
+    getSource_info() const {
+        return _source_info;
+    }
 
     ~Compiler(){};
 
@@ -60,9 +67,12 @@ class Compiler {
     // TODO
     int emit_binary(std::string, bool = true);
     int emit_object(std::string, bool = true);
-    int emit_llvmir(std::string, bool = true) { return 0; }
+    int emit_llvmir(std::string, bool = true);
 
-    void set_optimization(exec::Options::Optimization o) { opt_level = o; }
+    void
+    set_optimization(app::Options::Optimization o) {
+        opt_level = o;
+    }
 
   private:
     // methods

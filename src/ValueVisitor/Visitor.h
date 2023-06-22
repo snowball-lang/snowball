@@ -4,8 +4,10 @@
 #ifndef __SNOWBALL_VALUE_VISITOR_H_
 #define __SNOWBALL_VALUE_VISITOR_H_
 
-namespace snowball {
-namespace ir {
+namespace snowball
+{
+namespace ir
+{
 class Value;
 
 #define VISIT(n) class n;
@@ -14,7 +16,8 @@ class Value;
 
 } // namespace ir
 
-namespace codegen {
+namespace codegen
+{
 
 /**
  * @brief Value visitor
@@ -33,7 +36,7 @@ class ValueVisitor {
      */
     virtual void codegen() = 0;
 
-#define VISIT(n) virtual void visit(ir::n *) = 0;
+#define VISIT(n) virtual void visit(ir::n*) = 0;
 #include "../defs/visits.def"
 #undef VISIT
 };

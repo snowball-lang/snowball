@@ -9,11 +9,13 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
-std::shared_ptr<types::Type> Transformer::transformType(Expression::TypeRef *ty) {
-
+std::shared_ptr<types::Type>
+Transformer::transformType(Expression::TypeRef* ty) {
     auto name = ty->getPrettyName();
     auto id = ty->getName();
 
@@ -23,8 +25,7 @@ std::shared_ptr<types::Type> Transformer::transformType(Expression::TypeRef *ty)
 
     if (ast == nullptr) {
         if (ty->getGenerics().size() > 0) {
-            ast = Syntax::N<Expression::GenericIdentifier>(ty->getName(),
-                                                           ty->getGenerics());
+            ast = Syntax::N<Expression::GenericIdentifier>(ty->getName(), ty->getGenerics());
         } else {
             ast = Syntax::N<Expression::Identifier>(ty->getName());
         }
@@ -49,11 +50,9 @@ std::shared_ptr<types::Type> Transformer::transformType(Expression::TypeRef *ty)
             goto continueTypeFetch;
         }
 
-        E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()),
-                      {.info = errorReason});
+        E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()), {.info = errorReason});
     } else if (auto x = utils::cast<Expression::Index>(ast)) {
-        auto [_v, type, _o, _f, _m, canPrivate] =
-            getFromIndex(ty->getDBGInfo(), x, true).first;
+        auto [_v, type, _o, _f, _m, canPrivate] = getFromIndex(ty->getDBGInfo(), x, true).first;
 
         std::string errorReason;
         if (_v.has_value()) {
@@ -69,8 +68,7 @@ std::shared_ptr<types::Type> Transformer::transformType(Expression::TypeRef *ty)
             goto continueTypeFetch;
         }
 
-        E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()),
-                      {.info = errorReason});
+        E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()), {.info = errorReason});
     }
 
 continueTypeFetch:
@@ -120,23 +118,25 @@ continueTypeFetch:
         }
 
         if (existsWithGenerics) {
-            E<TYPE_ERROR>(ty, FMT("Type '%s' requires to have no template "
-                                  "parameters but at least one has been given?",
-                                  name.c_str()));
+            E<TYPE_ERROR>(ty,
+                          FMT("Type '%s' requires to have no template "
+                              "parameters but at least one has been given?",
+                              name.c_str()));
         }
     }
 
-    if (returnedType == nullptr) 
-        E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
+    if (returnedType == nullptr) E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
     if (!typeGenericsMatch(ty, returnedType)) {
         auto compAsDefinedType = utils::dyn_cast<types::DefinedType>(returnedType);
         auto compGenerics = compAsDefinedType == nullptr
-                                ? std::vector<std::shared_ptr<types::Type>>{}
-                                : compAsDefinedType->getGenerics();
-        E<TYPE_ERROR>(ty, FMT("Type '%s' require to have %i generic "
-                "argument(s) but %i where given!",
-                returnedType->getPrettyName().c_str(),
-                compGenerics.size(), ty->getGenerics().size()));  
+                ? std::vector<std::shared_ptr<types::Type>>{}
+                : compAsDefinedType->getGenerics();
+        E<TYPE_ERROR>(ty,
+                      FMT("Type '%s' require to have %i generic "
+                          "argument(s) but %i where given!",
+                          returnedType->getPrettyName().c_str(),
+                          compGenerics.size(),
+                          ty->getGenerics().size()));
     }
     return returnedType;
 }

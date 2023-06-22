@@ -6,40 +6,40 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
-Transformer::StoreType Transformer::getFromIdentifier(Expression::Identifier *s) {
+Transformer::StoreType
+Transformer::getFromIdentifier(Expression::Identifier* s) {
     auto g = utils::cast<Expression::GenericIdentifier>(s);
-    auto generics =
-        (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef *>{};
+    auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
     return getFromIdentifier(s->getDBGInfo(), s->getIdentifier(), generics);
 }
 Transformer::StoreType
-Transformer::getFromIdentifier(DBGSourceInfo *dbgInfo, const std::string identifier,
-                               std::vector<Expression::TypeRef *> generics,
+Transformer::getFromIdentifier(DBGSourceInfo* dbgInfo,
+                               const std::string identifier,
+                               std::vector<Expression::TypeRef*>
+                                       generics,
                                const std::string p_uuid) {
-
     // Transform the base first
     auto [item, success] = ctx->getItem(identifier);
 
     if (success) {
         if (item->isVal()) {
-            // TODO: it should not be getValue, it should have it's own value
+            // TODO: it should not be getValue, it should have it's own
+            // value
             auto val = item->getValue();
             return {val, std::nullopt, std::nullopt, std::nullopt, std::nullopt};
         } else if (item->isFunc()) {
-            return {std::nullopt, std::nullopt, item->getFunctions(), std::nullopt,
-                    std::nullopt};
+            return {std::nullopt, std::nullopt, item->getFunctions(), std::nullopt, std::nullopt};
         } else if (item->isType()) {
-            return {std::nullopt, item->getType(), std::nullopt, std::nullopt,
-                    std::nullopt};
+            return {std::nullopt, item->getType(), std::nullopt, std::nullopt, std::nullopt};
         } else if (item->isType()) {
-            return {std::nullopt, item->getType(), std::nullopt, std::nullopt,
-                    std::nullopt};
+            return {std::nullopt, item->getType(), std::nullopt, std::nullopt, std::nullopt};
         } else if (item->isModule()) {
-            return {std::nullopt, std::nullopt, std::nullopt, std::nullopt,
-                    item->getModule()};
+            return {std::nullopt, std::nullopt, std::nullopt, std::nullopt, item->getModule()};
         } else {
             assert(false && "BUG: Unhandled value type!");
         }
@@ -59,12 +59,10 @@ Transformer::getFromIdentifier(DBGSourceInfo *dbgInfo, const std::string identif
         std::shared_ptr<types::Type> lastType = nullptr;
         for (auto t : x.value()) {
             assert(t->isType());
-            auto transformed =
-                std::dynamic_pointer_cast<types::DefinedType>(t->getType());
+            auto transformed = std::dynamic_pointer_cast<types::DefinedType>(t->getType());
             assert(t != nullptr);
             if (typeGenericsMatch(ty, transformed)) {
-                return {std::nullopt, transformed, std::nullopt, std::nullopt,
-                        std::nullopt};
+                return {std::nullopt, transformed, std::nullopt, std::nullopt, std::nullopt};
             }
         }
     }
@@ -75,8 +73,7 @@ Transformer::getFromIdentifier(DBGSourceInfo *dbgInfo, const std::string identif
                 std::nullopt, std::nullopt};
     }
 
-    std::optional<std::vector<cacheComponents::Functions::FunctionStore>> overloads =
-        std::nullopt;
+    std::optional<std::vector<cacheComponents::Functions::FunctionStore>> overloads = std::nullopt;
     if (auto x = ctx->cache->getFunction(uuid)) {
         overloads = x;
     }

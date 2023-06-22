@@ -5,17 +5,18 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
 SN_TRANSFORMER_VISIT(Expression::NewInstance) {
     auto call = p_node->getCall();
     auto expr = p_node->getType();
 
     assert(utils::cast<Expression::TypeRef>(expr));
-    auto ident =
-        Syntax::N<Expression::Identifier>(services::OperatorService::getOperatorMangle(
-            services::OperatorService::CONSTRUCTOR));
+    auto ident = Syntax::N<Expression::Identifier>(
+            services::OperatorService::getOperatorMangle(services::OperatorService::CONSTRUCTOR));
     ident->setDBGInfo(expr->getDBGInfo());
     auto index = Syntax::N<Expression::Index>(expr, ident, true);
     index->setDBGInfo(expr->getDBGInfo());
@@ -30,8 +31,8 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
     auto type = transformType(typeRef);
 
     // Make a copy of the value
-    auto v = ctx->module->N<ir::ObjectInitialization>(
-        p_node->getDBGInfo(), c->getCallee(), c->getArguments());
+    auto v = ctx->module->N<ir::ObjectInitialization>(p_node->getDBGInfo(), c->getCallee(),
+                                                      c->getArguments());
     v->initializeAtHeap = p_node->atHeap();
     v->setType(v->initializeAtHeap ? type->getPointerTo() : type);
     this->value = v;

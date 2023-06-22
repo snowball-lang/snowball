@@ -5,11 +5,13 @@
 
 #include <assert.h>
 
-namespace snowball::parser {
+namespace snowball::parser
+{
 
-Syntax::Block *Parser::parseBlock(std::vector<TokenType> termination) {
+Syntax::Block*
+Parser::parseBlock(std::vector<TokenType> termination) {
     assert(!is<TokenType::_EOF>());
-    std::vector<Syntax::Node *> stmts;
+    std::vector<Syntax::Node*> stmts;
 
     while (true) {
         auto pk = peek();
@@ -17,8 +19,7 @@ Syntax::Block *Parser::parseBlock(std::vector<TokenType> termination) {
         switch (pk.type) {
             case TokenType::_EOF: {
                 next(); // eat EOF
-                createError<UNEXPECTED_EOF>(
-                    "Found an unexpected EOF while parsing a block");
+                createError<UNEXPECTED_EOF>("Found an unexpected EOF while parsing a block");
             }
 
             case TokenType::BRACKET_LCURLY: {

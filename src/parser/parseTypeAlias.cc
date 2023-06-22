@@ -6,9 +6,11 @@
 
 #include <assert.h>
 
-namespace snowball::parser {
+namespace snowball::parser
+{
 
-Syntax::Statement::TypeAlias *Parser::parseTypeAlias() {
+Syntax::Statement::TypeAlias*
+Parser::parseTypeAlias() {
     assert(is<TokenType::KWORD_TYPEDEF>());
     next(); // East "class"
 

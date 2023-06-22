@@ -11,15 +11,16 @@
 #ifndef __SNOWBALL_VALUE_EXTRACT_VALUE_H_
 #define __SNOWBALL_VALUE_EXTRACT_VALUE_H_
 
-namespace snowball {
-namespace ir {
+namespace snowball
+{
+namespace ir
+{
 
 /**
  * @brief A value extract represents the use of (e.g.) an
  * identifier.
  */
 class ValueExtract : public AcceptorExtend<ValueExtract, Value> {
-
     // Value being extracted
     std::shared_ptr<Value> value;
 
@@ -27,7 +28,10 @@ class ValueExtract : public AcceptorExtend<ValueExtract, Value> {
     explicit ValueExtract(std::shared_ptr<Value> variable) : value(variable){};
 
     /// @return The stored value
-    auto getValue() { return value; }
+    auto
+    getValue() {
+        return value;
+    }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

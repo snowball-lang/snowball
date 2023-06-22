@@ -32,10 +32,13 @@
 #include <llvm/Transforms/Scalar/GVN.h>
 #include <llvm/Transforms/Scalar/Reassociate.h>
 
-namespace snowball {
-namespace codegen {
+namespace snowball
+{
+namespace codegen
+{
 
-int LLVMBuilder::emitObjectFile(std::string out, bool log) {
+int
+LLVMBuilder::emitObjectFile(std::string out, bool log) {
     std::error_code EC;
     llvm::raw_fd_ostream dest(out, EC, llvm::sys::fs::OF_None);
 
@@ -48,8 +51,7 @@ int LLVMBuilder::emitObjectFile(std::string out, bool log) {
     auto FileType = llvm::CGFT_ObjectFile;
     if (target->addPassesToEmitFile(pass, dest, nullptr, FileType)) {
         remove(out.c_str());
-        throw SNError(Error::LLVM_INTERNAL,
-                      "TargetMachine can't emit a file of this type");
+        throw SNError(Error::LLVM_INTERNAL, "TargetMachine can't emit a file of this type");
     }
 
     if (log) Logger::success("Snowball project compiled to an object file! ✨\n");

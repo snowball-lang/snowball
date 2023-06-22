@@ -8,28 +8,29 @@
 
 using namespace snowball::Syntax::Expression;
 
-namespace snowball::parser {
+namespace snowball::parser
+{
 
-std::vector<Syntax::Expression::Param *> Parser::parseGenericParams() {
+std::vector<Syntax::Expression::Param*>
+Parser::parseGenericParams() {
     assert(is<TokenType::OP_LT>());
 
-    std::vector<Syntax::Expression::Param *> params;
+    std::vector<Syntax::Expression::Param*> params;
 
     while (true) {
         next();
 
         if (is<TokenType::_EOF>()) {
-            createError<UNEXPECTED_EOF>(
-                "Found an unexpected EOF while parsing generic declaration");
+            createError<UNEXPECTED_EOF>("Found an unexpected EOF while "
+                                        "parsing generic declaration");
         } else if (is<TokenType::IDENTIFIER>()) {
-
             // Get the current name for the parameter
             auto name = m_current.to_string();
 
             // Define the default type. The default
             // value is a null pointer, meaning that
             // there are no default parameters defined.
-            TypeRef *default_ty = nullptr;
+            TypeRef* default_ty = nullptr;
 
             // Consume identifier
             next();
@@ -47,8 +48,7 @@ std::vector<Syntax::Expression::Param *> Parser::parseGenericParams() {
             if (is<TokenType::OP_GT>()) {
                 next();
                 break;
-            } else if (is<TokenType::SYM_COMMA>() &&
-                       is<TokenType::IDENTIFIER>(peek(0, true))) {
+            } else if (is<TokenType::SYM_COMMA>() && is<TokenType::IDENTIFIER>(peek(0, true))) {
                 continue;
             }
 
@@ -57,10 +57,9 @@ std::vector<Syntax::Expression::Param *> Parser::parseGenericParams() {
             next();
             break;
         } else {
-            createError<SYNTAX_ERROR>(
-                FMT("Expected a vaid generic declaration but got '%s'",
-                    m_current.to_string().c_str()),
-                {.info = "Unexpected token here"});
+            createError<SYNTAX_ERROR>(FMT("Expected a vaid generic declaration but got '%s'",
+                                          m_current.to_string().c_str()),
+                                      {.info = "Unexpected token here"});
         }
     }
 

@@ -15,8 +15,10 @@
 #ifndef __SNOWBALL_AST_DEFINED_TYPES_H_
 #define __SNOWBALL_AST_DEFINED_TYPES_H_
 
-namespace snowball {
-namespace types {
+namespace snowball
+{
+namespace types
+{
 
 class FunctionType;
 
@@ -29,9 +31,7 @@ class FunctionType;
  * primitive types, in order to use these type and it's member,
  * a new initialization of the object is required.
  */
-class DefinedType : public AcceptorExtend<DefinedType, Type>,
-                    public ir::IdMixin,
-                    public DBGObject {
+class DefinedType : public AcceptorExtend<DefinedType, Type>, public ir::IdMixin, public DBGObject {
   public:
     /**
      * @brief A class field represents all of the "elements" a
@@ -41,8 +41,11 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
      *  is eqaul to another type.
      */
     struct ClassField : public Syntax::Statement::Privacy {
-        explicit ClassField(const std::string& name, std::shared_ptr<Type> type,
-                            Privacy privacy = PRIVATE, bool isMutable = false);
+        explicit ClassField(const std::string& name,
+                            std::shared_ptr<Type>
+                                    type,
+                            Privacy privacy = PRIVATE,
+                            bool isMutable = false);
 
         const std::string name;
         const std::shared_ptr<Type> type;
@@ -58,7 +61,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     ///  for this class
     std::vector<std::shared_ptr<Type>> generics;
     /// @brief a list of fields this class has
-    std::vector<ClassField *> fields;
+    std::vector<ClassField*> fields;
     /// @brief Definition of where in the stack this class is stored
     /// @example [module name].MyClass:2
     std::string uuid;
@@ -69,13 +72,15 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     /// @brief VTable holding all it's functions
     std::vector<std::shared_ptr<ir::Func>> classVtable;
     /// @brief The ast representation for the type
-    Syntax::Statement::ClassDef *ast = nullptr;
+    Syntax::Statement::ClassDef* ast = nullptr;
 
   public:
-    DefinedType(const std::string& name, const std::string uuid,
-                std::shared_ptr<ir::Module> module,
-                Syntax::Statement::ClassDef *ast = nullptr,
-                std::vector<ClassField *> fields = {},
+    DefinedType(const std::string& name,
+                const std::string uuid,
+                std::shared_ptr<ir::Module>
+                        module,
+                Syntax::Statement::ClassDef* ast = nullptr,
+                std::vector<ClassField*> fields = {},
                 std::shared_ptr<DefinedType> parent = nullptr,
                 std::vector<std::shared_ptr<Type>> generics = {});
 
@@ -89,7 +94,8 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
      *  primitive types, this function will automatically
      *  return false.
      */
-    virtual bool is(Type *other) const override {
+    virtual bool
+    is(Type* other) const override {
         if (auto c = utils::cast<DefinedType>(other)) {
             return is(c);
         }
@@ -104,7 +110,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
      * @param other Type to check
      * @return true/false depending on the equality
      */
-    virtual bool is(DefinedType *other) const;
+    virtual bool is(DefinedType* other) const;
 
     /// @return module where the type is defined in
     std::shared_ptr<ir::Module> getModule() const;
@@ -115,7 +121,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     /// @return UUID of the class that can be used as UUID base
     std::string getUUID() const;
     /// @return The ast representation for the type
-    Syntax::Statement::ClassDef *getAST() const;
+    Syntax::Statement::ClassDef* getAST() const;
     /// @return The size of the class virtual table
     int getVtableSize();
     /// @brief Increase the size of the virtual table
@@ -123,24 +129,33 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     /// @return a vector containing all the functions in a vtable
     std::vector<std::shared_ptr<ir::Func>> getVTable() const;
     /// @return the generic list defined for this type
-    auto getGenerics() const { return generics; }
+    auto
+    getGenerics() const {
+        return generics;
+    }
     /// @return the parent class it inherits from
     /// @note It may be std::nullptr if it does not inherit from
     ///  anything!
-    auto getParent() const { return parent; }
+    auto
+    getParent() const {
+        return parent;
+    }
     /// @return A list containing all the fields declared for the class
     /// @note It does not include the parent fields!
-    auto getFields() const { return fields; }
+    auto
+    getFields() const {
+        return fields;
+    }
     /// @brief Append a new field (ClassField) to the list
-    void addField(ClassField *f);
+    void addField(ClassField* f);
     /// @c Type::toRef() for information about this function.
     /// @note It essentially does the same thing except it adds
     ///  generics if needed
-    Syntax::Expression::TypeRef *toRef() override;
+    Syntax::Expression::TypeRef* toRef() override;
 
     /// @brief override function.
-    bool canCast(Type *ty) const override;
-    virtual bool canCast(DefinedType *ty) const;
+    bool canCast(Type* ty) const override;
+    virtual bool canCast(DefinedType* ty) const;
 };
 
 }; // namespace types

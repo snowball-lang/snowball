@@ -64,12 +64,12 @@ file(GLOB_RECURSE RUNTIME_SOURCES runtime/**/*.cc runtime/**/*.c runtime/gc/*.c)
 set (RUNTIME_FILES
   ${RUNTIME_SOURCES})
 
-set(EXEC_HEADERS_DIR exec/)
-file(GLOB_RECURSE EXEC_HEADERS ${EXEC_HEADERS_DIR}/*.h ${EXEC_HEADERS_DIR}/*.hpp)
-file(GLOB_RECURSE EXEC_SOURCES exec/*.cc exec/*.cc exec/*.c)
-set (EXEC_FILES
-  ${EXEC_HEADERS}
-  ${EXEC_SOURCES})
+set(APP_HEADERS_DIR app/)
+file(GLOB_RECURSE APP_HEADERS ${APP_HEADERS_DIR}/*.h ${APP_HEADERS_DIR}/*.hpp)
+file(GLOB_RECURSE APP_SOURCES app/*.cc app/*.cc app/*.c)
+set (APP_FILES
+  ${APP_HEADERS}
+  ${APP_SOURCES})
 
 # Map llvm components
 llvm_map_components_to_libnames(llvm_libs
@@ -107,8 +107,8 @@ else()
   add_library(SnowballRuntime SHARED ${RUNTIME_FILES})
 endif()
 
-add_executable(snowballexe ${EXEC_FILES})
-target_include_directories(snowballexe PUBLIC ${EXEC_HEADERS_DIR})
+add_executable(snowballexe ${APP_FILES})
+target_include_directories(snowballexe PUBLIC ${APP_HEADERS_DIR})
 target_link_libraries(snowballexe PUBLIC ${PROJECT_NAME} ${GLIB_LIBRARIES})
 
 if (${BUILD_FOR_WIN})

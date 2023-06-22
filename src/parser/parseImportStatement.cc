@@ -3,18 +3,20 @@
 
 #include <assert.h>
 
-namespace snowball {
-namespace parser {
+namespace snowball
+{
+namespace parser
+{
 
-Syntax::Statement::ImportStmt *Parser::parseImportStatement() {
+Syntax::Statement::ImportStmt*
+Parser::parseImportStatement() {
     assert(is<TokenType::KWORD_IMPORT>());
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
 
     next();
 
     auto package =
-        assert_tok<TokenType::IDENTIFIER>("an identifier for package reference")
-            .to_string();
+            assert_tok<TokenType::IDENTIFIER>("an identifier for package reference").to_string();
     next();
 
     consume<TokenType::SYM_COLCOL>("'::'");

@@ -8,10 +8,13 @@
 #include <llvm/IR/Value.h>
 #include <llvm/IR/Verifier.h>
 
-namespace snowball {
-namespace codegen {
+namespace snowball
+{
+namespace codegen
+{
 
-void LLVMBuilder::visit(ir::Func *func) {
+void
+LLVMBuilder::visit(ir::Func* func) {
     if (auto it = funcs.find(func->getId()); it != funcs.end()) {
         this->value = it->second;
         return;
@@ -24,7 +27,8 @@ void LLVMBuilder::visit(ir::Func *func) {
     this->value = fn;
 }
 
-llvm::Function *LLVMBuilder::buildBodiedFunction(llvm::Function *llvmFn, ir::Func *fn) {
+llvm::Function*
+LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Func* fn) {
     ctx->setCurrentFunction(llvmFn);
 
     auto returnType = getLLVMType(fn->getRetTy());
@@ -43,11 +47,11 @@ llvm::Function *LLVMBuilder::buildBodiedFunction(llvm::Function *llvmFn, ir::Fun
         auto storage = builder->CreateAlloca(getLLVMType(var->getType()));
         builder->CreateStore(llvmArgsIter, storage);
 
-        // note: We sum "1" to the ID because each "Variable" has the argument
-        // stored.
-        //  variable searches for it's ID and not the argument ID (aka: var id -
-        //  1). basically, we sum 1 because thats the ID when we store it as a
-        //  variable.
+        // note: We sum "1" to the ID because each "Variable" has the
+        // argument stored.
+        //  variable searches for it's ID and not the argument ID (aka:
+        //  var id - 1). basically, we sum 1 because thats the ID when
+        //  we store it as a variable.
         ctx->addSymbol(var->getId() + 1, storage);
 
         // debug info
@@ -56,13 +60,19 @@ llvm::Function *LLVMBuilder::buildBodiedFunction(llvm::Function *llvmFn, ir::Fun
 
         auto file = dbg.getFile(src->getPath());
         auto scope = llvmFn->getSubprogram();
-        auto debugVar = dbg.builder->createParameterVariable(
-            scope, var->getName(), var->getIndex(), file, dbgInfo->line,
-            getDIType(var->getType().get()), dbg.debug);
+        auto debugVar = dbg.builder->createParameterVariable(scope,
+                                                             var->getName(),
+                                                             var->getIndex(),
+                                                             file,
+                                                             dbgInfo->line,
+                                                             getDIType(var->getType().get()),
+                                                             dbg.debug);
         dbg.builder->insertDeclare(
-            storage, debugVar, dbg.builder->createExpression(),
-            llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
-            entry);
+                storage,
+                debugVar,
+                dbg.builder->createExpression(),
+                llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
+                entry);
 
         ++llvmArgsIter;
     }
@@ -79,13 +89,18 @@ llvm::Function *LLVMBuilder::buildBodiedFunction(llvm::Function *llvmFn, ir::Fun
 
         auto file = dbg.getFile(src->getPath());
         auto scope = llvmFn->getSubprogram();
-        auto debugVar = dbg.builder->createAutoVariable(
-            scope, v->getIdentifier(), file, dbgInfo->line,
-            getDIType(v->getType().get()), dbg.debug);
+        auto debugVar = dbg.builder->createAutoVariable(scope,
+                                                        v->getIdentifier(),
+                                                        file,
+                                                        dbgInfo->line,
+                                                        getDIType(v->getType().get()),
+                                                        dbg.debug);
         dbg.builder->insertDeclare(
-            storage, debugVar, dbg.builder->createExpression(),
-            llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
-            entry);
+                storage,
+                debugVar,
+                dbg.builder->createExpression(),
+                llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
+                entry);
     }
 
     builder->CreateBr(body);
@@ -100,7 +115,6 @@ llvm::Function *LLVMBuilder::buildBodiedFunction(llvm::Function *llvmFn, ir::Fun
     // Create return type
     if ((!builder->GetInsertBlock()->getInstList().back().isTerminator()) ||
         builder->GetInsertBlock()->getInstList().size() == 0) {
-
         if (utils::cast<types::VoidType>(fn->getRetTy().get())) {
             builder->CreateRetVoid();
         } else if (fn->isConstructor()) {

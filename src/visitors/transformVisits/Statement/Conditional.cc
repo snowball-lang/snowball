@@ -5,8 +5,10 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
 SN_TRANSFORMER_VISIT(Statement::Conditional) {
     p_node->getCondition()->accept(this);
@@ -21,8 +23,7 @@ SN_TRANSFORMER_VISIT(Statement::Conditional) {
         falsyBody = utils::dyn_cast<ir::Block>(this->value);
     }
 
-    auto cond = ctx->module->N<ir::Conditional>(p_node->getDBGInfo(), expr, truthyBody,
-                                                falsyBody);
+    auto cond = ctx->module->N<ir::Conditional>(p_node->getDBGInfo(), expr, truthyBody, falsyBody);
     this->value = utils::dyn_cast<ir::Value>(cond);
 }
 

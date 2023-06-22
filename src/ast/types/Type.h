@@ -18,15 +18,19 @@
  * Each type should have atleast a function that generates it's
  * llvm ir equivalent of it.
  */
-namespace snowball {
+namespace snowball
+{
 
-namespace Syntax {
-namespace Expression {
+namespace Syntax
+{
+namespace Expression
+{
 class TypeRef;
 }
 }; // namespace Syntax
 
-namespace types {
+namespace types
+{
 class PointerType;
 
 class Type : public std::enable_shared_from_this<Type> {
@@ -35,11 +39,16 @@ class Type : public std::enable_shared_from_this<Type> {
     std::string name;
 
   public:
-    enum Kind { TYPE, CLASS, REF } kind;
+    enum Kind
+    {
+        TYPE,
+        CLASS,
+        REF
+    } kind;
 
   public:
-    explicit Type(Kind p_kind) : kind(p_kind) {}
-    explicit Type(Kind p_kind, std::string p_name) : kind(p_kind), name(p_name) {}
+    explicit Type(Kind p_kind) : kind(p_kind) { }
+    explicit Type(Kind p_kind, std::string p_name) : kind(p_kind), name(p_name) { }
 
     Type(const Type&) = delete;
     Type& operator=(const Type&) = delete;
@@ -48,23 +57,42 @@ class Type : public std::enable_shared_from_this<Type> {
 
     /// @param other another type
     /// @return true if this type is equal to the argument type
-    virtual bool is(Type *other) const { return getName() == other->getName(); }
+    virtual bool
+    is(Type* other) const {
+        return getName() == other->getName();
+    }
     /// @brief normal Type::is but with std::shared_ptr support
-    virtual bool is(std::shared_ptr<Type> other) const { return is(other.get()); }
+    virtual bool
+    is(std::shared_ptr<Type> other) const {
+        return is(other.get());
+    }
 
     /// @return current's type name
-    virtual std::string getName() const { return name; }
+    virtual std::string
+    getName() const {
+        return name;
+    }
     /// @return type's pretty names, commonly used for output
-    virtual std::string getPrettyName() const { return name; };
+    virtual std::string
+    getPrettyName() const {
+        return name;
+    };
     /// @return Get a mangled version of the current type
-    virtual std::string getMangledName() const {
+    virtual std::string
+    getMangledName() const {
         return "T" + std::to_string(name.size()) + name;
     };
 
     /// @return if a type can be casted to this type
-    virtual bool canCast(Type *ty) const { return false; }
+    virtual bool
+    canCast(Type* ty) const {
+        return false;
+    }
     /// @brief std::shared_ptr support for Type::canCast
-    virtual bool canCast(std::shared_ptr<Type> t) const { return canCast(t.get()); }
+    virtual bool
+    canCast(std::shared_ptr<Type> t) const {
+        return canCast(t.get());
+    }
 
     /// @brief Create a *new* pointer type with this type as base
     /// @return a std::shared_ptr<PointerType> but casted into a `Type`
@@ -74,7 +102,7 @@ class Type : public std::enable_shared_from_this<Type> {
     ///	This is useful for cases such as class methods where the first
     /// argument needs to be "self" (aka. A type reference to it's
     /// parent class)
-    virtual Syntax::Expression::TypeRef *toRef();
+    virtual Syntax::Expression::TypeRef* toRef();
 };
 }; // namespace types
 }; // namespace snowball

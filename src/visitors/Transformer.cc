@@ -22,22 +22,32 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
-Transformer::Transformer(std::shared_ptr<ir::Module> mod, SourceInfo *srci)
+Transformer::Transformer(std::shared_ptr<ir::Module> mod, SourceInfo* srci)
     : AcceptorExtend<Transformer, Visitor>(srci) {
     ctx = new TransformContext(mod);
 
     initializeCoreRuntime();
 }
 
-std::vector<std::shared_ptr<ir::Module>> Transformer::getModules() const {
+std::vector<std::shared_ptr<ir::Module>>
+Transformer::getModules() const {
     return modules;
 }
-void Transformer::addModule(std::shared_ptr<ir::Module> m) { modules.push_back(m); }
-auto Transformer::getModule() const { return ctx->module; }
-void Transformer::visit(std::vector<Node *> p_nodes) {
+void
+Transformer::addModule(std::shared_ptr<ir::Module> m) {
+    modules.push_back(m);
+}
+auto
+Transformer::getModule() const {
+    return ctx->module;
+}
+void
+Transformer::visit(std::vector<Node*> p_nodes) {
     ctx->withScope([&] {
         AcceptorExtend::visit(p_nodes);
 
@@ -45,8 +55,7 @@ void Transformer::visit(std::vector<Node *> p_nodes) {
         for (auto node : p_nodes) {
             if (utils::cast<Statement::BodiedFunction>(node) ||
                 utils::cast<Statement::LLVMFunction>(node) ||
-                utils::cast<Statement::ClassDef>(node) ||
-                utils::cast<Statement::TypeAlias>(node)) {
+                utils::cast<Statement::ClassDef>(node) || utils::cast<Statement::TypeAlias>(node)) {
                 node->accept(this);
             }
         }

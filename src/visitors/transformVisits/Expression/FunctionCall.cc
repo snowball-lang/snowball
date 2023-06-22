@@ -4,16 +4,18 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
 SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
-    auto [argValues, argTypes] =
-        utils::vectors_iterate<Syntax::Expression::Base *, std::shared_ptr<ir::Value>,
-                               std::shared_ptr<types::Type>>(
+    auto [argValues, argTypes] = utils::vectors_iterate<Syntax::Expression::Base*,
+                                                        std::shared_ptr<ir::Value>,
+                                                        std::shared_ptr<types::Type>>(
             p_node->getArguments(),
-            [&](Syntax::Expression::Base *a)
-                -> std::pair<std::shared_ptr<ir::Value>, std::shared_ptr<types::Type>> {
+            [&](Syntax::Expression::Base* a)
+                    -> std::pair<std::shared_ptr<ir::Value>, std::shared_ptr<types::Type>> {
                 a->accept(this);
                 auto lkj = utils::cast<Expression::Identifier>(a);
                 return {this->value, this->value->getType()};
@@ -23,14 +25,15 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     std::shared_ptr<ir::Value> fn = nullptr;
     if (auto x = utils::cast<Expression::Identifier>(callee)) {
         auto g = utils::cast<Expression::GenericIdentifier>(callee);
-        auto generics =
-            (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef *>{};
+        auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
 
         auto r = getFromIdentifier(x->getDBGInfo(), x->getIdentifier(), generics);
         auto rTuple = std::tuple_cat(r, std::make_tuple(true));
-        fn = getFunction(p_node, rTuple, x->getNiceName(), argTypes,
-                         (g != nullptr) ? g->getGenerics()
-                                        : std::vector<Expression::TypeRef *>{});
+        fn = getFunction(p_node,
+                         rTuple,
+                         x->getNiceName(),
+                         argTypes,
+                         (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{});
     } else if (auto x = utils::cast<Expression::Index>(callee)) {
         bool inModule = false;
         std::string baseName;
@@ -58,24 +61,28 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         }
 
         auto g = utils::cast<Expression::GenericIdentifier>(indexBase);
-        auto generics =
-            (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef *>{};
+        auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
 
         auto name = baseName + x->getIdentifier()->getNiceName();
-        auto c = getFunction(p_node, r, name, argTypes,
+        auto c = getFunction(p_node,
+                             r,
+                             name,
+                             argTypes,
                              (g != nullptr) ? g->getGenerics()
-                                            : std::vector<Expression::TypeRef *>{});
+                                            : std::vector<Expression::TypeRef*>{});
 
-        // TODO: actually check if base is a module with: "getFromIdentifier" of
-        // the module
+        // TODO: actually check if base is a module with:
+        // "getFromIdentifier" of the module
         if ((x->isStatic && (!c->isStatic())) && (!inModule)) {
-            E<TYPE_ERROR>(p_node, FMT("Can't access class method '%s' "
-                                      "that's not static as if it was one!",
-                                      c->getNiceName().c_str()));
+            E<TYPE_ERROR>(p_node,
+                          FMT("Can't access class method '%s' "
+                              "that's not static as if it was one!",
+                              c->getNiceName().c_str()));
         } else if ((!x->isStatic) && c->isStatic()) {
-            E<TYPE_ERROR>(p_node, FMT("Can't access static class method '%s' "
-                                      "as with a non-static index expression!",
-                                      c->getNiceName().c_str()));
+            E<TYPE_ERROR>(p_node,
+                          FMT("Can't access static class method '%s' "
+                              "as with a non-static index expression!",
+                              c->getNiceName().c_str()));
         }
 
         if (b.has_value()) {
@@ -118,7 +125,6 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     }
 
     if (auto func = utils::dyn_cast<ir::Func>(fn)) {
-
         // Check for default arguments
         auto args = func->getArgs();
         if (argTypes.size() < (args.size() - func->hasParent())) {
@@ -131,48 +137,52 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
 
             if (((args.size() - default_arg_count) - func->hasParent()) <=
                 (argTypes.size() - func->hasParent())) {
-
                 ctx->withState(
-                    ctx->cache->getFunctionState(func->getId()),
-                    [&argTypes = argTypes, this, call, args, &argValues = argValues,
-                     p_node]() {
-                        // add default arguments
-                        for (auto arg = std::next(args.begin(), argTypes.size());
-                             arg != args.end(); ++arg) {
-                            if (arg->second->hasDefaultValue()) {
-                                arg->second->getDefaultValue()->accept(this);
-                                auto ty = this->value->getType();
-                                if (!arg->second->getType()->is(ty)) {
-                                    if (!arg->second->getType()->canCast(ty)) {
-                                        E<TYPE_ERROR>(arg->second,
-                                                      FMT("Function default value does "
-                                                          "not match argument ('%s') "
-                                                          "type!",
-                                                          arg->first.c_str()));
+                        ctx->cache->getFunctionState(func->getId()),
+                        [&argTypes = argTypes, this, call, args, &argValues = argValues, p_node]() {
+                            // add default arguments
+                            for (auto arg = std::next(args.begin(), argTypes.size());
+                                 arg != args.end();
+                                 ++arg) {
+                                if (arg->second->hasDefaultValue()) {
+                                    arg->second->getDefaultValue()->accept(this);
+                                    auto ty = this->value->getType();
+                                    if (!arg->second->getType()->is(ty)) {
+                                        if (!arg->second->getType()->canCast(ty)) {
+                                            E<TYPE_ERROR>(arg->second,
+                                                          FMT("Function default "
+                                                              "value does "
+                                                              "not match "
+                                                              "argument "
+                                                              "('%s') "
+                                                              "type!",
+                                                              arg->first.c_str()));
+                                        }
+
+                                        assert(false && "TODO: cast default argument");
+                                    } else {
+                                        argTypes.push_back(ty);
+                                        argValues.push_back(this->value);
+
+                                        call->setArguments(argValues);
+                                    }
+                                } else {
+                                    if (arg->first == "self") {
+                                        // We skip the "self" argument
+                                        // inside a method (or constructor)
+                                        // since it's a weird situation
+                                        // where you pass an argument
+                                        // implicitly.
+                                        continue;
                                     }
 
-                                    assert(false && "TODO: cast default argument");
-                                } else {
-                                    argTypes.push_back(ty);
-                                    argValues.push_back(this->value);
-
-                                    call->setArguments(argValues);
+                                    E<TYPE_ERROR>(p_node,
+                                                  FMT("Could not get value "
+                                                      "for argument '%s'!",
+                                                      arg->first.c_str()));
                                 }
-                            } else {
-                                if (arg->first == "self") {
-                                    // We skip the "self" argument inside a
-                                    // method (or constructor) since it's a
-                                    // weird situation where you pass an
-                                    // argument implicitly.
-                                    continue;
-                                }
-
-                                E<TYPE_ERROR>(p_node, FMT("Could not get value "
-                                                          "for argument '%s'!",
-                                                          arg->first.c_str()));
                             }
-                        }
-                    });
+                        });
             } else {
                 E<TYPE_ERROR>(p_node, "Function call missing arguments!");
             }

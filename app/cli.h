@@ -5,14 +5,22 @@
 #ifndef __SNOWBALL_EXEC_CLI_H_
 #define __SNOWBALL_EXEC_CLI_H_
 
-namespace snowball {
-namespace exec {
+namespace snowball
+{
+namespace app
+{
 struct Options {
     // TODO: optimization level
 
-    enum EmitType { EXECUTABLE, OBJECT, LLVM_IR };
+    enum EmitType
+    {
+        EXECUTABLE,
+        OBJECT,
+        LLVM_IR
+    };
 
-    enum Optimization {
+    enum Optimization
+    {
         OPTIMIZE_O0 = 0x00,
         OPTIMIZE_O1 = 0x01,
         OPTIMIZE_O2 = 0x02,
@@ -23,17 +31,17 @@ struct Options {
 
     struct RunOptions {
         Optimization opt = OPTIMIZE_O1;
-        bool silent      = false;
+        bool silent = false;
 
         std::string file = "";
     } run_opts;
 
     struct BuildOptions {
-        bool is_test       = false;
-        Optimization opt   = OPTIMIZE_O1;
+        bool is_test = false;
+        Optimization opt = OPTIMIZE_O1;
         EmitType emit_type = EXECUTABLE;
 
-        bool silent      = false;
+        bool silent = false;
         std::string file = "";
     } build_opts;
 
@@ -47,13 +55,14 @@ struct Options {
     } test_opts;
 
     struct InitOptions {
-        bool cfg      = false;
-        bool lib      = false;
-        bool yes      = false;
+        bool cfg = false;
+        bool lib = false;
+        bool yes = false;
         bool skip_cfg = false;
     } init_opts;
 
-    enum Command {
+    enum Command
+    {
         UNKNOWN = -1,
 
         BUILD,
@@ -66,7 +75,7 @@ struct Options {
 
 class CLI {
   public:
-    CLI(int argc, char **argv);
+    CLI(int argc, char** argv);
 
     Options parse();
     static void help();
@@ -76,7 +85,7 @@ class CLI {
     std::string current_arg;
     std::vector<std::string> args;
 };
-} // namespace exec
+} // namespace app
 } // namespace snowball
 
 #endif // __SNOWBALL_EXEC_CLI_H_

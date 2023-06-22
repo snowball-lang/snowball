@@ -5,8 +5,10 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
 SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
     E<TODO>("Not implementing lambdas until next year!");
@@ -23,7 +25,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
     char l[] = _SNOWBALL_LAMBDA_FUNCTIONS;
     auto name = parent->getName() + "::" + l + '\00';
     std::shared_ptr<ir::Func> fn = ctx->module->N<ir::Func>(
-        node->getDBGInfo(), name, false, node->isVariadic(), ctx->getCurrentClass());
+            node->getDBGInfo(), name, false, node->isVariadic(), ctx->getCurrentClass());
     fn->setRetTy(returnType);
     fn->setPrivacy(Statement::Privacy::PUBLIC);
     fn->setStatic(false);
@@ -34,9 +36,11 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
     for (int i = 0; i < node->getArgs().size(); i++) {
         auto arg = node->getArgs().at(i);
 
-        auto a = ctx->module->N<ir::Argument>(
-            node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
-            arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
+        auto a = ctx->module->N<ir::Argument>(node->getDBGInfo(),
+                                              arg->getName(),
+                                              fn->isConstructor() + i,
+                                              arg->hasDefaultValue() ? arg->getDefaultValue()
+                                                                     : nullptr);
         a->setType(transformType(arg->getType()));
         newArgs.insert(newArgs.end(), {arg->getName(), a});
     }
@@ -55,12 +59,11 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
         ctx->withScope([&]() {
             int argIndex = 0;
             for (auto arg : newArgs) {
-                auto ref = ctx->module->N<ir::Variable>(node->getDBGInfo(), arg.first,
-                                                        true /* TODO: is mutable */);
+                auto ref = ctx->module->N<ir::Variable>(
+                        node->getDBGInfo(), arg.first, true /* TODO: is mutable */);
 
                 ref->setType(arg.second->getType());
-                auto refItem = std::make_shared<transform::Item>(
-                    transform::Item::Type::VALUE, ref);
+                auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, ref);
 
                 ref->setId(arg.second->getId());
                 ctx->addItem(arg.first, refItem);
@@ -73,7 +76,8 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
                 !((utils::dyn_cast<types::NumericType>(returnType)) ||
                   (utils::dyn_cast<types::VoidType>(returnType))) &&
                 !fn->isConstructor()) {
-                E<TYPE_ERROR>(node, "Function lacks ending return statement!",
+                E<TYPE_ERROR>(node,
+                              "Function lacks ending return statement!",
                               {.info = "Function does not return on all paths!"});
             }
 

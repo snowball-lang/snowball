@@ -3,8 +3,10 @@
 #include "../../../../errors.h"
 #include "../../DefinitveAssigment.h"
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
 SN_DEFINITE_ASSIGMENT_VISIT(Expression::Index) {
     auto x = p_node->getIdentifier();
@@ -13,7 +15,6 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::Index) {
         auto base = p_node->getBase();
         if (auto i = utils::cast<Expression::Identifier>(base);
             i != nullptr && i->getIdentifier() == "self" && this->insideClass) {
-
             if (auto variable = getIdentifier("$self::" + x->getIdentifier())) {
                 if (variable->second == NotInitialized) {
                     E<VARIABLE_ERROR>(p_node->getDBGInfo(),

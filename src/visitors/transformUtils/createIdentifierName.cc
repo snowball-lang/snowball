@@ -4,11 +4,13 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
-std::string TransformContext::createIdentifierName(const std::string name,
-                                                   bool includeBase) {
+std::string
+TransformContext::createIdentifierName(const std::string name, bool includeBase) {
     std::string result;
     bool alreadyGenerated = name.find('.') != std::string::npos;
 

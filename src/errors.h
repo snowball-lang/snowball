@@ -4,15 +4,17 @@
 #include "logger.h"
 
 #include <exception>
+#include <optional>
 #include <stdexcept>
 #include <string>
-#include <optional>
 
 #ifndef __SNOWBALL_ERRORS_H_
 #define __SNOWBALL_ERRORS_H_
 
-namespace snowball {
-enum Error {
+namespace snowball
+{
+enum Error
+{
     IO_ERROR,
     TYPE_ERROR,
     SYNTAX_ERROR,
@@ -35,8 +37,9 @@ enum Error {
     TODO
 };
 
-namespace errors {
-const char *get_error(Error code);
+namespace errors
+{
+const char* get_error(Error code);
 
 class SNError {
   public:
@@ -45,9 +48,10 @@ class SNError {
         message = err;
     };
 
-    virtual void print_error(bool _ = false) const {
-        Logger::error(FMT("(%s%s%s) %s%s%s", RED, get_error(error), RESET, BOLD,
-                          message.c_str(), RESET));
+    virtual void
+    print_error(bool _ = false) const {
+        Logger::error(
+                FMT("(%s%s%s) %s%s%s", RED, get_error(error), RESET, BOLD, message.c_str(), RESET));
     };
 
     virtual ~SNError(){};
@@ -68,20 +72,18 @@ struct ErrorInfo {
 
 class NiceError : public SNError {
   protected:
-    DBGSourceInfo *cb_dbg_info;
+    DBGSourceInfo* cb_dbg_info;
 
   public:
     ErrorInfo info;
-    NiceError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info,
-              ErrorInfo info = {})
+    NiceError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})
         : SNError(code, err), cb_dbg_info(p_cb_dbg_info), info(info){};
     virtual void print_error(bool asTail = false) const override;
 };
 
 class LexerError : public NiceError {
   public:
-    LexerError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info,
-               ErrorInfo info = {})
+    LexerError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})
         : NiceError(code, err, p_cb_dbg_info, info){};
 
     virtual ~LexerError(){};
@@ -89,8 +91,7 @@ class LexerError : public NiceError {
 
 class ParserError : public NiceError {
   public:
-    ParserError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info,
-                ErrorInfo info = {})
+    ParserError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})
         : NiceError(code, err, p_cb_dbg_info, info){};
 
     virtual ~ParserError(){};
@@ -98,8 +99,7 @@ class ParserError : public NiceError {
 
 class CompilerError : public NiceError {
   public:
-    CompilerError(Error code, std::string err, DBGSourceInfo *p_cb_dbg_info,
-                  ErrorInfo info = {})
+    CompilerError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})
         : NiceError(code, err, p_cb_dbg_info, info){};
 
     virtual ~CompilerError(){};

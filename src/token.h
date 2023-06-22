@@ -9,8 +9,10 @@
 #ifndef __SNOWBALL_TOKEN_H_
 #define __SNOWBALL_TOKEN_H_
 
-namespace snowball {
-enum class TokenType {
+namespace snowball
+{
+enum class TokenType
+{
     /*
     | Indentifiers
     |---------------
@@ -200,10 +202,11 @@ struct Token {
 
     std::string value;
 
-    Token() {}
+    Token() { }
     Token(TokenType p_type) { type = p_type; }
 
-    std::string to_string() const {
+    std::string
+    to_string() const {
         switch (type) {
             // Symbols
             case TokenType::SYM_AT:
@@ -404,10 +407,14 @@ struct Token {
         // TODO: throw error: missed enum in switch case
     }
 
-    std::pair<int, int> get_pos() const {
+    std::pair<int, int>
+    get_pos() const {
         return std::pair<int, int>(std::make_pair(line, col));
     }
-    uint32_t get_width() const { return (uint32_t)to_string().size(); }
+    uint32_t
+    get_width() const {
+        return (uint32_t)to_string().size();
+    }
 };
 } // namespace snowball
 

@@ -10,10 +10,13 @@
 
 using namespace snowball::utils;
 
-namespace snowball {
-namespace codegen {
+namespace snowball
+{
+namespace codegen
+{
 
-llvm::Function *LLVMBuilder::createLLVMFunction(ir::Func *func) {
+llvm::Function*
+LLVMBuilder::createLLVMFunction(ir::Func* func) {
     auto innerFnType = cast<types::FunctionType>(func->getType().get());
     assert(innerFnType != nullptr);
 
@@ -23,17 +26,18 @@ llvm::Function *LLVMBuilder::createLLVMFunction(ir::Func *func) {
     auto fn = llvm::Function::Create(fnType,
                                      ((func->isStatic() && (!func->hasParent())) ||
                                       func->hasAttribute(Attributes::INTERNAL_LINKAGE))
-                                         ? llvm::Function::InternalLinkage
-                                         : llvm::Function::ExternalLinkage,
-                                     name, module.get());
+                                             ? llvm::Function::InternalLinkage
+                                             : llvm::Function::ExternalLinkage,
+                                     name,
+                                     module.get());
 
-    auto callee = (llvm::Function *)fn;
+    auto callee = (llvm::Function*)fn;
 
     auto attrSet = callee->getAttributes();
 
     if (func->hasAttribute(Attributes::INLINE)) {
         auto newAttrSet =
-            attrSet.addFnAttribute(callee->getContext(), llvm::Attribute::AlwaysInline);
+                attrSet.addFnAttribute(callee->getContext(), llvm::Attribute::AlwaysInline);
         callee->setAttributes(newAttrSet);
         // TODO: other attributes
     }

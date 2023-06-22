@@ -9,7 +9,8 @@
 #ifndef __SNOWBALL_LEXER_H_
 #define __SNOWBALL_LEXER_H_
 
-namespace snowball {
+namespace snowball
+{
 /**
  * @brief Tokenizer class
  *
@@ -27,7 +28,7 @@ namespace snowball {
  */
 class Lexer {
   public:
-    Lexer(SourceInfo *p_source_info);
+    Lexer(SourceInfo* p_source_info);
 
     void tokenize();
     std::vector<Token> tokens;
@@ -38,11 +39,10 @@ class Lexer {
     // methods
     void handle_eof(bool p_consume = true);
     void consume(TokenType p_tk, int p_eat_size = 1);
-    void lexer_error(Error m_error, std::string m_msg, int char_length = 1,
-                     ErrorInfo info = {});
+    void lexer_error(Error m_error, std::string m_msg, int char_length = 1, ErrorInfo info = {});
 
     // vars
-    SourceInfo *_source_info;
+    SourceInfo* _source_info;
     std::string code;
 
     int cur_line = 1;

@@ -3,10 +3,13 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
-bool Transformer::bodyReturns(std::vector<Node *> exprs) {
+bool
+Transformer::bodyReturns(std::vector<Node*> exprs) {
     for (auto expr : exprs) {
         if (cast<Statement::Return>(expr)) {
             return true;
@@ -20,7 +23,8 @@ bool Transformer::bodyReturns(std::vector<Node *> exprs) {
             }
         }
         // TODO: Break, continue: return false
-        // TODO: Loop, while: if (bodyReturns(b->getStmts())) return true;
+        // TODO: Loop, while: if (bodyReturns(b->getStmts())) return
+        // true;
 
         // Ignore unhandled!
     }

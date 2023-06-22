@@ -13,14 +13,18 @@
 
 #include "../../visitors/TransformState.h"
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
-namespace transform {
+namespace transform
+{
 class Item;
 }
 
-namespace cacheComponents {
+namespace cacheComponents
+{
 
 /**
  * @brief Cache component for functions
@@ -40,7 +44,7 @@ class Functions {
      *  it was located at before being added to the cache.
      */
     struct FunctionStore {
-        Statement::FunctionDef *function = nullptr;
+        Statement::FunctionDef* function = nullptr;
         std::shared_ptr<transform::ContextState> state;
     };
 
@@ -55,21 +59,23 @@ class Functions {
 
   public:
     /// @brief Set a new function overload
-    void setFunction(const std::string& name, Statement::FunctionDef *p_fn,
-                     std::shared_ptr<transform::ContextState> state);
+    void setFunction(const std::string& name,
+                     Statement::FunctionDef* p_fn,
+                     std::shared_ptr<transform::ContextState>
+                             state);
     /// @return All function overloads for a function
     std::optional<std::vector<FunctionStore>> getFunction(const std::string name);
-    /// @return Get the current state of an already defined function.
+    /// @return Get the current state of an already defined
+    /// function.
     std::shared_ptr<transform::ContextState>& getFunctionState(id_t id);
-    /// @brief defined a new state where the function has been generated from
+    /// @brief defined a new state where the function has been
+    /// generated from
     void setFunctionState(id_t id, std::shared_ptr<transform::ContextState>& s);
     /// @brief Set a new transformed function
     /// @c Transformer::addFunction
-    void setTransformedFunction(const std::string& uuid,
-                                std::shared_ptr<transform::Item> p_fn);
+    void setTransformedFunction(const std::string& uuid, std::shared_ptr<transform::Item> p_fn);
     /// @return get an item of an already transformed function
-    std::optional<std::shared_ptr<transform::Item>>
-    getTransformedFunction(const std::string uuid);
+    std::optional<std::shared_ptr<transform::Item>> getTransformedFunction(const std::string uuid);
 };
 
 } // namespace cacheComponents

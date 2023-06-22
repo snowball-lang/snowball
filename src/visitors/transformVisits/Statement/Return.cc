@@ -3,11 +3,12 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
 SN_TRANSFORMER_VISIT(Statement::Return) {
-
     if (auto f = ctx->getCurrentFunction(); f->isConstructor()) {
         E<SYNTAX_ERROR>(p_node,
                         "You can't return a value inside a constructor function!",

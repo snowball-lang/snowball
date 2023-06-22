@@ -24,24 +24,29 @@
  * The nodes are divided into 2 sections. There are
  * the expressions and the statements.
  */
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
 class Visitor;
 
 // In snowball, a block is composed of
 // a list of nodes.
 struct Block : AcceptorExtend<Block, Node> {
-    std::vector<Node *> stmts;
+    std::vector<Node*> stmts;
 
   public:
-    Block(std::vector<Node *> s) : AcceptorExtend(), stmts(s) {}
+    Block(std::vector<Node*> s) : AcceptorExtend(), stmts(s) { }
     ~Block() noexcept = default;
 
     // Aceptance for the AST visitor
     ACCEPT()
     // Geter function to fetch the parsed statements
-    auto getStmts() { return stmts; }
+    auto
+    getStmts() {
+        return stmts;
+    }
 };
 
 /**
@@ -54,7 +59,8 @@ struct Block : AcceptorExtend<Block, Node> {
  * expression.
  *
  */
-namespace Expression {
+namespace Expression
+{
 
 /**
  * This struct represents a constant value from the AST.
@@ -69,7 +75,8 @@ struct ConstantValue : public AcceptorExtend<ConstantValue, Base> {
      * This enum allows a constant value to be
      * differentiate from the other ones.
      */
-    enum ConstantType {
+    enum ConstantType
+    {
 #include "../../defs/ct.def"
     };
 
@@ -92,9 +99,15 @@ struct ConstantValue : public AcceptorExtend<ConstantValue, Base> {
     ConstantValue(ConstantType type, std::string value) : type(type), value(value){};
 
     /// @return Get constant value
-    std::string getValue() { return value; }
+    std::string
+    getValue() {
+        return value;
+    }
     /// @return Get the type that defines this constant.
-    ConstantType getType() { return type; }
+    ConstantType
+    getType() {
+        return type;
+    }
 
     ACCEPT()
 
@@ -118,19 +131,25 @@ struct ConstantValue : public AcceptorExtend<ConstantValue, Base> {
 struct Cast : public AcceptorExtend<Cast, Base> {
   private:
     /// @brief Value that's needed to be casted
-    Base *value;
+    Base* value;
     /// @brief Result type thats casted to
-    TypeRef *type;
+    TypeRef* type;
 
   public:
     using AcceptorExtend::AcceptorExtend;
 
-    Cast(Base *value, TypeRef *ty) : type(ty), value(value){};
+    Cast(Base* value, TypeRef* ty) : type(ty), value(value){};
 
     /// @return The value to cast
-    auto getValue() { return value; }
+    auto
+    getValue() {
+        return value;
+    }
     /// @brief get the type trying to be casted to
-    auto getType() { return type; }
+    auto
+    getType() {
+        return type;
+    }
 
     ACCEPT()
 };
@@ -149,7 +168,8 @@ struct FunctionCall : public AcceptorExtend<FunctionCall, Base> {
      * The callee value that's going to be called.
      * Unlike most programming languages, function calls dont
      * require an identifier because it can just call any expression
-     * that ends up being a function and has a respective function type.
+     * that ends up being a function and has a respective function
+     * type.
      * @example for correct usage
      *    myFunction()
      *    (cond ? myFunc : mySecondFunc)()
@@ -159,9 +179,9 @@ struct FunctionCall : public AcceptorExtend<FunctionCall, Base> {
      *    <void return>()
      *    ^---------- '4' or 'type void' are not functions
      */
-    Base *callee;
+    Base* callee;
     /// @brief A list of arguments passed to the function
-    std::vector<Base *> arguments;
+    std::vector<Base*> arguments;
     /**
      * @brief A variable used to fix a special occation for
      *  variable mutability. Uninitialized variables should
@@ -177,20 +197,28 @@ struct FunctionCall : public AcceptorExtend<FunctionCall, Base> {
   public:
     using AcceptorExtend::AcceptorExtend;
 
-    FunctionCall(Base *callee, std::vector<Base *> arguments = {})
+    FunctionCall(Base* callee, std::vector<Base*> arguments = {})
         : callee(callee), arguments(arguments), AcceptorExtend(){};
 
     /// @return Get function's callee
-    auto getCallee() { return callee; }
+    auto
+    getCallee() {
+        return callee;
+    }
     /// @return Call instruction arguments
-    auto& getArguments() { return arguments; }
+    auto&
+    getArguments() {
+        return arguments;
+    }
     /// @brief Set a new call expression to this call
-    void setCallee(Base *c) { callee = c; }
+    void
+    setCallee(Base* c) {
+        callee = c;
+    }
 
   public:
     /// @return string representation of a function call arguments
-    static std::string
-    getArgumentsAsString(const std::vector<std::shared_ptr<types::Type>> args);
+    static std::string getArgumentsAsString(const std::vector<std::shared_ptr<types::Type>> args);
 
     ACCEPT()
 };
@@ -208,9 +236,9 @@ struct FunctionCall : public AcceptorExtend<FunctionCall, Base> {
 struct NewInstance : public AcceptorExtend<NewInstance, Base> {
   private:
     /// @brief Value that's needed to be casted
-    FunctionCall *call;
+    FunctionCall* call;
     /// @brief Result type thats casted to
-    TypeRef *type;
+    TypeRef* type;
     /// @brief Wether or not the `new` operator should create
     ///  the instance on the heap or on the stack.
     bool createAtHeap = true;
@@ -218,15 +246,24 @@ struct NewInstance : public AcceptorExtend<NewInstance, Base> {
   public:
     using AcceptorExtend::AcceptorExtend;
 
-    NewInstance(FunctionCall *call, TypeRef *ty, bool createAtHeap = true)
+    NewInstance(FunctionCall* call, TypeRef* ty, bool createAtHeap = true)
         : type(ty), call(call), createAtHeap(createAtHeap){};
 
     /// @return Get the call value from the operator
-    auto getCall() { return call; }
+    auto
+    getCall() {
+        return call;
+    }
     /// @brief Get the type trying to be initialized
-    auto getType() { return type; }
+    auto
+    getType() {
+        return type;
+    }
     /// @see NewInstance::createAtHeap
-    auto atHeap() { return createAtHeap; }
+    auto
+    atHeap() {
+        return createAtHeap;
+    }
 
     ACCEPT()
 };
@@ -242,12 +279,16 @@ struct Identifier : public AcceptorExtend<Identifier, Base> {
   public:
     // using AcceptorExtend::AcceptorExtend;
 
-    Identifier(const std::string& identifier)
-        : identifier(identifier), AcceptorExtend(){};
+    Identifier(const std::string& identifier) : identifier(identifier), AcceptorExtend(){};
 
-    /// @return Get respective identifier Syntax::Expression::Identifierlue
-    auto getIdentifier() { return identifier; }
-    virtual std::string getNiceName() const {
+    /// @return Get respective identifier
+    /// Syntax::Expression::Identifierlue
+    auto
+    getIdentifier() {
+        return identifier;
+    }
+    virtual std::string
+    getNiceName() const {
         if (services::OperatorService::isOperator(identifier)) {
             auto i = services::OperatorService::operatorID(identifier);
             return services::OperatorService::operatorName(i);
@@ -270,8 +311,12 @@ struct PseudoVariable : public AcceptorExtend<PseudoVariable, Base> {
 
   public:
     PseudoVariable(std::string identifier);
-    /// @return Get the pseudo variable identifier without the prefix
-    auto getIdentifier() { return identifier; }
+    /// @return Get the pseudo variable identifier without the
+    /// prefix
+    auto
+    getIdentifier() {
+        return identifier;
+    }
 
     ACCEPT()
 };
@@ -283,10 +328,10 @@ struct PseudoVariable : public AcceptorExtend<PseudoVariable, Base> {
  */
 struct Index : public AcceptorExtend<Index, Base> {
     /// Base value from where we are geting the value
-    Base *base;
+    Base* base;
     /// Identifier node that we are trying to extract.
     /// @note Identifier can also have generics!
-    Identifier *identifier;
+    Identifier* identifier;
 
   public:
     /// @brief Wether the extract is marked as static or not
@@ -294,33 +339,38 @@ struct Index : public AcceptorExtend<Index, Base> {
 
     using AcceptorExtend::AcceptorExtend;
 
-    Index(Base *base, Identifier *identifier, bool isStatic = false)
+    Index(Base* base, Identifier* identifier, bool isStatic = false)
         : base(base), isStatic(isStatic), identifier(identifier), AcceptorExtend(){};
 
     /// @return Get respective base value
-    auto getBase() { return base; }
+    auto
+    getBase() {
+        return base;
+    }
     /// @return Get respective base value
-    auto getIdentifier() { return identifier; }
+    auto
+    getIdentifier() {
+        return identifier;
+    }
 
     ACCEPT()
 };
 
 /**
- * This is the same as an identifier except that it will contain generic
+ * This is the same as an identifier except that it will contain
+ * generic
  */
 struct GenericIdentifier : public AcceptorExtend<GenericIdentifier, Identifier> {
-
     /// @brief Generics stored into the identifier
-    std::vector<Expression::TypeRef *> generics;
+    std::vector<Expression::TypeRef*> generics;
 
   public:
     using AcceptorExtend::AcceptorExtend;
-    GenericIdentifier(const std::string& idnt,
-                      std::vector<Expression::TypeRef *> generics = {})
+    GenericIdentifier(const std::string& idnt, std::vector<Expression::TypeRef*> generics = {})
         : AcceptorExtend<GenericIdentifier, Identifier>(idnt), generics(generics){};
 
     /// @return generic list set to this identifier
-    std::vector<Expression::TypeRef *> getGenerics() const;
+    std::vector<Expression::TypeRef*> getGenerics() const;
     std::string getNiceName() const override;
 
     ACCEPT()
@@ -334,8 +384,8 @@ struct GenericIdentifier : public AcceptorExtend<GenericIdentifier, Identifier> 
 struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
     using OpType = services::OperatorService::OperatorType;
 
-    Base *left;         ///< Left node
-    Base *right;        ///< Right node
+    Base* left;         ///< Left node
+    Base* right;        ///< Right node
     OpType op_type;     ///< The type of operator
     bool unary = false; ///< Whether it's a unary operator
 
@@ -344,7 +394,7 @@ struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
      * @param p_node The operator expression node.
      * @return Whether it's an assignment operator.
      */
-    static bool is_assignment(BinaryOp *p_node);
+    static bool is_assignment(BinaryOp* p_node);
     /**
      * @brief Converts the operator type to a string.
      * @return The string representation of the operator.
@@ -353,8 +403,8 @@ struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
     ACCEPT()
 
     BinaryOp(OpType t) : op_type(t) {
-        unary = (op_type == OpType::NOT || op_type == OpType::BIT_NOT ||
-                 op_type == OpType::UPLUS || op_type == OpType::UMINUS);
+        unary = (op_type == OpType::NOT || op_type == OpType::BIT_NOT || op_type == OpType::UPLUS ||
+                 op_type == OpType::UMINUS);
     };
     ~BinaryOp() noexcept = default;
 
@@ -381,8 +431,9 @@ struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
  *
  *  - https://en.wikipedia.org/wiki/Statement_(logic)
  */
-namespace Statement {
-struct Base : public AcceptorExtend<Base, Node> {};
+namespace Statement
+{
+struct Base : public AcceptorExtend<Base, Node> { };
 
 /**
  * This is just a wrapper class for all nodes
@@ -392,12 +443,15 @@ struct Base : public AcceptorExtend<Base, Node> {};
  *   - modules, functions, classes, ...
  */
 struct Privacy {
-
     // The visibility specifies where can the node
     // be accessed from. For example, a private function
     // inside a class can't be accessed outside from it.
     // @warning keep the order the same, always!
-    enum Status { PUBLIC, PRIVATE } status = PRIVATE;
+    enum Status
+    {
+        PUBLIC,
+        PRIVATE
+    } status = PRIVATE;
 
   public:
     Privacy() { status = PRIVATE; }
@@ -413,7 +467,8 @@ struct Privacy {
 
   public:
     /// @brief Convert an integer to a Status
-    /// @param p_status Integer to transform (note: it will be inverted)
+    /// @param p_status Integer to transform (note: it will be
+    /// inverted)
     /// @return equivalent for Status
     static Status fromInt(int p_status);
 };
@@ -422,18 +477,16 @@ struct Privacy {
  * Function definition, check out parseFunction for
  * it's respective rules
  */
-struct FunctionDef
-    : public AcceptorExtend<FunctionDef, Base>,
-      public AcceptorExtend<FunctionDef, AttributeHolder<Attributes::Fn>>,
-      public AcceptorExtend<FunctionDef, Privacy>,
-      public AcceptorExtend<FunctionDef, GenericContainer<>> {
-
+struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
+                     public AcceptorExtend<FunctionDef, AttributeHolder<Attributes::Fn>>,
+                     public AcceptorExtend<FunctionDef, Privacy>,
+                     public AcceptorExtend<FunctionDef, GenericContainer<>> {
     // Function's identifier
     std::string name;
     // Arguments available for the functions
-    std::vector<Expression::Param *> args;
+    std::vector<Expression::Param*> args;
     // Function's return type
-    Expression::TypeRef *retType;
+    Expression::TypeRef* retType;
     // Whether or not function can take an infinite
     // number of arguments
     bool variadic = false;
@@ -452,26 +505,33 @@ struct FunctionDef
     void setName(const std::string name);
 
     /// @return iterator to the first arg
-    auto argBegin() { return args.begin(); }
+    auto
+    argBegin() {
+        return args.begin();
+    }
     /// @return iterator beyond the last arg
-    auto argEnd() { return args.end(); }
+    auto
+    argEnd() {
+        return args.end();
+    }
 
     /// @return Argument list
-    std::vector<Expression::Param *> getArgs() const;
+    std::vector<Expression::Param*> getArgs() const;
     /// @brief Set a new argument list to the function
-    void setArgs(std::vector<Expression::Param *> p_args);
+    void setArgs(std::vector<Expression::Param*> p_args);
 
     /// @return Return type
-    Expression::TypeRef *getRetType() const;
+    Expression::TypeRef* getRetType() const;
     /// @brief Set a return type to the function
-    void setRetType(Expression::TypeRef *p_type);
+    void setRetType(Expression::TypeRef* p_type);
 
     /// @return Whether or not the function is marked as variadic
     bool isVariadic();
     /// @brief Mark if the function is variadic or not
     void setVariadic(bool v = true);
 
-    /// @return of wether or not the function is declared as virtual.
+    /// @return of wether or not the function is declared as
+    /// virtual.
     bool isVirtual();
     /// @brief Mark if the function if it's virtual or not
     void setVirtual(bool v = true);
@@ -482,7 +542,10 @@ struct FunctionDef
     void setStatic(bool s = true);
 
     /// Check if the function is declared as an extern function
-    virtual bool isExtern() { return false; }
+    virtual bool
+    isExtern() {
+        return false;
+    }
 
     // Set an acceptance call
     ACCEPT()
@@ -493,11 +556,10 @@ struct FunctionDef
  * can either be mutable or unmutable.
  */
 struct VariableDecl : public AcceptorExtend<VariableDecl, Base> {
-
     /// @brief Variables's identifier
     std::string name;
     /// @brief Function's return type
-    Expression::Base *value;
+    Expression::Base* value;
     /// @brief Whether the variable can change or not
     bool _mutable = false;
     /**
@@ -510,23 +572,24 @@ struct VariableDecl : public AcceptorExtend<VariableDecl, Base> {
      *   ----- it can also be written as:
      *   let a = 2 as f32
      */
-    Expression::TypeRef *definedType = nullptr;
+    Expression::TypeRef* definedType = nullptr;
 
   public:
-    VariableDecl(const std::string& name, Expression::Base *value = nullptr,
+    VariableDecl(const std::string& name,
+                 Expression::Base* value = nullptr,
                  bool isMutable = false);
 
     /// @brief Get the identifier assign to the variable
     std::string getName() const;
     /// @return the value holt by the variable
-    Expression::Base *getValue();
+    Expression::Base* getValue();
     /// @return Wether or not the variable is mutable
     bool isMutable();
     /// @return The desired type the programmer wants
     /// @note It might possibly be nullptr!
-    Expression::TypeRef *getDefinedType();
+    Expression::TypeRef* getDefinedType();
     /// @brief declare a defined type for the variable
-    void setDefinedType(Expression::TypeRef *t);
+    void setDefinedType(Expression::TypeRef* t);
     /// @return true if the variable has been initialied
     bool isInitialized();
 
@@ -540,38 +603,38 @@ struct VariableDecl : public AcceptorExtend<VariableDecl, Base> {
 struct ClassDef : public AcceptorExtend<ClassDef, Base>,
                   public AcceptorExtend<ClassDef, Privacy>,
                   public AcceptorExtend<ClassDef, GenericContainer<>> {
-
     /// @brief Class identifier
     std::string name;
     /// @brief Defined functions to the class
     /// @note Although operators act like functions,
     ///  they are treated differently.
-    std::vector<FunctionDef *> functions;
+    std::vector<FunctionDef*> functions;
     /// @brief Class defined variables
-    std::vector<VariableDecl *> variables;
+    std::vector<VariableDecl*> variables;
     /// @brief Class inheritance parent
-    Expression::TypeRef *extends = nullptr;
+    Expression::TypeRef* extends = nullptr;
 
   public:
-    ClassDef(std::string name, Expression::TypeRef *extends = nullptr,
+    ClassDef(std::string name,
+             Expression::TypeRef* extends = nullptr,
              Privacy::Status prvc = PRIVATE);
 
     /// @brief Get class name
     std::string getName() const;
 
     /// Add a function to the function list
-    void addFunction(FunctionDef *fnDef);
+    void addFunction(FunctionDef* fnDef);
     /// Declare a variable and store it to this class
-    void addVariable(VariableDecl *var);
+    void addVariable(VariableDecl* var);
 
     /// Iterator utilities
-    using FunctionIterator = std::vector<FunctionDef *>::iterator;
-    using VariableIterator = std::vector<VariableDecl *>::iterator;
+    using FunctionIterator = std::vector<FunctionDef*>::iterator;
+    using VariableIterator = std::vector<VariableDecl*>::iterator;
 
     /// @return A full list of declared functions
-    std::vector<FunctionDef *>& getFunctions();
+    std::vector<FunctionDef*>& getFunctions();
     /// @return All variables defined on the current class
-    std::vector<VariableDecl *>& getVariables();
+    std::vector<VariableDecl*>& getVariables();
 
     FunctionIterator funcStart();
     FunctionIterator funcEnd();
@@ -580,7 +643,7 @@ struct ClassDef : public AcceptorExtend<ClassDef, Base>,
     VariableIterator varEnd();
 
     /// @return the parent class being inherited on
-    Expression::TypeRef *getParent() const;
+    Expression::TypeRef* getParent() const;
 
     // Set an acceptance call
     ACCEPT()
@@ -590,8 +653,8 @@ struct ClassDef : public AcceptorExtend<ClassDef, Base>,
  * @struct TypeAlias
  * @brief Representation of a type alias declaration inside the AST.
  *
- * Type aliases can be used to solve a variaety of different problems
- *  such as to avoid writing long types.
+ * Type aliases can be used to solve a variaety of different
+ * problems such as to avoid writing long types.
  *
  * @example
  *    type HelloWorld = My::Super::Long:Class:Name::With<?Generics>*
@@ -599,52 +662,65 @@ struct ClassDef : public AcceptorExtend<ClassDef, Base>,
 struct TypeAlias : public AcceptorExtend<TypeAlias, Base>,
                    public AcceptorExtend<TypeAlias, Privacy>,
                    public AcceptorExtend<TypeAlias, GenericContainer<>> {
-
     /// @brief Name of the alias to be exported as
     std::string identifier;
     /// @brief The type being refered by the alias
-    Expression::TypeRef *type;
+    Expression::TypeRef* type;
 
   public:
-    explicit TypeAlias(const std::string& identifier, Expression::TypeRef *type)
+    explicit TypeAlias(const std::string& identifier, Expression::TypeRef* type)
         : identifier(identifier), type(type){};
 
     /// @return The name of the alias to be exported as
-    auto getIdentifier() { return identifier; }
+    auto
+    getIdentifier() {
+        return identifier;
+    }
     /// @return The type being refered by the alias
-    auto getType() { return type; }
+    auto
+    getType() {
+        return type;
+    }
 
     // Set a visit handler for the generators
     ACCEPT()
 };
 
 /**
- * @brief Representation of a conditional block or "if statement" in the AST.
- * This contains instructions that are executed inside of it if a condition is
- * met, if not, the "else" statement is executed if it exists.
+ * @brief Representation of a conditional block or "if statement" in
+ * the AST. This contains instructions that are executed inside of
+ * it if a condition is met, if not, the "else" statement is
+ * executed if it exists.
  */
 struct Conditional : public AcceptorExtend<Conditional, Base> {
-
     // Instructions stored inside a block
-    Block *insts;
+    Block* insts;
     // the expression to be evaluated
-    Expression::Base *cond;
+    Expression::Base* cond;
     // The "else" statement block if the condition is false
-    Block *elseBlock;
+    Block* elseBlock;
 
   public:
-    explicit Conditional(Expression::Base *cond, Block *insts,
-                         Block *elseBlock = nullptr)
+    explicit Conditional(Expression::Base* cond, Block* insts, Block* elseBlock = nullptr)
         : cond(cond), insts(insts), elseBlock(elseBlock){};
 
     /// @return body block instructions to execute
     //   if the condition is met
-    auto getBlock() { return insts; }
+    auto
+    getBlock() {
+        return insts;
+    }
     /// @return the expression to be evaluated
-    auto getCondition() { return cond; }
+    auto
+    getCondition() {
+        return cond;
+    }
 
     /// @return Get "else" statement
-    auto getElse() { return elseBlock; }
+    auto
+    getElse() {
+        return elseBlock;
+    }
 
     // Set a visit handler for the generators
     ACCEPT()
@@ -658,17 +734,16 @@ struct Conditional : public AcceptorExtend<Conditional, Base> {
  * a common interface for all nodes in the program's AST.
  */
 struct WhileLoop : public AcceptorExtend<WhileLoop, Base> {
-
     // Instructions stored inside a block
-    Block *insts = nullptr;
+    Block* insts = nullptr;
     // the expression to be evaluated before each iteration
-    Expression::Base *cond = nullptr;
+    Expression::Base* cond = nullptr;
     /**
      * It has the same characteristics as a while loop except that
-     *  it has some differentiations. As the name suggests, a do-while
-     *  executes the instructions block before doing the check. For example,
-     *  we can use it the following (PSEUDOCODE): this will execute "hello" 5
-     * times.
+     *  it has some differentiations. As the name suggests, a
+     * do-while executes the instructions block before doing the
+     * check. For example, we can use it the following (PSEUDOCODE):
+     * this will execute "hello" 5 times.
      * ```
      * 1 | A = 0
      * 2 | DO {
@@ -680,25 +755,34 @@ struct WhileLoop : public AcceptorExtend<WhileLoop, Base> {
     bool doWhile = false;
 
   public:
-    explicit WhileLoop(Expression::Base *cond, Block *insts, bool isDoWhile = false)
+    explicit WhileLoop(Expression::Base* cond, Block* insts, bool isDoWhile = false)
         : cond(cond), insts(insts), doWhile(isDoWhile){};
 
     /// @return body block instructions to execute
     //   each iterator if the condition is truth
-    auto getBlock() const { return insts; }
+    auto
+    getBlock() const {
+        return insts;
+    }
     /// @return the expression to be evaluated each iteration
-    auto getCondition() const { return cond; }
+    auto
+    getCondition() const {
+        return cond;
+    }
     /// @return If the condition should be checked before or after
     ///  each iteration
-    auto isDoWhile() const { return doWhile; }
+    auto
+    isDoWhile() const {
+        return doWhile;
+    }
 
     // Set a visit handler for the generators
     ACCEPT()
 };
 
 /**
- * Import statement. Imports functions, classes and symbols from other
- *  files / modules.
+ * Import statement. Imports functions, classes and symbols from
+ * other files / modules.
  */
 struct ImportStmt : public AcceptorExtend<ImportStmt, Base> {
     /// @brief Represents the path trying to be accessed.
@@ -707,40 +791,50 @@ struct ImportStmt : public AcceptorExtend<ImportStmt, Base> {
     /// @example of different import statements and how they are
     ///	 represented.
     ///   | use Core::System			            | {"System"}
-    ///   | use hello::myPath::secondPath   | {"myPath", "secondPath"}
-    ///   | use hello::myPath:..:helloAgain | {"myPath", "..", "helloAgain"}
-    /// @note (1): Last path will be checked with all kind of different
-    /// supported
-    ///  extensions (sn, so, ...) and it's @c exportSymbol will be the name of
-    ///  the last path.
-    /// @note (2): The user can manually specify the path extension by doing the
-    /// following:
+    ///   | use hello::myPath::secondPath   | {"myPath",
+    ///   "secondPath"} | use hello::myPath:..:helloAgain |
+    ///   {"myPath", "..", "helloAgain"}
+    /// @note (1): Last path will be checked with all kind of
+    /// different supported
+    ///  extensions (sn, so, ...) and it's @c exportSymbol will be
+    ///  the name of the last path.
+    /// @note (2): The user can manually specify the path extension
+    /// by doing the following:
     ///   | use myModule::path:path2:myFile(so)::{ myFunc }
     std::vector<std::string> path;
     /// @brief place where searching the path from. This can be used
     ///  so we can decide from what package we need to import this.
     /// @example
     ///  | use Core::System | package = "Core"
-    /// @note If the package name is `$` that means that it's being extracted
+    /// @note If the package name is `$` that means that it's being
+    /// extracted
     ///  from the current module.
     std::string package;
-    /// @brief How the declaration is being exported into the current file.
+    /// @brief How the declaration is being exported into the
+    /// current file.
     std::string exportSymbol;
 
   public:
-    /// @brief Representation of the kind of import statement this is.
-    /// import statements can have different functionality such as:
-    ///  importing certain symbols from a module or importing every symbol
-    ///  into the current scope
+    /// @brief Representation of the kind of import statement this
+    /// is. import statements can have different functionality such
+    /// as:
+    ///  importing certain symbols from a module or importing every
+    ///  symbol into the current scope
     /// @example
     ///   DEFAULT: import std:Math
-    ///   EXTRACT: import myModule:pathToExtract::{ myFunction, awesomeClass }
-    ///   ALL    : import myAmazingModule:myPath::*
-    enum ImportType { DEFAULT, EXTRACT, ALL } type = DEFAULT;
+    ///   EXTRACT: import myModule:pathToExtract::{ myFunction,
+    ///   awesomeClass } ALL    : import myAmazingModule:myPath::*
+    enum ImportType
+    {
+        DEFAULT,
+        EXTRACT,
+        ALL
+    } type = DEFAULT;
 
   public:
     ImportStmt(const std::vector<std::string> path = {},
-               const std::string package = "$", ImportType ty = DEFAULT);
+               const std::string package = "$",
+               ImportType ty = DEFAULT);
 
   public:
     /// @brief get the package name where it's imported from
@@ -762,15 +856,14 @@ struct ImportStmt : public AcceptorExtend<ImportStmt, Base> {
  * @note return type must match function's return type
  */
 struct Return : public AcceptorExtend<Return, Base> {
-
     // Function's return type
-    Expression::Base *value = nullptr;
+    Expression::Base* value = nullptr;
 
   public:
-    Return(Expression::Base *value);
+    Return(Expression::Base* value);
 
     /// @return the value holt by the variable
-    Expression::Base *getValue() const;
+    Expression::Base* getValue() const;
 
     // Set an acceptance call
     ACCEPT()
@@ -787,7 +880,6 @@ struct Return : public AcceptorExtend<Return, Base> {
  * you can have; "C" or "System".
  */
 struct ExternFnDef : public AcceptorExtend<ExternFnDef, FunctionDef> {
-
     // External function for the function.
     std::string externalName;
 
@@ -795,13 +887,19 @@ struct ExternFnDef : public AcceptorExtend<ExternFnDef, FunctionDef> {
     using AcceptorExtend::AcceptorExtend;
 
     template <class... Args>
-    ExternFnDef(std::string externalName, Args&...args)
+    ExternFnDef(std::string externalName, Args&... args)
         : externalName(externalName), AcceptorExtend(std::forward<Args>(args)...){};
 
     // Whether the function is external, it is true in this case
-    virtual bool isExtern() override { return true; }
+    virtual bool
+    isExtern() override {
+        return true;
+    }
     /// @return Get external function's name.
-    std::string getExternalName() { return externalName; }
+    std::string
+    getExternalName() {
+        return externalName;
+    }
 };
 
 /**
@@ -810,56 +908,63 @@ struct ExternFnDef : public AcceptorExtend<ExternFnDef, FunctionDef> {
  * executed once this function is called.
  */
 struct BodiedFunction : public AcceptorExtend<BodiedFunction, FunctionDef> {
-
     // Function's block. This block contains all the intructions
     // a function executes when it's called.
-    Block *block;
+    Block* block;
 
   public:
     using AcceptorExtend::AcceptorExtend;
 
     template <class... Args>
-    BodiedFunction(Block *block, Args&...args)
+    BodiedFunction(Block* block, Args&... args)
         : block(block), AcceptorExtend(std::forward<Args>(args)...){};
 
     /// @return Get function's body declaration.
-    Block *getBody() { return block; }
+    Block*
+    getBody() {
+        return block;
+    }
 };
 
 /**
- * An LLVM defined function is a function with a declared LLVM block.
- * This block contains the instructions that will be
- * executed once this function is called.
+ * An LLVM defined function is a function with a declared LLVM
+ * block. This block contains the instructions that will be executed
+ * once this function is called.
  */
 struct LLVMFunction : public AcceptorExtend<LLVMFunction, FunctionDef> {
-
-    // Function's block. This block contains all the LLVM IR intructions
-    // a function executes when it's called.
+    // Function's block. This block contains all the LLVM IR
+    // intructions a function executes when it's called.
     std::string block;
 
   public:
     using AcceptorExtend::AcceptorExtend;
 
     template <class... Args>
-    LLVMFunction(std::string block, Args&...args)
+    LLVMFunction(std::string block, Args&... args)
         : block(block), AcceptorExtend(std::forward<Args>(args)...){};
 
     /// @return Get function's body declaration.
-    auto getBody() { return block; }
+    auto
+    getBody() {
+        return block;
+    }
 };
 
 }; // namespace Statement
 
-namespace Expression {
+namespace Expression
+{
 /**
- * A struct representing a Lambda Function, which is derived from the
- * AcceptorExtend class and inherits the BodiedFunction class. It provides a way
- * to define an anonymous function that can be passed as an argument to another
- * function or assigned to a variable.
+ * A struct representing a Lambda Function, which is derived from
+ * the AcceptorExtend class and inherits the BodiedFunction class.
+ * It provides a way to define an anonymous function that can be
+ * passed as an argument to another function or assigned to a
+ * variable.
  *
- * The LambdaFunction struct inherits the functionality of the AcceptorExtend
- * and BodiedFunction classes, allowing it to be used as an acceptor of visitors
- * and to have a body that can be evaluated when called.
+ * The LambdaFunction struct inherits the functionality of the
+ * AcceptorExtend and BodiedFunction classes, allowing it to be used
+ * as an acceptor of visitors and to have a body that can be
+ * evaluated when called.
  */
 struct LambdaFunction : public AcceptorExtend<LambdaFunction, Expression::Base> {
   public:
@@ -867,12 +972,15 @@ struct LambdaFunction : public AcceptorExtend<LambdaFunction, Expression::Base> 
 
     /* Function used inside the lambda since a lambda struct is
       sor of used as an "Interface" for expressions */
-    Statement::BodiedFunction *func = nullptr;
+    Statement::BodiedFunction* func = nullptr;
 
     /// @return the function assigned to this lambda interface
-    auto getFunc() { return func; }
+    auto
+    getFunc() {
+        return func;
+    }
 
-    LambdaFunction(Statement::BodiedFunction *func) : AcceptorExtend(), func(func){};
+    LambdaFunction(Statement::BodiedFunction* func) : AcceptorExtend(), func(func){};
 
     ACCEPT()
 };
@@ -884,8 +992,9 @@ struct LambdaFunction : public AcceptorExtend<LambdaFunction, Expression::Base> 
  * @tparam Inst Node type to be initialized
  * @return Resultant node
  */
-template <typename Inst, class... Args> Inst *N(Args&&...args) {
-
+template <typename Inst, class... Args>
+Inst*
+N(Args&&... args) {
     // Our template parameter must
     // be inherited from Node
     static_assert(std::is_base_of<Node, Inst>::value, "Inst must inherit from Node");
@@ -899,7 +1008,9 @@ template <typename Inst, class... Args> Inst *N(Args&&...args) {
  * @tparam ...Args arguments for the type
  * @return New type reference
  */
-template <class... Args> Expression::TypeRef *TR(Args&&...args) {
+template <class... Args>
+Expression::TypeRef*
+TR(Args&&... args) {
     auto n = new Expression::TypeRef(std::forward<Args>(args)...);
     return n;
 }

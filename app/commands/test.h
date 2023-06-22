@@ -1,7 +1,7 @@
 
+#include "app/cli.h"
 #include "compiler.h"
 #include "errors.h"
-#include "exec/cli.h"
 #include "logger.h"
 #include "utils/utils.h"
 #include "vendor/toml.hpp"
@@ -13,43 +13,44 @@ using namespace std::chrono;
 #ifndef __SNOWBALL_EXEC_TEST_CMD_H_
 #define __SNOWBALL_EXEC_TEST_CMD_H_
 
-namespace snowball {
-namespace exec {
-namespace commands {
-int test(exec::Options::TestOptions p_opts) {
-
+namespace snowball
+{
+namespace app
+{
+namespace commands
+{
+int
+test(app::Options::TestOptions p_opts) {
     toml::parse_result parsed_config = Compiler::get_config();
 
-    std::string filename =
-        (std::string)(parsed_config["package"]["main"].value_or<std::string>(
+    std::string filename = (std::string)(parsed_config["package"]["main"].value_or<std::string>(
             fs::current_path() / "src" / "main.sn"));
 
     std::ifstream ifs(filename);
     if (ifs.fail()) {
-        SNError(Error::IO_ERROR, FMT("Package main file not found in snowball "
-                                     "project! \n\t(searching for: '%s')",
-                                     filename.c_str()))
-            .print_error();
+        SNError(Error::IO_ERROR,
+                FMT("Package main file not found in snowball "
+                    "project! \n\t(searching for: '%s')",
+                    filename.c_str()))
+                .print_error();
         return EXIT_FAILURE;
     }
 
-    std::string content((std::istreambuf_iterator<char>(ifs)),
-                        (std::istreambuf_iterator<char>()));
+    std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 
     // TODO: check for output
     std::string output = _SNOWBALL_OUT_DEFAULT;
 
-    Logger::message(
-        "Compiling",
-        FMT("%s v%s",
-            ((std::string)(parsed_config["package"]["name"]
-                               .value_or<std::string>("<anonnimus>")))
-                .c_str(),
-            ((std::string)(parsed_config["package"]["version"]
-                               .value_or<std::string>("<unknown>")))
-                .c_str()));
+    Logger::message("Compiling",
+                    FMT("%s v%s",
+                        ((std::string)(parsed_config["package"]["name"].value_or<std::string>(
+                                 "<anonnimus>")))
+                                .c_str(),
+                        ((std::string)(parsed_config["package"]["version"].value_or<std::string>(
+                                 "<unknown>")))
+                                .c_str()));
 
-    Compiler *compiler = new Compiler(content, filename);
+    Compiler* compiler = new Compiler(content, filename);
     compiler->initialize();
     compiler->enable_tests();
 
@@ -74,7 +75,7 @@ int test(exec::Options::TestOptions p_opts) {
     return system(output.c_str());
 }
 } // namespace commands
-} // namespace exec
+} // namespace app
 } // namespace snowball
 
 #endif // __SNOWBALL_EXEC_TEST_CMD_H_

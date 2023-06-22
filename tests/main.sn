@@ -1,26 +1,13 @@
 use Core::CLib
 
-class A {
-  pub:
-    A() {
-    }
 
-    // TODO: also test for 'x: f32' <- some funny things going on :)
-    fn hello() {
-      CLib::putchar('a')
-    }    
-}
+// TODO: Error occurs when the funtion is already generated and we only check for arg->is(...) on non-generated function overloads instead of both non and generated functions 
+fn hello(x: f32) {
+  CLib::putchar('a')
+}    
 
-class B: A {
-  pub:
-    B() {
-    }
 
-    // TODO: replace this with A::hello if it is not declared
-}
-
-pub fn main() i32 {
-    let b = new B();
-
-    b.hello(2);
+pub fn main() 
+  i32 {
+    hello(2);
 }

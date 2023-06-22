@@ -1,8 +1,10 @@
 
 #include "../DefinitveAssigment.h"
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
 SN_DEFINITE_ASSIGMENT_VISIT(Block) {
     std::vector<std::string> blockInited;

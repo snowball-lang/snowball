@@ -8,9 +8,11 @@
 
 using namespace snowball::Syntax::Expression;
 
-namespace snowball::parser {
+namespace snowball::parser
+{
 
-TypeRef *Parser::parseType() {
+TypeRef*
+Parser::parseType() {
     throwIfNotType();
     assert(is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>());
     auto pos = m_current.get_pos();
@@ -31,11 +33,11 @@ TypeRef *Parser::parseType() {
     }
 
     auto ident = parseIdentifier();
-    Base *ast = ident;
+    Base* ast = ident;
     auto name = ident->getIdentifier();
 
     auto g = utils::cast<GenericIdentifier>(ast);
-    auto generics = (g != nullptr) ? g->getGenerics() : std::vector<TypeRef *>{};
+    auto generics = (g != nullptr) ? g->getGenerics() : std::vector<TypeRef*>{};
 
     next();
 
@@ -49,13 +51,12 @@ TypeRef *Parser::parseType() {
         ast->setDBGInfo(i->getDBGInfo());
 
         auto g = utils::cast<GenericIdentifier>(i);
-        generics = (g != nullptr) ? g->getGenerics() : std::vector<TypeRef *>{};
+        generics = (g != nullptr) ? g->getGenerics() : std::vector<TypeRef*>{};
 
         next();
     }
 
-    auto dbg =
-        new DBGSourceInfo(m_source_info, pos, m_current.get_pos().second - pos.second);
+    auto dbg = new DBGSourceInfo(m_source_info, pos, m_current.get_pos().second - pos.second);
     auto t = Syntax::TR(ast, name, dbg);
     t->setGenerics(generics);
 

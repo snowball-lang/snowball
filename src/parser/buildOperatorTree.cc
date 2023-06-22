@@ -7,10 +7,11 @@
 
 #include <assert.h>
 
-namespace snowball::parser {
+namespace snowball::parser
+{
 
-Syntax::Expression::Base *
-Parser::buildOperatorTree(std::vector<Syntax::Expression::Base *>& exprs) {
+Syntax::Expression::Base*
+Parser::buildOperatorTree(std::vector<Syntax::Expression::Base*>& exprs) {
     assert(exprs.size() > 0);
 
     while (exprs.size() > 1) {
@@ -19,7 +20,7 @@ Parser::buildOperatorTree(std::vector<Syntax::Expression::Base *>& exprs) {
         bool unary = false;
 
         for (int i = 0; i < (int)exprs.size(); i++) {
-            auto expression = static_cast<Syntax::Expression::BinaryOp *>(exprs[i]);
+            auto expression = static_cast<Syntax::Expression::BinaryOp*>(exprs[i]);
             if (!expression->isOperator) {
                 continue;
             }
@@ -128,12 +129,11 @@ Parser::buildOperatorTree(std::vector<Syntax::Expression::Base *>& exprs) {
         ASSERT(next_op >= 0);
 
         if (unary) {
-
             int next_expr = next_op;
             while (exprs[next_expr]->isOperator) {
                 if (++next_expr == exprs.size()) {
-                    createError<SYNTAX_ERROR>(exprs[next_expr]->getDBGInfo()->pos,
-                                              "expected an expression.", {}, 1);
+                    createError<SYNTAX_ERROR>(
+                            exprs[next_expr]->getDBGInfo()->pos, "expected an expression.", {}, 1);
                 }
             }
 
@@ -148,7 +148,6 @@ Parser::buildOperatorTree(std::vector<Syntax::Expression::Base *>& exprs) {
                 exprs.erase(exprs.begin() + i + 1);
             }
         } else {
-
             ASSERT(next_op >= 1 && next_op < (int)exprs.size() - 1)
             ASSERT(!(exprs[(size_t)next_op + 1]->isOperator) &&
                    !(exprs[(size_t)next_op - 1]->isOperator));
@@ -159,19 +158,21 @@ Parser::buildOperatorTree(std::vector<Syntax::Expression::Base *>& exprs) {
 
             if (exprs[(size_t)next_op - 1]->isOperator) {
                 if (Syntax::Expression::BinaryOp::is_assignment(
-                        (Syntax::Expression::BinaryOp *)exprs[(size_t)next_op - 1])) {
-                    createError<SYNTAX_ERROR>(
-                        exprs[(size_t)next_op - 1]->getDBGInfo()->pos,
-                        "unexpected assignment.", {}, 1);
+                            (Syntax::Expression::BinaryOp*)exprs[(size_t)next_op - 1])) {
+                    createError<SYNTAX_ERROR>(exprs[(size_t)next_op - 1]->getDBGInfo()->pos,
+                                              "unexpected assignment.",
+                                              {},
+                                              1);
                 }
             }
 
             if (exprs[(size_t)next_op + 1]->isOperator) {
                 if (Syntax::Expression::BinaryOp::is_assignment(
-                        (Syntax::Expression::BinaryOp *)exprs[(size_t)next_op + 1])) {
-                    createError<SYNTAX_ERROR>(
-                        exprs[(size_t)next_op + 1]->getDBGInfo()->pos,
-                        "unexpected assignment.", {}, 1);
+                            (Syntax::Expression::BinaryOp*)exprs[(size_t)next_op + 1])) {
+                    createError<SYNTAX_ERROR>(exprs[(size_t)next_op + 1]->getDBGInfo()->pos,
+                                              "unexpected assignment.",
+                                              {},
+                                              1);
                 }
             }
 

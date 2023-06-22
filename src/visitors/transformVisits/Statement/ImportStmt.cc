@@ -12,8 +12,10 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
 SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     int numThreads = 4; // TODO: let user decide!
@@ -33,8 +35,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
         auto item = std::make_shared<Item>(m.value());
         ctx->addItem(exportName, item);
     } else {
-        auto niceFullName =
-            package + "::" + utils::join(path.begin(), path.end(), "::");
+        auto niceFullName = package + "::" + utils::join(path.begin(), path.end(), "::");
         auto mod = std::make_shared<ir::Module>(niceFullName, uuid);
         auto st = std::make_shared<ContextState::StackType>();
         auto state = std::shared_ptr<ContextState>(new ContextState(st, mod, nullptr));

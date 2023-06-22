@@ -7,15 +7,18 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
-#define OPERATOR_INSTANCE(x, f)                                                        \
-    case services::OperatorService::x:                                                 \
-        this->value = builder->f(left, right);                                         \
+#define OPERATOR_INSTANCE(x, f)                                                                    \
+    case services::OperatorService::x:                                                             \
+        this->value = builder->f(left, right);                                                     \
         break;
 
-namespace snowball {
-namespace codegen {
+namespace snowball
+{
+namespace codegen
+{
 
-bool LLVMBuilder::buildOperator(ir::Call *call) {
+bool
+LLVMBuilder::buildOperator(ir::Call* call) {
     if (auto fn = utils::dyn_cast<ir::Func>(call->getCallee())) {
         auto args = call->getArguments();
         auto opName = fn->getName(true);
@@ -67,7 +70,6 @@ bool LLVMBuilder::buildOperator(ir::Call *call) {
                 }
 
                 return true;
-
             } else if (utils::dyn_cast<types::Float32Type>(args.at(0)->getType()) ||
                        utils::dyn_cast<types::Float64Type>(args.at(0)->getType())) {
                 // this->value = builder->Create
@@ -110,7 +112,6 @@ bool LLVMBuilder::buildOperator(ir::Call *call) {
                 }
 
                 return true;
-
             } else {
                 switch (services::OperatorService::operatorID(opName)) {
                     case services::OperatorService::EQ: {

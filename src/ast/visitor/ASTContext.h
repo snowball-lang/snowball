@@ -15,11 +15,13 @@
 #ifndef __SNOWBALL_AST_CONTEXT_H_
 #define __SNOWBALL_AST_CONTEXT_H_
 
-namespace snowball {
-namespace Syntax {
+namespace snowball
+{
+namespace Syntax
+{
 
-template <typename T> class ASTContext {
-
+template <typename T>
+class ASTContext {
     using Item = std::shared_ptr<T>;
     using Scope = std::map<std::string, Item>;
 
@@ -57,14 +59,15 @@ template <typename T> class ASTContext {
      * @param name Identifier for the item
      * @param item Item to be stored
      */
-    virtual void addItem(const std::string& name, Item& item) {
+    virtual void
+    addItem(const std::string& name, Item& item) {
         DEBUG_SYMTABLE(1, FMT("    Adding to scope: %s", name.c_str()).c_str())
         auto f = stack->front();
         auto val = f.find(name);
 
         if (val != f.end()) {
-            E<VARIABLE_ERROR>(item, FMT("Value for '%s' is already defiend!",
-                                        item->toString().c_str()));
+            E<VARIABLE_ERROR>(item,
+                              FMT("Value for '%s' is already defiend!", item->toString().c_str()));
         }
 
         stack->front().emplace(std::make_pair(name, item));
@@ -76,7 +79,8 @@ template <typename T> class ASTContext {
      * @param name  Item to search for
      * @return {item or nullptr, if found}
      */
-    virtual std::pair<Item, bool> getItem(const std::string name) const {
+    virtual std::pair<Item, bool>
+    getItem(const std::string name) const {
         for (auto s : *stack) {
             auto [val, found] = getInScope(name, s);
             if (found) return {val, true};
@@ -92,7 +96,8 @@ template <typename T> class ASTContext {
      * @param s scope where search is performed
      * @return {item or nullptr, if found}
      */
-    virtual std::pair<Item, bool> getInScope(const std::string name, Scope& s) const {
+    virtual std::pair<Item, bool>
+    getInScope(const std::string name, Scope& s) const {
         auto val = s.find(name);
         if (val != s.end()) {
             return {val->second, true};
@@ -101,18 +106,26 @@ template <typename T> class ASTContext {
         return {std::unique_ptr<T>(nullptr), false};
     }
     /// @return the current scope the programm is into
-    virtual Scope& currentScope() { return stack->front(); }
+    virtual Scope&
+    currentScope() {
+        return stack->front();
+    }
     /// @return the global scope
-    virtual Scope& globalScope() { return stack->at(stack->size() - 2); }
+    virtual Scope&
+    globalScope() {
+        return stack->at(stack->size() - 2);
+    }
     /// @brief Create a new scope and append it.
-    virtual void addScope() {
+    virtual void
+    addScope() {
         DEBUG_SYMTABLE(0, "Creating new scope")
 
         Scope newScope{};
         stack->insert(stack->begin(), newScope);
     }
     /// @brief Run a function inside a scope
-    virtual Scope withScope(std::function<void()> func) {
+    virtual Scope
+    withScope(std::function<void()> func) {
         addScope();
         func();
 
@@ -122,7 +135,8 @@ template <typename T> class ASTContext {
      * @brief Delete the current scope
      * @return Scope The deleted scope
      */
-    virtual Scope delScope() {
+    virtual Scope
+    delScope() {
         DEBUG_SYMTABLE(0, "Deleting scope")
 
         auto s = stack->front();

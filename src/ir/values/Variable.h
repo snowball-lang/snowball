@@ -11,8 +11,10 @@
 #ifndef __SNOWBALL_VARIABLE_VALUE_H_
 #define __SNOWBALL_VARIABLE_VALUE_H_
 
-namespace snowball {
-namespace ir {
+namespace snowball
+{
+namespace ir
+{
 
 /// @brief Representation of a variable access inside the IR.
 class Variable : public IdMixin, public AcceptorExtend<Variable, Value> {
@@ -26,16 +28,24 @@ class Variable : public IdMixin, public AcceptorExtend<Variable, Value> {
 
   public:
     // Create a new variable declaration
-    Variable(const std::string& identifier, bool isArgument = false,
-             bool isMutable = false)
+    Variable(const std::string& identifier, bool isArgument = false, bool isMutable = false)
         : identifier(identifier), _isArgument(isArgument), _isMutable(isMutable){};
 
     /// @return Variable identifier
-    auto getIdentifier() const { return identifier; }
+    auto
+    getIdentifier() const {
+        return identifier;
+    }
     /// @return Wether or not the variable points to an argument
-    auto isArgument() { return _isArgument; }
+    auto
+    isArgument() {
+        return _isArgument;
+    }
     /// @return true if the variable is mutable
-    auto isMutable() { return _isMutable; }
+    auto
+    isMutable() {
+        return _isMutable;
+    }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

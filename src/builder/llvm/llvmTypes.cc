@@ -10,14 +10,18 @@
 
 using namespace snowball::utils;
 
-namespace snowball {
-namespace codegen {
+namespace snowball
+{
+namespace codegen
+{
 
-llvm::Type *LLVMBuilder::getLLVMType(std::shared_ptr<types::Type> t) {
+llvm::Type*
+LLVMBuilder::getLLVMType(std::shared_ptr<types::Type> t) {
     return getLLVMType(t.get());
 }
 
-llvm::Type *LLVMBuilder::getLLVMType(types::Type *t) {
+llvm::Type*
+LLVMBuilder::getLLVMType(types::Type* t) {
     if (cast<types::Int64Type>(t)) {
         return builder->getInt64Ty();
     } else if (cast<types::Int32Type>(t)) {
@@ -50,21 +54,17 @@ llvm::Type *LLVMBuilder::getLLVMType(types::Type *t) {
         }
 
         auto fields = c->getFields();
-        auto generatedFields =
-            vector_iterate<types::DefinedType::ClassField *, llvm::Type *>(
-                fields, [&](types::DefinedType::ClassField *t) {
-                    return getLLVMType(t->type);
-                });
+        auto generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Type*>(
+                fields, [&](types::DefinedType::ClassField* t) { return getLLVMType(t->type); });
 
-        auto s =
-            llvm::StructType::create(*context, _SN_CLASS_PREFIX + c->getMangledName());
+        auto s = llvm::StructType::create(*context, _SN_CLASS_PREFIX + c->getMangledName());
         types.insert({c->getId(), s});
 
         if (auto v = ctx->getVtableTy(c->getId())) {
             generatedFields.insert(generatedFields.begin(), v);
         } else {
             auto structName = (std::string)_SN_VTABLE_PREFIX + c->getMangledName();
-            std::vector<llvm::Type *> types;
+            std::vector<llvm::Type*> types;
 
             for (auto fn : c->getVTable()) {
                 types.push_back(getLLVMType(fn->getType()));
@@ -87,10 +87,10 @@ llvm::Type *LLVMBuilder::getLLVMType(types::Type *t) {
     return nullptr; // to avoid warnings
 }
 
-llvm::FunctionType *LLVMBuilder::getLLVMFunctionType(types::FunctionType *fn) {
-    auto argTypes = vector_iterate<std::shared_ptr<types::Type>, llvm::Type *>(
-        fn->getArgs(),
-        [&](std::shared_ptr<types::Type> arg) { return getLLVMType(arg); });
+llvm::FunctionType*
+LLVMBuilder::getLLVMFunctionType(types::FunctionType* fn) {
+    auto argTypes = vector_iterate<std::shared_ptr<types::Type>, llvm::Type*>(
+            fn->getArgs(), [&](std::shared_ptr<types::Type> arg) { return getLLVMType(arg); });
 
     auto ret = getLLVMType(fn->getRetType());
     return llvm::FunctionType::get(ret, argTypes, fn->isVariadic());

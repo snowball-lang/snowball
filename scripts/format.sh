@@ -6,9 +6,8 @@ echo formating: $(pwd)
 
 format="xargs clang-format-14 -i -style=file"
 
-echo "work: Format source files..."
 find src/ -iname "*.cc" -print | $format
-echo "done: Formated CC files"
-echo "work: Format header files..."
 find src/ -iname "*.h" -print | $format
-echo "done: Formated header files"
+
+find app/ -iname "*.cc" -print | $format
+find app/ -iname "*.h" -print | $format
