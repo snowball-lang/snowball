@@ -5,10 +5,8 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
-namespace snowball
-{
-namespace codegen
-{
+namespace snowball {
+namespace codegen {
 
 void
 LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var) {

@@ -41,10 +41,8 @@
  *     but in snowball, we also some take more things into consideration
  *     whether `f(x) = g(x)` or `f(x) != g(x)`.
  */
-namespace snowball
-{
-namespace types
-{
+namespace snowball {
+namespace types {
 
 class FunctionType : public AcceptorExtend<FunctionType, Type> {
     // Function's argument type.

@@ -11,10 +11,8 @@
         builder->CreateBr(continueBB);                                                             \
     }
 
-namespace snowball
-{
-namespace codegen
-{
+namespace snowball {
+namespace codegen {
 
 void
 LLVMBuilder::visit(ir::Conditional* c) {

@@ -23,10 +23,8 @@
 #ifndef __SNOWBALL_LLVM_BUILDER_H_
 #define __SNOWBALL_LLVM_BUILDER_H_
 
-namespace snowball
-{
-namespace codegen
-{
+namespace snowball {
+namespace codegen {
 
 /**
  * @brief Some context so that we can know

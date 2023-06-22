@@ -15,10 +15,8 @@
 
 #ifndef __SNOWBALL_FUNC_VAL_H_
 #define __SNOWBALL_FUNC_VAL_H_
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 /// @brief Representation of a function in the IR
 class Func : public AcceptorExtend<Func, Value>,

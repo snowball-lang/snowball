@@ -14,10 +14,8 @@
 #include <string>
 #include <vector>
 
-namespace snowball
-{
-namespace types
-{
+namespace snowball {
+namespace types {
 
 std::string
 FunctionType::getPrettyName() const {

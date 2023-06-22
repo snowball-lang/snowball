@@ -18,19 +18,15 @@
  * Each type should have atleast a function that generates it's
  * llvm ir equivalent of it.
  */
-namespace snowball
-{
+namespace snowball {
 
-namespace Syntax
-{
-namespace Expression
-{
+namespace Syntax {
+namespace Expression {
 class TypeRef;
 }
 }; // namespace Syntax
 
-namespace types
-{
+namespace types {
 class PointerType;
 
 class Type : public std::enable_shared_from_this<Type> {

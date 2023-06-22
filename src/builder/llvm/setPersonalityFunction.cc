@@ -10,10 +10,8 @@
 
 using namespace snowball::utils;
 
-namespace snowball
-{
-namespace codegen
-{
+namespace snowball {
+namespace codegen {
 
 void
 LLVMBuilder::setPersonalityFunction(llvm::Function* func) {

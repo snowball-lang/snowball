@@ -11,10 +11,8 @@
 #include <llvm/PassRegistry.h>
 #include <llvm/Support/TargetSelect.h>
 
-namespace snowball
-{
-namespace codegen
-{
+namespace snowball {
+namespace codegen {
 
 LLVMBuilder::LLVMBuilder(std::shared_ptr<ir::MainModule> mod) : iModule(mod) {
     llvm::InitializeAllTargetInfos();

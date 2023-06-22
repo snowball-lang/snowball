@@ -7,8 +7,7 @@
 #include <assert.h>
 
 using namespace snowball::Syntax::Statement;
-namespace snowball::parser
-{
+namespace snowball::parser {
 
 Conditional*
 Parser::parseConditional() {

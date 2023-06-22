@@ -15,10 +15,8 @@
                           generics.size()));                                                       \
     }
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 inline const std::string FUNCTION_RETURN_STYPE = "Core::ReturnType";
 

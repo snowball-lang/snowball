@@ -13,10 +13,8 @@
 
 #define ASSERT(x) assert(x);
 
-namespace snowball
-{
-namespace utils
-{
+namespace snowball {
+namespace utils {
 
 std::string get_exe_folder();
 std::string itos(int i);

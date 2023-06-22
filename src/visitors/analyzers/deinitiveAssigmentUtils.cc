@@ -3,10 +3,8 @@
 
 #include <optional>
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 void
 DefiniteAssigment::withScope(std::function<void()> cb) {

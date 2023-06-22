@@ -3,12 +3,9 @@
 
 #include "../types/DefinedType.h"
 
-namespace snowball
-{
-namespace Syntax
-{
-namespace cacheComponents
-{
+namespace snowball {
+namespace Syntax {
+namespace cacheComponents {
 
 void
 Types::setType(const std::string& uuid,

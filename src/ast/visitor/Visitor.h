@@ -12,10 +12,8 @@
 #define ACCEPT(Node)                                                                               \
     virtual void visit(Node* p_node) { assert(false && "BUG: Visitor::visit called"); }
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 class Visitor : public SrcObject {
   public:

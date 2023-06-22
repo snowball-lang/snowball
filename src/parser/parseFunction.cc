@@ -14,8 +14,7 @@
 
 using namespace snowball::Syntax::Statement;
 
-namespace snowball::parser
-{
+namespace snowball::parser {
 
 FunctionDef*
 Parser::parseFunction(bool isConstructor, bool isOperator, bool isLambda) {

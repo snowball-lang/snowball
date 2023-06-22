@@ -11,10 +11,8 @@
 #ifndef __SNOWBALL_VARIABLE_VALUE_H_
 #define __SNOWBALL_VARIABLE_VALUE_H_
 
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 /// @brief Representation of a variable access inside the IR.
 class Variable : public IdMixin, public AcceptorExtend<Variable, Value> {

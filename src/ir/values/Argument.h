@@ -13,10 +13,8 @@
 #ifndef __SNOWBALL_ARGUMENT_VALUE_H_
 #define __SNOWBALL_ARGUMENT_VALUE_H_
 
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 /// @brief This is just an utility class that we use in order to access
 ///  an argument.

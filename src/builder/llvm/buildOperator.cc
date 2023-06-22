@@ -10,10 +10,8 @@
 #define OPERATOR_INSTANCE(x, f)                                                                    \
     case services::OperatorService::x: this->value = builder->f(left, right); break;
 
-namespace snowball
-{
-namespace codegen
-{
+namespace snowball {
+namespace codegen {
 
 bool
 LLVMBuilder::buildOperator(ir::Call* call) {

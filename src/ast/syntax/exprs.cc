@@ -7,12 +7,9 @@
 #include <string>
 #include <vector>
 
-namespace snowball
-{
-namespace Syntax
-{
-namespace Expression
-{
+namespace snowball {
+namespace Syntax {
+namespace Expression {
 
 DeclType::DeclType(Base* value, DBGSourceInfo* srcInfo)
     : value(value), TypeRef("decltype(...)", srcInfo){};

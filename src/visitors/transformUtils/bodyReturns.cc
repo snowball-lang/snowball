@@ -3,10 +3,8 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 bool
 Transformer::bodyReturns(std::vector<Node*> exprs) {

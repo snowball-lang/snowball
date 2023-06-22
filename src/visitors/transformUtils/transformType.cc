@@ -9,10 +9,8 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 std::shared_ptr<types::Type>
 Transformer::transformType(Expression::TypeRef* ty) {

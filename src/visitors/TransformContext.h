@@ -16,10 +16,8 @@
 
 #include "../ast/cache/Cache.h"
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 // This class gives context to the "Transformer" ast visitor
 // and it also gives the ability to do stack management.

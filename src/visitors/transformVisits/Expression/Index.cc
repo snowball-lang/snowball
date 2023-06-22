@@ -4,10 +4,8 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Expression::Index) {
     auto [r, _] = getFromIndex(p_node->getDBGInfo(), p_node, p_node->isStatic);

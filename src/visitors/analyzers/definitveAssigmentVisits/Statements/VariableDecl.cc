@@ -4,10 +4,8 @@
 
 #include <utility>
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 SN_DEFINITE_ASSIGMENT_VISIT(Statement::VariableDecl) {
     auto x = p_node->getName();

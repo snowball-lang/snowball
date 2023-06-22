@@ -3,10 +3,8 @@
 #include "../../../../errors.h"
 #include "../../DefinitveAssigment.h"
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 SN_DEFINITE_ASSIGMENT_VISIT(Statement::FunctionDef) {
     if (auto f = utils::cast<Statement::BodiedFunction>(p_node)) {

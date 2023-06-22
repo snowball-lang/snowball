@@ -8,10 +8,8 @@
 #include <llvm/IR/Value.h>
 #include <llvm/IR/Verifier.h>
 
-namespace snowball
-{
-namespace codegen
-{
+namespace snowball {
+namespace codegen {
 
 void
 LLVMBuilder::visit(ir::Func* func) {

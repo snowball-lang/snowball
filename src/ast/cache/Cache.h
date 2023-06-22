@@ -13,10 +13,8 @@
 #include "FunctionCache.h"
 #include "TypeCache.h"
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 /**
  * @brief The cache class

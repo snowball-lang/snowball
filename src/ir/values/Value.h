@@ -14,10 +14,8 @@
 /**
  * @brief Snowball values
  */
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 /// In snowball's internal IR,
 class Value : public ModuleHolder, public DBGObject {

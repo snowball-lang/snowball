@@ -5,10 +5,8 @@
 #ifndef __SNOWBALL_ID_MIXIN_H_
 #define __SNOWBALL_ID_MIXIN_H_
 
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 using id_t = std::uint64_t;
 

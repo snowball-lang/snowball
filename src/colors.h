@@ -2,8 +2,7 @@
 #ifndef __SNOWBALL_COLORS_H_
 #define __SNOWBALL_COLORS_H_
 
-namespace snowball
-{
+namespace snowball {
 
 // Regular text
 extern const char* BLK;

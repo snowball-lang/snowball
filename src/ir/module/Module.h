@@ -9,10 +9,8 @@
 #ifndef __SNOWBALL_MODULE_H_
 #define __SNOWBALL_MODULE_H_
 
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 class Func;
 class VariableDeclaration;

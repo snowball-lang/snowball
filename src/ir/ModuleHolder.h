@@ -4,10 +4,8 @@
 #ifndef __SNOWBALL_MODULE_HOLDER_H_
 #define __SNOWBALL_MODULE_HOLDER_H_
 
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 /// Container class that holds a module pointer
 class ModuleHolder {

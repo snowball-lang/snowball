@@ -4,10 +4,8 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Expression::GenericIdentifier) {
     auto generics = utils::vector_iterate<Expression::TypeRef*, std::shared_ptr<types::Type>>(

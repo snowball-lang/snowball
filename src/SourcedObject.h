@@ -5,8 +5,7 @@
 #ifndef __SNOWBALL_SRC_OBJECT_H_
 #define __SNOWBALL_SRC_OBJECT_H_
 
-namespace snowball
-{
+namespace snowball {
 
 /**
  * Good old src object. This

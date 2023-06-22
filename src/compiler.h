@@ -14,8 +14,7 @@ namespace fs = std::filesystem;
 #ifndef __SNOWBALL_COMPILER_H_
 #define __SNOWBALL_COMPILER_H_
 
-namespace snowball
-{
+namespace snowball {
 
 /**
  * @brief snowball Compiler

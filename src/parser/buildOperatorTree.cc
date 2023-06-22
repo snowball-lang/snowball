@@ -7,8 +7,7 @@
 
 #include <assert.h>
 
-namespace snowball::parser
-{
+namespace snowball::parser {
 
 Syntax::Expression::Base*
 Parser::buildOperatorTree(std::vector<Syntax::Expression::Base*>& exprs) {

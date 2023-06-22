@@ -12,10 +12,8 @@
 #ifndef __SNOWBALL_INDEX_EXTRACT_VALUE_H_
 #define __SNOWBALL_INDEX_EXTRACT_VALUE_H_
 
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 /**
  * @brief Representation of an index extraction statement

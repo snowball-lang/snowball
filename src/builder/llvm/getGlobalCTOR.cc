@@ -7,10 +7,8 @@
 #include <llvm/IR/Value.h>
 #include <llvm/Transforms/Utils/ModuleUtils.h>
 
-namespace snowball
-{
-namespace codegen
-{
+namespace snowball {
+namespace codegen {
 
 llvm::Function*
 LLVMBuilder::getGlobalCTOR(bool createIfNone) {

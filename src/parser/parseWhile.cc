@@ -8,8 +8,7 @@
 
 using namespace snowball::Syntax::Statement;
 
-namespace snowball::parser
-{
+namespace snowball::parser {
 
 WhileLoop*
 Parser::parseWhile() {

@@ -4,8 +4,7 @@
 #ifndef __SNOWBALL_SOURCE_INFO_H_
 #define __SNOWBALL_SOURCE_INFO_H_
 
-namespace snowball
-{
+namespace snowball {
 
 /**
  * @brief The source info is used so that the compiler knows

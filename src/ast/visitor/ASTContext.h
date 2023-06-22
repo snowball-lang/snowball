@@ -15,10 +15,8 @@
 #ifndef __SNOWBALL_AST_CONTEXT_H_
 #define __SNOWBALL_AST_CONTEXT_H_
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 template <typename T>
 class ASTContext {

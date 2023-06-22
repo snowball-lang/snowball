@@ -8,8 +8,7 @@
 
 using namespace snowball::Syntax::Expression;
 
-namespace snowball::parser
-{
+namespace snowball::parser {
 
 FunctionCall*
 Parser::parseFunctionCall(Syntax::Expression::Base* callee,

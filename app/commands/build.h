@@ -16,12 +16,9 @@ namespace fs = std::filesystem;
 #ifndef __SNOWBALL_EXEC_BUILD_CMD_H_
 #define __SNOWBALL_EXEC_BUILD_CMD_H_
 
-namespace snowball
-{
-namespace app
-{
-namespace commands
-{
+namespace snowball {
+namespace app {
+namespace commands {
 int
 build(app::Options::BuildOptions p_opts) {
     std::string filename = p_opts.file;

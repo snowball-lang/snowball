@@ -6,8 +6,7 @@
 #include <sstream>
 #include <string>
 
-namespace snowball
-{
+namespace snowball {
 DBGSourceInfo::DBGSourceInfo(SourceInfo* p_source_info, uint32_t p_line)
     : SrcObject(p_source_info), line(p_line) { }
 

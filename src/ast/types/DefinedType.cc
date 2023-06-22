@@ -13,10 +13,8 @@
 #include <string>
 #include <vector>
 
-namespace snowball
-{
-namespace types
-{
+namespace snowball {
+namespace types {
 
 DefinedType::DefinedType(const std::string& name,
                          const std::string uuid,

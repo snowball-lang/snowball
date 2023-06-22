@@ -11,10 +11,8 @@
 #ifndef __SNOWBALL_VALUE_EXTRACT_VALUE_H_
 #define __SNOWBALL_VALUE_EXTRACT_VALUE_H_
 
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 /**
  * @brief A value extract represents the use of (e.g.) an

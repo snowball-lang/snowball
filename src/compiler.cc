@@ -22,8 +22,7 @@
 namespace fs = std::filesystem;
 #define SN_MODULE_NAME "llvm_snowball_compile_mod_"
 
-namespace snowball
-{
+namespace snowball {
 Compiler::Compiler(std::string p_code, std::string p_path) {
     _code = p_code;
     _cwd = fs::current_path();

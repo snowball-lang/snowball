@@ -7,10 +7,8 @@
 #include <llvm/IR/Value.h>
 #include <memory>
 
-namespace snowball
-{
-namespace codegen
-{
+namespace snowball {
+namespace codegen {
 
 void
 LLVMBuilder::visit(ir::ValueExtract* extract) {

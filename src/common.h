@@ -4,8 +4,7 @@
 #ifndef __SNOWBALL_COMMON_H_
 #define __SNOWBALL_COMMON_H_
 
-namespace snowball
-{
+namespace snowball {
 template <typename Derived, typename Parent>
 class AcceptorExtend : public Parent {
   public:

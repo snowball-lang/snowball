@@ -11,10 +11,8 @@
 #ifndef __SNOWBALL_CALL_VALUE_H_
 #define __SNOWBALL_CALL_VALUE_H_
 
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 /**
  * @brief Representation of a function call in the IR

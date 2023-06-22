@@ -9,8 +9,7 @@
 #ifndef __SNOWBALL_TOKEN_H_
 #define __SNOWBALL_TOKEN_H_
 
-namespace snowball
-{
+namespace snowball {
 enum class TokenType
 {
     /*

@@ -1,10 +1,8 @@
 
 #include "../DefinitveAssigment.h"
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 SN_DEFINITE_ASSIGMENT_VISIT(Expression::ConstantValue) { }
 SN_DEFINITE_ASSIGMENT_VISIT(Expression::TypeRef) { }

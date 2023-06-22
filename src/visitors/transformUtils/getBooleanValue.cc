@@ -5,10 +5,8 @@
 #include <algorithm>
 #include <llvm/IR/Attributes.h>
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 std::shared_ptr<ir::Value>
 Transformer::getBooleanValue(std::shared_ptr<ir::Value> value) {

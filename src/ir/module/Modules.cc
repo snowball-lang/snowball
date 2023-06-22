@@ -13,10 +13,8 @@
  * Modules may contain things such as type
  * declarations, enviroments and functions.
  */
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 Module::Module(const std::string name, const std::string uuid)
     : name(name), uniqueName(uuid.empty() ? name : uuid) { }

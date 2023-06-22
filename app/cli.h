@@ -5,10 +5,8 @@
 #ifndef __SNOWBALL_EXEC_CLI_H_
 #define __SNOWBALL_EXEC_CLI_H_
 
-namespace snowball
-{
-namespace app
-{
+namespace snowball {
+namespace app {
 struct Options {
     // TODO: optimization level
 

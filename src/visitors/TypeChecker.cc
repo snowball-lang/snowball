@@ -22,10 +22,8 @@
 
 #define VISIT(Val) void TypeChecker::visit(ir::Val* p_node)
 
-namespace snowball
-{
-namespace codegen
-{
+namespace snowball {
+namespace codegen {
 
 TypeChecker::TypeChecker(std::shared_ptr<ir::Module> mod)
     : AcceptorExtend<TypeChecker, ValueVisitor>(), module(mod) { }

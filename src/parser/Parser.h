@@ -8,10 +8,8 @@
 #ifndef __SNOWBALL_PARSER_H_
 #define __SNOWBALL_PARSER_H_
 
-namespace snowball
-{
-namespace parser
-{
+namespace snowball {
+namespace parser {
 
 /**
  * The parser performs syntactic analysis.

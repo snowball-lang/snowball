@@ -2,12 +2,10 @@
 #include "../../utils/utils.h"
 #include "../Transformer.h"
 
-namespace snowball
-{
+namespace snowball {
 
 using namespace utils;
-namespace Syntax
-{
+namespace Syntax {
 
 std::shared_ptr<types::Type>
 Transformer::transformTypeAlias(const std::string& uuid,

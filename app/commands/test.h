@@ -13,12 +13,9 @@ using namespace std::chrono;
 #ifndef __SNOWBALL_EXEC_TEST_CMD_H_
 #define __SNOWBALL_EXEC_TEST_CMD_H_
 
-namespace snowball
-{
-namespace app
-{
-namespace commands
-{
+namespace snowball {
+namespace app {
+namespace commands {
 int
 test(app::Options::TestOptions p_opts) {
     toml::parse_result parsed_config = Compiler::get_config();

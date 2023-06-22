@@ -26,10 +26,8 @@
 #define ACCEPT(Node)               virtual void visit(Node* p_node) override;
 #define SN_TRANSFORMER_VISIT(Node) void Transformer::visit(Node* p_node)
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 /**
  * @class Transformer

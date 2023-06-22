@@ -16,10 +16,8 @@
  * This module contains extra information such as;
  * a pointer to the main function and untit tests.
  */
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 /// @brief The main module compiled from a snowball project
 class MainModule : public Module {

@@ -3,10 +3,8 @@
 
 #include <algorithm>
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 bool
 Transformer::typeGenericsMatch(Expression::TypeRef* ty, std::shared_ptr<types::Type> comp) {

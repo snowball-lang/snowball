@@ -20,13 +20,10 @@
  * This type checks may be things like; Checking
  * if types equal, validating function calls, etc.
  */
-namespace snowball
-{
-namespace codegen
-{
+namespace snowball {
+namespace codegen {
 
-namespace typecheck
-{
+namespace typecheck {
 /**
  * @brief Context class used for the type checker
  */

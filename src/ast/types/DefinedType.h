@@ -15,10 +15,8 @@
 #ifndef __SNOWBALL_AST_DEFINED_TYPES_H_
 #define __SNOWBALL_AST_DEFINED_TYPES_H_
 
-namespace snowball
-{
-namespace types
-{
+namespace snowball {
+namespace types {
 
 class FunctionType;
 

@@ -37,7 +37,7 @@ BraceWrapping: {
     AfterControlStatement: 'false'
     AfterEnum : 'true'
     AfterFunction : 'false'
-    AfterNamespace : 'true'
+    AfterNamespace : 'false'
     AfterStruct : 'false'
     AfterUnion : 'false'
     BeforeCatch : 'false'

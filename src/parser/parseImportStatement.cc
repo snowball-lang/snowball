@@ -3,10 +3,8 @@
 
 #include <assert.h>
 
-namespace snowball
-{
-namespace parser
-{
+namespace snowball {
+namespace parser {
 
 Syntax::Statement::ImportStmt*
 Parser::parseImportStatement() {

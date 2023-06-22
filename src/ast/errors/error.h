@@ -10,10 +10,8 @@
 #ifndef __SNOWBALL_AST_ERROR_H_
 #define __SNOWBALL_AST_ERROR_H_
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 template <Error e = Error::BUG, class Val>
 auto

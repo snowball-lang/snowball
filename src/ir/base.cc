@@ -3,10 +3,8 @@
 
 #include <cstdint>
 
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 id_t IdMixin::currentId = 0;
 void

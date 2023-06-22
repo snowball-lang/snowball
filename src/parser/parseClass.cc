@@ -7,8 +7,7 @@
 #include <assert.h>
 #define IS_CONSTRUCTOR(tk) is<TokenType::IDENTIFIER>(tk) && tk.value == name
 
-namespace snowball::parser
-{
+namespace snowball::parser {
 
 Syntax::Statement::ClassDef*
 Parser::parseClass() {

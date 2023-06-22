@@ -8,10 +8,8 @@
 #ifndef __SNOWBALL_SERVICES_OPERATORS_H_
 #define __SNOWBALL_SERVICES_OPERATORS_H_
 
-namespace snowball
-{
-namespace services
-{
+namespace snowball {
+namespace services {
 
 /**
  * @brief It manages all of the operator-related

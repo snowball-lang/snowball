@@ -9,8 +9,7 @@
 #ifndef __SNOWBALL_LEXER_H_
 #define __SNOWBALL_LEXER_H_
 
-namespace snowball
-{
+namespace snowball {
 /**
  * @brief Tokenizer class
  *

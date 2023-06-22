@@ -5,8 +5,7 @@
 #include "../ir/values/Argument.h"
 #include "TransformState.h"
 
-namespace snowball::Syntax
-{
+namespace snowball::Syntax {
 
 TransformContext::TransformContext(std::shared_ptr<ir::Module> mod) : AcceptorExtend() {
     module = mod;

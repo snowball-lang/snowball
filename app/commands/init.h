@@ -39,12 +39,9 @@ using namespace std::chrono;
 
 #define CONFIGURATION_FILE "sn.toml"
 
-namespace snowball
-{
-namespace app
-{
-namespace commands
-{
+namespace snowball {
+namespace app {
+namespace commands {
 
 void
 init_create_cfg(bool yes, std::string entry) {

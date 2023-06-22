@@ -11,10 +11,8 @@
 #ifndef __SNOWBALL_CONDITIONAL_VALUE_H_
 #define __SNOWBALL_CONDITIONAL_VALUE_H_
 
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 /**
  * @brief Representation of a conditional block or "if statement" in the

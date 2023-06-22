@@ -29,10 +29,8 @@
  *
  * There are: null, int, string, float, etc...
  */
-namespace snowball
-{
-namespace types
-{
+namespace snowball {
+namespace types {
 class PrimitiveType : public AcceptorExtend<PrimitiveType, Type> {
   public:
     PrimitiveType(std::string p_name) : AcceptorExtend(Kind::TYPE, p_name) { }

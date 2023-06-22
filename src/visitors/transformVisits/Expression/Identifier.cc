@@ -3,10 +3,8 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Expression::Identifier) {
     auto name = p_node->getIdentifier();

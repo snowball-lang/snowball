@@ -8,8 +8,7 @@
 
 using namespace snowball::Syntax::Expression;
 
-namespace snowball::parser
-{
+namespace snowball::parser {
 
 std::vector<TypeRef*>
 Parser::parseGenericExpr() {

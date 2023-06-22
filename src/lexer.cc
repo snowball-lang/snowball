@@ -30,8 +30,7 @@
 #define IS_HEX_CHAR(c) (IS_NUM(c) || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F'))
 #define IS_TEXT(c)     ((c == '_') || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))
 
-namespace snowball
-{
+namespace snowball {
 Lexer::Lexer(SourceInfo* p_source_info)
     : code(p_source_info->getSource()), _source_info(p_source_info) { }
 

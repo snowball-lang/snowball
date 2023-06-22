@@ -6,10 +6,8 @@
 #define RET_ERROR_IF_CODE(x, err)                                                                  \
     if (code == x) return err;
 
-namespace snowball
-{
-namespace errors
-{
+namespace snowball {
+namespace errors {
 
 void
 NiceError::print_error(bool asTail) const {

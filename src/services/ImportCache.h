@@ -8,10 +8,8 @@
 #ifndef __SNOWBALL_IMPORT_CACHE_H_
 #define __SNOWBALL_IMPORT_CACHE_H_
 
-namespace snowball
-{
-namespace services
-{
+namespace snowball {
+namespace services {
 
 /**
  * @brief It keeps track of the already-imported modules

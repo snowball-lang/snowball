@@ -33,11 +33,9 @@
 #include <llvm/Transforms/Scalar/GVN.h>
 #include <llvm/Transforms/Scalar/Reassociate.h>
 
-namespace snowball
-{
+namespace snowball {
 
-namespace
-{
+namespace {
 void
 applyDebugTransformations(llvm::Module* module, bool debug) {
     if (debug) {
@@ -58,8 +56,7 @@ applyDebugTransformations(llvm::Module* module, bool debug) {
 }
 } // namespace
 
-namespace codegen
-{
+namespace codegen {
 
 void
 LLVMBuilder::optimizeModule(app::Options::Optimization o) {

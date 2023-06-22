@@ -24,10 +24,8 @@ using namespace snowball::Syntax::transform;
         }                                                                                          \
     }
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     auto name = p_node->getName();

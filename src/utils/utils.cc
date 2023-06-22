@@ -17,10 +17,8 @@
 #include <iostream>
 namespace fs = std::filesystem;
 
-namespace snowball
-{
-namespace utils
-{
+namespace snowball {
+namespace utils {
 
 std::string
 get_exe_folder() {

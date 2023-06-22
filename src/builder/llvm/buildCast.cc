@@ -13,10 +13,8 @@
 #define IS_FLOAT(x)                                                                                \
     (utils::dyn_cast<types::Float32Type>(x) || utils::dyn_cast<types::Float64Type>(x))
 
-namespace snowball
-{
-namespace codegen
-{
+namespace snowball {
+namespace codegen {
 
 void
 LLVMBuilder::visit(ir::Cast* c) {

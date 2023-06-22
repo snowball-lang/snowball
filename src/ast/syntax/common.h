@@ -13,11 +13,9 @@
 #include "../types/Type.h"
 #define ACCEPT() void accept(Syntax::Visitor* v) override;
 
-namespace snowball
-{
+namespace snowball {
 
-namespace Attributes
-{
+namespace Attributes {
 enum Fn
 {
     LLVM_FUNC,
@@ -26,8 +24,7 @@ enum Fn
 };
 }
 
-namespace Syntax
-{
+namespace Syntax {
 class Visitor;
 
 struct Node : public DBGObject {
@@ -47,8 +44,7 @@ struct Node : public DBGObject {
  *  classes that can be inherited to make my life easier.
  */
 
-namespace Expression
-{
+namespace Expression {
 struct Base : public AcceptorExtend<Base, Node> {
     using AcceptorExtend::AcceptorExtend;
     void
@@ -224,8 +220,7 @@ struct Param {
 };
 } // namespace Expression
 
-namespace Statement
-{
+namespace Statement {
 
 /**
  * A generic class that accepts an enum as a template parameter and

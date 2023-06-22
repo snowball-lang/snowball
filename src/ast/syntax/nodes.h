@@ -24,10 +24,8 @@
  * The nodes are divided into 2 sections. There are
  * the expressions and the statements.
  */
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 class Visitor;
 
@@ -59,8 +57,7 @@ struct Block : AcceptorExtend<Block, Node> {
  * expression.
  *
  */
-namespace Expression
-{
+namespace Expression {
 
 /**
  * This struct represents a constant value from the AST.
@@ -431,8 +428,7 @@ struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
  *
  *  - https://en.wikipedia.org/wiki/Statement_(logic)
  */
-namespace Statement
-{
+namespace Statement {
 struct Base : public AcceptorExtend<Base, Node> { };
 
 /**
@@ -952,8 +948,7 @@ struct LLVMFunction : public AcceptorExtend<LLVMFunction, FunctionDef> {
 
 }; // namespace Statement
 
-namespace Expression
-{
+namespace Expression {
 /**
  * A struct representing a Lambda Function, which is derived from
  * the AcceptorExtend class and inherits the BodiedFunction class.

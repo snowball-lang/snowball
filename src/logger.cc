@@ -9,8 +9,7 @@
 
 #define _SN_LOGGER_BAR_WIDTH 70
 
-namespace snowball
-{
+namespace snowball {
 void
 Logger::log(std::string message) {
     printf("%s\n", message.c_str());

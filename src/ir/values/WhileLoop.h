@@ -11,10 +11,8 @@
 #ifndef __SNOWBALL_WHILE_LOOP_VALUE_H_
 #define __SNOWBALL_WHILE_LOOP_VALUE_H_
 
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 /**
  * @class WhileLoop

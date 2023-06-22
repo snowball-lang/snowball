@@ -13,18 +13,14 @@
 
 #include "../../visitors/TransformState.h"
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
-namespace transform
-{
+namespace transform {
 class Item;
 }
 
-namespace cacheComponents
-{
+namespace cacheComponents {
 
 /**
  * @brief Cache component for functions

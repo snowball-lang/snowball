@@ -4,12 +4,9 @@
 
 #include "../types/DefinedType.h"
 
-namespace snowball
-{
-namespace Syntax
-{
-namespace cacheComponents
-{
+namespace snowball {
+namespace Syntax {
+namespace cacheComponents {
 
 std::shared_ptr<transform::ContextState>&
 Functions::getFunctionState(id_t id) {

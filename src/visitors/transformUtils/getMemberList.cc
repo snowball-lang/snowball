@@ -4,10 +4,8 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 std::vector<types::DefinedType::ClassField*>
 Transformer::getMemberList(std::vector<Syntax::Statement::VariableDecl*> fieldNodes,

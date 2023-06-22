@@ -9,12 +9,9 @@
 #ifndef __SNOWBALL_TRANSFORM_STATE_H_
 #define __SNOWBALL_TRANSFORM_STATE_H_
 
-namespace snowball
-{
-namespace Syntax
-{
-namespace transform
-{
+namespace snowball {
+namespace Syntax {
+namespace transform {
 
 /// @brief Representation of a saved state for the context
 struct ContextState : std::enable_shared_from_this<ContextState> {

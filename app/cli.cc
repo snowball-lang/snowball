@@ -14,10 +14,8 @@
     this->current_index++;                                                                         \
     this->current_arg = this->args[this->current_index];
 
-namespace snowball
-{
-namespace app
-{
+namespace snowball {
+namespace app {
 CLI::CLI(int argc, char** argv) {
     // Start the index with 1 to ignore "snowball"
     for (int i = 1; i < argc; i++) { args.push_back(argv[i]); }

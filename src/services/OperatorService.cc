@@ -4,10 +4,8 @@
 #include <algorithm>
 #include <cassert>
 
-namespace snowball
-{
-namespace services
-{
+namespace snowball {
+namespace services {
 
 std::string
 OperatorService::getOperatorId(OperatorService::OperatorType id) {

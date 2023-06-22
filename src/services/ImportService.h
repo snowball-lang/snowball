@@ -5,10 +5,8 @@
 #ifndef __SNOWBALL_SERVICES_IMPORT_H_
 #define __SNOWBALL_SERVICES_IMPORT_H_
 
-namespace snowball
-{
-namespace services
-{
+namespace snowball {
+namespace services {
 
 /**
  * @brief It manages imports and module caches

@@ -5,8 +5,7 @@
 
 #include <assert.h>
 
-namespace snowball::parser
-{
+namespace snowball::parser {
 
 Syntax::Statement::VariableDecl*
 Parser::parseVariable() {

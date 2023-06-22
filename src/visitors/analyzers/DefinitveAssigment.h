@@ -28,10 +28,8 @@
 #define ACCEPT(Node)                      virtual void visit(Node* p_node) override;
 #define SN_DEFINITE_ASSIGMENT_VISIT(Node) void DefiniteAssigment::visit(Node* p_node)
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 /**
  * A class that extends the AcceptorExtend class and implements the

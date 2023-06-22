@@ -5,10 +5,8 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 std::pair<std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                      std::optional<std::shared_ptr<types::Type>>,

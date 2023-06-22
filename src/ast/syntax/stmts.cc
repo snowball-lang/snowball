@@ -5,13 +5,10 @@
 #include <string>
 #include <vector>
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
-namespace Statement
-{
+namespace Statement {
 
 // Separated namespace in order to use
 // Privacy::Status without name conflicts
@@ -34,8 +31,7 @@ Privacy::fromInt(int p_status) {
 }
 } // namespace Statement
 
-namespace Statement
-{
+namespace Statement {
 
 FunctionDef::FunctionDef(std::string name, Privacy::Status prvc)
     : AcceptorExtend<FunctionDef, Privacy>(prvc), name(name) { }

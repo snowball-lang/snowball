@@ -11,8 +11,7 @@
 #ifndef __SNOWBALL_ERRORS_H_
 #define __SNOWBALL_ERRORS_H_
 
-namespace snowball
-{
+namespace snowball {
 enum Error
 {
     IO_ERROR,
@@ -37,8 +36,7 @@ enum Error
     TODO
 };
 
-namespace errors
-{
+namespace errors {
 const char* get_error(Error code);
 
 class SNError {

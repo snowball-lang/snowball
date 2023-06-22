@@ -10,8 +10,7 @@
 
 using Operators = snowball::services::OperatorService;
 
-namespace snowball::parser
-{
+namespace snowball::parser {
 
 Syntax::Expression::Base*
 Parser::parseExpr(bool allowAssign) {

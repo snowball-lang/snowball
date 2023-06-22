@@ -4,10 +4,8 @@
 #include "../syntax/nodes.h"
 #include "PointerType.h"
 
-namespace snowball
-{
-namespace types
-{
+namespace snowball {
+namespace types {
 
 Syntax::Expression::TypeRef*
 Type::toRef() {

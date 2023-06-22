@@ -1,10 +1,8 @@
 
 #include "../Transformer.h"
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 std::shared_ptr<types::Type>
 Transformer::transformTypeFromBase(const std::string& uuid,

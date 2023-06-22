@@ -11,10 +11,8 @@
 #ifndef __SNOWBALL_RETURN_VALUE_H_
 #define __SNOWBALL_RETURN_VALUE_H_
 
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 /**
  * @brief Representation of a return statement

@@ -3,10 +3,8 @@
 
 #include "../token.h"
 
-namespace snowball
-{
-namespace parser
-{
+namespace snowball {
+namespace parser {
 
 Parser::Parser(std::vector<Token> p_tokens, SourceInfo* p_source_info)
     : m_tokens(p_tokens), m_source_info(p_source_info) {

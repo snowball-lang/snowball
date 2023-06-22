@@ -9,8 +9,7 @@
 #ifndef __SNOWBALL_DBG_INFO_H_
 #define __SNOWBALL_DBG_INFO_H_
 
-namespace snowball
-{
+namespace snowball {
 
 /**
  * DBGSource info is used by the error handling

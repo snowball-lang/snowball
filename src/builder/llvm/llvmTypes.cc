@@ -10,10 +10,8 @@
 
 using namespace snowball::utils;
 
-namespace snowball
-{
-namespace codegen
-{
+namespace snowball {
+namespace codegen {
 
 llvm::Type*
 LLVMBuilder::getLLVMType(std::shared_ptr<types::Type> t) {

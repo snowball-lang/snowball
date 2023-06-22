@@ -1,7 +1,6 @@
 #include "colors.h"
 
-namespace snowball
-{
+namespace snowball {
 const char* BLK = "\e[0;90m";
 const char* RED = "\e[0;31m";
 const char* GRN = "\e[0;32m";

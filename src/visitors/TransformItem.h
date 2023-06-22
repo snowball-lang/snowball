@@ -7,12 +7,9 @@
 #ifndef __SNOWBALL_TRANSFORM_ITEM_H_
 #define __SNOWBALL_TRANSFORM_ITEM_H_
 
-namespace snowball
-{
-namespace Syntax
-{
-namespace transform
-{
+namespace snowball {
+namespace Syntax {
+namespace transform {
 
 // TransfiormItem is the value stored/fetched
 // from the stack. It can either represent a

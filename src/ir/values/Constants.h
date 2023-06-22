@@ -12,10 +12,8 @@
 #ifndef __SNOWBALL_CONSTANT_VALUES_H_
 #define __SNOWBALL_CONSTANT_VALUES_H_
 
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 /// @brief Representation of a constant value in the IR
 class ConstantValue : public AcceptorExtend<ConstantValue, Value> {

@@ -4,10 +4,8 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
-namespace snowball
-{
-namespace codegen
-{
+namespace snowball {
+namespace codegen {
 
 llvm::Value*
 LLVMBuilder::allocateObject(std::shared_ptr<types::DefinedType> ty) {

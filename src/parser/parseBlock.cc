@@ -5,8 +5,7 @@
 
 #include <assert.h>
 
-namespace snowball::parser
-{
+namespace snowball::parser {
 
 Syntax::Block*
 Parser::parseBlock(std::vector<TokenType> termination) {

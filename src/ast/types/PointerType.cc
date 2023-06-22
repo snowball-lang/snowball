@@ -13,10 +13,8 @@
 #include <string>
 #include <vector>
 
-namespace snowball
-{
-namespace types
-{
+namespace snowball {
+namespace types {
 
 PointerType::PointerType(std::shared_ptr<Type> base)
     : AcceptorExtend(Kind::TYPE, base->getName() + "*"), base(base) { }

@@ -7,10 +7,8 @@
 
 #include <string>
 
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 Func::Func(std::string identifier,
            bool declaration,

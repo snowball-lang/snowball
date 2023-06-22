@@ -9,8 +9,7 @@
 #define VSNPRINTF_BUFF_SIZE 8192
 #define FMT(...)            Logger::format(__VA_ARGS__)
 
-namespace snowball
-{
+namespace snowball {
 
 class Logger {
   public:

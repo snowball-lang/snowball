@@ -12,12 +12,9 @@
 #ifndef __SNOWBALL_EXEC_RUN_CMD_H_
 #define __SNOWBALL_EXEC_RUN_CMD_H_
 
-namespace snowball
-{
-namespace app
-{
-namespace commands
-{
+namespace snowball {
+namespace app {
+namespace commands {
 int
 run(app::Options::RunOptions p_opts) {
     std::string filename = p_opts.file;

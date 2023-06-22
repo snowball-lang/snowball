@@ -12,10 +12,8 @@
 #include <llvm/Linker/Linker.h>
 #include <llvm/Support/SourceMgr.h>
 
-namespace snowball
-{
-namespace codegen
-{
+namespace snowball {
+namespace codegen {
 
 llvm::Function*
 LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func* fn) {

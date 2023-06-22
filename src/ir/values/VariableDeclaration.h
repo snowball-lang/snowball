@@ -11,10 +11,8 @@
 #ifndef __SNOWBALL_VARIABLE_DECL_VALUE_H_
 #define __SNOWBALL_VARIABLE_DECL_VALUE_H_
 
-namespace snowball
-{
-namespace ir
-{
+namespace snowball {
+namespace ir {
 
 /// @brief Representation of a variable declaration in the IR
 /// Variable declarations can be then used as a way to store values

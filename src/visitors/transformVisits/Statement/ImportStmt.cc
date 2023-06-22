@@ -12,10 +12,8 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-namespace snowball
-{
-namespace Syntax
-{
+namespace snowball {
+namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     int numThreads = 4; // TODO: let user decide!
