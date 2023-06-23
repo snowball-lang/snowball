@@ -49,10 +49,12 @@ Transformer::transformClass(const std::string& uuid,
 
             for (int genericCount = 0; genericCount < generics.size(); genericCount++) {
                 auto generic = classGenerics.at(genericCount);
-                auto item = std::make_shared<transform::Item>(generics.at(genericCount));
+                auto generatedGeneric = generics.at(genericCount);
+                auto item = std::make_shared<transform::Item>(generatedGeneric);
                 // TODO:
                 // item->setDBGInfo(generic->getDBGInfo());
                 ctx->addItem(generic->getName(), item);
+                executeGenericTests(generic->getWhereClause(), generatedGeneric);
             }
 
             auto baseUuid = ctx->createIdentifierName(ty->getName());

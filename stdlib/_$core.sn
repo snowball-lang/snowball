@@ -1,10 +1,10 @@
 
-class Iterable<_IteratorType> {
+class Iterable<_IteratorType: Core::Sized> {
   pub:
     Iterable() {}
 }
 
-class Vector<_StoreType>: Iterable<?_StoreType> {
+class Vector<_StoreType: Core::Sized>: Iterable<?_StoreType> {
   pub:
     Vector() {}
 }
@@ -22,7 +22,7 @@ class Vector<_StoreType>: Iterable<?_StoreType> {
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating strings.
  */
-class StringView<_CharType = char*>: Iterable<?_CharType> {
+class StringView<_CharType: Core::Sized = char*>: Iterable<?_CharType> {
   pub:
     /**
      * @brief Default constructor.

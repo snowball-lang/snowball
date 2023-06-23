@@ -120,7 +120,7 @@ Transformer::transformSpecialType(Expression::TypeRef* ty) {
             E<TYPE_ERROR>(
                     ty,
                     FMT("Type '%s' expected type '%s' to be able to cast to '%s' but it can't!",
-                        IS_POINTER_CHECK_STYPE.c_str(), childType->getPrettyName().c_str(),
+                        CASTABLE_TO_CHECK_STYPE.c_str(), childType->getPrettyName().c_str(),
                         parentType->getPrettyName().c_str()));
         }
 

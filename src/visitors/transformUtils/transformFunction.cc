@@ -33,11 +33,12 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
                 auto name = nodeGeneric->getName();
                 auto generic = deducedTypes.at(genericCount);
 
-                executeGenericTests(nodeGeneric->getWhereClause(), generic);
                 auto item = std::make_shared<transform::Item>(generic);
                 // TODO:
                 // item->setDBGInfo(generic->getDBGInfo());
                 ctx->addItem(name, item);
+                executeGenericTests(nodeGeneric->getWhereClause(), generic);
+
                 fnGenerics.push_back({name, generic});
             }
 
