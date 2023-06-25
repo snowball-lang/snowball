@@ -11,89 +11,10 @@ Parser::Parser(std::vector<Token> p_tokens, SourceInfo* p_source_info)
     m_current = m_tokens.at(m_tok_index);
 }
 
+
 std::vector<Syntax::Node*>
 Parser::parse() {
-    bool keep_parsing = true;
-    std::vector<Syntax::Node*> global;
-
-    while (keep_parsing) {
-        switch (m_current.type) {
-            case TokenType::_EOF: {
-                keep_parsing = false;
-                break;
-            }
-
-            case TokenType::KWORD_PUBLIC:
-            case TokenType::KWORD_PRIVATE: {
-                auto pk = peek();
-                if (!is<TokenType::KWORD_FUNC>(pk) && !is<TokenType::KWORD_VAR>(pk) &&
-                    !is<TokenType::KWORD_TYPEDEF>(pk) && !is<TokenType::KWORD_STATIC>(pk) &&
-                    !is<TokenType::KWORD_CLASS>(pk) && !is<TokenType::KWORD_EXTERN>(pk)) {
-                    createError<SYNTAX_ERROR>("expected keyword \"fn\", \"static\", \"class\", "
-                                              "\"let\" "
-                                              "or "
-                                              "\"extern\" after pub/priv declaration");
-                }
-
-                break;
-            }
-
-            case TokenType::KWORD_EXTERN: {
-                auto pk = peek();
-                if (!is<TokenType::KWORD_FUNC>(pk)) {
-                    createError<SYNTAX_ERROR>("expected 'fn' keyword after an "
-                                              "extern function declaration");
-                }
-
-                break;
-            }
-
-            case TokenType::KWORD_STATIC: {
-                auto pk = peek();
-                if (!is<TokenType::KWORD_FUNC>(pk)) {
-                    createError<SYNTAX_ERROR>("expected 'fn' keyword after a "
-                                              "static function declaration");
-                }
-
-                break;
-            }
-
-            case TokenType::KWORD_VAR: {
-                global.push_back(parseVariable());
-                break;
-            }
-
-            case TokenType::KWORD_FUNC: {
-                global.push_back(parseFunction());
-                break;
-            }
-
-            case TokenType::KWORD_CLASS: {
-                global.push_back(parseClass());
-                break;
-            }
-
-            case TokenType::KWORD_IMPORT: {
-                global.push_back(parseImportStatement());
-                break;
-            }
-
-            case TokenType::KWORD_TYPEDEF: {
-                global.push_back(parseTypeAlias());
-                break;
-            }
-
-            default:
-                createError<SYNTAX_ERROR>(FMT("Unexpected token found: %s%s%s",
-                                              BLU,
-                                              m_current.to_string().c_str(),
-                                              RESET));
-        }
-
-        if (keep_parsing) next();
-    }
-
-    return global;
+    return parseGlobal();
 }
 
 Token

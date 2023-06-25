@@ -51,10 +51,10 @@ class Parser {
     }
 
   public:
+    using NodeVec = std::vector<Syntax::Node*>;
     /// @brief Parse from the lexer tree
     /// @return AST containing parsed node
-    std::vector<Syntax::Node*> parse();
-    using NodeVec = std::vector<Syntax::Node*>;
+    NodeVec parse();
 
   private:
     // Utility functions for parsing
@@ -171,6 +171,13 @@ class Parser {
 
   private:
     // Parsing functions
+
+    /**
+     * @brief Utility method to parse a list of expressions
+     *  acting as a global scope.
+    */
+    NodeVec parseGlobal(TokenType terminator = TokenType::_EOF);
+
     /**
      * visibility    ::=  pub | priv
      * funcname      ::=  identifier

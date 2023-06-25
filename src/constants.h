@@ -213,6 +213,7 @@ typedef int32_t snowball_int_t;
 #define _SNOWBALL_KEYWORD__STATIC   "static"
 #define _SNOWBALL_KEYWORD__IMPORT   "use"
 #define _SNOWBALL_KEYWORD__CONSTEXPR   "constexpr"
+#define _SNOWBALL_KEYWORD__NAMESPACE   "namespace"
 #define _SNOWBALL_KEYWORD__TYPEDEF  "type"
 #define _SNOWBALL_KEYWORD__MUTABLE  "mut"
 #define _SNOWBALL_KEYWORD__DO       "do"

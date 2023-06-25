@@ -3,15 +3,25 @@ use Core::CLib
 // TODO: Error occurs when the funtion is already generated and we only check for arg->is(...) on non-generated function overloads instead of both non and generated functions 
 extern fn hello();
 
-class hello<T: Core::CastableTo<?f32>> {
-    hello() {}
+class hello<T = i32> {
+    pub:
+    hello() {
+        let x: T = 4;
+    }
 }    
 
+fn hello() {
+    let x: i32 = 4;
+}
+
+namespace hello {
+    fn [[unit_test]] test() {
+        let x: i32 = hello();
+    }
+}
 
 pub fn main() i32 {
-    if constexpr #hasattr(balls, x) {
-        eatMyHuge(balls)
-    }
 
-    new hello<?cobj>();
+
+    new hello<?>();
 }
