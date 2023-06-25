@@ -51,10 +51,7 @@ struct Node : public DBGObject {
 namespace Expression {
 struct Base : public AcceptorExtend<Base, Node> {
     using AcceptorExtend::AcceptorExtend;
-    void
-    accept(Syntax::Visitor* v) override {
-        assert(false);
-    };
+    void accept(Syntax::Visitor* v) override { assert(false); };
 };
 
 // Making a reference to the type. This should only appear on the
@@ -85,28 +82,16 @@ struct TypeRef : public types::Type, public Base {
 
     /// @return Internal type when using @fn types::Type::toRef().
     /// @note this shoudn't be used for normal usage!
-    auto
-    _getInternalType() {
-        return internalType;
-    }
+    auto _getInternalType() { return internalType; }
 
     /// @return AST used to declare this TypeRef.
     /// @note this shoudn't be used for normal usage!
-    auto
-    _getInternalAST() {
-        return internalAST;
-    }
+    auto _getInternalAST() { return internalAST; }
 
     /// @return true if it's a delctype(...)
-    virtual bool
-    isTypeDecl() {
-        return false;
-    }
+    virtual bool isTypeDecl() { return false; }
     /// @return true if the type is a pointer
-    virtual bool
-    isPointerType() {
-        return false;
-    }
+    virtual bool isPointerType() { return false; }
 
     ACCEPT()
     ~TypeRef() noexcept = default;
@@ -128,14 +113,8 @@ struct DeclType : public TypeRef {
     DeclType(Base* value, DBGSourceInfo* srcInfo);
 
     /// @return the expr value to get the type from
-    auto
-    getExpr() {
-        return value;
-    }
-    bool
-    isTypeDecl() override {
-        return true;
-    }
+    auto getExpr() { return value; }
+    bool isTypeDecl() override { return true; }
 
     ~DeclType() noexcept = default;
 };
@@ -147,14 +126,8 @@ struct PointerType : public TypeRef {
     PointerType(TypeRef* baseType, DBGSourceInfo* srcInfo);
 
     /// @return the expr value to get the type from
-    auto
-    getBaseType() {
-        return baseType;
-    }
-    bool
-    isPointerType() override {
-        return true;
-    }
+    auto getBaseType() { return baseType; }
+    bool isPointerType() override { return true; }
 
     ~PointerType() noexcept = default;
 };
@@ -187,10 +160,7 @@ struct WhereClause {
     explicit WhereClause(TypeRef* check) : checks(ChecksVectorType{checks}) { }
 
     /// @return The checks to perform
-    auto
-    getChecks() {
-        return checks;
-    }
+    auto getChecks() { return checks; }
 
     ~WhereClause() = default;
 };
@@ -222,51 +192,30 @@ struct Param {
 
     /// Get the param status, whether
     /// it is a generic parameter or a normal one
-    auto
-    getStatus() {
-        return status;
-    }
+    auto getStatus() { return status; }
     /// @return The parameter's type
-    TypeRef*
-    getType() const {
-        return type;
-    };
+    TypeRef* getType() const { return type; };
     /// @brief Set parameter's type
-    void
-    setType(TypeRef* ty) {
-        type = ty;
-    };
+    void setType(TypeRef* ty) { type = ty; };
     /// @brief Set the default value to the parameter
-    void
-    setDefaultValue(Base* b) {
-        defaultValue = b;
-    }
+    void setDefaultValue(Base* b) { defaultValue = b; }
     /// @brief Parameter's name
-    std::string
-    getName() const {
-        return name;
-    };
+    std::string getName() const { return name; };
     /// @brief check if the function contains a default value
-    bool
-    hasDefaultValue() {
-        return defaultValue != nullptr;
-    }
+    bool hasDefaultValue() { return defaultValue != nullptr; }
     /// @return default value if it exists
-    auto
-    getDefaultValue() {
+    auto getDefaultValue() {
         assert(status == Normal);
         assert(hasDefaultValue());
         return defaultValue;
     }
     /// @return The where clause for this generic parameter
-    auto
-    getWhereClause() const {
+    auto getWhereClause() const {
         assert(status == Generic);
         return whereClause;
     };
     /// @brief Set The where clause for this generic parameter
-    void
-    setWhereClause(WhereClause* clause) {
+    void setWhereClause(WhereClause* clause) {
         assert(status == Generic);
         whereClause = clause;
     };
@@ -291,8 +240,7 @@ class AttributeHolder {
      * @param attribute The attribute to check.
      * @return True if the attribute is set, false otherwise.
      */
-    bool
-    hasAttribute(T attribute) const {
+    bool hasAttribute(T attribute) const {
         return (m_attributes & (1 << static_cast<int>(attribute))) != 0;
     }
     /**
@@ -301,42 +249,27 @@ class AttributeHolder {
      *
      * @param attribute The attribute to add.
      */
-    auto
-    addAttribute(T attribute) {
-        return m_attributes |= (1 << static_cast<int>(attribute));
-    }
+    auto addAttribute(T attribute) { return m_attributes |= (1 << static_cast<int>(attribute)); }
     /**
      * Sets a new list of attributes to the current holder
      */
-    void
-    setAttributes(unsigned int attribute) {
-        m_attributes = attribute;
-    }
+    void setAttributes(unsigned int attribute) { m_attributes = attribute; }
     /**
      * Returns the respective unsigned integer for the attributes
      */
-    auto
-    getAttributes() const {
-        return m_attributes;
-    }
+    auto getAttributes() const { return m_attributes; }
     /**
      * Clears the bit for a specific attribute in the `m_attributes`
      * variable.
      *
      * @param attribute The attribute to remove.
      */
-    void
-    removeAttribute(T attribute) {
-        m_attributes &= ~(1 << static_cast<int>(attribute));
-    }
+    void removeAttribute(T attribute) { m_attributes &= ~(1 << static_cast<int>(attribute)); }
     /**
      * Clears all attributes for the node by setting `m_attributes`
      * to zero.
      */
-    void
-    clearAttributes() {
-        m_attributes = 0;
-    }
+    void clearAttributes() { m_attributes = 0; }
 
   private:
     /** The bit field storing the attributes for the node. */
@@ -359,25 +292,13 @@ struct GenericContainer {
     GenericContainer(){};
     GenericContainer(GenericList generics) : generics(generics){};
 
-    GenericList
-    getGenerics() const {
-        return generics;
-    }
-    void
-    setGenerics(GenericList list) {
-        generics = std::move(list);
-    }
+    GenericList getGenerics() const { return generics; }
+    void setGenerics(GenericList list) { generics = std::move(list); }
 
     /// @return iterator to the first generic
-    auto
-    genericsBegin() {
-        return generics.begin();
-    }
+    auto genericsBegin() { return generics.begin(); }
     /// @return iterator beyond the last generic
-    auto
-    genericsEnd() {
-        return generics.end();
-    }
+    auto genericsEnd() { return generics.end(); }
 };
 } // namespace Statement
 

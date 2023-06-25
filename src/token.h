@@ -206,8 +206,7 @@ struct Token {
     Token() { }
     Token(TokenType p_type) { type = p_type; }
 
-    std::string
-    to_string() const {
+    std::string to_string() const {
         switch (type) {
             // Symbols
             case TokenType::SYM_AT: return "@";
@@ -276,7 +275,7 @@ struct Token {
             case TokenType::KWORD_VIRTUAL: return _SNOWBALL_KEYWORD__VIRTUAL;
             case TokenType::KWORD_PRIVATE: return _SNOWBALL_KEYWORD__PRIVATE;
             case TokenType::KWORD_IMPORT: return _SNOWBALL_KEYWORD__IMPORT;
-            case TokenType::KWORD_CONSTEXPR: return _SNOWBALL_KEYWORD__CONSTEXPR; 
+            case TokenType::KWORD_CONSTEXPR: return _SNOWBALL_KEYWORD__CONSTEXPR;
             case TokenType::KWORD_NAMESPACE: return _SNOWBALL_KEYWORD__NAMESPACE;
             case TokenType::KWORD_TYPEDEF: return _SNOWBALL_KEYWORD__TYPEDEF;
             case TokenType::KWORD_MUTABLE: return _SNOWBALL_KEYWORD__MUTABLE;
@@ -326,14 +325,8 @@ struct Token {
         // TODO: throw error: missed enum in switch case
     }
 
-    std::pair<int, int>
-    get_pos() const {
-        return std::pair<int, int>(std::make_pair(line, col));
-    }
-    uint32_t
-    get_width() const {
-        return (uint32_t)to_string().size();
-    }
+    std::pair<int, int> get_pos() const { return std::pair<int, int>(std::make_pair(line, col)); }
+    uint32_t get_width() const { return (uint32_t)to_string().size(); }
 };
 } // namespace snowball
 

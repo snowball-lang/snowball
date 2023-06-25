@@ -20,8 +20,7 @@ namespace fs = std::filesystem;
 namespace snowball {
 namespace utils {
 
-std::string
-get_exe_folder() {
+std::string get_exe_folder() {
 #ifdef _WIN32
     wchar_t path[MAX_PATH] = {0};
     GetModuleFileNameW(NULL, path, MAX_PATH);
@@ -33,10 +32,9 @@ get_exe_folder() {
 #endif
 }
 
-std::string
-getSubstringByRange(const std::string& str,
-                    const std::pair<int, int>& start,
-                    const std::pair<int, int>& end) {
+std::string getSubstringByRange(const std::string& str,
+                                const std::pair<int, int>& start,
+                                const std::pair<int, int>& end) {
     int startPos = 0;
     int endPos = 0;
     int currentLine = 1;
@@ -62,8 +60,7 @@ getSubstringByRange(const std::string& str,
     return str.substr(startPos, endPos - startPos);
 }
 
-std::string
-getUTF8FromIndex(const std::string& s, const int index) {
+std::string getUTF8FromIndex(const std::string& s, const int index) {
     std::string result;
     unsigned char c = s[index];
 
@@ -82,8 +79,7 @@ getUTF8FromIndex(const std::string& s, const int index) {
     return result;
 }
 
-std::string
-get_lib_folder() {
+std::string get_lib_folder() {
     fs::path home = getenv("HOME");
     fs::path exe_folder = home / (std::string)STATICLIB_DIR;
     fs::path full_path = exe_folder / _SNOWBALL_LIBRARY_DIR;
@@ -96,8 +92,7 @@ get_lib_folder() {
     return full_path;
 }
 
-void
-replaceAll(std::string& str, const std::string& from, const std::string& to) {
+void replaceAll(std::string& str, const std::string& from, const std::string& to) {
     if (from.empty()) return;
     size_t start_pos = 0;
     while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
@@ -107,8 +102,7 @@ replaceAll(std::string& str, const std::string& from, const std::string& to) {
     }
 }
 
-std::list<std::string>
-split(std::string str, std::string token) {
+std::list<std::string> split(std::string str, std::string token) {
     std::list<std::string> result;
     while (str.size()) {
         int index = str.find(token);
@@ -124,19 +118,14 @@ split(std::string str, std::string token) {
     return result;
 }
 
-bool
-endsWith(const std::string& mainStr, const std::string& toMatch) {
+bool endsWith(const std::string& mainStr, const std::string& toMatch) {
     return (mainStr.size() >= toMatch.size() &&
             mainStr.compare(mainStr.size() - toMatch.size(), toMatch.size(), toMatch) == 0);
 }
 
-bool
-startsWith(const std::string& str, const std::string& comp) {
-    return str.rfind(comp, 0) == 0;
-}
+bool startsWith(const std::string& str, const std::string& comp) { return str.rfind(comp, 0) == 0; }
 
-std::string
-itos(int i) // convert int to string
+std::string itos(int i) // convert int to string
 {
     std::stringstream s;
     s << i;

@@ -15,8 +15,7 @@
 namespace snowball {
 namespace codegen {
 
-llvm::Function*
-LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func* fn) {
+llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func* fn) {
     ctx->setCurrentFunction(nullptr);
 
     // llvmFn->getDe

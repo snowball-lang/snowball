@@ -84,8 +84,7 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod) : AcceptorEx
 };
 
 /// @brief get a saved state of the context
-std::shared_ptr<transform::ContextState>
-TransformContext::saveState() {
+std::shared_ptr<transform::ContextState> TransformContext::saveState() {
     auto s = *this->stack;
     s.pop_back();
 
@@ -94,8 +93,7 @@ TransformContext::saveState() {
 }
 
 /// @brief set a state to the current context
-void
-TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
+void TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
     auto glob = this->stack->back();
     auto st = s->stack;
     st->emplace_back(glob);
@@ -106,8 +104,8 @@ TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
 }
 
 /// @brief Execute function with saved state
-void
-TransformContext::withState(std::shared_ptr<transform::ContextState> s, std::function<void()> cb) {
+void TransformContext::withState(
+        std::shared_ptr<transform::ContextState> s, std::function<void()> cb) {
     auto saved = this->saveState();
 
     this->setState(s);

@@ -33,8 +33,7 @@ class PointerType : public AcceptorExtend<PointerType, Type>, public ir::IdMixin
     /**
      * @param other another type to check.
      */
-    virtual bool
-    is(Type* other) const override {
+    virtual bool is(Type* other) const override {
         if (auto c = utils::cast<PointerType>(other)) { return base->is(c->getPointedType()); }
 
         return false;

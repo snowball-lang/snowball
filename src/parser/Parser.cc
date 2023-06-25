@@ -11,14 +11,9 @@ Parser::Parser(std::vector<Token> p_tokens, SourceInfo* p_source_info)
     m_current = m_tokens.at(m_tok_index);
 }
 
+std::vector<Syntax::Node*> Parser::parse() { return parseGlobal(); }
 
-std::vector<Syntax::Node*>
-Parser::parse() {
-    return parseGlobal();
-}
-
-Token
-Parser::next(int p_offset) {
+Token Parser::next(int p_offset) {
     try {
         m_tok_index += (p_offset + 1);
         m_current = m_tokens.at(m_tok_index);
@@ -29,8 +24,7 @@ Parser::next(int p_offset) {
     return {};
 }
 
-Token
-Parser::prev(int p_offset) {
+Token Parser::prev(int p_offset) {
     try {
         m_tok_index -= (p_offset + 1);
         m_current = m_tokens.at(m_tok_index);
@@ -41,8 +35,7 @@ Parser::prev(int p_offset) {
     return {};
 }
 
-Token
-Parser::peek(int p_offset, bool p_safe) {
+Token Parser::peek(int p_offset, bool p_safe) {
     Token tmp = {TokenType::_EOF};
     if ((m_tok_index + 1) + p_offset < 0 || (m_tok_index + 1) + p_offset >= (int)m_tokens.size()) {
         if (p_safe)

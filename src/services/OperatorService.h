@@ -54,8 +54,7 @@ class OperatorService {
     static OperatorType operatorID(const std::string& name);
     /// @brief Check if a name has equality towards an operator ID
     template <OperatorType op>
-    static bool
-    opEquals(const std::string& name) {
+    static bool opEquals(const std::string& name) {
         return (isOperator(name) && operatorID(name) == op);
     }
 };

@@ -46,60 +46,31 @@ class LLVMBuilderContext {
 
   public:
     /// @return Current function being generated
-    auto
-    getCurrentFunction() {
-        return currentFunction;
-    }
+    auto getCurrentFunction() { return currentFunction; }
     /// @return Change the current function to a new one
-    void
-    setCurrentFunction(llvm::Function* fn) {
-        currentFunction = fn;
-    }
+    void setCurrentFunction(llvm::Function* fn) { currentFunction = fn; }
     /// @brief Reset the current function to a null pointer
-    void
-    clearCurrentFunction() {
-        currentFunction = nullptr;
-    }
+    void clearCurrentFunction() { currentFunction = nullptr; }
 
     /// @return A full list of symbols used around the program
-    auto&
-    getAllSymbols() {
-        return symbols;
-    }
+    auto& getAllSymbols() { return symbols; }
     /// @return Add a new symbol to the symbol map
-    void
-    addSymbol(ir::id_t i, llvm::Value* s) {
-        symbols.emplace(i, s);
-    }
+    void addSymbol(ir::id_t i, llvm::Value* s) { symbols.emplace(i, s); }
     /// @brief Get the corresponding symbol to an id
-    auto
-    getSymbol(ir::id_t i) -> llvm::Value* {
-        return symbols.at(i);
-    }
+    auto getSymbol(ir::id_t i) -> llvm::Value* { return symbols.at(i); }
     /// @brief Clear the symbol table
-    void
-    clearSymbols() {
-        return symbols.clear();
-    }
+    void clearSymbols() { return symbols.clear(); }
     /// @return Add a new vtable to the vtable map
-    void
-    addVtable(ir::id_t i, llvm::GlobalVariable* s) {
-        vtables.emplace(i, s);
-    }
+    void addVtable(ir::id_t i, llvm::GlobalVariable* s) { vtables.emplace(i, s); }
     /// @brief Get the corresponding vtable to an id
-    auto
-    getVtable(ir::id_t i) -> llvm::GlobalVariable* {
+    auto getVtable(ir::id_t i) -> llvm::GlobalVariable* {
         auto item = vtables.find(i);
         return item == vtables.end() ? nullptr : item->second;
     }
     /// @return Add a new vtable to the vtable map
-    void
-    addVtableTy(ir::id_t i, llvm::StructType* s) {
-        vtableType.emplace(i, s);
-    }
+    void addVtableTy(ir::id_t i, llvm::StructType* s) { vtableType.emplace(i, s); }
     /// @brief Get the corresponding vtable to an id
-    auto
-    getVtableTy(ir::id_t i) -> llvm::StructType* {
+    auto getVtableTy(ir::id_t i) -> llvm::StructType* {
         auto item = vtableType.find(i);
         return item == vtableType.end() ? nullptr : item->second;
     }
@@ -151,8 +122,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
          * @return Created llvm value.
          */
         template <typename Inst, class... Args>
-        static Inst*
-        create(Args&&... args) {
+        static Inst* create(Args&&... args) {
             return Inst::Create(std::forward<Args>(args)...);
         }
 
@@ -161,8 +131,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
          * @return Created llvm struction.
          */
         template <typename Inst, class... Args>
-        static Inst*
-        insert(Args&&... args) {
+        static Inst* insert(Args&&... args) {
             return new Inst(std::forward<Args>(args)...);
         }
     } h;
@@ -358,8 +327,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      * can be accessed. This used instead of a return
      * value because c++ wants to make my life misserable.
      */
-    llvm::Value*
-    build(ir::Value* v) {
+    llvm::Value* build(ir::Value* v) {
         setDebugInfoLoc(v);
         v->visit(this);
         return this->value;

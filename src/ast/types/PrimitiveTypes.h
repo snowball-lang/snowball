@@ -46,10 +46,7 @@ class NumericType : public AcceptorExtend<NumericType, PrimitiveType> {
 
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
-    bool
-    canCast(Type* ty) const override {
-        return NumericType::isNumericType(ty);
-    }
+    bool canCast(Type* ty) const override { return NumericType::isNumericType(ty); }
 
   public:
     /**
@@ -131,8 +128,7 @@ class Int32Type : public AcceptorExtend<Int32Type, NumericType> {
 
     Int32Type() : AcceptorExtend(SN_INT32_TYPE) { }
 
-    bool
-    is(Type* other) const override {
+    bool is(Type* other) const override {
         return (TYPE_ALIAS == other->getName()) || NumericType::is(other);
     }
 };

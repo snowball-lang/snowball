@@ -16,8 +16,7 @@ using namespace std::chrono;
 namespace snowball {
 namespace app {
 namespace commands {
-int
-test(app::Options::TestOptions p_opts) {
+int test(app::Options::TestOptions p_opts) {
     toml::parse_result parsed_config = Compiler::get_config();
 
     std::string filename = (std::string)(parsed_config["package"]["main"].value_or<std::string>(

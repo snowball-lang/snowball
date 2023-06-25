@@ -13,8 +13,7 @@
 namespace snowball {
 namespace codegen {
 
-bool
-LLVMBuilder::buildOperator(ir::Call* call) {
+bool LLVMBuilder::buildOperator(ir::Call* call) {
     if (auto fn = utils::dyn_cast<ir::Func>(call->getCallee())) {
         auto args = call->getArguments();
         auto opName = fn->getName(true);

@@ -14,22 +14,19 @@ namespace snowball {
 namespace Syntax {
 
 template <Error e = Error::BUG, class Val>
-auto
-EI(Val item, std::string msg, ErrorInfo info = {}) {
+auto EI(Val item, std::string msg, ErrorInfo info = {}) {
     auto i = item->getDBGInfo();
     auto error = new CompilerError(e, msg, i, info);
     return error;
 }
 
 template <Error e, class Val>
-void
-E(Val item, std::string msg, ErrorInfo info = {}) {
+void E(Val item, std::string msg, ErrorInfo info = {}) {
     throw *EI<e>(item, msg, info);
 }
 
 template <Error e>
-void
-E(std::string msg) {
+void E(std::string msg) {
     throw SNError(e, msg);
 }
 

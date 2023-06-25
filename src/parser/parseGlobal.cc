@@ -9,8 +9,7 @@ using namespace snowball::Syntax::Expression;
 
 namespace snowball::parser {
 
-Parser::NodeVec
-Parser::parseGlobal(TokenType terminator) {
+Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
     bool keep_parsing = true;
     std::vector<Syntax::Node*> global;
 
@@ -24,12 +23,14 @@ Parser::parseGlobal(TokenType terminator) {
                 case TokenType::KWORD_PRIVATE: {
                     auto pk = peek();
                     if (!is<TokenType::KWORD_FUNC>(pk) && !is<TokenType::KWORD_VAR>(pk) &&
-                        !is<TokenType::KWORD_TYPEDEF>(pk) && !is<TokenType::KWORD_NAMESPACE>(pk) && !is<TokenType::KWORD_STATIC>(pk) &&
-                        !is<TokenType::KWORD_CLASS>(pk) && !is<TokenType::KWORD_EXTERN>(pk)) {
-                        createError<SYNTAX_ERROR>("expected keyword \"fn\", \"static\", \"namespace\", \"class\", "
-                                                "\"let\" "
-                                                "or "
-                                                "\"extern\" after pub/priv declaration");
+                        !is<TokenType::KWORD_TYPEDEF>(pk) && !is<TokenType::KWORD_NAMESPACE>(pk) &&
+                        !is<TokenType::KWORD_STATIC>(pk) && !is<TokenType::KWORD_CLASS>(pk) &&
+                        !is<TokenType::KWORD_EXTERN>(pk)) {
+                        createError<SYNTAX_ERROR>(
+                                "expected keyword \"fn\", \"static\", \"namespace\", \"class\", "
+                                "\"let\" "
+                                "or "
+                                "\"extern\" after pub/priv declaration");
                     }
 
                     break;
@@ -39,7 +40,7 @@ Parser::parseGlobal(TokenType terminator) {
                     auto pk = peek();
                     if (!is<TokenType::KWORD_FUNC>(pk)) {
                         createError<SYNTAX_ERROR>("expected 'fn' keyword after an "
-                                                "extern function declaration");
+                                                  "extern function declaration");
                     }
 
                     break;
@@ -49,7 +50,7 @@ Parser::parseGlobal(TokenType terminator) {
                     auto pk = peek();
                     if (!is<TokenType::KWORD_FUNC>(pk)) {
                         createError<SYNTAX_ERROR>("expected 'fn' keyword after a "
-                                                "static function declaration");
+                                                  "static function declaration");
                     }
 
                     break;
@@ -57,7 +58,7 @@ Parser::parseGlobal(TokenType terminator) {
 
                 case TokenType::KWORD_NAMESPACE: {
                     global.push_back(parseNamespace());
-                    break;  
+                    break;
                 }
 
                 case TokenType::KWORD_VAR: {
@@ -87,9 +88,9 @@ Parser::parseGlobal(TokenType terminator) {
 
                 default:
                     createError<SYNTAX_ERROR>(FMT("Unexpected token found: %s%s%s",
-                                                BLU,
-                                                m_current.to_string().c_str(),
-                                                RESET));
+                                                  BLU,
+                                                  m_current.to_string().c_str(),
+                                                  RESET));
             }
         }
 

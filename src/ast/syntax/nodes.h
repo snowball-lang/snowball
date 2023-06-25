@@ -41,10 +41,7 @@ struct Block : AcceptorExtend<Block, Node> {
     // Aceptance for the AST visitor
     ACCEPT()
     // Geter function to fetch the parsed statements
-    auto
-    getStmts() {
-        return stmts;
-    }
+    auto getStmts() { return stmts; }
 };
 
 /**
@@ -96,15 +93,9 @@ struct ConstantValue : public AcceptorExtend<ConstantValue, Base> {
     ConstantValue(ConstantType type, std::string value) : type(type), value(value){};
 
     /// @return Get constant value
-    std::string
-    getValue() {
-        return value;
-    }
+    std::string getValue() { return value; }
     /// @return Get the type that defines this constant.
-    ConstantType
-    getType() {
-        return type;
-    }
+    ConstantType getType() { return type; }
 
     ACCEPT()
 
@@ -138,15 +129,9 @@ struct Cast : public AcceptorExtend<Cast, Base> {
     Cast(Base* value, TypeRef* ty) : type(ty), value(value){};
 
     /// @return The value to cast
-    auto
-    getValue() {
-        return value;
-    }
+    auto getValue() { return value; }
     /// @brief get the type trying to be casted to
-    auto
-    getType() {
-        return type;
-    }
+    auto getType() { return type; }
 
     ACCEPT()
 };
@@ -198,20 +183,11 @@ struct FunctionCall : public AcceptorExtend<FunctionCall, Base> {
         : callee(callee), arguments(arguments), AcceptorExtend(){};
 
     /// @return Get function's callee
-    auto
-    getCallee() {
-        return callee;
-    }
+    auto getCallee() { return callee; }
     /// @return Call instruction arguments
-    auto&
-    getArguments() {
-        return arguments;
-    }
+    auto& getArguments() { return arguments; }
     /// @brief Set a new call expression to this call
-    void
-    setCallee(Base* c) {
-        callee = c;
-    }
+    void setCallee(Base* c) { callee = c; }
 
   public:
     /// @return string representation of a function call arguments
@@ -247,20 +223,11 @@ struct NewInstance : public AcceptorExtend<NewInstance, Base> {
         : type(ty), call(call), createAtHeap(createAtHeap){};
 
     /// @return Get the call value from the operator
-    auto
-    getCall() {
-        return call;
-    }
+    auto getCall() { return call; }
     /// @brief Get the type trying to be initialized
-    auto
-    getType() {
-        return type;
-    }
+    auto getType() { return type; }
     /// @see NewInstance::createAtHeap
-    auto
-    atHeap() {
-        return createAtHeap;
-    }
+    auto atHeap() { return createAtHeap; }
 
     ACCEPT()
 };
@@ -280,12 +247,8 @@ struct Identifier : public AcceptorExtend<Identifier, Base> {
 
     /// @return Get respective identifier
     /// Syntax::Expression::Identifierlue
-    auto
-    getIdentifier() {
-        return identifier;
-    }
-    virtual std::string
-    getNiceName() const {
+    auto getIdentifier() { return identifier; }
+    virtual std::string getNiceName() const {
         if (services::OperatorService::isOperator(identifier)) {
             auto i = services::OperatorService::operatorID(identifier);
             return services::OperatorService::operatorName(i);
@@ -310,10 +273,7 @@ struct PseudoVariable : public AcceptorExtend<PseudoVariable, Base> {
     PseudoVariable(std::string identifier);
     /// @return Get the pseudo variable identifier without the
     /// prefix
-    auto
-    getIdentifier() {
-        return identifier;
-    }
+    auto getIdentifier() { return identifier; }
 
     ACCEPT()
 };
@@ -340,15 +300,9 @@ struct Index : public AcceptorExtend<Index, Base> {
         : base(base), isStatic(isStatic), identifier(identifier), AcceptorExtend(){};
 
     /// @return Get respective base value
-    auto
-    getBase() {
-        return base;
-    }
+    auto getBase() { return base; }
     /// @return Get respective base value
-    auto
-    getIdentifier() {
-        return identifier;
-    }
+    auto getIdentifier() { return identifier; }
 
     ACCEPT()
 };
@@ -501,15 +455,9 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
     void setName(const std::string name);
 
     /// @return iterator to the first arg
-    auto
-    argBegin() {
-        return args.begin();
-    }
+    auto argBegin() { return args.begin(); }
     /// @return iterator beyond the last arg
-    auto
-    argEnd() {
-        return args.end();
-    }
+    auto argEnd() { return args.end(); }
 
     /// @return Argument list
     std::vector<Expression::Param*> getArgs() const;
@@ -538,10 +486,7 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
     void setStatic(bool s = true);
 
     /// Check if the function is declared as an extern function
-    virtual bool
-    isExtern() {
-        return false;
-    }
+    virtual bool isExtern() { return false; }
 
     // Set an acceptance call
     ACCEPT()
@@ -668,15 +613,9 @@ struct TypeAlias : public AcceptorExtend<TypeAlias, Base>,
         : identifier(identifier), type(type){};
 
     /// @return The name of the alias to be exported as
-    auto
-    getIdentifier() {
-        return identifier;
-    }
+    auto getIdentifier() { return identifier; }
     /// @return The type being refered by the alias
-    auto
-    getType() {
-        return type;
-    }
+    auto getType() { return type; }
 
     // Set a visit handler for the generators
     ACCEPT()
@@ -702,27 +641,18 @@ struct Conditional : public AcceptorExtend<Conditional, Base> {
 
     /// @return body block instructions to execute
     //   if the condition is met
-    auto
-    getBlock() {
-        return insts;
-    }
+    auto getBlock() { return insts; }
     /// @return the expression to be evaluated
-    auto
-    getCondition() {
-        return cond;
-    }
+    auto getCondition() { return cond; }
     /// @return Get "else" statement
-    auto
-    getElse() {
-        return elseBlock;
-    }
+    auto getElse() { return elseBlock; }
 
     // Set a visit handler for the generators
     ACCEPT()
 };
 
 /**
- * @brief AST representation of a conditional statement that contains a 
+ * @brief AST representation of a conditional statement that contains a
  *  `constexpr` expression as it's condition.
  */
 struct ConditionalConstExpr : public AcceptorExtend<ConditionalConstExpr, Base> {
@@ -736,30 +666,22 @@ struct ConditionalConstExpr : public AcceptorExtend<ConditionalConstExpr, Base> 
     Block* elseBlock = nullptr;
 
   public:
-    explicit ConditionalConstExpr(Expression::Identifier* name, std::vector<Node*> args, Block* insts, Block* elseBlock = nullptr)
+    explicit ConditionalConstExpr(Expression::Identifier* name,
+                                  std::vector<Node*>
+                                          args,
+                                  Block* insts,
+                                  Block* elseBlock = nullptr)
         : name(name), args(args), insts(insts), elseBlock(elseBlock){};
 
     /// @return body block instructions to execute
     //   if the condition is met
-    auto
-    getBlock() {
-        return insts;
-    }
+    auto getBlock() { return insts; }
     /// @return Name of the function for the expression
-    auto
-    getName() {
-        return name;
-    }
+    auto getName() { return name; }
     /// @return The arguments passed to the constant expression
-    auto
-    getArguments() {
-        return &args;
-    }
+    auto getArguments() { return &args; }
     /// @return Get "else" statement
-    auto
-    getElse() {
-        return elseBlock;
-    }
+    auto getElse() { return elseBlock; }
     // Set a visit handler for the generators
     ACCEPT()
 };
@@ -798,21 +720,12 @@ struct WhileLoop : public AcceptorExtend<WhileLoop, Base> {
 
     /// @return body block instructions to execute
     //   each iterator if the condition is truth
-    auto
-    getBlock() const {
-        return insts;
-    }
+    auto getBlock() const { return insts; }
     /// @return the expression to be evaluated each iteration
-    auto
-    getCondition() const {
-        return cond;
-    }
+    auto getCondition() const { return cond; }
     /// @return If the condition should be checked before or after
     ///  each iteration
-    auto
-    isDoWhile() const {
-        return doWhile;
-    }
+    auto isDoWhile() const { return doWhile; }
 
     // Set a visit handler for the generators
     ACCEPT()
@@ -888,6 +801,44 @@ struct ImportStmt : public AcceptorExtend<ImportStmt, Base> {
 };
 
 /**
+ * @class Namespace. AST representation of a namespace declaration.
+ *  Namespaces are used to group different symbols together.
+ *  This can be used to avoid name collisions.
+ * @example
+ *  namespace MyNamespace {
+ *     // ...
+ *  }
+ * @note Namespaces can be nested.
+ * @note Namespaces can be used to access symbols from other
+ *  namespaces.
+ * @example
+ *  namespace MyNamespace {
+ *   namespace MySecondNamespace {
+ *      // ...
+ *   }
+ *  }
+ *  MyNamespace::MySecondNamespace::myFunction()
+ */
+struct Namespace : public AcceptorExtend<Namespace, Base> {
+    /// @brief Name of the namespace
+    std::string name;
+    /// @brief Body of the namespace
+    std::vector<Node*> body;
+
+  public:
+    Namespace(std::string name, std::vector<Node*> body);
+
+  public:
+    /// @return Name of the namespace
+    std::string getName() const;
+    /// @return Body of the namespace
+    std::vector<Node*> getBody() const;
+
+    // Set an acceptance call
+    ACCEPT()
+};
+
+/**
  * In snowball, a return statement ends the execution of a
  * function, and returns control to the calling function.
  *
@@ -929,15 +880,9 @@ struct ExternFnDef : public AcceptorExtend<ExternFnDef, FunctionDef> {
         : externalName(externalName), AcceptorExtend(std::forward<Args>(args)...){};
 
     // Whether the function is external, it is true in this case
-    virtual bool
-    isExtern() override {
-        return true;
-    }
+    virtual bool isExtern() override { return true; }
     /// @return Get external function's name.
-    std::string
-    getExternalName() {
-        return externalName;
-    }
+    std::string getExternalName() { return externalName; }
 };
 
 /**
@@ -958,10 +903,7 @@ struct BodiedFunction : public AcceptorExtend<BodiedFunction, FunctionDef> {
         : block(block), AcceptorExtend(std::forward<Args>(args)...){};
 
     /// @return Get function's body declaration.
-    Block*
-    getBody() {
-        return block;
-    }
+    Block* getBody() { return block; }
 };
 
 /**
@@ -982,10 +924,7 @@ struct LLVMFunction : public AcceptorExtend<LLVMFunction, FunctionDef> {
         : block(block), AcceptorExtend(std::forward<Args>(args)...){};
 
     /// @return Get function's body declaration.
-    auto
-    getBody() {
-        return block;
-    }
+    auto getBody() { return block; }
 };
 
 }; // namespace Statement
@@ -1012,10 +951,7 @@ struct LambdaFunction : public AcceptorExtend<LambdaFunction, Expression::Base> 
     Statement::BodiedFunction* func = nullptr;
 
     /// @return the function assigned to this lambda interface
-    auto
-    getFunc() {
-        return func;
-    }
+    auto getFunc() { return func; }
 
     LambdaFunction(Statement::BodiedFunction* func) : AcceptorExtend(), func(func){};
 
@@ -1030,8 +966,7 @@ struct LambdaFunction : public AcceptorExtend<LambdaFunction, Expression::Base> 
  * @return Resultant node
  */
 template <typename Inst, class... Args>
-Inst*
-N(Args&&... args) {
+Inst* N(Args&&... args) {
     // Our template parameter must
     // be inherited from Node
     static_assert(std::is_base_of<Node, Inst>::value, "Inst must inherit from Node");
@@ -1046,8 +981,7 @@ N(Args&&... args) {
  * @return New type reference
  */
 template <class... Args>
-Expression::TypeRef*
-TR(Args&&... args) {
+Expression::TypeRef* TR(Args&&... args) {
     auto n = new Expression::TypeRef(std::forward<Args>(args)...);
     return n;
 }

@@ -189,8 +189,7 @@ VISIT(Block) {
     for (auto i : p_node->getBlock()) { i->visit(this); }
 }
 
-void
-TypeChecker::codegen() {
+void TypeChecker::codegen() {
     // Visit variables
     for (auto v : module->getVariables()) { visit(v.get()); }
 
@@ -201,14 +200,12 @@ TypeChecker::codegen() {
     for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn) { visit(fn->get()); }
 }
 
-void
-TypeChecker::cantBeVoid(
+void TypeChecker::cantBeVoid(
         DBGObject* dbg, std::shared_ptr<types::Type> ty, const std::string& message) {
     if (std::dynamic_pointer_cast<types::VoidType>(ty)) { Syntax::E<TYPE_ERROR>(dbg, message); }
 }
 
-std::optional<bool>
-TypeChecker::isMutable(std::shared_ptr<ir::Value> value) {
+std::optional<bool> TypeChecker::isMutable(std::shared_ptr<ir::Value> value) {
     if (auto x = utils::dyn_cast<ir::Variable>(value)) {
         return x->isMutable();
     } else if (auto x = utils::dyn_cast<ir::VariableDeclaration>(value)) {

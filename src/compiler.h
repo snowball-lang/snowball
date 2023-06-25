@@ -47,16 +47,10 @@ class Compiler {
     void cleanup();
 
     static toml::parse_result get_config();
-    void
-    enable_tests() {
-        _enabledTests = true;
-    }
+    void enable_tests() { _enabledTests = true; }
 
     // Get
-    SourceInfo*
-    getSource_info() const {
-        return _source_info;
-    }
+    SourceInfo* getSource_info() const { return _source_info; }
 
     ~Compiler(){};
 
@@ -68,10 +62,7 @@ class Compiler {
     int emit_object(std::string, bool = true);
     int emit_llvmir(std::string, bool = true);
 
-    void
-    set_optimization(app::Options::Optimization o) {
-        opt_level = o;
-    }
+    void set_optimization(app::Options::Optimization o) { opt_level = o; }
 
   private:
     // methods

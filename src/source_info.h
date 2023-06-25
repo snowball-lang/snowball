@@ -16,15 +16,9 @@ class SourceInfo {
         : _code(p_code), _path(p_path), source_length(p_code.size()){};
 
     /// @brief Get the source content for the file
-    std::string
-    getSource() const {
-        return _code;
-    };
+    std::string getSource() const { return _code; };
     /// @return The current file being working on
-    std::string
-    getPath() const {
-        return _path;
-    };
+    std::string getPath() const { return _path; };
 
     const int source_length = 0;
     ~SourceInfo() noexcept = default;

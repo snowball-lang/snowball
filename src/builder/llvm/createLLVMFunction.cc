@@ -13,8 +13,7 @@ using namespace snowball::utils;
 namespace snowball {
 namespace codegen {
 
-llvm::Function*
-LLVMBuilder::createLLVMFunction(ir::Func* func) {
+llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
     auto innerFnType = cast<types::FunctionType>(func->getType().get());
     assert(innerFnType != nullptr);
 

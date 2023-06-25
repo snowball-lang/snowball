@@ -8,8 +8,7 @@
 namespace snowball {
 namespace codegen {
 
-void
-LLVMBuilder::visit(ir::WhileLoop* c) {
+void LLVMBuilder::visit(ir::WhileLoop* c) {
     auto parent = ctx->getCurrentFunction();
     assert(parent);
 

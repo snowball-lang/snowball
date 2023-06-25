@@ -27,8 +27,7 @@ using namespace snowball;
 using namespace std::chrono;
 using namespace snowball::utils;
 
-int
-_main(int argc, char** argv) {
+int _main(int argc, char** argv) {
     try {
         if (argc == 1) {
             app::CLI::help();

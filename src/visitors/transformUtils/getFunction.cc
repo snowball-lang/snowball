@@ -6,8 +6,7 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::shared_ptr<ir::Func>
-Transformer::getFunction(
+std::shared_ptr<ir::Func> Transformer::getFunction(
         DBGObject* dbgInfo,
         std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                    std::optional<std::shared_ptr<types::Type>>,

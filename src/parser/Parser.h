@@ -34,18 +34,16 @@ class Parser {
   private:
     /// @brief Utility function to throw errors
     template <Error E, class... Args>
-    [[nodiscard]] auto
-    createError(std::pair<int, int> location,
-                std::string message,
-                ErrorInfo info = {},
-                Args&&... args) const {
+    [[nodiscard]] auto createError(std::pair<int, int> location,
+                                   std::string message,
+                                   ErrorInfo info = {},
+                                   Args&&... args) const {
         auto dbg_info = new DBGSourceInfo(m_source_info, location, std::forward<Args>(args)...);
         throw ParserError(E, message, dbg_info, info);
     }
 
     template <Error E>
-    [[nodiscard]] auto
-    createError(const std::string msg, ErrorInfo info = {}) const {
+    [[nodiscard]] auto createError(const std::string msg, ErrorInfo info = {}) const {
         auto pos = std::pair<int, int>(m_current.line, m_current.col);
         createError<E>(pos, msg, info, m_current.to_string().size());
     }
@@ -61,27 +59,23 @@ class Parser {
 
     /// Check if the current token is a certain token type
     template <TokenType Ty>
-    bool
-    is() const {
+    bool is() const {
         return m_current.type == Ty;
     }
     // Check if a token type is a certain type
     template <TokenType Ty>
-    bool
-    is(Token p_tok) const {
+    bool is(Token p_tok) const {
         return p_tok.type == Ty;
     }
     // Comparison between 2 token types
     template <TokenType Ty>
-    bool
-    is(TokenType p_ty) const {
+    bool is(TokenType p_ty) const {
         return p_ty == Ty;
     }
 
     // Check if a token mactches any of 2 types
     template <TokenType Ty, TokenType Ty2>
-    bool
-    is(Token p_tok) const {
+    bool is(Token p_tok) const {
         return p_tok.type == Ty || p_tok.type == Ty2;
     }
 
@@ -93,8 +87,7 @@ class Parser {
      * @return next token
      */
     template <TokenType Ty>
-    Token
-    consume(std::string expectation) {
+    Token consume(std::string expectation) {
         assert_tok<Ty>(expectation);
         return next();
     }
@@ -103,8 +96,7 @@ class Parser {
      * @brief It checks if the current token is viable
      *  for parsing a type.
      */
-    bool
-    isTypeValid() const {
+    bool isTypeValid() const {
         return is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>();
     }
 
@@ -112,8 +104,7 @@ class Parser {
      * @brief Throws an error if the current token does
      *  not match the @fn isTypeValid standard
      */
-    void
-    throwIfNotType() const {
+    void throwIfNotType() const {
         if (!isTypeValid()) {
             createError<SYNTAX_ERROR>(FMT("Expected a valid type declaration but found '%s' "
                                           "instead",
@@ -131,8 +122,7 @@ class Parser {
      * @return given token
      */
     template <TokenType Ty>
-    Token
-    assert_tok(std::string expectation) {
+    Token assert_tok(std::string expectation) {
         if (!is<Ty>()) {
             createError<SYNTAX_ERROR>(FMT(
                     "Expected %s but got '%s'",
@@ -175,7 +165,7 @@ class Parser {
     /**
      * @brief Utility method to parse a list of expressions
      *  acting as a global scope.
-    */
+     */
     NodeVec parseGlobal(TokenType terminator = TokenType::_EOF);
     /**
      * visibility    ::=  pub | priv

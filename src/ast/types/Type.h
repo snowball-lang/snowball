@@ -53,42 +53,21 @@ class Type : public std::enable_shared_from_this<Type> {
 
     /// @param other another type
     /// @return true if this type is equal to the argument type
-    virtual bool
-    is(Type* other) const {
-        return getName() == other->getName();
-    }
+    virtual bool is(Type* other) const { return getName() == other->getName(); }
     /// @brief normal Type::is but with std::shared_ptr support
-    virtual bool
-    is(std::shared_ptr<Type> other) const {
-        return is(other.get());
-    }
+    virtual bool is(std::shared_ptr<Type> other) const { return is(other.get()); }
 
     /// @return current's type name
-    virtual std::string
-    getName() const {
-        return name;
-    }
+    virtual std::string getName() const { return name; }
     /// @return type's pretty names, commonly used for output
-    virtual std::string
-    getPrettyName() const {
-        return name;
-    };
+    virtual std::string getPrettyName() const { return name; };
     /// @return Get a mangled version of the current type
-    virtual std::string
-    getMangledName() const {
-        return "T" + std::to_string(name.size()) + name;
-    };
+    virtual std::string getMangledName() const { return "T" + std::to_string(name.size()) + name; };
 
     /// @return if a type can be casted to this type
-    virtual bool
-    canCast(Type* ty) const {
-        return false;
-    }
+    virtual bool canCast(Type* ty) const { return false; }
     /// @brief std::shared_ptr support for Type::canCast
-    virtual bool
-    canCast(std::shared_ptr<Type> t) const {
-        return canCast(t.get());
-    }
+    virtual bool canCast(std::shared_ptr<Type> t) const { return canCast(t.get()); }
 
     /// @brief Create a *new* pointer type with this type as base
     /// @return a std::shared_ptr<PointerType> but casted into a `Type`

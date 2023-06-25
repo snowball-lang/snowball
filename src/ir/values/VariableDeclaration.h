@@ -32,20 +32,11 @@ class VariableDeclaration : public IdMixin, public AcceptorExtend<Variable, Valu
         : identifier(identifier), value(value), _isMutable(isMutable){};
 
     /// @return Variable identifier
-    auto
-    getIdentifier() const {
-        return identifier;
-    }
+    auto getIdentifier() const { return identifier; }
     /// @return respective value stored into the current variable
-    auto
-    getValue() const {
-        return value;
-    }
+    auto getValue() const { return value; }
     /// @return true if the variable is mutable
-    auto
-    isMutable() {
-        return _isMutable;
-    }
+    auto isMutable() { return _isMutable; }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

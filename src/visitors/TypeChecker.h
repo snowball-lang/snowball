@@ -33,15 +33,9 @@ class Context {
 
   public:
     /// @return The current function being type checked
-    auto
-    getCurrentFunction() {
-        return currentFunction;
-    }
+    auto getCurrentFunction() { return currentFunction; }
     /// @brief Set a new function that's being type checked
-    void
-    setCurrentFunction(ir::Func* f) {
-        currentFunction = f;
-    }
+    void setCurrentFunction(ir::Func* f) { currentFunction = f; }
 
     Context() = default;
 };
@@ -81,10 +75,7 @@ class TypeChecker : public AcceptorExtend<TypeChecker, codegen::ValueVisitor> {
 
   private:
     /// @brief Typecheck the value given
-    void
-    visit(ir::Value* v) {
-        v->visit(this);
-    }
+    void visit(ir::Value* v) { v->visit(this); }
 
 #define VISIT(n) void visit(ir::n*) override;
 #include "../defs/visits.def"

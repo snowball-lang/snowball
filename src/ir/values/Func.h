@@ -115,15 +115,9 @@ class Func : public AcceptorExtend<Func, Value>,
 #undef DEFAULT
 
     /// @return Whether the function is variadic
-    bool
-    isVariadic() const {
-        return variadic;
-    }
+    bool isVariadic() const { return variadic; }
     /// @return Whether the function is variadic
-    bool
-    isDeclaration() const {
-        return declaration;
-    }
+    bool isDeclaration() const { return declaration; }
 
     /// @return function's raw identifier
     virtual std::string getIdentifier();
@@ -136,33 +130,20 @@ class Func : public AcceptorExtend<Func, Value>,
     virtual std::string getNiceName();
 
     /// @brief Set a body to a function
-    void
-    setBody(std::shared_ptr<Block> p_body) {
-        body = p_body;
-    }
+    void setBody(std::shared_ptr<Block> p_body) { body = p_body; }
     /// @return Get body from function
-    auto
-    getBody() const {
-        return body;
-    }
+    auto getBody() const { return body; }
 
     /// @brief Declare a new LLVM IR body
     /// @param llvmBody the LLVM IR instructions
-    void
-    setLLVMBody(std::string llvmBody) {
-        this->llvmBody = llvmBody;
-    }
+    void setLLVMBody(std::string llvmBody) { this->llvmBody = llvmBody; }
     /// @return the LLVM ir body for this function
-    auto
-    getLLVMBody() {
+    auto getLLVMBody() {
         assert(!isDeclaration() && hasAttribute(Attributes::LLVM_FUNC));
         return llvmBody;
     }
     /// @brief Set arguments to a function
-    void
-    setArgs(FunctionArgs p_args) {
-        arguments = p_args;
-    }
+    void setArgs(FunctionArgs p_args) { arguments = p_args; }
     /// @return Get arguments from function
     /// @param ignoreSelf removes the `self` paramter (aka. the first /
     /// class parameter)
@@ -170,92 +151,51 @@ class Func : public AcceptorExtend<Func, Value>,
     FunctionArgs getArgs(bool ignoreSelf = false) const;
 
     /// @brief Set a return type to a function
-    void
-    setRetTy(std::shared_ptr<types::Type> p_ret) {
-        retTy = p_ret;
-    }
+    void setRetTy(std::shared_ptr<types::Type> p_ret) { retTy = p_ret; }
     /// @return Get function's return type.
-    auto&
-    getRetTy() const {
-        return retTy;
-    }
+    auto& getRetTy() const { return retTy; }
 
     /// @brief Set a return type to a function
-    void
-    addSymbol(std::shared_ptr<VariableDeclaration> v) {
-        symbols.emplace_back(v);
-    }
+    void addSymbol(std::shared_ptr<VariableDeclaration> v) { symbols.emplace_back(v); }
     /// @return Get function's return type.
-    std::vector<std::shared_ptr<VariableDeclaration>>&
-    getSymbols() {
+    std::vector<std::shared_ptr<VariableDeclaration>>& getSymbols() {
         assert(!isDeclaration());
         return symbols;
     }
     /// @brief get from what parent this function is declared inside
-    auto
-    getParent() const {
-        return parent;
-    }
+    auto getParent() const { return parent; }
     /// @return whether or not the function is defiend within a
     ///  parent scope.
-    bool
-    hasParent() const {
-        return getParent() != nullptr;
-    }
+    bool hasParent() const { return getParent() != nullptr; }
 
     /// @brief Get the index were the function is located at inside the
     ///  virtual table.
-    auto
-    getVirtualIndex() const {
+    auto getVirtualIndex() const {
         assert(inVirtualTable());
         return virtualIndex;
     }
     /// @return Check if the function is part of a virtual table.
-    bool
-    inVirtualTable() const {
-        return virtualIndex != -1;
-    }
+    bool inVirtualTable() const { return virtualIndex != -1; }
     /// @brief Set a new virtual table index.
-    void
-    setVirtualIndex(int x = -1) {
-        virtualIndex = x;
-    }
+    void setVirtualIndex(int x = -1) { virtualIndex = x; }
 
     /// @brief Set an external name to the function
     /// @c externalName
-    void
-    setExternalName(std::string n) {
-        externalName = n;
-    }
+    void setExternalName(std::string n) { externalName = n; }
     /// @return if the function is private or public.
     /// @note isPublic and isPrivate are just utility functions to know
     ///  the functions privacy but they both do essentially the same.
-    auto
-    isPublic() {
-        return !definedAsPrivate;
-    }
-    auto
-    isPrivate() {
-        return definedAsPrivate;
-    }
+    auto isPublic() { return !definedAsPrivate; }
+    auto isPrivate() { return definedAsPrivate; }
     /// @brief set function's privacy.
     /// @note If the function is declared as private, @param p
     ///  must be `true`.
     /// @c isPublic @c isPrivate @c definedAsPrivate
-    void
-    setPrivacy(bool p) {
-        definedAsPrivate = p;
-    }
+    void setPrivacy(bool p) { definedAsPrivate = p; }
     /// @brief Declare the function as static or not
-    void
-    setStatic(bool s = false) {
-        _static = s;
-    }
+    void setStatic(bool s = false) { _static = s; }
     /// @return whether or not the function is static
-    auto
-    isStatic() {
-        return _static;
-    }
+    auto isStatic() { return _static; }
     /// @return true if the function is a class contructor
     bool isConstructor() const;
 
@@ -305,11 +245,10 @@ class Func : public AcceptorExtend<Func, Value>,
      *  arguments can be greater that the function arguments.
      */
     template <typename T>
-    static bool
-    argumentSizesEqual(std::vector<T> functionArgs,
-                       const std::vector<std::shared_ptr<types::Type>>
-                               arguments,
-                       bool isVariadic = false) {
+    static bool argumentSizesEqual(std::vector<T> functionArgs,
+                                   const std::vector<std::shared_ptr<types::Type>>
+                                           arguments,
+                                   bool isVariadic = false) {
         int numFunctionArgs = functionArgs.size();
         int numProvidedArgs = arguments.size();
         int numDefaultArgs = 0;

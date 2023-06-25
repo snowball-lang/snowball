@@ -34,8 +34,7 @@ namespace snowball {
 Lexer::Lexer(SourceInfo* p_source_info)
     : code(p_source_info->getSource()), _source_info(p_source_info) { }
 
-void
-Lexer::tokenize() {
+void Lexer::tokenize() {
     if ((int)code.size() == 0) return;
 
     // Iterate every character of the source code
@@ -649,8 +648,7 @@ Lexer::tokenize() {
 #endif
 }
 
-void
-Lexer::handle_eof(bool p_consume) {
+void Lexer::handle_eof(bool p_consume) {
     // Declare a new Token
     Token tk;
 
@@ -666,8 +664,7 @@ Lexer::handle_eof(bool p_consume) {
     if (p_consume) { EAT_CHAR(1); }
 }
 
-void
-Lexer::consume(TokenType p_tk, int p_eat_size) {
+void Lexer::consume(TokenType p_tk, int p_eat_size) {
     Token tk;
     tk.type = p_tk;
     tk.line = cur_line;
@@ -676,8 +673,7 @@ Lexer::consume(TokenType p_tk, int p_eat_size) {
     EAT_CHAR(p_eat_size);
 }
 
-void
-Lexer::lexer_error(Error m_error, std::string m_msg, int char_length, ErrorInfo info) {
+void Lexer::lexer_error(Error m_error, std::string m_msg, int char_length, ErrorInfo info) {
     DBGSourceInfo* dbg_info = new DBGSourceInfo(
             (SourceInfo*)_source_info, std::pair<int, int>(cur_line, cur_col), char_length);
     throw LexerError(m_error, std::string(m_msg), dbg_info, info);

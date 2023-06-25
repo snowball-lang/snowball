@@ -51,19 +51,14 @@ Func::Func(std::string identifier,
     setArgs(arguments);
 }
 
-bool
-Func::isConstructor() const {
+bool Func::isConstructor() const {
     return (services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(
                    identifier)) &&
             hasParent();
 }
 
-std::string
-Func::getIdentifier() {
-    return identifier;
-}
-std::string
-Func::getName(bool ignoreOperators) {
+std::string Func::getIdentifier() { return identifier; }
+std::string Func::getName(bool ignoreOperators) {
     if (services::OperatorService::isOperator(identifier) && (!ignoreOperators)) {
         auto op = services::OperatorService::operatorID(identifier);
         return services::OperatorService::operatorName(op);
@@ -72,8 +67,7 @@ Func::getName(bool ignoreOperators) {
     return getIdentifier();
 }
 
-Func::FunctionArgs
-Func::getArgs(bool ignoreSelf) const {
+Func::FunctionArgs Func::getArgs(bool ignoreSelf) const {
     auto argv = arguments;
     if (ignoreSelf && argv.size() > 0 && ((hasParent() && (!_static)) || isConstructor())) {
         argv.erase(argv.begin());
@@ -82,13 +76,9 @@ Func::getArgs(bool ignoreSelf) const {
     return argv;
 }
 
-bool
-Func::isExternal(std::string name) {
-    return !utils::startsWith(name, _SN_MANGLE_PREFIX);
-}
+bool Func::isExternal(std::string name) { return !utils::startsWith(name, _SN_MANGLE_PREFIX); }
 
-std::string
-Func::getNiceName() {
+std::string Func::getNiceName() {
     auto moduleBase = module->isMain() ? "" : module->getName() + "::";
     auto base = hasParent() ? (parent->getPrettyName() + "::") : "";
     auto n = moduleBase + base + getName();
@@ -96,8 +86,7 @@ Func::getNiceName() {
     return n;
 }
 
-std::string
-Func::getMangle() {
+std::string Func::getMangle() {
     if (!externalName.empty()) return externalName;
 
     // TODO: add class to here

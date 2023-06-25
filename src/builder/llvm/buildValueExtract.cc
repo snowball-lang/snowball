@@ -10,8 +10,7 @@
 namespace snowball {
 namespace codegen {
 
-void
-LLVMBuilder::visit(ir::ValueExtract* extract) {
+void LLVMBuilder::visit(ir::ValueExtract* extract) {
     auto var = extract->getValue();
 
     llvm::Value* value = nullptr;

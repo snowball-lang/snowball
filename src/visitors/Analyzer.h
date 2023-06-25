@@ -61,8 +61,7 @@ class Analyzer : public AcceptorExtend<Analyzer, Visitor> {
      * @param nodes The vector of syntax nodes to be processed by the
      * pass manager.
      */
-    void
-    run(std::vector<Syntax::Node*> nodes) {
+    void run(std::vector<Syntax::Node*> nodes) {
         for (auto n : nodes) { n->accept(this); }
     }
 

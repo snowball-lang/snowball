@@ -7,8 +7,7 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-bool
-Transformer::isInClassContext(std::shared_ptr<types::Type> ty) {
+bool Transformer::isInClassContext(std::shared_ptr<types::Type> ty) {
     auto cls = ctx->getCurrentClass();
     if (cls == nullptr) return false;
 

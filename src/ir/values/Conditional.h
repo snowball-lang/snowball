@@ -37,21 +37,12 @@ class Conditional : public AcceptorExtend<Func, Value> {
 
     /// @return body block instructions to execute
     //   if the condition is met
-    auto
-    getBlock() {
-        return insts;
-    }
+    auto getBlock() { return insts; }
     /// @return the expression to be evaluated
-    auto
-    getCondition() {
-        return cond;
-    }
+    auto getCondition() { return cond; }
 
     /// @return Get "else" statement
-    auto
-    getElse() {
-        return elseBlock;
-    }
+    auto getElse() { return elseBlock; }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

@@ -6,16 +6,14 @@
 namespace snowball {
 namespace Syntax {
 
-void
-DefiniteAssigment::withScope(std::function<void()> cb) {
+void DefiniteAssigment::withScope(std::function<void()> cb) {
     this->scopes.push_front({});
 
     cb();
     this->scopes.pop_front();
 }
 
-void
-DefiniteAssigment::withState(std::function<void()> cb) {
+void DefiniteAssigment::withState(std::function<void()> cb) {
     auto currentState = this->state;
     this->state = {.inited = {}};
 
@@ -23,8 +21,7 @@ DefiniteAssigment::withState(std::function<void()> cb) {
     this->state = currentState;
 }
 
-void
-DefiniteAssigment::asBlock(std::function<void()> cb) {
+void DefiniteAssigment::asBlock(std::function<void()> cb) {
     withScope([&] { withState([&] { cb(); }); });
 }
 

@@ -42,36 +42,20 @@ class Module : public AcceptorExtend<Module, SrcObject>,
     std::string getUniqueName() const;
 
     // Boolean representing whether the module is global or not
-    virtual bool
-    isMain() {
-        return false;
-    }
+    virtual bool isMain() { return false; }
 
     // Return a list of defined functions used for our program
-    virtual std::vector<std::shared_ptr<ir::Func>>
-    getFunctions() const {
-        return functions;
-    }
+    virtual std::vector<std::shared_ptr<ir::Func>> getFunctions() const { return functions; }
     // Push a new function to the module
-    virtual void
-    addFunction(std::shared_ptr<ir::Func> fn) {
-        functions.push_back(fn);
-    }
+    virtual void addFunction(std::shared_ptr<ir::Func> fn) { functions.push_back(fn); }
     // Append a new variable to the variable list
-    virtual void
-    addVariable(std::shared_ptr<ir::VariableDeclaration> v) {
-        variables.push_back(v);
-    }
+    virtual void addVariable(std::shared_ptr<ir::VariableDeclaration> v) { variables.push_back(v); }
     // Get a list of user-declared variables for this module
-    const auto
-    getVariables() const {
-        return variables;
-    }
+    const auto getVariables() const { return variables; }
 
     /// @brief Utility function to create a new instruction
     template <typename DesiredType, typename... Args>
-    std::shared_ptr<DesiredType>
-    N(DBGSourceInfo* dbg, Args&&... args) {
+    std::shared_ptr<DesiredType> N(DBGSourceInfo* dbg, Args&&... args) {
         auto ret = std::shared_ptr<DesiredType>(new DesiredType(std::forward<Args>(args)...));
         ret->setModule(shared_from_this());
         ret->setSourceInfo(getSourceInfo());

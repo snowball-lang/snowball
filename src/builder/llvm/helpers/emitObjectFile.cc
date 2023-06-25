@@ -35,8 +35,7 @@
 namespace snowball {
 namespace codegen {
 
-int
-LLVMBuilder::emitObjectFile(std::string out, bool log) {
+int LLVMBuilder::emitObjectFile(std::string out, bool log) {
     std::error_code EC;
     llvm::raw_fd_ostream dest(out, EC, llvm::sys::fs::OF_None);
 

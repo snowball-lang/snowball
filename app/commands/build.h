@@ -19,8 +19,7 @@ namespace fs = std::filesystem;
 namespace snowball {
 namespace app {
 namespace commands {
-int
-build(app::Options::BuildOptions p_opts) {
+int build(app::Options::BuildOptions p_opts) {
     std::string filename = p_opts.file;
     std::string package_name = "<single file>";
     std::string package_version = "<unknown version>";

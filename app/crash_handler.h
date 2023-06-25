@@ -84,10 +84,7 @@ class CrashHandler {
     void initialize();
 
     void disable();
-    bool
-    is_disabled() const {
-        return disabled;
-    };
+    bool is_disabled() const { return disabled; };
 
     CrashHandler();
     ~CrashHandler();
@@ -107,8 +104,7 @@ int _main(int, char**);
 
 #if defined(_WIN32)
 
-int
-main(int argc, char** argv) {
+int main(int argc, char** argv) {
 #ifdef CRASH_HANDLER_EXCEPTION
     __try {
         return _main(argc, argv);
@@ -120,8 +116,7 @@ main(int argc, char** argv) {
 
 #elif defined(linux)
 
-int
-main(int argc, char** argv) {
+int main(int argc, char** argv) {
     CrashHandler crash_handler;
     crash_handler.initialize();
     return _main(argc, argv);
@@ -184,12 +179,8 @@ class symbol {
         SymGetSymFromAddr64(process, address, &displacement, sym);
     }
 
-    std::string
-    name() {
-        return std::string(sym->Name);
-    }
-    std::string
-    undecorated_name() {
+    std::string name() { return std::string(sym->Name); }
+    std::string undecorated_name() {
         if (*sym->Name == '\0') return "<couldn't map PC to fn name>";
         std::vector<char> und_name(max_name_len);
         UnDecorateSymbolName(sym->Name, &und_name[0], max_name_len, UNDNAME_COMPLETE);
@@ -203,8 +194,7 @@ class get_mod_info {
   public:
     get_mod_info(HANDLE h) : process(h) { }
 
-    module_data
-    operator()(HMODULE module) {
+    module_data operator()(HMODULE module) {
         module_data ret;
         char temp[4096];
         MODULEINFO mi;
@@ -344,8 +334,7 @@ CrashHandlerException(EXCEPTION_POINTERS* ep) {
 #include <vector>
 
 // TODO: move this to os related place
-std::string
-_get_exec_path() {
+std::string _get_exec_path() {
     int len = 1024;
     char pBuf[len];
 #ifdef _WIN32
@@ -364,14 +353,13 @@ _get_exec_path() {
     return pBuf;
 }
 
-int
-_execute(const std::string& p_path,
-         const std::vector<std::string>& p_arguments,
-         bool p_blocking,
-         int* r_child_id,
-         std::string* r_pipe,
-         int* r_exitcode,
-         bool read_stderr = true /*,Mutex *p_pipe_mutex*/) {
+int _execute(const std::string& p_path,
+             const std::vector<std::string>& p_arguments,
+             bool p_blocking,
+             int* r_child_id,
+             std::string* r_pipe,
+             int* r_exitcode,
+             bool read_stderr = true /*,Mutex *p_pipe_mutex*/) {
 
 #ifdef __EMSCRIPTEN__
     // Don't compile this code at all to avoid undefined references.
@@ -455,8 +443,7 @@ _execute(const std::string& p_path,
 }
 
 // FIXME: chage it to string split
-std::string
-_func_offset(const char* string_symbol) {
+std::string _func_offset(const char* string_symbol) {
     // the backtrace_symbol output:
     // /home/thakeenathees/dev/SNOWBALL/bin/SNOWBALL.x11.debug.64(+0x2801)
     // [0x55c5aa0a2801] from that it'll extract the offset (0x2801) and feed to
@@ -475,8 +462,7 @@ _func_offset(const char* string_symbol) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static void
-handle_crash(int sig) {
+static void handle_crash(int sig) {
     void* bt_buffer[256];
     size_t size = backtrace(bt_buffer, 256);
     std::string _execpath = _get_exec_path();
@@ -562,8 +548,7 @@ CrashHandler::CrashHandler() { disabled = false; }
 
 CrashHandler::~CrashHandler() { disable(); }
 
-void
-CrashHandler::disable() {
+void CrashHandler::disable() {
     if (disabled) return;
 
 #if _SN_DEBUG
@@ -575,8 +560,7 @@ CrashHandler::disable() {
     disabled = true;
 }
 
-void
-CrashHandler::initialize() {
+void CrashHandler::initialize() {
 #if _SN_DEBUG
     signal(SIGSEGV, handle_crash);
     signal(SIGFPE, handle_crash);

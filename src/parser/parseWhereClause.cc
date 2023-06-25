@@ -9,8 +9,7 @@ using namespace snowball::Syntax::Expression;
 
 namespace snowball::parser {
 
-WhereClause*
-Parser::parseWhereClause() {
+WhereClause* Parser::parseWhereClause() {
     assert(is<TokenType::SYM_COLLON>());
     WhereClause::ChecksVectorType tests;
 

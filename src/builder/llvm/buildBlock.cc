@@ -9,8 +9,7 @@
 namespace snowball {
 namespace codegen {
 
-void
-LLVMBuilder::visit(ir::Block* block) {
+void LLVMBuilder::visit(ir::Block* block) {
     for (auto i : block->getBlock()) { build(i.get()); }
 }
 

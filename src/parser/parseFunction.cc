@@ -16,8 +16,7 @@ using namespace snowball::Syntax::Statement;
 
 namespace snowball::parser {
 
-FunctionDef*
-Parser::parseFunction(bool isConstructor, bool isOperator, bool isLambda) {
+FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isLambda) {
     assert((is<TokenType::KWORD_FUNC>() && (!isConstructor && !isOperator)) ||
            (is<TokenType::IDENTIFIER>() && (isConstructor && !isOperator)) || (isOperator));
 

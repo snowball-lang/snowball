@@ -13,8 +13,7 @@ using namespace snowball::utils;
 namespace snowball {
 namespace codegen {
 
-void
-LLVMBuilder::setDebugInfoLoc(ir::Value* v) {
+void LLVMBuilder::setDebugInfoLoc(ir::Value* v) {
     if (v) {
         auto info = v->getDBGInfo();
         if (auto f = ctx->getCurrentFunction(); (info != nullptr && f != nullptr)) {

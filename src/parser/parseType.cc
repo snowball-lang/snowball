@@ -10,8 +10,7 @@ using namespace snowball::Syntax::Expression;
 
 namespace snowball::parser {
 
-TypeRef*
-Parser::parseType() {
+TypeRef* Parser::parseType() {
     throwIfNotType();
     assert(is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>());
     auto pos = m_current.get_pos();

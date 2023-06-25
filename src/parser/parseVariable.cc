@@ -7,8 +7,7 @@
 
 namespace snowball::parser {
 
-Syntax::Statement::VariableDecl*
-Parser::parseVariable() {
+Syntax::Statement::VariableDecl* Parser::parseVariable() {
     assert(is<TokenType::KWORD_VAR>());
     next();
 

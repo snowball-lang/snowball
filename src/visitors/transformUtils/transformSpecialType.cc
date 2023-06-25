@@ -22,8 +22,7 @@ inline const std::string IS_NUMERIC_CHECK_STYPE = "Core::IsNumeric";
 inline const std::string IS_POINTER_CHECK_STYPE = "Core::IsPointer";
 inline const std::string CASTABLE_TO_CHECK_STYPE = "Core::CastableTo";
 
-std::shared_ptr<types::Type>
-Transformer::transformSpecialType(Expression::TypeRef* ty) {
+std::shared_ptr<types::Type> Transformer::transformSpecialType(Expression::TypeRef* ty) {
     auto n = ty->getName();
 
     STYPE_INSTANCE(FUNCTION_RETURN_STYPE) {

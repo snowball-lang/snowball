@@ -21,8 +21,7 @@ CLI::CLI(int argc, char** argv) {
     for (int i = 1; i < argc; i++) { args.push_back(argv[i]); }
 }
 
-Options
-CLI::parse() {
+Options CLI::parse() {
     Options opts;
 
     current_arg = args[0];
@@ -291,8 +290,7 @@ CLI::parse() {
     return opts;
 }
 
-void
-CLI::help() {
+void CLI::help() {
     Logger::log("Snowball (C) MIT");
     Logger::log("Usage: snowball [command] [options]\n");
     Logger::log("Snowball Commands:");

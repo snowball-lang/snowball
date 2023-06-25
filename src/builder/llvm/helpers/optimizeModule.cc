@@ -36,8 +36,7 @@
 namespace snowball {
 
 namespace {
-void
-applyDebugTransformations(llvm::Module* module, bool debug) {
+void applyDebugTransformations(llvm::Module* module, bool debug) {
     if (debug) {
         // remove tail calls and fix linkage for stack traces
         for (auto& f : *module) {
@@ -58,8 +57,7 @@ applyDebugTransformations(llvm::Module* module, bool debug) {
 
 namespace codegen {
 
-void
-LLVMBuilder::optimizeModule(app::Options::Optimization o) {
+void LLVMBuilder::optimizeModule(app::Options::Optimization o) {
     applyDebugTransformations(module.get(), o == app::Options::OPTIMIZE_O0);
 
     llvm::LoopAnalysisManager loop_analysis_manager;

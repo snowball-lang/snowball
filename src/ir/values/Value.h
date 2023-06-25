@@ -32,15 +32,9 @@ class Value : public ModuleHolder, public DBGObject {
     virtual ~Value() noexcept = default;
 
     /// @return get value's type
-    virtual std::shared_ptr<types::Type>
-    getType() const {
-        return type;
-    }
+    virtual std::shared_ptr<types::Type> getType() const { return type; }
     /// @brief get value's type
-    virtual void
-    setType(std::shared_ptr<types::Type> p_type) {
-        type = p_type;
-    }
+    virtual void setType(std::shared_ptr<types::Type> p_type) { type = p_type; }
 
     // Generate helper function
     virtual void visit(codegen::ValueVisitor* v) = 0;

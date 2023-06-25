@@ -10,8 +10,7 @@
 namespace snowball {
 namespace codegen {
 
-llvm::Function*
-LLVMBuilder::getGlobalCTOR(bool createIfNone) {
+llvm::Function* LLVMBuilder::getGlobalCTOR(bool createIfNone) {
     auto mangle = (std::string) "_GLOBAL__I" + "$SN.$GlobalInit$" + iModule->getUniqueName();
     auto fn = module->getFunction(mangle);
 

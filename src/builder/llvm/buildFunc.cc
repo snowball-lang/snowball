@@ -11,8 +11,7 @@
 namespace snowball {
 namespace codegen {
 
-void
-LLVMBuilder::visit(ir::Func* func) {
+void LLVMBuilder::visit(ir::Func* func) {
     if (auto it = funcs.find(func->getId()); it != funcs.end()) {
         this->value = it->second;
         return;
@@ -25,8 +24,7 @@ LLVMBuilder::visit(ir::Func* func) {
     this->value = fn;
 }
 
-llvm::Function*
-LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Func* fn) {
+llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Func* fn) {
     ctx->setCurrentFunction(llvmFn);
 
     auto returnType = getLLVMType(fn->getRetTy());

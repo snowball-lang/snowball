@@ -21,15 +21,9 @@ class SrcObject {
     SrcObject(SourceInfo* i) : m_srci(i) { }
 
     /// @brief get the instance of the source info
-    auto
-    getSourceInfo() const {
-        return m_srci;
-    }
+    auto getSourceInfo() const { return m_srci; }
     /// @brief Declare a new instance of source info
-    void
-    setSourceInfo(SourceInfo* i) {
-        m_srci = i;
-    }
+    void setSourceInfo(SourceInfo* i) { m_srci = i; }
 };
 
 } // namespace snowball

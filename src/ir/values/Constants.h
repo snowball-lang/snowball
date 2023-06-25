@@ -25,10 +25,7 @@ class ConstantValue : public AcceptorExtend<ConstantValue, Value> {
 
     ConstantValue(ConstantType ty) : type(ty) { }
     // Get constant value's type
-    auto
-    getConstantType() {
-        return type;
-    }
+    auto getConstantType() { return type; }
 
   private:
     // Type value to differentiate between constantss
@@ -45,10 +42,7 @@ class StringValue : public AcceptorExtend<StringValue, ConstantValue> {
     StringValue(std::string value) : AcceptorExtend(String), value(value) { }
 
     // Get the string value.
-    auto
-    getConstantValue() const {
-        return value;
-    }
+    auto getConstantValue() const { return value; }
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS
 };
@@ -63,10 +57,7 @@ class NumberValue : public AcceptorExtend<NumberValue, ConstantValue> {
     NumberValue(snowball_int_t value) : AcceptorExtend(Number), value(value) { }
 
     // Get the number value.
-    auto
-    getConstantValue() const {
-        return value;
-    }
+    auto getConstantValue() const { return value; }
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS
 };
@@ -81,10 +72,7 @@ class FloatValue : public AcceptorExtend<FloatValue, ConstantValue> {
     FloatValue(double value) : AcceptorExtend(Float), value(value) { }
 
     // Get the number value.
-    auto
-    getConstantValue() const {
-        return value;
-    }
+    auto getConstantValue() const { return value; }
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS
 };
@@ -99,10 +87,7 @@ class BooleanValue : public AcceptorExtend<BooleanValue, ConstantValue> {
     BooleanValue(bool value) : AcceptorExtend(String), value(value) { }
 
     // Get the boolean value.
-    auto
-    getConstantValue() const {
-        return value;
-    }
+    auto getConstantValue() const { return value; }
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS
 };
@@ -117,10 +102,7 @@ class CharValue : public AcceptorExtend<BooleanValue, ConstantValue> {
     CharValue(char value) : AcceptorExtend(Char), value(value) { }
 
     // Get the boolean value.
-    auto
-    getConstantValue() const {
-        return value;
-    }
+    auto getConstantValue() const { return value; }
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS
 };

@@ -30,18 +30,9 @@ TypeRef::TypeRef(std::string p_name, DBGSourceInfo* p_dbg,
     : internalType(internalType), types::Type(REF, p_name) {
     setDBGInfo(p_dbg);
 }
-void
-TypeRef::setGenerics(std::vector<TypeRef*> g) {
-    generics = g;
-}
-std::vector<Expression::TypeRef*>
-GenericIdentifier::getGenerics() const {
-    return generics;
-}
-std::vector<TypeRef*>
-TypeRef::getGenerics() {
-    return this->generics;
-}
+void TypeRef::setGenerics(std::vector<TypeRef*> g) { generics = g; }
+std::vector<Expression::TypeRef*> GenericIdentifier::getGenerics() const { return generics; }
+std::vector<TypeRef*> TypeRef::getGenerics() { return this->generics; }
 Param::Param(std::string name, TypeRef* type, Status generic)
     : name(name), type(type), status(generic) {
     assert(generic <= 1 && generic >= 0 && "Invalid param status");
@@ -105,8 +96,7 @@ FunctionCall::getArgumentsAsString(const std::vector<std::shared_ptr<types::Type
     return result;
 }
 
-std::string
-GenericIdentifier::getNiceName() const {
+std::string GenericIdentifier::getNiceName() const {
     std::string gens = "<";
 
     int gIndex = 0;
@@ -122,8 +112,7 @@ GenericIdentifier::getNiceName() const {
 
 #define CASE(t, r)                                                                                 \
     case TokenType::t: return r;
-ConstantValue::ConstantType
-ConstantValue::deduceType(TokenType ty) {
+ConstantValue::ConstantType ConstantValue::deduceType(TokenType ty) {
     switch (ty) {
         CASE(VALUE_STRING, String)
         CASE(VALUE_CHAR, Char)
@@ -138,8 +127,7 @@ ConstantValue::deduceType(TokenType ty) {
 }
 #undef CASE
 
-std::string
-TypeRef::getPrettyName() const {
+std::string TypeRef::getPrettyName() const {
     std::string gens = "<";
 
     int gIndex = 0;

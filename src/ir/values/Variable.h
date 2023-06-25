@@ -30,20 +30,11 @@ class Variable : public IdMixin, public AcceptorExtend<Variable, Value> {
         : identifier(identifier), _isArgument(isArgument), _isMutable(isMutable){};
 
     /// @return Variable identifier
-    auto
-    getIdentifier() const {
-        return identifier;
-    }
+    auto getIdentifier() const { return identifier; }
     /// @return Wether or not the variable points to an argument
-    auto
-    isArgument() {
-        return _isArgument;
-    }
+    auto isArgument() { return _isArgument; }
     /// @return true if the variable is mutable
-    auto
-    isMutable() {
-        return _isMutable;
-    }
+    auto isMutable() { return _isMutable; }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

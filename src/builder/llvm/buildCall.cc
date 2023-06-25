@@ -12,8 +12,7 @@
 namespace snowball {
 namespace codegen {
 
-void
-LLVMBuilder::visit(ir::Call* call) {
+void LLVMBuilder::visit(ir::Call* call) {
     if (buildOperator(call)) return;
 
     auto callee = build(call->getCallee().get());

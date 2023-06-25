@@ -34,23 +34,13 @@ class Argument : public IdMixin, public AcceptorExtend<VariableDeclaration, Valu
         : name(name), index(index), defaultValue(defaultValue){};
 
     /// @return Argument index on the list
-    auto
-    getIndex() {
-        return index;
-    }
+    auto getIndex() { return index; }
     /// @return Argument index on the list
-    auto
-    getName() {
-        return name;
-    }
+    auto getName() { return name; }
     /// @brief check if the function contains a default value
-    bool
-    hasDefaultValue() {
-        return defaultValue != nullptr;
-    }
+    bool hasDefaultValue() { return defaultValue != nullptr; }
     /// @return default value if it exists
-    auto
-    getDefaultValue() {
+    auto getDefaultValue() {
         assert(hasDefaultValue());
         return defaultValue;
     }

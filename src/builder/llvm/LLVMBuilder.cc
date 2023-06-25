@@ -65,8 +65,7 @@ LLVMBuilder::LLVMBuilder(std::shared_ptr<ir::MainModule> mod) : iModule(mod) {
     module = newModule();
 }
 
-std::unique_ptr<llvm::Module>
-LLVMBuilder::newModule() {
+std::unique_ptr<llvm::Module> LLVMBuilder::newModule() {
     auto m = std::make_unique<llvm::Module>("snowball compiled project", *context);
 
     target = llvm::EngineBuilder().selectTarget();
@@ -98,13 +97,9 @@ LLVMBuilder::newModule() {
     return m;
 }
 
-void
-LLVMBuilder::newContext() {
-    context = std::make_unique<llvm::LLVMContext>();
-}
+void LLVMBuilder::newContext() { context = std::make_unique<llvm::LLVMContext>(); }
 
-llvm::DIFile*
-LLVMBuilder::DebugInfo::getFile(const std::string& path) {
+llvm::DIFile* LLVMBuilder::DebugInfo::getFile(const std::string& path) {
     std::string filename;
     std::string directory;
     auto pos = path.find_last_of("/");
@@ -118,21 +113,14 @@ LLVMBuilder::DebugInfo::getFile(const std::string& path) {
     return builder->createFile(filename, directory);
 }
 
-void
-LLVMBuilder::dump() {
-    this->print(llvm::errs());
-}
-void
-LLVMBuilder::print(llvm::raw_fd_ostream& s) {
-    module->print(s, nullptr);
-}
+void LLVMBuilder::dump() { this->print(llvm::errs()); }
+void LLVMBuilder::print(llvm::raw_fd_ostream& s) { module->print(s, nullptr); }
 
 #define ITERATE_FUNCTIONS for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn)
 #define IS_MAIN                                                                                    \
     (fn->get()->getName() == "main" &&                                                             \
      fn->get()->getPrivacy() == Syntax::Statement::Privacy::PUBLIC && iModule->isMain())
-void
-LLVMBuilder::codegen() {
+void LLVMBuilder::codegen() {
     auto generateModule = [&](std::shared_ptr<ir::Module> m) {
         this->iModule = m;
 

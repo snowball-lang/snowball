@@ -7,23 +7,15 @@
 namespace snowball {
 namespace services {
 
-std::string
-OperatorService::getOperatorId(OperatorService::OperatorType id) {
+std::string OperatorService::getOperatorId(OperatorService::OperatorType id) {
     return operators.at(id);
 }
 
-bool
-OperatorService::isOperator(const std::string& name) {
-    return utils::startsWith(name, "#");
-}
+bool OperatorService::isOperator(const std::string& name) { return utils::startsWith(name, "#"); }
 
-const std::string&
-OperatorService::operatorName(OperatorType id) {
-    return operatorNames.at(id);
-}
+const std::string& OperatorService::operatorName(OperatorType id) { return operatorNames.at(id); }
 
-OperatorService::OperatorType
-OperatorService::operatorID(const std::string& n) {
+OperatorService::OperatorType OperatorService::operatorID(const std::string& n) {
     std::string name = n;
     if (isOperator(name)) { name = name.substr(1, name.size() - 1); }
 
@@ -33,8 +25,7 @@ OperatorService::operatorID(const std::string& n) {
     return (OperatorService::OperatorType)std::distance(operators.begin(), it);
 }
 
-std::string
-OperatorService::getOperatorMangle(OperatorService::OperatorType id) {
+std::string OperatorService::getOperatorMangle(OperatorService::OperatorType id) {
     return "#" + getOperatorId(id);
 }
 

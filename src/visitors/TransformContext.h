@@ -51,8 +51,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     /// Utility function to get a primitive type
     /// @param name Type name to search for
     /// @return Primitive type shared pointer
-    std::shared_ptr<types::Type>
-    getPrimitiveType(const std::string name) {
+    std::shared_ptr<types::Type> getPrimitiveType(const std::string name) {
         auto [ty, found] = getItem(name);
 
         assert(found);
@@ -92,26 +91,16 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     // clang-format on
 
     /// @return The current function being generated
-    auto
-    getCurrentFunction() {
-        return currentFunction;
-    }
+    auto getCurrentFunction() { return currentFunction; }
     /// @brief Set a new function that's being generated
-    void
-    setCurrentFunction(std::shared_ptr<ir::Func> f) {
-        currentFunction = f;
-    }
+    void setCurrentFunction(std::shared_ptr<ir::Func> f) { currentFunction = f; }
     /// @return Get the parent class being transformed
-    auto
-    getCurrentClass(bool actual = false) {
+    auto getCurrentClass(bool actual = false) {
         return actual ? actuallCurrentClass == nullptr ? currentClass : actuallCurrentClass
                       : currentClass;
     }
     /// @brief Defined the new type being generated
-    void
-    setCurrentClass(std::shared_ptr<types::DefinedType> c) {
-        currentClass = c;
-    }
+    void setCurrentClass(std::shared_ptr<types::DefinedType> c) { currentClass = c; }
 
     /**
      * @brief Add function to stack.
@@ -122,8 +111,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
      *   3. (does not exist) Create a new item initialized
      *      with the function trying to be defined.
      */
-    void
-    defineFunction(std::shared_ptr<ir::Func> fn) {
+    void defineFunction(std::shared_ptr<ir::Func> fn) {
         auto name = createIdentifierName(fn->getName(true));
         auto item = cache->getTransformedFunction(name);
         if (item) {
@@ -147,8 +135,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
      * @brief It creates an error tail from a certain dbg node
      */
     template <typename T>
-    auto
-    createErrorTail(T x, ErrorInfo info = {}) {
+    auto createErrorTail(T x, ErrorInfo info = {}) {
         return Syntax::EI<Error::BUG>(x, "", info);
     }
 

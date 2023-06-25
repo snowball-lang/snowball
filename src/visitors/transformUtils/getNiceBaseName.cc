@@ -11,8 +11,7 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::string
-Transformer::getNiceBaseName(
+std::string Transformer::getNiceBaseName(
         std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                    std::optional<std::shared_ptr<types::Type>>,
                    std::optional<std::vector<std::shared_ptr<ir::Func>>>,

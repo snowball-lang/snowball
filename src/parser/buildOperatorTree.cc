@@ -9,8 +9,7 @@
 
 namespace snowball::parser {
 
-Syntax::Expression::Base*
-Parser::buildOperatorTree(std::vector<Syntax::Expression::Base*>& exprs) {
+Syntax::Expression::Base* Parser::buildOperatorTree(std::vector<Syntax::Expression::Base*>& exprs) {
     assert(exprs.size() > 0);
 
     while (exprs.size() > 1) {

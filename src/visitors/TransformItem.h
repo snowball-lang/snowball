@@ -88,57 +88,39 @@ class Item : public DBGObject {
     Item(std::shared_ptr<ir::Module> m) : module(m), type(MODULE){};
 
     // Utility functions to identify the item
-    bool
-    isType() {
-        return type == TYPE;
-    }
-    bool
-    isFunc() {
-        return type == FUNC;
-    }
-    bool
-    isVal() {
-        return type == VALUE;
-    }
-    bool
-    isModule() {
-        return type == MODULE;
-    }
+    bool isType() { return type == TYPE; }
+    bool isFunc() { return type == FUNC; }
+    bool isVal() { return type == VALUE; }
+    bool isModule() { return type == MODULE; }
 
     /// @return The module stored inside this item
-    auto
-    getModule() const {
+    auto getModule() const {
         assert(type == MODULE);
         return module;
     }
     /// @return The value stored inside this item
-    auto
-    getValue() const {
+    auto getValue() const {
         assert(type == VALUE);
         return value;
     }
     /// @return The type being represented as an item on the stack.
-    auto
-    getType() const {
+    auto getType() const {
         assert(type == TYPE);
         return tyVal;
     }
 
     /// @return a full list of functions stored in this item
-    auto&
-    getFunctions() {
+    auto& getFunctions() {
         assert(type == FUNC);
         return functions;
     }
     /// @brief append a new function pointer to this item.
-    void
-    addFunction(FunctionPtr fn) {
+    void addFunction(FunctionPtr fn) {
         assert(type == FUNC);
         functions.emplace_back(fn);
     }
 
-    std::string
-    toString() { /*TODO:*/
+    std::string toString() { /*TODO:*/
         return "<TODO: transform item name>";
     };
 };

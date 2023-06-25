@@ -29,8 +29,7 @@ Compiler::Compiler(std::string p_code, std::string p_path) {
     _path = _path / p_path;
 }
 
-void
-Compiler::initialize() {
+void Compiler::initialize() {
     _initialized = true;
     create_source_info();
 
@@ -39,8 +38,7 @@ Compiler::initialize() {
     if (!fs::exists(config_folder / "bin")) fs::create_directory(config_folder / "bin");
 }
 
-void
-Compiler::compile(bool verbose) {
+void Compiler::compile(bool verbose) {
     if (!_initialized) {
         throw SNError(Error::COMPILER_ERROR, "Compiler has not been initialized!");
     }
@@ -130,8 +128,7 @@ Compiler::compile(bool verbose) {
 #undef SHOW_STATUS
 }
 
-toml::parse_result
-Compiler::get_config() {
+toml::parse_result Compiler::get_config() {
     std::string name = fs::current_path() / "sn.toml";
     std::ifstream f(name.c_str());
     if (f.good()) { return toml::parse_file(name); }
@@ -144,11 +141,9 @@ Compiler::get_config() {
                       RESET));
 }
 
-void
-Compiler::cleanup() { }
+void Compiler::cleanup() { }
 
-int
-Compiler::emit_object(std::string out, bool log) {
+int Compiler::emit_object(std::string out, bool log) {
     auto builder = new codegen::LLVMBuilder(module);
     builder->codegen();
     builder->optimizeModule(opt_level);
@@ -160,8 +155,7 @@ Compiler::emit_object(std::string out, bool log) {
     return builder->emitObjectFile(out, log);
 }
 
-int
-Compiler::emit_llvmir(std::string p_output, bool p_pmessage) {
+int Compiler::emit_llvmir(std::string p_output, bool p_pmessage) {
     auto builder = new codegen::LLVMBuilder(module);
     builder->codegen();
     std::error_code EC;
@@ -174,8 +168,7 @@ Compiler::emit_llvmir(std::string p_output, bool p_pmessage) {
     return EXIT_SUCCESS;
 }
 
-int
-Compiler::emit_binary(std::string out, bool log) {
+int Compiler::emit_binary(std::string out, bool log) {
     std::string objfile = Logger::format("%s.so", out.c_str());
     DEBUG_CODEGEN("Emitting object file... (%s)", objfile.c_str());
     int objstatus = emit_object(objfile, false);
@@ -224,8 +217,7 @@ Compiler::emit_binary(std::string out, bool log) {
     return EXIT_SUCCESS;
 }
 
-void
-Compiler::create_source_info() {
+void Compiler::create_source_info() {
     SourceInfo* source_info = new SourceInfo(_code, _path);
     _source_info = source_info;
 }

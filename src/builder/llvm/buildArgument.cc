@@ -9,10 +9,7 @@
 namespace snowball {
 namespace codegen {
 
-void
-LLVMBuilder::visit(ir::Argument* arg) {
-    this->value = ctx->getSymbol(arg->getId());
-}
+void LLVMBuilder::visit(ir::Argument* arg) { this->value = ctx->getSymbol(arg->getId()); }
 
 } // namespace codegen
 } // namespace snowball

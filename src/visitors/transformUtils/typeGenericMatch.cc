@@ -6,8 +6,7 @@
 namespace snowball {
 namespace Syntax {
 
-bool
-Transformer::typeGenericsMatch(Expression::TypeRef* ty, std::shared_ptr<types::Type> comp) {
+bool Transformer::typeGenericsMatch(Expression::TypeRef* ty, std::shared_ptr<types::Type> comp) {
     std::vector<std::shared_ptr<types::Type>> generatedGenerics;
     for (auto x : ty->getGenerics()) { generatedGenerics.emplace_back(transformType(x)); }
 

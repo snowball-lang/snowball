@@ -9,8 +9,7 @@
 
 namespace snowball::parser {
 
-Syntax::Statement::ClassDef*
-Parser::parseClass() {
+Syntax::Statement::ClassDef* Parser::parseClass() {
     assert(is<TokenType::KWORD_CLASS>());
     next(); // East "class"
 

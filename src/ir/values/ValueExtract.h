@@ -26,10 +26,7 @@ class ValueExtract : public AcceptorExtend<ValueExtract, Value> {
     explicit ValueExtract(std::shared_ptr<Value> variable) : value(variable){};
 
     /// @return The stored value
-    auto
-    getValue() {
-        return value;
-    }
+    auto getValue() { return value; }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

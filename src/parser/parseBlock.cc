@@ -7,8 +7,7 @@
 
 namespace snowball::parser {
 
-Syntax::Block*
-Parser::parseBlock(std::vector<TokenType> termination) {
+Syntax::Block* Parser::parseBlock(std::vector<TokenType> termination) {
     assert(!is<TokenType::_EOF>());
     std::vector<Syntax::Node*> stmts;
 

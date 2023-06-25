@@ -73,8 +73,7 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
      * actual function corresponding to a FunctionType and this
      * function will just have the purpose as a fallback.
      */
-    virtual bool
-    is(Type* other) const override {
+    virtual bool is(Type* other) const override {
         if (auto f = utils::cast<FunctionType>(other)) { return is(f); }
 
         return false;
@@ -90,20 +89,11 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
     virtual bool is(FunctionType* other);
 
     /// @return function argument types
-    std::vector<std::shared_ptr<Type>>
-    getArgs() const {
-        return args;
-    }
+    std::vector<std::shared_ptr<Type>> getArgs() const { return args; }
     /// @return function return types
-    std::shared_ptr<Type>
-    getRetType() const {
-        return retTy;
-    }
+    std::shared_ptr<Type> getRetType() const { return retTy; }
     /// @return If the function is declared as variadic
-    bool
-    isVariadic() {
-        return variadic;
-    }
+    bool isVariadic() { return variadic; }
 
     // std::string getName() const override; // TODO:
 

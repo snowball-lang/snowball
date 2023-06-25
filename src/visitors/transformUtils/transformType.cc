@@ -12,8 +12,7 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::shared_ptr<types::Type>
-Transformer::transformType(Expression::TypeRef* ty) {
+std::shared_ptr<types::Type> Transformer::transformType(Expression::TypeRef* ty) {
     auto name = ty->getPrettyName();
     auto id = ty->getName();
 

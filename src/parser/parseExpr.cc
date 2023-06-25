@@ -12,8 +12,7 @@ using Operators = snowball::services::OperatorService;
 
 namespace snowball::parser {
 
-Syntax::Expression::Base*
-Parser::parseExpr(bool allowAssign) {
+Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
     std::vector<Syntax::Expression::Base*> exprs;
 
     while (true) {

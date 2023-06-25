@@ -38,17 +38,13 @@ class DBGSourceInfo : public SrcObject {
     void prepare_for_error();
     friend SrcObject;
 
-    auto
-    getDBGInfo() {
-        return this;
-    }
+    auto getDBGInfo() { return this; }
 
     /**
      * @brief Create a new instance  of dbg source info
      * using a token as reference.
      */
-    static auto
-    fromToken(SourceInfo* i, Token tk) {
+    static auto fromToken(SourceInfo* i, Token tk) {
         return new DBGSourceInfo(i, tk.get_pos(), tk.get_width());
     }
 };

@@ -13,8 +13,7 @@ using namespace snowball::utils;
 namespace snowball {
 namespace codegen {
 
-llvm::DISubprogram*
-LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
+llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
     auto srcInfo = x->getDBGInfo();
 
     auto file = dbg.getFile(srcInfo->getSourceInfo()->getPath());
@@ -39,8 +38,7 @@ LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
     return subprogram;
 }
 
-llvm::DIType*
-LLVMBuilder::getDIType(types::Type* ty) {
+llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     auto llvmType = getLLVMType(ty);
 
     auto& layout = module->getDataLayout();

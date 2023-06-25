@@ -92,8 +92,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>, public ir::IdMixin
      *  primitive types, this function will automatically
      *  return false.
      */
-    virtual bool
-    is(Type* other) const override {
+    virtual bool is(Type* other) const override {
         if (auto c = utils::cast<DefinedType>(other)) { return is(c); }
 
         return false;
@@ -125,23 +124,14 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>, public ir::IdMixin
     /// @return a vector containing all the functions in a vtable
     std::vector<std::shared_ptr<ir::Func>> getVTable() const;
     /// @return the generic list defined for this type
-    auto
-    getGenerics() const {
-        return generics;
-    }
+    auto getGenerics() const { return generics; }
     /// @return the parent class it inherits from
     /// @note It may be std::nullptr if it does not inherit from
     ///  anything!
-    auto
-    getParent() const {
-        return parent;
-    }
+    auto getParent() const { return parent; }
     /// @return A list containing all the fields declared for the class
     /// @note It does not include the parent fields!
-    auto
-    getFields() const {
-        return fields;
-    }
+    auto getFields() const { return fields; }
     /// @brief Append a new field (ClassField) to the list
     void addField(ClassField* f);
     /// @c Type::toRef() for information about this function.

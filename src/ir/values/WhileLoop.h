@@ -43,21 +43,12 @@ class WhileLoop : public AcceptorExtend<WhileLoop, Value> {
 
     /// @return body block instructions to execute
     //   if the condition is met each iteration
-    auto
-    getBlock() const {
-        return insts;
-    }
+    auto getBlock() const { return insts; }
     /// @return the expression to be evaluated each iteration
-    auto
-    getCondition() const {
-        return cond;
-    }
+    auto getCondition() const { return cond; }
     /// @return If the condition should be checked before or after
     ///  each iteration
-    auto
-    isDoWhile() const {
-        return doWhile;
-    }
+    auto isDoWhile() const { return doWhile; }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

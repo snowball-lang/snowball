@@ -13,8 +13,7 @@ using namespace snowball::utils;
 namespace snowball {
 namespace codegen {
 
-void
-LLVMBuilder::setPersonalityFunction(llvm::Function* func) {
+void LLVMBuilder::setPersonalityFunction(llvm::Function* func) {
     auto ty = llvm::FunctionType::get(builder->getInt32Ty(),
                                       {builder->getInt32Ty(), builder->getInt32Ty(),
                                        builder->getInt64Ty(), builder->getInt8PtrTy(),

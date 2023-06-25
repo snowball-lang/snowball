@@ -29,15 +29,9 @@ class Cast : public AcceptorExtend<Cast, Value> {
         : expr(expr), castType(castType){};
 
     /// @return value to cast
-    auto
-    getExpr() {
-        return expr;
-    }
+    auto getExpr() { return expr; }
     /// @return the result type to cast to
-    auto
-    getCastType() {
-        return castType;
-    }
+    auto getCastType() { return castType; }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

@@ -43,8 +43,7 @@ namespace snowball {
 namespace app {
 namespace commands {
 
-void
-init_create_cfg(bool yes, std::string entry) {
+void init_create_cfg(bool yes, std::string entry) {
     std::ofstream outfile(CONFIGURATION_FILE);
 
     std::string name = "amazing-snowball-project";
@@ -66,8 +65,7 @@ init_create_cfg(bool yes, std::string entry) {
 }
 
 // TODO: Output messages
-int
-init(app::Options::InitOptions p_opts) {
+int init(app::Options::InitOptions p_opts) {
     auto start = high_resolution_clock::now();
 
     if (p_opts.cfg) {

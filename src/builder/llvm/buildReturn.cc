@@ -10,8 +10,7 @@
 namespace snowball {
 namespace codegen {
 
-void
-LLVMBuilder::visit(ir::Return* ret) {
+void LLVMBuilder::visit(ir::Return* ret) {
     auto exprValue = ret->getExpr();
 
     llvm::Value* val = nullptr;

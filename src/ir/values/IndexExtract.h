@@ -37,26 +37,17 @@ class IndexExtract : public AcceptorExtend<Return, Value> {
      * @return The value it's being extracted
      *  from.
      */
-    auto
-    getValue() const {
-        return value;
-    }
+    auto getValue() const { return value; }
     /**
      * @brief Get the index used for the index
      *  extraction
      */
-    auto
-    getIndex() const {
-        return index;
-    }
+    auto getIndex() const { return index; }
     /**
      * @brief Get the field object from the value we are
      *  trying to extract
      */
-    auto
-    getField() const {
-        return field;
-    }
+    auto getField() const { return field; }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

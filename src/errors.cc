@@ -9,8 +9,7 @@
 namespace snowball {
 namespace errors {
 
-void
-NiceError::print_error(bool asTail) const {
+void NiceError::print_error(bool asTail) const {
     cb_dbg_info->prepare_for_error();
 
     if (!asTail) {
@@ -109,8 +108,7 @@ NiceError::print_error(bool asTail) const {
     }
 };
 
-const char*
-get_error(Error code) {
+const char* get_error(Error code) {
     RET_ERROR_IF_CODE(Error::BUG, "BUG")
     RET_ERROR_IF_CODE(Error::TODO, "TODO")
     RET_ERROR_IF_CODE(Error::WARNING, "Warning")

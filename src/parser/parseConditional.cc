@@ -10,8 +10,7 @@ using namespace snowball::Syntax::Statement;
 using namespace snowball::Syntax;
 namespace snowball::parser {
 
-Statement::Base*
-Parser::parseConditional() {
+Statement::Base* Parser::parseConditional() {
     assert(is<TokenType::KWORD_IF>());
     auto info = DBGSourceInfo::fromToken(m_source_info, m_current);
 
@@ -22,16 +21,17 @@ Parser::parseConditional() {
         consume<TokenType::SYM_HASH>("'#'");
 
         auto identifierInfo = DBGSourceInfo::fromToken(m_source_info, m_current);
-        auto identifier = Syntax::N<Expression::Identifier>(assert_tok<TokenType::IDENTIFIER>("an identifier").to_string());
+        auto identifier = Syntax::N<Expression::Identifier>(
+                assert_tok<TokenType::IDENTIFIER>("an identifier").to_string());
         identifier->setDBGInfo(identifierInfo);
 
-        //next();
-        //auto block = parseBlock();
-        //auto node = Syntax::N<ConditionalConstExpr>(expr, block);
-        //node->setDBGInfo(info);
-        //return node;
+        // next();
+        // auto block = parseBlock();
+        // auto node = Syntax::N<ConditionalConstExpr>(expr, block);
+        // node->setDBGInfo(info);
+        // return node;
     }
-    
+
     // Otherwise, parse a runtime conditional.
     auto expr = parseExpr(false);
     next();

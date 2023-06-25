@@ -28,20 +28,11 @@ class Call : public AcceptorExtend<Call, Value> {
         : callee(callee), arguments(args){};
 
     /// @return function call arguments
-    auto&
-    getArguments() {
-        return arguments;
-    }
+    auto& getArguments() { return arguments; }
     /// @return function call arguments
-    auto
-    getCallee() const {
-        return callee;
-    }
+    auto getCallee() const { return callee; }
     /// @brief Set a new list of arguments to the current call
-    void
-    setArguments(std::vector<std::shared_ptr<Value>> v) {
-        arguments = v;
-    }
+    void setArguments(std::vector<std::shared_ptr<Value>> v) { arguments = v; }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

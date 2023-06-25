@@ -30,10 +30,7 @@ class Return : public AcceptorExtend<Return, Value> {
      * @note The value may be std::nullptr because
      *  the user might do `return;` for void functions
      */
-    auto
-    getExpr() {
-        return expr;
-    }
+    auto getExpr() { return expr; }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

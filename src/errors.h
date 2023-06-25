@@ -46,8 +46,7 @@ class SNError {
         message = err;
     };
 
-    virtual void
-    print_error(bool _ = false) const {
+    virtual void print_error(bool _ = false) const {
         Logger::error(
                 FMT("(%s%s%s) %s%s%s", RED, get_error(error), RESET, BOLD, message.c_str(), RESET));
     };

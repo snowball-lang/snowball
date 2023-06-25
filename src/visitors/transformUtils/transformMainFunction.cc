@@ -6,8 +6,7 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-void
-Transformer::transformMainFunction(Statement::FunctionDef* p_node) {
+void Transformer::transformMainFunction(Statement::FunctionDef* p_node) {
     assert(ctx->module->isMain());
     assert(p_node->getName() == "main");
     assert(p_node->getPrivacy() == Statement::Privacy::PUBLIC);

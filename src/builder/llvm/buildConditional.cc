@@ -14,8 +14,7 @@
 namespace snowball {
 namespace codegen {
 
-void
-LLVMBuilder::visit(ir::Conditional* c) {
+void LLVMBuilder::visit(ir::Conditional* c) {
     auto parent = ctx->getCurrentFunction();
     assert(parent);
 

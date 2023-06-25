@@ -10,8 +10,7 @@ using namespace snowball::Syntax::Statement;
 
 namespace snowball::parser {
 
-WhileLoop*
-Parser::parseWhile() {
+WhileLoop* Parser::parseWhile() {
     assert(is<TokenType::KWORD_WHILE>() || is<TokenType::KWORD_DO>());
     auto token = m_current;
 

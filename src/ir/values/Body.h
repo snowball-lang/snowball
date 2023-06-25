@@ -26,10 +26,7 @@ class Block : public AcceptorExtend<Func, Value> {
     explicit Block(std::vector<std::shared_ptr<Value>> insts) : insts(insts){};
 
     /// @return body block instructions
-    auto
-    getBlock() {
-        return insts;
-    }
+    auto getBlock() { return insts; }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS
