@@ -18,6 +18,9 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
             keep_parsing = false;
         } else {
             switch (m_current.type) {
+                case TokenType::_EOF:
+                    // Unexpected because it shoud've been caught by the conditional above
+                    createError<SYNTAX_ERROR>("unexpected end of file");
 
                 case TokenType::KWORD_PUBLIC:
                 case TokenType::KWORD_PRIVATE: {

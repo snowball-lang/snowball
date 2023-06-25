@@ -35,6 +35,11 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     ///  of using current class or current module.
     /// @note If it's empty, we will consider it as `unset`.
     std::string baseUUIDOverride = "";
+    /// @brief A stack of UUIDs that are used to generate
+    ///  unique identifiers for things like functions, variables, etc.
+    /// @note Only used for namespaces. 
+    /// @note The closest stack item will not be added to the UUID stack.
+    std::vector<std::string> uuidStack = {};
     /// @brief The real class that the context is under. This
     ///  is useful (for example) when you want to generate functions
     ///  that got inherited but still want it to "be part of" the parent

@@ -3,7 +3,6 @@
 #include "../errors/error.h"
 #include "../types/PrimitiveTypes.h"
 
-#include <deque>
 #include <functional>
 #include <list>
 #include <map>
@@ -41,7 +40,7 @@ class ASTContext {
      *   if-stmt scope > fn scope > global scope
      *      (no vars)     (var a)   (types, etc)
      */
-    std::shared_ptr<std::deque<Scope>> stack = std::make_shared<std::deque<Scope>>();
+    std::shared_ptr<std::list<Scope>> stack = std::make_shared<std::list<Scope>>();
 
   public:
     ASTContext() {
@@ -82,7 +81,7 @@ class ASTContext {
             if (found) return {val, true};
         }
 
-        return {std::unique_ptr<T>(nullptr), false};
+        return {std::shared_ptr<T>(nullptr), false};
     }
 
     /**
@@ -96,12 +95,10 @@ class ASTContext {
         auto val = s.find(name);
         if (val != s.end()) { return {val->second, true}; }
 
-        return {std::unique_ptr<T>(nullptr), false};
+        return {std::shared_ptr<T>(nullptr), false};
     }
     /// @return the current scope the programm is into
     virtual Scope& currentScope() { return stack->front(); }
-    /// @return the global scope
-    virtual Scope& globalScope() { return stack->at(stack->size() - 2); }
     /// @brief Create a new scope and append it.
     virtual void addScope() {
         DEBUG_SYMTABLE(0, "Creating new scope")

@@ -84,8 +84,8 @@ class Item : public DBGObject {
 
     Item(Type type, ValuePtr val) : type(type), value(val){};
     Item(FunctionPtr fn) : type(FUNC), functions({fn}){};
-    Item(TypePtr val) : type(TYPE), tyVal(val){};
     Item(std::shared_ptr<ir::Module> m) : module(m), type(MODULE){};
+    Item(TypePtr val) : type(TYPE), tyVal(val){};
 
     // Utility functions to identify the item
     bool isType() { return type == TYPE; }

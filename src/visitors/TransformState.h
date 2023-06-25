@@ -1,7 +1,6 @@
 #include "../ir/module/Module.h"
 #include "TransformItem.h"
 
-#include <deque>
 #include <memory>
 #include <string>
 #include <vector>
@@ -15,7 +14,7 @@ namespace transform {
 
 /// @brief Representation of a saved state for the context
 struct ContextState : std::enable_shared_from_this<ContextState> {
-    using StackType = std::deque<std::map<std::string, std::shared_ptr<Item>>>;
+    using StackType = std::list<std::map<std::string, std::shared_ptr<Item>>>;
     std::shared_ptr<StackType> stack = {};
     std::shared_ptr<ir::Module> module = nullptr;
     std::shared_ptr<types::DefinedType> currentClass = nullptr;

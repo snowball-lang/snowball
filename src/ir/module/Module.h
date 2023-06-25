@@ -38,7 +38,7 @@ class Module : public AcceptorExtend<Module, SrcObject>,
 
     /// @return module's name
     std::string getName() const;
-    /// @return module's unique identifier
+    /// @return module's unique identifier (UUID)
     std::string getUniqueName() const;
 
     // Boolean representing whether the module is global or not

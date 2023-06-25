@@ -285,6 +285,10 @@ class Parser {
      * expr          ::=  <type>
      */
     Syntax::Expression::WhereClause* parseWhereClause();
+    /**
+     * namespace     ::=  "namespace" <identifier> "{" [body] "}"
+    */
+    Syntax::Statement::Namespace* parseNamespace();
 };
 
 } // namespace parser

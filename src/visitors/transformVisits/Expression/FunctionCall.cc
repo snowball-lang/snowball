@@ -27,7 +27,6 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     if (auto x = utils::cast<Expression::Identifier>(callee)) {
         auto g = utils::cast<Expression::GenericIdentifier>(callee);
         auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
-
         auto r = getFromIdentifier(x->getDBGInfo(), x->getIdentifier(), generics);
         auto rTuple = std::tuple_cat(r, std::make_tuple(true));
         fn = getFunction(p_node,

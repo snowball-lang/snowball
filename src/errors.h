@@ -25,6 +25,7 @@ enum Error
     CONFIGURATION_ERROR,
     ATTRIBUTE_ERROR,
     ARGUMENT_ERROR,
+    IMPORT_ERROR,
     PSEUDO_ERROR,
     FUNCTION_RET_ERR,
     COMPILER_ERROR, // note: not the same as "compile time error"
@@ -67,6 +68,9 @@ struct ErrorInfo {
     SNError* tail = nullptr;
 };
 
+/**
+ * @brief A nice error is an error that is printed in a nice way.
+ */
 class NiceError : public SNError {
   protected:
     DBGSourceInfo* cb_dbg_info;
@@ -78,6 +82,9 @@ class NiceError : public SNError {
     virtual void print_error(bool asTail = false) const override;
 };
 
+/**
+ * @brief A lexer error is an error that occurs during lexing.
+ */
 class LexerError : public NiceError {
   public:
     LexerError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})
@@ -86,6 +93,9 @@ class LexerError : public NiceError {
     virtual ~LexerError(){};
 };
 
+/**
+ * @brief A parser error is an error that occurs during parsing.
+*/
 class ParserError : public NiceError {
   public:
     ParserError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})
@@ -94,6 +104,9 @@ class ParserError : public NiceError {
     virtual ~ParserError(){};
 };
 
+/**
+ * @brief A compiler error is an error that occurs during compilation.
+*/
 class CompilerError : public NiceError {
   public:
     CompilerError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})

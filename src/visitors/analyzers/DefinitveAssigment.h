@@ -14,7 +14,6 @@
 #include "../Analyzer.h"
 
 #include <assert.h>
-#include <deque>
 #include <map>
 #include <memory>
 #include <optional>
@@ -117,7 +116,7 @@ class DefiniteAssigment : public Analyzer {
      * algorithm to keep track of the current variable scopes in the
      * program.
      */
-    std::deque<Scope> scopes = {/* global = */ {}};
+    std::list<Scope> scopes = {/* global = */ {}};
     /**
      * A struct that represents the state of the current scope in the
      * program.
