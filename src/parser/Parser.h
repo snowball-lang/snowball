@@ -177,7 +177,6 @@ class Parser {
      *  acting as a global scope.
     */
     NodeVec parseGlobal(TokenType terminator = TokenType::_EOF);
-
     /**
      * visibility    ::=  pub | priv
      * funcname      ::=  identifier

@@ -3,12 +3,6 @@ use Core::CLib
 // TODO: Error occurs when the funtion is already generated and we only check for arg->is(...) on non-generated function overloads instead of both non and generated functions 
 extern fn hello();
 
-class hello<T = i32> {
-    pub:
-    hello() {
-        let x: T = 4;
-    }
-}    
 
 fn hello() {
     let x: i32 = 4;
@@ -21,7 +15,4 @@ namespace hello {
 }
 
 pub fn main() i32 {
-
-
-    new hello<?>();
 }
