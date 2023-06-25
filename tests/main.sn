@@ -1,14 +1,13 @@
 use Core::CLib
 
-// TODO: Error occurs when the funtion is already generated and we only check for arg->is(...) on non-generated function overloads instead of both non and generated functions 
 
 fn myFunction() i32 {
-    return 0;
+    CLib::putchar('A')
 }
 
 namespace hello {
-    pub fn test() {
-        let x: i32 = myFunction(); // not found
+    pub fn [[test]] test() {
+        let x: i32 = myFunction();
     }
 }
 

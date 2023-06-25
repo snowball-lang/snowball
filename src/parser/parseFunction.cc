@@ -54,37 +54,18 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     auto width = 0;
 
     if (is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek())) {
-        next();
-
-        while (true) {
-            next();
-            assert_tok<TokenType::IDENTIFIER>("an identifier");
-
-            auto attr = m_current.to_string();
+        attributes = parseAttributes<Attributes::Fn>([&](std::string attr) {
             if (attr == "llvm_function") {
-                attributes.push_back(Attributes::Fn::LLVM_FUNC);
+                return Attributes::Fn::LLVM_FUNC;
                 isLLVMFunction = true;
             } else if (attr == "internal_linkage") {
-                attributes.push_back(Attributes::Fn::INTERNAL_LINKAGE);
+                return Attributes::Fn::INTERNAL_LINKAGE;
             } else if (attr == "inline") {
-                attributes.push_back(Attributes::Fn::INLINE);
-            } else {
-                createError<ATTRIBUTE_ERROR>(
-                        "Trying to use an undefined attribute!",
-                        {.info = FMT("Attribute '%s' is not defined!", attr.c_str())});
-            }
-
-            next();
-            if (is<TokenType::BRACKET_RSQUARED>()) {
-                next();
-                assert_tok<TokenType::BRACKET_RSQUARED>("']]'");
-                next();
-                break;
-            } else if (is<TokenType::SYM_COMMA>()) {
-            } else {
-                assert_tok<TokenType::BRACKET_RSQUARED>("',' or ']]'");
-            }
-        }
+                return Attributes::Fn::INLINE;
+            } 
+            
+            return Attributes::Fn::INVALID;
+        });
     }
 
     if (isOperator) {

@@ -19,6 +19,8 @@ namespace snowball {
 namespace Attributes {
 enum Fn
 {
+    INVALID = -1,
+    
     LLVM_FUNC,
     INTERNAL_LINKAGE,
     INLINE,

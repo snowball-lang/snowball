@@ -289,6 +289,39 @@ class Parser {
      * namespace     ::=  "namespace" <identifier> "{" [body] "}"
     */
     Syntax::Statement::Namespace* parseNamespace();
+    /**
+     * @brief Parses a list of attributes
+     * @param parseFn function to parse the attribute
+     * @return a vector of attributes
+     */
+    template<typename T> std::vector<T> parseAttributes(std::function<T(std::string)> parseFn) {
+        assert(is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek()));
+        next();
+        std::vector<T> attributes;
+        while (true) {
+            next();
+            assert_tok<TokenType::IDENTIFIER>("an identifier");
+            auto attr = m_current.to_string();
+            auto parsed = parseFn(attr);
+            if (parsed == T::INVALID) {
+                createError<ATTRIBUTE_ERROR>(
+                        "Trying to use an undefined attribute!",
+                        {.info = FMT("Attribute '%s' is not defined!", attr.c_str())});
+            }
+            attributes.push_back(parsed);
+            next();
+            if (is<TokenType::BRACKET_RSQUARED>()) {
+                next();
+                assert_tok<TokenType::BRACKET_RSQUARED>("']]'");
+                next();
+                break;
+            } else if (is<TokenType::SYM_COMMA>()) {
+            } else {
+                assert_tok<TokenType::BRACKET_RSQUARED>("',' or ']]'");
+            }
+        }
+        return attributes;
+    }
 };
 
 } // namespace parser
