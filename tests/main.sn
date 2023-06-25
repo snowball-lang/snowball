@@ -9,5 +9,9 @@ class hello<T: Core::CastableTo<?f32>> {
 
 
 pub fn main() i32 {
+    if constexpr #hasattr(balls, x) {
+        eatMyHuge(balls)
+    }
+
     new hello<?cobj>();
 }

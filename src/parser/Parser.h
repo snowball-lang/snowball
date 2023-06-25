@@ -221,8 +221,9 @@ class Parser {
     /**
      * conditional   ::=  "if" [expr] [block]
      *                |   "if" [expr]: [expr]
+     *                |   "if" "constexpr"
      */
-    Syntax::Statement::Conditional* parseConditional();
+    Syntax::Statement::Base* parseConditional();
     /**
      * visibility    ::=  pub | priv
      * class_name    ::=  identifier

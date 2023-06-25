@@ -711,13 +711,55 @@ struct Conditional : public AcceptorExtend<Conditional, Base> {
     getCondition() {
         return cond;
     }
-
     /// @return Get "else" statement
     auto
     getElse() {
         return elseBlock;
     }
 
+    // Set a visit handler for the generators
+    ACCEPT()
+};
+
+/**
+ * @brief AST representation of a conditional statement that contains a 
+ *  `constexpr` expression as it's condition.
+ */
+struct ConditionalConstExpr : public AcceptorExtend<ConditionalConstExpr, Base> {
+    // Instructions stored inside a block
+    Block* insts;
+    // Name of the function for the expression
+    Expression::Identifier* name;
+    // The arguments passed to the constant expression
+    std::vector<Node*> args;
+    // The "else" statement block if the condition is false
+    Block* elseBlock = nullptr;
+
+  public:
+    explicit ConditionalConstExpr(Expression::Identifier* name, std::vector<Node*> args, Block* insts, Block* elseBlock = nullptr)
+        : name(name), args(args), insts(insts), elseBlock(elseBlock){};
+
+    /// @return body block instructions to execute
+    //   if the condition is met
+    auto
+    getBlock() {
+        return insts;
+    }
+    /// @return Name of the function for the expression
+    auto
+    getName() {
+        return name;
+    }
+    /// @return The arguments passed to the constant expression
+    auto
+    getArguments() {
+        return &args;
+    }
+    /// @return Get "else" statement
+    auto
+    getElse() {
+        return elseBlock;
+    }
     // Set a visit handler for the generators
     ACCEPT()
 };

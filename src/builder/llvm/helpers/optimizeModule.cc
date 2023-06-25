@@ -89,7 +89,6 @@ LLVMBuilder::optimizeModule(app::Options::Optimization o) {
                                       module_analysis_manager);
     function_analysis_manager.registerPass([&] { return llvm::TargetLibraryAnalysis(tlii); });
 
-    // todo: let user decide
     llvm::OptimizationLevel level;
     switch (o) {
         case app::Options::Optimization::OPTIMIZE_O0: level = llvm::OptimizationLevel::O0; break;

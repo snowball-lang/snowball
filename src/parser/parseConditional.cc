@@ -9,16 +9,32 @@
 using namespace snowball::Syntax::Statement;
 namespace snowball::parser {
 
-Conditional*
+Base*
 Parser::parseConditional() {
     assert(is<TokenType::KWORD_IF>());
-
     auto info = DBGSourceInfo::fromToken(m_source_info, m_current);
+
+    // If the next token is a constexpr, then this is a compile-time conditional.
+    if (is<TokenType::KWORD_CONSTEXPR>(peek())) {
+        createError(info, "Compile-time conditionals are not yet supported");
+        next();
+        consume<TokenType::SYM_HASH>("'#'");
+
+        auto identifierInfo = DBGSourceInfo::fromToken(m_source_info, m_current);
+        auto identifier = Syntax::N<Identifier>(assert_tok<TokenType::IDENTIFIER>("an identifier"));
+        identifier->setDBGInfo(identifierInfo);
+
+        next();
+        auto block = parseBlock();
+        auto node = Syntax::N<ConditionalConstExpr>(expr, block);
+        node->setDBGInfo(info);
+        return node;
+    }
+    
+    // Otherwise, parse a runtime conditional.
     auto expr = parseExpr(false);
     next();
-
     auto block = parseBlock();
-
     auto node = Syntax::N<Conditional>(expr, block);
     node->setDBGInfo(info);
 
