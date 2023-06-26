@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <string>
 #include <vector>
+#include <map>
 
 #ifndef __SNOWBALL_AST_COMMON_NODES_H_
 #define __SNOWBALL_AST_COMMON_NODES_H_
@@ -20,7 +21,8 @@ namespace Attributes {
 enum Fn
 {
     INVALID = -1,
-    
+
+    TEST,
     LLVM_FUNC,
     INTERNAL_LINKAGE,
     INLINE,
@@ -233,8 +235,10 @@ namespace Statement {
  * @tparam T The enum type representing the attributes that can be
  * stored.
  */
-template <typename T>
+template <typename T, typename StoreType = std::map<std::string, std::string>>
 class AttributeHolder {
+    std::map<T, StoreType> arguments;
+
   public:
     /**
      * Checks if a specific attribute is set for the node.
@@ -251,11 +255,24 @@ class AttributeHolder {
      *
      * @param attribute The attribute to add.
      */
-    auto addAttribute(T attribute) { return m_attributes |= (1 << static_cast<int>(attribute)); }
+    auto addAttribute(T attribute, StoreType args) { 
+        arguments[attribute] = args;
+        return m_attributes |= (1 << static_cast<int>(attribute)); 
+    }
     /**
      * Sets a new list of attributes to the current holder
      */
-    void setAttributes(unsigned int attribute) { m_attributes = attribute; }
+    void setAttributes(unsigned int attribute, std::map<T, StoreType> args) { 
+        m_attributes = attribute; 
+        arguments = args;
+    }
+
+    void setAttributes(AttributeHolder* holder) {
+        for (int i = -1; i < (int)holder->getAttributes(); i++) {
+            arguments[static_cast<T>(i)] = holder->getAttributeArgs(static_cast<T>(i));
+        }
+        m_attributes = holder->m_attributes;
+    }
     /**
      * Returns the respective unsigned integer for the attributes
      */
@@ -272,6 +289,18 @@ class AttributeHolder {
      * to zero.
      */
     void clearAttributes() { m_attributes = 0; }
+
+    /**
+     * Gets the arguments for a specific attribute.
+     * @param attribute The attribute to get the arguments for.
+     * @return A vector containing the arguments for the attribute.
+     */
+    StoreType getAttributeArgs(T attribute) const {
+        auto it = arguments.find(attribute);
+        if (it == arguments.end())
+            return {};
+        return it->second;
+    }
 
   private:
     /** The bit field storing the attributes for the node. */

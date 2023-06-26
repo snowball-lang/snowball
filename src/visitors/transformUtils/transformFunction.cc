@@ -61,7 +61,7 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
                 if (node->isVirtual()) { fn->setVirtualIndex(c->addVtableItem(fn)); }
             }
 
-            fn->setAttributes(node->getAttributes());
+            fn->setAttributes(node);
             ir::Func::FunctionArgs newArgs = {};
 
             if (fn->isConstructor()) {

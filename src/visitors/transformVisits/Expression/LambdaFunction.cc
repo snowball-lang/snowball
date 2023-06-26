@@ -28,7 +28,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
     fn->setPrivacy(Statement::Privacy::PUBLIC);
     fn->setStatic(false);
 
-    fn->setAttributes(node->getAttributes());
+    fn->setAttributes(node);
     ir::Func::FunctionArgs newArgs = {};
 
     for (int i = 0; i < node->getArgs().size(); i++) {

@@ -30,7 +30,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     std::string name;
     std::string externName;
 
-    std::vector<Attributes::Fn> attributes;
+    std::map<Attributes::Fn, std::map<std::string, std::string>> attributes;
     bool isLLVMFunction = false;
 
     // Check if the tokens behind the function keyword
@@ -56,12 +56,14 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     if (is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek())) {
         attributes = parseAttributes<Attributes::Fn>([&](std::string attr) {
             if (attr == "llvm_function") {
-                return Attributes::Fn::LLVM_FUNC;
                 isLLVMFunction = true;
+                return Attributes::Fn::LLVM_FUNC;
             } else if (attr == "internal_linkage") {
                 return Attributes::Fn::INTERNAL_LINKAGE;
             } else if (attr == "inline") {
                 return Attributes::Fn::INLINE;
+            } else if (attr == "test") {
+                return Attributes::Fn::TEST;
             } 
             
             return Attributes::Fn::INVALID;
@@ -411,7 +413,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
         fn = Syntax::N<FunctionDef>(name);
     }
 
-    for (auto a : attributes) { fn->addAttribute(a); }
+    for (auto [n, a] : attributes) { fn->addAttribute(n, a); }
 
     fn->setVirtual(isVirtual);
     fn->setVariadic(isVarArg);
