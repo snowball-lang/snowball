@@ -13,9 +13,7 @@ std::string TransformContext::createIdentifierName(const std::string name, bool 
 
     if (includeBase && !alreadyGenerated) {
         alreadyGenerated = true;
-        if (!baseUUIDOverride.empty()) {
-            result = baseUUIDOverride + "." + name;
-        } else if (currentClass != nullptr) {
+        if (currentClass != nullptr) {
             result = currentClass->getUUID() + "." + name;
         } else {
             auto currentModule = module->getUniqueName();

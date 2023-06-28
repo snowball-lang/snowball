@@ -59,10 +59,8 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         } else if (auto b = utils::cast<Expression::TypeRef>(indexBase)) {
             baseName = transformType(b)->getPrettyName() + "::";
         }
-
         auto g = utils::cast<Expression::GenericIdentifier>(indexBase);
         auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
-
         auto name = baseName + x->getIdentifier()->getNiceName();
         auto c = getFunction(p_node,
                              r,
@@ -70,7 +68,6 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                              argTypes,
                              (g != nullptr) ? g->getGenerics()
                                             : std::vector<Expression::TypeRef*>{});
-
         // TODO: actually check if base is a module with:
         // "getFromIdentifier" of the module
         if ((x->isStatic && (!c->isStatic())) && (!inModule)) {
@@ -103,18 +100,27 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
             for (int i = 0; i < t->getArgs().size(); i++) {
                 auto arg = argTypes.at(i);
                 auto deduced = t->getArgs().at(i);
-                if (deduced->is(arg)) { /* ok */
-                } else if (deduced->canCast(arg)) {
+                if (arg->is(deduced)) { /* ok */
+                } else if (arg->canCast(deduced)) {
                     auto val = argValues.at(i);
-                    auto cast = ctx->module->N<ir::Cast>(nullptr, val, arg);
-                    cast->setType(arg);
+                    auto cast = ctx->module->N<ir::Cast>(nullptr, val, deduced);
+                    cast->setType(deduced);
                     argValues.at(i) = cast;
                 } else {
-                    E<TYPE_ERROR>(argValues.at(i),
+                    E<TYPE_ERROR>(p_node,
                                   FMT("Can't assign value with type '%s' "
                                       "to a parameter with type '%s'!",
                                       arg->getPrettyName().c_str(),
-                                      deduced->getPrettyName().c_str()));
+                                      deduced->getPrettyName().c_str()), ErrorInfo {.info = "This is the call causing the error.", .note = FMT("Errored trying to call function `%s`!\n With type `%s`", utils::dyn_cast<ir::Func>(fn)->getNiceName().c_str(), t->getPrettyName().c_str()),
+                                                                                 .tail = EI<>(argValues.at(i), "", {
+                                                                                    .info = "this is the "
+                                                                                            "value "
+                                                                                            "that's "
+                                                                                            "causing the "
+                                                                                            "error",
+                                                                                    .help = "Maybe try to convert a cast to the "
+                                                                                            "correct type?"
+                                                                                 })});
                 }
             }
         }

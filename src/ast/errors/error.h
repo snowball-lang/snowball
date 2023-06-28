@@ -14,7 +14,7 @@ namespace snowball {
 namespace Syntax {
 
 template <Error e = Error::BUG, class Val>
-auto EI(Val item, std::string msg, ErrorInfo info = {}) {
+auto EI(Val item, std::string msg = "", ErrorInfo info = {}) {
     auto i = item->getDBGInfo();
     auto error = new CompilerError(e, msg, i, info);
     return error;

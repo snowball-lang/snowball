@@ -140,7 +140,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>, public ir::IdMixin
     Syntax::Expression::TypeRef* toRef() override;
 
     /// @brief override function.
-    bool canCast(Type* ty) const override;
+    virtual bool canCast(Type* ty) const override;
     virtual bool canCast(DefinedType* ty) const;
 };
 

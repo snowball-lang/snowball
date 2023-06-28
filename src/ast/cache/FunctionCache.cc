@@ -5,6 +5,8 @@
 #include "../types/DefinedType.h"
 
 namespace snowball {
+using namespace services;
+
 namespace Syntax {
 namespace cacheComponents {
 
@@ -33,11 +35,11 @@ void Functions::setTransformedFunction(
         const std::string& uuid, std::shared_ptr<transform::Item> p_fn) {
     if (createdFunctions.count(uuid)) {
         auto x = createdFunctions.at(uuid);
-        assert(p_fn->getFunctions().size() == 1);
-        x->addFunction(p_fn->getFunctions().at(0));
+        for (auto f : p_fn->getFunctions()) {
+            x->addFunction(f);
+        }
         return;
     }
-
     createdFunctions[uuid] = p_fn;
 }
 
@@ -47,6 +49,49 @@ Functions::getTransformedFunction(const std::string uuid) {
     if (f != createdFunctions.end()) return f->second;
 
     return std::nullopt;
+}
+
+namespace {
+template <typename T> std::map<std::string, T> getAllFunctionsByUUID(std::string uuid, std::map<std::string, T>& functions) {
+    std::map<std::string, T> result;
+    for (auto f : functions) {
+        if (utils::startsWith(f.first + ".", uuid)) {
+            result[f.first] = f.second;
+        }
+    }
+    return result;
+}
+} // namespace
+
+void Functions::performInheritance(std::shared_ptr<types::DefinedType> ty, std::shared_ptr<types::DefinedType> parent) {
+    auto parentUUID = parent->getUUID();
+    auto childUUID = ty->getUUID();
+    auto createdFuncs = getAllFunctionsByUUID(parentUUID, createdFunctions);
+    auto nonGeneratedFunctions = getAllFunctionsByUUID(parentUUID, functions);
+
+    for (auto f : createdFuncs) {
+        auto name = f.first;
+        auto item = f.second;
+        auto functions = item->getFunctions();
+        utils::replaceAll(name, parentUUID + ".", "");
+        if (OperatorService::opEquals<OperatorType::CONSTRUCTOR>(name))
+            continue;
+        name = childUUID + "." + name;
+        setTransformedFunction(name, std::make_shared<transform::Item>(*item));
+    }
+
+    for (auto f : nonGeneratedFunctions) {
+        auto name = f.first;
+        auto item = f.second;
+        auto functions = item;
+        // TODO: avoid constructors?
+        utils::replaceAll(name, parentUUID, childUUID);
+        for (auto fn : functions) {
+            setFunction(name, fn.function, fn.state);
+        }
+    }
+
+    return;
 }
 
 } // namespace cacheComponents

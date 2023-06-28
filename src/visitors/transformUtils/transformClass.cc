@@ -33,20 +33,16 @@ Transformer::transformClass(const std::string& uuid,
     ctx->withState(classStore.state, [&]() {
         ctx->withScope([&] {
             auto backupClass = ctx->getCurrentClass();
-
             // TODO: maybe not reset completly, add nested classes in
             // the future
             ctx->setCurrentClass(nullptr);
-
             auto classGenerics = ty->getGenerics();
-
             // Fill out the remaining non-required tempalte parameters
             if (classGenerics.size() > generics.size()) {
                 for (auto i = generics.size(); i < classGenerics.size(); ++i) {
                     generics.push_back(transformType(classGenerics[i]->type));
                 }
             }
-
             for (int genericCount = 0; genericCount < generics.size(); genericCount++) {
                 auto generic = classGenerics.at(genericCount);
                 auto generatedGeneric = generics.at(genericCount);
@@ -56,13 +52,10 @@ Transformer::transformClass(const std::string& uuid,
                 ctx->addItem(generic->getName(), item);
                 executeGenericTests(generic->getWhereClause(), generatedGeneric);
             }
-
             auto baseUuid = ctx->createIdentifierName(ty->getName());
             auto existantTypes = ctx->cache->getTransformedType(uuid);
-
             auto _uuid = baseUuid + ":" +
                     utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
-
             std::shared_ptr<types::DefinedType> parentType = nullptr;
             if (auto x = ty->getParent()) {
                 auto parent = transformType(x);
@@ -79,7 +72,6 @@ Transformer::transformClass(const std::string& uuid,
                                            "primitive type."});
                 }
             }
-
             auto basedName = getNameWithBase(ty->getName());
             auto baseFields =
                     vector_iterate<Statement::VariableDecl*, types::DefinedType::ClassField*>(
@@ -92,20 +84,17 @@ Transformer::transformClass(const std::string& uuid,
                                         Statement::Privacy::PRIVATE,
                                         v->isMutable());
                             });
-
             auto fields = getMemberList(ty->getVariables(), baseFields, parentType);
             transformedType = std::make_shared<types::DefinedType>(
                     basedName, _uuid, ctx->module, ty, fields, parentType, generics);
-
             transformedType->setDBGInfo(ty->getDBGInfo());
             transformedType->setSourceInfo(ty->getSourceInfo());
+            if (parentType != nullptr)
+                ctx->cache->performInheritance(transformedType, parentType);
             ctx->setCurrentClass(transformedType);
-
             auto item = std::make_shared<transform::Item>(transformedType);
             ctx->cache->setTransformedType(_uuid, item);
-
             for (auto fn : ty->getFunctions()) { fn->accept(this); }
-
             {
                 // Set the default '=' operator for the class
                 auto fn = std::make_shared<ir::Func>(
@@ -116,13 +105,10 @@ Transformer::transformClass(const std::string& uuid,
                 auto typeArgs =
                         std::vector<std::shared_ptr<types::Type>>{transformedType, transformedType};
                 auto type = std::make_shared<types::FunctionType>(typeArgs, transformedType);
-
                 arg->setType(transformedType);
-
                 fn->setArgs({{"other", arg}});
                 fn->setType(type);
                 fn->setPrivacy(/* public */ false);
-
                 /// @see Transformer::defineFunction
                 auto name = ctx->createIdentifierName(fn->getName(true));
                 auto item = ctx->cache->getTransformedFunction(name);
@@ -135,31 +121,9 @@ Transformer::transformClass(const std::string& uuid,
                 }
             }
 
-            if (parentType != nullptr) {
-                auto backupCurrent = ctx->actuallCurrentClass;
-                auto backupUUID = ctx->baseUUIDOverride;
-                ctx->setCurrentClass(parentType);
-                ctx->actuallCurrentClass = transformedType;
-
-                ctx->baseUUIDOverride = _uuid;
-
-                // TODO: inherit parent functions all the way down to
-                // last base class
-                for (auto fn : parentType->getAST()->getFunctions()) {
-                    if (!services::OperatorService::opEquals<
-                                services::OperatorService::CONSTRUCTOR>(fn->getName())) {
-                        fn->accept(this);
-                    }
-                }
-
-                ctx->actuallCurrentClass = backupCurrent;
-                ctx->baseUUIDOverride = backupUUID;
-            }
-
             ctx->setCurrentClass(backupClass);
         });
     });
-
     return transformedType;
 }
 

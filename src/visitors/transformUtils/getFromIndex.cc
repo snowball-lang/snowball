@@ -10,7 +10,7 @@ namespace Syntax {
 
 std::pair<std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                      std::optional<std::shared_ptr<types::Type>>,
-                     std::optional<std::vector<std::shared_ptr<ir::Func>>>,
+                     std::optional<std::deque<std::shared_ptr<ir::Func>>>,
                      std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
                      std::optional<std::shared_ptr<ir::Module>>,
                      bool /* Accept private members */>,
@@ -20,7 +20,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
                            std::shared_ptr<ir::Value> value = nullptr)
             -> std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                           std::optional<std::shared_ptr<types::Type>>,
-                          std::optional<std::vector<std::shared_ptr<ir::Func>>>,
+                          std::optional<std::deque<std::shared_ptr<ir::Func>>>,
                           std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
                           std::optional<std::shared_ptr<ir::Module>>,
                           bool /* Accept private members */> {
@@ -98,7 +98,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     auto getFromModule = [&](std::shared_ptr<ir::Module> m)
             -> std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                           std::optional<std::shared_ptr<types::Type>>,
-                          std::optional<std::vector<std::shared_ptr<ir::Func>>>,
+                          std::optional<std::deque<std::shared_ptr<ir::Func>>>,
                           std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
                           std::optional<std::shared_ptr<ir::Module>>,
                           bool /* Accept private members */> {

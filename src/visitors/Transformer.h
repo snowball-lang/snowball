@@ -17,6 +17,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <deque>
 
 #ifndef __SNOWBALL_TRANSFORM_H_
 #define __SNOWBALL_TRANSFORM_H_
@@ -56,7 +57,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     using StoreType =
             std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                        std::optional<std::shared_ptr<types::Type>>,
-                       std::optional<std::vector<std::shared_ptr<ir::Func>>>,
+                       std::optional<std::deque<std::shared_ptr<ir::Func>>>,
                        std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
                        std::optional<std::shared_ptr<ir::Module>>>;
     // Context used to keep track of what's going on
@@ -189,7 +190,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     getFunction(DBGObject* dbgInfo,
                 std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                            std::optional<std::shared_ptr<types::Type>>,
-                           std::optional<std::vector<std::shared_ptr<ir::Func>>>,
+                           std::optional<std::deque<std::shared_ptr<ir::Func>>>,
                            std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
                            std::optional<std::shared_ptr<ir::Module>>,
                            bool /* Accept private members */>
@@ -294,7 +295,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     std::string getNiceBaseName(
             std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                        std::optional<std::shared_ptr<types::Type>>,
-                       std::optional<std::vector<std::shared_ptr<ir::Func>>>,
+                       std::optional<std::deque<std::shared_ptr<ir::Func>>>,
                        std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
                        std::optional<std::shared_ptr<ir::Module>>,
                        bool /* (Ignore) Accept private members */>
@@ -352,7 +353,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      */
     std::pair<std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                          std::optional<std::shared_ptr<types::Type>>,
-                         std::optional<std::vector<std::shared_ptr<ir::Func>>>,
+                         std::optional<std::deque<std::shared_ptr<ir::Func>>>,
                          std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
                          std::optional<std::shared_ptr<ir::Module>>,
                          bool /* Accept private members */>,

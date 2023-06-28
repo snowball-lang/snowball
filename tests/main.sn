@@ -1,15 +1,27 @@
 use Core::CLib
 
-fn myFunction() i32 {
-    CLib::putchar('A')
+class Parent {
+    pub:
+        Parent() {}
+
+        fn test() {
+            CLib::putchar('P');
+        }
 }
 
-namespace hello {
-    pub fn [[test]] test() {
-        let x: i32 = myFunction();
-    }
+class Child : Parent {
+    pub:
+        Child() {}
+
+        fn test() {
+            CLib::putchar('C');
+        }
 }
 
 pub fn main() i32 {
-    hello::test();
+    let p: Parent* = new Parent();
+    let c = new Child();
+
+    p.test();
+    c.test();
 }

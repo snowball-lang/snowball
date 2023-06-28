@@ -31,10 +31,6 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     // Module given to us so we can
     // identify where in the program we are.
     std::shared_ptr<ir::Module> module = nullptr;
-    /// @brief Override for a base UUID to use instead
-    ///  of using current class or current module.
-    /// @note If it's empty, we will consider it as `unset`.
-    std::string baseUUIDOverride = "";
     /// @brief A stack of UUIDs that are used to generate
     ///  unique identifiers for things like functions, variables, etc.
     /// @note Only used for namespaces. 

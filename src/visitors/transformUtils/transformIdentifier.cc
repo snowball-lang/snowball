@@ -48,7 +48,7 @@ Transformer::StoreType Transformer::getFromIdentifier(DBGSourceInfo* dbgInfo,
         ? p_uuid.empty() ? ctx->createIdentifierName(identifier, false)
                                : (p_uuid + "." + identifier)
         : (uuidStackOverride + "." + identifier);
-    std::optional<std::vector<std::shared_ptr<ir::Func>>> funcs = std::nullopt;
+    std::optional<std::deque<std::shared_ptr<ir::Func>>> funcs = std::nullopt;
     if (auto x = ctx->cache->getTransformedFunction(uuid)) {
         assert(x->get()->isFunc());
         funcs = x->get()->getFunctions();

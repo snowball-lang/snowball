@@ -4,6 +4,8 @@
 #include "../ir/values/Func.h"
 #include "../ir/values/Value.h"
 
+#include <deque>
+
 #ifndef __SNOWBALL_TRANSFORM_ITEM_H_
 #define __SNOWBALL_TRANSFORM_ITEM_H_
 
@@ -65,7 +67,7 @@ class Item : public DBGObject {
      *   Stack:
      *      "hello": Item<type: FUNC> ---^
      */
-    std::vector<FunctionPtr> functions;
+    std::deque<FunctionPtr> functions;
 
   public:
     // The type used to represent what this
@@ -117,10 +119,11 @@ class Item : public DBGObject {
     /// @brief append a new function pointer to this item.
     void addFunction(FunctionPtr fn) {
         assert(type == FUNC);
-        functions.emplace_back(fn);
+        functions.push_front(fn);
     }
 
     std::string toString() { /*TODO:*/
+        assert(false);
         return "<TODO: transform item name>";
     };
 };

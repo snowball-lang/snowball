@@ -108,13 +108,15 @@ Syntax::Expression::TypeRef* DefinedType::toRef() {
 }
 
 bool DefinedType::canCast(Type* ty) const {
-    if (auto x = utils::cast<DefinedType>(ty)) { return canCast(x); }
+    if (auto x = utils::cast<DefinedType>(ty)) { 
+        return canCast(x); 
+    }
 
     return false;
 }
 
 bool DefinedType::canCast(DefinedType* ty) const {
-    if (getParent() && (getParent()->is(ty) || getParent()->canCast(ty))) {
+    if (getParent() && (ty->is(getParent().get()))) {
         auto otherArgs = ty->getGenerics();
         bool argumentsEqual = std::all_of(
                 otherArgs.begin(), otherArgs.end(), [&, idx = 0](std::shared_ptr<Type> i) mutable {

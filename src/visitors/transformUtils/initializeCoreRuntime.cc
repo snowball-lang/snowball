@@ -11,7 +11,6 @@ void Transformer::initializeCoreRuntime() {
     auto import =
             Syntax::N<Syntax::Statement::ImportStmt>(std::vector<std::string>{"_$core"}, "Core");
     import->setDBGInfo(new DBGSourceInfo(ctx->module->getSourceInfo(), 0));
-
     import->accept(this);
 }
 
