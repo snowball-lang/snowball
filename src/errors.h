@@ -95,7 +95,7 @@ class LexerError : public NiceError {
 
 /**
  * @brief A parser error is an error that occurs during parsing.
-*/
+ */
 class ParserError : public NiceError {
   public:
     ParserError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})
@@ -106,7 +106,7 @@ class ParserError : public NiceError {
 
 /**
  * @brief A compiler error is an error that occurs during compilation.
-*/
+ */
 class CompilerError : public NiceError {
   public:
     CompilerError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})

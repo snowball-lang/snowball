@@ -287,14 +287,16 @@ class Parser {
     Syntax::Expression::WhereClause* parseWhereClause();
     /**
      * namespace     ::=  "namespace" <identifier> "{" [body] "}"
-    */
+     */
     Syntax::Statement::Namespace* parseNamespace();
     /**
      * @brief Parses a list of attributes
      * @param parseFn function to parse the attribute
      * @return a vector of attributes
      */
-    template<typename T> std::map<T, std::map<std::string, std::string>> parseAttributes(std::function<T(std::string)> parseFn) {
+    template <typename T>
+    std::map<T, std::map<std::string, std::string>>
+    parseAttributes(std::function<T(std::string)> parseFn) {
         assert(is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek()));
         next();
         std::map<T, std::map<std::string, std::string>> attributes;
@@ -313,7 +315,7 @@ class Parser {
             if (is<TokenType::BRACKET_LPARENT>()) {
                 while (true) {
                     auto pk = peek();
-                    if (is<TokenType::BRACKET_RPARENT>(pk) ) { break; }
+                    if (is<TokenType::BRACKET_RPARENT>(pk)) { break; }
                     // TODO: check for already deifned ones
                     auto name = assert_tok<TokenType::IDENTIFIER>("an identifier").to_string();
                     next();
@@ -326,12 +328,13 @@ class Parser {
                         continue;
                     } else {
                         next();
-                        createError<SYNTAX_ERROR>(FMT("Expected a ',' or a ')' but found '%s' instead",
-                                                    pk.to_string().c_str()));
+                        createError<SYNTAX_ERROR>(
+                                FMT("Expected a ',' or a ')' but found '%s' instead",
+                                    pk.to_string().c_str()));
                     }
                 }
             }
-            
+
             attributes[parsed] = attrArgs;
             next();
             if (is<TokenType::BRACKET_RSQUARED>()) {

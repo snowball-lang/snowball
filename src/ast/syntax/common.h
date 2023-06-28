@@ -4,9 +4,9 @@
 #include "../../common.h"
 
 #include <assert.h>
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 #ifndef __SNOWBALL_AST_COMMON_NODES_H_
 #define __SNOWBALL_AST_COMMON_NODES_H_
@@ -255,15 +255,15 @@ class AttributeHolder {
      *
      * @param attribute The attribute to add.
      */
-    auto addAttribute(T attribute, StoreType args) { 
+    auto addAttribute(T attribute, StoreType args) {
         arguments[attribute] = args;
-        return m_attributes |= (1 << static_cast<int>(attribute)); 
+        return m_attributes |= (1 << static_cast<int>(attribute));
     }
     /**
      * Sets a new list of attributes to the current holder
      */
-    void setAttributes(unsigned int attribute, std::map<T, StoreType> args) { 
-        m_attributes = attribute; 
+    void setAttributes(unsigned int attribute, std::map<T, StoreType> args) {
+        m_attributes = attribute;
         arguments = args;
     }
 
@@ -297,8 +297,7 @@ class AttributeHolder {
      */
     StoreType getAttributeArgs(T attribute) const {
         auto it = arguments.find(attribute);
-        if (it == arguments.end())
-            return {};
+        if (it == arguments.end()) return {};
         return it->second;
     }
 

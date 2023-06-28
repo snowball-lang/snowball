@@ -42,12 +42,12 @@ Transformer::StoreType Transformer::getFromIdentifier(DBGSourceInfo* dbgInfo,
     }
     int uuidStackIndex = -1;
     std::string uuidStackOverride = "";
-  fetchFromUUID:
+fetchFromUUID:
     // If we can't find it in the stack, we need to fetch it from the cache
-    auto uuid = uuidStackOverride.empty() 
-        ? p_uuid.empty() ? ctx->createIdentifierName(identifier, false)
-                               : (p_uuid + "." + identifier)
-        : (uuidStackOverride + "." + identifier);
+    auto uuid = uuidStackOverride.empty() ? p_uuid.empty()
+                    ? ctx->createIdentifierName(identifier, false)
+                    : (p_uuid + "." + identifier)
+                                          : (uuidStackOverride + "." + identifier);
     std::optional<std::deque<std::shared_ptr<ir::Func>>> funcs = std::nullopt;
     if (auto x = ctx->cache->getTransformedFunction(uuid)) {
         assert(x->get()->isFunc());

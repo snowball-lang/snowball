@@ -33,7 +33,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     std::shared_ptr<ir::Module> module = nullptr;
     /// @brief A stack of UUIDs that are used to generate
     ///  unique identifiers for things like functions, variables, etc.
-    /// @note Only used for namespaces. 
+    /// @note Only used for namespaces.
     /// @note The closest stack item will not be added to the UUID stack.
     std::vector<std::string> uuidStack = {};
     /// @brief The real class that the context is under. This

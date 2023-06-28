@@ -14,10 +14,10 @@
 #include "../utils/utils.h"
 
 #include <assert.h>
+#include <deque>
 #include <memory>
 #include <string>
 #include <vector>
-#include <deque>
 
 #ifndef __SNOWBALL_TRANSFORM_H_
 #define __SNOWBALL_TRANSFORM_H_

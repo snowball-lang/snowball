@@ -13,10 +13,10 @@ using namespace snowball::Syntax::transform;
     if (auto c = ctx->getCurrentClass(true)) {                                                     \
         if (!p_node->isStatic()) {                                                                 \
             auto args = p_node->getArgs();                                                         \
-            auto self = new Expression::Param("self", c->getPointerTo()->toRef());             \
-                                                                                                \
-            args.insert(args.begin(), self);                                                   \
-            p_node->setArgs(args);                                                             \
+            auto self = new Expression::Param("self", c->getPointerTo()->toRef());                 \
+                                                                                                   \
+            args.insert(args.begin(), self);                                                       \
+            p_node->setArgs(args);                                                                 \
         }                                                                                          \
     }
 

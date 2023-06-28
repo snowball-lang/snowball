@@ -35,9 +35,7 @@ void Functions::setTransformedFunction(
         const std::string& uuid, std::shared_ptr<transform::Item> p_fn) {
     if (createdFunctions.count(uuid)) {
         auto x = createdFunctions.at(uuid);
-        for (auto f : p_fn->getFunctions()) {
-            x->addFunction(f);
-        }
+        for (auto f : p_fn->getFunctions()) { x->addFunction(f); }
         return;
     }
     createdFunctions[uuid] = p_fn;
@@ -52,18 +50,19 @@ Functions::getTransformedFunction(const std::string uuid) {
 }
 
 namespace {
-template <typename T> std::map<std::string, T> getAllFunctionsByUUID(std::string uuid, std::map<std::string, T>& functions) {
+template <typename T>
+std::map<std::string, T> getAllFunctionsByUUID(std::string uuid,
+                                               std::map<std::string, T>& functions) {
     std::map<std::string, T> result;
     for (auto f : functions) {
-        if (utils::startsWith(f.first + ".", uuid)) {
-            result[f.first] = f.second;
-        }
+        if (utils::startsWith(f.first + ".", uuid)) { result[f.first] = f.second; }
     }
     return result;
 }
 } // namespace
 
-void Functions::performInheritance(std::shared_ptr<types::DefinedType> ty, std::shared_ptr<types::DefinedType> parent) {
+void Functions::performInheritance(
+        std::shared_ptr<types::DefinedType> ty, std::shared_ptr<types::DefinedType> parent) {
     auto parentUUID = parent->getUUID();
     auto childUUID = ty->getUUID();
     auto createdFuncs = getAllFunctionsByUUID(parentUUID, createdFunctions);
@@ -74,8 +73,7 @@ void Functions::performInheritance(std::shared_ptr<types::DefinedType> ty, std::
         auto item = f.second;
         auto functions = item->getFunctions();
         utils::replaceAll(name, parentUUID + ".", "");
-        if (OperatorService::opEquals<OperatorType::CONSTRUCTOR>(name))
-            continue;
+        if (OperatorService::opEquals<OperatorType::CONSTRUCTOR>(name)) continue;
         name = childUUID + "." + name;
         setTransformedFunction(name, std::make_shared<transform::Item>(*item));
     }
@@ -86,9 +84,7 @@ void Functions::performInheritance(std::shared_ptr<types::DefinedType> ty, std::
         auto functions = item;
         // TODO: avoid constructors?
         utils::replaceAll(name, parentUUID, childUUID);
-        for (auto fn : functions) {
-            setFunction(name, fn.function, fn.state);
-        }
+        for (auto fn : functions) { setFunction(name, fn.function, fn.state); }
     }
 
     return;

@@ -11,16 +11,16 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     auto callBackUp = ctx->latestCall;
     ctx->latestCall = p_node;
 
-    auto [argValues, argTypes] = utils::vectors_iterate<Syntax::Expression::Base*,
-                                                        std::shared_ptr<ir::Value>,
-                                                        std::shared_ptr<types::Type>>(
-            p_node->getArguments(),
-            [&](Syntax::Expression::Base* a)
-                    -> std::pair<std::shared_ptr<ir::Value>, std::shared_ptr<types::Type>> {
-                a->accept(this);
-                auto lkj = utils::cast<Expression::Identifier>(a);
-                return {this->value, this->value->getType()};
-            });
+    auto [argValues, argTypes] =
+            utils::vectors_iterate<Syntax::Expression::Base*, std::shared_ptr<ir::Value>,
+                                   std::shared_ptr<types::Type>>(
+                    p_node->getArguments(),
+                    [&](Syntax::Expression::Base* a)
+                            -> std::pair<std::shared_ptr<ir::Value>, std::shared_ptr<types::Type>> {
+                        a->accept(this);
+                        auto lkj = utils::cast<Expression::Identifier>(a);
+                        return {this->value, this->value->getType()};
+                    });
 
     auto callee = p_node->getCallee();
     std::shared_ptr<ir::Value> fn = nullptr;
@@ -107,20 +107,26 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                     cast->setType(deduced);
                     argValues.at(i) = cast;
                 } else {
-                    E<TYPE_ERROR>(p_node,
-                                  FMT("Can't assign value with type '%s' "
-                                      "to a parameter with type '%s'!",
-                                      arg->getPrettyName().c_str(),
-                                      deduced->getPrettyName().c_str()), ErrorInfo {.info = "This is the call causing the error.", .note = FMT("Errored trying to call function `%s`!\n With type `%s`", utils::dyn_cast<ir::Func>(fn)->getNiceName().c_str(), t->getPrettyName().c_str()),
-                                                                                 .tail = EI<>(argValues.at(i), "", {
-                                                                                    .info = "this is the "
-                                                                                            "value "
-                                                                                            "that's "
-                                                                                            "causing the "
-                                                                                            "error",
-                                                                                    .help = "Maybe try to convert a cast to the "
-                                                                                            "correct type?"
-                                                                                 })});
+                    E<TYPE_ERROR>(
+                            p_node,
+                            FMT("Can't assign value with type '%s' "
+                                "to a parameter with type '%s'!",
+                                arg->getPrettyName().c_str(),
+                                deduced->getPrettyName().c_str()),
+                            ErrorInfo{.info = "This is the call causing the error.",
+                                      .note = FMT(
+                                              "Errored trying to call function `%s`!\n With type "
+                                              "`%s`",
+                                              utils::dyn_cast<ir::Func>(fn)->getNiceName().c_str(),
+                                              t->getPrettyName().c_str()),
+                                      .tail = EI<>(argValues.at(i), "",
+                                                   {.info = "this is the "
+                                                            "value "
+                                                            "that's "
+                                                            "causing the "
+                                                            "error",
+                                                    .help = "Maybe try to convert a cast to the "
+                                                            "correct type?"})});
                 }
             }
         }

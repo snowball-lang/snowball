@@ -89,8 +89,7 @@ Transformer::transformClass(const std::string& uuid,
                     basedName, _uuid, ctx->module, ty, fields, parentType, generics);
             transformedType->setDBGInfo(ty->getDBGInfo());
             transformedType->setSourceInfo(ty->getSourceInfo());
-            if (parentType != nullptr)
-                ctx->cache->performInheritance(transformedType, parentType);
+            if (parentType != nullptr) ctx->cache->performInheritance(transformedType, parentType);
             ctx->setCurrentClass(transformedType);
             auto item = std::make_shared<transform::Item>(transformedType);
             ctx->cache->setTransformedType(_uuid, item);

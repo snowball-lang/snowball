@@ -25,7 +25,8 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
                                   : ctx->imports->getModuleUUID(filePath);
     auto exportName = ctx->imports->getExportName(filePath, p_node->getExportSymbol());
     if (ctx->getItem(exportName).second)
-        Syntax::E<IMPORT_ERROR>(p_node, FMT("Import with name '%s' is already defined!", exportName.c_str()));   
+        Syntax::E<IMPORT_ERROR>(
+                p_node, FMT("Import with name '%s' is already defined!", exportName.c_str()));
     if (auto m = ctx->imports->cache->getModule(filePath)) {
         auto item = std::make_shared<Item>(m.value());
         ctx->addItem(exportName, item);
