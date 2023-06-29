@@ -11,7 +11,9 @@ class Parent {
 
 class Child : Parent {
     pub:
-        Child() {}
+        Child() {
+            self.a = 2
+        }
 
         fn test() {
             CLib::putchar('C');
@@ -21,6 +23,8 @@ class Child : Parent {
 pub fn main() i32 {
     let p: Parent* = new Parent();
     let c = new Child();
+
+    c.a
 
     p.test();
     c.test();

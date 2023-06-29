@@ -11,16 +11,15 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
     auto [r, _] = getFromIndex(p_node->getDBGInfo(), p_node, p_node->isStatic);
     auto [value, type, functions, overloads, mod, canBePrivate] = r;
     auto name = p_node->getIdentifier()->getNiceName();
-    auto checkIfContextEqual = [&p_node = p_node, name = name, canBePrivate = canBePrivate](
-                                       std::shared_ptr<ir::Func> fn) -> std::shared_ptr<ir::Func> {
-        if ((!canBePrivate) && fn->isPrivate()) {
+    auto checkIfContextEqual = [&p_node = p_node, name = name, canBePrivate = canBePrivate]<typename T>(
+                                       T item) -> T {
+        if ((!canBePrivate) && item->isPrivate()) {
             E<TYPE_ERROR>(p_node->getDBGInfo(),
                           FMT("Variable '%s' is a private method and "
                               "it cant be accessed from this context!",
                               name.c_str()));
         }
-
-        return fn;
+        return item;
     };
 
     if (value) {
@@ -36,6 +35,7 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
             this->value = var;
             return;
         } else if (auto indexExtract = utils::dyn_cast<ir::IndexExtract>(val)) {
+            checkIfContextEqual(indexExtract->getField());
         } else {
             assert(false);
         }

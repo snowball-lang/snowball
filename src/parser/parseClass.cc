@@ -43,10 +43,8 @@ Syntax::Statement::ClassDef* Parser::parseClass() {
 
     auto cls = Syntax::N<Syntax::Statement::ClassDef>(
             name, parentClass, Syntax::Statement::Privacy::fromInt(isPublic));
-
     cls->setGenerics(generics);
     cls->setDBGInfo(dbg);
-
     while (true) {
         next();
         switch (m_current.type) {
@@ -83,7 +81,6 @@ Syntax::Statement::ClassDef* Parser::parseClass() {
             case TokenType::KWORD_OPERATOR: {
                 auto func = parseFunction(false, true);
                 func->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
-                // func->setName()
                 cls->addFunction(func);
             } break;
 
@@ -100,7 +97,10 @@ Syntax::Statement::ClassDef* Parser::parseClass() {
             } break;
 
             case TokenType::KWORD_VAR: {
-                cls->addVariable(parseVariable());
+                auto var = parseVariable();
+                var->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
+                cls->addVariable(var);
+
                 assert_tok<TokenType::SYM_SEMI_COLLON>("a ';'");
             } break;
 

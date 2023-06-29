@@ -7,23 +7,16 @@
 
 namespace snowball {
 namespace Syntax {
-
 namespace Statement {
-
 // Separated namespace in order to use
 // Privacy::Status without name conflicts
 using Status = Privacy::Status;
-
 Privacy::Privacy(Status status) : status(status) { }
-
 void Privacy::setPrivacy(Status s) { status = s; }
 Status Privacy::getPrivacy() const { return status; }
-
-Status Privacy::fromInt(int p_status) { return static_cast<Status>(!p_status); }
+Status Privacy::fromInt(bool p_status) { return static_cast<Status>(!p_status); }
 } // namespace Statement
-
 namespace Statement {
-
 FunctionDef::FunctionDef(std::string name, Privacy::Status prvc)
     : AcceptorExtend<FunctionDef, Privacy>(prvc), name(name) { }
 std::vector<Expression::Param*> FunctionDef::getArgs() const { return args; }
@@ -38,6 +31,14 @@ bool FunctionDef::isVariadic() { return variadic; }
 void FunctionDef::setVariadic(bool v) { variadic = v; }
 bool FunctionDef::isStatic() { return _static; }
 void FunctionDef::setStatic(bool s) { _static = s; }
+void ConstructorDef::setSuperArgs(std::vector<Expression::Base*> args) { superArgs = args; }
+void ConstructorDef::setInitArgs(std::map<std::string, Expression::Base*> list) { initArgs = list; }
+std::map<std::string, Expression::Base*> ConstructorDef::getInitArgs() const { return initArgs; }
+std::vector<Expression::Base*> ConstructorDef::getSuperArgs() const { return superArgs; }
+std::vector<Expression::Base*>::iterator ConstructorDef::superArgsBegin() { return superArgs.begin(); }
+std::vector<Expression::Base*>::iterator ConstructorDef::superArgsEnd() { return superArgs.end(); }
+std::map<std::string, Expression::Base*>::iterator ConstructorDef::initArgsBegin() { return initArgs.begin(); }
+std::map<std::string, Expression::Base*>::iterator ConstructorDef::initArgsEnd() { return initArgs.end(); }
 Namespace::Namespace(std::string name, std::vector<Node*> body) : body(body), name(name) { }
 std::string Namespace::getName() const { return name; }
 std::vector<Node*> Namespace::getBody() const { return body; }

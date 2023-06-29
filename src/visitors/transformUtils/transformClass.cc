@@ -81,7 +81,7 @@ Transformer::transformClass(const std::string& uuid,
                                         v->getName(),
                                         varTy,
                                         /*TODO: actually check this*/
-                                        Statement::Privacy::PRIVATE,
+                                        v->getPrivacy(),
                                         v->isMutable());
                             });
             auto fields = getMemberList(ty->getVariables(), baseFields, parentType);
@@ -107,7 +107,7 @@ Transformer::transformClass(const std::string& uuid,
                 arg->setType(transformedType);
                 fn->setArgs({{"other", arg}});
                 fn->setType(type);
-                fn->setPrivacy(/* public */ false);
+                fn->setPrivacy(PrivacyStatus::PUBLIC);
                 /// @see Transformer::defineFunction
                 auto name = ctx->createIdentifierName(fn->getName(true));
                 auto item = ctx->cache->getTransformedFunction(name);

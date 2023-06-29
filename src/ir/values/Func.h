@@ -83,12 +83,7 @@ class Func : public AcceptorExtend<Func, Value>,
     /// things such as; declaring the function entry point and declaring
     /// external functions
     std::string externalName;
-
-    /// Whether or not this function is declared as private or as
-    /// public. This comes really handy because it lets us to know if we
-    /// can access this function from a certain context.
-    bool definedAsPrivate = true;
-
+    
     /// Functions can be declared static too! We have this utility
     /// variable to determine if the function is declared as one. Being
     /// declared as static may bring different meanings.
@@ -182,16 +177,6 @@ class Func : public AcceptorExtend<Func, Value>,
     /// @brief Set an external name to the function
     /// @c externalName
     void setExternalName(std::string n) { externalName = n; }
-    /// @return if the function is private or public.
-    /// @note isPublic and isPrivate are just utility functions to know
-    ///  the functions privacy but they both do essentially the same.
-    auto isPublic() { return !definedAsPrivate; }
-    auto isPrivate() { return definedAsPrivate; }
-    /// @brief set function's privacy.
-    /// @note If the function is declared as private, @param p
-    ///  must be `true`.
-    /// @c isPublic @c isPrivate @c definedAsPrivate
-    void setPrivacy(bool p) { definedAsPrivate = p; }
     /// @brief Declare the function as static or not
     void setStatic(bool s = false) { _static = s; }
     /// @return whether or not the function is static

@@ -11,7 +11,11 @@ Syntax::Statement::VariableDecl* Parser::parseVariable() {
     assert(is<TokenType::KWORD_VAR>());
     next();
 
-    // TODO: dinamic mutability
+    bool isPublic = false;
+    if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-4, true))) {
+        isPublic = is<TokenType::KWORD_PUBLIC>(peek(-4, true));
+    }
+
     bool isMutable = false;
     if (is<TokenType::KWORD_MUTABLE>()) {
         isMutable = true;
@@ -47,6 +51,7 @@ Syntax::Statement::VariableDecl* Parser::parseVariable() {
 
     auto v = Syntax::N<Syntax::Statement::VariableDecl>(name, value, isMutable);
     v->setDefinedType(typeDef);
+    v->setPrivacy(Syntax::Statement::Privacy::fromInt(isPublic));
 
     auto info = new DBGSourceInfo(m_source_info, token.get_pos(), token.get_width());
     v->setDBGInfo(info);

@@ -1,6 +1,7 @@
 
 #include "TransformContext.h"
 
+#include "../ast/syntax/nodes.h"
 #include "../ast/types/FunctionType.h"
 #include "../ir/values/Argument.h"
 #include "TransformState.h"
@@ -42,13 +43,10 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod) : AcceptorEx
                 auto arg = std::make_shared<ir::Argument>("other");
                 auto typeArgs = {ty, overload};
                 auto type = std::make_shared<types::FunctionType>(typeArgs, ty);
-
                 arg->setType(overload);
-
                 fn->setArgs({{"other", arg}});
                 fn->setType(type);
-                fn->setPrivacy(/* public */ false);
-
+                fn->setPrivacy(/* public */ PrivacyStatus::PUBLIC);
                 /// @see Transformer::defineFunction
                 auto name = ty->getName() + "." + fn->getName(true);
                 auto item = cache->getTransformedFunction(name);
@@ -57,7 +55,6 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod) : AcceptorEx
                     (*item)->addFunction(fn);
                     continue;
                 }
-
                 auto i = std::make_shared<transform::Item>(fn);
                 cache->setTransformedFunction(name, i);
             }

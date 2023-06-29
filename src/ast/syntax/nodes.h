@@ -399,8 +399,8 @@ struct Privacy {
     // @warning keep the order the same, always!
     enum Status
     {
-        PUBLIC,
-        PRIVATE
+        PUBLIC = 0,
+        PRIVATE = 1
     } status = PRIVATE;
 
   public:
@@ -415,12 +415,18 @@ struct Privacy {
     /// @brief Set node's privacy
     void setPrivacy(Status s);
 
+    /// @return if the item is private or public.
+    /// @note isPublic and isPrivate are just utility functions to know
+    ///  the item's privacy but they both do essentially the same.
+    auto isPublic() { return status == PUBLIC; }
+    auto isPrivate() { return !isPublic(); }
+
   public:
     /// @brief Convert an integer to a Status
     /// @param p_status Integer to transform (note: it will be
     /// inverted)
     /// @return equivalent for Status
-    static Status fromInt(int p_status);
+    static Status fromInt(bool p_status);
 };
 
 /**
@@ -493,10 +499,65 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
 };
 
 /**
+ * @brief Representation of a class constructor. It's a special function that
+ *  gets called when a new instance of a class is created.
+ * @example
+ *  class A {
+ *     A() { ... }
+ * }
+ */
+struct ConstructorDef : public AcceptorExtend<ConstructorDef, FunctionDef> {
+    /**
+     * @brief Arguments used to initialize the parent class.
+     * @example
+     * class A {
+     *    A() { ... }
+     * }
+     * class B : A {
+     *    B() super(...) { ... }
+     * }
+     */
+    std::vector<Expression::Base*> superArgs;
+    /**
+     * @brief Arguments used to initialize the class.
+     * @example
+     * class A {
+     *   let x: i32;
+     *   A() : x(4) { ... }
+     * }
+     * @note This can be useful to store values to unmutable variables.
+     */
+    std::map<std::string, Expression::Base*> initArgs;
+
+  public:
+    using AcceptorExtend::AcceptorExtend;
+    
+    /// @brief Set the arguments used to initialize the parent class.
+    void setSuperArgs(std::vector<Expression::Base*> args);
+    /// @brief Set the arguments used to initialize the class.
+    void setInitArgs(std::map<std::string, Expression::Base*> args);
+    /// @return Arguments used to initialize the parent class.
+    decltype(superArgs) getSuperArgs() const;
+    /// @return Arguments used to initialize the class.
+    decltype(initArgs) getInitArgs() const;
+    /// @return The start of the super arguments
+    decltype(superArgs)::iterator superArgsBegin();
+    /// @return The end of the super arguments
+    decltype(superArgs)::iterator superArgsEnd();
+    /// @return The start of the init arguments
+    decltype(initArgs)::iterator initArgsBegin();
+    /// @return The end of the init arguments
+    decltype(initArgs)::iterator initArgsEnd();
+
+    ACCEPT()
+};
+
+/**
  * AST representation for a variable declaration. Variables
  * can either be mutable or unmutable.
  */
-struct VariableDecl : public AcceptorExtend<VariableDecl, Base> {
+struct VariableDecl : public AcceptorExtend<VariableDecl, Base>,
+  public AcceptorExtend<VariableDecl, Privacy> {
     /// @brief Variables's identifier
     std::string name;
     /// @brief Function's return type
@@ -985,6 +1046,8 @@ Expression::TypeRef* TR(Args&&... args) {
     auto n = new Expression::TypeRef(std::forward<Args>(args)...);
     return n;
 }
+
+using PrivacyStatus = Statement::Privacy::Status; ///< Privacy status enum
 
 }; // namespace Syntax
 }; // namespace snowball
