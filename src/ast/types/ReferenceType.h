@@ -43,7 +43,7 @@ class ReferenceType : public AcceptorExtend<ReferenceType, Type>, public ir::IdM
     std::string getMangledName() const override;
     /// @return The pointed type this type is pointing to
     /// @see ReferenceType::base
-    std::shared_ptr<Type> getPointedType() const;
+    std::shared_ptr<Type> getReferencedType() const;
     /// @return The base type being pointed.
     /// @example i32&&& -> i32
     std::shared_ptr<Type> getBaseType() const;

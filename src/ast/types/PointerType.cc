@@ -1,5 +1,6 @@
 
 #include "PointerType.h"
+#include "ReferenceType.h"
 
 #include "../../common.h"
 #include "../../constants.h"
@@ -35,6 +36,7 @@ Syntax::Expression::TypeRef* PointerType::toRef() {
 }
 
 std::shared_ptr<Type> PointerType::getBaseType() const {
+    if (auto c = utils::dyn_cast<ReferenceType>(base)) { return c->getBaseType(); }
     if (auto c = utils::dyn_cast<PointerType>(base)) { return c->getBaseType(); }
 
     return base;

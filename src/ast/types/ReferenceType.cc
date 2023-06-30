@@ -1,5 +1,6 @@
 
 #include "ReferenceType.h"
+#include "PointerType.h"
 
 #include "../../common.h"
 #include "../../constants.h"
@@ -17,11 +18,11 @@ namespace snowball {
 namespace types {
 
 ReferenceType::ReferenceType(std::shared_ptr<Type> base)
-    : AcceptorExtend(Kind::TYPE, base->getName() + "*"), base(base) { }
+    : AcceptorExtend(Kind::TYPE, base->getName() + "&"), base(base) { }
 std::shared_ptr<Type> ReferenceType::getReferencedType() const { return base; }
 std::string ReferenceType::getPrettyName() const {
     auto baseName = base->getPrettyName();
-    return baseName + "*";
+    return baseName + "&";
 }
 
 std::string ReferenceType::getMangledName() const {
@@ -36,6 +37,7 @@ Syntax::Expression::TypeRef* ReferenceType::toRef() {
 
 std::shared_ptr<Type> ReferenceType::getBaseType() const {
     if (auto c = utils::dyn_cast<ReferenceType>(base)) { return c->getBaseType(); }
+    if (auto c = utils::dyn_cast<PointerType>(base)) { return c->getBaseType(); }
 
     return base;
 }
