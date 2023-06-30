@@ -2,7 +2,10 @@ use Core::CLib
 
 class Parent {
     pub:
-        Parent() {}
+        let mut a: char;
+        Parent() {
+            self.a = '4';
+        }
 
         fn test() {
             CLib::putchar('P');
@@ -11,8 +14,8 @@ class Parent {
 
 class Child : Parent {
     pub:
-        Child() {
-            self.a = 2
+        Child() : super() {
+            self.a = 'X';
         }
 
         fn test() {
@@ -24,7 +27,8 @@ pub fn main() i32 {
     let p: Parent* = new Parent();
     let c = new Child();
 
-    c.a
+    CLib::putchar('H');
+    CLib::putchar(c.a);
 
     p.test();
     c.test();

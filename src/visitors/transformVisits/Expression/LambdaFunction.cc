@@ -70,10 +70,9 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
 
             auto body = bodiedFn->getBody();
 
-            if (!bodyReturns(body->getStmts()) &&
+            if (!fn->isConstructor() && !bodyReturns(body->getStmts()) &&
                 !((utils::dyn_cast<types::NumericType>(returnType)) ||
-                  (utils::dyn_cast<types::VoidType>(returnType))) &&
-                !fn->isConstructor()) {
+                  (utils::dyn_cast<types::VoidType>(returnType)))) {
                 E<TYPE_ERROR>(node,
                               "Function lacks ending return statement!",
                               {.info = "Function does not return on all paths!"});

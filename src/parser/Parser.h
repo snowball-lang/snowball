@@ -26,6 +26,7 @@ class Parser {
     std::vector<Token> m_tokens;
 
     SourceInfo* m_source_info;
+    Syntax::Statement::ClassDef* m_current_class = nullptr;
 
   public:
     Parser(std::vector<Token> p_tokens, SourceInfo* p_source_info);

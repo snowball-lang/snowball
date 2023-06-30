@@ -24,10 +24,6 @@ find_package(PkgConfig REQUIRED)
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 else()
   pkg_check_modules(GLIB REQUIRED glib-2.0)
-
-  include_directories(${GLIB_INCLUDE_DIRS})
-  link_directories(${GLIB_LIBRARY_DIRS})
-  add_definitions(${GLIB_CFLAGS_OTHER})
 endif()
 
 find_package(LLVM REQUIRED CONFIG)

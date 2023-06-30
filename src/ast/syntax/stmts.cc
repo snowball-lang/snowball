@@ -45,7 +45,7 @@ std::vector<Node*> Namespace::getBody() const { return body; }
 ImportStmt::ImportStmt(const std::vector<std::string> path,
                        const std::string package,
                        ImportType ty)
-    : path(path), package(package), type(ty){};
+    : path(path), package(package), type(ty) {};
 VariableDecl::VariableDecl(const std::string& name, Expression::Base* value, bool isMutable)
     : name(name), value(value), _mutable(isMutable){};
 bool VariableDecl::isInitialized() { return value != nullptr; }

@@ -45,6 +45,8 @@ Syntax::Statement::ClassDef* Parser::parseClass() {
             name, parentClass, Syntax::Statement::Privacy::fromInt(isPublic));
     cls->setGenerics(generics);
     cls->setDBGInfo(dbg);
+    auto classBackup = m_current_class;
+    m_current_class = cls;
     while (true) {
         next();
         switch (m_current.type) {
@@ -112,7 +114,7 @@ Syntax::Statement::ClassDef* Parser::parseClass() {
                                               {},
                                               dbg->width);
                 }
-
+                m_current_class = classBackup;
                 return cls;
             }
 

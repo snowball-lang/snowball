@@ -493,62 +493,10 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
 
     /// Check if the function is declared as an extern function
     virtual bool isExtern() { return false; }
+    /// Check if the function is declared as a constructor
+    virtual bool isConstructor() { return false; }
 
     // Set an acceptance call
-    ACCEPT()
-};
-
-/**
- * @brief Representation of a class constructor. It's a special function that
- *  gets called when a new instance of a class is created.
- * @example
- *  class A {
- *     A() { ... }
- * }
- */
-struct ConstructorDef : public AcceptorExtend<ConstructorDef, FunctionDef> {
-    /**
-     * @brief Arguments used to initialize the parent class.
-     * @example
-     * class A {
-     *    A() { ... }
-     * }
-     * class B : A {
-     *    B() super(...) { ... }
-     * }
-     */
-    std::vector<Expression::Base*> superArgs;
-    /**
-     * @brief Arguments used to initialize the class.
-     * @example
-     * class A {
-     *   let x: i32;
-     *   A() : x(4) { ... }
-     * }
-     * @note This can be useful to store values to unmutable variables.
-     */
-    std::map<std::string, Expression::Base*> initArgs;
-
-  public:
-    using AcceptorExtend::AcceptorExtend;
-    
-    /// @brief Set the arguments used to initialize the parent class.
-    void setSuperArgs(std::vector<Expression::Base*> args);
-    /// @brief Set the arguments used to initialize the class.
-    void setInitArgs(std::map<std::string, Expression::Base*> args);
-    /// @return Arguments used to initialize the parent class.
-    decltype(superArgs) getSuperArgs() const;
-    /// @return Arguments used to initialize the class.
-    decltype(initArgs) getInitArgs() const;
-    /// @return The start of the super arguments
-    decltype(superArgs)::iterator superArgsBegin();
-    /// @return The end of the super arguments
-    decltype(superArgs)::iterator superArgsEnd();
-    /// @return The start of the init arguments
-    decltype(initArgs)::iterator initArgsBegin();
-    /// @return The end of the init arguments
-    decltype(initArgs)::iterator initArgsEnd();
-
     ACCEPT()
 };
 
@@ -965,6 +913,64 @@ struct BodiedFunction : public AcceptorExtend<BodiedFunction, FunctionDef> {
 
     /// @return Get function's body declaration.
     Block* getBody() { return block; }
+};
+
+/**
+ * @brief Representation of a class constructor. It's a special function that
+ *  gets called when a new instance of a class is created.
+ * @example
+ *  class A {
+ *     A() { ... }
+ * }
+ */
+struct ConstructorDef : public AcceptorExtend<ConstructorDef, BodiedFunction> {
+    /**
+     * @brief Arguments used to initialize the parent class.
+     * @example
+     * class A {
+     *    A() { ... }
+     * }
+     * class B : A {
+     *    B() super(...) { ... }
+     * }
+     */
+    std::vector<Expression::Base*> superArgs;
+    /**
+     * @brief Arguments used to initialize the class.
+     * @example
+     * class A {
+     *   let x: i32;
+     *   A() : x(4) { ... }
+     * }
+     * @note This can be useful to store values to unmutable variables.
+     */
+    std::map<std::string, Expression::Base*> initArgs;
+
+  public:
+    using AcceptorExtend::AcceptorExtend;
+    template <class... Args>
+    ConstructorDef(Args&... args)
+        : AcceptorExtend(std::forward<Args>(args)...){};
+    
+    /// @brief Set the arguments used to initialize the parent class.
+    void setSuperArgs(std::vector<Expression::Base*> args);
+    /// @brief Set the arguments used to initialize the class.
+    void setInitArgs(std::map<std::string, Expression::Base*> args);
+    /// @return Arguments used to initialize the parent class.
+    decltype(superArgs) getSuperArgs() const;
+    /// @return Arguments used to initialize the class.
+    decltype(initArgs) getInitArgs() const;
+    /// @return The start of the super arguments
+    decltype(superArgs)::iterator superArgsBegin();
+    /// @return The end of the super arguments
+    decltype(superArgs)::iterator superArgsEnd();
+    /// @return The start of the init arguments
+    decltype(initArgs)::iterator initArgsBegin();
+    /// @return The end of the init arguments
+    decltype(initArgs)::iterator initArgsEnd();
+
+    /// @return `true` if the function is declared as a constructor
+    bool isConstructor() override { return true; }
 };
 
 /**

@@ -6,7 +6,7 @@ class Iterable<_IteratorType: Core::Sized> {
 
 class Vector<_StoreType: Core::Sized>: Iterable<?_StoreType> {
   pub:
-    Vector() {}
+    Vector() : super() {}
 }
 
 /**
@@ -29,7 +29,7 @@ class StringView<_CharType: Core::Sized = char*>: Iterable<?_CharType> {
      *
      * Constructs an empty string.
      */
-    StringView() {
+    StringView() : super() {
         self.size = 0;
         self.data = new Vector<?_CharType>{};
     }

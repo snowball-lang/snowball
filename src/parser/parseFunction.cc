@@ -30,6 +30,9 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     std::string name;
     std::string externName;
 
+    // Constructor specific only
+    std::vector<Syntax::Expression::Base*> superArgs;
+
     std::map<Attributes::Fn, std::map<std::string, std::string>> attributes;
     bool isLLVMFunction = false;
 
@@ -65,11 +68,9 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
             } else if (attr == "test") {
                 return Attributes::Fn::TEST;
             }
-
             return Attributes::Fn::INVALID;
         });
     }
-
     if (isOperator) {
         services::OperatorService::OperatorType opType;
         switch (m_current.type) {
@@ -280,8 +281,14 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     if (is<TokenType::OP_LT>()) {
         if (isExtern) {
             createError<SYNTAX_ERROR>("Can't define an external function with generics");
+        } else if (isConstructor) {
+            createError<SYNTAX_ERROR>("Can't define a constructor with generics");
+        } else if (isOperator) {
+            createError<SYNTAX_ERROR>("Can't define an operator with generics");
+        } else if (isLambda) {
+            createError<SYNTAX_ERROR>("Can't define a lambda with generics");
         }
-
+ 
         generics = parseGenericParams();
         width = (m_current.get_pos().second - dbg.second);
     }
@@ -358,6 +365,47 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
         returnType = new Syntax::Expression::TypeRef(SN_VOID_TYPE, info);
     }
 
+
+    if (isConstructor) { // We assume m_current_class is not nullptr
+        if (is<TokenType::SYM_COLLON>()) {
+            next();
+            if (is<TokenType::KWORD_SUPER>()) {
+                if (!m_current_class->getParent()) {
+                    createError<SYNTAX_ERROR>("Can't call super on a class that doesn't extend "
+                                              "from another class!");
+                }
+
+                next();
+                assert_tok<TokenType::BRACKET_LPARENT>("'('");
+
+                while (true) {
+                    auto pk = peek();
+
+                    if (is<TokenType::BRACKET_RPARENT>(pk)) { break; }
+
+                    next();
+                    auto expr = parseExpr();
+                    superArgs.push_back(expr);
+
+                    if (is<TokenType::SYM_COMMA>()) {
+                    } else if (is<TokenType::BRACKET_RPARENT>()) {
+                        prev();
+                    } else {
+                        createError<SYNTAX_ERROR>(FMT("Expected a ',' or a ')' but found '%s' instead",
+                                                      m_current.to_string().c_str()));
+                    }
+                }
+
+                next();
+                consume<TokenType::BRACKET_RPARENT>("')'");
+            } else {
+                assert(! "TODO: Continue here");
+            }
+        } else if (m_current_class->getParent()) {
+            createError<SYNTAX_ERROR>("Expected a 'super' call for constructors inside a class that extends form a type!");
+        }
+    }
+
     auto info = new DBGSourceInfo(m_source_info, dbg, width);
 
     Syntax::Block* block = nullptr;
@@ -403,7 +451,11 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     }
 
     FunctionDef* fn = nullptr;
-    if (isExtern) {
+    if (isConstructor) {
+        assert(hasBlock);
+        fn = Syntax::N<ConstructorDef>(block, name);
+        static_cast<ConstructorDef*>(fn)->setSuperArgs(superArgs);
+    } else if (isExtern) {
         fn = Syntax::N<ExternFnDef>(externName, name);
     } else if (isLLVMFunction) {
         fn = Syntax::N<LLVMFunction>(llvmCode, name);
@@ -412,9 +464,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     } else {
         fn = Syntax::N<FunctionDef>(name);
     }
-
     for (auto [n, a] : attributes) { fn->addAttribute(n, a); }
-
     fn->setVirtual(isVirtual);
     fn->setVariadic(isVarArg);
     fn->setPrivacy(privacy);
@@ -423,7 +473,6 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     fn->setRetType(returnType);
     fn->setGenerics(generics);
     fn->setStatic(isStatic);
-
     return fn;
 }
 
