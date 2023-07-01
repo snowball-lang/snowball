@@ -10,9 +10,19 @@ namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
     auto opType = p_node->op_type;
-    // assert(false && "TODO:");
 
-    if (p_node->unary) { assert(false && "TODO:"); }
+    if (p_node->unary) { 
+        if (opType == Expression::BinaryOp::OpType::REFERENCE) {
+            p_node->left->accept(this);
+            auto value = this->value;
+            auto ref = ctx->module->N<ir::ReferenceTo>(p_node->getDBGInfo(), value);
+            ref->setType(value->getType()->getPointerTo());
+            this->value = ref;
+            return;
+        }
+
+        assert(false && "TODO:"); 
+    }
 
     auto left = p_node->left;
     auto right = p_node->right;

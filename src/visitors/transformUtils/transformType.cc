@@ -1,6 +1,5 @@
 #include "../../ast/syntax/common.h"
 #include "../../ast/types/PointerType.h"
-#include "../../ast/types/ReferenceType.h"
 #include "../../utils/utils.h"
 #include "../Transformer.h"
 
@@ -87,13 +86,6 @@ continueTypeFetch:
         assert(pointer);
 
         return transformType(pointer->getBaseType())->getPointerTo();
-    }
-
-    if (ty->isReferenceType()) {
-        auto reference = utils::cast<Expression::ReferenceType>(ty);
-        assert(reference);
-
-        return transformType(reference->getBaseType())->getReferenceTo();
     }
 
     {

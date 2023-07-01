@@ -25,10 +25,10 @@ class Child : Parent {
 
 pub fn main() i32 {
     let p: Parent* = new Parent();
-    let c = new Child();
+    let mut c = new Child();
 
-    CLib::putchar('H');
     CLib::putchar(c.a);
+    CLib::putchar(p.a);
 
     p.test();
     c.test();

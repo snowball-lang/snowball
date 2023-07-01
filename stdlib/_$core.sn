@@ -7,6 +7,8 @@ class Iterable<_IteratorType: Core::Sized> {
 class Vector<_StoreType: Core::Sized>: Iterable<?_StoreType> {
   pub:
     Vector() : super() {}
+
+    fn push_back(value: _StoreType) {}
 }
 
 /**
@@ -31,6 +33,11 @@ class StringView<_CharType: Core::Sized = char*>: Iterable<?_CharType> {
      */
     StringView() : super() {
         self.size = 0;
+        
+        // TODO: this errors out for some reason
+        //let a = new Vector<?i32>{};
+        //a.push_back(0);
+
         self.data = new Vector<?_CharType>{};
     }
 

@@ -19,7 +19,7 @@ namespace ir {
  * @brief Representation of an index extraction statement
  *  in the IR.
  */
-class IndexExtract : public AcceptorExtend<Return, Value> {
+class IndexExtract : public AcceptorExtend<IndexExtract, Value> {
     // Expression used as value for the index statement
     std::shared_ptr<Value> value;
     // Index were the extraction is taken place.

@@ -15,8 +15,6 @@ DeclType::DeclType(Base* value, DBGSourceInfo* srcInfo)
     : value(value), TypeRef("decltype(...)", srcInfo){};
 PointerType::PointerType(TypeRef* baseType, DBGSourceInfo* srcInfo)
     : baseType(baseType), TypeRef(baseType->getName() + "*", srcInfo){};
-ReferenceType::ReferenceType(TypeRef* baseType, DBGSourceInfo* srcInfo)
-    : baseType(baseType), TypeRef(baseType->getName() + "&", srcInfo){};
 PseudoVariable::PseudoVariable(std::string identifier) : identifier(identifier){};
 TypeRef::TypeRef(Expression::Base* p_ast, std::string p_name, DBGSourceInfo* p_dbg)
     : internalAST(p_ast), types::Type(REF, p_name) {
@@ -68,6 +66,8 @@ std::string BinaryOp::to_string() const {
         OP_CASE(UMINUS, "-") OP_CASE(MULEQ, "*=")
         OP_CASE(DIVEQ, "/=") OP_CASE(PLUSEQ, "+=")
         OP_CASE(MOD_EQ, "%=") OP_CASE(MINUSEQ, "-=")
+
+        OP_CASE(REFERENCE, "&")
 
         // Assignment
         OP_CASE(EQ, "=") OP_CASE(OR, "||")

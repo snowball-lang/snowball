@@ -94,17 +94,17 @@ Transformer::transformClass(const std::string& uuid,
             auto item = std::make_shared<transform::Item>(transformedType);
             ctx->cache->setTransformedType(_uuid, item);
             for (auto fn : ty->getFunctions()) { fn->accept(this); }
-            {
+            for (int allowPointer = 0; allowPointer < 2; ++allowPointer) {
                 // Set the default '=' operator for the class
-                auto fn = std::make_shared<ir::Func>(
+                auto fn = ctx->module->N<ir::Func>(ty->getDBGInfo(),
                         services::OperatorService::getOperatorMangle(services::OperatorService::EQ),
                         true,
                         false);
                 auto arg = std::make_shared<ir::Argument>("other");
                 auto typeArgs =
-                        std::vector<std::shared_ptr<types::Type>>{transformedType, transformedType};
+                        std::vector<std::shared_ptr<types::Type>>{transformedType->getPointerTo(), allowPointer ? transformedType->getPointerTo() : transformedType};
                 auto type = std::make_shared<types::FunctionType>(typeArgs, transformedType);
-                arg->setType(transformedType);
+                arg->setType(allowPointer ? transformedType->getPointerTo() : transformedType);
                 fn->setArgs({{"other", arg}});
                 fn->setType(type);
                 fn->setPrivacy(PrivacyStatus::PUBLIC);

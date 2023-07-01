@@ -5,6 +5,7 @@
 #include "../ast/syntax/nodes.h"
 #include "../ast/types/FunctionType.h"
 #include "../ast/types/PrimitiveTypes.h"
+#include "../ir/values/ReferenceTo.h"
 #include "../ir/values/Call.h"
 #include "../ir/values/Cast.h"
 #include "../ir/values/Conditional.h"
@@ -48,6 +49,23 @@ VISIT(FloatValue) { /* noop */
 VISIT(CharValue) { /* noop */
 }
 
+VISIT(ReferenceTo) {
+    auto val = p_node->getValue();
+    val->visit(this);
+
+    cantBeVoid(p_node,
+               val->getType(),
+               FMT("Value used for reference '%s' has a value with 'void' "
+                   "type!",
+                   p_node->getType()->getPrettyName().c_str()));
+    if (!utils::dyn_cast<ir::Variable>(val) && !utils::dyn_cast<ir::IndexExtract>(val)) {
+        Syntax::E<TYPE_ERROR>(p_node,
+                              FMT("Value used for reference '%s' is not a "
+                                  "variable!",
+                                  p_node->getType()->getPrettyName().c_str()));
+    }
+}
+
 VISIT(Call) {
     auto args = p_node->getArguments();
     for (auto a : args) { a->visit(this); }
@@ -55,7 +73,7 @@ VISIT(Call) {
     // TODO: check for operator sides being equal
 
     // TODO: add support for "callable" type, not just function type
-    if (std::dynamic_pointer_cast<types::FunctionType>(p_node->getCallee()->getType()) == nullptr) {
+    if (utils::dyn_cast<types::FunctionType>(p_node->getCallee()->getType()) == nullptr) {
         Syntax::E<TYPE_ERROR>(p_node, FMT("Value trying to be called is not callable!"));
     }
 
@@ -129,23 +147,18 @@ VISIT(Cast) {
     auto t = p_node->getCastType();
     assert(t->is(p_node->getType()));
 
-    if ((utils::dyn_cast<types::NumericType>(v->getType()) == nullptr) &&
-        (utils::dyn_cast<types::NumericType>(t) != nullptr)) {
+    if (utils::dyn_cast<types::VoidType>(t)) {
         Syntax::E<TYPE_ERROR>(p_node,
-                              FMT("Can't create a casting operator from a "
-                                  "non-numerical type ('%s') "
-                                  "to a numerical ('%s')!",
-                                  t->getPrettyName().c_str(),
-                                  v->getType()->getPrettyName().c_str()));
-    } else if ((utils::dyn_cast<types::NumericType>(v->getType()) != nullptr) &&
-               (utils::dyn_cast<types::NumericType>(t) == nullptr)) {
+                              FMT("Can't cast to void type ('%s')!",
+                                  t->getPrettyName().c_str()));
+    } else if (utils::dyn_cast<types::VoidType>(v->getType())) {
         Syntax::E<TYPE_ERROR>(p_node,
-                              FMT("Can't create a casting operator from a "
-                                  "numerical type ('%s') "
-                                  "to a non-numerical type ('%s')!",
-                                  t->getPrettyName().c_str(),
+                              FMT("Can't cast from void type ('%s')!",
                                   v->getType()->getPrettyName().c_str()));
-    } else if (!v->getType()->canCast(t)) {
+    }
+
+    if (v->getType()->is(t)) return;
+    if (!v->getType()->canCast(t)) {
         Syntax::E<TYPE_ERROR>(p_node,
                               FMT("Can't create a casting operator from value ('%s') "
                                   "to type '%s'!",

@@ -13,7 +13,6 @@ llvm::Value* LLVMBuilder::allocateObject(std::shared_ptr<types::DefinedType> ty)
     auto allocation = builder->CreateCall(
             getAllocaFunction(), {builder->getInt32(dataLayout.getTypeAllocSize(llvmType))});
     auto cast = builder->CreatePointerCast(allocation, llvmType);
-
     llvm::Value* vtablePointer = nullptr;
     if (auto v = ctx->getVtable(ty->getId())) {
         vtablePointer = v;
@@ -24,11 +23,10 @@ llvm::Value* LLVMBuilder::allocateObject(std::shared_ptr<types::DefinedType> ty)
         vtablePointer = createVirtualTable(ty.get(), t);
     }
 
-    // TODO: VIRTUAL TABLE SIGFAULTS
+    // TODO: VIRTUAL TABLE SEGFAULTS
     auto pointer = builder->CreateInBoundsGEP(llvmType->getPointerElementType(), cast,
                                               {builder->getInt32(0), builder->getInt32(0)});
     builder->CreateStore(vtablePointer, pointer);
-
     return cast;
 }
 

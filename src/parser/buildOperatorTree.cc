@@ -26,6 +26,7 @@ Syntax::Expression::Base* Parser::buildOperatorTree(std::vector<Syntax::Expressi
                 case Syntax::Expression::BinaryOp::OpType::NOT:
                 case Syntax::Expression::BinaryOp::OpType::BIT_NOT:
                 case Syntax::Expression::BinaryOp::OpType::UPLUS:
+                case Syntax::Expression::BinaryOp::OpType::REFERENCE:
                 case Syntax::Expression::BinaryOp::OpType::UMINUS: {
                     precedence = 0;
                     break;
@@ -117,6 +118,7 @@ Syntax::Expression::Base* Parser::buildOperatorTree(std::vector<Syntax::Expressi
                 unary = (op == Syntax::Expression::BinaryOp::OpType::NOT ||
                          op == Syntax::Expression::BinaryOp::OpType::BIT_NOT ||
                          op == Syntax::Expression::BinaryOp::OpType::UPLUS ||
+                         op == Syntax::Expression::BinaryOp::OpType::REFERENCE ||
                          op == Syntax::Expression::BinaryOp::OpType::UMINUS);
                 // break;
             }

@@ -84,6 +84,9 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                 else if (tk.type == TokenType::OP_BIT_NOT)
                     exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(
                             Operators::OperatorType::BIT_NOT));
+                else if (tk.type == TokenType::OP_BIT_AND)
+                    exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(
+                            Operators::OperatorType::REFERENCE));
 
                 exprs.back()->isOperator = true;
 

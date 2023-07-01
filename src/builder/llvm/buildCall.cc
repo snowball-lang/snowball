@@ -1,5 +1,6 @@
 
 #include "../../ir/values/Call.h"
+#include "../../ir/values/ReferenceTo.h"
 #include "../../services/OperatorService.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
@@ -13,18 +14,19 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ir::Call* call) {
-    if (buildOperator(call)) return;
+    bool isConstructor = false;
+    if (buildOperator(call)) return; // TODO: maybe jump to cleanup?
 
     auto callee = build(call->getCallee().get());
     setDebugInfoLoc(call);
 
     auto args = utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value*>(
             call->getArguments(), [&](std::shared_ptr<ir::Value> arg) { return build(arg.get()); });
-
+    llvm::CallInst* llvmCall = nullptr;
     setDebugInfoLoc(call);
     if (auto c = utils::dyn_cast<ir::Func>(call->getCallee()); c != nullptr && c->isConstructor()) {
         auto instance = utils::cast<ir::ObjectInitialization>(call);
-
+        isConstructor = true;
         assert(instance);
         assert(c->hasParent());
 
@@ -38,10 +40,9 @@ void LLVMBuilder::visit(ir::Call* call) {
         }
 
         args.insert(args.begin(), object);
-        builder->CreateCall(
+        llvmCall = builder->CreateCall(
                 (llvm::FunctionType*)callee->getType()->getPointerElementType(), callee, args);
-        this->value = builder->CreateLoad(getLLVMType(instance->getType().get()), object);
-        return;
+        this->value = object;
     } else if (auto c = utils::dyn_cast<ir::Func>(call->getCallee());
                c != nullptr && c->inVirtualTable()) {
         assert(c->hasParent());
@@ -61,16 +62,21 @@ void LLVMBuilder::visit(ir::Call* call) {
 
         auto pointerLoad =
                 builder->CreateLoad(pointer->getType()->getPointerElementType(), pointer);
-        this->value = builder->CreateCall(
+        llvmCall = builder->CreateCall(
                 (llvm::FunctionType*)pointerLoad->getType()->getPointerElementType(),
                 (llvm::Function*)pointerLoad,
                 args);
-        return;
+        this->value = llvmCall;
+    } else {
+        // TODO: invoke if it's inside a try block
+        llvmCall = builder->CreateCall(
+                (llvm::FunctionType*)callee->getType()->getPointerElementType(), callee, args);
+        this->value = llvmCall;
     }
 
-    // TODO: invoke if it's inside a try block
-    this->value = builder->CreateCall(
-            (llvm::FunctionType*)callee->getType()->getPointerElementType(), callee, args);
+    auto calledFunction = llvmCall->getCalledFunction();
+    auto attrSet = calledFunction->getAttributes();
+    llvmCall->setAttributes(attrSet);
 }
 
 } // namespace codegen

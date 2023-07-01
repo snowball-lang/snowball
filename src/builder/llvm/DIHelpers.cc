@@ -57,13 +57,6 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     } else if (auto x = cast<types::PointerType>(ty)) {
         auto type = getDIType(x->getPointedType().get());
         return dbg.builder->createPointerType(type, layout.getTypeAllocSizeInBits(llvmType));
-    } else if (auto x = cast<types::ReferenceType>(ty)) {
-        // Handle reference type
-        auto type = getDIType(x->getReferencedType().get());
-        auto referenceType = dbg.builder->createReferenceType(
-            llvm::dwarf::DW_TAG_reference_type, type, layout.getTypeAllocSizeInBits(llvmType),
-            /*alignInBits = */ 0, llvm::None);
-        return referenceType;
     }
 
     else if (auto f = cast<types::FunctionType>(ty)) {

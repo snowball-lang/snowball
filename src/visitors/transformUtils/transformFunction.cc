@@ -66,7 +66,7 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
 
             if (fn->isConstructor()) {
                 auto a = ctx->module->N<ir::Argument>(node->getDBGInfo(), "self", 0, nullptr);
-                a->setType(ctx->getCurrentClass(true)->getPointerTo()->getReferenceTo());
+                a->setType(ctx->getCurrentClass(true)->getPointerTo());
                 newArgs.emplace(newArgs.begin(), std::make_pair("self", a));
             }
 

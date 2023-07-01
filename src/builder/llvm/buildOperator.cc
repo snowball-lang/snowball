@@ -108,10 +108,13 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             } else {
                 switch (services::OperatorService::operatorID(opName)) {
                     case services::OperatorService::EQ: {
-                        auto l = llvm::cast<llvm::LoadInst>(left);
-                        auto v = l->getOperand(0);
+                        llvm::Value* leftValue = left;
+                        llvm::Value* rightValue = right;
 
-                        builder->CreateStore(right, v);
+                        auto load = builder->CreateLoad(rightValue->getType()->getPointerElementType(),
+                                                        rightValue);
+
+                        builder->CreateStore(load, leftValue);
                         break;
                     }
 

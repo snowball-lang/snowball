@@ -79,9 +79,8 @@ Func::FunctionArgs Func::getArgs(bool ignoreSelf) const {
 bool Func::isExternal(std::string name) { return !utils::startsWith(name, _SN_MANGLE_PREFIX); }
 
 std::string Func::getNiceName() {
-    auto moduleBase = module->isMain() ? "" : module->getName() + "::";
-    auto base = hasParent() ? (parent->getPrettyName() + "::") : "";
-    auto n = moduleBase + base + getName();
+    auto base = hasParent() ? (parent->getPrettyName() + "::") :  module->isMain() ? "" : module->getName() + "::";
+    auto n = base + getName();
 
     return n;
 }

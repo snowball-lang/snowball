@@ -28,7 +28,6 @@ class TypeRef;
 
 namespace types {
 class PointerType;
-class ReferenceType;
 
 class Type : public std::enable_shared_from_this<Type> {
   protected:
@@ -73,10 +72,6 @@ class Type : public std::enable_shared_from_this<Type> {
     /// @brief Create a *new* pointer type with this type as base
     /// @return a std::shared_ptr<PointerType> but casted into a `Type`
     virtual std::shared_ptr<Type> getPointerTo();
-
-    /// @brief Create a *new* reference type with this type as base
-    /// @return a std::shared_ptr<ReferenceType> but casted into a `Type`
-    virtual std::shared_ptr<Type> getReferenceTo();
 
     /// @brief Transform the type into a syntax type reference node.
     ///	This is useful for cases such as class methods where the first

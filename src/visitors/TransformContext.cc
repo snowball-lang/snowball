@@ -39,7 +39,7 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod) : AcceptorEx
     for (auto ty : overloadTypes) {
         for (auto op : services::OperatorService::operators) {
             for (auto overload : overloadTypes) {
-                auto fn = std::make_shared<ir::Func>("#" + op, true, false);
+                auto fn = module->N<ir::Func>((DBGSourceInfo*)nullptr, "#" + op, true, false);
                 auto arg = std::make_shared<ir::Argument>("other");
                 auto typeArgs = {ty, overload};
                 auto type = std::make_shared<types::FunctionType>(typeArgs, ty);

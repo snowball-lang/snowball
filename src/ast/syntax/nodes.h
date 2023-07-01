@@ -333,6 +333,7 @@ struct GenericIdentifier : public AcceptorExtend<GenericIdentifier, Identifier> 
  * @extends AcceptorExtend<BinaryOp, Base>
  */
 struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
+  public:
     using OpType = services::OperatorService::OperatorType;
 
     Base* left;         ///< Left node
@@ -355,7 +356,7 @@ struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
 
     BinaryOp(OpType t) : op_type(t) {
         unary = (op_type == OpType::NOT || op_type == OpType::BIT_NOT || op_type == OpType::UPLUS ||
-                 op_type == OpType::UMINUS);
+                 op_type == OpType::UMINUS || op_type == OpType::REFERENCE);
     };
     ~BinaryOp() noexcept = default;
 

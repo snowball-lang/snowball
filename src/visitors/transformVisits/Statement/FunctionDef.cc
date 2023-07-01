@@ -11,13 +11,13 @@ using namespace snowball::Syntax::transform;
 
 #define ADD_SELF_ARG                                                                                 \
     if (auto c = ctx->getCurrentClass(true)) {                                                       \
-        if (!p_node->isStatic()) {                                                                   \
-            auto args = p_node->getArgs();                                                           \
-            auto self = new Expression::Param("self", c->getPointerTo()->getReferenceTo()->toRef()); \
-                                                                                                     \
-            args.insert(args.begin(), self);                                                         \
-            p_node->setArgs(args);                                                                   \
-        }                                                                                            \
+        auto args = p_node->getArgs();                                             \
+        if (!(args.size() > 0 && args.at(0)->getName() == "self") && !p_node->isStatic()) {               \
+            auto self = new Expression::Param("self", c->getPointerTo()->toRef()); \
+                                                                                    \
+            args.insert(args.begin(), self);                                       \
+            p_node->setArgs(args);                                                 \
+        }                                                                                       \
     }
 
 namespace snowball {

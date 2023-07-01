@@ -83,8 +83,17 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         }
 
         if (b.has_value()) {
-            argValues.insert(argValues.begin(), *b);
-            argTypes.insert(argTypes.begin(), (*b)->getType());
+            auto baseType = (*b)->getType();
+            if (utils::dyn_cast<types::PrimitiveType>(baseType) || utils::dyn_cast<types::PointerType>(baseType)) {
+                argValues.insert(argValues.begin(), *b);
+                argTypes.insert(argTypes.begin(), baseType);
+            } else {
+                auto reference = ctx->module->N<ir::ReferenceTo>(p_node->getDBGInfo(), *b);
+                reference->setType(baseType->getPointerTo());
+
+                argValues.insert(argValues.begin(), reference);
+                argTypes.insert(argTypes.begin(), reference->getType());
+            }
         }
 
         fn = c;
@@ -94,7 +103,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     }
 
     auto call = ctx->module->N<ir::Call>(p_node->getDBGInfo(), fn, argValues);
-    if (auto t = std::dynamic_pointer_cast<types::FunctionType>(fn->getType())) {
+    if (auto t = utils::dyn_cast<types::FunctionType>(fn->getType())) {
         if (((t->getArgs().size() <= argTypes.size()) ||
              (t->getArgs().size() <= argTypes.size() && t->isVariadic()))) {
             for (int i = 0; i < t->getArgs().size(); i++) {
@@ -114,7 +123,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                                 arg->getPrettyName().c_str(),
                                 deduced->getPrettyName().c_str()),
                             ErrorInfo{.info = "This is the call causing the error.",
-                                      .note = FMT(
+                                      .note = utils::dyn_cast<ir::Func>(fn) == nullptr ? FMT("Errored trying to cal function with type `%s`", t->getPrettyName().c_str()) : FMT(
                                               "Errored trying to call function `%s`!\n With type "
                                               "`%s`",
                                               utils::dyn_cast<ir::Func>(fn)->getNiceName().c_str(),

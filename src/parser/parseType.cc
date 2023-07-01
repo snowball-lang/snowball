@@ -45,14 +45,9 @@ TypeRef* Parser::parseType() {
     auto dbg = new DBGSourceInfo(m_source_info, pos, m_current.get_pos().second - pos.second);
     auto t = Syntax::TR(ast, name, dbg);
     t->setGenerics(generics);
-    while (is<TokenType::OP_MUL>() || is<TokenType::OP_AND>()) {
+    while (is<TokenType::OP_MUL>()) {
         next();
         auto base = t;
-        if (is<TokenType::OP_AND>()) {
-            next();
-            base = Syntax::N<ReferenceType>(base, dbg);
-            continue;
-        }
         
         t = Syntax::N<PointerType>(base, dbg);
     }
