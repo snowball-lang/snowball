@@ -7,7 +7,7 @@ class Parent {
             self.a = '4';
         }
 
-        fn test() {
+        virt fn test() {
             CLib::putchar('P');
         }
 }
@@ -18,7 +18,7 @@ class Child : Parent {
             self.a = 'X';
         }
 
-        fn test() {
+        virt fn test() {
             CLib::putchar('C');
         }
 }

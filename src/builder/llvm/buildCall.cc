@@ -75,8 +75,10 @@ void LLVMBuilder::visit(ir::Call* call) {
     }
 
     auto calledFunction = llvmCall->getCalledFunction();
-    auto attrSet = calledFunction->getAttributes();
-    llvmCall->setAttributes(attrSet);
+    if (calledFunction) {
+        auto attrSet = calledFunction->getAttributes();
+        llvmCall->setAttributes(attrSet);
+    }
 }
 
 } // namespace codegen

@@ -99,6 +99,7 @@ continueTypeFetch:
                 auto transformed = t->getType();
                 assert(t != nullptr);
 
+                // TODO: this is failing!
                 if (typeGenericsMatch(ty, transformed)) { return transformed; }
             }
         }

@@ -88,6 +88,9 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 argValues.insert(argValues.begin(), *b);
                 argTypes.insert(argTypes.begin(), baseType);
             } else {
+                if (auto t = utils::dyn_cast<types::DefinedType>(baseType)) {
+                    DUMP_S(t->getUUID().c_str())
+                }
                 auto reference = ctx->module->N<ir::ReferenceTo>(p_node->getDBGInfo(), *b);
                 reference->setType(baseType->getPointerTo());
 
