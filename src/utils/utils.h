@@ -74,12 +74,10 @@ std::vector<Return> map(std::map<Key, Val> p_map, std::function<Return(std::pair
     return vec;
 }
 
-template<typename IteratorType> 
-IteratorType at(std::list<IteratorType> _list, int _i){
+template <typename IteratorType>
+IteratorType at(std::list<IteratorType> _list, int _i) {
     typename std::list<IteratorType>::iterator it = _list.begin();
-    for(int i=0; i<_i; i++){
-        ++it;
-    }
+    for (int i = 0; i < _i; i++) { ++it; }
     return *it;
 }
 

@@ -112,6 +112,11 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
      * @return FunctionType* resultant type
      */
     static FunctionType* from(ir::Func* fn);
+
+    template <class Down>
+    std::shared_ptr<Down> downcasted_shared_from_this() {
+        return std::dynamic_pointer_cast<Down>(Type::shared_from_this());
+    }
 };
 
 }; // namespace types

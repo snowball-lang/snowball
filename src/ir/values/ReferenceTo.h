@@ -23,11 +23,10 @@ class ReferenceTo : public AcceptorExtend<ReferenceTo, Value> {
     std::shared_ptr<Value> value;
 
   public:
-    explicit ReferenceTo(std::shared_ptr<Value> value)
-        : value(value) {};
+    explicit ReferenceTo(std::shared_ptr<Value> value) : value(value){};
 
     /**
-     * @return The value it's being referenced to from. 
+     * @return The value it's being referenced to from.
      */
     auto getValue() const { return value; }
 

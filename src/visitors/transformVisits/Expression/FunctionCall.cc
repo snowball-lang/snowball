@@ -18,7 +18,6 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                     [&](Syntax::Expression::Base* a)
                             -> std::pair<std::shared_ptr<ir::Value>, std::shared_ptr<types::Type>> {
                         a->accept(this);
-                        auto lkj = utils::cast<Expression::Identifier>(a);
                         return {this->value, this->value->getType()};
                     });
 
@@ -84,13 +83,11 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
 
         if (b.has_value()) {
             auto baseType = (*b)->getType();
-            if (utils::dyn_cast<types::PrimitiveType>(baseType) || utils::dyn_cast<types::PointerType>(baseType)) {
+            if (utils::dyn_cast<types::PrimitiveType>(baseType) ||
+                utils::dyn_cast<types::PointerType>(baseType)) {
                 argValues.insert(argValues.begin(), *b);
                 argTypes.insert(argTypes.begin(), baseType);
             } else {
-                if (auto t = utils::dyn_cast<types::DefinedType>(baseType)) {
-                    DUMP_S(t->getUUID().c_str())
-                }
                 auto reference = ctx->module->N<ir::ReferenceTo>(p_node->getDBGInfo(), *b);
                 reference->setType(baseType->getPointerTo());
 
@@ -126,11 +123,16 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                                 arg->getPrettyName().c_str(),
                                 deduced->getPrettyName().c_str()),
                             ErrorInfo{.info = "This is the call causing the error.",
-                                      .note = utils::dyn_cast<ir::Func>(fn) == nullptr ? FMT("Errored trying to cal function with type `%s`", t->getPrettyName().c_str()) : FMT(
-                                              "Errored trying to call function `%s`!\n With type "
-                                              "`%s`",
-                                              utils::dyn_cast<ir::Func>(fn)->getNiceName().c_str(),
-                                              t->getPrettyName().c_str()),
+                                      .note = utils::dyn_cast<ir::Func>(fn) == nullptr
+                                              ? FMT("Errored trying to cal function with type `%s`",
+                                                    t->getPrettyName().c_str())
+                                              : FMT("Errored trying to call function `%s`!\n With "
+                                                    "type "
+                                                    "`%s`",
+                                                    utils::dyn_cast<ir::Func>(fn)
+                                                            ->getNiceName()
+                                                            .c_str(),
+                                                    t->getPrettyName().c_str()),
                                       .tail = EI<>(argValues.at(i), "",
                                                    {.info = "this is the "
                                                             "value "

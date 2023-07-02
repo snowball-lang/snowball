@@ -53,7 +53,6 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
         llvm::raw_string_ostream buf(bufStr);
         err.print("LLVM", buf);
         DUMP_S(code.c_str())
-
         DUMP_S(buf.str().c_str())
         assert(false && "TODO: (LLVM ERROR)");
     }

@@ -140,7 +140,7 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
             CompilerError* tailErrors = nullptr;
 #define ADD_FUNCTION_ERROR(id, idx)                                                                \
     for (auto overload : functions.value()) {                                                      \
-        auto err = EI<>(overload, "", {.info = "A possible function overload"});                   \
+        auto err = EI<>(overload, "", {.info = "A possible function overload found here" });                   \
         if (tailErrors == nullptr) {                                                               \
             tailErrors = err;                                                                      \
             continue;                                                                              \
@@ -152,7 +152,6 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
             // ADD_FUNCTION_ERROR(functions, overload)
             ADD_FUNCTION_ERROR(overloads, overload.function)
 
-#undef ADD_FUNCTION_ERROR
 
             // TODO: throw a note that sugest's it's correct types: only if
             // there's one
@@ -180,12 +179,21 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
         }
 
         case AmbiguityConflict: {
+            CompilerError* tailErrors = nullptr;
+            ADD_FUNCTION_ERROR(overloads, overload.function)
             E<TYPE_ERROR>(dbgInfo,
-                          FMT("Function ambiguity for %s(%s)",
+                          FMT("Ambiguous function call to '%s(%s)' found!",
                               name.c_str(),
-                              Expression::FunctionCall::getArgumentsAsString(arguments).c_str()));
+                              Expression::FunctionCall::getArgumentsAsString(arguments).c_str()),
+                            {
+                                .info = "Multiple functions match the provided arguments.",
+                                .note = "The arguments provided match multiple function overloads that could not be resolved.",
+                                .help = "Please ensure that you have correctly spelled the function name and provided the \nappropriate arguments. Additionally, check the documentation or function signature\nto confirm the correct syntax and parameter types.",
+                                .tail = tailErrors
+                            });
         }
 
+#undef ADD_FUNCTION_ERROR
         default: assert(false);
     }
 

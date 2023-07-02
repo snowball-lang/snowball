@@ -11,8 +11,8 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
     auto [r, _] = getFromIndex(p_node->getDBGInfo(), p_node, p_node->isStatic);
     auto [value, type, functions, overloads, mod, canBePrivate] = r;
     auto name = p_node->getIdentifier()->getNiceName();
-    auto checkIfContextEqual = [&p_node = p_node, name = name, canBePrivate = canBePrivate]<typename T>(
-                                       T item) -> T {
+    auto checkIfContextEqual =
+            [&p_node = p_node, name = name, canBePrivate = canBePrivate]<typename T>(T item) -> T {
         if ((!canBePrivate) && item->isPrivate()) {
             E<TYPE_ERROR>(p_node->getDBGInfo(),
                           FMT("Variable '%s' is a private method and "

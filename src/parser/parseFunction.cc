@@ -288,7 +288,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
         } else if (isLambda) {
             createError<SYNTAX_ERROR>("Can't define a lambda with generics");
         }
- 
+
         generics = parseGenericParams();
         width = (m_current.get_pos().second - dbg.second);
     }
@@ -365,7 +365,6 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
         returnType = new Syntax::Expression::TypeRef(SN_VOID_TYPE, info);
     }
 
-
     if (isConstructor) { // We assume m_current_class is not nullptr
         if (is<TokenType::SYM_COLLON>()) {
             next();
@@ -391,18 +390,20 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
                     } else if (is<TokenType::BRACKET_RPARENT>()) {
                         prev();
                     } else {
-                        createError<SYNTAX_ERROR>(FMT("Expected a ',' or a ')' but found '%s' instead",
-                                                      m_current.to_string().c_str()));
+                        createError<SYNTAX_ERROR>(
+                                FMT("Expected a ',' or a ')' but found '%s' instead",
+                                    m_current.to_string().c_str()));
                     }
                 }
 
                 next();
                 consume<TokenType::BRACKET_RPARENT>("')'");
             } else {
-                assert(! "TODO: Continue here");
+                assert(!"TODO: Continue here");
             }
         } else if (m_current_class->getParent()) {
-            createError<SYNTAX_ERROR>("Expected a 'super' call for constructors inside a class that extends form a type!");
+            createError<SYNTAX_ERROR>("Expected a 'super' call for constructors inside a class "
+                                      "that extends form a type!");
         }
     }
 

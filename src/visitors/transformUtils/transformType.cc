@@ -15,12 +15,9 @@ namespace Syntax {
 std::shared_ptr<types::Type> Transformer::transformType(Expression::TypeRef* ty) {
     auto name = ty->getPrettyName();
     auto id = ty->getName();
-
     std::shared_ptr<types::Type> returnedType = nullptr;
     if (auto x = transformSpecialType(ty)) { return x; }
-
     auto ast = ty->_getInternalAST();
-
     if (ast == nullptr) {
         if (ty->getGenerics().size() > 0) {
             ast = Syntax::N<Expression::GenericIdentifier>(ty->getName(), ty->getGenerics());
@@ -98,8 +95,6 @@ continueTypeFetch:
                 assert(t->isType());
                 auto transformed = t->getType();
                 assert(t != nullptr);
-
-                // TODO: this is failing!
                 if (typeGenericsMatch(ty, transformed)) { return transformed; }
             }
         }

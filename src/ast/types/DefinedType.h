@@ -142,6 +142,11 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>, public ir::IdMixin
     /// @brief override function.
     virtual bool canCast(Type* ty) const override;
     virtual bool canCast(DefinedType* ty) const;
+
+    template <class Down>
+    std::shared_ptr<Down> downcasted_shared_from_this() {
+        return std::dynamic_pointer_cast<Down>(Type::shared_from_this());
+    }
 };
 
 }; // namespace types

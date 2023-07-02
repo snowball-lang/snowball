@@ -23,7 +23,11 @@ class Child : Parent {
         }
 }
 
+fn hello(x: f32) {}
+fn hello(x: f64) {}
+
 pub fn main() i32 {
+    hello(2)
     let p: Parent* = new Parent();
     let mut c = new Child();
 

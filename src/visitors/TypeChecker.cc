@@ -5,12 +5,12 @@
 #include "../ast/syntax/nodes.h"
 #include "../ast/types/FunctionType.h"
 #include "../ast/types/PrimitiveTypes.h"
-#include "../ir/values/ReferenceTo.h"
 #include "../ir/values/Call.h"
 #include "../ir/values/Cast.h"
 #include "../ir/values/Conditional.h"
 #include "../ir/values/Func.h"
 #include "../ir/values/IndexExtract.h"
+#include "../ir/values/ReferenceTo.h"
 #include "../ir/values/Return.h"
 #include "../ir/values/Value.h"
 #include "../ir/values/VariableDeclaration.h"
@@ -149,12 +149,11 @@ VISIT(Cast) {
 
     if (utils::dyn_cast<types::VoidType>(t)) {
         Syntax::E<TYPE_ERROR>(p_node,
-                              FMT("Can't cast to void type ('%s')!",
-                                  t->getPrettyName().c_str()));
+                              FMT("Can't cast to void type ('%s')!", t->getPrettyName().c_str()));
     } else if (utils::dyn_cast<types::VoidType>(v->getType())) {
-        Syntax::E<TYPE_ERROR>(p_node,
-                              FMT("Can't cast from void type ('%s')!",
-                                  v->getType()->getPrettyName().c_str()));
+        Syntax::E<TYPE_ERROR>(
+                p_node,
+                FMT("Can't cast from void type ('%s')!", v->getType()->getPrettyName().c_str()));
     }
 
     if (v->getType()->is(t)) return;

@@ -83,7 +83,7 @@ class Func : public AcceptorExtend<Func, Value>,
     /// things such as; declaring the function entry point and declaring
     /// external functions
     std::string externalName;
-    
+
     /// Functions can be declared static too! We have this utility
     /// variable to determine if the function is declared as one. Being
     /// declared as static may bring different meanings.

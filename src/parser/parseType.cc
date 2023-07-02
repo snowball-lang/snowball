@@ -48,7 +48,7 @@ TypeRef* Parser::parseType() {
     while (is<TokenType::OP_MUL>()) {
         next();
         auto base = t;
-        
+
         t = Syntax::N<PointerType>(base, dbg);
     }
     return t;

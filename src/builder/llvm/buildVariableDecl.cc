@@ -12,7 +12,6 @@ namespace codegen {
 
 void LLVMBuilder::visit(ir::VariableDeclaration* variable) {
     llvm::Value* store = nullptr;
-
     if (auto a = utils::cast<ir::Argument>(variable->getValue().get())) {
         auto id = a->getId();
         store = ctx->getSymbol(id);
@@ -20,8 +19,11 @@ void LLVMBuilder::visit(ir::VariableDeclaration* variable) {
         auto id = variable->getId();
         store = ctx->getSymbol(id);
     }
-
     auto generatedValue = build(variable->getValue().get());
+    if (!utils::dyn_cast<types::PointerType>(variable->getType()) &&
+        !utils::dyn_cast<types::PrimitiveType>(variable->getType()))
+        generatedValue = builder->CreateLoad(generatedValue->getType()->getPointerElementType(),
+                                             generatedValue);
     builder->CreateStore(generatedValue, store);
 }
 

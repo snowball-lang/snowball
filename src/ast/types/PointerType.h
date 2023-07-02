@@ -58,6 +58,11 @@ class PointerType : public AcceptorExtend<PointerType, Type>, public ir::IdMixin
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
     bool canCast(Type* ty) const override;
+
+    template <class Down>
+    std::shared_ptr<Down> downcasted_shared_from_this() {
+        return std::dynamic_pointer_cast<Down>(Type::shared_from_this());
+    }
 };
 
 }; // namespace types

@@ -506,7 +506,7 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
  * can either be mutable or unmutable.
  */
 struct VariableDecl : public AcceptorExtend<VariableDecl, Base>,
-  public AcceptorExtend<VariableDecl, Privacy> {
+                      public AcceptorExtend<VariableDecl, Privacy> {
     /// @brief Variables's identifier
     std::string name;
     /// @brief Function's return type
@@ -950,9 +950,8 @@ struct ConstructorDef : public AcceptorExtend<ConstructorDef, BodiedFunction> {
   public:
     using AcceptorExtend::AcceptorExtend;
     template <class... Args>
-    ConstructorDef(Args&... args)
-        : AcceptorExtend(std::forward<Args>(args)...){};
-    
+    ConstructorDef(Args&... args) : AcceptorExtend(std::forward<Args>(args)...){};
+
     /// @brief Set the arguments used to initialize the parent class.
     void setSuperArgs(std::vector<Expression::Base*> args);
     /// @brief Set the arguments used to initialize the class.

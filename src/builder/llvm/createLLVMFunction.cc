@@ -1,7 +1,7 @@
 
 #include "../../ast/errors/error.h"
-#include "../../utils/utils.h"
 #include "../../ir/values/Argument.h"
+#include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 
 #include <llvm/IR/DerivedTypes.h>
@@ -16,7 +16,8 @@ namespace codegen {
 
 namespace {
 void setDereferenceableAttribute(llvm::Argument& arg, unsigned bytes) {
-    auto dereferenceable = llvm::Attribute::get(arg.getContext(), llvm::Attribute::Dereferenceable, bytes);
+    auto dereferenceable =
+            llvm::Attribute::get(arg.getContext(), llvm::Attribute::Dereferenceable, bytes);
     auto nonull = llvm::Attribute::get(arg.getContext(), llvm::Attribute::NonNull);
     auto noundef = llvm::Attribute::get(arg.getContext(), llvm::Attribute::NoUndef);
     auto aligment = llvm::Attribute::get(arg.getContext(), llvm::Attribute::Alignment, 8);
@@ -25,7 +26,7 @@ void setDereferenceableAttribute(llvm::Argument& arg, unsigned bytes) {
     arg.addAttr(noundef);
     arg.addAttr(aligment);
 }
-}
+} // namespace
 
 llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
     auto innerFnType = cast<types::FunctionType>(func->getType().get());

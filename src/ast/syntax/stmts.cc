@@ -35,17 +35,23 @@ void ConstructorDef::setSuperArgs(std::vector<Expression::Base*> args) { superAr
 void ConstructorDef::setInitArgs(std::map<std::string, Expression::Base*> list) { initArgs = list; }
 std::map<std::string, Expression::Base*> ConstructorDef::getInitArgs() const { return initArgs; }
 std::vector<Expression::Base*> ConstructorDef::getSuperArgs() const { return superArgs; }
-std::vector<Expression::Base*>::iterator ConstructorDef::superArgsBegin() { return superArgs.begin(); }
+std::vector<Expression::Base*>::iterator ConstructorDef::superArgsBegin() {
+    return superArgs.begin();
+}
 std::vector<Expression::Base*>::iterator ConstructorDef::superArgsEnd() { return superArgs.end(); }
-std::map<std::string, Expression::Base*>::iterator ConstructorDef::initArgsBegin() { return initArgs.begin(); }
-std::map<std::string, Expression::Base*>::iterator ConstructorDef::initArgsEnd() { return initArgs.end(); }
+std::map<std::string, Expression::Base*>::iterator ConstructorDef::initArgsBegin() {
+    return initArgs.begin();
+}
+std::map<std::string, Expression::Base*>::iterator ConstructorDef::initArgsEnd() {
+    return initArgs.end();
+}
 Namespace::Namespace(std::string name, std::vector<Node*> body) : body(body), name(name) { }
 std::string Namespace::getName() const { return name; }
 std::vector<Node*> Namespace::getBody() const { return body; }
 ImportStmt::ImportStmt(const std::vector<std::string> path,
                        const std::string package,
                        ImportType ty)
-    : path(path), package(package), type(ty) {};
+    : path(path), package(package), type(ty){};
 VariableDecl::VariableDecl(const std::string& name, Expression::Base* value, bool isMutable)
     : name(name), value(value), _mutable(isMutable){};
 bool VariableDecl::isInitialized() { return value != nullptr; }

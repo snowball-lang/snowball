@@ -479,7 +479,7 @@ static void handle_crash(int sig) {
             __FUNCTION__);
     fprintf(stderr, "%s: Program crashed with signal %d\n", __FUNCTION__, sig);
 
-    fprintf(stderr, "Dumping the backtrace.\n");
+    fprintf(stderr, "%s: Dumping the backtrace.\n", __FUNCTION__);
     char** strings = backtrace_symbols(bt_buffer, size);
     if (strings) {
         for (size_t i = 1; i < size; i++) {

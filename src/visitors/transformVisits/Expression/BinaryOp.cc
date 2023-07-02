@@ -11,7 +11,7 @@ namespace Syntax {
 SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
     auto opType = p_node->op_type;
 
-    if (p_node->unary) { 
+    if (p_node->unary) {
         if (opType == Expression::BinaryOp::OpType::REFERENCE) {
             p_node->left->accept(this);
             auto value = this->value;
@@ -21,7 +21,7 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
             return;
         }
 
-        assert(false && "TODO:"); 
+        assert(false && "TODO:");
     }
 
     auto left = p_node->left;
