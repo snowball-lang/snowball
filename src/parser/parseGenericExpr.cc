@@ -1,5 +1,3 @@
-
-
 #include "../common.h"
 #include "../token.h"
 #include "./Parser.h"
@@ -12,6 +10,7 @@ namespace snowball::parser {
 
 std::vector<TypeRef*> Parser::parseGenericExpr() {
     assert(is<TokenType::OP_LT>());
+    assert(is<TokenType::SYM_QUESTION>(peek()));
 
     next(); // Current token: OP_LT
     std::vector<TypeRef*> types;

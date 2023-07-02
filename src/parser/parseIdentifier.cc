@@ -1,5 +1,3 @@
-
-
 #include "../common.h"
 #include "../token.h"
 #include "./Parser.h"
@@ -12,7 +10,7 @@ namespace snowball::parser {
 
 Syntax::Expression::Identifier* Parser::parseIdentifier() {
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
-    if (is<TokenType::OP_LT>(peek())) {
+    if (is<TokenType::OP_LT>(peek()) && is<TokenType::SYM_QUESTION>(peek(1, true))) {
         auto name = m_current.to_string();
         next();
         auto generics = parseGenericExpr();
