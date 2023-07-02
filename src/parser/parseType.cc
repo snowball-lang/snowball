@@ -25,7 +25,7 @@ TypeRef* Parser::parseType() {
         return Syntax::N<DeclType>(expr, dbg);
     }
 
-    auto ident = parseIdentifier();
+    auto ident = parseIdentifier(true);
     Base* ast = ident;
     auto name = ident->getIdentifier();
     auto g = utils::cast<GenericIdentifier>(ast);
@@ -33,7 +33,7 @@ TypeRef* Parser::parseType() {
     next();
     while (is<TokenType::SYM_COLCOL>()) {
         next();
-        auto i = parseIdentifier();
+        auto i = parseIdentifier(true);
         auto base = ast;
         name += "::" + i->getIdentifier();
         ast = Syntax::N<Index>(ast, i, true);

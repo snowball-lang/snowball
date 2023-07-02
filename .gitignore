@@ -54,3 +54,5 @@ install_manifest.txt
 .sn/
 .sn/*
 .cache/
+
+compile_commands.json
