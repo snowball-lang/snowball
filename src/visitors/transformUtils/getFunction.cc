@@ -85,7 +85,6 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
             auto args = f->getArgs(true);
             size_t numArgs = arguments.size();
             auto argsVector = utils::list_to_vector(args);
-
             if (ir::Func::argumentSizesEqual(argsVector, arguments, f->isVariadic())) {
                 bool equal = true;
                 for (auto arg = args.begin(); ((arg != args.end()) && equal); ++arg) {
@@ -151,8 +150,6 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
             // TODO: check if this is necesary (just for functions)
             // ADD_FUNCTION_ERROR(functions, overload)
             ADD_FUNCTION_ERROR(overloads, overload.function)
-
-
             // TODO: throw a note that sugest's it's correct types: only if
             // there's one
             //  overload

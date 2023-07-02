@@ -3,37 +3,28 @@ use Core::CLib
 class Parent {
     pub:
         let mut a: char;
-        Parent() {
-            self.a = '4';
-        }
-
-        virt fn test() {
-            CLib::putchar('P');
+        Parent(x: char) {
+            self.a = x;
         }
 }
 
 class Child : Parent {
     pub:
-        Child() : super() {
-            self.a = 'X';
+        Child(balls: char = 'A') : super(balls) {
         }
 
         virt fn test() {
-            CLib::putchar('C');
+            CLib::putchar('L');
         }
 }
 
-fn hello(x: f32) {}
-fn hello(x: f64) {}
-
 pub fn main() i32 {
-    hello(2)
-    let p: Parent* = new Parent();
-    let mut c = new Child();
+    let mut c = new Child('B');
+    let mut x = new Child();
 
     CLib::putchar(c.a);
-    CLib::putchar(p.a);
-
-    p.test();
+    CLib::putchar(x.a);
     c.test();
+    c.test();
+    CLib::putchar('S');
 }

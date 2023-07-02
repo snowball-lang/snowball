@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-set -ex
+set -x
 
 cmake --build . --target clean
 rm -rf ./_deps

@@ -83,7 +83,6 @@ class ASTContext {
 
         return {std::shared_ptr<T>(nullptr), false};
     }
-
     /**
      * @brief Search for an item in a certain scope
      *
@@ -97,8 +96,17 @@ class ASTContext {
 
         return {std::shared_ptr<T>(nullptr), false};
     }
+    /**
+     * @brief Get the Item from the current scope
+     *
+     * @param name  Item to search for
+     * @return {item or nullptr, if found}
+     */
+    virtual std::pair<Item, bool> getInCurrentScope(const std::string name) const {
+        return getInScope(name, currentScope());
+    }
     /// @return the current scope the programm is into
-    virtual Scope& currentScope() { return stack->front(); }
+    virtual Scope& currentScope() const { return stack->front(); }
     /// @brief Create a new scope and append it.
     virtual void addScope() {
         DEBUG_SYMTABLE(0, "Creating new scope")

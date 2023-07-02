@@ -27,6 +27,12 @@ class Block : public AcceptorExtend<Func, Value> {
 
     /// @return body block instructions
     auto getBlock() { return insts; }
+    /// @brief It prepends a new instruction to the block
+    void prepend(std::shared_ptr<Value> inst) { insts.insert(insts.begin(), inst); }
+    /// @brief It prepends a new set of instructions to the block
+    void prepend(std::vector<std::shared_ptr<Value>> inst) { 
+      for (auto i : inst) prepend(i);
+    }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

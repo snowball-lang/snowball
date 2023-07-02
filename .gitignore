@@ -20,6 +20,10 @@
 *.mod
 *.smod
 
+.ninja_deps
+.ninja_log
+build.ninja
+
 # Compiled Static libraries
 *.lai
 *.la

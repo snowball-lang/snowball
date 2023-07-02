@@ -170,6 +170,13 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      */
     bool typeGenericsMatch(Expression::TypeRef* ty, std::shared_ptr<types::Type> comp);
     /**
+     * @brief It generates super call and variale assignment for the
+     *  class.
+     * @return Both the super call and generated assigment values as if it was
+     *  a block.
+     */
+    std::vector<std::shared_ptr<ir::Value>> transformConstructor(Statement::ConstructorDef* p_node);
+    /**
      * @brief It generates a type alias based on the `TypeRef` given to
      * us.
      * @note It also executes some checks such as generic checks and

@@ -52,7 +52,10 @@ class Call : public AcceptorExtend<Call, Value> {
 };
 
 /**
- * @brief Representation of the `new` operator
+ * @brief Representation of the `new` operator.
+ *  It's used to allocate a new object in the heap.
+ * @example
+ * let a = new A();
  */
 class ObjectInitialization : public AcceptorExtend<ObjectInitialization, Call> {
     friend Call;
@@ -64,6 +67,9 @@ class ObjectInitialization : public AcceptorExtend<ObjectInitialization, Call> {
 
     /// @brief Wether to initialize the object at stack or heap.
     bool initializeAtHeap = true;
+    /// @brief The created object value.
+    /// @note It can be nullptr if the object requires a new allocation. 
+    std::shared_ptr<ir::Value> createdObject = nullptr;
 };
 
 } // namespace ir

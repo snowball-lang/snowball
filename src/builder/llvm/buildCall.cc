@@ -29,11 +29,13 @@ void LLVMBuilder::visit(ir::Call* call) {
         isConstructor = true;
         assert(instance);
         assert(c->hasParent());
-
         auto p = c->getParent();
 
         llvm::Value* object = nullptr;
-        if (instance->initializeAtHeap) {
+        if (instance->createdObject) {
+            object = build(instance->createdObject.get());
+            object = builder->CreateBitCast(object, getLLVMType(instance->getType()));
+        } else if (instance->initializeAtHeap) {
             object = allocateObject(p);
         } else {
             object = builder->CreateAlloca(getLLVMType(instance->getType()));

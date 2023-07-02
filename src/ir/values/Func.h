@@ -186,36 +186,6 @@ class Func : public AcceptorExtend<Func, Value>,
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS
-
-  private:
-    /**
-     * @brief A generic class to check if a given type contains the
-     *  `hasDefaultValue` function. This class should be used as a
-     *  constexpr in order to execute certain instructions if the
-     *  function is existant or not
-     *
-     * @tparam T class to check if the function `hasDefaultValue`
-     *  exists
-     */
-    template <typename T>
-    class hasDefaultValue {
-        typedef char one;
-        struct two {
-            char x[2];
-        };
-
-        template <typename C>
-        static one test(decltype(&C::hasDefaultValue));
-        template <typename C>
-        static two test(...);
-
-      public:
-        enum
-        {
-            value = sizeof(test<T>(0)) == sizeof(char)
-        };
-    };
-
   public:
     /**
      * @brief Static function to detect if it's external or not
@@ -237,10 +207,10 @@ class Func : public AcceptorExtend<Func, Value>,
         int numFunctionArgs = functionArgs.size();
         int numProvidedArgs = arguments.size();
         int numDefaultArgs = 0;
-
+        //DUMP(std::is_same_v<T, Argument>::value)
         // Calculate the number of default arguments
         if (numFunctionArgs > numProvidedArgs) {
-            if constexpr (hasDefaultValue<T>::value) {
+            if constexpr (std::is_same_v<T, std::shared_ptr<Argument>>) {
                 for (int i = numProvidedArgs; i < numFunctionArgs; i++) {
                     if (functionArgs.at(i)->hasDefaultValue()) {
                         numDefaultArgs++;

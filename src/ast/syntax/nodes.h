@@ -208,9 +208,9 @@ struct FunctionCall : public AcceptorExtend<FunctionCall, Base> {
  */
 struct NewInstance : public AcceptorExtend<NewInstance, Base> {
   private:
-    /// @brief Value that's needed to be casted
+    /// @brief Call representation containing the arguments
     FunctionCall* call;
-    /// @brief Result type thats casted to
+    /// @brief Type that's being initialized
     TypeRef* type;
     /// @brief Wether or not the `new` operator should create
     ///  the instance on the heap or on the stack.
@@ -221,6 +221,7 @@ struct NewInstance : public AcceptorExtend<NewInstance, Base> {
 
     NewInstance(FunctionCall* call, TypeRef* ty, bool createAtHeap = true)
         : type(ty), call(call), createAtHeap(createAtHeap){};
+    NewInstance(DBGSourceInfo* dbg, std::vector<Base*> args, TypeRef* ty, bool createAtHeap = true);
 
     /// @return Get the call value from the operator
     auto getCall() { return call; }
@@ -946,11 +947,16 @@ struct ConstructorDef : public AcceptorExtend<ConstructorDef, BodiedFunction> {
      * @note This can be useful to store values to unmutable variables.
      */
     std::map<std::string, Expression::Base*> initArgs;
-
+    /// @brief Wether or not the constructor has super arguments
+    bool _hasSuperArgs = false;
   public:
     using AcceptorExtend::AcceptorExtend;
+
     template <class... Args>
-    ConstructorDef(Args&... args) : AcceptorExtend(std::forward<Args>(args)...){};
+    ConstructorDef(bool hasSuperArgs, Args&... args) : AcceptorExtend(args...), _hasSuperArgs(hasSuperArgs) {};
+
+    /// @brief Wether or not the constructor has super arguments
+    bool hasSuperArgs() const { return _hasSuperArgs; };
 
     /// @brief Set the arguments used to initialize the parent class.
     void setSuperArgs(std::vector<Expression::Base*> args);

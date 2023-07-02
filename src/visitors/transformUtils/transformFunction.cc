@@ -122,8 +122,16 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
                                                "paths!"});
                     }
 
+                    std::vector<std::shared_ptr<ir::Value>> prependedInsts;
+                    if (fn->isConstructor()) {
+                        auto constructor = utils::cast<Statement::ConstructorDef>(node);
+                        assert(constructor != nullptr);
+                        prependedInsts = transformConstructor(constructor);
+                    }
+
                     body->accept(this);
-                    auto functionBody = std::dynamic_pointer_cast<ir::Block>(this->value);
+                    auto functionBody = utils::dyn_cast<ir::Block>(this->value);
+                    functionBody->prepend(prependedInsts);
                     fn->setBody(functionBody);
                 });
 

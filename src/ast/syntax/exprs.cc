@@ -30,6 +30,12 @@ TypeRef::TypeRef(std::string p_name, DBGSourceInfo* p_dbg,
     : internalType(internalType), types::Type(REF, p_name) {
     setDBGInfo(p_dbg);
 }
+NewInstance::NewInstance(DBGSourceInfo* dbg, std::vector<Base*> args, TypeRef* ty, bool createAtHeap)
+    : type(ty), createAtHeap(createAtHeap) {
+    auto call = Syntax::N<FunctionCall>(ty->toRef(), args);
+    call->setDBGInfo(dbg);
+    this->call = call;
+}
 void TypeRef::setGenerics(std::vector<TypeRef*> g) { generics = g; }
 std::vector<Expression::TypeRef*> GenericIdentifier::getGenerics() const { return generics; }
 std::vector<TypeRef*> TypeRef::getGenerics() { return this->generics; }

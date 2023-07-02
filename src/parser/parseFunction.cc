@@ -32,6 +32,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
 
     // Constructor specific only
     std::vector<Syntax::Expression::Base*> superArgs;
+    bool hasSuperArgs = false;
 
     std::map<Attributes::Fn, std::map<std::string, std::string>> attributes;
     bool isLLVMFunction = false;
@@ -369,6 +370,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
         if (is<TokenType::SYM_COLLON>()) {
             next();
             if (is<TokenType::KWORD_SUPER>()) {
+                hasSuperArgs = true;
                 if (!m_current_class->getParent()) {
                     createError<SYNTAX_ERROR>("Can't call super on a class that doesn't extend "
                                               "from another class!");
@@ -379,16 +381,14 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
 
                 while (true) {
                     auto pk = peek();
-
                     if (is<TokenType::BRACKET_RPARENT>(pk)) { break; }
-
-                    next();
                     auto expr = parseExpr();
                     superArgs.push_back(expr);
-
+                    next();
                     if (is<TokenType::SYM_COMMA>()) {
                     } else if (is<TokenType::BRACKET_RPARENT>()) {
                         prev();
+                        break;
                     } else {
                         createError<SYNTAX_ERROR>(
                                 FMT("Expected a ',' or a ')' but found '%s' instead",
@@ -454,7 +454,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     FunctionDef* fn = nullptr;
     if (isConstructor) {
         assert(hasBlock);
-        fn = Syntax::N<ConstructorDef>(block, name);
+        fn = Syntax::N<ConstructorDef>(hasSuperArgs, block, name);
         static_cast<ConstructorDef*>(fn)->setSuperArgs(superArgs);
     } else if (isExtern) {
         fn = Syntax::N<ExternFnDef>(externName, name);
