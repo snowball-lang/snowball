@@ -4,7 +4,7 @@ class Iterable<_IteratorType: Core::Sized> {
     Iterable() {}
 }
 
-class Vector<_StoreType: Core::Sized>: Iterable<?_StoreType> {
+class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
   pub:
     Vector() : super() {}
 
@@ -24,7 +24,7 @@ class Vector<_StoreType: Core::Sized>: Iterable<?_StoreType> {
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating strings.
  */
-class StringView<_CharType: Core::Sized = char*>: Iterable<?_CharType> {
+class StringView<_CharType: Core::Sized = char*>: Iterable<_CharType> {
   pub:
     /**
      * @brief Default constructor.
@@ -33,15 +33,15 @@ class StringView<_CharType: Core::Sized = char*>: Iterable<?_CharType> {
      */
     StringView() : super() {
         self.size = 0;
-        self.data = new Vector<?_CharType>{};
+        self.data = new Vector<_CharType>{};
     }
 
   priv:
     
     let mut size: i32;
-    let mut data: Vector<?_CharType>;
+    let mut data: Vector<_CharType>;
 }
 
-type String = StringView<?>;
-// TODO (implement wchar): using WideString as StringView<?wchar*>
+type String = StringView<>;
+// TODO (implement wchar): using WideString as StringView<wchar*>
 
