@@ -1,4 +1,5 @@
 
+#include "../../ast/syntax/common.h"
 #include "../../ast/syntax/nodes.h"
 #include "../../ast/types/DefinedType.h"
 #include "../../ast/types/FunctionType.h"
@@ -183,6 +184,11 @@ class DefiniteAssigment : public Analyzer {
      */
     std::optional<std::pair<std::string, DefiniteAssigment::ReferenceStatus>>
     getIdentifier(std::string x);
+    /**
+     * It generates the constructor metadata for the given class (just for the current
+     *  scope)
+    */
+    void visitConstructor(Statement::FunctionDef* p_node);
 
 #include "../../defs/accepts.def"
   public:

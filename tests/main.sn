@@ -1,8 +1,9 @@
 use Core::CLib
 
-class Parent {
+class Parent: X {
   pub:
     let a: i32;
+    // TODO: typecheck this and generate it in llvm
     Parent() : a(254) {}
 }
 

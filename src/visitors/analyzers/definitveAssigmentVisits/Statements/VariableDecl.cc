@@ -18,7 +18,6 @@ SN_DEFINITE_ASSIGMENT_VISIT(Statement::VariableDecl) {
     }
 
     if (p_node->isInitialized()) { p_node->getValue()->accept(this); }
-
     this->scopes.front().emplace(
             std::make_pair(x, p_node->isInitialized() ? Initialized : NotInitialized));
 }

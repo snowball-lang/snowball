@@ -400,8 +400,11 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
 
                 next();
                 consume<TokenType::BRACKET_RPARENT>("')'");
+                if (is<TokenType::SYM_COMMA>()) {
+                    next();
+                    assert_tok<TokenType::IDENTIFIER>("an identifier");
+                }
             } 
-            
 
             while (is<TokenType::IDENTIFIER>()) {
                 auto name = m_current.to_string();
@@ -413,7 +416,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
                 next();
                 assert_tok<TokenType::BRACKET_LPARENT>("'('");
                 auto expr = parseExpr();
-                constructorInitArgs.insert({name, expr});
+                constructorInitArgs[name] = expr;
                 next();
                 consume<TokenType::BRACKET_RPARENT>("')'");
                 if (is<TokenType::SYM_COMMA>()) {
@@ -427,7 +430,9 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
                                 m_current.to_string().c_str()));
                 }
             }
-        } else if (m_current_class->getParent()) {
+        } 
+        
+        if (m_current_class->getParent() && !hasSuperArgs) {
             createError<SYNTAX_ERROR>("Expected a 'super' call for constructors inside a class "
                                       "that extends form a type!");
         }
@@ -480,8 +485,10 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     FunctionDef* fn = nullptr;
     if (isConstructor) {
         assert(hasBlock);
-        fn = Syntax::N<ConstructorDef>(hasSuperArgs, block, name);
-        static_cast<ConstructorDef*>(fn)->setSuperArgs(superArgs);
+        auto constructor = Syntax::N<ConstructorDef>(hasSuperArgs, block, name);
+        constructor->setSuperArgs(superArgs);
+        constructor->setInitArgs(constructorInitArgs);
+        fn = utils::cast<FunctionDef>(constructor);
     } else if (isExtern) {
         fn = Syntax::N<ExternFnDef>(externName, name);
     } else if (isLLVMFunction) {
