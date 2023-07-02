@@ -1,4 +1,5 @@
 #include "../Transformer.h"
+#include <cstring>
 
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
@@ -7,7 +8,7 @@ namespace snowball {
 namespace Syntax {
 
 void Transformer::executeGenericTests(
-        Syntax::Expression::WhereClause* clause, std::shared_ptr<types::Type> generic) {
+        Expression::WhereClause* clause, std::shared_ptr<types::Type> generic) {
     if (clause == nullptr) { return; }
     for (auto test : clause->getChecks()) {
         auto genericsCopy = test->getGenerics();
@@ -16,7 +17,6 @@ void Transformer::executeGenericTests(
         test->setGenerics(generics);
 
         transformType(test);
-
         // Reset generics
         test->setGenerics(genericsCopy);
     }

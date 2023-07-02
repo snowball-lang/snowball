@@ -21,6 +21,7 @@ inline const std::string SIZED_TYPE_CHECK_STYPE = "Core::Sized";
 inline const std::string IS_NUMERIC_CHECK_STYPE = "Core::IsNumeric";
 inline const std::string IS_POINTER_CHECK_STYPE = "Core::IsPointer";
 inline const std::string CASTABLE_TO_CHECK_STYPE = "Core::CastableTo";
+inline const std::string IMPLEMENTS_CHECK_STYPE = "Core::Implements";
 
 std::shared_ptr<types::Type> Transformer::transformSpecialType(Expression::TypeRef* ty) {
     auto n = ty->getName();
@@ -120,6 +121,27 @@ std::shared_ptr<types::Type> Transformer::transformSpecialType(Expression::TypeR
                     ty,
                     FMT("Type '%s' expected type '%s' to be able to cast to '%s' but it can't!",
                         CASTABLE_TO_CHECK_STYPE.c_str(), childType->getPrettyName().c_str(),
+                        parentType->getPrettyName().c_str()));
+        }
+
+        return childType;
+    }
+
+    STYPE_INSTANCE(IMPLEMENTS_CHECK_STYPE) {
+        ASSERT_GENERICS(2, IMPLEMENTS_CHECK_STYPE)
+
+        auto child = generics.at(0);
+        auto parent = generics.at(1);
+
+        auto childType = transformType(child);
+        auto parentType = transformType(parent);
+
+        auto definedType = utils::dyn_cast<types::DefinedType>(childType);
+        if (!definedType || !definedType->hasParent() || !definedType->getParent()->is(parentType.get())) {
+            E<TYPE_ERROR>(
+                    ty,
+                    FMT("Type '%s' expected type '%s' to be a subtype of '%s' but it isn't!",
+                        IMPLEMENTS_CHECK_STYPE.c_str(), childType->getPrettyName().c_str(),
                         parentType->getPrettyName().c_str()));
         }
 

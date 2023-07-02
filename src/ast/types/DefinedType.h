@@ -81,7 +81,6 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>, public ir::IdMixin
                 std::vector<ClassField*> fields = {},
                 std::shared_ptr<DefinedType> parent = nullptr,
                 std::vector<std::shared_ptr<Type>> generics = {});
-
     /**
      * @param other another type to check.
      *
@@ -125,13 +124,21 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>, public ir::IdMixin
     std::vector<std::shared_ptr<ir::Func>> getVTable() const;
     /// @return the generic list defined for this type
     auto getGenerics() const { return generics; }
+    /// @brief Set the generic list for this type
+    void setGenerics(std::vector<std::shared_ptr<Type>> generics) { this->generics = generics; }
     /// @return the parent class it inherits from
     /// @note It may be std::nullptr if it does not inherit from
     ///  anything!
     auto getParent() const { return parent; }
+    /// @brief Set the parent class it inherits from
+    void setParent(std::shared_ptr<DefinedType> p) { parent = p; }
+    /// @return true/false depending on whether the class has a parent
+    auto hasParent() const { return parent != nullptr; }
     /// @return A list containing all the fields declared for the class
     /// @note It does not include the parent fields!
     auto getFields() const { return fields; }
+    /// @brief Set the fields for the class
+    void setFields(std::vector<ClassField*> fields) { this->fields = fields; }
     /// @brief Append a new field (ClassField) to the list
     void addField(ClassField* f);
     /// @c Type::toRef() for information about this function.
