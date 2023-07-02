@@ -12,6 +12,7 @@
         isPublic = is<TokenType::KWORD_PUBLIC>(peek(-4, true));                                    \
     }
 
+using namespace snowball::Syntax;
 using namespace snowball::Syntax::Statement;
 
 namespace snowball::parser {
@@ -34,6 +35,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     std::vector<Syntax::Expression::Base*> superArgs;
     bool hasSuperArgs = false;
 
+    std::map<std::string, Expression::Base*> constructorInitArgs;
     std::map<Attributes::Fn, std::map<std::string, std::string>> attributes;
     bool isLLVMFunction = false;
 
@@ -398,8 +400,32 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
 
                 next();
                 consume<TokenType::BRACKET_RPARENT>("')'");
-            } else {
-                assert(!"TODO: Continue here");
+            } 
+            
+
+            while (is<TokenType::IDENTIFIER>()) {
+                auto name = m_current.to_string();
+                if (constructorInitArgs.find(name) != constructorInitArgs.end()) {
+                    createError<SYNTAX_ERROR>(FMT("Duplicate constructor init argument '%s'",
+                                                  name.c_str()));
+                }
+
+                next();
+                assert_tok<TokenType::BRACKET_LPARENT>("'('");
+                auto expr = parseExpr();
+                constructorInitArgs.insert({name, expr});
+                next();
+                consume<TokenType::BRACKET_RPARENT>("')'");
+                if (is<TokenType::SYM_COMMA>()) {
+                    next();
+                    assert_tok<TokenType::IDENTIFIER>("an identifier");
+                } else if (is<TokenType::BRACKET_LCURLY>()) {
+                    break;
+                } else {
+                    createError<SYNTAX_ERROR>(
+                            FMT("Expected a ',' or a '{' but found '%s' instead",
+                                m_current.to_string().c_str()));
+                }
             }
         } else if (m_current_class->getParent()) {
             createError<SYNTAX_ERROR>("Expected a 'super' call for constructors inside a class "

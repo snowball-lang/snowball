@@ -138,8 +138,8 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
                 E<VARIABLE_ERROR>(dbgInfo, FMT("Function '%s' is not defined!", name.c_str()));
             CompilerError* tailErrors = nullptr;
 #define ADD_FUNCTION_ERROR(id, idx)                                                                \
-    for (auto overload : functions.value()) {                                                      \
-        auto err = EI<>(overload, "", {.info = "A possible function overload found here" });                   \
+    for (auto overload : id.value()) {                                                      \
+        auto err = EI<>(idx, "", {.info = "A possible function overload found here" });                   \
         if (tailErrors == nullptr) {                                                               \
             tailErrors = err;                                                                      \
             continue;                                                                              \
