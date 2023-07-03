@@ -7,11 +7,16 @@
 #include "../ModuleHolder.h"
 #include "../values/Value.h"
 #include "../values/Call.h"
-#include "../../ir/values/Argument.h"
-#include "../../ir/values/Constants.h"
-#include "../../ir/values/Func.h"
-#include "../../ir/values/Return.h"
-#include "../../ir/values/ValueExtract.h"
+#include "../values/Argument.h"
+#include "../values/Constants.h"
+#include "../values/Func.h"
+#include "../values/Return.h"
+#include "../values/ValueExtract.h"
+#include "../values/WhileLoop.h"
+#include "../values/ReferenceTo.h"
+#include "../values/IndexExtract.h"
+#include "../values/Cast.h"
+#include "../values/Conditional.h"
 
 #include <list>
 #include <unordered_map>
@@ -40,32 +45,36 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
     IRBuilder(std::shared_ptr<ir::Module> module);
 
     /// @brief Create a new function
-    SharedValue<Func> createFunction(DBGSourceInfo* dbgInfo, std::string name, ValueVec<Argument> args, 
+    SharedValue<Func> createFunction(DBGSourceInfo* dbgInfo, std::string name, Func::FunctionArgs args, 
                                     bool isExtern = false, bool isVarArg = false);
-    SharedValue<Func> createFunction(DBGSourceInfo* dbgInfo, std::string name, SharedValue<Block> block, ValueVec<Argument> args, 
+    SharedValue<Func> createFunction(DBGSourceInfo* dbgInfo, std::string name, SharedValue<Block> block, Func::FunctionArgs args, 
                                     bool isExtern = false, bool isVarArg = false);
     SharedValue<Func> createFunction(DBGSourceInfo* dbgInfo, std::string name, SharedValue<Block> block, 
                                     bool isExtern = false, bool isVarArg = false);
     /// @brief Create a new cast               
-    SharedValue<Func> createCast(DBGSourceInfo* dbgInfo, SharedValue<> value, Type<> type);
+    SharedValue<Cast> createCast(DBGSourceInfo* dbgInfo, SharedValue<> value, Type<> type);
     /// @brief Create a new index extract
-    SharedValue<IndexExtract> createIndexExtract(DBGSourceInfo* dbgInfo, types::DefinedType::ClassField* value,
+    SharedValue<IndexExtract> createIndexExtract(DBGSourceInfo* dbgInfo, SharedValue<> value, types::DefinedType::ClassField* field,
                                            unsigned int index);
     /// @brief Create a new argument value
-    SharedValue<Argument> createArgument(DBGSourceInfo* dbgInfo, std::string name, Type<> type,
+    SharedValue<Argument> createArgument(DBGSourceInfo* dbgInfo, const std::string& name, int index,
+                                   AST(Expression::Base) defaultValue = nullptr);
+    /// @brief Create a new argument value and set a type to it
+    SharedValue<Argument> createArgument(DBGSourceInfo* dbgInfo, const std::string& name, int index,
+                                    Type<> type,
                                    AST(Expression::Base) defaultValue = nullptr);
     /// @brief Create a new variable
     SharedValue<Variable> createVariable(DBGSourceInfo* dbgInfo, const std::string& identifier,
                                    bool isArgument = false, bool isMutable = false);
+    /// @brief Create a new variable and set a type to it
+    SharedValue<Variable> createVariable(DBGSourceInfo* dbgInfo, const std::string& identifier, Type<> type,
+                                bool isArgument = false, bool isMutable = false);
     /// @brief Create a new block
     SharedValue<Block> createBlock(DBGSourceInfo* dbgInfo, std::vector<SharedValue<>> values);
     /// @brief Create a new empty block
     SharedValue<Block> createBlock(DBGSourceInfo* dbgInfo);
     /// @brief Create a new reference to a value (pointer)
     SharedValue<ReferenceTo> createReferenceTo(DBGSourceInfo* dbgInfo, SharedValue<> value);
-    /// @brief Create a new binary operation
-    SharedValue<BinaryOp> createBinaryOp(DBGSourceInfo* dbgInfo, SharedValue<> left, SharedValue<> right,
-                                   AST(Expression::BinaryOp::OpType) opType, bool isUnary = false);
     /// @brief Create a new string value
     SharedValue<StringValue> createStringValue(DBGSourceInfo* dbgInfo, const std::string value);
     /// @brief Create a new number value
@@ -99,6 +108,12 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
                                          SharedValue<Block> thenBlock, SharedValue<Block> elseBlock);
     /// @brief Create a new while loop
     SharedValue<WhileLoop> createWhileLoop(DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> body);
+
+    /// @brief Create a new binary operation
+    template <typename... Args>
+    SharedValue<BinaryOp> createBinaryOp(DBGSourceInfo* dbgInfo, Args&&... args) {
+      return createCall(dbgInfo, N<BinaryOp>(dbgInfo, std::forward<Args>(args)...));
+    }
 
     /// @brief Utility function to create a new instruction
     template <typename DesiredType, typename... Args>
