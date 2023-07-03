@@ -16,7 +16,9 @@ SN_DEFINITE_ASSIGMENT_VISIT(Statement::FunctionDef) {
 
                 if (p_node->isConstructor())
                     for (auto x : this->insideClass.value()->getVariables()) {
-                        this->scopes.front().insert({"$self::" + x->getName(), NotInitialized});
+                        this->scopes.front().insert({"$self::" + x->getName(), x->isInitialized() ? Initialized : NotInitialized});
+                        auto value = x->getValue();
+                        if (value) value->accept(this);
                     }
             }
 

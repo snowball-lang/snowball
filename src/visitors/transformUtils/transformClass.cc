@@ -81,12 +81,14 @@ Transformer::transformClass(const std::string& uuid,
                     vector_iterate<Statement::VariableDecl*, types::DefinedType::ClassField*>(
                             ty->getVariables(), [&](auto v) {
                                 auto varTy = transformType(v->getDefinedType());
-                                return new types::DefinedType::ClassField(
+                                auto field = new types::DefinedType::ClassField(
                                         v->getName(),
                                         varTy,
-                                        /*TODO: actually check this*/
                                         v->getPrivacy(),
+                                        v->getValue(),
                                         v->isMutable());
+                                field->setDBGInfo(v->getDBGInfo());
+                                return field;
                             });
             auto fields = getMemberList(ty->getVariables(), baseFields, parentType);
             transformedType->setParent(parentType);

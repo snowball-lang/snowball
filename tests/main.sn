@@ -2,9 +2,9 @@ use Core::CLib
 
 class Parent {
   pub:
-    let a: i32;
-    Parent() : a('B') {
-      
+    let mut b: i32 = 'x';
+    let mut a: i32 = self.a;
+    Parent() {
     }
 }
 

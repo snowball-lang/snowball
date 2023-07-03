@@ -38,15 +38,17 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>, public ir::IdMixin
      * @note The number of items does not affect whether this type
      *  is eqaul to another type.
      */
-    struct ClassField : public Syntax::Statement::Privacy {
+    struct ClassField : public Syntax::Statement::Privacy, public DBGObject {
         explicit ClassField(const std::string& name,
                             std::shared_ptr<Type>
                                     type,
                             Privacy privacy = PRIVATE,
+                            Syntax::Expression::Base* initializedValue = nullptr,
                             bool isMutable = false);
-
         const std::string name;
         const std::shared_ptr<Type> type;
+
+        Syntax::Expression::Base* initializedValue = nullptr;
 
         bool isMutable = false;
         bool initialized = false;

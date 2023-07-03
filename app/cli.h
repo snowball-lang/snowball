@@ -8,8 +8,6 @@
 namespace snowball {
 namespace app {
 struct Options {
-    // TODO: optimization level
-
     enum EmitType
     {
         EXECUTABLE,
