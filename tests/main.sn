@@ -1,10 +1,12 @@
 use Core::CLib
 
-class Parent: X {
+class Parent {
   pub:
     let a: i32;
     // TODO: typecheck this and generate it in llvm
-    Parent() : a(254) {}
+    Parent() : a(254) {
+      
+    }
 }
 
 pub fn main() i32 {

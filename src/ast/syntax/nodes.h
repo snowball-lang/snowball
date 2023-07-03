@@ -946,7 +946,7 @@ struct ConstructorDef : public AcceptorExtend<ConstructorDef, BodiedFunction> {
      * }
      * @note This can be useful to store values to unmutable variables.
      */
-    std::map<std::string, Expression::Base*> initArgs;
+    std::map<Expression::Identifier*, Expression::Base*> initArgs;
     /// @brief Wether or not the constructor has super arguments
     bool _hasSuperArgs = false;
   public:
@@ -961,7 +961,7 @@ struct ConstructorDef : public AcceptorExtend<ConstructorDef, BodiedFunction> {
     /// @brief Set the arguments used to initialize the parent class.
     void setSuperArgs(std::vector<Expression::Base*> args);
     /// @brief Set the arguments used to initialize the class.
-    void setInitArgs(std::map<std::string, Expression::Base*> args);
+    void setInitArgs(std::map<Expression::Identifier*, Expression::Base*> args);
     /// @return Arguments used to initialize the parent class.
     decltype(superArgs) getSuperArgs() const;
     /// @return Arguments used to initialize the class.

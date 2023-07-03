@@ -10,9 +10,9 @@ namespace snowball::parser {
 
 std::vector<TypeRef*> Parser::parseGenericExpr() {
     assert(is<TokenType::OP_LT>());
-    assert(is<TokenType::SYM_QUESTION>(peek()));
 
-    next(); // Current token: OP_LT
+    // If it's not a '?' it means that we 100% know that it's a generic expression
+    if (is<TokenType::SYM_QUESTION>(peek())) next(); // Current token: OP_LT
     std::vector<TypeRef*> types;
 
     while (true) {

@@ -35,7 +35,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     std::vector<Syntax::Expression::Base*> superArgs;
     bool hasSuperArgs = false;
 
-    std::map<std::string, Expression::Base*> constructorInitArgs;
+    std::map<Expression::Identifier*, Expression::Base*> constructorInitArgs;
     std::map<Attributes::Fn, std::map<std::string, std::string>> attributes;
     bool isLLVMFunction = false;
 
@@ -407,10 +407,10 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
             } 
 
             while (is<TokenType::IDENTIFIER>()) {
-                auto name = m_current.to_string();
+                auto name = parseIdentifier(false, false);
                 if (constructorInitArgs.find(name) != constructorInitArgs.end()) {
                     createError<SYNTAX_ERROR>(FMT("Duplicate constructor init argument '%s'",
-                                                  name.c_str()));
+                                                  name->getIdentifier().c_str()));
                 }
 
                 next();

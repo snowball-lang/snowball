@@ -13,7 +13,7 @@ void DefiniteAssigment::visitConstructor(Statement::FunctionDef* p_node) {
         superArg->accept(this);
     for (auto init : constructor->getInitArgs()) {
         init.second->accept(this);
-        auto name = "$self::" + init.first;
+        auto name = "$self::" + init.first->getIdentifier();
         this->scopes.front()[name] = Initialized;
     }
 }

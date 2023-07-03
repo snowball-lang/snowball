@@ -32,19 +32,17 @@ void FunctionDef::setVariadic(bool v) { variadic = v; }
 bool FunctionDef::isStatic() { return _static; }
 void FunctionDef::setStatic(bool s) { _static = s; }
 void ConstructorDef::setSuperArgs(std::vector<Expression::Base*> args) { superArgs = args; }
-void ConstructorDef::setInitArgs(std::map<std::string, Expression::Base*> list) { initArgs = list; }
-std::map<std::string, Expression::Base*> ConstructorDef::getInitArgs() const { return initArgs; }
+void ConstructorDef::setInitArgs(std::map<Expression::Identifier*, Expression::Base*> list) { initArgs = list; }
+std::map<Expression::Identifier*, Expression::Base*> ConstructorDef::getInitArgs() const { return initArgs; }
 std::vector<Expression::Base*> ConstructorDef::getSuperArgs() const { return superArgs; }
 std::vector<Expression::Base*>::iterator ConstructorDef::superArgsBegin() {
     return superArgs.begin();
 }
 std::vector<Expression::Base*>::iterator ConstructorDef::superArgsEnd() { return superArgs.end(); }
-std::map<std::string, Expression::Base*>::iterator ConstructorDef::initArgsBegin() {
-    return initArgs.begin();
-}
-std::map<std::string, Expression::Base*>::iterator ConstructorDef::initArgsEnd() {
-    return initArgs.end();
-}
+std::map<Expression::Identifier*, Expression::Base*>::iterator ConstructorDef::initArgsBegin() 
+    { return initArgs.begin(); }
+std::map<Expression::Identifier*, Expression::Base*>::iterator ConstructorDef::initArgsEnd() 
+    { return initArgs.end(); }
 Namespace::Namespace(std::string name, std::vector<Node*> body) : body(body), name(name) { }
 std::string Namespace::getName() const { return name; }
 std::vector<Node*> Namespace::getBody() const { return body; }
