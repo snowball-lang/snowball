@@ -11,7 +11,8 @@ namespace snowball::parser {
 Syntax::Expression::Identifier* Parser::parseIdentifier(bool isKnownType, bool allowGenerics) {
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
     auto genericContainsQuestion = is<TokenType::SYM_QUESTION>(peek(1, true));
-    if (allowGenerics && (is<TokenType::OP_LT>(peek()) && (isKnownType || genericContainsQuestion))) {
+    if (allowGenerics &&
+        (is<TokenType::OP_LT>(peek()) && (isKnownType || genericContainsQuestion))) {
         if (genericContainsQuestion && isKnownType)
             createError<SYNTAX_ERROR>("Expected a valid generic expression but got '?'",
                                       {.info = "Not a valid generic expression"});

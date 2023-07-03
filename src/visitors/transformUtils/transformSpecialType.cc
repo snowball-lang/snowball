@@ -137,12 +137,12 @@ std::shared_ptr<types::Type> Transformer::transformSpecialType(Expression::TypeR
         auto parentType = transformType(parent);
 
         auto definedType = utils::dyn_cast<types::DefinedType>(childType);
-        if (!definedType || !definedType->hasParent() || !definedType->getParent()->is(parentType.get())) {
-            E<TYPE_ERROR>(
-                    ty,
-                    FMT("Type '%s' expected type '%s' to be a subtype of '%s' but it isn't!",
-                        IMPLEMENTS_CHECK_STYPE.c_str(), childType->getPrettyName().c_str(),
-                        parentType->getPrettyName().c_str()));
+        if (!definedType || !definedType->hasParent() ||
+            !definedType->getParent()->is(parentType.get())) {
+            E<TYPE_ERROR>(ty,
+                          FMT("Type '%s' expected type '%s' to be a subtype of '%s' but it isn't!",
+                              IMPLEMENTS_CHECK_STYPE.c_str(), childType->getPrettyName().c_str(),
+                              parentType->getPrettyName().c_str()));
         }
 
         return childType;

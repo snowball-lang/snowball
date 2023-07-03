@@ -265,7 +265,8 @@ class Parser {
      *
      * @return Syntax::Expression::Identifier*
      */
-    Syntax::Expression::Identifier* parseIdentifier(bool isKnownType = false, bool allowGenerics = true);
+    Syntax::Expression::Identifier* parseIdentifier(bool isKnownType = false,
+                                                    bool allowGenerics = true);
     /**
      * expr          ::=  [constant_value] |
      *                    [function_call]  |

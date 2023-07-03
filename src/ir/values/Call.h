@@ -68,9 +68,12 @@ class ObjectInitialization : public AcceptorExtend<ObjectInitialization, Call> {
     /// @brief Wether to initialize the object at stack or heap.
     bool initializeAtHeap = true;
     /// @brief The created object value.
-    /// @note It can be nullptr if the object requires a new allocation. 
+    /// @note It can be nullptr if the object requires a new allocation.
     std::shared_ptr<ir::Value> createdObject = nullptr;
 };
+
+// This is how we represent a binary operation in the IR
+using BinaryOp = Call;
 
 } // namespace ir
 } // namespace snowball

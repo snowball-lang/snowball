@@ -207,8 +207,8 @@ class Func : public AcceptorExtend<Func, Value>,
         int numFunctionArgs = functionArgs.size();
         int numProvidedArgs = arguments.size();
         int numDefaultArgs = 0;
-        //DUMP(std::is_same_v<T, Argument>::value)
-        // Calculate the number of default arguments
+        // DUMP(std::is_same_v<T, Argument>::value)
+        //  Calculate the number of default arguments
         if (numFunctionArgs > numProvidedArgs) {
             if constexpr (std::is_same_v<T, std::shared_ptr<Argument>>) {
                 for (int i = numProvidedArgs; i < numFunctionArgs; i++) {

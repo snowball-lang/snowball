@@ -12,6 +12,7 @@
 #include "../ir/values/ReferenceTo.h"
 #include "../ir/values/Return.h"
 #include "../ir/values/ValueExtract.h"
+#include "../ir/builder/IRBuilder.h"
 #include "../utils/utils.h"
 
 #include <assert.h>
@@ -66,6 +67,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     TransformContext* ctx;
     // Transformed value from the last call
     std::shared_ptr<ir::Value> value;
+    // IR builder used to create new instructions
+    ir::IRBuilder builder;
     /**
      * Function fetch response.
      *

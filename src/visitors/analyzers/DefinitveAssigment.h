@@ -187,7 +187,7 @@ class DefiniteAssigment : public Analyzer {
     /**
      * It generates the constructor metadata for the given class (just for the current
      *  scope)
-    */
+     */
     void visitConstructor(Statement::FunctionDef* p_node);
 
 #include "../../defs/accepts.def"

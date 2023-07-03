@@ -30,8 +30,8 @@ class Block : public AcceptorExtend<Func, Value> {
     /// @brief It prepends a new instruction to the block
     void prepend(std::shared_ptr<Value> inst) { insts.insert(insts.begin(), inst); }
     /// @brief It prepends a new set of instructions to the block
-    void prepend(std::vector<std::shared_ptr<Value>> inst) { 
-      for (auto i : inst) prepend(i);
+    void prepend(std::vector<std::shared_ptr<Value>> inst) {
+        for (auto i : inst) prepend(i);
     }
 
     // Set a visit handler for the generators

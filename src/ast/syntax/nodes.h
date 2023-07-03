@@ -949,11 +949,13 @@ struct ConstructorDef : public AcceptorExtend<ConstructorDef, BodiedFunction> {
     std::map<Expression::Identifier*, Expression::Base*> initArgs;
     /// @brief Wether or not the constructor has super arguments
     bool _hasSuperArgs = false;
+
   public:
     using AcceptorExtend::AcceptorExtend;
 
     template <class... Args>
-    ConstructorDef(bool hasSuperArgs, Args&... args) : AcceptorExtend(args...), _hasSuperArgs(hasSuperArgs) {};
+    ConstructorDef(bool hasSuperArgs, Args&... args)
+        : AcceptorExtend(args...), _hasSuperArgs(hasSuperArgs){};
 
     /// @brief Wether or not the constructor has super arguments
     bool hasSuperArgs() const { return _hasSuperArgs; };

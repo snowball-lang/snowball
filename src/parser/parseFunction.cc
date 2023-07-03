@@ -404,7 +404,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
                     next();
                     assert_tok<TokenType::IDENTIFIER>("an identifier");
                 }
-            } 
+            }
 
             while (is<TokenType::IDENTIFIER>()) {
                 auto name = parseIdentifier(false, false);
@@ -425,13 +425,12 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
                 } else if (is<TokenType::BRACKET_LCURLY>()) {
                     break;
                 } else {
-                    createError<SYNTAX_ERROR>(
-                            FMT("Expected a ',' or a '{' but found '%s' instead",
-                                m_current.to_string().c_str()));
+                    createError<SYNTAX_ERROR>(FMT("Expected a ',' or a '{' but found '%s' instead",
+                                                  m_current.to_string().c_str()));
                 }
             }
-        } 
-        
+        }
+
         if (m_current_class->getParent() && !hasSuperArgs) {
             createError<SYNTAX_ERROR>("Expected a 'super' call for constructors inside a class "
                                       "that extends form a type!");
