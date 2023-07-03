@@ -2,6 +2,7 @@
 #include "../../DBGSourceInfo.h"
 #include "../../ast/types/PrimitiveTypes.h"
 #include "../../ast/types/DefinedType.h"
+#include "../../ast/types/FunctionType.h"
 #include "../../common.h"
 
 #include "../ModuleHolder.h"
@@ -45,6 +46,8 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
     IRBuilder(std::shared_ptr<ir::Module> module);
 
     /// @brief Create a new function
+    SharedValue<Func> createFunction(DBGSourceInfo* dbgInfo, std::string name,
+                                bool isExtern = false, bool isVarArg = false);
     SharedValue<Func> createFunction(DBGSourceInfo* dbgInfo, std::string name, Func::FunctionArgs args, 
                                     bool isExtern = false, bool isVarArg = false);
     SharedValue<Func> createFunction(DBGSourceInfo* dbgInfo, std::string name, SharedValue<Block> block, Func::FunctionArgs args, 
@@ -56,6 +59,8 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
     /// @brief Create a new index extract
     SharedValue<IndexExtract> createIndexExtract(DBGSourceInfo* dbgInfo, SharedValue<> value, types::DefinedType::ClassField* field,
                                            unsigned int index);
+    /// @brief Create a new argument value with the default parameters
+    SharedValue<Argument> createArgument(DBGSourceInfo* dbgInfo, const std::string& name, Type<> type = nullptr);
     /// @brief Create a new argument value
     SharedValue<Argument> createArgument(DBGSourceInfo* dbgInfo, const std::string& name, int index,
                                    AST(Expression::Base) defaultValue = nullptr);
@@ -107,13 +112,15 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
     SharedValue<Conditional> createConditional(DBGSourceInfo* dbgInfo, SharedValue<> condition,
                                          SharedValue<Block> thenBlock, SharedValue<Block> elseBlock);
     /// @brief Create a new while loop
-    SharedValue<WhileLoop> createWhileLoop(DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> body);
-
+    SharedValue<WhileLoop> createWhileLoop(DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> body, bool isDoWhile = false);
     /// @brief Create a new binary operation
     template <typename... Args>
     SharedValue<BinaryOp> createBinaryOp(DBGSourceInfo* dbgInfo, Args&&... args) {
       return createCall(dbgInfo, N<BinaryOp>(dbgInfo, std::forward<Args>(args)...));
     }
+
+    /// @brief Create a new function type
+    Type<types::FunctionType> createFunctionType(std::vector<Type<>> args, Type<> retType, bool isVarArg = false);
 
     /// @brief Utility function to create a new instruction
     template <typename DesiredType, typename... Args>

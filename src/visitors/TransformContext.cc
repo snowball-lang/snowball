@@ -8,11 +8,7 @@
 
 namespace snowball::Syntax {
 
-TransformContext::TransformContext(std::shared_ptr<ir::Module> mod) : AcceptorExtend() {
-    module = mod;
-    cache = new Cache();
-    imports = std::make_unique<services::ImportService>();
-
+TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder) : AcceptorExtend(), module(mod), builder(builder), cache(new Cache()), imports(std::make_unique<services::ImportService>()) {
     // Set all of the built in primitive types into the global stack
 #define DEFINE_TYPE(t)                                                                             \
     auto raw_##t = std::make_shared<types::t>();                                                   \
@@ -39,14 +35,15 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod) : AcceptorEx
     for (auto ty : overloadTypes) {
         for (auto op : services::OperatorService::operators) {
             for (auto overload : overloadTypes) {
-                auto fn = module->N<ir::Func>((DBGSourceInfo*)nullptr, "#" + op, true, false);
-                auto arg = std::make_shared<ir::Argument>("other");
                 auto typeArgs = {ty, overload};
-                auto type = std::make_shared<types::FunctionType>(typeArgs, ty);
-                arg->setType(overload);
+                auto fn = builder.createFunction(NO_DBGINFO, "#" + op, true, false);
+                auto arg = builder.createArgument(NO_DBGINFO, "other", overload);
+                auto type = builder.createFunctionType(typeArgs, ty);
+
                 fn->setArgs({{"other", arg}});
                 fn->setType(type);
-                fn->setPrivacy(/* public */ PrivacyStatus::PUBLIC);
+                fn->setPrivacy(PrivacyStatus::PUBLIC);
+
                 /// @see Transformer::defineFunction
                 auto name = ty->getName() + "." + fn->getName(true);
                 auto item = cache->getTransformedFunction(name);

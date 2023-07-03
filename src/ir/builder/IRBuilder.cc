@@ -10,8 +10,11 @@ namespace ir {
 IRBuilder::IRBuilder(std::shared_ptr<ir::Module> module) {
     setModule(module);
 }
-SharedValue<Func> IRBuilder::createFunction
-(DBGSourceInfo* dbgInfo, std::string name, Func::FunctionArgs args, bool isExtern, bool isVarArg) {
+SharedValue<Func> IRBuilder::createFunction(DBGSourceInfo* dbgInfo, std::string name,
+                                bool isExtern, bool isVarArg) {
+    return module->N<Func>(dbgInfo, name, isExtern, isVarArg);
+}
+SharedValue<Func> IRBuilder::createFunction(DBGSourceInfo* dbgInfo, std::string name, Func::FunctionArgs args, bool isExtern, bool isVarArg) {
     return module->N<Func>(dbgInfo, name, args, isExtern, isVarArg);
 }
 SharedValue<Func> IRBuilder::createFunction(DBGSourceInfo* dbgInfo, std::string name, SharedValue<Block> block, Func::FunctionArgs args, 
@@ -32,6 +35,11 @@ SharedValue<IndexExtract> IRBuilder::createIndexExtract(DBGSourceInfo* dbgInfo, 
     auto indexExtract = module->N<IndexExtract>(dbgInfo, value, field, index);
     indexExtract->setType(field->type);
     return indexExtract;
+}
+SharedValue<Argument> IRBuilder::createArgument(DBGSourceInfo* dbgInfo, const std::string& name, Type<> type) {
+    auto arg = createArgument(dbgInfo, name, 0, nullptr);
+    if (type) arg->setType(type);
+    return arg;
 }
 SharedValue<Argument> IRBuilder::createArgument(DBGSourceInfo* dbgInfo, const std::string& name, int index,
                                        Syntax::Expression::Base* defaultValue) {
@@ -63,6 +71,7 @@ SharedValue<Block> IRBuilder::createBlock(DBGSourceInfo* dbgInfo, std::vector<Sh
 SharedValue<ReferenceTo> IRBuilder::createReferenceTo(DBGSourceInfo* dbgInfo, SharedValue<> value) {
     auto ref = module->N<ReferenceTo>(dbgInfo, value);
     ref->setType(value->getType()->getPointerTo());
+    return ref;
 }
 SharedValue<StringValue> IRBuilder::createStringValue(DBGSourceInfo* dbgInfo, const std::string value) {
     return module->N<StringValue>(dbgInfo, value);
@@ -106,6 +115,7 @@ SharedValue<ObjectInitialization> IRBuilder::createObjectInitialization(DBGSourc
                                                         ValueVec<> args, bool atHeap) {
     auto init = module->N<ObjectInitialization>(dbgInfo, value, args);
     init->initializeAtHeap = atHeap;
+    return init;
 }
 SharedValue<ObjectInitialization> IRBuilder::createObjectInitialization(DBGSourceInfo* dbgInfo, SharedValue<> value,
                                                         ValueVec<> args, SharedValue<> createdObject, bool atHeap) {
@@ -117,8 +127,11 @@ SharedValue<Conditional> IRBuilder::createConditional(DBGSourceInfo* dbgInfo, Sh
                                         SharedValue<Block> thenBlock, SharedValue<Block> elseBlock) {
     return module->N<Conditional>(dbgInfo, condition, thenBlock, elseBlock);
 }
-SharedValue<WhileLoop> IRBuilder::createWhileLoop(DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> body) {
-    return module->N<WhileLoop>(dbgInfo, condition, body);
+SharedValue<WhileLoop> IRBuilder::createWhileLoop(DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> body, bool isDoWhile) {
+    return module->N<WhileLoop>(dbgInfo, condition, body, isDoWhile);
+}
+Type<types::FunctionType> IRBuilder::createFunctionType(std::vector<Type<>> args, Type<> retType, bool isVarArg) {
+    return std::make_shared<types::FunctionType>(args, retType, isVarArg);
 }
 
 } // namespace ir

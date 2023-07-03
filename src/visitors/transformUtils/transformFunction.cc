@@ -46,12 +46,12 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
             auto returnType = transformType(node->getRetType());
 
             // Create a new function value and store it's return type.
-            fn = ctx->module->N<ir::Func>(
+            fn = builder.createFunction(
                     node->getDBGInfo(),
                     name,
                     (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)),
-                    node->isVariadic(),
-                    ctx->getCurrentClass());
+                    node->isVariadic());
+            fn->setParent(ctx->getCurrentClass());
             fn->setRetTy(returnType);
             fn->setPrivacy(node->getPrivacy());
             fn->setStatic(node->isStatic());
@@ -65,7 +65,7 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
             ir::Func::FunctionArgs newArgs = {};
 
             if (fn->isConstructor()) {
-                auto a = ctx->module->N<ir::Argument>(node->getDBGInfo(), "self", 0, nullptr);
+                auto a = builder.createArgument(node->getDBGInfo(), "self", 0, nullptr);
                 a->setType(ctx->getCurrentClass(true)->getPointerTo());
                 newArgs.emplace(newArgs.begin(), std::make_pair("self", a));
             }
@@ -73,7 +73,7 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
             for (int i = 0; i < node->getArgs().size(); i++) {
                 auto arg = node->getArgs().at(i);
 
-                auto a = ctx->module->N<ir::Argument>(
+                auto a = builder.createArgument(
                         node->getDBGInfo(),
                         arg->getName(),
                         fn->isConstructor() + i,
@@ -98,7 +98,7 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
                 ctx->withScope([&]() {
                     int argIndex = 0;
                     for (auto arg : newArgs) {
-                        auto ref = ctx->module->N<ir::Variable>(
+                        auto ref = builder.createVariable(
                                 node->getDBGInfo(), arg.first, true /* TODO: is mutable */);
 
                         ref->setType(arg.second->getType());

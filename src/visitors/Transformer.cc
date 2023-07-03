@@ -27,8 +27,8 @@ namespace Syntax {
 
 Transformer::Transformer(std::shared_ptr<ir::Module> mod, SourceInfo* srci)
     : AcceptorExtend<Transformer, Visitor>(srci) {
-    ctx = new TransformContext(mod);
-
+    builder = ir::IRBuilder(mod);
+    ctx = new TransformContext(mod, builder);
     initializeCoreRuntime();
 }
 

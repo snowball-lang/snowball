@@ -16,7 +16,7 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
 
             // Remove the "" from the string value
             str = str.substr(1, str.size() - 2);
-            value = ctx->module->N<ir::StringValue>(p_node->getDBGInfo(), str);
+            value = builder.createStringValue(p_node->getDBGInfo(), str);
             value->setType(ctx->getStringType());
             break;
         }
@@ -33,7 +33,7 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
                 n = std::stoll(str); // We asume the number is correct
             }
 
-            value = ctx->module->N<ir::NumberValue>(p_node->getDBGInfo(), n);
+            value = builder.createNumberValue(p_node->getDBGInfo(), n);
             value->setType(ctx->getInt32Type());
             break;
         }
@@ -42,7 +42,7 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
             auto str = p_node->getValue();
             auto d = std::stod(str);
 
-            value = ctx->module->N<ir::FloatValue>(p_node->getDBGInfo(), d);
+            value = builder.createFloatValue(p_node->getDBGInfo(), d);
             value->setType(ctx->getF64Type());
             break;
         }
@@ -51,7 +51,7 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
             auto str = p_node->getValue();
             auto b = str == _SNOWBALL_KEYWORD__TRUE;
 
-            value = ctx->module->N<ir::BooleanValue>(p_node->getDBGInfo(), b);
+            value = builder.createBooleanValue(p_node->getDBGInfo(), b);
             value->setType(ctx->getBoolType());
             break;
         }
@@ -61,7 +61,7 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
 
             str = str.substr(1, str.size() - 2);
             auto ascii = (int)str[0];
-            value = ctx->module->N<ir::CharValue>(p_node->getDBGInfo(), ascii);
+            value = builder.createCharValue(p_node->getDBGInfo(), ascii);
             value->setType(ctx->getCharType());
             break;
         }

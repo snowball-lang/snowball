@@ -22,13 +22,13 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
                               variableName.c_str()));
     }
 
-    auto var = ctx->module->N<ir::Variable>(p_node->getDBGInfo(), variableName, false, isMutable);
+    auto var = builder.createVariable(p_node->getDBGInfo(), variableName, false, isMutable);
     auto item = std::make_shared<transform::Item>(transform::Item::Type::VALUE, var);
 
     // TODO: it should always be declared
     if (p_node->isInitialized()) {
         variableValue->accept(this);
-        auto varDecl = ctx->module->N<ir::VariableDeclaration>(
+        auto varDecl = builder.createVariableDeclaration(
                 p_node->getDBGInfo(), variableName, this->value, isMutable);
         varDecl->setId(var->getId());
         varDecl->setType(this->value->getType());
@@ -44,8 +44,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
             this->value = varDecl;
         } else {
             if (definedType->canCast(this->value->getType())) {
-                auto v = ctx->module->N<ir::Cast>(p_node->getDBGInfo(), this->value, definedType);
-                v->setType(definedType);
+                auto v = builder.createCast(p_node->getDBGInfo(), this->value, definedType);
                 this->value = v;
             } else {
                 E<VARIABLE_ERROR>(p_node,
@@ -58,7 +57,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
 
         var->setType(this->value->getType());
     } else {
-        auto varDecl = ctx->module->N<ir::VariableDeclaration>(
+        auto varDecl = builder.createVariableDeclaration(
                 p_node->getDBGInfo(), variableName, nullptr, isMutable);
         varDecl->setId(var->getId());
         varDecl->setType(definedType);

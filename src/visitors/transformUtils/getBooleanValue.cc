@@ -11,7 +11,7 @@ namespace Syntax {
 std::shared_ptr<ir::Value> Transformer::getBooleanValue(std::shared_ptr<ir::Value> value) {
     auto boolType = ctx->getBoolType();
     if (value->getType()->canCast(boolType)) {
-        auto v = ctx->module->N<ir::Cast>(value->getDBGInfo(), value, boolType);
+        auto v = builder.createCast(value->getDBGInfo(), value, boolType);
         v->setType(boolType);
         return utils::dyn_cast<ir::Value>(v);
     }

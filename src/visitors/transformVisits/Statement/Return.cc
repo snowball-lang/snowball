@@ -7,25 +7,37 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::Return) {
+    auto functionType = utils::dyn_cast<types::FunctionType>(ctx->getCurrentFunction()->getType());
+    assert(functionType);
     if (auto f = ctx->getCurrentFunction(); f->isConstructor()) {
         E<SYNTAX_ERROR>(p_node,
                         "You can't return a value inside a constructor function!",
                         {.info = "Constructors can't contain return statements"});
     }
 
-    std::shared_ptr<ir::Value> returnValue = nullptr;
-    if (p_node->getValue() != nullptr) {
-        p_node->getValue()->accept(this);
+    std::shared_ptr<ir::Value> ret = nullptr;
+    if (!utils::dyn_cast<types::VoidType>(functionType->getRetType())) {
+        std::shared_ptr<ir::Value> returnValue = nullptr;
+        if (p_node->getValue() != nullptr) {
+            p_node->getValue()->accept(this);
 
-        returnValue = this->value;
+            returnValue = this->value;
+        } else {
+            E<SYNTAX_ERROR>(p_node,
+                            "You must return a value inside a non-void function!",
+                            {.info = "Non-void functions must contain return statements"});
+        }
+
+        ret = builder.createReturn(p_node->getDBGInfo(), returnValue);
+    } else {
+        if (p_node->getValue() != nullptr) {
+            E<SYNTAX_ERROR>(p_node,
+                            "You can't return a value inside a void function!",
+                            {.info = "Void functions can't contain return statements"});
+        }
+
+        ret = builder.createVoidReturn(p_node->getDBGInfo());
     }
-
-    auto ret = ctx->module->N<ir::Return>(p_node->getDBGInfo(), returnValue);
-
-    // We shoudn't do this since return statements can't be use as
-    // values. We do this just in case we need it for some convinience
-    ret->setType(returnValue->getType());
-
     this->value = ret;
 }
 

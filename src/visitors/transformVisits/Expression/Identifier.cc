@@ -17,9 +17,7 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
         auto casted = std::dynamic_pointer_cast<ir::Variable>(val);
         assert(casted != nullptr);
 
-        auto var = ctx->module->N<ir::ValueExtract>(p_node->getDBGInfo(), casted);
-        var->setType(casted->getType());
-
+        auto var = builder.createValueExtract(p_node->getDBGInfo(), casted);
         this->value = var;
         return;
     } else if (functions) {
@@ -33,11 +31,7 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
 
         // There can only be 1 function overload without casting
         auto function = functions->at(0);
-
-        auto var = ctx->module->N<ir::ValueExtract>(p_node->getDBGInfo(), function);
-        var->setType(function->getType());
-
-        this->value = var;
+        this->value = builder.createValueExtract(p_node->getDBGInfo(), function);
         return;
     } else if (type) {
         E<VARIABLE_ERROR>(p_node, "Can't use types as values!");

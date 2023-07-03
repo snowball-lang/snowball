@@ -99,7 +99,7 @@ Transformer::transformClass(const std::string& uuid,
             for (auto fn : ty->getFunctions()) { fn->accept(this); }
             for (int allowPointer = 0; allowPointer < 2; ++allowPointer) {
                 // Set the default '=' operator for the class
-                auto fn = ctx->module->N<ir::Func>(
+                auto fn = builder.createFunction(
                         ty->getDBGInfo(),
                         services::OperatorService::getOperatorMangle(services::OperatorService::EQ),
                         true,

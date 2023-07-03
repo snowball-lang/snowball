@@ -9,6 +9,8 @@
 #ifndef __SNOWBALL_DBG_INFO_H_
 #define __SNOWBALL_DBG_INFO_H_
 
+#define NO_DBGINFO (DBGSourceInfo*)nullptr
+
 namespace snowball {
 
 /**

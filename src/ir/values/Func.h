@@ -157,6 +157,8 @@ class Func : public AcceptorExtend<Func, Value>,
         assert(!isDeclaration());
         return symbols;
     }
+    /// @brief set from what parent this function is declared inside
+    void setParent(std::shared_ptr<types::DefinedType> x) { parent = x; }
     /// @brief get from what parent this function is declared inside
     auto getParent() const { return parent; }
     /// @return whether or not the function is defiend within a

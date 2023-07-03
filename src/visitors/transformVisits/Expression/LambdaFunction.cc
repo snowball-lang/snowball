@@ -22,8 +22,9 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
     // Create a new function value and store it's return type.
     char l[] = _SNOWBALL_LAMBDA_FUNCTIONS;
     auto name = parent->getName() + "::" + l + '\00';
-    std::shared_ptr<ir::Func> fn = ctx->module->N<ir::Func>(
-            node->getDBGInfo(), name, false, node->isVariadic(), ctx->getCurrentClass());
+    auto fn = builder.createFunction(
+            node->getDBGInfo(), name, false, node->isVariadic());
+    fn->setParent(ctx->getCurrentClass());
     fn->setRetTy(returnType);
     fn->setPrivacy(Statement::Privacy::PUBLIC);
     fn->setStatic(false);
@@ -34,7 +35,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
     for (int i = 0; i < node->getArgs().size(); i++) {
         auto arg = node->getArgs().at(i);
 
-        auto a = ctx->module->N<ir::Argument>(node->getDBGInfo(),
+        auto a = builder.createArgument(node->getDBGInfo(),
                                               arg->getName(),
                                               fn->isConstructor() + i,
                                               arg->hasDefaultValue() ? arg->getDefaultValue()
@@ -57,7 +58,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
         ctx->withScope([&]() {
             int argIndex = 0;
             for (auto arg : newArgs) {
-                auto ref = ctx->module->N<ir::Variable>(
+                auto ref = builder.createVariable(
                         node->getDBGInfo(), arg.first, true /* TODO: is mutable */);
 
                 ref->setType(arg.second->getType());

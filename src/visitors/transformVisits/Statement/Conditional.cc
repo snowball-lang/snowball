@@ -21,7 +21,7 @@ SN_TRANSFORMER_VISIT(Statement::Conditional) {
         falsyBody = utils::dyn_cast<ir::Block>(this->value);
     }
 
-    auto cond = ctx->module->N<ir::Conditional>(p_node->getDBGInfo(), expr, truthyBody, falsyBody);
+    auto cond = builder.createConditional(p_node->getDBGInfo(), expr, truthyBody, falsyBody);
     this->value = utils::dyn_cast<ir::Value>(cond);
 }
 

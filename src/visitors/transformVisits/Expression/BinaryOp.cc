@@ -15,8 +15,7 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
         if (opType == Expression::BinaryOp::OpType::REFERENCE) {
             p_node->left->accept(this);
             auto value = this->value;
-            auto ref = ctx->module->N<ir::ReferenceTo>(p_node->getDBGInfo(), value);
-            ref->setType(value->getType()->getPointerTo());
+            auto ref = builder.createReferenceTo(p_node->getDBGInfo(), value);
             this->value = ref;
             return;
         }

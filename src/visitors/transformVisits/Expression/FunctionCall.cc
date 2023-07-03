@@ -88,9 +88,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 argValues.insert(argValues.begin(), *b);
                 argTypes.insert(argTypes.begin(), baseType);
             } else {
-                auto reference = ctx->module->N<ir::ReferenceTo>(p_node->getDBGInfo(), *b);
-                reference->setType(baseType->getPointerTo());
-
+                auto reference = builder.createReferenceTo(p_node->getDBGInfo(), *b);
                 argValues.insert(argValues.begin(), reference);
                 argTypes.insert(argTypes.begin(), reference->getType());
             }
@@ -102,7 +100,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         fn = this->value;
     }
 
-    auto call = ctx->module->N<ir::Call>(p_node->getDBGInfo(), fn, argValues);
+    auto call = builder.createCall(p_node->getDBGInfo(), fn, argValues);
     if (auto t = utils::dyn_cast<types::FunctionType>(fn->getType())) {
         if (((t->getArgs().size() <= argTypes.size()) ||
              (t->getArgs().size() <= argTypes.size() && t->isVariadic()))) {
@@ -112,8 +110,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 if (arg->is(deduced)) { /* ok */
                 } else if (arg->canCast(deduced)) {
                     auto val = argValues.at(i);
-                    auto cast = ctx->module->N<ir::Cast>(nullptr, val, deduced);
-                    cast->setType(deduced);
+                    auto cast = builder.createCast(nullptr, val, deduced);
                     argValues.at(i) = cast;
                 } else {
                     E<TYPE_ERROR>(
@@ -219,8 +216,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
             if (types::NumericType::isNumericType(t.get())) {
                 if (t->is(t2)) {
                 } else if (t->canCast(t2)) {
-                    auto cast = ctx->module->N<ir::Cast>(nullptr, val, t);
-                    cast->setType(t);
+                    auto cast = builder.createCast(NO_DBGINFO, val, t);
                     argValues.at(1) = cast;
                 }
             }

@@ -4,6 +4,7 @@
 #include "../ast/visitor/ASTContext.h"
 #include "../ast/visitor/Visitor.h"
 #include "../ir/values/Value.h"
+#include "../ir/builder/IRBuilder.h"
 #include "../services/ImportService.h"
 #include "TransformItem.h"
 
@@ -25,8 +26,9 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     // Current function being generated
     std::shared_ptr<ir::Func> currentFunction = std::shared_ptr<ir::Func>(nullptr);
     // Current class being transformed
-    std::shared_ptr<types::DefinedType> currentClass = std::shared_ptr<types::DefinedType>(nullptr);
-
+    std::shared_ptr<types::DefinedType> currentClass = std::shared_ptr<types::DefinedType>(nullptr);    
+    // The IRBuilder instance that's being used to generate the IR
+    ir::IRBuilder& builder;
   public:
     // Module given to us so we can
     // identify where in the program we are.
@@ -63,7 +65,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
 
   public:
     // Create a new instance of a context
-    TransformContext(std::shared_ptr<ir::Module> mod);
+    TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder);
 
     // clang-format off
 
