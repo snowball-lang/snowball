@@ -20,15 +20,12 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder>{
   public:
     IRBuilder() = default;
 
+    
+
     /// @brief Utility function to create a new instruction
     template <typename DesiredType, typename... Args>
     std::shared_ptr<DesiredType> N(DBGSourceInfo* dbg, Args&&... args) {
-        auto ret = std::shared_ptr<DesiredType>(new DesiredType(std::forward<Args>(args)...));
-        ret->setModule(shared_from_this());
-        ret->setSourceInfo(getSourceInfo());
-        ret->setDBGInfo(dbg);
-
-        return ret;
+        return module->N(dbg, std::forward<Args>(args)...);
     }
 };
 } // namespace ir
