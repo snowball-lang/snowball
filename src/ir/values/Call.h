@@ -34,6 +34,8 @@ class Call : public AcceptorExtend<Call, Value> {
     /// @brief Set a new list of arguments to the current call
     void setArguments(std::vector<std::shared_ptr<Value>> v) { arguments = v; }
 
+    virtual bool isOperator() const { return false; };
+
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS
 
@@ -72,8 +74,18 @@ class ObjectInitialization : public AcceptorExtend<ObjectInitialization, Call> {
     std::shared_ptr<ir::Value> createdObject = nullptr;
 };
 
-// This is how we represent a binary operation in the IR
-using BinaryOp = Call;
+class BinaryOp : public AcceptorExtend<BinaryOp, Call> {
+    friend Call;
+
+  public:
+    explicit BinaryOp(std::shared_ptr<Value> callee,
+                      std::vector<std::shared_ptr<Value>> args = {})
+        : AcceptorExtend(callee, args) { }
+
+    virtual bool isOperator() const override { return true; };
+    /// @brief Wether or not ignore mutability checks
+    bool ignoreMutability = false;
+};
 
 } // namespace ir
 } // namespace snowball

@@ -23,6 +23,21 @@ Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
         utils::dyn_cast<ir::ObjectInitialization>(this->value)->createdObject = selfArg->getValue();
         instrList.emplace_back(this->value);
     }
+    for (auto [name, arg] : p_node->getInitArgs()) {
+        auto selfRef = Syntax::N<Expression::Identifier>("self");
+        auto indexExpr = Syntax::N<Expression::Index>(selfRef, name);
+        auto assign = Syntax::N<Syntax::Expression::BinaryOp>(services::OperatorType::EQ);
+        assign->left = indexExpr;
+        assign->right = arg;
+        assign->setDBGInfo(name->getDBGInfo());
+        selfRef->setDBGInfo(name->getDBGInfo());
+        indexExpr->setDBGInfo(name->getDBGInfo());
+        assign->accept(this);
+        auto assigmentAsCall = utils::dyn_cast<ir::Call>(this->value);
+        auto assigmentValue = builder.createBinaryOp(assigmentAsCall);
+        assigmentValue->ignoreMutability = true;
+        instrList.emplace_back(assigmentValue);
+    }
 
     return instrList;
 }

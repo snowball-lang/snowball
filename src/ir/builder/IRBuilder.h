@@ -114,18 +114,15 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
     /// @brief Create a new while loop
     SharedValue<WhileLoop> createWhileLoop(DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> body, bool isDoWhile = false);
     /// @brief Create a new binary operation
-    template <typename... Args>
-    SharedValue<BinaryOp> createBinaryOp(DBGSourceInfo* dbgInfo, Args&&... args) {
-      return createCall(dbgInfo, N<BinaryOp>(dbgInfo, std::forward<Args>(args)...));
-    }
-
+    /// @todo add more overloads for the binary operation
+    SharedValue<BinaryOp> createBinaryOp(SharedValue<Call> call);
     /// @brief Create a new function type
     Type<types::FunctionType> createFunctionType(std::vector<Type<>> args, Type<> retType, bool isVarArg = false);
 
     /// @brief Utility function to create a new instruction
     template <typename DesiredType, typename... Args>
     std::shared_ptr<DesiredType> N(DBGSourceInfo* dbg, Args&&... args) {
-        return module->N(dbg, std::forward<Args>(args)...);
+        return module->N<DesiredType>(dbg, std::forward<Args>(args)...);
     }
 };
 } // namespace ir

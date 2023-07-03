@@ -39,6 +39,9 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
     index->setDBGInfo(p_node->getDBGInfo());
 
     call->accept(this);
+    auto assigmentAsCall = utils::dyn_cast<ir::Call>(this->value);
+    auto assigmentValue = builder.createBinaryOp(assigmentAsCall);
+    this->value = assigmentValue;
 }
 
 } // namespace Syntax

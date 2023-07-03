@@ -26,6 +26,7 @@ namespace codegen {
 namespace typecheck {
 /**
  * @brief Context class used for the type checker
+ * to store information about the current state of the type checker.
  */
 class Context {
     // Current function being typechecked

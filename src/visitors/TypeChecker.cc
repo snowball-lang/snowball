@@ -26,6 +26,8 @@
 namespace snowball {
 namespace codegen {
 
+using Operators = services::OperatorService;
+
 TypeChecker::TypeChecker(std::shared_ptr<ir::Module> mod)
     : AcceptorExtend<TypeChecker, ValueVisitor>(), module(mod) { }
 
@@ -78,17 +80,20 @@ VISIT(Call) {
     }
 
     if (auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee())) {
-        if (services::OperatorService::isOperator(fn->getName(true)) && args.size() == 2) {
-            if (services::OperatorService::opEquals<services::OperatorService::EQ>(
-                        fn->getName(true))) {
-                if (auto x = isMutable(args.at(0)); (x.has_value() && (!x.value()))) {
-                    if (!p_node->isInitialization) {
-                        Syntax::E<VARIABLE_ERROR>(p_node,
-                                                  "You can't assign a new value to a "
-                                                  "unmutable "
-                                                  "variable",
-                                                  {.info = "This variable is not mutable!"});
-                    }
+        if (Operators::opEquals<Operators::EQ>(fn->getName(true)) && args.size() == 2) {
+            auto binOp = utils::cast<ir::BinaryOp>(p_node);
+            if (auto x = isMutable(args.at(0)); !binOp->ignoreMutability && (x.has_value() && (!x.value()))) {
+                if (!p_node->isInitialization) {
+                    Syntax::E<VARIABLE_ERROR>(p_node,
+                                                "You can't assign a new value to a "
+                                                "unmutable "
+                                                "variable",
+                                                {.info = "This variable is not mutable!",
+                                                .note = "This error is caused by the 'mut' keyword "
+                                                        "not being present in the variable "
+                                                        "declaration.",
+                                                .help = "Try to make the variable mutable by adding "
+                                                    "the 'mut' keyword.",});
                 }
             }
             // TODO: check for operator sides being equal.

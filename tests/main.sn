@@ -3,13 +3,17 @@ use Core::CLib
 class Parent {
   pub:
     let a: i32;
-    // TODO: typecheck this and generate it in llvm
-    Parent() : a(254) {
+    Parent() : a('B') {
       
     }
 }
 
 pub fn main() i32 {
     let p = new Parent();
-    CLib::putchar(p.a as char);
+
+    let mut i = 0;
+    while i < 10 {
+      Core::CLib::putchar(p.a as char);
+      i = i + 1;
+    }
 }

@@ -12,7 +12,6 @@ SN_TRANSFORMER_VISIT(Expression::Cast) {
     p_node->getValue()->accept(this);
     auto t = transformType(p_node->getType());
     auto v = builder.createCast(p_node->getDBGInfo(), this->value, t);
-    v->setType(t);
     this->value = v;
 }
 
