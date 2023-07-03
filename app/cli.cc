@@ -230,6 +230,8 @@ Options CLI::parse() {
                 }
             } else if (IF_ANY_ARG("--silent", "-s")) {
                 opts.run_opts.silent = true;
+            } else if (IF_ANY_ARG("--jit", "-j")) {
+                opts.run_opts.jit = true;
             } else if (IF_ANY_ARG("--file", "-f")) {
                 CHECK_ARG("an input file")
                 NEXT_ARGUMENT()

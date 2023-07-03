@@ -30,6 +30,7 @@ struct Options {
     struct RunOptions {
         Optimization opt = OPTIMIZE_O1;
         bool silent = false;
+        bool jit = false;
 
         std::string file = "";
     } run_opts;
