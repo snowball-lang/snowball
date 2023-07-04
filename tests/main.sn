@@ -16,4 +16,5 @@ pub fn main() i32 {
       Core::CLib::putchar(p.a as char);
       i = i + 1;
     }
+    return 0;
 }

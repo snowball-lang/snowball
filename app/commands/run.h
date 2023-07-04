@@ -16,6 +16,7 @@ namespace snowball {
 namespace app {
 namespace commands {
 int run(app::Options::RunOptions p_opts) {
+    DUMP(p_opts.jit);
     std::string filename = p_opts.file;
     if (p_opts.file.empty()) {
         toml::parse_result parsed_config = Compiler::get_config();
