@@ -33,8 +33,7 @@ DefinedType::DefinedType(const std::string& name,
     , module(module)
     , ast(ast)
     , fields(fields)
-    , generics(generics) { }
-
+    , generics(generics) { setPrivacy(PUBLIC); }
 DefinedType::ClassField::ClassField(
         const std::string& name, std::shared_ptr<Type> type, Privacy privacy, Syntax::Expression::Base* initializedValue, bool isMutable)
     : name(name), type(type), Syntax::Statement::Privacy(privacy), initializedValue(initializedValue), isMutable(isMutable) { }

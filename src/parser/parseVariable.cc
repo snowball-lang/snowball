@@ -12,8 +12,8 @@ Syntax::Statement::VariableDecl* Parser::parseVariable() {
     next();
 
     bool isPublic = false;
-    if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-4, true))) {
-        isPublic = is<TokenType::KWORD_PUBLIC>(peek(-4, true));
+    if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-3, true))) {
+        isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
     }
 
     bool isMutable = false;

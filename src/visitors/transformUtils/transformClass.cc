@@ -106,6 +106,7 @@ Transformer::transformClass(const std::string& uuid,
             transformedType->setParent(parentType);
             transformedType->setFields(fields);
             transformedType->setGenerics(generics);
+            transformedType->setPrivacy(ty->getPrivacy());
             transformedType->setDBGInfo(ty->getDBGInfo());
             transformedType->setSourceInfo(ty->getSourceInfo());
             if (parentType != nullptr) ctx->cache->performInheritance(transformedType, parentType);

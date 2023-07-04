@@ -1,5 +1,6 @@
 
 #include "../errors/error.h"
+#include "../types/Type.h"
 #include "common.h"
 #include "nodes.h"
 

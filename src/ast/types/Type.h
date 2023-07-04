@@ -48,8 +48,8 @@ class Type : public std::enable_shared_from_this<Type> {
     } kind;
 
   public:
-    explicit Type(Kind p_kind, bool isMutable = false) : kind(p_kind), _mutable(isMutable) { }
-    explicit Type(Kind p_kind, std::string p_name, bool isMutable = false) : kind(p_kind), name(p_name), _mutable(isMutable) { }
+    explicit Type(Kind p_kind, bool isMutable = false);
+    explicit Type(Kind p_kind, std::string p_name, bool isMutable = false);
 
     Type(const Type&) = delete;
     Type& operator=(const Type&) = delete;

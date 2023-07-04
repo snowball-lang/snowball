@@ -57,6 +57,20 @@ std::shared_ptr<types::Type> Transformer::transformType(Expression::TypeRef* ty)
         } else if (_m.has_value()) {
             errorReason = "This is a module, not a type!";
         } else if (type.has_value()) {
+            if (auto x = utils::dyn_cast<types::DefinedType>(type.value()); x && x->isPrivate() && !canPrivate) {
+                E<TYPE_ERROR>(ty,
+                              FMT("Can't use '%s' as a type!", name.c_str()),
+                              {.info = "This is a private type and you can't access it from here!",
+                              .note = "Private types can only be accessed from inside the "
+                                      "module they are defined in.",
+                               .help = "If you are trying to access a private type from "
+                                       "outside the module, you can't\ndo that. "
+                                       "If you are trying to access a private type from "
+                                       "inside the module, \nyou can't do that either. "
+                                       "You can only access private types from inside "
+                                       "the\nmodule they are defined in."});
+            }
+
             returnedType = *type;
             goto continueTypeFetch;
         } else {
