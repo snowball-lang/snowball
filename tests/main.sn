@@ -2,18 +2,16 @@ use Core::CLib
 
 class Parent {
   pub:
-    let mut b: i32 = 'x';
-    let mut a: i32 = self.a;
     Parent() {
+    }
+
+    fn x() mut {
+
     }
 }
 
 pub fn main() i32 {
-    let p = new Parent();
+    let mut p = new Parent();
 
-    let mut i = 0;
-    while i < 10 {
-      Core::CLib::putchar(p.a as char);
-      i = i + 1;
-    }
+    p.x();
 }

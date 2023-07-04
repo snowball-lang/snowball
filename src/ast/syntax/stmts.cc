@@ -31,6 +31,8 @@ bool FunctionDef::isVariadic() { return variadic; }
 void FunctionDef::setVariadic(bool v) { variadic = v; }
 bool FunctionDef::isStatic() { return _static; }
 void FunctionDef::setStatic(bool s) { _static = s; }
+bool FunctionDef::isMutable() { return _mutable; }
+void FunctionDef::isMutable(bool m) { _mutable = m; }
 void ConstructorDef::setSuperArgs(std::vector<Expression::Base*> args) { superArgs = args; }
 void ConstructorDef::setInitArgs(std::map<Expression::Identifier*, Expression::Base*> list) {
     initArgs = list;

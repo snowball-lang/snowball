@@ -84,7 +84,7 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
 
             fn->setArgs(newArgs);
 
-            auto fnType = types::FunctionType::from(fn.get());
+            auto fnType = types::FunctionType::from(fn.get(), node);
             fn->setType(std::shared_ptr<types::FunctionType>(fnType));
 
             ctx->defineFunction(fn);

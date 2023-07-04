@@ -27,6 +27,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     bool isPublic = false;
     bool isStatic = false;
     bool isVirtual = false;
+    bool isMutable = false;
 
     std::string name;
     std::string externName;
@@ -353,6 +354,11 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     next();
     consume<TokenType::BRACKET_RPARENT>("')'");
 
+    if (is<TokenType::KWORD_MUTABLE>()) {
+        isMutable = true;
+        next();
+    }
+
     Syntax::Expression::TypeRef* returnType = nullptr;
     if (is<TokenType::IDENTIFIER>()) {
         if (isConstructor) {
@@ -506,6 +512,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     fn->setRetType(returnType);
     fn->setGenerics(generics);
     fn->setStatic(isStatic);
+    fn->isMutable(isMutable);
     return fn;
 }
 

@@ -79,10 +79,12 @@ VISIT(Call) {
         Syntax::E<TYPE_ERROR>(p_node, FMT("Value trying to be called is not callable!"));
     }
 
-    if (auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee())) {
+    if (auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee()); fn != nullptr && fn->hasParent() && !fn->isStatic()) {
+        auto arg = args.at(0);
+        auto isMutable = this->isMutable(arg);
         if (Operators::opEquals<Operators::EQ>(fn->getName(true)) && args.size() == 2) {
             auto binOp = utils::cast<ir::BinaryOp>(p_node);
-            if (auto x = isMutable(args.at(0)); !binOp->ignoreMutability && (x.has_value() && (!x.value()))) {
+            if (!binOp->ignoreMutability && !isMutable) {
                 if (!p_node->isInitialization) {
                     Syntax::E<VARIABLE_ERROR>(p_node,
                                                 "You can't assign a new value to a "
@@ -97,6 +99,21 @@ VISIT(Call) {
                 }
             }
             // TODO: check for operator sides being equal.
+        }
+
+        if (fn->getType()->isMutable() && !isMutable) {
+            Syntax::E<VARIABLE_ERROR>(p_node,
+                                      "You can't call a mutable function with a "
+                                      "nonmutable value!",
+                                      {.info = "This function is mutable!",
+                                       .note = "This error is caused by the function being "
+                                               "mutable, but the value being nonmutable.",
+                                       .help = "Try to make the value mutable by adding the 'mut' "
+                                               "keyword or make the function\nnonmutable by "
+                                               "removing the 'mut' keyword from it's declaration.",
+                                       .tail = Syntax::EI<>(arg->getDBGInfo(), "", {
+                                        .info = "This value is nonmutable!",
+                                       }) });
         }
     }
 }
@@ -222,7 +239,7 @@ void TypeChecker::cantBeVoid(
     if (std::dynamic_pointer_cast<types::VoidType>(ty)) { Syntax::E<TYPE_ERROR>(dbg, message); }
 }
 
-std::optional<bool> TypeChecker::isMutable(std::shared_ptr<ir::Value> value) {
+bool TypeChecker::isMutable(std::shared_ptr<ir::Value> value) {
     if (auto x = utils::dyn_cast<ir::Variable>(value)) {
         return x->isMutable();
     } else if (auto x = utils::dyn_cast<ir::VariableDeclaration>(value)) {
@@ -231,7 +248,7 @@ std::optional<bool> TypeChecker::isMutable(std::shared_ptr<ir::Value> value) {
         return x->getField()->isMutable;
     }
 
-    return std::nullopt;
+    return value->getType()->isMutable();
 }
 
 } // namespace codegen

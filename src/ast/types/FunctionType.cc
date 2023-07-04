@@ -54,10 +54,10 @@ std::string FunctionType::getMangledName() const {
     return result;
 }
 
-FunctionType* FunctionType::from(ir::Func* fn) {
+FunctionType* FunctionType::from(ir::Func* fn, Syntax::Statement::FunctionDef* node) {
     auto args = utils::map<std::string, std::shared_ptr<ir::Argument>, std::shared_ptr<Type>>(
             fn->getArgs(), [&](auto map) -> auto{ return map.second->getType(); });
-
+    bool isMutable = node ? node->isMutable() : false;
     if (fn->hasParent() && (!fn->isStatic()) &&
         services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(
                 fn->getName())) {
@@ -65,7 +65,7 @@ FunctionType* FunctionType::from(ir::Func* fn) {
     }
 
     auto ret = fn->getRetTy();
-    return new FunctionType(args, ret, fn->isVariadic());
+    return new FunctionType(args, ret, fn->isVariadic(), isMutable);
 }
 
 }; // namespace types

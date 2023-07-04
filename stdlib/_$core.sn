@@ -24,22 +24,25 @@ class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating strings.
  */
-class StringView<_CharType: Core::Sized = char*>: Iterable<_CharType> {
+class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
   pub:
     /**
      * @brief Default constructor.
-     *
      * Constructs an empty string.
      */
     StringView() : super() {
-        self.size = 0;
-        self.data = new Vector<_CharType>{};
     }
 
   priv:
     
-    let mut size: i32;
-    let mut data: Vector<_CharType>;
+    /** The size of the string. */
+    let mut size: i32 = 0;
+    /** The buffer containing the string. */
+    let buffer: _CharType*;
+    /** The maximum size of the string. */
+    let mut max_size: i32 = 0;
+    /** The factor by which the buffer size is increased when it is full. */
+    let factor = 2;
 }
 
 type String = StringView<>;

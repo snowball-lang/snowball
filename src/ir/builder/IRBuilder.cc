@@ -130,8 +130,8 @@ SharedValue<Conditional> IRBuilder::createConditional(DBGSourceInfo* dbgInfo, Sh
 SharedValue<WhileLoop> IRBuilder::createWhileLoop(DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> body, bool isDoWhile) {
     return N<WhileLoop>(dbgInfo, condition, body, isDoWhile);
 }
-Type<types::FunctionType> IRBuilder::createFunctionType(std::vector<Type<>> args, Type<> retType, bool isVarArg) {
-    return std::make_shared<types::FunctionType>(args, retType, isVarArg);
+Type<types::FunctionType> IRBuilder::createFunctionType(std::vector<Type<>> args, Type<> retType, bool isVarArg, bool isMutable) {
+    return std::make_shared<types::FunctionType>(args, retType, isVarArg, isMutable);
 }
 SharedValue<BinaryOp> IRBuilder::createBinaryOp(SharedValue<Call> call) {
     auto op = N<BinaryOp>(call->getDBGInfo(), call->getCallee(), call->getArguments());

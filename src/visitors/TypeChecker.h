@@ -50,9 +50,10 @@ class TypeChecker : public AcceptorExtend<TypeChecker, codegen::ValueVisitor> {
 
     /**
      * @brief Checks if a variable is mutable. If the IR value is not a
-     * variable successor, it will return std::nullopt.
+     * variable successor, it will return if the mutability specified inside the
+     * value type.
      */
-    std::optional<bool> isMutable(std::shared_ptr<ir::Value> value);
+    bool isMutable(std::shared_ptr<ir::Value> value);
     /**
      * Utility function to avoid using 'void' types
      * as values.

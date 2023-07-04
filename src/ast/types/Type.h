@@ -33,6 +33,8 @@ class Type : public std::enable_shared_from_this<Type> {
   protected:
     // Type's name
     std::string name;
+    // Whether or not a type is mutable
+    bool _mutable = false;
 
   public:
     enum Kind
@@ -43,8 +45,8 @@ class Type : public std::enable_shared_from_this<Type> {
     } kind;
 
   public:
-    explicit Type(Kind p_kind) : kind(p_kind) { }
-    explicit Type(Kind p_kind, std::string p_name) : kind(p_kind), name(p_name) { }
+    explicit Type(Kind p_kind, bool isMutable = false) : kind(p_kind), _mutable(isMutable) { }
+    explicit Type(Kind p_kind, std::string p_name, bool isMutable = false) : kind(p_kind), name(p_name), _mutable(isMutable) { }
 
     Type(const Type&) = delete;
     Type& operator=(const Type&) = delete;
@@ -78,6 +80,9 @@ class Type : public std::enable_shared_from_this<Type> {
     /// argument needs to be "self" (aka. A type reference to it's
     /// parent class)
     virtual Syntax::Expression::TypeRef* toRef();
+
+    /// @return If the function is mutable
+    bool isMutable() { return _mutable; }
 };
 }; // namespace types
 }; // namespace snowball

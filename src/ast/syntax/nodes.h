@@ -453,6 +453,9 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
     // Declaration of wether or not the function is declared
     // as virtual.
     bool _virtual = false;
+    // Declaration of wether or not the function is declared
+    // as mutable.
+    bool _mutable = false;
 
   public:
     FunctionDef(const std::string name, Privacy::Status prvc = PRIVATE);
@@ -492,6 +495,11 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
     bool isStatic();
     /// @brief Declare a function static or not.
     void setStatic(bool s = true);
+
+    /// @return `true` if the function is declared as mutable
+    bool isMutable();
+    /// @brief Declare a function mutable or not.
+    void isMutable(bool m);
 
     /// Check if the function is declared as an extern function
     virtual bool isExtern() { return false; }

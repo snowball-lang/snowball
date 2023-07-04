@@ -58,8 +58,9 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
                  std::shared_ptr<Type>
                          retTy,
                  bool isVariadic = false,
+                 bool isMutable = true,
                  const std::string& name = "<fn type>")
-        : AcceptorExtend(Kind::TYPE, name), args(args), retTy(retTy), variadic(isVariadic) { }
+        : AcceptorExtend(Kind::TYPE, name, isMutable), args(args), retTy(retTy), variadic(isVariadic) { }
 
     /**
      * @param other another (non-functional) type.
@@ -111,7 +112,7 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
      * @param fn Function value to process
      * @return FunctionType* resultant type
      */
-    static FunctionType* from(ir::Func* fn);
+    static FunctionType* from(ir::Func* fn, Syntax::Statement::FunctionDef* node = nullptr);
 
     template <class Down>
     std::shared_ptr<Down> downcasted_shared_from_this() {

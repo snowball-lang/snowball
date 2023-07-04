@@ -117,7 +117,7 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
     /// @todo add more overloads for the binary operation
     SharedValue<BinaryOp> createBinaryOp(SharedValue<Call> call);
     /// @brief Create a new function type
-    Type<types::FunctionType> createFunctionType(std::vector<Type<>> args, Type<> retType, bool isVarArg = false);
+    Type<types::FunctionType> createFunctionType(std::vector<Type<>> args, Type<> retType, bool isVarArg = false, bool isMutable = false);
 
     /// @brief Utility function to create a new instruction
     template <typename DesiredType, typename... Args>
