@@ -86,6 +86,8 @@ Options CLI::parse() {
                 Logger::log("  --optimization [-o] {opt} - Optimize "
                             "your project at a "
                             "certain level");
+                Logger::log("  --jit [-j] {opt}          - Execute the project "
+                            "using the JIT");
                 Logger::log("");
                 Logger::log("Optimization levels:");
                 Logger::log("  O0                        - Disable as many "

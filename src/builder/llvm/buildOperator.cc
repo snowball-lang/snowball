@@ -111,10 +111,11 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                         llvm::Value* leftValue = left;
                         llvm::Value* rightValue = right;
 
-                        auto load = builder->CreateLoad(
+                        if (!llvm::isa<llvm::LoadInst>(rightValue))
+                            rightValue = builder->CreateLoad(
                                 rightValue->getType()->getPointerElementType(), rightValue);
 
-                        builder->CreateStore(load, leftValue);
+                        builder->CreateStore(rightValue, leftValue);
                         break;
                     }
 

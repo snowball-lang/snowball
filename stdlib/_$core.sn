@@ -1,14 +1,70 @@
 
+namespace UA {
+
+/**
+ * @class UniversalArray
+ * @brief A class representing a universal array of elements.
+ *
+ * The UniversalArray class provides various operations and functionalities
+ * for working with universal arrays of elements. It supports common
+ * UniversalArray manipulation operations such as element insertion,
+ * element removal, element access, and more.
+ *
+ * @note The UniversalArray class is designed to be efficient and memory-safe.
+ *       It automatically manages the memory allocation and deallocation
+ *       required for storing and manipulating universal arrays.
+ */
+struct UniversalArray { items: cobj*: };
+
+/**
+ * @brief Allocates a universal array of elements.
+ * @param[in] size The size of the universal array to allocate.
+ * @return The allocated universal array.
+ */
+extern "sn.ua.alloc" as __ua_alloc(size: i32) UniversalArray;
+
+};
+
 class Iterable<_IteratorType: Core::Sized> {
   pub:
     Iterable() {}
 }
 
+/**
+ * @class Vector
+ * @brief A class representing a vector of elements.
+ *
+ * The Vector class provides various operations and functionalities
+ * for working with vectors of elements. It supports common Vector
+ * manipulation operations such as element insertion, element removal,
+ * element access, and more.
+ *
+ * @note The Vector class is designed to be efficient and memory-safe.
+ *       It automatically manages the memory allocation and deallocation
+ *       required for storing and manipulating vectors.
+ */
 class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
   pub:
-    Vector() : super() {}
+    /**
+     * @brief Default constructor.
+     * Constructs an empty vector.
+     */
+    Vector() : super() 
+      { self.buffer = UA::__ua_alloc(self.capacity); }
+    /**
+     * @brief It pushes an element to the back of the vector.
+     * @param[in] value The element to push to the back of the vector.
+     */
+    fn push(value: _StoreType) 
+      { /*TODO: implement*/ }
 
-    fn push_back(value: _StoreType) {}
+  priv:
+    /** The capacity of the vector. */
+    let capacity: i32 = 10;
+    /** The size of the vector. */
+    let current: i32 = 0;
+    /** The buffer containing the vector. */
+    let buffer: UA::UniversalArray;
 }
 
 /**
@@ -30,19 +86,26 @@ class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
      * @brief Default constructor.
      * Constructs an empty string.
      */
-    StringView() : super() {
-    }
+    StringView() : super() 
+      {}
+    /**
+      * @brief Constructs a string from a vector of characters.
+      * @param[in] buffer The vector of characters to construct the string from.
+      */
+    StringView(buffer: Vector<_CharType>) : super(), buffer(buffer) 
+      {}
+    /**
+      * @return The size of the string.
+      */
+    fn size() i32 { return self.buffer.size(); }
+    /**
+      * @return The buffer containing the string.
+      */
+    fn buffer() Vector<_CharType> { return self.buffer; }
 
   priv:
-    
-    /** The size of the string. */
-    let mut size: i32 = 0;
     /** The buffer containing the string. */
-    let buffer: _CharType*;
-    /** The maximum size of the string. */
-    let mut max_size: i32 = 0;
-    /** The factor by which the buffer size is increased when it is full. */
-    let factor: i32 = 2;
+    let buffer: Vector<_CharType> = new Vector<_CharType>{};
 }
 
 type String = StringView<>;

@@ -134,6 +134,7 @@ class Int32Type : public AcceptorExtend<Int32Type, NumericType> {
 };
 
 inline const std::string Int32Type::TYPE_ALIAS = "int";
+
 }; // namespace types
 }; // namespace snowball
 

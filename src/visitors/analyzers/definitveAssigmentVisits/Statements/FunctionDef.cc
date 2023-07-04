@@ -11,6 +11,10 @@ SN_DEFINITE_ASSIGMENT_VISIT(Statement::FunctionDef) {
         // Scope between parent and body scope for things like "self",
         // arguments, etc...
         withScope([&] {
+            for (auto a : p_node->getArgs()) {
+                this->scopes.front().insert({a->getName(), Initialized});
+            }
+
             if (this->insideClass) {
                 this->scopes.front().insert({"self", Initialized});
 
@@ -23,9 +27,6 @@ SN_DEFINITE_ASSIGMENT_VISIT(Statement::FunctionDef) {
             }
 
             visitConstructor(p_node);
-            for (auto a : p_node->getArgs()) {
-                this->scopes.front().insert({a->getName(), Initialized});
-            }
 
             auto body = f->getBody();
             body->accept(this);
