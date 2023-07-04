@@ -11,7 +11,7 @@ Transformer::transformTypeFromBase(const std::string& uuid,
     Statement::GenericContainer<>::GenericList generics;
     // TODO: check if there's another way to avoid repetition of code
 
-    if (auto c = utils::cast<Statement::ClassDef>(base.type)) {
+    if (auto c = utils::cast<Statement::DefinedTypeDef>(base.type)) {
         generics = c->getGenerics();
     } else if (auto c = utils::cast<Statement::TypeAlias>(base.type)) {
         generics = c->getGenerics();
@@ -37,7 +37,7 @@ Transformer::transformTypeFromBase(const std::string& uuid,
 
     if (auto x = utils::cast<Statement::TypeAlias>(base.type)) {
         return transformTypeAlias(uuid, base, typeRef);
-    } else if (auto x = utils::cast<Statement::ClassDef>(base.type)) {
+    } else if (auto x = utils::cast<Statement::DefinedTypeDef>(base.type)) {
         return transformClass(uuid, base, typeRef);
     }
 

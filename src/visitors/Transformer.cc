@@ -44,7 +44,7 @@ void Transformer::visit(std::vector<Node*> p_nodes) {
             if (utils::cast<Statement::BodiedFunction>(node) ||
                 utils::cast<Statement::LLVMFunction>(node) ||
                 utils::cast<Statement::ConstructorDef>(node) ||
-                utils::cast<Statement::Namespace>(node) || utils::cast<Statement::ClassDef>(node) ||
+                utils::cast<Statement::Namespace>(node) || utils::cast<Statement::DefinedTypeDef>(node) ||
                 utils::cast<Statement::TypeAlias>(node)) {
                 node->accept(this);
             }

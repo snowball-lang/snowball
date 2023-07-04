@@ -176,6 +176,7 @@ enum class TokenType
     KWORD_MUTABLE,        // Symbol: mut
     KWORD_DO,             // Symbol: do
     KWORD_NAMESPACE,      // Symbol: namespace
+    KWORD_STRUCT,         // Symbol: struct
     KWORD_PUBLIC,         // Symbol: pub
     KWORD_SWITCH,         // Symbol: switch
     KWORD_STATIC,         // Symbol: static
@@ -277,6 +278,7 @@ struct Token {
             case TokenType::KWORD_IMPORT: return _SNOWBALL_KEYWORD__IMPORT;
             case TokenType::KWORD_CONSTEXPR: return _SNOWBALL_KEYWORD__CONSTEXPR;
             case TokenType::KWORD_NAMESPACE: return _SNOWBALL_KEYWORD__NAMESPACE;
+            case TokenType::KWORD_STRUCT: return _SNOWBALL_KEYWORD__STRUCT;
             case TokenType::KWORD_TYPEDEF: return _SNOWBALL_KEYWORD__TYPEDEF;
             case TokenType::KWORD_MUTABLE: return _SNOWBALL_KEYWORD__MUTABLE;
             case TokenType::KWORD_DO: return _SNOWBALL_KEYWORD__DO;

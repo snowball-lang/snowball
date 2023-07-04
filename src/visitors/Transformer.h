@@ -266,12 +266,12 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * @brief It generates a a new types::Type instance from a
      * Statement::Base pointer.
      *
-     * It only accepts `ClassDef` or `TypeAlias`. It's purpose it to
+     * It only accepts `DefinedTypeDef` or `TypeAlias`. It's purpose it to
      * make sure the implementation of a new type is always up to date
      * in case the functionality us being updated.
      *
      * @note If the statement type is not supported, it will just panic!
-     * @arg typeRef is only needed if base is `ClassDef`!
+     * @arg typeRef is only needed if base is `DefinedTypeDef`!
      */
     std::shared_ptr<types::Type> transformTypeFromBase(const std::string& uuid,
                                                        cacheComponents::Types::TypeStore& base,

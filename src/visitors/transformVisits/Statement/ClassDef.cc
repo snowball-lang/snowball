@@ -6,7 +6,7 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-SN_TRANSFORMER_VISIT(Statement::ClassDef) {
+SN_TRANSFORMER_VISIT(Statement::DefinedTypeDef) {
     auto name = p_node->getName();
     auto uuid = ctx->createIdentifierName(name);
 

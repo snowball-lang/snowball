@@ -20,7 +20,7 @@ DefinedType::DefinedType(const std::string& name,
                          const std::string uuid,
                          std::shared_ptr<ir::Module>
                                  module,
-                         Syntax::Statement::ClassDef* ast,
+                         Syntax::Statement::DefinedTypeDef* ast,
                          std::vector<ClassField*>
                                  fields,
                          std::shared_ptr<DefinedType>
@@ -39,7 +39,7 @@ DefinedType::ClassField::ClassField(
         const std::string& name, std::shared_ptr<Type> type, Privacy privacy, Syntax::Expression::Base* initializedValue, bool isMutable)
     : name(name), type(type), Syntax::Statement::Privacy(privacy), initializedValue(initializedValue), isMutable(isMutable) { }
 std::string DefinedType::getUUID() const { return uuid; }
-Syntax::Statement::ClassDef* DefinedType::getAST() const { return ast; }
+Syntax::Statement::DefinedTypeDef* DefinedType::getAST() const { return ast; }
 void DefinedType::addField(ClassField* f) { fields.emplace_back(f); }
 std::shared_ptr<ir::Module> DefinedType::getModule() const { return module; }
 int DefinedType::getVtableSize() { return classVtable.size(); }

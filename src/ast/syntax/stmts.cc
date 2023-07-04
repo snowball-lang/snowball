@@ -68,18 +68,18 @@ Expression::TypeRef* VariableDecl::getDefinedType() { return definedType; }
 void VariableDecl::setDefinedType(Expression::TypeRef* t) { definedType = t; }
 Return::Return(Expression::Base* value) : value(value){};
 Expression::Base* Return::getValue() const { return value; }
-ClassDef::ClassDef(std::string name, Expression::TypeRef* extends, Privacy::Status prvc)
-    : name(name), extends(extends), AcceptorExtend<ClassDef, Privacy>(prvc) { }
-void ClassDef::addFunction(FunctionDef* fnDef) { functions.push_back(fnDef); }
-void ClassDef::addVariable(VariableDecl* var) { variables.push_back(var); }
-Expression::TypeRef* ClassDef::getParent() const { return extends; }
-std::string ClassDef::getName() const { return name; }
-std::vector<FunctionDef*>& ClassDef::getFunctions() { return functions; }
-std::vector<VariableDecl*>& ClassDef::getVariables() { return variables; }
-ClassDef::FunctionIterator ClassDef::funcStart() { return functions.begin(); }
-ClassDef::FunctionIterator ClassDef::funcEnd() { return functions.end(); }
-ClassDef::VariableIterator ClassDef::varStart() { return variables.begin(); }
-ClassDef::VariableIterator ClassDef::varEnd() { return variables.end(); }
+DefinedTypeDef::DefinedTypeDef(std::string name, Expression::TypeRef* extends, Privacy::Status prvc)
+    : name(name), extends(extends), AcceptorExtend<DefinedTypeDef, Privacy>(prvc) { }
+void DefinedTypeDef::addFunction(FunctionDef* fnDef) { functions.push_back(fnDef); }
+void DefinedTypeDef::addVariable(VariableDecl* var) { variables.push_back(var); }
+Expression::TypeRef* DefinedTypeDef::getParent() const { return extends; }
+std::string DefinedTypeDef::getName() const { return name; }
+std::vector<FunctionDef*>& DefinedTypeDef::getFunctions() { return functions; }
+std::vector<VariableDecl*>& DefinedTypeDef::getVariables() { return variables; }
+DefinedTypeDef::FunctionIterator DefinedTypeDef::funcStart() { return functions.begin(); }
+DefinedTypeDef::FunctionIterator DefinedTypeDef::funcEnd() { return functions.end(); }
+DefinedTypeDef::VariableIterator DefinedTypeDef::varStart() { return variables.begin(); }
+DefinedTypeDef::VariableIterator DefinedTypeDef::varEnd() { return variables.end(); }
 std::string ImportStmt::getPackage() const { return package; }
 std::vector<std::string> ImportStmt::getPath() const { return path; }
 std::string ImportStmt::getExportSymbol() const { return exportSymbol; }

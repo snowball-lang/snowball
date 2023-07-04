@@ -26,7 +26,7 @@ class Parser {
     std::vector<Token> m_tokens;
 
     SourceInfo* m_source_info;
-    Syntax::Statement::ClassDef* m_current_class = nullptr;
+    Syntax::Statement::DefinedTypeDef* m_current_class = nullptr;
 
   public:
     Parser(std::vector<Token> p_tokens, SourceInfo* p_source_info);
@@ -242,7 +242,7 @@ class Parser {
      * class         ::=  [visibility] "class" [class_name]
      *                    [class_inherit] [class_body]
      */
-    Syntax::Statement::ClassDef* parseClass();
+    Syntax::Statement::DefinedTypeDef* parseClass();
     /**
      * function_call ::= [expr] "(" [args] ")"
      * arguments     ::= [[expr] "," ...]
@@ -291,6 +291,13 @@ class Parser {
      * namespace     ::=  "namespace" <identifier> "{" [body] "}"
      */
     Syntax::Statement::Namespace* parseNamespace();
+    /**
+     * struct        ::=  "struct" <identifier> [generic_params] 
+     *                    "{" [body] "}" [";"]
+     * body          ::=  [[identifier] ":" [expr] ","] ...
+     */
+    Syntax::Statement::DefinedTypeDef* parseStructure();
+    
     /**
      * @brief Parses a list of attributes
      * @param parseFn function to parse the attribute

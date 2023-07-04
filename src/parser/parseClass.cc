@@ -9,7 +9,7 @@
 
 namespace snowball::parser {
 
-Syntax::Statement::ClassDef* Parser::parseClass() {
+Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
     assert(is<TokenType::KWORD_CLASS>());
     next(); // East "class"
 
@@ -41,7 +41,7 @@ Syntax::Statement::ClassDef* Parser::parseClass() {
     bool inPrivateScope = true;
     bool hasConstructor = false;
 
-    auto cls = Syntax::N<Syntax::Statement::ClassDef>(
+    auto cls = Syntax::N<Syntax::Statement::DefinedTypeDef>(
             name, parentClass, Syntax::Statement::Privacy::fromInt(isPublic));
     cls->setGenerics(generics);
     cls->setDBGInfo(dbg);

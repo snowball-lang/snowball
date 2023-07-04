@@ -72,14 +72,14 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>, public ir::IdMixin
     /// @brief VTable holding all it's functions
     std::vector<std::shared_ptr<ir::Func>> classVtable;
     /// @brief The ast representation for the type
-    Syntax::Statement::ClassDef* ast = nullptr;
+    Syntax::Statement::DefinedTypeDef* ast = nullptr;
 
   public:
     DefinedType(const std::string& name,
                 const std::string uuid,
                 std::shared_ptr<ir::Module>
                         module,
-                Syntax::Statement::ClassDef* ast = nullptr,
+                Syntax::Statement::DefinedTypeDef* ast = nullptr,
                 std::vector<ClassField*> fields = {},
                 std::shared_ptr<DefinedType> parent = nullptr,
                 std::vector<std::shared_ptr<Type>> generics = {});
@@ -117,7 +117,7 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>, public ir::IdMixin
     /// @return UUID of the class that can be used as UUID base
     std::string getUUID() const;
     /// @return The ast representation for the type
-    Syntax::Statement::ClassDef* getAST() const;
+    Syntax::Statement::DefinedTypeDef* getAST() const;
     /// @return The size of the class virtual table
     int getVtableSize();
     /// @brief Increase the size of the virtual table

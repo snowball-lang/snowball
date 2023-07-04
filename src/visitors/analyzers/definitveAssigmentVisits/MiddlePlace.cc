@@ -26,7 +26,7 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::FunctionCall) {
     for (auto a : p_node->getArguments()) { a->accept(this); }
 }
 
-SN_DEFINITE_ASSIGMENT_VISIT(Statement::ClassDef) {
+SN_DEFINITE_ASSIGMENT_VISIT(Statement::DefinedTypeDef) {
     auto bk = this->insideClass;
     this->insideClass = p_node;
     for (auto fn : p_node->getFunctions()) { fn->accept(this); }

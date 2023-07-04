@@ -569,6 +569,8 @@ void Lexer::tokenize() {
                         tk.type = TokenType::KWORD_CONSTEXPR;
                     } else if (identifier == _SNOWBALL_KEYWORD__NAMESPACE) {
                         tk.type = TokenType::KWORD_NAMESPACE;
+                    } else if (identifier == _SNOWBALL_KEYWORD__STRUCT) {
+                        tk.type = TokenType::KWORD_STRUCT;
                     } else if (identifier == _SNOWBALL_KEYWORD__TYPEDEF) {
                         tk.type = TokenType::KWORD_TYPEDEF;
                     } else if (identifier == _SNOWBALL_KEYWORD__MUTABLE) {

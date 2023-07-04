@@ -50,7 +50,7 @@ class DefiniteAssigment : public Analyzer {
      * @brief A context utility to make sure that the current node being
      *  visited is inside a class.
      */
-    std::optional<Statement::ClassDef*> insideClass = std::nullopt;
+    std::optional<Statement::DefinedTypeDef*> insideClass = std::nullopt;
     /**
      * An enumeration that defines the possible reference status values
      * for a variable in the analyzed program. The reference status

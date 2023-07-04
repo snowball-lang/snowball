@@ -10,7 +10,7 @@ std::shared_ptr<types::DefinedType>
 Transformer::transformClass(const std::string& uuid,
                             cacheComponents::Types::TypeStore& classStore,
                             Expression::TypeRef* typeRef) {
-    auto ty = utils::cast<Statement::ClassDef>(classStore.type);
+    auto ty = utils::cast<Statement::DefinedTypeDef>(classStore.type);
     assert(ty);
 
     // These are the generics generated outside of the class context.
