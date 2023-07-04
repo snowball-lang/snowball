@@ -41,8 +41,9 @@ std::shared_ptr<Type> PointerType::getBaseType() const {
 }
 
 bool PointerType::canCast(Type* ty) const {
-    if (auto c = utils::cast<PointerType>(ty)) { return base->canCast(c->getPointedType()); }
-
+    SNOWBALL_MUTABILITY_CAST_CHECK
+    if (auto c = utils::cast<PointerType>(ty)) 
+        return base->canCast(c->getPointedType());
     return false;
 }
 

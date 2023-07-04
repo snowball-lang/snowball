@@ -135,6 +135,7 @@ Type<types::FunctionType> IRBuilder::createFunctionType(std::vector<Type<>> args
 }
 SharedValue<BinaryOp> IRBuilder::createBinaryOp(SharedValue<Call> call) {
     auto op = N<BinaryOp>(call->getDBGInfo(), call->getCallee(), call->getArguments());
+    op->isInitialization = call->isInitialization;
     op->setType(call->getType());
     return op;
 }

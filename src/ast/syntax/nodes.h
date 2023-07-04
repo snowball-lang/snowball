@@ -347,6 +347,7 @@ struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
      * @param p_node The operator expression node.
      * @return Whether it's an assignment operator.
      */
+    static bool is_assignment(OpType opType);
     static bool is_assignment(BinaryOp* p_node);
     /**
      * @brief Converts the operator type to a string.

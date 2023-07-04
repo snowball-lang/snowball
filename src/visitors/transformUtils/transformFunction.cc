@@ -99,7 +99,7 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
                     int argIndex = 0;
                     for (auto arg : newArgs) {
                         auto ref = builder.createVariable(
-                                node->getDBGInfo(), arg.first, true /* TODO: is mutable */);
+                                node->getDBGInfo(), arg.first, true);
 
                         ref->setType(arg.second->getType());
                         auto refItem = std::make_shared<transform::Item>(
@@ -126,6 +126,7 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
                     if (fn->isConstructor()) {
                         auto constructor = utils::cast<Statement::ConstructorDef>(node);
                         assert(constructor != nullptr);
+                        fn->getType()->setMutable(true);
                         prependedInsts = transformConstructor(constructor);
                     }
 

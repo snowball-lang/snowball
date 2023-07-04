@@ -12,13 +12,15 @@ using namespace snowball::Syntax::transform;
 #define ADD_SELF_ARG                                                                               \
     if (auto c = ctx->getCurrentClass(true)) {                                                     \
         auto args = p_node->getArgs();                                                             \
+        auto pointer = c->getPointerTo();                                         \
+        pointer->setMutable(p_node->isMutable());                                                     \
         if (!(args.size() > 0 && args.at(0)->getName() == "self") && !p_node->isStatic()) {        \
-            auto self = new Expression::Param("self", c->getPointerTo()->toRef());                 \
+            auto self = new Expression::Param("self", pointer->toRef());                           \
                                                                                                    \
             args.insert(args.begin(), self);                                                       \
             p_node->setArgs(args);                                                                 \
         } else if (!p_node->isStatic()) { /* "self" already set by another class */                \
-            args.at(0)->setType(c->getPointerTo()->toRef());                                       \
+            args.at(0)->setType(pointer->toRef());                                       \
         }                                                                                          \
     }
 

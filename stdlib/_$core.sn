@@ -42,7 +42,7 @@ class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
     /** The maximum size of the string. */
     let mut max_size: i32 = 0;
     /** The factor by which the buffer size is increased when it is full. */
-    let factor = 2;
+    let factor: i32 = 2;
 }
 
 type String = StringView<>;

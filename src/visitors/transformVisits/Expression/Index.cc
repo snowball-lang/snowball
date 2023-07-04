@@ -15,7 +15,7 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
             [&p_node = p_node, name = name, canBePrivate = canBePrivate]<typename T>(T item) -> T {
         if ((!canBePrivate) && item->isPrivate()) {
             E<TYPE_ERROR>(p_node->getDBGInfo(),
-                          FMT("Variable '%s' is a private method and "
+                          FMT("Variable '%s' is a private member and "
                               "it cant be accessed from this context!",
                               name.c_str()));
         }
@@ -25,20 +25,17 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
     if (value) {
         // TODO: it should not be getValue, it should have it's own
         // value
-        auto val = *value;
-        if (auto casted = utils::dyn_cast<ir::Variable>(val)) {
-            assert(casted != nullptr);
-
+        if (auto casted = utils::dyn_cast<ir::Variable>(*value)) {
             // TODO: check for variable privacy
             this->value = builder.createValueExtract(p_node->getDBGInfo(), casted);
             return;
-        } else if (auto indexExtract = utils::dyn_cast<ir::IndexExtract>(val)) {
+        } else if (auto indexExtract = utils::dyn_cast<ir::IndexExtract>(*value)) {
             checkIfContextEqual(indexExtract->getField());
         } else {
             assert(false);
         }
 
-        this->value = val;
+        this->value = *value;
         return;
     } else if (type) {
         E<VARIABLE_ERROR>(p_node, "Can't use types as values!");

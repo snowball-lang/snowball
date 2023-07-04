@@ -44,18 +44,20 @@ Param::Param(std::string name, TypeRef* type, Status generic)
     : name(name), type(type), status(generic) {
     assert(generic <= 1 && generic >= 0 && "Invalid param status");
 } // clang-format off
+bool BinaryOp::is_assignment(OpType opType) {
+    return opType == OpType::EQ || opType == OpType::PLUSEQ ||
+        opType == OpType::MINUSEQ ||
+        opType == OpType::MULEQ || opType == OpType::DIVEQ ||
+        opType == OpType::MOD_EQ ||
+        opType == OpType::BIT_LSHIFT_EQ ||
+        opType == OpType::BIT_RSHIFT_EQ ||
+        opType == OpType::BIT_OR_EQ ||
+        opType == OpType::BIT_AND_EQ ||
+        opType == OpType::BIT_XOR_EQ;
+}
 bool BinaryOp::is_assignment(BinaryOp* p_node) {
     OpType p_op_type = p_node->op_type;
-
-    return p_op_type == OpType::EQ || p_op_type == OpType::PLUSEQ ||
-            p_op_type == OpType::MINUSEQ ||
-            p_op_type == OpType::MULEQ || p_op_type == OpType::DIVEQ ||
-            p_op_type == OpType::MOD_EQ ||
-            p_op_type == OpType::BIT_LSHIFT_EQ ||
-            p_op_type == OpType::BIT_RSHIFT_EQ ||
-            p_op_type == OpType::BIT_OR_EQ ||
-            p_op_type == OpType::BIT_AND_EQ ||
-            p_op_type == OpType::BIT_XOR_EQ;
+    return is_assignment(p_op_type);
 }
 std::string BinaryOp::to_string() const {
 #define OP_CASE(op, symbol) case OpType::op: return symbol;

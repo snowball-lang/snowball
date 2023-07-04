@@ -7,6 +7,9 @@
 #ifndef __SNOWBALL_AST_BASE_TYPE_H_
 #define __SNOWBALL_AST_BASE_TYPE_H_
 
+#define SNOWBALL_MUTABILITY_CAST_CHECK \
+  if (!_mutable && ty->isMutable()) return false;
+
 /**
  * Types in snowball can be represented in many different forms.
  * There can be user defined types (aka, classes and structs) and
@@ -83,6 +86,8 @@ class Type : public std::enable_shared_from_this<Type> {
 
     /// @return If the function is mutable
     bool isMutable() { return _mutable; }
+    /// @brief Set the mutability of the type
+    void setMutable(bool m) { _mutable = m; }
 };
 }; // namespace types
 }; // namespace snowball

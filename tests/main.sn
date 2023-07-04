@@ -2,16 +2,17 @@ use Core::CLib
 
 class Parent {
   pub:
+    let b: i32 = 'P';
     Parent() {
     }
 
-    fn x() mut {
-
+    fn x() {
+      self.b = 23;
     }
 }
 
 pub fn main() i32 {
-    let mut p = new Parent();
-
+    let p = new Parent();
+    CLib::putchar(p.b as char);
     p.x();
 }

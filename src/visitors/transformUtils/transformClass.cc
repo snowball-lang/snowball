@@ -77,19 +77,31 @@ Transformer::transformClass(const std::string& uuid,
                                            "primitive type."});
                 }
             }
-            auto baseFields =
-                    vector_iterate<Statement::VariableDecl*, types::DefinedType::ClassField*>(
-                            ty->getVariables(), [&](auto v) {
-                                auto varTy = transformType(v->getDefinedType());
-                                auto field = new types::DefinedType::ClassField(
-                                        v->getName(),
-                                        varTy,
-                                        v->getPrivacy(),
-                                        v->getValue(),
-                                        v->isMutable());
-                                field->setDBGInfo(v->getDBGInfo());
-                                return field;
-                            });
+            auto baseFields = vector_iterate<Statement::VariableDecl*, types::DefinedType::ClassField*>(
+                ty->getVariables(), [&](auto v) {
+                    auto definedType = v->getDefinedType();
+                    if (!definedType) E<SYNTAX_ERROR>(v->getDBGInfo(), "Can't infer type!", {
+                        .info = "The type of this variable can't be inferred!",
+                        .note = "This rule only applies to variables inside classes.",
+                        .help = "You can't infer the type of a variable "
+                                "without specifying it's type.\n"
+                                "For example, you can't do this:\n"
+                                "   let a = 10\n"
+                                "You have to do this:\n"
+                                "   let a: i32 = 10\n"
+                                "Or this:\n"
+                                "   let a = 10: i32"
+                    });
+                    auto varTy = transformType(definedType);
+                    auto field = new types::DefinedType::ClassField(
+                            v->getName(),
+                            varTy,
+                            v->getPrivacy(),
+                            v->getValue(),
+                            v->isMutable());
+                    field->setDBGInfo(v->getDBGInfo());
+                    return field;
+                });
             auto fields = getMemberList(ty->getVariables(), baseFields, parentType);
             transformedType->setParent(parentType);
             transformedType->setFields(fields);

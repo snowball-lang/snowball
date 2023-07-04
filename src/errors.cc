@@ -77,11 +77,12 @@ void NiceError::print_error(bool asTail) const {
         Logger::elog(FMT("%s  note%s:%s %s", BCYN, BBLK, RESET, (*lines.begin()).c_str()));
 
         lines.pop_front();
-        for (auto line : lines) { Logger::elog(FMT("%s      │  %s%s", BBLK, RESET, line.c_str())); }
+        for (auto line : lines) { Logger::elog(FMT("%s      │  %s%s", BLK, RESET, line.c_str())); }
     }
 
     if (auto x = info.tail) {
-        Logger::elog(FMT("%s      │", BLK));
+        if (info.note.empty())
+            Logger::elog(FMT("%s      │", BLK));
         Logger::elog(FMT("%s      │", BLK));
         Logger::elog(FMT("%s      :", BLK));
         Logger::elog(FMT("%s      │", BLK));

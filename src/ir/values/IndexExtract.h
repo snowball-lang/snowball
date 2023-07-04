@@ -42,12 +42,12 @@ class IndexExtract : public AcceptorExtend<IndexExtract, Value> {
      * @brief Get the index used for the index
      *  extraction
      */
-    auto getIndex() const { return index; }
+    virtual unsigned int getIndex() const { return index; }
     /**
      * @brief Get the field object from the value we are
      *  trying to extract
      */
-    auto getField() const { return field; }
+    virtual types::DefinedType::ClassField* getField() const { return field; }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

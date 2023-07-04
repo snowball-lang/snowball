@@ -34,7 +34,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
             auto fullUUID = x->getUUID();
             auto [v, ty, fns, ovs, mod] = getFromIdentifier(dbgInfo, name, generics, fullUUID);
 
-            std::optional<std::shared_ptr<ir::Value>> indexValue;
+            std::shared_ptr<ir::Value> indexValue = nullptr;
             if (!isStatic) {
                 auto fields = x->getFields();
                 bool fieldFound = false;
@@ -51,13 +51,12 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
 
                     indexValue = builder.createIndexExtract(
                             dbgInfo, value, *fieldValue, std::distance(fields.begin(), fieldValue));
-                    indexValue->get()->setType((*fieldValue)->type);
+                    indexValue->setType((*fieldValue)->type);
                 }
             }
 
-            if (indexValue == std::nullopt) { indexValue = v; }
-
-            if (!indexValue.has_value() && !ty.has_value() && !fns.has_value() &&
+            if (indexValue == nullptr && v.has_value()) { indexValue = v.value(); }
+            if (!indexValue && !ty.has_value() && !fns.has_value() &&
                 !ovs.has_value() && !mod.has_value()) {
                 // TODO: operator
                 E<VARIABLE_ERROR>(dbgInfo,
@@ -66,7 +65,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
                                       x->getPrettyName().c_str()));
             }
 
-            return {indexValue, ty, fns, ovs, mod, isInClassContext(x)};
+            return {indexValue ? std::make_optional(indexValue) : std::nullopt, ty, fns, ovs, mod, isInClassContext(x)};
         } else {
             // Case: index from a (for example) constant. You can access
             //  values from it so just check for functions

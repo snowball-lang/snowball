@@ -14,7 +14,7 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
         // TODO: it should not be getValue, it should have it's own
         // value
         auto val = *value;
-        auto casted = std::dynamic_pointer_cast<ir::Variable>(val);
+        auto casted = utils::dyn_cast<ir::Variable>(val);
         assert(casted != nullptr);
 
         auto var = builder.createValueExtract(p_node->getDBGInfo(), casted);
