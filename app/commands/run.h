@@ -48,6 +48,7 @@ int run(app::Options::RunOptions p_opts) {
     compiler->compile(p_opts.silent);
     if (p_opts.jit) {
         compiler->run_jit();
+        return 0;
     } else {
         compiler->emit_binary(output, false);
     }
