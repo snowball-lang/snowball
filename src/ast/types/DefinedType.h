@@ -73,6 +73,8 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>, public ir::IdMixin
     std::vector<std::shared_ptr<ir::Func>> classVtable;
     /// @brief The ast representation for the type
     Syntax::Statement::DefinedTypeDef* ast = nullptr;
+    /// @brief Whether or not the type is a struct
+    bool _struct = false;
 
   public:
     DefinedType(const std::string& name,
@@ -82,7 +84,8 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>, public ir::IdMixin
                 Syntax::Statement::DefinedTypeDef* ast = nullptr,
                 std::vector<ClassField*> fields = {},
                 std::shared_ptr<DefinedType> parent = nullptr,
-                std::vector<std::shared_ptr<Type>> generics = {});
+                std::vector<std::shared_ptr<Type>> generics = {},
+                bool isStruct = false);
     /**
      * @param other another type to check.
      *
@@ -147,6 +150,8 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>, public ir::IdMixin
     /// @note It essentially does the same thing except it adds
     ///  generics if needed
     Syntax::Expression::TypeRef* toRef() override;
+    /// @return true/false depending on whether the type is a struct
+    bool isStruct() const { return _struct; }
 
     /// @brief override function.
     virtual bool canCast(Type* ty) const override;

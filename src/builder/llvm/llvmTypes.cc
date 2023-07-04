@@ -51,7 +51,7 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
         auto generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Type*>(
                 fields, [&](types::DefinedType::ClassField* t) { return getLLVMType(t->type); });
 
-        auto s = llvm::StructType::create(*context, _SN_CLASS_PREFIX + c->getMangledName());
+        auto s = llvm::StructType::create(*context, (c->isStruct() ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) + c->getMangledName());
         types.insert({c->getId(), s});
 
         if (auto v = ctx->getVtableTy(c->getId())) {

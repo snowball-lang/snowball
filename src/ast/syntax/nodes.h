@@ -574,11 +574,13 @@ struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
     std::vector<VariableDecl*> variables;
     /// @brief Class inheritance parent
     Expression::TypeRef* extends = nullptr;
+    /// @brief Wether or not the class is a struct
+    bool _struct = false;
 
   public:
     DefinedTypeDef(std::string name,
              Expression::TypeRef* extends = nullptr,
-             Privacy::Status prvc = PRIVATE);
+             Privacy::Status prvc = PRIVATE, bool _struct = false);
 
     /// @brief Get class name
     std::string getName() const;
@@ -602,6 +604,9 @@ struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
 
     VariableIterator varStart();
     VariableIterator varEnd();
+
+    /// @return If the class is a struct or not
+    bool isStruct();
 
     /// @return the parent class being inherited on
     Expression::TypeRef* getParent() const;

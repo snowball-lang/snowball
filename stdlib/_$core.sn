@@ -14,14 +14,15 @@ namespace UA {
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating universal arrays.
  */
-struct UniversalArray { items: cobj*: };
+pub struct UniversalArray 
+  { let items: cobj*; };
 
 /**
  * @brief Allocates a universal array of elements.
  * @param[in] size The size of the universal array to allocate.
  * @return The allocated universal array.
  */
-extern "sn.ua.alloc" as __ua_alloc(size: i32) UniversalArray;
+pub extern fn "sn.ua.alloc" as __ua_alloc(i32) UniversalArray;
 
 };
 

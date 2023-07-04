@@ -68,10 +68,11 @@ Expression::TypeRef* VariableDecl::getDefinedType() { return definedType; }
 void VariableDecl::setDefinedType(Expression::TypeRef* t) { definedType = t; }
 Return::Return(Expression::Base* value) : value(value){};
 Expression::Base* Return::getValue() const { return value; }
-DefinedTypeDef::DefinedTypeDef(std::string name, Expression::TypeRef* extends, Privacy::Status prvc)
-    : name(name), extends(extends), AcceptorExtend<DefinedTypeDef, Privacy>(prvc) { }
+DefinedTypeDef::DefinedTypeDef(std::string name, Expression::TypeRef* extends, Privacy::Status prvc, bool _struct)
+    : name(name), extends(extends), AcceptorExtend<DefinedTypeDef, Privacy>(prvc), _struct(_struct) { }
 void DefinedTypeDef::addFunction(FunctionDef* fnDef) { functions.push_back(fnDef); }
 void DefinedTypeDef::addVariable(VariableDecl* var) { variables.push_back(var); }
+bool DefinedTypeDef::isStruct() { return _struct; }
 Expression::TypeRef* DefinedTypeDef::getParent() const { return extends; }
 std::string DefinedTypeDef::getName() const { return name; }
 std::vector<FunctionDef*>& DefinedTypeDef::getFunctions() { return functions; }

@@ -42,7 +42,7 @@ Transformer::transformClass(const std::string& uuid,
                     utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
             auto basedName = getNameWithBase(ty->getName());
             transformedType =
-                    std::make_shared<types::DefinedType>(basedName, _uuid, ctx->module, ty);
+                    std::make_shared<types::DefinedType>(basedName, _uuid, ctx->module, ty, std::vector<types::DefinedType::ClassField*>{}, nullptr, std::vector<std::shared_ptr<types::Type>>{}, ty->isStruct());
             auto item = std::make_shared<transform::Item>(transformedType);
             ctx->cache->setTransformedType(_uuid, item);
             auto classGenerics = ty->getGenerics();
@@ -111,6 +111,7 @@ Transformer::transformClass(const std::string& uuid,
             transformedType->setSourceInfo(ty->getSourceInfo());
             if (parentType != nullptr) ctx->cache->performInheritance(transformedType, parentType);
             ctx->setCurrentClass(transformedType);
+            assert(!ty->isStruct() || (ty->isStruct() && ty->getFunctions().size() == 0));
             for (auto fn : ty->getFunctions()) { fn->accept(this); }
             for (int allowPointer = 0; allowPointer < 2; ++allowPointer) {
                 // Set the default '=' operator for the class

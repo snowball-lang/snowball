@@ -5,23 +5,20 @@
 #include "./Parser.h"
 
 #include <assert.h>
-#define IS_CONSTRUCTOR(tk) is<TokenType::IDENTIFIER>(tk) && tk.value == name
 
 namespace snowball::parser {
 
-Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
-    assert(is<TokenType::KWORD_CLASS>());
-    next(); // East "class"
+Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
+    assert(is<TokenType::KWORD_STRUCT>());
+    next(); // East "struct"
 
     bool isPublic = false;
-    if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-4, true))) {
-        isPublic = is<TokenType::KWORD_PUBLIC>(peek(-4, true));
+    if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-3, true))) {
+        isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
     }
-
-    auto name = assert_tok<TokenType::IDENTIFIER>("class identifier").to_string();
+    
+    auto name = assert_tok<TokenType::IDENTIFIER>("structure identifier").to_string();
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
-
-    Syntax::Expression::TypeRef* parentClass = nullptr;
     Syntax::Statement::GenericContainer<>::GenericList generics;
 
     if (is<TokenType::OP_LT>(peek())) {
@@ -31,17 +28,21 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
     }
 
     next();
-    if (is<TokenType::SYM_COLLON>()) {
-        next();
-        throwIfNotType();
-        parentClass = parseType();
-    }
-
     assert_tok<TokenType::BRACKET_LCURLY>("'{'");
+    next();
     auto cls = Syntax::N<Syntax::Statement::DefinedTypeDef>(
-            name, parentClass, Syntax::Statement::Privacy::fromInt(isPublic));
+            name, nullptr, Syntax::Statement::Privacy::fromInt(isPublic), true);
     cls->setGenerics(generics);
     cls->setDBGInfo(dbg);
+
+    while (is<TokenType::KWORD_VAR>()) {
+        // TODO: maybe a custom syntax?
+        auto member = parseVariable();
+        consume<TokenType::SYM_SEMI_COLLON>("';'");
+        cls->addVariable(member);
+    }
+
+    assert_tok<TokenType::BRACKET_RCURLY>("'}'");
     return cls;
 }
 

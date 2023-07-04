@@ -26,13 +26,15 @@ DefinedType::DefinedType(const std::string& name,
                          std::shared_ptr<DefinedType>
                                  parent,
                          std::vector<std::shared_ptr<Type>>
-                                 generics)
+                                 generics,
+                            bool isStruct)
     : AcceptorExtend(Kind::CLASS, name)
     , uuid(uuid)
     , parent(parent)
     , module(module)
     , ast(ast)
     , fields(fields)
+    , _struct(isStruct)
     , generics(generics) { setPrivacy(PUBLIC); }
 DefinedType::ClassField::ClassField(
         const std::string& name, std::shared_ptr<Type> type, Privacy privacy, Syntax::Expression::Base* initializedValue, bool isMutable)

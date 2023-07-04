@@ -21,6 +21,9 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
                 case TokenType::_EOF:
                     // Unexpected because it shoud've been caught by the conditional above
                     createError<SYNTAX_ERROR>("unexpected end of file");
+                case TokenType::SYM_SEMI_COLLON:
+                    next();
+                    break;
 
                 case TokenType::KWORD_PUBLIC:
                 case TokenType::KWORD_PRIVATE: {
@@ -62,6 +65,11 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
 
                 case TokenType::KWORD_NAMESPACE: {
                     global.push_back(parseNamespace());
+                    break;
+                }
+
+                case TokenType::KWORD_STRUCT: {
+                    global.push_back(parseStructure());
                     break;
                 }
 

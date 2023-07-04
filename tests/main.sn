@@ -1,4 +1,8 @@
 use Core::CLib
 
+struct A {
+    let a: i32;
+}
+
 pub fn main() i32 {
 }
