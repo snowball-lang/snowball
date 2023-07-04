@@ -46,7 +46,11 @@ int run(app::Options::RunOptions p_opts) {
 
     // TODO: false if --no-output is passed
     compiler->compile(p_opts.silent);
-    compiler->emit_binary(output, false);
+    if (p_opts.jit) {
+        compiler->run_jit();
+    } else {
+        compiler->emit_binary(output, false);
+    }
 
     compiler->cleanup();
 

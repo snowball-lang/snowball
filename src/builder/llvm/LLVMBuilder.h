@@ -7,6 +7,7 @@
 #include "../../ir/module/MainModule.h"
 #include "../../ir/values/Func.h"
 #include "../../ir/values/Value.h"
+#include "../../ast/errors/error.h"
 
 #include <cstdint>
 #include <llvm/IR/Constants.h>
@@ -183,6 +184,11 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      * desired file.
      */
     int emitObjectFile(std::string out, bool log);
+
+    /**
+     * @brief Comple the LLVM-IR and run it as a JIT
+     */
+    void runInJit();
 
     // mark: build functions
     using AcceptorExtend::AcceptorExtend;

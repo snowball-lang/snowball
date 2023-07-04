@@ -217,6 +217,18 @@ int Compiler::emit_binary(std::string out, bool log) {
     return EXIT_SUCCESS;
 }
 
+void Compiler::run_jit() {
+    auto builder = new codegen::LLVMBuilder(module);
+    builder->codegen();
+    builder->optimizeModule(opt_level);
+
+#if _SNOWBALL_BYTECODE_DEBUG
+    builder->dump();
+#endif
+
+    builder->runInJit();
+}
+
 void Compiler::create_source_info() {
     SourceInfo* source_info = new SourceInfo(_code, _path);
     _source_info = source_info;

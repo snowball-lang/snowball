@@ -62,6 +62,8 @@ class Compiler {
     int emit_object(std::string, bool = true);
     int emit_llvmir(std::string, bool = true);
 
+    void run_jit();
+
     void set_optimization(app::Options::Optimization o) { opt_level = o; }
 
   private:

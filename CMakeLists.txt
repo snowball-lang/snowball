@@ -101,6 +101,7 @@ llvm_map_components_to_libnames(llvm_libs
   Vectorize
   nativecodegen
   ExecutionEngine
+  mcjit
 )
 
 ##################################################    Targets     ##################################################
