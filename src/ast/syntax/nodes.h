@@ -606,7 +606,7 @@ struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
     VariableIterator varEnd();
 
     /// @return If the class is a struct or not
-    bool isStruct();
+    virtual bool isStruct();
 
     /// @return the parent class being inherited on
     Expression::TypeRef* getParent() const;

@@ -77,7 +77,7 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
         std::vector<llvm::Metadata*> generatedFields;
         llvm::DIType* parentDIType = nullptr;
         if (auto p = c->getParent()) { parentDIType = getDIType(c->getParent().get()); }
-
+        // TODO: create struct type if it's a struct
         auto debugType =
                 dbg.builder->createClassType(file,
                                              c->getPrettyName(),

@@ -22,7 +22,7 @@ pub struct UniversalArray
  * @param[in] size The size of the universal array to allocate.
  * @return The allocated universal array.
  */
-pub extern fn "sn.ua.alloc" as __ua_alloc(i32) UniversalArray;
+pub extern fn "sn.ua.alloc" as __ua_alloc(i32) UniversalArray*;
 
 };
 
@@ -50,14 +50,18 @@ class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
      * @brief Default constructor.
      * Constructs an empty vector.
      */
-    Vector() : super() 
-      { self.buffer = UA::__ua_alloc(self.capacity); }
+    Vector() : super(), 
+      buffer(UA::__ua_alloc(self.capacity)) {}
     /**
      * @brief It pushes an element to the back of the vector.
      * @param[in] value The element to push to the back of the vector.
      */
     fn push(value: _StoreType) 
       { /*TODO: implement*/ }
+    /**
+      * @return The size of the vector.
+      */
+    fn size() i32 { return self.current; }
 
   priv:
     /** The capacity of the vector. */
@@ -65,7 +69,7 @@ class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
     /** The size of the vector. */
     let current: i32 = 0;
     /** The buffer containing the vector. */
-    let buffer: UA::UniversalArray;
+    let buffer: UA::UniversalArray*;
 }
 
 /**

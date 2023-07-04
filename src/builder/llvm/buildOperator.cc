@@ -111,7 +111,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                         llvm::Value* leftValue = left;
                         llvm::Value* rightValue = right;
 
-                        if (!llvm::isa<llvm::LoadInst>(rightValue))
+                        if (!llvm::isa<llvm::LoadInst>(rightValue) && rightValue->getType()->isPointerTy())
                             rightValue = builder->CreateLoad(
                                 rightValue->getType()->getPointerElementType(), rightValue);
 
