@@ -1,18 +1,18 @@
 
 /**
  * @namespace UA
-  * @brief The namespace containing the universal array library.
-  *
-  * The UA namespace contains the universal array library. It provides
-  * various operations and functionalities for working with universal
-  * arrays of elements. It supports common universal array manipulation
-  * operations such as element insertion, element removal, element access,
-  * and more.
-  *
-  * @note The UA namespace is designed to be efficient and memory-safe.
-  *       It automatically manages the memory allocation and deallocation
-  *       required for storing and manipulating universal arrays.
-  */
+ * @brief The namespace containing the universal array library.
+ *
+ * The UA namespace contains the universal array library. It provides
+ * various operations and functionalities for working with universal
+ * arrays of elements. It supports common universal array manipulation
+ * operations such as element insertion, element removal, element access,
+ * and more.
+ *
+ * @note The UA namespace is designed to be efficient and memory-safe.
+ *       It automatically manages the memory allocation and deallocation
+ *       required for storing and manipulating universal arrays.
+ */
 pub namespace UA {
 /**
  * @class UniversalArray
@@ -50,6 +50,35 @@ pub extern fn "sn.ua.resize" as __ua_resize(UniversalArray*, i32) UniversalArray
  */
 pub extern fn "sn.ua.set" as __ua_set(UniversalArray*, i32, cobj);
 } /* namespace UA */;
+
+/**
+ * @class Exception
+ * @brief A class representing an exception.
+ *
+ * The Exception class provides various operations and functionalities
+ * for working with exceptions. It supports common Exception
+ * manipulation operations such as exception throwing, exception
+ * catching, exception handling, and more.
+ */
+class Exception {
+  pub:
+    /**
+     * @brief Exception constructor.
+     * @param[in] m The message of the exception.
+     */ 
+    Exception(m: char*) : msg(m) 
+      { }
+    /**
+     * @brief Returns the message of the exception.
+     * @return The message of the exception.
+     */
+    fn what() char* 
+      { return self.msg; }
+  priv:
+    /** The message of the exception. */
+    let msg: char*;
+}
+
 
 class Iterable<_IteratorType: Core::Sized> {
   pub:
