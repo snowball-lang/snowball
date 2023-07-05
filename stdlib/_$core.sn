@@ -78,7 +78,7 @@ class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
       {
         self.resize(self.capacity + 10);
       }
-      UA::__ua_set(self.data, self.length, item);
+      UA::__ua_set(self.buffer, self.length, value as cobj);
       self.length = self.length + 1;
     }
     /**

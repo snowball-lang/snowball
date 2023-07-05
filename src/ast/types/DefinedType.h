@@ -29,7 +29,10 @@ class FunctionType;
  * primitive types, in order to use these type and it's member,
  * a new initialization of the object is required.
  */
-class DefinedType : public AcceptorExtend<DefinedType, Type>, public ir::IdMixin, public DBGObject, public Syntax::Statement::Privacy {
+class DefinedType : public AcceptorExtend<DefinedType, Type>,
+                    public ir::IdMixin,
+                    public DBGObject,
+                    public Syntax::Statement::Privacy {
   public:
     /**
      * @brief A class field represents all of the "elements" a

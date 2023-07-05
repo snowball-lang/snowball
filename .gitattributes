@@ -1,2 +1,3 @@
 *.h linguist-language=C
+*.sn linguist-language=Rust
 Dockerfile.* linguist-language=Dockerfile

@@ -27,7 +27,7 @@ DefinedType::DefinedType(const std::string& name,
                                  parent,
                          std::vector<std::shared_ptr<Type>>
                                  generics,
-                            bool isStruct)
+                         bool isStruct)
     : AcceptorExtend(Kind::CLASS, name)
     , uuid(uuid)
     , parent(parent)
@@ -35,10 +35,20 @@ DefinedType::DefinedType(const std::string& name,
     , ast(ast)
     , fields(fields)
     , _struct(isStruct)
-    , generics(generics) { setPrivacy(PUBLIC); }
-DefinedType::ClassField::ClassField(
-        const std::string& name, std::shared_ptr<Type> type, Privacy privacy, Syntax::Expression::Base* initializedValue, bool isMutable)
-    : name(name), type(type), Syntax::Statement::Privacy(privacy), initializedValue(initializedValue), isMutable(isMutable) { }
+    , generics(generics) {
+    setPrivacy(PUBLIC);
+}
+DefinedType::ClassField::ClassField(const std::string& name,
+                                    std::shared_ptr<Type>
+                                            type,
+                                    Privacy privacy,
+                                    Syntax::Expression::Base* initializedValue,
+                                    bool isMutable)
+    : name(name)
+    , type(type)
+    , Syntax::Statement::Privacy(privacy)
+    , initializedValue(initializedValue)
+    , isMutable(isMutable) { }
 std::string DefinedType::getUUID() const { return uuid; }
 Syntax::Statement::DefinedTypeDef* DefinedType::getAST() const { return ast; }
 void DefinedType::addField(ClassField* f) { fields.emplace_back(f); }
@@ -109,9 +119,8 @@ Syntax::Expression::TypeRef* DefinedType::toRef() {
 }
 
 bool DefinedType::canCast(Type* ty) const {
-    SNOWBALL_MUTABILITY_CAST_CHECK
-    if (auto x = utils::cast<DefinedType>(ty)) 
-        return canCast(x);
+    SNOWBALL_DEFAULT_CAST_CHECKS
+    if (auto x = utils::cast<DefinedType>(ty)) return canCast(x);
     return false;
 }
 

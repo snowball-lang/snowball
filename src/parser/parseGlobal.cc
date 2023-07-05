@@ -21,18 +21,15 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
                 case TokenType::_EOF:
                     // Unexpected because it shoud've been caught by the conditional above
                     createError<SYNTAX_ERROR>("unexpected end of file");
-                case TokenType::SYM_SEMI_COLLON:
-                    next();
-                    break;
+                case TokenType::SYM_SEMI_COLLON: next(); break;
 
                 case TokenType::KWORD_PUBLIC:
                 case TokenType::KWORD_PRIVATE: {
                     auto pk = peek();
                     if (!is<TokenType::KWORD_FUNC>(pk) && !is<TokenType::KWORD_VAR>(pk) &&
                         !is<TokenType::KWORD_TYPEDEF>(pk) && !is<TokenType::KWORD_NAMESPACE>(pk) &&
-                        !is<TokenType::KWORD_STRUCT>(pk) && 
-                        !is<TokenType::KWORD_STATIC>(pk) && !is<TokenType::KWORD_CLASS>(pk) &&
-                        !is<TokenType::KWORD_EXTERN>(pk)) {
+                        !is<TokenType::KWORD_STRUCT>(pk) && !is<TokenType::KWORD_STATIC>(pk) &&
+                        !is<TokenType::KWORD_CLASS>(pk) && !is<TokenType::KWORD_EXTERN>(pk)) {
                         createError<SYNTAX_ERROR>(
                                 "expected keyword \"fn\", \"static\", \"namespace\", \"class\", "
                                 "\"let\" "

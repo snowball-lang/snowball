@@ -16,7 +16,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
     if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-3, true))) {
         isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
     }
-    
+
     auto name = assert_tok<TokenType::IDENTIFIER>("structure identifier").to_string();
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
     Syntax::Statement::GenericContainer<>::GenericList generics;

@@ -41,8 +41,15 @@ Transformer::transformClass(const std::string& uuid,
             auto _uuid = baseUuid + ":" +
                     utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
             auto basedName = getNameWithBase(ty->getName());
-            transformedType =
-                    std::make_shared<types::DefinedType>(basedName, _uuid, ctx->module, ty, std::vector<types::DefinedType::ClassField*>{}, nullptr, std::vector<std::shared_ptr<types::Type>>{}, ty->isStruct());
+            transformedType = std::make_shared<types::DefinedType>(
+                    basedName,
+                    _uuid,
+                    ctx->module,
+                    ty,
+                    std::vector<types::DefinedType::ClassField*>{},
+                    nullptr,
+                    std::vector<std::shared_ptr<types::Type>>{},
+                    ty->isStruct());
             auto item = std::make_shared<transform::Item>(transformedType);
             ctx->cache->setTransformedType(_uuid, item);
             auto classGenerics = ty->getGenerics();
@@ -77,31 +84,33 @@ Transformer::transformClass(const std::string& uuid,
                                            "primitive type."});
                 }
             }
-            auto baseFields = vector_iterate<Statement::VariableDecl*, types::DefinedType::ClassField*>(
-                ty->getVariables(), [&](auto v) {
-                    auto definedType = v->getDefinedType();
-                    if (!definedType) E<SYNTAX_ERROR>(v->getDBGInfo(), "Can't infer type!", {
-                        .info = "The type of this variable can't be inferred!",
-                        .note = "This rule only applies to variables inside classes.",
-                        .help = "You can't infer the type of a variable "
-                                "without specifying it's type.\n"
-                                "For example, you can't do this:\n"
-                                "   let a = 10\n"
-                                "You have to do this:\n"
-                                "   let a: i32 = 10\n"
-                                "Or this:\n"
-                                "   let a = 10: i32"
+            auto baseFields = vector_iterate<Statement::VariableDecl*,
+                                             types::DefinedType::ClassField*>(
+                    ty->getVariables(), [&](auto v) {
+                        auto definedType = v->getDefinedType();
+                        if (!definedType)
+                            E<SYNTAX_ERROR>(
+                                    v->getDBGInfo(),
+                                    "Can't infer type!",
+                                    {.info = "The type of this variable can't be inferred!",
+                                     .note = "This rule only applies to variables inside classes.",
+                                     .help = "You can't infer the type of a variable "
+                                             "without specifying it's type.\n"
+                                             "For example, you can't do this:\n"
+                                             "   let a = 10\n"
+                                             "You have to do this:\n"
+                                             "   let a: i32 = 10\n"
+                                             "Or this:\n"
+                                             "   let a = 10: i32"});
+                        auto varTy = transformType(definedType);
+                        auto field = new types::DefinedType::ClassField(v->getName(),
+                                                                        varTy,
+                                                                        v->getPrivacy(),
+                                                                        v->getValue(),
+                                                                        v->isMutable());
+                        field->setDBGInfo(v->getDBGInfo());
+                        return field;
                     });
-                    auto varTy = transformType(definedType);
-                    auto field = new types::DefinedType::ClassField(
-                            v->getName(),
-                            varTy,
-                            v->getPrivacy(),
-                            v->getValue(),
-                            v->isMutable());
-                    field->setDBGInfo(v->getDBGInfo());
-                    return field;
-                });
             auto fields = getMemberList(ty->getVariables(), baseFields, parentType);
             transformedType->setParent(parentType);
             transformedType->setFields(fields);
@@ -112,7 +121,14 @@ Transformer::transformClass(const std::string& uuid,
             if (parentType != nullptr) ctx->cache->performInheritance(transformedType, parentType);
             ctx->setCurrentClass(transformedType);
             assert(!ty->isStruct() || (ty->isStruct() && ty->getFunctions().size() == 0));
+            // Create function definitions
+            auto backupGenerateFunction = ctx->generateFunction;
+            ctx->generateFunction = false;
             for (auto fn : ty->getFunctions()) { fn->accept(this); }
+            // Generate the function bodies
+            ctx->generateFunction = true;
+            for (auto fn : ty->getFunctions()) { fn->accept(this); }
+            ctx->generateFunction = backupGenerateFunction;
             for (int allowPointer = 0; allowPointer < 2; ++allowPointer) {
                 // Set the default '=' operator for the class
                 auto fn = builder.createFunction(

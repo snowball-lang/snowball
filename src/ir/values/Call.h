@@ -78,8 +78,7 @@ class BinaryOp : public AcceptorExtend<BinaryOp, Call> {
     friend Call;
 
   public:
-    explicit BinaryOp(std::shared_ptr<Value> callee,
-                      std::vector<std::shared_ptr<Value>> args = {})
+    explicit BinaryOp(std::shared_ptr<Value> callee, std::vector<std::shared_ptr<Value>> args = {})
         : AcceptorExtend(callee, args) { }
 
     virtual bool isOperator() const override { return true; };

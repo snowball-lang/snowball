@@ -41,9 +41,11 @@ void LLVMBuilder::visit(ir::Cast* c) {
     } else if (utils::dyn_cast<types::PointerType>(ty)) {
         assert(utils::dyn_cast<types::PointerType>(vTy) != nullptr);
         this->value = builder->CreatePointerCast(v, llvmType);
+    } else if (utils::dyn_cast<types::NumericType>(vTy) && 
+        utils::dyn_cast<types::CObjectType>(ty)) {
+        this->value = builder->CreateIntToPtr(v, llvmType);
     } else {
-        assert(utils::dyn_cast<types::DefinedType>(ty) != nullptr);
-        assert(utils::dyn_cast<types::DefinedType>(vTy) != nullptr);
+        assert(utils::dyn_cast<types::DefinedType>(ty) || utils::dyn_cast<types::CObjectType>(ty));
 
         this->value = builder->CreatePointerCast(v, llvmType);
     }

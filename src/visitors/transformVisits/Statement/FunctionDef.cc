@@ -12,15 +12,15 @@ using namespace snowball::Syntax::transform;
 #define ADD_SELF_ARG                                                                               \
     if (auto c = ctx->getCurrentClass(true)) {                                                     \
         auto args = p_node->getArgs();                                                             \
-        auto pointer = c->getPointerTo();                                         \
-        pointer->setMutable(p_node->isMutable());                                                     \
+        auto pointer = c->getPointerTo();                                                          \
+        pointer->setMutable(p_node->isMutable());                                                  \
         if (!(args.size() > 0 && args.at(0)->getName() == "self") && !p_node->isStatic()) {        \
             auto self = new Expression::Param("self", pointer->toRef());                           \
                                                                                                    \
             args.insert(args.begin(), self);                                                       \
             p_node->setArgs(args);                                                                 \
         } else if (!p_node->isStatic()) { /* "self" already set by another class */                \
-            args.at(0)->setType(pointer->toRef());                                       \
+            args.at(0)->setType(pointer->toRef());                                                 \
         }                                                                                          \
     }
 
@@ -32,9 +32,8 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     ADD_SELF_ARG
 
     if (!ctx->generateFunction && !IS_MAIN) {
-        assert(!services::OperatorService::isOperator(name));
-        // Check if the function requirements match the main function
-
+        // assert(!services::OperatorService::isOperator(name));
+        //  Check if the function requirements match the main function
         auto uuid = ctx->createIdentifierName(name);
 
         // Just set it to the function stack

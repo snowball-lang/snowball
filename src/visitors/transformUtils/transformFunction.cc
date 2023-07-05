@@ -73,11 +73,11 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
             for (int i = 0; i < node->getArgs().size(); i++) {
                 auto arg = node->getArgs().at(i);
 
-                auto a = builder.createArgument(
-                        node->getDBGInfo(),
-                        arg->getName(),
-                        fn->isConstructor() + i,
-                        arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
+                auto a = builder.createArgument(node->getDBGInfo(),
+                                                arg->getName(),
+                                                fn->isConstructor() + i,
+                                                arg->hasDefaultValue() ? arg->getDefaultValue()
+                                                                       : nullptr);
                 a->setType(transformType(arg->getType()));
                 newArgs.insert(newArgs.end(), {arg->getName(), a});
             }
@@ -98,8 +98,7 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
                 ctx->withScope([&]() {
                     int argIndex = 0;
                     for (auto arg : newArgs) {
-                        auto ref = builder.createVariable(
-                                node->getDBGInfo(), arg.first, true);
+                        auto ref = builder.createVariable(node->getDBGInfo(), arg.first, true);
 
                         ref->setType(arg.second->getType());
                         auto refItem = std::make_shared<transform::Item>(

@@ -5,6 +5,7 @@
 #include "../ast/syntax/nodes.h"
 #include "../ast/types/FunctionType.h"
 #include "../ast/types/PrimitiveTypes.h"
+#include "../ir/values/Argument.h"
 #include "../ir/values/Call.h"
 #include "../ir/values/Cast.h"
 #include "../ir/values/Conditional.h"
@@ -15,7 +16,6 @@
 #include "../ir/values/Value.h"
 #include "../ir/values/VariableDeclaration.h"
 #include "../ir/values/WhileLoop.h"
-#include "../ir/values/Argument.h"
 
 #include <assert.h>
 #include <optional>
@@ -83,7 +83,7 @@ VISIT(Call) {
         if (i == 0) checkMutability(p_node, fn, a);
 
         i++;
-        a->visit(this); 
+        a->visit(this);
     }
 }
 
@@ -208,10 +208,9 @@ void TypeChecker::cantBeVoid(
     if (utils::dyn_cast<types::VoidType>(ty)) { Syntax::E<TYPE_ERROR>(dbg, message); }
 }
 
-void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn, std::shared_ptr<ir::Value> value) {
-    if (auto x = utils::dyn_cast<ir::Variable>(value)) {
-        DUMP_S(x->getIdentifier().c_str())
-    }
+void TypeChecker::checkMutability(
+        ir::Call* p_node, std::shared_ptr<ir::Func> fn, std::shared_ptr<ir::Value> value) {
+    if (auto x = utils::dyn_cast<ir::Variable>(value)) { DUMP_S(x->getIdentifier().c_str()) }
     auto fnName = fn->getName(true);
     auto isMutable = this->isMutable(value);
     bool accessingSelf = this->accessingSelf(value);
@@ -220,51 +219,57 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
         auto binOp = utils::cast<ir::BinaryOp>(p_node);
         auto isAssignment = Syntax::Expression::BinaryOp::is_assignment(opType);
         if (isAssignment && accessingSelf && !ctx->getCurrentFunction()->getType()->isMutable()) {
-            Syntax::E<VARIABLE_ERROR>(p_node,
-                "You can't call a mutating method on an immutable instance!",
-                {.info = "This function is mutable!",
-                .note = "This error is caused by the function being "
-                        "mutable, but the value being nonmutable.",
-                .help = "Try to make the value mutable by adding the 'mut' "
-                        "keyword or make the function\nnonmutable by "
-                        "removing the 'mut' keyword from it's declaration.",
-                .tail = Syntax::EI<>(value->getDBGInfo(), "", {
-                    .info = "This value is nonmutable!",
-                }) });
-        } 
-        
+            Syntax::E<VARIABLE_ERROR>(
+                    p_node,
+                    "You can't call a mutating method on an immutable instance!",
+                    {.info = "This function is mutable!",
+                     .note = "This error is caused by the function being "
+                             "mutable, but the value being nonmutable.",
+                     .help = "Try to make the value mutable by adding the 'mut' "
+                             "keyword or make the function\nnonmutable by "
+                             "removing the 'mut' keyword from it's declaration.",
+                     .tail = Syntax::EI<>(value->getDBGInfo(),
+                                          "",
+                                          {
+                                                  .info = "This value is nonmutable!",
+                                          })});
+        }
+
         if (isAssignment && (!binOp->ignoreMutability && !isMutable) && !accessingSelf) {
             if (!p_node->isInitialization) {
-                Syntax::E<VARIABLE_ERROR>(p_node,
-                    "You can't assign a new value to a "
-                    "unmutable "
-                    "variable",
-                    {
-                    .note = "This error is caused by the 'mut' keyword "
-                            "not being present in \nthe variable"
-                            "declaration.",
-                    .help = "Try to make the variable mutable by adding "
-                        "the 'mut' keyword.",
-                    .tail = Syntax::EI<>(value->getDBGInfo(), "", {
-                        .info = "This variable is not mutable!"
-                    })});
+                Syntax::E<VARIABLE_ERROR>(
+                        p_node,
+                        "You can't assign a new value to a "
+                        "unmutable "
+                        "variable",
+                        {.note = "This error is caused by the 'mut' keyword "
+                                 "not being present in \nthe variable"
+                                 "declaration.",
+                         .help = "Try to make the variable mutable by adding "
+                                 "the 'mut' keyword.",
+                         .tail = Syntax::EI<>(value->getDBGInfo(),
+                                              "",
+                                              {.info = "This variable is not mutable!"})});
             }
-        } else if (isAssignment) return;
+        } else if (isAssignment)
+            return;
         // TODO: check for operator sides being equal.
     }
 
     if (fn->getType()->isMutable() && !isMutable) {
         Syntax::E<VARIABLE_ERROR>(p_node,
-            "You can't call a mutating method on an immutable instance!",
-            {.info = "This function is mutable!",
-            .note = "This error is caused by the function being "
-                    "mutable, but the value being nonmutable.",
-            .help = "Try to make the value mutable by adding the 'mut' "
-                    "keyword or make the function\nnonmutable by "
-                    "removing the 'mut' keyword from it's declaration.",
-            .tail = Syntax::EI<>(value->getDBGInfo(), "", {
-              .info = "This value is nonmutable!",
-            }) });
+                                  "You can't call a mutating method on an immutable instance!",
+                                  {.info = "This function is mutable!",
+                                   .note = "This error is caused by the function being "
+                                           "mutable, but the value being nonmutable.",
+                                   .help = "Try to make the value mutable by adding the 'mut' "
+                                           "keyword or make the function\nnonmutable by "
+                                           "removing the 'mut' keyword from it's declaration.",
+                                   .tail = Syntax::EI<>(value->getDBGInfo(),
+                                                        "",
+                                                        {
+                                                                .info = "This value is nonmutable!",
+                                                        })});
     }
 }
 
@@ -276,7 +281,7 @@ bool TypeChecker::accessingSelf(std::shared_ptr<ir::Value> value) {
     auto index = utils::dyn_cast<ir::IndexExtract>(value);
 
     while (index) {
-        if (auto x = utils::dyn_cast<ir::Variable>(index->getValue())) 
+        if (auto x = utils::dyn_cast<ir::Variable>(index->getValue()))
             return x->getIdentifier() == "self";
         index = utils::dyn_cast<ir::IndexExtract>(index->getValue());
     }

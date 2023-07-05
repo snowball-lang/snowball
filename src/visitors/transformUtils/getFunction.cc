@@ -148,8 +148,8 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
     }
 
             // TODO: check if this is necesary (just for functions)
-            // ADD_FUNCTION_ERROR(functions, overload)
-            if (overloads.has_value()) ADD_FUNCTION_ERROR(overloads, overload.function)
+            // ADD_FUNCTION_ERROR(overloads, overload.function)
+            if (functions.has_value()) ADD_FUNCTION_ERROR(functions, overload)
             // TODO: throw a note that sugest's it's correct types: only if
             // there's one
             //  overload

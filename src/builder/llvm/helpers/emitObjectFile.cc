@@ -40,8 +40,7 @@ int LLVMBuilder::emitObjectFile(std::string out, bool log) {
     llvm::raw_fd_ostream dest(out, EC, llvm::sys::fs::OF_None);
 
     if (EC) {
-        throw SNError(Error::IO_ERROR,
-                      FMT("Could not open file: %s", EC.message().c_str()));
+        throw SNError(Error::IO_ERROR, FMT("Could not open file: %s", EC.message().c_str()));
     }
 
     llvm::legacy::PassManager pass;

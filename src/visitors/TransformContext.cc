@@ -8,7 +8,12 @@
 
 namespace snowball::Syntax {
 
-TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder) : AcceptorExtend(), module(mod), builder(builder), cache(new Cache()), imports(std::make_unique<services::ImportService>()) {
+TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder)
+    : AcceptorExtend()
+    , module(mod)
+    , builder(builder)
+    , cache(new Cache())
+    , imports(std::make_unique<services::ImportService>()) {
     // Set all of the built in primitive types into the global stack
 #define DEFINE_TYPE(t)                                                                             \
     auto raw_##t = std::make_shared<types::t>();                                                   \
@@ -98,8 +103,8 @@ void TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
 }
 
 /// @brief Execute function with saved state
-void TransformContext::withState(
-        std::shared_ptr<transform::ContextState> s, std::function<void()> cb) {
+void TransformContext::withState(std::shared_ptr<transform::ContextState> s,
+                                 std::function<void()> cb) {
     auto saved = this->saveState();
 
     this->setState(s);

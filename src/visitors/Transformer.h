@@ -4,6 +4,7 @@
 #include "../ast/types/FunctionType.h"
 #include "../ast/types/PointerType.h"
 #include "../ast/visitor/Visitor.h"
+#include "../ir/builder/IRBuilder.h"
 #include "../ir/module/Module.h"
 #include "../ir/values/Argument.h"
 #include "../ir/values/Call.h"
@@ -12,7 +13,6 @@
 #include "../ir/values/ReferenceTo.h"
 #include "../ir/values/Return.h"
 #include "../ir/values/ValueExtract.h"
-#include "../ir/builder/IRBuilder.h"
 #include "../utils/utils.h"
 
 #include <assert.h>

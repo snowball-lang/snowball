@@ -292,12 +292,12 @@ class Parser {
      */
     Syntax::Statement::Namespace* parseNamespace();
     /**
-     * struct        ::=  "struct" <identifier> [generic_params] 
+     * struct        ::=  "struct" <identifier> [generic_params]
      *                    "{" [body] "}" [";"]
      * body          ::=  [[identifier] ":" [expr] ","] ...
      */
     Syntax::Statement::DefinedTypeDef* parseStructure();
-    
+
     /**
      * @brief Parses a list of attributes
      * @param parseFn function to parse the attribute

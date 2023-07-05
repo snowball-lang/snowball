@@ -22,8 +22,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
     // Create a new function value and store it's return type.
     char l[] = _SNOWBALL_LAMBDA_FUNCTIONS;
     auto name = parent->getName() + "::" + l + '\00';
-    auto fn = builder.createFunction(
-            node->getDBGInfo(), name, false, node->isVariadic());
+    auto fn = builder.createFunction(node->getDBGInfo(), name, false, node->isVariadic());
     fn->setParent(ctx->getCurrentClass());
     fn->setRetTy(returnType);
     fn->setPrivacy(Statement::Privacy::PUBLIC);
@@ -36,10 +35,9 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
         auto arg = node->getArgs().at(i);
 
         auto a = builder.createArgument(node->getDBGInfo(),
-                                              arg->getName(),
-                                              fn->isConstructor() + i,
-                                              arg->hasDefaultValue() ? arg->getDefaultValue()
-                                                                     : nullptr);
+                                        arg->getName(),
+                                        fn->isConstructor() + i,
+                                        arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
         a->setType(transformType(arg->getType()));
         newArgs.insert(newArgs.end(), {arg->getName(), a});
     }

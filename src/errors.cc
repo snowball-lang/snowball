@@ -81,8 +81,7 @@ void NiceError::print_error(bool asTail) const {
     }
 
     if (auto x = info.tail) {
-        if (info.note.empty())
-            Logger::elog(FMT("%s      │", BLK));
+        if (info.note.empty()) Logger::elog(FMT("%s      │", BLK));
         Logger::elog(FMT("%s      │", BLK));
         Logger::elog(FMT("%s      :", BLK));
         Logger::elog(FMT("%s      │", BLK));

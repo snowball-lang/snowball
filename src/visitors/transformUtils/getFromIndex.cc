@@ -56,8 +56,8 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
             }
 
             if (indexValue == nullptr && v.has_value()) { indexValue = v.value(); }
-            if (!indexValue && !ty.has_value() && !fns.has_value() &&
-                !ovs.has_value() && !mod.has_value()) {
+            if (!indexValue && !ty.has_value() && !fns.has_value() && !ovs.has_value() &&
+                !mod.has_value()) {
                 // TODO: operator
                 E<VARIABLE_ERROR>(dbgInfo,
                                   FMT("Coudn't find '%s' inside type '%s'!",
@@ -65,7 +65,12 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
                                       x->getPrettyName().c_str()));
             }
 
-            return {indexValue ? std::make_optional(indexValue) : std::nullopt, ty, fns, ovs, mod, isInClassContext(x)};
+            return {indexValue ? std::make_optional(indexValue) : std::nullopt,
+                    ty,
+                    fns,
+                    ovs,
+                    mod,
+                    isInClassContext(x)};
         } else {
             // Case: index from a (for example) constant. You can access
             //  values from it so just check for functions

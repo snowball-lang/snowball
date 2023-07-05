@@ -74,9 +74,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
     }
 
     auto type = this->value->getType();
-    if (isMutable && !type->isMutable()) {
-        type->setMutable(true);
-    }
+    if (isMutable && !type->isMutable()) { type->setMutable(true); }
 
     ctx->addItem(variableName, item);
 }

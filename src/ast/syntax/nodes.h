@@ -562,8 +562,8 @@ struct VariableDecl : public AcceptorExtend<VariableDecl, Base>,
  * Class definition. Created at "Parser::parseClass" function
  */
 struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
-                  public AcceptorExtend<DefinedTypeDef, Privacy>,
-                  public AcceptorExtend<DefinedTypeDef, GenericContainer<>> {
+                        public AcceptorExtend<DefinedTypeDef, Privacy>,
+                        public AcceptorExtend<DefinedTypeDef, GenericContainer<>> {
     /// @brief Class identifier
     std::string name;
     /// @brief Defined functions to the class
@@ -578,9 +578,8 @@ struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
     bool _struct = false;
 
   public:
-    DefinedTypeDef(std::string name,
-             Expression::TypeRef* extends = nullptr,
-             Privacy::Status prvc = PRIVATE, bool _struct = false);
+    DefinedTypeDef(std::string name, Expression::TypeRef* extends = nullptr,
+                   Privacy::Status prvc = PRIVATE, bool _struct = false);
 
     /// @brief Get class name
     std::string getName() const;

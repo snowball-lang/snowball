@@ -1,6 +1,7 @@
 
 #include "../../common.h"
 #include "../../constants.h"
+#include "../../utils/utils.h"
 #include "Type.h"
 
 #include <string>
@@ -36,6 +37,15 @@ class PrimitiveType : public AcceptorExtend<PrimitiveType, Type> {
     PrimitiveType(std::string p_name) : AcceptorExtend(Kind::TYPE, p_name) { }
 };
 
+/// @brief C object pointer type (it's the equivalent of `void*` in C)
+class CObjectType : public AcceptorExtend<CObjectType, PrimitiveType> {
+  public:
+    CObjectType() : AcceptorExtend(SN_COB_TYPE) { }
+    virtual bool canCast(Type* ty) const override {
+      return true;
+    }
+};
+
 /**
  * @brief This is a primitive type that acts like
  *  a numeric type. (e.g. i32, f64, bool, etc...)
@@ -46,7 +56,9 @@ class NumericType : public AcceptorExtend<NumericType, PrimitiveType> {
 
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
-    bool canCast(Type* ty) const override { SNOWBALL_MUTABILITY_CAST_CHECK return NumericType::isNumericType(ty); }
+    virtual bool canCast(Type* ty) const override {
+        SNOWBALL_DEFAULT_CAST_CHECKS return NumericType::isNumericType(ty);
+    }
 
   public:
     /**
@@ -63,12 +75,6 @@ class NumericType : public AcceptorExtend<NumericType, PrimitiveType> {
 class VoidType : public AcceptorExtend<VoidType, PrimitiveType> {
   public:
     VoidType() : AcceptorExtend(SN_VOID_TYPE) { }
-};
-
-/// @brief C object pointer type (it's the equivalent of `void*` in C)
-class CObjectType : public AcceptorExtend<CObjectType, PrimitiveType> {
-  public:
-    CObjectType() : AcceptorExtend(SN_COB_TYPE) { }
 };
 
 /// @brief Bool (represents 1-bit signed integer)

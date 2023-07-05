@@ -65,11 +65,13 @@ class TypeChecker : public AcceptorExtend<TypeChecker, codegen::ValueVisitor> {
     /**
      * @brief Check if the value is mutable or not
      */
-    void checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn, std::shared_ptr<ir::Value> value);
+    void checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn,
+                         std::shared_ptr<ir::Value> value);
     /**
      * @brief True if the value is accessing "self"
      */
     bool accessingSelf(std::shared_ptr<ir::Value> value);
+
   public:
     TypeChecker(std::shared_ptr<ir::Module> mod);
     ~TypeChecker() noexcept = default;
