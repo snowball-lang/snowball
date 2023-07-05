@@ -13,7 +13,9 @@
 #include "../ir/values/IndexExtract.h"
 #include "../ir/values/ReferenceTo.h"
 #include "../ir/values/Return.h"
+#include "../ir/values/Throw.h"
 #include "../ir/values/Value.h"
+#include "../ir/values/ValueExtract.h"
 #include "../ir/values/VariableDeclaration.h"
 #include "../ir/values/WhileLoop.h"
 
@@ -61,8 +63,8 @@ VISIT(ReferenceTo) {
                FMT("Value used for reference '%s' has a value with 'void' "
                    "type!",
                    p_node->getType()->getPrettyName().c_str()));
-    if (!utils::dyn_cast<ir::Variable>(val) && !utils::dyn_cast<ir::IndexExtract>(val)) {
-        Syntax::E<TYPE_ERROR>(p_node,
+    if (!utils::dyn_cast<ir::ValueExtract>(val) && !utils::dyn_cast<ir::IndexExtract>(val)) {
+        Syntax::E<TYPE_ERROR>(p_node->getDBGInfo(),
                               FMT("Value used for reference '%s' is not a "
                                   "variable!",
                                   p_node->getType()->getPrettyName().c_str()));
@@ -96,6 +98,13 @@ VISIT(VariableDeclaration) {
                FMT("Value used for variable '%s' has a value with 'void' "
                    "type!",
                    p_node->getIdentifier().c_str()));
+}
+
+VISIT(Throw) {
+    auto val = p_node->getExpr();
+    val->visit(this);
+
+    // TODO: check if the value is throwable
 }
 
 VISIT(IndexExtract) {
@@ -256,7 +265,7 @@ void TypeChecker::checkMutability(
         // TODO: check for operator sides being equal.
     }
 
-    if (fn->getType()->isMutable() && !isMutable) {
+    if (!fn->isConstructor() && (fn->getType()->isMutable() && !isMutable)) {
         Syntax::E<VARIABLE_ERROR>(p_node,
                                   "You can't call a mutating method on an immutable instance!",
                                   {.info = "This function is mutable!",

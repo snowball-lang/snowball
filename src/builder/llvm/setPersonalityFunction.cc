@@ -19,7 +19,7 @@ void LLVMBuilder::setPersonalityFunction(llvm::Function* func) {
                                        builder->getInt64Ty(), builder->getInt8PtrTy(),
                                        builder->getInt8PtrTy()},
                                       false);
-    auto c = module->getOrInsertFunction("sn.core.eh.personality", ty).getCallee();
+    auto c = module->getOrInsertFunction("sn.eh.personality", ty).getCallee();
     auto f = llvm::cast<llvm::Function>(c);
 
     func->setPersonalityFn(f);

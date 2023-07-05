@@ -26,6 +26,9 @@ SharedValue<Func> IRBuilder::createFunction(DBGSourceInfo* dbgInfo, std::string 
                                             bool isVarArg) {
     return createFunction(dbgInfo, name, block, {}, isExtern, isVarArg);
 }
+SharedValue<Throw> IRBuilder::createThrow(DBGSourceInfo* dbgInfo, SharedValue<> value) {
+    return N<Throw>(dbgInfo, value);
+}
 SharedValue<Cast> IRBuilder::createCast(DBGSourceInfo* dbgInfo, SharedValue<> value, Type<> type) {
     auto cast = N<Cast>(dbgInfo, value, type);
     cast->setType(type);
@@ -70,8 +73,8 @@ SharedValue<Variable> IRBuilder::createVariable(DBGSourceInfo* dbgInfo,
 SharedValue<Block> IRBuilder::createBlock(DBGSourceInfo* dbgInfo) {
     return createBlock(dbgInfo, {});
 }
-SharedValue<Block> IRBuilder::createBlock(DBGSourceInfo* dbgInfo,
-                                          std::vector<SharedValue<>> values) {
+SharedValue<Block>
+IRBuilder::createBlock(DBGSourceInfo* dbgInfo, std::vector<SharedValue<>> values) {
     return N<Block>(dbgInfo, values);
 }
 SharedValue<ReferenceTo> IRBuilder::createReferenceTo(DBGSourceInfo* dbgInfo, SharedValue<> value) {
@@ -108,24 +111,20 @@ SharedValue<Call> IRBuilder::createCall(DBGSourceInfo* dbgInfo, SharedValue<> ca
                                         ValueVec<> args) {
     return N<Call>(dbgInfo, callee, args);
 }
-SharedValue<VariableDeclaration> IRBuilder::createVariableDeclaration(DBGSourceInfo* dbgInfo,
-                                                                      const std::string identifier,
-                                                                      SharedValue<> value,
-                                                                      bool isMutable) {
+SharedValue<VariableDeclaration> IRBuilder::createVariableDeclaration(
+        DBGSourceInfo* dbgInfo, const std::string identifier, SharedValue<> value, bool isMutable) {
     auto decl = N<VariableDeclaration>(dbgInfo, identifier, value, isMutable);
     decl->setType(value->getType());
     return decl;
 }
-SharedValue<ValueExtract> IRBuilder::createValueExtract(DBGSourceInfo* dbgInfo,
-                                                        SharedValue<> value) {
+SharedValue<ValueExtract>
+IRBuilder::createValueExtract(DBGSourceInfo* dbgInfo, SharedValue<> value) {
     auto extract = N<ValueExtract>(dbgInfo, value);
     extract->setType(value->getType());
     return extract;
 }
-SharedValue<ObjectInitialization> IRBuilder::createObjectInitialization(DBGSourceInfo* dbgInfo,
-                                                                        SharedValue<> value,
-                                                                        ValueVec<> args,
-                                                                        bool atHeap) {
+SharedValue<ObjectInitialization> IRBuilder::createObjectInitialization(
+        DBGSourceInfo* dbgInfo, SharedValue<> value, ValueVec<> args, bool atHeap) {
     auto init = N<ObjectInitialization>(dbgInfo, value, args);
     init->initializeAtHeap = atHeap;
     return init;
@@ -138,9 +137,12 @@ IRBuilder::createObjectInitialization(DBGSourceInfo* dbgInfo, SharedValue<> valu
     return init;
 }
 SharedValue<Conditional> IRBuilder::createConditional(DBGSourceInfo* dbgInfo,
-                                                      SharedValue<> condition,
-                                                      SharedValue<Block> thenBlock,
-                                                      SharedValue<Block> elseBlock) {
+                                                      SharedValue<>
+                                                              condition,
+                                                      SharedValue<Block>
+                                                              thenBlock,
+                                                      SharedValue<Block>
+                                                              elseBlock) {
     return N<Conditional>(dbgInfo, condition, thenBlock, elseBlock);
 }
 SharedValue<WhileLoop> IRBuilder::createWhileLoop(DBGSourceInfo* dbgInfo, SharedValue<> condition,

@@ -321,6 +321,15 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      */
     llvm::Function* getAllocaFunction();
     /**
+     * @brief Creates (if it does not exist) or fetches a function
+     * declaration used to throw an exception.
+     */
+    llvm::Function* getThrowFunction();
+    /**
+     * @brief Creates a new instance of an exception.
+     */
+    llvm::Value* createException(llvm::Value* val);
+    /**
      * @brief Generate the current value given
      *
      * note: for the result of this function, `value`

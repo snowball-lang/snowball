@@ -615,6 +615,26 @@ struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
 };
 
 /**
+ * @brief Representation of a Raise statement in the AST.
+ * This is used to throw an exception.
+ * @example
+ *  raise new Exception("Something went wrong")
+ */
+struct Raise : public AcceptorExtend<Raise, Base> {
+    /// @brief Expression to be raised
+    Expression::Base* expr;
+
+  public:
+    Raise(Expression::Base* expr) : expr(expr){};
+
+    /// @return Get the expression to be raised
+    auto getExpr() { return expr; }
+
+    // Set an acceptance call
+    ACCEPT()
+};
+
+/**
  * @struct TypeAlias
  * @brief Representation of a type alias declaration inside the AST.
  *

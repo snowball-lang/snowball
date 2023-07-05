@@ -13,7 +13,7 @@ using namespace snowball::Syntax::transform;
     if (auto c = ctx->getCurrentClass(true)) {                                                     \
         auto args = p_node->getArgs();                                                             \
         auto pointer = c->getPointerTo();                                                          \
-        pointer->setMutable(p_node->isMutable());                                                  \
+        pointer->setMutable(p_node->isMutable() || p_node->isConstructor());                       \
         if (!(args.size() > 0 && args.at(0)->getName() == "self") && !p_node->isStatic()) {        \
             auto self = new Expression::Param("self", pointer->toRef());                           \
                                                                                                    \

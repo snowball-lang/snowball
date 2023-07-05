@@ -115,8 +115,9 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
      *   3. (does not exist) Create a new item initialized
      *      with the function trying to be defined.
      */
-    void defineFunction(std::shared_ptr<ir::Func> fn) {
-        auto name = createIdentifierName(fn->getName(true));
+    void defineFunction(std::shared_ptr<ir::Func> fn, const std::string namePrefix = "") {
+        auto fnName = fn->getName(true);
+        auto name = namePrefix.empty() ? createIdentifierName(fnName) : namePrefix + "." + fnName;
         auto item = cache->getTransformedFunction(name);
         if (item) {
             assert((*item)->isFunc());

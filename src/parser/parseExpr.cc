@@ -71,7 +71,8 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
 
                 expr = Syntax::N<Syntax::Expression::NewInstance>(call, ty, toTheHeap);
                 expr->setDBGInfo(call->getDBGInfo());
-            } else if (TOKEN(OP_NOT) || TOKEN(OP_PLUS) || TOKEN(OP_MINUS) || TOKEN(OP_BIT_NOT)) {
+            } else if (TOKEN(OP_NOT) || TOKEN(OP_PLUS) || TOKEN(OP_MINUS) || TOKEN(OP_BIT_NOT) ||
+                       TOKEN(OP_BIT_AND)) {
                 if (tk.type == TokenType::OP_NOT)
                     exprs.push_back(
                             Syntax::N<Syntax::Expression::BinaryOp>(Operators::OperatorType::NOT));
@@ -89,7 +90,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                             Operators::OperatorType::REFERENCE));
 
                 exprs.back()->isOperator = true;
-
+                exprs.back()->setDBGInfo(dbg);
                 continue;
             } else if (TOKEN(KWORD_FUNC)) {
                 auto f = parseFunction(false, false, true);

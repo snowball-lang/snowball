@@ -19,6 +19,7 @@ ACCEPT(Expression::LambdaFunction)
 ACCEPT(Expression::PseudoVariable)
 
 ACCEPT(Statement::TypeAlias)
+ACCEPT(Statement::Raise)
 ACCEPT(Statement::WhileLoop)
 ACCEPT(Statement::Return)
 ACCEPT(Statement::VariableDecl)

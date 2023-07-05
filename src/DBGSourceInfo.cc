@@ -59,8 +59,5 @@ std::string DBGSourceInfo::get_pos_str() const {
 DBGObject::DBGObject() { /* noop */
 }
 DBGSourceInfo* DBGObject::getDBGInfo() { return dbg; }
-void DBGObject::setDBGInfo(DBGSourceInfo* i) {
-    dbg = i;
-    // auto _src = i->getSourceInfo();
-}
+void DBGObject::setDBGInfo(DBGSourceInfo* i) { dbg = i; }
 } // namespace snowball

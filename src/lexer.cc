@@ -527,6 +527,8 @@ void Lexer::tokenize() {
 
                     if (identifier == _SNOWBALL_KEYWORD__NEW) {
                         tk.type = TokenType::KWORD_NEW;
+                    } else if (identifier == _SNOWBALL_KEYWORD__THROW) {
+                        tk.type = TokenType::KWORD_THROW;
                     } else if (identifier == _SNOWBALL_KEYWORD__IF) {
                         tk.type = TokenType::KWORD_IF;
                     } else if (identifier == _SNOWBALL_KEYWORD__VARIABLE) {

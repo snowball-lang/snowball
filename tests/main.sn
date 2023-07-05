@@ -1,8 +1,12 @@
 use Core::CLib
 
-struct A {
-    let a: i32;
+class A {
+    let what: char*;
+  pub:
+    A(x: char*) : what(x) {}
 }
 
 pub fn main() i32 {
+    let B = 'B';
+    raise new A(&B);
 }

@@ -82,13 +82,9 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
                     getFromIdentifier(dbgInfo, name, generics, type->getName());
 
             if ((!fns.has_value()) && (!ovs.has_value())) {
-                if (services::OperatorService::isOperator(name)) {
-                    assert(false && "TODO: operator missing from builtin type!");
-                }
-
                 // TODO: operator
                 E<VARIABLE_ERROR>(dbgInfo,
-                                  FMT("Coudn't find '%s' inside type '%s'!",
+                                  FMT("Coudn't find a function '%s' inside type '%s'!",
                                       name.c_str(),
                                       type->getPrettyName().c_str()));
             }

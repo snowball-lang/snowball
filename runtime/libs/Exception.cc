@@ -1,404 +1,607 @@
-
-
-#include <assert.h>
-#include <cstdint>
-#include <cstdlib>
-#include <cstring>
-#include <cxxabi.h>
-#include <iostream>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unwind.h>
-#include <utility>
-
-#define UNREACHABLE                                                            \
-    do {                                                                       \
-        std::abort();                                                          \
-    } while (0);
+// Content modified from the original: 
+// https://github.com/codeplaysoftware/llvm-leg/blob/master/examples/ExceptionDemo/ExceptionDemo.cpp
 
 namespace snowball {
 
-struct Exception {
-
-    _Unwind_Exception unwindHeader;
-    std::uintptr_t _landingPad;
-    std::uint32_t _typeIndex;
-
-    struct ActualException {
-        void *vtable;
-        char *_msg;
-    } *actualException = nullptr;
-
-    [[nodiscard]] std::uintptr_t getLandingPad() const { return _landingPad; }
-
-    void setLandingPad(std::uintptr_t p_landing_pad) {
-        _landingPad = p_landing_pad;
-    }
-
-    [[nodiscard]] std::uint32_t getTypeIndex() const { return _typeIndex; }
-
-    void setTypeIndex(std::uint32_t p_type_index) { _typeIndex = p_type_index; }
-
-    static const std::uint64_t EXCEPTION_CLASS = 0x50594C5250590000;
-
-    static Exception *fromUnwindHeader(_Unwind_Exception *header) {
-        return reinterpret_cast<Exception *>(reinterpret_cast<char *>(header) -
-                                             offsetof(Exception, unwindHeader));
-    }
+// This is the type of the exception object
+struct OurExceptionType_t {
+  /// type info type
+  int type;
 };
 
-enum {
-    // NOLINTBEGIN(readability-identifier-naming): These names are part of a
-    // standard.
-    DW_EH_PE_absptr   = 0x00,
-    DW_EH_PE_uleb128  = 0x01,
-    DW_EH_PE_udata2   = 0x02,
-    DW_EH_PE_udata4   = 0x03,
-    DW_EH_PE_udata8   = 0x04,
-    DW_EH_PE_sleb128  = 0x09,
-    DW_EH_PE_sdata2   = 0x0A,
-    DW_EH_PE_sdata4   = 0x0B,
-    DW_EH_PE_sdata8   = 0x0C,
-    DW_EH_PE_pcrel    = 0x10,
-    DW_EH_PE_textrel  = 0x20,
-    DW_EH_PE_datarel  = 0x30,
-    DW_EH_PE_funcrel  = 0x40,
-    DW_EH_PE_aligned  = 0x50,
-    DW_EH_PE_indirect = 0x80,
-    DW_EH_PE_omit     = 0xFF
-    // NOLINTEND(readability-identifier-naming)
+/// This is our Exception class which relies on a negative offset to calculate
+/// pointers to its instances from pointers to its unwindException member.
+///
+/// Note: The above unwind.h defines struct _Unwind_Exception to be aligned
+///       on a double word boundary. This is necessary to match the standard:
+///       http://mentorembedded.github.com/cxx-abi/abi-eh.html
+struct OurBaseException_t {
+  struct OurExceptionType_t type;
+
+  /// @brief Object instance
+  void* snowball_object;
+
+  // Note: This is properly aligned in unwind.h
+  struct _Unwind_Exception unwindException;
 };
 
-std::uintptr_t readULEB128(const std::uint8_t **data) {
-    std::uintptr_t result = 0;
-    std::uintptr_t shift  = 0;
-    unsigned char byte;
-    const uint8_t *p = *data;
-    do {
-        byte = *p++;
-        result |= static_cast<std::uintptr_t>(byte & 0x7F) << shift;
-        shift += 7;
-    } while (byte & 0x80);
-    *data = p;
-    return result;
+int64_t ourBaseFromUnwindOffset;
+
+const unsigned char ourBaseExcpClassChars[] =
+    {'o', 'b', 'j', '\0', 's', 'n', '\0'};
+
+static uint64_t ourBaseExceptionClass = 0;
+
+/// Deletes the true previosly allocated exception whose address
+/// is calculated from the supplied OurBaseException_t::unwindException
+/// member address. Handles (ignores), NULL pointers.
+/// @param expToDelete exception to delete
+void deleteOurException(OurUnwindException *expToDelete) {
+#ifdef DEBUG
+  fprintf(stderr,
+          "deleteOurException(...).\n");
+#endif
+
+  if (expToDelete &&
+      (expToDelete->exception_class == ourBaseExceptionClass)) {
+
+    free(((char*) expToDelete) + ourBaseFromUnwindOffset);
+  }
 }
 
-std::intptr_t readSLEB128(const std::uint8_t **data) {
-    std::uintptr_t result = 0;
-    std::uintptr_t shift  = 0;
-    unsigned char byte;
-    const uint8_t *p = *data;
-    do {
-        byte = *p++;
-        result |= static_cast<std::uintptr_t>(byte & 0x7F) << shift;
-        shift += 7;
-    } while (byte & 0x80);
-    *data = p;
-    if ((byte & 0x40) && (shift < (sizeof(result) << 3))) {
-        result |= static_cast<std::uintptr_t>(~0) << shift;
-    }
-    return static_cast<std::intptr_t>(result);
+
+/// This function is the struct _Unwind_Exception API mandated delete function
+/// used by foreign exception handlers when deleting our exception
+/// (OurException), instances.
+/// @param reason See @link http://mentorembedded.github.com/cxx-abi/abi-eh.html
+/// @unlink
+/// @param expToDelete exception instance to delete
+void deleteFromUnwindOurException(_Unwind_Reason_Code reason,
+                                  OurUnwindException *expToDelete) {
+#ifdef DEBUG
+  fprintf(stderr,
+          "deleteFromUnwindOurException(...).\n");
+#endif
+
+  deleteOurException(expToDelete);
 }
 
-template <class AsType>
-std::uintptr_t readPointerHelper(const std::uint8_t *& p) {
-    AsType value;
-    std::memcpy(&value, p, sizeof(AsType));
-    p += sizeof(AsType);
-    return static_cast<std::uintptr_t>(value);
+/// Read a uleb128 encoded value and advance pointer
+/// See Variable Length Data in:
+/// @link http://dwarfstd.org/Dwarf3.pdf @unlink
+/// @param data reference variable holding memory pointer to decode from
+/// @returns decoded value
+static uintptr_t readULEB128(const uint8_t **data) {
+  uintptr_t result = 0;
+  uintptr_t shift = 0;
+  unsigned char byte;
+  const uint8_t *p = *data;
+
+  do {
+    byte = *p++;
+    result |= (byte & 0x7f) << shift;
+    shift += 7;
+  }
+  while (byte & 0x80);
+
+  *data = p;
+
+  return result;
 }
 
-std::uintptr_t readEncodedPointer(const std::uint8_t **data,
-                                  std::uint8_t encoding) {
-    std::uintptr_t result = 0;
-    if (encoding == DW_EH_PE_omit) {
-        return result;
-    }
-    const std::uint8_t *p = *data;
-    // first get value
-    switch (encoding & 0x0F) {
-        case DW_EH_PE_absptr:
-            result = readPointerHelper<std::uintptr_t>(p);
-            break;
-        case DW_EH_PE_uleb128:
-            result = readULEB128(&p);
-            break;
-        case DW_EH_PE_sleb128:
-            result = static_cast<std::uintptr_t>(readSLEB128(&p));
-            break;
-        case DW_EH_PE_udata2:
-            result = readPointerHelper<std::uint16_t>(p);
-            break;
-        case DW_EH_PE_udata4:
-            result = readPointerHelper<std::uint32_t>(p);
-            break;
-        case DW_EH_PE_udata8:
-            result = readPointerHelper<std::uint64_t>(p);
-            break;
-        case DW_EH_PE_sdata2:
-            result = readPointerHelper<std::int16_t>(p);
-            break;
-        case DW_EH_PE_sdata4:
-            result = readPointerHelper<std::int32_t>(p);
-            break;
-        case DW_EH_PE_sdata8:
-            result = readPointerHelper<std::int64_t>(p);
-            break;
-        default:
-            // not supported
-            UNREACHABLE;
-    }
-    // then add relative offset
-    switch (encoding & 0x70) {
-        case DW_EH_PE_absptr:
-            // do nothing
-            break;
-        case DW_EH_PE_pcrel:
-            if (result) {
-                result += reinterpret_cast<intptr_t>(*data);
-            }
-            break;
-        case DW_EH_PE_datarel:
-        case DW_EH_PE_textrel:
-        case DW_EH_PE_funcrel:
-        case DW_EH_PE_aligned:
-        default:
-            // not supported
-            UNREACHABLE;
-    }
-    // then apply indirection
-    if (result && (encoding & DW_EH_PE_indirect)) {
-        result = *(reinterpret_cast<std::uintptr_t *>(result));
-    }
-    *data = p;
-    return result;
+/// Read a sleb128 encoded value and advance pointer
+/// See Variable Length Data in:
+/// @link http://dwarfstd.org/Dwarf3.pdf @unlink
+/// @param data reference variable holding memory pointer to decode from
+/// @returns decoded value
+static uintptr_t readSLEB128(const uint8_t **data) {
+  uintptr_t result = 0;
+  uintptr_t shift = 0;
+  unsigned char byte;
+  const uint8_t *p = *data;
+
+  do {
+    byte = *p++;
+    result |= (byte & 0x7f) << shift;
+    shift += 7;
+  }
+  while (byte & 0x80);
+
+  *data = p;
+
+  if ((byte & 0x40) && (shift < (sizeof(result) << 3))) {
+    result |= (~0 << shift);
+  }
+
+  return result;
 }
 
-struct Result {
-    _Unwind_Reason_Code code;
-    std::uintptr_t landingPad;
-    std::uint32_t typeIndex;
+unsigned getEncodingSize(uint8_t Encoding) {
+  if (Encoding == llvm::dwarf::DW_EH_PE_omit)
+    return 0;
 
-    Exception::ActualException *baseException;
-};
-
-Result findLandingPad(_Unwind_Action actions, bool nativeException,
-                      _Unwind_Exception *exception, _Unwind_Context *context) {
-    // Inconsistent states
-    if (actions & _UA_SEARCH_PHASE) {
-        if (actions &
-            (_UA_CLEANUP_PHASE | _UA_HANDLER_FRAME | _UA_FORCE_UNWIND)) {
-            return {_URC_FATAL_PHASE1_ERROR, 0, 0};
-        }
-    } else if (actions & _UA_CLEANUP_PHASE) {
-        if ((actions & (_UA_HANDLER_FRAME)) && (actions & _UA_FORCE_UNWIND)) {
-            return {_URC_FATAL_PHASE2_ERROR, 0, 0};
-        }
-    } else {
-        return {_URC_FATAL_PHASE1_ERROR, 0, 0};
-    }
-
-    const auto *exceptionTable = reinterpret_cast<const uint8_t *>(
-        _Unwind_GetLanguageSpecificData(context));
-    if (!exceptionTable) {
-        return {_URC_CONTINUE_UNWIND, 0, 0};
-    }
-
-    std::uintptr_t ip            = _Unwind_GetIP(context) - 1;
-    std::uintptr_t functionStart = _Unwind_GetRegionStart(context);
-    auto offset                  = ip - functionStart;
-    auto encodingStart           = *exceptionTable++;
-    const auto *lpStart          = reinterpret_cast<const uint8_t *>(
-        readEncodedPointer(&exceptionTable, encodingStart));
-    if (!lpStart) {
-        lpStart = reinterpret_cast<const uint8_t *>(functionStart);
-    }
-
-    const std::uint8_t *classInfo = nullptr;
-    std::uint8_t typeEncoding     = *exceptionTable++;
-
-    if (typeEncoding != DW_EH_PE_omit) {
-        auto classInfoOffset = readULEB128(&exceptionTable);
-        classInfo            = exceptionTable + classInfoOffset;
-    }
-
-    std::uint8_t callSiteEncoding = *exceptionTable++;
-    auto callSiteTableLength =
-        static_cast<std::uint32_t>(readULEB128(&exceptionTable));
-    const auto *callSiteTableStart = exceptionTable;
-    const auto *callSiteTableEnd   = callSiteTableStart + callSiteTableLength;
-    const auto *actionTableStart   = callSiteTableEnd;
-    for (const auto *callSitePtr = callSiteTableStart;
-         callSitePtr < callSiteTableEnd;) {
-
-        auto start       = readEncodedPointer(&callSitePtr, callSiteEncoding);
-        auto length      = readEncodedPointer(&callSitePtr, callSiteEncoding);
-        auto landingPad  = readEncodedPointer(&callSitePtr, callSiteEncoding);
-        auto actionEntry = readULEB128(&callSitePtr);
-        if (offset >= (start + length)) {
-            continue;
-        }
-
-        assert(offset >= start);
-
-        if (landingPad == 0) {
-            return {_URC_CONTINUE_UNWIND, 0, 0};
-        }
-
-        landingPad = reinterpret_cast<std::uintptr_t>(lpStart) + landingPad;
-        if (actionEntry == 0) {
-            return {actions & _UA_SEARCH_PHASE ? _URC_CONTINUE_UNWIND
-                                               : _URC_HANDLER_FOUND,
-                    landingPad, 0, 0};
-        }
-
-        const auto *action = actionTableStart + (actionEntry - 1);
-        bool hasCleanUp    = false;
-        while (true) {
-            // auto* actionRecord = action;
-            std::int32_t typeIndex     = readSLEB128(&action);
-            std::int32_t baseException = readSLEB128(&action);
-            if (typeIndex > 0) {
-                // catch clauses
-                return {_URC_HANDLER_FOUND, landingPad,
-                        static_cast<std::uint32_t>(typeIndex),
-                        reinterpret_cast<Exception::ActualException *>(
-                            baseException)};
-            } else if (typeIndex < 0) {
-                // Don't support filters or anything of the sort at the moment
-                // as I don't have a need yet
-            } else {
-                // cleanup clause
-                hasCleanUp = true;
-            }
-            const auto *temp  = action;
-            auto actionOffset = readSLEB128(&temp);
-            if (actionOffset == 0) {
-                return {hasCleanUp && (actions & _UA_CLEANUP_PHASE)
-                            ? _URC_HANDLER_FOUND
-                            : _URC_CONTINUE_UNWIND,
-                        landingPad, static_cast<std::uint32_t>(typeIndex)};
-            }
-            action += actionOffset;
-        }
-    }
-    UNREACHABLE;
+  switch (Encoding & 0x0F) {
+  case llvm::dwarf::DW_EH_PE_absptr:
+    return sizeof(uintptr_t);
+  case llvm::dwarf::DW_EH_PE_udata2:
+    return sizeof(uint16_t);
+  case llvm::dwarf::DW_EH_PE_udata4:
+    return sizeof(uint32_t);
+  case llvm::dwarf::DW_EH_PE_udata8:
+    return sizeof(uint64_t);
+  case llvm::dwarf::DW_EH_PE_sdata2:
+    return sizeof(int16_t);
+  case llvm::dwarf::DW_EH_PE_sdata4:
+    return sizeof(int32_t);
+  case llvm::dwarf::DW_EH_PE_sdata8:
+    return sizeof(int64_t);
+  default:
+    // not supported
+    abort();
+  }
 }
 
-Exception::ActualException *toExceptionType(void *p_exct) {
-    return reinterpret_cast<Exception::ActualException *>(p_exct);
+/// Read a pointer encoded value and advance pointer
+/// See Variable Length Data in:
+/// @link http://dwarfstd.org/Dwarf3.pdf @unlink
+/// @param data reference variable holding memory pointer to decode from
+/// @param encoding dwarf encoding type
+/// @returns decoded value
+static uintptr_t readEncodedPointer(const uint8_t **data, uint8_t encoding) {
+  uintptr_t result = 0;
+  const uint8_t *p = *data;
+
+  if (encoding == llvm::dwarf::DW_EH_PE_omit)
+    return(result);
+
+  // first get value
+  switch (encoding & 0x0F) {
+    case llvm::dwarf::DW_EH_PE_absptr:
+      result = *((uintptr_t*)p);
+      p += sizeof(uintptr_t);
+      break;
+    case llvm::dwarf::DW_EH_PE_uleb128:
+      result = readULEB128(&p);
+      break;
+      // Note: This case has not been tested
+    case llvm::dwarf::DW_EH_PE_sleb128:
+      result = readSLEB128(&p);
+      break;
+    case llvm::dwarf::DW_EH_PE_udata2:
+      result = *((uint16_t*)p);
+      p += sizeof(uint16_t);
+      break;
+    case llvm::dwarf::DW_EH_PE_udata4:
+      result = *((uint32_t*)p);
+      p += sizeof(uint32_t);
+      break;
+    case llvm::dwarf::DW_EH_PE_udata8:
+      result = *((uint64_t*)p);
+      p += sizeof(uint64_t);
+      break;
+    case llvm::dwarf::DW_EH_PE_sdata2:
+      result = *((int16_t*)p);
+      p += sizeof(int16_t);
+      break;
+    case llvm::dwarf::DW_EH_PE_sdata4:
+      result = *((int32_t*)p);
+      p += sizeof(int32_t);
+      break;
+    case llvm::dwarf::DW_EH_PE_sdata8:
+      result = *((int64_t*)p);
+      p += sizeof(int64_t);
+      break;
+    default:
+      // not supported
+      abort();
+      break;
+  }
+
+  // then add relative offset
+  switch (encoding & 0x70) {
+    case llvm::dwarf::DW_EH_PE_absptr:
+      // do nothing
+      break;
+    case llvm::dwarf::DW_EH_PE_pcrel:
+      result += (uintptr_t)(*data);
+      break;
+    case llvm::dwarf::DW_EH_PE_textrel:
+    case llvm::dwarf::DW_EH_PE_datarel:
+    case llvm::dwarf::DW_EH_PE_funcrel:
+    case llvm::dwarf::DW_EH_PE_aligned:
+    default:
+      // not supported
+      abort();
+      break;
+  }
+
+  // then apply indirection
+  if (encoding & llvm::dwarf::DW_EH_PE_indirect) {
+    result = *((uintptr_t*)result);
+  }
+
+  *data = p;
+
+  return result;
+}
+
+
+/// Deals with Dwarf actions matching our type infos
+/// (OurExceptionType_t instances). Returns whether or not a dwarf emitted
+/// action matches the supplied exception type. If such a match succeeds,
+/// the resultAction argument will be set with > 0 index value. Only
+/// corresponding llvm.eh.selector type info arguments, cleanup arguments
+/// are supported. Filters are not supported.
+/// See Variable Length Data in:
+/// @link http://dwarfstd.org/Dwarf3.pdf @unlink
+/// Also see @link http://mentorembedded.github.com/cxx-abi/abi-eh.html @unlink
+/// @param resultAction reference variable which will be set with result
+/// @param classInfo our array of type info pointers (to globals)
+/// @param actionEntry index into above type info array or 0 (clean up).
+///        We do not support filters.
+/// @param exceptionClass exception class (_Unwind_Exception::exception_class)
+///        of thrown exception.
+/// @param exceptionObject thrown _Unwind_Exception instance.
+/// @returns whether or not a type info was found. False is returned if only
+///          a cleanup was found
+static bool handleActionValue(int64_t *resultAction,
+                              uint8_t TTypeEncoding,
+                              const uint8_t *ClassInfo,
+                              uintptr_t actionEntry,
+                              uint64_t exceptionClass,
+                              struct _Unwind_Exception *exceptionObject) {
+  bool ret = false;
+
+  if (!resultAction ||
+      !exceptionObject ||
+      (exceptionClass != ourBaseExceptionClass))
+    return(ret);
+
+  struct OurBaseException_t *excp = (struct OurBaseException_t*)
+  (((char*) exceptionObject) + ourBaseFromUnwindOffset);
+  struct OurExceptionType_t *excpType = &(excp->type);
+  int type = excpType->type;
+
+#ifdef DEBUG
+  fprintf(stderr,
+          "handleActionValue(...): exceptionObject = <%p>, "
+          "excp = <%p>.\n",
+          exceptionObject,
+          excp);
+#endif
+
+  const uint8_t *actionPos = (uint8_t*) actionEntry,
+  *tempActionPos;
+  int64_t typeOffset = 0,
+  actionOffset;
+
+  for (int i = 0; true; ++i) {
+    // Each emitted dwarf action corresponds to a 2 tuple of
+    // type info address offset, and action offset to the next
+    // emitted action.
+    typeOffset = readSLEB128(&actionPos);
+    tempActionPos = actionPos;
+    actionOffset = readSLEB128(&tempActionPos);
+
+#ifdef DEBUG
+    fprintf(stderr,
+            "handleActionValue(...):typeOffset: <%lld>, "
+            "actionOffset: <%lld>.\n",
+            typeOffset,
+            actionOffset);
+#endif
+    assert((typeOffset >= 0) &&
+           "handleActionValue(...):filters are not supported.");
+
+    // Note: A typeOffset == 0 implies that a cleanup llvm.eh.selector
+    //       argument has been matched.
+    if (typeOffset > 0) {
+#ifdef DEBUG
+      fprintf(stderr,
+              "handleActionValue(...):actionValue <%d> found.\n",
+              i);
+#endif
+      unsigned EncSize = getEncodingSize(TTypeEncoding);
+      const uint8_t *EntryP = ClassInfo - typeOffset * EncSize;
+      uintptr_t P = readEncodedPointer(&EntryP, TTypeEncoding);
+      struct OurExceptionType_t *ThisClassInfo =
+        reinterpret_cast<struct OurExceptionType_t *>(P);
+      if (ThisClassInfo->type == type) {
+        *resultAction = i + 1;
+        ret = true;
+        break;
+      }
+    }
+
+#ifdef DEBUG
+    fprintf(stderr,
+            "handleActionValue(...):actionValue not found.\n");
+#endif
+    if (!actionOffset)
+      break;
+
+    actionPos += actionOffset;
+  }
+
+  return(ret);
+}
+
+
+/// Deals with the Language specific data portion of the emitted dwarf code.
+/// See @link http://mentorembedded.github.com/cxx-abi/abi-eh.html @unlink
+/// @param version unsupported (ignored), unwind version
+/// @param lsda language specific data area
+/// @param _Unwind_Action actions minimally supported unwind stage
+///        (forced specifically not supported)
+/// @param exceptionClass exception class (_Unwind_Exception::exception_class)
+///        of thrown exception.
+/// @param exceptionObject thrown _Unwind_Exception instance.
+/// @param context unwind system context
+/// @returns minimally supported unwinding control indicator
+static _Unwind_Reason_Code handleLsda(int version,
+                                      const uint8_t *lsda,
+                                      _Unwind_Action actions,
+                                      uint64_t exceptionClass,
+                                    struct _Unwind_Exception *exceptionObject,
+                                      _Unwind_Context_t context) {
+  _Unwind_Reason_Code ret = _URC_CONTINUE_UNWIND;
+
+  if (!lsda)
+    return(ret);
+
+#ifdef DEBUG
+  fprintf(stderr,
+          "handleLsda(...):lsda is non-zero.\n");
+#endif
+
+  // Get the current instruction pointer and offset it before next
+  // instruction in the current frame which threw the exception.
+  uintptr_t pc = _Unwind_GetIP(context)-1;
+
+  // Get beginning current frame's code (as defined by the
+  // emitted dwarf code)
+  uintptr_t funcStart = _Unwind_GetRegionStart(context);
+  uintptr_t pcOffset = pc - funcStart;
+  const uint8_t *ClassInfo = NULL;
+
+  // Note: See JITDwarfEmitter::EmitExceptionTable(...) for corresponding
+  //       dwarf emission
+
+  // Parse LSDA header.
+  uint8_t lpStartEncoding = *lsda++;
+
+  if (lpStartEncoding != llvm::dwarf::DW_EH_PE_omit) {
+    readEncodedPointer(&lsda, lpStartEncoding);
+  }
+
+  uint8_t ttypeEncoding = *lsda++;
+  uintptr_t classInfoOffset;
+
+  if (ttypeEncoding != llvm::dwarf::DW_EH_PE_omit) {
+    // Calculate type info locations in emitted dwarf code which
+    // were flagged by type info arguments to llvm.eh.selector
+    // intrinsic
+    classInfoOffset = readULEB128(&lsda);
+    ClassInfo = lsda + classInfoOffset;
+  }
+
+  // Walk call-site table looking for range that
+  // includes current PC.
+
+  uint8_t         callSiteEncoding = *lsda++;
+  uint32_t        callSiteTableLength = readULEB128(&lsda);
+  const uint8_t   *callSiteTableStart = lsda;
+  const uint8_t   *callSiteTableEnd = callSiteTableStart +
+  callSiteTableLength;
+  const uint8_t   *actionTableStart = callSiteTableEnd;
+  const uint8_t   *callSitePtr = callSiteTableStart;
+
+  while (callSitePtr < callSiteTableEnd) {
+    uintptr_t start = readEncodedPointer(&callSitePtr,
+                                         callSiteEncoding);
+    uintptr_t length = readEncodedPointer(&callSitePtr,
+                                          callSiteEncoding);
+    uintptr_t landingPad = readEncodedPointer(&callSitePtr,
+                                              callSiteEncoding);
+
+    // Note: Action value
+    uintptr_t actionEntry = readULEB128(&callSitePtr);
+
+    if (exceptionClass != ourBaseExceptionClass) {
+      // We have been notified of a foreign exception being thrown,
+      // and we therefore need to execute cleanup landing pads
+      actionEntry = 0;
+    }
+
+    if (landingPad == 0) {
+#ifdef DEBUG
+      fprintf(stderr,
+              "handleLsda(...): No landing pad found.\n");
+#endif
+
+      continue; // no landing pad for this entry
+    }
+
+    if (actionEntry) {
+      actionEntry += ((uintptr_t) actionTableStart) - 1;
+    }
+    else {
+#ifdef DEBUG
+      fprintf(stderr,
+              "handleLsda(...):No action table found.\n");
+#endif
+    }
+
+    bool exceptionMatched = false;
+
+    if ((start <= pcOffset) && (pcOffset < (start + length))) {
+#ifdef DEBUG
+      fprintf(stderr,
+              "handleLsda(...): Landing pad found.\n");
+#endif
+      int64_t actionValue = 0;
+
+      if (actionEntry) {
+        exceptionMatched = handleActionValue(&actionValue,
+                                             ttypeEncoding,
+                                             ClassInfo,
+                                             actionEntry,
+                                             exceptionClass,
+                                             exceptionObject);
+      }
+
+      if (!(actions & _UA_SEARCH_PHASE)) {
+#ifdef DEBUG
+        fprintf(stderr,
+                "handleLsda(...): installed landing pad "
+                "context.\n");
+#endif
+
+        // Found landing pad for the PC.
+        // Set Instruction Pointer to so we re-enter function
+        // at landing pad. The landing pad is created by the
+        // compiler to take two parameters in registers.
+        _Unwind_SetGR(context,
+                      __builtin_eh_return_data_regno(0),
+                      (uintptr_t)exceptionObject);
+
+        // Note: this virtual register directly corresponds
+        //       to the return of the llvm.eh.selector intrinsic
+        if (!actionEntry || !exceptionMatched) {
+          // We indicate cleanup only
+          _Unwind_SetGR(context,
+                        __builtin_eh_return_data_regno(1),
+                        0);
+        }
+        else {
+          // Matched type info index of llvm.eh.selector intrinsic
+          // passed here.
+          _Unwind_SetGR(context,
+                        __builtin_eh_return_data_regno(1),
+                        actionValue);
+        }
+
+        // To execute landing pad set here
+        _Unwind_SetIP(context, funcStart + landingPad);
+        ret = _URC_INSTALL_CONTEXT;
+      }
+      else if (exceptionMatched) {
+#ifdef DEBUG
+        fprintf(stderr,
+                "handleLsda(...): setting handler found.\n");
+#endif
+        ret = _URC_HANDLER_FOUND;
+      }
+      else {
+        // Note: Only non-clean up handlers are marked as
+        //       found. Otherwise the clean up handlers will be
+        //       re-found and executed during the clean up
+        //       phase.
+#ifdef DEBUG
+        fprintf(stderr,
+                "handleLsda(...): cleanup handler found.\n");
+#endif
+      }
+
+      break;
+    }
+  }
+
+  return(ret);
+}
+
+/// Generates our _Unwind_Exception class from a given character array.
+/// thereby handling arbitrary lengths (not in standard), and handling
+/// embedded \0s.
+/// See @link http://mentorembedded.github.com/cxx-abi/abi-eh.html @unlink
+/// @param classChars char array to encode. NULL values not checkedf
+/// @param classCharsSize number of chars in classChars. Value is not checked.
+/// @returns class value
+uint64_t genClass(const unsigned char classChars[], size_t classCharsSize)
+{
+  uint64_t ret = classChars[0];
+
+  for (unsigned i = 1; i < classCharsSize; ++i) {
+    ret <<= 8;
+    ret += classChars[i];
+  }
+
+  return(ret);
 }
 
 } // namespace snowball
 
-#define EXCEPTION_ARGUMENTS() void *thrown_exception
+// MARK: - Eported functions
 
-extern const void *
-    throwException(EXCEPTION_ARGUMENTS()) __asm__("sn.core.eh.throw");
-const void *throwException(EXCEPTION_ARGUMENTS()) {
+void throwOurException(void* obj) __asm__("sn.eh.throw");
+snowball::OurUnwindException *createOurException(int type) __asm__("sn.eh.create");
+_Unwind_Reason_Code ourPersonality(int version,
+                                   _Unwind_Action actions,
+                                   uint64_t exceptionClass,
+                                   struct _Unwind_Exception *exceptionObject,
+                                   _Unwind_Context_t context) __asm__("sn.eh.personality");
 
-    auto exception = reinterpret_cast<snowball::Exception *>(thrown_exception);
-    auto header    = exception->unwindHeader;
+/// Creates (allocates on the heap), an exception (OurException instance),
+/// of the supplied type info type.
+/// @param type type info type
+snowball::OurUnwindException *createOurException(int type) {
+  size_t size = sizeof(snowball::OurException);
+  snowball::OurException *ret = (snowball::OurException*) memset(malloc(size), 0, size);
+  (ret->type).type = type;
+  (ret->unwindException).exception_class = snowball::ourBaseExceptionClass;
+  (ret->unwindException).exception_cleanup = snowball::deleteFromUnwindOurException;
 
-    std::memset(&header, 0, sizeof(header));
-    header.exception_cleanup =
-        +[](_Unwind_Reason_Code, _Unwind_Exception *) { /*NOOP for now*/ };
-    header.exception_class = snowball::Exception::EXCEPTION_CLASS;
-    auto code              = _Unwind_RaiseException(&header);
-    switch (code) {
-        case _URC_END_OF_STACK: {
-            // TODO: show exception class name
-            std::cerr << "Runtime Error: " << exception->actualException->_msg
-                      << std::endl;
-            std::exit(1);
-        };
-
-        case _URC_FATAL_PHASE1_ERROR:
-        case _URC_FATAL_PHASE2_ERROR:
-            std::abort();
-
-        default:
-            UNREACHABLE;
-    }
-
-    // throw_exception never returns
-    printf("no one handled throwException, terminate!\n");
-    exit(0);
+  return(&(ret->unwindException));
 }
 
-extern const void *createException(snowball::Exception::ActualException
-                                       *exception) __asm__("sn.core.eh.create");
-extern const void *
-createException(snowball::Exception::ActualException *exception) {
-    snowball::Exception *exception_result =
-        static_cast<snowball::Exception *>(malloc(sizeof(snowball::Exception)));
+/// This is the personality function which is embedded (dwarf emitted), in the
+/// dwarf unwind info block. Again see: JITDwarfEmitter.cpp.
+/// See @link http://mentorembedded.github.com/cxx-abi/abi-eh.html @unlink
+/// @param version unsupported (ignored), unwind version
+/// @param _Unwind_Action actions minimally supported unwind stage
+///        (forced specifically not supported)
+/// @param exceptionClass exception class (_Unwind_Exception::exception_class)
+///        of thrown exception.
+/// @param exceptionObject thrown _Unwind_Exception instance.
+/// @param context unwind system context
+/// @returns minimally supported unwinding control indicator
+_Unwind_Reason_Code ourPersonality(int version,
+                                   _Unwind_Action actions,
+                                   uint64_t exceptionClass,
+                                   struct _Unwind_Exception *exceptionObject,
+                                   _Unwind_Context_t context) {
+#ifdef DEBUG
+  fprintf(stderr,
+          "We are in ourPersonality(...):actions is <%d>.\n",
+          actions);
 
-    exception_result->actualException = snowball::toExceptionType(
-        malloc(sizeof(snowball::Exception::ActualException *)));
-    memcpy(exception_result->actualException, exception,
-           sizeof(snowball::Exception::ActualException));
-    return static_cast<void *>(exception_result);
+  if (actions & _UA_SEARCH_PHASE) {
+    fprintf(stderr, "ourPersonality(...):In search phase.\n");
+  }
+  else {
+    fprintf(stderr, "ourPersonality(...):In non-search phase.\n");
+  }
+#endif
+
+  const uint8_t *lsda = _Unwind_GetLanguageSpecificData(context);
+
+#ifdef DEBUG
+  fprintf(stderr,
+          "ourPersonality(...):lsda = <%p>.\n",
+          lsda);
+#endif
+
+  // The real work of the personality function is captured here
+  return(handleLsda(version,
+                    lsda,
+                    actions,
+                    exceptionClass,
+                    exceptionObject,
+                    context));
 }
 
-#undef EXCEPTION_ARGUMENTS
-#define PERSONALITY_ARGUMENTS()                                                \
-    int version, _Unwind_Action actions, std::uint64_t clazz,                  \
-        _Unwind_Exception *exceptionInfo, _Unwind_Context *context
-
-extern const _Unwind_Reason_Code
-    personalityImpl(PERSONALITY_ARGUMENTS()) __asm__("sn.core.eh.personality");
-extern const _Unwind_Reason_Code personalityImpl(PERSONALITY_ARGUMENTS()) {
-    if (version != 1 || !exceptionInfo || !context) {
-        return _URC_FATAL_PHASE1_ERROR;
-    }
-
-    bool nativeException = clazz == snowball::Exception::EXCEPTION_CLASS;
-    if (actions == (_UA_CLEANUP_PHASE | _UA_HANDLER_FRAME) && nativeException) {
-        auto *snException =
-            snowball::Exception::fromUnwindHeader(exceptionInfo);
-        _Unwind_SetGR(context, __builtin_eh_return_data_regno(0),
-                      reinterpret_cast<uintptr_t>(exceptionInfo));
-        _Unwind_SetGR(context, __builtin_eh_return_data_regno(1),
-                      static_cast<uintptr_t>(snException->getTypeIndex()));
-        _Unwind_SetGR(
-            context, __builtin_eh_return_data_regno(2),
-            reinterpret_cast<uintptr_t>(snException->actualException));
-        _Unwind_SetIP(context, snException->getLandingPad());
-        return _URC_INSTALL_CONTEXT;
-    }
-
-    auto result = snowball::findLandingPad(actions, nativeException,
-                                           exceptionInfo, context);
-    if (result.code == _URC_CONTINUE_UNWIND ||
-        result.code == _URC_FATAL_PHASE1_ERROR) {
-        return result.code;
-    }
-
-    if (actions & _UA_SEARCH_PHASE) {
-        assert(result.code == _URC_HANDLER_FOUND);
-        if (nativeException) {
-            auto *snException =
-                snowball::Exception::fromUnwindHeader(exceptionInfo);
-            snException->setLandingPad(result.landingPad);
-            snException->setTypeIndex(result.typeIndex);
-            snException->actualException = result.baseException;
-        }
-        return _URC_HANDLER_FOUND;
-    }
-
-    // TODO: Trying to jump to a catch handler with a foreign exception. Figure
-    // out how that is supposed
-    //       to work
-    _Unwind_SetGR(context, __builtin_eh_return_data_regno(0),
-                  reinterpret_cast<uintptr_t>(exceptionInfo));
-    _Unwind_SetGR(context, __builtin_eh_return_data_regno(1),
-                  static_cast<uintptr_t>(result.typeIndex));
-    _Unwind_SetGR(context, __builtin_eh_return_data_regno(2),
-                  reinterpret_cast<uintptr_t>(result.baseException));
-    _Unwind_SetIP(context, result.landingPad);
-    return _URC_INSTALL_CONTEXT;
+void throwOurException(void *exc) {
+  _Unwind_Reason_Code code = _Unwind_RaiseException((_Unwind_Exception *)exc);
+  (void)code;
+  
 }
-
-#undef PERSONALITY_ARGUMENTS

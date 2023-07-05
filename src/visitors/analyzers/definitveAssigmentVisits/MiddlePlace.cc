@@ -13,10 +13,10 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::NewInstance) {
 }
 
 SN_DEFINITE_ASSIGMENT_VISIT(Expression::Cast) { p_node->getValue()->accept(this); }
-
 SN_DEFINITE_ASSIGMENT_VISIT(Expression::GenericIdentifier) {
     utils::cast<Expression::Identifier>(p_node)->accept(this);
 }
+SN_DEFINITE_ASSIGMENT_VISIT(Statement::Raise) { p_node->getExpr()->accept(this); }
 
 SN_DEFINITE_ASSIGMENT_VISIT(Statement::Namespace) {
     for (auto x : p_node->getBody()) { x->accept(this); }

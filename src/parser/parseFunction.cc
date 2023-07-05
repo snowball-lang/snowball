@@ -330,7 +330,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
 
             auto arg = new Syntax::Expression::Param(name, type);
             if (is<TokenType::OP_EQ>()) {
-                auto expr = parseExpr();
+                auto expr = parseExpr(false);
                 arg->setDefaultValue(expr);
                 next();
             }
@@ -390,7 +390,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
                 while (true) {
                     auto pk = peek();
                     if (is<TokenType::BRACKET_RPARENT>(pk)) { break; }
-                    auto expr = parseExpr();
+                    auto expr = parseExpr(false);
                     superArgs.push_back(expr);
                     next();
                     if (is<TokenType::SYM_COMMA>()) {
@@ -421,7 +421,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
 
                 next();
                 assert_tok<TokenType::BRACKET_LPARENT>("'('");
-                auto expr = parseExpr();
+                auto expr = parseExpr(false);
                 constructorInitArgs[name] = expr;
                 next();
                 consume<TokenType::BRACKET_RPARENT>("')'");

@@ -12,6 +12,7 @@
 #include "../ir/values/Func.h"
 #include "../ir/values/ReferenceTo.h"
 #include "../ir/values/Return.h"
+#include "../ir/values/Throw.h"
 #include "../ir/values/ValueExtract.h"
 #include "../utils/utils.h"
 

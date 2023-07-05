@@ -41,9 +41,7 @@ class PrimitiveType : public AcceptorExtend<PrimitiveType, Type> {
 class CObjectType : public AcceptorExtend<CObjectType, PrimitiveType> {
   public:
     CObjectType() : AcceptorExtend(SN_COB_TYPE) { }
-    virtual bool canCast(Type* ty) const override {
-      return true;
-    }
+    virtual bool canCast(Type* ty) const override { return true; }
 };
 
 /**

@@ -15,6 +15,7 @@
 #include "../values/IndexExtract.h"
 #include "../values/ReferenceTo.h"
 #include "../values/Return.h"
+#include "../values/Throw.h"
 #include "../values/Value.h"
 #include "../values/ValueExtract.h"
 #include "../values/WhileLoop.h"
@@ -84,6 +85,8 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
     SharedValue<Block> createBlock(DBGSourceInfo* dbgInfo, std::vector<SharedValue<>> values);
     /// @brief Create a new empty block
     SharedValue<Block> createBlock(DBGSourceInfo* dbgInfo);
+    /// @brief Create a new throw instruction
+    SharedValue<Throw> createThrow(DBGSourceInfo* dbgInfo, SharedValue<> value);
     /// @brief Create a new reference to a value (pointer)
     SharedValue<ReferenceTo> createReferenceTo(DBGSourceInfo* dbgInfo, SharedValue<> value);
     /// @brief Create a new string value
@@ -105,15 +108,14 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
     /// @brief Create a new type
     SharedValue<VariableDeclaration> createVariableDeclaration(DBGSourceInfo* dbgInfo,
                                                                const std::string identifier,
-                                                               SharedValue<> value,
+                                                               SharedValue<>
+                                                                       value,
                                                                bool isMutable = false);
     /// @brief Create a extraction node from a value
     SharedValue<ValueExtract> createValueExtract(DBGSourceInfo* dbgInfo, SharedValue<> value);
     /// @brief Create a object initialization node
-    SharedValue<ObjectInitialization> createObjectInitialization(DBGSourceInfo* dbgInfo,
-                                                                 SharedValue<> value,
-                                                                 ValueVec<> args,
-                                                                 bool atHeap = false);
+    SharedValue<ObjectInitialization> createObjectInitialization(
+            DBGSourceInfo* dbgInfo, SharedValue<> value, ValueVec<> args, bool atHeap = false);
     /// @brief Create a object initialization node with an already created object
     SharedValue<ObjectInitialization>
     createObjectInitialization(DBGSourceInfo* dbgInfo, SharedValue<> value, ValueVec<> args,

@@ -297,6 +297,10 @@ class Parser {
      * body          ::=  [[identifier] ":" [expr] ","] ...
      */
     Syntax::Statement::DefinedTypeDef* parseStructure();
+    /**
+     * throw         ::=  "throw" [expr] ";"
+     */
+    Syntax::Statement::Raise* parseThrow();
 
     /**
      * @brief Parses a list of attributes

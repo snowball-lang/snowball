@@ -79,7 +79,6 @@ class Exception {
     let msg: char*;
 }
 
-
 class Iterable<_IteratorType: Core::Sized> {
   pub:
     Iterable() {}

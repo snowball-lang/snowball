@@ -156,6 +156,7 @@ enum class TokenType
     KWORD_IF,             // Symbol: if
     KWORD_VAR,            // Symbol: let
     KWORD_NEW,            // Symbol: new
+    KWORD_THROW,          // Symbol: raise
     KWORD_FOR,            // Symbol: for
     KWORD_ENUM,           // Symbol: enum
     KWORD_FUNC,           // Symbol: fn
@@ -304,6 +305,7 @@ struct Token {
             case TokenType::KWORD_DECLTYPE: return _SNOWBALL_KEYWORD__DECLTYPE;
             case TokenType::KWORD_EXTERN: return _SNOWBALL_KEYWORD__EXTERN;
             case TokenType::KWORD_NEW: return _SNOWBALL_KEYWORD__NEW;
+            case TokenType::KWORD_THROW: return _SNOWBALL_KEYWORD__THROW;
             case TokenType::KWORD_TRY: return _SNOWBALL_KEYWORD__TRY;
             case TokenType::KWORD_CATCH:
                 return _SNOWBALL_KEYWORD__CATCH;

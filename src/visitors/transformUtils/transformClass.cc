@@ -130,31 +130,21 @@ Transformer::transformClass(const std::string& uuid,
             for (auto fn : ty->getFunctions()) { fn->accept(this); }
             ctx->generateFunction = backupGenerateFunction;
             for (int allowPointer = 0; allowPointer < 2; ++allowPointer) {
+                auto argType = allowPointer ? transformedType->getPointerTo() : transformedType;
                 // Set the default '=' operator for the class
                 auto fn = builder.createFunction(
                         ty->getDBGInfo(),
                         services::OperatorService::getOperatorMangle(services::OperatorService::EQ),
                         true,
                         false);
-                auto arg = std::make_shared<ir::Argument>("other");
+                auto arg = builder.createArgument(NO_DBGINFO, "other", argType);
                 auto typeArgs = std::vector<std::shared_ptr<types::Type>>{
-                        transformedType->getPointerTo(),
-                        allowPointer ? transformedType->getPointerTo() : transformedType};
+                        transformedType->getPointerTo(), argType};
                 auto type = std::make_shared<types::FunctionType>(typeArgs, transformedType);
-                arg->setType(allowPointer ? transformedType->getPointerTo() : transformedType);
                 fn->setArgs({{"other", arg}});
                 fn->setType(type);
                 fn->setPrivacy(PrivacyStatus::PUBLIC);
-                /// @see Transformer::defineFunction
-                auto name = ctx->createIdentifierName(fn->getName(true));
-                auto item = ctx->cache->getTransformedFunction(name);
-                if (item) {
-                    assert((*item)->isFunc());
-                    (*item)->addFunction(fn);
-                } else {
-                    auto i = std::make_shared<transform::Item>(fn);
-                    ctx->cache->setTransformedFunction(name, i);
-                }
+                ctx->defineFunction(fn);
             }
 
             ctx->setCurrentClass(backupClass);

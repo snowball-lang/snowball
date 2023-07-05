@@ -227,6 +227,7 @@ typedef int32_t snowball_int_t;
 #define _SNOWBALL_KEYWORD__OPERATOR  "operator"
 #define _SNOWBALL_KEYWORD__VARIABLE  "let"
 #define _SNOWBALL_KEYWORD__NEW       "new"
+#define _SNOWBALL_KEYWORD__THROW     "raise"
 #define _SNOWBALL_KEYWORD__CONSTANT  "const"
 #define _SNOWBALL_KEYWORD__TRY       "try"
 #define _SNOWBALL_KEYWORD__CATCH     "catch"

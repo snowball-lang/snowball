@@ -20,11 +20,13 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
         if (services::OperatorService::isOperator(opName) && args.size() == 2) {
             auto left = build(args.at(0).get());
             auto right = build(args.at(1).get());
-            if (utils::dyn_cast<types::Int8Type>(args.at(0)->getType()) ||
-                utils::dyn_cast<types::Int16Type>(args.at(0)->getType()) ||
-                utils::dyn_cast<types::Int32Type>(args.at(0)->getType()) ||
-                utils::dyn_cast<types::Int64Type>(args.at(0)->getType()) ||
-                utils::dyn_cast<types::CharType>(args.at(0)->getType())) {
+            auto baseType = args.at(0)->getType();
+            if (auto x = utils::dyn_cast<types::PointerType>(baseType)) baseType = x->getBaseType();
+            if (utils::dyn_cast<types::Int8Type>(baseType) ||
+                utils::dyn_cast<types::Int16Type>(baseType) ||
+                utils::dyn_cast<types::Int32Type>(baseType) ||
+                utils::dyn_cast<types::Int64Type>(baseType) ||
+                utils::dyn_cast<types::CharType>(baseType)) {
                 // this->value = builder->Create
                 switch (services::OperatorService::operatorID(opName)) {
                     OPERATOR_INSTANCE(EQEQ, CreateICmpEQ)
@@ -55,8 +57,9 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                     case services::OperatorService::EQ: {
                         auto l = llvm::cast<llvm::LoadInst>(left);
                         auto v = l->getOperand(0);
+                        auto rightValue = right;
 
-                        builder->CreateStore(right, v);
+                        builder->CreateStore(rightValue, v);
                         break;
                     }
 
@@ -64,8 +67,8 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                 }
 
                 return true;
-            } else if (utils::dyn_cast<types::Float32Type>(args.at(0)->getType()) ||
-                       utils::dyn_cast<types::Float64Type>(args.at(0)->getType())) {
+            } else if (utils::dyn_cast<types::Float32Type>(baseType) ||
+                       utils::dyn_cast<types::Float64Type>(baseType)) {
                 // this->value = builder->Create
                 switch (services::OperatorService::operatorID(opName)) {
                     OPERATOR_INSTANCE(EQEQ, CreateFCmpUEQ)
@@ -110,7 +113,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                     case services::OperatorService::EQ: {
                         llvm::Value* leftValue = left;
                         llvm::Value* rightValue = right;
-
+                        rightValue->getType()->dump();
                         if (!llvm::isa<llvm::LoadInst>(rightValue) &&
                             rightValue->getType()->isPointerTy())
                             rightValue = builder->CreateLoad(
