@@ -330,6 +330,11 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      */
     llvm::Value* createException(llvm::Value* val);
     /**
+     * @brief It initializes the runtime. This function is called
+     * before any other function is generated.
+     */
+    void initializeRuntime();
+    /**
      * @brief Generate the current value given
      *
      * note: for the result of this function, `value`

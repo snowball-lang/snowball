@@ -1,7 +1,55 @@
 // Content modified from the original: 
 // https://github.com/codeplaysoftware/llvm-leg/blob/master/examples/ExceptionDemo/ExceptionDemo.cpp
 
-namespace snowball {
+
+#include <backtrace.h>
+#include <cassert>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <mutex>
+#include <sstream>
+#include <unwind.h>
+
+#include "runtime.h"
+
+
+enum {
+    // standard.
+    DW_EH_PE_absptr   = 0x00,
+    DW_EH_PE_uleb128  = 0x01,
+    DW_EH_PE_udata2   = 0x02,
+    DW_EH_PE_udata4   = 0x03,
+    DW_EH_PE_udata8   = 0x04,
+    DW_EH_PE_sleb128  = 0x09,
+    DW_EH_PE_sdata2   = 0x0A,
+    DW_EH_PE_sdata4   = 0x0B,
+    DW_EH_PE_sdata8   = 0x0C,
+    DW_EH_PE_pcrel    = 0x10,
+    DW_EH_PE_textrel  = 0x20,
+    DW_EH_PE_datarel  = 0x30,
+    DW_EH_PE_funcrel  = 0x40,
+    DW_EH_PE_aligned  = 0x50,
+    DW_EH_PE_indirect = 0x80,
+    DW_EH_PE_omit     = 0xFF
+};
+
+// System C++ ABI unwind types from:
+//     http://mentorembedded.github.com/cxx-abi/abi-eh.html (v1.22)
+
+extern "C" {
+  struct _Unwind_Context;
+  typedef struct _Unwind_Context *_Unwind_Context_t;
+
+  extern uintptr_t _Unwind_GetGR (_Unwind_Context_t c, int i);
+  extern void _Unwind_SetGR (_Unwind_Context_t c, int i, uintptr_t n);
+  extern void _Unwind_SetIP (_Unwind_Context_t, uintptr_t new_value);
+  extern uintptr_t _Unwind_GetIP (_Unwind_Context_t context);
+  extern uintptr_t _Unwind_GetRegionStart (_Unwind_Context_t context);
+
+} // extern "C"
 
 // This is the type of the exception object
 struct OurExceptionType_t {
@@ -24,6 +72,12 @@ struct OurBaseException_t {
   // Note: This is properly aligned in unwind.h
   struct _Unwind_Exception unwindException;
 };
+
+// Note: Not needed since we are C++
+typedef struct OurBaseException_t OurException;
+typedef struct _Unwind_Exception OurUnwindException;
+
+namespace snowball {
 
 int64_t ourBaseFromUnwindOffset;
 
@@ -117,23 +171,23 @@ static uintptr_t readSLEB128(const uint8_t **data) {
 }
 
 unsigned getEncodingSize(uint8_t Encoding) {
-  if (Encoding == llvm::dwarf::DW_EH_PE_omit)
+  if (Encoding == DW_EH_PE_omit)
     return 0;
 
   switch (Encoding & 0x0F) {
-  case llvm::dwarf::DW_EH_PE_absptr:
+  case DW_EH_PE_absptr:
     return sizeof(uintptr_t);
-  case llvm::dwarf::DW_EH_PE_udata2:
+  case DW_EH_PE_udata2:
     return sizeof(uint16_t);
-  case llvm::dwarf::DW_EH_PE_udata4:
+  case DW_EH_PE_udata4:
     return sizeof(uint32_t);
-  case llvm::dwarf::DW_EH_PE_udata8:
+  case DW_EH_PE_udata8:
     return sizeof(uint64_t);
-  case llvm::dwarf::DW_EH_PE_sdata2:
+  case DW_EH_PE_sdata2:
     return sizeof(int16_t);
-  case llvm::dwarf::DW_EH_PE_sdata4:
+  case DW_EH_PE_sdata4:
     return sizeof(int32_t);
-  case llvm::dwarf::DW_EH_PE_sdata8:
+  case DW_EH_PE_sdata8:
     return sizeof(int64_t);
   default:
     // not supported
@@ -151,43 +205,43 @@ static uintptr_t readEncodedPointer(const uint8_t **data, uint8_t encoding) {
   uintptr_t result = 0;
   const uint8_t *p = *data;
 
-  if (encoding == llvm::dwarf::DW_EH_PE_omit)
+  if (encoding == DW_EH_PE_omit)
     return(result);
 
   // first get value
   switch (encoding & 0x0F) {
-    case llvm::dwarf::DW_EH_PE_absptr:
+    case DW_EH_PE_absptr:
       result = *((uintptr_t*)p);
       p += sizeof(uintptr_t);
       break;
-    case llvm::dwarf::DW_EH_PE_uleb128:
+    case DW_EH_PE_uleb128:
       result = readULEB128(&p);
       break;
       // Note: This case has not been tested
-    case llvm::dwarf::DW_EH_PE_sleb128:
+    case DW_EH_PE_sleb128:
       result = readSLEB128(&p);
       break;
-    case llvm::dwarf::DW_EH_PE_udata2:
+    case DW_EH_PE_udata2:
       result = *((uint16_t*)p);
       p += sizeof(uint16_t);
       break;
-    case llvm::dwarf::DW_EH_PE_udata4:
+    case DW_EH_PE_udata4:
       result = *((uint32_t*)p);
       p += sizeof(uint32_t);
       break;
-    case llvm::dwarf::DW_EH_PE_udata8:
+    case DW_EH_PE_udata8:
       result = *((uint64_t*)p);
       p += sizeof(uint64_t);
       break;
-    case llvm::dwarf::DW_EH_PE_sdata2:
+    case DW_EH_PE_sdata2:
       result = *((int16_t*)p);
       p += sizeof(int16_t);
       break;
-    case llvm::dwarf::DW_EH_PE_sdata4:
+    case DW_EH_PE_sdata4:
       result = *((int32_t*)p);
       p += sizeof(int32_t);
       break;
-    case llvm::dwarf::DW_EH_PE_sdata8:
+    case DW_EH_PE_sdata8:
       result = *((int64_t*)p);
       p += sizeof(int64_t);
       break;
@@ -199,16 +253,16 @@ static uintptr_t readEncodedPointer(const uint8_t **data, uint8_t encoding) {
 
   // then add relative offset
   switch (encoding & 0x70) {
-    case llvm::dwarf::DW_EH_PE_absptr:
+    case DW_EH_PE_absptr:
       // do nothing
       break;
-    case llvm::dwarf::DW_EH_PE_pcrel:
+    case DW_EH_PE_pcrel:
       result += (uintptr_t)(*data);
       break;
-    case llvm::dwarf::DW_EH_PE_textrel:
-    case llvm::dwarf::DW_EH_PE_datarel:
-    case llvm::dwarf::DW_EH_PE_funcrel:
-    case llvm::dwarf::DW_EH_PE_aligned:
+    case DW_EH_PE_textrel:
+    case DW_EH_PE_datarel:
+    case DW_EH_PE_funcrel:
+    case DW_EH_PE_aligned:
     default:
       // not supported
       abort();
@@ -216,7 +270,7 @@ static uintptr_t readEncodedPointer(const uint8_t **data, uint8_t encoding) {
   }
 
   // then apply indirection
-  if (encoding & llvm::dwarf::DW_EH_PE_indirect) {
+  if (encoding & DW_EH_PE_indirect) {
     result = *((uintptr_t*)result);
   }
 
@@ -370,14 +424,14 @@ static _Unwind_Reason_Code handleLsda(int version,
   // Parse LSDA header.
   uint8_t lpStartEncoding = *lsda++;
 
-  if (lpStartEncoding != llvm::dwarf::DW_EH_PE_omit) {
+  if (lpStartEncoding != DW_EH_PE_omit) {
     readEncodedPointer(&lsda, lpStartEncoding);
   }
 
   uint8_t ttypeEncoding = *lsda++;
   uintptr_t classInfoOffset;
 
-  if (ttypeEncoding != llvm::dwarf::DW_EH_PE_omit) {
+  if (ttypeEncoding != DW_EH_PE_omit) {
     // Calculate type info locations in emitted dwarf code which
     // were flagged by type info arguments to llvm.eh.selector
     // intrinsic
@@ -529,12 +583,23 @@ uint64_t genClass(const unsigned char classChars[], size_t classCharsSize)
   return(ret);
 }
 
+/// @brief Returns the offset of the exception member of OurException_t
+/// @return offset of exception member of OurException_t
+int64_t exception_offset() {
+  static OurBaseException_t dummy = {};
+  return (int64_t)((uintptr_t)&dummy - (uintptr_t) & (dummy.unwindException));
+}
+
+uint64_t exception_class() {
+  return genClass(ourBaseExcpClassChars, sizeof(ourBaseExcpClassChars));
+}
+
 } // namespace snowball
 
 // MARK: - Eported functions
 
 void throwOurException(void* obj) __asm__("sn.eh.throw");
-snowball::OurUnwindException *createOurException(int type) __asm__("sn.eh.create");
+OurUnwindException *createOurException(void* obj, int type) __asm__("sn.eh.create");
 _Unwind_Reason_Code ourPersonality(int version,
                                    _Unwind_Action actions,
                                    uint64_t exceptionClass,
@@ -544,12 +609,13 @@ _Unwind_Reason_Code ourPersonality(int version,
 /// Creates (allocates on the heap), an exception (OurException instance),
 /// of the supplied type info type.
 /// @param type type info type
-snowball::OurUnwindException *createOurException(int type) {
-  size_t size = sizeof(snowball::OurException);
-  snowball::OurException *ret = (snowball::OurException*) memset(malloc(size), 0, size);
+OurUnwindException *createOurException(void* obj, int type) {
+  size_t size = sizeof(OurException);
+  OurException *ret = (OurException*) memset(malloc(size), 0, size);
   (ret->type).type = type;
   (ret->unwindException).exception_class = snowball::ourBaseExceptionClass;
   (ret->unwindException).exception_cleanup = snowball::deleteFromUnwindOurException;
+  ret->snowball_object = obj;
 
   return(&(ret->unwindException));
 }
@@ -583,7 +649,7 @@ _Unwind_Reason_Code ourPersonality(int version,
   }
 #endif
 
-  const uint8_t *lsda = _Unwind_GetLanguageSpecificData(context);
+  const uint8_t *lsda = (uint8_t *)_Unwind_GetLanguageSpecificData(context);
 
 #ifdef DEBUG
   fprintf(stderr,
@@ -592,7 +658,7 @@ _Unwind_Reason_Code ourPersonality(int version,
 #endif
 
   // The real work of the personality function is captured here
-  return(handleLsda(version,
+  return(snowball::handleLsda(version,
                     lsda,
                     actions,
                     exceptionClass,
@@ -604,4 +670,11 @@ void throwOurException(void *exc) {
   _Unwind_Reason_Code code = _Unwind_RaiseException((_Unwind_Exception *)exc);
   (void)code;
   
+}
+
+namespace snowball {
+void initialize_exceptions() {
+  ourBaseFromUnwindOffset = exception_offset();
+  ourBaseExceptionClass = exception_class();
+}
 }

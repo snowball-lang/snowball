@@ -117,9 +117,6 @@ void LLVMBuilder::dump() { this->print(llvm::errs()); }
 void LLVMBuilder::print(llvm::raw_fd_ostream& s) { module->print(s, nullptr); }
 
 #define ITERATE_FUNCTIONS for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn)
-#define IS_MAIN                                                                                    \
-    (fn->get()->getName() == "main" &&                                                             \
-     fn->get()->getPrivacy() == Syntax::Statement::Privacy::PUBLIC && iModule->isMain())
 void LLVMBuilder::codegen() {
     auto generateModule = [&](std::shared_ptr<ir::Module> m) {
         this->iModule = m;
@@ -166,6 +163,7 @@ void LLVMBuilder::codegen() {
     generateModule(mainModule);
     for (auto m : mainModule->getModules()) generateModule(m);
 
+    initializeRuntime();
     dbg.builder->finalize();
 
     std::string module_error_string;
@@ -179,7 +177,6 @@ void LLVMBuilder::codegen() {
         throw SNError(Error::LLVM_INTERNAL, module_error_string);
     }
 }
-#undef IS_MAIN
 #undef LOOP_FUNCTIONS
 
 } // namespace codegen
