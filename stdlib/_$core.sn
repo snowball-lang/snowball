@@ -24,6 +24,22 @@ pub struct UniversalArray
  */
 pub extern fn "sn.ua.alloc" as __ua_alloc(i32) UniversalArray*;
 
+/**
+ * @brief Resizes a universal array of elements.
+ * @param[in] array The universal array to resize.
+ * @param[in] size The new size of the universal array.
+ * @return The resized universal array.
+ */
+pub extern fn "sn.ua.resize" as __ua_resize(UniversalArray*, i32) UniversalArray*;
+
+/**
+ * @brief Sets an element in a universal array.
+ * @param[in] array The universal array to set the element in.
+ * @param[in] index The index of the element to set.
+ * @param[in] item The element to set.
+ */
+pub extern fn "sn.ua.set" as __ua_set(UniversalArray*, i32, cobj);
+
 };
 
 class Iterable<_IteratorType: Core::Sized> {
@@ -56,18 +72,34 @@ class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
      * @brief It pushes an element to the back of the vector.
      * @param[in] value The element to push to the back of the vector.
      */
-    fn push(value: _StoreType) 
-      { /*TODO: implement*/ }
+    fn [[internal_linkage]] push(value: _StoreType) mut
+    { 
+      if self.length + 1 >= self.capacity 
+      {
+        self.resize(self.capacity + 10);
+      }
+      UA::__ua_set(self.data, self.length, item);
+      self.length = self.length + 1;
+    }
     /**
       * @return The size of the vector.
       */
-    fn size() i32 { return self.current; }
+    fn [[internal_linkage, inline]] size() i32 { return self.length; }
+    /**
+      * @brief Resizes the vector.
+      * @param[in] capacity The new capacity of the vector.
+      */
+    fn [[internal_linkage]] resize(capacity: i32) mut
+    { 
+      self.capacity = capacity;
+      self.buffer = UA::__ua_resize(self.buffer, self.capacity); 
+    }
 
   priv:
     /** The capacity of the vector. */
     let capacity: i32 = 10;
     /** The size of the vector. */
-    let current: i32 = 0;
+    let length: i32 = 0;
     /** The buffer containing the vector. */
     let buffer: UA::UniversalArray*;
 }
@@ -102,11 +134,13 @@ class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
     /**
       * @return The size of the string.
       */
-    fn size() i32 { return self.buffer.size(); }
+    fn [[internal_linkage, inline]] size() i32 
+      { return self.buffer.size(); }
     /**
       * @return The buffer containing the string.
       */
-    fn buffer() Vector<_CharType> { return self.buffer; }
+    fn [[internal_linkage, inline]] buffer() Vector<_CharType> 
+      { return self.buffer; }
 
   priv:
     /** The buffer containing the string. */
