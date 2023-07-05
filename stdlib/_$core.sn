@@ -1,6 +1,19 @@
 
-namespace UA {
-
+/**
+ * @namespace UA
+  * @brief The namespace containing the universal array library.
+  *
+  * The UA namespace contains the universal array library. It provides
+  * various operations and functionalities for working with universal
+  * arrays of elements. It supports common universal array manipulation
+  * operations such as element insertion, element removal, element access,
+  * and more.
+  *
+  * @note The UA namespace is designed to be efficient and memory-safe.
+  *       It automatically manages the memory allocation and deallocation
+  *       required for storing and manipulating universal arrays.
+  */
+pub namespace UA {
 /**
  * @class UniversalArray
  * @brief A class representing a universal array of elements.
@@ -16,14 +29,12 @@ namespace UA {
  */
 pub struct UniversalArray 
   { let items: cobj*; };
-
 /**
  * @brief Allocates a universal array of elements.
  * @param[in] size The size of the universal array to allocate.
  * @return The allocated universal array.
  */
 pub extern fn "sn.ua.alloc" as __ua_alloc(i32) UniversalArray*;
-
 /**
  * @brief Resizes a universal array of elements.
  * @param[in] array The universal array to resize.
@@ -31,7 +42,6 @@ pub extern fn "sn.ua.alloc" as __ua_alloc(i32) UniversalArray*;
  * @return The resized universal array.
  */
 pub extern fn "sn.ua.resize" as __ua_resize(UniversalArray*, i32) UniversalArray*;
-
 /**
  * @brief Sets an element in a universal array.
  * @param[in] array The universal array to set the element in.
@@ -39,8 +49,7 @@ pub extern fn "sn.ua.resize" as __ua_resize(UniversalArray*, i32) UniversalArray
  * @param[in] item The element to set.
  */
 pub extern fn "sn.ua.set" as __ua_set(UniversalArray*, i32, cobj);
-
-};
+} /* namespace UA */;
 
 class Iterable<_IteratorType: Core::Sized> {
   pub:
@@ -94,7 +103,6 @@ class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
       self.capacity = capacity;
       self.buffer = UA::__ua_resize(self.buffer, self.capacity); 
     }
-
   priv:
     /** The capacity of the vector. */
     let capacity: i32 = 10;
@@ -141,7 +149,6 @@ class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       */
     fn [[internal_linkage, inline]] buffer() Vector<_CharType> 
       { return self.buffer; }
-
   priv:
     /** The buffer containing the string. */
     let buffer: Vector<_CharType> = new Vector<_CharType>{};
