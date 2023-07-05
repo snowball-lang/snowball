@@ -1,5 +1,6 @@
 
 #include "../../common.h"
+#include "../../ir/id.h"
 
 #include <memory>
 #include <string>
@@ -33,7 +34,7 @@ class TypeRef;
 namespace types {
 class PointerType;
 
-class Type : public std::enable_shared_from_this<Type> {
+class Type : public std::enable_shared_from_this<Type>, public ir::IdMixin {
   protected:
     // Type's name
     std::string name;

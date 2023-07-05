@@ -7,6 +7,6 @@ class A {
 }
 
 pub fn main() i32 {
-    let B = 'B';
+    let B = 'X';
     raise new A(&B);
 }

@@ -15,7 +15,6 @@
 
 #include "runtime.h"
 
-
 enum {
     // standard.
     DW_EH_PE_absptr   = 0x00,
@@ -55,6 +54,17 @@ extern "C" {
 struct OurExceptionType_t {
   /// type info type
   int type;
+};
+
+/**
+ * This is the type of the exception object instance
+ * @note This is the type of the object instance, not the object itself.
+ *       The object instance is a member of the object.
+ * @see OurBaseException_t below.
+*/
+struct SnowballExceptionInstance_t {
+  void* _vtable;
+  char* message;
 };
 
 /// This is our Exception class which relies on a negative offset to calculate
@@ -594,6 +604,32 @@ uint64_t exception_class() {
   return genClass(ourBaseExcpClassChars, sizeof(ourBaseExcpClassChars));
 }
 
+void end_stack(void* exep) {
+  auto *base = (OurBaseException_t *)((char *)exep + exception_offset());
+  void *obj = base->snowball_object;
+  auto *hdr = (SnowballExceptionInstance_t *)obj;
+  bool showBacktrace = false;
+
+  // TODO: Class name and location
+  std::ostringstream buf;
+  buf << "\n\e[1;31merror\e[1;37m: Unhandled exception";
+  if (strcmp(hdr->message, "") != 0) {
+    buf << ": \033[0m";
+    buf << hdr->message;
+  } else {
+    buf << "\033[0m";
+  }
+
+  if (!showBacktrace) {
+    buf << "\n \e[1;32minfo\e[0m: You can export the enviroment variable `SN_BACKTRACE=1` to enable backtrace logging.";
+  }
+
+  buf << "\n\n";
+  auto output = buf.str();
+  fwrite(output.data(), 1, output.size(), stderr);
+  abort();
+}
+
 } // namespace snowball
 
 // MARK: - Eported functions
@@ -669,7 +705,7 @@ _Unwind_Reason_Code ourPersonality(int version,
 void throwOurException(void *exc) {
   _Unwind_Reason_Code code = _Unwind_RaiseException((_Unwind_Exception *)exc);
   (void)code;
-  
+  snowball::end_stack(exc);
 }
 
 namespace snowball {

@@ -328,7 +328,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
     /**
      * @brief Creates a new instance of an exception.
      */
-    llvm::Value* createException(llvm::Value* val);
+    llvm::Value* createException(llvm::Value* val, std::shared_ptr<types::Type> type);
     /**
      * @brief It initializes the runtime. This function is called
      * before any other function is generated.

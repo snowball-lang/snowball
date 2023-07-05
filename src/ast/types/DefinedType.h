@@ -30,7 +30,6 @@ class FunctionType;
  * a new initialization of the object is required.
  */
 class DefinedType : public AcceptorExtend<DefinedType, Type>,
-                    public ir::IdMixin,
                     public DBGObject,
                     public Syntax::Statement::Privacy {
   public:
