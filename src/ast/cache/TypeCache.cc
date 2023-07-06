@@ -15,7 +15,10 @@ void Types::setType(const std::string& uuid,
     types[uuid] = {p_ty, state};
 }
 
-void Types::setTransformedType(const std::string& uuid, std::shared_ptr<transform::Item> p_ty, const std::string overloadedUUID) {
+void Types::setTransformedType(const std::string& uuid,
+                               std::shared_ptr<transform::Item>
+                                       p_ty,
+                               const std::string overloadedUUID) {
     auto storeUUID = overloadedUUID.empty() ? uuid : overloadedUUID;
     identifierLookup[uuid].emplace_back(storeUUID);
     createdTypes[storeUUID] = p_ty;

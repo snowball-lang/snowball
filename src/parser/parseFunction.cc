@@ -217,7 +217,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
                     opType = services::OperatorService::OperatorType::BOOL;
                     break;
                 }
-                    
+
                 goto snowballInvalidDefaultOperatorCase;
             }
 

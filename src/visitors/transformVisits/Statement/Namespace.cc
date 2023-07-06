@@ -16,7 +16,8 @@ SN_TRANSFORMER_VISIT(Statement::Namespace) {
             E<VARIABLE_ERROR>(
                     p_node,
                     FMT("Namespace '%s' is already defined in the current scope!", name.c_str()));
-        auto mod = std::make_shared<ir::Module>(getNameWithBase(name), ctx->createIdentifierName(name));
+        auto mod = std::make_shared<ir::Module>(getNameWithBase(name),
+                                                ctx->createIdentifierName(name));
         mod->setSourceInfo(ctx->module->getSourceInfo());
         ctx->uuidStack.push_back(ctx->module->getUniqueName());
         auto sharedModule = std::make_shared<Item>(mod);
@@ -24,14 +25,12 @@ SN_TRANSFORMER_VISIT(Statement::Namespace) {
         ctx->module = mod;
         ctx->withScope([&]() mutable {
             ctx->addItem(name, sharedModule);
-            for (auto x : body) { 
-                SN_TRANSFORMER_CAN_GENERATE(x) x->accept(this); 
-            }
+            for (auto x : body) { SN_TRANSFORMER_CAN_GENERATE(x) x->accept(this); }
         });
         ctx->module = backup;
         addModule(mod);
         ctx->addItem(name, sharedModule);
-        ctx->uuidStack.pop_back();        
+        ctx->uuidStack.pop_back();
     } else {
         auto [item, found] = ctx->getItem(name);
         assert(found);
@@ -43,7 +42,7 @@ SN_TRANSFORMER_VISIT(Statement::Namespace) {
             for (auto x : body) { x->accept(this); }
         });
         ctx->module = backup;
-        ctx->uuidStack.pop_back();    
+        ctx->uuidStack.pop_back();
     }
 }
 

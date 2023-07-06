@@ -9,10 +9,10 @@
 #include "../ir/values/Call.h"
 #include "../ir/values/Cast.h"
 #include "../ir/values/Conditional.h"
+#include "../ir/values/Dereference.h"
 #include "../ir/values/Func.h"
 #include "../ir/values/IndexExtract.h"
 #include "../ir/values/ReferenceTo.h"
-#include "../ir/values/Dereference.h"
 #include "../ir/values/Return.h"
 #include "../ir/values/Throw.h"
 #include "../ir/values/Value.h"
@@ -64,7 +64,8 @@ VISIT(DereferenceTo) {
                FMT("Value used for reference '%s' has a value with 'void' "
                    "type!",
                    p_node->getType()->getPrettyName().c_str()));
-    if (!utils::dyn_cast<ir::ValueExtract>(val) && !utils::dyn_cast<ir::Variable>(val) && !utils::dyn_cast<ir::IndexExtract>(val)) {
+    if (!utils::dyn_cast<ir::ValueExtract>(val) && !utils::dyn_cast<ir::Variable>(val) &&
+        !utils::dyn_cast<ir::IndexExtract>(val)) {
         Syntax::E<TYPE_ERROR>(p_node->getDBGInfo(),
                               FMT("Value used for dereference '%s' is not a "
                                   "variable!",
@@ -81,20 +82,19 @@ VISIT(ReferenceTo) {
                FMT("Value used for reference '%s' has a value with 'void' "
                    "type!",
                    p_node->getType()->getPrettyName().c_str()));
-    if (!utils::dyn_cast<ir::ValueExtract>(val) && !utils::dyn_cast<ir::Variable>(val) && !utils::dyn_cast<ir::IndexExtract>(val)) {
+    if (!utils::dyn_cast<ir::ValueExtract>(val) && !utils::dyn_cast<ir::Variable>(val) &&
+        !utils::dyn_cast<ir::IndexExtract>(val)) {
         Syntax::E<TYPE_ERROR>(p_node->getDBGInfo(),
                               FMT("Value used for reference '%s' is not a "
                                   "variable!",
                                   p_node->getType()->getPrettyName().c_str()),
-                              {
-                                .note = "This error is caused by the value not being a variable.",
-                                .help = "Try to use a variable instead of a value.",
-                                .tail = Syntax::EI<>(val->getDBGInfo(),
-                                    "",
-                                    {
-                                            .info = "This value is not a variable!",
-                                    })
-                              });
+                              {.note = "This error is caused by the value not being a variable.",
+                               .help = "Try to use a variable instead of a value.",
+                               .tail = Syntax::EI<>(val->getDBGInfo(),
+                                                    "",
+                                                    {
+                                                            .info = "This value is not a variable!",
+                                                    })});
     }
 }
 

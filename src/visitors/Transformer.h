@@ -9,9 +9,9 @@
 #include "../ir/values/Argument.h"
 #include "../ir/values/Call.h"
 #include "../ir/values/Constants.h"
+#include "../ir/values/Dereference.h"
 #include "../ir/values/Func.h"
 #include "../ir/values/ReferenceTo.h"
-#include "../ir/values/Dereference.h"
 #include "../ir/values/Return.h"
 #include "../ir/values/Throw.h"
 #include "../ir/values/ValueExtract.h"
@@ -30,12 +30,11 @@
 
 #define ACCEPT(Node)               virtual void visit(Node* p_node) override;
 #define SN_TRANSFORMER_VISIT(Node) void Transformer::visit(Node* p_node)
-#define SN_TRANSFORMER_CAN_GENERATE(node) if (utils::cast<Statement::BodiedFunction>(node) || \
-                utils::cast<Statement::LLVMFunction>(node) || \
-                utils::cast<Statement::ConstructorDef>(node) || \
-                utils::cast<Statement::Namespace>(node) ||      \
-                utils::cast<Statement::DefinedTypeDef>(node) || \
-                utils::cast<Statement::TypeAlias>(node)) 
+#define SN_TRANSFORMER_CAN_GENERATE(node)                                                          \
+    if (utils::cast<Statement::BodiedFunction>(node) ||                                            \
+        utils::cast<Statement::LLVMFunction>(node) ||                                              \
+        utils::cast<Statement::ConstructorDef>(node) || utils::cast<Statement::Namespace>(node) || \
+        utils::cast<Statement::DefinedTypeDef>(node) || utils::cast<Statement::TypeAlias>(node))
 
 namespace snowball {
 namespace Syntax {

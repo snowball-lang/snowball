@@ -73,11 +73,12 @@ SharedValue<Variable> IRBuilder::createVariable(DBGSourceInfo* dbgInfo,
 SharedValue<Block> IRBuilder::createBlock(DBGSourceInfo* dbgInfo) {
     return createBlock(dbgInfo, {});
 }
-SharedValue<Block>
-IRBuilder::createBlock(DBGSourceInfo* dbgInfo, std::vector<SharedValue<>> values) {
+SharedValue<Block> IRBuilder::createBlock(DBGSourceInfo* dbgInfo,
+                                          std::vector<SharedValue<>> values) {
     return N<Block>(dbgInfo, values);
 }
-SharedValue<DereferenceTo> IRBuilder::createDereferenceTo(DBGSourceInfo* dbgInfo, SharedValue<> value, Type<> type) {
+SharedValue<DereferenceTo> IRBuilder::createDereferenceTo(DBGSourceInfo* dbgInfo,
+                                                          SharedValue<> value, Type<> type) {
     auto ref = N<DereferenceTo>(dbgInfo, value);
     ref->setType(type);
     return ref;
@@ -116,20 +117,24 @@ SharedValue<Call> IRBuilder::createCall(DBGSourceInfo* dbgInfo, SharedValue<> ca
                                         ValueVec<> args) {
     return N<Call>(dbgInfo, callee, args);
 }
-SharedValue<VariableDeclaration> IRBuilder::createVariableDeclaration(
-        DBGSourceInfo* dbgInfo, const std::string identifier, SharedValue<> value, bool isMutable) {
+SharedValue<VariableDeclaration> IRBuilder::createVariableDeclaration(DBGSourceInfo* dbgInfo,
+                                                                      const std::string identifier,
+                                                                      SharedValue<> value,
+                                                                      bool isMutable) {
     auto decl = N<VariableDeclaration>(dbgInfo, identifier, value, isMutable);
     decl->setType(value->getType());
     return decl;
 }
-SharedValue<ValueExtract>
-IRBuilder::createValueExtract(DBGSourceInfo* dbgInfo, SharedValue<> value) {
+SharedValue<ValueExtract> IRBuilder::createValueExtract(DBGSourceInfo* dbgInfo,
+                                                        SharedValue<> value) {
     auto extract = N<ValueExtract>(dbgInfo, value);
     extract->setType(value->getType());
     return extract;
 }
-SharedValue<ObjectInitialization> IRBuilder::createObjectInitialization(
-        DBGSourceInfo* dbgInfo, SharedValue<> value, ValueVec<> args, bool atHeap) {
+SharedValue<ObjectInitialization> IRBuilder::createObjectInitialization(DBGSourceInfo* dbgInfo,
+                                                                        SharedValue<> value,
+                                                                        ValueVec<> args,
+                                                                        bool atHeap) {
     auto init = N<ObjectInitialization>(dbgInfo, value, args);
     init->initializeAtHeap = atHeap;
     return init;

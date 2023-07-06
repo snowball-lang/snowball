@@ -14,18 +14,17 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
     auto checkIfContextEqual =
             [&p_node = p_node, name = name, canBePrivate = canBePrivate]<typename T>(T item) -> T {
         if ((!canBePrivate) && item->isPrivate()) {
-            E<TYPE_ERROR>(p_node->getDBGInfo(),
-                          FMT("Variable '%s' is a private member and "
-                              "it cant be accessed from this context!",
-                              name.c_str()), 
-                        {
-                            .info = "did you mean to use a public member?",
-                            .note = "private members can only be accessed from the same class or struct",
-                            .help = "try making the member public",
-                            .tail = EI<>(item->getDBGInfo(), "", {
-                                .info = "this is the private member declaration"
-                            })
-                        });
+            E<TYPE_ERROR>(
+                    p_node->getDBGInfo(),
+                    FMT("Variable '%s' is a private member and "
+                        "it cant be accessed from this context!",
+                        name.c_str()),
+                    {.info = "did you mean to use a public member?",
+                     .note = "private members can only be accessed from the same class or struct",
+                     .help = "try making the member public",
+                     .tail = EI<>(item->getDBGInfo(),
+                                  "",
+                                  {.info = "this is the private member declaration"})});
         }
         return item;
     };

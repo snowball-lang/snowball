@@ -57,7 +57,10 @@ class Types {
                  std::shared_ptr<transform::ContextState>
                          state);
     /// @brief add a new generated class to the cache
-    void setTransformedType(const std::string& uuid, std::shared_ptr<transform::Item> p_ty, const std::string overloadedUUID = "");
+    void setTransformedType(const std::string& uuid,
+                            std::shared_ptr<transform::Item>
+                                    p_ty,
+                            const std::string overloadedUUID = "");
     /// @brief add a new generated class to the cache
     std::optional<std::vector<std::shared_ptr<transform::Item>>>
     getTransformedType(const std::string& uuid);

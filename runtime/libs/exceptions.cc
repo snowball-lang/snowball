@@ -1,8 +1,6 @@
 // Content modified from the original: 
 // https://github.com/codeplaysoftware/llvm-leg/blob/master/examples/ExceptionDemo/ExceptionDemo.cpp
 
-
-#include <backtrace.h>
 #include <cassert>
 #include <cstdint>
 #include <cstdio>

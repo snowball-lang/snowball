@@ -50,7 +50,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                 next();
                 assert_tok<TokenType::BRACKET_RPARENT>("')'");
             } else if (TOKEN(VALUE_NUMBER) || TOKEN(VALUE_FLOAT) || TOKEN(VALUE_STRING) ||
-                TOKEN(VALUE_CHAR) || TOKEN(VALUE_BOOL)) {
+                       TOKEN(VALUE_CHAR) || TOKEN(VALUE_BOOL)) {
                 auto ty = Syntax::Expression::ConstantValue::deduceType(m_current.type);
 
                 expr = Syntax::N<Syntax::Expression::ConstantValue>(ty, m_current.to_string());
@@ -120,7 +120,8 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                 } else if (is<TokenType::BRACKET_RSQUARED>(tk)) {
                     auto indexExpr = parseExpr(false);
                     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
-                    auto bop = Syntax::N<Syntax::Expression::BinaryOp>(Syntax::Expression::BinaryOp::OpType::INDEX);
+                    auto bop = Syntax::N<Syntax::Expression::BinaryOp>(
+                            Syntax::Expression::BinaryOp::OpType::INDEX);
                     bop->isOperator = true;
                     bop->setDBGInfo(dbg);
                     assert_tok<TokenType::BRACKET_RSQUARED>("']'");

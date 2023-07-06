@@ -41,9 +41,7 @@ void Transformer::visitGlobal(std::vector<Node*> p_nodes) {
         bool backup = ctx->generateFunction;
         ctx->generateFunction = false;
         for (auto node : p_nodes) {
-            SN_TRANSFORMER_CAN_GENERATE(node) {
-                node->accept(this);
-            }
+            SN_TRANSFORMER_CAN_GENERATE(node) { node->accept(this); }
         }
 
         ctx->generateFunction = true;

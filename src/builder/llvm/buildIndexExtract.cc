@@ -11,8 +11,7 @@ namespace codegen {
 
 void LLVMBuilder::visit(ir::IndexExtract* index) {
     auto valueType = index->getValue()->getType();
-    if (auto x = utils::dyn_cast<types::PointerType>(valueType)) 
-        valueType = x->getBaseType();
+    if (auto x = utils::dyn_cast<types::PointerType>(valueType)) valueType = x->getBaseType();
     auto defiendType = utils::dyn_cast<types::DefinedType>(valueType);
     assert(defiendType);
     auto baseType = getLLVMType(valueType);
@@ -21,7 +20,8 @@ void LLVMBuilder::visit(ir::IndexExtract* index) {
     // table.
     // TODO: support for structs without vtable.
     auto i = index->getIndex() + !defiendType->isStruct();
-    auto g = builder->CreateStructGEP(baseType->isPointerTy() ? baseType->getPointerElementType() : baseType, v, i);
+    auto g = builder->CreateStructGEP(
+            baseType->isPointerTy() ? baseType->getPointerElementType() : baseType, v, i);
     this->value = builder->CreateLoad(g->getType()->getPointerElementType(), g);
 }
 

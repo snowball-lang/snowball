@@ -97,8 +97,8 @@ void TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
 }
 
 /// @brief Execute function with saved state
-void TransformContext::withState(
-        std::shared_ptr<transform::ContextState> s, std::function<void()> cb) {
+void TransformContext::withState(std::shared_ptr<transform::ContextState> s,
+                                 std::function<void()> cb) {
     auto saved = this->saveState();
 
     this->setState(s);

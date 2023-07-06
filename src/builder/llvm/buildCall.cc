@@ -1,7 +1,7 @@
 
 #include "../../ir/values/Call.h"
-#include "../../ir/values/ReferenceTo.h"
 #include "../../ir/values/Dereference.h"
+#include "../../ir/values/ReferenceTo.h"
 #include "../../services/OperatorService.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"

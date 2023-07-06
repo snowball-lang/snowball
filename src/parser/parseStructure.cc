@@ -59,7 +59,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
 
             default: {
                 createError<SYNTAX_ERROR>(FMT("Expected a valid member declaration but found '%s'",
-                                          m_current.to_string().c_str()));
+                                              m_current.to_string().c_str()));
                 break;
             }
         }

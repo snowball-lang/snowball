@@ -120,9 +120,9 @@ continueTypeFetch:
 
     if (existsWithGenerics) {
         E<TYPE_ERROR>(ty,
-                        FMT("Type '%s' requires to have no template "
-                            "parameters but at least one has been given?",
-                            name.c_str()));
+                      FMT("Type '%s' requires to have no template "
+                          "parameters but at least one has been given?",
+                          name.c_str()));
     }
 
     if (returnedType == nullptr) E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));

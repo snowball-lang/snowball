@@ -14,7 +14,7 @@
 #ifndef __SNOWBALL_AST_CONTEXT_H_
 #define __SNOWBALL_AST_CONTEXT_H_
 
-#pragma GCC diagnostic push 
+#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-security"
 
 namespace snowball {
@@ -99,9 +99,7 @@ class ASTContext {
      */
     virtual std::pair<Item, bool> getInScope(const std::string name, Scope& s) const {
         auto val = s.find(name);
-        if (val != s.end()) { 
-            return {val->second, true}; 
-        }
+        if (val != s.end()) { return {val->second, true}; }
 
         return {std::shared_ptr<T>(nullptr), false};
     }
