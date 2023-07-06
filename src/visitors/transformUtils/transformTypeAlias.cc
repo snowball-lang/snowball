@@ -27,11 +27,6 @@ Transformer::transformTypeAlias(const std::string& uuid,
     ctx->withState(base.state, [&]() {
         ctx->withScope([&] {
             auto backupClass = ctx->getCurrentClass();
-
-            // TODO: maybe not reset completly, add nested classes in
-            // the future
-            ctx->setCurrentClass(nullptr);
-
             auto classGenerics = ty->getGenerics();
 
             // Fill out the remaining non-required tempalte parameters
@@ -52,6 +47,7 @@ Transformer::transformTypeAlias(const std::string& uuid,
             }
 
             transformedType = transformType(ty->getType());
+            //ctx->cache->setTransformedType(uuid, transformedType);
         });
     });
 

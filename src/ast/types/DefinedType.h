@@ -31,7 +31,8 @@ class FunctionType;
  */
 class DefinedType : public AcceptorExtend<DefinedType, Type>,
                     public DBGObject,
-                    public Syntax::Statement::Privacy {
+                    public Syntax::Statement::Privacy,
+                    public ir::IdMixin {
   public:
     /**
      * @brief A class field represents all of the "elements" a
@@ -88,6 +89,8 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
                 std::shared_ptr<DefinedType> parent = nullptr,
                 std::vector<std::shared_ptr<Type>> generics = {},
                 bool isStruct = false);
+    DefinedType(const DefinedType&) = delete;
+    DefinedType& operator=(DefinedType const&) = delete;
     /**
      * @param other another type to check.
      *

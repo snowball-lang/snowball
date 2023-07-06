@@ -25,6 +25,7 @@ class IdMixin {
     static void resetId();
 
     IdMixin() : id(currentId++) { }
+    IdMixin(const IdMixin&) = delete;
     IdMixin& operator=(const IdMixin&) = delete;
 
     /// @return the node's id.

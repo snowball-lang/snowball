@@ -9,7 +9,7 @@
         LD_PATH,                                                                                   \
                 "-dynamic-linker"                                                                  \
                 "-L" STATICLIB_DIR,                                                                \
-                LLVM_LDFLAGS, "-L" STATICLIB_DIR "" _SNOWBALL_LIBRARY_DIR, p_input,                \
+                LLVM_LDFLAGS, "-L" STATICLIB_DIR "" _SNOWBALL_LIBRARY_OBJ, p_input,                \
                 "-lSnowballRuntime", "-lc", "-lgcc", "-lm"                                         \
     }
 #elif __APPLE__
@@ -17,7 +17,7 @@
     {                                                                                              \
         LD_PATH, "-syslibroot", "/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/",          \
                 "-dynamic", "-arch", "arm64", "-macosx_version_min", "13.0.0",       \
-                "-L" STATICLIB_DIR PATH_SEPARATOR _SNOWBALL_LIBRARY_DIR, p_input,                  \
+                "-L" STATICLIB_DIR PATH_SEPARATOR _SNOWBALL_LIBRARY_OBJ, p_input,                  \
                 "-lSnowballRuntime", "-lc", "-lSystem", "-lm"                                      \
     }
 #elif __linux__
@@ -30,7 +30,7 @@
                 "/usr/lib/x86_64-linux-gnu/crtn.o",                                                \
                 "-L/usr/lib/gcc/x86_64-linux-gnu/" LIBC_VERSION "/",                               \
                 "-L/usr/lib/gcc/x86_64-linux-gnu/" LIBC_VERSION "/", "-L" STATICLIB_DIR,           \
-                LLVM_LDFLAGS, "-L" STATICLIB_DIR PATH_SEPARATOR _SNOWBALL_LIBRARY_DIR, p_input,    \
+                LLVM_LDFLAGS, "-L" STATICLIB_DIR PATH_SEPARATOR _SNOWBALL_LIBRARY_OBJ, p_input,    \
                 "-lSnowballRuntime", "-lc", "-lgcc", "-lm"                                         \
     }
 #else

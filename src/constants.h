@@ -163,6 +163,10 @@ typedef int32_t snowball_int_t;
 // LD
 #pragma region
 
+#ifndef _SNOWBALL_LIBRARY_OBJ
+#error "_SNOWBALL_LIBRARY_OBJ must be defined! (e.g. \"snowball-objects\")"
+#endif
+
 #ifndef _SNOWBALL_LIBRARY_DIR
 #error "_SNOWBALL_LIBRARY_DIR must be defined! (e.g. \"snowball-libs\")"
 #endif

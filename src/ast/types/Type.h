@@ -34,7 +34,7 @@ class TypeRef;
 namespace types {
 class PointerType;
 
-class Type : public std::enable_shared_from_this<Type>, public ir::IdMixin {
+class Type : public std::enable_shared_from_this<Type> {
   protected:
     // Type's name
     std::string name;

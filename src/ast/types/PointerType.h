@@ -20,7 +20,7 @@ namespace types {
 
 class FunctionType;
 
-class PointerType : public AcceptorExtend<PointerType, Type>, public DBGObject {
+class PointerType : public AcceptorExtend<PointerType, Type>, public DBGObject, public ir::IdMixin {
     friend AcceptorExtend;
 
   private:

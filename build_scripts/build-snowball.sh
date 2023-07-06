@@ -13,13 +13,14 @@ set -e
 label=snowball-"$NAME"-"$ARCH"
 
 bash build_scripts/release.sh
+mkdir -p ./bin/Release/objects
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    mv libSnowballRuntime.dylib ./bin/Release/
-    mv libSnowball.dylib ./bin/Release/
+    mv libSnowballRuntime.dylib ./bin/Release/objects
+    mv libSnowball.dylib ./bin/Release/objects
 else
-    mv libSnowballRuntime.so ./bin/Release/
-    mv libSnowball.so ./bin/Release/
+    mv libSnowballRuntime.so ./bin/Release/objects
+    mv libSnowball.so ./bin/Release/objects
 fi
 
 mkdir release
