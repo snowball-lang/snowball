@@ -15,10 +15,10 @@
 #elif __APPLE__
 #define LD_ARGS()                                                                                  \
     {                                                                                              \
-        LD_PATH, "-macosx_version_min", "10.10.0", "/usr/lib/crt1.o", "/usr/lib/crti.o",           \
-                "/usr/lib/system/libdyld.dylib", "-L/usr/local/lib", LLVM_LDFLAGS,                 \
+        LD_PATH, "-syslibroot", "/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/", "-dynamic", "-arch", "arm64", "-macosx_version_min", "13.0.0",           \
+                LLVM_LDFLAGS,                 \
                 "-L" STATICLIB_DIR PATH_SEPARATOR _SNOWBALL_LIBRARY_DIR, p_input,                  \
-                "-lSnowballRuntime", "-lc", "-lSystem", "-lm", "/usr/lib/crtn.o"                   \
+                "-lSnowballRuntime", "-lc", "-lSystem", "-lm"                  \
     }
 #elif __linux__
 #define LD_ARGS()                                                                                  \
