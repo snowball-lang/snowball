@@ -14,6 +14,9 @@
 #ifndef __SNOWBALL_AST_CONTEXT_H_
 #define __SNOWBALL_AST_CONTEXT_H_
 
+#pragma GCC diagnostic push 
+#pragma GCC diagnostic ignored "-Wformat-security"
+
 namespace snowball {
 namespace Syntax {
 
@@ -66,7 +69,7 @@ class ASTContext {
                               FMT("Value for '%s' is already defiend!", item->toString().c_str()));
         }
 
-        stack->front().emplace(std::make_pair(name, item));
+        stack->front().insert(std::make_pair(name, item));
     }
 
     /**
@@ -78,9 +81,13 @@ class ASTContext {
     virtual std::pair<Item, bool> getItem(const std::string name) const {
         for (auto s : *stack) {
             auto [val, found] = getInScope(name, s);
-            if (found) return {val, true};
+            if (found) {
+                DEBUG_SYMTABLE(1, FMT("[symtable]: Successfully fetched %s", name.c_str()).c_str())
+                return {val, true};
+            }
         }
 
+        DEBUG_SYMTABLE(1, FMT("[symtable]: Coudn't fetch '%s'", name.c_str()).c_str())
         return {std::shared_ptr<T>(nullptr), false};
     }
     /**
@@ -137,5 +144,7 @@ class ASTContext {
 
 } // namespace Syntax
 } // namespace snowball
+
+#pragma GCC diagnostic pop
 
 #endif // __SNOWBALL_AST_CONTEXT_H_

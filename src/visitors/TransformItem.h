@@ -5,6 +5,7 @@
 #include "../ir/values/Value.h"
 
 #include <deque>
+#include <iomanip>
 
 #ifndef __SNOWBALL_TRANSFORM_ITEM_H_
 #define __SNOWBALL_TRANSFORM_ITEM_H_

@@ -46,6 +46,9 @@ class Types {
     std::map<std::string, TypeStore> types;
     /// @brief a list of already transformed types
     std::map<std::string, std::shared_ptr<transform::Item>> createdTypes;
+    /// @brief A map containing what UUIDs are associated with it's original identifiers
+    /// @example Foo -> [Foo:1, Foo:2, ...]
+    std::map<std::string, std::vector<std::string>> identifierLookup;
 
   public:
     /// @brief Set a new type to the cache
@@ -54,10 +57,10 @@ class Types {
                  std::shared_ptr<transform::ContextState>
                          state);
     /// @brief add a new generated class to the cache
-    void setTransformedType(const std::string& uuid, std::shared_ptr<transform::Item> p_ty);
+    void setTransformedType(const std::string& uuid, std::shared_ptr<transform::Item> p_ty, const std::string overloadedUUID = "");
     /// @brief add a new generated class to the cache
     std::optional<std::vector<std::shared_ptr<transform::Item>>>
-    getTransformedType(const std::string& uuidPrefix);
+    getTransformedType(const std::string& uuid);
     /// @return All function overloads for a function
     std::optional<TypeStore> getType(const std::string uuid);
 };

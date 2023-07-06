@@ -100,31 +100,29 @@ continueTypeFetch:
         return transformType(pointer->getBaseType())->getPointerTo();
     }
 
-    {
-        auto uuid = ctx->createIdentifierName(id, false);
-        bool existsWithGenerics = false;
+    auto uuid = ctx->createIdentifierName(id, false);
+    bool existsWithGenerics = false;
 
-        if (auto x = ctx->cache->getTransformedType(uuid)) {
-            existsWithGenerics = true;
-            for (auto t : x.value()) {
-                assert(t->isType());
-                auto transformed = t->getType();
-                assert(t != nullptr);
-                if (typeGenericsMatch(ty, transformed)) { return transformed; }
-            }
+    if (auto x = ctx->cache->getTransformedType(uuid)) {
+        existsWithGenerics = true;
+        for (auto t : x.value()) {
+            assert(t->isType());
+            auto transformed = t->getType();
+            assert(t != nullptr);
+            if (typeGenericsMatch(ty, transformed)) { return transformed; }
         }
+    }
 
-        if (auto x = ctx->cache->getType(uuid)) {
-            auto cls = *x;
-            return transformTypeFromBase(uuid, cls, ty);
-        }
+    if (auto x = ctx->cache->getType(uuid)) {
+        auto cls = *x;
+        return transformTypeFromBase(uuid, cls, ty);
+    }
 
-        if (existsWithGenerics) {
-            E<TYPE_ERROR>(ty,
-                          FMT("Type '%s' requires to have no template "
-                              "parameters but at least one has been given?",
-                              name.c_str()));
-        }
+    if (existsWithGenerics) {
+        E<TYPE_ERROR>(ty,
+                        FMT("Type '%s' requires to have no template "
+                            "parameters but at least one has been given?",
+                            name.c_str()));
     }
 
     if (returnedType == nullptr) E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));

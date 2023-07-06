@@ -15,19 +15,25 @@ void Types::setType(const std::string& uuid,
     types[uuid] = {p_ty, state};
 }
 
-void Types::setTransformedType(const std::string& uuid, std::shared_ptr<transform::Item> p_ty) {
-    createdTypes[uuid] = p_ty;
+void Types::setTransformedType(const std::string& uuid, std::shared_ptr<transform::Item> p_ty, const std::string overloadedUUID) {
+    auto storeUUID = overloadedUUID.empty() ? uuid : overloadedUUID;
+    identifierLookup[uuid].emplace_back(storeUUID);
+    createdTypes[storeUUID] = p_ty;
 }
 
 std::optional<std::vector<std::shared_ptr<transform::Item>>>
-Types::getTransformedType(const std::string& uuidPrefix) {
+Types::getTransformedType(const std::string& uuid) {
+    auto identifiers = identifierLookup.find(uuid);
+    if (identifiers == identifierLookup.end()) return std::nullopt;
+
     std::vector<std::shared_ptr<transform::Item>> typesFound;
-    for (auto t : createdTypes) {
-        if (t.first.find(uuidPrefix) == 0) typesFound.emplace_back(t.second);
+    for (auto id : identifiers->second) {
+        auto type = createdTypes.find(id);
+        assert(type != createdTypes.end());
+        typesFound.emplace_back(type->second);
     }
 
     if (typesFound.size() > 0) return typesFound;
-
     return std::nullopt;
 }
 

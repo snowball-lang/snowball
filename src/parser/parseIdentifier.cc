@@ -9,6 +9,7 @@ using namespace snowball::Syntax::Expression;
 namespace snowball::parser {
 
 Syntax::Expression::Identifier* Parser::parseIdentifier(bool isKnownType, bool allowGenerics) {
+    assert(is<TokenType::IDENTIFIER>());
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
     auto genericContainsQuestion = is<TokenType::SYM_QUESTION>(peek(1, true));
     if (allowGenerics &&

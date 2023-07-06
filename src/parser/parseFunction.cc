@@ -203,13 +203,22 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
                 break;
             }
 
+            case TokenType::BRACKET_LSQUARED: {
+                if (is<TokenType::BRACKET_RSQUARED>(peek())) {
+                    opType = services::OperatorService::OperatorType::CONSTRUCTOR;
+                    break;
+                }
+
+                goto snowballInvalidDefaultOperatorCase;
+            }
+
             case TokenType::IDENTIFIER: {
                 if (m_current.to_string() == "bool") {
                     opType = services::OperatorService::OperatorType::BOOL;
                     break;
-                } else {
-                    goto snowballInvalidDefaultOperatorCase;
                 }
+                    
+                goto snowballInvalidDefaultOperatorCase;
             }
 
             case TokenType::BRACKET_LPARENT: {

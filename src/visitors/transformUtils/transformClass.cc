@@ -40,7 +40,7 @@ Transformer::transformClass(const std::string& uuid,
             auto existantTypes = ctx->cache->getTransformedType(uuid);
             auto _uuid = baseUuid + ":" +
                     utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
-            auto basedName = getNameWithBase(ty->getName());
+            auto basedName = ty->getName();
             transformedType = std::make_shared<types::DefinedType>(
                     basedName,
                     _uuid,
@@ -51,7 +51,7 @@ Transformer::transformClass(const std::string& uuid,
                     std::vector<std::shared_ptr<types::Type>>{},
                     ty->isStruct());
             auto item = std::make_shared<transform::Item>(transformedType);
-            ctx->cache->setTransformedType(_uuid, item);
+            ctx->cache->setTransformedType(baseUuid, item, _uuid);
             auto classGenerics = ty->getGenerics();
             // Fill out the remaining non-required tempalte parameters
             if (classGenerics.size() > generics.size()) {

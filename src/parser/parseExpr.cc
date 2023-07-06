@@ -110,6 +110,17 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                     next();
                     // auto callee = expr;
                     expr = parseFunctionCall(expr);
+                } else if (is<TokenType::BRACKET_RSQUARED>(tk)) {
+                    auto indexExpr = parseExpr(false);
+                    auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
+                    auto bop = Syntax::N<Syntax::Expression::BinaryOp>(Syntax::Expression::BinaryOp::OpType::INDEX);
+                    bop->isOperator = true;
+                    bop->setDBGInfo(dbg);
+                    assert_tok<TokenType::BRACKET_RSQUARED>("']'");
+
+                    bop->left = expr;
+                    bop->right = indexExpr;
+                    expr = bop;
                 } else if (is<TokenType::SYM_COLCOL>(tk) || is<TokenType::SYM_DOT>(tk)) {
                     auto isStatic = is<TokenType::SYM_COLCOL>(tk);
                     next(1);

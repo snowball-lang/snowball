@@ -51,6 +51,11 @@ pub extern fn "sn.ua.resize" as __ua_resize(UniversalArray*, i32) UniversalArray
 pub extern fn "sn.ua.set" as __ua_set(UniversalArray*, i32, cobj);
 } /* namespace UA */;
 
+
+type String = StringView<>;
+// TODO (implement wchar): using WideString as StringView<wchar*>
+
+
 /**
  * @class Exception
  * @brief A class representing an exception.
@@ -67,6 +72,12 @@ class Exception {
      * @param[in] m The message of the exception.
      */ 
     Exception(m: char*) : msg(m) 
+      { }
+    /**
+      * @brief Exception constructor from a string.
+      * @param[in] m The message of the exception.
+      */
+    Exception(m: String) : msg(m.buffer()) 
       { }
     /**
      * @brief Returns the message of the exception.
@@ -131,6 +142,16 @@ class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
       self.capacity = capacity;
       self.buffer = UA::__ua_resize(self.buffer, self.capacity); 
     }
+    /**
+      * @brief Returns the element at the specified index.
+      * @param[in] index The index of the element to return.
+      * @return The element at the specified index.
+      */
+    fn [[internal_linkage]] at(index: i32) 
+    {
+
+    }
+
   priv:
     /** The capacity of the vector. */
     let capacity: i32 = 10;
@@ -181,7 +202,3 @@ class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
     /** The buffer containing the string. */
     let buffer: Vector<_CharType> = new Vector<_CharType>{};
 }
-
-type String = StringView<>;
-// TODO (implement wchar): using WideString as StringView<wchar*>
-

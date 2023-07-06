@@ -125,12 +125,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     // Transform the base first
     auto base = index->getBase();
     if (auto baseIdentifier = utils::cast<Expression::Identifier>(base)) {
-        auto g = utils::cast<Syntax::Expression::GenericIdentifier>(baseIdentifier);
-        auto generics =
-                (g != nullptr) ? g->getGenerics() : std::vector<Syntax::Expression::TypeRef*>{};
-
-        auto [val, type, funcs, overloads, mod] =
-                getFromIdentifier(dbgInfo, baseIdentifier->getIdentifier(), generics);
+        auto [val, type, funcs, overloads, mod] = getFromIdentifier(baseIdentifier);
 
         if (val && (!isStatic)) {
             return {getFromType(val.value()->getType(), *val), val.value()};
