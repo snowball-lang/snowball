@@ -39,7 +39,8 @@ void LLVMBuilder::visit(ir::Cast* c) {
         // cast float to another float
         this->value = builder->CreateFPCast(v, llvmType);
     } else if (utils::dyn_cast<types::PointerType>(ty)) {
-        assert(utils::dyn_cast<types::PointerType>(vTy) != nullptr);
+        assert(utils::dyn_cast<types::PointerType>(vTy) ||
+               utils::dyn_cast<types::CObjectType>(vTy));
         this->value = builder->CreatePointerCast(v, llvmType);
     } else if (utils::dyn_cast<types::NumericType>(vTy) &&
                utils::dyn_cast<types::CObjectType>(ty)) {

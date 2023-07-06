@@ -18,6 +18,19 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
             auto ref = builder.createReferenceTo(p_node->getDBGInfo(), value);
             this->value = ref;
             return;
+        } else  if (opType == Expression::BinaryOp::OpType::DEREFERENCE) {
+            p_node->left->accept(this);
+            auto value = this->value;
+            auto type = value->getType();
+            if (auto x = utils::dyn_cast<types::PointerType>(type)) {
+                type = x->getBaseType();
+            } else {
+                E<DEREFERENCE_ERROR>(p_node, "Can't dereference a non-pointer type!");
+            }
+            
+            auto ref = builder.createDereferenceTo(p_node->getDBGInfo(), value, type);
+            this->value = ref;
+            return;
         }
 
         assert(false && "TODO:");

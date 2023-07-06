@@ -18,7 +18,7 @@ namespace Syntax {
 class Visitor : public SrcObject {
   public:
     Visitor(SourceInfo* srci) : SrcObject(srci){};
-    virtual void visit(std::vector<Node*>);
+    virtual void visitGlobal(std::vector<Node*>);
 
 #include "../../defs/accepts.def"
 };

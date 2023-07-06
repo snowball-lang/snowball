@@ -62,11 +62,12 @@ std::vector<std::shared_ptr<ir::Func>> DefinedType::getVTable() const { return c
 
 bool DefinedType::is(DefinedType* other) const {
     auto otherArgs = other->getGenerics();
-    bool argumentsEqual = std::all_of(
+    bool genericSizeEqual = otherArgs.size() == generics.size();
+    bool argumentsEqual = genericSizeEqual ? std::all_of(
             otherArgs.begin(), otherArgs.end(), [&, idx = 0](std::shared_ptr<Type> i) mutable {
                 return generics.at(idx)->is(i);
                 idx++;
-            });
+            }) : false;
     return (other->getUUID() == uuid) && argumentsEqual;
 }
 

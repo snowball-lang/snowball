@@ -6,7 +6,7 @@
 namespace snowball {
 namespace Syntax {
 
-void Visitor::visit(std::vector<Node*> p_list) {
+void Visitor::visitGlobal(std::vector<Node*> p_list) {
     for (auto node : p_list) { node->accept(this); }
 }
 

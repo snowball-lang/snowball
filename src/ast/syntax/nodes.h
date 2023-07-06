@@ -358,7 +358,7 @@ struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
 
     BinaryOp(OpType t) : op_type(t) {
         unary = (op_type == OpType::NOT || op_type == OpType::BIT_NOT || op_type == OpType::UPLUS ||
-                 op_type == OpType::UMINUS || op_type == OpType::REFERENCE);
+                 op_type == OpType::UMINUS || op_type == OpType::REFERENCE || op_type == OpType::DEREFERENCE);
     };
     ~BinaryOp() noexcept = default;
 

@@ -86,9 +86,9 @@ void Compiler::compile(bool verbose) {
             auto simplifier = new Syntax::Transformer(
                     mainModule->downcasted_shared_from_this<ir::Module>(), _source_info);
 #if _SNOWBALL_TIMERS_DEBUG
-            DEBUG_TIMER("Simplifier: %fs", utils::_timer([&] { simplifier->visit(ast); }));
+            DEBUG_TIMER("Simplifier: %fs", utils::_timer([&] { simplifier->visitGlobal(ast); }));
 #else
-            simplifier->visit(ast);
+            simplifier->visitGlobal(ast);
 #endif
 
             SHOW_STATUS(Logger::compiling(Logger::progress(0.60)))

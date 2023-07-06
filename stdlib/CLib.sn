@@ -66,7 +66,7 @@ pub extern fn free(cobj) void;
  * @note(3) A typical cause of failure for puts is running out of space on the file system, when stdout is
  *  redirected to a file.
  */
-pub extern fn puts(String) i32;
+pub extern fn puts(char*) i32;
 /**
  * @brief Writes a character to the standard output (stdout).
  * @param character(i32) - The `i32` promotion of the character to be written.

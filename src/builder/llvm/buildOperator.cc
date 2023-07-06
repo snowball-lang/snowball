@@ -113,7 +113,6 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                     case services::OperatorService::EQ: {
                         llvm::Value* leftValue = left;
                         llvm::Value* rightValue = right;
-                        rightValue->getType()->dump();
                         if (!llvm::isa<llvm::LoadInst>(rightValue) &&
                             rightValue->getType()->isPointerTy())
                             rightValue = builder->CreateLoad(

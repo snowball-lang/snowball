@@ -77,6 +77,11 @@ SharedValue<Block>
 IRBuilder::createBlock(DBGSourceInfo* dbgInfo, std::vector<SharedValue<>> values) {
     return N<Block>(dbgInfo, values);
 }
+SharedValue<DereferenceTo> IRBuilder::createDereferenceTo(DBGSourceInfo* dbgInfo, SharedValue<> value, Type<> type) {
+    auto ref = N<DereferenceTo>(dbgInfo, value);
+    ref->setType(type);
+    return ref;
+}
 SharedValue<ReferenceTo> IRBuilder::createReferenceTo(DBGSourceInfo* dbgInfo, SharedValue<> value) {
     auto ref = N<ReferenceTo>(dbgInfo, value);
     ref->setType(value->getType()->getPointerTo());

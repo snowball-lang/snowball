@@ -119,7 +119,8 @@ Syntax::Expression::Base* Parser::buildOperatorTree(std::vector<Syntax::Expressi
                          op == Syntax::Expression::BinaryOp::OpType::BIT_NOT ||
                          op == Syntax::Expression::BinaryOp::OpType::UPLUS ||
                          op == Syntax::Expression::BinaryOp::OpType::REFERENCE ||
-                         op == Syntax::Expression::BinaryOp::OpType::UMINUS);
+                         op == Syntax::Expression::BinaryOp::OpType::UMINUS ||
+                         op == Syntax::Expression::BinaryOp::OpType::DEREFERENCE);
                 // break;
             }
         }

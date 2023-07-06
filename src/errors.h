@@ -27,6 +27,7 @@ enum Error
     ARGUMENT_ERROR,
     IMPORT_ERROR,
     PSEUDO_ERROR,
+    DEREFERENCE_ERROR,
     FUNCTION_RET_ERR,
     COMPILER_ERROR, // note: not the same as "compile time error"
 

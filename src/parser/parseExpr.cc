@@ -45,7 +45,11 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
             parseNormal = true;
 
         if (parseNormal) {
-            if (TOKEN(VALUE_NUMBER) || TOKEN(VALUE_FLOAT) || TOKEN(VALUE_STRING) ||
+            if (TOKEN(BRACKET_LPARENT)) {
+                expr = parseExpr();
+                next();
+                assert_tok<TokenType::BRACKET_RPARENT>("')'");
+            } else if (TOKEN(VALUE_NUMBER) || TOKEN(VALUE_FLOAT) || TOKEN(VALUE_STRING) ||
                 TOKEN(VALUE_CHAR) || TOKEN(VALUE_BOOL)) {
                 auto ty = Syntax::Expression::ConstantValue::deduceType(m_current.type);
 
@@ -72,7 +76,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                 expr = Syntax::N<Syntax::Expression::NewInstance>(call, ty, toTheHeap);
                 expr->setDBGInfo(call->getDBGInfo());
             } else if (TOKEN(OP_NOT) || TOKEN(OP_PLUS) || TOKEN(OP_MINUS) || TOKEN(OP_BIT_NOT) ||
-                       TOKEN(OP_BIT_AND)) {
+                       TOKEN(OP_BIT_AND) || TOKEN(OP_MUL)) {
                 if (tk.type == TokenType::OP_NOT)
                     exprs.push_back(
                             Syntax::N<Syntax::Expression::BinaryOp>(Operators::OperatorType::NOT));
@@ -88,6 +92,9 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                 else if (tk.type == TokenType::OP_BIT_AND)
                     exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(
                             Operators::OperatorType::REFERENCE));
+                else if (tk.type == TokenType::OP_MUL)
+                    exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(
+                            Operators::OperatorType::DEREFERENCE));
 
                 exprs.back()->isOperator = true;
                 exprs.back()->setDBGInfo(dbg);

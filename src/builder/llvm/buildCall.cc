@@ -1,6 +1,7 @@
 
 #include "../../ir/values/Call.h"
 #include "../../ir/values/ReferenceTo.h"
+#include "../../ir/values/Dereference.h"
 #include "../../services/OperatorService.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
@@ -34,7 +35,7 @@ void LLVMBuilder::visit(ir::Call* call) {
         llvm::Value* object = nullptr;
         if (instance->createdObject) {
             object = build(instance->createdObject.get());
-            object = builder->CreateBitCast(object, getLLVMType(instance->getType()));
+            object = builder->CreatePointerCast(object, getLLVMType(instance->getType()));
         } else if (instance->initializeAtHeap) {
             object = allocateObject(p);
         } else {

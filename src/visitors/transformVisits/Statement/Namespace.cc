@@ -8,11 +8,10 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::Namespace) {
-    if (!ctx->generateFunction) return; // TODO:
     auto name = p_node->getName();
     auto body = p_node->getBody();
 
-    //if (!ctx->generateFunction) {
+    if (!ctx->generateFunction) {
         if (ctx->getInScope(name, ctx->currentScope()).second)
             E<VARIABLE_ERROR>(
                     p_node,
@@ -25,13 +24,15 @@ SN_TRANSFORMER_VISIT(Statement::Namespace) {
         ctx->module = mod;
         ctx->withScope([&]() mutable {
             ctx->addItem(name, sharedModule);
-            for (auto x : body) { x->accept(this); }
+            for (auto x : body) { 
+                SN_TRANSFORMER_CAN_GENERATE(x) x->accept(this); 
+            }
         });
         ctx->module = backup;
         addModule(mod);
         ctx->addItem(name, sharedModule);
         ctx->uuidStack.pop_back();        
-    /*} else {
+    } else {
         auto [item, found] = ctx->getItem(name);
         assert(found);
         auto mod = item->getModule();
@@ -43,7 +44,7 @@ SN_TRANSFORMER_VISIT(Statement::Namespace) {
         });
         ctx->module = backup;
         ctx->uuidStack.pop_back();    
-    }*/
+    }
 }
 
 } // namespace Syntax

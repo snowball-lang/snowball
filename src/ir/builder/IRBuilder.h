@@ -14,6 +14,7 @@
 #include "../values/Func.h"
 #include "../values/IndexExtract.h"
 #include "../values/ReferenceTo.h"
+#include "../values/Dereference.h"
 #include "../values/Return.h"
 #include "../values/Throw.h"
 #include "../values/Value.h"
@@ -89,6 +90,8 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
     SharedValue<Throw> createThrow(DBGSourceInfo* dbgInfo, SharedValue<> value);
     /// @brief Create a new reference to a value (pointer)
     SharedValue<ReferenceTo> createReferenceTo(DBGSourceInfo* dbgInfo, SharedValue<> value);
+    /// @brief Create a new dereference to a value (pointer)
+    SharedValue<DereferenceTo> createDereferenceTo(DBGSourceInfo* dbgInfo, SharedValue<> value, Type<> type);
     /// @brief Create a new string value
     SharedValue<StringValue> createStringValue(DBGSourceInfo* dbgInfo, const std::string value);
     /// @brief Create a new number value

@@ -36,23 +36,19 @@ Transformer::Transformer(std::shared_ptr<ir::Module> mod, SourceInfo* srci)
 std::vector<std::shared_ptr<ir::Module>> Transformer::getModules() const { return modules; }
 void Transformer::addModule(std::shared_ptr<ir::Module> m) { modules.push_back(m); }
 auto Transformer::getModule() const { return ctx->module; }
-void Transformer::visit(std::vector<Node*> p_nodes) {
+void Transformer::visitGlobal(std::vector<Node*> p_nodes) {
     ctx->withScope([&] {
-        AcceptorExtend::visit(p_nodes);
-
-        ctx->generateFunction = true;
+        bool backup = ctx->generateFunction;
+        ctx->generateFunction = false;
         for (auto node : p_nodes) {
-            if (utils::cast<Statement::BodiedFunction>(node) ||
-                utils::cast<Statement::LLVMFunction>(node) ||
-                utils::cast<Statement::ConstructorDef>(node) ||
-                utils::cast<Statement::Namespace>(node) ||
-                utils::cast<Statement::DefinedTypeDef>(node) ||
-                utils::cast<Statement::TypeAlias>(node)) {
+            SN_TRANSFORMER_CAN_GENERATE(node) {
                 node->accept(this);
             }
         }
 
-        ctx->generateFunction = false;
+        ctx->generateFunction = true;
+        AcceptorExtend::visitGlobal(p_nodes);
+        ctx->generateFunction = backup;
     });
 }
 

@@ -35,11 +35,34 @@ Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
     cls->setGenerics(generics);
     cls->setDBGInfo(dbg);
 
-    while (is<TokenType::KWORD_VAR>()) {
-        // TODO: maybe a custom syntax?
-        auto member = parseVariable();
-        consume<TokenType::SYM_SEMI_COLLON>("';'");
-        cls->addVariable(member);
+    bool keepParsing = true;
+    while (keepParsing) {
+        switch (m_current.type) {
+            case TokenType::KWORD_PUBLIC:
+            case TokenType::KWORD_PRIVATE: {
+                next();
+                assert_tok<TokenType::KWORD_VAR>("a valid member declaration");
+                break;
+            }
+
+            case TokenType::KWORD_VAR: {
+                auto member = parseVariable();
+                consume<TokenType::SYM_SEMI_COLLON>("';'");
+                cls->addVariable(member);
+                break;
+            }
+
+            case TokenType::BRACKET_RCURLY: {
+                keepParsing = false;
+                break;
+            }
+
+            default: {
+                createError<SYNTAX_ERROR>(FMT("Expected a valid member declaration but found '%s'",
+                                          m_current.to_string().c_str()));
+                break;
+            }
+        }
     }
 
     assert_tok<TokenType::BRACKET_RCURLY>("'}'");

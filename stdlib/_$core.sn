@@ -28,7 +28,7 @@ pub namespace UA {
  *       required for storing and manipulating universal arrays.
  */
 pub struct UniversalArray 
-  { let items: cobj*; };
+  { pub let items: cobj*; };
 /**
  * @brief Allocates a universal array of elements.
  * @param[in] size The size of the universal array to allocate.
@@ -51,11 +51,6 @@ pub extern fn "sn.ua.resize" as __ua_resize(UniversalArray*, i32) UniversalArray
 pub extern fn "sn.ua.set" as __ua_set(UniversalArray*, i32, cobj);
 } /* namespace UA */;
 
-
-type String = StringView<>;
-// TODO (implement wchar): using WideString as StringView<wchar*>
-
-
 /**
  * @class Exception
  * @brief A class representing an exception.
@@ -77,7 +72,7 @@ class Exception {
       * @brief Exception constructor from a string.
       * @param[in] m The message of the exception.
       */
-    Exception(m: String) : msg(m.buffer()) 
+    Exception(m: String) : msg(m.c_str()) 
       { }
     /**
      * @brief Returns the message of the exception.
@@ -151,6 +146,12 @@ class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
     {
 
     }
+    /**
+      * @brief Returns the data of the vector.
+      * @return The data of the vector.
+      */
+    fn [[internal_linkage, inline]] data() _StoreType* 
+      { return (*self.buffer.items) as _StoreType* }
 
   priv:
     /** The capacity of the vector. */
@@ -196,9 +197,13 @@ class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
     /**
       * @return The buffer containing the string.
       */
-    fn [[internal_linkage, inline]] buffer() Vector<_CharType> 
-      { return self.buffer; }
+    fn [[internal_linkage, inline]] c_str() _CharType*
+      { return self.buffer.data(); }
   priv:
     /** The buffer containing the string. */
     let buffer: Vector<_CharType> = new Vector<_CharType>{};
 }
+
+
+type String = StringView<>;
+// TODO (implement wchar): using WideString as StringView<wchar*>

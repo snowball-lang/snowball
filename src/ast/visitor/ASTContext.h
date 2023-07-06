@@ -99,7 +99,9 @@ class ASTContext {
      */
     virtual std::pair<Item, bool> getInScope(const std::string name, Scope& s) const {
         auto val = s.find(name);
-        if (val != s.end()) { return {val->second, true}; }
+        if (val != s.end()) { 
+            return {val->second, true}; 
+        }
 
         return {std::shared_ptr<T>(nullptr), false};
     }
