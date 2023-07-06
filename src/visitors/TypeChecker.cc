@@ -246,7 +246,6 @@ void TypeChecker::cantBeVoid(
 
 void TypeChecker::checkMutability(
         ir::Call* p_node, std::shared_ptr<ir::Func> fn, std::shared_ptr<ir::Value> value) {
-    if (auto x = utils::dyn_cast<ir::Variable>(value)) { DUMP_S(x->getIdentifier().c_str()) }
     auto fnName = fn->getName(true);
     auto isMutable = this->isMutable(value);
     bool accessingSelf = this->accessingSelf(value);

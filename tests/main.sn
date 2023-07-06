@@ -1,12 +1,1 @@
-use Core::CLib
-
-class A {
-    let what: char*;
-  pub:
-    A(x: char*) : what(x) {}
-}
-
-pub fn main() i32 {
-    let B = 'X';
-    raise new A(&B);
-}
+fn main() void {}

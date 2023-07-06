@@ -25,7 +25,7 @@ void Transformer::transformMainFunction(Statement::FunctionDef* p_node) {
     auto rawRetTy = p_node->getRetType();
     auto returnType = transformType(rawRetTy);
 
-    if (!returnType->is(ctx->getInt32Type())) {
+    if (!utils::dyn_cast<types::Int32Type>(returnType)) {
         E<SYNTAX_ERROR>(rawRetTy, "Program entry's return type must be of type 'i32'!");
     }
 

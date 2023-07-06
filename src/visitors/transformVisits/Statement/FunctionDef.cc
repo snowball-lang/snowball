@@ -6,8 +6,10 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
+#define IS_PUBLIC                                                                                    \
+    (p_node->getPrivacy() == Statement::Privacy::PUBLIC)
 #define IS_MAIN                                                                                    \
-    (name == "main" && p_node->getPrivacy() == Statement::Privacy::PUBLIC && ctx->module->isMain())
+    (name == "main" && ctx->module->isMain())
 
 #define ADD_SELF_ARG                                                                               \
     if (auto c = ctx->getCurrentClass(true)) {                                                     \
@@ -31,7 +33,7 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     auto name = p_node->getName();
     ADD_SELF_ARG
 
-    if (!ctx->generateFunction && !IS_MAIN) {
+    if (!ctx->generateFunction && !(IS_MAIN)) {
         // assert(!services::OperatorService::isOperator(name));
         //  Check if the function requirements match the main function
         auto uuid = ctx->createIdentifierName(name);
@@ -47,6 +49,8 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     }
 
     if (ctx->generateFunction && IS_MAIN) {
+        if (!IS_PUBLIC) 
+            E<SYNTAX_ERROR>(p_node, "Program entry point must be public!");
         transformMainFunction(p_node);
         return;
     }
