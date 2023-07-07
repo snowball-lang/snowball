@@ -1,5 +1,8 @@
 use Core::CLib;
 
+
+namespace Core {
+
 /**
  * @namespace UA
  * @brief The namespace containing the universal array library.
@@ -219,6 +222,11 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       StringView<char> { return new StringView<char>{buffer}; }
 }
 
+} // namespace Core
 
+// Type exports
+type StringView<T> = Core::StringView<T>;
+type Vector<T> = Core::Vector<T>;
+type Exception = Core::Exception;
 type String = StringView<>;
 // TODO (implement wchar): using WideString as StringView<wchar*>
