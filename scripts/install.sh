@@ -92,13 +92,20 @@ if [[ -d "$SNOWBALL_INSTALL_DIR" ]]; then
     log warn "Previous snowball installation found at $SNOWBALL_INSTALL_DIR"
     if [[ "$YES" == "-y" ]]; then
         log warn "Skipping prompt due to -y flag"
-        prompt="n"
+        prompt="y"
     else
         read -p "Do you want to remove the previous installation? [y/n]: " prompt
     fi
     if [[ "$prompt" == "y" ]]; then
         log info "Removing previous installation..."
         rm -rf "$SNOWBALL_INSTALL_DIR"
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            log info "Removing libSnowball.dylib from $LIB_FOLDER"
+            rm -f "$LIB_FOLDER/libSnowball.dylib"
+        else
+            log info "Removing libSnowball.so from $LIB_FOLDER"
+            rm -f "$LIB_FOLDER/libSnowball.so"
+        fi
     else
         log info "Skipping removal of previous installation..."
     fi
