@@ -95,11 +95,11 @@ log info "Moving required shared libraries to lib folder"
 log warn "You may need to use 'sudo' password for this action"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    mv libSnowballRuntime.dylib $LIB_FOLDER
-    mv libSnowball.dylib $LIB_FOLDER
+    mv objects/libSnowballRuntime.dylib $LIB_FOLDER/objects
+    mv objects/libSnowball.dylib $LIB_FOLDER/objects
 else
-    mv libSnowballRuntime.so $LIB_FOLDER
-    mv libSnowball.so $LIB_FOLDER
+    mv objects/libSnowballRuntime.so $LIB_FOLDER/objects
+    mv objects/libSnowball.so $LIB_FOLDER/objects
 fi
 
 log info "Exporting snowball to PATH"
