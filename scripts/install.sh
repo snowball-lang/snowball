@@ -91,6 +91,42 @@ mkdir -p $SNOWBALL_INSTALL_DIR
 cd $SNOWBALL_INSTALL_DIR
 x=$(curl -L https://github.com/snowball-lang/snowball/releases/latest/download/"$SNOWBALL_BUILD_ARCHIVE" | tar zxvf - --strip-components=1)
 
+# function to prompt the user for input
+prompt_user() {
+    local message="$1"
+    local default_value="$2"
+    local allowed_values="$3"
+    
+    read -p "$message" -i "$default_value" -e value
+    if [[ -n "$allowed_values" ]]; then
+        if [[ "$allowed_values" == *"$value"* ]]; then
+            echo "$value"
+        else
+            echo "$default_value"
+        fi
+    else
+        echo "$value"
+    fi
+}
+
+log info "Checking for non-existant previous snowball installations..."
+
+if [[ -d "$SNOWBALL_INSTALL_DIR" ]]; then
+    log warn "Previous snowball installation found at $SNOWBALL_INSTALL_DIR"
+    if [[ "$YES" == "-y" ]]; then
+        log warn "Skipping prompt due to -y flag"
+        prompt="n"
+    else
+        read -p "Do you want to remove the previous installation? [y/n]: " prompt
+    fi
+    if [[ "$prompt" == "y" ]]; then
+        log info "Removing previous installation..."
+        rm -rf "$SNOWBALL_INSTALL_DIR"
+    else
+        log info "Skipping removal of previous installation..."
+    fi
+fi
+
 log info "Moving required shared libraries to lib folder"
 log warn "You may need to use 'sudo' password for this action"
 
@@ -128,24 +164,6 @@ check_file_writable() {
         fi
     else
         return 1
-    fi
-}
-
-# function to prompt the user for input
-prompt_user() {
-    local message="$1"
-    local default_value="$2"
-    local allowed_values="$3"
-    
-    read -p "$message" -i "$default_value" -e value
-    if [[ -n "$allowed_values" ]]; then
-        if [[ "$allowed_values" == *"$value"* ]]; then
-            echo "$value"
-        else
-            echo "$default_value"
-        fi
-    else
-        echo "$value"
     fi
 }
 
