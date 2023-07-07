@@ -13,7 +13,7 @@ Syntax::Statement::Namespace* Parser::parseNamespace() {
     next();
     consume<TokenType::BRACKET_LCURLY>("'{'");
     auto body = parseGlobal(TokenType::BRACKET_RCURLY);
-    consume<TokenType::BRACKET_RCURLY>("'}'");
+    assert_tok<TokenType::BRACKET_RCURLY>("'}'");
     auto ns = Syntax::N<Syntax::Statement::Namespace>(name, body);
     ns->setDBGInfo(dbg);
     return ns;

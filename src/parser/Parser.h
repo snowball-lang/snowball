@@ -143,7 +143,7 @@ class Parser {
     Token peek(int p_offset = 0, bool p_safe = false);
     // Decrement @var "m_tok_index" and
     // return the current token
-    Token prev(int p_offset = 0);
+    Token prev(int p_offset = 0, bool p_safe = false);
     /**
      * Joins a list of expressions into a single expression tree that
      * follows the order of operations defined by BIDMAS (Brackets,

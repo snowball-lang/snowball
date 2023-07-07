@@ -24,13 +24,16 @@ Token Parser::next(int p_offset) {
     return {};
 }
 
-Token Parser::prev(int p_offset) {
+Token Parser::prev(int p_offset, bool p_safe) {
     try {
         m_tok_index -= (p_offset + 1);
         m_current = m_tokens.at(m_tok_index);
 
         return m_current;
-    } catch (std::out_of_range& _) { createError<BUG>("Index error"); }
+    } catch (std::out_of_range& _) { 
+        if (!p_safe)
+            createError<BUG>("Index error"); 
+    }
 
     return {};
 }

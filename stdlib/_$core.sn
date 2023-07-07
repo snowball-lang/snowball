@@ -1,6 +1,5 @@
 use Core::CLib;
 
-
 namespace Core {
 
 /**
@@ -225,7 +224,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
 } // namespace Core
 
 // Type exports
-type StringView<T> = Core::StringView<T>;
+type StringView<T = char> = Core::StringView<T>;
 type Vector<T> = Core::Vector<T>;
 type Exception = Core::Exception;
 type String = StringView<>;
