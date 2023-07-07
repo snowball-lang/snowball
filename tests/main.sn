@@ -1,5 +1,6 @@
 use Core::System
   
 pub fn main() i32 {
-  System::println("hello")
+  let s = String::from("hello");
+  System::println(s.size())
 }
