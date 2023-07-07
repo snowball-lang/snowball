@@ -12,6 +12,7 @@
 
 #include "FunctionCache.h"
 #include "TypeCache.h"
+#include "ModuleCache.h"
 
 namespace snowball {
 namespace Syntax {
@@ -23,7 +24,7 @@ namespace Syntax {
  * it can't affect for the real one. It also adds
  * some extra context to the ast visitor.
  */
-class Cache : public cacheComponents::Functions, public cacheComponents::Types { };
+class Cache : public cacheComponents::Functions, public cacheComponents::Types, public cacheComponents::Modules { };
 
 } // namespace Syntax
 } // namespace snowball

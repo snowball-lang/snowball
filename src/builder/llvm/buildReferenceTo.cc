@@ -13,8 +13,16 @@ void LLVMBuilder::visit(ir::ReferenceTo* ref) {
     auto val = ref->getValue();
     auto llvmReferencedValue = build(val.get());
 
-    auto load = llvm::cast<llvm::LoadInst>(llvmReferencedValue);
-    auto value = load->getOperand(0);
+    llvm::Value* value = nullptr;
+    if (llvm::isa<llvm::LoadInst>(llvmReferencedValue)) {
+        // It's already a load instruction, we can just use that
+        auto load = llvm::cast<llvm::LoadInst>(llvmReferencedValue);
+        value = load->getOperand(0);
+    } else {
+        llvmReferencedValue->dump();
+        assert(llvmReferencedValue->getType()->isPointerTy());
+        value = llvmReferencedValue;
+    }
 
     this->value = value;
 }

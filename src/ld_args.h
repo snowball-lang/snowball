@@ -16,7 +16,7 @@
 #define LD_ARGS()                                                                                  \
     {                                                                                              \
         LD_PATH, "-syslibroot", "/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk/",          \
-                "-dynamic", "-arch", "arm64", "-macosx_version_min", "13.0.0",       \
+                "-dynamic" "-macosx_version_min", "13.0.0",       \
                 "-L" STATICLIB_DIR PATH_SEPARATOR _SNOWBALL_LIBRARY_OBJ, p_input,                  \
                 "-lSnowballRuntime", "-lc", "-lSystem", "-lm"                                      \
     }

@@ -103,7 +103,7 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
             }
         }
 
-        if (keep_parsing) next();
+        if (keep_parsing && !is<TokenType::_EOF>(m_current)) next();
     }
 
     return global;

@@ -18,14 +18,25 @@ void LLVMBuilder::visit(ir::Call* call) {
     bool isConstructor = false;
     if (buildOperator(call)) return; // TODO: maybe jump to cleanup?
 
-    auto callee = build(call->getCallee().get());
+    auto calleeValue = call->getCallee();
+    auto callee = build(calleeValue.get());
     setDebugInfoLoc(call);
 
     auto args = utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value*>(
             call->getArguments(), [&](std::shared_ptr<ir::Value> arg) { return build(arg.get()); });
     llvm::CallInst* llvmCall = nullptr;
+    llvm::Value* allocatedValue = nullptr;
+    if (auto c = utils::dyn_cast<types::FunctionType>(calleeValue->getType())
+        ; c != nullptr && utils::dyn_cast<types::DefinedType>(c->getRetType())) {
+        auto retType = c->getRetType();
+        auto retTypeLLVM = getLLVMType(retType);
+        // It's a function returning a type that's not a pointer
+        // We need to allocate the value
+        allocatedValue = builder->CreateAlloca(retTypeLLVM);
+    }
+
     setDebugInfoLoc(call);
-    if (auto c = utils::dyn_cast<ir::Func>(call->getCallee()); c != nullptr && c->isConstructor()) {
+    if (auto c = utils::dyn_cast<ir::Func>(calleeValue); c != nullptr && c->isConstructor()) {
         auto instance = utils::cast<ir::ObjectInitialization>(call);
         isConstructor = true;
         assert(instance);
@@ -46,7 +57,7 @@ void LLVMBuilder::visit(ir::Call* call) {
         llvmCall = builder->CreateCall(
                 (llvm::FunctionType*)callee->getType()->getPointerElementType(), callee, args);
         this->value = builder->CreateLoad(object->getType()->getPointerElementType(), object);
-    } else if (auto c = utils::dyn_cast<ir::Func>(call->getCallee());
+    } else if (auto c = utils::dyn_cast<ir::Func>(calleeValue);
                c != nullptr && c->inVirtualTable()) {
         assert(c->hasParent());
 
@@ -66,12 +77,22 @@ void LLVMBuilder::visit(ir::Call* call) {
                 (llvm::FunctionType*)pointerLoad->getType()->getPointerElementType(),
                 (llvm::Function*)pointerLoad,
                 args);
-        this->value = llvmCall;
+        if (allocatedValue) {
+            builder->CreateStore(llvmCall, allocatedValue);
+            this->value = allocatedValue;
+        } else {
+            this->value = llvmCall;
+        }
     } else {
         // TODO: invoke if it's inside a try block
         llvmCall = builder->CreateCall(
                 (llvm::FunctionType*)callee->getType()->getPointerElementType(), callee, args);
-        this->value = llvmCall;
+        if (allocatedValue) {
+            builder->CreateStore(llvmCall, allocatedValue);
+            this->value = allocatedValue;
+        } else {
+            this->value = llvmCall;
+        }
     }
 
     auto calledFunction = llvmCall->getCalledFunction();

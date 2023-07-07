@@ -158,6 +158,7 @@ add_command_to_path() {
     if [[ "$add_to_path" == "y" ]]; then
         log info "Updating $config_file ..."
         echo "" >> "$config_file"
+        log info "executing \"export PATH=\"\$PATH:$EXPORT_COMMAND\"\""
         echo "export PATH=\"\$PATH:$EXPORT_COMMAND\"" >> "$config_file"
     else
         log warn "Skipping update of $config_file."
@@ -220,5 +221,6 @@ printf "\n    ${green}snowball-${OS}-${ARCH}${normal} - successfully installed w
 
 log info "Snowball successfully installed at: $(pwd)"
 log info "Open a new terminal session or update your PATH to use snowball"
-
+echo ""
+log info "Checkoutt the documentation at: https://github.com/snowball-lang/docs"
 log info "Happy coding! 🐱"

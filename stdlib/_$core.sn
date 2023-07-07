@@ -1,3 +1,4 @@
+use Core::CLib;
 
 /**
  * @namespace UA
@@ -187,8 +188,9 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       * @brief Constructs a string from a vector of characters.
       * @param[in] buffer The vector of characters to construct the string from.
       */
-    StringView(buffer: _CharType*) : super(), buffer(buffer) 
-      {}
+    StringView(buffer: _CharType*) : 
+      super(), buffer(buffer), length(CLib::c_string::strlen(buffer))
+      { self.capacity = self.length + 10; }
     /**
       * @return The size of the string.
       */

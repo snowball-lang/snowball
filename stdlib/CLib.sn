@@ -93,3 +93,17 @@ pub extern fn printf(char*, ...) i32;
  * @note(1) The behavior is undefined if a program calls exit more than once.
  */
 pub extern fn exit(i32);
+
+/**
+ * @brief a namespace that contains functions for manipulating strings.
+ * @note(1) All functions in this namespace are thread-safe.
+ */
+namespace c_string {
+/**
+ * @brief It returns the length of string based on the null-terminator.
+ * @param str(char*) - string to be measured
+ * @return i32 - length of the string
+ */
+pub extern fn strlen(char*) i32;
+
+} // namespace c_string
