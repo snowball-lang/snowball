@@ -281,6 +281,10 @@ void Lexer::tokenize() {
                                 str += '\n';
                                 EAT_CHAR(2);
                                 break;
+                            case '0':
+                                str += '\0';
+                                EAT_CHAR(2);
+                                break;
                             case '"':
                                 str += '"';
                                 EAT_CHAR(2);

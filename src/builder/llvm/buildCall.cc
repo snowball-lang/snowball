@@ -45,7 +45,7 @@ void LLVMBuilder::visit(ir::Call* call) {
         args.insert(args.begin(), object);
         llvmCall = builder->CreateCall(
                 (llvm::FunctionType*)callee->getType()->getPointerElementType(), callee, args);
-        this->value = object;
+        this->value = builder->CreateLoad(object->getType()->getPointerElementType(), object);
     } else if (auto c = utils::dyn_cast<ir::Func>(call->getCallee());
                c != nullptr && c->inVirtualTable()) {
         assert(c->hasParent());
@@ -55,14 +55,11 @@ void LLVMBuilder::visit(ir::Call* call) {
 
         auto f = llvm::cast<llvm::Function>(callee);
         auto parentValue = args.at(/* self = */ 0);
-
         auto vtable = builder->CreateStructGEP(
                 parentValue->getType()->getPointerElementType(), parentValue, 0);
-
         auto loadedVtable = builder->CreateLoad(vtable->getType()->getPointerElementType(), vtable);
         auto pointer = builder->CreateStructGEP(
                 loadedVtable->getType()->getPointerElementType(), loadedVtable, index);
-
         auto pointerLoad =
                 builder->CreateLoad(pointer->getType()->getPointerElementType(), pointer);
         llvmCall = builder->CreateCall(

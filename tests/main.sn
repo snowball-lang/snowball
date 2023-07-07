@@ -1,5 +1,5 @@
-
-
+use Core::System
+  
 pub fn main() i32 {
-  let x = new String{};
+  System::println("hello")
 }

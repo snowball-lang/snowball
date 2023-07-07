@@ -17,30 +17,43 @@ namespace snowball {
 namespace Syntax {
 
 void Transformer::initializeCoreRuntime() {
-    auto [filePath, error] = ctx->imports->getImportPath("Core", {"_$core"});
-    if (!error.empty()) { E<IO_ERROR>(error); }
-    // clang-format off
-    std::ifstream ifs(filePath.string());
-    assert(!ifs.fail());
-    std::string content((std::istreambuf_iterator<char>(ifs)),
-                        (std::istreambuf_iterator<char>()));
-    auto srcInfo = new SourceInfo(content, filePath);
-    auto lexer = new Lexer(srcInfo);
-    lexer->tokenize();
-    auto tokens = lexer->tokens;
-    if (tokens.size() != 0) {
-        auto parser = new parser::Parser(tokens, srcInfo);
-        auto ast = parser->parse();
-        ctx->module->setSourceInfo(srcInfo);
-        visitGlobal(ast);
-        // TODO: make this a separate function to avoid any sort of "conflict" with the compiler's version of this algorithm
-        std::vector<Syntax::Analyzer *> passes = {
-            new Syntax::DefiniteAssigment(srcInfo)};
-        for (auto pass : passes)
-            pass->run(ast);
-        auto typeChecker = new codegen::TypeChecker(ctx->module);
-        typeChecker->codegen();
-    }
+    auto dbg = new DBGSourceInfo(ctx->module->getSourceInfo(), 0);
+    auto import = Syntax::N<Syntax::Statement::ImportStmt>(
+        std::vector<std::string>{"_$core"}, "Core");
+    import->setDBGInfo(dbg);
+    import->accept(this);
+
+    ctx->uuidStack.push_back(ctx->imports->CORE_UUID + "_$core");
+
+    //std::map<std::string, std::vector<std::string>> typeAliases = {
+    //    { "String", {} },
+    //    { "Exception", {} },
+    //    { "Vector", { "_StoreType" } },
+    //    { "StringView", { "_CharType" } },
+    //    { "Iterable", { "_IteratorType" } }
+    //};
+//
+    //for (auto [type, generics] : typeAliases) {
+    //    auto uuid = ctx->imports->CORE_UUID + "_$core." + type;
+    //    auto mainUuid = ctx->module->getUniqueName() + "." + type;
+    //    auto fetchedType = ctx->cache->getTransformedType(uuid);
+    //    assert(fetchedType || (generics.size() > 0));
+    //    if (generics.size() == 0) {
+    //        auto identifiers = ctx->cache->identifierLookup[uuid];
+    //        auto types = fetchedType.value();
+    //        assert(identifiers.size() == types.size());
+    //        int i = 0;
+    //        for (auto x : types) {
+    //            auto id = identifiers[i++];
+    //            utils::replaceAll(id, uuid, mainUuid);
+    //            ctx->cache->setTransformedType(mainUuid, x, id);
+    //        }
+    //    }
+//
+    //    auto cachedType = ctx->cache->getType(uuid);
+    //    assert(cachedType);
+    //    ctx->cache->setType(mainUuid, cachedType.value().type, cachedType.value().state);
+    //}
 }
 
 } // namespace Syntax

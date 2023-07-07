@@ -20,8 +20,7 @@ void LLVMBuilder::visit(ir::VariableDeclaration* variable) {
         store = ctx->getSymbol(id);
     }
     auto generatedValue = build(variable->getValue().get());
-    if (!utils::dyn_cast<types::PointerType>(variable->getType()) &&
-        !utils::dyn_cast<types::PrimitiveType>(variable->getType()))
+    if (generatedValue->getType()->isPointerTy())
         generatedValue = builder->CreateLoad(generatedValue->getType()->getPointerElementType(),
                                              generatedValue);
     builder->CreateStore(generatedValue, store);

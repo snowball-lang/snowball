@@ -16,6 +16,7 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
+    if (ctx->generateFunction) return;
     auto package = p_node->getPackage();
     auto path = p_node->getPath();
     // TODO: extension
@@ -33,8 +34,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     } else {
         auto niceFullName = package + "::" + utils::join(path.begin(), path.end(), "::");
         auto mod = std::make_shared<ir::Module>(niceFullName, uuid);
-        auto st = std::make_shared<ContextState::StackType>();
-        auto state = std::shared_ptr<ContextState>(new ContextState(st, mod, nullptr));
+        auto state = std::make_shared<ContextState>(ContextState::StackType{}, mod, nullptr);
         // clang-format off
         ctx->withState(state,
             [filePath = filePath, this]() mutable {
@@ -66,6 +66,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
         // clang-format on
         auto item = std::make_shared<Item>(mod);
         ctx->addItem(exportName, item);
+        auto [x,found] = ctx->getItem(exportName);
     }
 }
 

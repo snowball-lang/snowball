@@ -78,18 +78,17 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
 
 /// @brief get a saved state of the context
 std::shared_ptr<transform::ContextState> TransformContext::saveState() {
-    auto s = *this->stack;
+    auto s = this->stack;
     s.pop_back();
 
-    return std::make_shared<transform::ContextState>(
-            std::make_shared<transform::ContextState::StackType>(s), this->module, currentClass);
+    return std::make_shared<transform::ContextState>(s, this->module, currentClass);
 }
 
 /// @brief set a state to the current context
 void TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
-    auto glob = this->stack->back();
+    auto glob = this->stack.back();
     auto st = s->stack;
-    st->emplace_back(glob);
+    st.emplace_back(glob);
 
     this->stack = st;
     this->module = s->module;

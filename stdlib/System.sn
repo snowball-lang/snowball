@@ -1,5 +1,5 @@
 
-use Core::CLib
+use Core::CLib;
 
 /**
  * @brief Causes the program to terminate with the specified exit code.
@@ -9,61 +9,23 @@ use Core::CLib
  */
 pub static fn exit(exitCode: i32 = 0) { CLib::exit(exitCode); }
 /**
- * Prints the given string message to standard output.
- *
- * @param msg the string message to print
- * @return the number of characters printed
- */
-pub static fn print(msg: String) i32 { return CLib::printf("%s",  msg); }
-/**
- * Prints the given boolean value to standard output.
- *
- * @param msg the boolean value to print
- * @return the number of characters printed
- */
-pub static fn print(msg: bool  ) i32 { return CLib::printf("%i",  msg); }
-/**
- * Prints the given 8-bit integer value to standard output.
- *
- * @param msg the 8-bit integer value to print
- * @return the number of characters printed
- */
-pub static fn print(msg: i8    ) i32 { return print(msg as i32);        }
-/**
- * Prints the given 16-bit integer value to standard output.
- *
- * @param msg the 16-bit integer value to print
- * @return the number of characters printed
- */
-pub static fn print(msg: i16   ) i32 { return print(msg as i32);        }
-/**
- * Prints the given 32-bit integer value to standard output.
- *
- * @param msg the 32-bit integer value to print
- * @return the number of characters printed
- */
-pub static fn print(msg: i32   ) i32 { return CLib::printf("%i",  msg); }
-/**
- * Prints the given 64-bit integer value to standard output.
+ * Prints @arg msg to standard output.
  *
  * @param msg the 64-bit integer value to print
  * @return the number of characters printed
  */
-pub static fn print(msg: i64   ) i32 { return CLib::printf("%ld", msg); }
+pub static fn [[inline]] print<T>(msg: T, end: char* = "") i32 { 
+    return CLib::printf("%s%s", String::from(msg).c_str(), end); 
+}
 /**
- * Prints the given single-precision floating-point value to standard output.
+ * Prints @arg msg to standard output with a new
+ * line appended to the end.
  *
- * @param msg the single-precision floating-point value to print
+ * @param msg the 64-bit integer value to print
  * @return the number of characters printed
  */
-pub static fn print(msg: f32   ) i32 { return CLib::printf("%f",  msg); }
-/**
- * Prints the given double-precision floating-point value to standard output.
- *
- * @param msg the double-precision floating-point value to print
- * @return the number of characters printed
- */
-pub static fn print(msg: f64   ) i32 { return CLib::printf("%f",  msg); }
+pub static fn [[inline]] println<T>(msg: T) i32 
+    { return print(msg, "\n"); }
 /**
  * @brief Prints a new line character to standard output.
  *
@@ -73,72 +35,4 @@ pub static fn print(msg: f64   ) i32 { return CLib::printf("%f",  msg); }
  * @note This function does not print any other characters besides the new line character.
  * If you need to print additional characters or a string, use the `println(...)` function instead.
  */
-pub static fn printNewLine() { CLib::putchar('\n'); }
-/**
- * @brief Writes a string to @param stream and it also writes a new line
- *  additionally
- * @param msg string to print
- * @return On success, the total number of characters written is returned.
- */
-pub static fn println(msg: String) i32 { _genericPrinln(msg); }
-/**
- * @brief Writes a i32-bit allocated integer to @param stream and it also writes a new line
- *  additionally
- * @param msg i32 to print
- * @return On success, the total number of characters written is returned.
- */
-pub static fn println(msg: i32) i32 { _genericPrinln(msg); }
-/**
- * @brief Writes a i64-bit allocated integer to @param stream and it also writes a new line
- *  additionally
- * @param msg i64 to print
- * @return On success, the total number of characters written is returned.
- */
-pub static fn println(msg: i64) i32 { _genericPrinln(msg); }
-/**
- * @brief Writes a f32-bit allocated float to @param stream and it also writes a new line
- *  additionally
- * @param msg f32 to print
- * @return On success, the total number of characters written is returned.
- */
-pub static fn println(msg: f32) i32 { _genericPrinln(msg); }
-/**
- * @brief Writes a f64-bit allocated real to @param stream and it also writes a new line
- *  additionally
- * @param msg f64 to print
- * @return On success, the total number of characters written is returned.
- */
-pub static fn println(msg: f64) i32 { _genericPrinln(msg); }
-/**
- * @brief Used to take user input. By default, it returns the user input in form of
- *  a string.
- * @param __p prompt to print before input is requested
- * @return What the user entered in the stdin stream.
- */
-pub static fn input(__p: String = "") String {
-    print(__p)
-    return _input()
-}
-
-// - Mark: Private functions
-extern fn "sn.core.libs.System.input" as _input() String;
-
-/**
- * @brief Prints a primitive value followed by a new line character.
- *
- * This function is a utility for printing a primitive value followed by a new line character
- * to standard output. It can be used to simplify printing operations and improve readability.
- *
- * @tparam PrimitiveType The type of the primitive value to print.
- * @param msg The primitive value to print.
- * @return The number of characters printed.
- *
- * @note This function relies on the `print()` and `printNewLine()` functions to perform the printing.
- * If you need more control over the output format, use those functions directly instead.
- */
-static fn _genericPrinln<_Type>(msg: _Type) i32 {
-    let ret = print(msg);
-    printNewLine();
-
-    return ret;
-}
+pub static fn println() { CLib::putchar('\n'); }

@@ -21,6 +21,9 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
     bool isGeneric = node->getGenerics().size() > 0;
 
     std::shared_ptr<ir::Func> fn = nullptr;
+    for (auto s : fnStore.state->stack) {
+        continue;
+    }
     ctx->withState(fnStore.state, [&]() {
         // Parent scope for things such as: generics
         ctx->withScope([&]() {

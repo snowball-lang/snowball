@@ -43,7 +43,7 @@ class ASTContext {
      *   if-stmt scope > fn scope > global scope
      *      (no vars)     (var a)   (types, etc)
      */
-    std::shared_ptr<std::list<Scope>> stack = std::make_shared<std::list<Scope>>();
+    std::list<Scope> stack = {};
 
   public:
     ASTContext() {
@@ -59,9 +59,9 @@ class ASTContext {
      * @param name Identifier for the item
      * @param item Item to be stored
      */
-    virtual void addItem(const std::string& name, Item& item) {
+    virtual void addItem(const std::string& name, Item item) {
         DEBUG_SYMTABLE(1, FMT("    Adding to scope: %s", name.c_str()).c_str())
-        auto f = stack->front();
+        auto f = stack.front();
         auto val = f.find(name);
 
         if (val != f.end()) {
@@ -69,7 +69,7 @@ class ASTContext {
                               FMT("Value for '%s' is already defiend!", item->toString().c_str()));
         }
 
-        stack->front().insert(std::make_pair(name, item));
+        stack.front().insert(std::make_pair(name, item));
     }
 
     /**
@@ -79,7 +79,7 @@ class ASTContext {
      * @return {item or nullptr, if found}
      */
     virtual std::pair<Item, bool> getItem(const std::string name) const {
-        for (auto s : *stack) {
+        for (auto s : stack) {
             auto [val, found] = getInScope(name, s);
             if (found) {
                 DEBUG_SYMTABLE(1, FMT("[symtable]: Successfully fetched %s", name.c_str()).c_str())
@@ -97,7 +97,7 @@ class ASTContext {
      * @param s scope where search is performed
      * @return {item or nullptr, if found}
      */
-    virtual std::pair<Item, bool> getInScope(const std::string name, Scope& s) const {
+    virtual std::pair<Item, bool> getInScope(const std::string name, Scope s) const {
         auto val = s.find(name);
         if (val != s.end()) { return {val->second, true}; }
 
@@ -113,13 +113,13 @@ class ASTContext {
         return getInScope(name, currentScope());
     }
     /// @return the current scope the programm is into
-    virtual Scope& currentScope() const { return stack->front(); }
+    virtual Scope currentScope() const { return stack.front(); }
     /// @brief Create a new scope and append it.
     virtual void addScope() {
         DEBUG_SYMTABLE(0, "Creating new scope")
 
         Scope newScope{};
-        stack->insert(stack->begin(), newScope);
+        stack.insert(stack.begin(), newScope);
     }
     /// @brief Run a function inside a scope
     virtual Scope withScope(std::function<void()> func) {
@@ -135,8 +135,8 @@ class ASTContext {
     virtual Scope delScope() {
         DEBUG_SYMTABLE(0, "Deleting scope")
 
-        auto s = stack->front();
-        stack->pop_front();
+        auto s = stack.front();
+        stack.pop_front();
 
         return s;
     }

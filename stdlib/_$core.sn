@@ -60,7 +60,7 @@ pub extern fn "sn.ua.set" as __ua_set(UniversalArray*, i32, cobj);
  * manipulation operations such as exception throwing, exception
  * catching, exception handling, and more.
  */
-class Exception {
+pub class Exception {
   pub:
     /**
      * @brief Exception constructor.
@@ -85,7 +85,7 @@ class Exception {
     let msg: char*;
 }
 
-class Iterable<_IteratorType: Core::Sized> {
+pub class Iterable<_IteratorType: Core::Sized> {
   pub:
     Iterable() {}
 }
@@ -103,7 +103,7 @@ class Iterable<_IteratorType: Core::Sized> {
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating vectors.
  */
-class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
+pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
   pub:
     /**
      * @brief Default constructor.
@@ -175,7 +175,7 @@ class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating strings.
  */
-class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
+pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
   pub:
     /**
      * @brief Default constructor.
@@ -187,21 +187,34 @@ class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       * @brief Constructs a string from a vector of characters.
       * @param[in] buffer The vector of characters to construct the string from.
       */
-    StringView(buffer: Vector<_CharType>) : super(), buffer(buffer) 
+    StringView(buffer: _CharType*) : super(), buffer(buffer) 
       {}
     /**
       * @return The size of the string.
       */
     fn [[internal_linkage, inline]] size() i32 
-      { return self.buffer.size(); }
+      { return self.length; }
     /**
       * @return The buffer containing the string.
       */
     fn [[internal_linkage, inline]] c_str() _CharType*
-      { return self.buffer.data(); }
+      { return self.buffer; }
   priv:
+    /** The capacity of the string. */
+    let capacity: i32 = 10;
+    /** The size of the string. */
+    let length: i32 = 0;
     /** The buffer containing the string. */
-    let buffer: Vector<_CharType> = new Vector<_CharType>{};
+    let buffer: _CharType* = "";
+
+  // Static exports
+  pub:
+    /**
+      * @brief Constructs a string from a vector of characters.
+      * @param[in] buffer The vector of characters to construct the string from.
+      */
+    static fn [[internal_linkage, inline]] from<T>(buffer: T)
+      StringView<char> { return new StringView<char>{buffer}; }
 }
 
 

@@ -15,11 +15,11 @@ namespace transform {
 /// @brief Representation of a saved state for the context
 struct ContextState : std::enable_shared_from_this<ContextState> {
     using StackType = std::list<std::map<std::string, std::shared_ptr<Item>>>;
-    std::shared_ptr<StackType> stack = {};
+    StackType stack = {};
     std::shared_ptr<ir::Module> module = nullptr;
     std::shared_ptr<types::DefinedType> currentClass = nullptr;
 
-    explicit ContextState(std::shared_ptr<StackType> s = {},
+    explicit ContextState(StackType s = {},
                           std::shared_ptr<ir::Module> module = nullptr,
                           std::shared_ptr<types::DefinedType> currentClass = nullptr)
         : stack(s), module(module), currentClass(currentClass) { }

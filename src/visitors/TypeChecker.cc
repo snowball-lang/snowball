@@ -174,10 +174,7 @@ VISIT(Cast) {
     auto t = p_node->getCastType();
     assert(t->is(p_node->getType()));
 
-    if (utils::dyn_cast<types::VoidType>(t)) {
-        Syntax::E<TYPE_ERROR>(p_node,
-                              FMT("Can't cast to void type ('%s')!", t->getPrettyName().c_str()));
-    } else if (utils::dyn_cast<types::VoidType>(v->getType())) {
+    if (utils::dyn_cast<types::VoidType>(v->getType())) {
         Syntax::E<TYPE_ERROR>(
                 p_node,
                 FMT("Can't cast from void type ('%s')!", v->getType()->getPrettyName().c_str()));
@@ -188,8 +185,8 @@ VISIT(Cast) {
         Syntax::E<TYPE_ERROR>(p_node,
                               FMT("Can't create a casting operator from value ('%s') "
                                   "to type '%s'!",
-                                  t->getPrettyName().c_str(),
-                                  v->getType()->getPrettyName().c_str()));
+                                  v->getType()->getPrettyName().c_str(),
+                                  t->getPrettyName().c_str()));
     }
 }
 

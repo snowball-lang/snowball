@@ -13,19 +13,15 @@ SN_TRANSFORMER_VISIT(Statement::TypeAlias) {
     auto state = ctx->saveState();
     auto x = ctx->cache->getType(uuid);
 
-    if (x.has_value() && (!ctx->generateFunction) ||
-        ctx->cache->getTransformedType(uuid).has_value()) {
+    if (x.has_value() && (!ctx->generateFunction)) {
         E<VARIABLE_ERROR>(p_node,
                           FMT("Type alias with name '%s' is already "
                               "defined in the current scope!",
                               name.c_str()));
     } else if (ctx->generateFunction && (p_node->getGenerics().size() == 0)) {
-        if (!ctx->generateFunction) return;
         assert(ctx->cache->getTransformedType(uuid) == std::nullopt);
-
         auto item = std::make_shared<transform::Item>(transformType(p_node->getType()));
         ctx->cache->setTransformedType(uuid, item);
-
         return;
     } else if (!ctx->generateFunction || (p_node->getGenerics().size() > 0)) {
         ctx->cache->setType(uuid, p_node, state);
