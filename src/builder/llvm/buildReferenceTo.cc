@@ -19,7 +19,6 @@ void LLVMBuilder::visit(ir::ReferenceTo* ref) {
         auto load = llvm::cast<llvm::LoadInst>(llvmReferencedValue);
         value = load->getOperand(0);
     } else {
-        llvmReferencedValue->dump();
         assert(llvmReferencedValue->getType()->isPointerTy());
         value = llvmReferencedValue;
     }

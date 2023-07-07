@@ -168,7 +168,6 @@ void LLVMBuilder::codegen() {
 
     std::string module_error_string;
     llvm::raw_string_ostream module_error_stream(module_error_string);
-    module->dump();
     llvm::verifyModule(*module.get(), &module_error_stream);
 
     if (!module_error_string.empty()) {

@@ -169,7 +169,7 @@ struct WhereClause {
 
   public:
     WhereClause(ChecksVectorType checks) : checks(checks) { }
-    explicit WhereClause(TypeRef* check) : checks(ChecksVectorType{checks}) { }
+    explicit WhereClause(TypeRef* check) : checks(ChecksVectorType{check}) { }
 
     /// @return The checks to perform
     auto getChecks() { return checks; }
