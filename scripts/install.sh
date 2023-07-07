@@ -123,17 +123,9 @@ log warn "You may need to use 'sudo' password for this action"
 if [[ "$OSTYPE" == "darwin"* ]]; then
     log info "Moving libSnowball.dylib to $LIB_FOLDER"
     cp objects/libSnowball.dylib $LIB_FOLDER
-
-    log info "Moving libSnowballRuntime.dylib and libSnowball.dylib to $SNOWBALL_INSTALL_DIR/objects"
-    mv objects/libSnowballRuntime.dylib $SNOWBALL_INSTALL_DIR/objects
-    mv objects/libSnowball.dylib $SNOWBALL_INSTALL_DIR/objects
 else
     log info "Moving libSnowball.so to $LIB_FOLDER"
     cp objects/libSnowball.so $LIB_FOLDER
-
-    log info "Moving libSnowballRuntime.so and libSnowball.so to $SNOWBALL_INSTALL_DIR/objects"
-    mv objects/libSnowballRuntime.so $SNOWBALL_INSTALL_DIR/objects
-    mv objects/libSnowball.so $SNOWBALL_INSTALL_DIR/objects
 fi
 
 log info "Exporting snowball to PATH"
