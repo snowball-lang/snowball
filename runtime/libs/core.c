@@ -11,7 +11,7 @@ typedef struct UniversalArray {
 extern UniversalArray_T* ua_allocate(int size) __asm__("sn.ua.alloc");
 extern UniversalArray_T* ua_resize(UniversalArray_T* ua, int size) __asm__("sn.ua.resize");
 extern void* ua_get(UniversalArray_T* ua, int index) __asm__("sn.ua.get");
-extern void* ua_set(UniversalArray_T* ua, int index, void* value) __asm__("sn.ua.set");
+extern void ua_set(UniversalArray_T* ua, int index, void* value) __asm__("sn.ua.set");
 
 UniversalArray_T* ua_allocate(int size) {
     return (UniversalArray_T*)sn_alloca(size);
@@ -25,7 +25,8 @@ void* ua_get(UniversalArray_T* ua, int index) {
     return (void*)ua->data[index];
 }
 
-void* ua_set(UniversalArray_T* ua, int index, void* value) {
+void ua_set(UniversalArray_T* ua, int index, void* value) {
+    printf("IDX: %d\n", index);
+    printf("LEN: %d\n", sizeof(ua->data) / sizeof(void*));
     ua->data[index] = value;
-    return value;
 }

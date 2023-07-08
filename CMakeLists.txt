@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.16)
 
 if ("$ENV{ARCH}" STREQUAL "arm64")
   if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    message("CROSS COMPILING FOR ARM64!")
     set(CMAKE_SYSTEM_PROCESSOR arm64)
     set(CMAKE_HOST_SYSTEM_PROCESSOR arm64)
     set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)

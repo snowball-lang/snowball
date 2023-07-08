@@ -53,36 +53,38 @@ Transformer::getBestFittingFunction(const std::vector<Cache::FunctionStore>& ove
             genericCount++;
             genericIndex = genericIterator;
         } else {
-            auto fnArgs = getActualFunctionArgs(foundFunction.first);
-            bool argsEqual = (fnArgs.size() == 0) && (arguments.size() == 0);
-            bool argsNeedCasting = false;
+            ctx->withState(foundFunction.first.state, [&] {
+                auto fnArgs = getActualFunctionArgs(foundFunction.first);
+                bool argsEqual = (fnArgs.size() == 0) && (arguments.size() == 0);
+                bool argsNeedCasting = false;
 
-            for (auto i = 0; ((i < fnArgs.size()) && (!argsEqual)); i++) {
-                auto type = transformType(fnArgs.at(i)->getType());
-                if (fnArgs.at(i)->hasDefaultValue() && arguments.size() < fnArgs.size()) {
-                    argsEqual = true;
-                    continue;
-                }
-
-                argsEqual = type->is(arguments.at(i));
-                if (!argsEqual) {
-                    auto canCast = arguments.at(i)->canCast(type);
-
-                    if (canCast) {
+                for (auto i = 0; ((i < fnArgs.size()) && (!argsEqual)); i++) {
+                    auto type = transformType(fnArgs.at(i)->getType());
+                    if (fnArgs.at(i)->hasDefaultValue() && arguments.size() < fnArgs.size()) {
                         argsEqual = true;
-                        argsNeedCasting = true;
+                        continue;
+                    }
+
+                    argsEqual = type->is(arguments.at(i));
+                    if (!argsEqual) {
+                        auto canCast = arguments.at(i)->canCast(type);
+
+                        if (canCast) {
+                            argsEqual = true;
+                            argsNeedCasting = true;
+                        }
                     }
                 }
-            }
 
-            if (argsEqual) {
-                if (!argsNeedCasting) {
-                    exactFunctionExists = true;
-                    bestFunction = foundFunction;
-                } else {
-                    matchedFunctions.push_back(foundFunction);
+                if (argsEqual) {
+                    if (!argsNeedCasting) {
+                        exactFunctionExists = true;
+                        bestFunction = foundFunction;
+                    } else {
+                        matchedFunctions.push_back(foundFunction);
+                    }
                 }
-            }
+            });
         }
 
         genericIterator++;

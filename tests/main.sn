@@ -3,6 +3,6 @@ use Core::System
 pub fn main() i32 {
   let s = String::from("hello");
   let a = new Vector<String>{};
-  a.push(s);
+  a.push(&s);
   System::println(s.c_str());
 }
