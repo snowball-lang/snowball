@@ -15,7 +15,8 @@ pub static fn exit(exitCode: i32 = 0) { CLib::exit(exitCode); }
  * @return the number of characters printed
  */
 pub static fn [[inline]] print<T>(msg: T, end: char* = "") i32 { 
-    return CLib::printf("%s%s", String::from(msg).c_str(), end); 
+    let m = String::from(msg).c_str();
+    return CLib::printf("%s%s", m, end); 
 }
 /**
  * Prints @arg msg to standard output with a new

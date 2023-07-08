@@ -123,7 +123,7 @@ Syntax::Expression::TypeRef* DefinedType::toRef() {
 }
 
 bool DefinedType::canCast(Type* ty) const {
-    SNOWBALL_DEFAULT_CAST_CHECKS
+    SNOWBALL_MUTABLE_CAST_CHECK
     if (auto x = utils::cast<DefinedType>(ty)) return canCast(x);
     return false;
 }

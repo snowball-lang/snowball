@@ -37,7 +37,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
         auto state = std::make_shared<ContextState>(ContextState::StackType{}, mod, nullptr);
         // clang-format off
         ctx->withState(state,
-            [filePath = filePath, this]() mutable {
+            [filePath = filePath, mod, this]() mutable {
                 std::ifstream ifs(filePath.string());
                 assert(!ifs.fail());
                 std::string content((std::istreambuf_iterator<char>(ifs)),
@@ -47,6 +47,8 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
                 lexer->tokenize();
                 auto tokens = lexer->tokens;
                 if (tokens.size() != 0) {
+                    auto backupModule = ctx->module;
+                    ctx->module = mod;
                     auto parser = new parser::Parser(tokens, srcInfo);
                     auto ast = parser->parse();
                     ctx->module->setSourceInfo(srcInfo);
@@ -56,9 +58,8 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
                         new Syntax::DefiniteAssigment(srcInfo)};
                     for (auto pass : passes)
                         pass->run(ast);
-                    auto typeChecker = new codegen::TypeChecker(ctx->module);
-                    typeChecker->codegen();
                     // TODO: set a new module to the import cache
+                    ctx->module = backupModule;
                     addModule(ctx->module);
                     ctx->imports->cache->addModule(filePath, ctx->module);
                 }
@@ -66,7 +67,6 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
         // clang-format on
         auto item = std::make_shared<Item>(mod);
         ctx->addItem(exportName, item);
-        auto [x,found] = ctx->getItem(exportName);
     }
 }
 

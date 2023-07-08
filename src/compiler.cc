@@ -91,8 +91,11 @@ void Compiler::compile(bool verbose) {
             simplifier->visitGlobal(ast);
 #endif
 
-            SHOW_STATUS(Logger::compiling(Logger::progress(0.60)))
+            SHOW_STATUS(Logger::compiling(Logger::progress(0.70)))
             std::vector<Syntax::Analyzer*> passes = {new Syntax::DefiniteAssigment(_source_info)};
+
+            mainModule->setModules(simplifier->getModules());
+            module = mainModule;
 
 #if _SNOWBALL_TIMERS_DEBUG
             DEBUG_TIMER("Passes: %fs", utils::_timer([&] {
@@ -102,22 +105,18 @@ void Compiler::compile(bool verbose) {
             for (auto pass : passes) { pass->run(ast); }
 #endif
 
-            SHOW_STATUS(Logger::compiling(Logger::progress(0.70)))
-
-            auto typeChecker = new codegen::TypeChecker(mainModule);
-
-#if _SNOWBALL_TIMERS_DEBUG
-            DEBUG_TIMER("TypeChecker: %fs", utils::_timer([&] { typeChecker->codegen(); }));
-#else
-            typeChecker->codegen();
-#endif
-
-            SHOW_STATUS(Logger::compiling(Logger::progress(0.80)))
-
-            mainModule->setModules(simplifier->getModules());
-            module = mainModule;
-
             SHOW_STATUS(Logger::compiling(Logger::progress(0.90)))
+
+            for (auto module : mainModule->getModules()) {
+                auto typeChecker = new codegen::TypeChecker(module);
+#if _SNOWBALL_TIMERS_DEBUG
+                DEBUG_TIMER("TypeChecker: %fs", utils::_timer([&] { typeChecker->codegen(); })); 
+#else
+                typeChecker->codegen();
+#endif
+            }
+
+            SHOW_STATUS(Logger::compiling(Logger::progress(1)))
 
             SHOW_STATUS(Logger::reset_status())
         }

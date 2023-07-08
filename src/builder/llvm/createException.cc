@@ -18,9 +18,17 @@ llvm::Value* LLVMBuilder::createException(llvm::Value* value, std::shared_ptr<ty
     f->addRetAttr(llvm::Attribute::NoUndef);
     f->setDoesNotThrow();
 
-    auto definedType = utils::dyn_cast<types::DefinedType>(type);
+    auto usedValue = value;
+    if (llvm::isa<llvm::LoadInst>(value)) {
+        auto load = llvm::cast<llvm::LoadInst>(value);
+        usedValue = load->getOperand(0);
+        load->eraseFromParent();
+    }
+
+    auto pointerType = utils::dyn_cast<types::PointerType>(type);
+    auto definedType = utils::dyn_cast<types::DefinedType>(pointerType->getPointedType());
     int typeId = definedType ? definedType->getId() : -1;
-    auto cast = builder->CreatePointerCast(value, builder->getInt8PtrTy());
+    auto cast = builder->CreatePointerCast(usedValue, builder->getInt8PtrTy());
 
     return builder->CreateCall(f, {cast, builder->getInt32(typeId)});
 }

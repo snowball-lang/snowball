@@ -65,7 +65,7 @@ VISIT(DereferenceTo) {
                    "type!",
                    p_node->getType()->getPrettyName().c_str()));
     if (!utils::dyn_cast<ir::ValueExtract>(val) && !utils::dyn_cast<ir::Variable>(val) &&
-        !utils::dyn_cast<ir::IndexExtract>(val)) {
+        !utils::dyn_cast<ir::IndexExtract>(val) && !utils::dyn_cast<ir::Argument>(val)) {
         Syntax::E<TYPE_ERROR>(p_node->getDBGInfo(),
                               FMT("Value used for dereference '%s' is not a "
                                   "variable!",
@@ -82,20 +82,6 @@ VISIT(ReferenceTo) {
                FMT("Value used for reference '%s' has a value with 'void' "
                    "type!",
                    p_node->getType()->getPrettyName().c_str()));
-    if (!utils::dyn_cast<ir::ValueExtract>(val) && !utils::dyn_cast<ir::Variable>(val) &&
-        !utils::dyn_cast<ir::IndexExtract>(val)) {
-        Syntax::E<TYPE_ERROR>(p_node->getDBGInfo(),
-                              FMT("Value used for reference '%s' is not a "
-                                  "variable!",
-                                  p_node->getType()->getPrettyName().c_str()),
-                              {.note = "This error is caused by the value not being a variable.",
-                               .help = "Try to use a variable instead of a value.",
-                               .tail = Syntax::EI<>(val->getDBGInfo(),
-                                                    "",
-                                                    {
-                                                            .info = "This value is not a variable!",
-                                                    })});
-    }
 }
 
 VISIT(Call) {
@@ -108,6 +94,7 @@ VISIT(Call) {
     // TODO: check for operator sides being equal
 
     int i = 0;
+    fn->visit(this);
     for (auto a : p_node->getArguments()) {
         if (i == 0) checkMutability(p_node, fn, a);
 
@@ -183,10 +170,22 @@ VISIT(Cast) {
     if (v->getType()->is(t)) return;
     if (!v->getType()->canCast(t)) {
         Syntax::E<TYPE_ERROR>(p_node,
-                              FMT("Can't create a casting operator from value ('%s') "
-                                  "to type '%s'!",
+                              FMT("Can't create a casting operator from type `%s` "
+                                  "to type `%s`!",
                                   v->getType()->getPrettyName().c_str(),
-                                  t->getPrettyName().c_str()));
+                                  t->getPrettyName().c_str()),
+                              {.note = "This error is caused by the types not being "
+                                       "castable.",
+                               .help = "Casting operators allow for type conversions between different data types.\n"
+                                        "However, in this case, it is not possible to create a casting operator from \n"
+                                        "the specified source type to the desired target type.\n\n"
+                                        "Please ensure that the types involved in the casting operation are compatible \n"
+                                        "and that there is a valid casting mechanism defined between them. Check the \n"
+                                        "documentation or language specifications to verify the supported casting operations \n"
+                                        "and rules for the involved types.\n\n"
+                                        "If the desired type conversion is not directly supported, you may need to consider \n"
+                                        "alternative approaches such as using explicit conversion functions or implementing \n"
+                                        "custom conversion logic to achieve the desired result."});
     }
 }
 
@@ -194,8 +193,8 @@ VISIT(Return) {
     auto fn = ctx->getCurrentFunction();
     assert(fn != nullptr);
 
-    if (p_node->getExpr() != nullptr) { p_node->getExpr()->visit(this); }
-
+    if (p_node->getExpr() != nullptr) 
+        p_node->getExpr()->visit(this);
     if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) != nullptr) &&
         (p_node->getExpr() != nullptr)) {
         Syntax::E<TYPE_ERROR>(p_node,
@@ -233,7 +232,8 @@ void TypeChecker::codegen() {
     auto functions = module->getFunctions();
 
     // Iterate every function with a reversed iterator.
-    for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn) { visit(fn->get()); }
+    for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn) 
+        visit(fn->get());
 }
 
 void TypeChecker::cantBeVoid(

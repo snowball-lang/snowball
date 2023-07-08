@@ -8,9 +8,10 @@
 #ifndef __SNOWBALL_AST_BASE_TYPE_H_
 #define __SNOWBALL_AST_BASE_TYPE_H_
 
-#define SNOWBALL_DEFAULT_CAST_CHECKS                                                               \
-    if (!_mutable && ty->isMutable()) return false;                                                \
+#define SNOWBALL_COBJ_CAST_CHECK \
     if (utils::cast<CObjectType>(ty)) return true;
+#define SNOWBALL_MUTABLE_CAST_CHECK                                                               \
+    if (!_mutable && ty->isMutable()) return false;                                                \
 
 /**
  * Types in snowball can be represented in many different forms.

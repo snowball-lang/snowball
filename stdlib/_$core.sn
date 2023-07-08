@@ -52,6 +52,15 @@ pub extern fn "sn.ua.resize" as __ua_resize(UniversalArray*, i32) UniversalArray
  * @param[in] item The element to set.
  */
 pub extern fn "sn.ua.set" as __ua_set(UniversalArray*, i32, cobj);
+
+/**
+ * @brief Gets an element from a universal array.
+ * @param[in] array The universal array to get the element from.
+ * @param[in] index The index of the element to get.
+ * @return The element at the specified index.
+ */
+pub extern fn "sn.ua.get" as __ua_get(UniversalArray*, i32) cobj;
+
 } /* namespace UA */;
 
 /**
@@ -88,6 +97,31 @@ pub class Exception {
     let msg: char*;
 }
 
+/**
+ * @class IndexError
+ * @brief A class representing an index error.
+ *
+ * The IndexError class provides various operations and functionalities
+ * for working with index errors. It supports common IndexError
+ * manipulation operations such as exception throwing, exception
+ * catching, exception handling, and more.
+ */
+pub class IndexError: Exception {
+  pub:
+    /**
+     * @brief Exception constructor.
+     * @param[in] m The message of the exception.
+     */ 
+    IndexError(m: char*) : super(m) 
+      { }
+    /**
+      * @brief Exception constructor from a string.
+      * @param[in] m The message of the exception.
+      */
+    IndexError(m: String) : super(m) 
+      { }
+}
+
 pub class Iterable<_IteratorType: Core::Sized> {
   pub:
     Iterable() {}
@@ -106,7 +140,7 @@ pub class Iterable<_IteratorType: Core::Sized> {
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating vectors.
  */
-pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
+pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType*> {
   pub:
     /**
      * @brief Default constructor.
@@ -118,7 +152,7 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
      * @brief It pushes an element to the back of the vector.
      * @param[in] value The element to push to the back of the vector.
      */
-    fn [[internal_linkage]] push(value: _StoreType) mut
+    fn [[internal_linkage]] push(value: _StoreType*) mut
     { 
       if self.length + 1 >= self.capacity 
       {
@@ -145,9 +179,13 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
       * @param[in] index The index of the element to return.
       * @return The element at the specified index.
       */
-    fn [[internal_linkage]] at(index: i32) 
+    fn [[internal_linkage]] at(index: i32) _StoreType*
     {
-
+      if index < 0 || index >= self.length 
+      {
+        raise new IndexError("Index out of bounds.");
+      }
+      return UA::__ua_get(self.buffer, index) as _StoreType*;
     }
     /**
       * @brief Returns the data of the vector.
@@ -227,5 +265,6 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
 type StringView<T = char> = Core::StringView<T>;
 type Vector<T> = Core::Vector<T>;
 type Exception = Core::Exception;
+type IndexError = Core::IndexError;
 type String = StringView<>;
 // TODO (implement wchar): using WideString as StringView<wchar*>

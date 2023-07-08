@@ -2,5 +2,7 @@ use Core::System
   
 pub fn main() i32 {
   let s = String::from("hello");
-  System::println(s.size())
+  let a = new Vector<String>{};
+  //a.push(s);
+  System::println(s.c_str());
 }
