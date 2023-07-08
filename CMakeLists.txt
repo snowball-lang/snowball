@@ -1,4 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
+
+if ("$ENV{ARCH}" STREQUAL "arm64")
+  if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(CMAKE_SYSTEM_PROCESSOR arm)
+  endif()
+endif()
+
 project(snowball)
 include(FetchContent)
 
