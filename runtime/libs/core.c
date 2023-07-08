@@ -14,11 +14,14 @@ extern void* ua_get(UniversalArray_T* ua, int index) __asm__("sn.ua.get");
 extern void ua_set(UniversalArray_T* ua, int index, void* value) __asm__("sn.ua.set");
 
 UniversalArray_T* ua_allocate(int size) {
-    return (UniversalArray_T*)sn_alloca(size);
+    UniversalArray_T* array = sn_alloca(size);
+    array->data = sn_alloca(size * sizeof(void*));
+    return array;
 }
 
 UniversalArray_T* ua_resize(UniversalArray_T* ua, int size) {
-    return (UniversalArray_T*)sn_realloc(ua, size);
+    ua->data = sn_realloc(ua->data, size * sizeof(void*));
+    return ua;
 }
 
 void* ua_get(UniversalArray_T* ua, int index) {
@@ -26,7 +29,5 @@ void* ua_get(UniversalArray_T* ua, int index) {
 }
 
 void ua_set(UniversalArray_T* ua, int index, void* value) {
-    printf("IDX: %d\n", index);
-    printf("LEN: %d\n", sizeof(ua->data) / sizeof(void*));
     ua->data[index] = value;
 }
