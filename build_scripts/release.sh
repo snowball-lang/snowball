@@ -3,7 +3,7 @@ export CXXFLAGS="-D_SN_DEBUG=0"
 if [[ "$OSTYPE" != "darwin"* ]]; then
     export CC="/usr/bin/g++"
     export CXX="/usr/bin/g++-9"
-
+else
     if [[ "$ARCH" == "arm64" ]]; then
         brew tap ArmMbed/homebrew-formulae
         brew install arm-none-eabi-gcc
