@@ -1,6 +1,14 @@
 export CXXFLAGS="-D_SN_DEBUG=0"
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
+if [[ "$OSTYPE" != "darwin"* ]]; then
+    sudo apt install software-properties-common
+    sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+    sudo apt update
+    sudo apt install gcc-9 g++-9 -y
+
+    export CC="/usr/bin/gcc-9"
+    export CXX="/usr/bin/g++-9"
+else
     if [[ "$ARCH" == "arm64" ]]; then
         brew tap ArmMbed/homebrew-formulae
         brew install arm-none-eabi-gcc
