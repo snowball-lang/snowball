@@ -3,10 +3,19 @@ cmake_minimum_required(VERSION 3.16)
 if ("$ENV{ARCH}" STREQUAL "arm64")
   if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(CMAKE_SYSTEM_PROCESSOR arm)
+    set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)
   endif()
 endif()
 
 project(snowball)
+
+if ("$ENV{ARCH}" STREQUAL "arm64")
+  if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(CMAKE_C_LINK_FLAGS "")
+    set(CMAKE_CXX_LINK_FLAGS "")
+  endif()
+endif()
+
 include(FetchContent)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
