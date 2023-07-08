@@ -8,11 +8,8 @@ else
         brew tap ArmMbed/homebrew-formulae
         brew install arm-none-eabi-gcc
     
-        export CC="/usr/bin/arm-none-eabi-gcc"
-        export CXX="arm-none-eabi-g++"
-
-        echo $CC
-        arm-none-eabi-g++ --help
+        export CC="/usr/local/bin/arm-none-eabi-gcc"
+        export CXX="/usr/local/bin/arm-none-eabi-g++"
     fi 
 fi
 
