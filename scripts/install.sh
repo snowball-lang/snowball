@@ -122,10 +122,10 @@ log warn "You may need to use 'sudo' password for this action"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     log info "Moving libSnowball.dylib to $LIB_FOLDER"
-    cp objects/libSnowball.dylib $LIB_FOLDER
+    cp lib/libSnowball.dylib $LIB_FOLDER
 else
     log info "Moving libSnowball.so to $LIB_FOLDER"
-    cp objects/libSnowball.so $LIB_FOLDER
+    cp lib/libSnowball.so $LIB_FOLDER
 fi
 
 log info "Exporting snowball to PATH"

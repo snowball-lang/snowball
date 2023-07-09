@@ -12,20 +12,26 @@ set -e
 
 label=snowball-"$NAME"-"$ARCH"
 
+if [[ "$NAME" == "ce-specific" ]]; then
+    export BUILD_FOR_CE=1
+else    
+    export BUILD_FOR_CE=0    
+fi
+
 bash build_scripts/release.sh
-mkdir -p ./bin/Release/objects
+mkdir -p ./bin/Release/lib
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    mv libSnowballRuntime.dylib ./bin/Release/objects
-    mv libSnowball.dylib ./bin/Release/objects
+    mv libSnowballRuntime.dylib ./bin/Release/lib
+    mv libSnowball.dylib ./bin/Release/lib
 else
-    mv libSnowballRuntime.so ./bin/Release/objects
-    mv libSnowball.so ./bin/Release/objects
+    mv libSnowballRuntime.so ./bin/Release/lib
+    mv libSnowball.so ./bin/Release/lib
 fi
 
 mkdir release
 mkdir -p release/bin
 cp -a ./bin/Release/. release/
 mv release/snowball release/bin/snowball
-cp -R ./stdlib release/libs
+cp -R ./stdlib release/stdlib
 tar -czvf "$label".tar.gz release/

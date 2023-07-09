@@ -80,9 +80,14 @@ std::string getUTF8FromIndex(const std::string& s, const int index) {
 }
 
 std::string get_lib_folder() {
+#if defined(_SNOWBALL_BUILD_FOR_CE)
+    fs::path exe_folder = get_exe_folder();
+    fs::path full_path = exe_folder / _SNOWBALL_LIBRARY_DIR;
+#else
     fs::path home = getenv("HOME");
     fs::path exe_folder = home / (std::string)STATICLIB_DIR;
     fs::path full_path = exe_folder / _SNOWBALL_LIBRARY_DIR;
+#endif
 
     bool filepathExists = fs::is_directory(full_path);
     if (!filepathExists) {
