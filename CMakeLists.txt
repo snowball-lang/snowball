@@ -19,8 +19,8 @@ endif()
 
 include(FetchContent)
 
-message(STATUS $ENV{BUILD_FOR_CE})
 message(STATUS $ENV{ARCH})
+message(STATUS ${CMAKE_SYSTEM_NAME})
 if (DEFINED ENV{BUILD_FOR_CE})
   message(STATUS "Building for CE")
   set(CMAKE_INSTALL_RPATH $ORIGIN/../lib)
