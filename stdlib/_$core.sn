@@ -260,6 +260,29 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
   // Static exports
   pub:
     /**
+     * @brief Constructs a string from a long integer. 
+     * @param[in] num The integer to construct the string from.
+     */
+    static fn [[internal_linkage, inline]] from(num: i64)
+      StringView<_CharType> 
+    { 
+      let buffer: _CharType& = 
+        CLib::__internal::alloca_and_snprintf(22, "%d", num);
+      return new StringView<_CharType>{buffer}; 
+    }
+    /**
+     * @brief Constructs a string from an integer. 
+     * @param[in] num The integer to construct the string from.
+     */
+    static fn [[internal_linkage, inline]] from(num: i32)
+      StringView<_CharType> 
+    { 
+      let buffer: _CharType& = 
+        CLib::__internal::alloca_and_snprintf(10, "%i", num);
+      return new StringView<_CharType>{buffer}; 
+    }
+
+    /**
       * @brief Constructs a string from a vector of characters.
       * @param[in] buffer The vector of characters to construct the string from.
       */

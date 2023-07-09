@@ -12,4 +12,5 @@ fn example(x: Test&) {
 pub fn main() i32 {
   let t = new Test();
   example(t);
+  System::println(42)
 }
