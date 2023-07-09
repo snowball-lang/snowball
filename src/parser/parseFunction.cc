@@ -205,7 +205,8 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
 
             case TokenType::BRACKET_LSQUARED: {
                 if (is<TokenType::BRACKET_RSQUARED>(peek())) {
-                    opType = services::OperatorService::OperatorType::CONSTRUCTOR;
+                    opType = services::OperatorService::OperatorType::INDEX;
+                    next();
                     break;
                 }
 

@@ -162,23 +162,23 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType*> {
       self.length = self.length + 1;
     }
     /**
-      * @return The size of the vector.
-      */
+     * @return The size of the vector.
+     */
     fn [[internal_linkage, inline]] size() i32 { return self.length; }
     /**
-      * @brief Resizes the vector.
-      * @param[in] capacity The new capacity of the vector.
-      */
+     * @brief Resizes the vector.
+     * @param[in] capacity The new capacity of the vector.
+     */
     fn [[internal_linkage]] resize(capacity: i32) mut
     { 
       self.capacity = capacity;
       self.buffer = UA::__ua_resize(self.buffer, self.capacity); 
     }
     /**
-      * @brief Returns the element at the specified index.
-      * @param[in] index The index of the element to return.
-      * @return The element at the specified index.
-      */
+     * @brief Returns the element at the specified index.
+     * @param[in] index The index of the element to return.
+     * @return The element at the specified index.
+     */
     fn [[internal_linkage]] at(index: i32) _StoreType*
     {
       if index < 0 || index >= self.length 
@@ -188,11 +188,19 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType*> {
       return UA::__ua_get(self.buffer, index) as _StoreType*;
     }
     /**
-      * @brief Returns the data of the vector.
-      * @return The data of the vector.
-      */
+     * @brief Returns the data of the vector.
+     * @return The data of the vector.
+     */
     fn [[internal_linkage, inline]] data() _StoreType* 
       { return (*self.buffer.items) as _StoreType* }
+    /**
+     * @brief A wrapper over the at() method.
+     * @param[in] index The index of the element to return.
+     * @return The element at the specified index.
+     * @see Vector<_StoreType>::at()
+     */
+    operator [[internal_linkage, inline]] [](index: i32) _StoreType* 
+      { return self.at(index); }
 
   priv:
     /** The capacity of the vector. */

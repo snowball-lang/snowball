@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.DIST }}
+    runs-on: ${{ matrix.DIST == 'ce-specific' && 'ubuntu-20.04' || matrix.DIST }}
     strategy:
       matrix:
         include:
