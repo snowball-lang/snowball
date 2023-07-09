@@ -301,6 +301,13 @@ class Parser {
      * throw         ::=  "throw" [expr] ";"
      */
     Syntax::Statement::Raise* parseThrow();
+    /**
+     * block_or_expr ::=  [block] | [stmt]
+     */
+    Syntax::Block* parseBlockOrStmt();
+    /// @brief Parses a statement
+    /// @return a statement
+    Syntax::Node* parseStatement(Token pk);
 
     /**
      * @brief Parses a list of attributes

@@ -36,7 +36,13 @@ Statement::Base* Parser::parseConditional() {
     auto expr = parseExpr(false);
     next();
     auto block = parseBlock();
-    auto node = Syntax::N<Conditional>(expr, block);
+    Block* elseBlock = nullptr;
+    if (is<TokenType::KWORD_ELSE>(peek())) {
+        next();
+        elseBlock = parseBlockOrStmt();
+    }
+
+    auto node = Syntax::N<Conditional>(expr, block, elseBlock);
     node->setDBGInfo(info);
 
     return node;

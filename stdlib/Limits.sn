@@ -1,23 +1,23 @@
-pub mod String
+pub namespace String
 {
-	pub var min = -128
-	pub var max =  127
+	pub const min = -128
+	pub const max =  127
 }
 
-pub mod int16
+pub namespace int16
 {
-	pub var min: i16 = -32768
-	pub var max: i16 =  32767
+	pub const min: i16 = -32768
+	pub const max: i16 =  32767
 }
 
-pub mod int32
+pub namespace int32
 {
-	pub var min: i32 = -2147483648
-	pub var max: i32 =  2147483647
+	pub const min: i32 = -2147483648
+	pub const max: i32 =  2147483647
 }
 
-pub mod int64
+pub namespace int64
 {
-	pub var min: i64 = -9223372036854775808
-	pub var max: i64 =  9223372036854775807
+	pub const min: i64 = -9223372036854775808
+	pub const max: i64 =  9223372036854775807
 }
