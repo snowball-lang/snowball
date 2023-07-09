@@ -19,7 +19,9 @@ endif()
 
 include(FetchContent)
 
-if ("$ENV{BUILD_FOR_CE}" STREQUAL "1")
+message(STATUS $ENV{BUILD_FOR_CE})
+message(STATUS $ENV{ARCH})
+if (DEFINED ENV{BUILD_FOR_CE})
   message(STATUS "Building for CE")
   set(CMAKE_INSTALL_RPATH $ORIGIN/../lib)
 endif()
@@ -159,7 +161,7 @@ set (STATICLIB_DIR ".snowball")
 set (_SNOWBALL_LIBRARY_OBJ "lib")
 set (_SNOWBALL_LIBRARY_DIR "stdlib")
 
-if ("$ENV{BUILD_FOR_CE}" STREQUAL "1")
+if (DEFINED ENV{BUILD_FOR_CE})
   add_compile_definitions(_SNOWBALL_BUILD_FOR_CE="1")
 endif()
 

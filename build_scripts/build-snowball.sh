@@ -14,8 +14,6 @@ label=snowball-"$NAME"-"$ARCH"
 
 if [[ "$NAME" == "ce-specific" ]]; then
     export BUILD_FOR_CE=1
-else    
-    export BUILD_FOR_CE=0    
 fi
 
 bash build_scripts/release.sh
