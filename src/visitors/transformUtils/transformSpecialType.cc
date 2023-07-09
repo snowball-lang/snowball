@@ -90,7 +90,7 @@ std::shared_ptr<types::Type> Transformer::transformSpecialType(Expression::TypeR
         auto type = transformType(generic);
 
         // TODO: check for other instances
-        if (!utils::dyn_cast<types::PointerType>(type)) {
+        if (!utils::dyn_cast<types::ReferenceType>(type)) {
             E<TYPE_ERROR>(ty,
                           FMT("Type '%s' is expected to contain a pointer type but found '%s'.",
                               IS_POINTER_CHECK_STYPE.c_str(),

@@ -84,7 +84,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         if (b.has_value()) {
             auto baseType = (*b)->getType();
             if (utils::dyn_cast<types::PrimitiveType>(baseType) ||
-                utils::dyn_cast<types::PointerType>(baseType)) {
+                utils::dyn_cast<types::ReferenceType>(baseType)) {
                 argValues.insert(argValues.begin(), *b);
                 argTypes.insert(argTypes.begin(), baseType);
             } else {

@@ -95,7 +95,7 @@ struct TypeRef : public types::Type, public Base {
     /// @return true if it's a delctype(...)
     virtual bool isTypeDecl() { return false; }
     /// @return true if the type is a pointer
-    virtual bool isPointerType() { return false; }
+    virtual bool isReferenceType() { return false; }
 
     ACCEPT()
     ~TypeRef() noexcept = default;
@@ -124,24 +124,24 @@ struct DeclType : public TypeRef {
 };
 
 /**
- * @class PointerType
+ * @class ReferenceType
  * @brief A struct representing a pointer type that derives from
  * TypeRef.
  *
  * This struct holds a pointer to a TypeRef object and provides methods
  * to access the type value and determine if it is a pointer type.
  */
-struct PointerType : public TypeRef {
+struct ReferenceType : public TypeRef {
     TypeRef* baseType;
 
   public:
-    PointerType(TypeRef* baseType, DBGSourceInfo* srcInfo);
+    ReferenceType(TypeRef* baseType, DBGSourceInfo* srcInfo);
 
     /// @return the expr value to get the type from
     auto getBaseType() { return baseType; }
-    bool isPointerType() override { return true; }
+    bool isReferenceType() override { return true; }
 
-    ~PointerType() noexcept = default;
+    ~ReferenceType() noexcept = default;
 };
 
 /**

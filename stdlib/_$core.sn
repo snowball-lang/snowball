@@ -31,27 +31,27 @@ pub namespace UA {
  *       required for storing and manipulating universal arrays.
  */
 pub struct UniversalArray 
-  { pub let items: cobj*; };
+  { pub let items: cobj&; };
 /**
  * @brief Allocates a universal array of elements.
  * @param[in] size The size of the universal array to allocate.
  * @return The allocated universal array.
  */
-pub extern fn "sn.ua.alloc" as __ua_alloc(i32) UniversalArray*;
+pub extern fn "sn.ua.alloc" as __ua_alloc(i32) UniversalArray&;
 /**
  * @brief Resizes a universal array of elements.
  * @param[in] array The universal array to resize.
  * @param[in] size The new size of the universal array.
  * @return The resized universal array.
  */
-pub extern fn "sn.ua.resize" as __ua_resize(UniversalArray*, i32) UniversalArray*;
+pub extern fn "sn.ua.resize" as __ua_resize(UniversalArray&, i32) UniversalArray&;
 /**
  * @brief Sets an element in a universal array.
  * @param[in] array The universal array to set the element in.
  * @param[in] index The index of the element to set.
  * @param[in] item The element to set.
  */
-pub extern fn "sn.ua.set" as __ua_set(UniversalArray*, i32, cobj);
+pub extern fn "sn.ua.set" as __ua_set(UniversalArray&, i32, cobj);
 
 /**
  * @brief Gets an element from a universal array.
@@ -59,7 +59,7 @@ pub extern fn "sn.ua.set" as __ua_set(UniversalArray*, i32, cobj);
  * @param[in] index The index of the element to get.
  * @return The element at the specified index.
  */
-pub extern fn "sn.ua.get" as __ua_get(UniversalArray*, i32) cobj;
+pub extern fn "sn.ua.get" as __ua_get(UniversalArray&, i32) cobj;
 
 } /* namespace UA */;
 
@@ -78,7 +78,7 @@ pub class Exception {
      * @brief Exception constructor.
      * @param[in] m The message of the exception.
      */ 
-    Exception(m: char*) : msg(m) 
+    Exception(m: char&) : msg(m) 
       { }
     /**
       * @brief Exception constructor from a string.
@@ -90,11 +90,11 @@ pub class Exception {
      * @brief Returns the message of the exception.
      * @return The message of the exception.
      */
-    fn what() char* 
+    fn what() char& 
       { return self.msg; }
   priv:
     /** The message of the exception. */
-    let msg: char*;
+    let msg: char&;
 }
 
 /**
@@ -112,7 +112,7 @@ pub class IndexError: Exception {
      * @brief Exception constructor.
      * @param[in] m The message of the exception.
      */ 
-    IndexError(m: char*) : super(m) 
+    IndexError(m: char&) : super(m) 
       { }
     /**
       * @brief Exception constructor from a string.
@@ -140,7 +140,7 @@ pub class Iterable<_IteratorType: Core::Sized> {
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating vectors.
  */
-pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType*> {
+pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType&> {
   pub:
     /**
      * @brief Default constructor.
@@ -152,7 +152,7 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType*> {
      * @brief It pushes an element to the back of the vector.
      * @param[in] value The element to push to the back of the vector.
      */
-    fn [[internal_linkage]] push(value: _StoreType*) mut
+    fn [[internal_linkage]] push(value: _StoreType&) mut
     { 
       if self.length + 1 >= self.capacity 
       {
@@ -179,27 +179,27 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType*> {
      * @param[in] index The index of the element to return.
      * @return The element at the specified index.
      */
-    fn [[internal_linkage]] at(index: i32) _StoreType*
+    fn [[internal_linkage]] at(index: i32) _StoreType&
     {
       if index < 0 || index >= self.length 
       {
         raise new IndexError("Index out of bounds.");
       }
-      return UA::__ua_get(self.buffer, index) as _StoreType*;
+      return UA::__ua_get(self.buffer, index) as _StoreType&;
     }
     /**
      * @brief Returns the data of the vector.
      * @return The data of the vector.
      */
-    fn [[internal_linkage, inline]] data() _StoreType* 
-      { return (*self.buffer.items) as _StoreType* }
+    fn [[internal_linkage, inline]] data() _StoreType& 
+      { return (*self.buffer.items) as _StoreType& }
     /**
      * @brief A wrapper over the at() method.
      * @param[in] index The index of the element to return.
      * @return The element at the specified index.
      * @see Vector<_StoreType>::at()
      */
-    operator [[internal_linkage, inline]] [](index: i32) _StoreType* 
+    operator [[internal_linkage, inline]] [](index: i32) _StoreType& 
       { return self.at(index); }
 
   priv:
@@ -208,7 +208,7 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType*> {
     /** The size of the vector. */
     let length: i32 = 0;
     /** The buffer containing the vector. */
-    let buffer: UA::UniversalArray*;
+    let buffer: UA::UniversalArray&;
 }
 
 /**
@@ -236,7 +236,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       * @brief Constructs a string from a vector of characters.
       * @param[in] buffer The vector of characters to construct the string from.
       */
-    StringView(buffer: _CharType*) : 
+    StringView(buffer: _CharType&) : 
       super(), buffer(buffer), length(CLib::c_string::strlen(buffer))
       { self.capacity = self.length + 10; }
     /**
@@ -247,7 +247,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
     /**
       * @return The buffer containing the string.
       */
-    fn [[internal_linkage, inline]] c_str() _CharType*
+    fn [[internal_linkage, inline]] c_str() _CharType&
       { return self.buffer; }
   priv:
     /** The capacity of the string. */
@@ -255,7 +255,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
     /** The size of the string. */
     let length: i32 = 0;
     /** The buffer containing the string. */
-    let buffer: _CharType* = "";
+    let buffer: _CharType& = "";
 
   // Static exports
   pub:
@@ -275,4 +275,4 @@ type Vector<T> = Core::Vector<T>;
 type Exception = Core::Exception;
 type IndexError = Core::IndexError;
 type String = StringView<>;
-// TODO (implement wchar): using WideString as StringView<wchar*>
+// TODO (implement wchar): using WideString as StringView<wchar&>

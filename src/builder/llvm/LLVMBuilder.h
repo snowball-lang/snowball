@@ -2,7 +2,7 @@
 #include "../../../app/cli.h"
 #include "../../ValueVisitor/Visitor.h"
 #include "../../ast/types/FunctionType.h"
-#include "../../ast/types/PointerType.h"
+#include "../../ast/types/ReferenceType.h"
 #include "../../ir/id.h"
 #include "../../ir/module/MainModule.h"
 #include "../../ir/values/Func.h"

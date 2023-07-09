@@ -10,7 +10,7 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::initializeRuntime() {
-    auto ty = llvm::FunctionType::get(builder->getInt32Ty(), {}, false);
+    auto ty = llvm::FunctionType::get(builder->getVoidTy(), {}, false);
     auto f = llvm::cast<llvm::Function>(
             module->getOrInsertFunction("sn.runtime.initialize", ty).getCallee());
     f->addFnAttr(llvm::Attribute::AlwaysInline);

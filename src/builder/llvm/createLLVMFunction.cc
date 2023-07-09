@@ -45,7 +45,7 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
     for (int i = 0; i < func->getArgs().size(); ++i) {
         auto llvmArg = fn->arg_begin() + i;
         auto arg = utils::at(func->getArgs(), i);
-        if (utils::dyn_cast<types::PointerType>((arg).second->getType())) {
+        if (utils::dyn_cast<types::ReferenceType>((arg).second->getType())) {
             setDereferenceableAttribute(*llvmArg, layout.getTypeSizeInBits(llvmArg->getType()));
         }
     }

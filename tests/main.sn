@@ -1,10 +1,11 @@
 use Core::System
   
 pub fn main() i32 {
-  if 0 {
-    System::println("true");
-  } else if 0 {
-    System::println("false");
-  } else
-    System::println("false");
+  let s = String::from("hello");
+  let a = new Vector<String>{};
+  
+  a.push(&s);
+  let x = a[0];
+
+  System::println(x.c_str());
 }

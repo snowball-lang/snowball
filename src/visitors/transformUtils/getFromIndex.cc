@@ -24,7 +24,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
                           std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
                           std::optional<std::shared_ptr<ir::Module>>,
                           bool /* Accept private members */> {
-        if (auto x = utils::dyn_cast<types::PointerType>(type)) { type = x->getBaseType(); }
+        if (auto x = utils::dyn_cast<types::ReferenceType>(type)) { type = x->getBaseType(); }
 
         if (auto x = utils::dyn_cast<types::DefinedType>(type)) {
             auto g = utils::cast<Expression::GenericIdentifier>(index->getIdentifier());

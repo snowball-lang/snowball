@@ -66,7 +66,7 @@ pub extern fn free(cobj) void;
  * @note(3) A typical cause of failure for puts is running out of space on the file system, when stdout is
  *  redirected to a file.
  */
-pub extern fn puts(char*) i32;
+pub extern fn puts(char&) i32;
 /**
  * @brief Writes a character to the standard output (stdout).
  * @param character(i32) - The `i32` promotion of the character to be written.
@@ -86,7 +86,7 @@ pub extern fn getchar() char;
  *  in the resulting string replacing their respective specifiers.
  * @return On success, the total number of characters written is returned.
  */
-pub extern fn printf(char*, ...) i32;
+pub extern fn printf(char&, ...) i32;
 /**
  * @brief Causes normal program termination to occur.
  * @param exit_code(i32) - exit status of the program
@@ -101,9 +101,9 @@ pub extern fn exit(i32);
 namespace c_string {
 /**
  * @brief It returns the length of string based on the null-terminator.
- * @param str(char*) - string to be measured
+ * @param str(char&) - string to be measured
  * @return i32 - length of the string
  */
-pub extern fn strlen(char*) i32;
+pub extern fn strlen(char&) i32;
 
 } // namespace c_string

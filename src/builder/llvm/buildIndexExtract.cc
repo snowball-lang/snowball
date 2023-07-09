@@ -11,7 +11,7 @@ namespace codegen {
 
 void LLVMBuilder::visit(ir::IndexExtract* index) {
     auto valueType = index->getValue()->getType();
-    if (auto x = utils::dyn_cast<types::PointerType>(valueType)) valueType = x->getBaseType();
+    if (auto x = utils::dyn_cast<types::ReferenceType>(valueType)) valueType = x->getBaseType();
     auto defiendType = utils::dyn_cast<types::DefinedType>(valueType);
     assert(defiendType);
     auto baseType = getLLVMType(valueType);

@@ -25,7 +25,7 @@ llvm::Value* LLVMBuilder::createException(llvm::Value* value, std::shared_ptr<ty
         load->eraseFromParent();
     }
 
-    auto pointerType = utils::dyn_cast<types::PointerType>(type);
+    auto pointerType = utils::dyn_cast<types::ReferenceType>(type);
     auto definedType = utils::dyn_cast<types::DefinedType>(pointerType->getPointedType());
     int typeId = definedType ? definedType->getId() : -1;
     auto cast = builder->CreatePointerCast(usedValue, builder->getInt8PtrTy());

@@ -20,7 +20,7 @@ namespace types {
 
 class FunctionType;
 
-class PointerType : public AcceptorExtend<PointerType, Type>, public DBGObject, public ir::IdMixin {
+class ReferenceType : public AcceptorExtend<ReferenceType, Type>, public DBGObject, public ir::IdMixin {
     friend AcceptorExtend;
 
   private:
@@ -28,13 +28,13 @@ class PointerType : public AcceptorExtend<PointerType, Type>, public DBGObject, 
     std::shared_ptr<Type> base = nullptr;
 
   public:
-    PointerType(std::shared_ptr<Type> base);
+    ReferenceType(std::shared_ptr<Type> base);
 
     /**
      * @param other another type to check.
      */
     virtual bool is(Type* other) const override {
-        if (auto c = utils::cast<PointerType>(other)) { return base->is(c->getPointedType()); }
+        if (auto c = utils::cast<ReferenceType>(other)) { return base->is(c->getPointedType()); }
 
         return false;
     }
@@ -44,7 +44,7 @@ class PointerType : public AcceptorExtend<PointerType, Type>, public DBGObject, 
     /// @return the mangled version of the type
     std::string getMangledName() const override;
     /// @return The pointed type this type is pointing to
-    /// @see PointerType::base
+    /// @see ReferenceType::base
     std::shared_ptr<Type> getPointedType() const;
     /// @return The base type being pointed.
     /// @example i32**** -> i32
