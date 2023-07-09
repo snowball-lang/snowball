@@ -33,6 +33,7 @@ cp -a ./bin/Release/. release/
 mv release/snowball release/bin/snowball
 
 if [[ "$NAME" == "ce-specific" ]]; then
+    sudo apt install patchelf -y
     patchelf --set-rpath '$ORIGIN/../lib' release/bin/snowball
 fi
 
