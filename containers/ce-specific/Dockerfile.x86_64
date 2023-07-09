@@ -1,0 +1,24 @@
+FROM ubuntu:20.04
+
+ENV ARCH=x86_64 DIST=linux NAME=ce-specific
+
+SHELL ["/bin/bash", "-x", "-c"]
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update && apt-get -f install && \
+    apt-get install -y gcc-9 g++-9 wget curl patchelf vim-common fuse \
+        libfuse2 libtool autoconf automake zlib1g-dev libjpeg-dev libpng-dev \
+        git libssl-dev sudo cmake make pkg-config cmake-data libglib2.0-dev
+
+RUN apt-get install lsb-release wget software-properties-common gnupg -y
+RUN wget https://apt.llvm.org/llvm.sh
+RUN chmod +x llvm.sh
+RUN sudo ./llvm.sh 14
+
+# keep user ID in sync in and outside Docker image
+ARG UID
+RUN adduser --uid "$UID" --gecos "" build
+
+USER build
+CMD ["bash"]

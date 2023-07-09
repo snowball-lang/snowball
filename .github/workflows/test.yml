@@ -16,7 +16,7 @@ jobs:
             DIST: 'ubuntu-20.04'
             NAME: 'linux'
           - ARCH: 'x86_64'
-            DIST: 'ubuntu-20.04'
+            DIST: 'ce-specific'
             NAME: 'ce-specific'
           - ARCH: 'aarch64'
             DIST: 'ubuntu-20.04'
