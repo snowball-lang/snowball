@@ -93,6 +93,9 @@ Transformer::getBestFittingFunction(const std::vector<Cache::FunctionStore>& ove
     if (((matchedFunctions.size() > 1) && (!exactFunctionExists) && (genericIndex == -1)) ||
         (genericCount > 1)) {
         return {{nullptr}, {}, FunctionFetchResponse::AmbiguityConflict};
+    } else if (matchedFunctions.size() == 1) {
+        auto matched = matchedFunctions.at(0);
+        return {matched.first, matched.second, FunctionFetchResponse::Ok};
     } else if (exactFunctionExists) {
         return {bestFunction.first, bestFunction.second, FunctionFetchResponse::Ok};
     } else if (genericIndex != -1) {

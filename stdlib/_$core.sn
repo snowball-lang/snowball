@@ -240,6 +240,13 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       super(), buffer(buffer), length(CLib::c_string::strlen(buffer))
       { self.capacity = self.length + 10; }
     /**
+     * @brief Constructs a string from another string.
+     * @param[in] other The string to construct the string from.
+     */
+    StringView(other: StringView<_CharType>&) : 
+      super(), buffer(other.buffer), length(other.length), 
+      capacity(other.capacity) { }
+    /**
       * @return The size of the string.
       */
     fn [[internal_linkage, inline]] size() i32 

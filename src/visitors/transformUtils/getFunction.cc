@@ -139,6 +139,7 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
             CompilerError* tailErrors = nullptr;
 #define ADD_FUNCTION_ERROR(id, idx)                                                                \
     for (auto overload : id.value()) {                                                             \
+        if (idx->getDBGInfo() == nullptr) continue;                                                \
         auto err = EI<>(idx, "", {.info = "A possible function overload found here"});             \
         if (tailErrors == nullptr) {                                                               \
             tailErrors = err;                                                                      \

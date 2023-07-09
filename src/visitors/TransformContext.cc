@@ -37,13 +37,13 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
             raw_BoolType,  raw_Float64Type, raw_Float32Type, raw_Int64Type,
             raw_Int32Type, raw_Int16Type,   raw_Int8Type,    raw_CharType};
 
-    for (int asPointer = 0; asPointer <= 1; ++asPointer) {
+    for (int asPointer = 0; asPointer < 2; ++asPointer) {
 
         for (auto ty : overloadTypes) {
             for (auto op : services::OperatorService::operators) {
                 for (auto overload : overloadTypes) {
                     auto classType = asPointer ? ty->getPointerTo() : ty;
-                    auto overloadType = asPointer ? overload->getPointerTo() : ty;
+                    auto overloadType = asPointer ? overload->getPointerTo() : overload;
                     auto typeArgs = {classType, overloadType};
                     auto fn = builder.createFunction(NO_DBGINFO, "#" + op, true, false);
                     auto arg = builder.createArgument(NO_DBGINFO, "other", overloadType);
