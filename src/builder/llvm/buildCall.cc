@@ -56,7 +56,7 @@ void LLVMBuilder::visit(ir::Call* call) {
         args.insert(args.begin(), object);
         llvmCall = builder->CreateCall(
                 (llvm::FunctionType*)callee->getType()->getPointerElementType(), callee, args);
-        this->value = builder->CreateLoad(object->getType()->getPointerElementType(), object);
+        this->value = instance->initializeAtHeap ? object : builder->CreateLoad(object->getType()->getPointerElementType(), object);
     } else if (auto c = utils::dyn_cast<ir::Func>(calleeValue);
                c != nullptr && c->inVirtualTable()) {
         assert(c->hasParent());
