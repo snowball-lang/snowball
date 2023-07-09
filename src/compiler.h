@@ -61,6 +61,7 @@ class Compiler {
     int emit_binary(std::string, bool = true);
     int emit_object(std::string, bool = true);
     int emit_llvmir(std::string, bool = true);
+    int emit_assembly(std::string, bool = true);
 
     void set_optimization(app::Options::Optimization o) { opt_level = o; }
 

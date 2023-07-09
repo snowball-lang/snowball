@@ -35,7 +35,7 @@
 namespace snowball {
 namespace codegen {
 
-int LLVMBuilder::emitObjectFile(std::string out, bool log) {
+int LLVMBuilder::emitObjectFile(std::string out, bool log, bool object) {
     std::error_code EC;
     llvm::raw_fd_ostream dest(out, EC, llvm::sys::fs::OF_None);
 
@@ -44,7 +44,7 @@ int LLVMBuilder::emitObjectFile(std::string out, bool log) {
     }
 
     llvm::legacy::PassManager pass;
-    auto FileType = llvm::CGFT_ObjectFile;
+    auto FileType = object ? llvm::CGFT_ObjectFile : llvm::CGFT_AssemblyFile;
     if (target->addPassesToEmitFile(pass, dest, nullptr, FileType)) {
         remove(out.c_str());
         throw SNError(Error::LLVM_INTERNAL, "TargetMachine can't emit a file of this type");

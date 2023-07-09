@@ -182,7 +182,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      * @brief Compile the LLVM-IR code into an object file into the
      * desired file.
      */
-    int emitObjectFile(std::string out, bool log);
+    int emitObjectFile(std::string out, bool log, bool object = true);
 
     // mark: build functions
     using AcceptorExtend::AcceptorExtend;

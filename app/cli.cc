@@ -26,7 +26,7 @@ Options CLI::parse() {
 
     current_arg = args[0];
 
-    if (current_arg == "help") {
+    if (current_arg == "--help" || current_arg == "-h") {
         if (current_index < args.size() - 1) {
             NEXT_ARGUMENT();
 
@@ -36,12 +36,12 @@ Options CLI::parse() {
                 Logger::log("Help:");
                 Logger::log("  Build your snowball project\n");
                 Logger::log("Options:");
-                Logger::log("  --emit_type {type}        - Select the "
+                Logger::log("  --emit {type}             - Select the "
                             "output format");
                 Logger::log("  --test [-t]               - Build "
                             "project as it was for "
                             "testing");
-                Logger::log("  --optimization [-o] {opt} - Optimize "
+                Logger::log("  -{opt}                    - Optimize "
                             "your project at a "
                             "certain level");
                 Logger::log("");
@@ -55,9 +55,12 @@ Options CLI::parse() {
                 Logger::log("  llvm-ir                   - Emit the "
                             "llvm-ir code to "
                             "file");
+                Logger::log("  asm                       - Emit the "
+                            "assembly code to "
+                            "file");
                 Logger::log("");
                 Logger::log("Optimization levels:");
-                Logger::log("  O0                        - Disable as many "
+                Logger::log("  O0 [g]                    - Disable as many "
                             "optimizations as possible");
                 Logger::log("  O1 (default)              - Optimize "
                             "quickly without "
@@ -83,14 +86,14 @@ Options CLI::parse() {
                 Logger::log("Help:");
                 Logger::log("  Build and execute your snowball project\n");
                 Logger::log("Options:");
-                Logger::log("  --optimization [-o] {opt} - Optimize "
+                Logger::log("  -{opt} - Optimize "
                             "your project at a "
                             "certain level");
                 Logger::log("  --jit [-j] {opt}          - Execute the project "
                             "using the JIT");
                 Logger::log("");
                 Logger::log("Optimization levels:");
-                Logger::log("  O0                        - Disable as many "
+                Logger::log("  O0 [g]                    - Disable as many "
                             "optimizations as possible");
                 Logger::log("  O1 (default)              - Optimize "
                             "quickly without "
@@ -161,7 +164,7 @@ Options CLI::parse() {
                 NEXT_ARGUMENT()
 
                 opts.build_opts.file = current_arg;
-            } else if (IF_ARG("--emit_type")) {
+            } else if (IF_ARG("--emit")) {
                 CHECK_ARG("an output type")
                 NEXT_ARGUMENT()
 
@@ -171,32 +174,30 @@ Options CLI::parse() {
                     opts.build_opts.emit_type = Options::EmitType::OBJECT;
                 } else if (current_arg == "llvm-ir") {
                     opts.build_opts.emit_type = Options::EmitType::LLVM_IR;
+                } else if (current_arg == "asm") {
+                    opts.build_opts.emit_type = Options::EmitType::ASSEMBLY;
                 } else {
                     throw SNError(Error::ARGUMENT_ERROR,
                                   "Valid build output types are: exec, lib, "
-                                  "llvm-ir");
+                                  "llvm-ir and asm");
                 }
-            } else if (IF_ANY_ARG("--optimization", "-o")) {
-                CHECK_ARG("an optimization level")
+            } else if (IF_ANY_ARG("--output", "-o")) {
+                CHECK_ARG("an output file")
                 NEXT_ARGUMENT()
 
-                if (current_arg == "O0") {
-                    opts.build_opts.opt = Options::Optimization::OPTIMIZE_O0;
-                } else if (current_arg == "O1") {
-                    opts.build_opts.opt = Options::Optimization::OPTIMIZE_O1;
-                } else if (current_arg == "O2") {
-                    opts.build_opts.opt = Options::Optimization::OPTIMIZE_O2;
-                } else if (current_arg == "O3") {
-                    opts.build_opts.opt = Options::Optimization::OPTIMIZE_O3;
-                } else if (current_arg == "Os") {
-                    opts.build_opts.opt = Options::Optimization::OPTIMIZE_Os;
-                } else if (current_arg == "Oz") {
-                    opts.build_opts.opt = Options::Optimization::OPTIMIZE_Oz;
-                } else {
-                    throw SNError(Error::ARGUMENT_ERROR,
-                                  "Valid optimization levels are: O0, O1, O2, "
-                                  "O3, Os, Oz");
-                }
+                opts.build_opts.output = current_arg;
+            } else if (IF_ANY_ARG("-g", "-O0")) {
+                opts.build_opts.opt = Options::Optimization::OPTIMIZE_O0;
+            } else if (IF_ARG("-O1")) {
+                opts.build_opts.opt = Options::Optimization::OPTIMIZE_O1;
+            } else if (IF_ARG("-O2")) {
+                opts.build_opts.opt = Options::Optimization::OPTIMIZE_O2;
+            } else if (IF_ARG("-O3")) {
+                opts.build_opts.opt = Options::Optimization::OPTIMIZE_O3;
+            } else if (IF_ARG("-Os")) {
+                opts.build_opts.opt = Options::Optimization::OPTIMIZE_Os;
+            } else if (IF_ARG("-Oz")) {
+                opts.build_opts.opt = Options::Optimization::OPTIMIZE_Oz;
             } else {
                 throw SNError(
                         Error::ARGUMENT_ERROR,
@@ -209,27 +210,18 @@ Options CLI::parse() {
         while (current_index < args.size() - 1) {
             NEXT_ARGUMENT();
 
-            if (IF_ANY_ARG("--optimization", "-o")) {
-                CHECK_ARG("an optimization level")
-                NEXT_ARGUMENT()
-
-                if (current_arg == "O0") {
-                    opts.run_opts.opt = Options::Optimization::OPTIMIZE_O0;
-                } else if (current_arg == "O1") {
-                    opts.run_opts.opt = Options::Optimization::OPTIMIZE_O1;
-                } else if (current_arg == "O2") {
-                    opts.run_opts.opt = Options::Optimization::OPTIMIZE_O2;
-                } else if (current_arg == "O3") {
-                    opts.run_opts.opt = Options::Optimization::OPTIMIZE_O3;
-                } else if (current_arg == "Os") {
-                    opts.run_opts.opt = Options::Optimization::OPTIMIZE_Os;
-                } else if (current_arg == "Oz") {
-                    opts.run_opts.opt = Options::Optimization::OPTIMIZE_Oz;
-                } else {
-                    throw SNError(Error::ARGUMENT_ERROR,
-                                  "Valid optimization levels are: O0, O1, O2, "
-                                  "O3, Os, Oz");
-                }
+            if (IF_ANY_ARG("-g", "-O0")) {
+                opts.run_opts.opt = Options::Optimization::OPTIMIZE_O0;
+            } else if (IF_ARG("-O1")) {
+                opts.run_opts.opt = Options::Optimization::OPTIMIZE_O1;
+            } else if (IF_ARG("-O2")) {
+                opts.run_opts.opt = Options::Optimization::OPTIMIZE_O2;
+            } else if (IF_ARG("-O3")) {
+                opts.run_opts.opt = Options::Optimization::OPTIMIZE_O3;
+            } else if (IF_ARG("-Os")) {
+                opts.run_opts.opt = Options::Optimization::OPTIMIZE_Os;
+            } else if (IF_ARG("-Oz")) {
+                opts.run_opts.opt = Options::Optimization::OPTIMIZE_Oz;
             } else if (IF_ANY_ARG("--silent", "-s")) {
                 opts.run_opts.silent = true;
             } else if (IF_ANY_ARG("--jit", "-j")) {
@@ -241,7 +233,7 @@ Options CLI::parse() {
             } else {
                 throw SNError(
                         Error::ARGUMENT_ERROR,
-                        FMT("Unexpected argument for the build command: %s", current_arg.c_str()));
+                        FMT("Unexpected argument for the run command: %s", current_arg.c_str()));
             }
         }
     } else if (current_arg == "test") {

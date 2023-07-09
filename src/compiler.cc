@@ -167,6 +167,14 @@ int Compiler::emit_llvmir(std::string p_output, bool p_pmessage) {
     return EXIT_SUCCESS;
 }
 
+int Compiler::emit_assembly(std::string p_output, bool p_pmessage) {
+    auto builder = new codegen::LLVMBuilder(module);
+    builder->codegen();
+    auto res = builder->emitObjectFile(p_output, false, false);
+    if (p_pmessage) Logger::success("Snowball project transpiled to llvm IR code! 🎉\n");
+    return res;
+}
+
 int Compiler::emit_binary(std::string out, bool log) {
     std::string objfile = Logger::format("%s.so", out.c_str());
     DEBUG_CODEGEN("Emitting object file... (%s)", objfile.c_str());

@@ -54,6 +54,8 @@ int build(app::Options::BuildOptions p_opts) {
         build_type = "llvm-ir";
     } else if (p_opts.emit_type == Options::EmitType::OBJECT) {
         build_type = "library";
+    } else if (p_opts.emit_type == Options::EmitType::ASSEMBLY) {
+        build_type = "assembly";
     } else {
         throw SNError(BUG, FMT("Unhandled emit type for build process ('%i')", p_opts.emit_type));
     }
@@ -67,9 +69,25 @@ int build(app::Options::BuildOptions p_opts) {
     std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 
     // TODO: check for output
-    std::string output = p_opts.emit_type == app::Options::EmitType::LLVM_IR
-            ? _SNOWBALL_LLIR_OUT_DEFAULT
-            : _SNOWBALL_OUT_DEFAULT;
+    std::string output;
+    switch (p_opts.emit_type) {
+        case app::Options::EmitType::EXECUTABLE:
+            output = _SNOWBALL_OUT_DEFAULT;
+            break;
+        case app::Options::EmitType::OBJECT:
+            output = _SNOWBALL_OBJ_OUT_DEFAULT;
+            break;
+        case app::Options::EmitType::LLVM_IR:
+            output = _SNOWBALL_LLIR_OUT_DEFAULT;
+            break;
+        case app::Options::EmitType::ASSEMBLY:
+            output = _SNOWBALL_ASM_OUT_DEFAULT;
+            break;
+    }
+
+    if (!p_opts.output.empty()) {
+        output = p_opts.output;
+    }
 
     Compiler* compiler = new Compiler(content, filename);
     compiler->initialize();
@@ -89,6 +107,7 @@ int build(app::Options::BuildOptions p_opts) {
     auto duration = duration_cast<milliseconds>(stop - start).count();
 
     Logger::message("Finished", FMT("build target(s) in %ims", duration));
+    Logger::message("Generating", FMT("Generating output at `%s`", output.c_str()));
     Logger::log("");
 
     int status;
@@ -96,6 +115,8 @@ int build(app::Options::BuildOptions p_opts) {
         status = compiler->emit_object(output);
     } else if (p_opts.emit_type == app::Options::EmitType::LLVM_IR) {
         status = compiler->emit_llvmir(output);
+    } else if (p_opts.emit_type == app::Options::EmitType::ASSEMBLY) {
+        status = compiler->emit_assembly(output);
     } else {
         status = compiler->emit_binary(output);
     }

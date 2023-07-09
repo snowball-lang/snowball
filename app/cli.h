@@ -12,7 +12,8 @@ struct Options {
     {
         EXECUTABLE,
         OBJECT,
-        LLVM_IR
+        LLVM_IR,
+        ASSEMBLY
     };
 
     enum Optimization
@@ -40,6 +41,7 @@ struct Options {
 
         bool silent = false;
         std::string file = "";
+        std::string output = "";
     } build_opts;
 
     struct ExplainOptions {

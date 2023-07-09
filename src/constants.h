@@ -10,8 +10,8 @@ extern "C" {
 #endif
 
 // breaking.feature.fix
-#define _SNOWBALL_VERSION        "0.0.1"
-#define _SNOWBALL_VERSION_NUMBER 0x010101
+#define _SNOWBALL_VERSION        "0.0.7"
+#define _SNOWBALL_VERSION_NUMBER 0x000007
 #define _SNOWBALL_BUILD_DATE     __DATE__
 #define _SNOWBALL_BUILD_TIME     __TIME__
 
@@ -50,7 +50,9 @@ extern "C" {
 #define _SNOWBALL_STR_FACTOR       16
 #define _SNOWBALL_MAX_LENGTH       2147483647
 #define _SNOWBALL_OUT_DEFAULT      ".sn" PATH_SEPARATOR "bin" PATH_SEPARATOR "out.o"
+#define _SNOWBALL_ASM_OUT_DEFAULT  ".sn" PATH_SEPARATOR "bin" PATH_SEPARATOR "out.s"
 #define _SNOWBALL_LLIR_OUT_DEFAULT ".sn" PATH_SEPARATOR "bin" PATH_SEPARATOR "out.ll"
+#define _SNOWBALL_OBJ_OUT_DEFAULT  ".sn" PATH_SEPARATOR "bin" PATH_SEPARATOR "out.o"
 
 #ifndef _SNOWBALL_ENABLE_INT64
 #define _SNOWBALL_ENABLE_INT64                                                                     \
