@@ -8,6 +8,13 @@ if ("$ENV{ARCH}" STREQUAL "arm64")
   endif()
 endif()
 
+message(STATUS $ENV{ARCH})
+message(STATUS ${CMAKE_SYSTEM_NAME})
+if (DEFINED ENV{BUILD_FOR_CE})
+  message(STATUS "Building for CE")
+  set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
+endif()
+
 project(snowball)
 
 if ("$ENV{ARCH}" STREQUAL "arm64")
@@ -18,13 +25,6 @@ if ("$ENV{ARCH}" STREQUAL "arm64")
 endif()
 
 include(FetchContent)
-
-message(STATUS $ENV{ARCH})
-message(STATUS ${CMAKE_SYSTEM_NAME})
-if (DEFINED ENV{BUILD_FOR_CE})
-  message(STATUS "Building for CE")
-  set(CMAKE_INSTALL_RPATH $ORIGIN/../lib)
-endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   set(BUILD_FOR_WIN TRUE)
@@ -143,7 +143,7 @@ target_link_libraries(snowballexe PUBLIC ${PROJECT_NAME} ${GLIB_LIBRARIES})
 if (${BUILD_FOR_WIN})
   set_target_properties(snowballexe PROPERTIES OUTPUT_NAME ${PROJECT_NAME}.exe)
 else()
-  set_target_properties(snowballexe PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+  set_target_properties(snowballexe PROPERTIES OUTPUT_NAME ${PROJECT_NAME} )
 endif()
 set_target_properties(snowball PROPERTIES OUTPUT_NAME "Snowball")
 
