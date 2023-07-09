@@ -44,11 +44,6 @@ struct Options {
         std::string output = "";
     } build_opts;
 
-    struct ExplainOptions {
-        // TODO
-
-    } explain_opts;
-
     struct TestOptions {
         bool silent = false;
     } test_opts;
@@ -67,7 +62,6 @@ struct Options {
         BUILD,
         RUN,
         TEST,
-        EXPLAIN,
         INIT
     } command = UNKNOWN;
 };

@@ -279,6 +279,9 @@ Options CLI::parse() {
                         FMT("Unexpected argument for the init command: %s", current_arg.c_str()));
             }
         }
+    } else if (IF_ANY_ARG("--version", "-v")) {
+        Logger::log("Snowball version " _SNOWBALL_VERSION);
+        exit(0);
     } else {
         throw SNError(Error::ARGUMENT_ERROR, FMT("Unknown command found: %s", current_arg.c_str()));
     }
@@ -290,6 +293,7 @@ void CLI::help() {
     Logger::log("Snowball (C) MIT");
     Logger::log("Usage: snowball [command] [options]\n");
     Logger::log("Snowball Commands:");
+    Logger::log("  --version [-v]   - builds the current snowball project");
     Logger::log("  build            - builds the current snowball project");
     Logger::log("  run              - build and execute the current "
                 "snowball project");
@@ -297,7 +301,6 @@ void CLI::help() {
     Logger::log("  init             - create a new snowball project "
                 "(in current "
                 "directory)");
-    Logger::log("  explain          - explain a snowball error");
     Logger::log("  help             - prints out help");
     Logger::log("");
     Logger::log("Try `snowball help [command]` for more information.");

@@ -622,7 +622,7 @@ void Lexer::tokenize() {
                     lexer_error(Error::SYNTAX_ERROR,
                                 "Unexpected MONKE found!",
                                 1,
-                                {.info = "🐒🐒🐒🐒🐒🐒", .help = "This is just an easter egg!"});
+                                {.info = "🐒🐒🐒🐒🐒🐒", .note = "This is just an easter egg!"});
                 } else {
                     lexer_error(Error::SYNTAX_ERROR,
                                 FMT("Unexpected character found '%s' while lexing.", c.c_str()),
