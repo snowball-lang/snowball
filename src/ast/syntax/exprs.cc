@@ -17,18 +17,18 @@ DeclType::DeclType(Base* value, DBGSourceInfo* srcInfo)
 ReferenceType::ReferenceType(TypeRef* baseType, DBGSourceInfo* srcInfo)
     : baseType(baseType), TypeRef(baseType->getName() + "&", srcInfo){};
 PseudoVariable::PseudoVariable(std::string identifier) : identifier(identifier){};
-TypeRef::TypeRef(Expression::Base* p_ast, std::string p_name, DBGSourceInfo* p_dbg)
-    : internalAST(p_ast), types::Type(REF, p_name) {
+TypeRef::TypeRef(Expression::Base* p_ast, std::string p_name, DBGSourceInfo* p_dbg, std::string id)
+    : internalAST(p_ast), types::Type(REF, p_name), id(id) {
     setDBGInfo(p_dbg);
 }
 TypeRef::TypeRef(std::string p_name, snowball::DBGSourceInfo* p_dbg,
-                 std::vector<TypeRef*> p_generics)
-    : generics(p_generics), types::Type(REF, p_name) {
+                 std::vector<TypeRef*> p_generics, std::string id)
+    : generics(p_generics), types::Type(REF, p_name), id(id) {
     setDBGInfo(p_dbg);
 }
 TypeRef::TypeRef(std::string p_name, DBGSourceInfo* p_dbg,
-                 std::shared_ptr<types::Type> internalType)
-    : internalType(internalType), types::Type(REF, p_name) {
+                 std::shared_ptr<types::Type> internalType, std::string id)
+    : internalType(internalType), types::Type(REF, p_name), id(id) {
     setDBGInfo(p_dbg);
 }
 NewInstance::NewInstance(DBGSourceInfo* dbg, std::vector<Base*> args, TypeRef* ty,

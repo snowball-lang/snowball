@@ -2,6 +2,7 @@
 #include "../../ValueVisitor/Visitor.h"
 #include "../../ast/syntax/nodes.h"
 #include "../../ast/types/DefinedType.h"
+#include "../../ast/types/TypeAlias.h"
 #include "../../ast/types/Type.h"
 #include "../../common.h"
 #include "Body.h"

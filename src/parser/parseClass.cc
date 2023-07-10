@@ -118,6 +118,14 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
                 return cls;
             }
 
+            case TokenType::KWORD_TYPEDEF: {
+                auto typeDef = parseTypeAlias();
+                typeDef->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
+                cls->addTypeAlias(typeDef);
+
+                assert_tok<TokenType::SYM_SEMI_COLLON>("a ';'");
+            } break;
+
             // note: This case should be always at the bottom!
             case TokenType::IDENTIFIER: {
                 if (IS_CONSTRUCTOR(m_current)) {

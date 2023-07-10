@@ -3,6 +3,7 @@
 #include "FunctionCache.h"
 
 #include "../types/DefinedType.h"
+#include "../types/TypeAlias.h"
 
 namespace snowball {
 using namespace services;

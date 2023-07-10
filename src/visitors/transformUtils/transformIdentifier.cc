@@ -58,10 +58,8 @@ fetchFromUUID:
         std::shared_ptr<types::Type> lastType = nullptr;
         for (auto t : x.value()) {
             assert(t->isType());
-            auto transformed = std::dynamic_pointer_cast<types::DefinedType>(t->getType());
-            assert(t != nullptr);
-            if (typeGenericsMatch(ty, transformed)) {
-                return {std::nullopt, transformed, std::nullopt, std::nullopt, std::nullopt};
+            if (typeGenericsMatch(ty, t->getType())) {
+                return {std::nullopt, t->getType(), std::nullopt, std::nullopt, std::nullopt};
             }
         }
     }

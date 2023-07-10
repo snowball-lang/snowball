@@ -13,7 +13,7 @@ llvm::Value* LLVMBuilder::allocateObject(std::shared_ptr<types::DefinedType> ty)
     auto allocation = builder->CreateCall(
             getAllocaFunction(), {builder->getInt32(dataLayout.getTypeAllocSize(llvmType))});
     auto cast = builder->CreatePointerCast(allocation, llvmType);
-    if (ty->isStruct()) return cast;
+    if (ty->isStruct() || !ty->hasVtable()) return cast;
 
     // Class specific stuff
     llvm::Value* vtablePointer = nullptr;

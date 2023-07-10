@@ -28,6 +28,7 @@ TypeRef* Parser::parseType() {
     auto ident = parseIdentifier(true);
     Base* ast = ident;
     auto name = ident->getIdentifier();
+    auto id = ident->getIdentifier();
     auto g = utils::cast<GenericIdentifier>(ast);
     auto generics = (g != nullptr) ? g->getGenerics() : std::vector<TypeRef*>{};
     next();
@@ -36,6 +37,7 @@ TypeRef* Parser::parseType() {
         auto i = parseIdentifier(true);
         auto base = ast;
         name += "::" + i->getIdentifier();
+        id += "." + i->getIdentifier();
         ast = Syntax::N<Index>(ast, i, true);
         ast->setDBGInfo(i->getDBGInfo());
         auto g = utils::cast<GenericIdentifier>(i);
@@ -43,7 +45,7 @@ TypeRef* Parser::parseType() {
         next();
     }
     auto dbg = new DBGSourceInfo(m_source_info, pos, m_current.get_pos().second - pos.second);
-    auto t = Syntax::TR(ast, name, dbg);
+    auto t = Syntax::TR(ast, name, dbg, id);
     t->setGenerics(generics);
     while (is<TokenType::OP_BIT_AND>()) {
         next();

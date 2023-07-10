@@ -27,7 +27,7 @@ void LLVMBuilder::visit(ir::Call* call) {
     llvm::CallInst* llvmCall = nullptr;
     llvm::Value* allocatedValue = nullptr;
     if (auto c = utils::dyn_cast<types::FunctionType>(calleeValue->getType());
-        c != nullptr && utils::dyn_cast<types::DefinedType>(c->getRetType())) {
+        c != nullptr && utils::dyn_cast<types::BaseType>(c->getRetType())) {
         auto retType = c->getRetType();
         auto retTypeLLVM = getLLVMType(retType);
         // It's a function returning a type that's not a pointer

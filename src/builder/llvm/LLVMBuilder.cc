@@ -89,6 +89,8 @@ std::unique_ptr<llvm::Module> LLVMBuilder::newModule() {
                                               /*RV=*/0);
 
     m->addModuleFlag(llvm::Module::Warning, "Debug Info Version", llvm::DEBUG_METADATA_VERSION);
+    m->addModuleFlag(llvm::Module::Warning, "Snowball Compiler ID", _SNOWBALL_VERSION_NUMBER);
+    m->addModuleFlag(llvm::Module::Warning, "Snowball Compiler Version", llvm::ConstantDataArray::getString(*context, _SNOWBALL_VERSION, true));
     // darwin only supports dwarf2
     if (llvm::Triple(m->getTargetTriple()).isOSDarwin()) {
         m->addModuleFlag(llvm::Module::Warning, "Dwarf Version", 2);

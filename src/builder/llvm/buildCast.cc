@@ -46,8 +46,7 @@ void LLVMBuilder::visit(ir::Cast* c) {
                utils::dyn_cast<types::CObjectType>(ty)) {
         this->value = builder->CreateIntToPtr(v, llvmType);
     } else {
-        assert(utils::dyn_cast<types::DefinedType>(ty) || utils::dyn_cast<types::CObjectType>(ty));
-
+        assert(utils::dyn_cast<types::BaseType>(ty) || utils::dyn_cast<types::CObjectType>(ty));
         this->value = builder->CreatePointerCast(v, llvmType);
     }
 }

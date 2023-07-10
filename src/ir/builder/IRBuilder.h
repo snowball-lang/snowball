@@ -1,6 +1,8 @@
 
 #include "../../DBGSourceInfo.h"
 #include "../../ast/types/DefinedType.h"
+#include "../../ast/types/TypeAlias.h"
+#include "../../ast/types/TypeAlias.h"
 #include "../../ast/types/FunctionType.h"
 #include "../../ast/types/PrimitiveTypes.h"
 #include "../../common.h"
@@ -137,6 +139,8 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
     /// @brief Create a new function type
     Type<types::FunctionType> createFunctionType(std::vector<Type<>> args, Type<> retType,
                                                  bool isVarArg = false, bool isMutable = false);
+    /// @brief Create a new type alias
+    Type<types::TypeAlias> createTypeAlias(DBGSourceInfo* dbg, std::string name, Type<> base);
 
     /// @brief Utility function to create a new instruction
     template <typename DesiredType, typename... Args>

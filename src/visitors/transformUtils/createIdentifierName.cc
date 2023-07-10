@@ -9,10 +9,10 @@ namespace Syntax {
 
 std::string TransformContext::createIdentifierName(const std::string name, bool includeBase) {
     std::string result;
-    bool alreadyGenerated = name.find('.') != std::string::npos;
+    //bool alreadyGenerated = name.find('.') != std::string::npos;
 
-    if (includeBase && !alreadyGenerated) {
-        alreadyGenerated = true;
+    if (includeBase) {
+        //alreadyGenerated = true;
         if (currentClass != nullptr) {
             result = currentClass->getUUID() + "." + name;
         } else {
@@ -23,7 +23,7 @@ std::string TransformContext::createIdentifierName(const std::string name, bool 
         }
     }
 
-    if (!includeBase && !alreadyGenerated) {
+    if (!includeBase) {
         auto currentModule = module->getUniqueName();
         result = currentModule + "." + name;
     }

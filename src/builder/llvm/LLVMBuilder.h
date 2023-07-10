@@ -2,6 +2,8 @@
 #include "../../../app/cli.h"
 #include "../../ValueVisitor/Visitor.h"
 #include "../../ast/types/FunctionType.h"
+#include "../../ast/types/DefinedType.h"
+#include "../../ast/types/TypeAlias.h"
 #include "../../ast/types/ReferenceType.h"
 #include "../../ir/id.h"
 #include "../../ir/module/MainModule.h"

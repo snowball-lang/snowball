@@ -34,8 +34,8 @@ DefinedType::DefinedType(const std::string& name,
     , module(module)
     , ast(ast)
     , fields(fields)
-    , _struct(isStruct)
-    , generics(generics) {
+    , _struct(isStruct) {
+    setGenerics(generics);
     setPrivacy(PUBLIC);
 }
 DefinedType::ClassField::ClassField(const std::string& name,
@@ -49,10 +49,8 @@ DefinedType::ClassField::ClassField(const std::string& name,
     , Syntax::Statement::Privacy(privacy)
     , initializedValue(initializedValue)
     , isMutable(isMutable) { }
-std::string DefinedType::getUUID() const { return uuid; }
 Syntax::Statement::DefinedTypeDef* DefinedType::getAST() const { return ast; }
 void DefinedType::addField(ClassField* f) { fields.emplace_back(f); }
-std::shared_ptr<ir::Module> DefinedType::getModule() const { return module; }
 int DefinedType::getVtableSize() { return classVtable.size(); }
 int DefinedType::addVtableItem(std::shared_ptr<ir::Func> f) {
     classVtable.push_back(f);
@@ -114,7 +112,7 @@ std::string DefinedType::getMangledName() const {
 }
 
 Syntax::Expression::TypeRef* DefinedType::toRef() {
-    auto tRef = Syntax::TR(getUUID(), nullptr, shared_from_this());
+    auto tRef = Syntax::TR(getUUID(), nullptr, shared_from_this(), getUUID());
     std::vector<Syntax::Expression::TypeRef*> genericRef;
     for (auto g : generics) { genericRef.push_back(g->toRef()); }
 

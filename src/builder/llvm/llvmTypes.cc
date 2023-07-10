@@ -44,6 +44,9 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
 
     else if (auto f = cast<types::FunctionType>(t)) {
         return getLLVMFunctionType(f)->getPointerTo();
+    } else if (auto a = cast<types::TypeAlias>(t)) {
+        assert(! "Unreachable type case found!");
+        return getLLVMType(a->getBaseType());
     } else if (auto c = cast<types::DefinedType>(t)) {
         if (auto it = types.find(c->getId()); it != types.end()) { return it->second; }
 
@@ -55,8 +58,7 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
                                           (c->isStruct() ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) +
                                                   c->getMangledName());
         types.insert({c->getId(), s});
-
-        if (!c->isStruct()) { // Ignore vtables for structs
+        if (c->hasVtable()) { // Ignore vtables for structs
             if (auto v = ctx->getVtableTy(c->getId())) {
                 generatedFields.insert(generatedFields.begin(), v);
             } else {

@@ -7,20 +7,19 @@
 #include "../syntax/common.h"
 #include "../syntax/nodes.h"
 #include "Type.h"
+#include "BaseType.h"
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#ifndef __SNOWBALL_AST_POINTER_TYPES_H_
-#define __SNOWBALL_AST_POINTER_TYPES_H_
+#ifndef __SNOWBALL_AST_ALIAS_TYPES_H_
+#define __SNOWBALL_AST_ALIAS_TYPES_H_
 
 namespace snowball {
 namespace types {
 
-class ReferenceType : public AcceptorExtend<ReferenceType, Type>,
-                      public DBGObject,
-                      public ir::IdMixin {
+class TypeAlias : public AcceptorExtend<TypeAlias, BaseType> {
     friend AcceptorExtend;
 
   private:
@@ -28,15 +27,13 @@ class ReferenceType : public AcceptorExtend<ReferenceType, Type>,
     std::shared_ptr<Type> base = nullptr;
 
   public:
-    ReferenceType(std::shared_ptr<Type> base);
+    TypeAlias(const std::string name, std::shared_ptr<Type> base);
 
     /**
      * @param other another type to check.
      */
     virtual bool is(Type* other) const override {
-        if (auto c = utils::cast<ReferenceType>(other)) { return base->is(c->getPointedType()); }
-
-        return false;
+        return base->is(other);
     }
 
     /// @brief Get the type represented as a "human-readable" string
@@ -44,10 +41,6 @@ class ReferenceType : public AcceptorExtend<ReferenceType, Type>,
     /// @return the mangled version of the type
     std::string getMangledName() const override;
     /// @return The pointed type this type is pointing to
-    /// @see ReferenceType::base
-    std::shared_ptr<Type> getPointedType() const;
-    /// @return The base type being pointed.
-    /// @example i32**** -> i32
     std::shared_ptr<Type> getBaseType() const;
 
     /// @c Type::toRef() for information about this function.
@@ -58,7 +51,7 @@ class ReferenceType : public AcceptorExtend<ReferenceType, Type>,
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
     bool canCast(Type* ty) const override;
-
+    
     template <class Down>
     std::shared_ptr<Down> downcasted_shared_from_this() {
         return std::dynamic_pointer_cast<Down>(Type::shared_from_this());
@@ -68,4 +61,4 @@ class ReferenceType : public AcceptorExtend<ReferenceType, Type>,
 }; // namespace types
 }; // namespace snowball
 
-#endif // __SNOWBALL_AST_POINTER_TYPES_H_
+#endif // __SNOWBALL_AST_ALIAS_TYPES_H_

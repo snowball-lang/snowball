@@ -9,12 +9,16 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
+template <typename T>
+using GenericContainer = snowball::Syntax::Statement::GenericContainer<T>;
+
 namespace snowball {
 namespace Syntax {
 
 std::shared_ptr<types::Type> Transformer::transformType(Expression::TypeRef* ty) {
     auto name = ty->getPrettyName();
-    auto id = ty->getName();
+    auto id = ty->getId();
+    if (id.empty()) { id = ty->getName(); }
     std::shared_ptr<types::Type> returnedType = nullptr;
     if (auto x = transformSpecialType(ty)) { return x; }
     auto ast = ty->_getInternalAST();
@@ -57,7 +61,7 @@ std::shared_ptr<types::Type> Transformer::transformType(Expression::TypeRef* ty)
         } else if (_m.has_value()) {
             errorReason = "This is a module, not a type!";
         } else if (type.has_value()) {
-            if (auto x = utils::dyn_cast<types::DefinedType>(type.value());
+            if (auto x = utils::dyn_cast<types::BaseType>(type.value());
                 x && x->isPrivate() && !canPrivate) {
                 E<TYPE_ERROR>(ty,
                               FMT("Can't use '%s' as a type!", name.c_str()),
@@ -109,13 +113,23 @@ continueTypeFetch:
             assert(t->isType());
             auto transformed = t->getType();
             assert(t != nullptr);
-            if (typeGenericsMatch(ty, transformed)) { return transformed; }
+            if (typeGenericsMatch(ty, transformed)) { 
+                if (auto alias = utils::dyn_cast<types::TypeAlias>(transformed)) {
+                    transformed = alias->getBaseType();
+                }
+
+                return transformed; 
+            }
         }
     }
 
     if (auto x = ctx->cache->getType(uuid)) {
         auto cls = *x;
-        return transformTypeFromBase(uuid, cls, ty);
+        auto transformed = transformTypeFromBase(uuid, cls, ty);
+        if (auto alias = utils::dyn_cast<types::TypeAlias>(transformed)) {
+            transformed = alias->getBaseType();
+        }
+        return transformed;
     }
 
     if (existsWithGenerics) {
@@ -125,19 +139,23 @@ continueTypeFetch:
                           name.c_str()));
     }
 
-    if (returnedType == nullptr) E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
+    if (returnedType == nullptr) 
+        E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
     if (!typeGenericsMatch(ty, returnedType)) {
-        auto compAsDefinedType = utils::dyn_cast<types::DefinedType>(returnedType);
+        auto compAsDefinedType = utils::cast<GenericContainer<std::shared_ptr<types::Type>>>(returnedType.get());
         auto compGenerics = compAsDefinedType == nullptr
                 ? std::vector<std::shared_ptr<types::Type>>{}
                 : compAsDefinedType->getGenerics();
         E<TYPE_ERROR>(ty,
-                      FMT("Type '%s' require to have %i generic "
-                          "argument(s) but %i where given!",
+                      FMT("Type generics for '%s' don't match with '%s' ones!",
                           returnedType->getPrettyName().c_str(),
-                          compGenerics.size(),
-                          ty->getGenerics().size()));
+                          ty->getPrettyName().c_str()));
     }
+
+    if (auto alias = utils::dyn_cast<types::TypeAlias>(returnedType)) {
+        returnedType = alias->getBaseType();
+    }
+
     return returnedType;
 }
 

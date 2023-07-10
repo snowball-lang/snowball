@@ -12,6 +12,7 @@
 #include "../../visitors/TransformItem.h"
 #include "../../visitors/TransformState.h"
 #include "../types/DefinedType.h"
+#include "../types/TypeAlias.h"
 
 namespace snowball {
 namespace Syntax {

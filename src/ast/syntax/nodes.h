@@ -560,6 +560,37 @@ struct VariableDecl : public AcceptorExtend<VariableDecl, Base>,
 };
 
 /**
+ * @struct TypeAlias
+ * @brief Representation of a type alias declaration inside the AST.
+ *
+ * Type aliases can be used to solve a variaety of different
+ * problems such as to avoid writing long types.
+ *
+ * @example
+ *    type HelloWorld = My::Super::Long:Class:Name::With<?Generics>*
+ */
+struct TypeAlias : public AcceptorExtend<TypeAlias, Base>,
+                   public AcceptorExtend<TypeAlias, Privacy>,
+                   public AcceptorExtend<TypeAlias, GenericContainer<>> {
+    /// @brief Name of the alias to be exported as
+    std::string identifier;
+    /// @brief The type being refered by the alias
+    Expression::TypeRef* type;
+
+  public:
+    explicit TypeAlias(const std::string& identifier, Expression::TypeRef* type)
+        : identifier(identifier), type(type){};
+
+    /// @return The name of the alias to be exported as
+    auto getIdentifier() { return identifier; }
+    /// @return The type being refered by the alias
+    auto getType() { return type; }
+
+    // Set a visit handler for the generators
+    ACCEPT()
+};
+
+/**
  * Class definition. Created at "Parser::parseClass" function
  */
 struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
@@ -573,6 +604,8 @@ struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
     std::vector<FunctionDef*> functions;
     /// @brief Class defined variables
     std::vector<VariableDecl*> variables;
+    /// @brief A list containing all the type aliases
+    std::vector<TypeAlias*> typeAliases;
     /// @brief Class inheritance parent
     Expression::TypeRef* extends = nullptr;
     /// @brief Wether or not the class is a struct
@@ -605,6 +638,11 @@ struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
     VariableIterator varStart();
     VariableIterator varEnd();
 
+    /// @return A full list of declared type aliases
+    std::vector<TypeAlias*>& getTypeAliases();
+    /// @brief Add a type alias to the class
+    void addTypeAlias(TypeAlias* alias);
+
     /// @return If the class is a struct or not
     virtual bool isStruct();
 
@@ -632,37 +670,6 @@ struct Raise : public AcceptorExtend<Raise, Base> {
     auto getExpr() { return expr; }
 
     // Set an acceptance call
-    ACCEPT()
-};
-
-/**
- * @struct TypeAlias
- * @brief Representation of a type alias declaration inside the AST.
- *
- * Type aliases can be used to solve a variaety of different
- * problems such as to avoid writing long types.
- *
- * @example
- *    type HelloWorld = My::Super::Long:Class:Name::With<?Generics>*
- */
-struct TypeAlias : public AcceptorExtend<TypeAlias, Base>,
-                   public AcceptorExtend<TypeAlias, Privacy>,
-                   public AcceptorExtend<TypeAlias, GenericContainer<>> {
-    /// @brief Name of the alias to be exported as
-    std::string identifier;
-    /// @brief The type being refered by the alias
-    Expression::TypeRef* type;
-
-  public:
-    explicit TypeAlias(const std::string& identifier, Expression::TypeRef* type)
-        : identifier(identifier), type(type){};
-
-    /// @return The name of the alias to be exported as
-    auto getIdentifier() { return identifier; }
-    /// @return The type being refered by the alias
-    auto getType() { return type; }
-
-    // Set a visit handler for the generators
     ACCEPT()
 };
 

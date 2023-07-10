@@ -50,6 +50,8 @@ Transformer::transformClass(const std::string& uuid,
                     nullptr,
                     std::vector<std::shared_ptr<types::Type>>{},
                     ty->isStruct());
+            transformedType->setModule(ctx->module);
+            transformedType->setUUID(_uuid);
             auto item = std::make_shared<transform::Item>(transformedType);
             ctx->cache->setTransformedType(baseUuid, item, _uuid);
             auto classGenerics = ty->getGenerics();
@@ -124,9 +126,11 @@ Transformer::transformClass(const std::string& uuid,
             // Create function definitions
             auto backupGenerateFunction = ctx->generateFunction;
             ctx->generateFunction = false;
+            for (auto ty : ty->getTypeAliases()) { ty->accept(this); }
             for (auto fn : ty->getFunctions()) { fn->accept(this); }
             // Generate the function bodies
             ctx->generateFunction = true;
+            for (auto ty : ty->getTypeAliases()) { ty->accept(this); }
             for (auto fn : ty->getFunctions()) { fn->accept(this); }
             ctx->generateFunction = backupGenerateFunction;
             for (int allowPointer = 0; allowPointer < 2; ++allowPointer) {

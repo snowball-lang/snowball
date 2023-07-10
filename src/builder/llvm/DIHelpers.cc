@@ -68,6 +68,8 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
                 dbg.builder->createSubroutineType(llvm::MDTuple::get(*context, argTypes));
         return dbg.builder->createPointerType(subroutineType,
                                               layout.getTypeAllocSizeInBits(llvmType));
+    } else if (auto c = cast<types::TypeAlias>(ty)) {
+        return getDIType(c->getBaseType().get());
     } else if (auto c = cast<types::DefinedType>(ty)) {
         // TODO: add "VTableHolder" as argument
         auto dbgInfo = c->getDBGInfo();

@@ -1,5 +1,6 @@
 
 #include "nodes.h"
+#include "common.h"
 
 #include <assert.h>
 #include <string>
@@ -79,6 +80,8 @@ DefinedTypeDef::DefinedTypeDef(std::string name,
 void DefinedTypeDef::addFunction(FunctionDef* fnDef) { functions.push_back(fnDef); }
 void DefinedTypeDef::addVariable(VariableDecl* var) { variables.push_back(var); }
 bool DefinedTypeDef::isStruct() { return _struct; }
+std::vector<TypeAlias*>& DefinedTypeDef::getTypeAliases() { return typeAliases; }
+void DefinedTypeDef::addTypeAlias(TypeAlias* alias) { typeAliases.push_back(alias); }
 Expression::TypeRef* DefinedTypeDef::getParent() const { return extends; }
 std::string DefinedTypeDef::getName() const { return name; }
 std::vector<FunctionDef*>& DefinedTypeDef::getFunctions() { return functions; }

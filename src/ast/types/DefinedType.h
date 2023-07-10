@@ -7,6 +7,7 @@
 #include "../syntax/common.h"
 #include "../syntax/nodes.h"
 #include "Type.h"
+#include "BaseType.h"
 
 #include <memory>
 #include <string>
@@ -18,8 +19,6 @@
 namespace snowball {
 namespace types {
 
-class FunctionType;
-
 /**
  * @brief Defined types.
  *
@@ -29,10 +28,7 @@ class FunctionType;
  * primitive types, in order to use these type and it's member,
  * a new initialization of the object is required.
  */
-class DefinedType : public AcceptorExtend<DefinedType, Type>,
-                    public DBGObject,
-                    public Syntax::Statement::Privacy,
-                    public ir::IdMixin {
+class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
   public:
     /**
      * @brief A class field represents all of the "elements" a
@@ -60,9 +56,6 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     friend AcceptorExtend;
 
   private:
-    /// @brief A list containing the already-generated generics
-    ///  for this class
-    std::vector<std::shared_ptr<Type>> generics;
     /// @brief a list of fields this class has
     std::vector<ClassField*> fields;
     /// @brief Definition of where in the stack this class is stored
@@ -116,14 +109,10 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
      */
     virtual bool is(DefinedType* other) const;
 
-    /// @return module where the type is defined in
-    std::shared_ptr<ir::Module> getModule() const;
     /// @brief Get the type represented as a "human-readable" string
     std::string getPrettyName() const override;
     /// @return the mangled version of the type
     std::string getMangledName() const override;
-    /// @return UUID of the class that can be used as UUID base
-    std::string getUUID() const;
     /// @return The ast representation for the type
     Syntax::Statement::DefinedTypeDef* getAST() const;
     /// @return The size of the class virtual table
@@ -132,10 +121,6 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     int addVtableItem(std::shared_ptr<ir::Func> f);
     /// @return a vector containing all the functions in a vtable
     std::vector<std::shared_ptr<ir::Func>> getVTable() const;
-    /// @return the generic list defined for this type
-    auto getGenerics() const { return generics; }
-    /// @brief Set the generic list for this type
-    void setGenerics(std::vector<std::shared_ptr<Type>> generics) { this->generics = generics; }
     /// @return the parent class it inherits from
     /// @note It may be std::nullptr if it does not inherit from
     ///  anything!
@@ -157,6 +142,9 @@ class DefinedType : public AcceptorExtend<DefinedType, Type>,
     Syntax::Expression::TypeRef* toRef() override;
     /// @return true/false depending on whether the type is a struct
     bool isStruct() const { return _struct; }
+
+    /// @brief Whether or not the type has a vtable
+    bool hasVtable() const { return classVtable.size() > 0; }
 
     /// @brief override function.
     virtual bool canCast(Type* ty) const override;

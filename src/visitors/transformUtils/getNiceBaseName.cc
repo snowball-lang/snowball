@@ -1,5 +1,6 @@
 
 #include "../../ast/types/DefinedType.h"
+#include "../../ast/types/TypeAlias.h"
 #include "../Transformer.h"
 
 #include <optional>

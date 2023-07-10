@@ -159,6 +159,9 @@ Type<types::FunctionType> IRBuilder::createFunctionType(std::vector<Type<>> args
                                                         bool isVarArg, bool isMutable) {
     return std::make_shared<types::FunctionType>(args, retType, isVarArg, isMutable);
 }
+Type<types::TypeAlias> IRBuilder::createTypeAlias(DBGSourceInfo* dbg, std::string name, Type<> base) {
+    return N<types::TypeAlias>(dbg, name, base);
+}
 SharedValue<BinaryOp> IRBuilder::createBinaryOp(SharedValue<Call> call) {
     auto op = N<BinaryOp>(call->getDBGInfo(), call->getCallee(), call->getArguments());
     op->isInitialization = call->isInitialization;

@@ -5,8 +5,8 @@
 #include <memory>
 #include <string>
 
-#ifndef __SNOWBALL_AST_BASE_TYPE_H_
-#define __SNOWBALL_AST_BASE_TYPE_H_
+#ifndef __SNOWBALL_AST_TYPE_H_
+#define __SNOWBALL_AST_TYPE_H_
 
 #define SNOWBALL_COBJ_CAST_CHECK                                                                   \
     if (utils::cast<CObjectType>(ty)) return true;
@@ -92,7 +92,8 @@ class Type : public std::enable_shared_from_this<Type> {
     /// @brief Set the mutability of the type
     void setMutable(bool m) { _mutable = m; }
 };
+
 }; // namespace types
 }; // namespace snowball
 
-#endif // __SNOWBALL_AST_BASE_TYPE_H_
+#endif // __SNOWBALL_AST_TYPE_H_

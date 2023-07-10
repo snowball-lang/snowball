@@ -20,7 +20,11 @@ SN_TRANSFORMER_VISIT(Statement::TypeAlias) {
                               name.c_str()));
     } else if (ctx->generateFunction && (p_node->getGenerics().size() == 0)) {
         assert(ctx->cache->getTransformedType(uuid) == std::nullopt);
-        auto item = std::make_shared<transform::Item>(transformType(p_node->getType()));
+        auto baseType = transformType(p_node->getType());
+        auto typeAlias = builder.createTypeAlias(p_node->getDBGInfo(), name, baseType);
+        typeAlias->setPrivacy(p_node->getPrivacy());
+        typeAlias->setUUID(uuid);
+        auto item = std::make_shared<transform::Item>(typeAlias);
         ctx->cache->setTransformedType(uuid, item);
         return;
     } else if (!ctx->generateFunction || (p_node->getGenerics().size() > 0)) {
