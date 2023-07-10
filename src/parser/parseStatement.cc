@@ -66,7 +66,7 @@ Syntax::Node* Parser::parseStatement(Token pk) {
             auto expr = parseExpr();
             return expr;
         }
-    }   
+    }
 
     assert(false);
     return nullptr; // to remove warnings

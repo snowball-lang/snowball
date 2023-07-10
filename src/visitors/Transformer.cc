@@ -34,9 +34,9 @@ Transformer::Transformer(std::shared_ptr<ir::Module> mod, SourceInfo* srci)
 }
 
 std::vector<std::shared_ptr<ir::Module>> Transformer::getModules() const { return modules; }
-void Transformer::addModule(std::shared_ptr<ir::Module> m) { 
+void Transformer::addModule(std::shared_ptr<ir::Module> m) {
     ctx->cache->addModule(m->getUniqueName(), m);
-    modules.push_back(m); 
+    modules.push_back(m);
 }
 auto Transformer::getModule() const { return ctx->module; }
 void Transformer::visitGlobal(std::vector<Node*> p_nodes) {

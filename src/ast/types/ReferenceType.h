@@ -20,7 +20,9 @@ namespace types {
 
 class FunctionType;
 
-class ReferenceType : public AcceptorExtend<ReferenceType, Type>, public DBGObject, public ir::IdMixin {
+class ReferenceType : public AcceptorExtend<ReferenceType, Type>,
+                      public DBGObject,
+                      public ir::IdMixin {
     friend AcceptorExtend;
 
   private:

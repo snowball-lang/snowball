@@ -70,7 +70,7 @@ fetchFromUUID:
         return {std::nullopt, transformTypeFromBase(uuid, t.value(), ty), std::nullopt,
                 std::nullopt, std::nullopt};
     }
-    
+
     std::optional<std::vector<cacheComponents::Functions::FunctionStore>> overloads = std::nullopt;
     if (auto x = ctx->cache->getFunction(uuid)) { overloads = x; }
     if (funcs || overloads) { return {std::nullopt, std::nullopt, funcs, overloads, std::nullopt}; }

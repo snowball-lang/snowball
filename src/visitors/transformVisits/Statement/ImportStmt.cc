@@ -34,8 +34,11 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     } else {
         auto niceFullName = package + "::" + utils::join(path.begin(), path.end(), "::");
         auto mod = std::make_shared<ir::Module>(niceFullName, uuid);
-        std::vector<std::string> uuidStack = ctx->uuidStack.size() == 0 ? std::vector<std::string>{} : std::vector<std::string>{ctx->uuidStack.front()};
-        auto state = std::make_shared<ContextState>(ContextState::StackType{}, mod, uuidStack, nullptr);
+        std::vector<std::string> uuidStack = ctx->uuidStack.size() == 0
+                ? std::vector<std::string>{}
+                : std::vector<std::string>{ctx->uuidStack.front()};
+        auto state =
+                std::make_shared<ContextState>(ContextState::StackType{}, mod, uuidStack, nullptr);
         // clang-format off
         ctx->withState(state,
             [filePath = filePath, mod, this]() mutable {

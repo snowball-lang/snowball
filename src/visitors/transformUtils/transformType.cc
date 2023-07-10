@@ -125,8 +125,7 @@ continueTypeFetch:
                           name.c_str()));
     }
 
-    if (returnedType == nullptr) 
-        E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
+    if (returnedType == nullptr) E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
     if (!typeGenericsMatch(ty, returnedType)) {
         auto compAsDefinedType = utils::dyn_cast<types::DefinedType>(returnedType);
         auto compGenerics = compAsDefinedType == nullptr

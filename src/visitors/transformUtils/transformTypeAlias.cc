@@ -47,7 +47,7 @@ Transformer::transformTypeAlias(const std::string& uuid,
             }
 
             transformedType = transformType(ty->getType());
-            //ctx->cache->setTransformedType(uuid, transformedType);
+            // ctx->cache->setTransformedType(uuid, transformedType);
         });
     });
 

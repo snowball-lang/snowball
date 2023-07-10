@@ -71,23 +71,13 @@ int build(app::Options::BuildOptions p_opts) {
     // TODO: check for output
     std::string output;
     switch (p_opts.emit_type) {
-        case app::Options::EmitType::EXECUTABLE:
-            output = _SNOWBALL_OUT_DEFAULT;
-            break;
-        case app::Options::EmitType::OBJECT:
-            output = _SNOWBALL_OBJ_OUT_DEFAULT;
-            break;
-        case app::Options::EmitType::LLVM_IR:
-            output = _SNOWBALL_LLIR_OUT_DEFAULT;
-            break;
-        case app::Options::EmitType::ASSEMBLY:
-            output = _SNOWBALL_ASM_OUT_DEFAULT;
-            break;
+        case app::Options::EmitType::EXECUTABLE: output = _SNOWBALL_OUT_DEFAULT; break;
+        case app::Options::EmitType::OBJECT: output = _SNOWBALL_OBJ_OUT_DEFAULT; break;
+        case app::Options::EmitType::LLVM_IR: output = _SNOWBALL_LLIR_OUT_DEFAULT; break;
+        case app::Options::EmitType::ASSEMBLY: output = _SNOWBALL_ASM_OUT_DEFAULT; break;
     }
 
-    if (!p_opts.output.empty()) {
-        output = p_opts.output;
-    }
+    if (!p_opts.output.empty()) { output = p_opts.output; }
 
     Compiler* compiler = new Compiler(content, filename);
     compiler->initialize();

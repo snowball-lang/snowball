@@ -21,7 +21,8 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             auto left = build(args.at(0).get());
             auto right = build(args.at(1).get());
             auto baseType = args.at(0)->getType();
-            if (auto x = utils::dyn_cast<types::ReferenceType>(baseType)) baseType = x->getBaseType();
+            if (auto x = utils::dyn_cast<types::ReferenceType>(baseType))
+                baseType = x->getBaseType();
             if (utils::dyn_cast<types::Int8Type>(baseType) ||
                 utils::dyn_cast<types::Int16Type>(baseType) ||
                 utils::dyn_cast<types::Int32Type>(baseType) ||

@@ -176,16 +176,23 @@ VISIT(Cast) {
                                   t->getPrettyName().c_str()),
                               {.note = "This error is caused by the types not being "
                                        "castable.",
-                               .help = "Casting operators allow for type conversions between different data types.\n"
-                                        "However, in this case, it is not possible to create a casting operator from \n"
-                                        "the specified source type to the desired target type.\n\n"
-                                        "Please ensure that the types involved in the casting operation are compatible \n"
-                                        "and that there is a valid casting mechanism defined between them. Check the \n"
-                                        "documentation or language specifications to verify the supported casting operations \n"
-                                        "and rules for the involved types.\n\n"
-                                        "If the desired type conversion is not directly supported, you may need to consider \n"
-                                        "alternative approaches such as using explicit conversion functions or implementing \n"
-                                        "custom conversion logic to achieve the desired result."});
+                               .help = "Casting operators allow for type conversions between "
+                                       "different data types.\n"
+                                       "However, in this case, it is not possible to create a "
+                                       "casting operator from \n"
+                                       "the specified source type to the desired target type.\n\n"
+                                       "Please ensure that the types involved in the casting "
+                                       "operation are compatible \n"
+                                       "and that there is a valid casting mechanism defined "
+                                       "between them. Check the \n"
+                                       "documentation or language specifications to verify the "
+                                       "supported casting operations \n"
+                                       "and rules for the involved types.\n\n"
+                                       "If the desired type conversion is not directly supported, "
+                                       "you may need to consider \n"
+                                       "alternative approaches such as using explicit conversion "
+                                       "functions or implementing \n"
+                                       "custom conversion logic to achieve the desired result."});
     }
 }
 
@@ -193,8 +200,7 @@ VISIT(Return) {
     auto fn = ctx->getCurrentFunction();
     assert(fn != nullptr);
 
-    if (p_node->getExpr() != nullptr) 
-        p_node->getExpr()->visit(this);
+    if (p_node->getExpr() != nullptr) p_node->getExpr()->visit(this);
     if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) != nullptr) &&
         (p_node->getExpr() != nullptr)) {
         Syntax::E<TYPE_ERROR>(p_node,
@@ -232,8 +238,7 @@ void TypeChecker::codegen() {
     auto functions = module->getFunctions();
 
     // Iterate every function with a reversed iterator.
-    for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn) 
-        visit(fn->get());
+    for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn) visit(fn->get());
 }
 
 void TypeChecker::cantBeVoid(

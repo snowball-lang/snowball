@@ -110,7 +110,7 @@ void Compiler::compile(bool verbose) {
             for (auto module : mainModule->getModules()) {
                 auto typeChecker = new codegen::TypeChecker(module);
 #if _SNOWBALL_TIMERS_DEBUG
-                DEBUG_TIMER("TypeChecker: %fs", utils::_timer([&] { typeChecker->codegen(); })); 
+                DEBUG_TIMER("TypeChecker: %fs", utils::_timer([&] { typeChecker->codegen(); }));
 #else
                 typeChecker->codegen();
 #endif

@@ -25,7 +25,7 @@ Syntax::Block* Parser::parseBlock(std::vector<TokenType> termination) {
             next();
             continue;
         }
-        
+
         stmts.push_back(parseStatement(pk));
     }
 

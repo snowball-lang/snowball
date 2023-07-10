@@ -24,16 +24,16 @@ std::string get_exe_folder() {
 #ifdef _WIN32
     // Windows specific
     wchar_t szPath[MAX_PATH];
-    GetModuleFileNameW( NULL, szPath, MAX_PATH );
+    GetModuleFileNameW(NULL, szPath, MAX_PATH);
 #else
     // Linux specific
     char szPath[PATH_MAX];
-    ssize_t count = readlink( "/proc/self/exe", szPath, PATH_MAX );
-    if( count < 0 || count >= PATH_MAX )
-        return {}; // some error
+    ssize_t count = readlink("/proc/self/exe", szPath, PATH_MAX);
+    if (count < 0 || count >= PATH_MAX) return {}; // some error
     szPath[count] = '\0';
 #endif
-    return std::filesystem::path{ szPath }.parent_path() / ""; // to finish the folder path with (back)slash
+    return std::filesystem::path{szPath}.parent_path() /
+            ""; // to finish the folder path with (back)slash
 }
 
 std::string getSubstringByRange(const std::string& str,
@@ -95,7 +95,9 @@ std::string get_lib_folder() {
 
     bool filepathExists = fs::is_directory(full_path);
     if (!filepathExists) {
-        throw snowball::SNError(snowball::Error::IO_ERROR, FMT("Could not find system libraries! (%s)", full_path.string().c_str()));
+        throw snowball::SNError(
+                snowball::Error::IO_ERROR,
+                FMT("Could not find system libraries! (%s)", full_path.string().c_str()));
     }
 
     return full_path;

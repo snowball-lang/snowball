@@ -17,8 +17,7 @@ SN_TRANSFORMER_VISIT(Statement::Namespace) {
             E<VARIABLE_ERROR>(
                     p_node,
                     FMT("Namespace '%s' is already defined in the current scope!", name.c_str()));
-        auto mod = std::make_shared<ir::Module>(getNameWithBase(name),
-                                                uuid);
+        auto mod = std::make_shared<ir::Module>(getNameWithBase(name), uuid);
         mod->setSourceInfo(ctx->module->getSourceInfo());
         ctx->uuidStack.push_back(ctx->module->getUniqueName());
         auto sharedModule = std::make_shared<Item>(mod);

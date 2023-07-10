@@ -46,6 +46,7 @@ class Types {
     std::map<std::string, TypeStore> types;
     /// @brief a list of already transformed types
     std::map<std::string, std::shared_ptr<transform::Item>> createdTypes;
+
   public:
     /// @brief A map containing what UUIDs are associated with it's original identifiers
     /// @example Foo -> [Foo:1, Foo:2, ...]

@@ -182,9 +182,6 @@ typedef int32_t snowball_int_t;
 #error "LD_PATH must be defined! (e.g. \"/usr/bin/ld\")"
 #endif
 
-// ld args
-#include "ld_args.h"
-
 #ifndef STATICLIB_DIR
 #error "STATICLIB_DIR path must be defined! (e.g. \"/usr/lib/\")"
 #endif

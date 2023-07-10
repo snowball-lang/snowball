@@ -1,7 +1,6 @@
 #include "../../ast/syntax/nodes.h"
 #include "../Transformer.h"
 
-#include <fstream>
 #include "../../lexer.h"
 #include "../../parser/Parser.h"
 #include "../../utils/utils.h"
@@ -9,6 +8,7 @@
 #include "../../visitors/Transformer.h"
 #include "../../visitors/TypeChecker.h"
 #include "../../visitors/analyzers/DefinitveAssigment.h"
+#include <fstream>
 
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
@@ -18,22 +18,22 @@ namespace Syntax {
 
 void Transformer::initializeCoreRuntime() {
     auto dbg = new DBGSourceInfo(ctx->module->getSourceInfo(), 0);
-    auto import = Syntax::N<Syntax::Statement::ImportStmt>(
-        std::vector<std::string>{"_$core"}, "Core");
+    auto import =
+            Syntax::N<Syntax::Statement::ImportStmt>(std::vector<std::string>{"_$core"}, "Core");
     import->setDBGInfo(dbg);
     import->accept(this);
 
     ctx->uuidStack.push_back(ctx->imports->CORE_UUID + "_$core");
 
-    //std::map<std::string, std::vector<std::string>> typeAliases = {
-    //    { "String", {} },
-    //    { "Exception", {} },
-    //    { "Vector", { "_StoreType" } },
-    //    { "StringView", { "_CharType" } },
-    //    { "Iterable", { "_IteratorType" } }
-    //};
-//
-    //for (auto [type, generics] : typeAliases) {
+    // std::map<std::string, std::vector<std::string>> typeAliases = {
+    //     { "String", {} },
+    //     { "Exception", {} },
+    //     { "Vector", { "_StoreType" } },
+    //     { "StringView", { "_CharType" } },
+    //     { "Iterable", { "_IteratorType" } }
+    // };
+    //
+    // for (auto [type, generics] : typeAliases) {
     //    auto uuid = ctx->imports->CORE_UUID + "_$core." + type;
     //    auto mainUuid = ctx->module->getUniqueName() + "." + type;
     //    auto fetchedType = ctx->cache->getTransformedType(uuid);
@@ -49,7 +49,7 @@ void Transformer::initializeCoreRuntime() {
     //            ctx->cache->setTransformedType(mainUuid, x, id);
     //        }
     //    }
-//
+    //
     //    auto cachedType = ctx->cache->getType(uuid);
     //    assert(cachedType);
     //    ctx->cache->setType(mainUuid, cachedType.value().type, cachedType.value().state);

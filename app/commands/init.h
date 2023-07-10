@@ -20,12 +20,12 @@ using namespace std::chrono;
     "pub fn my_export() String {\n"                                                                \
     "    return \"Hello, World\"\n"                                                                \
     "}\n\n" /* TODO: add #[cfg(test)] */                                                           \
-    "\nnamespace tests {\n"                                                                              \
+    "\nnamespace tests {\n"                                                                        \
     "   #[test]\n"                                                                                 \
     "    fn test_my_lib() {\n" /* TODO: implement this in the actual                               \
                                 * language                                                         \
                                 */                                                                 \
-    "        Assertion::assert(my_export() == \"Hello, World\")\n"                         \
+    "        Assertion::assert(my_export() == \"Hello, World\")\n"                                 \
     "    }\n"                                                                                      \
     "}"
 
@@ -33,7 +33,7 @@ using namespace std::chrono;
 #define EXECUTABLE_MAIN                                                                            \
     "use Core::System\n"                                                                           \
                                                                                                    \
-    "\npub fn main() {\n"                                                                         \
+    "\npub fn main() {\n"                                                                          \
     "   System::println(\"Hello, World\")\n"                                                       \
     "}"
 

@@ -26,8 +26,8 @@ void LLVMBuilder::visit(ir::Call* call) {
             call->getArguments(), [&](std::shared_ptr<ir::Value> arg) { return build(arg.get()); });
     llvm::CallInst* llvmCall = nullptr;
     llvm::Value* allocatedValue = nullptr;
-    if (auto c = utils::dyn_cast<types::FunctionType>(calleeValue->getType())
-        ; c != nullptr && utils::dyn_cast<types::DefinedType>(c->getRetType())) {
+    if (auto c = utils::dyn_cast<types::FunctionType>(calleeValue->getType());
+        c != nullptr && utils::dyn_cast<types::DefinedType>(c->getRetType())) {
         auto retType = c->getRetType();
         auto retTypeLLVM = getLLVMType(retType);
         // It's a function returning a type that's not a pointer
@@ -56,7 +56,9 @@ void LLVMBuilder::visit(ir::Call* call) {
         args.insert(args.begin(), object);
         llvmCall = builder->CreateCall(
                 (llvm::FunctionType*)callee->getType()->getPointerElementType(), callee, args);
-        this->value = instance->initializeAtHeap ? object : builder->CreateLoad(object->getType()->getPointerElementType(), object);
+        this->value = instance->initializeAtHeap
+                ? object
+                : builder->CreateLoad(object->getType()->getPointerElementType(), object);
     } else if (auto c = utils::dyn_cast<ir::Func>(calleeValue);
                c != nullptr && c->inVirtualTable()) {
         assert(c->hasParent());
