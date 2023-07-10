@@ -58,14 +58,15 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
             fn->setStatic(node->isStatic());
             fn->setGenerics(fnGenerics);
             fn->setModule(ctx->module);
-
+            fn->setAttributes(node);
+            auto isExtern = node->isExtern();
+            if (((ctx->getCurrentClass() || !fn->isStatic()) || fn->isPrivate()) && !isEntryPoint && !isExtern)
+                fn->addAttribute(Attributes::INTERNAL_LINKAGE);    
             if (auto c = ctx->getCurrentClass(true)) {
                 if (node->isVirtual()) { fn->setVirtualIndex(c->addVtableItem(fn)); }
             }
 
-            fn->setAttributes(node);
             ir::Func::FunctionArgs newArgs = {};
-
             if (fn->isConstructor()) {
                 auto a = builder.createArgument(node->getDBGInfo(), "self", 0, nullptr);
                 a->setType(ctx->getCurrentClass(true)->getPointerTo());

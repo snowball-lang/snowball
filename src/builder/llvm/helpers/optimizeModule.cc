@@ -98,15 +98,8 @@ void LLVMBuilder::optimizeModule(app::Options::Optimization o) {
         default: assert(false && "during code optimization");
     }
 
-    if (level == llvm::OptimizationLevel::O0) {
-        llvm::ModulePassManager mpm =
-                pass_builder.buildO0DefaultPipeline(llvm::OptimizationLevel::O0);
-        mpm.run(*module, module_analysis_manager);
-    } else {
-        llvm::ModulePassManager mpm = pass_builder.buildPerModuleDefaultPipeline(level);
-        mpm.run(*module, module_analysis_manager);
-    }
-
+    llvm::ModulePassManager mpm = pass_builder.buildLTOPreLinkDefaultPipeline(level);
+    mpm.run(*module, module_analysis_manager);
     applyDebugTransformations(module.get(), o == app::Options::OPTIMIZE_O0);
 }
 

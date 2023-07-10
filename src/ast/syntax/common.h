@@ -269,7 +269,7 @@ class AttributeHolder {
      *
      * @param attribute The attribute to add.
      */
-    auto addAttribute(T attribute, StoreType args) {
+    auto addAttribute(T attribute, StoreType args = {}) {
         arguments[attribute] = args;
         return m_attributes |= (1 << static_cast<int>(attribute));
     }

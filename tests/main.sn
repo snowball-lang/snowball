@@ -1,16 +1,6 @@
-use Core::System;
 
-class X {
-  pub:
-    type x<T> = String;
-    X() {
-
-    }
-}
 
 // Define the main function.
 pub fn main() i32 {
-    let a: X::x<i32> = String::from("");
-    let b: X::x<i32> = String::from("");
-    let c: X::x<f32> = X::x<?i32>::from("");
+    let a: String = String::from("");
 }

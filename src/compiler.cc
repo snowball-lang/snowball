@@ -157,6 +157,8 @@ int Compiler::emit_object(std::string out, bool log) {
 int Compiler::emit_llvmir(std::string p_output, bool p_pmessage) {
     auto builder = new codegen::LLVMBuilder(module);
     builder->codegen();
+    builder->optimizeModule(opt_level);
+
     std::error_code EC;
     llvm::raw_fd_ostream dest(p_output, EC);
     if (EC)
@@ -170,6 +172,8 @@ int Compiler::emit_llvmir(std::string p_output, bool p_pmessage) {
 int Compiler::emit_assembly(std::string p_output, bool p_pmessage) {
     auto builder = new codegen::LLVMBuilder(module);
     builder->codegen();
+    builder->optimizeModule(opt_level);
+    
     auto res = builder->emitObjectFile(p_output, false, false);
     if (p_pmessage) Logger::success("Snowball project transpiled to llvm IR code! 🎉\n");
     return res;
