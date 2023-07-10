@@ -22,14 +22,18 @@ namespace utils {
 
 std::string get_exe_folder() {
 #ifdef _WIN32
-    wchar_t path[MAX_PATH] = {0};
-    GetModuleFileNameW(NULL, path, MAX_PATH);
-    return path;
+    // Windows specific
+    wchar_t szPath[MAX_PATH];
+    GetModuleFileNameW( NULL, szPath, MAX_PATH );
 #else
-    char result[PATH_MAX];
-    ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
-    return std::string(result, (count > 0) ? count : 0);
+    // Linux specific
+    char szPath[PATH_MAX];
+    ssize_t count = readlink( "/proc/self/exe", szPath, PATH_MAX );
+    if( count < 0 || count >= PATH_MAX )
+        return {}; // some error
+    szPath[count] = '\0';
 #endif
+    return std::filesystem::path{ szPath }.parent_path() / ""; // to finish the folder path with (back)slash
 }
 
 std::string getSubstringByRange(const std::string& str,
