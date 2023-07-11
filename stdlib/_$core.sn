@@ -251,6 +251,21 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
     /** The buffer containing the string. */
     let buffer: _CharType& = "";
 
+  priv:
+    /**
+     * @brief Creates a new string from a number.
+     * @param[in] num The number to create the string from.
+     * @param[in] format The format of the number.
+     * @return The created string.
+     */
+    static fn [[internal_linkage, inline]] fromNumber<T>(num: T, format: char& = "%ld")
+      StringView<_CharType> 
+    { 
+      let buffer: _CharType& = 
+        CLib::__internal::alloca_and_snprintf(10, format, num);
+      return new StringView<_CharType>{buffer}; 
+    }
+
   // Static exports
   pub:
     /**
@@ -259,22 +274,14 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
      */
     static fn [[internal_linkage, inline]] from(num: i64)
       StringView<_CharType> 
-    { 
-      let buffer: _CharType& = 
-        CLib::__internal::alloca_and_snprintf(22, "%d", num);
-      return new StringView<_CharType>{buffer}; 
-    }
+    { return Self::fromNumber(num, "%ld"); }
     /**
      * @brief Constructs a string from an integer. 
      * @param[in] num The integer to construct the string from.
      */
     static fn [[internal_linkage, inline]] from(num: i32)
       StringView<_CharType> 
-    { 
-      let buffer: _CharType& = 
-        CLib::__internal::alloca_and_snprintf(10, "%i", num);
-      return new StringView<_CharType>{buffer}; 
-    }
+    { return Self::fromNumber(num, "%i"); }
 
     /**
       * @brief Constructs a string from a vector of characters.

@@ -61,6 +61,8 @@ Transformer::transformClass(const std::string& uuid,
                     generics.push_back(transformType(classGenerics[i]->type));
                 }
             }
+            auto selfType = std::make_shared<Item>(transformedType);
+            ctx->addItem("Self", selfType);
             for (int genericCount = 0; genericCount < generics.size(); genericCount++) {
                 auto generic = classGenerics.at(genericCount);
                 auto generatedGeneric = generics.at(genericCount);

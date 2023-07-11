@@ -28,6 +28,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     bool isStatic = false;
     bool isVirtual = false;
     bool isMutable = false;
+    bool isNotImplemented = false;
 
     std::string name;
     std::string externName;
@@ -280,7 +281,6 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
                                        "'%s' while parsing an extern function declaration"
                                      : "Expected an identifier but got '%s' while parsing a "
                                        "function declaration";
-
             createError<SYNTAX_ERROR>(FMT(e.c_str(), m_current.to_string().c_str()));
         }
     }
@@ -462,6 +462,39 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     if (isExtern) {
         // TODO: external functions can have bodies!
         assert_tok<TokenType::SYM_SEMI_COLLON>("';'");
+    } else if (is<TokenType::OP_EQ>()) {
+        next();
+        if (is<TokenType::VALUE_NUMBER>()) {
+            auto number = m_current.to_string();
+            if (number != "0") {
+                createError<SYNTAX_ERROR>("Expected a '0' for the function body!", {
+                    .info = "Expected a '0' for the function body!",
+                    .note = "The function body must be a '0' for now.",
+                    .help = "You have to set the function body to '0'.\n"
+                            "For example:\n"
+                            "1 |   virt fn my_fn() = 0\n"
+                            "2 |"
+                });
+            }
+
+            if (!isVirtual) {
+                createError<SYNTAX_ERROR>("Function body can only be '0' for virtual functions!", {
+                    .info = "Function body can only be '0' for virtual functions!",
+                    .note = "The function body must be a '0' for now.",
+                    .help = "You have to set the function body to '0'.\n"
+                            "For example:\n"
+                            "1 |   virt fn my_fn() = 0\n"
+                            "2 |"
+                });
+            }
+
+            isNotImplemented = true;
+            hasBlock = true;
+            block = new Syntax::Block();
+            next();
+        } else {
+            createError<SYNTAX_ERROR>("Expected a number literal for the function body!");
+        }
     } else {
         assert_tok<TokenType::BRACKET_LCURLY>("'{'");
         if (isLLVMFunction) {

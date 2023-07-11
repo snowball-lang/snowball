@@ -35,6 +35,7 @@ struct Block : AcceptorExtend<Block, Node> {
     std::vector<Node*> stmts;
 
   public:
+    Block() : AcceptorExtend(){};
     Block(std::vector<Node*> s) : AcceptorExtend(), stmts(s) { }
     ~Block() noexcept = default;
 
