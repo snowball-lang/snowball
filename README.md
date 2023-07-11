@@ -66,7 +66,7 @@ pub fn main() i32 {
 }
 ```
 
-* [Try it online](https://godbolt.org/z/6Pen9M8s5)
+* [Try it online](https://godbolt.org/z/68j6Krs5d)
 
 ## Roadmap
 
