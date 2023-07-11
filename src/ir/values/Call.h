@@ -81,7 +81,8 @@ class BinaryOp : public AcceptorExtend<BinaryOp, Call> {
     explicit BinaryOp(std::shared_ptr<Value> callee, std::vector<std::shared_ptr<Value>> args = {})
         : AcceptorExtend(callee, args) { }
 
-    virtual bool isOperator() const override { return true; };
+    virtual bool isOperator() const { return true; };
+    
     /// @brief Wether or not ignore mutability checks
     bool ignoreMutability = false;
 };

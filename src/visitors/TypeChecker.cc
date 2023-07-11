@@ -96,10 +96,10 @@ VISIT(Call) {
     int i = 0;
     fn->visit(this);
     for (auto a : p_node->getArguments()) {
+        a->visit(this);
         if (i == 0) checkMutability(p_node, fn, a);
 
         i++;
-        a->visit(this);
     }
 }
 
@@ -251,10 +251,11 @@ void TypeChecker::checkMutability(
     auto fnName = fn->getName(true);
     auto isMutable = this->isMutable(value);
     bool accessingSelf = this->accessingSelf(value);
-    if (Operators::isOperator(fnName)) {
+    if (Operators::isOperator(fnName) && !Operators::opEquals<Operators::CONSTRUCTOR>(fnName)) {
         auto opType = Operators::operatorID(fnName);
         auto binOp = utils::cast<ir::BinaryOp>(p_node);
         auto isAssignment = Syntax::Expression::BinaryOp::is_assignment(opType);
+        assert(binOp);
         if (isAssignment && accessingSelf && !ctx->getCurrentFunction()->getType()->isMutable()) {
             Syntax::E<VARIABLE_ERROR>(
                     p_node,
@@ -272,7 +273,7 @@ void TypeChecker::checkMutability(
                                           })});
         }
 
-        if (isAssignment && (!binOp->ignoreMutability && !isMutable) && !accessingSelf) {
+        if (isAssignment && !binOp->ignoreMutability && !isMutable) {
             if (!p_node->isInitialization) {
                 Syntax::E<VARIABLE_ERROR>(
                         p_node,
@@ -311,6 +312,9 @@ void TypeChecker::checkMutability(
 }
 
 bool TypeChecker::isMutable(std::shared_ptr<ir::Value> value) {
+    if (auto x = utils::dyn_cast<ir::Variable>(value)) return x->isMutable();
+    if (auto x = utils::dyn_cast<ir::IndexExtract>(value)) return x->getField()->isMutable;
+    
     return value->getType()->isMutable();
 }
 

@@ -202,6 +202,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES})
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
+add_compile_definitions("_SN_DEBUG=$<CONFIG:Debug>")
 set_target_properties     (${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 # To output llvm ir

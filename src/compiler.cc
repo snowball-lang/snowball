@@ -57,16 +57,13 @@ void Compiler::compile(bool silent) {
         auto lexer = new Lexer(_source_info);
 
 #if _SNOWBALL_TIMERS_DEBUG
-        std::vector<Token> tokens;
         DEBUG_TIMER("Lexer: %fs", utils::_timer([&] {
                         lexer->tokenize();
-                        tokens = lexer->tokens;
                     }));
 #else
         lexer->tokenize();
-        auto tokens = lexer->tokens;
 #endif
-
+        auto tokens = lexer->tokens;
         if (tokens.size() != 0) {
             SHOW_STATUS(Logger::compiling(Logger::progress(0.50)))
 
@@ -107,10 +104,12 @@ void Compiler::compile(bool silent) {
 
             SHOW_STATUS(Logger::compiling(Logger::progress(0.90)))
 
-            for (auto module : mainModule->getModules()) {
+            auto typeCheckModules = mainModule->getModules();
+            typeCheckModules.push_back(mainModule);
+            for (auto module : typeCheckModules) {
                 auto typeChecker = new codegen::TypeChecker(module);
 #if _SNOWBALL_TIMERS_DEBUG
-                DEBUG_TIMER("TypeChecker: %fs", utils::_timer([&] { typeChecker->codegen(); }));
+                DEBUG_TIMER("TypeChecker: %fs (%s)", utils::_timer([&] { typeChecker->codegen(); }), module->getName().c_str());
 #else
                 typeChecker->codegen();
 #endif

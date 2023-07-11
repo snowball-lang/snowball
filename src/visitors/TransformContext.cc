@@ -42,15 +42,20 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
         for (auto ty : overloadTypes) {
             for (auto op : services::OperatorService::operators) {
                 for (auto overload : overloadTypes) {
+                    auto opType = services::OperatorService::operatorID(op);
                     auto classType = asPointer ? ty->getPointerTo() : ty;
                     auto overloadType = asPointer ? overload->getPointerTo() : overload;
                     auto typeArgs = {classType, overloadType};
                     auto fn = builder.createFunction(NO_DBGINFO, "#" + op, true, false);
                     auto arg = builder.createArgument(NO_DBGINFO, "other", overloadType);
                     auto type = builder.createFunctionType(typeArgs, ty);
+                    auto isMut = Expression::BinaryOp::is_assignment(opType);
                     fn->setArgs({{"other", arg}});
                     fn->setType(type);
+                    fn->setRetTy(ty);
                     fn->setPrivacy(PrivacyStatus::PUBLIC);
+                    fn->getType()->setMutable(isMut);
+                    fn->getRetTy()->setMutable(isMut);
                     defineFunction(fn, ty->getName());
                 }
             }

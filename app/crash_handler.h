@@ -65,7 +65,7 @@
 // #pragma comment(lib, "dbghelp.lib")
 
 // Crash handler exception only enabled with MSVC
-#if (defined(_DEBUG) || defined(_SN_DEBUG)) && defined(_MSC_VER)
+#if (defined(_DEBUG) || _SN_DEBUG) && defined(_MSC_VER)
 #define CRASH_HANDLER_EXCEPTION 1
 extern DWORD CrashHandlerException(EXCEPTION_POINTERS* ep);
 #endif

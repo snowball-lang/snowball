@@ -48,13 +48,24 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
                                     (std::istreambuf_iterator<char>()));
                 auto srcInfo = new SourceInfo(content, filePath);
                 auto lexer = new Lexer(srcInfo);
+#if _SNOWBALL_TIMERS_DEBUG
+                DEBUG_TIMER("Lexer: %fs (%s)", utils::_timer([&] {
+                    lexer->tokenize();
+                }), filePath.c_str());
+#else
                 lexer->tokenize();
+#endif
                 auto tokens = lexer->tokens;
                 if (tokens.size() != 0) {
                     auto backupModule = ctx->module;
                     ctx->module = mod;
                     auto parser = new parser::Parser(tokens, srcInfo);
+#if _SNOWBALL_TIMERS_DEBUG
+                    parser::Parser::NodeVec ast;
+                    DEBUG_TIMER("Parser: %fs (%s)", utils::_timer([&] { ast = parser->parse(); }), filePath.c_str());
+#else
                     auto ast = parser->parse();
+#endif
                     ctx->module->setSourceInfo(srcInfo);
                     visitGlobal(ast);
                     // TODO: make this a separate function to avoid any sort of "conflict" with the compiler's version of this algorithm

@@ -286,7 +286,7 @@ Options CLI::parse() {
             }
         }
     } else if (IF_ANY_ARG("--version", "-v")) {
-        Logger::log("Snowball version " _SNOWBALL_VERSION);
+        Logger::log("Snowball version " _SNOWBALL_VERSION " (" _SNOWBALL_BUILD_TYPE ")");
         exit(0);
     } else {
         throw SNError(Error::ARGUMENT_ERROR, FMT("Unknown command found: %s", current_arg.c_str()));

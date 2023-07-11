@@ -5,6 +5,7 @@
 #include "../../ast/types/Type.h"
 #include "../../ast/types/TypeAlias.h"
 #include "../../common.h"
+#include "../../constants.h"
 #include "Body.h"
 #include "Value.h"
 #include "Variable.h"
@@ -210,9 +211,10 @@ class Func : public AcceptorExtend<Func, Value>,
         int numFunctionArgs = functionArgs.size();
         int numProvidedArgs = arguments.size();
         int numDefaultArgs = 0;
-        // DUMP(std::is_same_v<T, Argument>::value)
+        // DUMP((std::is_same_v<T, Argument>::value))
         //  Calculate the number of default arguments
         if (numFunctionArgs > numProvidedArgs) {
+            DUMP_S(typeid(T).name());
             if constexpr (std::is_same_v<T, std::shared_ptr<Argument>>) {
                 for (int i = numProvidedArgs; i < numFunctionArgs; i++) {
                     if (functionArgs.at(i)->hasDefaultValue()) {

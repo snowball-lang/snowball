@@ -85,7 +85,8 @@ std::string DefinedType::getPrettyName() const {
         genericString += ">";
     }
 
-    return n + genericString;
+    std::string mut = isMutable() ? "mut " : "";
+    return mut + n + genericString;
 }
 
 std::string DefinedType::getMangledName() const {

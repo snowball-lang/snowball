@@ -245,9 +245,9 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       { return self.buffer; }
   priv:
     /** The capacity of the string. */
-    let capacity: i32 = 10;
+    let mut capacity: i32 = 10;
     /** The size of the string. */
-    let length: i32 = 0;
+    let mut length: i32 = 0;
     /** The buffer containing the string. */
     let buffer: _CharType& = "";
 

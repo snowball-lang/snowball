@@ -88,7 +88,7 @@ class Type : public std::enable_shared_from_this<Type> {
     virtual Syntax::Expression::TypeRef* toRef();
 
     /// @return If the function is mutable
-    bool isMutable() { return _mutable; }
+    bool isMutable() const { return _mutable; }
     /// @brief Set the mutability of the type
     void setMutable(bool m) { _mutable = m; }
 };
