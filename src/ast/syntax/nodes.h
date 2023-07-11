@@ -651,6 +651,9 @@ struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
 
     // Set an acceptance call
     ACCEPT()
+  public:
+    /// @brief If the class has a constructor
+    bool hasConstructor = false;
 };
 
 /**

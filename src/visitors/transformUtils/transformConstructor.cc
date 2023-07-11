@@ -31,7 +31,7 @@ Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
             auto selfRef = Syntax::N<Expression::Identifier>("self");
             auto nameIdent = Syntax::N<Expression::Identifier>(name);
             auto indexExpr = Syntax::N<Expression::Index>(selfRef, nameIdent);
-            auto assign = Syntax::N<Syntax::Expression::BinaryOp>(services::OperatorType::EQ);
+            auto assign = Syntax::N<Syntax::Expression::BinaryOp>(OperatorType::EQ);
             assign->left = indexExpr;
             assign->right = initializedValue;
             assign->setDBGInfo(field->getDBGInfo());
@@ -48,7 +48,7 @@ Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
     for (auto [name, arg] : p_node->getInitArgs()) {
         auto selfRef = Syntax::N<Expression::Identifier>("self");
         auto indexExpr = Syntax::N<Expression::Index>(selfRef, name);
-        auto assign = Syntax::N<Syntax::Expression::BinaryOp>(services::OperatorType::EQ);
+        auto assign = Syntax::N<Syntax::Expression::BinaryOp>(OperatorType::EQ);
         assign->left = indexExpr;
         assign->right = arg;
         assign->setDBGInfo(name->getDBGInfo());

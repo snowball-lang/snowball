@@ -107,13 +107,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
             } break;
 
             case TokenType::BRACKET_RCURLY: {
-                if (!hasConstructor) {
-                    createError<SYNTAX_ERROR>(dbg->pos,
-                                              FMT("Class '%s' requires at least one constructor!",
-                                                  cls->getName().c_str()),
-                                              {},
-                                              dbg->width);
-                }
+                cls->hasConstructor = hasConstructor;
                 m_current_class = classBackup;
                 return cls;
             }

@@ -154,6 +154,10 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
     std::shared_ptr<Down> downcasted_shared_from_this() {
         return std::dynamic_pointer_cast<Down>(Type::shared_from_this());
     }
+
+  public:
+    /// @brief If the class has a constructor
+    bool hasConstructor = false;
 };
 
 }; // namespace types

@@ -70,9 +70,9 @@ inline const std::vector<std::string> OperatorService::operatorNames = {
 };
 #undef OPERATOR
 
-using OperatorType = OperatorService::OperatorType;
-
 } // namespace services
+
+using OperatorType = services::OperatorService::OperatorType;
 } // namespace snowball
 
 #endif // __SNOWBALL_SERVICES_OPERATORS_H_

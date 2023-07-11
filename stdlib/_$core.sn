@@ -106,21 +106,8 @@ pub class Exception {
  * manipulation operations such as exception throwing, exception
  * catching, exception handling, and more.
  */
-pub class IndexError: Exception {
-  pub:
-    /**
-     * @brief Exception constructor.
-     * @param[in] m The message of the exception.
-     */ 
-    IndexError(m: char&) : super(m) 
-      { }
-    /**
-      * @brief Exception constructor from a string.
-      * @param[in] m The message of the exception.
-      */
-    IndexError(m: String) : super(m) 
-      { }
-}
+pub class IndexError: Exception 
+  { }
 
 pub class Iterable<_IteratorType: Core::Sized> {
   pub:

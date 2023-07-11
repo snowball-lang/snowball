@@ -120,14 +120,22 @@ Transformer::transformClass(const std::string& uuid,
             transformedType->setPrivacy(ty->getPrivacy());
             transformedType->setDBGInfo(ty->getDBGInfo());
             transformedType->setSourceInfo(ty->getSourceInfo());
-            if (parentType != nullptr) ctx->cache->performInheritance(transformedType, parentType);
+            bool allowConstructor = (!ty->hasConstructor) && baseFields.size() == 0;
+            if (parentType != nullptr) 
+                ctx->cache->performInheritance(transformedType, parentType, allowConstructor);
             ctx->setCurrentClass(transformedType);
             assert(!ty->isStruct() || (ty->isStruct() && ty->getFunctions().size() == 0));
             // Create function definitions
             auto backupGenerateFunction = ctx->generateFunction;
             ctx->generateFunction = false;
             for (auto ty : ty->getTypeAliases()) { ty->accept(this); }
-            for (auto fn : ty->getFunctions()) { fn->accept(this); }
+            for (auto fn : ty->getFunctions()) { 
+                if (services::OperatorService::opEquals<OperatorType::CONSTRUCTOR>(fn->getName())) {
+                    transformedType->hasConstructor = true;
+                }
+
+                fn->accept(this); 
+            }
             // Generate the function bodies
             ctx->generateFunction = true;
             for (auto ty : ty->getTypeAliases()) { ty->accept(this); }
@@ -138,7 +146,7 @@ Transformer::transformClass(const std::string& uuid,
                 // Set the default '=' operator for the class
                 auto fn = builder.createFunction(
                         ty->getDBGInfo(),
-                        services::OperatorService::getOperatorMangle(services::OperatorService::EQ),
+                        services::OperatorService::getOperatorMangle(OperatorType::EQ),
                         true,
                         false);
                 auto arg = builder.createArgument(NO_DBGINFO, "other", argType);
@@ -149,6 +157,21 @@ Transformer::transformClass(const std::string& uuid,
                 fn->setType(type);
                 fn->setPrivacy(PrivacyStatus::PUBLIC);
                 ctx->defineFunction(fn);
+            }
+
+            auto parentHasConstructor = allowConstructor && parentType != nullptr && !parentType->isStruct() && parentType->hasConstructor;
+            if (!parentHasConstructor && !transformedType->hasConstructor && !transformedType->isStruct()) {
+                E<SYNTAX_ERROR>(ty,
+                                "This class does not have a constructor!",
+                                {.info = "This class does not have a constructor!",
+                                 .help = "You have to define a constructor for this class.\n"
+                                         "For example:\n"
+                                         "1 |   class Test {\n"
+                                         "2 |       Test() {\n"
+                                         "3 |           // ...\n"
+                                         "4 |       }\n"
+                                         "5 |   }\n"
+                                         "6 |"});
             }
 
             ctx->setCurrentClass(backupClass);

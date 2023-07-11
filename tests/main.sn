@@ -1,6 +1,14 @@
 
+class Parent {
+  pub:
+    Parent() {}
+}
+
+class Child : Parent {
+  pub:
+}
 
 // Define the main function.
 pub fn main() i32 {
-    let a: String = String::from("");
+    let a = new Child();
 }

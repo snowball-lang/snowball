@@ -74,7 +74,7 @@ class Functions {
     std::optional<std::shared_ptr<transform::Item>> getTransformedFunction(const std::string uuid);
     /// Copy a list of functions to a new list for a new type
     void performInheritance(
-            std::shared_ptr<types::DefinedType> ty, std::shared_ptr<types::DefinedType> parent);
+            std::shared_ptr<types::DefinedType> ty, std::shared_ptr<types::DefinedType> parent, bool allowConstructor = false);
 };
 
 } // namespace cacheComponents
