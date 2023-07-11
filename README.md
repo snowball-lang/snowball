@@ -61,35 +61,12 @@ Here is an example of a class in snowball.
 ```rs
 use Core::System
 
-class Vector {
-
-    let x: i32 = 0
-    let y: i32 = 0
-
-  pub:
-    Vector(x: Int, y: Int) {
-        self.x = x
-        self.y = y
-    }
-
-    // JS equivalent: const __sum = (this, vec2) => new Vector(...)
-    // overrides operator +
-    operator +(vec2: Vector) Vector =>
-        new Vector(self.x + vec2.x, self.y + vec2.y)
-
-    operator str() String {
-        return "Vector(x=${self.x} y=${self.y})"
-    }
-}
-
 pub fn main() i32 {
-    let vec1 = new Vector(1,2)
-    let vec2 = new Vector(10,22)
-
-    System::println(vec1 + vec2)
-    return 0
+    System::println("Hello, world! 🐱");
 }
 ```
+
+* [Try it online](https://godbolt.org/z/6Pen9M8s5)
 
 ## Roadmap
 

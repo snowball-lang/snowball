@@ -214,8 +214,7 @@ class Func : public AcceptorExtend<Func, Value>,
         // DUMP((std::is_same_v<T, Argument>::value))
         //  Calculate the number of default arguments
         if (numFunctionArgs > numProvidedArgs) {
-            DUMP_S(typeid(T).name());
-            if constexpr (std::is_same_v<T, std::shared_ptr<Argument>>) {
+            if constexpr (std::is_same_v<T, Syntax::Expression::Param*>) {
                 for (int i = numProvidedArgs; i < numFunctionArgs; i++) {
                     if (functionArgs.at(i)->hasDefaultValue()) {
                         numDefaultArgs++;
