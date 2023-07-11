@@ -21,15 +21,13 @@ namespace app {
 namespace commands {
 int build(app::Options::BuildOptions p_opts) {
     std::string filename = p_opts.file;
-    std::string package_name = "<single file>";
+    std::string package_name = "file";
     std::string package_version = "<unknown version>";
 
     if (p_opts.file.empty()) {
         toml::parse_result parsed_config = Compiler::get_config();
-        filename = p_opts.file.empty()
-                ? (std::string)(parsed_config["package"]["main"].value_or<std::string>(
-                          (fs::current_path() / "src" / "main.sn")))
-                : p_opts.file;
+        filename = parsed_config["package"]["main"].value_or<std::string>(
+                          (fs::current_path() / "src" / "main.sn"));
         package_name = (std::string)(
                 parsed_config["package"]["name"].value_or<std::string>("<anonnimus>"));
         package_version = parsed_config["package"]["version"].value_or<std::string>("<unknown>");

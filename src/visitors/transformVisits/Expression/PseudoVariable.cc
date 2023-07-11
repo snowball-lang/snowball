@@ -47,8 +47,6 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
         stringValue = std::to_string(p_node->getDBGInfo()->pos.second);
     } else if (pseudo == "SN_VERSION") {
         stringValue = _SNOWBALL_VERSION;
-    } else if (pseudo == "SN_EXEC") {
-        stringValue = get_exe_folder();
     } else if (pseudo == "SN_FOLDER") {
         stringValue = fs::path(get_exe_folder()).remove_filename();
     } else {
