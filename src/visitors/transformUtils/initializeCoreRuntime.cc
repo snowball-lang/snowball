@@ -1,7 +1,7 @@
 #include "../../ast/syntax/nodes.h"
 #include "../Transformer.h"
 
-#include "../../lexer.h"
+#include "../../lexer/lexer.h"
 #include "../../parser/Parser.h"
 #include "../../utils/utils.h"
 #include "../../visitors/Analyzer.h"

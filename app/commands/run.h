@@ -2,7 +2,7 @@
 #include "app/cli.h"
 #include "compiler.h"
 #include "errors.h"
-#include "logger.h"
+#include "utils/logger.h"
 #include "utils/utils.h"
 #include "vendor/toml.hpp"
 
@@ -45,7 +45,7 @@ int run(app::Options::RunOptions p_opts) {
     compiler->set_optimization(p_opts.opt);
 
     // TODO: false if --no-output is passed
-    compiler->compile(p_opts.silent);
+    compiler->compile(p_opts.no_progress || p_opts.silent);
     compiler->emit_binary(output, false);
 
     compiler->cleanup();

@@ -1,5 +1,5 @@
 
-#include "../DBGSourceInfo.h"
+#include "../srci/DBGSourceInfo.h"
 #include "../ast/syntax/nodes.h"
 #include "../ast/visitor/ASTContext.h"
 #include "../ast/visitor/Visitor.h"

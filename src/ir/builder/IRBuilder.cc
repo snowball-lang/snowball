@@ -1,6 +1,6 @@
 
 #include "IRBuilder.h"
-#include "../../DBGSourceInfo.h"
+#include "../../srci/DBGSourceInfo.h"
 #include "../../ast/syntax/nodes.h"
 #include "../../common.h"
 

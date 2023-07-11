@@ -4,7 +4,7 @@
 #include "ir/module/MainModule.h"
 #include "ir/module/Module.h"
 #include "ld_args.h"
-#include "lexer.h"
+#include "lexer/lexer.h"
 #include "parser/Parser.h"
 #include "utils/utils.h"
 #include "visitors/Analyzer.h"
@@ -38,13 +38,13 @@ void Compiler::initialize() {
     if (!fs::exists(config_folder / "bin")) fs::create_directory(config_folder / "bin");
 }
 
-void Compiler::compile(bool verbose) {
+void Compiler::compile(bool silent) {
     if (!_initialized) {
         throw SNError(Error::COMPILER_ERROR, "Compiler has not been initialized!");
     }
 #if _SNOWBALL_TIMERS_DEBUG == 0
 #define SHOW_STATUS(status)                                                                        \
-    if (!verbose) status;
+    if (!silent) status;
 #else
 #define SHOW_STATUS(_)
 #endif

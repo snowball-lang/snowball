@@ -2,7 +2,7 @@
 #include "app/cli.h"
 #include "compiler.h"
 #include "errors.h"
-#include "logger.h"
+#include "utils/logger.h"
 #include "utils/utils.h"
 #include "vendor/toml.hpp"
 
@@ -37,14 +37,15 @@ int test(app::Options::TestOptions p_opts) {
     // TODO: check for output
     std::string output = _SNOWBALL_OUT_DEFAULT;
 
-    Logger::message("Compiling",
-                    FMT("%s v%s",
-                        ((std::string)(parsed_config["package"]["name"].value_or<std::string>(
-                                 "<anonnimus>")))
-                                .c_str(),
-                        ((std::string)(parsed_config["package"]["version"].value_or<std::string>(
-                                 "<unknown>")))
-                                .c_str()));
+    if (!p_opts.silent)
+        Logger::message("Project",
+                        FMT("%s v%s",
+                            ((std::string)(parsed_config["package"]["name"].value_or<std::string>(
+                                    "<anonnimus>")))
+                                    .c_str(),
+                            ((std::string)(parsed_config["package"]["version"].value_or<std::string>(
+                                    "<unknown>")))
+                                    .c_str()));
 
     Compiler* compiler = new Compiler(content, filename);
     compiler->initialize();
@@ -53,7 +54,7 @@ int test(app::Options::TestOptions p_opts) {
     auto start = high_resolution_clock::now();
 
     // TODO: false if --no-output is passed
-    compiler->compile(!p_opts.silent);
+    compiler->compile(p_opts.no_progress || p_opts.silent);
 
     auto stop = high_resolution_clock::now();
 
@@ -65,10 +66,16 @@ int test(app::Options::TestOptions p_opts) {
     // use duration cast method
     auto duration = duration_cast<milliseconds>(stop - start).count();
 
-    Logger::message("Finished", FMT("test target(s) in %ims", duration));
-    Logger::message("Running", FMT("unittests (%s)", filename.c_str()));
+    if (!p_opts.silent) {
+        Logger::message("Finished", FMT("test target(s) in %ims", duration));
+        Logger::message("Running", FMT("unittests (%s)", filename.c_str()));
+    }
 
-    return system(output.c_str());
+    char* args[] = {strdup(output.c_str()), NULL};
+    int result = execvp(args[0], args);
+
+    // This shoudnt be executed
+    return result;
 }
 } // namespace commands
 } // namespace app

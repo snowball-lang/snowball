@@ -1,9 +1,9 @@
 
-#include "../DBGSourceInfo.h"
+#include "../srci/DBGSourceInfo.h"
 #include "../ast/syntax/nodes.h"
 #include "../common.h"
 #include "../errors.h"
-#include "../token.h"
+#include "../lexer/tokens/token.h"
 
 #ifndef __SNOWBALL_PARSER_H_
 #define __SNOWBALL_PARSER_H_

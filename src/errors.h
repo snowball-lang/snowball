@@ -1,7 +1,7 @@
 
-#include "DBGSourceInfo.h"
-#include "colors.h"
-#include "logger.h"
+#include "srci/DBGSourceInfo.h"
+#include "utils/colors.h"
+#include "utils/logger.h"
 
 #include <exception>
 #include <optional>

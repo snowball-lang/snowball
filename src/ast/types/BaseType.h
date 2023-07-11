@@ -1,6 +1,6 @@
 
 #include "../../common.h"
-#include "../../DBGSourceInfo.h"
+#include "../../srci/DBGSourceInfo.h"
 #include "../../ast/syntax/nodes.h"
 #include "../../ast/syntax/common.h"
 #include "../../ir/id.h"

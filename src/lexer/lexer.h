@@ -1,8 +1,8 @@
 
-#include "errors.h"
-#include "logger.h"
-#include "source_info.h"
-#include "token.h"
+#include "../errors.h"
+#include "../utils/logger.h"
+#include "../source_info.h"
+#include "tokens/token.h"
 
 #include <vector>
 
@@ -30,7 +30,7 @@ class Lexer {
     Lexer(SourceInfo* p_source_info);
 
     void tokenize();
-    std::vector<Token> tokens;
+    std::vector<Token> tokens = {};
 
     ~Lexer(){};
 

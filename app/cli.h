@@ -32,6 +32,7 @@ struct Options {
         bool jit = false;
 
         std::string file = "";
+        bool no_progress = false;
     } run_opts;
 
     struct BuildOptions {
@@ -42,10 +43,12 @@ struct Options {
         bool silent = false;
         std::string file = "";
         std::string output = "";
+        bool no_progress = false;
     } build_opts;
 
     struct TestOptions {
         bool silent = false;
+        bool no_progress = false;
     } test_opts;
 
     struct InitOptions {

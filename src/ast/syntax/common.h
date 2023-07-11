@@ -1,6 +1,6 @@
 
 
-#include "../../DBGSourceInfo.h"
+#include "../../srci/DBGSourceInfo.h"
 #include "../../common.h"
 
 #include <assert.h>

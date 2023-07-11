@@ -1,6 +1,6 @@
 
 #include "app/cli.h"
-#include "logger.h"
+#include "utils/logger.h"
 
 #include <chrono>
 #include <fstream>

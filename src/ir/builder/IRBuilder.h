@@ -1,5 +1,5 @@
 
-#include "../../DBGSourceInfo.h"
+#include "../../srci/DBGSourceInfo.h"
 #include "../../ast/types/DefinedType.h"
 #include "../../ast/types/TypeAlias.h"
 #include "../../ast/types/TypeAlias.h"

@@ -7,11 +7,13 @@
 
 namespace snowball {
 
-/**
- * Good old src object. This
- * class is used for all objects that
- * require a source info passed into it.
- */
+/// @brief A class that contains source information
+/// @details This class is used to store source information
+///          in the AST nodes.
+///          It is used to store the file path, the line and column
+///          of the source code.
+///          It is also used to store the source code itself.
+/// @see SrcObject
 class SrcObject {
   protected:
     SourceInfo* m_srci;

@@ -1,5 +1,5 @@
 
-#include "logger.h"
+#include "utils/logger.h"
 
 #include <cstdarg>
 #include <iomanip>
@@ -7,7 +7,7 @@
 #include <sstream>
 #include <string>
 
-#define _SN_LOGGER_BAR_WIDTH 70
+#define _SN_LOGGER_BAR_WIDTH 20
 
 namespace snowball {
 void Logger::log(std::string message) {
@@ -49,7 +49,7 @@ void Logger::reset_status() {
     fflush(stdout);
 };
 void Logger::compiling(std::string message) {
-    printf("\33[2K\r%s      Compiling%s %s", BGRN, RESET, message.c_str());
+    printf("%s      Compiling%s %s", BCYN, RESET, message.c_str());
     fflush(stdout);
 };
 

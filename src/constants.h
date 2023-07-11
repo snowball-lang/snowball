@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 // breaking.feature.fix
-#define _SNOWBALL_VERSION        "0.0.7"
+#define _SNOWBALL_VERSION        "0.0.7-hotfix"
 #define _SNOWBALL_VERSION_NUMBER 0x000007
 #define _SNOWBALL_BUILD_DATE     __DATE__
 #define _SNOWBALL_BUILD_TIME     __TIME__

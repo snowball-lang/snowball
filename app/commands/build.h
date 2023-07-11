@@ -58,11 +58,12 @@ int build(app::Options::BuildOptions p_opts) {
         throw SNError(BUG, FMT("Unhandled emit type for build process ('%i')", p_opts.emit_type));
     }
 
-    Logger::message("Compiling",
-                    FMT("%s v%s [%s]",
-                        package_name.c_str(),
-                        package_version.c_str(),
-                        (build_type.c_str())));
+    if (!p_opts.silent)
+        Logger::message("Project",
+                        FMT("%s v%s [%s]",
+                            package_name.c_str(),
+                            package_version.c_str(),
+                            (build_type.c_str())));
 
     std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 
@@ -85,8 +86,7 @@ int build(app::Options::BuildOptions p_opts) {
 
     auto start = high_resolution_clock::now();
 
-    // TODO: false if --no-output is passed
-    compiler->compile(p_opts.silent);
+    compiler->compile(p_opts.no_progress || p_opts.silent);
     auto stop = high_resolution_clock::now();
 
     // Get duration. Substart timepoints to
@@ -94,19 +94,21 @@ int build(app::Options::BuildOptions p_opts) {
     // use duration cast method
     auto duration = duration_cast<milliseconds>(stop - start).count();
 
-    Logger::message("Finished", FMT("build target(s) in %ims", duration));
-    Logger::message("Generating", FMT("Generating output at `%s`", output.c_str()));
-    Logger::log("");
+    if (!p_opts.silent) {
+        Logger::message("Finished", FMT("build target(s) in %ims", duration));
+        Logger::message("Generating", FMT("Generating output at `%s`", output.c_str()));
+        Logger::log("");
+    }
 
     int status;
     if (p_opts.emit_type == app::Options::EmitType::OBJECT) {
-        status = compiler->emit_object(output);
+        status = compiler->emit_object(output, !p_opts.silent);
     } else if (p_opts.emit_type == app::Options::EmitType::LLVM_IR) {
-        status = compiler->emit_llvmir(output);
+        status = compiler->emit_llvmir(output, !p_opts.silent);
     } else if (p_opts.emit_type == app::Options::EmitType::ASSEMBLY) {
-        status = compiler->emit_assembly(output);
+        status = compiler->emit_assembly(output, !p_opts.silent);
     } else {
-        status = compiler->emit_binary(output);
+        status = compiler->emit_binary(output, !p_opts.silent);
     }
 
     compiler->cleanup();

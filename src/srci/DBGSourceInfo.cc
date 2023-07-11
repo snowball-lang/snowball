@@ -1,7 +1,7 @@
 
-#include "DBGSourceInfo.h"
+#include "srci/DBGSourceInfo.h"
 
-#include "SourcedObject.h"
+#include "srci/SourcedObject.h"
 
 #include <sstream>
 #include <string>

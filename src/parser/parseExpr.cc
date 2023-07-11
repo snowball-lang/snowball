@@ -1,7 +1,7 @@
 
 #include "../common.h"
 #include "../services/OperatorService.h"
-#include "../token.h"
+#include "../lexer/tokens/token.h"
 #include "../utils/utils.h"
 #include "./Parser.h"
 

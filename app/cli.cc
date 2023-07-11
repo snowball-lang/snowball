@@ -2,7 +2,7 @@
 #include "app/cli.h"
 
 #include "errors.h"
-#include "logger.h"
+#include "utils/logger.h"
 
 #define IF_ANY_ARG(arg1, arg2) current_arg == arg1 || current_arg == arg2
 #define IF_ARG(arg)            current_arg == arg
@@ -159,6 +159,8 @@ Options CLI::parse() {
                 opts.build_opts.is_test = true;
             } else if (IF_ANY_ARG("--silent", "-s")) {
                 opts.build_opts.silent = true;
+            } else if (IF_ARG("--no-progress")) {
+                opts.build_opts.no_progress = true;
             } else if (IF_ANY_ARG("--file", "-f")) {
                 CHECK_ARG("an input file")
                 NEXT_ARGUMENT()
@@ -224,6 +226,8 @@ Options CLI::parse() {
                 opts.run_opts.opt = Options::Optimization::OPTIMIZE_Oz;
             } else if (IF_ANY_ARG("--silent", "-s")) {
                 opts.run_opts.silent = true;
+            } else if (IF_ARG("--no-progress")) {
+                opts.run_opts.no_progress = true;
             } else if (IF_ANY_ARG("--jit", "-j")) {
                 opts.run_opts.jit = true;
             } else if (IF_ANY_ARG("--file", "-f")) {
@@ -244,6 +248,8 @@ Options CLI::parse() {
 
             if (IF_ANY_ARG("--silent", "-s")) {
                 opts.test_opts.silent = true;
+            } else if (IF_ARG("--no-progress")) {
+                opts.test_opts.no_progress = true;
             } else {
                 throw SNError(
                         Error::ARGUMENT_ERROR,

@@ -1,5 +1,5 @@
 
-#include "../../SourcedObject.h"
+#include "../../srci/SourcedObject.h"
 #include "../../errors.h"
 #include "../syntax/nodes.h"
 

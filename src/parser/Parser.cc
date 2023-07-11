@@ -1,7 +1,7 @@
 
 #include "./Parser.h"
 
-#include "../token.h"
+#include "../lexer/tokens/token.h"
 
 namespace snowball {
 namespace parser {

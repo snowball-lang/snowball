@@ -1,8 +1,8 @@
 
-#include "lexer.h"
+#include "lexer/lexer.h"
 
 #include "errors.h"
-#include "token.h"
+#include "lexer/tokens/token.h"
 #include "utils/utils.h"
 
 #include <codecvt>
@@ -35,6 +35,7 @@ Lexer::Lexer(SourceInfo* p_source_info)
     : code(p_source_info->getSource()), _source_info(p_source_info) { }
 
 void Lexer::tokenize() {
+    tokens = {};
     if ((int)code.size() == 0) return;
 
     // Iterate every character of the source code
@@ -667,7 +668,7 @@ void Lexer::handle_eof(bool p_consume) {
     tk.col = cur_col;
 
     // Add token to the list of tokens
-    tokens.emplace_back(tk);
+    tokens.push_back(tk);
 
     if (p_consume) { EAT_CHAR(1); }
 }
@@ -677,7 +678,7 @@ void Lexer::consume(TokenType p_tk, int p_eat_size) {
     tk.type = p_tk;
     tk.line = cur_line;
     tk.col = cur_col;
-    tokens.emplace_back(tk);
+    tokens.push_back(tk);
     EAT_CHAR(p_eat_size);
 }
 

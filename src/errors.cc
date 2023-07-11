@@ -13,7 +13,7 @@ void NiceError::print_error(bool asTail) const {
     cb_dbg_info->prepare_for_error();
 
     if (!asTail) {
-        Logger::log("\n");
+        Logger::log("");
         Logger::error(FMT(
                 "(%s%s%s) %s%s%s", BRED, get_error(error), RESET, BOLD, message.c_str(), RESET));
         Logger::elog(FMT("%s       ╭─[%s%s%s%s:%i:%i%s%s]%s",
