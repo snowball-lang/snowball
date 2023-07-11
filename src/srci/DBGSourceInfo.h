@@ -1,10 +1,10 @@
 
 
-#include "SourcedObject.h"
 #include "../common.h"
-#include "../utils/logger.h"
-#include "../source_info.h"
 #include "../lexer/tokens/token.h"
+#include "../source_info.h"
+#include "../utils/logger.h"
+#include "SourcedObject.h"
 
 #ifndef __SNOWBALL_DBG_INFO_H_
 #define __SNOWBALL_DBG_INFO_H_

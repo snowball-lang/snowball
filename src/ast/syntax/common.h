@@ -1,7 +1,7 @@
 
 
-#include "../../srci/DBGSourceInfo.h"
 #include "../../common.h"
+#include "../../srci/DBGSourceInfo.h"
 
 #include <assert.h>
 #include <map>
@@ -75,8 +75,10 @@ struct TypeRef : public types::Type, public Base {
     std::string id;
 
   public:
-    TypeRef(std::string p_name, DBGSourceInfo* p_dbg, std::vector<TypeRef*> p_generics = {}, std::string id = "");
-    TypeRef(std::string p_name, DBGSourceInfo* p_dbg, std::shared_ptr<types::Type> internalType, std::string id);
+    TypeRef(std::string p_name, DBGSourceInfo* p_dbg, std::vector<TypeRef*> p_generics = {},
+            std::string id = "");
+    TypeRef(std::string p_name, DBGSourceInfo* p_dbg, std::shared_ptr<types::Type> internalType,
+            std::string id);
     TypeRef(Expression::Base* p_ast, std::string p_name, DBGSourceInfo* p_dbg, std::string id);
 
     /// @brief Get type's generics

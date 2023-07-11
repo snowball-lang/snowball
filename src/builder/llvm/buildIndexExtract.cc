@@ -14,7 +14,7 @@ void LLVMBuilder::visit(ir::IndexExtract* index) {
     if (auto x = utils::dyn_cast<types::ReferenceType>(valueType)) valueType = x->getBaseType();
     auto defiendType = utils::dyn_cast<types::DefinedType>(valueType);
     if (auto alias = utils::dyn_cast<types::TypeAlias>(valueType)) {
-        assert( !"Found a local type alias in the index extract!" );
+        assert(!"Found a local type alias in the index extract!");
     }
     assert(defiendType);
     auto baseType = getLLVMType(valueType);

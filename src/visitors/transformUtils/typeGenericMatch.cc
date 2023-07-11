@@ -11,7 +11,8 @@ using namespace Statement;
 bool Transformer::typeGenericsMatch(Expression::TypeRef* ty, std::shared_ptr<types::Type> comp) {
     std::vector<std::shared_ptr<types::Type>> generatedGenerics;
     for (auto x : ty->getGenerics()) { generatedGenerics.push_back(transformType(x)); }
-    auto compAsDefinedType = utils::cast<Statement::GenericContainer<std::shared_ptr<types::Type>>>(comp.get());
+    auto compAsDefinedType =
+            utils::cast<Statement::GenericContainer<std::shared_ptr<types::Type>>>(comp.get());
     auto compGenerics = compAsDefinedType == nullptr ? std::vector<std::shared_ptr<types::Type>>{}
                                                      : compAsDefinedType->getGenerics();
 

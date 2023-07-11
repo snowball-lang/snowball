@@ -1,6 +1,6 @@
 
-#include "../../srci/DBGSourceInfo.h"
 #include "../../common.h"
+#include "../../srci/DBGSourceInfo.h"
 #include "Module.h"
 
 /**

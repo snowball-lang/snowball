@@ -60,8 +60,9 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
             fn->setModule(ctx->module);
             fn->setAttributes(node);
             auto isExtern = node->isExtern();
-            if (((ctx->getCurrentClass() || !fn->isStatic()) || fn->isPrivate()) && !isEntryPoint && !isExtern)
-                fn->addAttribute(Attributes::INTERNAL_LINKAGE);    
+            if (((ctx->getCurrentClass() || !fn->isStatic()) || fn->isPrivate()) && !isEntryPoint &&
+                !isExtern)
+                fn->addAttribute(Attributes::INTERNAL_LINKAGE);
             if (auto c = ctx->getCurrentClass(true)) {
                 if (node->isVirtual()) { fn->setVirtualIndex(c->addVtableItem(fn)); }
             }

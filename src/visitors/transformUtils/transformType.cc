@@ -113,12 +113,12 @@ continueTypeFetch:
             assert(t->isType());
             auto transformed = t->getType();
             assert(t != nullptr);
-            if (typeGenericsMatch(ty, transformed)) { 
+            if (typeGenericsMatch(ty, transformed)) {
                 if (auto alias = utils::dyn_cast<types::TypeAlias>(transformed)) {
                     transformed = alias->getBaseType();
                 }
 
-                return transformed; 
+                return transformed;
             }
         }
     }
@@ -139,10 +139,10 @@ continueTypeFetch:
                           name.c_str()));
     }
 
-    if (returnedType == nullptr) 
-        E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
+    if (returnedType == nullptr) E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
     if (!typeGenericsMatch(ty, returnedType)) {
-        auto compAsDefinedType = utils::cast<GenericContainer<std::shared_ptr<types::Type>>>(returnedType.get());
+        auto compAsDefinedType =
+                utils::cast<GenericContainer<std::shared_ptr<types::Type>>>(returnedType.get());
         auto compGenerics = compAsDefinedType == nullptr
                 ? std::vector<std::shared_ptr<types::Type>>{}
                 : compAsDefinedType->getGenerics();

@@ -62,8 +62,10 @@ std::map<std::string, T> getAllFunctionsByUUID(std::string uuid,
 }
 } // namespace
 
-void Functions::performInheritance(
-        std::shared_ptr<types::DefinedType> ty, std::shared_ptr<types::DefinedType> parent, bool allowConstructor) {
+void Functions::performInheritance(std::shared_ptr<types::DefinedType> ty,
+                                   std::shared_ptr<types::DefinedType>
+                                           parent,
+                                   bool allowConstructor) {
     auto parentUUID = parent->getUUID();
     auto childUUID = ty->getUUID();
     auto createdFuncs = getAllFunctionsByUUID(parentUUID, createdFunctions);
@@ -74,7 +76,8 @@ void Functions::performInheritance(
         auto item = f.second;
         auto functions = item->getFunctions();
         utils::replaceAll(name, parentUUID + ".", "");
-        if (OperatorService::opEquals<OperatorType::CONSTRUCTOR>(name) && !allowConstructor) continue;
+        if (OperatorService::opEquals<OperatorType::CONSTRUCTOR>(name) && !allowConstructor)
+            continue;
         name = childUUID + "." + name;
         setTransformedFunction(name, std::make_shared<transform::Item>(*item));
     }
@@ -85,7 +88,8 @@ void Functions::performInheritance(
         auto functions = item;
         // TODO: avoid constructors?
         utils::replaceAll(name, parentUUID + ".", "");
-        if (OperatorService::opEquals<OperatorType::CONSTRUCTOR>(name) && !allowConstructor) continue;
+        if (OperatorService::opEquals<OperatorType::CONSTRUCTOR>(name) && !allowConstructor)
+            continue;
         name = childUUID + "." + name;
         for (auto fn : functions) { setFunction(name, fn.function, fn.state); }
     }

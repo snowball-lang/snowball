@@ -38,14 +38,15 @@ int test(app::Options::TestOptions p_opts) {
     std::string output = _SNOWBALL_OUT_DEFAULT;
 
     if (!p_opts.silent)
-        Logger::message("Project",
-                        FMT("%s v%s",
-                            ((std::string)(parsed_config["package"]["name"].value_or<std::string>(
-                                    "<anonnimus>")))
-                                    .c_str(),
-                            ((std::string)(parsed_config["package"]["version"].value_or<std::string>(
-                                    "<unknown>")))
-                                    .c_str()));
+        Logger::message(
+                "Project",
+                FMT("%s v%s",
+                    ((std::string)(
+                             parsed_config["package"]["name"].value_or<std::string>("<anonnimus>")))
+                            .c_str(),
+                    ((std::string)(parsed_config["package"]["version"].value_or<std::string>(
+                             "<unknown>")))
+                            .c_str()));
 
     Compiler* compiler = new Compiler(content, filename);
     compiler->initialize();

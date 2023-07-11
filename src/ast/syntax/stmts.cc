@@ -1,6 +1,6 @@
 
-#include "nodes.h"
 #include "common.h"
+#include "nodes.h"
 
 #include <assert.h>
 #include <string>

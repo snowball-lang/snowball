@@ -1,7 +1,7 @@
 
-#include "../../srci/DBGSourceInfo.h"
 #include "../../ast/types/PrimitiveTypes.h"
 #include "../../common.h"
+#include "../../srci/DBGSourceInfo.h"
 
 #include <list>
 #include <unordered_map>

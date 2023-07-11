@@ -1,8 +1,8 @@
 
-#include "../srci/DBGSourceInfo.h"
 #include "../ast/types/Type.h"
 #include "../ir/values/Func.h"
 #include "../ir/values/Value.h"
+#include "../srci/DBGSourceInfo.h"
 
 #include <deque>
 #include <iomanip>

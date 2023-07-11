@@ -35,22 +35,16 @@ std::string TypeAlias::getPrettyName() const {
     return n + genericString + " { aka " + baseName + " }";
 }
 
-std::string TypeAlias::getMangledName() const {
-    return base->getMangledName();
-}
+std::string TypeAlias::getMangledName() const { return base->getMangledName(); }
 
 Syntax::Expression::TypeRef* TypeAlias::toRef() {
     auto tRef = Syntax::TR(getName(), nullptr, shared_from_this(), getUUID());
     return tRef;
 }
 
-std::shared_ptr<Type> TypeAlias::getBaseType() const {
-    return base;
-}
+std::shared_ptr<Type> TypeAlias::getBaseType() const { return base; }
 
-bool TypeAlias::canCast(Type* ty) const {
-    return base->canCast(ty);
-}
+bool TypeAlias::canCast(Type* ty) const { return base->canCast(ty); }
 
 }; // namespace types
 }; // namespace snowball

@@ -1,10 +1,10 @@
 
-#include "../../common.h"
-#include "../../srci/DBGSourceInfo.h"
-#include "../../ast/syntax/nodes.h"
 #include "../../ast/syntax/common.h"
+#include "../../ast/syntax/nodes.h"
+#include "../../common.h"
 #include "../../ir/id.h"
 #include "../../ir/module/Module.h"
+#include "../../srci/DBGSourceInfo.h"
 #include "Type.h"
 
 #include <memory>
@@ -24,10 +24,10 @@ class TypeRef;
 namespace types {
 
 class BaseType : public Type,
-                public DBGObject,
-                public Syntax::Statement::Privacy,
-                public Syntax::Statement::GenericContainer<std::shared_ptr<Type>>,
-                public ir::IdMixin {
+                 public DBGObject,
+                 public Syntax::Statement::Privacy,
+                 public Syntax::Statement::GenericContainer<std::shared_ptr<Type>>,
+                 public ir::IdMixin {
   protected:
     /// @brief Definition of where in the stack this class is stored
     /// @example [module name].MyClass:2

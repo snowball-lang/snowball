@@ -6,8 +6,8 @@
 #include "../../utils/utils.h"
 #include "../syntax/common.h"
 #include "../syntax/nodes.h"
-#include "Type.h"
 #include "BaseType.h"
+#include "Type.h"
 
 #include <memory>
 #include <string>
@@ -32,9 +32,7 @@ class TypeAlias : public AcceptorExtend<TypeAlias, BaseType> {
     /**
      * @param other another type to check.
      */
-    virtual bool is(Type* other) const override {
-        return base->is(other);
-    }
+    virtual bool is(Type* other) const override { return base->is(other); }
 
     /// @brief Get the type represented as a "human-readable" string
     std::string getPrettyName() const override;
@@ -51,7 +49,7 @@ class TypeAlias : public AcceptorExtend<TypeAlias, BaseType> {
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
     bool canCast(Type* ty) const override;
-    
+
     template <class Down>
     std::shared_ptr<Down> downcasted_shared_from_this() {
         return std::dynamic_pointer_cast<Down>(Type::shared_from_this());

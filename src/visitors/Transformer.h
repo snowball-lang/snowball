@@ -1,9 +1,9 @@
 
 #include "../ast/syntax/nodes.h"
 #include "../ast/types/DefinedType.h"
-#include "../ast/types/TypeAlias.h"
 #include "../ast/types/FunctionType.h"
 #include "../ast/types/ReferenceType.h"
+#include "../ast/types/TypeAlias.h"
 #include "../ast/visitor/Visitor.h"
 #include "../ir/builder/IRBuilder.h"
 #include "../ir/module/Module.h"

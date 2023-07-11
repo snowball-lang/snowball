@@ -173,7 +173,7 @@ int Compiler::emit_assembly(std::string p_output, bool p_pmessage) {
     auto builder = new codegen::LLVMBuilder(module);
     builder->codegen();
     builder->optimizeModule(opt_level);
-    
+
     auto res = builder->emitObjectFile(p_output, false, false);
     if (p_pmessage) Logger::success("Snowball project transpiled to llvm IR code! 🎉\n");
     return res;

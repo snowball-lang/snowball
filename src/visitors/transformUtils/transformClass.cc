@@ -121,7 +121,7 @@ Transformer::transformClass(const std::string& uuid,
             transformedType->setDBGInfo(ty->getDBGInfo());
             transformedType->setSourceInfo(ty->getSourceInfo());
             bool allowConstructor = (!ty->hasConstructor) && baseFields.size() == 0;
-            if (parentType != nullptr) 
+            if (parentType != nullptr)
                 ctx->cache->performInheritance(transformedType, parentType, allowConstructor);
             ctx->setCurrentClass(transformedType);
             assert(!ty->isStruct() || (ty->isStruct() && ty->getFunctions().size() == 0));
@@ -129,12 +129,12 @@ Transformer::transformClass(const std::string& uuid,
             auto backupGenerateFunction = ctx->generateFunction;
             ctx->generateFunction = false;
             for (auto ty : ty->getTypeAliases()) { ty->accept(this); }
-            for (auto fn : ty->getFunctions()) { 
+            for (auto fn : ty->getFunctions()) {
                 if (services::OperatorService::opEquals<OperatorType::CONSTRUCTOR>(fn->getName())) {
                     transformedType->hasConstructor = true;
                 }
 
-                fn->accept(this); 
+                fn->accept(this);
             }
             // Generate the function bodies
             ctx->generateFunction = true;
@@ -159,11 +159,14 @@ Transformer::transformClass(const std::string& uuid,
                 ctx->defineFunction(fn);
             }
 
-            auto parentHasConstructor = allowConstructor && parentType != nullptr && !parentType->isStruct() && parentType->hasConstructor;
-            if (!parentHasConstructor && !transformedType->hasConstructor && !transformedType->isStruct()) {
+            auto parentHasConstructor = allowConstructor && parentType != nullptr &&
+                    !parentType->isStruct() && parentType->hasConstructor;
+            if (!parentHasConstructor && !transformedType->hasConstructor &&
+                !transformedType->isStruct()) {
                 E<SYNTAX_ERROR>(ty,
                                 "This class does not have a constructor!",
                                 {.info = "This class does not have a constructor!",
+                                 .note = "No constructor has been defined or can be inherited.",
                                  .help = "You have to define a constructor for this class.\n"
                                          "For example:\n"
                                          "1 |   class Test {\n"

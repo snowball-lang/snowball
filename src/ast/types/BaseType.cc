@@ -1,10 +1,10 @@
 #include "BaseType.h"
-#include "../syntax/nodes.h"
 #include "../../common.h"
 #include "../../constants.h"
 #include "../../ir/values/Func.h"
 #include "../../utils/utils.h"
 #include "../syntax/common.h"
+#include "../syntax/nodes.h"
 #include "Type.h"
 
 #include <memory>

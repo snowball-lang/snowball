@@ -81,8 +81,8 @@ std::shared_ptr<transform::ContextState> TransformContext::saveState() {
     auto s = this->stack;
     s.pop_back();
 
-    return std::make_shared<transform::ContextState>(
-            s, this->module, this->uuidStack, this->currentClass);
+    return std::make_shared<transform::ContextState>(s, this->module, this->uuidStack,
+                                                     this->currentClass);
 }
 
 /// @brief set a state to the current context
@@ -98,8 +98,8 @@ void TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
 }
 
 /// @brief Execute function with saved state
-void TransformContext::withState(
-        std::shared_ptr<transform::ContextState> s, std::function<void()> cb) {
+void TransformContext::withState(std::shared_ptr<transform::ContextState> s,
+                                 std::function<void()> cb) {
     auto saved = this->saveState();
 
     this->setState(s);

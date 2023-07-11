@@ -1,8 +1,8 @@
 
 #include "IRBuilder.h"
-#include "../../srci/DBGSourceInfo.h"
 #include "../../ast/syntax/nodes.h"
 #include "../../common.h"
+#include "../../srci/DBGSourceInfo.h"
 
 namespace snowball {
 namespace ir {
@@ -73,8 +73,8 @@ SharedValue<Variable> IRBuilder::createVariable(DBGSourceInfo* dbgInfo,
 SharedValue<Block> IRBuilder::createBlock(DBGSourceInfo* dbgInfo) {
     return createBlock(dbgInfo, {});
 }
-SharedValue<Block>
-IRBuilder::createBlock(DBGSourceInfo* dbgInfo, std::vector<SharedValue<>> values) {
+SharedValue<Block> IRBuilder::createBlock(DBGSourceInfo* dbgInfo,
+                                          std::vector<SharedValue<>> values) {
     return N<Block>(dbgInfo, values);
 }
 SharedValue<DereferenceTo> IRBuilder::createDereferenceTo(DBGSourceInfo* dbgInfo,
@@ -117,20 +117,24 @@ SharedValue<Call> IRBuilder::createCall(DBGSourceInfo* dbgInfo, SharedValue<> ca
                                         ValueVec<> args) {
     return N<Call>(dbgInfo, callee, args);
 }
-SharedValue<VariableDeclaration> IRBuilder::createVariableDeclaration(
-        DBGSourceInfo* dbgInfo, const std::string identifier, SharedValue<> value, bool isMutable) {
+SharedValue<VariableDeclaration> IRBuilder::createVariableDeclaration(DBGSourceInfo* dbgInfo,
+                                                                      const std::string identifier,
+                                                                      SharedValue<> value,
+                                                                      bool isMutable) {
     auto decl = N<VariableDeclaration>(dbgInfo, identifier, value, isMutable);
     decl->setType(value->getType());
     return decl;
 }
-SharedValue<ValueExtract>
-IRBuilder::createValueExtract(DBGSourceInfo* dbgInfo, SharedValue<> value) {
+SharedValue<ValueExtract> IRBuilder::createValueExtract(DBGSourceInfo* dbgInfo,
+                                                        SharedValue<> value) {
     auto extract = N<ValueExtract>(dbgInfo, value);
     extract->setType(value->getType());
     return extract;
 }
-SharedValue<ObjectInitialization> IRBuilder::createObjectInitialization(
-        DBGSourceInfo* dbgInfo, SharedValue<> value, ValueVec<> args, bool atHeap) {
+SharedValue<ObjectInitialization> IRBuilder::createObjectInitialization(DBGSourceInfo* dbgInfo,
+                                                                        SharedValue<> value,
+                                                                        ValueVec<> args,
+                                                                        bool atHeap) {
     auto init = N<ObjectInitialization>(dbgInfo, value, args);
     init->initializeAtHeap = atHeap;
     return init;
@@ -159,7 +163,8 @@ Type<types::FunctionType> IRBuilder::createFunctionType(std::vector<Type<>> args
                                                         bool isVarArg, bool isMutable) {
     return std::make_shared<types::FunctionType>(args, retType, isVarArg, isMutable);
 }
-Type<types::TypeAlias> IRBuilder::createTypeAlias(DBGSourceInfo* dbg, std::string name, Type<> base) {
+Type<types::TypeAlias> IRBuilder::createTypeAlias(DBGSourceInfo* dbg, std::string name,
+                                                  Type<> base) {
     return N<types::TypeAlias>(dbg, name, base);
 }
 SharedValue<BinaryOp> IRBuilder::createBinaryOp(SharedValue<Call> call) {

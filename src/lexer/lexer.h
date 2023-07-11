@@ -1,7 +1,7 @@
 
 #include "../errors.h"
-#include "../utils/logger.h"
 #include "../source_info.h"
+#include "../utils/logger.h"
 #include "tokens/token.h"
 
 #include <vector>

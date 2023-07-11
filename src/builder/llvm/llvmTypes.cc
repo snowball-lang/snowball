@@ -45,7 +45,7 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
     else if (auto f = cast<types::FunctionType>(t)) {
         return getLLVMFunctionType(f)->getPointerTo();
     } else if (auto a = cast<types::TypeAlias>(t)) {
-        assert(! "Unreachable type case found!");
+        assert(!"Unreachable type case found!");
         return getLLVMType(a->getBaseType());
     } else if (auto c = cast<types::DefinedType>(t)) {
         if (auto it = types.find(c->getId()); it != types.end()) { return it->second; }

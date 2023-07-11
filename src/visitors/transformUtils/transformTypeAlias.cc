@@ -47,13 +47,14 @@ Transformer::transformTypeAlias(const std::string& uuid,
             }
 
             auto aliasedType = transformType(ty->getType());
-            auto alias = builder.createTypeAlias(ty->getDBGInfo(), ty->getIdentifier(), aliasedType);
+            auto alias =
+                    builder.createTypeAlias(ty->getDBGInfo(), ty->getIdentifier(), aliasedType);
             alias->setPrivacy(ty->getPrivacy());
             alias->setGenerics(generics);
             alias->setUUID(uuid);
             transformedType = alias;
-            //auto item = std::make_shared<transform::Item>(alias);
-            //ctx->cache->setTransformedType(uuid, item);
+            // auto item = std::make_shared<transform::Item>(alias);
+            // ctx->cache->setTransformedType(uuid, item);
         });
     });
 

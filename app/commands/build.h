@@ -27,7 +27,7 @@ int build(app::Options::BuildOptions p_opts) {
     if (p_opts.file.empty()) {
         toml::parse_result parsed_config = Compiler::get_config();
         filename = parsed_config["package"]["main"].value_or<std::string>(
-                          (fs::current_path() / "src" / "main.sn"));
+                (fs::current_path() / "src" / "main.sn"));
         package_name = (std::string)(
                 parsed_config["package"]["name"].value_or<std::string>("<anonnimus>"));
         package_version = parsed_config["package"]["version"].value_or<std::string>("<unknown>");
