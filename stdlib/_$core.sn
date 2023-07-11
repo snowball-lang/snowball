@@ -191,9 +191,9 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType&> {
 
   priv:
     /** The capacity of the vector. */
-    let capacity: i32 = 10;
+    let mut capacity: i32 = 10;
     /** The size of the vector. */
-    let length: i32 = 0;
+    let mut length: i32 = 0;
     /** The buffer containing the vector. */
     let buffer: UA::UniversalArray&;
 }

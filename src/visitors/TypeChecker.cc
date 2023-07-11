@@ -36,6 +36,8 @@ TypeChecker::TypeChecker(std::shared_ptr<ir::Module> mod)
     : AcceptorExtend<TypeChecker, ValueVisitor>(), module(mod) { }
 
 VISIT(Func) {
+    if (p_node->hasAttribute(Attributes::Fn::TYPECHECKED)) return;
+    p_node->addAttribute(Attributes::Fn::TYPECHECKED);
     auto backup = ctx->getCurrentFunction();
     ctx->setCurrentFunction(p_node);
     auto body = p_node->getBody();
@@ -96,9 +98,9 @@ VISIT(Call) {
     int i = 0;
     fn->visit(this);
     for (auto a : p_node->getArguments()) {
-        a->visit(this);
         if (i == 0) checkMutability(p_node, fn, a);
 
+        a->visit(this);
         i++;
     }
 }
