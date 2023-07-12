@@ -72,6 +72,8 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
                 return Attributes::Fn::INLINE;
             } else if (attr == "test") {
                 return Attributes::Fn::TEST;
+            } else if (attr == "no_mangle") {
+                return Attributes::Fn::NO_MANGLE;
             }
             return Attributes::Fn::INVALID;
         });

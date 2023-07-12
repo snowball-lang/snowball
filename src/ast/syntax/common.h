@@ -26,6 +26,7 @@ enum Fn
     LLVM_FUNC,
     INTERNAL_LINKAGE,
     INLINE,
+    NO_MANGLE,
     NOT_IMPLEMENTED,
     TYPECHECKED, // internal
 };
