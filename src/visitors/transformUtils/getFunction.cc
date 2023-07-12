@@ -85,9 +85,9 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
             auto args = f->getArgs(true);
             size_t numArgs = arguments.size();
             auto argsVector = utils::list_to_vector(args);
-            if (ir::Func::argumentSizesEqual(argsVector, arguments, f->isVariadic())) {
+            if (ir::Func::argumentSizesEqual(argsVector, arguments, f->isVariadic()) || isIdentifier) {
                 bool equal = true;
-                for (auto arg = args.begin(); ((arg != args.end()) && equal); ++arg) {
+                for (auto arg = args.begin(); ((arg != args.end()) && equal && !isIdentifier); ++arg) {
                     auto i = std::distance(args.begin(), arg);
                     if (i < numArgs) {
                         equal = arg->second->getType()->is(arguments.at(i));

@@ -64,6 +64,30 @@ pub extern fn "sn.ua.get" as __ua_get(UniversalArray&, i32) cobj;
 } /* namespace UA */;
 
 /**
+ * @namespace __internal
+ * @brief The namespace containing internal functions.
+ *
+ * The __internal namespace contains internal functions. It provides
+ * various operations and functionalities for working with internal
+ * functions. It supports common internal function manipulation
+ * operations such as exception throwing, exception catching,
+ * exception handling, and more.
+ *
+ * @note The __internal namespace is designed to be efficient and memory-safe.
+ *       It automatically manages the memory allocation and deallocation
+ *       required for storing and manipulating internal functions.
+ */
+//namespace __internal {
+//
+//fn [[internal_linkage, inline, no_mangle]] __snowball_test(lhs: StringView<T>&, rhs: StringView<T>&)
+//  StringView<T> 
+//{
+//
+//}
+//
+//} /* namespace __internal */;
+
+/**
  * @class Exception
  * @brief A class representing an exception.
  *

@@ -23,8 +23,7 @@ SN_TRANSFORMER_VISIT(Statement::Namespace) {
         auto sharedModule = std::make_shared<Item>(mod);
         auto backup = ctx->module;
         ctx->module = mod;
-        ctx->withScope([&]() mutable {
-            ctx->addItem(name, sharedModule);
+        ctx->withScope([&]() {
             for (auto x : body) { SN_TRANSFORMER_CAN_GENERATE(x) x->accept(this); }
         });
         ctx->module = backup;
@@ -38,7 +37,7 @@ SN_TRANSFORMER_VISIT(Statement::Namespace) {
         ctx->uuidStack.push_back(ctx->module->getUniqueName());
         auto backup = ctx->module;
         ctx->module = mod;
-        ctx->withScope([&]() mutable {
+        ctx->withScope([&]() {
             for (auto x : body) { x->accept(this); }
         });
         ctx->module = backup;

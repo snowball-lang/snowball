@@ -95,8 +95,8 @@ int build(app::Options::BuildOptions p_opts) {
     auto duration = duration_cast<milliseconds>(stop - start).count();
 
     if (!p_opts.silent) {
-        Logger::message("Finished", FMT("build target(s) in %ims", duration));
-        Logger::message("Generating", FMT("Generating output at `%s`", output.c_str()));
+        Logger::message("Finished", FMT("build target(s) in %s%i%sms", BOLD, duration, RESET));
+        Logger::message("Generating", FMT("Generating output at `%s%s%s`", BOLD, output.c_str(), RESET));
         Logger::log("");
     }
 

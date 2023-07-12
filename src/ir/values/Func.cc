@@ -89,6 +89,7 @@ std::string Func::getNiceName() {
 
 std::string Func::getMangle() {
     if (!externalName.empty()) return externalName;
+    if (hasAttribute(Attributes::NO_MANGLE)) return getIdentifier();
 
     // TODO: add class to here
     auto base = hasParent() ? parent->getMangledName() : module->getUniqueName();

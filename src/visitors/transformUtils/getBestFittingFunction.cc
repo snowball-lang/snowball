@@ -60,7 +60,7 @@ Transformer::getBestFittingFunction(const std::vector<Cache::FunctionStore>& ove
 
                 for (auto i = 0; ((i < fnArgs.size()) && (!argsEqual)); i++) {
                     auto type = transformType(fnArgs.at(i)->getType());
-                    if (fnArgs.at(i)->hasDefaultValue() && arguments.size() < fnArgs.size()) {
+                    if ((fnArgs.at(i)->hasDefaultValue() || isIdentifier) && arguments.size() < fnArgs.size()) {
                         argsEqual = true;
                         continue;
                     }
