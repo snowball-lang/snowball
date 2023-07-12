@@ -96,9 +96,10 @@ VISIT(Call) {
     // TODO: check for operator sides being equal
 
     int i = 0;
-    fn->visit(this);
+    if (fn) fn->visit(this);
     for (auto a : p_node->getArguments()) {
-        if (i == 0) checkMutability(p_node, fn, a);
+        // TODO: maybe check even if it's not a function value?
+        if (i == 0 && fn) checkMutability(p_node, fn, a);
 
         a->visit(this);
         i++;
