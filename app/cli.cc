@@ -250,6 +250,18 @@ Options CLI::parse() {
                 opts.test_opts.silent = true;
             } else if (IF_ARG("--no-progress")) {
                 opts.test_opts.no_progress = true;
+            } else if (IF_ANY_ARG("-g", "-O0")) {
+                opts.test_opts.opt = Options::Optimization::OPTIMIZE_O0;
+            } else if (IF_ARG("-O1")) {
+                opts.test_opts.opt = Options::Optimization::OPTIMIZE_O1;
+            } else if (IF_ARG("-O2")) {
+                opts.test_opts.opt = Options::Optimization::OPTIMIZE_O2;
+            } else if (IF_ARG("-O3")) {
+                opts.test_opts.opt = Options::Optimization::OPTIMIZE_O3;
+            } else if (IF_ARG("-Os")) {
+                opts.test_opts.opt = Options::Optimization::OPTIMIZE_Os;
+            } else if (IF_ARG("-Oz")) {
+                opts.test_opts.opt = Options::Optimization::OPTIMIZE_Oz;
             } else {
                 throw SNError(
                         Error::ARGUMENT_ERROR,

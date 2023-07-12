@@ -58,12 +58,20 @@ int build(app::Options::BuildOptions p_opts) {
         throw SNError(BUG, FMT("Unhandled emit type for build process ('%i')", p_opts.emit_type));
     }
 
+    if (p_opts.opt == Options::Optimization::OPTIMIZE_O0) {
+        build_type += " + debug";
+    } else {
+        build_type += " + optimized";
+    }
+
     if (!p_opts.silent)
         Logger::message("Project",
-                        FMT("%s v%s [%s]",
+                        FMT("%s v%s [%s%s%s]",
                             package_name.c_str(),
                             package_version.c_str(),
-                            (build_type.c_str())));
+                            BOLD,
+                            build_type.c_str(),
+                            RESET));
 
     std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 
@@ -95,7 +103,7 @@ int build(app::Options::BuildOptions p_opts) {
     auto duration = duration_cast<milliseconds>(stop - start).count();
 
     if (!p_opts.silent) {
-        Logger::message("Finished", FMT("build target(s) in %s%i%sms", BOLD, duration, RESET));
+        Logger::message("Finished", FMT("build target(s) in %s%ims%s", BOLD, duration, RESET));
         Logger::message("Generating", FMT("Generating output at `%s%s%s`", BOLD, output.c_str(), RESET));
         Logger::log("");
     }

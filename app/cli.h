@@ -49,6 +49,7 @@ struct Options {
     struct TestOptions {
         bool silent = false;
         bool no_progress = false;
+        Optimization opt = OPTIMIZE_O0;
     } test_opts;
 
     struct InitOptions {
