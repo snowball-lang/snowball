@@ -21,15 +21,15 @@ namespace ir {
 class Value : public ModuleHolder, public DBGObject {
     std::shared_ptr<types::Type> type;
 
-  public:
-    Value() = default;
-    Value(std::shared_ptr<types::Type> p_type) { type = p_type; };
-
     Value(const Value*&) = delete;
     Value(const Value&) = delete;
     Value(const Value&&) = delete;
     Value& operator=(const Value&) = delete;
+
+  public:
     virtual ~Value() noexcept = default;
+    Value() = default;
+    Value(std::shared_ptr<types::Type> p_type) { type = p_type; };
 
     /// @return get value's type
     virtual std::shared_ptr<types::Type> getType() const { return type; }

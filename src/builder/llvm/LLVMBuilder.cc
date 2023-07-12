@@ -164,8 +164,8 @@ void LLVMBuilder::codegen() {
     auto mainModule = utils::dyn_cast<ir::MainModule>(iModule);
     assert(mainModule);
 
-    generateModule(mainModule);
     for (auto m : mainModule->getModules()) generateModule(m);
+    generateModule(mainModule);
 
     initializeRuntime();
     dbg.builder->finalize();

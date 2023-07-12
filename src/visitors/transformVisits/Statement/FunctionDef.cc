@@ -35,13 +35,19 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
         // assert(!services::OperatorService::isOperator(name));
         //  Check if the function requirements match the main function
         auto uuid = ctx->createIdentifierName(name);
-
-        // Just set it to the function stack
-        if (auto x = ctx->cache->getFunction(uuid)) {
-            // assert(false && "func exists");
-            // TODO: check for already existing functions
+        // TODO: check for already existing functions (for no mangled versions)
+        if (p_node->hasAttribute(Attributes::Fn::NO_MANGLE)) {
+            if (std::find(ctx->exported.begin(), ctx->exported.end(), name) != ctx->exported.end()) {
+                E<VARIABLE_ERROR>(p_node->getDBGInfo(), "Unmangled export already exists!", {
+                    .info = "This function name is already exported as unmangled.",
+                    .note = "This symbols is exported on another location with the 'no_mangle' attribute.",
+                    .help = "Try renaming the function or removing the 'no_mangle' attribute. If you want \n"
+                            "to export the function as unmangled, remove the mangled version of the function."
+                });
+            } else {
+                ctx->exported.push_back(name);
+            }
         }
-
         ctx->cache->setFunction(uuid, p_node, ctx->saveState());
         return;
     }

@@ -98,6 +98,9 @@ class Func : public AcceptorExtend<Func, Value>,
     /// @note The initial value of this attribute is false.
     bool used = false;
 
+    Func(const Func&) = delete;
+    Func& operator=(Func const&);
+
   public:
 #define DEFAULT                                                                                    \
     bool declaration = false, bool variadic = false,                                               \
@@ -106,8 +109,8 @@ class Func : public AcceptorExtend<Func, Value>,
     explicit Func(std::string identifier, DEFAULT);
     explicit Func(std::string identifier, FunctionArgs arguments, DEFAULT);
     explicit Func(std::string identifier, std::shared_ptr<Block> body, DEFAULT);
-    explicit Func(
-            std::string identifier, std::shared_ptr<Block> body, FunctionArgs arguments, DEFAULT);
+    explicit Func(std::string identifier, std::shared_ptr<Block> body, 
+        FunctionArgs arguments, DEFAULT);
 
 #undef DEFAULT
 

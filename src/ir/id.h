@@ -16,6 +16,9 @@ class IdMixin {
     /// the global id counter
     static id_t currentId;
 
+    IdMixin(const IdMixin&) = delete;
+    IdMixin& operator=(const IdMixin&) = delete;
+
   protected:
     /// the instance's id
     id_t id;
@@ -25,8 +28,6 @@ class IdMixin {
     static void resetId();
 
     IdMixin() : id(currentId++) { }
-    IdMixin(const IdMixin&) = delete;
-    IdMixin& operator=(const IdMixin&) = delete;
 
     /// @return the node's id.
     virtual id_t getId() const { return id; }

@@ -34,6 +34,8 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     // Module given to us so we can
     // identify where in the program we are.
     std::shared_ptr<ir::Module> module = nullptr;
+    // A list of exported functions and variables without mangle
+    std::vector<std::string> exported;
     /// @brief A stack of UUIDs that are used to generate
     ///  unique identifiers for things like functions, variables, etc.
     /// @note Only used for namespaces.

@@ -22,7 +22,7 @@ Transformer::StoreType Transformer::getFromIdentifier(DBGSourceInfo* dbgInfo,
     // Transform the base first
     auto [item, success] = ctx->getItem(identifier);
 
-    if (success) {
+    if (success && p_uuid.empty()) {
         if (item->isVal()) {
             // TODO: it should not be getValue, it should have it's own
             // value
@@ -40,6 +40,7 @@ Transformer::StoreType Transformer::getFromIdentifier(DBGSourceInfo* dbgInfo,
             assert(false && "BUG: Unhandled value type!");
         }
     }
+
     int uuidStackIndex = -1;
     std::string uuidStackOverride = "";
 fetchFromUUID:

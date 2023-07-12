@@ -14,11 +14,11 @@ void LLVMBuilder::visit(ir::ValueExtract* extract) {
     auto var = extract->getValue();
 
     llvm::Value* value = nullptr;
-    if (auto f = std::dynamic_pointer_cast<ir::Func>(var)) {
+    if (auto f = utils::dyn_cast<ir::Func>(var)) {
         auto fn = funcs.at(f->getId());
         this->value = fn;
         return;
-    } else if (auto v = std::dynamic_pointer_cast<ir::Variable>(var)) {
+    } else if (auto v = utils::dyn_cast<ir::Variable>(var)) {
         // note(argument): "x + 1" because ir::Argument (x - 1) gets
         // created after ir::Variable (x). note(note argument): They are
         // declared as usual with normal ID incrementation

@@ -36,17 +36,28 @@ int test(app::Options::TestOptions p_opts) {
 
     // TODO: check for output
     std::string output = _SNOWBALL_OUT_DEFAULT;
+    std::string build_type = "";
+
+    filename = parsed_config["package"]["main"].value_or<std::string>(
+            (fs::current_path() / "src" / "main.sn"));
+    std::string package_name = (std::string)(
+            parsed_config["package"]["name"].value_or<std::string>("<anonnimus>"));
+    std::string package_version = parsed_config["package"]["version"].value_or<std::string>("<unknown>");
+
+    if (p_opts.opt == Options::Optimization::OPTIMIZE_O0) {
+        build_type += "debug";
+    } else {
+        build_type += "optimized";
+    }
 
     if (!p_opts.silent)
-        Logger::message(
-                "Project",
-                FMT("%s v%s",
-                    ((std::string)(
-                             parsed_config["package"]["name"].value_or<std::string>("<anonnimus>")))
-                            .c_str(),
-                    ((std::string)(parsed_config["package"]["version"].value_or<std::string>(
-                             "<unknown>")))
-                            .c_str()));
+        Logger::message("Project",
+                        FMT("%s v%s [%s%s%s]",
+                            package_name.c_str(),
+                            package_version.c_str(),
+                            BOLD,
+                            build_type.c_str(),
+                            RESET));
 
     Compiler* compiler = new Compiler(content, filename);
     compiler->initialize();
@@ -68,7 +79,7 @@ int test(app::Options::TestOptions p_opts) {
     auto duration = duration_cast<milliseconds>(stop - start).count();
 
     if (!p_opts.silent) {
-        Logger::message("Finished", FMT("test target(s) in %ims", duration));
+        Logger::message("Finished", FMT("test target(s) in %s%i%sms", BOLD, duration, RESET));
         Logger::message("Running", FMT("unittests (%s)", filename.c_str()));
     }
 
