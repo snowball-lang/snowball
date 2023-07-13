@@ -62,6 +62,7 @@ int test(app::Options::TestOptions p_opts) {
     Compiler* compiler = new Compiler(content, filename);
     compiler->initialize();
     compiler->enable_tests();
+    compiler->set_optimization(p_opts.opt);
 
     auto start = high_resolution_clock::now();
 
