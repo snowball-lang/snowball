@@ -27,7 +27,7 @@ class Func : public AcceptorExtend<Func, Value>,
              public AcceptorExtend<Func,
                                    Syntax::Statement::GenericContainer<
                                            std::pair<std::string, std::shared_ptr<types::Type>>>>,
-             public AcceptorExtend<Func, Syntax::Statement::AttributeHolder<Attributes::Fn>> {
+             public AcceptorExtend<Func, Syntax::AttributeHolder> {
   public:
     // Utility types
     using FunctionArgs = std::list<std::pair<std::string, std::shared_ptr<Argument>>>;

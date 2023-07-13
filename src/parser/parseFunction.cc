@@ -38,7 +38,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     bool hasSuperArgs = false;
 
     std::map<Expression::Identifier*, Expression::Base*> constructorInitArgs;
-    std::map<Attributes::Fn, std::map<std::string, std::string>> attributes;
+    std::map<Attributes, std::map<std::string, std::string>> attributes;
     bool isLLVMFunction = false;
 
     // Check if the tokens behind the function keyword
@@ -62,20 +62,26 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     auto width = 0;
 
     if (is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek())) {
-        attributes = parseAttributes<Attributes::Fn>([&](std::string attr) {
+        attributes = parseAttributes([&](std::string attr) {
             if (attr == "llvm_function") {
                 isLLVMFunction = true;
-                return Attributes::Fn::LLVM_FUNC;
+                return Attributes::LLVM_FUNC;
             } else if (attr == "internal_linkage") {
-                return Attributes::Fn::INTERNAL_LINKAGE;
+                return Attributes::INTERNAL_LINKAGE;
+            } else if (attr == "external_linkage") {
+                return Attributes::EXTERNAL_LINKAGE;
             } else if (attr == "inline") {
-                return Attributes::Fn::INLINE;
+                return Attributes::INLINE;
+            } else if (attr == "no_inline") {
+                return Attributes::NO_INLINE;
             } else if (attr == "test") {
-                return Attributes::Fn::TEST;
+                return Attributes::TEST;
             } else if (attr == "no_mangle") {
-                return Attributes::Fn::NO_MANGLE;
+                return Attributes::NO_MANGLE;
+            } else if (attr == "export") {
+                return Attributes::EXPORT;
             }
-            return Attributes::Fn::INVALID;
+            return Attributes::INVALID;
         });
     }
     if (isOperator) {

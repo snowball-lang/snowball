@@ -314,61 +314,8 @@ class Parser {
      * @param parseFn function to parse the attribute
      * @return a vector of attributes
      */
-    template <typename T>
-    std::map<T, std::map<std::string, std::string>>
-    parseAttributes(std::function<T(std::string)> parseFn) {
-        assert(is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek()));
-        next();
-        std::map<T, std::map<std::string, std::string>> attributes;
-        while (true) {
-            std::map<std::string, std::string> attrArgs;
-            next();
-            assert_tok<TokenType::IDENTIFIER>("an identifier");
-            auto attr = m_current.to_string();
-            auto parsed = parseFn(attr);
-            if (parsed == T::INVALID) {
-                createError<ATTRIBUTE_ERROR>(
-                        "Trying to use an undefined attribute!",
-                        {.info = FMT("Attribute '%s' is not defined!", attr.c_str())});
-            }
-
-            if (is<TokenType::BRACKET_LPARENT>()) {
-                while (true) {
-                    auto pk = peek();
-                    if (is<TokenType::BRACKET_RPARENT>(pk)) { break; }
-                    // TODO: check for already deifned ones
-                    auto name = assert_tok<TokenType::IDENTIFIER>("an identifier").to_string();
-                    next();
-                    consume<TokenType::OP_EQ>("'='");
-                    auto val = assert_tok<TokenType::VALUE_STRING>("a string value").to_string();
-                    attrArgs[name] = val;
-                    pk = peek();
-                    if (is<TokenType::SYM_COMMA>(pk) || is<TokenType::BRACKET_RPARENT>(pk)) {
-                        if (is<TokenType::SYM_COMMA>(pk)) next();
-                        continue;
-                    } else {
-                        next();
-                        createError<SYNTAX_ERROR>(
-                                FMT("Expected a ',' or a ')' but found '%s' instead",
-                                    pk.to_string().c_str()));
-                    }
-                }
-            }
-
-            attributes[parsed] = attrArgs;
-            next();
-            if (is<TokenType::BRACKET_RSQUARED>()) {
-                next();
-                assert_tok<TokenType::BRACKET_RSQUARED>("']]'");
-                next();
-                break;
-            } else if (is<TokenType::SYM_COMMA>()) {
-            } else {
-                assert_tok<TokenType::BRACKET_RSQUARED>("',' or ']]'");
-            }
-        }
-        return attributes;
-    }
+    std::map<Attributes, std::map<std::string, std::string>>
+    parseAttributes(std::function<Attributes(std::string)> parseFn);
 };
 
 } // namespace parser

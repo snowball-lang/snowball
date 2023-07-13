@@ -9,14 +9,14 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::WhileLoop) {
-    p_node->getCondition()->accept(this);
-    auto expr = getBooleanValue(this->value);
+    auto cond = trans(p_node->getCondition());
+    auto expr = getBooleanValue(cond);
 
-    p_node->getBlock()->accept(this);
-    auto body = utils::dyn_cast<ir::Block>(this->value);
+    auto block = trans(p_node->getBlock());
+    auto body = utils::dyn_cast<ir::Block>(block);
 
-    auto cond = builder.createWhileLoop(p_node->getDBGInfo(), expr, body, p_node->isDoWhile());
-    this->value = utils::dyn_cast<ir::Value>(cond);
+    auto loop = builder.createWhileLoop(p_node->getDBGInfo(), expr, body, p_node->isDoWhile());
+    this->value = utils::dyn_cast<ir::Value>(loop);
 }
 
 } // namespace Syntax

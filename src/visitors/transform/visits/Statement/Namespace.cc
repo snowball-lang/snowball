@@ -24,7 +24,7 @@ SN_TRANSFORMER_VISIT(Statement::Namespace) {
         auto backup = ctx->module;
         ctx->module = mod;
         ctx->withScope([&]() {
-            for (auto x : body) { SN_TRANSFORMER_CAN_GENERATE(x) x->accept(this); }
+            for (auto x : body) { SN_TRANSFORMER_CAN_GENERATE(x) trans(x); }
         });
         ctx->module = backup;
         addModule(mod);
@@ -38,7 +38,7 @@ SN_TRANSFORMER_VISIT(Statement::Namespace) {
         auto backup = ctx->module;
         ctx->module = mod;
         ctx->withScope([&]() {
-            for (auto x : body) { x->accept(this); }
+            for (auto x : body) { trans(x); }
         });
         ctx->module = backup;
         ctx->uuidStack.pop_back();

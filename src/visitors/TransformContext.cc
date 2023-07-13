@@ -13,6 +13,7 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
     : AcceptorExtend()
     , module(mod)
     , testMode(testMode)
+    , isMainModule(true)
     , builder(builder)
     , cache(new Cache())
     , imports(std::make_unique<services::ImportService>()) {

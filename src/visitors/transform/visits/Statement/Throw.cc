@@ -8,8 +8,8 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::Raise) {
-    p_node->getExpr()->accept(this);
-    this->value = builder.createThrow(p_node->getDBGInfo(), this->value);
+    auto expr = trans(p_node->getExpr());
+    this->value = builder.createThrow(p_node->getDBGInfo(), expr);
 }
 
 } // namespace Syntax

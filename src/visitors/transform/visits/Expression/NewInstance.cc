@@ -20,9 +20,7 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
     index->setDBGInfo(expr->getDBGInfo());
 
     call->setCallee(index);
-    call->accept(this);
-
-    auto c = utils::dyn_cast<ir::Call>(this->value);
+    auto c = utils::dyn_cast<ir::Call>(trans(call));
     assert(c != nullptr);
 
     auto typeRef = utils::cast<Expression::TypeRef>(expr);

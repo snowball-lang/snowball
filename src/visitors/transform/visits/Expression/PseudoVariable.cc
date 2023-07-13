@@ -59,7 +59,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
     //  from being lost.
     auto val = new Syntax::Expression::ConstantValue(
             Expression::ConstantValue::ConstantType::String, "\"" + stringValue + "\"");
-    val->accept(this);
+    trans(val);
 }
 
 } // namespace Syntax

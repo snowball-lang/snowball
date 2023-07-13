@@ -33,6 +33,28 @@ Transformer::Transformer(std::shared_ptr<ir::Module> mod, SourceInfo* srci, bool
     initializeCoreRuntime();
 }
 
+std::shared_ptr<ir::Value> Transformer::trans(Node* node) {
+    if (auto x = utils::cast<AttributeHolder>(node)) {
+        if (x->hasAttribute(Attributes::CFG)) {
+            auto args = x->getAttributeArgs(Attributes::CFG);
+            for (auto [type, _] : args) {
+                if (type == "test") {
+                    if (!ctx->testMode) {
+                        return nullptr; // TODO: check if this causes problems
+                    }
+                } else {
+                    E<SYNTAX_ERROR>(node,
+                                    "Unknown attribute!",
+                                    {.info = FMT("Unknown config attribute '%s'", type.c_str())});
+                }
+            }
+        }
+    }
+    
+    node->accept(this);
+    return this->value;
+}
+
 std::vector<std::shared_ptr<ir::Module>> Transformer::getModules() const { return modules; }
 void Transformer::addModule(std::shared_ptr<ir::Module> m) {
     ctx->cache->addModule(m->getUniqueName(), m);

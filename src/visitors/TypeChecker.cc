@@ -36,8 +36,8 @@ TypeChecker::TypeChecker(std::shared_ptr<ir::Module> mod)
     : AcceptorExtend<TypeChecker, ValueVisitor>(), module(mod) { }
 
 VISIT(Func) {
-    if (p_node->hasAttribute(Attributes::Fn::TYPECHECKED)) return;
-    p_node->addAttribute(Attributes::Fn::TYPECHECKED);
+    if (p_node->hasAttribute(Attributes::TYPECHECKED)) return;
+    p_node->addAttribute(Attributes::TYPECHECKED);
     auto backup = ctx->getCurrentFunction();
     ctx->setCurrentFunction(p_node);
     auto body = p_node->getBody();

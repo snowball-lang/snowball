@@ -93,8 +93,8 @@ continueTypeFetch:
         auto decl = utils::cast<Expression::DeclType>(ty);
         assert(decl);
 
-        decl->getExpr()->accept(this);
-        return this->value->getType();
+        auto val = trans(decl->getExpr());
+        return val->getType();
     }
 
     if (ty->isReferenceType()) {

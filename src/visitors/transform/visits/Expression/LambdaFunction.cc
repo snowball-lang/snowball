@@ -77,8 +77,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
                               {.info = "Function does not return on all paths!"});
             }
 
-            body->accept(this);
-            auto functionBody = std::dynamic_pointer_cast<ir::Block>(this->value);
+            auto functionBody = utils::dyn_cast<ir::Block>(trans(body));
             fn->setBody(functionBody);
         });
 

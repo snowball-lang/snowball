@@ -27,11 +27,11 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
 
     // TODO: it should always be declared
     if (p_node->isInitialized()) {
-        variableValue->accept(this);
+        auto val = trans(variableValue);
         auto varDecl = builder.createVariableDeclaration(
-                p_node->getDBGInfo(), variableName, this->value, isMutable);
+                p_node->getDBGInfo(), variableName, val, isMutable);
         varDecl->setId(var->getId());
-        varDecl->setType(this->value->getType());
+        varDecl->setType(val->getType());
         auto itemDecl = std::make_shared<transform::Item>(transform::Item::Type::VALUE, varDecl);
 
         if (auto f = ctx->getCurrentFunction().get()) {
@@ -40,22 +40,22 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
             ctx->module->addVariable(varDecl);
         }
 
-        if (definedType == nullptr || definedType->is(this->value->getType())) {
+        if (definedType == nullptr || definedType->is(val->getType())) {
             this->value = varDecl;
         } else {
-            if (definedType->canCast(this->value->getType())) {
-                auto v = builder.createCast(p_node->getDBGInfo(), this->value, definedType);
+            if (definedType->canCast(val->getType())) {
+                auto v = builder.createCast(p_node->getDBGInfo(), val, definedType);
                 this->value = v;
             } else {
                 E<VARIABLE_ERROR>(p_node,
                                   FMT("Can't assign value with type '%s' to "
                                       "the variable with type '%s'!",
-                                      this->value->getType()->getPrettyName().c_str(),
+                                      val->getType()->getPrettyName().c_str(),
                                       definedType->getPrettyName().c_str()));
             }
         }
 
-        var->setType(this->value->getType());
+        var->setType(val->getType());
     } else {
         auto varDecl = builder.createVariableDeclaration(
                 p_node->getDBGInfo(), variableName, nullptr, isMutable);

@@ -17,8 +17,8 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                     p_node->getArguments(),
                     [&](Syntax::Expression::Base* a)
                             -> std::pair<std::shared_ptr<ir::Value>, std::shared_ptr<types::Type>> {
-                        a->accept(this);
-                        return {this->value, this->value->getType()};
+                        auto val = trans(a);
+                        return {val, val->getType()};
                     });
 
     auto callee = p_node->getCallee();
@@ -96,8 +96,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
 
         fn = c;
     } else {
-        callee->accept(this);
-        fn = this->value;
+        fn = trans(callee);
     }
 
     auto call = builder.createCall(p_node->getDBGInfo(), fn, argValues);
@@ -166,8 +165,8 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                                  arg != args.end();
                                  ++arg) {
                                 if (arg->second->hasDefaultValue()) {
-                                    arg->second->getDefaultValue()->accept(this);
-                                    auto ty = this->value->getType();
+                                    auto val = trans(arg->second->getDefaultValue());
+                                    auto ty = val->getType();
                                     if (!arg->second->getType()->is(ty)) {
                                         if (!arg->second->getType()->canCast(ty)) {
                                             E<TYPE_ERROR>(arg->second,
@@ -183,7 +182,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                                         assert(false && "TODO: cast default argument");
                                     } else {
                                         argTypes.push_back(ty);
-                                        argValues.push_back(this->value);
+                                        argValues.push_back(val);
 
                                         call->setArguments(argValues);
                                     }

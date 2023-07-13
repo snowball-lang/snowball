@@ -439,7 +439,6 @@ struct Privacy {
  * it's respective rules
  */
 struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
-                     public AcceptorExtend<FunctionDef, AttributeHolder<Attributes::Fn>>,
                      public AcceptorExtend<FunctionDef, Privacy>,
                      public AcceptorExtend<FunctionDef, GenericContainer<>> {
     // Function's identifier

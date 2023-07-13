@@ -13,14 +13,12 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
 
     if (p_node->unary) {
         if (opType == Expression::BinaryOp::OpType::REFERENCE) {
-            p_node->left->accept(this);
-            auto value = this->value;
+            auto value = trans(p_node->left);
             auto ref = builder.createReferenceTo(p_node->getDBGInfo(), value);
             this->value = ref;
             return;
         } else if (opType == Expression::BinaryOp::OpType::DEREFERENCE) {
-            p_node->left->accept(this);
-            auto value = this->value;
+            auto value = trans(p_node->left);
             auto type = value->getType();
             if (auto x = utils::dyn_cast<types::ReferenceType>(type)) {
                 type = x->getBaseType();
@@ -51,8 +49,8 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
     call->setDBGInfo(p_node->getDBGInfo());
     index->setDBGInfo(p_node->getDBGInfo());
 
-    call->accept(this);
-    auto assigmentAsCall = utils::dyn_cast<ir::Call>(this->value);
+    auto val = trans(call);
+    auto assigmentAsCall = utils::dyn_cast<ir::Call>(val);
     auto assigmentValue = builder.createBinaryOp(assigmentAsCall);
     this->value = assigmentValue;
 }

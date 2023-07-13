@@ -77,15 +77,14 @@ pub extern fn "sn.ua.get" as __ua_get(UniversalArray&, i32) cobj;
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating internal functions.
  */
-//namespace __internal {
-//
-//fn [[internal_linkage, inline, no_mangle]] __snowball_test(lhs: StringView<T>&, rhs: StringView<T>&)
-//  StringView<T> 
-//{
-//
-//}
-//
-//} /* namespace __internal */;
+namespace __internal {
+
+fn [[export(name = "sn.test.try"), cfg(test), no_inline]] __snowball_test()
+{
+
+}
+
+} /* namespace __internal */;
 
 /**
  * @class Exception

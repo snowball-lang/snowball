@@ -212,8 +212,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
         }
     } else if (!isStatic) {
         // case: Integers, Strings, etc... index
-        base->accept(this);
-        auto v = this->value;
+        auto v = trans(base);
         return {getFromType(v->getType(), v), v};
     } else {
         E<SYNTAX_ERROR>(dbgInfo,

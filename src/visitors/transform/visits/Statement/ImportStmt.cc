@@ -17,6 +17,7 @@ namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     if (ctx->generateFunction) return;
+    auto bkIsMainModule = ctx->isMainModule;
     auto package = p_node->getPackage();
     auto path = p_node->getPath();
     // TODO: extension
@@ -25,6 +26,8 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     auto uuid = package == "Core" ? ctx->imports->CORE_UUID + path[0]
                                   : ctx->imports->getModuleUUID(filePath);
     auto exportName = ctx->imports->getExportName(filePath, p_node->getExportSymbol());
+    auto isExternalModule = ctx->imports->isExternalModule(package);
+    ctx->isMainModule = !isExternalModule;
     if (ctx->getItem(exportName).second)
         Syntax::E<IMPORT_ERROR>(
                 p_node, FMT("Import with name '%s' is already defined!", exportName.c_str()));
@@ -83,6 +86,8 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
         auto item = std::make_shared<Item>(mod);
         ctx->addItem(exportName, item);
     }
+
+    ctx->isMainModule = bkIsMainModule;
 }
 
 } // namespace Syntax

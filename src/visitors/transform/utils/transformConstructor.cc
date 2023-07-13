@@ -19,9 +19,9 @@ Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
         auto newInstance =
                 Syntax::N<Expression::NewInstance>(p_node->getDBGInfo(), superArgs, parentClassRef);
         newInstance->setDBGInfo(p_node->getDBGInfo());
-        newInstance->accept(this);
-        utils::dyn_cast<ir::ObjectInitialization>(this->value)->createdObject = selfArg->getValue();
-        instrList.emplace_back(this->value);
+        auto val = trans(newInstance);
+        utils::dyn_cast<ir::ObjectInitialization>(val)->createdObject = selfArg->getValue();
+        instrList.emplace_back(val);
     }
     for (auto field : ctx->getCurrentClass()->getFields()) {
         auto name = field->name;
@@ -38,8 +38,8 @@ Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
             nameIdent->setDBGInfo(field->getDBGInfo());
             selfRef->setDBGInfo(field->getDBGInfo());
             indexExpr->setDBGInfo(field->getDBGInfo());
-            assign->accept(this);
-            auto assigmentAsCall = utils::dyn_cast<ir::Call>(this->value);
+            auto val = trans(assign);
+            auto assigmentAsCall = utils::dyn_cast<ir::Call>(val);
             auto assigmentValue = builder.createBinaryOp(assigmentAsCall);
             assigmentValue->ignoreMutability = true;
             instrList.emplace_back(assigmentValue);
@@ -54,8 +54,8 @@ Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
         assign->setDBGInfo(name->getDBGInfo());
         selfRef->setDBGInfo(name->getDBGInfo());
         indexExpr->setDBGInfo(name->getDBGInfo());
-        assign->accept(this);
-        auto assigmentAsCall = utils::dyn_cast<ir::Call>(this->value);
+        auto val = trans(assign);
+        auto assigmentAsCall = utils::dyn_cast<ir::Call>(val);
         auto assigmentValue = builder.createBinaryOp(assigmentAsCall);
         assigmentValue->ignoreMutability = true;
         instrList.emplace_back(assigmentValue);

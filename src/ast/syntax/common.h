@@ -17,20 +17,26 @@
 
 namespace snowball {
 
-namespace Attributes {
-enum Fn
+/// @brief An enum representing the attributes that can be stored
+///  for a node.
+enum Attributes
 {
-    INVALID = -1,
+    // Default attributes
+    INVALID,
+    CFG,
 
+    // FUNCTION ATTRIBUTES
     TEST,
     LLVM_FUNC,
     INTERNAL_LINKAGE,
+    EXTERNAL_LINKAGE,
     INLINE,
+    NO_INLINE,
     NO_MANGLE,
     NOT_IMPLEMENTED,
-    TYPECHECKED, // internal
+    EXPORT,
+    TYPECHECKED
 };
-}
 
 namespace Syntax {
 
@@ -38,7 +44,87 @@ namespace Syntax {
 class Visitor;
 class WhereClause;
 
-struct Node : public DBGObject {
+/**
+ * A generic class that accepts an enum as a template parameter and
+ * stores and checks attributes for a node.
+ */
+class AttributeHolder {
+    using StoreType = std::map<std::string, std::string>;
+    std::map<Attributes, StoreType> arguments;
+
+  public:
+    /**
+     * Checks if a specific attribute is set for the node.
+     *
+     * @param attribute The attribute to check.
+     * @return True if the attribute is set, false otherwise.
+     */
+    bool hasAttribute(Attributes attribute) const {
+        return (m_attributes & (1 << static_cast<int>(attribute))) != 0;
+    }
+    /**
+     * Sets the bit for a specific attribute in the `m_attributes`
+     * variable.
+     *
+     * @param attribute The attribute to add.
+     */
+    auto addAttribute(Attributes attribute, StoreType args = {}) {
+        arguments[attribute] = args;
+        return m_attributes |= (1 << static_cast<int>(attribute));
+    }
+    /**
+     * Sets a new list of attributes to the current holder
+     */
+    void setAttributes(unsigned int attribute, std::map<Attributes, StoreType> args) {
+        m_attributes = attribute;
+        arguments = args;
+    }
+    /**
+     * Returns the respective unsigned integer for the attributes
+     */
+    auto getAttributes() const { return m_attributes; }
+    /**
+     * Sets the attributes from a holder
+     */
+    void setAttributes(AttributeHolder* holder) {
+        for (int i = -1; i < (int)holder->getAttributes(); i++) {
+            arguments[static_cast<Attributes>(i)] =
+                    holder->getAttributeArgs(static_cast<Attributes>(i));
+        }
+        m_attributes = holder->m_attributes;
+    }
+    /**
+     * Clears the bit for a specific attribute in the `m_attributes`
+     * variable.
+     *
+     * @param attribute The attribute to remove.
+     */
+    void removeAttribute(Attributes attribute) {
+        m_attributes &= ~(1 << static_cast<int>(attribute));
+    }
+    /**
+     * Clears all attributes for the node by setting `m_attributes`
+     * to zero.
+     */
+    void clearAttributes() { m_attributes = 0; }
+
+    /**
+     * Gets the arguments for a specific attribute.
+     * @param attribute The attribute to get the arguments for.
+     * @return A vector containing the arguments for the attribute.
+     */
+    StoreType getAttributeArgs(Attributes attribute) const {
+        auto it = arguments.find(attribute);
+        if (it == arguments.end()) return {};
+        return it->second;
+    }
+
+  private:
+    /** The bit field storing the attributes for the node. */
+    unsigned int m_attributes = 0;
+};
+
+struct Node : public DBGObject, public AttributeHolder {
   public:
     Node() = default;
     ~Node() noexcept = default;
@@ -56,10 +142,7 @@ struct Node : public DBGObject {
  */
 
 namespace Expression {
-struct Base : public AcceptorExtend<Base, Node> {
-    using AcceptorExtend::AcceptorExtend;
-    void accept(Syntax::Visitor* v) override { assert(false); };
-};
+struct Base : public AcceptorExtend<Base, Node> { };
 
 // Making a reference to the type. This should only appear on the
 // parser stage
@@ -246,84 +329,6 @@ struct Param {
 } // namespace Expression
 
 namespace Statement {
-
-/**
- * A generic class that accepts an enum as a template parameter and
- * stores and checks attributes for a node.
- *
- * @tparam T The enum type representing the attributes that can be
- * stored.
- */
-template <typename T, typename StoreType = std::map<std::string, std::string>>
-class AttributeHolder {
-    std::map<T, StoreType> arguments;
-
-  public:
-    /**
-     * Checks if a specific attribute is set for the node.
-     *
-     * @param attribute The attribute to check.
-     * @return True if the attribute is set, false otherwise.
-     */
-    bool hasAttribute(T attribute) const {
-        return (m_attributes & (1 << static_cast<int>(attribute))) != 0;
-    }
-    /**
-     * Sets the bit for a specific attribute in the `m_attributes`
-     * variable.
-     *
-     * @param attribute The attribute to add.
-     */
-    auto addAttribute(T attribute, StoreType args = {}) {
-        arguments[attribute] = args;
-        return m_attributes |= (1 << static_cast<int>(attribute));
-    }
-    /**
-     * Sets a new list of attributes to the current holder
-     */
-    void setAttributes(unsigned int attribute, std::map<T, StoreType> args) {
-        m_attributes = attribute;
-        arguments = args;
-    }
-
-    void setAttributes(AttributeHolder* holder) {
-        for (int i = -1; i < (int)holder->getAttributes(); i++) {
-            arguments[static_cast<T>(i)] = holder->getAttributeArgs(static_cast<T>(i));
-        }
-        m_attributes = holder->m_attributes;
-    }
-    /**
-     * Returns the respective unsigned integer for the attributes
-     */
-    auto getAttributes() const { return m_attributes; }
-    /**
-     * Clears the bit for a specific attribute in the `m_attributes`
-     * variable.
-     *
-     * @param attribute The attribute to remove.
-     */
-    void removeAttribute(T attribute) { m_attributes &= ~(1 << static_cast<int>(attribute)); }
-    /**
-     * Clears all attributes for the node by setting `m_attributes`
-     * to zero.
-     */
-    void clearAttributes() { m_attributes = 0; }
-
-    /**
-     * Gets the arguments for a specific attribute.
-     * @param attribute The attribute to get the arguments for.
-     * @return A vector containing the arguments for the attribute.
-     */
-    StoreType getAttributeArgs(T attribute) const {
-        auto it = arguments.find(attribute);
-        if (it == arguments.end()) return {};
-        return it->second;
-    }
-
-  private:
-    /** The bit field storing the attributes for the node. */
-    unsigned int m_attributes = 0;
-};
 
 /**
  * This struct is used a sort of container

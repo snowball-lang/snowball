@@ -61,7 +61,8 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
             fn->setAttributes(node);
             auto isExtern = node->isExtern();
             if (((ctx->getCurrentClass() || !fn->isStatic()) || fn->isPrivate()) && !isEntryPoint &&
-                !isExtern)
+                !isExtern && !fn->hasAttribute(Attributes::EXTERNAL_LINKAGE) &&
+                !fn->hasAttribute(Attributes::EXPORT))
                 fn->addAttribute(Attributes::INTERNAL_LINKAGE);
             if (auto c = ctx->getCurrentClass(true)) {
                 if (node->isVirtual()) { fn->setVirtualIndex(c->addVtableItem(fn)); }
@@ -133,8 +134,8 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
                         prependedInsts = transformConstructor(constructor);
                     }
 
-                    body->accept(this);
-                    auto functionBody = utils::dyn_cast<ir::Block>(this->value);
+                    auto block = trans(body);
+                    auto functionBody = utils::dyn_cast<ir::Block>(block);
                     functionBody->prepend(prependedInsts);
                     fn->setBody(functionBody);
                 });

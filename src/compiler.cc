@@ -78,8 +78,10 @@ void Compiler::compile(bool silent) {
 
             mainModule->setSourceInfo(_source_info);
 
-            auto simplifier = new Syntax::Transformer(
-                    mainModule->downcasted_shared_from_this<ir::Module>(), _source_info, _enabledTests);
+            auto simplifier =
+                    new Syntax::Transformer(mainModule->downcasted_shared_from_this<ir::Module>(),
+                                            _source_info,
+                                            _enabledTests);
 #if _SNOWBALL_TIMERS_DEBUG
             DEBUG_TIMER("Simplifier: %fs", utils::_timer([&] { simplifier->visitGlobal(ast); }));
 #else

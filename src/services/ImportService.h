@@ -49,7 +49,10 @@ class ImportService {
                                                                 std::vector<std::string>
                                                                         path,
                                                                 const std::string extension = "");
-
+    /**
+     * @brief Check if a module is external or not
+     */
+    bool isExternalModule(std::string package);
     /**
      * @brief Gets the exported name based on the path if the export
      * symbol is empty.

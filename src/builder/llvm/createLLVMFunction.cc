@@ -58,10 +58,13 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
                 attrSet.addFnAttribute(callee->getContext(), llvm::Attribute::AlwaysInline);
         callee->setAttributes(newAttrSet);
         // TODO: other attributes
+    } else if (func->hasAttribute(Attributes::NO_INLINE)) {
+        auto newAttrSet = attrSet.addFnAttribute(callee->getContext(), llvm::Attribute::NoInline);
+        callee->setAttributes(newAttrSet);
     }
 
-    if (!ir::Func::isExternal(func->getMangle()) || func->hasAttribute(Attributes::Fn::NO_MANGLE) ||
-        func->getMangle() == "main") {
+    if (!ir::Func::isExternal(func->getMangle()) || func->hasAttribute(Attributes::NO_MANGLE) ||
+        func->getMangle() == "main" || func->hasAttribute(Attributes::EXPORT)) {
         auto DISubprogram = getDISubprogramForFunc(func);
         callee->setSubprogram(DISubprogram);
     }

@@ -11,22 +11,16 @@ use Core::System;
 // Define a static function that calculates the nth Fibonacci number.
 // This is a recursive function.
 
-namespace x {
-namespace x {
-namespace x {
-   pub static  fn [[no_mangle]] fib(n: i64) i64 {
+pub static fn [[test]] fib(n: i64) i64 {
     if n <= 1 {
         return n
     }
 
     return fib(n-1) + fib(n-2)
 } 
-}    
-}    
-}
 
 // Define the main function.
 pub fn main() i32 {
-    let f = x::x::x::fib;
-    System::println(f(47 as i64));
+//    let f = fib;
+//    System::println(f(47 as i64));
 }

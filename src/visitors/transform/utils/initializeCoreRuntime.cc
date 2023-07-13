@@ -21,7 +21,7 @@ void Transformer::initializeCoreRuntime() {
     auto import =
             Syntax::N<Syntax::Statement::ImportStmt>(std::vector<std::string>{"_$core"}, "Core");
     import->setDBGInfo(dbg);
-    import->accept(this);
+    trans(import);
 
     ctx->uuidStack.push_back(ctx->imports->CORE_UUID + "_$core");
 

@@ -130,18 +130,18 @@ Transformer::transformClass(const std::string& uuid,
             // Create function definitions
             auto backupGenerateFunction = ctx->generateFunction;
             ctx->generateFunction = false;
-            for (auto ty : ty->getTypeAliases()) { ty->accept(this); }
+            for (auto ty : ty->getTypeAliases()) { trans(ty); }
             for (auto fn : ty->getFunctions()) {
                 if (services::OperatorService::opEquals<OperatorType::CONSTRUCTOR>(fn->getName())) {
                     transformedType->hasConstructor = true;
                 }
 
-                fn->accept(this);
+                trans(fn);
             }
             // Generate the function bodies
             ctx->generateFunction = true;
-            for (auto ty : ty->getTypeAliases()) { ty->accept(this); }
-            for (auto fn : ty->getFunctions()) { fn->accept(this); }
+            for (auto ty : ty->getTypeAliases()) { trans(ty); }
+            for (auto fn : ty->getFunctions()) { trans(fn); }
             ctx->generateFunction = backupGenerateFunction;
             for (int allowPointer = 0; allowPointer < 2; ++allowPointer) {
                 auto argType = allowPointer ? transformedType->getPointerTo() : transformedType;

@@ -19,9 +19,7 @@ SN_TRANSFORMER_VISIT(Statement::Return) {
     if (!utils::dyn_cast<types::VoidType>(functionType->getRetType())) {
         std::shared_ptr<ir::Value> returnValue = nullptr;
         if (p_node->getValue() != nullptr) {
-            p_node->getValue()->accept(this);
-
-            returnValue = this->value;
+            returnValue = trans(p_node->getValue());
         } else {
             E<SYNTAX_ERROR>(p_node,
                             "You must return a value inside a non-void function!",

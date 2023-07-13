@@ -29,13 +29,15 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     std::shared_ptr<types::DefinedType> currentClass = std::shared_ptr<types::DefinedType>(nullptr);
     // The IRBuilder instance that's being used to generate the IR
     ir::IRBuilder& builder;
-    // If test mode is enabled
-    bool testMode = false;
 
   public:
     // Module given to us so we can
     // identify where in the program we are.
     std::shared_ptr<ir::Module> module = nullptr;
+    // If test mode is enabled
+    bool testMode = false;
+    // We are compiling the main module
+    bool isMainModule = false;
     // A list of exported functions and variables without mangle
     std::vector<std::string> exported;
     /// @brief A stack of UUIDs that are used to generate

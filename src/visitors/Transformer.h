@@ -399,7 +399,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     void transformMainFunction(Statement::FunctionDef* p_node);
     /// @brief append a new module to the global generated modules list
     void addModule(std::shared_ptr<ir::Module> m);
-    /// @brief Transforms a special type. For example, the
+    /// @brief Transform a node into a value.
+    std::shared_ptr<ir::Value> trans(Node* node);
 
   public:
     Transformer(std::shared_ptr<ir::Module> mod, SourceInfo* srci, bool allowTests = false);

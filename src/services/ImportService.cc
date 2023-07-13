@@ -25,6 +25,8 @@ std::string ImportService::getExportName(std::filesystem::path path, std::string
     return symbol.empty() ? path.stem().string() : symbol;
 }
 
+bool ImportService::isExternalModule(std::string package) { return package != "$"; }
+
 std::string ImportService::getModuleUUID(std::filesystem::path path) {
     std::string result = path.string();
     utils::replaceAll(result, PATH_SEPARATOR, "::");
