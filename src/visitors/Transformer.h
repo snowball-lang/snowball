@@ -402,7 +402,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     /// @brief Transforms a special type. For example, the
 
   public:
-    Transformer(std::shared_ptr<ir::Module> mod, SourceInfo* srci);
+    Transformer(std::shared_ptr<ir::Module> mod, SourceInfo* srci, bool allowTests = false);
 
     using AcceptorExtend<Transformer, Visitor>::visit;
     using AcceptorExtend<Transformer, Visitor>::visitGlobal;

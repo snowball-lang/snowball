@@ -57,9 +57,7 @@ void Compiler::compile(bool silent) {
         auto lexer = new Lexer(_source_info);
 
 #if _SNOWBALL_TIMERS_DEBUG
-        DEBUG_TIMER("Lexer: %fs", utils::_timer([&] {
-                        lexer->tokenize();
-                    }));
+        DEBUG_TIMER("Lexer: %fs", utils::_timer([&] { lexer->tokenize(); }));
 #else
         lexer->tokenize();
 #endif
@@ -81,7 +79,7 @@ void Compiler::compile(bool silent) {
             mainModule->setSourceInfo(_source_info);
 
             auto simplifier = new Syntax::Transformer(
-                    mainModule->downcasted_shared_from_this<ir::Module>(), _source_info);
+                    mainModule->downcasted_shared_from_this<ir::Module>(), _source_info, _enabledTests);
 #if _SNOWBALL_TIMERS_DEBUG
             DEBUG_TIMER("Simplifier: %fs", utils::_timer([&] { simplifier->visitGlobal(ast); }));
 #else
@@ -109,7 +107,9 @@ void Compiler::compile(bool silent) {
             for (auto module : typeCheckModules) {
                 auto typeChecker = new codegen::TypeChecker(module);
 #if _SNOWBALL_TIMERS_DEBUG
-                DEBUG_TIMER("TypeChecker: %fs (%s)", utils::_timer([&] { typeChecker->codegen(); }), module->getName().c_str());
+                DEBUG_TIMER("TypeChecker: %fs (%s)",
+                            utils::_timer([&] { typeChecker->codegen(); }),
+                            module->getName().c_str());
 #else
                 typeChecker->codegen();
 #endif

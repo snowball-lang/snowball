@@ -60,8 +60,8 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
         // TODO: other attributes
     }
 
-    if (!ir::Func::isExternal(func->getMangle()) || func->hasAttribute(Attributes::Fn::NO_MANGLE) 
-        || func->getMangle() == "main") {
+    if (!ir::Func::isExternal(func->getMangle()) || func->hasAttribute(Attributes::Fn::NO_MANGLE) ||
+        func->getMangle() == "main") {
         auto DISubprogram = getDISubprogramForFunc(func);
         callee->setSubprogram(DISubprogram);
     }

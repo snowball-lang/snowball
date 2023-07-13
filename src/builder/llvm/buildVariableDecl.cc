@@ -21,7 +21,8 @@ void LLVMBuilder::visit(ir::VariableDeclaration* variable) {
     }
     auto generatedValue = build(variable->getValue().get());
     auto isPointer = !!utils::dyn_cast<types::ReferenceType>(variable->getType());
-    if (generatedValue->getType()->isPointerTy() && !isPointer && generatedValue->getType()->isFunctionTy())
+    if (generatedValue->getType()->isPointerTy() && !isPointer &&
+        generatedValue->getType()->isFunctionTy())
         generatedValue = builder->CreateLoad(generatedValue->getType()->getPointerElementType(),
                                              generatedValue);
 

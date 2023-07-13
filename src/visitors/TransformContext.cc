@@ -8,9 +8,11 @@
 
 namespace snowball::Syntax {
 
-TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder)
+TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder,
+                                   bool testMode)
     : AcceptorExtend()
     , module(mod)
+    , testMode(testMode)
     , builder(builder)
     , cache(new Cache())
     , imports(std::make_unique<services::ImportService>()) {
@@ -103,8 +105,8 @@ void TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
 }
 
 /// @brief Execute function with saved state
-void TransformContext::withState(std::shared_ptr<transform::ContextState> s,
-                                 std::function<void()> cb) {
+void TransformContext::withState(
+        std::shared_ptr<transform::ContextState> s, std::function<void()> cb) {
     auto saved = this->saveState();
 
     this->setState(s);

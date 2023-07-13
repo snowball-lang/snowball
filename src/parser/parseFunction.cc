@@ -469,25 +469,24 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
         if (is<TokenType::VALUE_NUMBER>()) {
             auto number = m_current.to_string();
             if (number != "0") {
-                createError<SYNTAX_ERROR>("Expected a '0' for the function body!", {
-                    .info = "Expected a '0' for the function body!",
-                    .note = "The function body must be a '0' for now.",
-                    .help = "You have to set the function body to '0'.\n"
-                            "For example:\n"
-                            "1 |   virt fn my_fn() = 0\n"
-                            "2 |"
-                });
+                createError<SYNTAX_ERROR>("Expected a '0' for the function body!",
+                                          {.info = "Expected a '0' for the function body!",
+                                           .note = "The function body must be a '0' for now.",
+                                           .help = "You have to set the function body to '0'.\n"
+                                                   "For example:\n"
+                                                   "1 |   virt fn my_fn() = 0\n"
+                                                   "2 |"});
             }
 
             if (!isVirtual) {
-                createError<SYNTAX_ERROR>("Function body can only be '0' for virtual functions!", {
-                    .info = "Function body can only be '0' for virtual functions!",
-                    .note = "The function body must be a '0' for now.",
-                    .help = "You have to set the function body to '0'.\n"
-                            "For example:\n"
-                            "1 |   virt fn my_fn() = 0\n"
-                            "2 |"
-                });
+                createError<SYNTAX_ERROR>(
+                        "Function body can only be '0' for virtual functions!",
+                        {.info = "Function body can only be '0' for virtual functions!",
+                         .note = "The function body must be a '0' for now.",
+                         .help = "You have to set the function body to '0'.\n"
+                                 "For example:\n"
+                                 "1 |   virt fn my_fn() = 0\n"
+                                 "2 |"});
             }
 
             isNotImplemented = true;

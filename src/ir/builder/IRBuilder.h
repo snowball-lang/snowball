@@ -119,10 +119,8 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
     /// @brief Create a extraction node from a value
     SharedValue<ValueExtract> createValueExtract(DBGSourceInfo* dbgInfo, SharedValue<> value);
     /// @brief Create a object initialization node
-    SharedValue<ObjectInitialization> createObjectInitialization(DBGSourceInfo* dbgInfo,
-                                                                 SharedValue<> value,
-                                                                 ValueVec<> args,
-                                                                 bool atHeap = false);
+    SharedValue<ObjectInitialization> createObjectInitialization(
+            DBGSourceInfo* dbgInfo, SharedValue<> value, ValueVec<> args, bool atHeap = false);
     /// @brief Create a object initialization node with an already created object
     SharedValue<ObjectInitialization>
     createObjectInitialization(DBGSourceInfo* dbgInfo, SharedValue<> value, ValueVec<> args,

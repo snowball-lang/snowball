@@ -29,6 +29,8 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     std::shared_ptr<types::DefinedType> currentClass = std::shared_ptr<types::DefinedType>(nullptr);
     // The IRBuilder instance that's being used to generate the IR
     ir::IRBuilder& builder;
+    // If test mode is enabled
+    bool testMode = false;
 
   public:
     // Module given to us so we can
@@ -68,7 +70,8 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
 
   public:
     // Create a new instance of a context
-    TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder);
+    TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder,
+                     bool testMode = false);
 
     // clang-format off
 

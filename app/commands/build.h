@@ -104,7 +104,8 @@ int build(app::Options::BuildOptions p_opts) {
 
     if (!p_opts.silent) {
         Logger::message("Finished", FMT("build target(s) in %s%ims%s", BOLD, duration, RESET));
-        Logger::message("Generating", FMT("Generating output at `%s%s%s`", BOLD, output.c_str(), RESET));
+        Logger::message("Generating",
+                        FMT("Generating output at `%s%s%s`", BOLD, output.c_str(), RESET));
         Logger::log("");
     }
 

@@ -40,9 +40,10 @@ int test(app::Options::TestOptions p_opts) {
 
     filename = parsed_config["package"]["main"].value_or<std::string>(
             (fs::current_path() / "src" / "main.sn"));
-    std::string package_name = (std::string)(
-            parsed_config["package"]["name"].value_or<std::string>("<anonnimus>"));
-    std::string package_version = parsed_config["package"]["version"].value_or<std::string>("<unknown>");
+    std::string package_name =
+            (std::string)(parsed_config["package"]["name"].value_or<std::string>("<anonnimus>"));
+    std::string package_version =
+            parsed_config["package"]["version"].value_or<std::string>("<unknown>");
 
     if (p_opts.opt == Options::Optimization::OPTIMIZE_O0) {
         build_type += "debug";

@@ -82,7 +82,7 @@ class BinaryOp : public AcceptorExtend<BinaryOp, Call> {
         : AcceptorExtend(callee, args) { }
 
     virtual bool isOperator() const { return true; };
-    
+
     /// @brief Wether or not ignore mutability checks
     bool ignoreMutability = false;
 };

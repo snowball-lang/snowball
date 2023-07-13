@@ -28,8 +28,9 @@
         LD_PATH, "-dynamic-linker", "/lib64/ld-linux-x86-64.so.2",                                 \
                 "/usr/lib/x86_64-linux-gnu/crt1.o", "/usr/lib/x86_64-linux-gnu/crti.o",            \
                 "/usr/lib/x86_64-linux-gnu/crtn.o", LLVM_LDFLAGS,                                  \
-                "-L" + (std::string)(((fs::path)utils::get_lib_folder()) / ".." / _SNOWBALL_LIBRARY_OBJ), p_input,                  \
-                "-lSnowballRuntime", "-lc", "-lm"                                                  \
+                "-L" +                                                                             \
+                (std::string)(((fs::path)utils::get_lib_folder()) / ".." / _SNOWBALL_LIBRARY_OBJ), \
+                p_input, "-lSnowballRuntime", "-lc", "-lm"                                         \
     }
 #else
 #define LD_ARGS()                                                                                  \
