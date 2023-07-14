@@ -50,7 +50,7 @@ std::shared_ptr<ir::Value> Transformer::trans(Node* node) {
             }
         }
     }
-    
+
     node->accept(this);
     return this->value;
 }

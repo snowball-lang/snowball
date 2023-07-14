@@ -21,7 +21,7 @@ void LLVMBuilder::visit(ir::Func* func) {
     auto fn = createLLVMFunction(func);
     if (func->hasAttribute(Attributes::ALLOW_FOR_TEST)) {
         fn->addFnAttr(llvm::Attribute::NoInline);
-        ctx->tests[func->getNiceName()] = fn;
+        ctx->tests.insert(std::make_pair(func, fn));
     }
 
     funcs.insert({func->getId(), fn});

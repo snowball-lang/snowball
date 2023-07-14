@@ -381,6 +381,10 @@ void Lexer::tokenize() {
                                 str += '\r';
                                 EAT_CHAR(2);
                                 break;
+                            case 'e':
+                                str += '\e';
+                                EAT_CHAR(2);
+                                break;
                             case '\n':
                                 EAT_CHAR(1);
                                 EAT_LINE();

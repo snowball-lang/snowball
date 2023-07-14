@@ -52,6 +52,8 @@ class OperatorService {
     static const std::string& operatorName(OperatorType id);
     /// @return the corresponding ID from a @param name
     static OperatorType operatorID(const std::string& name);
+    /// @brief Check if an operator is unary
+    static bool isUnary(OperatorType op_type);
     /// @brief Check if a name has equality towards an operator ID
     template <OperatorType op>
     static bool opEquals(const std::string& name) {

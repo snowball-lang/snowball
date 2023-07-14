@@ -30,8 +30,6 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
             this->value = ref;
             return;
         }
-
-        assert(false && "TODO:");
     }
 
     auto left = p_node->left;
@@ -40,7 +38,8 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
     auto ident =
             Syntax::N<Expression::Identifier>(services::OperatorService::getOperatorMangle(opType));
     auto index = Syntax::N<Expression::Index>(left, ident);
-    std::vector<Expression::Base*> args = {right};
+    std::vector<Expression::Base*> args = p_node->unary ? std::vector<Expression::Base*>{}
+                                                        : std::vector<Expression::Base*>{right};
     auto call = Syntax::N<Expression::FunctionCall>(index, args);
 
     call->isInitialization = p_node->isInitialization;

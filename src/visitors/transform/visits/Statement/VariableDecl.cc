@@ -14,7 +14,6 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
     auto variableValue = p_node->getValue();
     auto isMutable = p_node->isMutable();
     assert(p_node->isInitialized() || definedType != nullptr);
-
     if (ctx->getInScope(variableName, ctx->currentScope()).second) {
         E<VARIABLE_ERROR>(p_node,
                           FMT("Variable with name '%s' is already "
@@ -24,7 +23,6 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
 
     auto var = builder.createVariable(p_node->getDBGInfo(), variableName, false, isMutable);
     auto item = std::make_shared<transform::Item>(transform::Item::Type::VALUE, var);
-
     // TODO: it should always be declared
     if (p_node->isInitialized()) {
         auto val = trans(variableValue);

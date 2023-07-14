@@ -71,9 +71,9 @@ VISIT(DereferenceTo) {
     if (!utils::dyn_cast<ir::ValueExtract>(val) && !utils::dyn_cast<ir::Variable>(val) &&
         !utils::dyn_cast<ir::IndexExtract>(val) && !utils::dyn_cast<ir::Argument>(val)) {
         E<TYPE_ERROR>(p_node->getDBGInfo(),
-                              FMT("Value used for dereference '%s' is not a "
-                                  "variable!",
-                                  p_node->getType()->getPrettyName().c_str()));
+                      FMT("Value used for dereference '%s' is not a "
+                          "variable!",
+                          p_node->getType()->getPrettyName().c_str()));
     }
 }
 
@@ -175,29 +175,29 @@ VISIT(Cast) {
     if (v->getType()->is(t)) return;
     if (!v->getType()->canCast(t)) {
         E<TYPE_ERROR>(p_node,
-                              FMT("Can't create a casting operator from type `%s` "
-                                  "to type `%s`!",
-                                  v->getType()->getPrettyName().c_str(),
-                                  t->getPrettyName().c_str()),
-                              {.note = "This error is caused by the types not being "
-                                       "castable.",
-                               .help = "Casting operators allow for type conversions between "
-                                       "different data types.\n"
-                                       "However, in this case, it is not possible to create a "
-                                       "casting operator from \n"
-                                       "the specified source type to the desired target type.\n\n"
-                                       "Please ensure that the types involved in the casting "
-                                       "operation are compatible \n"
-                                       "and that there is a valid casting mechanism defined "
-                                       "between them. Check the \n"
-                                       "documentation or language specifications to verify the "
-                                       "supported casting operations \n"
-                                       "and rules for the involved types.\n\n"
-                                       "If the desired type conversion is not directly supported, "
-                                       "you may need to consider \n"
-                                       "alternative approaches such as using explicit conversion "
-                                       "functions or implementing \n"
-                                       "custom conversion logic to achieve the desired result."});
+                      FMT("Can't create a casting operator from type `%s` "
+                          "to type `%s`!",
+                          v->getType()->getPrettyName().c_str(),
+                          t->getPrettyName().c_str()),
+                      {.note = "This error is caused by the types not being "
+                               "castable.",
+                       .help = "Casting operators allow for type conversions between "
+                               "different data types.\n"
+                               "However, in this case, it is not possible to create a "
+                               "casting operator from \n"
+                               "the specified source type to the desired target type.\n\n"
+                               "Please ensure that the types involved in the casting "
+                               "operation are compatible \n"
+                               "and that there is a valid casting mechanism defined "
+                               "between them. Check the \n"
+                               "documentation or language specifications to verify the "
+                               "supported casting operations \n"
+                               "and rules for the involved types.\n\n"
+                               "If the desired type conversion is not directly supported, "
+                               "you may need to consider \n"
+                               "alternative approaches such as using explicit conversion "
+                               "functions or implementing \n"
+                               "custom conversion logic to achieve the desired result."});
     }
 }
 
@@ -209,25 +209,25 @@ VISIT(Return) {
     if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) != nullptr) &&
         (p_node->getExpr() != nullptr)) {
         E<TYPE_ERROR>(p_node,
-                              FMT("Nonvalue returning function cant have a "
-                                  "return containing an expression (%s)!",
-                                  p_node->getType()->getPrettyName().c_str()));
+                      FMT("Nonvalue returning function cant have a "
+                          "return containing an expression (%s)!",
+                          p_node->getType()->getPrettyName().c_str()));
     }
 
     if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) == nullptr) &&
         (p_node->getExpr() == nullptr)) {
         E<TYPE_ERROR>(p_node,
-                              FMT("Can't return \"nothing\" in a function with "
-                                  "non-void return type (%s)!",
-                                  fn->getRetTy()->getPrettyName().c_str()));
+                      FMT("Can't return \"nothing\" in a function with "
+                          "non-void return type (%s)!",
+                          fn->getRetTy()->getPrettyName().c_str()));
     }
 
     if (!fn->getRetTy()->is(p_node->getType())) {
         E<TYPE_ERROR>(p_node,
-                              FMT("Return type (%s) does not match parent "
-                                  "function's return type (%s)!",
-                                  p_node->getType()->getPrettyName().c_str(),
-                                  fn->getRetTy()->getPrettyName().c_str()));
+                      FMT("Return type (%s) does not match parent "
+                          "function's return type (%s)!",
+                          p_node->getType()->getPrettyName().c_str(),
+                          fn->getRetTy()->getPrettyName().c_str()));
     }
 }
 
@@ -246,13 +246,13 @@ void TypeChecker::codegen() {
     for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn) visit(fn->get());
 }
 
-void TypeChecker::cantBeVoid(
-        DBGObject* dbg, std::shared_ptr<types::Type> ty, const std::string& message) {
+void TypeChecker::cantBeVoid(DBGObject* dbg, std::shared_ptr<types::Type> ty,
+                             const std::string& message) {
     if (utils::dyn_cast<types::VoidType>(ty)) { E<TYPE_ERROR>(dbg, message); }
 }
 
-void TypeChecker::checkMutability(
-        ir::Call* p_node, std::shared_ptr<ir::Func> fn, std::shared_ptr<ir::Value> value) {
+void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn,
+                                  std::shared_ptr<ir::Value> value) {
     auto fnName = fn->getName(true);
     auto isMutable = this->isMutable(value);
     bool accessingSelf = this->accessingSelf(value);
@@ -262,37 +262,35 @@ void TypeChecker::checkMutability(
         auto isAssignment = Expression::BinaryOp::is_assignment(opType);
         assert(binOp);
         if (isAssignment && accessingSelf && !ctx->getCurrentFunction()->getType()->isMutable()) {
-            E<VARIABLE_ERROR>(
-                    p_node,
-                    "You can't call a mutating method on an immutable instance!",
-                    {.info = "This function is mutable!",
-                     .note = "This error is caused by the function being "
-                             "mutable, but the value being nonmutable.",
-                     .help = "Try to make the value mutable by adding the 'mut' "
-                             "keyword or make the function\nnonmutable by "
-                             "removing the 'mut' keyword from it's declaration.",
-                     .tail = EI<>(value->getDBGInfo(),
-                                          "",
-                                          {
-                                                  .info = "This value is nonmutable!",
-                                          })});
+            E<VARIABLE_ERROR>(p_node,
+                              "You can't call a mutating method on an immutable instance!",
+                              {.info = "This function is mutable!",
+                               .note = "This error is caused by the function being "
+                                       "mutable, but the value being nonmutable.",
+                               .help = "Try to make the value mutable by adding the 'mut' "
+                                       "keyword or make the function\nnonmutable by "
+                                       "removing the 'mut' keyword from it's declaration.",
+                               .tail = EI<>(value->getDBGInfo(),
+                                            "",
+                                            {
+                                                    .info = "This value is nonmutable!",
+                                            })});
         }
 
         if (isAssignment && !binOp->ignoreMutability && !isMutable) {
             if (!p_node->isInitialization) {
-                E<VARIABLE_ERROR>(
-                        p_node,
-                        "You can't assign a new value to a "
-                        "unmutable "
-                        "variable",
-                        {.note = "This error is caused by the 'mut' keyword "
-                                 "not being present in \nthe variable"
-                                 "declaration.",
-                         .help = "Try to make the variable mutable by adding "
-                                 "the 'mut' keyword.",
-                         .tail = EI<>(value->getDBGInfo(),
-                                              "",
-                                              {.info = "This variable is not mutable!"})});
+                E<VARIABLE_ERROR>(p_node,
+                                  "You can't assign a new value to a "
+                                  "unmutable "
+                                  "variable",
+                                  {.note = "This error is caused by the 'mut' keyword "
+                                           "not being present in \nthe variable"
+                                           "declaration.",
+                                   .help = "Try to make the variable mutable by adding "
+                                           "the 'mut' keyword.",
+                                   .tail = EI<>(value->getDBGInfo(),
+                                                "",
+                                                {.info = "This variable is not mutable!"})});
             }
         } else if (isAssignment)
             return;
@@ -301,18 +299,18 @@ void TypeChecker::checkMutability(
 
     if (!fn->isConstructor() && (fn->getType()->isMutable() && !isMutable)) {
         E<VARIABLE_ERROR>(p_node,
-                                  "You can't call a mutating method on an immutable instance!",
-                                  {.info = "This function is mutable!",
-                                   .note = "This error is caused by the function being "
-                                           "mutable, but the value being nonmutable.",
-                                   .help = "Try to make the value mutable by adding the 'mut' "
-                                           "keyword or make the function\nnonmutable by "
-                                           "removing the 'mut' keyword from it's declaration.",
-                                   .tail = EI<>(value->getDBGInfo(),
-                                                        "",
-                                                        {
-                                                                .info = "This value is nonmutable!",
-                                                        })});
+                          "You can't call a mutating method on an immutable instance!",
+                          {.info = "This function is mutable!",
+                           .note = "This error is caused by the function being "
+                                   "mutable, but the value being nonmutable.",
+                           .help = "Try to make the value mutable by adding the 'mut' "
+                                   "keyword or make the function\nnonmutable by "
+                                   "removing the 'mut' keyword from it's declaration.",
+                           .tail = EI<>(value->getDBGInfo(),
+                                        "",
+                                        {
+                                                .info = "This value is nonmutable!",
+                                        })});
     }
 }
 
@@ -337,49 +335,41 @@ bool TypeChecker::accessingSelf(std::shared_ptr<ir::Value> value) {
 
 void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
     if (p_node->hasAttribute(Attributes::TEST)) {
-        if (p_node->isDeclaration()) 
+        if (p_node->isDeclaration())
             E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions must have a body!",
-            {
-                .info = "This function is a test function!",
-                .note = "This error is caused by the function not having a body.",
-                .help = "Try adding a body to the function."
-            });
+                            {.info = "This function is a test function!",
+                             .note = "This error is caused by the function not having a body.",
+                             .help = "Try adding a body to the function."});
         else if (!utils::dyn_cast<types::Int32Type>(p_node->getRetTy()))
-            E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions must return an integer!",
-            {
-                .info = "This function is a test function!",
-                .note = "This error is caused by the function not returning an integer.",
-                .help = "Try changing the return type to an integer."
-            });
+            E<SYNTAX_ERROR>(
+                    p_node->getDBGInfo(), "Test functions must return an integer!",
+                    {.info = "This function is a test function!",
+                     .note = "This error is caused by the function not returning an integer.",
+                     .help = "Try changing the return type to an integer."});
         else if (p_node->getArgs().size() > 0)
             E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions can't have arguments!",
-            {
-                .info = "This function is a test function!",
-                .note = "This error is caused by the function having arguments.",
-                .help = "Try removing the arguments from the function."
-            });
+                            {.info = "This function is a test function!",
+                             .note = "This error is caused by the function having arguments.",
+                             .help = "Try removing the arguments from the function."});
         else if (p_node->hasAttribute(Attributes::INLINE))
-            E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions can't be inline!",
-            {
-                .info = "This function is a test function!",
-                .note = "This error is caused by the function having the 'inline' attribute.",
-                .help = "Try removing the 'inline' attribute from the function."
-            });
+            E<SYNTAX_ERROR>(
+                    p_node->getDBGInfo(), "Test functions can't be inline!",
+                    {.info = "This function is a test function!",
+                     .note = "This error is caused by the function having the 'inline' attribute.",
+                     .help = "Try removing the 'inline' attribute from the function."});
     } else if (p_node->hasAttribute(Attributes::INLINE)) {
         if (p_node->isDeclaration())
             E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Inline functions must have a body!",
-            {
-                .info = "This function is an inline function!",
-                .note = "This error is caused by the function not having a body.",
-                .help = "Try adding a body to the function."
-            });
+                            {.info = "This function is an inline function!",
+                             .note = "This error is caused by the function not having a body.",
+                             .help = "Try adding a body to the function."});
         else if (p_node->hasAttribute(Attributes::NO_INLINE))
-            E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Inline functions can't have the 'no_inline' attribute!",
-            {
-                .info = "This function is an inlined function!",
-                .note = "This error is caused by the function having the 'no_inline' attribute.",
-                .help = "Try removing the 'no_inline' attribute from the function."
-            });
+            E<SYNTAX_ERROR>(p_node->getDBGInfo(),
+                            "Inline functions can't have the 'no_inline' attribute!",
+                            {.info = "This function is an inlined function!",
+                             .note = "This error is caused by the function having the 'no_inline' "
+                                     "attribute.",
+                             .help = "Try removing the 'no_inline' attribute from the function."});
     }
 }
 

@@ -41,19 +41,22 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
             raw_Int32Type, raw_Int16Type,   raw_Int8Type,    raw_CharType};
 
     for (int asPointer = 0; asPointer < 2; ++asPointer) {
-
         for (auto ty : overloadTypes) {
             for (auto op : services::OperatorService::operators) {
                 for (auto overload : overloadTypes) {
                     auto opType = services::OperatorService::operatorID(op);
-                    auto classType = asPointer ? ty->getPointerTo() : ty;
+                    auto unary = services::OperatorService::isUnary(opType);
+                    auto classType = asPointer ? unary ? ty : ty->getPointerTo() : ty;
                     auto overloadType = asPointer ? overload->getPointerTo() : overload;
-                    auto typeArgs = {classType, overloadType};
+                    auto typeArgs = (!unary)
+                            ? std::vector<std::shared_ptr<types::Type>>{classType, overloadType}
+                            : std::vector<std::shared_ptr<types::Type>>{classType};
                     auto fn = builder.createFunction(NO_DBGINFO, "#" + op, true, false);
                     auto arg = builder.createArgument(NO_DBGINFO, "other", overloadType);
                     auto type = builder.createFunctionType(typeArgs, ty);
                     auto isMut = Expression::BinaryOp::is_assignment(opType);
-                    fn->setArgs({{"other", arg}});
+                    fn->setArgs(unary ? ir::Func::FunctionArgs{}
+                                      : ir::Func::FunctionArgs{{"other", arg}});
                     fn->setType(type);
                     fn->setRetTy(ty);
                     fn->setPrivacy(PrivacyStatus::PUBLIC);
@@ -106,8 +109,8 @@ void TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
 }
 
 /// @brief Execute function with saved state
-void TransformContext::withState(
-        std::shared_ptr<transform::ContextState> s, std::function<void()> cb) {
+void TransformContext::withState(std::shared_ptr<transform::ContextState> s,
+                                 std::function<void()> cb) {
     auto saved = this->saveState();
 
     this->setState(s);

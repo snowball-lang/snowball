@@ -20,6 +20,10 @@ SN_TRANSFORMER_VISIT(Statement::Return) {
         std::shared_ptr<ir::Value> returnValue = nullptr;
         if (p_node->getValue() != nullptr) {
             returnValue = trans(p_node->getValue());
+            auto type = returnValue->getType();
+            if (type->canCast(functionType->getRetType())) {
+                returnValue = builder.createCast(p_node->getDBGInfo(), returnValue, functionType->getRetType());
+            }
         } else {
             E<SYNTAX_ERROR>(p_node,
                             "You must return a value inside a non-void function!",

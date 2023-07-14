@@ -26,8 +26,7 @@ void LLVMBuilder::initializeRuntime() {
                     (llvm::Function*)module->getOrInsertFunction(_SNOWBALL_FUNCTION_ENTRY, fnType)
                             .getCallee();
             setPersonalityFunction(mainFunction);
-            body = llvm::BasicBlock::Create(builder->getContext(), "entry", mainFunction);
-            buildReturn = true;
+            body = llvm::BasicBlock::Create(builder->getContext(), "test_entry", mainFunction);
         } else {
             body = &mainFunction->front();
         }
@@ -38,14 +37,17 @@ void LLVMBuilder::initializeRuntime() {
                         .getCallee();
         setPersonalityFunction(mainFunction);
         body = llvm::BasicBlock::Create(builder->getContext(), "entry", mainFunction);
-        buildReturn = true;
+        buildReturn = !ctx->testMode;
     }
 
     builder->SetInsertPoint(body);
     if (buildReturn) {
         builder->CreateCall(f, {});
-        if (ctx->testMode) createTests();
         builder->CreateRet(builder->getInt32(0));
+    }
+    if (ctx->testMode) {
+        builder->CreateCall(f, {});
+        createTests(mainFunction);
     } else {
         llvm::CallInst::Create(f, {}, "", &body->front());
     }

@@ -48,7 +48,7 @@ class LLVMBuilderContext {
 
   public:
     // A map of test functions containing their names
-    std::map<std::string, llvm::Function*> tests;
+    std::map<std::shared_ptr<ir::Func>, llvm::Function*> tests;
     // If the module is compiled in test mode
     bool testMode = false;
     /// @return Current function being generated
@@ -216,6 +216,10 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      */
     llvm::Type* getLLVMType(types::Type* t);
     /**
+     * @brief Fetch the C stdlib printf function
+     */
+    llvm::Function* getPrintfFunction();
+    /**
      * @brief A allocates a new object inside the LLVM IR code and cast
      * it into the desired type.
      */
@@ -257,7 +261,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
     /**
      * @brief It generates the test functions for the current module.
      */
-    void createTests();
+    void createTests(llvm::Function* mainFunction);
     /**
      * @brief It generates the LLVM IR contents that the user has
      *  manually inserted by using "inline LLVM".

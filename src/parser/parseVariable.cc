@@ -10,31 +10,24 @@ namespace snowball::parser {
 Syntax::Statement::VariableDecl* Parser::parseVariable() {
     assert(is<TokenType::KWORD_VAR>());
     next();
-
     bool isPublic = false;
     if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-3, true))) {
         isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
     }
-
     bool isMutable = false;
     if (is<TokenType::KWORD_MUTABLE>()) {
         isMutable = true;
         next();
     }
-
     auto token = assert_tok<TokenType::IDENTIFIER>("an identifier");
     next(); // consume identifier
-
     auto name = token.to_string();
-
     // TODO: actually find type definition
     Syntax::Expression::TypeRef* typeDef = nullptr;
-
     if (is<TokenType::SYM_COLLON>()) {
         next();
         typeDef = parseType();
     }
-
     Syntax::Expression::Base* value = nullptr;
     if (is<TokenType::OP_EQ>()) {
         value = parseExpr(false);

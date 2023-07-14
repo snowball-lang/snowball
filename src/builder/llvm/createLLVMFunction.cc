@@ -50,7 +50,6 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
         }
     }
     auto callee = (llvm::Function*)fn;
-
     auto attrSet = callee->getAttributes();
 
     if (func->hasAttribute(Attributes::INLINE)) {

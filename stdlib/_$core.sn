@@ -85,9 +85,25 @@ fn [[
   no_inline
 ]] snowball_test(
   func: fn () => i32,
-  name: char&
-) {
-
+  name: char&,
+  skip: bool = false
+) i32 {
+  let tty = "should pass";
+  CLib::printf(" Testing \e[1m%s\e[0m [%s] ... ", name, tty);
+  // TODO: Add support for exceptions
+  if !skip {
+    let result = func();
+    if result {
+      CLib::printf("\e[1;32mnice!\e[0m\n");
+    } else {
+      CLib::printf("\e[1;31merror \n");
+      CLib::printf("\n UNEXPECTED RESULT:\n");
+      CLib::printf("   --> Expected a success return value but got `%i`\n", result);
+      CLib::printf("\e[0m\n");
+    }
+  } else {
+    CLib::printf("\e[1;33mwip\e[0m\n");
+  }
 }
 
 } /* namespace __internal */;

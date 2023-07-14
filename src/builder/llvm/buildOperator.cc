@@ -8,7 +8,11 @@
 #include <llvm/IR/Value.h>
 
 #define OPERATOR_INSTANCE(x, f)                                                                    \
-    case services::OperatorService::x: this->value = builder->f(left, right); break;
+    case services::OperatorService::x:                                                             \
+        this->value = builder->f(left, right);                                                     \
+        break;
+#define OPERATOR_UINSTANCE(x, f)                                                                   \
+    case services::OperatorService::x: this->value = builder->f(left); break;
 
 namespace snowball {
 namespace codegen {
@@ -17,13 +21,16 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
     if (auto fn = utils::dyn_cast<ir::Func>(call->getCallee())) {
         auto args = call->getArguments();
         auto opName = fn->getName(true);
-        if (services::OperatorService::isOperator(opName) && args.size() == 2) {
+        if (services::OperatorService::isOperator(opName) &&
+            !services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(opName)) {
             auto left = build(args.at(0).get());
-            auto right = build(args.at(1).get());
+            llvm::Value* right = nullptr;
+            if (args.size() > 1) right = build(args.at(1).get());
             auto baseType = args.at(0)->getType();
             if (auto x = utils::dyn_cast<types::ReferenceType>(baseType))
                 baseType = x->getBaseType();
-            if (utils::dyn_cast<types::Int8Type>(baseType) ||
+            if (utils::dyn_cast<types::BoolType>(baseType) ||
+                utils::dyn_cast<types::Int8Type>(baseType) ||
                 utils::dyn_cast<types::Int16Type>(baseType) ||
                 utils::dyn_cast<types::Int32Type>(baseType) ||
                 utils::dyn_cast<types::Int64Type>(baseType) ||
@@ -53,6 +60,8 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                     OPERATOR_INSTANCE(GT, CreateICmpSGT)
                     OPERATOR_INSTANCE(LTEQ, CreateICmpSLE)
                     OPERATOR_INSTANCE(GTEQ, CreateICmpSGE)
+
+                    OPERATOR_UINSTANCE(NOT, CreateNot)
 
                     // TODO: remainder oeprators (!, +=, etc...)
                     case services::OperatorService::EQ: {
@@ -95,6 +104,8 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                     OPERATOR_INSTANCE(GT, CreateFCmpOGT)
                     OPERATOR_INSTANCE(LTEQ, CreateFCmpOLE)
                     OPERATOR_INSTANCE(GTEQ, CreateFCmpOGE)
+
+                    OPERATOR_UINSTANCE(NOT, CreateNot)
 
                     // TODO: remainder oeprators (!, +=, etc...)
                     case services::OperatorService::EQ: {
