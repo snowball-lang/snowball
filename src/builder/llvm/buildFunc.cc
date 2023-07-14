@@ -19,6 +19,10 @@ void LLVMBuilder::visit(ir::Func* func) {
 
     setDebugInfoLoc(func);
     auto fn = createLLVMFunction(func);
+    if (func->hasAttribute(Attributes::ALLOW_FOR_TEST)) {
+        fn->addFnAttr(llvm::Attribute::NoInline);
+        ctx->tests[func->getNiceName()] = fn;
+    }
 
     funcs.insert({func->getId(), fn});
     this->value = fn;

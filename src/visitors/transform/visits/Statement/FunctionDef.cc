@@ -28,7 +28,10 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
-    if (p_node->hasAttribute(Attributes::TEST) && !ctx->testMode) return;
+    if (p_node->hasAttribute(Attributes::TEST) && (!ctx->testMode || !ctx->isMainModule)) return;
+    else if (p_node->hasAttribute(Attributes::TEST)) {
+        p_node->addAttribute(Attributes::ALLOW_FOR_TEST);
+    }
 
     auto name = p_node->getName();
     ADD_SELF_ARG

@@ -35,7 +35,10 @@ enum Attributes
     NO_MANGLE,
     NOT_IMPLEMENTED,
     EXPORT,
-    TYPECHECKED
+
+    // Function internal attributes
+    TYPECHECKED,
+    ALLOW_FOR_TEST,
 };
 
 namespace Syntax {

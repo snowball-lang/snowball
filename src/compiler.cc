@@ -144,7 +144,7 @@ toml::parse_result Compiler::get_config() {
 void Compiler::cleanup() { }
 
 int Compiler::emit_object(std::string out, bool log) {
-    auto builder = new codegen::LLVMBuilder(module);
+    auto builder = new codegen::LLVMBuilder(module, _enabledTests);
     builder->codegen();
     builder->optimizeModule(opt_level);
 
@@ -156,7 +156,7 @@ int Compiler::emit_object(std::string out, bool log) {
 }
 
 int Compiler::emit_llvmir(std::string p_output, bool p_pmessage) {
-    auto builder = new codegen::LLVMBuilder(module);
+    auto builder = new codegen::LLVMBuilder(module, _enabledTests);
     builder->codegen();
     builder->optimizeModule(opt_level);
 
@@ -171,7 +171,7 @@ int Compiler::emit_llvmir(std::string p_output, bool p_pmessage) {
 }
 
 int Compiler::emit_assembly(std::string p_output, bool p_pmessage) {
-    auto builder = new codegen::LLVMBuilder(module);
+    auto builder = new codegen::LLVMBuilder(module, _enabledTests);
     builder->codegen();
     builder->optimizeModule(opt_level);
 

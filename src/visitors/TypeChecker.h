@@ -47,7 +47,6 @@ class TypeChecker : public AcceptorExtend<TypeChecker, codegen::ValueVisitor> {
     std::shared_ptr<ir::Module> module;
     // Context used to type check
     typecheck::Context* ctx = new typecheck::Context();
-
     /**
      * @brief Checks if a variable is mutable. If the IR value is not a
      * variable successor, it will return if the mutability specified inside the
@@ -62,15 +61,13 @@ class TypeChecker : public AcceptorExtend<TypeChecker, codegen::ValueVisitor> {
      */
     void cantBeVoid(DBGObject* dbg, std::shared_ptr<types::Type> ty,
                     const std::string& message = "");
-    /**
-     * @brief Check if the value is mutable or not
-     */
+    /// @brief Check if the value is mutable or not
     void checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn,
                          std::shared_ptr<ir::Value> value);
-    /**
-     * @brief True if the value is accessing "self"
-     */
+    /// @brief True if the value is accessing "self"
     bool accessingSelf(std::shared_ptr<ir::Value> value);
+    /// @brief It performs checks on a function declaration
+    void checkFunctionDeclaration(ir::Func* p_node);
 
   public:
     TypeChecker(std::shared_ptr<ir::Module> mod);

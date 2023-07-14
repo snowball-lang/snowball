@@ -14,7 +14,8 @@
 namespace snowball {
 namespace codegen {
 
-LLVMBuilder::LLVMBuilder(std::shared_ptr<ir::MainModule> mod) : iModule(mod) {
+LLVMBuilder::LLVMBuilder(std::shared_ptr<ir::MainModule> mod, bool testMode) : iModule(mod) {
+    ctx->testMode = testMode;
     llvm::InitializeAllTargetInfos();
     llvm::InitializeAllTargets();
     llvm::InitializeAllTargetMCs();

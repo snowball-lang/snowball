@@ -333,6 +333,54 @@ bool TypeChecker::accessingSelf(std::shared_ptr<ir::Value> value) {
     return false;
 }
 
+void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
+    if (p_node->hasAttribute(Attributes::TEST)) {
+        if (!p_node->hasBlock()) 
+            E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions must have a body!",
+            {
+                .info = "This function is a test function!",
+                .note = "This error is caused by the function not having a body.",
+                .help = "Try adding a body to the function."
+            });
+        else if (!utils::dyn_cast<types::Int32Type>(p_node->getRetTy()))
+            E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions must return an integer!",
+            {
+                .info = "This function is a test function!",
+                .note = "This error is caused by the function not returning an integer.",
+                .help = "Try changing the return type to an integer."
+            });
+        else if (p_node->getArgs().size() > 0)
+            E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions can't have arguments!",
+            {
+                .info = "This function is a test function!",
+                .note = "This error is caused by the function having arguments.",
+                .help = "Try removing the arguments from the function."
+            });
+        else if (p_node->hasAttribute(Attributes::INLINE))
+            E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions can't be inline!",
+            {
+                .info = "This function is a test function!",
+                .note = "This error is caused by the function having the 'inline' attribute.",
+                .help = "Try removing the 'inline' attribute from the function."
+            });
+    } else if (p_node->hasAttribute(Attributes::INLINE)) {
+        if (!p_node->hasBlock())
+            E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Inline functions must have a body!",
+            {
+                .info = "This function is an inline function!",
+                .note = "This error is caused by the function not having a body.",
+                .help = "Try adding a body to the function."
+            });
+        else if (p_node->hasAttribute(Attributes::NO_INLINE))
+            E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Inline functions can't have the 'no_inline' attribute!",
+            {
+                .info = "This function is an inlined function!",
+                .note = "This error is caused by the function having the 'no_inline' attribute.",
+                .help = "Try removing the 'no_inline' attribute from the function."
+            });
+    }
+}
+
 } // namespace codegen
 } // namespace snowball
 

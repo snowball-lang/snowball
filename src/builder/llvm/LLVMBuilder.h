@@ -47,6 +47,10 @@ class LLVMBuilderContext {
     std::map<ir::id_t, llvm::StructType*> vtableType;
 
   public:
+    // A map of test functions containing their names
+    std::map<std::string, llvm::Function*> tests;
+    // If the module is compiled in test mode
+    bool testMode = false;
     /// @return Current function being generated
     auto getCurrentFunction() { return currentFunction; }
     /// @return Change the current function to a new one
@@ -94,10 +98,8 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
     // Internal module given by the internal representation
     // of the program.
     std::shared_ptr<ir::Module> iModule;
-
     // Context used all around the codegen process
     std::unique_ptr<LLVMBuilderContext> ctx = std::make_unique<LLVMBuilderContext>();
-
     /**
      * Struct containing all debug information
      * tools needed.
@@ -113,7 +115,6 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
         // Create a new DIFile for llvm
         llvm::DIFile* getFile(const std::string& path);
     } dbg;
-
     /**
      * Helper struct that will allow us to create
      * certain types of llvm instructions.
@@ -127,7 +128,6 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
         static Inst* create(Args&&... args) {
             return Inst::Create(std::forward<Args>(args)...);
         }
-
         /**
          * Create a new llvm instruction.
          * @return Created llvm struction.
@@ -137,7 +137,6 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
             return new Inst(std::forward<Args>(args)...);
         }
     } h;
-
     // LLVM IR module that acts as a top level container of
     // all other LLVM Intermediate Representation (IR) objects
     std::unique_ptr<llvm::Module> module;
@@ -152,7 +151,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
 
   public:
     // Create a new instance of a llvm builder
-    LLVMBuilder(std::shared_ptr<ir::MainModule> mod);
+    LLVMBuilder(std::shared_ptr<ir::MainModule> mod, bool testMode = false);
     /**
      * @brief Dump the LLVM IR code to stdout.
      *
@@ -255,6 +254,10 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      *  implement an throw/catch exception runtime.
      */
     void setPersonalityFunction(llvm::Function* func);
+    /**
+     * @brief It generates the test functions for the current module.
+     */
+    void createTests();
     /**
      * @brief It generates the LLVM IR contents that the user has
      *  manually inserted by using "inline LLVM".

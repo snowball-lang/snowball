@@ -19,7 +19,18 @@ void LLVMBuilder::initializeRuntime() {
     bool buildReturn = false;
     llvm::BasicBlock* body;
     if (mainFunction) {
-        body = &mainFunction->front();
+        if (ctx->testMode) {
+            mainFunction->eraseFromParent();
+            auto fnType = llvm::FunctionType::get(builder->getInt32Ty(), {});
+            mainFunction =
+                    (llvm::Function*)module->getOrInsertFunction(_SNOWBALL_FUNCTION_ENTRY, fnType)
+                            .getCallee();
+            setPersonalityFunction(mainFunction);
+            body = llvm::BasicBlock::Create(builder->getContext(), "entry", mainFunction);
+            buildReturn = true;
+        } else {
+            body = &mainFunction->front();
+        }
     } else {
         auto fnType = llvm::FunctionType::get(builder->getInt32Ty(), {});
         mainFunction =
@@ -33,6 +44,7 @@ void LLVMBuilder::initializeRuntime() {
     builder->SetInsertPoint(body);
     if (buildReturn) {
         builder->CreateCall(f, {});
+        if (ctx->testMode) createTests();
         builder->CreateRet(builder->getInt32(0));
     } else {
         llvm::CallInst::Create(f, {}, "", &body->front());
