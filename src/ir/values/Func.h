@@ -116,7 +116,7 @@ class Func : public AcceptorExtend<Func, Value>,
 
     /// @return Whether the function is variadic
     bool isVariadic() const { return variadic; }
-    /// @return Whether the function is variadic
+    /// @return Whether the function is a declaration
     bool isDeclaration() const { return declaration; }
 
     /// @return function's raw identifier

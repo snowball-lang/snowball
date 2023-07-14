@@ -30,6 +30,7 @@
 namespace snowball {
 namespace codegen {
 
+using namespace Syntax;
 using Operators = services::OperatorService;
 
 TypeChecker::TypeChecker(std::shared_ptr<ir::Module> mod)
@@ -38,6 +39,7 @@ TypeChecker::TypeChecker(std::shared_ptr<ir::Module> mod)
 VISIT(Func) {
     if (p_node->hasAttribute(Attributes::TYPECHECKED)) return;
     p_node->addAttribute(Attributes::TYPECHECKED);
+    checkFunctionDeclaration(p_node);
     auto backup = ctx->getCurrentFunction();
     ctx->setCurrentFunction(p_node);
     auto body = p_node->getBody();
@@ -68,7 +70,7 @@ VISIT(DereferenceTo) {
                    p_node->getType()->getPrettyName().c_str()));
     if (!utils::dyn_cast<ir::ValueExtract>(val) && !utils::dyn_cast<ir::Variable>(val) &&
         !utils::dyn_cast<ir::IndexExtract>(val) && !utils::dyn_cast<ir::Argument>(val)) {
-        Syntax::E<TYPE_ERROR>(p_node->getDBGInfo(),
+        E<TYPE_ERROR>(p_node->getDBGInfo(),
                               FMT("Value used for dereference '%s' is not a "
                                   "variable!",
                                   p_node->getType()->getPrettyName().c_str()));
@@ -90,7 +92,7 @@ VISIT(Call) {
     auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee());
     bool validMethod = fn != nullptr && fn->hasParent() && !fn->isStatic();
     if (utils::dyn_cast<types::FunctionType>(p_node->getCallee()->getType()) == nullptr) {
-        Syntax::E<TYPE_ERROR>(p_node, FMT("Value trying to be called is not callable!"));
+        E<TYPE_ERROR>(p_node, FMT("Value trying to be called is not callable!"));
     }
 
     // TODO: check for operator sides being equal
@@ -165,14 +167,14 @@ VISIT(Cast) {
     assert(t->is(p_node->getType()));
 
     if (utils::dyn_cast<types::VoidType>(v->getType())) {
-        Syntax::E<TYPE_ERROR>(
+        E<TYPE_ERROR>(
                 p_node,
                 FMT("Can't cast from void type ('%s')!", v->getType()->getPrettyName().c_str()));
     }
 
     if (v->getType()->is(t)) return;
     if (!v->getType()->canCast(t)) {
-        Syntax::E<TYPE_ERROR>(p_node,
+        E<TYPE_ERROR>(p_node,
                               FMT("Can't create a casting operator from type `%s` "
                                   "to type `%s`!",
                                   v->getType()->getPrettyName().c_str(),
@@ -206,7 +208,7 @@ VISIT(Return) {
     if (p_node->getExpr() != nullptr) p_node->getExpr()->visit(this);
     if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) != nullptr) &&
         (p_node->getExpr() != nullptr)) {
-        Syntax::E<TYPE_ERROR>(p_node,
+        E<TYPE_ERROR>(p_node,
                               FMT("Nonvalue returning function cant have a "
                                   "return containing an expression (%s)!",
                                   p_node->getType()->getPrettyName().c_str()));
@@ -214,14 +216,14 @@ VISIT(Return) {
 
     if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) == nullptr) &&
         (p_node->getExpr() == nullptr)) {
-        Syntax::E<TYPE_ERROR>(p_node,
+        E<TYPE_ERROR>(p_node,
                               FMT("Can't return \"nothing\" in a function with "
                                   "non-void return type (%s)!",
                                   fn->getRetTy()->getPrettyName().c_str()));
     }
 
     if (!fn->getRetTy()->is(p_node->getType())) {
-        Syntax::E<TYPE_ERROR>(p_node,
+        E<TYPE_ERROR>(p_node,
                               FMT("Return type (%s) does not match parent "
                                   "function's return type (%s)!",
                                   p_node->getType()->getPrettyName().c_str(),
@@ -246,7 +248,7 @@ void TypeChecker::codegen() {
 
 void TypeChecker::cantBeVoid(
         DBGObject* dbg, std::shared_ptr<types::Type> ty, const std::string& message) {
-    if (utils::dyn_cast<types::VoidType>(ty)) { Syntax::E<TYPE_ERROR>(dbg, message); }
+    if (utils::dyn_cast<types::VoidType>(ty)) { E<TYPE_ERROR>(dbg, message); }
 }
 
 void TypeChecker::checkMutability(
@@ -257,10 +259,10 @@ void TypeChecker::checkMutability(
     if (Operators::isOperator(fnName) && !Operators::opEquals<Operators::CONSTRUCTOR>(fnName)) {
         auto opType = Operators::operatorID(fnName);
         auto binOp = utils::cast<ir::BinaryOp>(p_node);
-        auto isAssignment = Syntax::Expression::BinaryOp::is_assignment(opType);
+        auto isAssignment = Expression::BinaryOp::is_assignment(opType);
         assert(binOp);
         if (isAssignment && accessingSelf && !ctx->getCurrentFunction()->getType()->isMutable()) {
-            Syntax::E<VARIABLE_ERROR>(
+            E<VARIABLE_ERROR>(
                     p_node,
                     "You can't call a mutating method on an immutable instance!",
                     {.info = "This function is mutable!",
@@ -269,7 +271,7 @@ void TypeChecker::checkMutability(
                      .help = "Try to make the value mutable by adding the 'mut' "
                              "keyword or make the function\nnonmutable by "
                              "removing the 'mut' keyword from it's declaration.",
-                     .tail = Syntax::EI<>(value->getDBGInfo(),
+                     .tail = EI<>(value->getDBGInfo(),
                                           "",
                                           {
                                                   .info = "This value is nonmutable!",
@@ -278,7 +280,7 @@ void TypeChecker::checkMutability(
 
         if (isAssignment && !binOp->ignoreMutability && !isMutable) {
             if (!p_node->isInitialization) {
-                Syntax::E<VARIABLE_ERROR>(
+                E<VARIABLE_ERROR>(
                         p_node,
                         "You can't assign a new value to a "
                         "unmutable "
@@ -288,7 +290,7 @@ void TypeChecker::checkMutability(
                                  "declaration.",
                          .help = "Try to make the variable mutable by adding "
                                  "the 'mut' keyword.",
-                         .tail = Syntax::EI<>(value->getDBGInfo(),
+                         .tail = EI<>(value->getDBGInfo(),
                                               "",
                                               {.info = "This variable is not mutable!"})});
             }
@@ -298,7 +300,7 @@ void TypeChecker::checkMutability(
     }
 
     if (!fn->isConstructor() && (fn->getType()->isMutable() && !isMutable)) {
-        Syntax::E<VARIABLE_ERROR>(p_node,
+        E<VARIABLE_ERROR>(p_node,
                                   "You can't call a mutating method on an immutable instance!",
                                   {.info = "This function is mutable!",
                                    .note = "This error is caused by the function being "
@@ -306,7 +308,7 @@ void TypeChecker::checkMutability(
                                    .help = "Try to make the value mutable by adding the 'mut' "
                                            "keyword or make the function\nnonmutable by "
                                            "removing the 'mut' keyword from it's declaration.",
-                                   .tail = Syntax::EI<>(value->getDBGInfo(),
+                                   .tail = EI<>(value->getDBGInfo(),
                                                         "",
                                                         {
                                                                 .info = "This value is nonmutable!",
@@ -335,7 +337,7 @@ bool TypeChecker::accessingSelf(std::shared_ptr<ir::Value> value) {
 
 void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
     if (p_node->hasAttribute(Attributes::TEST)) {
-        if (!p_node->hasBlock()) 
+        if (p_node->isDeclaration()) 
             E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions must have a body!",
             {
                 .info = "This function is a test function!",
@@ -364,7 +366,7 @@ void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
                 .help = "Try removing the 'inline' attribute from the function."
             });
     } else if (p_node->hasAttribute(Attributes::INLINE)) {
-        if (!p_node->hasBlock())
+        if (p_node->isDeclaration())
             E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Inline functions must have a body!",
             {
                 .info = "This function is an inline function!",
