@@ -40,9 +40,7 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
         return builder->getInt8Ty();
     } else if (auto x = cast<types::ReferenceType>(t)) {
         return getLLVMType(x->getPointedType())->getPointerTo();
-    }
-
-    else if (auto f = cast<types::FunctionType>(t)) {
+    } else if (auto f = cast<types::FunctionType>(t)) {
         return getLLVMFunctionType(f)->getPointerTo();
     } else if (auto a = cast<types::TypeAlias>(t)) {
         assert(!"Unreachable type case found!");

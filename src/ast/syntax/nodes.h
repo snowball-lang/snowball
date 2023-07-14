@@ -839,7 +839,7 @@ struct ImportStmt : public AcceptorExtend<ImportStmt, Base> {
 
   public:
     ImportStmt(const std::vector<std::string> path = {},
-               const std::string package = "$",
+               const std::string package = "pkg",
                ImportType ty = DEFAULT);
 
   public:

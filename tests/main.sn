@@ -6,23 +6,9 @@
 
 // Import the core library.
 // This is required for the println function.
-use Core::System;
+use pkg::string;
+use Core::CLib;
 
-
-namespace tests {
-
-fn [[test]] fib() i32 {
-    return (69-5) + 5 == 69;
-} 
-
-fn [[test(skip)]] balls() i32 {
-} 
-
-fn [[test]] fib() i32 {
-    return 1 == 2;
-} 
-}
-
-// Define the main function.
 pub fn main() i32 {
+    
 }

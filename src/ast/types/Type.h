@@ -54,7 +54,6 @@ class Type : public std::enable_shared_from_this<Type> {
     explicit Type(Kind p_kind, bool isMutable = false);
     explicit Type(Kind p_kind, std::string p_name, bool isMutable = false);
 
-    Type(const Type&) = delete;
     Type& operator=(const Type&) = delete;
 
     ~Type() noexcept = default;
@@ -68,7 +67,7 @@ class Type : public std::enable_shared_from_this<Type> {
     /// @return current's type name
     virtual std::string getName() const { return name; }
     /// @return type's pretty names, commonly used for output
-    virtual std::string getPrettyName() const { return name; };
+    virtual std::string getPrettyName() const { return (_mutable ? "mut" : "") + name; };
     /// @return Get a mangled version of the current type
     virtual std::string getMangledName() const { return "T" + std::to_string(name.size()) + name; };
 
@@ -88,7 +87,7 @@ class Type : public std::enable_shared_from_this<Type> {
     virtual Syntax::Expression::TypeRef* toRef();
 
     /// @return If the function is mutable
-    bool isMutable() const { return _mutable; }
+    virtual bool isMutable() const { return _mutable; }
     /// @brief Set the mutability of the type
     void setMutable(bool m) { _mutable = m; }
 };

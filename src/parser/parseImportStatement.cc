@@ -12,8 +12,9 @@ Syntax::Statement::ImportStmt* Parser::parseImportStatement() {
 
     next();
 
-    auto package =
-            assert_tok<TokenType::IDENTIFIER>("an identifier for package reference").to_string();
+    std::string package = assert_tok<TokenType::IDENTIFIER>(
+        "an identifier for package reference"
+    ).to_string();
     next();
 
     consume<TokenType::SYM_COLCOL>("'::'");

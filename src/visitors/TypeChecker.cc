@@ -5,6 +5,7 @@
 #include "../ast/syntax/nodes.h"
 #include "../ast/types/FunctionType.h"
 #include "../ast/types/PrimitiveTypes.h"
+#include "../ast/types/ReferenceType.h"
 #include "../ir/values/Argument.h"
 #include "../ir/values/Call.h"
 #include "../ir/values/Cast.h"
@@ -68,11 +69,10 @@ VISIT(DereferenceTo) {
                FMT("Value used for reference '%s' has a value with 'void' "
                    "type!",
                    p_node->getType()->getPrettyName().c_str()));
-    if (!utils::dyn_cast<ir::ValueExtract>(val) && !utils::dyn_cast<ir::Variable>(val) &&
-        !utils::dyn_cast<ir::IndexExtract>(val) && !utils::dyn_cast<ir::Argument>(val)) {
-        E<TYPE_ERROR>(p_node->getDBGInfo(),
+    if (!utils::dyn_cast<types::ReferenceType>(val->getType())) {
+        E<TYPE_ERROR>(p_node,
                       FMT("Value used for dereference '%s' is not a "
-                          "variable!",
+                          "reference!",
                           p_node->getType()->getPrettyName().c_str()));
     }
 }
@@ -315,9 +315,13 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
 }
 
 bool TypeChecker::isMutable(std::shared_ptr<ir::Value> value) {
-    if (auto x = utils::dyn_cast<ir::Variable>(value)) return x->isMutable();
-    if (auto x = utils::dyn_cast<ir::IndexExtract>(value)) return x->getField()->isMutable;
-
+    if (auto x = utils::dyn_cast<ir::Variable>(value)) 
+        return x->isMutable();
+    if (auto x = utils::dyn_cast<ir::IndexExtract>(value)) 
+        return x->getField()->isMutable;
+    if (auto x = utils::dyn_cast<ir::VariableDeclaration>(value))
+        return x->isMutable();
+    auto b = utils::dyn_cast<types::ReferenceType>(value->getType());
     return value->getType()->isMutable();
 }
 

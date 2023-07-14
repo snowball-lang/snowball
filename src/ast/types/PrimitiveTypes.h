@@ -55,7 +55,8 @@ class NumericType : public AcceptorExtend<NumericType, PrimitiveType> {
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
     virtual bool canCast(Type* ty) const override {
-        SNOWBALL_MUTABLE_CAST_CHECK return NumericType::isNumericType(ty);
+        SNOWBALL_COBJ_CAST_CHECK
+        return NumericType::isNumericType(ty);
     }
 
   public:

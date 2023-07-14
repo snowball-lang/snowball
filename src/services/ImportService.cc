@@ -14,7 +14,7 @@ inline const std::string ImportService::CORE_UUID = "@sn.Core.";
 fs::path ImportService::getPackagePath(const std::string package) {
     if (package == "Core") {
         return utils::get_lib_folder();
-    } else if (package == "$") {
+    } else if (package == "pkg") {
         return fs::current_path();
     }
 
@@ -25,20 +25,20 @@ std::string ImportService::getExportName(std::filesystem::path path, std::string
     return symbol.empty() ? path.stem().string() : symbol;
 }
 
-bool ImportService::isExternalModule(std::string package) { return package != "$"; }
+bool ImportService::isExternalModule(std::string package) { return package != "pkg"; }
 
 std::string ImportService::getModuleUUID(std::filesystem::path path) {
     std::string result = path.string();
     utils::replaceAll(result, PATH_SEPARATOR, "::");
 
-    return "$" + result;
+    return "pkg" + result;
 }
 
 std::pair<fs::path, std::string> ImportService::getImportPath(const std::string package,
                                                               std::vector<std::string> path,
                                                               const std::string extension) {
     auto packagePath = getPackagePath(package);
-    bool isPackage = package == "$";
+    bool isPackage = package == "pkg";
 
     fs::path definedPath;
     for (auto p : path) { definedPath /= p; }

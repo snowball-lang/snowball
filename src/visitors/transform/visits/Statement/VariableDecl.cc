@@ -14,6 +14,11 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
     auto variableValue = p_node->getValue();
     auto isMutable = p_node->isMutable();
     assert(p_node->isInitialized() || definedType != nullptr);
+    if (definedType) {
+        //definedType = utils::copy_shared(definedType);
+        definedType->setMutable(isMutable);
+    }
+
     if (ctx->getInScope(variableName, ctx->currentScope()).second) {
         E<VARIABLE_ERROR>(p_node,
                           FMT("Variable with name '%s' is already "
@@ -30,8 +35,6 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
                 p_node->getDBGInfo(), variableName, val, isMutable);
         varDecl->setId(var->getId());
         varDecl->setType(val->getType());
-        auto itemDecl = std::make_shared<transform::Item>(transform::Item::Type::VALUE, varDecl);
-
         if (auto f = ctx->getCurrentFunction().get()) {
             f->addSymbol(varDecl);
         } else {
@@ -53,14 +56,14 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
             }
         }
 
-        var->setType(val->getType());
+        auto ty = val->getType();
+        ty->setMutable(isMutable);
+        var->setType(ty);
     } else {
         auto varDecl = builder.createVariableDeclaration(
                 p_node->getDBGInfo(), variableName, nullptr, isMutable);
         varDecl->setId(var->getId());
         varDecl->setType(definedType);
-        auto itemDecl = std::make_shared<transform::Item>(transform::Item::Type::VALUE, varDecl);
-
         if (auto f = ctx->getCurrentFunction().get()) {
             f->addSymbol(varDecl);
         } else {
@@ -70,9 +73,6 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
         var->setType(definedType);
         this->value = var;
     }
-
-    auto type = this->value->getType();
-    if (isMutable != type->isMutable()) { type->setMutable(isMutable); }
 
     ctx->addItem(variableName, item);
 }

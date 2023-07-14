@@ -17,7 +17,9 @@ namespace snowball {
 namespace types {
 
 ReferenceType::ReferenceType(std::shared_ptr<Type> base)
-    : AcceptorExtend(Kind::TYPE, base->getName() + "&"), base(base) { }
+    : AcceptorExtend(Kind::TYPE, base->getName() + "&"), base(base) {
+    setMutable(base->isMutable());
+}
 std::shared_ptr<Type> ReferenceType::getPointedType() const { return base; }
 std::string ReferenceType::getPrettyName() const {
     auto baseName = base->getPrettyName();

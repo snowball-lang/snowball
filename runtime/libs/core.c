@@ -14,7 +14,7 @@ extern void* ua_get(UniversalArray_T* ua, int index) __asm__("sn.ua.get");
 extern void ua_set(UniversalArray_T* ua, int index, void* value) __asm__("sn.ua.set");
 
 UniversalArray_T* ua_allocate(int size) {
-    UniversalArray_T* array = sn_alloca(size);
+    UniversalArray_T* array = (UniversalArray_T*)sn_alloca(size);
     array->data = sn_alloca(size * sizeof(void*));
     return array;
 }

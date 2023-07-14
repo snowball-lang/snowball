@@ -37,7 +37,7 @@ pub struct UniversalArray
  * @param[in] size The size of the universal array to allocate.
  * @return The allocated universal array.
  */
-pub extern fn "sn.ua.alloc" as __ua_alloc(i32) UniversalArray&;
+pub extern fn [[no_inline]] "sn.ua.alloc" as __ua_alloc(i32) UniversalArray&;
 /**
  * @brief Resizes a universal array of elements.
  * @param[in] array The universal array to resize.
@@ -172,7 +172,7 @@ pub class Iterable<_IteratorType: Core::Sized> {
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating vectors.
  */
-pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType&> {
+pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
   pub:
     /**
      * @brief Default constructor.
@@ -184,7 +184,7 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType&> {
      * @brief It pushes an element to the back of the vector.
      * @param[in] value The element to push to the back of the vector.
      */
-    fn [[internal_linkage]] push(value: _StoreType&) mut
+    fn [[internal_linkage]] push(value: _StoreType) mut
     { 
       if self.length + 1 >= self.capacity 
       {
@@ -211,27 +211,27 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType&> {
      * @param[in] index The index of the element to return.
      * @return The element at the specified index.
      */
-    fn [[internal_linkage]] at(index: i32) _StoreType&
+    fn [[internal_linkage]] at(index: i32) _StoreType
     {
       if index < 0 || index >= self.length 
       {
         raise new IndexError("Index out of bounds.");
       }
-      return UA::__ua_get(self.buffer, index) as _StoreType&;
+      return UA::__ua_get(self.buffer, index) as _StoreType;
     }
     /**
      * @brief Returns the data of the vector.
      * @return The data of the vector.
      */
-    fn [[internal_linkage, inline]] data() _StoreType& 
-      { return (*self.buffer.items) as _StoreType& }
+    fn [[internal_linkage, inline]] data() _StoreType
+      { return (*self.buffer.items) as _StoreType }
     /**
      * @brief A wrapper over the at() method.
      * @param[in] index The index of the element to return.
      * @return The element at the specified index.
      * @see Vector<_StoreType>::at()
      */
-    operator [[internal_linkage, inline]] [](index: i32) _StoreType& 
+    operator [[internal_linkage, inline]] [](index: i32) _StoreType
       { return self.at(index); }
 
   priv:
@@ -240,7 +240,7 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType&> {
     /** The size of the vector. */
     let mut length: i32 = 0;
     /** The buffer containing the vector. */
-    let buffer: UA::UniversalArray&;
+    let mut buffer: UA::UniversalArray&;
 }
 
 /**

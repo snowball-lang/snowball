@@ -26,7 +26,7 @@ class ImportService {
   public:
     /**
      * @brief Get the package path based on it's identifier
-     * @note if package name is "$" it will return the current package
+     * @note if package name is "pkg" it will return the current package
      *  being generated
      */
     std::filesystem::path getPackagePath(const std::string package);
@@ -38,7 +38,7 @@ class ImportService {
      *
      * @param package package to search from (e.g. std). @note if the
      * package is
-     * "$" it will find inside the current package being generated.
+     * "pkg" it will find inside the current package being generated.
      * @param path the path to search for
      * @param extension extension to find for (search for common ones
      * for )

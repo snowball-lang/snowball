@@ -1,0 +1,14 @@
+
+namespace tests {
+
+fn [[test]] empty() i32 {
+    let s = new String();
+    return s.size() == 0;
+}
+
+fn [[test]] size() i32 {
+    let s = new String("hello");
+    return s.size() == 5;
+}
+
+}

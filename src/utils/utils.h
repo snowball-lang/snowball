@@ -98,7 +98,7 @@ Desired* cast(Current curr) {
 
 template <typename T>
 std::shared_ptr<T> copy_shared(std::shared_ptr<T> x) {
-    return std::shared_ptr<T>(*x);
+    return std::make_shared<T>(*x);
 }
 
 template <typename Desired, typename Current>

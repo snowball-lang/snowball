@@ -20,8 +20,10 @@ void LLVMBuilder::visit(ir::ReferenceTo* ref) {
         value = load->getOperand(0);
     } else {
         // TODO: actually do fix this
-        assert(llvmReferencedValue->getType()->isPointerTy());
-        value = llvmReferencedValue;
+        // assert(llvmReferencedValue->getType()->isPointerTy());
+        auto alloca = builder->CreateAlloca(llvmReferencedValue->getType());
+        builder->CreateStore(llvmReferencedValue, alloca);
+        value = alloca;
     }
 
     this->value = value;

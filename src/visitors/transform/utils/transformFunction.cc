@@ -71,7 +71,9 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
             ir::Func::FunctionArgs newArgs = {};
             if (fn->isConstructor()) {
                 auto a = builder.createArgument(node->getDBGInfo(), "self", 0, nullptr);
-                a->setType(ctx->getCurrentClass(true)->getPointerTo());
+                auto ty = ctx->getCurrentClass(true)->getPointerTo();
+                ty->setMutable(node->isMutable());
+                a->setType(ty);
                 newArgs.emplace(newArgs.begin(), std::make_pair("self", a));
             }
 
@@ -88,10 +90,8 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
             }
 
             fn->setArgs(newArgs);
-
             auto fnType = types::FunctionType::from(fn.get(), node);
             fn->setType(std::shared_ptr<types::FunctionType>(fnType));
-
             ctx->defineFunction(fn);
 
             // Generate a bodied for functions that have
@@ -103,19 +103,18 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
                 ctx->withScope([&]() {
                     int argIndex = 0;
                     for (auto arg : newArgs) {
-                        auto ref = builder.createVariable(node->getDBGInfo(), arg.first, true);
-
+                        auto ref = builder.createVariable(
+                            node->getDBGInfo(), arg.first, true, 
+                            arg.second->getType()->isMutable());
                         ref->setType(arg.second->getType());
                         auto refItem = std::make_shared<transform::Item>(
                                 transform::Item::Type::VALUE, ref);
-
                         ref->setId(arg.second->getId());
                         ctx->addItem(arg.first, refItem);
                         argIndex++;
                     }
 
                     auto body = bodiedFn->getBody();
-
                     if (!bodyReturns(body->getStmts()) &&
                         !((utils::dyn_cast<types::NumericType>(returnType)) ||
                           (utils::dyn_cast<types::VoidType>(returnType))) &&
@@ -132,6 +131,8 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
                         assert(constructor != nullptr);
                         fn->getType()->setMutable(true);
                         prependedInsts = transformConstructor(constructor);
+                    } else {
+                        fn->getType()->setMutable(node->isMutable());
                     }
 
                     auto block = trans(body);
