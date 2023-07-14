@@ -21,6 +21,6 @@ pub static fn [[test]] fib(n: i64) i64 {
 
 // Define the main function.
 pub fn main() i32 {
-//    let f = fib;
-//    System::println(f(47 as i64));
+    let f = fib;
+    System::println(f(47 as i64));
 }

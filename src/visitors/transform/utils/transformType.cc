@@ -95,6 +95,14 @@ continueTypeFetch:
 
         auto val = trans(decl->getExpr());
         return val->getType();
+    } else if (ty->isFunctionType()) {
+        auto fn = utils::cast<Expression::FuncType>(ty);
+        assert(fn);
+        std::vector<std::shared_ptr<types::Type>> args;
+        for (auto arg : fn->getArgs()) 
+            args.push_back(transformType(arg));
+        auto ret = transformType(fn->getReturnValue());
+        return builder.createFunctionType(args, ret);
     }
 
     if (ty->isReferenceType()) {

@@ -187,6 +187,8 @@ struct TypeRef : public types::Type, public Base {
     virtual bool isTypeDecl() { return false; }
     /// @return true if the type is a pointer
     virtual bool isReferenceType() { return false; }
+    /// @return true if the type is a function
+    virtual bool isFunctionType() { return false; }
 
     /// @return The id of the type
     auto getId() { return id; }
@@ -215,6 +217,33 @@ struct DeclType : public TypeRef {
     bool isTypeDecl() override { return true; }
 
     ~DeclType() noexcept = default;
+};
+
+/**
+ * @class FuncType
+ * @brief A struct representing a function type that derives from
+ * TypeRef.
+ *
+ * This struct holds a pointer to a TypeRef object and provides methods
+ * to access the type value and determine if it is a function type.
+ */
+struct FuncType : public TypeRef {
+    /// @brief The return value of the function
+    TypeRef* returnValue;
+    /// @brief The arguments of the function
+    std::vector<TypeRef*> args;
+
+  public:
+    FuncType(std::vector<TypeRef*> args, TypeRef* returnValue, DBGSourceInfo* srcInfo);
+
+    /// @return the arguments of the function
+    auto getArgs() { return args; }
+    /// @return the return value of the function
+    auto getReturnValue() { return returnValue; }
+
+    bool isFunctionType() override { return true; }
+
+    ~FuncType() noexcept = default;
 };
 
 /**

@@ -79,8 +79,14 @@ pub extern fn "sn.ua.get" as __ua_get(UniversalArray&, i32) cobj;
  */
 namespace __internal {
 
-fn [[export(name = "sn.test.try"), cfg(test), no_inline]] __snowball_test()
-{
+fn [[
+  export(name = "sn.test.try"), 
+  cfg(test), 
+  no_inline
+]] snowball_test(
+  func: fn () => i32,
+  name: char&
+) {
 
 }
 

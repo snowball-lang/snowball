@@ -98,7 +98,7 @@ class Parser {
      *  for parsing a type.
      */
     bool isTypeValid() const {
-        return is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>();
+        return is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() || is<TokenType::KWORD_FUNC>();
     }
 
     /**

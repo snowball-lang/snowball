@@ -14,6 +14,8 @@ namespace Expression {
 
 DeclType::DeclType(Base* value, DBGSourceInfo* srcInfo)
     : value(value), TypeRef("decltype(...)", srcInfo){};
+FuncType::FuncType(std::vector<TypeRef*> args, TypeRef* returnValue, DBGSourceInfo* srcInfo)
+    : args(args), returnValue(returnValue), TypeRef("fn(...)", srcInfo){};
 ReferenceType::ReferenceType(TypeRef* baseType, DBGSourceInfo* srcInfo)
     : baseType(baseType), TypeRef(baseType->getName() + "&", srcInfo){};
 PseudoVariable::PseudoVariable(std::string identifier) : identifier(identifier){};
