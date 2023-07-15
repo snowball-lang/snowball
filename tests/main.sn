@@ -10,5 +10,6 @@ use pkg::string;
 use Core::CLib;
 
 pub fn main() i32 {
-    
+    let s = new String{};
+    let x = new Vector<char&>{};
 }
