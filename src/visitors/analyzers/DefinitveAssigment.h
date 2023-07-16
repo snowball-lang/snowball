@@ -184,8 +184,7 @@ class DefiniteAssigment : public Analyzer {
      * declaration statement of the variable and its reference status,
      * if found. Otherwise, an empty optional is returned.
      */
-    std::optional<std::pair<std::string, DefiniteAssigment::ReferenceStatus>>
-    getIdentifier(std::string x);
+    std::optional<std::pair<std::string, DefiniteAssigment::ReferenceStatus>> getIdentifier(std::string x);
     /**
      * It generates the constructor metadata for the given class (just for the current
      *  scope)

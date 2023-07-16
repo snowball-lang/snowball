@@ -7,20 +7,18 @@ namespace snowball {
 using namespace utils;
 namespace Syntax {
 
-std::shared_ptr<types::Type>
-Transformer::transformTypeAlias(const std::string& uuid,
-                                cacheComponents::Types::TypeStore& base,
-                                Expression::TypeRef* typeRef) {
+std::shared_ptr<types::Type> Transformer::transformTypeAlias(const std::string& uuid,
+                                                             cacheComponents::Types::TypeStore& base,
+                                                             Expression::TypeRef* typeRef) {
     auto ty = utils::cast<Statement::TypeAlias>(base.type);
     assert(ty);
 
     // These are the generics generated outside of the type alias
     // context. Note that the default class generics WILL be generated
     // inside the class context.
-    auto generics = typeRef != nullptr
-            ? vector_iterate<Expression::TypeRef*, std::shared_ptr<types::Type>>(
-                      typeRef->getGenerics(), [&](auto t) { return transformType(t); })
-            : std::vector<std::shared_ptr<types::Type>>{};
+    auto generics = typeRef != nullptr ? vector_iterate<Expression::TypeRef*, std::shared_ptr<types::Type>>(
+                                                 typeRef->getGenerics(), [&](auto t) { return transformType(t); })
+                                       : std::vector<std::shared_ptr<types::Type>>{};
 
     // TODO: check if typeRef generics match class generics
     std::shared_ptr<types::Type> transformedType;
@@ -47,8 +45,7 @@ Transformer::transformTypeAlias(const std::string& uuid,
             }
 
             auto aliasedType = transformType(ty->getType());
-            auto alias =
-                    builder.createTypeAlias(ty->getDBGInfo(), ty->getIdentifier(), aliasedType);
+            auto alias = builder.createTypeAlias(ty->getDBGInfo(), ty->getIdentifier(), aliasedType);
             alias->setPrivacy(ty->getPrivacy());
             alias->setGenerics(generics);
             alias->setUUID(uuid);

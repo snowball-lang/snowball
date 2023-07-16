@@ -14,9 +14,7 @@ SN_TRANSFORMER_VISIT(Statement::Namespace) {
     auto uuid = ctx->createIdentifierName(name);
     if (!ctx->generateFunction) {
         if (ctx->getInScope(name, ctx->currentScope()).second)
-            E<VARIABLE_ERROR>(
-                    p_node,
-                    FMT("Namespace '%s' is already defined in the current scope!", name.c_str()));
+            E<VARIABLE_ERROR>(p_node, FMT("Namespace '%s' is already defined in the current scope!", name.c_str()));
         auto mod = std::make_shared<ir::Module>(getNameWithBase(name), uuid);
         mod->setSourceInfo(ctx->module->getSourceInfo());
         ctx->uuidStack.push_back(ctx->module->getUniqueName());

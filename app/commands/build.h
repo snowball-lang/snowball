@@ -26,10 +26,8 @@ int build(app::Options::BuildOptions p_opts) {
 
     if (p_opts.file.empty()) {
         toml::parse_result parsed_config = Compiler::get_config();
-        filename = parsed_config["package"]["main"].value_or<std::string>(
-                (fs::current_path() / "src" / "main.sn"));
-        package_name = (std::string)(
-                parsed_config["package"]["name"].value_or<std::string>("<anonnimus>"));
+        filename = parsed_config["package"]["main"].value_or<std::string>((fs::current_path() / "src" / "main.sn"));
+        package_name = (std::string)(parsed_config["package"]["name"].value_or<std::string>("<anonnimus>"));
         package_version = parsed_config["package"]["version"].value_or<std::string>("<unknown>");
     }
 
@@ -65,13 +63,9 @@ int build(app::Options::BuildOptions p_opts) {
     }
 
     if (!p_opts.silent)
-        Logger::message("Project",
-                        FMT("%s v%s [%s%s%s]",
-                            package_name.c_str(),
-                            package_version.c_str(),
-                            BOLD,
-                            build_type.c_str(),
-                            RESET));
+        Logger::message(
+                "Project",
+                FMT("%s v%s [%s%s%s]", package_name.c_str(), package_version.c_str(), BOLD, build_type.c_str(), RESET));
 
     std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 
@@ -104,8 +98,7 @@ int build(app::Options::BuildOptions p_opts) {
 
     if (!p_opts.silent) {
         Logger::message("Finished", FMT("build target(s) in %s%ims%s", BOLD, duration, RESET));
-        Logger::message("Generating",
-                        FMT("Generating output at `%s%s%s`", BOLD, output.c_str(), RESET));
+        Logger::message("Generating", FMT("Generating output at `%s%s%s`", BOLD, output.c_str(), RESET));
         Logger::log("");
     }
 

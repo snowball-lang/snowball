@@ -22,19 +22,18 @@ llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
 
     std::string baseName = x->getNiceName();
 
-    llvm::DISubprogram* subprogram =
-            dbg.builder->createFunction(file,
-                                        baseName,
-                                        x->getMangle(),
-                                        file,
-                                        srcInfo->line,
-                                        llvm::cast<llvm::DISubroutineType>(subroutineType),
-                                        /*ScopeLine=*/0,
-                                        llvm::DINode::FlagPrototyped,
-                                        llvm::DISubprogram::toSPFlags(
-                                                /*IsLocalToUnit=*/true,
-                                                /*IsDefinition=*/true,
-                                                /*IsOptimized=*/!dbg.debug));
+    llvm::DISubprogram* subprogram = dbg.builder->createFunction(file,
+                                                                 baseName,
+                                                                 x->getMangle(),
+                                                                 file,
+                                                                 srcInfo->line,
+                                                                 llvm::cast<llvm::DISubroutineType>(subroutineType),
+                                                                 /*ScopeLine=*/0,
+                                                                 llvm::DINode::FlagPrototyped,
+                                                                 llvm::DISubprogram::toSPFlags(
+                                                                         /*IsLocalToUnit=*/true,
+                                                                         /*IsDefinition=*/true,
+                                                                         /*IsOptimized=*/!dbg.debug));
     return subprogram;
 }
 
@@ -64,10 +63,8 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
 
         for (auto argType : f->getArgs()) { argTypes.push_back(getDIType(argType.get())); }
 
-        auto subroutineType =
-                dbg.builder->createSubroutineType(llvm::MDTuple::get(*context, argTypes));
-        return dbg.builder->createPointerType(subroutineType,
-                                              layout.getTypeAllocSizeInBits(llvmType));
+        auto subroutineType = dbg.builder->createSubroutineType(llvm::MDTuple::get(*context, argTypes));
+        return dbg.builder->createPointerType(subroutineType, layout.getTypeAllocSizeInBits(llvmType));
     } else if (auto c = cast<types::TypeAlias>(ty)) {
         return getDIType(c->getBaseType().get());
     } else if (auto c = cast<types::DefinedType>(ty)) {
@@ -80,31 +77,29 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
         llvm::DIType* parentDIType = nullptr;
         if (auto p = c->getParent()) { parentDIType = getDIType(c->getParent().get()); }
         // TODO: create struct type if it's a struct
-        auto debugType =
-                dbg.builder->createClassType(file,
-                                             c->getPrettyName(),
-                                             file,
-                                             dbgInfo->line,
-                                             /* TODO: */ 0,
-                                             0,
-                                             0,
-                                             llvm::DINode::FlagZero,
-                                             parentDIType,
-                                             dbg.builder->getOrCreateArray(generatedFields));
+        auto debugType = dbg.builder->createClassType(file,
+                                                      c->getPrettyName(),
+                                                      file,
+                                                      dbgInfo->line,
+                                                      /* TODO: */ 0,
+                                                      0,
+                                                      0,
+                                                      llvm::DINode::FlagZero,
+                                                      parentDIType,
+                                                      dbg.builder->getOrCreateArray(generatedFields));
 
         generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Metadata*>(
                 fields, [&](types::DefinedType::ClassField* t) {
                     // TODO: custom line for fields?
-                    return dbg.builder->createMemberType(
-                            debugType,
-                            t->name,
-                            file,
-                            dbgInfo->line,
-                            layout.getTypeAllocSizeInBits(getLLVMType(t->type)),
-                            /*AlignInBits=*/0,
-                            0,
-                            llvm::DINode::FlagZero,
-                            getDIType(t->type.get()));
+                    return dbg.builder->createMemberType(debugType,
+                                                         t->name,
+                                                         file,
+                                                         dbgInfo->line,
+                                                         layout.getTypeAllocSizeInBits(getLLVMType(t->type)),
+                                                         /*AlignInBits=*/0,
+                                                         0,
+                                                         llvm::DINode::FlagZero,
+                                                         getDIType(t->type.get()));
                 });
 
         return debugType;

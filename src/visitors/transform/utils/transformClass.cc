@@ -6,10 +6,9 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::shared_ptr<types::DefinedType>
-Transformer::transformClass(const std::string& uuid,
-                            cacheComponents::Types::TypeStore& classStore,
-                            Expression::TypeRef* typeRef) {
+std::shared_ptr<types::DefinedType> Transformer::transformClass(const std::string& uuid,
+                                                                cacheComponents::Types::TypeStore& classStore,
+                                                                Expression::TypeRef* typeRef) {
     auto ty = utils::cast<Statement::DefinedTypeDef>(classStore.type);
     assert(ty);
 
@@ -23,10 +22,9 @@ Transformer::transformClass(const std::string& uuid,
     //
     // Note that the default class generics WILL be generated inside the
     // class context.
-    auto generics = typeRef != nullptr
-            ? vector_iterate<Expression::TypeRef*, std::shared_ptr<types::Type>>(
-                      typeRef->getGenerics(), [&](auto t) { return transformType(t); })
-            : std::vector<std::shared_ptr<types::Type>>{};
+    auto generics = typeRef != nullptr ? vector_iterate<Expression::TypeRef*, std::shared_ptr<types::Type>>(
+                                                 typeRef->getGenerics(), [&](auto t) { return transformType(t); })
+                                       : std::vector<std::shared_ptr<types::Type>>{};
 
     // TODO: check if typeRef generics match class generics
     std::shared_ptr<types::DefinedType> transformedType;
@@ -38,18 +36,16 @@ Transformer::transformClass(const std::string& uuid,
             ctx->setCurrentClass(nullptr);
             auto baseUuid = ctx->createIdentifierName(ty->getName());
             auto existantTypes = ctx->cache->getTransformedType(uuid);
-            auto _uuid = baseUuid + ":" +
-                    utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
+            auto _uuid = baseUuid + ":" + utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
             auto basedName = ty->getName();
-            transformedType = std::make_shared<types::DefinedType>(
-                    basedName,
-                    _uuid,
-                    ctx->module,
-                    ty,
-                    std::vector<types::DefinedType::ClassField*>{},
-                    nullptr,
-                    std::vector<std::shared_ptr<types::Type>>{},
-                    ty->isStruct());
+            transformedType = std::make_shared<types::DefinedType>(basedName,
+                                                                   _uuid,
+                                                                   ctx->module,
+                                                                   ty,
+                                                                   std::vector<types::DefinedType::ClassField*>{},
+                                                                   nullptr,
+                                                                   std::vector<std::shared_ptr<types::Type>>{},
+                                                                   ty->isStruct());
             transformedType->setModule(ctx->module);
             transformedType->setUUID(_uuid);
             auto item = std::make_shared<transform::Item>(transformedType);
@@ -88,30 +84,25 @@ Transformer::transformClass(const std::string& uuid,
                                            "primitive type."});
                 }
             }
-            auto baseFields = vector_iterate<Statement::VariableDecl*,
-                                             types::DefinedType::ClassField*>(
+            auto baseFields = vector_iterate<Statement::VariableDecl*, types::DefinedType::ClassField*>(
                     ty->getVariables(), [&](auto v) {
                         auto definedType = v->getDefinedType();
                         if (!definedType)
-                            E<SYNTAX_ERROR>(
-                                    v->getDBGInfo(),
-                                    "Can't infer type!",
-                                    {.info = "The type of this variable can't be inferred!",
-                                     .note = "This rule only applies to variables inside classes.",
-                                     .help = "You can't infer the type of a variable "
-                                             "without specifying it's type.\n"
-                                             "For example, you can't do this:\n"
-                                             "   let a = 10\n"
-                                             "You have to do this:\n"
-                                             "   let a: i32 = 10\n"
-                                             "Or this:\n"
-                                             "   let a = 10: i32"});
+                            E<SYNTAX_ERROR>(v->getDBGInfo(),
+                                            "Can't infer type!",
+                                            {.info = "The type of this variable can't be inferred!",
+                                             .note = "This rule only applies to variables inside classes.",
+                                             .help = "You can't infer the type of a variable "
+                                                     "without specifying it's type.\n"
+                                                     "For example, you can't do this:\n"
+                                                     "   let a = 10\n"
+                                                     "You have to do this:\n"
+                                                     "   let a: i32 = 10\n"
+                                                     "Or this:\n"
+                                                     "   let a = 10: i32"});
                         auto varTy = transformType(definedType);
-                        auto field = new types::DefinedType::ClassField(v->getName(),
-                                                                        varTy,
-                                                                        v->getPrivacy(),
-                                                                        v->getValue(),
-                                                                        v->isMutable());
+                        auto field = new types::DefinedType::ClassField(v->getName(), varTy, v->getPrivacy(),
+                                                                        v->getValue(), v->isMutable());
                         field->setDBGInfo(v->getDBGInfo());
                         return field;
                     });
@@ -123,8 +114,7 @@ Transformer::transformClass(const std::string& uuid,
             transformedType->setDBGInfo(ty->getDBGInfo());
             transformedType->setSourceInfo(ty->getSourceInfo());
             bool allowConstructor = (!ty->hasConstructor) && baseFields.size() == 0;
-            if (parentType != nullptr)
-                ctx->cache->performInheritance(transformedType, parentType, allowConstructor);
+            if (parentType != nullptr) ctx->cache->performInheritance(transformedType, parentType, allowConstructor);
             ctx->setCurrentClass(transformedType);
             assert(!ty->isStruct() || (ty->isStruct() && ty->getFunctions().size() == 0));
             // Create function definitions
@@ -147,13 +137,9 @@ Transformer::transformClass(const std::string& uuid,
                 auto argType = allowPointer ? transformedType->getPointerTo() : transformedType;
                 // Set the default '=' operator for the class
                 auto fn = builder.createFunction(
-                        ty->getDBGInfo(),
-                        services::OperatorService::getOperatorMangle(OperatorType::EQ),
-                        true,
-                        false);
+                        ty->getDBGInfo(), services::OperatorService::getOperatorMangle(OperatorType::EQ), true, false);
                 auto arg = builder.createArgument(NO_DBGINFO, "other", argType);
-                auto typeArgs = std::vector<std::shared_ptr<types::Type>>{
-                        transformedType->getPointerTo(), argType};
+                auto typeArgs = std::vector<std::shared_ptr<types::Type>>{transformedType->getPointerTo(), argType};
                 auto type = std::make_shared<types::FunctionType>(typeArgs, transformedType);
                 fn->setArgs({{"other", arg}});
                 fn->setType(type);
@@ -161,10 +147,9 @@ Transformer::transformClass(const std::string& uuid,
                 ctx->defineFunction(fn);
             }
 
-            auto parentHasConstructor = allowConstructor && parentType != nullptr &&
-                    !parentType->isStruct() && parentType->hasConstructor;
-            if (!parentHasConstructor && !transformedType->hasConstructor &&
-                !transformedType->isStruct()) {
+            auto parentHasConstructor =
+                    allowConstructor && parentType != nullptr && !parentType->isStruct() && parentType->hasConstructor;
+            if (!parentHasConstructor && !transformedType->hasConstructor && !transformedType->isStruct()) {
                 E<SYNTAX_ERROR>(ty,
                                 "This class does not have a constructor!",
                                 {.info = "This class does not have a constructor!",

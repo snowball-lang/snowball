@@ -10,8 +10,8 @@ namespace codegen {
 llvm::Value* LLVMBuilder::allocateObject(std::shared_ptr<types::DefinedType> ty) {
     auto llvmType = getLLVMType(ty)->getPointerTo();
     auto dataLayout = module->getDataLayout();
-    auto allocation = builder->CreateCall(
-            getAllocaFunction(), {builder->getInt32(dataLayout.getTypeAllocSize(llvmType))});
+    auto allocation =
+            builder->CreateCall(getAllocaFunction(), {builder->getInt32(dataLayout.getTypeAllocSize(llvmType))});
     auto cast = builder->CreatePointerCast(allocation, llvmType);
     if (ty->isStruct() || !ty->hasVtable()) return cast;
 

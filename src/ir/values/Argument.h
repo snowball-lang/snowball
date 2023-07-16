@@ -28,9 +28,7 @@ class Argument : public IdMixin, public AcceptorExtend<VariableDeclaration, Valu
 
   public:
     auto operator=(Argument*&) = delete;
-    explicit Argument(const std::string& name,
-                      int index = 0,
-                      Syntax::Expression::Base* defaultValue = nullptr)
+    explicit Argument(const std::string& name, int index = 0, Syntax::Expression::Base* defaultValue = nullptr)
         : name(name), index(index), defaultValue(defaultValue){};
 
     /// @return Argument index on the list

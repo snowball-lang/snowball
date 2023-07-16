@@ -13,9 +13,7 @@ using namespace snowball::utils;
 namespace snowball {
 namespace codegen {
 
-llvm::Type* LLVMBuilder::getLLVMType(std::shared_ptr<types::Type> t) {
-    return getLLVMType(t.get());
-}
+llvm::Type* LLVMBuilder::getLLVMType(std::shared_ptr<types::Type> t) { return getLLVMType(t.get()); }
 
 llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
     if (cast<types::Int64Type>(t)) {
@@ -53,8 +51,7 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
                 fields, [&](types::DefinedType::ClassField* t) { return getLLVMType(t->type); });
 
         auto s = llvm::StructType::create(*context,
-                                          (c->isStruct() ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) +
-                                                  c->getMangledName());
+                                          (c->isStruct() ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) + c->getMangledName());
         types.insert({c->getId(), s});
         if (c->hasVtable()) { // Ignore vtables for structs
             if (auto v = ctx->getVtableTy(c->getId())) {

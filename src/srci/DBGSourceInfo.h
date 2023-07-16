@@ -46,9 +46,7 @@ class DBGSourceInfo : public SrcObject {
      * @brief Create a new instance  of dbg source info
      * using a token as reference.
      */
-    static auto fromToken(SourceInfo* i, Token tk) {
-        return new DBGSourceInfo(i, tk.get_pos(), tk.get_width());
-    }
+    static auto fromToken(SourceInfo* i, Token tk) { return new DBGSourceInfo(i, tk.get_pos(), tk.get_width()); }
 };
 
 /**

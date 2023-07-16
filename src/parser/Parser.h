@@ -35,10 +35,8 @@ class Parser {
   private:
     /// @brief Utility function to throw errors
     template <Error E, class... Args>
-    [[nodiscard]] auto createError(std::pair<int, int> location,
-                                   std::string message,
-                                   ErrorInfo info = {},
-                                   Args&&... args) const {
+    [[nodiscard]] auto
+    createError(std::pair<int, int> location, std::string message, ErrorInfo info = {}, Args&&... args) const {
         auto dbg_info = new DBGSourceInfo(m_source_info, location, std::forward<Args>(args)...);
         throw ParserError(E, message, dbg_info, info);
     }
@@ -98,8 +96,7 @@ class Parser {
      *  for parsing a type.
      */
     bool isTypeValid() const {
-        return is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() ||
-                is<TokenType::KWORD_FUNC>();
+        return is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() || is<TokenType::KWORD_FUNC>();
     }
 
     /**
@@ -126,11 +123,10 @@ class Parser {
     template <TokenType Ty>
     Token assert_tok(std::string expectation) {
         if (!is<Ty>()) {
-            createError<SYNTAX_ERROR>(FMT(
-                    "Expected %s but got '%s'",
-                    expectation.c_str(),
-                    (is<TokenType::_EOF>(m_current) ? "an unexpected EOF" : m_current.to_string())
-                            .c_str()));
+            createError<SYNTAX_ERROR>(
+                    FMT("Expected %s but got '%s'",
+                        expectation.c_str(),
+                        (is<TokenType::_EOF>(m_current) ? "an unexpected EOF" : m_current.to_string()).c_str()));
         }
 
         return m_current;
@@ -250,10 +246,9 @@ class Parser {
      *
      * @param callee expression being called
      */
-    Syntax::Expression::FunctionCall*
-    parseFunctionCall(Syntax::Expression::Base* callee,
-                      TokenType terminator = TokenType::BRACKET_RPARENT,
-                      std::string terminatorString = ")");
+    Syntax::Expression::FunctionCall* parseFunctionCall(Syntax::Expression::Base* callee,
+                                                        TokenType terminator = TokenType::BRACKET_RPARENT,
+                                                        std::string terminatorString = ")");
     /**
      * function_call ::= [expr] "(" [args] ")"
      * arguments     ::= [[expr] "," ...]
@@ -266,8 +261,7 @@ class Parser {
      *
      * @return Syntax::Expression::Identifier*
      */
-    Syntax::Expression::Identifier* parseIdentifier(bool isKnownType = false,
-                                                    bool allowGenerics = true);
+    Syntax::Expression::Identifier* parseIdentifier(bool isKnownType = false, bool allowGenerics = true);
     /**
      * expr          ::=  [constant_value] |
      *                    [function_call]  |

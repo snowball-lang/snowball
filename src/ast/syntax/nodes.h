@@ -359,8 +359,7 @@ struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
 
     BinaryOp(OpType t) : op_type(t) {
         unary = (op_type == OpType::NOT || op_type == OpType::BIT_NOT || op_type == OpType::UPLUS ||
-                 op_type == OpType::UMINUS || op_type == OpType::REFERENCE ||
-                 op_type == OpType::DEREFERENCE);
+                 op_type == OpType::UMINUS || op_type == OpType::REFERENCE || op_type == OpType::DEREFERENCE);
     };
     ~BinaryOp() noexcept = default;
 
@@ -516,8 +515,7 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
  * AST representation for a variable declaration. Variables
  * can either be mutable or unmutable.
  */
-struct VariableDecl : public AcceptorExtend<VariableDecl, Base>,
-                      public AcceptorExtend<VariableDecl, Privacy> {
+struct VariableDecl : public AcceptorExtend<VariableDecl, Base>, public AcceptorExtend<VariableDecl, Privacy> {
     /// @brief Variables's identifier
     std::string name;
     /// @brief Function's return type
@@ -537,9 +535,7 @@ struct VariableDecl : public AcceptorExtend<VariableDecl, Base>,
     Expression::TypeRef* definedType = nullptr;
 
   public:
-    VariableDecl(const std::string& name,
-                 Expression::Base* value = nullptr,
-                 bool isMutable = false);
+    VariableDecl(const std::string& name, Expression::Base* value = nullptr, bool isMutable = false);
 
     /// @brief Get the identifier assign to the variable
     std::string getName() const;
@@ -578,8 +574,7 @@ struct TypeAlias : public AcceptorExtend<TypeAlias, Base>,
     Expression::TypeRef* type;
 
   public:
-    explicit TypeAlias(const std::string& identifier, Expression::TypeRef* type)
-        : identifier(identifier), type(type){};
+    explicit TypeAlias(const std::string& identifier, Expression::TypeRef* type) : identifier(identifier), type(type){};
 
     /// @return The name of the alias to be exported as
     auto getIdentifier() { return identifier; }
@@ -612,8 +607,10 @@ struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
     bool _struct = false;
 
   public:
-    DefinedTypeDef(std::string name, Expression::TypeRef* extends = nullptr,
-                   Privacy::Status prvc = PRIVATE, bool _struct = false);
+    DefinedTypeDef(std::string name,
+                   Expression::TypeRef* extends = nullptr,
+                   Privacy::Status prvc = PRIVATE,
+                   bool _struct = false);
 
     /// @brief Get class name
     std::string getName() const;
@@ -721,11 +718,8 @@ struct ConditionalConstExpr : public AcceptorExtend<ConditionalConstExpr, Base> 
     Block* elseBlock = nullptr;
 
   public:
-    explicit ConditionalConstExpr(Expression::Identifier* name,
-                                  std::vector<Node*>
-                                          args,
-                                  Block* insts,
-                                  Block* elseBlock = nullptr)
+    explicit ConditionalConstExpr(
+            Expression::Identifier* name, std::vector<Node*> args, Block* insts, Block* elseBlock = nullptr)
         : name(name), args(args), insts(insts), elseBlock(elseBlock){};
 
     /// @return body block instructions to execute
@@ -838,9 +832,7 @@ struct ImportStmt : public AcceptorExtend<ImportStmt, Base> {
     } type = DEFAULT;
 
   public:
-    ImportStmt(const std::vector<std::string> path = {},
-               const std::string package = "pkg",
-               ImportType ty = DEFAULT);
+    ImportStmt(const std::vector<std::string> path = {}, const std::string package = "pkg", ImportType ty = DEFAULT);
 
   public:
     /// @brief get the package name where it's imported from
@@ -954,8 +946,7 @@ struct BodiedFunction : public AcceptorExtend<BodiedFunction, FunctionDef> {
     using AcceptorExtend::AcceptorExtend;
 
     template <class... Args>
-    BodiedFunction(Block* block, Args&... args)
-        : block(block), AcceptorExtend(std::forward<Args>(args)...){};
+    BodiedFunction(Block* block, Args&... args) : block(block), AcceptorExtend(std::forward<Args>(args)...){};
 
     /// @return Get function's body declaration.
     Block* getBody() { return block; }
@@ -998,8 +989,7 @@ struct ConstructorDef : public AcceptorExtend<ConstructorDef, BodiedFunction> {
     using AcceptorExtend::AcceptorExtend;
 
     template <class... Args>
-    ConstructorDef(bool hasSuperArgs, Args&... args)
-        : AcceptorExtend(args...), _hasSuperArgs(hasSuperArgs){};
+    ConstructorDef(bool hasSuperArgs, Args&... args) : AcceptorExtend(args...), _hasSuperArgs(hasSuperArgs){};
 
     /// @brief Wether or not the constructor has super arguments
     bool hasSuperArgs() const { return _hasSuperArgs; };
@@ -1039,8 +1029,7 @@ struct LLVMFunction : public AcceptorExtend<LLVMFunction, FunctionDef> {
     using AcceptorExtend::AcceptorExtend;
 
     template <class... Args>
-    LLVMFunction(std::string block, Args&... args)
-        : block(block), AcceptorExtend(std::forward<Args>(args)...){};
+    LLVMFunction(std::string block, Args&... args) : block(block), AcceptorExtend(std::forward<Args>(args)...){};
 
     /// @return Get function's body declaration.
     auto getBody() { return block; }

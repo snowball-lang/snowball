@@ -62,9 +62,7 @@ class AttributeHolder {
      * @param attribute The attribute to check.
      * @return True if the attribute is set, false otherwise.
      */
-    bool hasAttribute(Attributes attribute) const {
-        return (m_attributes & (1 << static_cast<int>(attribute))) != 0;
-    }
+    bool hasAttribute(Attributes attribute) const { return (m_attributes & (1 << static_cast<int>(attribute))) != 0; }
     /**
      * Sets the bit for a specific attribute in the `m_attributes`
      * variable.
@@ -91,8 +89,7 @@ class AttributeHolder {
      */
     void setAttributes(AttributeHolder* holder) {
         for (int i = -1; i < (int)holder->getAttributes(); i++) {
-            arguments[static_cast<Attributes>(i)] =
-                    holder->getAttributeArgs(static_cast<Attributes>(i));
+            arguments[static_cast<Attributes>(i)] = holder->getAttributeArgs(static_cast<Attributes>(i));
         }
         m_attributes = holder->m_attributes;
     }
@@ -102,9 +99,7 @@ class AttributeHolder {
      *
      * @param attribute The attribute to remove.
      */
-    void removeAttribute(Attributes attribute) {
-        m_attributes &= ~(1 << static_cast<int>(attribute));
-    }
+    void removeAttribute(Attributes attribute) { m_attributes &= ~(1 << static_cast<int>(attribute)); }
     /**
      * Clears all attributes for the node by setting `m_attributes`
      * to zero.
@@ -164,10 +159,8 @@ struct TypeRef : public types::Type, public Base {
     std::string id;
 
   public:
-    TypeRef(std::string p_name, DBGSourceInfo* p_dbg, std::vector<TypeRef*> p_generics = {},
-            std::string id = "");
-    TypeRef(std::string p_name, DBGSourceInfo* p_dbg, std::shared_ptr<types::Type> internalType,
-            std::string id);
+    TypeRef(std::string p_name, DBGSourceInfo* p_dbg, std::vector<TypeRef*> p_generics = {}, std::string id = "");
+    TypeRef(std::string p_name, DBGSourceInfo* p_dbg, std::shared_ptr<types::Type> internalType, std::string id);
     TypeRef(Expression::Base* p_ast, std::string p_name, DBGSourceInfo* p_dbg, std::string id);
 
     /// @brief Get type's generics

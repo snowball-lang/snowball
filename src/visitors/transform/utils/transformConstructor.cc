@@ -6,8 +6,7 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::vector<std::shared_ptr<ir::Value>>
-Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
+std::vector<std::shared_ptr<ir::Value>> Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
     auto instrList = std::vector<std::shared_ptr<ir::Value>>();
     auto currentClass = ctx->getCurrentClass();
     if (p_node->hasSuperArgs()) {
@@ -16,8 +15,7 @@ Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
         auto superArgs = p_node->getSuperArgs();
         auto parentClass = currentClass->getParent();
         auto parentClassRef = parentClass->toRef();
-        auto newInstance =
-                Syntax::N<Expression::NewInstance>(p_node->getDBGInfo(), superArgs, parentClassRef);
+        auto newInstance = Syntax::N<Expression::NewInstance>(p_node->getDBGInfo(), superArgs, parentClassRef);
         newInstance->setDBGInfo(p_node->getDBGInfo());
         auto val = trans(newInstance);
         utils::dyn_cast<ir::ObjectInitialization>(val)->createdObject = selfArg->getValue();

@@ -11,29 +11,21 @@ using namespace services;
 namespace Syntax {
 namespace cacheComponents {
 
-std::shared_ptr<transform::ContextState>& Functions::getFunctionState(id_t id) {
-    return functionStates.at(id);
-}
-void Functions::setFunctionState(id_t id, std::shared_ptr<transform::ContextState>& s) {
-    functionStates[id] = s;
-}
-void Functions::setFunction(const std::string& name,
-                            Statement::FunctionDef* p_fn,
-                            std::shared_ptr<transform::ContextState>
-                                    state) {
+std::shared_ptr<transform::ContextState>& Functions::getFunctionState(id_t id) { return functionStates.at(id); }
+void Functions::setFunctionState(id_t id, std::shared_ptr<transform::ContextState>& s) { functionStates[id] = s; }
+void Functions::setFunction(const std::string& name, Statement::FunctionDef* p_fn,
+                            std::shared_ptr<transform::ContextState> state) {
     functions[name].push_back({p_fn, state});
 }
 
-std::optional<std::vector<Functions::FunctionStore>>
-Functions::getFunction(const std::string name) {
+std::optional<std::vector<Functions::FunctionStore>> Functions::getFunction(const std::string name) {
     auto f = functions.find(name);
     if (f != functions.end()) return f->second;
 
     return std::nullopt;
 }
 
-void Functions::setTransformedFunction(
-        const std::string& uuid, std::shared_ptr<transform::Item> p_fn) {
+void Functions::setTransformedFunction(const std::string& uuid, std::shared_ptr<transform::Item> p_fn) {
     if (createdFunctions.count(uuid)) {
         auto x = createdFunctions.at(uuid);
         for (auto f : p_fn->getFunctions()) { x->addFunction(f); }
@@ -42,8 +34,7 @@ void Functions::setTransformedFunction(
     createdFunctions[uuid] = p_fn;
 }
 
-std::optional<std::shared_ptr<transform::Item>>
-Functions::getTransformedFunction(const std::string uuid) {
+std::optional<std::shared_ptr<transform::Item>> Functions::getTransformedFunction(const std::string uuid) {
     auto f = createdFunctions.find(uuid);
     if (f != createdFunctions.end()) return f->second;
 
@@ -52,8 +43,7 @@ Functions::getTransformedFunction(const std::string uuid) {
 
 namespace {
 template <typename T>
-std::map<std::string, T> getAllFunctionsByUUID(std::string uuid,
-                                               std::map<std::string, T>& functions) {
+std::map<std::string, T> getAllFunctionsByUUID(std::string uuid, std::map<std::string, T>& functions) {
     std::map<std::string, T> result;
     for (auto f : functions) {
         if (utils::startsWith(f.first + ".", uuid)) { result[f.first] = f.second; }
@@ -62,9 +52,7 @@ std::map<std::string, T> getAllFunctionsByUUID(std::string uuid,
 }
 } // namespace
 
-void Functions::performInheritance(std::shared_ptr<types::DefinedType> ty,
-                                   std::shared_ptr<types::DefinedType>
-                                           parent,
+void Functions::performInheritance(std::shared_ptr<types::DefinedType> ty, std::shared_ptr<types::DefinedType> parent,
                                    bool allowConstructor) {
     auto parentUUID = parent->getUUID();
     auto childUUID = ty->getUUID();
@@ -76,8 +64,7 @@ void Functions::performInheritance(std::shared_ptr<types::DefinedType> ty,
         auto item = f.second;
         auto functions = item->getFunctions();
         utils::replaceAll(name, parentUUID + ".", "");
-        if (OperatorService::opEquals<OperatorType::CONSTRUCTOR>(name) && !allowConstructor)
-            continue;
+        if (OperatorService::opEquals<OperatorType::CONSTRUCTOR>(name) && !allowConstructor) continue;
         name = childUUID + "." + name;
         setTransformedFunction(name, std::make_shared<transform::Item>(*item));
     }
@@ -88,8 +75,7 @@ void Functions::performInheritance(std::shared_ptr<types::DefinedType> ty,
         auto functions = item;
         // TODO: avoid constructors?
         utils::replaceAll(name, parentUUID + ".", "");
-        if (OperatorService::opEquals<OperatorType::CONSTRUCTOR>(name) && !allowConstructor)
-            continue;
+        if (OperatorService::opEquals<OperatorType::CONSTRUCTOR>(name) && !allowConstructor) continue;
         name = childUUID + "." + name;
         for (auto fn : functions) { setFunction(name, fn.function, fn.state); }
     }

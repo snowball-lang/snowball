@@ -9,7 +9,7 @@
 #ifndef __SNOWBALL_AST_VISITOR_H_
 #define __SNOWBALL_AST_VISITOR_H_
 
-#define ACCEPT(Node)                                                                               \
+#define ACCEPT(Node)                                                                                                   \
     virtual void visit(Node* p_node) { assert(false && "BUG: Visitor::visit called"); }
 
 namespace snowball {

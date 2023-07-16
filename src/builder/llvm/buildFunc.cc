@@ -67,12 +67,11 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
                                                              dbgInfo->line,
                                                              getDIType(var->getType().get()),
                                                              dbg.debug);
-        dbg.builder->insertDeclare(
-                storage,
-                debugVar,
-                dbg.builder->createExpression(),
-                llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
-                entry);
+        dbg.builder->insertDeclare(storage,
+                                   debugVar,
+                                   dbg.builder->createExpression(),
+                                   llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
+                                   entry);
 
         ++llvmArgsIter;
     }
@@ -89,18 +88,13 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
 
         auto file = dbg.getFile(src->getPath());
         auto scope = llvmFn->getSubprogram();
-        auto debugVar = dbg.builder->createAutoVariable(scope,
-                                                        v->getIdentifier(),
-                                                        file,
-                                                        dbgInfo->line,
-                                                        getDIType(v->getType().get()),
-                                                        dbg.debug);
-        dbg.builder->insertDeclare(
-                storage,
-                debugVar,
-                dbg.builder->createExpression(),
-                llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
-                entry);
+        auto debugVar = dbg.builder->createAutoVariable(
+                scope, v->getIdentifier(), file, dbgInfo->line, getDIType(v->getType().get()), dbg.debug);
+        dbg.builder->insertDeclare(storage,
+                                   debugVar,
+                                   dbg.builder->createExpression(),
+                                   llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
+                                   entry);
     }
 
     builder->CreateBr(body);

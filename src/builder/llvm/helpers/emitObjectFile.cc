@@ -39,9 +39,7 @@ int LLVMBuilder::emitObjectFile(std::string out, bool log, bool object) {
     std::error_code EC;
     llvm::raw_fd_ostream dest(out, EC, llvm::sys::fs::OF_None);
 
-    if (EC) {
-        throw SNError(Error::IO_ERROR, FMT("Could not open file: %s", EC.message().c_str()));
-    }
+    if (EC) { throw SNError(Error::IO_ERROR, FMT("Could not open file: %s", EC.message().c_str())); }
 
     llvm::legacy::PassManager pass;
     auto FileType = object ? llvm::CGFT_ObjectFile : llvm::CGFT_AssemblyFile;

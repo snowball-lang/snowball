@@ -7,25 +7,19 @@ namespace snowball {
 namespace Syntax {
 namespace cacheComponents {
 
-void Types::setType(const std::string& uuid,
-                    Statement::Base* p_ty,
-                    std::shared_ptr<transform::ContextState>
-                            state) {
+void Types::setType(const std::string& uuid, Statement::Base* p_ty, std::shared_ptr<transform::ContextState> state) {
     assert(utils::cast<Statement::DefinedTypeDef>(p_ty) || utils::cast<Statement::TypeAlias>(p_ty));
     types[uuid] = {p_ty, state};
 }
 
-void Types::setTransformedType(const std::string& uuid,
-                               std::shared_ptr<transform::Item>
-                                       p_ty,
+void Types::setTransformedType(const std::string& uuid, std::shared_ptr<transform::Item> p_ty,
                                const std::string overloadedUUID) {
     auto storeUUID = overloadedUUID.empty() ? uuid : overloadedUUID;
     identifierLookup[uuid].emplace_back(storeUUID);
     createdTypes[storeUUID] = p_ty;
 }
 
-std::optional<std::vector<std::shared_ptr<transform::Item>>>
-Types::getTransformedType(const std::string& uuid) {
+std::optional<std::vector<std::shared_ptr<transform::Item>>> Types::getTransformedType(const std::string& uuid) {
     auto identifiers = identifierLookup.find(uuid);
     if (identifiers == identifierLookup.end()) return std::nullopt;
 

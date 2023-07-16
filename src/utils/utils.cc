@@ -32,12 +32,10 @@ std::string get_exe_folder() {
     if (count < 0 || count >= PATH_MAX) return {}; // some error
     szPath[count] = '\0';
 #endif
-    return std::filesystem::path{szPath}.parent_path() /
-            ""; // to finish the folder path with (back)slash
+    return std::filesystem::path{szPath}.parent_path() / ""; // to finish the folder path with (back)slash
 }
 
-std::string getSubstringByRange(const std::string& str,
-                                const std::pair<int, int>& start,
+std::string getSubstringByRange(const std::string& str, const std::pair<int, int>& start,
                                 const std::pair<int, int>& end) {
     int startPos = 0;
     int endPos = 0;
@@ -98,9 +96,8 @@ std::string get_lib_folder() {
 
     bool filepathExists = fs::is_directory(full_path);
     if (!filepathExists) {
-        throw snowball::SNError(
-                snowball::Error::IO_ERROR,
-                FMT("Could not find system libraries! (%s)", full_path.string().c_str()));
+        throw snowball::SNError(snowball::Error::IO_ERROR,
+                                FMT("Could not find system libraries! (%s)", full_path.string().c_str()));
     }
 
     return full_path;

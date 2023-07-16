@@ -7,11 +7,11 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
-#define OPERATOR_INSTANCE(x, f)                                                                    \
-    case services::OperatorService::x:                                                             \
-        this->value = builder->f(left, right);                                                     \
+#define OPERATOR_INSTANCE(x, f)                                                                                        \
+    case services::OperatorService::x:                                                                                 \
+        this->value = builder->f(left, right);                                                                         \
         break;
-#define OPERATOR_UINSTANCE(x, f)                                                                   \
+#define OPERATOR_UINSTANCE(x, f)                                                                                       \
     case services::OperatorService::x: this->value = builder->f(left); break;
 
 namespace snowball {
@@ -27,14 +27,10 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             llvm::Value* right = nullptr;
             if (args.size() > 1) right = build(args.at(1).get());
             auto baseType = args.at(0)->getType();
-            if (auto x = utils::dyn_cast<types::ReferenceType>(baseType))
-                baseType = x->getBaseType();
-            if (utils::dyn_cast<types::BoolType>(baseType) ||
-                utils::dyn_cast<types::Int8Type>(baseType) ||
-                utils::dyn_cast<types::Int16Type>(baseType) ||
-                utils::dyn_cast<types::Int32Type>(baseType) ||
-                utils::dyn_cast<types::Int64Type>(baseType) ||
-                utils::dyn_cast<types::CharType>(baseType)) {
+            if (auto x = utils::dyn_cast<types::ReferenceType>(baseType)) baseType = x->getBaseType();
+            if (utils::dyn_cast<types::BoolType>(baseType) || utils::dyn_cast<types::Int8Type>(baseType) ||
+                utils::dyn_cast<types::Int16Type>(baseType) || utils::dyn_cast<types::Int32Type>(baseType) ||
+                utils::dyn_cast<types::Int64Type>(baseType) || utils::dyn_cast<types::CharType>(baseType)) {
                 // this->value = builder->Create
                 switch (services::OperatorService::operatorID(opName)) {
                     OPERATOR_INSTANCE(EQEQ, CreateICmpEQ)
@@ -77,8 +73,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                 }
 
                 return true;
-            } else if (utils::dyn_cast<types::Float32Type>(baseType) ||
-                       utils::dyn_cast<types::Float64Type>(baseType)) {
+            } else if (utils::dyn_cast<types::Float32Type>(baseType) || utils::dyn_cast<types::Float64Type>(baseType)) {
                 // this->value = builder->Create
                 switch (services::OperatorService::operatorID(opName)) {
                     OPERATOR_INSTANCE(EQEQ, CreateFCmpUEQ)
@@ -125,10 +120,9 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                     case services::OperatorService::EQ: {
                         llvm::Value* leftValue = left;
                         llvm::Value* rightValue = right;
-                        if (!llvm::isa<llvm::LoadInst>(rightValue) &&
-                            rightValue->getType()->isPointerTy())
-                            rightValue = builder->CreateLoad(
-                                    rightValue->getType()->getPointerElementType(), rightValue);
+                        if (!llvm::isa<llvm::LoadInst>(rightValue) && rightValue->getType()->isPointerTy())
+                            rightValue =
+                                    builder->CreateLoad(rightValue->getType()->getPointerElementType(), rightValue);
 
                         builder->CreateStore(rightValue, leftValue);
                         break;

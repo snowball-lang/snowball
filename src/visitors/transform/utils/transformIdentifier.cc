@@ -14,10 +14,8 @@ Transformer::StoreType Transformer::getFromIdentifier(Expression::Identifier* s)
     auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
     return getFromIdentifier(s->getDBGInfo(), s->getIdentifier(), generics);
 }
-Transformer::StoreType Transformer::getFromIdentifier(DBGSourceInfo* dbgInfo,
-                                                      const std::string identifier,
-                                                      std::vector<Expression::TypeRef*>
-                                                              generics,
+Transformer::StoreType Transformer::getFromIdentifier(DBGSourceInfo* dbgInfo, const std::string identifier,
+                                                      std::vector<Expression::TypeRef*> generics,
                                                       const std::string p_uuid) {
     // Transform the base first
     auto [item, success] = ctx->getItem(identifier);
@@ -45,10 +43,9 @@ Transformer::StoreType Transformer::getFromIdentifier(DBGSourceInfo* dbgInfo,
     std::string uuidStackOverride = "";
 fetchFromUUID:
     // If we can't find it in the stack, we need to fetch it from the cache
-    auto uuid = uuidStackOverride.empty() ? p_uuid.empty()
-                    ? ctx->createIdentifierName(identifier, false)
-                    : (p_uuid + "." + identifier)
-                                          : (uuidStackOverride + "." + identifier);
+    auto uuid = uuidStackOverride.empty()
+            ? p_uuid.empty() ? ctx->createIdentifierName(identifier, false) : (p_uuid + "." + identifier)
+            : (uuidStackOverride + "." + identifier);
     std::optional<std::deque<std::shared_ptr<ir::Func>>> funcs = std::nullopt;
     if (auto x = ctx->cache->getTransformedFunction(uuid)) {
         assert(x->get()->isFunc());
@@ -66,8 +63,7 @@ fetchFromUUID:
     }
     if (auto t = ctx->cache->getType(uuid)) {
         auto ty = new Expression::TypeRef(identifier, dbgInfo, generics);
-        return {std::nullopt, transformTypeFromBase(uuid, t.value(), ty), std::nullopt,
-                std::nullopt, std::nullopt};
+        return {std::nullopt, transformTypeFromBase(uuid, t.value(), ty), std::nullopt, std::nullopt, std::nullopt};
     }
 
     std::optional<std::vector<cacheComponents::Functions::FunctionStore>> overloads = std::nullopt;

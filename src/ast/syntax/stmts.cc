@@ -35,29 +35,19 @@ void FunctionDef::setStatic(bool s) { _static = s; }
 bool FunctionDef::isMutable() { return _mutable; }
 void FunctionDef::isMutable(bool m) { _mutable = m; }
 void ConstructorDef::setSuperArgs(std::vector<Expression::Base*> args) { superArgs = args; }
-void ConstructorDef::setInitArgs(std::map<Expression::Identifier*, Expression::Base*> list) {
-    initArgs = list;
-}
-std::map<Expression::Identifier*, Expression::Base*> ConstructorDef::getInitArgs() const {
-    return initArgs;
-}
+void ConstructorDef::setInitArgs(std::map<Expression::Identifier*, Expression::Base*> list) { initArgs = list; }
+std::map<Expression::Identifier*, Expression::Base*> ConstructorDef::getInitArgs() const { return initArgs; }
 std::vector<Expression::Base*> ConstructorDef::getSuperArgs() const { return superArgs; }
-std::vector<Expression::Base*>::iterator ConstructorDef::superArgsBegin() {
-    return superArgs.begin();
-}
+std::vector<Expression::Base*>::iterator ConstructorDef::superArgsBegin() { return superArgs.begin(); }
 std::vector<Expression::Base*>::iterator ConstructorDef::superArgsEnd() { return superArgs.end(); }
 std::map<Expression::Identifier*, Expression::Base*>::iterator ConstructorDef::initArgsBegin() {
     return initArgs.begin();
 }
-std::map<Expression::Identifier*, Expression::Base*>::iterator ConstructorDef::initArgsEnd() {
-    return initArgs.end();
-}
+std::map<Expression::Identifier*, Expression::Base*>::iterator ConstructorDef::initArgsEnd() { return initArgs.end(); }
 Namespace::Namespace(std::string name, std::vector<Node*> body) : body(body), name(name) { }
 std::string Namespace::getName() const { return name; }
 std::vector<Node*> Namespace::getBody() const { return body; }
-ImportStmt::ImportStmt(const std::vector<std::string> path,
-                       const std::string package,
-                       ImportType ty)
+ImportStmt::ImportStmt(const std::vector<std::string> path, const std::string package, ImportType ty)
     : path(path), package(package), type(ty){};
 VariableDecl::VariableDecl(const std::string& name, Expression::Base* value, bool isMutable)
     : name(name), value(value), _mutable(isMutable){};
@@ -69,14 +59,8 @@ Expression::TypeRef* VariableDecl::getDefinedType() { return definedType; }
 void VariableDecl::setDefinedType(Expression::TypeRef* t) { definedType = t; }
 Return::Return(Expression::Base* value) : value(value){};
 Expression::Base* Return::getValue() const { return value; }
-DefinedTypeDef::DefinedTypeDef(std::string name,
-                               Expression::TypeRef* extends,
-                               Privacy::Status prvc,
-                               bool _struct)
-    : name(name)
-    , extends(extends)
-    , AcceptorExtend<DefinedTypeDef, Privacy>(prvc)
-    , _struct(_struct) { }
+DefinedTypeDef::DefinedTypeDef(std::string name, Expression::TypeRef* extends, Privacy::Status prvc, bool _struct)
+    : name(name), extends(extends), AcceptorExtend<DefinedTypeDef, Privacy>(prvc), _struct(_struct) { }
 void DefinedTypeDef::addFunction(FunctionDef* fnDef) { functions.push_back(fnDef); }
 void DefinedTypeDef::addVariable(VariableDecl* var) { variables.push_back(var); }
 bool DefinedTypeDef::isStruct() { return _struct; }

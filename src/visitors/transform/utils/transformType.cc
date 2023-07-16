@@ -61,8 +61,7 @@ std::shared_ptr<types::Type> Transformer::transformType(Expression::TypeRef* ty)
         } else if (_m.has_value()) {
             errorReason = "This is a module, not a type!";
         } else if (type.has_value()) {
-            if (auto x = utils::dyn_cast<types::BaseType>(type.value());
-                x && x->isPrivate() && !canPrivate) {
+            if (auto x = utils::dyn_cast<types::BaseType>(type.value()); x && x->isPrivate() && !canPrivate) {
                 E<TYPE_ERROR>(ty,
                               FMT("Can't use '%s' as a type!", name.c_str()),
                               {.info = "This is a private type and you can't access it from here!",
@@ -121,9 +120,7 @@ continueTypeFetch:
             auto transformed = t->getType();
             assert(t != nullptr);
             if (typeGenericsMatch(ty, transformed)) {
-                if (auto alias = utils::dyn_cast<types::TypeAlias>(transformed)) {
-                    transformed = alias->getBaseType();
-                }
+                if (auto alias = utils::dyn_cast<types::TypeAlias>(transformed)) { transformed = alias->getBaseType(); }
 
                 return transformed;
             }
@@ -133,9 +130,7 @@ continueTypeFetch:
     if (auto x = ctx->cache->getType(uuid)) {
         auto cls = *x;
         auto transformed = transformTypeFromBase(uuid, cls, ty);
-        if (auto alias = utils::dyn_cast<types::TypeAlias>(transformed)) {
-            transformed = alias->getBaseType();
-        }
+        if (auto alias = utils::dyn_cast<types::TypeAlias>(transformed)) { transformed = alias->getBaseType(); }
         return transformed;
     }
 
@@ -148,20 +143,16 @@ continueTypeFetch:
 
     if (returnedType == nullptr) E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
     if (!typeGenericsMatch(ty, returnedType)) {
-        auto compAsDefinedType =
-                utils::cast<GenericContainer<std::shared_ptr<types::Type>>>(returnedType.get());
-        auto compGenerics = compAsDefinedType == nullptr
-                ? std::vector<std::shared_ptr<types::Type>>{}
-                : compAsDefinedType->getGenerics();
+        auto compAsDefinedType = utils::cast<GenericContainer<std::shared_ptr<types::Type>>>(returnedType.get());
+        auto compGenerics = compAsDefinedType == nullptr ? std::vector<std::shared_ptr<types::Type>>{}
+                                                         : compAsDefinedType->getGenerics();
         E<TYPE_ERROR>(ty,
                       FMT("Type generics for '%s' don't match with '%s' ones!",
                           returnedType->getPrettyName().c_str(),
                           ty->getPrettyName().c_str()));
     }
 
-    if (auto alias = utils::dyn_cast<types::TypeAlias>(returnedType)) {
-        returnedType = alias->getBaseType();
-    }
+    if (auto alias = utils::dyn_cast<types::TypeAlias>(returnedType)) { returnedType = alias->getBaseType(); }
 
     return returnedType;
 }

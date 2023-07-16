@@ -31,11 +31,11 @@
 
 #define ACCEPT(Node)               virtual void visit(Node* p_node) override;
 #define SN_TRANSFORMER_VISIT(Node) void Transformer::visit(Node* p_node)
-#define SN_TRANSFORMER_CAN_GENERATE(node)                                                          \
-    if (utils::cast<Statement::BodiedFunction>(node) ||                                            \
-        utils::cast<Statement::ImportStmt>(node) || utils::cast<Statement::LLVMFunction>(node) ||  \
-        utils::cast<Statement::ConstructorDef>(node) || utils::cast<Statement::Namespace>(node) || \
-        utils::cast<Statement::DefinedTypeDef>(node) || utils::cast<Statement::TypeAlias>(node))
+#define SN_TRANSFORMER_CAN_GENERATE(node)                                                                              \
+    if (utils::cast<Statement::BodiedFunction>(node) || utils::cast<Statement::ImportStmt>(node) ||                    \
+        utils::cast<Statement::LLVMFunction>(node) || utils::cast<Statement::ConstructorDef>(node) ||                  \
+        utils::cast<Statement::Namespace>(node) || utils::cast<Statement::DefinedTypeDef>(node) ||                     \
+        utils::cast<Statement::TypeAlias>(node))
 
 namespace snowball {
 namespace Syntax {
@@ -64,12 +64,11 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      *  for functions that need these 4 return types
      *  as a result.
      */
-    using StoreType =
-            std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-                       std::optional<std::shared_ptr<types::Type>>,
-                       std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                       std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
-                       std::optional<std::shared_ptr<ir::Module>>>;
+    using StoreType = std::tuple<std::optional<std::shared_ptr<ir::Value>>,
+                                 std::optional<std::shared_ptr<types::Type>>,
+                                 std::optional<std::deque<std::shared_ptr<ir::Func>>>,
+                                 std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+                                 std::optional<std::shared_ptr<ir::Module>>>;
     // Context used to keep track of what's going on
     // and to manage a stack.
     TransformContext* ctx;
@@ -152,12 +151,11 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * @return a vector containing all the class's fields, including the
      * inherited ones.
      */
-    std::vector<types::DefinedType::ClassField*>
-    getMemberList(std::vector<Syntax::Statement::VariableDecl*> fieldNodes,
-                  std::vector<types::DefinedType::ClassField*>
-                          fields,
-                  std::shared_ptr<types::DefinedType>
-                          parent);
+    std::vector<types::DefinedType::ClassField*> getMemberList(std::vector<Syntax::Statement::VariableDecl*> fieldNodes,
+                                                               std::vector<types::DefinedType::ClassField*>
+                                                                       fields,
+                                                               std::shared_ptr<types::DefinedType>
+                                                                       parent);
     /**
      * Generate a function if it exists on the function cache,
      * if it was already generated, we can just return the already
@@ -193,9 +191,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * @note It also executes some checks such as generic checks and
      * more
      */
-    std::shared_ptr<types::Type> transformTypeAlias(const std::string& uuid,
-                                                    cacheComponents::Types::TypeStore& base,
-                                                    Expression::TypeRef* typeRef);
+    std::shared_ptr<types::Type>
+    transformTypeAlias(const std::string& uuid, cacheComponents::Types::TypeStore& base, Expression::TypeRef* typeRef);
     /**
      * @brief Fetch a function and get it's most fitting overload.
      *
@@ -222,10 +219,9 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * @brief Transform a function that hasn't been generated yet.
      * @arg arguments - deduced arguments to unify
      */
-    std::shared_ptr<ir::Func>
-    transformFunction(cacheComponents::Functions::FunctionStore node,
-                      const std::vector<std::shared_ptr<types::Type>>& deducedTypes,
-                      bool isEntryPoint = false);
+    std::shared_ptr<ir::Func> transformFunction(cacheComponents::Functions::FunctionStore node,
+                                                const std::vector<std::shared_ptr<types::Type>>& deducedTypes,
+                                                bool isEntryPoint = false);
     /**
      * @brief Gets the `real` user defined list for the arguments.
      * This is because, when generating a function, we add the "self"
@@ -234,8 +230,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * and there for we need to get this "real" list to avoid "no
      * matched functions" error.
      */
-    std::vector<Expression::Param*>
-    getActualFunctionArgs(cacheComponents::Functions::FunctionStore node);
+    std::vector<Expression::Param*> getActualFunctionArgs(cacheComponents::Functions::FunctionStore node);
     /**
      * @brief Checks if the current class in the context is in the same
      * context as @param ty.
@@ -285,6 +280,11 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
                                                        cacheComponents::Types::TypeStore& base,
                                                        Expression::TypeRef* typeRef);
     /**
+     * @brief It tryes to cast a value to x type. If it fails, it will
+     * return a nullptr.
+     */
+    std::shared_ptr<ir::Value> tryCast(std::shared_ptr<ir::Value> value, std::shared_ptr<types::Type> type);
+    /**
      * Transforms a given special type reference into a shared pointer
      * to Type.
      *
@@ -311,14 +311,13 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * constructing the base name.
      * @return A string containing the constructed base name.
      */
-    std::string getNiceBaseName(
-            std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-                       std::optional<std::shared_ptr<types::Type>>,
-                       std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                       std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
-                       std::optional<std::shared_ptr<ir::Module>>,
-                       bool /* (Ignore) Accept private members */>
-                    base);
+    std::string getNiceBaseName(std::tuple<std::optional<std::shared_ptr<ir::Value>>,
+                                           std::optional<std::shared_ptr<types::Type>>,
+                                           std::optional<std::deque<std::shared_ptr<ir::Func>>>,
+                                           std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+                                           std::optional<std::shared_ptr<ir::Module>>,
+                                           bool /* (Ignore) Accept private members */>
+                                        base);
     /**
      * Check if the body of a function returns a value.
      *
@@ -341,8 +340,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * @note If any test fail, an error would be reported meaning that if
      *  the program is still being executed all tests had passed.
      */
-    void executeGenericTests(
-            Syntax::Expression::WhereClause* clause, std::shared_ptr<types::Type> generic);
+    void executeGenericTests(Syntax::Expression::WhereClause* clause, std::shared_ptr<types::Type> generic);
     /**
      * @brief Creates a type.
      *
@@ -361,10 +359,9 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      *    stack[class<T>.function(n)] :
      *      -> [module uuid].class:[# overload of class].function
      */
-    std::shared_ptr<types::DefinedType>
-    transformClass(const std::string& uuid,
-                   cacheComponents::Types::TypeStore& classStore,
-                   Expression::TypeRef* typeRef = nullptr);
+    std::shared_ptr<types::DefinedType> transformClass(const std::string& uuid,
+                                                       cacheComponents::Types::TypeStore& classStore,
+                                                       Expression::TypeRef* typeRef = nullptr);
     /**
      * @brief Get a value from an index node.
      * @return It may return a value, a type pointer or a vector

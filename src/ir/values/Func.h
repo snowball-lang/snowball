@@ -21,13 +21,13 @@ namespace snowball {
 namespace ir {
 
 /// @brief Representation of a function in the IR
-class Func : public AcceptorExtend<Func, Value>,
-             public IdMixin,
-             public AcceptorExtend<Func, Syntax::Statement::Privacy>,
-             public AcceptorExtend<Func,
-                                   Syntax::Statement::GenericContainer<
-                                           std::pair<std::string, std::shared_ptr<types::Type>>>>,
-             public AcceptorExtend<Func, Syntax::AttributeHolder> {
+class Func
+    : public AcceptorExtend<Func, Value>,
+      public IdMixin,
+      public AcceptorExtend<Func, Syntax::Statement::Privacy>,
+      public AcceptorExtend<Func,
+                            Syntax::Statement::GenericContainer<std::pair<std::string, std::shared_ptr<types::Type>>>>,
+      public AcceptorExtend<Func, Syntax::AttributeHolder> {
   public:
     // Utility types
     using FunctionArgs = std::list<std::pair<std::string, std::shared_ptr<Argument>>>;
@@ -102,15 +102,12 @@ class Func : public AcceptorExtend<Func, Value>,
     Func& operator=(Func const&);
 
   public:
-#define DEFAULT                                                                                    \
-    bool declaration = false, bool variadic = false,                                               \
-         std::shared_ptr<types::DefinedType> ty = nullptr
+#define DEFAULT bool declaration = false, bool variadic = false, std::shared_ptr<types::DefinedType> ty = nullptr
 
     explicit Func(std::string identifier, DEFAULT);
     explicit Func(std::string identifier, FunctionArgs arguments, DEFAULT);
     explicit Func(std::string identifier, std::shared_ptr<Block> body, DEFAULT);
-    explicit Func(std::string identifier, std::shared_ptr<Block> body, FunctionArgs arguments,
-                  DEFAULT);
+    explicit Func(std::string identifier, std::shared_ptr<Block> body, FunctionArgs arguments, DEFAULT);
 
 #undef DEFAULT
 
@@ -208,9 +205,7 @@ class Func : public AcceptorExtend<Func, Value>,
      */
     template <typename T>
     static bool argumentSizesEqual(std::vector<T> functionArgs,
-                                   const std::vector<std::shared_ptr<types::Type>>
-                                           arguments,
-                                   bool isVariadic = false) {
+                                   const std::vector<std::shared_ptr<types::Type>> arguments, bool isVariadic = false) {
         int numFunctionArgs = functionArgs.size();
         int numProvidedArgs = arguments.size();
         int numDefaultArgs = 0;

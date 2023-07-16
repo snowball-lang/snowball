@@ -23,12 +23,11 @@ void LLVMBuilder::visit(ir::IndexExtract* index) {
     // table.
     // TODO: support for structs without vtable.
     auto i = index->getIndex() + defiendType->hasVtable();
-    //if (llvm::isa<llvm::LoadInst>(v)) {
-    //    auto load = llvm::cast<llvm::LoadInst>(v);
-    //    v = load->getPointerOperand();
-    //}
-    auto g = builder->CreateStructGEP(
-            baseType->isPointerTy() ? baseType->getPointerElementType() : baseType, v, i);
+    // if (llvm::isa<llvm::LoadInst>(v)) {
+    //     auto load = llvm::cast<llvm::LoadInst>(v);
+    //     v = load->getPointerOperand();
+    // }
+    auto g = builder->CreateStructGEP(baseType->isPointerTy() ? baseType->getPointerElementType() : baseType, v, i);
     this->value = builder->CreateLoad(g->getType()->getPointerElementType(), g);
 }
 

@@ -22,9 +22,8 @@ Parser::parseAttributes(std::function<Attributes(std::string)> parseFn) {
         } else {
             parsed = parseFn(attr);
             if (parsed == Attributes::INVALID) {
-                createError<ATTRIBUTE_ERROR>(
-                        "Trying to use an undefined attribute!",
-                        {.info = FMT("Attribute '%s' is not defined!", attr.c_str())});
+                createError<ATTRIBUTE_ERROR>("Trying to use an undefined attribute!",
+                                             {.info = FMT("Attribute '%s' is not defined!", attr.c_str())});
             }
         }
         if (is<TokenType::BRACKET_LPARENT>(peek())) {
@@ -38,8 +37,7 @@ Parser::parseAttributes(std::function<Attributes(std::string)> parseFn) {
                 if (is<TokenType::OP_EQ>()) {
                     next();
                     auto val = assert_tok<TokenType::VALUE_STRING>("a string value").to_string();
-                    if (is<TokenType::VALUE_STRING>())
-                        val = val.substr(1, val.size() - 2); // remove "
+                    if (is<TokenType::VALUE_STRING>()) val = val.substr(1, val.size() - 2); // remove "
                     attrArgs[name] = val;
                 } else {
                     attrArgs[name] = "";
@@ -51,8 +49,8 @@ Parser::parseAttributes(std::function<Attributes(std::string)> parseFn) {
                     continue;
                 } else {
                     next();
-                    createError<SYNTAX_ERROR>(FMT("Expected a ',' or a ')' but found '%s' instead",
-                                                  pk.to_string().c_str()));
+                    createError<SYNTAX_ERROR>(
+                            FMT("Expected a ',' or a ')' but found '%s' instead", pk.to_string().c_str()));
                 }
             }
         }

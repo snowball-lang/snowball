@@ -103,7 +103,8 @@
         "typeindex": "cpp",
         "any": "cpp",
         "stdint.h": "c",
-        "gc.h": "c"
+        "gc.h": "c",
+        "__verbose_abort": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "todo-tree.tree.scanMode": "workspace",

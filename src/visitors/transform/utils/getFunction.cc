@@ -6,19 +6,19 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::shared_ptr<ir::Func> Transformer::getFunction(
-        DBGObject* dbgInfo,
-        std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-                   std::optional<std::shared_ptr<types::Type>>,
-                   std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                   std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
-                   std::optional<std::shared_ptr<ir::Module>>,
-                   bool /* Accept private members */>
-                store,
-        const std::string& name,
-        const std::vector<std::shared_ptr<types::Type>>& arguments,
-        const std::vector<Expression::TypeRef*>& generics,
-        bool isIdentifier) {
+std::shared_ptr<ir::Func>
+Transformer::getFunction(DBGObject* dbgInfo,
+                         std::tuple<std::optional<std::shared_ptr<ir::Value>>,
+                                    std::optional<std::shared_ptr<types::Type>>,
+                                    std::optional<std::deque<std::shared_ptr<ir::Func>>>,
+                                    std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+                                    std::optional<std::shared_ptr<ir::Module>>,
+                                    bool /* Accept private members */>
+                                 store,
+                         const std::string& name,
+                         const std::vector<std::shared_ptr<types::Type>>& arguments,
+                         const std::vector<Expression::TypeRef*>& generics,
+                         bool isIdentifier) {
     auto [val, ty, functions, overloads, mod, canBePrivate] = store;
     auto checkIfContextEqual = [&dbgInfo = dbgInfo, name = name, canBePrivate = canBePrivate](
                                        std::shared_ptr<ir::Func> fn) -> std::shared_ptr<ir::Func> {
@@ -73,8 +73,7 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
                           v->getType()->getPrettyName().c_str()));
     } else if (ty) {
         // TODO: Call smth like Type::operator ()(..args)
-        E<TYPE_ERROR>(dbgInfo,
-                      FMT("Value with name '%s' is a type that can't be called!", name.c_str()));
+        E<TYPE_ERROR>(dbgInfo, FMT("Value with name '%s' is a type that can't be called!", name.c_str()));
     } else if (mod) {
         E<TYPE_ERROR>(dbgInfo, FMT("Silly billy, you can't call modules! ('%s')", name.c_str()));
     }
@@ -85,11 +84,9 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
             auto args = f->getArgs(true);
             size_t numArgs = arguments.size();
             auto argsVector = utils::list_to_vector(args);
-            if (ir::Func::argumentSizesEqual(argsVector, arguments, f->isVariadic()) ||
-                isIdentifier) {
+            if (ir::Func::argumentSizesEqual(argsVector, arguments, f->isVariadic()) || isIdentifier) {
                 bool equal = true;
-                for (auto arg = args.begin(); ((arg != args.end()) && equal && !isIdentifier);
-                     ++arg) {
+                for (auto arg = args.begin(); ((arg != args.end()) && equal && !isIdentifier); ++arg) {
                     auto i = std::distance(args.begin(), arg);
                     if (i < numArgs) {
                         equal = arg->second->getType()->is(arguments.at(i));
@@ -107,8 +104,7 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
                 auto fnGenerics = f->getGenerics();
                 // TODO: allow variadic generics
                 if (fnGenerics.size() == generics.size()) {
-                    for (auto generic = fnGenerics.begin(); (generic != fnGenerics.end()) && equal;
-                         ++generic) {
+                    for (auto generic = fnGenerics.begin(); (generic != fnGenerics.end()) && equal; ++generic) {
                         auto i = std::distance(fnGenerics.begin(), generic);
                         equal = (*generic).second->is(generics.at(i));
                     }
@@ -123,11 +119,11 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
         }
     }
 
-    auto [fn, args, res] = getBestFittingFunction(
-            overloads.has_value() ? overloads.value() : std::vector<Cache::FunctionStore>{},
-            arguments,
-            generics,
-            isIdentifier);
+    auto [fn, args, res] =
+            getBestFittingFunction(overloads.has_value() ? overloads.value() : std::vector<Cache::FunctionStore>{},
+                                   arguments,
+                                   generics,
+                                   isIdentifier);
     switch (res) {
         case Ok: {
             if (foundFunction != nullptr) return checkIfContextEqual(foundFunction);
@@ -139,15 +135,15 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
             if ((!overloads.has_value()) && (!functions.has_value()))
                 E<VARIABLE_ERROR>(dbgInfo, FMT("Function '%s' is not defined!", name.c_str()));
             CompilerError* tailErrors = nullptr;
-#define ADD_FUNCTION_ERROR(id, idx)                                                                \
-    for (auto overload : id.value()) {                                                             \
-        if (idx->getDBGInfo() == nullptr) continue;                                                \
-        auto err = EI<>(idx, "", {.info = "A possible function overload found here"});             \
-        if (tailErrors == nullptr) {                                                               \
-            tailErrors = err;                                                                      \
-            continue;                                                                              \
-        }                                                                                          \
-        tailErrors->info.tail = err;                                                               \
+#define ADD_FUNCTION_ERROR(id, idx)                                                                                    \
+    for (auto overload : id.value()) {                                                                                 \
+        if (idx->getDBGInfo() == nullptr) continue;                                                                    \
+        auto err = EI<>(idx, "", {.info = "A possible function overload found here"});                                 \
+        if (tailErrors == nullptr) {                                                                                   \
+            tailErrors = err;                                                                                          \
+            continue;                                                                                                  \
+        }                                                                                                              \
+        tailErrors->info.tail = err;                                                                                   \
     }
 
             // TODO: check if this is necesary (just for functions)
@@ -159,26 +155,25 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
             // TODO: throw a note that sugest's it's correct types: only if
             // there's one
             //  overload
-            E<VARIABLE_ERROR>(
-                    dbgInfo,
-                    FMT("No matches found for %s(%s)",
-                        name.c_str(),
-                        Expression::FunctionCall::getArgumentsAsString(arguments).c_str()),
-                    {.info = "No function overloads found for this function!",
-                     .note = "The function does exist but it's arguments are "
-                             "not correctly "
-                             "defined.",
-                     .help = "The provided function name and arguments do not "
-                             "match any of "
-                             "the \navailable function overloads. Please "
-                             "ensure that you "
-                             "have correctly spelled the \nfunction name and "
-                             "provided the "
-                             "appropriate arguments. Additionally, check the "
-                             "\ndocumentation or function signature to confirm "
-                             "the correct "
-                             "syntax and parameter \ntypes.",
-                     .tail = tailErrors});
+            E<VARIABLE_ERROR>(dbgInfo,
+                              FMT("No matches found for %s(%s)",
+                                  name.c_str(),
+                                  Expression::FunctionCall::getArgumentsAsString(arguments).c_str()),
+                              {.info = "No function overloads found for this function!",
+                               .note = "The function does exist but it's arguments are "
+                                       "not correctly "
+                                       "defined.",
+                               .help = "The provided function name and arguments do not "
+                                       "match any of "
+                                       "the \navailable function overloads. Please "
+                                       "ensure that you "
+                                       "have correctly spelled the \nfunction name and "
+                                       "provided the "
+                                       "appropriate arguments. Additionally, check the "
+                                       "\ndocumentation or function signature to confirm "
+                                       "the correct "
+                                       "syntax and parameter \ntypes.",
+                               .tail = tailErrors});
         }
 
         case AmbiguityConflict: {

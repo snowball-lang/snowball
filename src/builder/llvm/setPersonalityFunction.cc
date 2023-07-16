@@ -15,9 +15,8 @@ namespace codegen {
 
 void LLVMBuilder::setPersonalityFunction(llvm::Function* func) {
     auto ty = llvm::FunctionType::get(builder->getInt32Ty(),
-                                      {builder->getInt32Ty(), builder->getInt32Ty(),
-                                       builder->getInt64Ty(), builder->getInt8PtrTy(),
-                                       builder->getInt8PtrTy()},
+                                      {builder->getInt32Ty(), builder->getInt32Ty(), builder->getInt64Ty(),
+                                       builder->getInt8PtrTy(), builder->getInt8PtrTy()},
                                       false);
     auto c = module->getOrInsertFunction("sn.eh.personality", ty).getCallee();
     auto f = llvm::cast<llvm::Function>(c);

@@ -8,9 +8,7 @@ namespace snowball {
 namespace services {
 using OpType = services::OperatorService::OperatorType;
 
-std::string OperatorService::getOperatorId(OperatorService::OperatorType id) {
-    return operators.at(id);
-}
+std::string OperatorService::getOperatorId(OperatorService::OperatorType id) { return operators.at(id); }
 
 bool OperatorService::isOperator(const std::string& name) { return utils::startsWith(name, "#"); }
 
@@ -26,14 +24,11 @@ OperatorService::OperatorType OperatorService::operatorID(const std::string& n) 
     return (OperatorService::OperatorType)std::distance(operators.begin(), it);
 }
 
-std::string OperatorService::getOperatorMangle(OperatorService::OperatorType id) {
-    return "#" + getOperatorId(id);
-}
+std::string OperatorService::getOperatorMangle(OperatorService::OperatorType id) { return "#" + getOperatorId(id); }
 
 bool OperatorService::isUnary(OperatorService::OperatorType op_type) {
     return op_type == OpType::NOT || op_type == OpType::BIT_NOT || op_type == OpType::UPLUS ||
-            op_type == OpType::UMINUS || op_type == OpType::REFERENCE ||
-            op_type == OpType::DEREFERENCE;
+            op_type == OpType::UMINUS || op_type == OpType::REFERENCE || op_type == OpType::DEREFERENCE;
 }
 
 } // namespace services

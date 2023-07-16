@@ -18,8 +18,7 @@ void LLVMBuilder::visit(ir::Return* ret) {
         auto expr = build(exprValue.get());
         auto funcRet = ctx->getCurrentFunction()->getReturnType();
         // case: "return x();" where x is a function returning a type that's not a pointer
-        if (!funcRet->isPointerTy() && expr->getType()->isPointerTy() &&
-            !expr->getType()->isFunctionTy()) {
+        if (!funcRet->isPointerTy() && expr->getType()->isPointerTy() && !expr->getType()->isFunctionTy()) {
             expr = builder->CreateLoad(expr->getType()->getPointerElementType(), expr);
         }
 

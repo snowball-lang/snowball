@@ -8,14 +8,13 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
-    auto definedType =
-            p_node->getDefinedType() == nullptr ? nullptr : transformType(p_node->getDefinedType());
+    auto definedType = p_node->getDefinedType() == nullptr ? nullptr : transformType(p_node->getDefinedType());
     auto variableName = p_node->getName();
     auto variableValue = p_node->getValue();
     auto isMutable = p_node->isMutable();
     assert(p_node->isInitialized() || definedType != nullptr);
     if (definedType) {
-        //definedType = utils::copy_shared(definedType);
+        // definedType = utils::copy_shared(definedType);
         definedType->setMutable(isMutable);
     }
 
@@ -31,8 +30,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
     // TODO: it should always be declared
     if (p_node->isInitialized()) {
         auto val = trans(variableValue);
-        auto varDecl = builder.createVariableDeclaration(
-                p_node->getDBGInfo(), variableName, val, isMutable);
+        auto varDecl = builder.createVariableDeclaration(p_node->getDBGInfo(), variableName, val, isMutable);
         varDecl->setId(var->getId());
         varDecl->setType(val->getType());
         if (auto f = ctx->getCurrentFunction().get()) {
@@ -44,8 +42,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
         if (definedType == nullptr || definedType->is(val->getType())) {
             this->value = varDecl;
         } else {
-            if (definedType->canCast(val->getType())) {
-                auto v = builder.createCast(p_node->getDBGInfo(), val, definedType);
+            if (auto v = tryCast(val, definedType); v != nullptr) {
                 this->value = v;
             } else {
                 E<VARIABLE_ERROR>(p_node,
@@ -60,8 +57,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
         ty->setMutable(isMutable);
         var->setType(ty);
     } else {
-        auto varDecl = builder.createVariableDeclaration(
-                p_node->getDBGInfo(), variableName, nullptr, isMutable);
+        auto varDecl = builder.createVariableDeclaration(p_node->getDBGInfo(), variableName, nullptr, isMutable);
         varDecl->setId(var->getId());
         varDecl->setType(definedType);
         if (auto f = ctx->getCurrentFunction().get()) {

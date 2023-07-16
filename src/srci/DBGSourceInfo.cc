@@ -7,8 +7,7 @@
 #include <string>
 
 namespace snowball {
-DBGSourceInfo::DBGSourceInfo(SourceInfo* p_source_info, uint32_t p_line)
-    : SrcObject(p_source_info), line(p_line) { }
+DBGSourceInfo::DBGSourceInfo(SourceInfo* p_source_info, uint32_t p_line) : SrcObject(p_source_info), line(p_line) { }
 
 DBGSourceInfo::DBGSourceInfo(SourceInfo* p_source_info, std::pair<int, int> p_pos, uint32_t p_width)
     : pos(p_pos), line((uint32_t)p_pos.first), width(p_width), SrcObject(p_source_info) { }

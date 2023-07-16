@@ -11,8 +11,7 @@ namespace codegen {
 
 void LLVMBuilder::initializeRuntime() {
     auto ty = llvm::FunctionType::get(builder->getVoidTy(), {}, false);
-    auto f = llvm::cast<llvm::Function>(
-            module->getOrInsertFunction("sn.runtime.initialize", ty).getCallee());
+    auto f = llvm::cast<llvm::Function>(module->getOrInsertFunction("sn.runtime.initialize", ty).getCallee());
     f->addFnAttr(llvm::Attribute::AlwaysInline);
     f->addFnAttr(llvm::Attribute::NoUnwind);
     auto mainFunction = module->getFunction(_SNOWBALL_FUNCTION_ENTRY);
@@ -22,9 +21,7 @@ void LLVMBuilder::initializeRuntime() {
         if (ctx->testMode) {
             mainFunction->eraseFromParent();
             auto fnType = llvm::FunctionType::get(builder->getInt32Ty(), {});
-            mainFunction =
-                    (llvm::Function*)module->getOrInsertFunction(_SNOWBALL_FUNCTION_ENTRY, fnType)
-                            .getCallee();
+            mainFunction = (llvm::Function*)module->getOrInsertFunction(_SNOWBALL_FUNCTION_ENTRY, fnType).getCallee();
             setPersonalityFunction(mainFunction);
             body = llvm::BasicBlock::Create(builder->getContext(), "test_entry", mainFunction);
         } else {
@@ -32,9 +29,7 @@ void LLVMBuilder::initializeRuntime() {
         }
     } else {
         auto fnType = llvm::FunctionType::get(builder->getInt32Ty(), {});
-        mainFunction =
-                (llvm::Function*)module->getOrInsertFunction(_SNOWBALL_FUNCTION_ENTRY, fnType)
-                        .getCallee();
+        mainFunction = (llvm::Function*)module->getOrInsertFunction(_SNOWBALL_FUNCTION_ENTRY, fnType).getCallee();
         setPersonalityFunction(mainFunction);
         body = llvm::BasicBlock::Create(builder->getContext(), "entry", mainFunction);
         buildReturn = !ctx->testMode;

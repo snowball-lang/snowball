@@ -12,8 +12,7 @@ namespace snowball {
 namespace Syntax {
 namespace Expression {
 
-DeclType::DeclType(Base* value, DBGSourceInfo* srcInfo)
-    : value(value), TypeRef("decltype(...)", srcInfo){};
+DeclType::DeclType(Base* value, DBGSourceInfo* srcInfo) : value(value), TypeRef("decltype(...)", srcInfo){};
 FuncType::FuncType(std::vector<TypeRef*> args, TypeRef* returnValue, DBGSourceInfo* srcInfo)
     : args(args), returnValue(returnValue), TypeRef("fn(...)", srcInfo){};
 ReferenceType::ReferenceType(TypeRef* baseType, DBGSourceInfo* srcInfo)
@@ -23,18 +22,15 @@ TypeRef::TypeRef(Expression::Base* p_ast, std::string p_name, DBGSourceInfo* p_d
     : internalAST(p_ast), types::Type(REF, p_name), id(id) {
     setDBGInfo(p_dbg);
 }
-TypeRef::TypeRef(std::string p_name, snowball::DBGSourceInfo* p_dbg,
-                 std::vector<TypeRef*> p_generics, std::string id)
+TypeRef::TypeRef(std::string p_name, snowball::DBGSourceInfo* p_dbg, std::vector<TypeRef*> p_generics, std::string id)
     : generics(p_generics), types::Type(REF, p_name), id(id) {
     setDBGInfo(p_dbg);
 }
-TypeRef::TypeRef(std::string p_name, DBGSourceInfo* p_dbg,
-                 std::shared_ptr<types::Type> internalType, std::string id)
+TypeRef::TypeRef(std::string p_name, DBGSourceInfo* p_dbg, std::shared_ptr<types::Type> internalType, std::string id)
     : internalType(internalType), types::Type(REF, p_name), id(id) {
     setDBGInfo(p_dbg);
 }
-NewInstance::NewInstance(DBGSourceInfo* dbg, std::vector<Base*> args, TypeRef* ty,
-                         bool createAtHeap)
+NewInstance::NewInstance(DBGSourceInfo* dbg, std::vector<Base*> args, TypeRef* ty, bool createAtHeap)
     : type(ty), createAtHeap(createAtHeap) {
     auto call = Syntax::N<FunctionCall>(ty->toRef(), args);
     call->setDBGInfo(dbg);
@@ -43,8 +39,7 @@ NewInstance::NewInstance(DBGSourceInfo* dbg, std::vector<Base*> args, TypeRef* t
 void TypeRef::setGenerics(std::vector<TypeRef*> g) { generics = g; }
 std::vector<Expression::TypeRef*> GenericIdentifier::getGenerics() const { return generics; }
 std::vector<TypeRef*> TypeRef::getGenerics() { return this->generics; }
-Param::Param(std::string name, TypeRef* type, Status generic)
-    : name(name), type(type), status(generic) {
+Param::Param(std::string name, TypeRef* type, Status generic) : name(name), type(type), status(generic) {
     assert(generic <= 1 && generic >= 0 && "Invalid param status");
 } // clang-format off
 bool BinaryOp::is_assignment(OpType opType) {
@@ -99,8 +94,7 @@ std::string BinaryOp::to_string() const {
 #undef OP_DEFAULT
 } // clang-format on
 
-std::string
-FunctionCall::getArgumentsAsString(const std::vector<std::shared_ptr<types::Type>> args) {
+std::string FunctionCall::getArgumentsAsString(const std::vector<std::shared_ptr<types::Type>> args) {
     std::string result;
     for (auto arg = args.begin(); arg != args.end(); ++arg) {
         result += arg->get()->getPrettyName();
@@ -124,7 +118,7 @@ std::string GenericIdentifier::getNiceName() const {
     return identifier + (gIndex > 0 ? gens + ">" : "");
 }
 
-#define CASE(t, r)                                                                                 \
+#define CASE(t, r)                                                                                                     \
     case TokenType::t: return r;
 ConstantValue::ConstantType ConstantValue::deduceType(TokenType ty) {
     switch (ty) {

@@ -65,8 +65,7 @@ class ASTContext {
         auto val = f.find(name);
 
         if (val != f.end()) {
-            E<VARIABLE_ERROR>(item,
-                              FMT("Value for '%s' is already defiend!", item->toString().c_str()));
+            E<VARIABLE_ERROR>(item, FMT("Value for '%s' is already defiend!", item->toString().c_str()));
         }
 
         stack.front().insert(std::make_pair(name, item));

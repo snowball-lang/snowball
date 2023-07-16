@@ -10,11 +10,7 @@
 namespace snowball {
 namespace ir {
 
-Func::Func(std::string identifier,
-           bool declaration,
-           bool variadic,
-           std::shared_ptr<types::DefinedType>
-                   parent)
+Func::Func(std::string identifier, bool declaration, bool variadic, std::shared_ptr<types::DefinedType> parent)
     : declaration(declaration), variadic(variadic), identifier(identifier), parent(parent) { }
 
 Func::Func(std::string identifier,
@@ -52,9 +48,7 @@ Func::Func(std::string identifier,
 }
 
 bool Func::isConstructor() const {
-    return (services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(
-                   identifier)) &&
-            hasParent();
+    return (services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(identifier)) && hasParent();
 }
 
 std::string Func::getIdentifier() { return identifier; }
@@ -69,9 +63,7 @@ std::string Func::getName(bool ignoreOperators) {
 
 Func::FunctionArgs Func::getArgs(bool ignoreSelf) const {
     auto argv = arguments;
-    if (ignoreSelf && argv.size() > 0 && ((hasParent() && (!_static)) || isConstructor())) {
-        argv.erase(argv.begin());
-    }
+    if (ignoreSelf && argv.size() > 0 && ((hasParent() && (!_static)) || isConstructor())) { argv.erase(argv.begin()); }
 
     return argv;
 }
@@ -79,9 +71,7 @@ Func::FunctionArgs Func::getArgs(bool ignoreSelf) const {
 bool Func::isExternal(std::string name) { return !utils::startsWith(name, _SN_MANGLE_PREFIX); }
 
 std::string Func::getNiceName() {
-    auto base = hasParent()    ? (parent->getPrettyName() + "::")
-            : module->isMain() ? ""
-                               : module->getName() + "::";
+    auto base = hasParent() ? (parent->getPrettyName() + "::") : module->isMain() ? "" : module->getName() + "::";
     auto n = base + getName();
 
     return n;
@@ -104,10 +94,9 @@ std::string Func::getMangle() {
         name = name.substr(0, name.size() - (_SNOWBALL_LAMBDA_SIZE + 1)) + ".$LmbdF";
     }
 
-    std::string prefix =
-            (utils::startsWith(base, _SN_MANGLE_PREFIX) ? base : (_SN_MANGLE_PREFIX + base)) +
-            +"&" + std::to_string(name.size()) + name // Function name with modules
-            + "Cv" + std::to_string(getId());         // disambiguator
+    std::string prefix = (utils::startsWith(base, _SN_MANGLE_PREFIX) ? base : (_SN_MANGLE_PREFIX + base)) + +"&" +
+            std::to_string(name.size()) + name // Function name with modules
+            + "Cv" + std::to_string(getId());  // disambiguator
 
     std::string mangledArgs = "Sa"; // Start args tag
 

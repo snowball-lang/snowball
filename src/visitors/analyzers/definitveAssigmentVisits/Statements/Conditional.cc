@@ -27,8 +27,7 @@ SN_DEFINITE_ASSIGMENT_VISIT(Statement::Conditional) {
 
         for (auto id : blockInited) {
             auto var = getIdentifier(id);
-            if ((std::find(elseInited.begin(), elseInited.end(), id) != elseInited.end()) &&
-                var != std::nullopt) {
+            if ((std::find(elseInited.begin(), elseInited.end(), id) != elseInited.end()) && var != std::nullopt) {
                 if (var.value().second == NotInitialized) {
                     this->state.inited.push_back(id);
                     this->scopes.front()[id] = Initialized;

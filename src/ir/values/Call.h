@@ -63,8 +63,7 @@ class ObjectInitialization : public AcceptorExtend<ObjectInitialization, Call> {
     friend Call;
 
   public:
-    explicit ObjectInitialization(std::shared_ptr<Value> callee,
-                                  std::vector<std::shared_ptr<Value>> args = {})
+    explicit ObjectInitialization(std::shared_ptr<Value> callee, std::vector<std::shared_ptr<Value>> args = {})
         : AcceptorExtend(callee, args) { }
 
     /// @brief Wether to initialize the object at stack or heap.

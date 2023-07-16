@@ -35,11 +35,10 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
     auto left = p_node->left;
     auto right = p_node->right;
 
-    auto ident =
-            Syntax::N<Expression::Identifier>(services::OperatorService::getOperatorMangle(opType));
+    auto ident = Syntax::N<Expression::Identifier>(services::OperatorService::getOperatorMangle(opType));
     auto index = Syntax::N<Expression::Index>(left, ident);
-    std::vector<Expression::Base*> args = p_node->unary ? std::vector<Expression::Base*>{}
-                                                        : std::vector<Expression::Base*>{right};
+    std::vector<Expression::Base*> args =
+            p_node->unary ? std::vector<Expression::Base*>{} : std::vector<Expression::Base*>{right};
     auto call = Syntax::N<Expression::FunctionCall>(index, args);
 
     call->isInitialization = p_node->isInitialization;

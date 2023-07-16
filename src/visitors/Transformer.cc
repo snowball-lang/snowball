@@ -43,8 +43,7 @@ std::shared_ptr<ir::Value> Transformer::trans(Node* node) {
                         return nullptr; // TODO: check if this causes problems
                     }
                 } else {
-                    E<SYNTAX_ERROR>(node,
-                                    "Unknown attribute!",
+                    E<SYNTAX_ERROR>(node, "Unknown attribute!",
                                     {.info = FMT("Unknown config attribute '%s'", type.c_str())});
                 }
             }

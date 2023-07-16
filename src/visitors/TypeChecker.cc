@@ -34,8 +34,7 @@ namespace codegen {
 using namespace Syntax;
 using Operators = services::OperatorService;
 
-TypeChecker::TypeChecker(std::shared_ptr<ir::Module> mod)
-    : AcceptorExtend<TypeChecker, ValueVisitor>(), module(mod) { }
+TypeChecker::TypeChecker(std::shared_ptr<ir::Module> mod) : AcceptorExtend<TypeChecker, ValueVisitor>(), module(mod) { }
 
 VISIT(Func) {
     if (p_node->hasAttribute(Attributes::TYPECHECKED)) return;
@@ -167,9 +166,7 @@ VISIT(Cast) {
     assert(t->is(p_node->getType()));
 
     if (utils::dyn_cast<types::VoidType>(v->getType())) {
-        E<TYPE_ERROR>(
-                p_node,
-                FMT("Can't cast from void type ('%s')!", v->getType()->getPrettyName().c_str()));
+        E<TYPE_ERROR>(p_node, FMT("Can't cast from void type ('%s')!", v->getType()->getPrettyName().c_str()));
     }
 
     if (v->getType()->is(t)) return;
@@ -206,16 +203,14 @@ VISIT(Return) {
     assert(fn != nullptr);
 
     if (p_node->getExpr() != nullptr) p_node->getExpr()->visit(this);
-    if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) != nullptr) &&
-        (p_node->getExpr() != nullptr)) {
+    if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) != nullptr) && (p_node->getExpr() != nullptr)) {
         E<TYPE_ERROR>(p_node,
                       FMT("Nonvalue returning function cant have a "
                           "return containing an expression (%s)!",
                           p_node->getType()->getPrettyName().c_str()));
     }
 
-    if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) == nullptr) &&
-        (p_node->getExpr() == nullptr)) {
+    if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) == nullptr) && (p_node->getExpr() == nullptr)) {
         E<TYPE_ERROR>(p_node,
                       FMT("Can't return \"nothing\" in a function with "
                           "non-void return type (%s)!",
@@ -246,13 +241,11 @@ void TypeChecker::codegen() {
     for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn) visit(fn->get());
 }
 
-void TypeChecker::cantBeVoid(DBGObject* dbg, std::shared_ptr<types::Type> ty,
-                             const std::string& message) {
+void TypeChecker::cantBeVoid(DBGObject* dbg, std::shared_ptr<types::Type> ty, const std::string& message) {
     if (utils::dyn_cast<types::VoidType>(ty)) { E<TYPE_ERROR>(dbg, message); }
 }
 
-void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn,
-                                  std::shared_ptr<ir::Value> value) {
+void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn, std::shared_ptr<ir::Value> value) {
     auto fnName = fn->getName(true);
     auto isMutable = this->isMutable(value);
     bool accessingSelf = this->accessingSelf(value);
@@ -288,9 +281,7 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
                                            "declaration.",
                                    .help = "Try to make the variable mutable by adding "
                                            "the 'mut' keyword.",
-                                   .tail = EI<>(value->getDBGInfo(),
-                                                "",
-                                                {.info = "This variable is not mutable!"})});
+                                   .tail = EI<>(value->getDBGInfo(), "", {.info = "This variable is not mutable!"})});
             }
         } else if (isAssignment)
             return;
@@ -315,12 +306,9 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
 }
 
 bool TypeChecker::isMutable(std::shared_ptr<ir::Value> value) {
-    if (auto x = utils::dyn_cast<ir::Variable>(value)) 
-        return x->isMutable();
-    if (auto x = utils::dyn_cast<ir::IndexExtract>(value)) 
-        return x->getField()->isMutable;
-    if (auto x = utils::dyn_cast<ir::VariableDeclaration>(value))
-        return x->isMutable();
+    if (auto x = utils::dyn_cast<ir::Variable>(value)) return x->isMutable();
+    if (auto x = utils::dyn_cast<ir::IndexExtract>(value)) return x->getField()->isMutable;
+    if (auto x = utils::dyn_cast<ir::VariableDeclaration>(value)) return x->isMutable();
     auto b = utils::dyn_cast<types::ReferenceType>(value->getType());
     return value->getType()->isMutable();
 }
@@ -329,8 +317,7 @@ bool TypeChecker::accessingSelf(std::shared_ptr<ir::Value> value) {
     auto index = utils::dyn_cast<ir::IndexExtract>(value);
 
     while (index) {
-        if (auto x = utils::dyn_cast<ir::Variable>(index->getValue()))
-            return x->getIdentifier() == "self";
+        if (auto x = utils::dyn_cast<ir::Variable>(index->getValue())) return x->getIdentifier() == "self";
         index = utils::dyn_cast<ir::IndexExtract>(index->getValue());
     }
 
@@ -345,22 +332,20 @@ void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
                              .note = "This error is caused by the function not having a body.",
                              .help = "Try adding a body to the function."});
         else if (!utils::dyn_cast<types::Int32Type>(p_node->getRetTy()))
-            E<SYNTAX_ERROR>(
-                    p_node->getDBGInfo(), "Test functions must return an integer!",
-                    {.info = "This function is a test function!",
-                     .note = "This error is caused by the function not returning an integer.",
-                     .help = "Try changing the return type to an integer."});
+            E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions must return an integer!",
+                            {.info = "This function is a test function!",
+                             .note = "This error is caused by the function not returning an integer.",
+                             .help = "Try changing the return type to an integer."});
         else if (p_node->getArgs().size() > 0)
             E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions can't have arguments!",
                             {.info = "This function is a test function!",
                              .note = "This error is caused by the function having arguments.",
                              .help = "Try removing the arguments from the function."});
         else if (p_node->hasAttribute(Attributes::INLINE))
-            E<SYNTAX_ERROR>(
-                    p_node->getDBGInfo(), "Test functions can't be inline!",
-                    {.info = "This function is a test function!",
-                     .note = "This error is caused by the function having the 'inline' attribute.",
-                     .help = "Try removing the 'inline' attribute from the function."});
+            E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions can't be inline!",
+                            {.info = "This function is a test function!",
+                             .note = "This error is caused by the function having the 'inline' attribute.",
+                             .help = "Try removing the 'inline' attribute from the function."});
     } else if (p_node->hasAttribute(Attributes::INLINE)) {
         if (p_node->isDeclaration())
             E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Inline functions must have a body!",

@@ -67,10 +67,9 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
                 if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_VAR &&
                     pk.type != TokenType::KWORD_OPERATOR && (!IS_CONSTRUCTOR(pk))) {
                     next();
-                    createError<SYNTAX_ERROR>(
-                            "expected keyword \"func\", \"let\", \"operator\" or a "
-                            "constructor "
-                            "declaration after static member");
+                    createError<SYNTAX_ERROR>("expected keyword \"func\", \"let\", \"operator\" or a "
+                                              "constructor "
+                                              "declaration after static member");
                 }
             } break;
 
@@ -93,8 +92,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
                     createError<ARGUMENT_ERROR>("Virtual methods can't be static!");
                 } else if (pk.type != TokenType::KWORD_FUNC) {
                     next();
-                    createError<SYNTAX_ERROR>(
-                            "Expected keyword \"func\" after virtual declaration!");
+                    createError<SYNTAX_ERROR>("Expected keyword \"func\" after virtual declaration!");
                 }
             } break;
 
@@ -126,8 +124,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
                     hasConstructor = true;
                     auto func = parseFunction(true);
                     func->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
-                    func->setName(services::OperatorService::getOperatorMangle(
-                            services::OperatorService::CONSTRUCTOR));
+                    func->setName(services::OperatorService::getOperatorMangle(services::OperatorService::CONSTRUCTOR));
                     func->setStatic();
                     cls->addFunction(func);
                     break;
@@ -136,8 +133,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
 
             default: {
                 createError<SYNTAX_ERROR>(
-                        FMT("Unexpected token ('%s') found while parsing class body",
-                            m_current.to_string().c_str()));
+                        FMT("Unexpected token ('%s') found while parsing class body", m_current.to_string().c_str()));
             }
         }
     }

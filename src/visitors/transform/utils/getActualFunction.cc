@@ -7,11 +7,10 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::vector<Expression::Param*>
-Transformer::getActualFunctionArgs(cacheComponents::Functions::FunctionStore node) {
+std::vector<Expression::Param*> Transformer::getActualFunctionArgs(cacheComponents::Functions::FunctionStore node) {
     auto args = node.function->getArgs();
-    if ((node.state->currentClass != nullptr) && (!node.function->isStatic()) &&
-        (args.size() > 0) && (args.at(0)->getName() == "self")) {
+    if ((node.state->currentClass != nullptr) && (!node.function->isStatic()) && (args.size() > 0) &&
+        (args.at(0)->getName() == "self")) {
         args.erase(args.begin());
     }
 

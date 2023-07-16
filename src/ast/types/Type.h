@@ -8,9 +8,9 @@
 #ifndef __SNOWBALL_AST_TYPE_H_
 #define __SNOWBALL_AST_TYPE_H_
 
-#define SNOWBALL_COBJ_CAST_CHECK                                                                   \
+#define SNOWBALL_COBJ_CAST_CHECK                                                                                       \
     if (utils::cast<CObjectType>(ty)) return true;
-#define SNOWBALL_MUTABLE_CAST_CHECK                                                                \
+#define SNOWBALL_MUTABLE_CAST_CHECK                                                                                    \
     if (!_mutable && ty->isMutable()) return false;
 
 /**

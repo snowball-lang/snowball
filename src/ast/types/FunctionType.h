@@ -60,10 +60,7 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
                  bool isVariadic = false,
                  bool isMutable = true,
                  const std::string& name = "<fn type>")
-        : AcceptorExtend(Kind::TYPE, name, isMutable)
-        , args(args)
-        , retTy(retTy)
-        , variadic(isVariadic) { }
+        : AcceptorExtend(Kind::TYPE, name, isMutable), args(args), retTy(retTy), variadic(isVariadic) { }
 
     /**
      * @param other another (non-functional) type.

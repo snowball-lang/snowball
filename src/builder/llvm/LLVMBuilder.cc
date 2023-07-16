@@ -154,8 +154,7 @@ void LLVMBuilder::codegen() {
             auto f = fn->get();
             if (!f->isDeclaration()) {
                 auto llvmFn = funcs.at(f->getId());
-                f->hasAttribute(Attributes::LLVM_FUNC) ? buildLLVMFunction(llvmFn, f)
-                                                       : buildBodiedFunction(llvmFn, f);
+                f->hasAttribute(Attributes::LLVM_FUNC) ? buildLLVMFunction(llvmFn, f) : buildBodiedFunction(llvmFn, f);
 
                 setPersonalityFunction(llvmFn);
             }

@@ -11,20 +11,16 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
     auto [r, _] = getFromIndex(p_node->getDBGInfo(), p_node, p_node->isStatic);
     auto [value, type, functions, overloads, mod, canBePrivate] = r;
     auto name = p_node->getIdentifier()->getNiceName();
-    auto checkIfContextEqual =
-            [&p_node = p_node, name = name, canBePrivate = canBePrivate]<typename T>(T item) -> T {
+    auto checkIfContextEqual = [&p_node = p_node, name = name, canBePrivate = canBePrivate]<typename T>(T item) -> T {
         if ((!canBePrivate) && item->isPrivate()) {
-            E<TYPE_ERROR>(
-                    p_node->getDBGInfo(),
-                    FMT("Variable '%s' is a private member and "
-                        "it cant be accessed from this context!",
-                        name.c_str()),
-                    {.info = "did you mean to use a public member?",
-                     .note = "private members can only be accessed from the same class or struct",
-                     .help = "try making the member public",
-                     .tail = EI<>(item->getDBGInfo(),
-                                  "",
-                                  {.info = "this is the private member declaration"})});
+            E<TYPE_ERROR>(p_node->getDBGInfo(),
+                          FMT("Variable '%s' is a private member and "
+                              "it cant be accessed from this context!",
+                              name.c_str()),
+                          {.info = "did you mean to use a public member?",
+                           .note = "private members can only be accessed from the same class or struct",
+                           .help = "try making the member public",
+                           .tail = EI<>(item->getDBGInfo(), "", {.info = "this is the private member declaration"})});
         }
         return item;
     };
@@ -49,8 +45,7 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
     } else if (mod) {
         E<VARIABLE_ERROR>(p_node, "Can't use modules as values!");
     } else if (overloads || functions) {
-        if ((overloads.has_value() && overloads->size() > 1) ||
-            (functions.has_value() && functions->size() > 1)) {
+        if ((overloads.has_value() && overloads->size() > 1) || (functions.has_value() && functions->size() > 1)) {
             E<VARIABLE_ERROR>(p_node, "Index points to a function with multiple overloads!");
         }
 

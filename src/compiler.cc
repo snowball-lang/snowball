@@ -39,11 +39,9 @@ void Compiler::initialize() {
 }
 
 void Compiler::compile(bool silent) {
-    if (!_initialized) {
-        throw SNError(Error::COMPILER_ERROR, "Compiler has not been initialized!");
-    }
+    if (!_initialized) { throw SNError(Error::COMPILER_ERROR, "Compiler has not been initialized!"); }
 #if _SNOWBALL_TIMERS_DEBUG == 0
-#define SHOW_STATUS(status)                                                                        \
+#define SHOW_STATUS(status)                                                                                            \
     if (!silent) status;
 #else
 #define SHOW_STATUS(_)
@@ -78,10 +76,8 @@ void Compiler::compile(bool silent) {
 
             mainModule->setSourceInfo(_source_info);
 
-            auto simplifier =
-                    new Syntax::Transformer(mainModule->downcasted_shared_from_this<ir::Module>(),
-                                            _source_info,
-                                            _enabledTests);
+            auto simplifier = new Syntax::Transformer(
+                    mainModule->downcasted_shared_from_this<ir::Module>(), _source_info, _enabledTests);
 #if _SNOWBALL_TIMERS_DEBUG
             DEBUG_TIMER("Simplifier: %fs", utils::_timer([&] { simplifier->visitGlobal(ast); }));
 #else
@@ -162,9 +158,7 @@ int Compiler::emit_llvmir(std::string p_output, bool p_pmessage) {
 
     std::error_code EC;
     llvm::raw_fd_ostream dest(p_output, EC);
-    if (EC)
-        throw SNError(Error::IO_ERROR,
-                      Logger::format("Could not open file: %s", EC.message().c_str()));
+    if (EC) throw SNError(Error::IO_ERROR, Logger::format("Could not open file: %s", EC.message().c_str()));
     builder->print(dest);
     if (p_pmessage) Logger::success("Snowball project transpiled to llvm IR code! 🎉\n");
     return EXIT_SUCCESS;
@@ -214,13 +208,10 @@ int Compiler::emit_binary(std::string out, bool log) {
     int ldstatus = system(ldcommand.c_str());
     if (ldstatus) {
         remove(objfile.c_str());
-        throw SNError(LINKER_ERR,
-                      Logger::format("Linking with " LD_PATH " failed with code %d", ldstatus));
+        throw SNError(LINKER_ERR, Logger::format("Linking with " LD_PATH " failed with code %d", ldstatus));
     }
 
-    if (log)
-        Logger::success(Logger::format(
-                "Snowball project successfully compiled! 🥳", BGRN, RESET, out.c_str()));
+    if (log) Logger::success(Logger::format("Snowball project successfully compiled! 🥳", BGRN, RESET, out.c_str()));
 
     // clean up
     DEBUG_CODEGEN("Cleaning up object file... (%s)", objfile.c_str());

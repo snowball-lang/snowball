@@ -49,13 +49,11 @@ Transformer::deduceFunction(cacheComponents::Functions::FunctionStore s,
     std::vector<std::shared_ptr<types::Type>> deducedTypes;
 
     for (const auto& generic : function->getGenerics()) {
-        const auto deducedType =
-                deduceFunctionType(generic, fnArgs, arguments, generics, deducedTypes);
+        const auto deducedType = deduceFunctionType(generic, fnArgs, arguments, generics, deducedTypes);
         if (deducedType.has_value()) {
             deducedTypes.push_back(deducedType.value());
         } else {
-            return {{},
-                    FMT("Cannot deduce type '%s' in function call!", generic->getName().c_str())};
+            return {{}, FMT("Cannot deduce type '%s' in function call!", generic->getName().c_str())};
         }
     }
 

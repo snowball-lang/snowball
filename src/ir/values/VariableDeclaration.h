@@ -27,8 +27,7 @@ class VariableDeclaration : public IdMixin, public AcceptorExtend<Variable, Valu
 
   public:
     // Create a new variable declaration
-    VariableDeclaration(const std::string& identifier, std::shared_ptr<Value> value,
-                        bool isMutable = false)
+    VariableDeclaration(const std::string& identifier, std::shared_ptr<Value> value, bool isMutable = false)
         : identifier(identifier), value(value), _isMutable(isMutable){};
 
     /// @return Variable identifier

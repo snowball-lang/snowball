@@ -59,11 +59,9 @@ class TypeChecker : public AcceptorExtend<TypeChecker, codegen::ValueVisitor> {
      * @example
      *   let a = hello() <- error: hello returns void
      */
-    void cantBeVoid(DBGObject* dbg, std::shared_ptr<types::Type> ty,
-                    const std::string& message = "");
+    void cantBeVoid(DBGObject* dbg, std::shared_ptr<types::Type> ty, const std::string& message = "");
     /// @brief Check if the value is mutable or not
-    void checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn,
-                         std::shared_ptr<ir::Value> value);
+    void checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn, std::shared_ptr<ir::Value> value);
     /// @brief True if the value is accessing "self"
     bool accessingSelf(std::shared_ptr<ir::Value> value);
     /// @brief It performs checks on a function declaration

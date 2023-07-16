@@ -12,18 +12,17 @@
 #include <type_traits>
 #include <vector>
 
-#define GET_CHAR(m_off)                                                                            \
-    (((size_t)char_ptr + m_off >= code.size()) ? '\0' : code.at((size_t)char_ptr + m_off))
-#define EAT_CHAR(m_num)                                                                            \
-    {                                                                                              \
-        char_ptr += m_num;                                                                         \
-        cur_col += m_num;                                                                          \
+#define GET_CHAR(m_off) (((size_t)char_ptr + m_off >= code.size()) ? '\0' : code.at((size_t)char_ptr + m_off))
+#define EAT_CHAR(m_num)                                                                                                \
+    {                                                                                                                  \
+        char_ptr += m_num;                                                                                             \
+        cur_col += m_num;                                                                                              \
     }
-#define EAT_LINE()                                                                                 \
-    {                                                                                              \
-        char_ptr++;                                                                                \
-        cur_col = 1;                                                                               \
-        cur_line++;                                                                                \
+#define EAT_LINE()                                                                                                     \
+    {                                                                                                                  \
+        char_ptr++;                                                                                                    \
+        cur_col = 1;                                                                                                   \
+        cur_line++;                                                                                                    \
     }
 
 #define IS_NUM(c)      (('0' <= c && c <= '9'))
@@ -31,8 +30,7 @@
 #define IS_TEXT(c)     ((c == '_') || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))
 
 namespace snowball {
-Lexer::Lexer(SourceInfo* p_source_info)
-    : code(p_source_info->getSource()), _source_info(p_source_info) { }
+Lexer::Lexer(SourceInfo* p_source_info) : code(p_source_info->getSource()), _source_info(p_source_info) { }
 
 void Lexer::tokenize() {
     tokens = {};
@@ -298,8 +296,7 @@ void Lexer::tokenize() {
                                 EAT_CHAR(1);
                                 EAT_LINE();
                                 break;
-                            default:
-                                lexer_error(Error::SYNTAX_ERROR, "invalid escape character", 2);
+                            default: lexer_error(Error::SYNTAX_ERROR, "invalid escape character", 2);
                         }
                     } else if (GET_CHAR(0) == 0) {
                         lexer_error(Error::UNEXPECTED_EOF,
@@ -330,8 +327,7 @@ void Lexer::tokenize() {
                 EAT_CHAR(1);
 
                 if (str.size() != 1) {
-                    lexer_error(Error::SYNTAX_ERROR,
-                                "Character values can only have a length of 1!");
+                    lexer_error(Error::SYNTAX_ERROR, "Character values can only have a length of 1!");
                 }
 
                 Token tk;
@@ -389,8 +385,7 @@ void Lexer::tokenize() {
                                 EAT_CHAR(1);
                                 EAT_LINE();
                                 break;
-                            default:
-                                lexer_error(Error::SYNTAX_ERROR, "invalid escape character", 2);
+                            default: lexer_error(Error::SYNTAX_ERROR, "invalid escape character", 2);
                         }
                     } else if (GET_CHAR(0) == 0) {
                         lexer_error(Error::UNEXPECTED_EOF,
@@ -497,15 +492,11 @@ void Lexer::tokenize() {
                             }
                         } break;
 
-                        default:
-                            lexer_error(Error::BUG,
-                                        FMT("Unreachable number mode \"%i\"", mode),
-                                        num.size());
+                        default: lexer_error(Error::BUG, FMT("Unreachable number mode \"%i\"", mode), num.size());
                     }
 
                     // "1." parsed as 1.0 which should be error.
-                    if (num[num.size() - 1] == '.')
-                        lexer_error(Error::SYNTAX_ERROR, "invalid numeric value.");
+                    if (num[num.size() - 1] == '.') lexer_error(Error::SYNTAX_ERROR, "invalid numeric value.");
 
                     Token tk;
                     tk.line = cur_line;
@@ -606,8 +597,7 @@ void Lexer::tokenize() {
                         tk.type = TokenType::KWORD_CATCH;
                     }
 
-                    else if (identifier == _SNOWBALL_KEYWORD__TRUE ||
-                             identifier == _SNOWBALL_KEYWORD__FALSE) {
+                    else if (identifier == _SNOWBALL_KEYWORD__TRUE || identifier == _SNOWBALL_KEYWORD__FALSE) {
                         tk.type = TokenType::VALUE_BOOL;
                     } else {
                         tk.type = TokenType::IDENTIFIER;
@@ -629,9 +619,8 @@ void Lexer::tokenize() {
                                 1,
                                 {.info = "🐒🐒🐒🐒🐒🐒", .note = "This is just an easter egg!"});
                 } else {
-                    lexer_error(Error::SYNTAX_ERROR,
-                                FMT("Unexpected character found '%s' while lexing.", c.c_str()),
-                                1);
+                    lexer_error(
+                            Error::SYNTAX_ERROR, FMT("Unexpected character found '%s' while lexing.", c.c_str()), 1);
                 }
         }
     }
@@ -687,8 +676,8 @@ void Lexer::consume(TokenType p_tk, int p_eat_size) {
 }
 
 void Lexer::lexer_error(Error m_error, std::string m_msg, int char_length, ErrorInfo info) {
-    DBGSourceInfo* dbg_info = new DBGSourceInfo(
-            (SourceInfo*)_source_info, std::pair<int, int>(cur_line, cur_col), char_length);
+    DBGSourceInfo* dbg_info =
+            new DBGSourceInfo((SourceInfo*)_source_info, std::pair<int, int>(cur_line, cur_col), char_length);
     throw LexerError(m_error, std::string(m_msg), dbg_info, info);
 }
 } // namespace snowball

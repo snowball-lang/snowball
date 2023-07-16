@@ -19,8 +19,8 @@ namespace commands {
 int test(app::Options::TestOptions p_opts) {
     toml::parse_result parsed_config = Compiler::get_config();
 
-    std::string filename = (std::string)(parsed_config["package"]["main"].value_or<std::string>(
-            fs::current_path() / "src" / "main.sn"));
+    std::string filename = (std::string)(
+            parsed_config["package"]["main"].value_or<std::string>(fs::current_path() / "src" / "main.sn"));
 
     std::ifstream ifs(filename);
     if (ifs.fail()) {
@@ -38,12 +38,9 @@ int test(app::Options::TestOptions p_opts) {
     std::string output = _SNOWBALL_OUT_DEFAULT;
     std::string build_type = "";
 
-    filename = parsed_config["package"]["main"].value_or<std::string>(
-            (fs::current_path() / "src" / "main.sn"));
-    std::string package_name =
-            (std::string)(parsed_config["package"]["name"].value_or<std::string>("<anonnimus>"));
-    std::string package_version =
-            parsed_config["package"]["version"].value_or<std::string>("<unknown>");
+    filename = parsed_config["package"]["main"].value_or<std::string>((fs::current_path() / "src" / "main.sn"));
+    std::string package_name = (std::string)(parsed_config["package"]["name"].value_or<std::string>("<anonnimus>"));
+    std::string package_version = parsed_config["package"]["version"].value_or<std::string>("<unknown>");
 
     if (p_opts.opt == Options::Optimization::OPTIMIZE_O0) {
         build_type += "debug";
@@ -52,13 +49,9 @@ int test(app::Options::TestOptions p_opts) {
     }
 
     if (!p_opts.silent)
-        Logger::message("Project",
-                        FMT("%s v%s [%s%s%s]",
-                            package_name.c_str(),
-                            package_version.c_str(),
-                            BOLD,
-                            build_type.c_str(),
-                            RESET));
+        Logger::message(
+                "Project",
+                FMT("%s v%s [%s%s%s]", package_name.c_str(), package_version.c_str(), BOLD, build_type.c_str(), RESET));
 
     Compiler* compiler = new Compiler(content, filename);
     compiler->initialize();

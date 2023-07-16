@@ -49,8 +49,8 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                 expr = parseExpr();
                 next();
                 assert_tok<TokenType::BRACKET_RPARENT>("')'");
-            } else if (TOKEN(VALUE_NUMBER) || TOKEN(VALUE_FLOAT) || TOKEN(VALUE_STRING) ||
-                       TOKEN(VALUE_CHAR) || TOKEN(VALUE_BOOL)) {
+            } else if (TOKEN(VALUE_NUMBER) || TOKEN(VALUE_FLOAT) || TOKEN(VALUE_STRING) || TOKEN(VALUE_CHAR) ||
+                       TOKEN(VALUE_BOOL)) {
                 auto ty = Syntax::Expression::ConstantValue::deduceType(m_current.type);
 
                 expr = Syntax::N<Syntax::Expression::ConstantValue>(ty, m_current.to_string());
@@ -68,45 +68,36 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                     assert_tok<TokenType::BRACKET_LPARENT>("'(' or '{'");
                 }
 
-                auto call = parseFunctionCall(ty,
-                                              toTheHeap ? TokenType::BRACKET_RPARENT
-                                                        : TokenType::BRACKET_RCURLY,
-                                              toTheHeap ? ")" : "}");
+                auto call = parseFunctionCall(
+                        ty, toTheHeap ? TokenType::BRACKET_RPARENT : TokenType::BRACKET_RCURLY, toTheHeap ? ")" : "}");
 
                 expr = Syntax::N<Syntax::Expression::NewInstance>(call, ty, toTheHeap);
                 expr->setDBGInfo(call->getDBGInfo());
-            } else if (TOKEN(OP_NOT) || TOKEN(OP_PLUS) || TOKEN(OP_MINUS) || TOKEN(OP_BIT_NOT) ||
-                       TOKEN(OP_BIT_AND) || TOKEN(OP_MUL)) {
+            } else if (TOKEN(OP_NOT) || TOKEN(OP_PLUS) || TOKEN(OP_MINUS) || TOKEN(OP_BIT_NOT) || TOKEN(OP_BIT_AND) ||
+                       TOKEN(OP_MUL)) {
                 if (tk.type == TokenType::OP_NOT)
-                    exprs.push_back(
-                            Syntax::N<Syntax::Expression::BinaryOp>(Operators::OperatorType::NOT));
+                    exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(Operators::OperatorType::NOT));
                 else if (tk.type == TokenType::OP_PLUS)
-                    exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(
-                            Operators::OperatorType::UPLUS));
+                    exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(Operators::OperatorType::UPLUS));
                 else if (tk.type == TokenType::OP_MINUS)
-                    exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(
-                            Operators::OperatorType::UMINUS));
+                    exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(Operators::OperatorType::UMINUS));
                 else if (tk.type == TokenType::OP_BIT_NOT)
-                    exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(
-                            Operators::OperatorType::BIT_NOT));
+                    exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(Operators::OperatorType::BIT_NOT));
                 else if (tk.type == TokenType::OP_BIT_AND)
-                    exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(
-                            Operators::OperatorType::REFERENCE));
+                    exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(Operators::OperatorType::REFERENCE));
                 else if (tk.type == TokenType::OP_MUL)
-                    exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(
-                            Operators::OperatorType::DEREFERENCE));
+                    exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(Operators::OperatorType::DEREFERENCE));
 
                 exprs.back()->isOperator = true;
                 exprs.back()->setDBGInfo(dbg);
                 continue;
             } else if (TOKEN(KWORD_FUNC)) {
                 auto f = parseFunction(false, false, true);
-                expr = Syntax::N<Syntax::Expression::LambdaFunction>(
-                        utils::cast<Syntax::Statement::BodiedFunction>(f));
+                expr = Syntax::N<Syntax::Expression::LambdaFunction>(utils::cast<Syntax::Statement::BodiedFunction>(f));
                 expr->setDBGInfo(f->getDBGInfo());
             } else {
-                createError<SYNTAX_ERROR>(FMT("Expected a valid expression but got '%s'",
-                                              m_current.to_string().c_str()));
+                createError<SYNTAX_ERROR>(
+                        FMT("Expected a valid expression but got '%s'", m_current.to_string().c_str()));
             }
 
             if (expr->getDBGInfo() == nullptr) expr->setDBGInfo(dbg);
@@ -121,8 +112,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                     next();
                     auto indexExpr = parseExpr(false);
                     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
-                    auto bop = Syntax::N<Syntax::Expression::BinaryOp>(
-                            Syntax::Expression::BinaryOp::OpType::INDEX);
+                    auto bop = Syntax::N<Syntax::Expression::BinaryOp>(Syntax::Expression::BinaryOp::OpType::INDEX);
                     bop->isOperator = true;
                     bop->setDBGInfo(dbg);
                     next();
@@ -141,8 +131,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                     auto dbgInfo =
                             new DBGSourceInfo(m_source_info,
                                               expr->getDBGInfo()->pos,
-                                              expr->getDBGInfo()->width +
-                                                      index->getDBGInfo()->width + (isStatic + 1));
+                                              expr->getDBGInfo()->width + index->getDBGInfo()->width + (isStatic + 1));
                     expr = Syntax::N<Syntax::Expression::Index>(expr, index, isStatic);
                     expr->setDBGInfo(dbgInfo);
                 } else if (is<TokenType::KWORD_AS>(tk)) {
@@ -154,8 +143,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
 
                     auto dbgInfo = new DBGSourceInfo(m_source_info,
                                                      expr->getDBGInfo()->pos,
-                                                     expr->getDBGInfo()->width +
-                                                             expr->getDBGInfo()->width + 2 +
+                                                     expr->getDBGInfo()->width + expr->getDBGInfo()->width + 2 +
                                                              ty->getDBGInfo()->width);
 
                     expr = Syntax::N<Syntax::Expression::Cast>(expr, ty);
@@ -171,10 +159,10 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
         services::OperatorService::OperatorType op_type;
 
         tk = peek();
-#define OP_CASE(m_tk, m_op)                                                                        \
-    case TokenType::m_tk: {                                                                        \
-        op_type = services::OperatorService::OperatorType::m_op;                                   \
-        break;                                                                                     \
+#define OP_CASE(m_tk, m_op)                                                                                            \
+    case TokenType::m_tk: {                                                                                            \
+        op_type = services::OperatorService::OperatorType::m_op;                                                       \
+        break;                                                                                                         \
     }
         switch (tk.type) {
             OP_CASE(OP_EQ, EQ);
@@ -228,10 +216,8 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
     auto expr = buildOperatorTree(exprs);
     if (auto x = utils::cast<Syntax::Expression::BinaryOp>(expr)) {
         if (!allowAssign && Syntax::Expression::BinaryOp::is_assignment(x)) {
-            createError<SYNTAX_ERROR>(expr->getDBGInfo()->pos,
-                                      "assignment is not allowed inside expression.",
-                                      {},
-                                      x->to_string().size());
+            createError<SYNTAX_ERROR>(
+                    expr->getDBGInfo()->pos, "assignment is not allowed inside expression.", {}, x->to_string().size());
         }
     }
 

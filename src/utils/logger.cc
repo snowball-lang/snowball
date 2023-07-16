@@ -25,22 +25,13 @@ void Logger::elog(std::string message) {
 
 void Logger::info(std::string message) { printf("%sinfo%s: %s\n", BGRN, RESET, message.c_str()); }
 void Logger::help(std::string message) { printf("%shelp%s: %s\n", BGRN, RESET, message.c_str()); }
-void Logger::error(std::string message) {
-    printf("\n%serror%s: %s\n", BRED, RESET, message.c_str());
-}
-void Logger::warning(std::string message) {
-    printf("%swarning%s: %s\n", BYEL, RESET, message.c_str());
-}
-void Logger::verbose(std::string message) {
-    printf("%sverbose%s: %s\n", BMAG, RESET, message.c_str());
-}
-void Logger::success(std::string message) {
-    printf("%ssuccess%s: %s\n", BGRN, RESET, message.c_str());
-}
+void Logger::error(std::string message) { printf("\n%serror%s: %s\n", BRED, RESET, message.c_str()); }
+void Logger::warning(std::string message) { printf("%swarning%s: %s\n", BYEL, RESET, message.c_str()); }
+void Logger::verbose(std::string message) { printf("%sverbose%s: %s\n", BMAG, RESET, message.c_str()); }
+void Logger::success(std::string message) { printf("%ssuccess%s: %s\n", BGRN, RESET, message.c_str()); }
 
 void Logger::message(std::string topic, std::string message) {
-    std::cout << BGRN << std::setw(15) << std::fixed << topic << RESET << ' ' << message
-              << std::endl;
+    std::cout << BGRN << std::setw(15) << std::fixed << topic << RESET << ' ' << message << std::endl;
 }
 
 // status

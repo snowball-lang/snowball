@@ -50,17 +50,13 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
 
         // TODO: maybe avoid this if the function has default generics?
         if (function.function->getGenerics().size() > 0) {
-            E<VARIABLE_ERROR>(p_node,
-                              FMT("Function '%s' requires to have generics!",
-                                  p_node->getIdentifier().c_str()));
+            E<VARIABLE_ERROR>(p_node, FMT("Function '%s' requires to have generics!", p_node->getIdentifier().c_str()));
         }
 
         assert(false);
     }
 
-    E<VARIABLE_ERROR>(p_node,
-                      FMT("Cannot find identifier `%s`!", name.c_str()),
-                      {.info = "this name is not defined"});
+    E<VARIABLE_ERROR>(p_node, FMT("Cannot find identifier `%s`!", name.c_str()), {.info = "this name is not defined"});
 }
 
 } // namespace Syntax

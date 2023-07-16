@@ -15,26 +15,26 @@ using namespace std::chrono;
 #define STRINGIFY(...) #__VA_ARGS__
 
 #define LIBRARY_ENTRY "src/lib.sn"
-#define LIBRARY_MAIN                                                                               \
-    "use Core::Assertion\n\n"                                                                      \
-    "pub fn my_export() String {\n"                                                                \
-    "    return \"Hello, World\"\n"                                                                \
-    "}\n\n" /* TODO: add #[cfg(test)] */                                                           \
-    "\nnamespace tests {\n"                                                                        \
-    "   #[test]\n"                                                                                 \
-    "    fn test_my_lib() {\n" /* TODO: implement this in the actual                               \
-                                * language                                                         \
-                                */                                                                 \
-    "        Assertion::assert(my_export() == \"Hello, World\")\n"                                 \
-    "    }\n"                                                                                      \
+#define LIBRARY_MAIN                                                                                                   \
+    "use Core::Assertion\n\n"                                                                                          \
+    "pub fn my_export() String {\n"                                                                                    \
+    "    return \"Hello, World\"\n"                                                                                    \
+    "}\n\n" /* TODO: add #[cfg(test)] */                                                                               \
+    "\nnamespace tests {\n"                                                                                            \
+    "   #[test]\n"                                                                                                     \
+    "    fn test_my_lib() {\n" /* TODO: implement this in the actual                                                   \
+                                * language                                                                             \
+                                */                                                                                     \
+    "        Assertion::assert(my_export() == \"Hello, World\")\n"                                                     \
+    "    }\n"                                                                                                          \
     "}"
 
 #define EXECUTABLE_ENTRY "src/main.sn"
-#define EXECUTABLE_MAIN                                                                            \
-    "use Core::System\n"                                                                           \
-                                                                                                   \
-    "\npub fn main() {\n"                                                                          \
-    "   System::println(\"Hello, World\")\n"                                                       \
+#define EXECUTABLE_MAIN                                                                                                \
+    "use Core::System\n"                                                                                               \
+                                                                                                                       \
+    "\npub fn main() {\n"                                                                                              \
+    "   System::println(\"Hello, World\")\n"                                                                           \
     "}"
 
 #define CONFIGURATION_FILE "sn.toml"
@@ -72,8 +72,7 @@ int init(app::Options::InitOptions p_opts) {
         init_create_cfg(p_opts.yes, EXECUTABLE_ENTRY);
         return 0;
     } else if (p_opts.lib) {
-        Logger::message("Initalizing",
-                        FMT("creating snowball project [library]", CONFIGURATION_FILE));
+        Logger::message("Initalizing", FMT("creating snowball project [library]", CONFIGURATION_FILE));
 
         Logger::warning("Library example is not yet supported by "
                         "current snowball!");
@@ -85,8 +84,7 @@ int init(app::Options::InitOptions p_opts) {
         outfile << LIBRARY_MAIN << std::endl;
         outfile.close();
     } else {
-        Logger::message("Initalizing",
-                        FMT("creating snowball project [executable]", CONFIGURATION_FILE));
+        Logger::message("Initalizing", FMT("creating snowball project [executable]", CONFIGURATION_FILE));
 
         if (!fs::exists("src")) fs::create_directory("src");
         if (!p_opts.skip_cfg) init_create_cfg(p_opts.yes, EXECUTABLE_ENTRY);

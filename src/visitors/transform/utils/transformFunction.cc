@@ -6,10 +6,9 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::shared_ptr<ir::Func>
-Transformer::transformFunction(Cache::FunctionStore fnStore,
-                               const std::vector<std::shared_ptr<types::Type>>& deducedTypes,
-                               bool isEntryPoint) {
+std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fnStore,
+                                                         const std::vector<std::shared_ptr<types::Type>>& deducedTypes,
+                                                         bool isEntryPoint) {
     auto node = fnStore.function;
 
     // get the function name and store it for readability
@@ -47,11 +46,9 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
             auto returnType = transformType(node->getRetType());
 
             // Create a new function value and store it's return type.
-            fn = builder.createFunction(
-                    node->getDBGInfo(),
-                    name,
-                    (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)),
-                    node->isVariadic());
+            fn = builder.createFunction(node->getDBGInfo(), name,
+                                        (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)),
+                                        node->isVariadic());
             fn->setParent(ctx->getCurrentClass());
             fn->setRetTy(returnType);
             fn->setPrivacy(node->getPrivacy());
@@ -60,9 +57,8 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
             fn->setModule(ctx->module);
             fn->setAttributes(node);
             auto isExtern = node->isExtern();
-            if (((ctx->getCurrentClass() || !fn->isStatic()) || fn->isPrivate()) && !isEntryPoint &&
-                !isExtern && !fn->hasAttribute(Attributes::EXTERNAL_LINKAGE) &&
-                !fn->hasAttribute(Attributes::EXPORT))
+            if (((ctx->getCurrentClass() || !fn->isStatic()) || fn->isPrivate()) && !isEntryPoint && !isExtern &&
+                !fn->hasAttribute(Attributes::EXTERNAL_LINKAGE) && !fn->hasAttribute(Attributes::EXPORT))
                 fn->addAttribute(Attributes::INTERNAL_LINKAGE);
             if (auto c = ctx->getCurrentClass(true)) {
                 if (node->isVirtual()) { fn->setVirtualIndex(c->addVtableItem(fn)); }
@@ -80,11 +76,8 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
             for (int i = 0; i < node->getArgs().size(); i++) {
                 auto arg = node->getArgs().at(i);
 
-                auto a = builder.createArgument(node->getDBGInfo(),
-                                                arg->getName(),
-                                                fn->isConstructor() + i,
-                                                arg->hasDefaultValue() ? arg->getDefaultValue()
-                                                                       : nullptr);
+                auto a = builder.createArgument(node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
+                                                arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
                 a->setType(transformType(arg->getType()));
                 newArgs.insert(newArgs.end(), {arg->getName(), a});
             }
@@ -103,12 +96,10 @@ Transformer::transformFunction(Cache::FunctionStore fnStore,
                 ctx->withScope([&]() {
                     int argIndex = 0;
                     for (auto arg : newArgs) {
-                        auto ref = builder.createVariable(
-                            node->getDBGInfo(), arg.first, true, 
-                            arg.second->getType()->isMutable());
+                        auto ref = builder.createVariable(node->getDBGInfo(), arg.first, true,
+                                                          arg.second->getType()->isMutable());
                         ref->setType(arg.second->getType());
-                        auto refItem = std::make_shared<transform::Item>(
-                                transform::Item::Type::VALUE, ref);
+                        auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, ref);
                         ref->setId(arg.second->getId());
                         ctx->addItem(arg.first, refItem);
                         argIndex++;

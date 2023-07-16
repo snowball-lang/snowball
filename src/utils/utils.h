@@ -24,8 +24,7 @@ std::list<std::string> split(std::string str, std::string token);
 bool endsWith(const std::string& mainStr, const std::string& toMatch);
 bool startsWith(const std::string& str, const std::string& comp);
 void replaceAll(std::string& str, const std::string& from, const std::string& to);
-std::string getSubstringByRange(const std::string& str,
-                                const std::pair<int, int>& start,
+std::string getSubstringByRange(const std::string& str, const std::pair<int, int>& start,
                                 const std::pair<int, int>& end);
 template <typename Iter>
 // https://stackoverflow.com/questions/495021/why-can-templates-only-be-implemented-in-the-header-file
@@ -50,8 +49,8 @@ std::vector<Vec1> vector_iterate(std::vector<StTy> p_vec, std::function<Vec1(StT
 }
 
 template <typename StTy, typename Vec1, typename Vec2>
-std::pair<std::vector<Vec1>, std::vector<Vec2>>
-vectors_iterate(std::vector<StTy> p_vec, std::function<std::pair<Vec1, Vec2>(StTy)> p_function) {
+std::pair<std::vector<Vec1>, std::vector<Vec2>> vectors_iterate(std::vector<StTy> p_vec,
+                                                                std::function<std::pair<Vec1, Vec2>(StTy)> p_function) {
     std::vector<Vec1> vec1;
     std::vector<Vec2> vec2;
 
@@ -82,8 +81,7 @@ IteratorType at(std::list<IteratorType> _list, int _i) {
 }
 
 template <typename Key, typename Val, typename Return = Val>
-std::vector<Return>
-map(std::list<std::pair<Key, Val>> p_map, std::function<Return(std::pair<Key, Val>)> cb) {
+std::vector<Return> map(std::list<std::pair<Key, Val>> p_map, std::function<Return(std::pair<Key, Val>)> cb) {
     std::vector<Return> vec;
 
     for (auto item : p_map) { vec.push_back(cb(item)); }

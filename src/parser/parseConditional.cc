@@ -21,8 +21,8 @@ Statement::Base* Parser::parseConditional() {
         consume<TokenType::SYM_HASH>("'#'");
 
         auto identifierInfo = DBGSourceInfo::fromToken(m_source_info, m_current);
-        auto identifier = Syntax::N<Expression::Identifier>(
-                assert_tok<TokenType::IDENTIFIER>("an identifier").to_string());
+        auto identifier =
+                Syntax::N<Expression::Identifier>(assert_tok<TokenType::IDENTIFIER>("an identifier").to_string());
         identifier->setDBGInfo(identifierInfo);
 
         // next();

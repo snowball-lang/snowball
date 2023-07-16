@@ -55,10 +55,8 @@ class Functions {
 
   public:
     /// @brief Set a new function overload
-    void setFunction(const std::string& name,
-                     Statement::FunctionDef* p_fn,
-                     std::shared_ptr<transform::ContextState>
-                             state);
+    void setFunction(const std::string& name, Statement::FunctionDef* p_fn,
+                     std::shared_ptr<transform::ContextState> state);
     /// @return All function overloads for a function
     std::optional<std::vector<FunctionStore>> getFunction(const std::string name);
     /// @return Get the current state of an already defined
@@ -73,9 +71,7 @@ class Functions {
     /// @return get an item of an already transformed function
     std::optional<std::shared_ptr<transform::Item>> getTransformedFunction(const std::string uuid);
     /// Copy a list of functions to a new list for a new type
-    void performInheritance(std::shared_ptr<types::DefinedType> ty,
-                            std::shared_ptr<types::DefinedType>
-                                    parent,
+    void performInheritance(std::shared_ptr<types::DefinedType> ty, std::shared_ptr<types::DefinedType> parent,
                             bool allowConstructor = false);
 };
 

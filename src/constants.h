@@ -55,7 +55,7 @@ extern "C" {
 #define _SNOWBALL_OBJ_OUT_DEFAULT  ".sn" PATH_SEPARATOR "bin" PATH_SEPARATOR "out.o"
 
 #ifndef _SNOWBALL_ENABLE_INT64
-#define _SNOWBALL_ENABLE_INT64                                                                     \
+#define _SNOWBALL_ENABLE_INT64                                                                                         \
     0 // if 1 enable snowball_int_t to be a 64bit int (instead of a                        \
 				// 32bit int)
 #endif
@@ -70,7 +70,7 @@ typedef int32_t snowball_int_t;
 #define _SNOWBALL_INT_MIN -2147483648
 #endif
 
-#define UNREACHABLE                                                                                \
+#define UNREACHABLE                                                                                                    \
     do { std::abort(); } while (0);
 
 // Debug
@@ -92,9 +92,9 @@ typedef int32_t snowball_int_t;
 #define _SNOWBALL_TIMERS_DEBUG   0
 #define _SNOWBALL_FREE_DEBUG     0 // todo
 
-#define PRINT_LINE(...)                                                                            \
-    printf(__VA_ARGS__);                                                                           \
-    printf("\n");                                                                                  \
+#define PRINT_LINE(...)                                                                                                \
+    printf(__VA_ARGS__);                                                                                               \
+    printf("\n");                                                                                                      \
     fflush(stdout);
 
 #if _SNOWBALL_LEXER_DEBUG
@@ -116,8 +116,8 @@ typedef int32_t snowball_int_t;
 #endif
 
 #if _SNOWBALL_SYMTABLE_DEBUG
-#define DEBUG_SYMTABLE(depth, ...)                                                                 \
-    printf("%*s", depth * 4, " ");                                                                 \
+#define DEBUG_SYMTABLE(depth, ...)                                                                                     \
+    printf("%*s", depth * 4, " ");                                                                                     \
     PRINT_LINE(__VA_ARGS__)
 #else
 #define DEBUG_SYMTABLE(...)
@@ -137,9 +137,8 @@ typedef int32_t snowball_int_t;
 
 #define DEBUG_ALWAYS(...) PRINT_LINE(__VA_ARGS__)
 
-#define DUMP(varname) fprintf(stderr, "%s (%s) = %i\n", #varname, typeid(varname).name(), varname);
-#define DUMP_S(varname)                                                                            \
-    fprintf(stderr, "%s (%s) = %s\n", #varname, typeid(varname).name(), varname);
+#define DUMP(varname)   fprintf(stderr, "%s (%s) = %i\n", #varname, typeid(varname).name(), varname);
+#define DUMP_S(varname) fprintf(stderr, "%s (%s) = %s\n", #varname, typeid(varname).name(), varname);
 
 #else
 #define _SNOWBALL_BUILD_TYPE "Default"
@@ -235,7 +234,7 @@ typedef int32_t snowball_int_t;
 #define _SNOWBALL_KEYWORD__TRY       "try"
 #define _SNOWBALL_KEYWORD__CATCH     "catch"
 
-#define _SNOWBALL_LAMBDA_FUNCTIONS                                                                 \
+#define _SNOWBALL_LAMBDA_FUNCTIONS                                                                                     \
     { '(', 'l', 'a', 'm', 'b', 'd', 'a', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ')', 0 }
 #define _SNOWBALL_LAMBDA_SIZE 17
 
@@ -248,20 +247,18 @@ typedef int32_t snowball_int_t;
 
 // Compiler lines
 #if 0
-#define _SNOWBALL_COMPILER_ENTRY                                                                   \
-    "Snowball " _SNOWBALL_VERSION " (" _SNOWBALL_BUILD_TYPE ": " _SNOWBALL_BUILD_DATE              \
-    ", " _SNOWBALL_BUILD_TIME ")"
-#define _SNOWBALL_COMPILER_ENTRY_BK                                                                \
+#define _SNOWBALL_COMPILER_ENTRY                                                                                       \
+    "Snowball " _SNOWBALL_VERSION " (" _SNOWBALL_BUILD_TYPE ": " _SNOWBALL_BUILD_DATE ", " _SNOWBALL_BUILD_TIME ")"
+#define _SNOWBALL_COMPILER_ENTRY_BK                                                                                    \
     "\
-Snowball " _SNOWBALL_VERSION " (" _SNOWBALL_BUILD_TYPE ": " _SNOWBALL_BUILD_DATE                   \
-    ", " _SNOWBALL_BUILD_TIME ")\n\
+Snowball " _SNOWBALL_VERSION " (" _SNOWBALL_BUILD_TYPE ": " _SNOWBALL_BUILD_DATE ", " _SNOWBALL_BUILD_TIME ")\n\
 Type \"help\", \"copyright\", \"credits\" or \"license\" for more information.\
 "
 #endif
 
 // Licenses
 #define _SNOWBALL_LICENSE_NAME "MIT"
-#define _SNOWBALL_LICENSE_TEXT                                                                     \
+#define _SNOWBALL_LICENSE_TEXT                                                                                         \
     "\
 The MIT License (MIT)\n\
 \n\

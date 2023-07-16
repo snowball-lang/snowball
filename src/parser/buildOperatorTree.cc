@@ -131,8 +131,7 @@ Syntax::Expression::Base* Parser::buildOperatorTree(std::vector<Syntax::Expressi
             int next_expr = next_op;
             while (exprs[next_expr]->isOperator) {
                 if (++next_expr == exprs.size()) {
-                    createError<SYNTAX_ERROR>(
-                            exprs[next_expr]->getDBGInfo()->pos, "expected an expression.", {}, 1);
+                    createError<SYNTAX_ERROR>(exprs[next_expr]->getDBGInfo()->pos, "expected an expression.", {}, 1);
                 }
             }
 
@@ -148,8 +147,7 @@ Syntax::Expression::Base* Parser::buildOperatorTree(std::vector<Syntax::Expressi
             }
         } else {
             ASSERT(next_op >= 1 && next_op < (int)exprs.size() - 1)
-            ASSERT(!(exprs[(size_t)next_op + 1]->isOperator) &&
-                   !(exprs[(size_t)next_op - 1]->isOperator));
+            ASSERT(!(exprs[(size_t)next_op + 1]->isOperator) && !(exprs[(size_t)next_op - 1]->isOperator));
 
             auto e = utils::cast<Syntax::Expression::BinaryOp>(exprs[(size_t)next_op]);
             auto op_node = new Syntax::Expression::BinaryOp(e->op_type);
@@ -158,20 +156,16 @@ Syntax::Expression::Base* Parser::buildOperatorTree(std::vector<Syntax::Expressi
             if (exprs[(size_t)next_op - 1]->isOperator) {
                 if (Syntax::Expression::BinaryOp::is_assignment(
                             (Syntax::Expression::BinaryOp*)exprs[(size_t)next_op - 1])) {
-                    createError<SYNTAX_ERROR>(exprs[(size_t)next_op - 1]->getDBGInfo()->pos,
-                                              "unexpected assignment.",
-                                              {},
-                                              1);
+                    createError<SYNTAX_ERROR>(
+                            exprs[(size_t)next_op - 1]->getDBGInfo()->pos, "unexpected assignment.", {}, 1);
                 }
             }
 
             if (exprs[(size_t)next_op + 1]->isOperator) {
                 if (Syntax::Expression::BinaryOp::is_assignment(
                             (Syntax::Expression::BinaryOp*)exprs[(size_t)next_op + 1])) {
-                    createError<SYNTAX_ERROR>(exprs[(size_t)next_op + 1]->getDBGInfo()->pos,
-                                              "unexpected assignment.",
-                                              {},
-                                              1);
+                    createError<SYNTAX_ERROR>(
+                            exprs[(size_t)next_op + 1]->getDBGInfo()->pos, "unexpected assignment.", {}, 1);
                 }
             }
 

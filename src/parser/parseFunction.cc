@@ -6,10 +6,10 @@
 
 #include <assert.h>
 
-#define CHECK_PRIVACY(var)                                                                         \
-    var = true;                                                                                    \
-    if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-4, true))) {                   \
-        isPublic = is<TokenType::KWORD_PUBLIC>(peek(-4, true));                                    \
+#define CHECK_PRIVACY(var)                                                                                             \
+    var = true;                                                                                                        \
+    if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-4, true))) {                                       \
+        isPublic = is<TokenType::KWORD_PUBLIC>(peek(-4, true));                                                        \
     }
 
 using namespace snowball::Syntax;
@@ -242,14 +242,12 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
 
             snowballInvalidDefaultOperatorCase:
             default: {
-                createError<SYNTAX_ERROR>(FMT("Expected a valid operator type but instead got '%s'",
-                                              m_current.to_string().c_str()));
+                createError<SYNTAX_ERROR>(
+                        FMT("Expected a valid operator type but instead got '%s'", m_current.to_string().c_str()));
             }
         }
 
-        if (opType == services::OperatorService::EQ) {
-            createError<SYNTAX_ERROR>("Can't overload the '=' operator!");
-        }
+        if (opType == services::OperatorService::EQ) { createError<SYNTAX_ERROR>("Can't overload the '=' operator!"); }
 
         name = services::OperatorService::getOperatorMangle(opType);
         externName = name;
@@ -358,14 +356,13 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
 
         argumentCount++;
         if (is<TokenType::SYM_COMMA>()) {
-            if (isVarArg)
-                createError<SYNTAX_ERROR>("Variadic arguments should be the last argument!");
+            if (isVarArg) createError<SYNTAX_ERROR>("Variadic arguments should be the last argument!");
             // if (!isExtern) prev();
         } else if (is<TokenType::BRACKET_RPARENT>()) {
             prev();
         } else {
-            createError<SYNTAX_ERROR>(FMT("Expected a ',' or a ')' but found '%s' instead",
-                                          m_current.to_string().c_str()));
+            createError<SYNTAX_ERROR>(
+                    FMT("Expected a ',' or a ')' but found '%s' instead", m_current.to_string().c_str()));
         }
     }
 
@@ -417,8 +414,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
                         break;
                     } else {
                         createError<SYNTAX_ERROR>(
-                                FMT("Expected a ',' or a ')' but found '%s' instead",
-                                    m_current.to_string().c_str()));
+                                FMT("Expected a ',' or a ')' but found '%s' instead", m_current.to_string().c_str()));
                     }
                 }
 
@@ -433,8 +429,8 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
             while (is<TokenType::IDENTIFIER>()) {
                 auto name = parseIdentifier(false, false);
                 if (constructorInitArgs.find(name) != constructorInitArgs.end()) {
-                    createError<SYNTAX_ERROR>(FMT("Duplicate constructor init argument '%s'",
-                                                  name->getIdentifier().c_str()));
+                    createError<SYNTAX_ERROR>(
+                            FMT("Duplicate constructor init argument '%s'", name->getIdentifier().c_str()));
                 }
 
                 next();
@@ -449,8 +445,8 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
                 } else if (is<TokenType::BRACKET_LCURLY>()) {
                     break;
                 } else {
-                    createError<SYNTAX_ERROR>(FMT("Expected a ',' or a '{' but found '%s' instead",
-                                                  m_current.to_string().c_str()));
+                    createError<SYNTAX_ERROR>(
+                            FMT("Expected a ',' or a '{' but found '%s' instead", m_current.to_string().c_str()));
                 }
             }
         }
@@ -485,14 +481,13 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
             }
 
             if (!isVirtual) {
-                createError<SYNTAX_ERROR>(
-                        "Function body can only be '0' for virtual functions!",
-                        {.info = "Function body can only be '0' for virtual functions!",
-                         .note = "The function body must be a '0' for now.",
-                         .help = "You have to set the function body to '0'.\n"
-                                 "For example:\n"
-                                 "1 |   virt fn my_fn() = 0\n"
-                                 "2 |"});
+                createError<SYNTAX_ERROR>("Function body can only be '0' for virtual functions!",
+                                          {.info = "Function body can only be '0' for virtual functions!",
+                                           .note = "The function body must be a '0' for now.",
+                                           .help = "You have to set the function body to '0'.\n"
+                                                   "For example:\n"
+                                                   "1 |   virt fn my_fn() = 0\n"
+                                                   "2 |"});
             }
 
             isNotImplemented = true;
@@ -533,9 +528,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
         assert_tok<TokenType::BRACKET_RCURLY>("'}'");
     }
 
-    if (!hasBlock && isLLVMFunction) {
-        createError<SYNTAX_ERROR>("LLVM defined functions must have a body!");
-    }
+    if (!hasBlock && isLLVMFunction) { createError<SYNTAX_ERROR>("LLVM defined functions must have a body!"); }
 
     FunctionDef* fn = nullptr;
     if (isConstructor) {

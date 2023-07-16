@@ -61,14 +61,13 @@ std::vector<std::shared_ptr<ir::Func>> DefinedType::getVTable() const { return c
 bool DefinedType::is(DefinedType* other) const {
     auto otherArgs = other->getGenerics();
     bool genericSizeEqual = otherArgs.size() == generics.size();
-    bool argumentsEqual = genericSizeEqual
-            ? std::all_of(otherArgs.begin(),
-                          otherArgs.end(),
-                          [&, idx = 0](std::shared_ptr<Type> i) mutable {
-                              return generics.at(idx)->is(i);
-                              idx++;
-                          })
-            : false;
+    bool argumentsEqual = genericSizeEqual ? std::all_of(otherArgs.begin(),
+                                                         otherArgs.end(),
+                                                         [&, idx = 0](std::shared_ptr<Type> i) mutable {
+                                                             return generics.at(idx)->is(i);
+                                                             idx++;
+                                                         })
+                                           : false;
     return (other->getUUID() == uuid) && argumentsEqual;
 }
 
@@ -93,8 +92,8 @@ std::string DefinedType::getMangledName() const {
     auto base = module->getUniqueName();
     auto _tyID = static_cast<ir::id_t>(getId());
     std::stringstream sstm;
-    sstm << (utils::startsWith(base, _SN_MANGLE_PREFIX) ? base : _SN_MANGLE_PREFIX) << "&"
-         << name.size() << name << "Cv" << _tyID;
+    sstm << (utils::startsWith(base, _SN_MANGLE_PREFIX) ? base : _SN_MANGLE_PREFIX) << "&" << name.size() << name
+         << "Cv" << _tyID;
     auto prefix = sstm.str(); // disambiguator
 
     std::string mangledArgs; // Start args tag
@@ -130,8 +129,8 @@ bool DefinedType::canCast(Type* ty) const {
 bool DefinedType::canCast(DefinedType* ty) const {
     if (getParent() && (ty->is(getParent().get()))) {
         auto otherArgs = ty->getGenerics();
-        bool argumentsEqual = std::all_of(
-                otherArgs.begin(), otherArgs.end(), [&, idx = 0](std::shared_ptr<Type> i) mutable {
+        bool argumentsEqual =
+                std::all_of(otherArgs.begin(), otherArgs.end(), [&, idx = 0](std::shared_ptr<Type> i) mutable {
                     return generics.at(idx)->is(i);
                     idx++;
                 });

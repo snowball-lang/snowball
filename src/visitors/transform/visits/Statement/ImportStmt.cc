@@ -23,14 +23,12 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     // TODO: extension
     auto [filePath, error] = ctx->imports->getImportPath(package, path);
     if (!error.empty()) { E<IO_ERROR>(p_node, error); }
-    auto uuid = package == "Core" ? ctx->imports->CORE_UUID + path[0]
-                                  : ctx->imports->getModuleUUID(filePath);
+    auto uuid = package == "Core" ? ctx->imports->CORE_UUID + path[0] : ctx->imports->getModuleUUID(filePath);
     auto exportName = ctx->imports->getExportName(filePath, p_node->getExportSymbol());
     auto isExternalModule = ctx->imports->isExternalModule(package);
     ctx->isMainModule = !isExternalModule;
     if (ctx->getItem(exportName).second)
-        Syntax::E<IMPORT_ERROR>(
-                p_node, FMT("Import with name '%s' is already defined!", exportName.c_str()));
+        Syntax::E<IMPORT_ERROR>(p_node, FMT("Import with name '%s' is already defined!", exportName.c_str()));
     if (auto m = ctx->imports->cache->getModule(filePath)) {
         auto item = std::make_shared<Item>(m.value());
         ctx->addItem(exportName, item);
@@ -40,8 +38,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
         std::vector<std::string> uuidStack = ctx->uuidStack.size() == 0
                 ? std::vector<std::string>{}
                 : std::vector<std::string>{ctx->uuidStack.front()};
-        auto state =
-                std::make_shared<ContextState>(ContextState::StackType{}, mod, uuidStack, nullptr);
+        auto state = std::make_shared<ContextState>(ContextState::StackType{}, mod, uuidStack, nullptr);
         // clang-format off
         ctx->withState(state,
             [filePath = filePath, mod, this]() mutable {

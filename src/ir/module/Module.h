@@ -16,8 +16,7 @@ class Func;
 class VariableDeclaration;
 
 /// @brief The representation of a programm
-class Module : public AcceptorExtend<Module, SrcObject>,
-               public std::enable_shared_from_this<Module> {
+class Module : public AcceptorExtend<Module, SrcObject>, public std::enable_shared_from_this<Module> {
     // Module's name. The main modules has
     // a default name.
     std::string name;

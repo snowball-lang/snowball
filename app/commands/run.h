@@ -19,10 +19,9 @@ int run(app::Options::RunOptions p_opts) {
     std::string filename = p_opts.file;
     if (p_opts.file.empty()) {
         toml::parse_result parsed_config = Compiler::get_config();
-        filename = p_opts.file.empty()
-                ? (std::string)(parsed_config["package"]["main"].value_or<std::string>(
-                          (fs::current_path() / "src" / "main.sn")))
-                : p_opts.file;
+        filename = p_opts.file.empty() ? (std::string)(parsed_config["package"]["main"].value_or<std::string>(
+                                                 (fs::current_path() / "src" / "main.sn")))
+                                       : p_opts.file;
     }
 
     std::ifstream ifs(filename);

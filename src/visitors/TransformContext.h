@@ -49,8 +49,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     ///  is useful (for example) when you want to generate functions
     ///  that got inherited but still want it to "be part of" the parent
     ///  type.
-    std::shared_ptr<types::DefinedType> actuallCurrentClass =
-            std::shared_ptr<types::DefinedType>(nullptr);
+    std::shared_ptr<types::DefinedType> actuallCurrentClass = std::shared_ptr<types::DefinedType>(nullptr);
     /// @brief A node representing the last call being transformed sort of
     ///  like the first call in a backtrace list
     /// @todo maybe make it a list and display all of the calls if a flag like
@@ -72,8 +71,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
 
   public:
     // Create a new instance of a context
-    TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder,
-                     bool testMode = false);
+    TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder, bool testMode = false);
 
     // clang-format off
 
@@ -107,8 +105,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     void setCurrentFunction(std::shared_ptr<ir::Func> f) { currentFunction = f; }
     /// @return Get the parent class being transformed
     auto getCurrentClass(bool actual = false) {
-        return actual ? actuallCurrentClass == nullptr ? currentClass : actuallCurrentClass
-                      : currentClass;
+        return actual ? actuallCurrentClass == nullptr ? currentClass : actuallCurrentClass : currentClass;
     }
     /// @brief Defined the new type being generated
     void setCurrentClass(std::shared_ptr<types::DefinedType> c) { currentClass = c; }

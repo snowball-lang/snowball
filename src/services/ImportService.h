@@ -45,10 +45,8 @@ class ImportService {
      * @return std::filesystem::path found path to import and
      * std::string an error message if any
      */
-    std::pair<std::filesystem::path, std::string> getImportPath(const std::string package,
-                                                                std::vector<std::string>
-                                                                        path,
-                                                                const std::string extension = "");
+    std::pair<std::filesystem::path, std::string>
+    getImportPath(const std::string package, std::vector<std::string> path, const std::string extension = "");
     /**
      * @brief Check if a module is external or not
      */

@@ -5,12 +5,11 @@
 #include <llvm/IR/Attributes.h>
 
 #define STYPE_INSTANCE(x) if (n == x)
-#define ASSERT_GENERICS(n, t)                                                                      \
-    auto generics = ty->getGenerics();                                                             \
-    if (generics.size() != n) {                                                                    \
-        E<TYPE_ERROR>(ty->getDBGInfo(),                                                            \
-                      FMT("Expected '%i' generics for '%s' but got '%i' instead", n, t.c_str(),    \
-                          generics.size()));                                                       \
+#define ASSERT_GENERICS(n, t)                                                                                          \
+    auto generics = ty->getGenerics();                                                                                 \
+    if (generics.size() != n) {                                                                                        \
+        E<TYPE_ERROR>(ty->getDBGInfo(),                                                                                \
+                      FMT("Expected '%i' generics for '%s' but got '%i' instead", n, t.c_str(), generics.size()));     \
     }
 
 namespace snowball {
@@ -76,8 +75,7 @@ std::shared_ptr<types::Type> Transformer::transformSpecialType(Expression::TypeR
             !((x == nullptr) || types::NumericType::isNumericType(x.get()))) {
             E<TYPE_ERROR>(ty,
                           FMT("Type '%s' is expected to be a numeric type but found '%s'!",
-                              IS_NUMERIC_CHECK_STYPE.c_str(),
-                              type->getPrettyName().c_str()));
+                              IS_NUMERIC_CHECK_STYPE.c_str(), type->getPrettyName().c_str()));
         }
 
         return type;
@@ -117,11 +115,10 @@ std::shared_ptr<types::Type> Transformer::transformSpecialType(Expression::TypeR
 
         // TODO: check for other instances
         if (!childType->canCast(parentType)) {
-            E<TYPE_ERROR>(
-                    ty,
-                    FMT("Type '%s' expected type '%s' to be able to cast to '%s' but it can't!",
-                        CASTABLE_TO_CHECK_STYPE.c_str(), childType->getPrettyName().c_str(),
-                        parentType->getPrettyName().c_str()));
+            E<TYPE_ERROR>(ty,
+                          FMT("Type '%s' expected type '%s' to be able to cast to '%s' but it can't!",
+                              CASTABLE_TO_CHECK_STYPE.c_str(), childType->getPrettyName().c_str(),
+                              parentType->getPrettyName().c_str()));
         }
 
         return childType;
@@ -137,8 +134,7 @@ std::shared_ptr<types::Type> Transformer::transformSpecialType(Expression::TypeR
         auto parentType = transformType(parent);
 
         auto definedType = utils::dyn_cast<types::DefinedType>(childType);
-        if (!definedType || !definedType->hasParent() ||
-            !definedType->getParent()->is(parentType.get())) {
+        if (!definedType || !definedType->hasParent() || !definedType->getParent()->is(parentType.get())) {
             E<TYPE_ERROR>(ty,
                           FMT("Type '%s' expected type '%s' to be a subtype of '%s' but it isn't!",
                               IMPLEMENTS_CHECK_STYPE.c_str(), childType->getPrettyName().c_str(),

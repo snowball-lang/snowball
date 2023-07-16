@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
 
 #endif // SNOWBALL_INCLUDE_CRASH_HANDLER_MAIN
 
-#if defined(SNOWBALL_CRASH_HANDLER_IMPLEMENTATION) ||                                              \
+#if defined(SNOWBALL_CRASH_HANDLER_IMPLEMENTATION) ||                                                                  \
         (defined(SNOWBALL_INCLUDE_CRASH_HANDLER_MAIN) && defined(SNOWBALL_IMPLEMENTATION))
 /***************************************************************************************************************************/
 /*                                                CRASH HANDLER WINDOWS */
@@ -169,8 +169,7 @@ class symbol {
     static const int max_name_len = 1024;
 
   public:
-    symbol(HANDLE process, DWORD64 address)
-        : sym((sym_type*)::operator new(sizeof(*sym) + max_name_len)) {
+    symbol(HANDLE process, DWORD64 address) : sym((sym_type*)::operator new(sizeof(*sym) + max_name_len)) {
         memset(sym, '\0', sizeof(*sym) + max_name_len);
         sym->SizeOfStruct = sizeof(*sym);
         sym->MaxNameLength = max_name_len;
@@ -232,15 +231,10 @@ CrashHandlerException(EXCEPTION_POINTERS* ep) {
     if (!SymInitialize(process, nullptr, false)) return EXCEPTION_CONTINUE_SEARCH;
 
     SymSetOptions(SymGetOptions() | SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
-    EnumProcessModules(
-            process, &module_handles[0], (DWORD)module_handles.size() * sizeof(HMODULE), &cbNeeded);
+    EnumProcessModules(process, &module_handles[0], (DWORD)module_handles.size() * sizeof(HMODULE), &cbNeeded);
     module_handles.resize(cbNeeded / sizeof(HMODULE));
-    EnumProcessModules(
-            process, &module_handles[0], (DWORD)module_handles.size() * sizeof(HMODULE), &cbNeeded);
-    std::transform(module_handles.begin(),
-                   module_handles.end(),
-                   std::back_inserter(modules),
-                   get_mod_info(process));
+    EnumProcessModules(process, &module_handles[0], (DWORD)module_handles.size() * sizeof(HMODULE), &cbNeeded);
+    std::transform(module_handles.begin(), module_handles.end(), std::back_inserter(modules), get_mod_info(process));
     void* base = modules[0].base_address;
 
     // Setup stuff:
@@ -280,12 +274,7 @@ CrashHandlerException(EXCEPTION_POINTERS* ep) {
                 std::string fnName = symbol(process, frame.AddrPC.Offset).undecorated_name();
 
                 if (SymGetLineFromAddr64(process, frame.AddrPC.Offset, &offset_from_symbol, &line))
-                    fprintf(stderr,
-                            "[%d] %s (%s:%d)\n",
-                            n,
-                            fnName.c_str(),
-                            line.FileName,
-                            line.LineNumber);
+                    fprintf(stderr, "[%d] %s (%s:%d)\n", n, fnName.c_str(), line.FileName, line.LineNumber);
                 else
                     fprintf(stderr, "[%d] %s\n", n, fnName.c_str());
             } else
@@ -294,15 +283,8 @@ CrashHandlerException(EXCEPTION_POINTERS* ep) {
             n++;
         }
 
-        if (!StackWalk64(image_type,
-                         process,
-                         hThread,
-                         &frame,
-                         context,
-                         nullptr,
-                         SymFunctionTableAccess64,
-                         SymGetModuleBase64,
-                         nullptr))
+        if (!StackWalk64(image_type, process, hThread, &frame, context, nullptr, SymFunctionTableAccess64,
+                         SymGetModuleBase64, nullptr))
             break;
     } while (frame.AddrReturn.Offset != 0 && n < 256);
 
@@ -370,9 +352,7 @@ int _execute(const std::string& p_path,
         std::string argss;
         argss = "\"" + p_path + "\"";
 
-        for (int i = 0; i < p_arguments.size(); i++) {
-            argss += std::string(" \"") + p_arguments[i] + "\"";
-        }
+        for (int i = 0; i < p_arguments.size(); i++) { argss += std::string(" \"") + p_arguments[i] + "\""; }
 
         if (read_stderr) {
             argss += " 2>&1"; // Read stderr too

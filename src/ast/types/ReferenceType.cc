@@ -32,8 +32,7 @@ std::string ReferenceType::getMangledName() const {
 }
 
 Syntax::Expression::TypeRef* ReferenceType::toRef() {
-    auto tRef = Syntax::TR("$referenceType:" + std::to_string(getId()), nullptr, shared_from_this(),
-                           "<pointer>");
+    auto tRef = Syntax::TR("$referenceType:" + std::to_string(getId()), nullptr, shared_from_this(), "<pointer>");
     return tRef;
 }
 

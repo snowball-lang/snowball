@@ -6,12 +6,12 @@
 
 #define IF_ANY_ARG(arg1, arg2) current_arg == arg1 || current_arg == arg2
 #define IF_ARG(arg)            current_arg == arg
-#define CHECK_ARG(expectation)                                                                     \
-    if (current_index == args.size() - 1) {                                                        \
-        throw SNError(Error::ARGUMENT_ERROR, "Expected " expectation " as argument");              \
+#define CHECK_ARG(expectation)                                                                                         \
+    if (current_index == args.size() - 1) {                                                                            \
+        throw SNError(Error::ARGUMENT_ERROR, "Expected " expectation " as argument");                                  \
     }
-#define NEXT_ARGUMENT()                                                                            \
-    this->current_index++;                                                                         \
+#define NEXT_ARGUMENT()                                                                                                \
+    this->current_index++;                                                                                             \
     this->current_arg = this->args[this->current_index];
 
 namespace snowball {
@@ -201,9 +201,8 @@ Options CLI::parse() {
             } else if (IF_ARG("-Oz")) {
                 opts.build_opts.opt = Options::Optimization::OPTIMIZE_Oz;
             } else {
-                throw SNError(
-                        Error::ARGUMENT_ERROR,
-                        FMT("Unexpected argument for the build command: %s", current_arg.c_str()));
+                throw SNError(Error::ARGUMENT_ERROR,
+                              FMT("Unexpected argument for the build command: %s", current_arg.c_str()));
             }
         }
     } else if (current_arg == "run") {
@@ -235,9 +234,8 @@ Options CLI::parse() {
                 NEXT_ARGUMENT()
                 opts.run_opts.file = current_arg;
             } else {
-                throw SNError(
-                        Error::ARGUMENT_ERROR,
-                        FMT("Unexpected argument for the run command: %s", current_arg.c_str()));
+                throw SNError(Error::ARGUMENT_ERROR,
+                              FMT("Unexpected argument for the run command: %s", current_arg.c_str()));
             }
         }
     } else if (current_arg == "test") {
@@ -263,9 +261,8 @@ Options CLI::parse() {
             } else if (IF_ARG("-Oz")) {
                 opts.test_opts.opt = Options::Optimization::OPTIMIZE_Oz;
             } else {
-                throw SNError(
-                        Error::ARGUMENT_ERROR,
-                        FMT("Unexpected argument for the test command: %s", current_arg.c_str()));
+                throw SNError(Error::ARGUMENT_ERROR,
+                              FMT("Unexpected argument for the test command: %s", current_arg.c_str()));
             }
         }
 
@@ -292,9 +289,8 @@ Options CLI::parse() {
 
                 opts.init_opts.skip_cfg = true;
             } else {
-                throw SNError(
-                        Error::ARGUMENT_ERROR,
-                        FMT("Unexpected argument for the init command: %s", current_arg.c_str()));
+                throw SNError(Error::ARGUMENT_ERROR,
+                              FMT("Unexpected argument for the init command: %s", current_arg.c_str()));
             }
         }
     } else if (IF_ANY_ARG("--version", "-v")) {

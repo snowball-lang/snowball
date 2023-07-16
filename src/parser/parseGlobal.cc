@@ -30,11 +30,10 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
                         !is<TokenType::KWORD_TYPEDEF>(pk) && !is<TokenType::KWORD_NAMESPACE>(pk) &&
                         !is<TokenType::KWORD_STRUCT>(pk) && !is<TokenType::KWORD_STATIC>(pk) &&
                         !is<TokenType::KWORD_CLASS>(pk) && !is<TokenType::KWORD_EXTERN>(pk)) {
-                        createError<SYNTAX_ERROR>(
-                                "expected keyword \"fn\", \"static\", \"namespace\", \"class\", "
-                                "\"let\" "
-                                "or "
-                                "\"extern\" after pub/priv declaration");
+                        createError<SYNTAX_ERROR>("expected keyword \"fn\", \"static\", \"namespace\", \"class\", "
+                                                  "\"let\" "
+                                                  "or "
+                                                  "\"extern\" after pub/priv declaration");
                     }
 
                     break;
@@ -96,10 +95,8 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
                 }
 
                 default:
-                    createError<SYNTAX_ERROR>(FMT("Unexpected token found: %s%s%s",
-                                                  BLU,
-                                                  m_current.to_string().c_str(),
-                                                  RESET));
+                    createError<SYNTAX_ERROR>(
+                            FMT("Unexpected token found: %s%s%s", BLU, m_current.to_string().c_str(), RESET));
             }
         }
 

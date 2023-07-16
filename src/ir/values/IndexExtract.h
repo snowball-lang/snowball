@@ -29,9 +29,7 @@ class IndexExtract : public AcceptorExtend<IndexExtract, Value> {
     types::DefinedType::ClassField* field;
 
   public:
-    explicit IndexExtract(std::shared_ptr<Value> value,
-                          types::DefinedType::ClassField* field,
-                          unsigned int i)
+    explicit IndexExtract(std::shared_ptr<Value> value, types::DefinedType::ClassField* field, unsigned int i)
         : value(value), index(i), field(field){};
 
     /**

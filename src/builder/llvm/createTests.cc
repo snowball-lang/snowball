@@ -19,9 +19,8 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
     mainFunction->addFnAttr(llvm::Attribute::OptimizeNone);
 
     builder->CreateCall(printFunction,
-                        {builder->CreateGlobalStringPtr(FMT("\nExecuting %s%i%s test(s)...\n", BBLU,
-                                                            ctx->tests.size(), RESET),
-                                                        "test.msg")});
+                        {builder->CreateGlobalStringPtr(
+                                FMT("\nExecuting %s%i%s test(s)...\n", BBLU, ctx->tests.size(), RESET), "test.msg")});
 
     auto successCount = builder->CreateAlloca(builder->getInt32Ty(), nullptr, "success.count");
     auto failCount = builder->CreateAlloca(builder->getInt32Ty(), nullptr, "fail.count");
@@ -37,8 +36,7 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
         auto attrArgs = fn->getAttributeArgs(Attributes::TEST);
         auto shouldSkip = attrArgs.find("skip") != attrArgs.end();
         auto namePtr = builder->CreateGlobalStringPtr(name, "test.alloca");
-        auto call = builder->CreateCall(testFunction,
-                                        {llvmFunc, namePtr, builder->getInt1(shouldSkip)});
+        auto call = builder->CreateCall(testFunction, {llvmFunc, namePtr, builder->getInt1(shouldSkip)});
         auto shouldContinue = builder->CreateICmpEQ(call, builder->getInt32(0));
         if (shouldSkip) {
             skipCount++;
@@ -49,38 +47,34 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
             builder->CreateCondBr(shouldContinue, successBlock, failBlock);
 
             builder->SetInsertPoint(successBlock);
-            builder->CreateStore(builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), successCount), builder->getInt32(1)),
-                                successCount);
+            builder->CreateStore(
+                    builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), successCount), builder->getInt32(1)),
+                    successCount);
             builder->CreateBr(continueBlock);
 
             builder->SetInsertPoint(failBlock);
-            builder->CreateStore(builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), failCount), builder->getInt32(1)),
-                                failCount);
+            builder->CreateStore(
+                    builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), failCount), builder->getInt32(1)),
+                    failCount);
             builder->CreateBr(continueBlock);
             builder->SetInsertPoint(continueBlock);
         }
     }
 
-    builder->CreateCall(
-        printFunction,
-        {builder->CreateGlobalStringPtr(FMT("\nTest results:\n "), "test.msg")});
-    builder->CreateCall(
-        printFunction,
-        {builder->CreateGlobalStringPtr(FMT("%s%%i%s test(s) passed; ", BGRN, RESET), "test.msg"),
-         builder->CreateLoad(builder->getInt32Ty(), successCount)});
-    builder->CreateCall(
-        printFunction,
-        {builder->CreateGlobalStringPtr(FMT("%s%%i%s test(s) failed; ", BRED, RESET), "test.msg"),
-         builder->CreateLoad(builder->getInt32Ty(), failCount)});
-    builder->CreateCall(
-        printFunction,
-        {builder->CreateGlobalStringPtr(FMT("%s%%i%s test(s) skipped; ", BYEL, RESET), "test.msg"),
-         builder->getInt32(skipCount)});
-    builder->CreateCall(
-        printFunction,
-        {builder->CreateGlobalStringPtr(FMT("%s%%i%s test(s) total\n\n", BOLD, RESET), "test.msg"),
-         builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), successCount),
-                            builder->CreateLoad(builder->getInt32Ty(), failCount))});
+    builder->CreateCall(printFunction, {builder->CreateGlobalStringPtr(FMT("\nTest results:\n "), "test.msg")});
+    builder->CreateCall(printFunction,
+                        {builder->CreateGlobalStringPtr(FMT("%s%%i%s test(s) passed; ", BGRN, RESET), "test.msg"),
+                         builder->CreateLoad(builder->getInt32Ty(), successCount)});
+    builder->CreateCall(printFunction,
+                        {builder->CreateGlobalStringPtr(FMT("%s%%i%s test(s) failed; ", BRED, RESET), "test.msg"),
+                         builder->CreateLoad(builder->getInt32Ty(), failCount)});
+    builder->CreateCall(printFunction,
+                        {builder->CreateGlobalStringPtr(FMT("%s%%i%s test(s) skipped; ", BYEL, RESET), "test.msg"),
+                         builder->getInt32(skipCount)});
+    builder->CreateCall(printFunction,
+                        {builder->CreateGlobalStringPtr(FMT("%s%%i%s test(s) total\n\n", BOLD, RESET), "test.msg"),
+                         builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), successCount),
+                                            builder->CreateLoad(builder->getInt32Ty(), failCount))});
 
     builder->CreateBr(end);
     builder->SetInsertPoint(end);

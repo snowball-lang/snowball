@@ -8,7 +8,7 @@
 #ifndef __SNOWBALL_VALUE_H_
 #define __SNOWBALL_VALUE_H_
 
-#define SN_GENERATOR_VISITS                                                                        \
+#define SN_GENERATOR_VISITS                                                                                            \
     void visit(codegen::ValueVisitor* v) override { v->visit(this); };
 
 /**

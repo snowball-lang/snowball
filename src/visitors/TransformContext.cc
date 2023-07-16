@@ -8,8 +8,7 @@
 
 namespace snowball::Syntax {
 
-TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder,
-                                   bool testMode)
+TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder, bool testMode)
     : AcceptorExtend()
     , module(mod)
     , testMode(testMode)
@@ -18,9 +17,9 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
     , cache(new Cache())
     , imports(std::make_unique<services::ImportService>()) {
     // Set all of the built in primitive types into the global stack
-#define DEFINE_TYPE(t)                                                                             \
-    auto raw_##t = std::make_shared<types::t>();                                                   \
-    auto _##t = std::make_shared<transform::Item>(raw_##t);                                        \
+#define DEFINE_TYPE(t)                                                                                                 \
+    auto raw_##t = std::make_shared<types::t>();                                                                       \
+    auto _##t = std::make_shared<transform::Item>(raw_##t);                                                            \
     addItem(raw_##t->getName(), _##t);
 
     DEFINE_TYPE(BoolType)
@@ -36,9 +35,9 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
 
 #undef DEFINE_TYPE
 
-    std::vector<std::shared_ptr<types::Type>> overloadTypes = {
-            raw_BoolType,  raw_Float64Type, raw_Float32Type, raw_Int64Type,
-            raw_Int32Type, raw_Int16Type,   raw_Int8Type,    raw_CharType};
+    std::vector<std::shared_ptr<types::Type>> overloadTypes = {raw_BoolType,  raw_Float64Type, raw_Float32Type,
+                                                               raw_Int64Type, raw_Int32Type,   raw_Int16Type,
+                                                               raw_Int8Type,  raw_CharType};
 
     for (int asPointer = 0; asPointer < 2; ++asPointer) {
         for (auto ty : overloadTypes) {
@@ -48,15 +47,13 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
                     auto unary = services::OperatorService::isUnary(opType);
                     auto classType = asPointer ? unary ? ty : ty->getPointerTo() : ty;
                     auto overloadType = asPointer ? overload->getPointerTo() : overload;
-                    auto typeArgs = (!unary)
-                            ? std::vector<std::shared_ptr<types::Type>>{classType, overloadType}
-                            : std::vector<std::shared_ptr<types::Type>>{classType};
+                    auto typeArgs = (!unary) ? std::vector<std::shared_ptr<types::Type>>{classType, overloadType}
+                                             : std::vector<std::shared_ptr<types::Type>>{classType};
                     auto fn = builder.createFunction(NO_DBGINFO, "#" + op, true, false);
                     auto arg = builder.createArgument(NO_DBGINFO, "other", overloadType);
                     auto type = builder.createFunctionType(typeArgs, ty);
                     auto isMut = Expression::BinaryOp::is_assignment(opType);
-                    fn->setArgs(unary ? ir::Func::FunctionArgs{}
-                                      : ir::Func::FunctionArgs{{"other", arg}});
+                    fn->setArgs(unary ? ir::Func::FunctionArgs{} : ir::Func::FunctionArgs{{"other", arg}});
                     fn->setType(type);
                     fn->setRetTy(ty);
                     fn->setPrivacy(PrivacyStatus::PUBLIC);
@@ -74,13 +71,11 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
     auto coreModItem = std::make_shared<transform::Item>(coreMod);
     addItem("Core", coreModItem);
 
-    std::vector<std::string> coreBuiltins = {"ReturnType", "Sized", "IsNumeric", "IsPointer",
-                                             "CastableTo"};
+    std::vector<std::string> coreBuiltins = {"ReturnType", "Sized", "IsNumeric", "IsPointer", "CastableTo"};
 
     for (auto builtin : coreBuiltins) {
         auto baseUuid = imports->CORE_UUID + "." + builtin;
-        auto transformedType =
-                std::make_shared<types::DefinedType>(builtin.c_str(), baseUuid, coreMod);
+        auto transformedType = std::make_shared<types::DefinedType>(builtin.c_str(), baseUuid, coreMod);
 
         auto item = std::make_shared<transform::Item>(transformedType);
         cache->setTransformedType(baseUuid, item);
@@ -92,8 +87,7 @@ std::shared_ptr<transform::ContextState> TransformContext::saveState() {
     auto s = this->stack;
     s.pop_back();
 
-    return std::make_shared<transform::ContextState>(s, this->module, this->uuidStack,
-                                                     this->currentClass);
+    return std::make_shared<transform::ContextState>(s, this->module, this->uuidStack, this->currentClass);
 }
 
 /// @brief set a state to the current context
@@ -109,8 +103,7 @@ void TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
 }
 
 /// @brief Execute function with saved state
-void TransformContext::withState(std::shared_ptr<transform::ContextState> s,
-                                 std::function<void()> cb) {
+void TransformContext::withState(std::shared_ptr<transform::ContextState> s, std::function<void()> cb) {
     auto saved = this->saveState();
 
     this->setState(s);

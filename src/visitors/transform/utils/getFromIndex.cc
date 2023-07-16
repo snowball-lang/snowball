@@ -16,8 +16,7 @@ std::pair<std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                      bool /* Accept private members */>,
           std::optional<std::shared_ptr<ir::Value>>>
 Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool isStatic) {
-    auto getFromType = [&](std::shared_ptr<types::Type> type,
-                           std::shared_ptr<ir::Value> value = nullptr)
+    auto getFromType = [&](std::shared_ptr<types::Type> type, std::shared_ptr<ir::Value> value = nullptr)
             -> std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                           std::optional<std::shared_ptr<types::Type>>,
                           std::optional<std::deque<std::shared_ptr<ir::Func>>>,
@@ -39,12 +38,11 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
             if (!isStatic) {
                 auto fields = x->getFields();
                 bool fieldFound = false;
-                auto fieldValue = std::find_if(
-                        fields.begin(), fields.end(), [&](types::DefinedType::ClassField* f) {
-                            bool e = f->name == name;
-                            fieldFound = e;
-                            return fieldFound;
-                        });
+                auto fieldValue = std::find_if(fields.begin(), fields.end(), [&](types::DefinedType::ClassField* f) {
+                    bool e = f->name == name;
+                    fieldFound = e;
+                    return fieldFound;
+                });
 
                 if (fieldFound) {
                     // assert(v == std::nullopt);
@@ -57,21 +55,13 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
             }
 
             if (indexValue == nullptr && v.has_value()) { indexValue = v.value(); }
-            if (!indexValue && !ty.has_value() && !fns.has_value() && !ovs.has_value() &&
-                !mod.has_value()) {
+            if (!indexValue && !ty.has_value() && !fns.has_value() && !ovs.has_value() && !mod.has_value()) {
                 // TODO: operator
                 E<VARIABLE_ERROR>(dbgInfo,
-                                  FMT("Coudn't find '%s' inside type '%s'!",
-                                      name.c_str(),
-                                      x->getPrettyName().c_str()));
+                                  FMT("Coudn't find '%s' inside type '%s'!", name.c_str(), x->getPrettyName().c_str()));
             }
 
-            return {indexValue ? std::make_optional(indexValue) : std::nullopt,
-                    ty,
-                    fns,
-                    ovs,
-                    mod,
-                    isInClassContext(x)};
+            return {indexValue ? std::make_optional(indexValue) : std::nullopt, ty, fns, ovs, mod, isInClassContext(x)};
         } else {
             // Case: index from a (for example) constant. You can access
             //  values from it so just check for functions
@@ -79,8 +69,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
             auto g = utils::cast<Expression::GenericIdentifier>(index->getIdentifier());
             auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
 
-            auto [v, ty, fns, ovs, mod] =
-                    getFromIdentifier(dbgInfo, name, generics, type->getName());
+            auto [v, ty, fns, ovs, mod] = getFromIdentifier(dbgInfo, name, generics, type->getName());
 
             if ((!fns.has_value()) && (!ovs.has_value())) {
                 // TODO: operator
@@ -109,11 +98,10 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
         auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
 
         auto fullUUID = m->getUniqueName();
-        auto [v, ty, fns, ovs, mod] = getFromIdentifier(
-                dbgInfo, index->getIdentifier()->getIdentifier(), generics, fullUUID);
+        auto [v, ty, fns, ovs, mod] =
+                getFromIdentifier(dbgInfo, index->getIdentifier()->getIdentifier(), generics, fullUUID);
 
-        if (!v.has_value() && !ty.has_value() && !fns.has_value() && !ovs.has_value() &&
-            !mod.has_value()) {
+        if (!v.has_value() && !ty.has_value() && !fns.has_value() && !ovs.has_value() && !mod.has_value()) {
             E<VARIABLE_ERROR>(dbgInfo,
                               FMT("Coudn't find '%s' inside module '%s'!",
                                   index->getIdentifier()->getIdentifier().c_str(),
@@ -155,10 +143,9 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
         else if (overloads || funcs) {
             E<TYPE_ERROR>(dbgInfo, "Can't use function pointer as index base!");
         } else {
-            E<VARIABLE_ERROR>(
-                    baseIdentifier->getDBGInfo(),
-                    FMT("Cannot find identifier `%s`!", baseIdentifier->getIdentifier().c_str()),
-                    {.info = "this name is not defined"});
+            E<VARIABLE_ERROR>(baseIdentifier->getDBGInfo(),
+                              FMT("Cannot find identifier `%s`!", baseIdentifier->getIdentifier().c_str()),
+                              {.info = "this name is not defined"});
         }
 
         assert(false && "BUG: unhandled index value");
@@ -194,9 +181,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
             E<TYPE_ERROR>(dbgInfo, "Can't use function pointer as index base!");
         } else {
             // TODO: include base name
-            E<VARIABLE_ERROR>(
-                    dbgInfo,
-                    FMT("Identifier '%s' not found!", baseIdentifier->getIdentifier().c_str()));
+            E<VARIABLE_ERROR>(dbgInfo, FMT("Identifier '%s' not found!", baseIdentifier->getIdentifier().c_str()));
         }
 
         assert(false && "TODO: index index");
@@ -220,8 +205,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
                         "indentifiers!");
     }
 
-    return {{std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt, false},
-            std::nullopt};
+    return {{std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt, false}, std::nullopt};
 }
 } // namespace Syntax
 } // namespace snowball

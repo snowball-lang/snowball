@@ -31,8 +31,8 @@ std::string FunctionType::getPrettyName() const {
 
 bool FunctionType::is(FunctionType* other) {
     auto otherArgs = other->getArgs();
-    bool argumentsEqual = std::all_of(
-            otherArgs.begin(), otherArgs.end(), [&, idx = 0](std::shared_ptr<Type> i) mutable {
+    bool argumentsEqual =
+            std::all_of(otherArgs.begin(), otherArgs.end(), [&, idx = 0](std::shared_ptr<Type> i) mutable {
                 return args.at(idx)->is(i);
                 idx++;
             });
@@ -59,8 +59,7 @@ FunctionType* FunctionType::from(ir::Func* fn, Syntax::Statement::FunctionDef* n
             fn->getArgs(), [&](auto map) -> auto{ return map.second->getType(); });
     bool isMutable = node ? node->isMutable() : false;
     if (fn->hasParent() && (!fn->isStatic()) &&
-        services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(
-                fn->getName())) {
+        services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(fn->getName())) {
         args.insert(args.begin(), fn->getParent());
     }
 

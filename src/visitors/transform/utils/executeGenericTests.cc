@@ -7,8 +7,7 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-void Transformer::executeGenericTests(
-        Expression::WhereClause* clause, std::shared_ptr<types::Type> generic) {
+void Transformer::executeGenericTests(Expression::WhereClause* clause, std::shared_ptr<types::Type> generic) {
     if (clause == nullptr) { return; }
     for (auto test : clause->getChecks()) {
         auto genericsCopy = test->getGenerics();

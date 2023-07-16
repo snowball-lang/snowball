@@ -54,13 +54,11 @@ void LLVMBuilder::visit(ir::Call* call) {
         }
 
         args.insert(args.begin(), object);
-        llvmCall = builder->CreateCall(
-                (llvm::FunctionType*)callee->getType()->getPointerElementType(), callee, args);
+        llvmCall = builder->CreateCall((llvm::FunctionType*)callee->getType()->getPointerElementType(), callee, args);
         this->value = instance->initializeAtHeap
                 ? object
                 : builder->CreateLoad(object->getType()->getPointerElementType(), object);
-    } else if (auto c = utils::dyn_cast<ir::Func>(calleeValue);
-               c != nullptr && c->inVirtualTable()) {
+    } else if (auto c = utils::dyn_cast<ir::Func>(calleeValue); c != nullptr && c->inVirtualTable()) {
         assert(c->hasParent());
 
         auto index = c->getVirtualIndex();
@@ -68,17 +66,13 @@ void LLVMBuilder::visit(ir::Call* call) {
 
         auto f = llvm::cast<llvm::Function>(callee);
         auto parentValue = args.at(/* self = */ 0);
-        auto vtable = builder->CreateStructGEP(
-                parentValue->getType()->getPointerElementType(), parentValue, 0);
+        auto vtable = builder->CreateStructGEP(parentValue->getType()->getPointerElementType(), parentValue, 0);
         auto loadedVtable = builder->CreateLoad(vtable->getType()->getPointerElementType(), vtable);
-        auto pointer = builder->CreateStructGEP(
-                loadedVtable->getType()->getPointerElementType(), loadedVtable, index);
-        auto pointerLoad =
-                builder->CreateLoad(pointer->getType()->getPointerElementType(), pointer);
-        llvmCall = builder->CreateCall(
-                (llvm::FunctionType*)pointerLoad->getType()->getPointerElementType(),
-                (llvm::Function*)pointerLoad,
-                args);
+        auto pointer = builder->CreateStructGEP(loadedVtable->getType()->getPointerElementType(), loadedVtable, index);
+        auto pointerLoad = builder->CreateLoad(pointer->getType()->getPointerElementType(), pointer);
+        llvmCall = builder->CreateCall((llvm::FunctionType*)pointerLoad->getType()->getPointerElementType(),
+                                       (llvm::Function*)pointerLoad,
+                                       args);
         if (allocatedValue) {
             builder->CreateStore(llvmCall, allocatedValue);
             this->value = allocatedValue;
@@ -87,8 +81,7 @@ void LLVMBuilder::visit(ir::Call* call) {
         }
     } else {
         // TODO: invoke if it's inside a try block
-        llvmCall = builder->CreateCall(
-                (llvm::FunctionType*)callee->getType()->getPointerElementType(), callee, args);
+        llvmCall = builder->CreateCall((llvm::FunctionType*)callee->getType()->getPointerElementType(), callee, args);
         if (allocatedValue) {
             builder->CreateStore(llvmCall, allocatedValue);
             this->value = allocatedValue;

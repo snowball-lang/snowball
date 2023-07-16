@@ -16,8 +16,7 @@ namespace codegen {
 
 namespace {
 void setDereferenceableAttribute(llvm::Argument& arg, unsigned bytes) {
-    auto dereferenceable =
-            llvm::Attribute::get(arg.getContext(), llvm::Attribute::Dereferenceable, bytes);
+    auto dereferenceable = llvm::Attribute::get(arg.getContext(), llvm::Attribute::Dereferenceable, bytes);
     auto nonull = llvm::Attribute::get(arg.getContext(), llvm::Attribute::NonNull);
     auto noundef = llvm::Attribute::get(arg.getContext(), llvm::Attribute::NoUndef);
     auto aligment = llvm::Attribute::get(arg.getContext(), llvm::Attribute::Alignment, 8);
@@ -34,13 +33,13 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
 
     auto fnType = llvm::cast<llvm::FunctionType>(getLLVMFunctionType(innerFnType));
     auto name = func->getMangle();
-    auto fn = llvm::Function::Create(fnType,
-                                     ((func->isStatic() && (!func->hasParent())) ||
-                                      func->hasAttribute(Attributes::INTERNAL_LINKAGE))
-                                             ? llvm::Function::InternalLinkage
-                                             : llvm::Function::ExternalLinkage,
-                                     name,
-                                     module.get());
+    auto fn = llvm::Function::Create(
+            fnType,
+            ((func->isStatic() && (!func->hasParent())) || func->hasAttribute(Attributes::INTERNAL_LINKAGE))
+                    ? llvm::Function::InternalLinkage
+                    : llvm::Function::ExternalLinkage,
+            name,
+            module.get());
     auto& layout = module->getDataLayout();
     for (int i = 0; i < func->getArgs().size(); ++i) {
         auto llvmArg = fn->arg_begin() + i;
@@ -53,8 +52,7 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
     auto attrSet = callee->getAttributes();
 
     if (func->hasAttribute(Attributes::INLINE)) {
-        auto newAttrSet =
-                attrSet.addFnAttribute(callee->getContext(), llvm::Attribute::AlwaysInline);
+        auto newAttrSet = attrSet.addFnAttribute(callee->getContext(), llvm::Attribute::AlwaysInline);
         callee->setAttributes(newAttrSet);
         // TODO: other attributes
     } else if (func->hasAttribute(Attributes::NO_INLINE)) {

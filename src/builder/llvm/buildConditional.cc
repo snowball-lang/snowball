@@ -5,10 +5,10 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
-#define CREATE_CONTINUE(x)                                                                         \
-    if (x || (!builder->GetInsertBlock()->getInstList().back().isTerminator()) ||                  \
-        builder->GetInsertBlock()->getInstList().size() == 0) {                                    \
-        builder->CreateBr(continueBB);                                                             \
+#define CREATE_CONTINUE(x)                                                                                             \
+    if (x || (!builder->GetInsertBlock()->getInstList().back().isTerminator()) ||                                      \
+        builder->GetInsertBlock()->getInstList().size() == 0) {                                                        \
+        builder->CreateBr(continueBB);                                                                                 \
     }
 
 namespace snowball {
