@@ -82,7 +82,7 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
                 std::shared_ptr<DefinedType> parent = nullptr,
                 std::vector<std::shared_ptr<Type>> generics = {},
                 bool isStruct = false);
-    DefinedType(const DefinedType&) = delete;
+    DefinedType(const DefinedType&) = default;
     DefinedType& operator=(DefinedType const&) = delete;
     /**
      * @param other another type to check.
@@ -150,6 +150,8 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
     virtual bool canCast(Type* ty) const override;
     virtual bool canCast(DefinedType* ty) const;
 
+    SNOWBALL_TYPE_CLONE(DefinedType)
+    
     template <class Down>
     std::shared_ptr<Down> downcasted_shared_from_this() {
         return std::dynamic_pointer_cast<Down>(Type::shared_from_this());

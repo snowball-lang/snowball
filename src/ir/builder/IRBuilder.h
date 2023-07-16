@@ -130,6 +130,12 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
     /// @brief Create a new type alias
     Type<types::TypeAlias> createTypeAlias(DBGSourceInfo* dbg, std::string name, Type<> base);
     /// @brief It sets a type to a value
+    /// @important When to use this function?
+    ///  1. val1->setType(val2->getType())
+    /// When NOT to use this function?
+    ///  1. val1->setType(val2->getType()->getPointerTo()) // copies base type
+    ///  2. val1->setType(builder.createNew[type](...)) // No need to copy
+    ///  3. val1->setType(transformType(...)) // already copies
     void setType(SharedValue<> value, Type<> type);
     /// @brief Utility function to create a new instruction
     template <typename DesiredType, typename... Args>

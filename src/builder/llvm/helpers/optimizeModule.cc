@@ -95,15 +95,33 @@ void LLVMBuilder::optimizeModule(app::Options::Optimization o) {
         case app::Options::Optimization::OPTIMIZE_Oz: level = llvm::OptimizationLevel::Oz; break;
         default: assert(false && "during code optimization");
     }
-
+    std::vector<std::function<void(llvm::ModulePassManager &, llvm::OptimizationLevel)>>
+      PipelineStartEPCallbacks;
+    std::vector<std::function<void(llvm::ModulePassManager &, llvm::OptimizationLevel)>>
+        OptimizerLastEPCallbacks;
+    PipelineStartEPCallbacks.push_back(
+      [](llvm::ModulePassManager &MPM, llvm::OptimizationLevel Level) {
+        MPM.addPass(llvm::VerifierPass());
+      }
+    );
+    for (const auto &C : PipelineStartEPCallbacks)
+        pass_builder.registerPipelineStartEPCallback(C);
+    for (const auto &C : OptimizerLastEPCallbacks)
+        pass_builder.registerOptimizerLastEPCallback(C);
     llvm::ModulePassManager mpm;
-    // if (o == app::Options::OPTIMIZE_O0) {
-    //     mpm = pass_builder.buildO0DefaultPipeline(level, true);
-    // } else {
-    mpm = pass_builder.buildLTOPreLinkDefaultPipeline(level);
-    //}
+    if (o == app::Options::OPTIMIZE_O0) {
+        mpm = pass_builder.buildThinLTODefaultPipeline(level, nullptr);
+    } else {
+        mpm = pass_builder.buildLTOPreLinkDefaultPipeline(level);
+    }
+
+    llvm::legacy::PassManager codegen_pm;
+    codegen_pm.add(
+      llvm::createTargetTransformInfoWrapperPass(target->getTargetIRAnalysis()));
 
     mpm.run(*module, module_analysis_manager);
+    codegen_pm.run(*module);
+
     applyDebugTransformations(module.get(), o == app::Options::OPTIMIZE_O0);
 }
 

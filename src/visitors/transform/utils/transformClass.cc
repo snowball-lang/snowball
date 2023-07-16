@@ -140,7 +140,7 @@ std::shared_ptr<types::DefinedType> Transformer::transformClass(const std::strin
                         ty->getDBGInfo(), services::OperatorService::getOperatorMangle(OperatorType::EQ), true, false);
                 auto arg = builder.createArgument(NO_DBGINFO, "other", argType);
                 auto typeArgs = std::vector<std::shared_ptr<types::Type>>{transformedType->getPointerTo(), argType};
-                auto type = std::make_shared<types::FunctionType>(typeArgs, transformedType);
+                auto type = builder.createFunctionType(typeArgs, transformedType);
                 fn->setArgs({{"other", arg}});
                 fn->setType(type);
                 fn->setPrivacy(PrivacyStatus::PUBLIC);

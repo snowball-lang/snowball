@@ -114,7 +114,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
             }
         }
 
-        call->setType(t->getRetType());
+        builder.setType(call, t->getRetType());
     } else {
         assert(false && "TODO: other function values?!?!?");
     }

@@ -50,7 +50,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
 
                     indexValue = builder.createIndexExtract(
                             dbgInfo, value, *fieldValue, std::distance(fields.begin(), fieldValue));
-                    indexValue->setType((*fieldValue)->type);
+                    builder.setType(indexValue, (*fieldValue)->type);
                 }
             }
 

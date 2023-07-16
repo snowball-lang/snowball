@@ -29,7 +29,7 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
     // Make a copy of the value
     auto v = builder.createObjectInitialization(p_node->getDBGInfo(), c->getCallee(), c->getArguments(),
                                                 p_node->atHeap());
-    v->setType(v->initializeAtHeap ? type->getPointerTo() : type);
+    builder.setType(v, v->initializeAtHeap ? type->getPointerTo() : type);
     this->value = v;
 }
 

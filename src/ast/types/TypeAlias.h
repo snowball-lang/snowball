@@ -28,6 +28,7 @@ class TypeAlias : public AcceptorExtend<TypeAlias, BaseType> {
 
   public:
     TypeAlias(const std::string name, std::shared_ptr<Type> base);
+    TypeAlias(const TypeAlias& other) = default;
 
     /**
      * @param other another type to check.
@@ -49,6 +50,8 @@ class TypeAlias : public AcceptorExtend<TypeAlias, BaseType> {
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
     bool canCast(Type* ty) const override;
+
+    SNOWBALL_TYPE_CLONE(TypeAlias)
 
     template <class Down>
     std::shared_ptr<Down> downcasted_shared_from_this() {

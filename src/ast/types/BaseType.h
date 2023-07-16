@@ -37,6 +37,7 @@ class BaseType : public Type,
 
   public:
     BaseType(Kind kind, const std::string name);
+    BaseType(const BaseType& other) = default;
 
     /// @brief Get the module where the type is defined.
     std::shared_ptr<ir::Module> getModule() const;

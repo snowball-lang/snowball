@@ -28,18 +28,18 @@ SharedValue<Throw> IRBuilder::createThrow(DBGSourceInfo* dbgInfo, SharedValue<> 
 }
 SharedValue<Cast> IRBuilder::createCast(DBGSourceInfo* dbgInfo, SharedValue<> value, Type<> type) {
     auto cast = N<Cast>(dbgInfo, value, type);
-    cast->setType(type);
+    setType(cast, type);
     return cast;
 }
 SharedValue<IndexExtract> IRBuilder::createIndexExtract(DBGSourceInfo* dbgInfo, SharedValue<> value,
                                                         types::DefinedType::ClassField* field, unsigned int index) {
     auto indexExtract = N<IndexExtract>(dbgInfo, value, field, index);
-    indexExtract->setType(field->type);
+    setType(indexExtract, field->type);
     return indexExtract;
 }
 SharedValue<Argument> IRBuilder::createArgument(DBGSourceInfo* dbgInfo, const std::string& name, Type<> type) {
     auto arg = createArgument(dbgInfo, name, 0, nullptr);
-    if (type) arg->setType(type);
+    if (type) setType(arg, type);
     return arg;
 }
 SharedValue<Argument> IRBuilder::createArgument(DBGSourceInfo* dbgInfo, const std::string& name, int index,
@@ -49,7 +49,7 @@ SharedValue<Argument> IRBuilder::createArgument(DBGSourceInfo* dbgInfo, const st
 SharedValue<Argument> IRBuilder::createArgument(DBGSourceInfo* dbgInfo, const std::string& name, int index, Type<> type,
                                                 Syntax::Expression::Base* defaultValue) {
     auto arg = createArgument(dbgInfo, name, index, defaultValue);
-    arg->setType(type);
+    setType(arg, type);
     return arg;
 }
 SharedValue<Variable> IRBuilder::createVariable(DBGSourceInfo* dbgInfo, const std::string& identifier, bool isArgument,
@@ -59,7 +59,7 @@ SharedValue<Variable> IRBuilder::createVariable(DBGSourceInfo* dbgInfo, const st
 SharedValue<Variable> IRBuilder::createVariable(DBGSourceInfo* dbgInfo, const std::string& identifier, Type<> type,
                                                 bool isArgument, bool isMutable) {
     auto var = createVariable(dbgInfo, identifier, isArgument, isMutable);
-    var->setType(type);
+    setType(var, type);
     return var;
 }
 SharedValue<Block> IRBuilder::createBlock(DBGSourceInfo* dbgInfo) { return createBlock(dbgInfo, {}); }
@@ -68,12 +68,12 @@ SharedValue<Block> IRBuilder::createBlock(DBGSourceInfo* dbgInfo, std::vector<Sh
 }
 SharedValue<DereferenceTo> IRBuilder::createDereferenceTo(DBGSourceInfo* dbgInfo, SharedValue<> value, Type<> type) {
     auto ref = N<DereferenceTo>(dbgInfo, value);
-    ref->setType(type);
+    setType(ref, type);
     return ref;
 }
 SharedValue<ReferenceTo> IRBuilder::createReferenceTo(DBGSourceInfo* dbgInfo, SharedValue<> value) {
     auto ref = N<ReferenceTo>(dbgInfo, value);
-    ref->setType(value->getType()->getPointerTo());
+    setType(ref, value->getType()->getPointerTo());
     return ref;
 }
 SharedValue<StringValue> IRBuilder::createStringValue(DBGSourceInfo* dbgInfo, const std::string value) {
@@ -93,7 +93,7 @@ SharedValue<CharValue> IRBuilder::createCharValue(DBGSourceInfo* dbgInfo, char v
 }
 SharedValue<Return> IRBuilder::createReturn(DBGSourceInfo* dbgInfo, SharedValue<> value) {
     auto ret = N<Return>(dbgInfo, value);
-    if (value) ret->setType(value->getType());
+    if (value) setType(ret, value->getType());
     return ret;
 }
 SharedValue<Return> IRBuilder::createVoidReturn(DBGSourceInfo* dbgInfo) { return N<Return>(dbgInfo, nullptr); }
@@ -104,12 +104,12 @@ SharedValue<VariableDeclaration> IRBuilder::createVariableDeclaration(DBGSourceI
                                                                       const std::string identifier, SharedValue<> value,
                                                                       bool isMutable) {
     auto decl = N<VariableDeclaration>(dbgInfo, identifier, value, isMutable);
-    decl->setType(value->getType());
+    setType(decl, value->getType());
     return decl;
 }
 SharedValue<ValueExtract> IRBuilder::createValueExtract(DBGSourceInfo* dbgInfo, SharedValue<> value) {
     auto extract = N<ValueExtract>(dbgInfo, value);
-    extract->setType(value->getType());
+    setType(extract, value->getType());
     return extract;
 }
 SharedValue<ObjectInitialization> IRBuilder::createObjectInitialization(DBGSourceInfo* dbgInfo, SharedValue<> value,
@@ -143,8 +143,12 @@ Type<types::TypeAlias> IRBuilder::createTypeAlias(DBGSourceInfo* dbg, std::strin
 SharedValue<BinaryOp> IRBuilder::createBinaryOp(SharedValue<Call> call) {
     auto op = N<BinaryOp>(call->getDBGInfo(), call->getCallee(), call->getArguments());
     op->isInitialization = call->isInitialization;
-    op->setType(call->getType());
+    setType(op, call->getType());
     return op;
+}
+void IRBuilder::setType(SharedValue<> value, Type<> type) {
+    Type<> copiedType = type->copy();
+    value->setType(copiedType);
 }
 } // namespace ir
 } // namespace snowball

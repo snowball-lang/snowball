@@ -27,6 +27,7 @@ class ReferenceType : public AcceptorExtend<ReferenceType, Type>, public DBGObje
 
   public:
     ReferenceType(std::shared_ptr<Type> base);
+    ReferenceType(const ReferenceType& other) = default;
 
     /**
      * @param other another type to check.
@@ -52,6 +53,8 @@ class ReferenceType : public AcceptorExtend<ReferenceType, Type>, public DBGObje
     /// @note It essentially does the same thing except it adds
     ///  generics if needed
     Syntax::Expression::TypeRef* toRef() override;
+
+    SNOWBALL_TYPE_CLONE(ReferenceType)
 
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.

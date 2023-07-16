@@ -16,7 +16,6 @@ class IdMixin {
     /// the global id counter
     static id_t currentId;
 
-    IdMixin(const IdMixin&) = delete;
     IdMixin& operator=(const IdMixin&) = delete;
 
   protected:
@@ -27,6 +26,7 @@ class IdMixin {
     /// Resets the global id counter.
     static void resetId();
 
+    IdMixin(const IdMixin&) = default;
     IdMixin() : id(currentId++) { }
 
     /// @return the node's id.

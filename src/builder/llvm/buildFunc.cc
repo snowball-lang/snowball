@@ -62,7 +62,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
         auto scope = llvmFn->getSubprogram();
         auto debugVar = dbg.builder->createParameterVariable(scope,
                                                              var->getName(),
-                                                             var->getIndex(),
+                                                             var->getIndex()+1, // lua vibes... :]
                                                              file,
                                                              dbgInfo->line,
                                                              getDIType(var->getType().get()),
@@ -107,7 +107,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     setDebugInfoLoc(nullptr);
 
     // Create return type
-    if ((!builder->GetInsertBlock()->getInstList().back().isTerminator()) ||
+    if ((!builder->GetInsertBlock()->getTerminator()) ||
         builder->GetInsertBlock()->getInstList().size() == 0) {
         if (utils::cast<types::VoidType>(fn->getRetTy().get())) {
             builder->CreateRetVoid();

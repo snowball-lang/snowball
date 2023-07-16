@@ -98,7 +98,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
                     for (auto arg : newArgs) {
                         auto ref = builder.createVariable(node->getDBGInfo(), arg.first, true,
                                                           arg.second->getType()->isMutable());
-                        ref->setType(arg.second->getType());
+                        builder.setType(ref, arg.second->getType());
                         auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, ref);
                         ref->setId(arg.second->getId());
                         ctx->addItem(arg.first, refItem);

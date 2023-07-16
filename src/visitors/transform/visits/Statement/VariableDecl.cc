@@ -32,7 +32,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
         auto val = trans(variableValue);
         auto varDecl = builder.createVariableDeclaration(p_node->getDBGInfo(), variableName, val, isMutable);
         varDecl->setId(var->getId());
-        varDecl->setType(val->getType());
+        builder.setType(varDecl, val->getType());
         if (auto f = ctx->getCurrentFunction().get()) {
             f->addSymbol(varDecl);
         } else {
@@ -55,18 +55,18 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
 
         auto ty = val->getType();
         ty->setMutable(isMutable);
-        var->setType(ty);
+        builder.setType(var, ty);
     } else {
         auto varDecl = builder.createVariableDeclaration(p_node->getDBGInfo(), variableName, nullptr, isMutable);
         varDecl->setId(var->getId());
-        varDecl->setType(definedType);
+        builder.setType(varDecl, definedType);
         if (auto f = ctx->getCurrentFunction().get()) {
             f->addSymbol(varDecl);
         } else {
             ctx->module->addVariable(varDecl);
         }
 
-        var->setType(definedType);
+        builder.setType(var, definedType);
         this->value = var;
     }
 

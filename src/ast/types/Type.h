@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <cassert>
 
 #ifndef __SNOWBALL_AST_TYPE_H_
 #define __SNOWBALL_AST_TYPE_H_
@@ -12,6 +13,10 @@
     if (utils::cast<CObjectType>(ty)) return true;
 #define SNOWBALL_MUTABLE_CAST_CHECK                                                                                    \
     if (!_mutable && ty->isMutable()) return false;
+
+#define SNOWBALL_TYPE_CLONE(X) \
+    virtual std::shared_ptr<types::Type> copy() const override \
+      { return std::make_shared<X>(*this); }
 
 /**
  * Types in snowball can be represented in many different forms.
@@ -55,6 +60,7 @@ class Type : public std::enable_shared_from_this<Type> {
     explicit Type(Kind p_kind, std::string p_name, bool isMutable = false);
 
     Type& operator=(const Type&) = delete;
+    Type(const Type& other) = default;
 
     ~Type() noexcept = default;
 
@@ -72,13 +78,17 @@ class Type : public std::enable_shared_from_this<Type> {
     virtual std::string getMangledName() const { return "T" + std::to_string(name.size()) + name; };
 
     /// @return if a type can be casted to this type
-    virtual bool canCast(Type* ty) const { return false; }
+    virtual bool canCast(Type* ty) const { assert(!"called cantCast to not-specialised type!"); }
     /// @brief std::shared_ptr support for Type::canCast
     virtual bool canCast(std::shared_ptr<Type> t) const { return canCast(t.get()); }
 
     /// @brief Create a *new* pointer type with this type as base
     /// @return a std::shared_ptr<ReferenceType> but casted into a `Type`
     virtual std::shared_ptr<Type> getPointerTo();
+
+    /// @brief Create a new copy of this type
+    /// @return a std::shared_ptr<Type> but casted into a `Type`
+    virtual std::shared_ptr<Type> copy() const;
 
     /// @brief Transform the type into a syntax type reference node.
     ///	This is useful for cases such as class methods where the first

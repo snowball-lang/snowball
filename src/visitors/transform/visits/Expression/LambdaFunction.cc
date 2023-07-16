@@ -56,7 +56,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
             for (auto arg : newArgs) {
                 auto ref = builder.createVariable(node->getDBGInfo(), arg.first, true /* TODO: is mutable */);
 
-                ref->setType(arg.second->getType());
+                builder.setType(ref, arg.second->getType());
                 auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, ref);
 
                 ref->setId(arg.second->getId());

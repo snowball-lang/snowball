@@ -61,6 +61,7 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
                  bool isMutable = true,
                  const std::string& name = "<fn type>")
         : AcceptorExtend(Kind::TYPE, name, isMutable), args(args), retTy(retTy), variadic(isVariadic) { }
+    FunctionType(const FunctionType& other) = default;
 
     /**
      * @param other another (non-functional) type.
@@ -97,6 +98,8 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
     bool isVariadic() { return variadic; }
 
     // std::string getName() const override; // TODO:
+
+    SNOWBALL_TYPE_CLONE(FunctionType)
 
     /**
      * @brief Get the function represented as a "human-readable"
