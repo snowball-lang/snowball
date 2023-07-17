@@ -24,6 +24,8 @@ class Item : public DBGObject {
     using FunctionPtr = std::shared_ptr<ir::Func>;
     using TypePtr = std::shared_ptr<types::Type>;
 
+    using MacroPtr = Macro*;
+
     // This value is the actual value gotten from
     // the stack.
     ValuePtr value = nullptr;
@@ -69,6 +71,10 @@ class Item : public DBGObject {
      *      "hello": Item<type: FUNC> ---^
      */
     std::deque<FunctionPtr> functions;
+    // Macro stored inside this item. The macro can
+    // be either user-defined or it can be imported from
+    // another file.
+    MacroPtr macro = nullptr;
 
   public:
     // The type used to represent what this
@@ -78,7 +84,8 @@ class Item : public DBGObject {
         TYPE,
         FUNC,
         VALUE,
-        MODULE
+        MODULE,
+        MACRO
     } type;
 
     // Constructors and destructors for the
@@ -89,12 +96,14 @@ class Item : public DBGObject {
     Item(FunctionPtr fn) : type(FUNC), functions({fn}){};
     Item(std::shared_ptr<ir::Module> m) : module(m), type(MODULE){};
     Item(TypePtr val) : type(TYPE), tyVal(val){};
+    Item(MacroPtr m) : macro(m), type(MACRO){};
 
     // Utility functions to identify the item
     bool isType() { return type == TYPE; }
     bool isFunc() { return type == FUNC; }
     bool isVal() { return type == VALUE; }
     bool isModule() { return type == MODULE; }
+    bool isMacro() { return type == MACRO; }
 
     /// @return The module stored inside this item
     auto getModule() const {
@@ -111,7 +120,11 @@ class Item : public DBGObject {
         assert(type == TYPE);
         return tyVal;
     }
-
+    /// @return The macro stored inside this item
+    auto getMacro() const {
+        assert(type == MACRO);
+        return macro;
+    }
     /// @return a full list of functions stored in this item
     auto& getFunctions() {
         assert(type == FUNC);

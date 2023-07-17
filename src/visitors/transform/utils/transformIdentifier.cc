@@ -34,6 +34,13 @@ Transformer::StoreType Transformer::getFromIdentifier(DBGSourceInfo* dbgInfo, co
             return {std::nullopt, item->getType(), std::nullopt, std::nullopt, std::nullopt};
         } else if (item->isModule()) {
             return {std::nullopt, std::nullopt, std::nullopt, std::nullopt, item->getModule()};
+        } else if (item->isMacro()) {
+            E<SYNTAX_ERROR>(dbgInfo, "Macros cannot be used as values!",
+              {
+                .info = "This is the macro that was used",
+                .note = "Macros are not values, they are used to generate code at compile time.",
+                .help = "If you want to use a macro as a value, you can use the '@' symbol before \nand identifier to use a function-like macro."
+              });
         } else {
             assert(false && "BUG: Unhandled value type!");
         }
