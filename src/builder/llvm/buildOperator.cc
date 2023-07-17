@@ -120,7 +120,10 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                     case services::OperatorService::EQ: {
                         llvm::Value* leftValue = left;
                         llvm::Value* rightValue = right;
-                        if (!llvm::isa<llvm::LoadInst>(rightValue) && rightValue->getType()->isPointerTy())
+                        if (llvm::isa<llvm::LoadInst>(leftValue)) {
+                            auto l = llvm::cast<llvm::LoadInst>(leftValue);
+                            leftValue = l->getOperand(0);
+                        } else if (!llvm::isa<llvm::LoadInst>(rightValue) && rightValue->getType()->isPointerTy())
                             rightValue =
                                     builder->CreateLoad(rightValue->getType()->getPointerElementType(), rightValue);
 

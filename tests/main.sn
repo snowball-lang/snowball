@@ -6,9 +6,5 @@
 
 // Import the core library.
 // This is required for the println function.
+use pkg::vector;
 use pkg::string;
-use Core::CLib;
-
-pub fn main() i32 {
-    let x = new Vector<char&>{};
-}

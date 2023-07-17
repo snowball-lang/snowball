@@ -36,9 +36,17 @@ Parser::parseAttributes(std::function<Attributes(std::string)> parseFn) {
                 next();
                 if (is<TokenType::OP_EQ>()) {
                     next();
-                    auto val = assert_tok<TokenType::VALUE_STRING>("a string value").to_string();
-                    if (is<TokenType::VALUE_STRING>()) val = val.substr(1, val.size() - 2); // remove "
-                    attrArgs[name] = val;
+                    if (is<TokenType::VALUE_STRING>()) {
+                        auto val = m_current.to_string();
+                        if (is<TokenType::VALUE_STRING>()) val = val.substr(1, val.size() - 2); // remove "
+                        attrArgs[name] = val;
+                    } else if (is<TokenType::VALUE_NUMBER>()) {
+                        attrArgs[name] = m_current.to_string();
+                    } else {
+                        createError<SYNTAX_ERROR>(
+                                FMT("Expected a string or a number value but found '%s' instead",
+                                    peek().to_string().c_str()));
+                    }
                 } else {
                     attrArgs[name] = "";
                     prev();

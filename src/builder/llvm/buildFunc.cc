@@ -44,7 +44,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     auto llvmArgsIter = llvmFn->arg_begin();
     for (auto varIter = fnArgs.begin(); varIter != fnArgs.end(); ++varIter) {
         auto var = varIter->second;
-        auto storage = builder->CreateAlloca(getLLVMType(var->getType()));
+        auto storage = builder->CreateAlloca(getLLVMType(var->getType()), nullptr, "arg." + var->getName());
         builder->CreateStore(llvmArgsIter, storage);
 
         // note: We sum "1" to the ID because each "Variable" has the
@@ -72,14 +72,13 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
                                    dbg.builder->createExpression(),
                                    llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
                                    entry);
-
         ++llvmArgsIter;
     }
 
     // Generate all the used variables
     for (auto v : fn->getSymbols()) {
         auto llvmType = getLLVMType(v->getType());
-        auto storage = builder->CreateAlloca(llvmType);
+        auto storage = builder->CreateAlloca(llvmType, nullptr, "var." + v->getIdentifier());
         ctx->addSymbol(v->getId(), storage);
 
         // debug info

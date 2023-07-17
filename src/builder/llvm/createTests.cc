@@ -35,8 +35,10 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
         auto name = fn->getNiceName();
         auto attrArgs = fn->getAttributeArgs(Attributes::TEST);
         auto shouldSkip = attrArgs.find("skip") != attrArgs.end();
+        auto doesExpect = attrArgs.find("expect") != attrArgs.end();
+        auto expect = doesExpect ? std::stoi(attrArgs["expect"]) : 1;
         auto namePtr = builder->CreateGlobalStringPtr(name, "test.alloca");
-        auto call = builder->CreateCall(testFunction, {llvmFunc, namePtr, builder->getInt1(shouldSkip)});
+        auto call = builder->CreateCall(testFunction, {llvmFunc, namePtr, builder->getInt1(shouldSkip), builder->getInt32(expect)});
         auto shouldContinue = builder->CreateICmpEQ(call, builder->getInt32(0));
         if (shouldSkip) {
             skipCount++;
@@ -59,6 +61,20 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
             builder->CreateBr(continueBlock);
             builder->SetInsertPoint(continueBlock);
         }
+    }
+
+    if (ctx->tests.size() == 0) {
+        builder->CreateCall(printFunction, {builder->CreateGlobalStringPtr(
+            FMT("\n%s"
+            "  Oops! It seems like our tests have gone on vacation!\n\n"
+            "  They must be off sunbathing on a tropical beach or enjoying some\n"
+            "  well-deserved rest.\n\n"
+            "  While they're out having fun, why don't you \n"
+            "  take this opportunity to show off your code's confidence by giving\n"
+            "  it a high-five?\n\n"
+            "  Remember, real programmers write self-assured code that\n"
+            "  doesn't need tests to prove its awesomeness! 😉%s\n", BYEL, RESET), "test.msg")
+        });
     }
 
     builder->CreateCall(printFunction, {builder->CreateGlobalStringPtr(FMT("\nTest results:\n "), "test.msg")});

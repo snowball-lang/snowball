@@ -51,11 +51,13 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
                                              : std::vector<std::shared_ptr<types::Type>>{classType};
                     auto fn = builder.createFunction(NO_DBGINFO, "#" + op, true, false);
                     auto arg = builder.createArgument(NO_DBGINFO, "other", overloadType);
-                    auto type = builder.createFunctionType(typeArgs, ty);
+                    auto isComp = Expression::BinaryOp::is_comp(opType);
+                    auto returnType =  isComp ? raw_BoolType : ty;
+                    auto type = builder.createFunctionType(typeArgs, returnType);
                     auto isMut = Expression::BinaryOp::is_assignment(opType);
                     fn->setArgs(unary ? ir::Func::FunctionArgs{} : ir::Func::FunctionArgs{{"other", arg}});
                     fn->setType(type);
-                    fn->setRetTy(ty);
+                    fn->setRetTy(returnType);
                     fn->setPrivacy(PrivacyStatus::PUBLIC);
                     fn->getType()->setMutable(isMut);
                     fn->getRetTy()->setMutable(isMut);

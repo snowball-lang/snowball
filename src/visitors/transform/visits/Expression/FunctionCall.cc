@@ -87,7 +87,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     // clang-format off
     auto call = builder.createCall(p_node->getDBGInfo(), fn, argValues);
     if (auto t = utils::dyn_cast<types::FunctionType>(fn->getType())) {
-        if (((t->getArgs().size() <= argTypes.size()) || (t->getArgs().size() <= argTypes.size() && t->isVariadic()))) {
+        if (t->getArgs().size() <= argTypes.size()) {
             for (int i = 0; i < t->getArgs().size(); i++) {
                 auto arg = argTypes.at(i);
                 auto deduced = t->getArgs().at(i);
@@ -130,40 +130,40 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
 
             if (((args.size() - default_arg_count) - func->hasParent()) <= (argTypes.size() - func->hasParent())) {
                 ctx->withState(ctx->cache->getFunctionState(func->getId()),
-                    [&argTypes = argTypes, this, call, args, &argValues = argValues, p_node]() {
-                    // add default arguments
-                    for (auto arg = std::next(args.begin(), argTypes.size()); arg != args.end(); ++arg) {
-                        if (arg->second->hasDefaultValue()) {
-                            auto val = trans(arg->second->getDefaultValue());
-                            auto ty = val->getType();
-                            if (!arg->second->getType()->is(ty)) {
-                                if (!tryCast(val, arg->second->getType()))
-                                    E<TYPE_ERROR>(arg->second,
-                                        FMT("Function's default value does not match argument ('%s') type!",
-                                            arg->first.c_str()),
-                                        {.info = "This is the default value that's causing the error",
-                                        .help = "Maybe try to convert a cast to the correct type?"});
-                                assert(false && "TODO: cast default argument");
-                            } else {
-                                argTypes.push_back(ty);
-                                argValues.push_back(val);
-
-                                call->setArguments(argValues);
-                            }
+                [&argTypes = argTypes, this, call, args, &argValues = argValues, p_node]() {
+                // add default arguments
+                for (auto arg = std::next(args.begin(), argTypes.size()); arg != args.end(); ++arg) {
+                    if (arg->second->hasDefaultValue()) {
+                        auto val = trans(arg->second->getDefaultValue());
+                        auto ty = val->getType();
+                        if (!arg->second->getType()->is(ty)) {
+                            if (!tryCast(val, arg->second->getType()))
+                                E<TYPE_ERROR>(arg->second,
+                                    FMT("Function's default value does not match argument ('%s') type!",
+                                        arg->first.c_str()),
+                                    {.info = "This is the default value that's causing the error",
+                                    .help = "Maybe try to convert a cast to the correct type?"});
+                            assert(false && "TODO: cast default argument");
                         } else {
-                            if (arg->first == "self") {
-                                // We skip the "self" argument
-                                // inside a method (or constructor)
-                                // since it's a weird situation
-                                // where you pass an argument
-                                // implicitly.
-                                continue;
-                            }
-                            E<TYPE_ERROR>(p_node,
-                                FMT("Could not get value for argument '%s'!",
-                                    arg->first.c_str()));
+                            argTypes.push_back(ty);
+                            argValues.push_back(val);
+
+                            call->setArguments(argValues);
                         }
+                    } else {
+                        if (arg->first == "self") {
+                            // We skip the "self" argument
+                            // inside a method (or constructor)
+                            // since it's a weird situation
+                            // where you pass an argument
+                            // implicitly.
+                            continue;
+                        }
+                        E<TYPE_ERROR>(p_node,
+                            FMT("Could not get value for argument '%s'!",
+                                arg->first.c_str()));
                     }
+                }
                 });
             } else {
                 E<TYPE_ERROR>(p_node, "Function call missing arguments!");

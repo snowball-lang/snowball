@@ -84,7 +84,7 @@ void LLVMBuilder::visit(ir::Call* call) {
         llvmCall = builder->CreateCall((llvm::FunctionType*)callee->getType()->getPointerElementType(), callee, args);
         if (allocatedValue) {
             builder->CreateStore(llvmCall, allocatedValue);
-            this->value = allocatedValue;
+            this->value = builder->CreateLoad(allocatedValue->getType()->getPointerElementType(), allocatedValue);
         } else {
             this->value = llvmCall;
         }

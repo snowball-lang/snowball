@@ -39,8 +39,7 @@ void LLVMBuilder::initializeRuntime() {
     if (buildReturn) {
         builder->CreateCall(f, {});
         builder->CreateRet(builder->getInt32(0));
-    }
-    if (ctx->testMode) {
+    } else if (ctx->testMode) {
         builder->CreateCall(f, {});
         createTests(mainFunction);
     } else {

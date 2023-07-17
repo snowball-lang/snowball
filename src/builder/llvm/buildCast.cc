@@ -26,7 +26,7 @@ void LLVMBuilder::visit(ir::Cast* c) {
 
     // Check if both types are integers
     if (IS_INTEGER(vTy) && IS_INTEGER(ty)) {                     // i[n] <-> i[n]
-        this->value = builder->CreateIntCast(v, llvmType, true); // TODO: check if it's actually signed
+        this->value = builder->CreateIntCast(v, llvmType, false); // TODO: check if it's actually signed
     } else if (IS_INTEGER(vTy) && IS_FLOAT(ty)) {                // i[n] -> float
         // cast signed integer to float
         this->value = builder->CreateSIToFP(v, llvmType);

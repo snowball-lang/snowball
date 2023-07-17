@@ -100,7 +100,6 @@ Transformer::getFunction(DBGObject* dbgInfo,
                         }
                     }
                 }
-
                 auto fnGenerics = f->getGenerics();
                 // TODO: allow variadic generics
                 if (fnGenerics.size() == generics.size()) {
@@ -118,12 +117,13 @@ Transformer::getFunction(DBGObject* dbgInfo,
             }
         }
     }
-
-    auto [fn, args, res] =
-            getBestFittingFunction(overloads.has_value() ? overloads.value() : std::vector<Cache::FunctionStore>{},
-                                   arguments,
-                                   generics,
-                                   isIdentifier);
+    auto [fn, args, res] = getBestFittingFunction(
+        overloads.has_value()
+            ? overloads.value()
+            : std::vector<Cache::FunctionStore>{},
+        arguments,
+        generics,
+        isIdentifier);
     switch (res) {
         case Ok: {
             if (foundFunction != nullptr) return checkIfContextEqual(foundFunction);

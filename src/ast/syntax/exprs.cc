@@ -57,6 +57,11 @@ bool BinaryOp::is_assignment(BinaryOp* p_node) {
     OpType p_op_type = p_node->op_type;
     return is_assignment(p_op_type);
 }
+bool BinaryOp::is_comp(OpType opType) {
+    return opType == OpType::GT || opType == OpType::LT ||
+        opType == OpType::GTEQ || opType == OpType::LTEQ ||
+        opType == OpType::EQEQ || opType == OpType::NOTEQ;
+}
 std::string BinaryOp::to_string() const {
 #define OP_CASE(op, symbol) case OpType::op: return symbol;
 #define OP_DEFAULT default: assert(false);

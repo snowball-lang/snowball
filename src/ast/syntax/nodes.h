@@ -351,6 +351,12 @@ struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
     static bool is_assignment(OpType opType);
     static bool is_assignment(BinaryOp* p_node);
     /**
+     * @brief Determines if the operator is a comparison operator.
+     * @param p_node The operator expression node.
+     * @return Whether it's a comparison operator.
+     */
+    static bool is_comp(OpType p_node);
+    /**
      * @brief Converts the operator type to a string.
      * @return The string representation of the operator.
      */

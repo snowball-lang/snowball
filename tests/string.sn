@@ -6,9 +6,9 @@ fn [[test]] empty() i32 {
     return s.size() == 0;
 }
 
-fn [[test]] size() i32 {
+fn [[test(expect = 5)]] size() i32 {
     let s = new String("hello");
-    return s.size() == 5;
+    return s.size();
 }
 
 }

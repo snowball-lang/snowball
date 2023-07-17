@@ -129,6 +129,11 @@ std::list<std::string> split(std::string str, std::string token) {
     return result;
 }
 
+bool isNumber(const std::string& s) {
+    return !s.empty() && std::find_if(s.begin(), 
+        s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
+}
+
 bool endsWith(const std::string& mainStr, const std::string& toMatch) {
     return (mainStr.size() >= toMatch.size() &&
             mainStr.compare(mainStr.size() - toMatch.size(), toMatch.size(), toMatch) == 0);
