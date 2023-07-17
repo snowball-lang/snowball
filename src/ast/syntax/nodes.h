@@ -1083,20 +1083,27 @@ struct LambdaFunction : public AcceptorExtend<LambdaFunction, Expression::Base> 
  * @note Macros can be used as statements or expressions.
 */
 struct Macro : public AcceptorExtend<Macro, Node> {
+  public:
+    enum ArguementType
+    {
+        STATEMENT,
+        EXPRESSION
+    };
+  private:
     std::string name;
-    std::vector<std::string> args;
+    std::map<std::string, ArguementType> args;
     Block* body;
 
     bool isStatement = false;
 
   public:
-    Macro(std::string name, std::vector<std::string> args, Block* body, bool isStatement = false)
+    Macro(std::string name, std::map<std::string, ArguementType> args, Block* body, bool isStatement = false)
         : name(name), args(args), body(body), isStatement(isStatement) {};
 
     /// @return Get macro's name
     std::string getName() const { return name; }
     /// @return Get macro's arguments
-    std::vector<std::string> getArgs() const { return args; }
+    auto getArgs() const { return args; }
     /// @return Get macro's body
     Block* getBody() const { return body; }
     /// @return If the macro is a statement or not
