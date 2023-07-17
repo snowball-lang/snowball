@@ -1,0 +1,11 @@
+
+use Core::Char;
+
+namespace tests {
+
+fn [[test(skip)]] isSpace() i32 {
+    @assert(Char::isSpace(' '));
+}
+
+}
+

@@ -28,7 +28,14 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     auto isExternalModule = ctx->imports->isExternalModule(package);
     ctx->isMainModule = !isExternalModule;
     if (ctx->getItem(exportName).second)
-        Syntax::E<IMPORT_ERROR>(p_node, FMT("Import with name '%s' is already defined!", exportName.c_str()));
+        Syntax::E<IMPORT_ERROR>(p_node, FMT("Import with name '%s' is already defined!", exportName.c_str()),
+         {
+            .info = "This is the import that was used",
+            .note = "It may be possible that you have imported the same module twice\n"
+                    "or that this symbol is already defined in the same stack.",
+            .help = "If you want to import the same module twice, you can use the 'as'\n"
+                    "keyword to give it a different name."
+         });
     if (auto m = ctx->imports->cache->getModule(filePath)) {
         auto item = std::make_shared<Item>(m.value());
         ctx->addItem(exportName, item);

@@ -35,6 +35,12 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
 
                     expr = Syntax::N<Syntax::Expression::PseudoVariable>(m_current.to_string());
                     expr->setDBGInfo(dbg);
+                    if (is<TokenType::BRACKET_LPARENT>(peek())) {
+                        next();
+                        assert(false && "TODO: implement function-like macros");
+                        // auto call = parseFunctionCall(expr);
+                        // expr = Syntax::N<Syntax::Expression::MacroCall>(expr, call);
+                    }
                 } else {
                     prev();
                     parseNormal = true;
