@@ -8,3 +8,4 @@
 // This is required for the println function.
 use pkg::vector;
 use pkg::string;
+use pkg::char;
