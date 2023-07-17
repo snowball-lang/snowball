@@ -5,6 +5,7 @@
 #endif
 
 ACCEPT(Block)
+ACCEPT(Macro)
 
 ACCEPT(Expression::ConstantValue)
 ACCEPT(Expression::FunctionCall)

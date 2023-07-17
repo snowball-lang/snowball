@@ -543,6 +543,8 @@ void Lexer::tokenize() {
                         tk.type = TokenType::KWORD_DECLTYPE;
                     } else if (identifier == _SNOWBALL_KEYWORD__FUNCTION) {
                         tk.type = TokenType::KWORD_FUNC;
+                    } else if (identifier == _SNOWBALL_KEYWORD__MACRO) {
+                        tk.type = TokenType::KWORD_MACRO;
                     } else if (identifier == _SNOWBALL_KEYWORD__OPERATOR) {
                         tk.type = TokenType::KWORD_OPERATOR;
                     } else if (identifier == _SNOWBALL_KEYWORD__ELSE) {

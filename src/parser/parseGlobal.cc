@@ -23,6 +23,11 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
                     createError<SYNTAX_ERROR>("unexpected end of file");
                 case TokenType::SYM_SEMI_COLLON: break;
 
+                case TokenType::KWORD_MACRO: {
+                    global.push_back(parseMacro());
+                    break;
+                }
+
                 case TokenType::KWORD_PUBLIC:
                 case TokenType::KWORD_PRIVATE: {
                     auto pk = peek();

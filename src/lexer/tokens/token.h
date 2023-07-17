@@ -161,6 +161,7 @@ enum class TokenType
     KWORD_ENUM,           // Symbol: enum
     KWORD_FUNC,           // Symbol: fn
     KWORD_OPERATOR,       // Symbol: operator
+    KWORD_MACRO,          // Symbol: macro
     KWORD_ELSE,           // Symbol: else
     KWORD_CASE,           // Symbol: case
     KWORD_BREAK,          // Symbol: break
@@ -287,6 +288,7 @@ struct Token {
             case TokenType::KWORD_AS: return _SNOWBALL_KEYWORD__AS;
             case TokenType::KWORD_ENUM: return _SNOWBALL_KEYWORD__ENUM;
             case TokenType::KWORD_FUNC: return _SNOWBALL_KEYWORD__FUNCTION;
+            case TokenType::KWORD_MACRO: return _SNOWBALL_KEYWORD__MACRO;
             case TokenType::KWORD_OPERATOR: return _SNOWBALL_KEYWORD__OPERATOR;
             case TokenType::KWORD_VAR: return _SNOWBALL_KEYWORD__VARIABLE;
             case TokenType::KWORD_CONST: return _SNOWBALL_KEYWORD__CONSTANT;

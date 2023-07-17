@@ -241,6 +241,12 @@ class Parser {
      */
     Syntax::Statement::DefinedTypeDef* parseClass();
     /**
+     * macro        ::=  "macro" ["!"] <identifier> "(" [args] ")" "{" [body] "}"
+     * args         ::=  [identifier] "," ...
+     * body         ::=  [stmt] ...
+     */
+    Syntax::Macro* parseMacro();
+    /**
      * function_call ::= [expr] "(" [args] ")"
      * arguments     ::= [[expr] "," ...]
      *

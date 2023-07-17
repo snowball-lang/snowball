@@ -1074,6 +1074,39 @@ struct LambdaFunction : public AcceptorExtend<LambdaFunction, Expression::Base> 
 } // namespace Expression
 
 /**
+ * @brief Representation of a macro declaration in the AST.
+ * Macros are used to generate code at compile time.
+ * @example
+ * macro myMacro(a: i32, b: i32) {
+ *  return a + b
+ * }
+ * @note Macros can be used as statements or expressions.
+*/
+struct Macro : public AcceptorExtend<Macro, Node> {
+    std::string name;
+    std::vector<std::string> args;
+    Block* body;
+
+    bool isStatement = false;
+
+  public:
+    Macro(std::string name, std::vector<std::string> args, Block* body, bool isStatement = false)
+        : name(name), args(args), body(body), isStatement(isStatement) {};
+
+    /// @return Get macro's name
+    std::string getName() const { return name; }
+    /// @return Get macro's arguments
+    std::vector<std::string> getArgs() const { return args; }
+    /// @return Get macro's body
+    Block* getBody() const { return body; }
+    /// @return If the macro is a statement or not
+    bool isMacroStatement() const { return isStatement; }
+
+    // Set an acceptance call
+    ACCEPT()
+};
+
+/**
  * @brief Utility function to create a new node
  * @tparam ...Args arguments for the node
  * @tparam Inst Node type to be initialized
