@@ -77,18 +77,18 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
         });
     }
 
-    builder->CreateCall(printFunction, {builder->CreateGlobalStringPtr(FMT("\nTest results:\n "), "test.msg")});
+    builder->CreateCall(printFunction, {builder->CreateGlobalStringPtr(FMT("\nTest results:\n"), "test.msg")});
     builder->CreateCall(printFunction,
-                        {builder->CreateGlobalStringPtr(FMT("%s%%i%s test(s) passed; ", BGRN, RESET), "test.msg"),
+                        {builder->CreateGlobalStringPtr(FMT("  %s+ %%i%s test(s) passed; ", BGRN, RESET), "test.msg"),
                          builder->CreateLoad(builder->getInt32Ty(), successCount)});
     builder->CreateCall(printFunction,
-                        {builder->CreateGlobalStringPtr(FMT("%s%%i%s test(s) failed; ", BRED, RESET), "test.msg"),
+                        {builder->CreateGlobalStringPtr(FMT("\n  %s- %%i%s test(s) failed; ", BRED, RESET), "test.msg"),
                          builder->CreateLoad(builder->getInt32Ty(), failCount)});
     builder->CreateCall(printFunction,
-                        {builder->CreateGlobalStringPtr(FMT("%s%%i%s test(s) skipped; ", BYEL, RESET), "test.msg"),
+                        {builder->CreateGlobalStringPtr(FMT("\n  %s? %%i%s test(s) skipped; ", BYEL, RESET), "test.msg"),
                          builder->getInt32(skipCount)});
     builder->CreateCall(printFunction,
-                        {builder->CreateGlobalStringPtr(FMT("%s%%i%s executed test(s) total\n\n", BOLD, RESET), "test.msg"),
+                        {builder->CreateGlobalStringPtr(FMT("\n  %s= %%i%s executed test(s) total\n\n", BOLD, RESET), "test.msg"),
                          builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), successCount),
                                             builder->CreateLoad(builder->getInt32Ty(), failCount))});
 

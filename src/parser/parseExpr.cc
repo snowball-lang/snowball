@@ -40,11 +40,13 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                         std::vector<Syntax::Node*> args;
                         next();
                         if (!is<TokenType::BRACKET_RPARENT>()) {
+                            prev();
                             while (true) {
+                                next();
                                 args.push_back(parseStatement(peek()));
                                 if (is<TokenType::SYM_COMMA>(peek())) {
-                                    next();
                                 } else {
+                                    next();
                                     break;
                                 }
                             }

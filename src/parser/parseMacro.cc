@@ -20,16 +20,32 @@ Syntax::Macro* Parser::parseMacro() {
         auto name = m_current.to_string();
         next();
         consume<TokenType::SYM_COLLON>("':'");
-        auto type = assert_tok<TokenType::IDENTIFIER>("an identifier for type").to_string();
+        auto type = m_current.to_string();
         Syntax::Macro::ArguementType argType;
         if (type == "expr") {
             argType = Syntax::Macro::ArguementType::EXPRESSION;
         } else if (type == "const") {
             argType = Syntax::Macro::ArguementType::CONSTANT;
+            next();
+            if (is<TokenType::BRACKET_LSQUARED>()) {
+                next();
+                auto val = assert_tok<TokenType::IDENTIFIER>("an identifier for constant value").to_string();
+                next();
+                assert_tok<TokenType::BRACKET_RSQUARED>("']'");
+                if (val == "str") {
+                    argType = Syntax::Macro::ArguementType::CONSTANT_STRING;
+                } else if (val == "num") {
+                    argType = Syntax::Macro::ArguementType::CONSTANT_NUMBER;
+                } else if (val == "chr") {
+                    argType = Syntax::Macro::ArguementType::CONSTANT_CHAR;
+                } else {
+                    createError<SYNTAX_ERROR>("Expected 'str', 'num', or 'chr' for constant type");
+                }
+            }
         } else if (type == "stmt") {
             argType = Syntax::Macro::ArguementType::STATEMENT;
         } else {
-            createError<SYNTAX_ERROR>("expected 'expr' or 'stmt' for macro arguement type");
+            createError<SYNTAX_ERROR>("Expected 'expr' or 'stmt' for macro arguement type");
         }
         // TODO: check for existant args
         args.push_back(std::make_pair(name, argType));

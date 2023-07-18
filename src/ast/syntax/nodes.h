@@ -1101,7 +1101,11 @@ struct Macro : public AcceptorExtend<Macro, Node> {
     {
         STATEMENT,
         EXPRESSION,
-        CONSTANT
+        CONSTANT,
+
+        CONSTANT_CHAR,
+        CONSTANT_NUMBER,
+        CONSTANT_STRING,
     };
   private:
     std::string name;
