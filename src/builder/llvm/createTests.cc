@@ -39,7 +39,7 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
         auto expect = doesExpect ? std::stoi(attrArgs["expect"]) : 1;
         auto namePtr = builder->CreateGlobalStringPtr(name, "test.alloca");
         auto call = builder->CreateCall(testFunction, {llvmFunc, namePtr, builder->getInt1(shouldSkip), builder->getInt32(expect)});
-        auto shouldContinue = builder->CreateICmpEQ(call, builder->getInt32(0));
+        auto shouldContinue = builder->CreateICmpEQ(call, builder->getInt32(1));
         if (shouldSkip) {
             skipCount++;
         } else {
@@ -88,7 +88,7 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
                         {builder->CreateGlobalStringPtr(FMT("%s%%i%s test(s) skipped; ", BYEL, RESET), "test.msg"),
                          builder->getInt32(skipCount)});
     builder->CreateCall(printFunction,
-                        {builder->CreateGlobalStringPtr(FMT("%s%%i%s test(s) total\n\n", BOLD, RESET), "test.msg"),
+                        {builder->CreateGlobalStringPtr(FMT("%s%%i%s executed test(s) total\n\n", BOLD, RESET), "test.msg"),
                          builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), successCount),
                                             builder->CreateLoad(builder->getInt32Ty(), failCount))});
 
