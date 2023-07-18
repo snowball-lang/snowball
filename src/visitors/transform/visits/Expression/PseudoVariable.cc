@@ -50,6 +50,19 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
         stringValue = fs::path(get_exe_folder()).remove_filename();
     } else if (auto [item, found] = ctx->getItem(pseudo); found) {
         auto macro = item->getMacro();
+        if (!p_node->asStatement && macro->isMacroStatement()) {
+            E<PSEUDO_ERROR>(p_node, FMT("Macro '%s' is not an expression!", pseudo.c_str()),
+             {
+                .info = "Trying to use a statement macro as an expression macro.",
+                .note = "You can't use a statement macro as an expression macro.\n"
+                        "You can use the macro as a statement instead.",
+                .help = "Try using the macro as a statement instead or declare the\n"
+                        "macro as an expression macro.",
+                .tail = EI<>(macro->getDBGInfo(), "", {
+                    .info = "Macro declaration here.",
+                })
+             });
+        } 
         transformMacro(p_node, macro);
         return;
     } else {

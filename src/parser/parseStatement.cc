@@ -64,6 +64,9 @@ Syntax::Node* Parser::parseStatement(Token pk) {
 
         default: {
             auto expr = parseExpr();
+            if (auto x = utils::cast<Syntax::Expression::PseudoVariable>(expr)) {
+                x->asStatement = true;
+            }
             return expr;
         }
     }

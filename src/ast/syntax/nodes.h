@@ -287,6 +287,8 @@ struct PseudoVariable : public AcceptorExtend<PseudoVariable, Base> {
     std::vector<Node*> getArgs() const;
     /// @brief Set the arguments passed to the variable
     void setArgs(std::vector<Node*> args);
+    /// @brief If the variable is used inside a statement
+    bool asStatement = false;
 
     ACCEPT()
 };

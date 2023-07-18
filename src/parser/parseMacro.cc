@@ -44,8 +44,6 @@ Syntax::Macro* Parser::parseMacro() {
     assert_tok<TokenType::BRACKET_LCURLY>("'{'");
     auto body = parseBlock();
     auto macro = Syntax::N<Syntax::Macro>(name, args, body, isStatementMacro);
-    auto width = m_current.get_pos().second - dbg->pos.second;
-    dbg->width = width;
     macro->setDBGInfo(dbg);
     return macro;
 }
