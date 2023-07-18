@@ -36,6 +36,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                     auto var = Syntax::N<Syntax::Expression::PseudoVariable>(m_current.to_string());
                     var->setDBGInfo(dbg);
                     if (is<TokenType::BRACKET_LPARENT>(peek())) {
+                        dbg->width--;
                         std::vector<Syntax::Node*> args;
                         next();
                         if (!is<TokenType::BRACKET_RPARENT>()) {

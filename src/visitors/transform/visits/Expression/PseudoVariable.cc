@@ -58,7 +58,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
         // Typecheck macros:
         int i = 0;
         for (auto arg : args) {
-            Macro::ArguementType argType = macro->getArgs()[i];
+            Macro::ArguementType argType = macro->getArgs()[i].second;
             Macro::ArguementType deducedArgType;
             if (utils::cast<Expression::Base>(arg)) {
                 if (utils::cast<Expression::ConstantValue>(arg)) {
@@ -71,10 +71,16 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
             } else {
                 E<PSEUDO_ERROR>(p_node, FMT("Unknown arguement type for macro '%s'!", pseudo.c_str()));
             }
+            if (argType != deducedArgType) {
+                assert(!"TODO: error for unmatching macro types");
+            }
             i++;
         }
 
-        assert(false && "TODO: macro calls");
+        assert(false && "TODO: macro expansion");
+        for (auto inst : macro->getBody()->getStmts()) {
+            trans(inst);
+        }
     } else {
         E<PSEUDO_ERROR>(p_node, FMT("Pseudo variable with name '%s' hasn't been found!", pseudo.c_str()));
     }

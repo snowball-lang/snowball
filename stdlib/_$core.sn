@@ -355,7 +355,7 @@ type String = StringView<>;
 // TODO (implement wchar): using WideString as StringView<wchar&>
 
 macro assert(condition: expr) {
-  if !condition {
+  if !@condition {
     //raise new AssertionError(@format("Assertion '{}' failed at {}", @FILE_LINE));
   }
 }
