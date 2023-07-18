@@ -15,7 +15,7 @@ Syntax::Macro* Parser::parseMacro() {
     auto name = assert_tok<TokenType::IDENTIFIER>("an identifier for macro name").to_string();
     next();
     consume<TokenType::BRACKET_LPARENT>("'('");
-    std::map<std::string, Syntax::Macro::ArguementType> args;
+    std::vector<std::pair<std::string, Syntax::Macro::ArguementType>> args;
     while (is<TokenType::IDENTIFIER>()) {
         auto name = m_current.to_string();
         next();
@@ -31,7 +31,8 @@ Syntax::Macro* Parser::parseMacro() {
         } else {
             createError<SYNTAX_ERROR>("expected 'expr' or 'stmt' for macro arguement type");
         }
-        args[name] = argType;
+        // TODO: check for existant args
+        args.push_back(std::make_pair(name, argType));
         next();
         if (is<TokenType::SYM_COMMA>()) {
             next();

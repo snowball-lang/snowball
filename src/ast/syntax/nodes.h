@@ -1103,7 +1103,7 @@ struct Macro : public AcceptorExtend<Macro, Node> {
     };
   private:
     std::string name;
-    std::map<std::string, ArguementType> args;
+    std::vector<std::pair<std::string, ArguementType>> args;
     Block* body;
 
     bool isStatement = false;
