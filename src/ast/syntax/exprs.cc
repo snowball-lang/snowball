@@ -18,6 +18,9 @@ FuncType::FuncType(std::vector<TypeRef*> args, TypeRef* returnValue, DBGSourceIn
 ReferenceType::ReferenceType(TypeRef* baseType, DBGSourceInfo* srcInfo)
     : baseType(baseType), TypeRef(baseType->getName() + "&", srcInfo){};
 PseudoVariable::PseudoVariable(std::string identifier) : identifier(identifier){};
+void PseudoVariable::setArgs(std::vector<Node*> args) { this->args = args; hasArguments = true; }
+bool PseudoVariable::hasArgs() const { return hasArguments; }
+std::vector<Node*> PseudoVariable::getArgs() const { return args; }
 TypeRef::TypeRef(Expression::Base* p_ast, std::string p_name, DBGSourceInfo* p_dbg, std::string id)
     : internalAST(p_ast), types::Type(REF, p_name), id(id) {
     setDBGInfo(p_dbg);

@@ -270,12 +270,23 @@ struct Identifier : public AcceptorExtend<Identifier, Base> {
  */
 struct PseudoVariable : public AcceptorExtend<PseudoVariable, Base> {
     std::string identifier;
+    /// @brief Arguments passed to the variable
+    std::vector<Node*> args;
+    /// @brief Wether or not the variable has arguments
+    bool hasArguments = false;
 
   public:
     PseudoVariable(std::string identifier);
     /// @return Get the pseudo variable identifier without the
     /// prefix
     auto getIdentifier() { return identifier; }
+
+    /// @brief If the variable contains arguments 
+    bool hasArgs() const;
+    /// @return Get the arguments passed to the variable
+    std::vector<Node*> getArgs() const;
+    /// @brief Set the arguments passed to the variable
+    void setArgs(std::vector<Node*> args);
 
     ACCEPT()
 };

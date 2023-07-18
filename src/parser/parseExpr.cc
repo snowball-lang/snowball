@@ -33,14 +33,25 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                     dbg->pos.first++;
                     dbg->width++;
 
-                    expr = Syntax::N<Syntax::Expression::PseudoVariable>(m_current.to_string());
-                    expr->setDBGInfo(dbg);
+                    auto var = Syntax::N<Syntax::Expression::PseudoVariable>(m_current.to_string());
+                    var->setDBGInfo(dbg);
                     if (is<TokenType::BRACKET_LPARENT>(peek())) {
+                        std::vector<Syntax::Node*> args;
                         next();
-                        assert(false && "TODO: implement function-like macros");
-                        // auto call = parseFunctionCall(expr);
-                        // expr = Syntax::N<Syntax::Expression::MacroCall>(expr, call);
+                        if (!is<TokenType::BRACKET_RPARENT>()) {
+                            while (true) {
+                                args.push_back(parseStatement(peek()));
+                                if (is<TokenType::SYM_COMMA>(peek())) {
+                                    next();
+                                } else {
+                                    break;
+                                }
+                            }
+                        }
+                        consume<TokenType::BRACKET_RPARENT>("')'");
+                        var->setArgs(args);
                     }
+                    expr = var;
                 } else {
                     prev();
                     parseNormal = true;
