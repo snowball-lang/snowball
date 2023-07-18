@@ -1098,7 +1098,8 @@ struct Macro : public AcceptorExtend<Macro, Node> {
     enum ArguementType
     {
         STATEMENT,
-        EXPRESSION
+        EXPRESSION,
+        CONSTANT
     };
   private:
     std::string name;

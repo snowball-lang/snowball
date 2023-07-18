@@ -48,6 +48,31 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
         stringValue = _SNOWBALL_VERSION;
     } else if (pseudo == "SN_FOLDER") {
         stringValue = fs::path(get_exe_folder()).remove_filename();
+    } else if (auto [macro, found] = ctx->getItem(pseudo); found) {
+        macro = macro->getMacro();
+        auto args = p_node->getArgs();
+        if (args.size() != macro->getArgs().size()) {
+            E<PSEUDO_ERROR>(p_node, FMT("Macro '%s' expects %d arguments, but %d were given!",
+                                        pseudo.c_str(), macro->getArgs().size(), args.size()));
+        }
+        // Typecheck macros:
+        for (auto arg : args) {
+            Macro::ArguementType argType = macro->getArgs()[arg.first];
+            Macro::ArguementType deducedArgType;
+            if (utils::cast<Expression::Base>(arg)) {
+                if (utils::cast<Expression::ConstantValue>(arg)) {
+                    deducedArgType = Macro::ArguementType::CONSTANT;
+                } else {
+                    deducedArgType = Macro::ArguementType::EXPRESSION;
+                }
+            } else if (utils::cast<Statement::Base>(arg)) {
+                deducedArgType = Macro::ArguementType::STATEMENT;
+            } else {
+                E<PSEUDO_ERROR>(p_node, FMT("Unknown arguement type for macro '%s'!", pseudo.c_str()));
+            }
+        }
+
+        assert(false && "TODO: macro calls");
     } else {
         E<PSEUDO_ERROR>(p_node, FMT("Pseudo variable with name '%s' hasn't been found!", pseudo.c_str()));
     }
