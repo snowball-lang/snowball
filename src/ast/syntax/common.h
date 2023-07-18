@@ -39,6 +39,9 @@ enum Attributes
     // Function internal attributes
     TYPECHECKED,
     ALLOW_FOR_TEST,
+
+    // Import attributes
+    MACROS,
 };
 
 namespace Syntax {

@@ -27,6 +27,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     auto exportName = ctx->imports->getExportName(filePath, p_node->getExportSymbol());
     auto isExternalModule = ctx->imports->isExternalModule(package);
     ctx->isMainModule = !isExternalModule;
+    std::shared_ptr<ir::Module> importedModule = nullptr;
     if (ctx->getItem(exportName).second)
         Syntax::E<IMPORT_ERROR>(p_node, FMT("Import with name '%s' is already defined!", exportName.c_str()),
          {
@@ -39,6 +40,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     if (auto m = ctx->imports->cache->getModule(filePath)) {
         auto item = std::make_shared<Item>(m.value());
         ctx->addItem(exportName, item);
+        importedModule = m.value();
     } else {
         auto niceFullName = package + "::" + utils::join(path.begin(), path.end(), "::");
         auto mod = std::make_shared<ir::Module>(niceFullName, uuid);
@@ -89,6 +91,40 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
         // clang-format on
         auto item = std::make_shared<Item>(mod);
         ctx->addItem(exportName, item);
+        importedModule = mod;
+    }
+
+    if (p_node->hasAttribute(Attributes::MACROS)) {
+        auto args = p_node->getAttributeArgs(Attributes::MACROS);
+        auto macros = importedModule->getExportedMacros();
+        for (auto [name, _v] : args) {
+            if (!_v.empty()) {
+                E<ATTRIBUTE_ERROR>(p_node, FMT("Attribute 'macros(%s)' does not take any arguments!", name.c_str()));
+            }
+            auto macro = macros.find(name);
+            if (macro == macros.end()) {
+                E<ATTRIBUTE_ERROR>(p_node, FMT("Macro '%s' does not exist!", name.c_str()),
+                    {
+                        .info = "This is the macro that was used",
+                        .note = "It may be possible that you forgot to use the 'export' keyword\n"
+                                "or that this macro does not exist in the imported module.",
+                        .help = "If you want to import the macro from the module, you need to use\n"
+                                "the 'export' keyword in front of the macro."
+                    });
+            }
+
+            auto item = std::make_shared<Item>(macro->second);
+            if (ctx->getInCurrentScope(name).second)
+                Syntax::E<IMPORT_ERROR>(p_node, FMT("Import with name '%s' is already defined!", name.c_str()),
+                 {
+                    .info = "This is the import that was used",
+                    .note = "It may be possible that you have imported the same module twice\n"
+                            "or that this symbol is already defined in the same stack.",
+                    .help = "If you want to import the same module twice, you can use the 'as'\n"
+                            "keyword to give it a different name."
+                 });
+            ctx->addItem(name, item);
+        }
     }
 
     ctx->isMainModule = bkIsMainModule;

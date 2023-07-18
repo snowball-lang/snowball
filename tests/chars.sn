@@ -1,11 +1,12 @@
 
 use Core::Char;
 use Core::System;
+use [[use_macro(assert)]] Core::Assert;
 
 namespace tests {
 
 fn [[test(skip)]] isSpace() i32 {
-    //@assert(Char::isSpace('b'));
+    @assert(Char::isSpace('b'));
 }
 
 }

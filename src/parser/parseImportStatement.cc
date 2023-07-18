@@ -9,8 +9,17 @@ namespace parser {
 Syntax::Statement::ImportStmt* Parser::parseImportStatement() {
     assert(is<TokenType::KWORD_IMPORT>());
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
-
     next();
+
+    std::map<Attributes, std::map<std::string, std::string>> attributes;
+    if (is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek())) {
+        attributes = parseAttributes([&](std::string attr) {
+            if (attr == "use_macro" || attr == "use_macros") {
+                return Attributes::MACROS;
+            }
+            return Attributes::INVALID;
+        });
+    }
 
     std::string package = assert_tok<TokenType::IDENTIFIER>("an identifier for package reference").to_string();
     next();
@@ -41,7 +50,7 @@ Syntax::Statement::ImportStmt* Parser::parseImportStatement() {
     auto width = m_current.get_pos().second - dbg->pos.second;
     dbg->width = width;
     import->setDBGInfo(dbg);
-
+    for (auto [n, a] : attributes) { import->addAttribute(n, a); }
     return import;
 }
 

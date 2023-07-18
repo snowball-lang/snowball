@@ -1,0 +1,30 @@
+/**
+ * @class AssertionError
+ * @brief A class representing an assertion error.
+ *
+ * The AssertionError class provides various operations and functionalities
+ * for working with assertion errors. It supports common AssertionError
+ * manipulation operations such as exception throwing, exception
+ * catching, exception handling, and more.
+ */
+pub class AssertionError: Exception 
+  { }
+/**
+ * @macro assert_m
+ * @brief Asserts a condition.
+ * @param[in] condition The condition to assert.
+ * @param[in] message The message to display if the assertion fails.
+ */
+macro [[export]] assert_m(condition: expr, message: const[str]) {
+  if !(@condition) {
+    raise new Core::AssertionError(message);
+  }
+}
+/**
+ * @macro assert
+ * @brief Asserts a condition.
+ * @param[in] condition The condition to assert.
+ */
+macro [[export]] assert(condition: expr) {
+  @assert_m(condition, "Assertion failed.");
+}

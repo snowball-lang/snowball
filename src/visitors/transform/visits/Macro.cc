@@ -12,6 +12,18 @@ SN_TRANSFORMER_VISIT(Macro) {
         Syntax::E<VARIABLE_ERROR>(p_node, FMT("Macro with name '%s' is already defined!", macroName.c_str()));
     auto item = std::make_shared<Item>(p_node);
     // TODO: export to module
+    if (p_node->hasAttribute(Attributes::EXPORT)) {
+        auto args = p_node->getAttributeArgs(Attributes::EXPORT);
+        std::string exportName = macroName;
+        if (args.find("as") != args.end()) {
+            exportName = args["as"];
+        }
+
+        auto& moduleExports = ctx->module->getExportedMacros();
+        if (moduleExports.find(macroName) != moduleExports.end())
+            Syntax::E<VARIABLE_ERROR>(p_node, FMT("Macro with name '%s' is already exported!", macroName.c_str()));
+        ctx->module->addExportedMacro(macroName, p_node);
+    }
     ctx->addItem(macroName, item);
 }
 

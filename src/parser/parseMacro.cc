@@ -12,6 +12,16 @@ Syntax::Macro* Parser::parseMacro() {
     // TODO: expression macro: 'macro foo() = 1 + 1'
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
     bool isStatementMacro = true;
+    std::map<Attributes, std::map<std::string, std::string>> attributes;
+    if (is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek())) {
+        attributes = parseAttributes([&](std::string attr) {
+            if (attr == "export") {
+                return Attributes::EXPORT;
+            }
+            return Attributes::INVALID;
+        });
+    }
+
     auto name = assert_tok<TokenType::IDENTIFIER>("an identifier for macro name").to_string();
     next();
     consume<TokenType::BRACKET_LPARENT>("'('");
@@ -61,6 +71,7 @@ Syntax::Macro* Parser::parseMacro() {
     auto body = parseBlock();
     auto macro = Syntax::N<Syntax::Macro>(name, args, body, isStatementMacro);
     macro->setDBGInfo(dbg);
+    for (auto [n, a] : attributes) { macro->addAttribute(n, a); }
     return macro;
 }
 
