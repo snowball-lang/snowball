@@ -7,6 +7,7 @@
 #include "../services/ImportService.h"
 #include "../srci/DBGSourceInfo.h"
 #include "TransformItem.h"
+#include "MacroInstance.h"
 
 #include <assert.h>
 #include <string>
@@ -55,6 +56,8 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     /// @todo maybe make it a list and display all of the calls if a flag like
     ///  "--show-full-backtrace" is set.
     Expression::FunctionCall* latestCall = nullptr;
+    /// @brief The current macro instance being transformed
+    transform::MacroInstance* currentMacroInstance = nullptr;
 
   private:
     /// Utility function to get a primitive type
@@ -62,10 +65,8 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     /// @return Primitive type shared pointer
     std::shared_ptr<types::Type> getPrimitiveType(const std::string name) {
         auto [ty, found] = getItem(name);
-
         assert(found);
         assert(ty->isType());
-
         return ty->getType();
     }
 

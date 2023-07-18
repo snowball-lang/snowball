@@ -240,6 +240,11 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      */
     bool isInClassContext(std::shared_ptr<types::Type> ty);
     /**
+     * @brief It generates macros. It will also generate the body of
+     * the macro.
+     */
+    void transformMacro(Expression::PseudoVariable* p_node, Syntax::Macro* macro);
+    /**
      * Retrieves the boolean value of the given shared pointer to an
      * ir::Value object.
      *

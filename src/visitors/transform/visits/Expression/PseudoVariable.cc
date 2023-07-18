@@ -50,38 +50,17 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
         stringValue = fs::path(get_exe_folder()).remove_filename();
     } else if (auto [item, found] = ctx->getItem(pseudo); found) {
         auto macro = item->getMacro();
-        auto args = p_node->getArgs();
-        if (args.size() != macro->getArgs().size()) {
-            E<PSEUDO_ERROR>(p_node, FMT("Macro '%s' expects %d arguments, but %d were given!",
-                                        pseudo.c_str(), macro->getArgs().size(), args.size()));
-        }
-        // Typecheck macros:
-        int i = 0;
-        for (auto arg : args) {
-            Macro::ArguementType argType = macro->getArgs()[i].second;
-            Macro::ArguementType deducedArgType;
-            if (utils::cast<Expression::Base>(arg)) {
-                if (utils::cast<Expression::ConstantValue>(arg)) {
-                    deducedArgType = Macro::ArguementType::CONSTANT;
-                } else {
-                    deducedArgType = Macro::ArguementType::EXPRESSION;
-                }
-            } else if (utils::cast<Statement::Base>(arg)) {
-                deducedArgType = Macro::ArguementType::STATEMENT;
-            } else {
-                E<PSEUDO_ERROR>(p_node, FMT("Unknown arguement type for macro '%s'!", pseudo.c_str()));
+        transformMacro(p_node, macro);
+        return;
+    } else {
+        if (auto parent = ctx->currentMacroInstance) {
+            auto arg = parent->stack.find(pseudo);
+            if (arg != parent->stack.end()) {
+                trans((*arg).second);
+                return;
             }
-            if (argType != deducedArgType) {
-                assert(!"TODO: error for unmatching macro types");
-            }
-            i++;
         }
 
-        assert(false && "TODO: macro expansion");
-        for (auto inst : macro->getBody()->getStmts()) {
-            trans(inst);
-        }
-    } else {
         E<PSEUDO_ERROR>(p_node, FMT("Pseudo variable with name '%s' hasn't been found!", pseudo.c_str()));
     }
 

@@ -1,10 +1,18 @@
 
 use Core::Char;
+use Core::System;
+
+macro assert(condition: expr) {
+  if !@condition {
+    System::println("BALLLLLLLLLLLLLLLLLLLS");
+    //raise new AssertionError(@format("Assertion '{}' failed at {}", @FILE_LINE));
+  }
+}
 
 namespace tests {
 
-fn [[test(skip)]] isSpace() i32 {
-    //@assert(Char::isSpace(' '));
+fn [[test]] isSpace() i32 {
+    System::println(@assert(Char::isSpace('b')));
 }
 
 }
