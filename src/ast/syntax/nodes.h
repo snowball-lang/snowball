@@ -1126,7 +1126,10 @@ struct Macro : public AcceptorExtend<Macro, Node> {
     Block* getBody() const { return body; }
     /// @return If the macro is a statement or not
     bool isMacroStatement() const { return isStatement; }
-
+    /// @brief Convert an arguement type to a string
+    /// @param type Type to convert
+    /// @return String representation of the type
+    static std::string arguementTypeToString(ArguementType type);
     // Set an acceptance call
     ACCEPT()
 };

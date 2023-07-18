@@ -158,5 +158,20 @@ std::string TypeRef::getPrettyName() const {
 }
 
 } // namespace Expression
+
+std::string Macro::arguementTypeToString(Macro::ArguementType t) {
+    switch (t) {
+        case Macro::ArguementType::CONSTANT: return "constant";
+        case Macro::ArguementType::EXPRESSION: return "expression";
+        case Macro::ArguementType::STATEMENT: return "statement";
+        case Macro::ArguementType::CONSTANT_STRING: return "constant string";
+        case Macro::ArguementType::CONSTANT_NUMBER: return "constant number";
+        case Macro::ArguementType::CONSTANT_CHAR: return "constant char";
+        default: E<BUG>(FMT("Unknown arguement type '%i'!", t));
+    }
+
+    UNREACHABLE
+}
+
 } // namespace Syntax
 } // namespace snowball

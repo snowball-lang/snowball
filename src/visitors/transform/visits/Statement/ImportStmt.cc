@@ -125,6 +125,22 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
                  });
             ctx->addItem(name, item);
         }
+
+        if (args.size() == 0) {
+            for (auto [name, macro] : macros) {
+                auto item = std::make_shared<Item>(macro);
+                if (ctx->getInCurrentScope(name).second)
+                    Syntax::E<IMPORT_ERROR>(p_node, FMT("Import with name '%s' is already defined!", name.c_str()),
+                     {
+                        .info = "This is the import that was used",
+                        .note = "It may be possible that you have imported the same module twice\n"
+                                "or that this symbol is already defined in the same stack.",
+                        .help = "If you want to import the same module twice, you can use the 'as'\n"
+                                "keyword to give it a different name."
+                     });
+                ctx->addItem(name, item);
+            }
+        }
     }
 
     ctx->isMainModule = bkIsMainModule;

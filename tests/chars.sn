@@ -1,7 +1,7 @@
 
 use Core::Char;
 use Core::System;
-use [[use_macro(assert)]] Core::Assert;
+use [[use_macro]] Core::Assert;
 
 namespace tests {
 

@@ -33,7 +33,9 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, Macro* macr
             E<PSEUDO_ERROR>(p_node, FMT("Unknown arguement type for macro '%s'!", macroName.c_str()));
         }
         if (argType != deducedArgType) {
-            assert(!"TODO: error for unmatching macro types");
+            E<PSEUDO_ERROR>(p_node, FMT("Macro '%s' expects arguement '%s' to be of type '%s', but '%s' was given!",
+                                        macroName.c_str(), name.c_str(), Macro::arguementTypeToString(argType).c_str(),
+                                        Macro::arguementTypeToString(deducedArgType).c_str()));
         }
         if (ctx->currentMacroInstance->stack.find(name) != ctx->currentMacroInstance->stack.end()) {
             E<PSEUDO_ERROR>(p_node, FMT("Macro '%s' already has an arguement with name '%s'!",
