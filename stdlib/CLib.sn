@@ -144,8 +144,8 @@ pub namespace __internal {
 pub static fn [[inline]] alloca_and_snprintf<T>
     (bytes: i32, format: char&, value: T) char& 
 {
-    let buffer = malloc(10) as char&; // TODO: use sn.alloca
-    snprintf(buffer, 10, format, value);
+    let buffer = malloc(bytes) as char&; // TODO: use sn.alloca
+    snprintf(buffer, bytes, format, value);
     return buffer;
 } 
 

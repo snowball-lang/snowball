@@ -14,7 +14,9 @@ Syntax::Statement::Return* Parser::parseReturn() {
 
     auto info = DBGSourceInfo::fromToken(m_source_info, m_current);
 
-    auto expr = parseExpr(false);
+    Syntax::Expression::Base* expr = nullptr;
+    if (!is<TokenType::SYM_SEMI_COLLON>(peek()))
+        expr = parseExpr(false);
     auto node = Syntax::N<Return>(expr);
     node->setDBGInfo(info);
 

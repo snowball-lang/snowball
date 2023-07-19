@@ -16,16 +16,13 @@ using namespace std::chrono;
 
 #define LIBRARY_ENTRY "src/lib.sn"
 #define LIBRARY_MAIN                                                                                                   \
-    "use Core::Assertion\n\n"                                                                                          \
+    "use [[use_macro(assert)]] Core::Assert;\n\n"                                                                                          \
     "pub fn my_export() String {\n"                                                                                    \
-    "    return \"Hello, World\"\n"                                                                                    \
+    "    return \"Hello, World\".to_string();\n"                                                                                    \
     "}\n\n" /* TODO: add #[cfg(test)] */                                                                               \
     "\nnamespace tests {\n"                                                                                            \
-    "   #[test]\n"                                                                                                     \
-    "    fn test_my_lib() {\n" /* TODO: implement this in the actual                                                   \
-                                * language                                                                             \
-                                */                                                                                     \
-    "        Assertion::assert(my_export() == \"Hello, World\")\n"                                                     \
+    "    fn [[test]] test_my_lib() {\n"                                                                     \
+    "        @assert(my_export() == \"Hello, World\")\n"                                                     \
     "    }\n"                                                                                                          \
     "}"
 

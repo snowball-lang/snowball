@@ -1,4 +1,4 @@
-use Core::System;
+use [[use_macro]] Core::Assert;
 
 namespace tests {
 
@@ -15,6 +15,15 @@ fn [[test(expect = 5)]] push() i32 {
         i = i + 1;
     }
     return v.size();
+}
+
+fn [[test(expect = 20)]] insert() i32 {
+    let mut v = new Vector<i32>();
+    v.insert(1, 5);
+    v.insert(1, 10);
+    v.insert(1, 20);
+    @assert(v.size() == 3);
+    return v.at(1);
 }
 
 }

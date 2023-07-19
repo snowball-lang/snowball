@@ -89,11 +89,11 @@ fn [[
   skip: bool = false,
   expect: i32 = 1
 ) i32 {
-  let tty = "should pass";
-  //if expect != 1 {
-  //  // TODO:
-  //  CLib::snprintf(tty, 64, "expected `%i`", expect);
-  //}
+  let mut tty = "should pass";
+  if expect != 1 {
+    // TODO:
+    tty = CLib::__internal::alloca_and_snprintf(25, "expecting \e[1m`%i`\e[0m", expect);
+  }
   CLib::printf(" Testing \e[1m%s\e[0m [%s] ... ", name, tty);
   // TODO: Add support for exceptions
   if !skip {
@@ -148,7 +148,6 @@ pub class Exception {
     /** The message of the exception. */
     let msg: char&;
 }
-
 /**
  * @class IndexError
  * @brief A class representing an index error.
@@ -160,11 +159,38 @@ pub class Exception {
  */
 pub class IndexError: Exception 
   { }
-
+/**
+ * @class Iterable
+ * @brief A class representing an iterable.
+ *
+ * The Iterable class provides various operations and functionalities
+ * for working with iterables. It supports common Iterable
+ * manipulation operations such as iteration, element access, and more.
+ */
 pub class Iterable<_IteratorType: Core::Sized> {
   pub:
     Iterable() {}
 }
+/**
+ * @class Iter
+ * @brief A class representing an iterator.
+ *
+ * The Iter can be considered as the reverse of the Iterable class.
+ * It provides various operations and functionalities for working
+ * with iterators. It supports common Iter manipulation operations
+ * such as iteration, element access, and more.
+ */
+pub class Iter<_IteratorType: Core::Sized> {
+    /// @brief if the iterator is valid
+    let valid: bool = false;
+  pub:
+    /**
+     * @brief Iter constructor.
+     * @note It creates an invalid iterator.
+     */
+    Iter() {}
+}
+
 
 /**
  * @class Vector
@@ -240,6 +266,22 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
      */
     operator [[internal_linkage, inline]] [](index: i32) _StoreType
       { return self.at(index); }
+    /**
+     * @brief It inserts an element at the specified index.
+     * @param[in] index The index to insert the element at.
+     * @param[in] value The element to insert.
+     */
+    fn [[internal_linkage]] insert(index: i32, value: _StoreType) mut
+    {
+      if index >= self.length 
+      {
+        self.push(value);
+        return;
+      }
+      let cur = UA::__ua_get(self.buffer, index) as _StoreType;
+      UA::__ua_set(self.buffer, index, value as cobj);
+      self.insert(index + 1, cur);
+    }
 
   priv:
     /** The capacity of the vector. */
@@ -348,6 +390,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
 // Type exports
 type StringView<T = char> = Core::StringView<T>;
 type Vector<T> = Core::Vector<T>;
+type Iter<T> = Core::Iter<T>;
 type Exception = Core::Exception;
 type IndexError = Core::IndexError;
 type String = StringView<>;

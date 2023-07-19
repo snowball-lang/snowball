@@ -35,6 +35,7 @@ SN_TRANSFORMER_VISIT(Statement::Return) {
         }
 
         ret = builder.createVoidReturn(p_node->getDBGInfo());
+        ret->setType(ctx->getVoidType());
     }
     this->value = ret;
 }

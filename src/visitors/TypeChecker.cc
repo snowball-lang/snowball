@@ -203,14 +203,14 @@ VISIT(Return) {
     assert(fn != nullptr);
 
     if (p_node->getExpr() != nullptr) p_node->getExpr()->visit(this);
-    if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) != nullptr) && (p_node->getExpr() != nullptr)) {
+    if ((utils::dyn_cast<types::VoidType>(fn->getRetTy()) != nullptr) && (p_node->getExpr() != nullptr)) {
         E<TYPE_ERROR>(p_node,
                       FMT("Nonvalue returning function cant have a "
                           "return containing an expression (%s)!",
                           p_node->getType()->getPrettyName().c_str()));
     }
 
-    if ((std::dynamic_pointer_cast<types::VoidType>(fn->getRetTy()) == nullptr) && (p_node->getExpr() == nullptr)) {
+    if ((utils::dyn_cast<types::VoidType>(fn->getRetTy()) == nullptr) && (p_node->getExpr() == nullptr)) {
         E<TYPE_ERROR>(p_node,
                       FMT("Can't return \"nothing\" in a function with "
                           "non-void return type (%s)!",
