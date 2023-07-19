@@ -17,7 +17,7 @@ pub class AssertionError: Exception
  */
 macro [[export]] assert_m(condition: expr, message: const[str]) {
   if !(@condition) {
-    raise new Core::AssertionError(message);
+    raise @pkg(new AssertionError(@message));
   }
 }
 /**
@@ -26,5 +26,5 @@ macro [[export]] assert_m(condition: expr, message: const[str]) {
  * @param[in] condition The condition to assert.
  */
 macro [[export]] assert(condition: expr) {
-  @assert_m(condition, "Assertion failed.");
+  @assert_m(@condition, "Assertion failed.");
 }

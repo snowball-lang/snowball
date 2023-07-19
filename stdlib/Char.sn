@@ -6,9 +6,8 @@
  * @return True if the given character is a whitespace character.
  */
 pub fn [[inline]] isSpace(c: char) bool {
-    return c == 0x20 || c == 0x0c 
-      || c == 0x0a || c == 0x0d 
-      || c == 0x09 || c == 0x0b;
+    return c == ' ' || c == '\t' 
+       || c == '\n' || c == '\r';
 }
 /**
  * Returns true if the given character is an

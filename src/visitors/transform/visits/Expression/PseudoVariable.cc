@@ -49,7 +49,8 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
     } else if (pseudo == "SN_FOLDER") {
         stringValue = fs::path(get_exe_folder()).remove_filename();
     } else if (auto [item, found] = ctx->getItem(pseudo); found) {
-        auto macro = item->getMacro();
+        auto macroInstance = item->getMacro();
+        auto macro = macroInstance->macro;
         if (!p_node->asStatement && macro->isMacroStatement()) {
             E<PSEUDO_ERROR>(p_node, FMT("Macro '%s' is not an expression!", pseudo.c_str()),
              {
@@ -63,13 +64,19 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
                 })
              });
         } 
-        transformMacro(p_node, macro);
+        transformMacro(p_node, macroInstance);
         return;
     } else {
         if (auto parent = ctx->currentMacroInstance) {
             auto arg = parent->stack.find(pseudo);
             if (arg != parent->stack.end()) {
-                trans((*arg).second);
+                auto backup = parent;
+                auto node = (*arg).second;
+                if (node->parentMacro != nullptr)
+                    ctx->currentMacroInstance = node->parentMacro;
+                trans(node);
+                if (node->parentMacro != nullptr)
+                    ctx->currentMacroInstance = backup;
                 return;
             }
         }

@@ -243,7 +243,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * @brief It generates macros. It will also generate the body of
      * the macro.
      */
-    void transformMacro(Expression::PseudoVariable* p_node, Syntax::Macro* macro);
+    void transformMacro(Expression::PseudoVariable* p_node, transform::MacroInstance* macro);
     /**
      * Retrieves the boolean value of the given shared pointer to an
      * ir::Value object.
@@ -254,6 +254,10 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
      * boolean value of the given value object.
      */
     std::shared_ptr<ir::Value> getBooleanValue(std::shared_ptr<ir::Value> value);
+    /**
+     * @brief It generates all the macros for every module.
+     */
+    void initializePerModuleMacros();
     /**
      * @brief It imports and generates the core runtime classes and
      * functions for basic snowball functionality.

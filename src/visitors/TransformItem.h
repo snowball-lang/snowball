@@ -24,7 +24,7 @@ class Item : public DBGObject {
     using FunctionPtr = std::shared_ptr<ir::Func>;
     using TypePtr = std::shared_ptr<types::Type>;
 
-    using MacroPtr = Macro*;
+    using MacroPtr = MacroInstance*;
 
     // This value is the actual value gotten from
     // the stack.

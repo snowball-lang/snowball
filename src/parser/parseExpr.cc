@@ -51,7 +51,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                                 }
                             }
                         }
-                        consume<TokenType::BRACKET_RPARENT>("')'");
+                        assert_tok<TokenType::BRACKET_RPARENT>("')'");
                         var->setArgs(args);
                     }
                     expr = var;

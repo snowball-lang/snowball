@@ -45,7 +45,7 @@ enum Attributes
 };
 
 namespace Syntax {
-
+namespace transform {struct MacroInstance;}
 // Forward declarations
 class Visitor;
 class WhereClause;
@@ -125,6 +125,8 @@ class AttributeHolder {
     unsigned int m_attributes = 0;
 };
 
+struct Macro;
+
 struct Node : public DBGObject, public AttributeHolder {
   public:
     Node() = default;
@@ -132,6 +134,7 @@ struct Node : public DBGObject, public AttributeHolder {
 
     virtual void accept(Syntax::Visitor* v) = 0;
 
+    transform::MacroInstance* parentMacro = nullptr;
     /// @brief A flag that tells if the current node is
     ///  an operator
     bool isOperator = false;

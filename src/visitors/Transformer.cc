@@ -62,6 +62,8 @@ void Transformer::addModule(std::shared_ptr<ir::Module> m) {
 auto Transformer::getModule() const { return ctx->module; }
 void Transformer::visitGlobal(std::vector<Node*> p_nodes) {
     ctx->withScope([&] {
+        initializePerModuleMacros();
+
         bool backup = ctx->generateFunction;
         ctx->generateFunction = false;
         for (auto node : p_nodes) {

@@ -1,12 +1,304 @@
 
 use Core::Char;
-use Core::System;
 use [[use_macro]] Core::Assert;
 
 namespace tests {
 
-fn [[test(skip)]] isSpace() i32 {
-    @assert(Char::isSpace('b'));
+fn [[test]] isSpace() i32 {
+    @assert(Char::isSpace(' '));
+    @assert(Char::isSpace('\t'));
+    @assert(Char::isSpace('\n'));
+    @assert(Char::isSpace('\r'));
+    @assert(!Char::isSpace('a'));
+    @assert(!Char::isSpace('0'));
+    @assert(!Char::isSpace('!'));
+    return true;
+}
+
+fn [[test]] isDigit() i32 {
+    @assert(Char::isDigit('0'));
+    @assert(Char::isDigit('1'));
+    @assert(Char::isDigit('2'));
+    @assert(Char::isDigit('3'));
+    @assert(Char::isDigit('4'));
+    @assert(Char::isDigit('5'));
+    @assert(Char::isDigit('6'));
+    @assert(Char::isDigit('7'));
+    @assert(Char::isDigit('8'));
+    @assert(Char::isDigit('9'));
+    @assert(!Char::isDigit('a'));
+    @assert(!Char::isDigit('A'));
+    @assert(!Char::isDigit('!'));
+    return true;
+}
+
+fn [[test]] isUpper() i32 {
+    @assert(Char::isUpper('A'));
+    @assert(Char::isUpper('B'));
+    @assert(Char::isUpper('C'));
+    @assert(Char::isUpper('D'));
+    @assert(Char::isUpper('E'));
+    @assert(Char::isUpper('F'));
+    @assert(Char::isUpper('G'));
+    @assert(Char::isUpper('H'));
+    @assert(Char::isUpper('I'));
+    @assert(Char::isUpper('J'));
+    @assert(Char::isUpper('K'));
+    @assert(Char::isUpper('L'));
+    @assert(Char::isUpper('M'));
+    @assert(Char::isUpper('N'));
+    @assert(Char::isUpper('O'));
+    @assert(Char::isUpper('P'));
+    @assert(Char::isUpper('Q'));
+    @assert(Char::isUpper('R'));
+    @assert(Char::isUpper('S'));
+    @assert(Char::isUpper('T'));
+    @assert(Char::isUpper('U'));
+    @assert(Char::isUpper('V'));
+    @assert(Char::isUpper('W'));
+    @assert(Char::isUpper('X'));
+    @assert(Char::isUpper('Y'));
+    @assert(Char::isUpper('Z'));
+    @assert(!Char::isUpper('a'));
+    @assert(!Char::isUpper('0'));
+    @assert(!Char::isUpper('!'));
+    return true;
+}
+
+fn [[test]] isLower() i32 {
+    @assert(Char::isLower('a'));
+    @assert(Char::isLower('b'));
+    @assert(Char::isLower('c'));
+    @assert(Char::isLower('d'));
+    @assert(Char::isLower('e'));
+    @assert(Char::isLower('f'));
+    @assert(Char::isLower('g'));
+    @assert(Char::isLower('h'));
+    @assert(Char::isLower('i'));
+    @assert(Char::isLower('j'));
+    @assert(Char::isLower('k'));
+    @assert(Char::isLower('l'));
+    @assert(Char::isLower('m'));
+    @assert(Char::isLower('n'));
+    @assert(Char::isLower('o'));
+    @assert(Char::isLower('p'));
+    @assert(Char::isLower('q'));
+    @assert(Char::isLower('r'));
+    @assert(Char::isLower('s'));
+    @assert(Char::isLower('t'));
+    @assert(Char::isLower('u'));
+    @assert(Char::isLower('v'));
+    @assert(Char::isLower('w'));
+    @assert(Char::isLower('x'));
+    @assert(Char::isLower('y'));
+    @assert(Char::isLower('z'));
+    @assert(!Char::isLower('A'));
+    @assert(!Char::isLower('0'));
+    @assert(!Char::isLower('!'));
+    return true;
+}
+
+fn [[test]] isHexDigit() i32 {
+    @assert(Char::isHexDigit('0'));
+    @assert(Char::isHexDigit('1'));
+    @assert(Char::isHexDigit('2'));
+    @assert(Char::isHexDigit('3'));
+    @assert(Char::isHexDigit('4'));
+    @assert(Char::isHexDigit('5'));
+    @assert(Char::isHexDigit('6'));
+    @assert(Char::isHexDigit('7'));
+    @assert(Char::isHexDigit('8'));
+    @assert(Char::isHexDigit('9'));
+    @assert(Char::isHexDigit('a'));
+    @assert(Char::isHexDigit('b'));
+    @assert(Char::isHexDigit('c'));
+    @assert(Char::isHexDigit('d'));
+    @assert(Char::isHexDigit('e'));
+    @assert(Char::isHexDigit('f'));
+    @assert(Char::isHexDigit('A'));
+    @assert(Char::isHexDigit('B'));
+    @assert(Char::isHexDigit('C'));
+    @assert(Char::isHexDigit('D'));
+    @assert(Char::isHexDigit('E'));
+    @assert(Char::isHexDigit('F'));
+    @assert(!Char::isHexDigit('!'));
+    return true;
+}
+
+fn [[test]] isOctDigit() i32 {
+    @assert(Char::isOctDigit('0'));
+    @assert(Char::isOctDigit('1'));
+    @assert(Char::isOctDigit('2'));
+    @assert(Char::isOctDigit('3'));
+    @assert(Char::isOctDigit('4'));
+    @assert(Char::isOctDigit('5'));
+    @assert(Char::isOctDigit('6'));
+    @assert(Char::isOctDigit('7'));
+    @assert(!Char::isOctDigit('8'));
+    @assert(!Char::isOctDigit('9'));
+    @assert(!Char::isOctDigit('a'));
+    @assert(!Char::isOctDigit('b'));
+    @assert(!Char::isOctDigit('c'));
+    @assert(!Char::isOctDigit('d'));
+    @assert(!Char::isOctDigit('e'));
+    @assert(!Char::isOctDigit('f'));
+    @assert(!Char::isOctDigit('A'));
+    @assert(!Char::isOctDigit('B'));
+    @assert(!Char::isOctDigit('C'));
+    @assert(!Char::isOctDigit('D'));
+    @assert(!Char::isOctDigit('E'));
+    @assert(!Char::isOctDigit('F'));
+    @assert(!Char::isOctDigit('!'));
+    return true;
+}
+
+fn [[test]] isAlpha() i32 {
+    @assert(Char::isAlpha('a'));
+    @assert(Char::isAlpha('b'));
+    @assert(Char::isAlpha('c'));
+    @assert(Char::isAlpha('d'));
+    @assert(Char::isAlpha('e'));
+    @assert(Char::isAlpha('f'));
+    @assert(Char::isAlpha('g'));
+    @assert(Char::isAlpha('z'));
+    @assert(Char::isAlpha('A'));
+    @assert(Char::isAlpha('B'));
+    @assert(Char::isAlpha('C'));
+    @assert(Char::isAlpha('D'));
+    @assert(Char::isAlpha('E'));
+    @assert(Char::isAlpha('F'));
+    @assert(Char::isAlpha('G'));
+    @assert(Char::isAlpha('Z'));
+    @assert(!Char::isAlpha('0'));
+    @assert(!Char::isAlpha('1'));
+    return true;
+}
+
+fn [[test]] isAlphaNum() i32 {
+    @assert(Char::isAlphaNum('a'));
+    @assert(Char::isAlphaNum('b'));
+    @assert(Char::isAlphaNum('c'));
+    @assert(Char::isAlphaNum('E'));
+    @assert(Char::isAlphaNum('F'));
+    @assert(Char::isAlphaNum('G'));
+    @assert(Char::isAlphaNum('Z'));
+    @assert(Char::isAlphaNum('0'));
+    @assert(Char::isAlphaNum('1'));
+    @assert(!Char::isAlphaNum('!'));
+    return true;
+}
+
+fn [[test]] isControl() i32 {
+    @assert(Char::isControl('\0'));
+    @assert(!Char::isControl(' '));
+    @assert(!Char::isControl('!'));
+    @assert(!Char::isControl('0'));
+    @assert(!Char::isControl('a'));
+    return true;
+}
+
+fn [[test]] isPrint() i32 {
+    @assert(Char::isPrint(' '));
+    @assert(Char::isPrint('!'));
+    @assert(Char::isPrint('0'));
+    @assert(Char::isPrint('a'));
+    @assert(!Char::isPrint('\0'));
+    return true;
+}
+
+fn [[test]] isPunctuation() i32 {
+    @assert(Char::isPunctuation('!'));
+    @assert(Char::isPunctuation('?'));
+    @assert(Char::isPunctuation('.'));
+    @assert(Char::isPunctuation(','));
+    @assert(Char::isPunctuation(';'));
+    @assert(Char::isPunctuation(':'));
+    @assert(Char::isPunctuation('\''));
+    @assert(Char::isPunctuation('"'));
+    @assert(Char::isPunctuation('('));
+    @assert(Char::isPunctuation(')'));
+    @assert(Char::isPunctuation('['));
+    @assert(Char::isPunctuation(']'));
+    @assert(Char::isPunctuation('{'));
+    @assert(Char::isPunctuation('}'));
+    @assert(Char::isPunctuation('<'));
+    @assert(Char::isPunctuation('>'));
+    @assert(Char::isPunctuation('-'));
+    @assert(Char::isPunctuation('_'));
+    @assert(Char::isPunctuation('/'));
+    @assert(Char::isPunctuation('\\'));
+    @assert(Char::isPunctuation('|'));
+    @assert(Char::isPunctuation('&'));
+    @assert(Char::isPunctuation('^'));
+    @assert(Char::isPunctuation('%'));
+    @assert(Char::isPunctuation('$'));
+    @assert(Char::isPunctuation('#'));
+    @assert(Char::isPunctuation('@'));
+    @assert(Char::isPunctuation('*'));
+    @assert(Char::isPunctuation('+'));
+    @assert(Char::isPunctuation('='));
+    @assert(!Char::isPunctuation(' '));
+    @assert(!Char::isPunctuation('0'));
+    @assert(!Char::isPunctuation('a'));
+    return true;
+}
+
+fn [[test]] isSymbol() i32 {
+    @assert(Char::isSymbol('+'))
+    @assert(Char::isSymbol('-'))
+    @assert(Char::isSymbol('*'))
+    @assert(Char::isSymbol('/'))
+    @assert(Char::isSymbol('|'))
+    @assert(Char::isSymbol('&'))
+    @assert(Char::isSymbol('^'))
+    @assert(Char::isSymbol('<'))
+    @assert(Char::isSymbol('>'))
+    @assert(Char::isSymbol('='))
+    @assert(Char::isSymbol('~'))
+    @assert(Char::isSymbol('@'))
+    @assert(Char::isSymbol('$'))
+    @assert(Char::isSymbol('%'))
+    @assert(Char::isSymbol('!'))
+    @assert(Char::isSymbol('?'))
+    @assert(Char::isSymbol('\\'))
+    return true;
+}
+
+fn [[test]] isMark() i32 {
+    @assert(Char::isMark('\''))
+    @assert(Char::isMark('\\'))
+    @assert(Char::isMark('`'))
+    @assert(Char::isMark('^'))
+    @assert(Char::isMark('"'))
+    @assert(Char::isMark('~'))
+    @assert(Char::isMark('.'))
+    @assert(Char::isMark('-'))
+    @assert(Char::isMark('_'))
+    @assert(Char::isMark('*'))
+    @assert(Char::isMark('+'))
+    @assert(Char::isMark('='))
+    @assert(Char::isMark('<'))
+    @assert(Char::isMark('>'))
+    @assert(Char::isMark('@'))
+    @assert(Char::isMark(':'))
+    @assert(Char::isMark('/'))
+    @assert(Char::isMark('|'))
+    @assert(Char::isMark('!'))
+    @assert(Char::isMark('?'))
+    @assert(Char::isMark('#'))
+    @assert(Char::isMark('$'))
+    @assert(Char::isMark('%'))
+    @assert(Char::isMark('&'))
+    @assert(Char::isMark('('))
+    @assert(Char::isMark(')'))
+    @assert(Char::isMark('['))
+    @assert(Char::isMark(']'))
+    @assert(Char::isMark('{'))
+    @assert(Char::isMark('}'))
+    @assert(!Char::isMark(' '));
+    @assert(!Char::isMark('0'));
+    @assert(!Char::isMark('a'));
+    return true;
 }
 
 }

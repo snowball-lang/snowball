@@ -61,7 +61,8 @@ struct OurExceptionType_t {
  * @see OurBaseException_t below.
 */
 struct SnowballExceptionInstance_t {
-  void* _vtable;
+  // TODO: check if theres actually a vtable?
+  // void* _vtable;
   char* message;
 };
 

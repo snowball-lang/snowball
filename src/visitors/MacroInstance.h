@@ -25,7 +25,8 @@ struct MacroInstance {
     // The macro that is being transformed
     Macro* macro = nullptr;
 
-    explicit MacroInstance(Macro* macro, std::shared_ptr<ir::Module> module = nullptr) { }
+    explicit MacroInstance(Macro* macro, std::shared_ptr<ir::Module> module = nullptr) :
+        macro(macro), module(module) { }
 };
 } // namespace transform
 } // namespace Syntax

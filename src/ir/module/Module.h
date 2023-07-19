@@ -11,6 +11,9 @@
 #define __SNOWBALL_MODULE_H_
 
 namespace snowball {
+namespace Syntax::transform {
+class MacroInstance;
+} // namespace transform
 namespace ir {
 
 class Func;
@@ -30,7 +33,8 @@ class Module : public AcceptorExtend<Module, SrcObject>, public std::enable_shar
     // A list of declared variables used for this module
     std::vector<std::shared_ptr<ir::VariableDeclaration>> variables;
     // A list of exported macros
-    std::unordered_map<std::string, Syntax::Macro*> exportedMacros = {};
+    std::unordered_map<std::string, Syntax::transform::MacroInstance*> 
+      exportedMacros = {};
 
   public:
     Module(std::string name, std::string uuid = "");
@@ -57,7 +61,7 @@ class Module : public AcceptorExtend<Module, SrcObject>, public std::enable_shar
     // Get a list of exported macros
     const auto getExportedMacros() const { return exportedMacros; }
     // Add a new exported macro
-    void addExportedMacro(std::string name, Syntax::Macro* macro) 
+    void addExportedMacro(std::string name, Syntax::transform::MacroInstance* macro) 
       { exportedMacros[name] = macro; }
 
     /// @brief Utility function to create a new instruction
