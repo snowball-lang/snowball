@@ -723,6 +723,50 @@ struct Conditional : public AcceptorExtend<Conditional, Base> {
 };
 
 /**
+ * @brief Representation of a try-catch block in the AST.
+ */
+struct TryCatch : public AcceptorExtend<TryCatch, Base> {
+  public:
+    struct CatchBlock {
+        /// @brief The exception type to catch
+        Expression::TypeRef* exceptionType;
+        /// @brief The variable to store the exception
+        std::string exceptionVar;
+        /// @brief The block to execute if the exception is caught
+        Block* block;
+
+      public:
+        CatchBlock(Expression::TypeRef* exceptionType, std::string exceptionVar, Block* block)
+            : exceptionType(exceptionType), exceptionVar(exceptionVar), block(block){};
+
+        /// @return The exception type to catch
+        auto getExceptionType() { return exceptionType; }
+        /// @return The variable to store the exception
+        auto getExceptionVar() { return exceptionVar; }
+        /// @return The block to execute if the exception is caught
+        auto getBlock() { return block; }
+    };
+
+  private:
+    /// @brief The block to execute
+    Block* tryBlock;
+    /// @brief The block to execute if an exception is caught
+    std::vector<CatchBlock*> catchBlocks;
+
+  public:
+    TryCatch(Block* tryBlock, std::vector<CatchBlock*> catchBlocks)
+        : tryBlock(tryBlock), catchBlocks(catchBlocks){};
+
+    /// @return The block to execute
+    auto getTryBlock() { return tryBlock; }
+    /// @return The block to execute if an exception is caught
+    auto getCatchBlocks() { return catchBlocks; }
+
+    // Set a visit handler for the generators
+    ACCEPT()
+};
+
+/**
  * @brief AST representation of a conditional statement that contains a
  *  `constexpr` expression as it's condition.
  */

@@ -58,8 +58,7 @@ Syntax::Node* Parser::parseStatement(Token pk) {
 
         case TokenType::KWORD_TRY: {
             next();
-            assert(false);
-            //return parseTry();
+            return parseTryCatch();
             break;
         }
 

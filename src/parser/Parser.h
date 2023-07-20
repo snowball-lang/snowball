@@ -306,6 +306,11 @@ class Parser {
      * block_or_expr ::=  [block] | [stmt]
      */
     Syntax::Block* parseBlockOrStmt();
+    /**
+     * try           ::=  "try" "{" [block] "}" <catch>
+     * catch         ::=  "catch" "(" [identifier] ":" [type] ")" "{" [block] "}"
+     */
+    Syntax::Statement::TryCatch* parseTryCatch();
     /// @brief Parses a statement
     /// @return a statement
     Syntax::Node* parseStatement(Token pk);
