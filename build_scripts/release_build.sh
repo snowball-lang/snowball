@@ -19,7 +19,6 @@ error() {
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ "$ARCH" == "arm64" ]]; then
-        setopt sh_word_split
         mkdir arm-homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C arm-homebrew 
         alias arm-brew='$(pwd)/arm-homebrew/bin/brew'
         response=$(arm-brew fetch --force --bottle-tag=arm64_big_sur boost | grep "Downloaded to")

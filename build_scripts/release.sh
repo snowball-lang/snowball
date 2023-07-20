@@ -16,4 +16,4 @@ cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr/local -DLLVM_ENABLE_BACKTRACES=OFF \
 -DLLVM_INCLUDE_EXAMPLES=OFF \
 -DCMAKE_OSX_ARCHITECTURES="$ARCH" \
 -DLLVM_INCLUDE_DOCS=OFF -DCMAKE_BUILD_TYPE=Release -DEXECUTABLE_OUTPUT_PATH="bin/Release" $@ .
-cmake --build . --config Release --verbose -- -j 10
+cmake --build . --config Release --verbose -- -j 3
