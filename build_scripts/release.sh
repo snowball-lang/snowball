@@ -8,11 +8,11 @@ if [[ "$OSTYPE" != "darwin"* ]]; then
     export CXX="/usr/bin/g++-9"
 else
     if [[ "$ARCH" == "arm64" ]]; then
-        brew tap ArmMbed/homebrew-formulae
-        brew install arm-none-eabi-gcc
+        #brew tap ArmMbed/homebrew-formulae
+        #brew install arm-none-eabi-gcc
     
-        export CC="/usr/local/bin/arm-none-eabi-gcc"
-        export CXX="/usr/local/bin/arm-none-eabi-g++"
+        #export CC="/usr/local/bin/arm-none-eabi-gcc"
+        #export CXX="/usr/local/bin/arm-none-eabi-g++"
     fi 
 fi
 
