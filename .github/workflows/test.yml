@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.DIST }}
+    runs-on: ${{ matrix.DIST == 'ce-specific' && 'ubuntu-20.04' || matrix.DIST }}
     strategy:
       matrix:
         include:
@@ -25,7 +25,7 @@ jobs:
           #  DIST: 'macos-11'
           #  NAME: 'darwin'
           - ARCH: 'x86_64'
-            DIST: 'macos-11'
+            DIST: 'm1max'
             NAME: 'darwin'
           # - ARCH: 'x86_64'
           #   DIST: 'windows-latest'
