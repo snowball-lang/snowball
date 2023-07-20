@@ -18,9 +18,19 @@ error() {
 }
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    brew install llvm@14
-    export LLVM_DIR="/usr/local/opt/llvm@14/lib/cmake"
+    if [[ "$ARCH" == "arm64" ]]; then
+        setopt sh_word_split
+        mkdir arm-homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C arm-homebrew 
+        alias arm-brew='$(pwd)/arm-homebrew/bin/brew'
+        response=$(arm-brew fetch --force --bottle-tag=arm64_big_sur boost | grep "Downloaded to")
+        parsed=($response)  
+        arm-brew install $parsed[3] 
+        arm-brew install llvm@14
+    else
+        brew install llvm@14
+    fi
 
+    export LLVM_DIR="/usr/local/opt/llvm@14/lib/cmake"
     bash build_scripts/build-snowball.sh
 else
 
