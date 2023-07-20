@@ -1,13 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
 
-if ("$ENV{ARCH}" STREQUAL "arm64")
-  if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(CMAKE_SYSTEM_PROCESSOR arm64)
-    set(CMAKE_HOST_SYSTEM_PROCESSOR arm64)
-    set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)
-  endif()
-endif()
-
 message(STATUS $ENV{ARCH})
 message(STATUS ${CMAKE_SYSTEM_NAME})
 if (DEFINED ENV{BUILD_FOR_CE})
@@ -15,7 +7,16 @@ if (DEFINED ENV{BUILD_FOR_CE})
   set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
 endif()
 
-project(snowball)
+file(READ "snowball.version.str" version)
+file(READ "snowball.version.id" versionID)
+project(snowball VERSION ${version})
+
+if(CMAKE_OSX_ARCHITECTURES MATCHES "arm64")
+  set(CPU_TYPE ${CMAKE_OSX_ARCHITECTURES})
+  set(CMAKE_SYSTEM_PROCESSOR arm64)
+  set(CMAKE_HOST_SYSTEM_PROCESSOR arm64)
+  set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)
+endif()
 
 if ("$ENV{ARCH}" STREQUAL "arm64")
   if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -192,6 +193,9 @@ string(STRIP ${LLVM_LDFLAGS} LLVM_LDFLAGS)
 message(STATUS "${LLVM_LDFLAGS}")
 add_compile_definitions(LLVM_LDFLAGS="${LLVM_LDFLAGS}")
 add_compile_definitions(LIBC_VERSION="${_LIBC_VERSION}")
+
+add_compile_definitions(_SNOWBALL_VERSION="${version}")
+add_compile_definitions(_SNOWBALL_VERSION_NUMBER=${versionID})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${LLVM_INCLUDE_DIRS}

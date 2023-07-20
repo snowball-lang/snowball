@@ -25,7 +25,7 @@ jobs:
             DIST: 'macos-11'
             NAME: 'darwin'
           - ARCH: 'arm64'
-            DIST: 'm1max' # 'macos-11'
+            DIST: 'macos-11'
             NAME: 'darwin'
           # - ARCH: 'x86_64'
           #   DIST: 'windows-latest'
@@ -47,13 +47,7 @@ jobs:
           fi
 
       - name: Build in Docker
-        run: |
-          set -x
-          if [[ "$OSTYPE" != "darwin"* || ${{matrix.ARCH != 'arm64'}} ]]; then
-            bash -ex build_scripts/release_build.sh
-          else
-            arch -arm64 bash -ex build_scripts/release_build.sh
-          fi
+        run: bash -ex build_scripts/release_build.sh
 
       - name: Get release
         id: get_release
