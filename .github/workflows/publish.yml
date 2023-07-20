@@ -25,7 +25,7 @@ jobs:
             DIST: 'macos-11'
             NAME: 'darwin'
           - ARCH: 'arm64'
-            DIST: 'macos-11' # 'macos-11'
+            DIST: 'm1max' # 'macos-11'
             NAME: 'darwin'
           # - ARCH: 'x86_64'
           #   DIST: 'windows-latest'
