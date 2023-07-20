@@ -1,6 +1,7 @@
 
 #include "../../ir/values/Call.h"
 #include "../../ir/values/Func.h"
+#include "../../ir/values/IndexExtract.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 
@@ -31,7 +32,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             if (utils::dyn_cast<types::BoolType>(baseType) || utils::dyn_cast<types::Int8Type>(baseType) ||
                 utils::dyn_cast<types::Int16Type>(baseType) || utils::dyn_cast<types::Int32Type>(baseType) ||
                 utils::dyn_cast<types::Int64Type>(baseType) || utils::dyn_cast<types::CharType>(baseType)) {
-                // this->value = builder->Create
+                
                 switch (services::OperatorService::operatorID(opName)) {
                     OPERATOR_INSTANCE(EQEQ, CreateICmpEQ)
                     OPERATOR_INSTANCE(PLUS, CreateAdd)
@@ -61,11 +62,15 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
 
                     // TODO: remainder oeprators (!, +=, etc...)
                     case services::OperatorService::EQ: {
-                        auto l = llvm::cast<llvm::LoadInst>(left);
-                        auto v = l->getOperand(0);
-                        auto rightValue = right;
+                        if (auto index = utils::dyn_cast<ir::IndexExtract>(args.at(0))) {
+                            createInsertValue(right, index->getIndex(), left, baseType);
+                        } else {
+                            auto l = llvm::cast<llvm::LoadInst>(left);
+                            auto v = l->getOperand(0);
 
-                        builder->CreateStore(rightValue, v);
+                            builder->CreateStore(right, v);
+                        }
+
                         break;
                     }
 
@@ -104,10 +109,15 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
 
                     // TODO: remainder oeprators (!, +=, etc...)
                     case services::OperatorService::EQ: {
-                        auto l = llvm::cast<llvm::LoadInst>(left);
-                        auto v = l->getOperand(0);
+                        if (auto index = utils::dyn_cast<ir::IndexExtract>(args.at(0))) {
+                            createInsertValue(right, index->getIndex(), left, baseType);
+                        } else {
+                            auto l = llvm::cast<llvm::LoadInst>(left);
+                            auto v = l->getOperand(0);
 
-                        builder->CreateStore(right, v);
+                            builder->CreateStore(right, v);
+                        }
+
                         break;
                     }
 
@@ -123,11 +133,13 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                         if (llvm::isa<llvm::LoadInst>(leftValue)) {
                             auto l = llvm::cast<llvm::LoadInst>(leftValue);
                             leftValue = l->getOperand(0);
-                        } else if (!llvm::isa<llvm::LoadInst>(rightValue) && rightValue->getType()->isPointerTy())
-                            rightValue =
-                                    builder->CreateLoad(rightValue->getType()->getPointerElementType(), rightValue);
+                        }
+                        if (auto index = utils::dyn_cast<ir::IndexExtract>(args.at(0))) {
+                            createInsertValue(rightValue, index->getIndex(), leftValue, baseType);
+                        } else {
+                            builder->CreateStore(rightValue, leftValue);
+                        }
 
-                        builder->CreateStore(rightValue, leftValue);
                         break;
                     }
 

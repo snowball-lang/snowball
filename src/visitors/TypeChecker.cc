@@ -346,6 +346,37 @@ void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
                             {.info = "This function is a test function!",
                              .note = "This error is caused by the function having the 'inline' attribute.",
                              .help = "Try removing the 'inline' attribute from the function."});
+
+        auto args = p_node->getAttributeArgs(Attributes::TEST);
+        for (auto [name, value] : args) {
+            if (name == "expect") {
+                if (value == "") {
+                    E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions must have an 'expect' value!",
+                                    {.info = "This function is a test function!",
+                                     .note = "This error is caused by the function not having an 'expect' value.",
+                                     .help = "Try adding an 'expect' value to the function."});
+                } else if (!utils::isNumber(value)) {
+                    E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions 'expect' value must be a number!",
+                                    {.info = "This function is a test function!",
+                                     .note = "This error is caused by the function having an 'expect' value that is "
+                                             "not a number.",
+                                     .help = "Try changing the 'expect' value to a number."});
+                }
+            } else if (name == "skip") {
+                if (value != "") {
+                    E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions 'skip' value must be empty!",
+                                    {.info = "This function is a test function!",
+                                     .note = "This error is caused by the function having a 'skip' value that is not "
+                                             "empty.",
+                                     .help = "Try removing the 'skip' value from the function."});
+                }
+            } else {
+                E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions can't have the '" + name + "' attribute!",
+                                {.info = "This function is a test function!",
+                                 .note = "This error is caused by the function having the '" + name + "' attribute.",
+                                 .help = "Try removing the '" + name + "' attribute from the function."});
+            }
+        }
     } else if (p_node->hasAttribute(Attributes::INLINE)) {
         if (p_node->isDeclaration())
             E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Inline functions must have a body!",

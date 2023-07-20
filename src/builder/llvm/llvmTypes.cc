@@ -77,6 +77,7 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
         Syntax::E<BUG>(FMT("Undefined type! ('%s')", t->getName().c_str()));
     }
 
+    assert(false);
     return nullptr; // to avoid warnings
 }
 

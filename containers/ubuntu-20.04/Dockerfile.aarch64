@@ -15,7 +15,7 @@ RUN apt-get update && apt-get -f install && \
 RUN apt-get install lsb-release wget software-properties-common gnupg -y
 RUN wget https://apt.llvm.org/llvm.sh
 RUN chmod +x llvm.sh
-RUN sudo ./llvm.sh 14
+RUN sudo ./llvm.sh 16
 
 # keep user ID in sync in and outside Docker image
 ARG UID

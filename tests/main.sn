@@ -7,5 +7,6 @@
 // Import the core library.
 // This is required for the println function.
 use pkg::vector;
-use pkg::string;
 use pkg::chars;
+use pkg::cls;
+use pkg::string;

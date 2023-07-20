@@ -116,8 +116,8 @@ void LLVMBuilder::optimizeModule(app::Options::Optimization o) {
     }
 
     llvm::legacy::PassManager codegen_pm;
-    codegen_pm.add(
-      llvm::createTargetTransformInfoWrapperPass(target->getTargetIRAnalysis()));
+    //codegen_pm.add(
+    //  llvm::createTargetTransformInfoWrapperPass(target->getTargetIRAnalysis()));
 
     mpm.run(*module, module_analysis_manager);
     codegen_pm.run(*module);

@@ -10,25 +10,25 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ir::IndexExtract* index) {
-    auto valueType = index->getValue()->getType();
-    if (auto x = utils::dyn_cast<types::ReferenceType>(valueType)) valueType = x->getBaseType();
-    auto defiendType = utils::dyn_cast<types::DefinedType>(valueType);
-    if (auto alias = utils::dyn_cast<types::TypeAlias>(valueType)) {
+    auto indexValue = index->getValue();
+    auto valueType = indexValue->getType();
+    auto basedType = valueType;
+    if (auto x = utils::dyn_cast<types::ReferenceType>(basedType)) basedType = x->getBaseType();
+    auto defiendType = utils::dyn_cast<types::DefinedType>(basedType);
+    if (auto alias = utils::dyn_cast<types::TypeAlias>(basedType)) {
         assert(!"Found a local type alias in the index extract!");
     }
     assert(defiendType);
-    auto baseType = getLLVMType(valueType);
-    auto v = build(index->getValue().get());
+    auto v = build(indexValue.get());
     // We add "1" becasue index #0 is a pointer to the virtual
     // table.
     // TODO: support for structs without vtable.
     auto i = index->getIndex() + defiendType->hasVtable();
-    // if (llvm::isa<llvm::LoadInst>(v)) {
-    //     auto load = llvm::cast<llvm::LoadInst>(v);
-    //     v = load->getPointerOperand();
-    // }
-    auto g = builder->CreateStructGEP(baseType->isPointerTy() ? baseType->getPointerElementType() : baseType, v, i);
-    this->value = builder->CreateLoad(g->getType()->getPointerElementType(), g);
+    if (auto ty = utils::dyn_cast<types::ReferenceType>(valueType)) {
+        auto baseType = getBasePointerType(ty);
+        v = builder->CreateLoad(getLLVMType(baseType), v);
+    }
+    this->value = builder->CreateExtractValue(v, i);
 }
 
 } // namespace codegen

@@ -280,6 +280,15 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      */
     bool buildOperator(ir::Call* call);
     /**
+     * @brief It creates an insert value instruction.
+     * @param v Value to insert
+     * @param i Index to insert the value
+     * @param rhs Base value to insert the value
+     * @param refType Reference type to insert the value
+     * @return llvm::Value* Resultant llvm value
+     */
+    llvm::Value* createInsertValue(llvm::Value* v, uint32_t i, llvm::Value* rhs, std::shared_ptr<types::Type> refType);
+    /**
      * @brief Get a wrapper for a function. Subprogram is considered
      * also as a function description.
      *
@@ -354,6 +363,17 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
         setDebugInfoLoc(v);
         v->visit(this);
         return this->value;
+    }
+    /**
+     * @brief Fetch the base type of a pointer type.
+     * @param ty Pointer type to fetch the base type from.
+     * @note if the type is not a pointer type, it will return the
+     * same type.
+     */
+    std::shared_ptr<types::Type> getBasePointerType(std::shared_ptr<types::Type> ty) {
+        if (auto x = utils::dyn_cast<types::ReferenceType>(ty)) 
+            return x->getBaseType();
+        return ty;
     }
 };
 

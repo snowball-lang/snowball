@@ -6,8 +6,7 @@
 #include <llvm/IR/Value.h>
 
 #define CREATE_CONTINUE(x)                                                                                             \
-    if (x || (!builder->GetInsertBlock()->getTerminator()) ||                                      \
-        builder->GetInsertBlock()->getInstList().size() == 0) {                                                        \
+    if (x || !builder->GetInsertBlock()->getTerminator()) {                                                        \
         builder->CreateBr(continueBB);                                                                                 \
     }
 

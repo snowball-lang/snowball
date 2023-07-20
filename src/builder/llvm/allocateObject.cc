@@ -8,11 +8,12 @@ namespace snowball {
 namespace codegen {
 
 llvm::Value* LLVMBuilder::allocateObject(std::shared_ptr<types::DefinedType> ty) {
-    auto llvmType = getLLVMType(ty)->getPointerTo();
+    auto llvmType = getLLVMType(ty);
+    auto llvmTypePtr = getLLVMType(ty)->getPointerTo();
     auto dataLayout = module->getDataLayout();
     auto allocation =
-            builder->CreateCall(getAllocaFunction(), {builder->getInt32(dataLayout.getTypeAllocSize(llvmType))});
-    auto cast = builder->CreatePointerCast(allocation, llvmType);
+            builder->CreateCall(getAllocaFunction(), {builder->getInt32(dataLayout.getTypeAllocSize(llvmTypePtr))});
+    auto cast = builder->CreatePointerCast(allocation, llvmTypePtr);
     if (ty->isStruct() || !ty->hasVtable()) return cast;
 
     // Class specific stuff
@@ -26,7 +27,7 @@ llvm::Value* LLVMBuilder::allocateObject(std::shared_ptr<types::DefinedType> ty)
         vtablePointer = createVirtualTable(ty.get(), t);
     }
 
-    auto pointer = builder->CreateInBoundsGEP(llvmType->getPointerElementType(), cast,
+    auto pointer = builder->CreateInBoundsGEP(llvmType, cast,
                                               {builder->getInt32(0), builder->getInt32(0)});
     builder->CreateStore(vtablePointer, pointer);
     return cast;

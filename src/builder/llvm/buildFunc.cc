@@ -106,8 +106,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     setDebugInfoLoc(nullptr);
 
     // Create return type
-    if ((!builder->GetInsertBlock()->getTerminator()) ||
-        builder->GetInsertBlock()->getInstList().size() == 0) {
+    if (!builder->GetInsertBlock()->getTerminator()) {
         if (utils::cast<types::VoidType>(fn->getRetTy().get())) {
             builder->CreateRetVoid();
         } else if (fn->isConstructor()) {

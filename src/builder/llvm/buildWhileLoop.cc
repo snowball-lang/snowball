@@ -18,8 +18,7 @@ void LLVMBuilder::visit(ir::WhileLoop* c) {
         builder->CreateBr(whileBB);
         builder->SetInsertPoint(whileBB);
         c->getBlock()->visit(this);
-        if ((!builder->GetInsertBlock()->getTerminator()) ||
-            builder->GetInsertBlock()->getInstList().size() == 0) {
+        if (!builder->GetInsertBlock()->getTerminator()) {
             builder->CreateBr(condBB);
         }
         builder->SetInsertPoint(condBB);
@@ -33,8 +32,7 @@ void LLVMBuilder::visit(ir::WhileLoop* c) {
         builder->CreateCondBr(cond, whileBB, continueBB);
         builder->SetInsertPoint(whileBB);
         c->getBlock()->visit(this);
-        if ((!builder->GetInsertBlock()->getTerminator()) ||
-            builder->GetInsertBlock()->getInstList().size() == 0) {
+        if (!builder->GetInsertBlock()->getTerminator()) {
             builder->CreateBr(condBB);
         }
         builder->SetInsertPoint(continueBB);

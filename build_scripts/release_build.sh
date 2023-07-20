@@ -19,15 +19,15 @@ error() {
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ "$ARCH" == "arm64" ]]; then
-        brew fetch --force --bottle-tag=arm64_big_sur llvm@14
-        llvmResult=$(brew --cache --bottle-tag=arm64_big_sur llvm@14)
+        brew fetch --force --bottle-tag=arm64_big_sur llvm@16
+        llvmResult=$(brew --cache --bottle-tag=arm64_big_sur llvm@16)
         echo "Looking for arm64 version of (llvm): $llvmResult"
         brew install $llvmResult
     else
-        brew install llvm@14
+        brew install llvm@16
     fi
 
-    export LLVM_DIR="/usr/local/opt/llvm@14/lib/cmake"
+    export LLVM_DIR="/usr/local/opt/llvm@16/lib/cmake"
     bash build_scripts/build-snowball.sh
 else
 
