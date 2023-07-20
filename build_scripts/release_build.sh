@@ -19,7 +19,9 @@ error() {
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ "$ARCH" == "arm64" ]]; then
-        brew fetch --force --bottle-tag=arm64_big_sur llvm@14
+        llvmResult=$(brew --cache --bottle-tag=arm64_monterey llvm@14)
+        echo "Looking for arm64 version of (llvm): $llvmResult"
+        brew install $llvmResult
     else
         brew install llvm@14
     fi
