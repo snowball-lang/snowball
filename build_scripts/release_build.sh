@@ -24,7 +24,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Looking for arm64 version of (llvm): $llvmResult"
         brew install $llvmResult
 
-        brew uninstall zstd
+        brew uninstall zstd --force
         brew fetch --force --bottle-tag=arm64_big_sur zstd
         zstdResult=$(brew --cache --bottle-tag=arm64_big_sur zstd)
         brew install $zstdResult
