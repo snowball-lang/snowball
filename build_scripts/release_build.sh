@@ -19,15 +19,15 @@ error() {
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ "$ARCH" == "arm64" ]]; then
+        brew uninstall --ignore-dependencies zstd
+        brew fetch --force --bottle-tag=arm64_big_sur zstd
+        zstdResult=$(brew --cache --bottle-tag=arm64_big_sur zstd)
+        brew install $zstdResult
+
         brew fetch --force --bottle-tag=arm64_big_sur llvm@16
         llvmResult=$(brew --cache --bottle-tag=arm64_big_sur llvm@16)
         echo "Looking for arm64 version of (llvm): $llvmResult"
         brew install $llvmResult
-
-        brew uninstall zstd --force
-        brew fetch --force --bottle-tag=arm64_big_sur zstd
-        zstdResult=$(brew --cache --bottle-tag=arm64_big_sur zstd)
-        brew install $zstdResult
     else
         brew install llvm@16
     fi
