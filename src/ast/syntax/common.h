@@ -155,7 +155,7 @@ struct TypeRef : public types::Type, public Base {
 
     /// @brief Internal type when using @fn types::Type::toRef().
     /// @note this shoudn't be used for normal usage!
-    std::shared_ptr<types::Type> internalType = nullptr;
+    types::Type* internalType = nullptr;
 
     /// @brief AST used to declare this TypeRef.
     /// @note this shoudn't be used for normal usage!
@@ -166,7 +166,7 @@ struct TypeRef : public types::Type, public Base {
 
   public:
     TypeRef(std::string p_name, DBGSourceInfo* p_dbg, std::vector<TypeRef*> p_generics = {}, std::string id = "");
-    TypeRef(std::string p_name, DBGSourceInfo* p_dbg, std::shared_ptr<types::Type> internalType, std::string id);
+    TypeRef(std::string p_name, DBGSourceInfo* p_dbg, types::Type* internalType, std::string id);
     TypeRef(Expression::Base* p_ast, std::string p_name, DBGSourceInfo* p_dbg, std::string id);
 
     /// @brief Get type's generics

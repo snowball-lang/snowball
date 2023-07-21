@@ -65,7 +65,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
                                                              var->getIndex()+1, // lua vibes... :]
                                                              file,
                                                              dbgInfo->line,
-                                                             getDIType(var->getType().get()),
+                                                             getDIType(var->getType()),
                                                              dbg.debug);
         dbg.builder->insertDeclare(storage,
                                    debugVar,
@@ -88,7 +88,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
         auto file = dbg.getFile(src->getPath());
         auto scope = llvmFn->getSubprogram();
         auto debugVar = dbg.builder->createAutoVariable(
-                scope, v->getIdentifier(), file, dbgInfo->line, getDIType(v->getType().get()), dbg.debug);
+                scope, v->getIdentifier(), file, dbgInfo->line, getDIType(v->getType()), dbg.debug);
         dbg.builder->insertDeclare(storage,
                                    debugVar,
                                    dbg.builder->createExpression(),
@@ -107,7 +107,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
 
     // Create return type
     if (!builder->GetInsertBlock()->getTerminator()) {
-        if (utils::cast<types::VoidType>(fn->getRetTy().get())) {
+        if (utils::cast<types::VoidType>(fn->getRetTy())) {
             builder->CreateRetVoid();
         } else if (fn->isConstructor()) {
             // note: 0 should be always the "self" parameter

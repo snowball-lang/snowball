@@ -9,7 +9,7 @@
 namespace snowball {
 namespace codegen {
 
-llvm::Value* LLVMBuilder::createException(llvm::Value* value, std::shared_ptr<types::Type> type) {
+llvm::Value* LLVMBuilder::createException(llvm::Value* value, types::Type* type) {
     auto ty = llvm::FunctionType::get(builder->getInt8PtrTy(), {builder->getInt8PtrTy(), builder->getInt32Ty()}, false);
     auto f = llvm::cast<llvm::Function>(module->getOrInsertFunction("sn.eh.create", ty).getCallee());
     f->addRetAttr(llvm::Attribute::NonNull);
@@ -24,8 +24,8 @@ llvm::Value* LLVMBuilder::createException(llvm::Value* value, std::shared_ptr<ty
         load->eraseFromParent();
     }
 
-    auto pointerType = utils::dyn_cast<types::ReferenceType>(type);
-    auto definedType = utils::dyn_cast<types::BaseType>(pointerType->getPointedType());
+    auto pointerType = utils::cast<types::ReferenceType>(type);
+    auto definedType = utils::cast<types::BaseType>(pointerType->getPointedType());
     int typeId = definedType ? definedType->getId() : -1;
     auto cast = builder->CreatePointerCast(usedValue, builder->getInt8PtrTy());
 

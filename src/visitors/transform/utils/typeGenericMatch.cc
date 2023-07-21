@@ -8,11 +8,11 @@ namespace Syntax {
 
 using namespace Statement;
 
-bool Transformer::typeGenericsMatch(Expression::TypeRef* ty, std::shared_ptr<types::Type> comp) {
-    std::vector<std::shared_ptr<types::Type>> generatedGenerics;
+bool Transformer::typeGenericsMatch(Expression::TypeRef* ty, types::Type* comp) {
+    std::vector<types::Type*> generatedGenerics;
     for (auto x : ty->getGenerics()) { generatedGenerics.push_back(transformType(x)); }
-    auto compAsDefinedType = utils::cast<Statement::GenericContainer<std::shared_ptr<types::Type>>>(comp.get());
-    auto compGenerics = compAsDefinedType == nullptr ? std::vector<std::shared_ptr<types::Type>>{}
+    auto compAsDefinedType = utils::cast<Statement::GenericContainer<types::Type*>>(comp);
+    auto compGenerics = compAsDefinedType == nullptr ? std::vector<types::Type*>{}
                                                      : compAsDefinedType->getGenerics();
 
     if (generatedGenerics.size() < compGenerics.size()) {

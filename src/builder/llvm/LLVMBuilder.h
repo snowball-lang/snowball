@@ -223,18 +223,12 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      * @brief A allocates a new object inside the LLVM IR code and cast
      * it into the desired type.
      */
-    llvm::Value* allocateObject(std::shared_ptr<types::DefinedType> ty);
+    llvm::Value* allocateObject(types::DefinedType* ty);
     /**
      * @brief It creates a new struct type and a new constant struct
      * value for a virtual table for @param ty
      */
-    llvm::GlobalVariable* createVirtualTable(types::DefinedType* ty, llvm::StructType* vtableType);
-    /**
-     * @brief Utility function to the actual `getLLVMType`
-     * function. This is just a workaround to avoid shared
-     * pointers.
-     */
-    llvm::Type* getLLVMType(std::shared_ptr<types::Type> t);
+    llvm::GlobalVariable* createVirtualTable(types::DefinedType* ty, llvm::StructType* vtableType); 
     /**
      * @brief Get llvm corresponding function type from an
      * already generate snowball type.
@@ -287,7 +281,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      * @param refType Reference type to insert the value
      * @return llvm::Value* Resultant llvm value
      */
-    llvm::Value* createInsertValue(llvm::Value* v, uint32_t i, llvm::Value* rhs, std::shared_ptr<types::Type> refType);
+    llvm::Value* createInsertValue(llvm::Value* v, uint32_t i, llvm::Value* rhs, types::Type* refType);
     /**
      * @brief Get a wrapper for a function. Subprogram is considered
      * also as a function description.
@@ -346,7 +340,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
     /**
      * @brief Creates a new instance of an exception.
      */
-    llvm::Value* createException(llvm::Value* val, std::shared_ptr<types::Type> type);
+    llvm::Value* createException(llvm::Value* val, types::Type* type);
     /**
      * @brief It initializes the runtime. This function is called
      * before any other function is generated.
@@ -370,8 +364,8 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      * @note if the type is not a pointer type, it will return the
      * same type.
      */
-    std::shared_ptr<types::Type> getBasePointerType(std::shared_ptr<types::Type> ty) {
-        if (auto x = utils::dyn_cast<types::ReferenceType>(ty)) 
+    types::Type* getBasePointerType(types::Type* ty) {
+        if (auto x = utils::cast<types::ReferenceType>(ty)) 
             return x->getBaseType();
         return ty;
     }

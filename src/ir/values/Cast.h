@@ -22,10 +22,10 @@ class Cast : public AcceptorExtend<Cast, Value> {
     /// @brief Expression used as value for the casting
     std::shared_ptr<Value> expr = nullptr;
     /// @brief Type to cast to
-    std::shared_ptr<types::Type> castType;
+    types::Type* castType;
 
   public:
-    explicit Cast(std::shared_ptr<Value> expr, std::shared_ptr<types::Type> castType)
+    explicit Cast(std::shared_ptr<Value> expr, types::Type* castType)
         : expr(expr), castType(castType){};
 
     /// @return value to cast

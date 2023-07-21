@@ -52,7 +52,7 @@ std::map<std::string, T> getAllFunctionsByUUID(std::string uuid, std::map<std::s
 }
 } // namespace
 
-void Functions::performInheritance(std::shared_ptr<types::DefinedType> ty, std::shared_ptr<types::DefinedType> parent,
+void Functions::performInheritance(types::DefinedType* ty, types::DefinedType* parent,
                                    bool allowConstructor) {
     auto parentUUID = parent->getUUID();
     auto childUUID = ty->getUUID();

@@ -12,7 +12,7 @@ std::vector<types::DefinedType::ClassField*>
 Transformer::getMemberList(std::vector<Syntax::Statement::VariableDecl*> fieldNodes,
                            std::vector<types::DefinedType::ClassField*>
                                    fields,
-                           std::shared_ptr<types::DefinedType>
+                           types::DefinedType*
                                    parent) {
     std::vector<types::DefinedType::ClassField*> member_list;
     assert(fields.size() == fieldNodes.size());

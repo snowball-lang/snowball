@@ -9,14 +9,14 @@ namespace Syntax {
 std::shared_ptr<ir::Func>
 Transformer::getFunction(DBGObject* dbgInfo,
                          std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-                                    std::optional<std::shared_ptr<types::Type>>,
+                                    std::optional<types::Type*>,
                                     std::optional<std::deque<std::shared_ptr<ir::Func>>>,
                                     std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
                                     std::optional<std::shared_ptr<ir::Module>>,
                                     bool /* Accept private members */>
                                  store,
                          const std::string& name,
-                         const std::vector<std::shared_ptr<types::Type>>& arguments,
+                         const std::vector<types::Type*>& arguments,
                          const std::vector<Expression::TypeRef*>& generics,
                          bool isIdentifier) {
     auto [val, ty, functions, overloads, mod, canBePrivate] = store;
@@ -34,7 +34,7 @@ Transformer::getFunction(DBGObject* dbgInfo,
 
     if (val) {
         auto v = *val;
-        auto fnType = utils::dyn_cast<types::FunctionType>(v->getType());
+        auto fnType = utils::cast<types::FunctionType>(v->getType());
         if (fnType == nullptr) {
             E<TYPE_ERROR>(dbgInfo,
                           FMT("Value with name '%s' (with type: '%s') "

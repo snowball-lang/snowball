@@ -6,12 +6,12 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::optional<std::shared_ptr<types::Type>>
+std::optional<types::Type*>
 Transformer::deduceFunctionType(snowball::Syntax::Expression::Param* generic,
                                 const std::vector<Expression::Param*>& fnArgs,
-                                const std::vector<std::shared_ptr<types::Type>>& arguments,
-                                const std::vector<std::shared_ptr<types::Type>>& generics,
-                                const std::vector<std::shared_ptr<types::Type>>& deducedTypes) {
+                                const std::vector<types::Type*>& arguments,
+                                const std::vector<types::Type*>& generics,
+                                const std::vector<types::Type*>& deducedTypes) {
     // I'm pretty sure this function works, but I'm a programmer, not a
     // magician.
 
@@ -39,14 +39,14 @@ Transformer::deduceFunctionType(snowball::Syntax::Expression::Param* generic,
     return std::nullopt;
 }
 
-std::pair<std::vector<std::shared_ptr<types::Type>>, std::string>
+std::pair<std::vector<types::Type*>, std::string>
 Transformer::deduceFunction(cacheComponents::Functions::FunctionStore s,
-                            const std::vector<std::shared_ptr<types::Type>>& arguments,
-                            const std::vector<std::shared_ptr<types::Type>>& generics) {
+                            const std::vector<types::Type*>& arguments,
+                            const std::vector<types::Type*>& generics) {
     auto function = s.function;
     auto fnArgs = getActualFunctionArgs(s);
 
-    std::vector<std::shared_ptr<types::Type>> deducedTypes;
+    std::vector<types::Type*> deducedTypes;
 
     for (const auto& generic : function->getGenerics()) {
         const auto deducedType = deduceFunctionType(generic, fnArgs, arguments, generics, deducedTypes);

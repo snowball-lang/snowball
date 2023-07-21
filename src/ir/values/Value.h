@@ -19,7 +19,7 @@ namespace ir {
 
 /// In snowball's internal IR,
 class Value : public ModuleHolder, public DBGObject {
-    std::shared_ptr<types::Type> type;
+    types::Type* type;
 
     Value(const Value*&) = delete;
     Value(const Value&) = delete;
@@ -29,12 +29,12 @@ class Value : public ModuleHolder, public DBGObject {
   public:
     virtual ~Value() noexcept = default;
     Value() = default;
-    Value(std::shared_ptr<types::Type> p_type) { type = p_type; };
+    Value(types::Type* p_type) { type = p_type; };
 
     /// @return get value's type
-    virtual std::shared_ptr<types::Type> getType() const { return type; }
+    virtual types::Type* getType() const { return type; }
     /// @brief get value's type
-    virtual void setType(std::shared_ptr<types::Type> p_type) { type = p_type; }
+    virtual void setType(types::Type* p_type) { type = p_type; }
 
     // Generate helper function
     virtual void visit(codegen::ValueVisitor* v) = 0;

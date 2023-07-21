@@ -23,10 +23,10 @@ class ReferenceType : public AcceptorExtend<ReferenceType, Type>, public DBGObje
 
   private:
     /// @brief Base class that this type is pointing to
-    std::shared_ptr<Type> base = nullptr;
+    Type* base = nullptr;
 
   public:
-    ReferenceType(std::shared_ptr<Type> base);
+    ReferenceType(Type* base);
     ReferenceType(const ReferenceType& other) = default;
 
     /**
@@ -44,26 +44,19 @@ class ReferenceType : public AcceptorExtend<ReferenceType, Type>, public DBGObje
     std::string getMangledName() const override;
     /// @return The pointed type this type is pointing to
     /// @see ReferenceType::base
-    std::shared_ptr<Type> getPointedType() const;
+    Type* getPointedType() const;
     /// @return The base type being pointed.
     /// @example i32**** -> i32
-    std::shared_ptr<Type> getBaseType() const;
+    Type* getBaseType() const;
 
     /// @c Type::toRef() for information about this function.
     /// @note It essentially does the same thing except it adds
     ///  generics if needed
     Syntax::Expression::TypeRef* toRef() override;
 
-    SNOWBALL_TYPE_CLONE(ReferenceType)
-
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
     bool canCast(Type* ty) const override;
-
-    template <class Down>
-    std::shared_ptr<Down> downcasted_shared_from_this() {
-        return std::dynamic_pointer_cast<Down>(Type::shared_from_this());
-    }
 };
 
 }; // namespace types

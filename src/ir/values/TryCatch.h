@@ -26,12 +26,12 @@ class TryCatch : public AcceptorExtend<TryCatch, Value> {
     // The catch block
     std::vector<std::shared_ptr<Block>> catchBlocks;
     // Catch types
-    std::vector<std::shared_ptr<types::Type>> catchTypes;
+    std::vector<types::Type*> catchTypes;
 
   public:
     explicit TryCatch(std::shared_ptr<Block> block,
                       std::vector<std::shared_ptr<Block>> catchBlocks,
-                      std::vector<std::shared_ptr<types::Type>> catchTypes)
+                      std::vector<types::Type*> catchTypes)
         : block(block), catchBlocks(catchBlocks), catchTypes(catchTypes){};
 
     /// @return body block instructions to execute

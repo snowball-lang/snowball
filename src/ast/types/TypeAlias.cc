@@ -16,7 +16,7 @@
 namespace snowball {
 namespace types {
 
-TypeAlias::TypeAlias(const std::string name, std::shared_ptr<Type> base)
+TypeAlias::TypeAlias(const std::string name, Type* base)
     : AcceptorExtend(Kind::TYPE, name), base(base) { }
 std::string TypeAlias::getPrettyName() const {
     auto baseName = base->getPrettyName();
@@ -38,11 +38,11 @@ std::string TypeAlias::getPrettyName() const {
 std::string TypeAlias::getMangledName() const { return base->getMangledName(); }
 
 Syntax::Expression::TypeRef* TypeAlias::toRef() {
-    auto tRef = Syntax::TR(getName(), nullptr, shared_from_this(), getUUID());
+    auto tRef = Syntax::TR(getName(), nullptr, this, getUUID());
     return tRef;
 }
 
-std::shared_ptr<Type> TypeAlias::getBaseType() const { return base; }
+Type* TypeAlias::getBaseType() const { return base; }
 
 bool TypeAlias::canCast(Type* ty) const { return base->canCast(ty); }
 

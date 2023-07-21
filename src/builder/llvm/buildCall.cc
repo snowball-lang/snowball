@@ -20,7 +20,7 @@ void LLVMBuilder::visit(ir::Call* call) {
 
     auto calleeValue = call->getCallee();
     auto callee = build(calleeValue.get());
-    auto fnType = utils::cast<types::FunctionType>(calleeValue->getType().get());
+    auto fnType = utils::cast<types::FunctionType>(calleeValue->getType());
     auto calleeType = getLLVMFunctionType(fnType);
     setDebugInfoLoc(call);
 
@@ -29,8 +29,8 @@ void LLVMBuilder::visit(ir::Call* call) {
     llvm::CallInst* llvmCall = nullptr;
     llvm::Value* allocatedValue = nullptr;
     llvm::Type* allocatedValueType = nullptr;
-    if (auto c = utils::dyn_cast<types::FunctionType>(calleeValue->getType());
-        c != nullptr && utils::dyn_cast<types::BaseType>(c->getRetType())) {
+    if (auto c = utils::cast<types::FunctionType>(calleeValue->getType());
+        c != nullptr && utils::cast<types::BaseType>(c->getRetType())) {
         auto retType = c->getRetType();
         allocatedValueType = getLLVMType(retType);
         // It's a function returning a type that's not a pointer

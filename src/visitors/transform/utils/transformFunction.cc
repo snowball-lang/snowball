@@ -7,7 +7,7 @@ namespace snowball {
 namespace Syntax {
 
 std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fnStore,
-                                                         const std::vector<std::shared_ptr<types::Type>>& deducedTypes,
+                                                         const std::vector<types::Type*>& deducedTypes,
                                                          bool isEntryPoint) {
     auto node = fnStore.function;
 
@@ -27,7 +27,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
             // Transform generics
             // TODO: variadic generics?
             assert(deducedTypes.size() == node->getGenerics().size());
-            std::vector<std::pair<std::string, std::shared_ptr<types::Type>>> fnGenerics;
+            std::vector<std::pair<std::string, types::Type*>> fnGenerics;
             for (int genericCount = 0; genericCount < deducedTypes.size(); genericCount++) {
                 auto nodeGeneric = node->getGenerics().at(genericCount);
                 auto name = nodeGeneric->getName();
@@ -66,7 +66,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
 
             ir::Func::FunctionArgs newArgs = {};
             if (fn->isConstructor()) {
-                auto a = builder.createArgument(node->getDBGInfo(), "self", 0, nullptr);
+                auto a = builder.createArgument(node->getDBGInfo(), "self", 0, (Syntax::Expression::Base*)nullptr);
                 auto ty = ctx->getCurrentClass(true)->getPointerTo();
                 ty->setMutable(node->isMutable());
                 a->setType(ty);
@@ -84,7 +84,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
 
             fn->setArgs(newArgs);
             auto fnType = types::FunctionType::from(fn.get(), node);
-            fn->setType(std::shared_ptr<types::FunctionType>(fnType));
+            fn->setType(fnType);
             ctx->defineFunction(fn);
 
             // Generate a bodied for functions that have
@@ -107,8 +107,8 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
 
                     auto body = bodiedFn->getBody();
                     if (!bodyReturns(body->getStmts()) &&
-                        !((utils::dyn_cast<types::NumericType>(returnType)) ||
-                          (utils::dyn_cast<types::VoidType>(returnType))) &&
+                        !((utils::cast<types::NumericType>(returnType)) ||
+                          (utils::cast<types::VoidType>(returnType))) &&
                         !fn->isConstructor()) {
                         E<TYPE_ERROR>(node,
                                       "Function lacks ending return statement!",

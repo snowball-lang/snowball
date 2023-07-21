@@ -9,24 +9,24 @@ namespace snowball {
 namespace Syntax {
 
 std::pair<std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-                     std::optional<std::shared_ptr<types::Type>>,
+                     std::optional<types::Type*>,
                      std::optional<std::deque<std::shared_ptr<ir::Func>>>,
                      std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
                      std::optional<std::shared_ptr<ir::Module>>,
                      bool /* Accept private members */>,
           std::optional<std::shared_ptr<ir::Value>>>
 Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool isStatic) {
-    auto getFromType = [&](std::shared_ptr<types::Type> type, std::shared_ptr<ir::Value> value = nullptr)
+    auto getFromType = [&](types::Type* type, std::shared_ptr<ir::Value> value = nullptr)
             -> std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-                          std::optional<std::shared_ptr<types::Type>>,
+                          std::optional<types::Type*>,
                           std::optional<std::deque<std::shared_ptr<ir::Func>>>,
                           std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
                           std::optional<std::shared_ptr<ir::Module>>,
                           bool /* Accept private members */> {
-        if (auto x = utils::dyn_cast<types::ReferenceType>(type)) { type = x->getBaseType(); }
-        if (auto x = utils::dyn_cast<types::TypeAlias>(type)) { type = x->getBaseType(); }
+        if (auto x = utils::cast<types::ReferenceType>(type)) { type = x->getBaseType(); }
+        if (auto x = utils::cast<types::TypeAlias>(type)) { type = x->getBaseType(); }
 
-        if (auto x = utils::dyn_cast<types::DefinedType>(type)) {
+        if (auto x = utils::cast<types::DefinedType>(type)) {
             auto g = utils::cast<Expression::GenericIdentifier>(index->getIdentifier());
             auto name = index->getIdentifier()->getIdentifier();
             auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
@@ -87,7 +87,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
 
     auto getFromModule = [&](std::shared_ptr<ir::Module> m)
             -> std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-                          std::optional<std::shared_ptr<types::Type>>,
+                          std::optional<types::Type*>,
                           std::optional<std::deque<std::shared_ptr<ir::Func>>>,
                           std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
                           std::optional<std::shared_ptr<ir::Module>>,

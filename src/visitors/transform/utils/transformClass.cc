@@ -6,7 +6,7 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::shared_ptr<types::DefinedType> Transformer::transformClass(const std::string& uuid,
+types::DefinedType* Transformer::transformClass(const std::string& uuid,
                                                                 cacheComponents::Types::TypeStore& classStore,
                                                                 Expression::TypeRef* typeRef) {
     auto ty = utils::cast<Statement::DefinedTypeDef>(classStore.type);
@@ -22,12 +22,12 @@ std::shared_ptr<types::DefinedType> Transformer::transformClass(const std::strin
     //
     // Note that the default class generics WILL be generated inside the
     // class context.
-    auto generics = typeRef != nullptr ? vector_iterate<Expression::TypeRef*, std::shared_ptr<types::Type>>(
+    auto generics = typeRef != nullptr ? vector_iterate<Expression::TypeRef*, types::Type*>(
                                                  typeRef->getGenerics(), [&](auto t) { return transformType(t); })
-                                       : std::vector<std::shared_ptr<types::Type>>{};
+                                       : std::vector<types::Type*>{};
 
     // TODO: check if typeRef generics match class generics
-    std::shared_ptr<types::DefinedType> transformedType;
+    types::DefinedType* transformedType;
     ctx->withState(classStore.state, [&]() {
         ctx->withScope([&] {
             auto backupClass = ctx->getCurrentClass();
@@ -38,13 +38,13 @@ std::shared_ptr<types::DefinedType> Transformer::transformClass(const std::strin
             auto existantTypes = ctx->cache->getTransformedType(uuid);
             auto _uuid = baseUuid + ":" + utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
             auto basedName = ty->getName();
-            transformedType = std::make_shared<types::DefinedType>(basedName,
+            transformedType = new types::DefinedType(basedName,
                                                                    _uuid,
                                                                    ctx->module,
                                                                    ty,
                                                                    std::vector<types::DefinedType::ClassField*>{},
                                                                    nullptr,
-                                                                   std::vector<std::shared_ptr<types::Type>>{},
+                                                                   std::vector<types::Type*>{},
                                                                    ty->isStruct());
             transformedType->setModule(ctx->module);
             transformedType->setUUID(_uuid);
@@ -68,10 +68,10 @@ std::shared_ptr<types::DefinedType> Transformer::transformClass(const std::strin
                 ctx->addItem(generic->getName(), item);
                 executeGenericTests(generic->getWhereClause(), generatedGeneric);
             }
-            std::shared_ptr<types::DefinedType> parentType = nullptr;
+            types::DefinedType* parentType = nullptr;
             if (auto x = ty->getParent()) {
                 auto parent = transformType(x);
-                parentType = utils::dyn_cast<types::DefinedType>(parent);
+                parentType = utils::cast<types::DefinedType>(parent);
                 if (!parentType) {
                     E<TYPE_ERROR>(ty,
                                   FMT("Can't inherit from '%s'", parent->getPrettyName().c_str()),
@@ -139,7 +139,7 @@ std::shared_ptr<types::DefinedType> Transformer::transformClass(const std::strin
                 auto fn = builder.createFunction(
                         ty->getDBGInfo(), services::OperatorService::getOperatorMangle(OperatorType::EQ), true, false);
                 auto arg = builder.createArgument(NO_DBGINFO, "other", argType);
-                auto typeArgs = std::vector<std::shared_ptr<types::Type>>{transformedType->getPointerTo(), argType};
+                auto typeArgs = std::vector<types::Type*>{transformedType->getPointerTo(), argType};
                 auto type = builder.createFunctionType(typeArgs, transformedType);
                 fn->setArgs({{"other", arg}});
                 fn->setType(type);

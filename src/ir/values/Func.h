@@ -26,7 +26,7 @@ class Func
       public IdMixin,
       public AcceptorExtend<Func, Syntax::Statement::Privacy>,
       public AcceptorExtend<Func,
-                            Syntax::Statement::GenericContainer<std::pair<std::string, std::shared_ptr<types::Type>>>>,
+                            Syntax::Statement::GenericContainer<std::pair<std::string, types::Type*>>>,
       public AcceptorExtend<Func, Syntax::AttributeHolder> {
   public:
     // Utility types
@@ -53,10 +53,10 @@ class Func
     /// Function's identifier
     std::string identifier;
     /// Function's return type
-    std::shared_ptr<types::Type> retTy;
+    types::Type* retTy;
     /// @brief Parent class that this function is defined
     ///  in.
-    std::shared_ptr<types::DefinedType> parent = nullptr;
+    types::DefinedType* parent = nullptr;
 
     /// Function parameters are the names listed in
     /// the function definition. Function arguments
@@ -102,7 +102,7 @@ class Func
     Func& operator=(Func const&);
 
   public:
-#define DEFAULT bool declaration = false, bool variadic = false, std::shared_ptr<types::DefinedType> ty = nullptr
+#define DEFAULT bool declaration = false, bool variadic = false, types::DefinedType* ty = nullptr
 
     explicit Func(std::string identifier, DEFAULT);
     explicit Func(std::string identifier, FunctionArgs arguments, DEFAULT);
@@ -148,7 +148,7 @@ class Func
     FunctionArgs getArgs(bool ignoreSelf = false) const;
 
     /// @brief Set a return type to a function
-    void setRetTy(std::shared_ptr<types::Type> p_ret) { retTy = p_ret; }
+    void setRetTy(types::Type* p_ret) { retTy = p_ret; }
     /// @return Get function's return type.
     auto& getRetTy() const { return retTy; }
 
@@ -160,7 +160,7 @@ class Func
         return symbols;
     }
     /// @brief set from what parent this function is declared inside
-    void setParent(std::shared_ptr<types::DefinedType> x) { parent = x; }
+    void setParent(types::DefinedType* x) { parent = x; }
     /// @brief get from what parent this function is declared inside
     auto getParent() const { return parent; }
     /// @return whether or not the function is defiend within a
@@ -205,7 +205,7 @@ class Func
      */
     template <typename T>
     static bool argumentSizesEqual(std::vector<T> functionArgs,
-                                   const std::vector<std::shared_ptr<types::Type>> arguments, bool isVariadic = false) {
+                                   const std::vector<types::Type*> arguments, bool isVariadic = false) {
         int numFunctionArgs = functionArgs.size();
         int numProvidedArgs = arguments.size();
         int numDefaultArgs = 0;

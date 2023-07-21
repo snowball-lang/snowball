@@ -15,10 +15,8 @@ Syntax::Expression::TypeRef* Type::toRef() {
     return ty;
 }
 
-std::shared_ptr<Type> Type::copy() const 
-    { assert(!"called copy to not-specialised type!"); }
-std::shared_ptr<Type> Type::getPointerTo() 
-    { return std::make_shared<ReferenceType>(shared_from_this()); }
+Type* Type::getPointerTo() 
+    { return new ReferenceType(this); }
 
 } // namespace types
 } // namespace snowball

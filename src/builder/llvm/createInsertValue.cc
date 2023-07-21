@@ -14,7 +14,7 @@ using namespace snowball::utils;
 namespace snowball {
 namespace codegen {
 
-llvm::Value* LLVMBuilder::createInsertValue(llvm::Value* v, uint32_t i, llvm::Value* rhs, std::shared_ptr<types::Type> refType) {
+llvm::Value* LLVMBuilder::createInsertValue(llvm::Value* v, uint32_t i, llvm::Value* rhs, types::Type* refType) {
     llvm::Value* leftValue = llvm::cast<llvm::ExtractValueInst>(rhs)
         ->getAggregateOperand();;
     auto vload = llvm::cast<llvm::LoadInst>(leftValue)->getPointerOperand();

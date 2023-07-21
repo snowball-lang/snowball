@@ -26,7 +26,7 @@ namespace types {
 class BaseType : public Type,
                  public DBGObject,
                  public Syntax::Statement::Privacy,
-                 public Syntax::Statement::GenericContainer<std::shared_ptr<Type>>,
+                 public Syntax::Statement::GenericContainer<Type*>,
                  public ir::IdMixin {
   protected:
     /// @brief Definition of where in the stack this class is stored
@@ -48,11 +48,6 @@ class BaseType : public Type,
     void setModule(std::shared_ptr<ir::Module> m);
     /// @brief Set the UUID of the type.
     void setUUID(const std::string uuid);
-
-    template <class Down>
-    std::shared_ptr<Down> downcasted_shared_from_this() {
-        return std::dynamic_pointer_cast<Down>(Type::shared_from_this());
-    }
 };
 
 }; // namespace types

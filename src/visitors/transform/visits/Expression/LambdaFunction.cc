@@ -43,7 +43,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
     fn->setArgs(newArgs);
 
     auto fnType = types::FunctionType::from(fn.get());
-    fn->setType(std::shared_ptr<types::FunctionType>(fnType));
+    fn->setType(fnType);
 
     // Generate a bodied for functions that have
     // them defined.
@@ -67,8 +67,8 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
             auto body = bodiedFn->getBody();
 
             if (!fn->isConstructor() && !bodyReturns(body->getStmts()) &&
-                !((utils::dyn_cast<types::NumericType>(returnType)) ||
-                  (utils::dyn_cast<types::VoidType>(returnType)))) {
+                !((utils::cast<types::NumericType>(returnType)) ||
+                  (utils::cast<types::VoidType>(returnType)))) {
                 E<TYPE_ERROR>(node, "Function lacks ending return statement!",
                               {.info = "Function does not return on all paths!"});
             }

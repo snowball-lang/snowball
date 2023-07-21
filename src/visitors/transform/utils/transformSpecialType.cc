@@ -22,7 +22,7 @@ inline const std::string IS_POINTER_CHECK_STYPE = "Core::IsPointer";
 inline const std::string CASTABLE_TO_CHECK_STYPE = "Core::CastableTo";
 inline const std::string IMPLEMENTS_CHECK_STYPE = "Core::Implements";
 
-std::shared_ptr<types::Type> Transformer::transformSpecialType(Expression::TypeRef* ty) {
+types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
     auto n = ty->getName();
 
     STYPE_INSTANCE(FUNCTION_RETURN_STYPE) {
@@ -30,7 +30,7 @@ std::shared_ptr<types::Type> Transformer::transformSpecialType(Expression::TypeR
 
         auto generic = generics.at(0);
         auto type = transformType(generic);
-        auto fnType = utils::dyn_cast<types::FunctionType>(type);
+        auto fnType = utils::cast<types::FunctionType>(type);
         if (fnType) { return fnType->getRetType(); }
 
         E<TYPE_ERROR>(ty,
@@ -47,7 +47,7 @@ std::shared_ptr<types::Type> Transformer::transformSpecialType(Expression::TypeR
         auto type = transformType(generic);
 
         // TODO: check for other instances
-        if (utils::dyn_cast<types::VoidType>(type)) {
+        if (utils::cast<types::VoidType>(type)) {
             E<TYPE_ERROR>(ty,
                           FMT("Type '%s' is expected to contain a known size at compile time but "
                               "found '%s'.",
@@ -71,8 +71,8 @@ std::shared_ptr<types::Type> Transformer::transformSpecialType(Expression::TypeR
         auto type = transformType(generic);
 
         // TODO: check for other instances
-        if (auto x = utils::dyn_cast<types::PrimitiveType>(type);
-            !((x == nullptr) || types::NumericType::isNumericType(x.get()))) {
+        if (auto x = utils::cast<types::PrimitiveType>(type);
+            !((x == nullptr) || types::NumericType::isNumericType(x))) {
             E<TYPE_ERROR>(ty,
                           FMT("Type '%s' is expected to be a numeric type but found '%s'!",
                               IS_NUMERIC_CHECK_STYPE.c_str(), type->getPrettyName().c_str()));
@@ -88,7 +88,7 @@ std::shared_ptr<types::Type> Transformer::transformSpecialType(Expression::TypeR
         auto type = transformType(generic);
 
         // TODO: check for other instances
-        if (!utils::dyn_cast<types::ReferenceType>(type)) {
+        if (!utils::cast<types::ReferenceType>(type)) {
             E<TYPE_ERROR>(ty,
                           FMT("Type '%s' is expected to contain a pointer type but found '%s'.",
                               IS_POINTER_CHECK_STYPE.c_str(),
@@ -133,8 +133,8 @@ std::shared_ptr<types::Type> Transformer::transformSpecialType(Expression::TypeR
         auto childType = transformType(child);
         auto parentType = transformType(parent);
 
-        auto definedType = utils::dyn_cast<types::DefinedType>(childType);
-        if (!definedType || !definedType->hasParent() || !definedType->getParent()->is(parentType.get())) {
+        auto definedType = utils::cast<types::DefinedType>(childType);
+        if (!definedType || !definedType->hasParent() || !definedType->getParent()->is(parentType)) {
             E<TYPE_ERROR>(ty,
                           FMT("Type '%s' expected type '%s' to be a subtype of '%s' but it isn't!",
                               IMPLEMENTS_CHECK_STYPE.c_str(), childType->getPrettyName().c_str(),

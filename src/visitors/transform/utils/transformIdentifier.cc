@@ -60,7 +60,7 @@ fetchFromUUID:
     }
     if (auto x = ctx->cache->getTransformedType(uuid)) {
         auto ty = new Expression::TypeRef(identifier, dbgInfo, generics);
-        std::shared_ptr<types::Type> lastType = nullptr;
+        types::Type* lastType = nullptr;
         for (auto t : x.value()) {
             assert(t->isType());
             if (typeGenericsMatch(ty, t->getType())) {

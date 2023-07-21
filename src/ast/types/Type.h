@@ -14,10 +14,6 @@
 #define SNOWBALL_MUTABLE_CAST_CHECK                                                                                    \
     if (!_mutable && ty->isMutable()) return false;
 
-#define SNOWBALL_TYPE_CLONE(X) \
-    virtual std::shared_ptr<types::Type> copy() const override \
-      { return std::make_shared<X>(*this); }
-
 /**
  * Types in snowball can be represented in many different forms.
  * There can be user defined types (aka, classes and structs) and
@@ -40,7 +36,7 @@ class TypeRef;
 namespace types {
 class ReferenceType;
 
-class Type : public std::enable_shared_from_this<Type> {
+class Type {
   protected:
     // Type's name
     std::string name;
@@ -67,9 +63,6 @@ class Type : public std::enable_shared_from_this<Type> {
     /// @param other another type
     /// @return true if this type is equal to the argument type
     virtual bool is(Type* other) const { return getName() == other->getName(); }
-    /// @brief normal Type::is but with std::shared_ptr support
-    virtual bool is(std::shared_ptr<Type> other) const { return is(other.get()); }
-
     /// @return current's type name
     virtual std::string getName() const { return name; }
     /// @return type's pretty names, commonly used for output
@@ -79,16 +72,10 @@ class Type : public std::enable_shared_from_this<Type> {
 
     /// @return if a type can be casted to this type
     virtual bool canCast(Type* ty) const { assert(!"called cantCast to not-specialised type!"); }
-    /// @brief std::shared_ptr support for Type::canCast
-    virtual bool canCast(std::shared_ptr<Type> t) const { return canCast(t.get()); }
 
     /// @brief Create a *new* pointer type with this type as base
     /// @return a std::shared_ptr<ReferenceType> but casted into a `Type`
-    virtual std::shared_ptr<Type> getPointerTo();
-
-    /// @brief Create a new copy of this type
-    /// @return a std::shared_ptr<Type> but casted into a `Type`
-    virtual std::shared_ptr<Type> copy() const;
+    virtual Type* getPointerTo();
 
     /// @brief Transform the type into a syntax type reference node.
     ///	This is useful for cases such as class methods where the first

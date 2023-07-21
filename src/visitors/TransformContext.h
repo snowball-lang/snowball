@@ -27,7 +27,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     // Current function being generated
     std::shared_ptr<ir::Func> currentFunction = std::shared_ptr<ir::Func>(nullptr);
     // Current class being transformed
-    std::shared_ptr<types::DefinedType> currentClass = std::shared_ptr<types::DefinedType>(nullptr);
+    types::DefinedType* currentClass = nullptr;
     // The IRBuilder instance that's being used to generate the IR
     ir::IRBuilder& builder;
 
@@ -50,7 +50,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     ///  is useful (for example) when you want to generate functions
     ///  that got inherited but still want it to "be part of" the parent
     ///  type.
-    std::shared_ptr<types::DefinedType> actuallCurrentClass = std::shared_ptr<types::DefinedType>(nullptr);
+    types::DefinedType* actuallCurrentClass = nullptr;
     /// @brief A node representing the last call being transformed sort of
     ///  like the first call in a backtrace list
     /// @todo maybe make it a list and display all of the calls if a flag like
@@ -63,7 +63,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     /// Utility function to get a primitive type
     /// @param name Type name to search for
     /// @return Primitive type shared pointer
-    std::shared_ptr<types::Type> getPrimitiveType(const std::string name) {
+    types::Type* getPrimitiveType(const std::string name) {
         auto [ty, found] = getItem(name);
         assert(found);
         assert(ty->isType());
@@ -77,27 +77,27 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     // clang-format off
 
     /// @brief Get the bool primitive type
-    std::shared_ptr<types::Type> getBoolType() { return getPrimitiveType(SN_BOOL_TYPE); }
+    types::Type* getBoolType() { return getPrimitiveType(SN_BOOL_TYPE); }
     /// @brief Get the string primitive type
-    std::shared_ptr<types::Type> getStringType() { return getPrimitiveType(SN_STR_TYPE); }
+    types::Type* getStringType() { return getPrimitiveType(SN_STR_TYPE); }
     /// @brief Get the char primitive type
-    std::shared_ptr<types::Type> getCharType() { return getPrimitiveType(SN_CHR_TYPE); }
+    types::Type* getCharType() { return getPrimitiveType(SN_CHR_TYPE); }
     /// @brief Get the equivalent of `void*` type in C
-    std::shared_ptr<types::Type> getCObjectType() { return getPrimitiveType(SN_COB_TYPE); }
+    types::Type* getCObjectType() { return getPrimitiveType(SN_COB_TYPE); }
     /// @brief Get the float 64 primitive type
-    std::shared_ptr<types::Type> getF64Type() { return getPrimitiveType(SN_F64_TYPE); }
+    types::Type* getF64Type() { return getPrimitiveType(SN_F64_TYPE); }
     /// @brief Get the float 32 primitive type
-    std::shared_ptr<types::Type> getF32Type() { return getPrimitiveType(SN_F32_TYPE); }
+    types::Type* getF32Type() { return getPrimitiveType(SN_F32_TYPE); }
     /// @brief Get the int 64 primitive type
-    std::shared_ptr<types::Type> getInt64Type() { return getPrimitiveType(SN_INT64_TYPE); }
+    types::Type* getInt64Type() { return getPrimitiveType(SN_INT64_TYPE); }
     /// @brief Get the int 32 primitive type
-    std::shared_ptr<types::Type> getInt32Type() { return getPrimitiveType(SN_INT32_TYPE); }
+    types::Type* getInt32Type() { return getPrimitiveType(SN_INT32_TYPE); }
     /// @brief Get the int 16 primitive type
-    std::shared_ptr<types::Type> getInt16Type() { return getPrimitiveType(SN_INT16_TYPE); }
+    types::Type* getInt16Type() { return getPrimitiveType(SN_INT16_TYPE); }
     /// @brief Get the int 8 primitive type
-    std::shared_ptr<types::Type> getInt8Type() { return getPrimitiveType(SN_INT8_TYPE); }
+    types::Type* getInt8Type() { return getPrimitiveType(SN_INT8_TYPE); }
     /// @brief Get the void type representation
-    std::shared_ptr<types::Type> getVoidType() { return getPrimitiveType(SN_VOID_TYPE); }
+    types::Type* getVoidType() { return getPrimitiveType(SN_VOID_TYPE); }
     // clang-format on
 
     /// @return The current function being generated
@@ -109,7 +109,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
         return actual ? actuallCurrentClass == nullptr ? currentClass : actuallCurrentClass : currentClass;
     }
     /// @brief Defined the new type being generated
-    void setCurrentClass(std::shared_ptr<types::DefinedType> c) { currentClass = c; }
+    void setCurrentClass(types::DefinedType* c) { currentClass = c; }
 
     /**
      * @brief Add function to stack.

@@ -13,8 +13,6 @@ using namespace snowball::utils;
 namespace snowball {
 namespace codegen {
 
-llvm::Type* LLVMBuilder::getLLVMType(std::shared_ptr<types::Type> t) { return getLLVMType(t.get()); }
-
 llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
     if (cast<types::Int64Type>(t)) {
         return builder->getInt64Ty();
@@ -82,8 +80,8 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
 }
 
 llvm::FunctionType* LLVMBuilder::getLLVMFunctionType(types::FunctionType* fn) {
-    auto argTypes = vector_iterate<std::shared_ptr<types::Type>, llvm::Type*>(
-            fn->getArgs(), [&](std::shared_ptr<types::Type> arg) { return getLLVMType(arg); });
+    auto argTypes = vector_iterate<types::Type*, llvm::Type*>(
+            fn->getArgs(), [&](types::Type* arg) { return getLLVMType(arg); });
 
     auto ret = getLLVMType(fn->getRetType());
     return llvm::FunctionType::get(ret, argTypes, fn->isVariadic());

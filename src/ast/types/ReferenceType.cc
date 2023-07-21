@@ -16,11 +16,11 @@
 namespace snowball {
 namespace types {
 
-ReferenceType::ReferenceType(std::shared_ptr<Type> base)
+ReferenceType::ReferenceType(Type* base)
     : AcceptorExtend(Kind::TYPE, base->getName() + "&"), base(base) {
     setMutable(base->isMutable());
 }
-std::shared_ptr<Type> ReferenceType::getPointedType() const { return base; }
+Type* ReferenceType::getPointedType() const { return base; }
 std::string ReferenceType::getPrettyName() const {
     auto baseName = base->getPrettyName();
     return baseName + "&";
@@ -32,12 +32,12 @@ std::string ReferenceType::getMangledName() const {
 }
 
 Syntax::Expression::TypeRef* ReferenceType::toRef() {
-    auto tRef = Syntax::TR("$referenceType:" + std::to_string(getId()), nullptr, shared_from_this(), "<pointer>");
+    auto tRef = Syntax::TR("$referenceType:" + std::to_string(getId()), nullptr, this, "<pointer>");
     return tRef;
 }
 
-std::shared_ptr<Type> ReferenceType::getBaseType() const {
-    if (auto c = utils::dyn_cast<ReferenceType>(base)) { return c->getBaseType(); }
+Type* ReferenceType::getBaseType() const {
+    if (auto c = utils::cast<ReferenceType>(base)) { return c->getBaseType(); }
 
     return base;
 }

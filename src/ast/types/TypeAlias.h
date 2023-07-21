@@ -24,10 +24,10 @@ class TypeAlias : public AcceptorExtend<TypeAlias, BaseType> {
 
   private:
     /// @brief Base class that this type is pointing to
-    std::shared_ptr<Type> base = nullptr;
+    Type* base = nullptr;
 
   public:
-    TypeAlias(const std::string name, std::shared_ptr<Type> base);
+    TypeAlias(const std::string name, Type* base);
     TypeAlias(const TypeAlias& other) = default;
 
     /**
@@ -40,7 +40,7 @@ class TypeAlias : public AcceptorExtend<TypeAlias, BaseType> {
     /// @return the mangled version of the type
     std::string getMangledName() const override;
     /// @return The pointed type this type is pointing to
-    std::shared_ptr<Type> getBaseType() const;
+    Type* getBaseType() const;
 
     /// @c Type::toRef() for information about this function.
     /// @note It essentially does the same thing except it adds
@@ -50,13 +50,6 @@ class TypeAlias : public AcceptorExtend<TypeAlias, BaseType> {
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
     bool canCast(Type* ty) const override;
-
-    SNOWBALL_TYPE_CLONE(TypeAlias)
-
-    template <class Down>
-    std::shared_ptr<Down> downcasted_shared_from_this() {
-        return std::dynamic_pointer_cast<Down>(Type::shared_from_this());
-    }
 };
 
 }; // namespace types

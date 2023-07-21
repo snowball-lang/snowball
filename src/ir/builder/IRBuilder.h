@@ -36,7 +36,7 @@ template <typename ValueType = Value>
 using SharedValue = std::shared_ptr<ValueType>;
 
 template <class TypeName = types::Type>
-using Type = std::shared_ptr<TypeName>;
+using Type = TypeName*;
 
 template <typename ValueType = Value>
 using ValueVec = std::vector<SharedValue<ValueType>>;

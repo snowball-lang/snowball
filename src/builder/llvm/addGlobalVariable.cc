@@ -53,7 +53,7 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
                                                                 var->getIdentifier(),
                                                                 file,
                                                                 srcInfo->line,
-                                                                getDIType(var->getType().get()),
+                                                                getDIType(var->getType()),
                                                                 false);
     gvar->addDebugInfo(debugVar);
 }

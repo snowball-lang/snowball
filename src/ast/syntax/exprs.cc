@@ -29,7 +29,7 @@ TypeRef::TypeRef(std::string p_name, snowball::DBGSourceInfo* p_dbg, std::vector
     : generics(p_generics), types::Type(REF, p_name), id(id) {
     setDBGInfo(p_dbg);
 }
-TypeRef::TypeRef(std::string p_name, DBGSourceInfo* p_dbg, std::shared_ptr<types::Type> internalType, std::string id)
+TypeRef::TypeRef(std::string p_name, DBGSourceInfo* p_dbg, types::Type* internalType, std::string id)
     : internalType(internalType), types::Type(REF, p_name), id(id) {
     setDBGInfo(p_dbg);
 }
@@ -102,10 +102,10 @@ std::string BinaryOp::to_string() const {
 #undef OP_DEFAULT
 } // clang-format on
 
-std::string FunctionCall::getArgumentsAsString(const std::vector<std::shared_ptr<types::Type>> args) {
+std::string FunctionCall::getArgumentsAsString(const std::vector<types::Type*> args) {
     std::string result;
     for (auto arg = args.begin(); arg != args.end(); ++arg) {
-        result += arg->get()->getPrettyName();
+        result += (*arg)->getPrettyName();
         if (arg != args.end() && args.size() != 1) { result += ", "; }
     }
 

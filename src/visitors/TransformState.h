@@ -17,7 +17,7 @@ struct ContextState : std::enable_shared_from_this<ContextState> {
     using StackType = std::list<std::map<std::string, std::shared_ptr<Item>>>;
     StackType stack = {};
     std::shared_ptr<ir::Module> module = nullptr;
-    std::shared_ptr<types::DefinedType> currentClass = nullptr;
+    types::DefinedType* currentClass = nullptr;
     std::vector<std::string> uuidStack = {};
 
     explicit ContextState(StackType s,
@@ -25,7 +25,7 @@ struct ContextState : std::enable_shared_from_this<ContextState> {
                                   module,
                           std::vector<std::string>
                                   uuidStack,
-                          std::shared_ptr<types::DefinedType> currentClass = nullptr)
+                          types::DefinedType* currentClass = nullptr)
         : stack(s), module(module), currentClass(currentClass), uuidStack(uuidStack) { }
 };
 } // namespace transform

@@ -11,10 +11,10 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     auto callBackUp = ctx->latestCall;
     ctx->latestCall = p_node;
     auto [argValues, argTypes] =
-            utils::vectors_iterate<Syntax::Expression::Base*, std::shared_ptr<ir::Value>, std::shared_ptr<types::Type>>(
+            utils::vectors_iterate<Syntax::Expression::Base*, std::shared_ptr<ir::Value>, types::Type*>(
                     p_node->getArguments(),
                     [&](Syntax::Expression::Base* a)
-                            -> std::pair<std::shared_ptr<ir::Value>, std::shared_ptr<types::Type>> {
+                            -> std::pair<std::shared_ptr<ir::Value>, types::Type*> {
                         auto val = trans(a);
                         return {val, val->getType()};
                     });
@@ -71,7 +71,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         }
         if (b.has_value()) {
             auto baseType = (*b)->getType();
-            if (utils::dyn_cast<types::PrimitiveType>(baseType) || utils::dyn_cast<types::ReferenceType>(baseType)) {
+            if (utils::cast<types::PrimitiveType>(baseType) || utils::cast<types::ReferenceType>(baseType)) {
                 argValues.insert(argValues.begin(), *b);
                 argTypes.insert(argTypes.begin(), baseType);
             } else {
@@ -86,7 +86,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     }
     // clang-format off
     auto call = builder.createCall(p_node->getDBGInfo(), fn, argValues);
-    if (auto t = utils::dyn_cast<types::FunctionType>(fn->getType())) {
+    if (auto t = utils::cast<types::FunctionType>(fn->getType())) {
         if (t->getArgs().size() <= argTypes.size()) {
             for (int i = 0; i < t->getArgs().size(); i++) {
                 auto arg = argTypes.at(i);
@@ -174,7 +174,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
             auto t = argValues.at(0)->getType();
             auto val = argValues.at(1);
             auto t2 = val->getType();
-            if (types::NumericType::isNumericType(t.get())) {
+            if (types::NumericType::isNumericType(t)) {
                 if (t->is(t2)) {
                 } else if (auto cast = tryCast(val, t); cast != nullptr) {
                     argValues.at(1) = cast;

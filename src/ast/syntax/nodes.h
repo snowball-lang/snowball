@@ -192,7 +192,7 @@ struct FunctionCall : public AcceptorExtend<FunctionCall, Base> {
 
   public:
     /// @return string representation of a function call arguments
-    static std::string getArgumentsAsString(const std::vector<std::shared_ptr<types::Type>> args);
+    static std::string getArgumentsAsString(const std::vector<types::Type*> args);
 
     ACCEPT()
 };

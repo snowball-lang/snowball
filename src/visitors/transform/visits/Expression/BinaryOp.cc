@@ -20,7 +20,7 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
         } else if (opType == Expression::BinaryOp::OpType::DEREFERENCE) {
             auto value = trans(p_node->left);
             auto type = value->getType();
-            if (auto x = utils::dyn_cast<types::ReferenceType>(type)) {
+            if (auto x = utils::cast<types::ReferenceType>(type)) {
                 type = x->getBaseType();
             } else {
                 E<DEREFERENCE_ERROR>(p_node, "Can't dereference a non-pointer type!");

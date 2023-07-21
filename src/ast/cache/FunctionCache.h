@@ -71,7 +71,7 @@ class Functions {
     /// @return get an item of an already transformed function
     std::optional<std::shared_ptr<transform::Item>> getTransformedFunction(const std::string uuid);
     /// Copy a list of functions to a new list for a new type
-    void performInheritance(std::shared_ptr<types::DefinedType> ty, std::shared_ptr<types::DefinedType> parent,
+    void performInheritance(types::DefinedType* ty, types::DefinedType* parent,
                             bool allowConstructor = false);
 };
 

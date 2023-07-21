@@ -18,7 +18,7 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
     , imports(std::make_unique<services::ImportService>()) {
     // Set all of the built in primitive types into the global stack
 #define DEFINE_TYPE(t)                                                                                                 \
-    auto raw_##t = std::make_shared<types::t>();                                                                       \
+    auto raw_##t = new types::t();                                                                       \
     auto _##t = std::make_shared<transform::Item>(raw_##t);                                                            \
     addItem(raw_##t->getName(), _##t);
 
@@ -35,7 +35,7 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
 
 #undef DEFINE_TYPE
 
-    std::vector<std::shared_ptr<types::Type>> overloadTypes = {raw_BoolType,  raw_Float64Type, raw_Float32Type,
+    std::vector<types::Type*> overloadTypes = {raw_BoolType, raw_Float64Type, raw_Float32Type,
                                                                raw_Int64Type, raw_Int32Type,   raw_Int16Type,
                                                                raw_Int8Type,  raw_CharType};
 
@@ -47,8 +47,8 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
                     auto unary = services::OperatorService::isUnary(opType);
                     auto classType = asPointer ? unary ? ty : ty->getPointerTo() : ty;
                     auto overloadType = asPointer ? overload->getPointerTo() : overload;
-                    auto typeArgs = (!unary) ? std::vector<std::shared_ptr<types::Type>>{classType, overloadType}
-                                             : std::vector<std::shared_ptr<types::Type>>{classType};
+                    auto typeArgs = (!unary) ? std::vector<types::Type*>{classType, overloadType}
+                                             : std::vector<types::Type*>{classType};
                     auto fn = builder.createFunction(NO_DBGINFO, "#" + op, true, false);
                     auto arg = builder.createArgument(NO_DBGINFO, "other", overloadType);
                     auto isComp = Expression::BinaryOp::is_comp(opType);
@@ -77,7 +77,7 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
 
     for (auto builtin : coreBuiltins) {
         auto baseUuid = imports->CORE_UUID + "." + builtin;
-        auto transformedType = std::make_shared<types::DefinedType>(builtin.c_str(), baseUuid, coreMod);
+        auto transformedType = new types::DefinedType(builtin.c_str(), baseUuid, coreMod);
 
         auto item = std::make_shared<transform::Item>(transformedType);
         cache->setTransformedType(baseUuid, item);

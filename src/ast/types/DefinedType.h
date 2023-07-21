@@ -39,13 +39,13 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
      */
     struct ClassField : public Syntax::Statement::Privacy, public DBGObject {
         explicit ClassField(const std::string& name,
-                            std::shared_ptr<Type>
+                            Type*
                                     type,
                             Privacy privacy = PRIVATE,
                             Syntax::Expression::Base* initializedValue = nullptr,
                             bool isMutable = false);
         const std::string name;
-        const std::shared_ptr<Type> type;
+        Type* type;
 
         Syntax::Expression::Base* initializedValue = nullptr;
 
@@ -64,7 +64,7 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
     /// @brief A module where the type is defined.
     std::shared_ptr<ir::Module> module;
     /// @brief Parent class where the class in inherited from
-    std::shared_ptr<DefinedType> parent = nullptr;
+    DefinedType* parent = nullptr;
     /// @brief VTable holding all it's functions
     std::vector<std::shared_ptr<ir::Func>> classVtable;
     /// @brief The ast representation for the type
@@ -79,8 +79,8 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
                         module,
                 Syntax::Statement::DefinedTypeDef* ast = nullptr,
                 std::vector<ClassField*> fields = {},
-                std::shared_ptr<DefinedType> parent = nullptr,
-                std::vector<std::shared_ptr<Type>> generics = {},
+                DefinedType* parent = nullptr,
+                std::vector<Type*> generics = {},
                 bool isStruct = false);
     DefinedType(const DefinedType&) = default;
     DefinedType& operator=(DefinedType const&) = delete;
@@ -126,7 +126,7 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
     ///  anything!
     auto getParent() const { return parent; }
     /// @brief Set the parent class it inherits from
-    void setParent(std::shared_ptr<DefinedType> p) { parent = p; }
+    void setParent(DefinedType* p) { parent = p; }
     /// @return true/false depending on whether the class has a parent
     auto hasParent() const { return parent != nullptr; }
     /// @return A list containing all the fields declared for the class
@@ -149,13 +149,6 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
     /// @brief override function.
     virtual bool canCast(Type* ty) const override;
     virtual bool canCast(DefinedType* ty) const;
-
-    SNOWBALL_TYPE_CLONE(DefinedType)
-    
-    template <class Down>
-    std::shared_ptr<Down> downcasted_shared_from_this() {
-        return std::dynamic_pointer_cast<Down>(Type::shared_from_this());
-    }
 
   public:
     /// @brief If the class has a constructor

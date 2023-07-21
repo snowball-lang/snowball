@@ -15,12 +15,12 @@ using GenericContainer = snowball::Syntax::Statement::GenericContainer<T>;
 namespace snowball {
 namespace Syntax {
 
-std::shared_ptr<types::Type> Transformer::transformType(Expression::TypeRef* ty) {
+types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     auto name = ty->getPrettyName();
     auto id = ty->getId();
     if (id.empty()) { id = ty->getName(); }
-    std::shared_ptr<types::Type> returnedType = nullptr;
-    if (auto x = transformSpecialType(ty)) { return x->copy(); }
+    types::Type* returnedType = nullptr;
+    if (auto x = transformSpecialType(ty)) { return x; }
     auto ast = ty->_getInternalAST();
     if (ast == nullptr) {
         if (ty->getGenerics().size() > 0) {
@@ -61,7 +61,7 @@ std::shared_ptr<types::Type> Transformer::transformType(Expression::TypeRef* ty)
         } else if (_m.has_value()) {
             errorReason = "This is a module, not a type!";
         } else if (type.has_value()) {
-            if (auto x = utils::dyn_cast<types::BaseType>(type.value()); x && x->isPrivate() && !canPrivate) {
+            if (auto x = utils::cast<types::BaseType>(type.value()); x && x->isPrivate() && !canPrivate) {
                 E<TYPE_ERROR>(ty,
                               FMT("Can't use '%s' as a type!", name.c_str()),
                               {.info = "This is a private type and you can't access it from here!",
@@ -86,18 +86,18 @@ std::shared_ptr<types::Type> Transformer::transformType(Expression::TypeRef* ty)
 
 continueTypeFetch:
     // TODO: maybe move up in the function to prevent problems with generics?
-    if (auto x = ty->_getInternalType()) { return x->copy(); }
+    if (auto x = ty->_getInternalType()) { return x; }
 
     if (ty->isTypeDecl()) {
         auto decl = utils::cast<Expression::DeclType>(ty);
         assert(decl);
 
         auto val = trans(decl->getExpr());
-        return val->getType()->copy();
+        return val->getType();
     } else if (ty->isFunctionType()) {
         auto fn = utils::cast<Expression::FuncType>(ty);
         assert(fn);
-        std::vector<std::shared_ptr<types::Type>> args;
+        std::vector<types::Type*> args;
         for (auto arg : fn->getArgs()) args.push_back(transformType(arg));
         auto ret = transformType(fn->getReturnValue());
         return builder.createFunctionType(args, ret);
@@ -120,9 +120,9 @@ continueTypeFetch:
             auto transformed = t->getType();
             assert(t != nullptr);
             if (typeGenericsMatch(ty, transformed)) {
-                if (auto alias = utils::dyn_cast<types::TypeAlias>(transformed)) { transformed = alias->getBaseType(); }
+                if (auto alias = utils::cast<types::TypeAlias>(transformed)) { transformed = alias->getBaseType(); }
 
-                return transformed->copy();
+                return transformed;
             }
         }
     }
@@ -130,8 +130,8 @@ continueTypeFetch:
     if (auto x = ctx->cache->getType(uuid)) {
         auto cls = *x;
         auto transformed = transformTypeFromBase(uuid, cls, ty);
-        if (auto alias = utils::dyn_cast<types::TypeAlias>(transformed)) { transformed = alias->getBaseType(); }
-        return transformed->copy();
+        if (auto alias = utils::cast<types::TypeAlias>(transformed)) { transformed = alias->getBaseType(); }
+        return transformed;
     }
 
     if (existsWithGenerics) {
@@ -143,8 +143,8 @@ continueTypeFetch:
 
     if (returnedType == nullptr) E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
     if (!typeGenericsMatch(ty, returnedType)) {
-        auto compAsDefinedType = utils::cast<GenericContainer<std::shared_ptr<types::Type>>>(returnedType.get());
-        auto compGenerics = compAsDefinedType == nullptr ? std::vector<std::shared_ptr<types::Type>>{}
+        auto compAsDefinedType = utils::cast<GenericContainer<types::Type*>>(returnedType);
+        auto compGenerics = compAsDefinedType == nullptr ? std::vector<types::Type*>{}
                                                          : compAsDefinedType->getGenerics();
         E<TYPE_ERROR>(ty,
                       FMT("Type generics for '%s' don't match with '%s' ones!",
@@ -152,9 +152,9 @@ continueTypeFetch:
                           ty->getPrettyName().c_str()));
     }
 
-    if (auto alias = utils::dyn_cast<types::TypeAlias>(returnedType)) { returnedType = alias->getBaseType(); }
+    if (auto alias = utils::cast<types::TypeAlias>(returnedType)) { returnedType = alias->getBaseType(); }
 
-    return returnedType->copy();
+    return returnedType;
 }
 
 } // namespace Syntax

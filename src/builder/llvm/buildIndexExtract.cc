@@ -13,9 +13,9 @@ void LLVMBuilder::visit(ir::IndexExtract* index) {
     auto indexValue = index->getValue();
     auto valueType = indexValue->getType();
     auto basedType = valueType;
-    if (auto x = utils::dyn_cast<types::ReferenceType>(basedType)) basedType = x->getBaseType();
-    auto defiendType = utils::dyn_cast<types::DefinedType>(basedType);
-    if (auto alias = utils::dyn_cast<types::TypeAlias>(basedType)) {
+    if (auto x = utils::cast<types::ReferenceType>(basedType)) basedType = x->getBaseType();
+    auto defiendType = utils::cast<types::DefinedType>(basedType);
+    if (auto alias = utils::cast<types::TypeAlias>(basedType)) {
         assert(!"Found a local type alias in the index extract!");
     }
     assert(defiendType);
@@ -24,7 +24,7 @@ void LLVMBuilder::visit(ir::IndexExtract* index) {
     // table.
     // TODO: support for structs without vtable.
     auto i = index->getIndex() + defiendType->hasVtable();
-    if (auto ty = utils::dyn_cast<types::ReferenceType>(valueType)) {
+    if (auto ty = utils::cast<types::ReferenceType>(valueType)) {
         auto baseType = getBasePointerType(ty);
         v = builder->CreateLoad(getLLVMType(baseType), v);
     }

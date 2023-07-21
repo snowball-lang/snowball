@@ -4,7 +4,7 @@
 namespace snowball {
 namespace Syntax {
 
-std::shared_ptr<types::Type> Transformer::transformTypeFromBase(const std::string& uuid,
+types::Type* Transformer::transformTypeFromBase(const std::string& uuid,
                                                                 cacheComponents::Types::TypeStore& base,
                                                                 Expression::TypeRef* typeRef) {
     Statement::GenericContainer<>::GenericList generics;

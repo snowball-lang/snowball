@@ -17,7 +17,7 @@ llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
     auto srcInfo = x->getDBGInfo();
 
     auto file = dbg.getFile(srcInfo->getSourceInfo()->getPath());
-    auto derivedType = llvm::cast<llvm::DIDerivedType>(getDIType(x->getType().get()));
+    auto derivedType = llvm::cast<llvm::DIDerivedType>(getDIType(x->getType()));
     auto subroutineType = llvm::cast<llvm::DISubroutineType>(derivedType->getRawBaseType());
 
     std::string baseName = x->getNiceName();
@@ -54,19 +54,19 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     } else if (cast<types::VoidType>(ty)) {
         return nullptr;
     } else if (auto x = cast<types::ReferenceType>(ty)) {
-        auto type = getDIType(x->getPointedType().get());
+        auto type = getDIType(x->getPointedType());
         return dbg.builder->createPointerType(type, layout.getTypeAllocSizeInBits(llvmType));
     }
 
     else if (auto f = cast<types::FunctionType>(ty)) {
-        std::vector<llvm::Metadata*> argTypes = {getDIType(f->getRetType().get())};
+        std::vector<llvm::Metadata*> argTypes = {getDIType(f->getRetType())};
 
-        for (auto argType : f->getArgs()) { argTypes.push_back(getDIType(argType.get())); }
+        for (auto argType : f->getArgs()) { argTypes.push_back(getDIType(argType)); }
 
         auto subroutineType = dbg.builder->createSubroutineType(llvm::MDTuple::get(*context, argTypes));
         return dbg.builder->createPointerType(subroutineType, layout.getTypeAllocSizeInBits(llvmType));
     } else if (auto c = cast<types::TypeAlias>(ty)) {
-        return getDIType(c->getBaseType().get());
+        return getDIType(c->getBaseType());
     } else if (auto c = cast<types::DefinedType>(ty)) {
         // TODO: add "VTableHolder" as argument
         auto dbgInfo = c->getDBGInfo();
@@ -75,7 +75,7 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
         auto fields = c->getFields();
         std::vector<llvm::Metadata*> generatedFields;
         llvm::DIType* parentDIType = nullptr;
-        if (auto p = c->getParent()) { parentDIType = getDIType(c->getParent().get()); }
+        if (auto p = c->getParent()) { parentDIType = getDIType(c->getParent()); }
         // TODO: create struct type if it's a struct
         auto debugType = dbg.builder->createClassType(file,
                                                       c->getPrettyName(),
@@ -99,7 +99,7 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
                                                          /*AlignInBits=*/0,
                                                          0,
                                                          llvm::DINode::FlagZero,
-                                                         getDIType(t->type.get()));
+                                                         getDIType(t->type));
                 });
 
         return debugType;

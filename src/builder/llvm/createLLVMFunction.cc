@@ -28,7 +28,7 @@ void setDereferenceableAttribute(llvm::Argument& arg, unsigned bytes) {
 } // namespace
 
 llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
-    auto innerFnType = cast<types::FunctionType>(func->getType().get());
+    auto innerFnType = cast<types::FunctionType>(func->getType());
     assert(innerFnType != nullptr);
 
     auto fnType = llvm::cast<llvm::FunctionType>(getLLVMFunctionType(innerFnType));
@@ -44,7 +44,7 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
     for (int i = 0; i < func->getArgs().size(); ++i) {
         auto llvmArg = fn->arg_begin() + i;
         auto arg = utils::at(func->getArgs(), i);
-        if (utils::dyn_cast<types::ReferenceType>((arg).second->getType())) {
+        if (utils::cast<types::ReferenceType>((arg).second->getType())) {
             setDereferenceableAttribute(*llvmArg, layout.getTypeSizeInBits(llvmArg->getType()));
         }
     }

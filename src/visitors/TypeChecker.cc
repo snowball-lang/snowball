@@ -69,7 +69,7 @@ VISIT(DereferenceTo) {
                FMT("Value used for reference '%s' has a value with 'void' "
                    "type!",
                    p_node->getType()->getPrettyName().c_str()));
-    if (!utils::dyn_cast<types::ReferenceType>(val->getType())) {
+    if (!utils::cast<types::ReferenceType>(val->getType())) {
         E<TYPE_ERROR>(p_node,
                       FMT("Value used for dereference '%s' is not a "
                           "reference!",
@@ -91,7 +91,7 @@ VISIT(ReferenceTo) {
 VISIT(Call) {
     auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee());
     bool validMethod = fn != nullptr && fn->hasParent() && !fn->isStatic();
-    if (utils::dyn_cast<types::FunctionType>(p_node->getCallee()->getType()) == nullptr) {
+    if (utils::cast<types::FunctionType>(p_node->getCallee()->getType()) == nullptr) {
         E<TYPE_ERROR>(p_node, FMT("Value trying to be called is not callable!"));
     }
 
@@ -174,7 +174,7 @@ VISIT(Cast) {
     auto t = p_node->getCastType();
     assert(t->is(p_node->getType()));
 
-    if (utils::dyn_cast<types::VoidType>(v->getType())) {
+    if (utils::cast<types::VoidType>(v->getType())) {
         E<TYPE_ERROR>(p_node, FMT("Can't cast from void type ('%s')!", v->getType()->getPrettyName().c_str()));
     }
 
@@ -212,14 +212,14 @@ VISIT(Return) {
     assert(fn != nullptr);
 
     if (p_node->getExpr() != nullptr) p_node->getExpr()->visit(this);
-    if ((utils::dyn_cast<types::VoidType>(fn->getRetTy()) != nullptr) && (p_node->getExpr() != nullptr)) {
+    if ((utils::cast<types::VoidType>(fn->getRetTy()) != nullptr) && (p_node->getExpr() != nullptr)) {
         E<TYPE_ERROR>(p_node,
                       FMT("Nonvalue returning function cant have a "
                           "return containing an expression (%s)!",
                           p_node->getType()->getPrettyName().c_str()));
     }
 
-    if ((utils::dyn_cast<types::VoidType>(fn->getRetTy()) == nullptr) && (p_node->getExpr() == nullptr)) {
+    if ((utils::cast<types::VoidType>(fn->getRetTy()) == nullptr) && (p_node->getExpr() == nullptr)) {
         E<TYPE_ERROR>(p_node,
                       FMT("Can't return \"nothing\" in a function with "
                           "non-void return type (%s)!",
@@ -250,8 +250,8 @@ void TypeChecker::codegen() {
     for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn) visit(fn->get());
 }
 
-void TypeChecker::cantBeVoid(DBGObject* dbg, std::shared_ptr<types::Type> ty, const std::string& message) {
-    if (utils::dyn_cast<types::VoidType>(ty)) { E<TYPE_ERROR>(dbg, message); }
+void TypeChecker::cantBeVoid(DBGObject* dbg, types::Type* ty, const std::string& message) {
+    if (utils::cast<types::VoidType>(ty)) { E<TYPE_ERROR>(dbg, message); }
 }
 
 void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn, std::shared_ptr<ir::Value> value) {
@@ -318,7 +318,7 @@ bool TypeChecker::isMutable(std::shared_ptr<ir::Value> value) {
     if (auto x = utils::dyn_cast<ir::Variable>(value)) return x->isMutable();
     if (auto x = utils::dyn_cast<ir::IndexExtract>(value)) return x->getField()->isMutable;
     if (auto x = utils::dyn_cast<ir::VariableDeclaration>(value)) return x->isMutable();
-    auto b = utils::dyn_cast<types::ReferenceType>(value->getType());
+    auto b = utils::cast<types::ReferenceType>(value->getType());
     return value->getType()->isMutable();
 }
 
@@ -340,7 +340,7 @@ void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
                             {.info = "This function is a test function!",
                              .note = "This error is caused by the function not having a body.",
                              .help = "Try adding a body to the function."});
-        else if (!utils::dyn_cast<types::Int32Type>(p_node->getRetTy()))
+        else if (!utils::cast<types::Int32Type>(p_node->getRetTy()))
             E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions must return an integer!",
                             {.info = "This function is a test function!",
                              .note = "This error is caused by the function not returning an integer.",

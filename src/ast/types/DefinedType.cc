@@ -23,9 +23,9 @@ DefinedType::DefinedType(const std::string& name,
                          Syntax::Statement::DefinedTypeDef* ast,
                          std::vector<ClassField*>
                                  fields,
-                         std::shared_ptr<DefinedType>
+                         DefinedType*
                                  parent,
-                         std::vector<std::shared_ptr<Type>>
+                         std::vector<Type*>
                                  generics,
                          bool isStruct)
     : AcceptorExtend(Kind::CLASS, name)
@@ -39,7 +39,7 @@ DefinedType::DefinedType(const std::string& name,
     setPrivacy(PUBLIC);
 }
 DefinedType::ClassField::ClassField(const std::string& name,
-                                    std::shared_ptr<Type>
+                                    Type*
                                             type,
                                     Privacy privacy,
                                     Syntax::Expression::Base* initializedValue,
@@ -63,7 +63,7 @@ bool DefinedType::is(DefinedType* other) const {
     bool genericSizeEqual = otherArgs.size() == generics.size();
     bool argumentsEqual = genericSizeEqual ? std::all_of(otherArgs.begin(),
                                                          otherArgs.end(),
-                                                         [&, idx = 0](std::shared_ptr<Type> i) mutable {
+                                                         [&, idx = 0](Type* i) mutable {
                                                              return generics.at(idx)->is(i);
                                                              idx++;
                                                          })
@@ -112,7 +112,7 @@ std::string DefinedType::getMangledName() const {
 }
 
 Syntax::Expression::TypeRef* DefinedType::toRef() {
-    auto tRef = Syntax::TR(getUUID(), nullptr, shared_from_this(), getUUID());
+    auto tRef = Syntax::TR(getUUID(), nullptr, this, getUUID());
     std::vector<Syntax::Expression::TypeRef*> genericRef;
     for (auto g : generics) { genericRef.push_back(g->toRef()); }
 
@@ -127,10 +127,10 @@ bool DefinedType::canCast(Type* ty) const {
 }
 
 bool DefinedType::canCast(DefinedType* ty) const {
-    if (getParent() && (ty->is(getParent().get()))) {
+    if (getParent() && (ty->is(getParent()))) {
         auto otherArgs = ty->getGenerics();
         bool argumentsEqual =
-                std::all_of(otherArgs.begin(), otherArgs.end(), [&, idx = 0](std::shared_ptr<Type> i) mutable {
+                std::all_of(otherArgs.begin(), otherArgs.end(), [&, idx = 0](Type* i) mutable {
                     return generics.at(idx)->is(i);
                     idx++;
                 });

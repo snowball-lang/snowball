@@ -7,7 +7,7 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::Return) {
-    auto functionType = utils::dyn_cast<types::FunctionType>(ctx->getCurrentFunction()->getType());
+    auto functionType = utils::cast<types::FunctionType>(ctx->getCurrentFunction()->getType());
     assert(functionType);
     if (auto f = ctx->getCurrentFunction(); f->isConstructor()) {
         E<SYNTAX_ERROR>(p_node, "You can't return a value inside a constructor function!",
@@ -15,7 +15,7 @@ SN_TRANSFORMER_VISIT(Statement::Return) {
     }
 
     std::shared_ptr<ir::Value> ret = nullptr;
-    if (!utils::dyn_cast<types::VoidType>(functionType->getRetType())) {
+    if (!utils::cast<types::VoidType>(functionType->getRetType())) {
         std::shared_ptr<ir::Value> returnValue = nullptr;
         if (p_node->getValue() != nullptr) {
             returnValue = trans(p_node->getValue());

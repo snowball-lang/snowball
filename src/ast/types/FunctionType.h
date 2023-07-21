@@ -46,16 +46,16 @@ namespace types {
 
 class FunctionType : public AcceptorExtend<FunctionType, Type> {
     // Function's argument type.
-    std::vector<std::shared_ptr<Type>> args;
+    std::vector<Type*> args;
     // Function's return type.
-    std::shared_ptr<Type> retTy;
+    Type* retTy;
     // Whether or not a function is declared
     // as variadic.
     bool variadic = false;
 
   public:
-    FunctionType(std::vector<std::shared_ptr<Type>> args,
-                 std::shared_ptr<Type>
+    FunctionType(std::vector<Type*> args,
+                 Type*
                          retTy,
                  bool isVariadic = false,
                  bool isMutable = true,
@@ -91,15 +91,13 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
     virtual bool is(FunctionType* other);
 
     /// @return function argument types
-    std::vector<std::shared_ptr<Type>> getArgs() const { return args; }
+    std::vector<Type*> getArgs() const { return args; }
     /// @return function return types
-    std::shared_ptr<Type> getRetType() const { return retTy; }
+    Type* getRetType() const { return retTy; }
     /// @return If the function is declared as variadic
     bool isVariadic() { return variadic; }
 
     // std::string getName() const override; // TODO:
-
-    SNOWBALL_TYPE_CLONE(FunctionType)
 
     /**
      * @brief Get the function represented as a "human-readable"
@@ -116,11 +114,6 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
      * @return FunctionType* resultant type
      */
     static FunctionType* from(ir::Func* fn, Syntax::Statement::FunctionDef* node = nullptr);
-
-    template <class Down>
-    std::shared_ptr<Down> downcasted_shared_from_this() {
-        return std::dynamic_pointer_cast<Down>(Type::shared_from_this());
-    }
 };
 
 }; // namespace types

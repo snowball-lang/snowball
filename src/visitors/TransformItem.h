@@ -22,7 +22,7 @@ class Item : public DBGObject {
     // change it.
     using ValuePtr = std::shared_ptr<ir::Value>;
     using FunctionPtr = std::shared_ptr<ir::Func>;
-    using TypePtr = std::shared_ptr<types::Type>;
+    using TypePtr = types::Type*;
 
     using MacroPtr = MacroInstance*;
 

@@ -6,16 +6,16 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::tuple<Cache::FunctionStore, std::vector<std::shared_ptr<types::Type>>, Transformer::FunctionFetchResponse>
+std::tuple<Cache::FunctionStore, std::vector<types::Type*>, Transformer::FunctionFetchResponse>
 Transformer::getBestFittingFunction(const std::vector<Cache::FunctionStore>& overloads,
-                                    const std::vector<std::shared_ptr<types::Type>>& arguments,
+                                    const std::vector<types::Type*>& arguments,
                                     const std::vector<Expression::TypeRef*>& generics,
                                     bool isIdentifier) {
-    std::vector<std::pair<Cache::FunctionStore, std::vector<std::shared_ptr<types::Type>>>> functions;
+    std::vector<std::pair<Cache::FunctionStore, std::vector<types::Type*>>> functions;
     for (auto n : overloads) {
         auto fn = n.function;
         if (ir::Func::argumentSizesEqual(getActualFunctionArgs(n), arguments, fn->isVariadic()) || isIdentifier) {
-            auto genericArguments = utils::vector_iterate<Expression::TypeRef*, std::shared_ptr<types::Type>>(
+            auto genericArguments = utils::vector_iterate<Expression::TypeRef*, types::Type*>(
                     generics, [&](auto g) { return transformType(g); });
             auto [deducedArgs, errors] = deduceFunction(n, arguments, genericArguments);
             if (errors.empty()) {
@@ -26,8 +26,8 @@ Transformer::getBestFittingFunction(const std::vector<Cache::FunctionStore>& ove
         }
     }
     bool exactFunctionExists = false;
-    std::pair<Cache::FunctionStore, std::vector<std::shared_ptr<types::Type>>> bestFunction = {{nullptr},{}};
-    std::vector<std::pair<Cache::FunctionStore, std::vector<std::shared_ptr<types::Type>>>> matchedFunctions;
+    std::pair<Cache::FunctionStore, std::vector<types::Type*>> bestFunction = {{nullptr},{}};
+    std::vector<std::pair<Cache::FunctionStore, std::vector<types::Type*>>> matchedFunctions;
     int genericIndex = -1;
     int genericCount = 0;
     int genericIterator = 0;

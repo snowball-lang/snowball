@@ -38,7 +38,7 @@ SharedValue<IndexExtract> IRBuilder::createIndexExtract(DBGSourceInfo* dbgInfo, 
     return indexExtract;
 }
 SharedValue<Argument> IRBuilder::createArgument(DBGSourceInfo* dbgInfo, const std::string& name, Type<> type) {
-    auto arg = createArgument(dbgInfo, name, 0, nullptr);
+    auto arg = createArgument(dbgInfo, name, 0, (Syntax::Expression::Base*)nullptr);
     if (type) setType(arg, type);
     return arg;
 }
@@ -135,10 +135,12 @@ SharedValue<WhileLoop> IRBuilder::createWhileLoop(DBGSourceInfo* dbgInfo, Shared
 }
 Type<types::FunctionType> IRBuilder::createFunctionType(std::vector<Type<>> args, Type<> retType, bool isVarArg,
                                                         bool isMutable) {
-    return std::make_shared<types::FunctionType>(args, retType, isVarArg, isMutable);
+    return new types::FunctionType(args, retType, isVarArg, isMutable);
 }
 Type<types::TypeAlias> IRBuilder::createTypeAlias(DBGSourceInfo* dbg, std::string name, Type<> base) {
-    return N<types::TypeAlias>(dbg, name, base);
+    auto ty = new types::TypeAlias(name, base);
+    ty->setDBGInfo(dbg);
+    return ty;
 }
 SharedValue<BinaryOp> IRBuilder::createBinaryOp(SharedValue<Call> call) {
     auto op = N<BinaryOp>(call->getDBGInfo(), call->getCallee(), call->getArguments());
@@ -147,8 +149,7 @@ SharedValue<BinaryOp> IRBuilder::createBinaryOp(SharedValue<Call> call) {
     return op;
 }
 void IRBuilder::setType(SharedValue<> value, Type<> type) {
-    Type<> copiedType = type->copy();
-    value->setType(copiedType);
+    value->setType(type);
 }
 } // namespace ir
 } // namespace snowball
