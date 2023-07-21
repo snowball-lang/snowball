@@ -1,3 +1,4 @@
+#include "../../../../ir/values/TryCatch.h"
 #include "../../../Transformer.h"
 
 using namespace snowball::utils;

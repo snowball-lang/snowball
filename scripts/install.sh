@@ -115,7 +115,7 @@ log info "Creating target directory: $SNOWBALL_INSTALL_DIR"
 
 mkdir -p $SNOWBALL_INSTALL_DIR
 cd $SNOWBALL_INSTALL_DIR
-x=$(curl -OL https://github.com/snowball-lang/snowball/releases/latest/download/"$SNOWBALL_BUILD_ARCHIVE" | tar zxvf - --strip-components=1)
+x=$(curl -L https://github.com/snowball-lang/snowball/releases/latest/download/"$SNOWBALL_BUILD_ARCHIVE" | tar zxvf - --strip-components=1)
 
 log info "Moving required shared libraries to lib folder"
 log warn "You may need to use 'sudo' password for this action"

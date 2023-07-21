@@ -16,6 +16,7 @@
 #include "../ir/values/ReferenceTo.h"
 #include "../ir/values/Return.h"
 #include "../ir/values/Throw.h"
+#include "../ir/values/TryCatch.h"
 #include "../ir/values/Value.h"
 #include "../ir/values/ValueExtract.h"
 #include "../ir/values/VariableDeclaration.h"
@@ -123,6 +124,14 @@ VISIT(Throw) {
     val->visit(this);
 
     // TODO: check if the value is throwable
+}
+
+VISIT(TryCatch) {
+    auto tryBlock = p_node->getBlock();
+    auto catchBlock = p_node->getCatchBlocks();
+
+    tryBlock->visit(this);
+    for (auto c : catchBlock) { c->visit(this); }
 }
 
 VISIT(IndexExtract) {
