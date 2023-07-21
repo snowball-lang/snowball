@@ -37,4 +37,4 @@ if [[ "$NAME" == "ce-specific" ]]; then
 fi
 
 cp -R ./stdlib release/stdlib
-tar -czvf "$label".tar.gz release/
+tar -czvf "$label".tar.gz -C release/ .
