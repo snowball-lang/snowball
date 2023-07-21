@@ -12,7 +12,7 @@ use pkg::cls;
 use pkg::string;
 
 pub fn main() i32 {
-    let mut p = new Vector<i32>{};
+    let p = new Vector<i32>{};
     let mut x = new Vector<i32>{};
     p.push(1);
 }
