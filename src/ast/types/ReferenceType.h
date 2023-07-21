@@ -57,6 +57,8 @@ class ReferenceType : public AcceptorExtend<ReferenceType, Type>, public DBGObje
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
     bool canCast(Type* ty) const override;
+
+    SNOWBALL_TYPE_COPIABLE(ReferenceType)
 };
 
 }; // namespace types

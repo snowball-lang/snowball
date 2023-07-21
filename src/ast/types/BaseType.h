@@ -48,6 +48,8 @@ class BaseType : public Type,
     void setModule(std::shared_ptr<ir::Module> m);
     /// @brief Set the UUID of the type.
     void setUUID(const std::string uuid);
+
+    SNOWBALL_TYPE_COPIABLE(BaseType)
 };
 
 }; // namespace types

@@ -153,6 +153,8 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
   public:
     /// @brief If the class has a constructor
     bool hasConstructor = false;
+
+    SNOWBALL_TYPE_COPIABLE(DefinedType)
 };
 
 }; // namespace types

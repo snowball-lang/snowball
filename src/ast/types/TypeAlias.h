@@ -50,6 +50,8 @@ class TypeAlias : public AcceptorExtend<TypeAlias, BaseType> {
     /// @brief override function. All numeric types
     ///  can cast to any other numeric types.
     bool canCast(Type* ty) const override;
+
+    SNOWBALL_TYPE_COPIABLE(TypeAlias)
 };
 
 }; // namespace types

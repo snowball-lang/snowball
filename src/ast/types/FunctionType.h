@@ -114,6 +114,8 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
      * @return FunctionType* resultant type
      */
     static FunctionType* from(ir::Func* fn, Syntax::Statement::FunctionDef* node = nullptr);
+
+    SNOWBALL_TYPE_COPIABLE(FunctionType)
 };
 
 }; // namespace types

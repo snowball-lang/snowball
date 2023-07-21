@@ -20,7 +20,7 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     auto id = ty->getId();
     if (id.empty()) { id = ty->getName(); }
     types::Type* returnedType = nullptr;
-    if (auto x = transformSpecialType(ty)) { return x; }
+    if (auto x = transformSpecialType(ty)) { return x->copy(); }
     auto ast = ty->_getInternalAST();
     if (ast == nullptr) {
         if (ty->getGenerics().size() > 0) {
@@ -86,14 +86,14 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
 
 continueTypeFetch:
     // TODO: maybe move up in the function to prevent problems with generics?
-    if (auto x = ty->_getInternalType()) { return x; }
+    if (auto x = ty->_getInternalType()) { return x->copy(); }
 
     if (ty->isTypeDecl()) {
         auto decl = utils::cast<Expression::DeclType>(ty);
         assert(decl);
 
         auto val = trans(decl->getExpr());
-        return val->getType();
+        return val->getType()->copy();
     } else if (ty->isFunctionType()) {
         auto fn = utils::cast<Expression::FuncType>(ty);
         assert(fn);
@@ -107,7 +107,8 @@ continueTypeFetch:
         auto pointer = utils::cast<Expression::ReferenceType>(ty);
         assert(pointer);
 
-        return transformType(pointer->getBaseType())->getPointerTo();
+        auto x = transformType(pointer->getBaseType())->getPointerTo();
+        return x;
     }
 
     auto uuid = ctx->createIdentifierName(id, false);
@@ -122,7 +123,7 @@ continueTypeFetch:
             if (typeGenericsMatch(ty, transformed)) {
                 if (auto alias = utils::cast<types::TypeAlias>(transformed)) { transformed = alias->getBaseType(); }
 
-                return transformed;
+                return transformed->copy();
             }
         }
     }
@@ -131,7 +132,7 @@ continueTypeFetch:
         auto cls = *x;
         auto transformed = transformTypeFromBase(uuid, cls, ty);
         if (auto alias = utils::cast<types::TypeAlias>(transformed)) { transformed = alias->getBaseType(); }
-        return transformed;
+        return transformed->copy();
     }
 
     if (existsWithGenerics) {
@@ -154,7 +155,7 @@ continueTypeFetch:
 
     if (auto alias = utils::cast<types::TypeAlias>(returnedType)) { returnedType = alias->getBaseType(); }
 
-    return returnedType;
+    return returnedType->copy();
 }
 
 } // namespace Syntax

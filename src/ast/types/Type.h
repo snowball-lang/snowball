@@ -6,6 +6,9 @@
 #include <string>
 #include <cassert>
 
+#define SNOWBALL_TYPE_COPIABLE(X)                                                                                   \
+    Type* copy() const override { return new X(*this); }
+
 #ifndef __SNOWBALL_AST_TYPE_H_
 #define __SNOWBALL_AST_TYPE_H_
 
@@ -76,6 +79,10 @@ class Type {
     /// @brief Create a *new* pointer type with this type as base
     /// @return a std::shared_ptr<ReferenceType> but casted into a `Type`
     virtual Type* getPointerTo();
+
+    /// @brief Create a new copy of this type
+    /// @return a Type* but casted into a `Type`
+    virtual Type* copy() const;
 
     /// @brief Transform the type into a syntax type reference node.
     ///	This is useful for cases such as class methods where the first

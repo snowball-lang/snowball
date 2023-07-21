@@ -17,6 +17,9 @@ Syntax::Expression::TypeRef* Type::toRef() {
 
 Type* Type::getPointerTo() 
     { return new ReferenceType(this); }
+Type* Type::copy() const  { 
+    assert(!"called copy to not-specialised type!");
+}
 
 } // namespace types
 } // namespace snowball
