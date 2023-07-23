@@ -14,8 +14,8 @@ void LLVMBuilder::visit(ir::Throw* extract) {
     auto expr = extract->getExpr();
     auto value = build(expr.get());
     auto exception = createException(value, expr->getType());
-    auto throwFunction = getThrowFunction();
-    this->value = builder->CreateCall(throwFunction, {exception});
+    auto [type, throwFunction] = getThrowFunction();
+    this->value = createCall(type, throwFunction, {exception});
 }
 
 } // namespace codegen

@@ -104,13 +104,18 @@ SharedValue<VariableDeclaration> IRBuilder::createVariableDeclaration(DBGSourceI
                                                                       const std::string identifier, SharedValue<> value,
                                                                       bool isMutable) {
     auto decl = N<VariableDeclaration>(dbgInfo, identifier, value, isMutable);
-    setType(decl, value->getType());
+    if (value != nullptr) setType(decl, value->getType());
     return decl;
 }
 SharedValue<ValueExtract> IRBuilder::createValueExtract(DBGSourceInfo* dbgInfo, SharedValue<> value) {
     auto extract = N<ValueExtract>(dbgInfo, value);
     setType(extract, value->getType());
     return extract;
+}
+SharedValue<TryCatch> IRBuilder::createTryCatch(DBGSourceInfo* dbgInfo, SharedValue<Block> tryBlock,
+                                        std::vector<SharedValue<Block>> catchBlocks,
+                                        std::vector<SharedValue<VariableDeclaration>> catchVars) {
+    return N<TryCatch>(dbgInfo, tryBlock, catchBlocks, catchVars);
 }
 SharedValue<ObjectInitialization> IRBuilder::createObjectInitialization(DBGSourceInfo* dbgInfo, SharedValue<> value,
                                                                         ValueVec<> args, bool atHeap) {
@@ -139,6 +144,8 @@ Type<types::FunctionType> IRBuilder::createFunctionType(std::vector<Type<>> args
 }
 Type<types::TypeAlias> IRBuilder::createTypeAlias(DBGSourceInfo* dbg, std::string name, Type<> base) {
     auto ty = new types::TypeAlias(name, base);
+    ty->setModule(module);
+    ty->setSourceInfo(module->getSourceInfo());
     ty->setDBGInfo(dbg);
     return ty;
 }

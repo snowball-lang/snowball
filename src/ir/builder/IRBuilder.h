@@ -12,6 +12,7 @@
 #include "../values/Cast.h"
 #include "../values/Conditional.h"
 #include "../values/Constants.h"
+#include "../values/TryCatch.h"
 #include "../values/Dereference.h"
 #include "../values/Func.h"
 #include "../values/IndexExtract.h"
@@ -103,6 +104,10 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
     SharedValue<Return> createVoidReturn(DBGSourceInfo* dbgInfo);
     /// @brief Create a new call instruction
     SharedValue<Call> createCall(DBGSourceInfo* dbgInfo, SharedValue<> callee, ValueVec<> args);
+    /// @brief Create a new try/catch instruction
+    SharedValue<TryCatch> createTryCatch(DBGSourceInfo* dbgInfo, SharedValue<Block> tryBlock,
+                                         std::vector<SharedValue<Block>> catchBlocks,
+                                         std::vector<SharedValue<VariableDeclaration>> catchVars);
     /// @brief Create a new type
     SharedValue<VariableDeclaration> createVariableDeclaration(DBGSourceInfo* dbgInfo, const std::string identifier,
                                                                SharedValue<> value, bool isMutable = false);

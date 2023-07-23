@@ -24,9 +24,7 @@ llvm::Value* LLVMBuilder::createException(llvm::Value* value, types::Type* type)
         load->eraseFromParent();
     }
 
-    auto pointerType = utils::cast<types::ReferenceType>(type);
-    auto definedType = utils::cast<types::BaseType>(pointerType->getPointedType());
-    int typeId = definedType ? definedType->getId() : -1;
+    int typeId = typeIdxLookup(type->getMangledName());
     auto cast = builder->CreatePointerCast(usedValue, builder->getInt8PtrTy());
 
     return builder->CreateCall(f, {cast, builder->getInt32(typeId)});

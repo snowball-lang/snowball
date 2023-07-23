@@ -4,15 +4,18 @@
 //  Fibonacci example for the lang                  じし(_,)ノ
 //  Docs: https://snowball-lang.gitbook.io/docs/
 
-// Import the core library.
-// This is required for the println function.
-use pkg::vector;
-use pkg::chars;
-use pkg::cls;
-use pkg::string;
+//use pkg::vector;
+//use pkg::chars;
+//use pkg::cls;
+//use pkg::string;
+
+use Core::System;
 
 pub fn main() i32 {
-    let p = new Vector<i32>{};
-    let mut x = new Vector<i32>{};
-    p.push(1);
+    try {
+        raise new Exception("Hello, World!");
+    } catch(e: Exception&) {
+        System::println("Hello, World! 2222");
+        System::println(e.what());
+    }
 }

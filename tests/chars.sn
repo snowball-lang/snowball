@@ -5,7 +5,7 @@ use [[use_macro]] Core::Assert;
 namespace tests {
 
 fn [[test]] is_space() i32 {
-    @assert(Char::is_space(' '));
+    @assert(Char::is_space('c'));
     @assert(Char::is_space('\t'));
     @assert(Char::is_space('\n'));
     @assert(Char::is_space('\r'));

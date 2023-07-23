@@ -97,7 +97,7 @@ fn [[
   CLib::printf(" Testing \e[1m%s\e[0m [%s] ... ", name, tty);
   // TODO: Add support for exceptions
   if !skip {
-    //try {
+    try {
       let result = func();
       if result == expect {
         CLib::printf("\e[1;32mnice!\e[0m\n");
@@ -108,13 +108,12 @@ fn [[
         CLib::printf("\e[0m\n");
         return false;
       }
-    //} catch (e: Exception) {
-    //  CLib::printf("\e[1;31merror \n");
-    //  CLib::printf("\n UNEXPECTED EXCEPTION:\n");
-    //  CLib::printf("   --> %s\n", e.what());
-    //  CLib::printf("\e[0m\n");
-    //  return false;
-    //}
+    } catch (e: Exception&) {
+      CLib::printf("\n UNEXPECTED EXCEPTION:\n");
+      CLib::printf("   --> %s\n", e.what());
+      CLib::printf("\e[0m\n");
+      return false;
+    }
   } else {
     CLib::printf("\e[1;33mwip\e[0m\n");
   }

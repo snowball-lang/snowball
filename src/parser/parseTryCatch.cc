@@ -12,7 +12,7 @@ Syntax::Statement::TryCatch* Parser::parseTryCatch() {
     assert(is<TokenType::KWORD_TRY>());
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
     next();
-    consume<TokenType::BRACKET_LCURLY>("a left curly brace '{' to start the try block");
+    assert_tok<TokenType::BRACKET_LCURLY>("a left curly brace '{' to start the try block");
     auto tryBlock = parseBlock();
     next(); // We know it's a right curly brace, but we don't need to check it
     std::vector<Syntax::Statement::TryCatch::CatchBlock*> catchBlocks;

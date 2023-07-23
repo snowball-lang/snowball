@@ -12,6 +12,7 @@
 #include <unwind.h>
 
 #include "runtime.h"
+//#define DEBUG
 
 enum {
     // standard.
@@ -645,13 +646,16 @@ _Unwind_Reason_Code ourPersonality(int version,
 /// of the supplied type info type.
 /// @param type type info type
 OurUnwindException *createOurException(void* obj, int type) {
-  size_t size = sizeof(OurException);
+  const size_t size = sizeof(OurException);
   OurException *ret = (OurException*) memset(malloc(size), 0, size);
   (ret->type).type = type;
   (ret->unwindException).exception_class = snowball::ourBaseExceptionClass;
   (ret->unwindException).exception_cleanup = snowball::deleteFromUnwindOurException;
   ret->snowball_object = obj;
 
+#ifdef DEBUG
+  printf("Created exception of type <%d>.\n", type);
+#endif
   return(&(ret->unwindException));
 }
 

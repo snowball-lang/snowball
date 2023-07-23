@@ -9,10 +9,10 @@
 namespace snowball {
 namespace codegen {
 
-llvm::Function* LLVMBuilder::getThrowFunction() {
+std::pair<llvm::FunctionType*, llvm::Function*> LLVMBuilder::getThrowFunction() {
     auto ty = llvm::FunctionType::get(builder->getVoidTy(), {builder->getInt8PtrTy()}, false);
     auto f = llvm::cast<llvm::Function>(module->getOrInsertFunction("sn.eh.throw", ty).getCallee());
-    return f;
+    return {ty, f};
 }
 
 } // namespace codegen

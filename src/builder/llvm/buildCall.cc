@@ -26,7 +26,7 @@ void LLVMBuilder::visit(ir::Call* call) {
 
     auto args = utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value*>(
             call->getArguments(), [&](std::shared_ptr<ir::Value> arg) { return build(arg.get()); });
-    llvm::CallInst* llvmCall = nullptr;
+    llvm::Value* llvmCall = nullptr;
     llvm::Value* allocatedValue = nullptr;
     llvm::Type* allocatedValueType = nullptr;
     if (auto c = utils::cast<types::FunctionType>(calleeValue->getType());
@@ -58,7 +58,7 @@ void LLVMBuilder::visit(ir::Call* call) {
         }
 
         args.insert(args.begin(), object);
-        llvmCall = builder->CreateCall(calleeType, callee, args);
+        llvmCall = createCall(calleeType, callee, args);
         this->value = instance->initializeAtHeap
                 ? object
                 : builder->CreateLoad(instanceType, object);;
@@ -74,7 +74,7 @@ void LLVMBuilder::visit(ir::Call* call) {
         auto loadedVtable = builder->CreateLoad(parentValue->getType(), parentValue);
         auto pointer = builder->CreateInBoundsGEP(loadedVtable->getType(), loadedVtable, {builder->getInt32(index)});
         auto calleePointer = builder->CreateLoad(pointer->getType(), pointer);
-        llvmCall = builder->CreateCall(calleeType,
+        llvmCall = createCall(calleeType,
                                        (llvm::Function*)calleePointer,
                                        args);
         if (allocatedValue) {
@@ -85,7 +85,7 @@ void LLVMBuilder::visit(ir::Call* call) {
         }
     } else {
         // TODO: invoke if it's inside a try block
-        llvmCall = builder->CreateCall(calleeType, callee, args);
+        llvmCall = createCall(calleeType, callee, args);
         if (allocatedValue) {
             builder->CreateStore(llvmCall, allocatedValue);
             this->value = builder->CreateLoad(allocatedValueType, allocatedValue);
@@ -94,10 +94,22 @@ void LLVMBuilder::visit(ir::Call* call) {
         }
     }
 
-    auto calledFunction = llvmCall->getCalledFunction();
-    if (calledFunction) {
-        auto attrSet = calledFunction->getAttributes();
-        llvmCall->setAttributes(attrSet);
+    if (llvm::isa<llvm::CallInst>(llvmCall)) {
+        auto call = llvm::cast<llvm::CallInst>(llvmCall);
+        auto calledFunction = call->getCalledFunction();
+        if (calledFunction) {
+            auto attrSet = calledFunction->getAttributes();
+            call->setAttributes(attrSet);
+        }
+    } else if (llvm::isa<llvm::InvokeInst>(llvmCall)) {
+        auto call = llvm::cast<llvm::InvokeInst>(llvmCall);
+        auto calledFunction = call->getCalledFunction();
+        if (calledFunction) {
+            auto attrSet = calledFunction->getAttributes();
+            call->setAttributes(attrSet);
+        }
+    } else {
+        assert(false);
     }
 }
 

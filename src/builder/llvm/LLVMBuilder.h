@@ -28,6 +28,23 @@
 namespace snowball {
 namespace codegen {
 
+namespace {
+int typeIdxLookup(const std::string &name) {
+  static std::unordered_map<std::string, int> cache;
+  static int next = 1000;
+  if (name.empty())
+    return 0;
+  auto it = cache.find(name);
+  if (it != cache.end()) {
+    return it->second;
+  } else {
+    const int myID = next++;
+    cache[name] = myID;
+    return myID;
+  }
+}
+} // namespace
+
 /**
  * @brief Some context so that we can know
  * where in the program we are located.
@@ -80,13 +97,15 @@ class LLVMBuilderContext {
         auto item = vtableType.find(i);
         return item == vtableType.end() ? nullptr : item->second;
     }
-
     // TODO: add a function to clear functions, symbols, etc as cleanup
 };
 
 /**
- * An instructions visitor that generates
- * llvm IR from our ir.
+ * An LLVM builder that will transform the internal
+ * representation of the program into a LLVM module.
+ * This module can then be compiled into many different
+ * things.
+ * @see https://llvm.org/docs/LangRef.html
  */
 class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
     // A global map to keep track of all processed
@@ -116,8 +135,10 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
         llvm::DIFile* getFile(const std::string& path);
     } dbg;
     /**
-     * Helper struct that will allow us to create
-     * certain types of llvm instructions.
+     * Helper struct containing all the llvm helper functions
+     * needed. This is used to avoid having to write a lot of
+     * boilerplate code.
+     * @see https://llvm.org/doxygen/classllvm_1_1IRBuilder.html
      */
     struct {
         /**
@@ -137,6 +158,23 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
             return new Inst(std::forward<Args>(args)...);
         }
     } h;
+    /**
+     * Information for each try-catch block.
+     */
+    struct TryCatchInfo {
+        /// The catch block
+        llvm::BasicBlock* catchBlock;
+        /// Catch route block
+        llvm::BasicBlock* catchRouteBlock;
+        /// All handlers for this try-catch block
+        std::vector<llvm::BasicBlock*> handlers;
+        /// All catch variables for this try-catch block
+        std::vector<std::shared_ptr<ir::VariableDeclaration>> catchVars;
+        /// Stores the exception pad
+        llvm::Value* exceptionPad = nullptr;
+    };
+    /// A stack containing all the try-catch blocks
+    std::vector<TryCatchInfo> tryCatchStack;
     // LLVM IR module that acts as a top level container of
     // all other LLVM Intermediate Representation (IR) objects
     std::unique_ptr<llvm::Module> module;
@@ -165,6 +203,10 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      * @brief Print the llvm IR module into a stream
      */
     void print(llvm::raw_fd_ostream& s);
+    /**
+     * @brief get a type info struct type
+     */
+    llvm::StructType* getTypeInfoType();
     /**
      * @brief Start the codegen process
      *
@@ -257,6 +299,11 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      */
     void createTests(llvm::Function* mainFunction);
     /**
+     * @brief It generates a function call or an invoke instruction
+     * depending on the current context.
+     */
+    llvm::Value* createCall(llvm::FunctionType* ty, llvm::Value* callee, llvm::ArrayRef<llvm::Value*> args);
+    /**
      * @brief It generates the LLVM IR contents that the user has
      *  manually inserted by using "inline LLVM".
      */
@@ -336,7 +383,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      * @brief Creates (if it does not exist) or fetches a function
      * declaration used to throw an exception.
      */
-    llvm::Function* getThrowFunction();
+    std::pair<llvm::FunctionType*, llvm::Function*> getThrowFunction();
     /**
      * @brief Creates a new instance of an exception.
      */

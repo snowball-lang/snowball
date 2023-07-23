@@ -26,13 +26,13 @@ class TryCatch : public AcceptorExtend<TryCatch, Value> {
     // The catch block
     std::vector<std::shared_ptr<Block>> catchBlocks;
     // Catch types
-    std::vector<types::Type*> catchTypes;
+    std::vector<std::shared_ptr<VariableDeclaration>> catchVars;
 
   public:
     explicit TryCatch(std::shared_ptr<Block> block,
                       std::vector<std::shared_ptr<Block>> catchBlocks,
-                      std::vector<types::Type*> catchTypes)
-        : block(block), catchBlocks(catchBlocks), catchTypes(catchTypes){};
+                      std::vector<std::shared_ptr<VariableDeclaration>> catchVars)
+        : block(block), catchBlocks(catchBlocks), catchVars(catchVars) {};
 
     /// @return body block instructions to execute
     auto getBlock() { return block; }
@@ -41,7 +41,7 @@ class TryCatch : public AcceptorExtend<TryCatch, Value> {
     auto getCatchBlocks() { return catchBlocks; }
 
     /// @return the catch types
-    auto getCatchTypes() { return catchTypes; }
+    auto getCatchVars() { return catchVars; }
 
     // Set a visit handler for the generators
     SN_GENERATOR_VISITS

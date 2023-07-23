@@ -19,7 +19,7 @@ SN_TRANSFORMER_VISIT(Statement::TypeAlias) {
                               "defined in the current scope!",
                               name.c_str()));
     } else if (ctx->generateFunction && (p_node->getGenerics().size() == 0)) {
-        assert(ctx->cache->getTransformedType(uuid) == std::nullopt);
+        if (ctx->cache->getTransformedType(uuid) != std::nullopt) return;
         auto baseType = transformType(p_node->getType());
         auto typeAlias = builder.createTypeAlias(p_node->getDBGInfo(), name, baseType);
         typeAlias->setPrivacy(p_node->getPrivacy());

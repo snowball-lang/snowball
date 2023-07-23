@@ -17,7 +17,7 @@ pub class AssertionError: Exception
  */
 macro [[export]] assert_m(condition: expr, message: const[str]) {
   if !(@condition) {
-    raise @pkg(new AssertionError(@message));
+    raise @pkg(new Exception(@message));
   }
 }
 /**

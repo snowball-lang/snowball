@@ -19,7 +19,7 @@ SN_TRANSFORMER_VISIT(Statement::DefinedTypeDef) {
                               "the current scope!",
                               name.c_str()));
     } else if (ctx->generateFunction && (p_node->getGenerics().size() == 0)) {
-        assert(ctx->cache->getTransformedType(uuid) == std::nullopt);
+        if (ctx->cache->getTransformedType(uuid) != std::nullopt) return;
         cacheComponents::Types::TypeStore store{.type = p_node, .state = state};
         transformClass(uuid, store);
         return;
