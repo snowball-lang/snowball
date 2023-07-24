@@ -84,7 +84,7 @@ std::string DefinedType::getPrettyName() const {
         genericString += ">";
     }
 
-    std::string mut = isMutable() ? "mut " : "";
+    std::string mut = isMutable() ? "mut  " : "";
     return mut + n + genericString;
 }
 

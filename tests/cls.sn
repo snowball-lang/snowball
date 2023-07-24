@@ -62,4 +62,46 @@ fn [[test]] virtual_heap() i32 {
   return t.test();
 }
 
+class TypeInsideClassTest {
+  pub:
+    type x = VirtualTest;
+    TypeInsideClassTest() {}
+}
+
+fn [[test]] type_inside_class() i32 {
+  let t: TypeInsideClassTest::x = new VirtualTest{};
+  return true;
+}
+
+class ClassGenericsTest<T> {
+  pub:
+    ClassGenericsTest(x: T) {}
+}
+
+fn [[test]] class_generics() i32 {
+  let t = new ClassGenericsTest<i32>(1);
+  return true;
+}
+
+class ClassDefaultGenericsTest<T = i32> {
+  pub:
+    ClassDefaultGenericsTest(x: T) {}
+}
+
+fn [[test]] class_default_generics() i32 {
+  let t = new ClassDefaultGenericsTest<>(1);
+  return true;
+}
+
+class GenericAccessTest<T> {
+  pub:
+    let mut a: T = 0;
+    GenericAccessTest() {}
+}
+
+fn [[test(expect = 0)]] generic_access_stack() i32 {
+  let t = new GenericAccessTest<i32>{};
+  return t.a;
+}
+
 }

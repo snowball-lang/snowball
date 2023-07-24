@@ -69,7 +69,7 @@ class Type {
     /// @return current's type name
     virtual std::string getName() const { return name; }
     /// @return type's pretty names, commonly used for output
-    virtual std::string getPrettyName() const { return (_mutable ? "mut" : "") + name; };
+    virtual std::string getPrettyName() const { return (_mutable ? "mut " : "") + name; };
     /// @return Get a mangled version of the current type
     virtual std::string getMangledName() const { return "T" + std::to_string(name.size()) + name; };
 

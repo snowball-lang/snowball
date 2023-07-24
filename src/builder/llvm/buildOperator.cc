@@ -58,7 +58,11 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                     OPERATOR_INSTANCE(LTEQ, CreateICmpSLE)
                     OPERATOR_INSTANCE(GTEQ, CreateICmpSGE)
 
-                    OPERATOR_UINSTANCE(NOT, CreateNot)
+                    case services::OperatorService::NOT: {
+                        auto size_in_bits = ((llvm::IntegerType*)left->getType())->getBitWidth();
+                        this->value = builder->CreateICmpEQ(left, llvm::ConstantInt::get(builder->getIntNTy((unsigned)size_in_bits), 0, false));
+                        break;
+                    }
 
                     // TODO: remainder oeprators (!, +=, etc...)
                     case services::OperatorService::EQ: {
@@ -105,7 +109,10 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                     OPERATOR_INSTANCE(LTEQ, CreateFCmpOLE)
                     OPERATOR_INSTANCE(GTEQ, CreateFCmpOGE)
 
-                    OPERATOR_UINSTANCE(NOT, CreateNot)
+                    case services::OperatorService::NOT: {
+                        this->value = builder->CreateFCmpOEQ(left, llvm::ConstantFP::get(builder->getFloatTy(), 0.0f));
+                        break;
+                    }
 
                     // TODO: remainder oeprators (!, +=, etc...)
                     case services::OperatorService::EQ: {
