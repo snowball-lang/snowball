@@ -18,12 +18,6 @@ llvm::Value* LLVMBuilder::createException(llvm::Value* value, types::Type* type)
     f->setDoesNotThrow();
 
     auto usedValue = value;
-    if (llvm::isa<llvm::LoadInst>(value)) {
-        auto load = llvm::cast<llvm::LoadInst>(value);
-        usedValue = load->getOperand(0);
-        load->eraseFromParent();
-    }
-
     int typeId = typeIdxLookup(type->getMangledName());
     auto cast = builder->CreatePointerCast(usedValue, builder->getInt8PtrTy());
 

@@ -1,0 +1,36 @@
+namespace tests {
+
+macro inline_statement() {
+    return 1;
+}
+
+fn [[test]] inline_statement() i32 {
+    @inline_statement();
+}
+
+macro argument(x: const[num]) {
+    return @x;
+}
+
+fn [[test]] argument() i32 {
+    @argument(1);
+}
+
+macro default_arg(x: const[num] = 1) {
+    return @x;
+}
+
+fn [[test]] default_arg() i32 {
+    @default_arg();
+}
+
+macro macro_scope_access() {
+    let x = 1;
+}
+
+fn [[test]] macro_scope_access() i32 {
+    @macro_scope_access();
+    return x;
+}
+
+}

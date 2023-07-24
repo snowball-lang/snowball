@@ -1153,13 +1153,13 @@ struct Macro : public AcceptorExtend<Macro, Node> {
     };
   private:
     std::string name;
-    std::vector<std::pair<std::string, ArguementType>> args;
+    std::vector<std::tuple<std::string, ArguementType, Node*>> args;
     Block* body;
 
     bool isStatement = false;
 
   public:
-    Macro(std::string name, std::vector<std::pair<std::string, ArguementType>> args, Block* body, bool isStatement = false)
+    Macro(std::string name, std::vector<std::tuple<std::string, ArguementType, Node*>> args, Block* body, bool isStatement = false)
         : name(name), args(args), body(body), isStatement(isStatement) {};
 
     /// @return Get macro's name

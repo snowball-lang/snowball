@@ -1,5 +1,6 @@
 // Content modified from the original: 
 // https://github.com/codeplaysoftware/llvm-leg/blob/master/examples/ExceptionDemo/ExceptionDemo.cpp
+#define DEBUG
 
 #include <cassert>
 #include <cstdint>
@@ -12,7 +13,6 @@
 #include <unwind.h>
 
 #include "runtime.h"
-//#define DEBUG
 
 enum {
     // standard.
@@ -635,7 +635,7 @@ void end_stack(void* exep) {
 // MARK: - Eported functions
 
 void throwOurException(void* obj) __asm__("sn.eh.throw");
-OurUnwindException *createOurException(void* obj, int type) __asm__("sn.eh.create");
+void *createOurException(void* obj, int type) __asm__("sn.eh.create");
 _Unwind_Reason_Code ourPersonality(int version,
                                    _Unwind_Action actions,
                                    uint64_t exceptionClass,
@@ -645,13 +645,13 @@ _Unwind_Reason_Code ourPersonality(int version,
 /// Creates (allocates on the heap), an exception (OurException instance),
 /// of the supplied type info type.
 /// @param type type info type
-OurUnwindException *createOurException(void* obj, int type) {
+void *createOurException(void* obj, int type) {
   const size_t size = sizeof(OurException);
   OurException *ret = (OurException*) memset(malloc(size), 0, size);
-  (ret->type).type = type;
-  (ret->unwindException).exception_class = snowball::ourBaseExceptionClass;
-  (ret->unwindException).exception_cleanup = snowball::deleteFromUnwindOurException;
+  ret->type.type = type;
   ret->snowball_object = obj;
+  ret->unwindException.exception_class = snowball::ourBaseExceptionClass;
+  ret->unwindException.exception_cleanup = snowball::deleteFromUnwindOurException;
 
 #ifdef DEBUG
   printf("Created exception of type <%d>.\n", type);
@@ -676,6 +676,7 @@ _Unwind_Reason_Code ourPersonality(int version,
                                    struct _Unwind_Exception *exceptionObject,
                                    _Unwind_Context_t context) {
 #ifdef DEBUG
+  printf("We are in ourPersonality(...).\n");
   fprintf(stderr,
           "We are in ourPersonality(...):actions is <%d>.\n",
           actions);
@@ -707,8 +708,23 @@ _Unwind_Reason_Code ourPersonality(int version,
 
 void throwOurException(void *exc) {
   _Unwind_Reason_Code code = _Unwind_RaiseException((_Unwind_Exception *)exc);
-  (void)code;
-  snowball::end_stack(exc);
+  switch (code) {
+    case _URC_END_OF_STACK: {
+      snowball::end_stack(exc);
+    };
+
+    case _URC_FATAL_PHASE1_ERROR:
+    case _URC_FATAL_PHASE2_ERROR:
+      std::abort();
+
+    default:
+      printf("Unknown error code: %d\n", code);
+      std::abort();
+  }
+
+  // throw_exception never returns
+  printf("no one handled throwException, terminate!\n");
+  exit(0);
 }
 
 namespace snowball {

@@ -39,7 +39,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                         dbg->width--;
                         std::vector<Syntax::Node*> args;
                         next();
-                        if (!is<TokenType::BRACKET_RPARENT>()) {
+                        if (!is<TokenType::BRACKET_RPARENT>(peek())) {
                             prev();
                             while (true) {
                                 next();
@@ -50,6 +50,8 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                                     break;
                                 }
                             }
+                        } else {
+                            next();
                         }
                         assert_tok<TokenType::BRACKET_RPARENT>("')'");
                         var->setArgs(args);

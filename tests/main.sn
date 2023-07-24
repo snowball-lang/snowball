@@ -4,18 +4,17 @@
 //  Fibonacci example for the lang                  じし(_,)ノ
 //  Docs: https://snowball-lang.gitbook.io/docs/
 
-//use pkg::vector;
-//use pkg::chars;
-//use pkg::cls;
-//use pkg::string;
-
-use Core::System;
+use pkg::vector;
+use pkg::chars;
+use pkg::cls;
+use pkg::string;
+use pkg::macros;
 
 pub fn main() i32 {
-    try {
-        raise new Exception("Hello, World!");
-    } catch(e: Exception&) {
-        System::println("Hello, World! 2222");
-        System::println(e.what());
-    }
-}
+    // TODO: Make this work!
+    //try {
+    //    raise new Exception("Hello, World!");
+    //} catch(e: Exception&) {
+    //    System::println(e.what());
+    //}
+}   

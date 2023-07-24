@@ -11,15 +11,26 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
     auto macroName = p_node->getIdentifier();
     auto macroInstance = macroIns;
     auto macro = macroIns->macro;
-    if (args.size() != macro->getArgs().size()) {
-        E<PSEUDO_ERROR>(p_node, FMT("Macro '%s' expects %d arguments, but %d were given!",
-                                    macroName.c_str(), macro->getArgs().size(), args.size()));
+    auto numRequiredArgs = macro->getArgs().size();
+    for (auto arg : macro->getArgs()) 
+        numRequiredArgs -= std::get<2>(arg) == nullptr ? 0 : 1;
+    if (args.size() < numRequiredArgs) {
+        E<PSEUDO_ERROR>(p_node, FMT("Macro '%s' expects at least %d arguments, but %d were given!",
+                                    macroName.c_str(), numRequiredArgs, args.size()));
     }
     // Typecheck macros:
-    int i = 0;
-    for (auto arg : args) {
-        auto name = macro->getArgs()[i].first;
-        Macro::ArguementType argType = macro->getArgs()[i].second;
+    for (int i = 0; i < macro->getArgs().size(); i++) {
+        Node* arg = nullptr;
+        auto macroArg = macro->getArgs()[i];
+        auto name = std::get<0>(macroArg);
+        auto argType = std::get<1>(macroArg);
+        auto defaultArg = std::get<2>(macroArg);
+        if ((i+1) > args.size() && args.size() < macro->getArgs().size()) {
+            assert(defaultArg);
+            arg = defaultArg;
+        } else {
+            arg = args.at(i);
+        }
         Macro::ArguementType deducedArgType;
         if (utils::cast<Expression::Base>(arg)) {
             if (auto x = utils::cast<Expression::ConstantValue>(arg)) {
@@ -59,7 +70,6 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
         }
         arg->parentMacro = ctx->currentMacroInstance;
         macroInstance->stack.insert(std::make_pair(name, arg));
-        i++;
     }
     if (macroName == "pkg") {
         if (ctx->currentMacroInstance == nullptr) {
