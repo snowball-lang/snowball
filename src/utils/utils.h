@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <filesystem>
 
 #ifndef __SNOWBALL_UTILS__MAIN_H_
 #define __SNOWBALL_UTILS__MAIN_H_
@@ -18,7 +19,7 @@ namespace utils {
 
 std::string get_exe_folder();
 std::string itos(int i);
-std::string get_lib_folder();
+std::filesystem::path get_lib_folder();
 bool isNumber(const std::string& s);
 std::string getUTF8FromIndex(const std::string& s, const int index);
 std::list<std::string> split(std::string str, std::string token);

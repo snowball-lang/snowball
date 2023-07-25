@@ -21,7 +21,11 @@ Transformer::getBestFittingFunction(const std::vector<Cache::FunctionStore>& ove
             if (errors.empty()) {
                 functions.push_back({n, deducedArgs});
             } else {
-                E<TYPE_ERROR>(fn, errors);
+                E<TYPE_ERROR>(fn, errors, {
+                    .tail = EI<>(ctx->latestCall->getDBGInfo(), "", {
+                        .info = "Called from here"
+                    })
+                });
             }
         }
     }

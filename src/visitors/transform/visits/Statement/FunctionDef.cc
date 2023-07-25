@@ -58,7 +58,7 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
                 ctx->exported.push_back(name);
             }
         }
-        ctx->cache->setFunction(uuid, p_node, ctx->saveState());
+        ctx->cache->setFunction(uuid, std::move(p_node), ctx->saveState());
         return;
     }
 

@@ -21,9 +21,9 @@ Transformer::getNiceBaseName(std::tuple<std::optional<std::shared_ptr<ir::Value>
                                         bool /* (Ignore) Accept private members */>
                                      base) {
     if (auto x = std::get<0>(base)) {
-        return x.value()->getType()->getPrettyName();
+        return "(" + x.value()->getType()->getPrettyName() + ")";
     } else if (auto x = std::get<1>(base)) {
-        return x.value()->getPrettyName();
+        return "(" + x.value()->getPrettyName() + ")";
     } else if (std::get<2>(base) || std::get<3>(base)) {
         return "<BUG>";
     } else if (auto x = std::get<4>(base)) {

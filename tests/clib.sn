@@ -1,0 +1,40 @@
+
+use Core::CLib;
+
+namespace tests {
+
+fn [[test]] null_ptr() i32 {
+    let x = CLib::null_ptr<?char&>();
+    return x == 0 as char&;
+}
+
+fn [[test(expect = 5)]] strlen() i32 {
+    let x = CLib::c_string::strlen("hello");
+    return x;
+}
+
+fn [[test(expect = 0)]] strlen_empty() i32 {
+    let x = CLib::c_string::strlen("");
+    return x;
+}
+
+fn [[test(expect = 0)]] internal_sprintf() i32 {
+    let x = CLib::__internal::alloca_and_snprintf(20, "%s", "hello");
+    return CLib::c_string::strcmp(x, "hello");
+}
+
+fn [[test(expect = 0)]] malloc() i32 {
+    let x = CLib::malloc(20) as char&;
+    CLib::c_string::strcpy(x, "hello");
+    return CLib::c_string::strcmp(x, "hello");
+}
+
+fn [[test(expect = 0)]] realloc() i32 {
+    let mut x = CLib::malloc(20) as char&;
+    CLib::c_string::strcpy(x, "hello");
+    x = CLib::realloc(x as cobj, 30) as char&;
+    CLib::c_string::strcat(x, " world");
+    return CLib::c_string::strcmp(x, "hello world");
+}
+
+}

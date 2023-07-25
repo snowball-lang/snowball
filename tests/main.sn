@@ -4,12 +4,14 @@
 //  Fibonacci example for the lang                  じし(_,)ノ
 //  Docs: https://snowball-lang.gitbook.io/docs/
 
+use pkg::option;
 use pkg::vector;
 use pkg::chars;
 use pkg::cls;
 use pkg::string;
 use pkg::macros;
 use pkg::syntax;
+use pkg::clib;
 
 use Core::Panic;
 
@@ -20,5 +22,4 @@ pub fn main() i32 {
     //} catch(e: Exception&) {
     //    System::println(e.what());
     //}
-    Panic::panic();
 }   

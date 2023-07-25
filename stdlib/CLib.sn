@@ -105,6 +105,15 @@ pub extern fn snprintf(char&, i32, char&, ...) i32;
 pub extern fn exit(i32);
 
 /**
+ * @brief Returns a null pointer for a given pointer type.
+ * @tparam PtrType - pointer type
+ * @return PtrType - null pointer
+ */
+pub fn [[inline]] null_ptr<PtrType: Core::Sized = cobj>() PtrType {
+    return 0 as cobj as PtrType;
+}
+
+/**
  * @brief a namespace that contains functions for manipulating strings.
  * @note(1) All functions in this namespace are thread-safe.
  */
@@ -115,7 +124,27 @@ namespace c_string {
  * @return i32 - length of the string
  */
 pub extern fn strlen(char&) i32;
-
+/**
+ * @brief It checks if the two strings are equal.
+ * @param str1(char&) - first string
+ * @param str2(char&) - second string
+ * @return bool - true if the strings are equal, false otherwise
+ */
+pub extern fn strcmp(char&, char&) bool;
+/**
+ * @brief It copies the string pointed by source into the array pointed by destination, including the terminating null character (and stopping at that point).
+ * @param destination(char&) - pointer to the destination array where the content is to be copied.
+ * @param source(char&) - C string to be copied.
+ * @return char& - pointer to the destination string destination.
+ */
+pub extern fn strcpy(char&, char&) char&;
+/**
+ * @brief It concatenates the string pointed to by source to the end of the string pointed to by destination.
+ * @param destination(char&) - pointer to the destination array, which should contain a C string, and be large enough to contain the concatenated resulting string.
+ * @param source(char&) - C string to be appended. This should not overlap destination.
+ * @return char& - pointer to the destination string destination.
+ */
+pub extern fn strcat(char&, char&) char&;
 } // namespace c_string
 
 pub namespace __internal {

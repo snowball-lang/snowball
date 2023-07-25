@@ -38,9 +38,9 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
                     "keyword to give it a different name."
          });
     if (auto m = ctx->imports->cache->getModule(filePath)) {
-        auto item = std::make_shared<Item>(m.value());
-        ctx->addItem(exportName, item);
         importedModule = m.value();
+        auto item = std::make_shared<Item>(std::move(m.value()));
+        ctx->addItem(exportName, item);
     } else {
         auto niceFullName = package + "::" + utils::join(path.begin(), path.end(), "::");
         auto mod = std::make_shared<ir::Module>(niceFullName, uuid);

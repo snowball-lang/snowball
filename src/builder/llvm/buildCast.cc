@@ -37,15 +37,13 @@ void LLVMBuilder::visit(ir::Cast* c) {
         // cast float to another float
         this->value = builder->CreateFPCast(v, llvmType);
     } else if (utils::cast<types::ReferenceType>(ty)) { // ref <-> cobj
-        assert(utils::cast<types::ReferenceType>(vTy) || utils::cast<types::CObjectType>(vTy));
         this->value = builder->CreatePointerCast(v, llvmType);
-    } else if (utils::cast<types::NumericType>(vTy) && // i[n] -> cobj
+    } else if ((IS_INTEGER(vTy) || IS_FLOAT(vTy)) && // i[n] -> cobj
                utils::cast<types::CObjectType>(ty)) {
         this->value = builder->CreateIntToPtr(v, llvmType);
-    } else if (utils::cast<types::NumericType>(ty) && utils::cast<types::CObjectType>(vTy)) { // cobj -> i[n]
+    } else if ((IS_INTEGER(ty) || IS_FLOAT(ty)) && utils::cast<types::CObjectType>(vTy)) { // cobj -> i[n]
         this->value = builder->CreatePtrToInt(v, llvmType);
     } else {
-        assert(utils::cast<types::BaseType>(ty) || utils::cast<types::CObjectType>(ty));
         this->value = builder->CreatePointerCast(v, llvmType);
     }
 }

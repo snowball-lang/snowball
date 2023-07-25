@@ -1,0 +1,40 @@
+use Core::Optional;
+
+namespace tests {
+
+fn [[test]] empty_from_func() i32 {
+    let x = Optional::None<?i32>();
+    return x.empty();
+}
+
+fn [[test]] empty_from_class() i32 {
+    let x = new Optional::Option<i32>();
+    return x.empty();
+}
+
+fn [[test]] with_value_from_func() i32 {
+    let x = Optional::Some<?i32>(42);
+    return !x.empty();
+}
+
+fn [[test]] with_value_from_class() i32 {
+    let x = new Optional::Option<i32>(42);
+    return !x.empty();
+}
+
+fn [[test(expect = 42)]] test_value_from_func() i32 {
+    let x = Optional::Some<?i32>(42);
+    return x.val();
+}
+
+fn [[test]] pointer_value() i32 {
+    let x = new Optional::Option<char&>("hello");
+    return !x.empty();
+}
+
+fn [[test(expect = 42)]] value_default() i32 {
+    let x = new Optional::Option<i32>();
+    return x.value_or(42);
+}
+
+}

@@ -25,8 +25,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
         auto r = getFromIdentifier(x->getDBGInfo(), x->getIdentifier(), generics);
         auto rTuple = std::tuple_cat(r, std::make_tuple(true));
-        fn = getFunction(p_node, rTuple, x->getNiceName(), argTypes,
-                         (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{});
+        fn = getFunction(p_node, rTuple, x->getNiceName(), argTypes, generics);
     } else if (auto x = utils::cast<Expression::Index>(callee)) {
         bool inModule = false;
         std::string baseName;
@@ -51,11 +50,10 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         } else if (auto b = utils::cast<Expression::TypeRef>(indexBase)) {
             baseName = transformType(b)->getPrettyName() + "::";
         }
-        auto g = utils::cast<Expression::GenericIdentifier>(indexBase);
+        auto g = utils::cast<Expression::GenericIdentifier>(x->getIdentifier());
         auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
         auto name = baseName + x->getIdentifier()->getNiceName();
-        auto c = getFunction(p_node, r, name, argTypes,
-                             (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{});
+        auto c = getFunction(p_node, r, name, argTypes, generics);
         // TODO: actually check if base is a module with:
         // "getFromIdentifier" of the module
         if ((x->isStatic && (!c->isStatic())) && (!inModule)) {
