@@ -35,6 +35,17 @@ Before we get started, you'll need to have snowball installed into your compuite
 curl -fsSL https://raw.githubusercontent.com/snowball-lang/snowball/dev/scripts/install.sh | sudo -E bash -s -- -y
 ```
 
+### Instalation from source (unix)
+
+```shell
+git clone https://github.com/snowball-lang/snowball
+cd snowball
+sh ./build_scripts/release.sh
+sudo make install -j100
+```
+
+**note**: We use -j100 to create *100 threads* to make the compilation faster. This will make your computer slower, it can be removed.
+
 ### Writing Your First Snowball Program
 
 First, you will need a new snowball project. For that, create a new directory and execute the following command:
