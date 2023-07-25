@@ -1,0 +1,108 @@
+/**
+ * @class Pair
+ * 
+ * @brief A templated class that represents a simple container for holding a pair of values.
+ * 
+ * The `Pair` class is a simple container that holds two values, which can be of different types.
+ * It is commonly used to associate two values together as a single entity.
+ * 
+ * @tparam T The type of the first element in the pair.
+ * @tparam U The type of the second element in the pair.
+ * 
+ * @note The `Pair` class does not provide access control or member functions for its elements.
+ * Users can directly access and modify the elements without restrictions.
+ * 
+ * Example usage:
+ * @code
+ *   let x = new Pair<int, int>{1, 2};
+ *   let y = x.first + x.second;
+ * @endcode
+ * 
+ * @see make_pair
+ */
+pub class Pair<T: Core::Sized, U: Core::Sized> {
+  pub:
+    /// @brief The first element of the pair. 
+    let first: T;
+    /// @brief The second element of the pair.
+    let second: U;
+
+    /**
+     * @brief Constructor with initial values.
+     * 
+     * @param firstValue The initial value for the first element.
+     * @param secondValue The initial value for the second element.
+     */
+    Pair(first: T, second: U)
+      : first(first), second(second) {}
+}
+
+/**
+ * @brief Creates a `Pair` object with the given values.
+ * 
+ * @param first The initial value for the first element.
+ * @param second The initial value for the second element.
+ * 
+ * @return A `Pair` object with the given values.
+ */
+pub fn make_pair<T, U>(first: T, second: U) Pair<T, U> {
+  return new Pair<T, U>{first, second};
+}
+
+// Mark: - Triple
+
+/**
+ * @class Triple
+ * 
+ * @brief A templated class that represents a simple container for holding a triple of values.
+ * 
+ * The `Triple` class is a simple container that holds three values, which can be of different types.
+ * It is commonly used to associate three values together as a single entity.
+ * 
+ * @tparam T The type of the first element in the triple.
+ * @tparam U The type of the second element in the triple.
+ * @tparam V The type of the third element in the triple.
+ * 
+ * @note The `Triple` class does not provide access control or member functions for its elements.
+ * Users can directly access and modify the elements without restrictions.
+ * 
+ * Example usage:
+ * @code
+ *   let x = new Triple<int, int, int>{1, 2, 3};
+ *   let y = x.first + x.second + x.third;
+ * @endcode
+ * 
+ * @see make_triple
+ */
+pub class Triple<T: Core::Sized, U: Core::Sized, V: Core::Sized> {
+  pub:
+    /// @brief The first element of the triple. 
+    let first: T;
+    /// @brief The second element of the triple.
+    let second: U;
+    /// @brief The third element of the triple.
+    let third: V;
+
+    /**
+     * @brief Constructor with initial values.
+     * 
+     * @param firstValue The initial value for the first element.
+     * @param secondValue The initial value for the second element.
+     * @param thirdValue The initial value for the third element.
+     */
+    Triple(first: T, second: U, third: V)
+      : first(first), second(second), third(third) {}
+}
+
+/**
+ * @brief Creates a `Triple` object with the given values.
+ * 
+ * @param first The initial value for the first element.
+ * @param second The initial value for the second element.
+ * @param third The initial value for the third element.
+ * 
+ * @return A `Triple` object with the given values.
+ */
+pub fn make_triple<T, U, V>(first: T, second: U, third: V) Triple<T, U, V> {
+  return new Triple<T, U, V>{first, second, third};
+}

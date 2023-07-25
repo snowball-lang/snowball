@@ -12,6 +12,7 @@ use pkg::string;
 use pkg::macros;
 use pkg::syntax;
 use pkg::clib;
+use pkg::tuples;
 
 use Core::Panic;
 

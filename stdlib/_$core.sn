@@ -289,6 +289,14 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
       UA::__ua_set(self.buffer, index, value as cobj);
       self.insert(index + 1, cur);
     }
+    /**
+     * @brief It returns a string representation of the vector.
+     * @return A string representation of the vector.
+     */
+    fn [[internal_linkage]] to_string<>() String {
+      // TODO: Implement this
+      //return x.to_str()
+    }
 
   priv:
     /** The capacity of the vector. */

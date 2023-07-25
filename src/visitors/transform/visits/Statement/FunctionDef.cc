@@ -68,7 +68,7 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
         return;
     }
 
-    if (ctx->generateFunction && p_node->getGenerics().size() == 0) {
+    if (ctx->generateFunction && !p_node->isGeneric()) {
         transformFunction({p_node, ctx->saveState()}, {});
     }
 }

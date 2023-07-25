@@ -49,6 +49,7 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
         auto function = overloads->at(0);
 
         // TODO: maybe avoid this if the function has default generics?
+        // TODO: check if the identifier is generic it's self
         if (function.function->getGenerics().size() > 0) {
             E<VARIABLE_ERROR>(p_node, FMT("Function '%s' requires to have generics!", p_node->getIdentifier().c_str()));
         }

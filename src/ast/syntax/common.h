@@ -373,17 +373,24 @@ struct GenericContainer {
     using GenericList = std::vector<T>;
     GenericList generics;
 
+    bool _generic = false;
+
   public:
-    GenericContainer(){};
-    GenericContainer(GenericList generics) : generics(generics){};
+    GenericContainer() = default;
+    GenericContainer(GenericList generics) : _generic(true), generics(generics){};
 
     GenericList getGenerics() const { return generics; }
-    void setGenerics(GenericList list) { generics = std::move(list); }
+    void setGenerics(GenericList list) { 
+      _generic = true;
+      generics = std::move(list); 
+    }
 
     /// @return iterator to the first generic
     auto genericsBegin() { return generics.begin(); }
     /// @return iterator beyond the last generic
     auto genericsEnd() { return generics.end(); }
+    /// @return true if the node has generics
+    bool isGeneric() { return _generic; }
 };
 } // namespace Statement
 

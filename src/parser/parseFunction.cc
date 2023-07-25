@@ -28,6 +28,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     bool isStatic = false;
     bool isVirtual = false;
     bool isMutable = false;
+    bool isGeneric = false;
     bool isNotImplemented = false;
 
     std::string name;
@@ -299,6 +300,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     // Check for generic expressions
     std::vector<Syntax::Expression::Param*> generics;
     if (is<TokenType::OP_LT>()) {
+        isGeneric = true;
         if (isExtern) {
             createError<SYNTAX_ERROR>("Can't define an external function with generics");
         } else if (isConstructor) {
@@ -553,7 +555,8 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     fn->setArgs(arguments);
     fn->setDBGInfo(info);
     fn->setRetType(returnType);
-    fn->setGenerics(generics);
+    if (isGeneric)
+        fn->setGenerics(generics);
     fn->setStatic(isStatic);
     fn->isMutable(isMutable);
     return fn;
