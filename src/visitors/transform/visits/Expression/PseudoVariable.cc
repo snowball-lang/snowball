@@ -71,9 +71,22 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
             auto arg = parent->stack.find(pseudo);
             if (arg != parent->stack.end()) {
                 auto backup = parent;
-                auto node = (*arg).second;
+                auto [node, type] = (*arg).second;
                 if (node->parentMacro != nullptr)
                     ctx->currentMacroInstance = node->parentMacro;
+                if (!p_node->asStatement && type == Macro::ArguementType::STATEMENT) {
+                    E<PSEUDO_ERROR>(p_node, FMT("Macro arguement '%s' is not an expression!", pseudo.c_str()),
+                    {
+                        .info = "Trying to use a statement macro as an expression macro.",
+                        .note = "You can't use a statement macro as an expression macro.\n"
+                                "You can use the macro as a statement instead.",
+                        .help = "Try using the macro as a statement instead or declare the\n"
+                                "macro as an expression macro.",
+                        .tail = EI<>(node->getDBGInfo(), "", {
+                            .info = "Macro arguement declaration here.",
+                        })
+                    });
+                }
                 trans(node);
                 if (node->parentMacro != nullptr)
                     ctx->currentMacroInstance = backup;

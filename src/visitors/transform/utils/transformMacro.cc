@@ -69,7 +69,7 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
                                         macroName.c_str(), name.c_str()));
         }
         arg->parentMacro = ctx->currentMacroInstance;
-        macroInstance->stack.insert(std::make_pair(name, arg));
+        macroInstance->stack.insert(std::make_pair(name, std::make_pair(arg, deducedArgType)));
     }
     if (macroName == "pkg") {
         if (ctx->currentMacroInstance == nullptr) {

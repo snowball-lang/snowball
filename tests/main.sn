@@ -11,6 +11,10 @@ use pkg::string;
 use pkg::macros;
 use pkg::syntax;
 
+macro x(f: stmt) {
+    let x = @f
+}
+
 pub fn main() i32 {
     // TODO: Make this work!
     //try {
@@ -18,4 +22,6 @@ pub fn main() i32 {
     //} catch(e: Exception&) {
     //    System::println(e.what());
     //}
+
+    @x(return 2)
 }   

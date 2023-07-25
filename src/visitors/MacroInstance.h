@@ -16,7 +16,7 @@ namespace transform {
 
 /// @brief Representation of a saved state for the context
 struct MacroInstance {
-    using StackType = std::map<std::string, Node*>;
+    using StackType = std::map<std::string, std::pair<Node*, Macro::ArguementType>>;
 
     // The stack of items
     StackType stack = {};
