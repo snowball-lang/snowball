@@ -621,7 +621,7 @@ void end_stack(void* exep) {
   }
 
   if (!showBacktrace) {
-    buf << "\n \e[1;32minfo\e[0m: You can export the enviroment variable `SN_BACKTRACE=1` to enable backtrace logging.";
+    buf << "\n \e[1;37minfo\e[0m: You can export the enviroment variable \e[1;37m`SN_BACKTRACE=1`\e[0m to enable backtrace logging.";
   }
 
   buf << "\n\n";

@@ -1,0 +1,23 @@
+use Core::CLib;
+use Core::System;
+
+/**
+ * @brief It emits a panic message and exits the program.
+ * @param message The message to emit.
+ */
+pub fn [[inline]] panic(message: char& = "Something went wrong! 🐱") {
+    // TODO: mark function with '!'
+    CLib::printf("\n\n--------------------\n");
+    CLib::printf("Program panicked with message: %s\n", message);
+    CLib::printf("\e[1;37mnote:\e[0m run with \e[1;37m`SN_BACKTRACE=1`\e[0m environment variable to get a backtrace\n\n");
+    System::exit(127);
+}
+
+/**
+ * @brief It emits a panic message and exits the program.
+ * @param message The message to emit.
+ */
+pub fn [[inline]] panic<MessageType>(message: MessageType) {
+    let s: String = String::from(message);
+    panic(s.c_str());
+}
