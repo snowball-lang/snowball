@@ -14,6 +14,8 @@ use pkg::syntax;
 use pkg::clib;
 use pkg::tuples;
 
+use Core::System;
+
 pub fn main() i32 {
     // TODO: Make this work!
     //try {
@@ -21,6 +23,5 @@ pub fn main() i32 {
     //} catch(e: Exception&) {
     //    System::println(e.what());
     //}
-    let r = new Range{0, 10};
-    r.next();
-}   
+    let mut r = new Range{0, 10};
+}

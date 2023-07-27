@@ -176,7 +176,7 @@ pub class IndexError: Exception
  */
 pub class Iterable<_IteratorType: Core::Sized> {
     /// @brief The index of the iterator.
-    let iter_index: i32 = 0;
+    let mut iter_index: i32 = 0;
   pub:
     /**
      * @brief Iterable constructor.
@@ -188,6 +188,11 @@ pub class Iterable<_IteratorType: Core::Sized> {
      * @return The next element in the iteration.
      */
     virt fn next() Iter<_IteratorType> = 0;
+    /**
+     * @brief It resets the iteration.
+     */
+    fn [[inline]] reset() mut 
+      { self.iter_index = 0; }
 }
 
 /**
@@ -202,12 +207,45 @@ pub class Iterable<_IteratorType: Core::Sized> {
 pub class Iter<_IteratorType: Core::Sized> {
     /// @brief if the iterator is valid
     let valid: bool = false;
+    /// @brief the value of the iterator
+    let _value: _IteratorType = CLib::null_ptr<?_IteratorType>();
   pub:
     /**
      * @brief Iter constructor.
      * @note It creates an invalid iterator.
      */
     Iter() {}
+    /**
+     * @brief Iter constructor.
+     * @param[in] value The value of the iterator.
+     */
+    Iter(value: _IteratorType) : _value(value),
+      valid(true) {}
+    /**
+     * @brief Returns the value of the iterator.
+     * @return The value of the iterator.
+     */
+    fn [[internal_linkage, inline]] value() _IteratorType 
+    { 
+      if !self.valid 
+      {
+        raise new IndexError("Invalid iterator.");
+      }
+      return self._value; 
+    }
+  pub:
+    /**
+     * @brief Returns an invalid iterator.
+     * @return An invalid iterator.
+     */
+    static fn [[inline]] invalid() Iter<_IteratorType> 
+      { return new Iter<_IteratorType>{}; }
+    /**
+     * @brief Returns a valid iterator.
+     * @return A valid iterator.
+     */
+    static fn [[inline]] valid(val: _IteratorType) Iter<_IteratorType> 
+      { return new Iter<_IteratorType>{val}; }
 }
 /**
  * @class Range 
@@ -225,35 +263,57 @@ pub class Range: Iterable<i32> {
      * @param[in] end The end of the range.
      */
     Range(start: i32, end: i32) : 
-      super(), start(start), end(end) {}
+      super(), _start(start), _end(end) 
+    {
+      self.iter_index = self._start;
+    }
     /**
      * @brief Range constructor with default start.
      * @param[in] end The end of the range.
      */
-    Range(end: i32) : super(), end(end) {}
+    Range(end: i32) : super(), _end(end) {}
     /**
      * @brief Returns the size of the range.
      * @return The size of the range.
      */
     fn [[internal_linkage, inline]] size() i32 
-      { return self.end - self.start; }
+      { return self._end - self._start; }
     /**
      * @brief Returns the start of the range.
      * @return The start of the range.
      */
     fn [[internal_linkage, inline]] begin() i32 
-      { return self.start; }
+      { return self._start; }
     /**
      * @brief Returns the end of the range.
      * @return The end of the range.
      */
     fn [[internal_linkage, inline]] end() i32 
-      { return self.end; }
+      { return self._end; }
+    /**
+     * @brief Returns the next element in the iteration.
+     * @return The next element in the iteration.
+     */
+    virt fn [[internal_linkage]] next() mut Iter<i32>
+    {
+      if self.iter_index > self.end() 
+      {
+        return Iter<?i32>::invalid();
+      }
+      let iter = Iter<?i32>::valid(self.iter_index);
+      self.iter_index = self.iter_index + 1;
+      return iter;
+    }
+    /**
+     * @brief It resets the iteration.
+     */
+    fn [[inline]] reset() mut 
+      { self.iter_index = self._start; }
   priv:
     /** The start of the range. */
-    let start: i32 = 0;
+    let _start: i32 = 0;
     /** The end of the range. */
-    let end: i32;
+    let _end: i32;
 };
 /**
  * @class Vector
