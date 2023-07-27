@@ -39,13 +39,13 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
             auto _uuid = baseUuid + ":" + utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
             auto basedName = ty->getName();
             transformedType = new types::DefinedType(basedName,
-                                                                   _uuid,
-                                                                   ctx->module,
-                                                                   ty,
-                                                                   std::vector<types::DefinedType::ClassField*>{},
-                                                                   nullptr,
-                                                                   std::vector<types::Type*>{},
-                                                                   ty->isStruct());
+                                                    _uuid,
+                                                    ctx->module,
+                                                    ty,
+                                                    std::vector<types::DefinedType::ClassField*>{},
+                                                    nullptr,
+                                                    std::vector<types::Type*>{},
+                                                    ty->isStruct());
             transformedType->setModule(ctx->module);
             transformedType->setUUID(_uuid);
             auto item = std::make_shared<transform::Item>(transformedType);
@@ -84,6 +84,13 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
                                            "primitive type."});
                 }
             }
+            auto backupGenerateFunction = ctx->generateFunction;
+            ctx->setCurrentClass(transformedType);
+            // Transform types first thing
+            ctx->generateFunction = false;
+            for (auto ty : ty->getTypeAliases()) { trans(ty); }
+            ctx->generateFunction = true;
+            for (auto ty : ty->getTypeAliases()) { trans(ty); }
             auto baseFields = vector_iterate<Statement::VariableDecl*, types::DefinedType::ClassField*>(
                     ty->getVariables(), [&](auto v) {
                         auto definedType = v->getDefinedType();
@@ -115,12 +122,9 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
             transformedType->setSourceInfo(ty->getSourceInfo());
             bool allowConstructor = (!ty->hasConstructor) && baseFields.size() == 0;
             if (parentType != nullptr) ctx->cache->performInheritance(transformedType, parentType, allowConstructor);
-            ctx->setCurrentClass(transformedType);
             assert(!ty->isStruct() || (ty->isStruct() && ty->getFunctions().size() == 0));
             // Create function definitions
-            auto backupGenerateFunction = ctx->generateFunction;
             ctx->generateFunction = false;
-            for (auto ty : ty->getTypeAliases()) { trans(ty); }
             for (auto fn : ty->getFunctions()) {
                 if (services::OperatorService::opEquals<OperatorType::CONSTRUCTOR>(fn->getName())) {
                     transformedType->hasConstructor = true;
@@ -130,7 +134,6 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
             }
             // Generate the function bodies
             ctx->generateFunction = true;
-            for (auto ty : ty->getTypeAliases()) { trans(ty); }
             for (auto fn : ty->getFunctions()) { trans(fn); }
             ctx->generateFunction = backupGenerateFunction;
             for (int allowPointer = 0; allowPointer < 2; ++allowPointer) {

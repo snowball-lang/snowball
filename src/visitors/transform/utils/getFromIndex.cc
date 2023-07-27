@@ -4,6 +4,7 @@
 
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
+using namespace snowball::services;
 
 namespace snowball {
 namespace Syntax {
@@ -73,6 +74,8 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
 
             if ((!fns.has_value()) && (!ovs.has_value())) {
                 // TODO: operator
+                if (OperatorService::isOperator(name))
+                    name = OperatorService::operatorName(OperatorService::operatorID(name));
                 E<VARIABLE_ERROR>(dbgInfo,
                                   FMT("Coudn't find a function '%s' inside type '%s'!",
                                       name.c_str(),

@@ -18,7 +18,7 @@ SN_TRANSFORMER_VISIT(Statement::TypeAlias) {
                           FMT("Type alias with name '%s' is already "
                               "defined in the current scope!",
                               name.c_str()));
-    } else if (ctx->generateFunction && (p_node->getGenerics().size() == 0)) {
+    } else if (ctx->generateFunction && (!p_node->isGeneric())) {
         if (ctx->cache->getTransformedType(uuid) != std::nullopt) return;
         auto baseType = transformType(p_node->getType());
         auto typeAlias = builder.createTypeAlias(p_node->getDBGInfo(), name, baseType);
@@ -26,6 +26,7 @@ SN_TRANSFORMER_VISIT(Statement::TypeAlias) {
         typeAlias->setUUID(uuid);
         auto item = std::make_shared<transform::Item>(typeAlias);
         ctx->cache->setTransformedType(uuid, item);
+        ctx->addItem(name, item);
         return;
     } else if (!ctx->generateFunction || (p_node->getGenerics().size() > 0)) {
         ctx->cache->setType(uuid, p_node, state);

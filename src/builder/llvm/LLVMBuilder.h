@@ -265,7 +265,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
      * @brief A allocates a new object inside the LLVM IR code and cast
      * it into the desired type.
      */
-    llvm::Value* allocateObject(types::DefinedType* ty);
+    llvm::Value* allocateObject(types::DefinedType* ty, bool heapAllocated);
     /**
      * @brief It creates a new struct type and a new constant struct
      * value for a virtual table for @param ty

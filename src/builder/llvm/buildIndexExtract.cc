@@ -24,11 +24,8 @@ void LLVMBuilder::visit(ir::IndexExtract* index) {
     // table.
     // TODO: support for structs without vtable.
     auto i = index->getIndex() + defiendType->hasVtable();
-    if (auto ty = utils::cast<types::ReferenceType>(valueType)) {
-        auto baseType = getBasePointerType(ty);
-        v = builder->CreateLoad(getLLVMType(baseType), v);
-    }
-    this->value = builder->CreateExtractValue(v, i);
+    auto extract = builder->CreateStructGEP(getLLVMType(basedType), v, i);
+    this->value = builder->CreateLoad(getLLVMType(index->getType()), extract);
 }
 
 } // namespace codegen

@@ -15,14 +15,14 @@ namespace snowball {
 namespace codegen {
 
 llvm::Value* LLVMBuilder::createInsertValue(llvm::Value* v, uint32_t i, llvm::Value* rhs, types::Type* refType) {
-    llvm::Value* leftValue = llvm::cast<llvm::ExtractValueInst>(rhs)
-        ->getAggregateOperand();;
-    auto vload = llvm::cast<llvm::LoadInst>(leftValue)->getPointerOperand();
-
+    if (llvm::isa<llvm::LoadInst>(rhs)) {
+        auto l = llvm::cast<llvm::LoadInst>(rhs);
+        rhs = l->getOperand(0);
+    }
     //auto lhs = builder->CreateExtractValue(leftValue, i);
     //llvm::Value* load = builder->CreateLoad(getLLVMType(refType), lhs);
-    auto load = builder->CreateInsertValue(leftValue, v, i);
-    return builder->CreateStore(load, vload);
+    //auto load = builder->CreateInsertValue(v, v, i);
+    return builder->CreateStore(v, rhs);
 }
 
 } // namespace codegen

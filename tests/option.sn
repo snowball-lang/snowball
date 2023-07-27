@@ -1,9 +1,11 @@
 use Core::Optional;
+use Core::CLib;
 
 namespace tests {
 
 fn [[test]] empty_from_func() i32 {
     let x = Optional::None<?i32>();
+    //CLib::printf("x: %i", Optional::None<?i32>().empty()) 
     return x.empty();
 }
 
@@ -13,7 +15,7 @@ fn [[test]] empty_from_class() i32 {
 }
 
 fn [[test]] with_value_from_func() i32 {
-    let x = Optional::Some<?i32>(42);
+    let x = Optional::Some(42);
     return !x.empty();
 }
 
@@ -35,6 +37,17 @@ fn [[test]] pointer_value() i32 {
 fn [[test(expect = 42)]] value_default() i32 {
     let x = new Optional::Option<i32>();
     return x.value_or(42);
+}
+
+fn [[test]] empty_value_class() i32 {
+    let x = new Optional::Option<String>{};
+    return x.empty();
+}
+
+fn [[test(expect = 5)]] value_class() i32 {
+    let s = new String{"hello"};
+    let x = new Optional::Option<String>{s};
+    return x.val().size();
 }
 
 }

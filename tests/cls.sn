@@ -51,7 +51,7 @@ class VirtualTest {
     }
 }
 
-fn [[test(skip)]] virtual_stack() i32 {
+fn [[test]] virtual_stack() i32 {
   // TODO: what's going on here
   let t = new VirtualTest{};
   return t.test();

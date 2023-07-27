@@ -35,16 +35,28 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
 
 #undef DEFINE_TYPE
 
-    std::vector<types::Type*> overloadTypes = {raw_BoolType, raw_Float64Type, raw_Float32Type,
-                                                               raw_Int64Type, raw_Int32Type,   raw_Int16Type,
-                                                               raw_Int8Type,  raw_CharType};
+    std::vector<std::pair<types::Type*, std::vector<std::string>>> 
+    overloadTypes = {{raw_BoolType, OperatorService::operators},   
+                    {raw_Float64Type, OperatorService::operators}, 
+                    {raw_Float32Type, OperatorService::operators},
+                    {raw_Int64Type, OperatorService::operators}, 
+                    {raw_Int32Type, OperatorService::operators},   
+                    {raw_Int16Type, OperatorService::operators},
+                    {raw_Int8Type, OperatorService::operators},  
+                    {raw_CharType, OperatorService::operators},
+
+                    {raw_CObjectType, {
+                        OperatorService::getOperatorId(OperatorService::OperatorType::EQEQ),
+                        OperatorService::getOperatorId(OperatorService::OperatorType::NOTEQ),
+                    }}
+    };
 
     for (int asPointer = 0; asPointer < 2; ++asPointer) {
-        for (auto ty : overloadTypes) {
-            for (auto op : services::OperatorService::operators) {
-                for (auto overload : overloadTypes) {
-                    auto opType = services::OperatorService::operatorID(op);
-                    auto unary = services::OperatorService::isUnary(opType);
+        for (auto [ty, operators] : overloadTypes) {
+            for (auto op : operators) {
+                for (auto [overload, _] : overloadTypes) {
+                    auto opType = OperatorService::operatorID(op);
+                    auto unary = OperatorService::isUnary(opType);
                     auto classType = asPointer ? unary ? ty : ty->getPointerTo() : ty;
                     auto overloadType = asPointer ? overload->getPointerTo() : overload;
                     auto typeArgs = (!unary) ? std::vector<types::Type*>{classType, overloadType}

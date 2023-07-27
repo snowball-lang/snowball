@@ -16,17 +16,16 @@ pub class BadOptionAccess: Exception
  *
  * The `Option` type is also used in the return type of functions that are not
  * guaranteed to return a value, like `Array::pop` or `Hash::delete`.
- *
- * @note If the stored value is a null pointer, the `Option` is considered to be
- *       empty.
  */
 pub class Option<_StoreType> {
     /**
      * The value stored in the `Option`.
-     * @note If the stored value is a null pointer, the `Option` is considered
-     *       to be empty.
      */
     let _value: _StoreType = CLib::null_ptr<?_StoreType>();
+    /**
+     * Whether the `Option` is engaged.
+     */
+    let _engage: bool = false;
   pub:
     /**
      * Creates a new empty `Option`.
@@ -37,7 +36,8 @@ pub class Option<_StoreType> {
      *
      * @param value The value to store in the `Option`.
      */
-    Option(value: _StoreType) : _value(value) {}
+    Option(value: _StoreType) : _value(value), 
+      _engage(true) {}
     /**
      * @brief Returns the value stored in the `Option`.
      */
@@ -51,7 +51,7 @@ pub class Option<_StoreType> {
      */
     fn [[inline]] empty() bool 
     {
-      return self._value == CLib::null_ptr<?_StoreType>();
+      return !self._engage;
     }
     /**
      * @return The value stored in the `Option` or the

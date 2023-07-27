@@ -31,7 +31,8 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             if (auto x = utils::cast<types::ReferenceType>(baseType)) baseType = x->getBaseType();
             if (utils::cast<types::BoolType>(baseType) || utils::cast<types::Int8Type>(baseType) ||
                 utils::cast<types::Int16Type>(baseType) || utils::cast<types::Int32Type>(baseType) ||
-                utils::cast<types::Int64Type>(baseType) || utils::cast<types::CharType>(baseType)) {
+                utils::cast<types::Int64Type>(baseType) || utils::cast<types::CharType>(baseType) ||
+                utils::cast<types::CObjectType>(baseType)) {
                 
                 switch (services::OperatorService::operatorID(opName)) {
                     OPERATOR_INSTANCE(EQEQ, CreateICmpEQ)

@@ -51,10 +51,8 @@ void LLVMBuilder::visit(ir::Call* call) {
         if (instance->createdObject) {
             object = build(instance->createdObject.get());
             object = builder->CreatePointerCast(object, instanceType);
-        } else if (instance->initializeAtHeap) {
-            object = allocateObject(p);
         } else {
-            object = builder->CreateAlloca(instanceType);
+            object = allocateObject(p, instance->initializeAtHeap);
         }
 
         args.insert(args.begin(), object);

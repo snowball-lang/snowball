@@ -13,6 +13,7 @@ Syntax::Statement::TypeAlias* Parser::parseTypeAlias() {
     next(); // East "class"
 
     bool isPublic = false;
+    bool isGeneric = false;
     if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-3, true))) {
         isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
     }
@@ -23,19 +24,19 @@ Syntax::Statement::TypeAlias* Parser::parseTypeAlias() {
 
     next();
 
-    if (is<TokenType::OP_LT>()) { generics = parseGenericParams(); }
+    if (is<TokenType::OP_LT>()) { 
+        isGeneric = true;
+        generics = parseGenericParams(); 
+    }
 
     consume<TokenType::OP_EQ>("'='");
     auto type = parseType();
-
     auto privacy = Syntax::Statement::Privacy::fromInt(isPublic);
     auto node = Syntax::N<Syntax::Statement::TypeAlias>(name, type);
-
     node->setPrivacy(privacy);
     node->setDBGInfo(dbg);
-
-    node->setGenerics(generics);
-
+    if (isGeneric)
+        node->setGenerics(generics);
     return node;
 }
 

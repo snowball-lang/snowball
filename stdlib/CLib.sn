@@ -114,6 +114,15 @@ pub fn [[inline]] null_ptr<PtrType: Core::Sized = cobj>() PtrType {
 }
 
 /**
+ * @brief It checks if a pointer is null.
+ * @param ptr(cobj) - pointer to be checked
+ * @return bool - true if the pointer is null, false otherwise
+ */
+pub fn [[inline]] is_null(ptr: cobj) bool {
+    return ptr == null_ptr();
+}
+
+/**
  * @brief a namespace that contains functions for manipulating strings.
  * @note(1) All functions in this namespace are thread-safe.
  */

@@ -14,6 +14,7 @@ void LLVMBuilder::visit(ir::ReferenceTo* ref) {
     auto llvmReferencedValue = build(val.get());
 
     llvm::Value* value = nullptr;
+    llvmReferencedValue->dump();
     if (llvm::isa<llvm::LoadInst>(llvmReferencedValue)) {
         // It's already a load instruction, we can just use that
         auto load = llvm::cast<llvm::LoadInst>(llvmReferencedValue);
@@ -21,9 +22,12 @@ void LLVMBuilder::visit(ir::ReferenceTo* ref) {
     } else {
         // TODO: actually do fix this
         // assert(llvmReferencedValue->getType()->isPointerTy());
-        auto alloca = builder->CreateAlloca(llvmReferencedValue->getType());
-        builder->CreateStore(llvmReferencedValue, alloca);
-        value = alloca;
+        //auto currentBlock = builder->GetInsertBlock();
+        //builder->SetInsertPoint(ctx->getCurrentFunction()->getEntryBlock().getTerminator());
+        //auto alloca = builder->CreateAlloca(getLLVMType(val->getType()));
+        //builder->SetInsertPoint(currentBlock);
+        //builder->CreateStore(llvmReferencedValue, alloca);
+        value = llvmReferencedValue;
     }
 
     this->value = value;

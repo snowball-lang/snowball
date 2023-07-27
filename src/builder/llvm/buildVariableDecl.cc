@@ -30,7 +30,12 @@ void LLVMBuilder::visit(ir::VariableDeclaration* variable) {
         generatedValue = builder->CreatePointerCast(generatedValue, storeBaseType);
     }
 
+    //if (auto x = utils::cast<types::ReferenceType>(variable->getValue()->getType());
+    //    x != nullptr && (!utils::cast<types::PrimitiveType>(x->getBaseType()))) {
+    //    builder->CreateMemCpy(generatedValue, llvm::MaybeAlign(), store, llvm::MaybeAlign(), module->getDataLayout().getTypeAllocSize(storeBaseType), 0);
+    //} else {
     builder->CreateStore(generatedValue, store);
+    //}
 }
 
 } // namespace codegen

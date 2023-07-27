@@ -75,6 +75,7 @@ inline const std::vector<std::string> OperatorService::operatorNames = {
 } // namespace services
 
 using OperatorType = services::OperatorService::OperatorType;
+using namespace services;
 } // namespace snowball
 
 #endif // __SNOWBALL_SERVICES_OPERATORS_H_

@@ -7,13 +7,18 @@
 namespace snowball {
 namespace codegen {
 
-llvm::Value* LLVMBuilder::allocateObject(types::DefinedType* ty) {
+llvm::Value* LLVMBuilder::allocateObject(types::DefinedType* ty, bool heapAllocated) {
     auto llvmType = getLLVMType(ty);
     auto llvmTypePtr = getLLVMType(ty)->getPointerTo();
     auto dataLayout = module->getDataLayout();
-    auto allocation =
-            builder->CreateCall(getAllocaFunction(), {builder->getInt32(dataLayout.getTypeAllocSize(llvmTypePtr))});
-    auto cast = builder->CreatePointerCast(allocation, llvmTypePtr);
+    llvm::Value* cast = nullptr;
+    if (heapAllocated) {
+        auto allocation =
+                builder->CreateCall(getAllocaFunction(), {builder->getInt32(dataLayout.getTypeAllocSize(llvmTypePtr))});
+        cast = builder->CreatePointerCast(allocation, llvmTypePtr);
+    } else {
+        cast = builder->CreateAlloca(llvmType);
+    }
     if (ty->isStruct() || !ty->hasVtable()) return cast;
 
     // Class specific stuff

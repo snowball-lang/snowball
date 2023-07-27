@@ -322,6 +322,8 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
  */
 pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
   pub:
+    type StringType = _CharType&;
+
     /**
      * @brief Default constructor.
      * Constructs an empty string.
@@ -332,7 +334,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       * @brief Constructs a string from a vector of characters.
       * @param[in] buffer The vector of characters to construct the string from.
       */
-    StringView(buffer: _CharType&) : 
+    StringView(buffer: StringType) : 
       super(), buffer(buffer), length(CLib::c_string::strlen(buffer))
       { self.capacity = self.length + 10; }
     /**
@@ -350,15 +352,36 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
     /**
       * @return The buffer containing the string.
       */
-    fn [[internal_linkage, inline]] c_str() _CharType&
+    fn [[internal_linkage, inline]] c_str() StringType
       { return self.buffer; }
+    /**
+     * @brief It compares the string with another string.
+     * @param[in] other The string to compare the string with.
+     * @return The result of the comparison.
+     */
+    operator [[internal_linkage, inline]] ==(other: StringView<_CharType>) bool
+    {
+      if self.length != other.length 
+      {
+        return false;
+      }
+      // TODO:
+      //for i in 0..self.length 
+      //{
+      //  if self.buffer[i] != other.buffer[i] 
+      //  {
+      //    return false;
+      //  }
+      //}
+      return CLib::c_string::strcmp(self.buffer, other.buffer) == 0;
+    }
   priv:
     /** The capacity of the string. */
     let mut capacity: i32 = 10;
     /** The size of the string. */
     let mut length: i32 = 0;
     /** The buffer containing the string. */
-    let buffer: _CharType& = "";
+    let buffer: StringType = "";
 
   priv:
     /**
@@ -370,7 +393,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
     static fn [[internal_linkage, inline]] fromNumber<T>(num: T, format: char& = "%ld")
       StringView<_CharType> 
     { 
-      let buffer: _CharType& = 
+      let buffer: Self::StringType = 
         CLib::__internal::alloca_and_snprintf(10, format, num);
       return new StringView<_CharType>{buffer}; 
     }
