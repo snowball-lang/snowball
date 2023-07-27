@@ -67,6 +67,11 @@ void Functions::performInheritance(types::DefinedType* ty, types::DefinedType* p
         if (OperatorService::opEquals<OperatorType::CONSTRUCTOR>(name) && !allowConstructor) continue;
         name = childUUID + "." + name;
         setTransformedFunction(name, std::make_shared<transform::Item>(*item));
+        for (auto x : functions) {
+            if (x->inVirtualTable()) {
+                auto vtableIndex = ty->addVtableItem(x);
+            }
+        }
     }
 
     for (auto f : nonGeneratedFunctions) {

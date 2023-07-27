@@ -127,17 +127,8 @@ bool DefinedType::canCast(Type* ty) const {
 }
 
 bool DefinedType::canCast(DefinedType* ty) const {
-    if (getParent() && (ty->is(getParent()))) {
-        auto otherArgs = ty->getGenerics();
-        bool argumentsEqual =
-                std::all_of(otherArgs.begin(), otherArgs.end(), [&, idx = 0](Type* i) mutable {
-                    return generics.at(idx)->is(i);
-                    idx++;
-                });
-        return argumentsEqual;
-    }
-
-    return false;
+    // TODO: test this:
+    return getParent() && (ty->is(getParent()));
 }
 
 }; // namespace types

@@ -98,7 +98,21 @@ VISIT(Call) {
     // TODO: check for operator sides being equal
 
     int i = 0;
-    if (fn) fn->visit(this);
+    if (fn) {
+        if (fn->hasAttribute(Attributes::NOT_IMPLEMENTED)) {
+            E<SYNTAX_ERROR>(p_node,
+                            FMT("Function '%s' is not implemented!",
+                                fn->getName(true).c_str()),
+                            {.info = "This function is not implemented!",
+                             .note = "This error is caused by the function having the \n"
+                                     "'not implemented' attribute.",
+                             .help = "Try implementing the function or removing the \n"
+                                     "'= 0' attribute from it or override it from a \n"
+                                     "child class.",
+                             .tail = EI<>(fn->getDBGInfo(), "", {.info = "This is the function declaration."})});
+        }
+        fn->visit(this);
+    }
     for (auto a : p_node->getArguments()) {
         // TODO: maybe check even if it's not a function value?
         if (i == 0 && fn) checkMutability(p_node, fn, a);

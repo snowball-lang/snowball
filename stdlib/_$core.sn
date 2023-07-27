@@ -175,9 +175,21 @@ pub class IndexError: Exception
  * manipulation operations such as iteration, element access, and more.
  */
 pub class Iterable<_IteratorType: Core::Sized> {
+    /// @brief The index of the iterator.
+    let iter_index: i32 = 0;
   pub:
+    /**
+     * @brief Iterable constructor.
+     * @note It creates an invalid iterable.
+     */
     Iterable() {}
+    /**
+     * @brief It continues the iteration.
+     * @return The next element in the iteration.
+     */
+    virt fn next() Iter<_IteratorType> = 0;
 }
+
 /**
  * @class Iter
  * @brief A class representing an iterator.
@@ -197,8 +209,52 @@ pub class Iter<_IteratorType: Core::Sized> {
      */
     Iter() {}
 }
-
-
+/**
+ * @class Range 
+ * @brief A class representing a range of elements.
+ *
+ * The Range class provides various operations and functionalities
+ * for working with ranges of elements. It supports common Range
+ * manipulation operations such as iteration, element access, and more.
+ */
+pub class Range: Iterable<i32> {
+  pub:
+    /**
+     * @brief Range constructor.
+     * @param[in] start The start of the range.
+     * @param[in] end The end of the range.
+     */
+    Range(start: i32, end: i32) : 
+      super(), start(start), end(end) {}
+    /**
+     * @brief Range constructor with default start.
+     * @param[in] end The end of the range.
+     */
+    Range(end: i32) : super(), end(end) {}
+    /**
+     * @brief Returns the size of the range.
+     * @return The size of the range.
+     */
+    fn [[internal_linkage, inline]] size() i32 
+      { return self.end - self.start; }
+    /**
+     * @brief Returns the start of the range.
+     * @return The start of the range.
+     */
+    fn [[internal_linkage, inline]] begin() i32 
+      { return self.start; }
+    /**
+     * @brief Returns the end of the range.
+     * @return The end of the range.
+     */
+    fn [[internal_linkage, inline]] end() i32 
+      { return self.end; }
+  priv:
+    /** The start of the range. */
+    let start: i32 = 0;
+    /** The end of the range. */
+    let end: i32;
+};
 /**
  * @class Vector
  * @brief A class representing a vector of elements.
@@ -431,5 +487,6 @@ type Vector<T> = Core::Vector<T>;
 type Iter<T> = Core::Iter<T>;
 type Exception = Core::Exception;
 type IndexError = Core::IndexError;
+type Range = Core::Range;
 type String = StringView<>;
 // TODO (implement wchar): using WideString as StringView<wchar&>

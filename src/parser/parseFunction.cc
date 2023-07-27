@@ -557,6 +557,8 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     fn->setRetType(returnType);
     if (isGeneric)
         fn->setGenerics(generics);
+    if (isNotImplemented) 
+        fn->addAttribute(Attributes::NOT_IMPLEMENTED);
     fn->setStatic(isStatic);
     fn->isMutable(isMutable);
     return fn;
