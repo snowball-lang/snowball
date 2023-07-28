@@ -14,7 +14,7 @@ llvm::Value* LLVMBuilder::allocateObject(types::DefinedType* ty, bool heapAlloca
     llvm::Value* cast = nullptr;
     if (heapAllocated) {
         auto allocation =
-                builder->CreateCall(getAllocaFunction(), {builder->getInt32(dataLayout.getTypeAllocSize(llvmTypePtr))});
+                builder->CreateCall(getAllocaFunction(), {builder->getInt32(dataLayout.getTypeAllocSize(llvmType))});
         cast = builder->CreatePointerCast(allocation, llvmTypePtr);
     } else {
         cast = builder->CreateAlloca(llvmType);

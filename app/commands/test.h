@@ -1,6 +1,7 @@
 
 #include "app/cli.h"
 #include "compiler.h"
+#include "constants.h"
 #include "errors.h"
 #include "utils/logger.h"
 #include "utils/utils.h"
@@ -64,6 +65,7 @@ int test(app::Options::TestOptions p_opts) {
     compiler->compile(p_opts.no_progress || p_opts.silent);
 
     auto stop = high_resolution_clock::now();
+    auto date = std::chrono::system_clock::now();
 
     compiler->emit_binary(output, false);
     compiler->cleanup();
@@ -76,11 +78,16 @@ int test(app::Options::TestOptions p_opts) {
     if (!p_opts.silent) {
         Logger::message("Finished", FMT("test target(s) in %s%i%sms", BOLD, duration, RESET));
         Logger::message("Running", FMT("unittests (%s)", filename.c_str()));
+
+        Logger::message("Info", FMT("Snowball version: %s", _SNOWBALL_VERSION));
+        auto time = std::chrono::system_clock::to_time_t(date);
+        Logger::message("Info", FMT("Build date: %s", std::ctime(&time)));
     }
 
     char* args[] = {strdup(output.c_str()), NULL};
     int result = execvp(args[0], args);
 
+    DUMP_S("HELLOOOO")
     // This shoudnt be executed
     return result;
 }
