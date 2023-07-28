@@ -145,17 +145,27 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
                     expr = bop;
                 } else if (is<TokenType::SYM_COLCOL>(tk) || is<TokenType::SYM_DOT>(tk)) {
                     auto isStatic = is<TokenType::SYM_COLCOL>(tk);
-                    next(1);
+                    if (!isStatic && is<TokenType::SYM_DOT>(peek(2, true))) { // Range expr (1..5)
+                        auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
+                        auto bop = Syntax::N<Syntax::Expression::BinaryOp>(Syntax::Expression::BinaryOp::OpType::RANGE);
+                        bop->isOperator = true;
+                        bop->setDBGInfo(dbg);
+                        bop->left = expr;
+                        next(2);
+                        bop->right = parseExpr(false);
+                        expr = bop;
+                    } else {
+                        next(1);
+                        assert_tok<TokenType::IDENTIFIER>("an identifier");
+                        auto index = parseIdentifier();
 
-                    assert_tok<TokenType::IDENTIFIER>("an identifier");
-                    auto index = parseIdentifier();
-
-                    auto dbgInfo =
-                            new DBGSourceInfo(m_source_info,
-                                              expr->getDBGInfo()->pos,
-                                              expr->getDBGInfo()->width + index->getDBGInfo()->width + (isStatic + 1));
-                    expr = Syntax::N<Syntax::Expression::Index>(expr, index, isStatic);
-                    expr->setDBGInfo(dbgInfo);
+                        auto dbgInfo =
+                                new DBGSourceInfo(m_source_info,
+                                                expr->getDBGInfo()->pos,
+                                                expr->getDBGInfo()->width + index->getDBGInfo()->width + (isStatic + 1));
+                        expr = Syntax::N<Syntax::Expression::Index>(expr, index, isStatic);
+                        expr->setDBGInfo(dbgInfo);
+                    }
                 } else if (is<TokenType::KWORD_AS>(tk)) {
                     next(1);
                     throwIfNotType();

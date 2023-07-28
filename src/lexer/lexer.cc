@@ -464,12 +464,17 @@ void Lexer::tokenize() {
                         if (GET_CHAR(1) == 'b' || GET_CHAR(1) == 'B') mode = BIN;
                         if (GET_CHAR(1) == 'x' || GET_CHAR(1) == 'X') mode = HEX;
                     }
+                    bool isRange = false;
                     EAT_CHAR(1);
                     switch (mode) {
                         case INT: {
                             while (IS_NUM(GET_CHAR(0)) || GET_CHAR(0) == '.') {
-                                if (GET_CHAR(0) == '.' && mode == FLOAT)
-                                    lexer_error(Error::SYNTAX_ERROR, "invalid numeric value.", 1);
+                                if (GET_CHAR(0) == '.' && mode == FLOAT) {
+                                    mode == INT;
+                                    num.erase(num.size() - 1);
+                                    isRange = true;
+                                    break; // It must be a range, right?
+                                }
                                 if (GET_CHAR(0) == '.') mode = FLOAT;
                                 num += GET_CHAR(0);
                                 EAT_CHAR(1);
@@ -509,6 +514,7 @@ void Lexer::tokenize() {
                     }
 
                     tokens.emplace_back(tk);
+                    if (isRange) consume(TokenType::SYM_DOT);
                     break;
                 }
                 // identifier

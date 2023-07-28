@@ -23,7 +23,7 @@ pub fn main() i32 {
     //} catch(e: Exception&) {
     //    System::println(e.what());
     //}
-    for r : new Range{0, 10} {
+    for r : 0..10 {
         System::println(r.value());
     }
 }
