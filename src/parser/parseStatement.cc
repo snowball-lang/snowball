@@ -37,6 +37,12 @@ Syntax::Node* Parser::parseStatement(Token pk) {
             break;
         }
 
+        case TokenType::KWORD_FOR: {
+            next();
+            return parseForLoop();
+            break;
+        }
+
         case TokenType::KWORD_WHILE:
         case TokenType::KWORD_DO: {
             next();

@@ -14,7 +14,6 @@ void LLVMBuilder::visit(ir::ReferenceTo* ref) {
     auto llvmReferencedValue = build(val.get());
 
     llvm::Value* value = nullptr;
-    llvmReferencedValue->dump();
     if (llvm::isa<llvm::LoadInst>(llvmReferencedValue)) {
         // It's already a load instruction, we can just use that
         auto load = llvm::cast<llvm::LoadInst>(llvmReferencedValue);

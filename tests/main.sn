@@ -23,5 +23,7 @@ pub fn main() i32 {
     //} catch(e: Exception&) {
     //    System::println(e.what());
     //}
-    let mut r = new Range{0, 10};
+    for r : new Range{0, 10} {
+        System::println(r.value());
+    }
 }

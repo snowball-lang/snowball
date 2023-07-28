@@ -145,7 +145,8 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                         if (auto index = utils::dyn_cast<ir::IndexExtract>(args.at(0))) {
                             createInsertValue(rightValue, index->getIndex(), leftValue, baseType);
                         } else {
-                            builder->CreateStore(rightValue, leftValue);
+                            //builder->CreateMemCpy(rightValue, llvm::MaybeAlign(), leftValue, llvm::MaybeAlign(), module->getDataLayout().getTypeAllocSize(leftValue->getType()), 0);
+                            builder->CreateStore(builder->CreateLoad(getLLVMType(baseType), rightValue), leftValue);
                         }
 
                         break;

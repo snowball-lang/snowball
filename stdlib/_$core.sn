@@ -178,6 +178,8 @@ pub class Iterable<_IteratorType: Core::Sized> {
     /// @brief The index of the iterator.
     let mut iter_index: i32 = 0;
   pub:
+    type IteratorType = Iter<_IteratorType>;
+
     /**
      * @brief Iterable constructor.
      * @note It creates an invalid iterable.
@@ -206,7 +208,7 @@ pub class Iterable<_IteratorType: Core::Sized> {
  */
 pub class Iter<_IteratorType: Core::Sized> {
     /// @brief if the iterator is valid
-    let valid: bool = false;
+    let _valid: bool = false;
     /// @brief the value of the iterator
     let _value: _IteratorType = CLib::null_ptr<?_IteratorType>();
   pub:
@@ -220,19 +222,25 @@ pub class Iter<_IteratorType: Core::Sized> {
      * @param[in] value The value of the iterator.
      */
     Iter(value: _IteratorType) : _value(value),
-      valid(true) {}
+      _valid(true) {}
     /**
      * @brief Returns the value of the iterator.
      * @return The value of the iterator.
      */
     fn [[internal_linkage, inline]] value() _IteratorType 
     { 
-      if !self.valid 
+      if !self._valid 
       {
-        raise new IndexError("Invalid iterator.");
+        raise new IndexError("Invalid iterator access!");
       }
       return self._value; 
     }
+    /**
+     * @brief Returns if the iterator is valid.
+     * @return If the iterator is valid.
+     */
+    fn [[internal_linkage, inline]] is_valid() bool 
+      { return self._valid; }
   pub:
     /**
      * @brief Returns an invalid iterator.

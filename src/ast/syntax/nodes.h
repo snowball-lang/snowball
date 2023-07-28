@@ -767,6 +767,32 @@ struct TryCatch : public AcceptorExtend<TryCatch, Base> {
 };
 
 /**
+ * @brief Representation of a for loop in the AST.
+ */
+struct ForLoop : public AcceptorExtend<ForLoop, Base> {
+    /// @brief The variable to iterate
+    std::string var;
+    /// @brief The expression to iterate
+    Expression::Base* expr;
+    /// @brief The block to execute
+    Block* block;
+
+  public:
+    ForLoop(std::string var, Expression::Base* expr, Block* block) 
+      : var(var), expr(expr), block(block){};
+
+    /// @return The variable to iterate
+    auto getVar() { return var; }
+    /// @return The expression to iterate
+    auto getExpr() { return expr; }
+    /// @return The block to execute
+    auto getBlock() { return block; }
+
+    // Set a visit handler for the generators
+    ACCEPT()
+};
+
+/**
  * @brief AST representation of a conditional statement that contains a
  *  `constexpr` expression as it's condition.
  */

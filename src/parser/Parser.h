@@ -311,6 +311,10 @@ class Parser {
      * catch         ::=  "catch" "(" [identifier] ":" [type] ")" "{" [block] "}"
      */
     Syntax::Statement::TryCatch* parseTryCatch();
+    /**
+     * for           ::=  "for" [expr] ":" [expr] "{" [block] "}"
+     */
+    Syntax::Statement::ForLoop* parseForLoop();
     /// @brief Parses a statement
     /// @return a statement
     Syntax::Node* parseStatement(Token pk);

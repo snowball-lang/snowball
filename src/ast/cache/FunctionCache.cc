@@ -54,6 +54,9 @@ std::map<std::string, T> getAllFunctionsByUUID(std::string uuid, std::map<std::s
 
 void Functions::performInheritance(types::DefinedType* ty, types::DefinedType* parent,
                                    bool allowConstructor) {
+    // Inherit all the way down
+    if (parent->getParent() != nullptr) 
+        performInheritance(ty, parent->getParent(), allowConstructor);
     auto parentUUID = parent->getUUID();
     auto childUUID = ty->getUUID();
     auto createdFuncs = getAllFunctionsByUUID(parentUUID, createdFunctions);
