@@ -76,12 +76,14 @@ int test(app::Options::TestOptions p_opts) {
     auto duration = duration_cast<milliseconds>(stop - start).count();
 
     if (!p_opts.silent) {
-        Logger::message("Finished", FMT("test target(s) in %s%i%sms", BOLD, duration, RESET));
-        Logger::message("Running", FMT("unittests (%s)", filename.c_str()));
-
-        Logger::message("Info", FMT("Snowball version: %s", _SNOWBALL_VERSION));
         auto time = std::chrono::system_clock::to_time_t(date);
-        Logger::message("Info", FMT("Build date: %s", std::ctime(&time)));
+        auto t = std::ctime(&time);
+        if (t[strlen(t)-1] == '\n') t[strlen(t)-1] = '\0';
+        Logger::message("Finished", FMT("test target(s) in %s%i%sms", BOLD, duration, RESET));
+        Logger::compiling(FMT("version: %s%s%s\n", BOLD, _SNOWBALL_VERSION, RESET), "Snowball");
+        Logger::compiling(FMT("Build date: %s%s%s\n", BOLD, t, RESET), "Date");
+        Logger::message("Running", FMT("unittests (%s)", filename.c_str()));
+        Logger::compiling("Good luck with the tests! 🙏😽\n", "Motivation");
     }
 
     char* args[] = {strdup(output.c_str()), NULL};

@@ -39,8 +39,8 @@ void Logger::reset_status() {
     printf("\33[2K\r");
     fflush(stdout);
 };
-void Logger::compiling(std::string message) {
-    printf("%s      Compiling%s %s", BCYN, RESET, message.c_str());
+void Logger::compiling(std::string message, std::string status) {
+    std::cout << BCYN << std::setw(15) << status << RESET << ' ' << message;
     fflush(stdout);
 };
 

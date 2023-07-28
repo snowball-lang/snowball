@@ -5,7 +5,6 @@ on:
       - created
   push:
   pull_request:
-
 jobs:
   build:
     runs-on: ${{ matrix.DIST == 'ce-specific' && 'ubuntu-20.04' || matrix.DIST }}
@@ -15,17 +14,20 @@ jobs:
           - ARCH: 'x86_64'
             DIST: 'ubuntu-20.04'
             NAME: 'linux'
-          - ARCH: 'x86_64'
-            DIST: 'ce-specific'
-            NAME: 'ce-specific'
           - ARCH: 'aarch64'
             DIST: 'ubuntu-20.04'
             NAME: 'linux'
-          #- ARCH: 'arm64'
-          #  DIST: 'macos-11'
-          #  NAME: 'darwin'
           - ARCH: 'x86_64'
-            DIST: 'm1max'
+            DIST: 'ce-specific'
+            NAME: 'ce-specific'
+          # - ARCH: 'arm64'
+          #   DIST: 'macos-11'
+          #   NAME: 'darwin'
+          - ARCH: 'x86_64'
+            DIST: 'macos-11'
+            NAME: 'darwin'
+          - ARCH: 'arm64'
+            DIST: 'macos-11'
             NAME: 'darwin'
           # - ARCH: 'x86_64'
           #   DIST: 'windows-latest'
@@ -48,7 +50,6 @@ jobs:
 
       - name: Build in Docker
         run: bash -ex build_scripts/release_build.sh
-
       - name: Install snowball
         run: sudo cmake --install .
 

@@ -86,6 +86,7 @@ fn [[
 ]] snowball_test(
   func: fn () => i32,
   name: char&,
+  index: i32,
   skip: bool = false,
   expect: i32 = 1
 ) i32 {
@@ -94,7 +95,7 @@ fn [[
     // TODO:
     tty = CLib::__internal::alloca_and_snprintf(25, "expecting \e[1m`%i`\e[0m", expect);
   }
-  CLib::printf(" Testing \e[1m%s\e[0m [%s] ... ", name, tty);
+  CLib::printf(" Testing (\e[1m#%i\e[0m) \e[1m%s\e[0m [%s] ... ", index, name, tty);
   // TODO: Add support for exceptions
   if !skip {
     try {

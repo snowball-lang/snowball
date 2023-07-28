@@ -31,6 +31,7 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
 
     auto end = llvm::BasicBlock::Create(builder->getContext(), "end", mainFunction);
     auto testFunction = module->getFunction("sn.test.try"); // Always match this
+    int testIndex = 1;
     for (auto [fn, llvmFunc] : ctx->tests) {
         auto name = fn->getNiceName();
         auto attrArgs = fn->getAttributeArgs(Attributes::TEST);
@@ -38,7 +39,7 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
         auto doesExpect = attrArgs.find("expect") != attrArgs.end();
         auto expect = doesExpect ? std::stoi(attrArgs["expect"]) : 1;
         auto namePtr = builder->CreateGlobalStringPtr(name, "test.alloca");
-        auto call = builder->CreateCall(testFunction, {llvmFunc, namePtr, builder->getInt1(shouldSkip), builder->getInt32(expect)});
+        auto call = builder->CreateCall(testFunction, {llvmFunc, namePtr, builder->getInt32(testIndex), builder->getInt1(shouldSkip), builder->getInt32(expect)});
         auto shouldContinue = builder->CreateICmpEQ(call, builder->getInt32(1));
         if (shouldSkip) {
             skipCount++;
@@ -61,6 +62,7 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
             builder->CreateBr(continueBlock);
             builder->SetInsertPoint(continueBlock);
         }
+        testIndex++;
     }
 
     if (ctx->tests.size() == 0) {
@@ -88,9 +90,14 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
                         {builder->CreateGlobalStringPtr(FMT("\n  %s? %%i%s test(s) skipped; ", BYEL, RESET), "test.msg"),
                          builder->getInt32(skipCount)});
     builder->CreateCall(printFunction,
-                        {builder->CreateGlobalStringPtr(FMT("\n  %s= %%i%s executed test(s) total\n\n", BOLD, RESET), "test.msg"),
+                        {builder->CreateGlobalStringPtr(FMT("\n  %s= %%i%s executed test(s) total\n"
+                                                            "  %s=> %%i%%%s of the tests passed. 🧪\n\n", BOLD, RESET, BOLD, RESET), "test.msg"),
                          builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), successCount),
-                                            builder->CreateLoad(builder->getInt32Ty(), failCount))});
+                                            builder->CreateLoad(builder->getInt32Ty(), failCount)),
+                         builder->CreateMul(builder->CreateSDiv(builder->CreateLoad(builder->getInt32Ty(), successCount),
+                                             builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), successCount),
+                                                                builder->CreateLoad(builder->getInt32Ty(), failCount))),
+                                            builder->getInt32(100))});
 
     builder->CreateBr(end);
     builder->SetInsertPoint(end);

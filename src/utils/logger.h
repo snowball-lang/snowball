@@ -28,7 +28,7 @@ class Logger {
 
     // status messages
     static void reset_status();
-    static void compiling(std::string message);
+    static void compiling(std::string message, std::string status = "Compiling");
 
     static std::string progress(float progress = 0);
     static std::string format(const char* p_format, ...);

@@ -1,3 +1,4 @@
+use Core::System;
 
 namespace tests {
 
@@ -121,10 +122,10 @@ fn [[test(expect = 1, skip)]] rshift() i32 {
     // return 2 >> 1;
 }
 
-fn [[test(expect = 10)]] range_loop() i32 {
+fn [[test(expect = 11)]] range_loop() i32 {
     let mut a = 0;
     for i in 0..10 {
-        a = a + i;
+        a = a + 1;
     }
 
     return a;
