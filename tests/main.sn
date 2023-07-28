@@ -23,7 +23,4 @@ pub fn main() i32 {
     //} catch(e: Exception&) {
     //    System::println(e.what());
     //}
-    for r : 0..10 {
-        System::println(r.value());
-    }
 }

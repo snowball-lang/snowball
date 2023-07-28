@@ -15,7 +15,10 @@ Syntax::Statement::ForLoop* Parser::parseForLoop() {
 
     auto var = assert_tok<TokenType::IDENTIFIER>("identifier").to_string();
     next();
-    assert_tok<TokenType::SYM_COLLON>("':'");
+    auto kword = assert_tok<TokenType::IDENTIFIER>("'in'").to_string();
+    if (kword != "in") {
+        createError<SYNTAX_ERROR>("Expected 'in' after for loop variable declaration!");
+    }
     auto expr = parseExpr();
     next();
     assert_tok<TokenType::BRACKET_LCURLY>("'{'");
