@@ -146,7 +146,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                             createInsertValue(rightValue, index->getIndex(), leftValue, baseType);
                         } else {
                             //builder->CreateMemCpy(rightValue, llvm::MaybeAlign(), leftValue, llvm::MaybeAlign(), module->getDataLayout().getTypeAllocSize(leftValue->getType()), 0);
-                            if (auto x = utils::cast<types::ReferenceType>(baseType))
+                            if (!utils::cast<types::ReferenceType>(baseType) && !llvm::isa<llvm::LoadInst>(rightValue))
                                 rightValue = builder->CreateLoad(getLLVMType(baseType), rightValue, ".load");
                             builder->CreateStore(rightValue, leftValue);
                         }

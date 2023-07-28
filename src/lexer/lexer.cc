@@ -470,7 +470,7 @@ void Lexer::tokenize() {
                         case INT: {
                             while (IS_NUM(GET_CHAR(0)) || GET_CHAR(0) == '.') {
                                 if (GET_CHAR(0) == '.' && mode == FLOAT) {
-                                    mode == INT;
+                                    mode = INT;
                                     num.erase(num.size() - 1);
                                     isRange = true;
                                     break; // It must be a range, right?
@@ -514,7 +514,11 @@ void Lexer::tokenize() {
                     }
 
                     tokens.emplace_back(tk);
-                    if (isRange) consume(TokenType::SYM_DOT);
+                    if (isRange) { // we add '..' if it's a range expr (1..5)
+                        consume(TokenType::SYM_DOT);
+                        consume(TokenType::SYM_DOT);
+                        this->char_ptr -= 1;
+                    }
                     break;
                 }
                 // identifier
