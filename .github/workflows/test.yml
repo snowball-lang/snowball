@@ -52,8 +52,12 @@ jobs:
         run: bash -ex build_scripts/release_build.sh
       - name: Install snowball
         run: |
+          set -x
           sudo make install
-          cp -r stdlib/ ~/.snowball/
+          mkdir -p ~/.snowball
+          cp -r stdlib/ ~/.snowball/stdlib
+          ls ~/.snowball
+          ls ~/.snowball/stdlib/
 
       - name: Execute tests
         run: |

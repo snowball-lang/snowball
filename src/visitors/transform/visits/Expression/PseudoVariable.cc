@@ -46,6 +46,12 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
         stringValue = std::to_string(p_node->getDBGInfo()->pos.second);
     } else if (pseudo == "SN_VERSION") {
         stringValue = _SNOWBALL_VERSION;
+    } else if (pseudo == "DATE") {
+        auto date = std::chrono::system_clock::now();
+        auto time = std::chrono::system_clock::to_time_t(date);
+        char buffer[12]; // __DATE__ format requires 12 characters (including null terminator)
+        std::strftime(buffer, sizeof(buffer), "%b %d %Y", std::localtime(&time));
+        stringValue = buffer;
     } else if (pseudo == "SN_FOLDER") {
         stringValue = fs::path(get_exe_folder()).remove_filename();
     } else if (auto [item, found] = ctx->getItem(pseudo); found) {
