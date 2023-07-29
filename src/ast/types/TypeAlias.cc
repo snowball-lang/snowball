@@ -16,30 +16,29 @@
 namespace snowball {
 namespace types {
 
-TypeAlias::TypeAlias(const std::string name, Type* base)
-    : AcceptorExtend(Kind::TYPE, name), base(base) { }
+TypeAlias::TypeAlias(const std::string name, Type* base) : AcceptorExtend(Kind::TYPE, name), base(base) { }
 std::string TypeAlias::getPrettyName() const {
-    auto baseName = base->getPrettyName();
-    auto base = module->isMain() ? "" : module->getName() + "::";
-    auto n = base + getName();
+  auto baseName = base->getPrettyName();
+  auto base = module->isMain() ? "" : module->getName() + "::";
+  auto n = base + getName();
 
-    std::string genericString; // Start args tag
-    if (generics.size() > 0) {
-        genericString = "<";
+  std::string genericString; // Start args tag
+  if (generics.size() > 0) {
+    genericString = "<";
 
-        for (auto g : generics) { genericString += g->getPrettyName(); }
+    for (auto g : generics) { genericString += g->getPrettyName(); }
 
-        genericString += ">";
-    }
+    genericString += ">";
+  }
 
-    return n + genericString + " { aka " + baseName + " }";
+  return n + genericString + " { aka " + baseName + " }";
 }
 
 std::string TypeAlias::getMangledName() const { return base->getMangledName(); }
 
 Syntax::Expression::TypeRef* TypeAlias::toRef() {
-    auto tRef = Syntax::TR(getName(), nullptr, this, getUUID());
-    return tRef;
+  auto tRef = Syntax::TR(getName(), nullptr, this, getUUID());
+  return tRef;
 }
 
 Type* TypeAlias::getBaseType() const { return base; }

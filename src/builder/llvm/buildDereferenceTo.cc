@@ -10,10 +10,10 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ir::DereferenceTo* ref) {
-    auto val = ref->getValue();
-    auto type = ref->getType();
+  auto val = ref->getValue();
+  auto type = ref->getType();
 
-    this->value = builder->CreateLoad(getLLVMType(type), build(val.get()));
+  this->value = builder->CreateLoad(getLLVMType(type), build(val.get()));
 }
 
 } // namespace codegen

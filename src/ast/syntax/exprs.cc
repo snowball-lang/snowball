@@ -18,32 +18,35 @@ FuncType::FuncType(std::vector<TypeRef*> args, TypeRef* returnValue, DBGSourceIn
 ReferenceType::ReferenceType(TypeRef* baseType, DBGSourceInfo* srcInfo)
     : baseType(baseType), TypeRef(baseType->getName() + "&", srcInfo){};
 PseudoVariable::PseudoVariable(std::string identifier) : identifier(identifier){};
-void PseudoVariable::setArgs(std::vector<Node*> args) { this->args = args; hasArguments = true; }
+void PseudoVariable::setArgs(std::vector<Node*> args) {
+  this->args = args;
+  hasArguments = true;
+}
 bool PseudoVariable::hasArgs() const { return hasArguments; }
 std::vector<Node*> PseudoVariable::getArgs() const { return args; }
 TypeRef::TypeRef(Expression::Base* p_ast, std::string p_name, DBGSourceInfo* p_dbg, std::string id)
     : internalAST(p_ast), types::Type(REF, p_name), id(id) {
-    setDBGInfo(p_dbg);
+  setDBGInfo(p_dbg);
 }
 TypeRef::TypeRef(std::string p_name, snowball::DBGSourceInfo* p_dbg, std::vector<TypeRef*> p_generics, std::string id)
     : generics(p_generics), types::Type(REF, p_name), id(id) {
-    setDBGInfo(p_dbg);
+  setDBGInfo(p_dbg);
 }
 TypeRef::TypeRef(std::string p_name, DBGSourceInfo* p_dbg, types::Type* internalType, std::string id)
     : internalType(internalType), types::Type(REF, p_name), id(id) {
-    setDBGInfo(p_dbg);
+  setDBGInfo(p_dbg);
 }
 NewInstance::NewInstance(DBGSourceInfo* dbg, std::vector<Base*> args, TypeRef* ty, bool createAtHeap)
     : type(ty), createAtHeap(createAtHeap) {
-    auto call = Syntax::N<FunctionCall>(ty->toRef(), args);
-    call->setDBGInfo(dbg);
-    this->call = call;
+  auto call = Syntax::N<FunctionCall>(ty->toRef(), args);
+  call->setDBGInfo(dbg);
+  this->call = call;
 }
 void TypeRef::setGenerics(std::vector<TypeRef*> g) { generics = g; }
 std::vector<Expression::TypeRef*> GenericIdentifier::getGenerics() const { return generics; }
 std::vector<TypeRef*> TypeRef::getGenerics() { return this->generics; }
 Param::Param(std::string name, TypeRef* type, Status generic) : name(name), type(type), status(generic) {
-    assert(generic <= 1 && generic >= 0 && "Invalid param status");
+  assert(generic <= 1 && generic >= 0 && "Invalid param status");
 } // clang-format off
 bool BinaryOp::is_assignment(OpType opType) {
     return opType == OpType::EQ || opType == OpType::PLUSEQ ||
@@ -103,74 +106,74 @@ std::string BinaryOp::to_string() const {
 } // clang-format on
 
 std::string FunctionCall::getArgumentsAsString(const std::vector<types::Type*> args) {
-    std::string result;
-    for (auto arg = args.begin(); arg != args.end(); ++arg) {
-        result += (*arg)->getPrettyName();
-        if (arg != args.end() && args.size() != 1) { result += ", "; }
-    }
+  std::string result;
+  for (auto arg = args.begin(); arg != args.end(); ++arg) {
+    result += (*arg)->getPrettyName();
+    if (arg != args.end() && args.size() != 1) { result += ", "; }
+  }
 
-    return result;
+  return result;
 }
 
 std::string GenericIdentifier::getNiceName() const {
-    std::string gens = "<";
+  std::string gens = "<";
 
-    int gIndex = 0;
-    for (auto t : generics) {
-        gens += t->getPrettyName();
-        if (gIndex != (generics.size() - 1)) { gens += ", "; }
+  int gIndex = 0;
+  for (auto t : generics) {
+    gens += t->getPrettyName();
+    if (gIndex != (generics.size() - 1)) { gens += ", "; }
 
-        gIndex++;
-    }
+    gIndex++;
+  }
 
-    return identifier + (gIndex > 0 ? gens + ">" : "");
+  return identifier + (gIndex > 0 ? gens + ">" : "");
 }
 
 #define CASE(t, r)                                                                                                     \
-    case TokenType::t: return r;
+  case TokenType::t: return r;
 ConstantValue::ConstantType ConstantValue::deduceType(TokenType ty) {
-    switch (ty) {
-        CASE(VALUE_STRING, String)
-        CASE(VALUE_CHAR, Char)
-        CASE(VALUE_FLOAT, Float)
-        CASE(VALUE_NUMBER, Number)
-        CASE(VALUE_BOOL, Bool)
+  switch (ty) {
+    CASE(VALUE_STRING, String)
+    CASE(VALUE_CHAR, Char)
+    CASE(VALUE_FLOAT, Float)
+    CASE(VALUE_NUMBER, Number)
+    CASE(VALUE_BOOL, Bool)
 
-        default: E<BUG>(FMT("Unknown token type, coudn't deduce! (ty: %i)", ty));
-    }
+    default: E<BUG>(FMT("Unknown token type, coudn't deduce! (ty: %i)", ty));
+  }
 
-    UNREACHABLE
+  UNREACHABLE
 }
 #undef CASE
 
 std::string TypeRef::getPrettyName() const {
-    std::string gens = "<";
+  std::string gens = "<";
 
-    int gIndex = 0;
-    for (auto t : generics) {
-        gens += t->getPrettyName();
-        if (gIndex != (generics.size() - 1)) { gens += ", "; }
+  int gIndex = 0;
+  for (auto t : generics) {
+    gens += t->getPrettyName();
+    if (gIndex != (generics.size() - 1)) { gens += ", "; }
 
-        gIndex++;
-    }
+    gIndex++;
+  }
 
-    return getName() + (gIndex > 0 ? gens + ">" : "");
+  return getName() + (gIndex > 0 ? gens + ">" : "");
 }
 
 } // namespace Expression
 
 std::string Macro::arguementTypeToString(Macro::ArguementType t) {
-    switch (t) {
-        case Macro::ArguementType::CONSTANT: return "constant";
-        case Macro::ArguementType::EXPRESSION: return "expression";
-        case Macro::ArguementType::STATEMENT: return "statement";
-        case Macro::ArguementType::CONSTANT_STRING: return "constant string";
-        case Macro::ArguementType::CONSTANT_NUMBER: return "constant number";
-        case Macro::ArguementType::CONSTANT_CHAR: return "constant char";
-        default: E<BUG>(FMT("Unknown arguement type '%i'!", t));
-    }
+  switch (t) {
+    case Macro::ArguementType::CONSTANT: return "constant";
+    case Macro::ArguementType::EXPRESSION: return "expression";
+    case Macro::ArguementType::STATEMENT: return "statement";
+    case Macro::ArguementType::CONSTANT_STRING: return "constant string";
+    case Macro::ArguementType::CONSTANT_NUMBER: return "constant number";
+    case Macro::ArguementType::CONSTANT_CHAR: return "constant char";
+    default: E<BUG>(FMT("Unknown arguement type '%i'!", t));
+  }
 
-    UNREACHABLE
+  UNREACHABLE
 }
 
 } // namespace Syntax

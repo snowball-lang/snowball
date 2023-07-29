@@ -17,10 +17,9 @@ Func::Func(std::string identifier,
            Func::FunctionArgs arguments,
            bool declaration,
            bool variadic,
-           types::DefinedType*
-                   parent)
+           types::DefinedType* parent)
     : declaration(declaration), variadic(variadic), identifier(identifier), parent(parent) {
-    setArgs(arguments);
+  setArgs(arguments);
 }
 
 Func::Func(std::string identifier,
@@ -28,10 +27,9 @@ Func::Func(std::string identifier,
                    body,
            bool declaration,
            bool variadic,
-           types::DefinedType*
-                   parent)
+           types::DefinedType* parent)
     : declaration(declaration), variadic(variadic), identifier(identifier), parent(parent) {
-    setBody(body);
+  setBody(body);
 }
 
 Func::Func(std::string identifier,
@@ -40,74 +38,73 @@ Func::Func(std::string identifier,
            Func::FunctionArgs arguments,
            bool declaration,
            bool variadic,
-           types::DefinedType*
-                   parent)
+           types::DefinedType* parent)
     : declaration(declaration), variadic(variadic), identifier(identifier), parent(parent) {
-    setBody(body);
-    setArgs(arguments);
+  setBody(body);
+  setArgs(arguments);
 }
 
 bool Func::isConstructor() const {
-    return (services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(identifier)) && hasParent();
+  return (services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(identifier)) && hasParent();
 }
 
 std::string Func::getIdentifier() { return identifier; }
 std::string Func::getName(bool ignoreOperators) {
-    if (services::OperatorService::isOperator(identifier) && (!ignoreOperators)) {
-        auto op = services::OperatorService::operatorID(identifier);
-        return services::OperatorService::operatorName(op);
-    }
+  if (services::OperatorService::isOperator(identifier) && (!ignoreOperators)) {
+    auto op = services::OperatorService::operatorID(identifier);
+    return services::OperatorService::operatorName(op);
+  }
 
-    return getIdentifier();
+  return getIdentifier();
 }
 
 Func::FunctionArgs Func::getArgs(bool ignoreSelf) const {
-    auto argv = arguments;
-    if (ignoreSelf && argv.size() > 0 && ((hasParent() && (!_static)) || isConstructor())) { argv.erase(argv.begin()); }
+  auto argv = arguments;
+  if (ignoreSelf && argv.size() > 0 && ((hasParent() && (!_static)) || isConstructor())) { argv.erase(argv.begin()); }
 
-    return argv;
+  return argv;
 }
 
 bool Func::isExternal(std::string name) { return !utils::startsWith(name, _SN_MANGLE_PREFIX); }
 
 std::string Func::getNiceName() {
-    auto base = hasParent() ? (parent->getPrettyName() + "::") : module->isMain() ? "" : module->getName() + "::";
-    auto n = base + getName();
+  auto base = hasParent() ? (parent->getPrettyName() + "::") : module->isMain() ? "" : module->getName() + "::";
+  auto n = base + getName();
 
-    return n;
+  return n;
 }
 
 std::string Func::getMangle() {
-    if (!externalName.empty()) return externalName;
-    if (hasAttribute(Attributes::NO_MANGLE)) return getIdentifier();
-    if (hasAttribute(Attributes::EXPORT)) {
-        auto args = getAttributeArgs(Attributes::EXPORT);
-        auto name = args.find("name");
-        if (name != args.end()) { return name->second; }
-    }
+  if (!externalName.empty()) return externalName;
+  if (hasAttribute(Attributes::NO_MANGLE)) return getIdentifier();
+  if (hasAttribute(Attributes::EXPORT)) {
+    auto args = getAttributeArgs(Attributes::EXPORT);
+    auto name = args.find("name");
+    if (name != args.end()) { return name->second; }
+  }
 
-    // TODO: add class to here
-    auto base = hasParent() ? parent->getMangledName() : module->getUniqueName();
+  // TODO: add class to here
+  auto base = hasParent() ? parent->getMangledName() : module->getUniqueName();
 
-    auto name = getIdentifier();
-    if (utils::endsWith(name, _SNOWBALL_LAMBDA_FUNCTIONS)) {
-        name = name.substr(0, name.size() - (_SNOWBALL_LAMBDA_SIZE + 1)) + ".$LmbdF";
-    }
+  auto name = getIdentifier();
+  if (utils::endsWith(name, _SNOWBALL_LAMBDA_FUNCTIONS)) {
+    name = name.substr(0, name.size() - (_SNOWBALL_LAMBDA_SIZE + 1)) + ".$LmbdF";
+  }
 
-    std::string prefix = (utils::startsWith(base, _SN_MANGLE_PREFIX) ? base : (_SN_MANGLE_PREFIX + base)) + +"&" +
-            std::to_string(name.size()) + name // Function name with modules
-            + "Cv" + std::to_string(getId());  // disambiguator
+  std::string prefix = (utils::startsWith(base, _SN_MANGLE_PREFIX) ? base : (_SN_MANGLE_PREFIX + base)) + +"&" +
+          std::to_string(name.size()) + name // Function name with modules
+          + "Cv" + std::to_string(getId());  // disambiguator
 
-    std::string mangledArgs = "Sa"; // Start args tag
+  std::string mangledArgs = "Sa"; // Start args tag
 
-    int argCounter = 1;
-    for (auto a : arguments) {
-        mangledArgs += "A" + std::to_string(argCounter) + a.second->getType()->getMangledName();
-        argCounter++;
-    }
+  int argCounter = 1;
+  for (auto a : arguments) {
+    mangledArgs += "A" + std::to_string(argCounter) + a.second->getType()->getMangledName();
+    argCounter++;
+  }
 
-    std::string mangled = prefix + mangledArgs + "FnE"; // FnE = end of function
-    return mangled;
+  std::string mangled = prefix + mangledArgs + "FnE"; // FnE = end of function
+  return mangled;
 }
 
 } // namespace ir

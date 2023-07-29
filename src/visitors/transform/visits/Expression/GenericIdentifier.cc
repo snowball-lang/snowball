@@ -8,34 +8,33 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Expression::GenericIdentifier) {
-    auto generics = utils::vector_iterate<Expression::TypeRef*, types::Type*>(
-            p_node->getGenerics(), [&](Expression::TypeRef* ty) { return transformType(ty); });
+  auto generics = utils::vector_iterate<Expression::TypeRef*, types::Type*>(
+          p_node->getGenerics(), [&](Expression::TypeRef* ty) { return transformType(ty); });
 
-    auto name = p_node->getIdentifier();
-    auto [value, type, functions, overloads, mod] =
-            getFromIdentifier(p_node->getDBGInfo(), name, p_node->getGenerics());
+  auto name = p_node->getIdentifier();
+  auto [value, type, functions, overloads, mod] = getFromIdentifier(p_node->getDBGInfo(), name, p_node->getGenerics());
 
-    if (value) {
-        E<VARIABLE_ERROR>(p_node, "Values cant contain generics!");
-    } else if (functions || overloads) {
-        auto c = getFunction(p_node,
-                             {value, type, functions, overloads, mod,
-                              /*TODO: test this: */ false},
-                             name,
-                             {},
-                             p_node->getGenerics(),
-                             true);
+  if (value) {
+    E<VARIABLE_ERROR>(p_node, "Values cant contain generics!");
+  } else if (functions || overloads) {
+    auto c = getFunction(p_node,
+                         {value, type, functions, overloads, mod,
+                          /*TODO: test this: */ false},
+                         name,
+                         {},
+                         p_node->getGenerics(),
+                         true);
 
-        auto var = builder.createValueExtract(p_node->getDBGInfo(), c);
-        this->value = var;
-        return;
-    } else if (type) {
-        E<VARIABLE_ERROR>(p_node, "Can't use types as values!");
-    } else if (mod) {
-        E<VARIABLE_ERROR>(p_node, "Can't use modules as values!");
-    }
+    auto var = builder.createValueExtract(p_node->getDBGInfo(), c);
+    this->value = var;
+    return;
+  } else if (type) {
+    E<VARIABLE_ERROR>(p_node, "Can't use types as values!");
+  } else if (mod) {
+    E<VARIABLE_ERROR>(p_node, "Can't use modules as values!");
+  }
 
-    assert(false && "BUG: Unhandled value type!");
+  assert(false && "BUG: Unhandled value type!");
 }
 
 } // namespace Syntax

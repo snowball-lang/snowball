@@ -7,7 +7,7 @@ namespace snowball {
 namespace Syntax {
 
 #define ACCEPT(Node)                                                                                                   \
-    void Node::accept(Syntax::Visitor* v) { v->visit(this); }
+  void Node::accept(Syntax::Visitor* v) { v->visit(this); }
 #include "../../defs/accepts.def"
 
 } // namespace Syntax

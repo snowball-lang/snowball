@@ -28,30 +28,30 @@ using namespace std::chrono;
 using namespace snowball::utils;
 
 int _main(int argc, char** argv) {
-    try {
-        if (argc == 1) {
-            app::CLI::help();
-            return EXIT_SUCCESS;
-        }
-
-        app::CLI* cli = new app::CLI(argc, argv);
-        app::Options opts = cli->parse();
-
-        if (opts.command == app::Options::BUILD) {
-            return app::commands::build(opts.build_opts);
-        } else if (opts.command == app::Options::RUN) {
-            return app::commands::run(opts.run_opts);
-        } else if (opts.command == app::Options::TEST) {
-            return app::commands::test(opts.test_opts);
-        } else if (opts.command == app::Options::INIT) {
-            return app::commands::init(opts.init_opts);
-        } else {
-            throw SNError(Error::TODO, FMT("Command with type %i not yet supported", opts.command));
-        }
-    } catch (const SNError& error) {
-        error.print_error();
-        return EXIT_FAILURE;
+  try {
+    if (argc == 1) {
+      app::CLI::help();
+      return EXIT_SUCCESS;
     }
 
-    return EXIT_SUCCESS;
+    app::CLI* cli = new app::CLI(argc, argv);
+    app::Options opts = cli->parse();
+
+    if (opts.command == app::Options::BUILD) {
+      return app::commands::build(opts.build_opts);
+    } else if (opts.command == app::Options::RUN) {
+      return app::commands::run(opts.run_opts);
+    } else if (opts.command == app::Options::TEST) {
+      return app::commands::test(opts.test_opts);
+    } else if (opts.command == app::Options::INIT) {
+      return app::commands::init(opts.init_opts);
+    } else {
+      throw SNError(Error::TODO, FMT("Command with type %i not yet supported", opts.command));
+    }
+  } catch (const SNError& error) {
+    error.print_error();
+    return EXIT_FAILURE;
+  }
+
+  return EXIT_SUCCESS;
 }

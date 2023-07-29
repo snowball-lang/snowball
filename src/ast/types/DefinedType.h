@@ -29,132 +29,131 @@ namespace types {
  * a new initialization of the object is required.
  */
 class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
-  public:
-    /**
-     * @brief A class field represents all of the "elements" a
-     *  type has stored into it.
-     *
-     * @note The number of items does not affect whether this type
-     *  is eqaul to another type.
-     */
-    struct ClassField : public Syntax::Statement::Privacy, public DBGObject {
-        explicit ClassField(const std::string& name,
-                            Type*
-                                    type,
-                            Privacy privacy = PRIVATE,
-                            Syntax::Expression::Base* initializedValue = nullptr,
-                            bool isMutable = false);
-        const std::string name;
-        Type* type;
+public:
+  /**
+   * @brief A class field represents all of the "elements" a
+   *  type has stored into it.
+   *
+   * @note The number of items does not affect whether this type
+   *  is eqaul to another type.
+   */
+  struct ClassField : public Syntax::Statement::Privacy, public DBGObject {
+    explicit ClassField(const std::string& name,
+                        Type* type,
+                        Privacy privacy = PRIVATE,
+                        Syntax::Expression::Base* initializedValue = nullptr,
+                        bool isMutable = false);
+    const std::string name;
+    Type* type;
 
-        Syntax::Expression::Base* initializedValue = nullptr;
+    Syntax::Expression::Base* initializedValue = nullptr;
 
-        bool isMutable = false;
-        bool initialized = false;
-    };
+    bool isMutable = false;
+    bool initialized = false;
+  };
 
-    friend AcceptorExtend;
+  friend AcceptorExtend;
 
-  private:
-    /// @brief a list of fields this class has
-    std::vector<ClassField*> fields;
-    /// @brief Definition of where in the stack this class is stored
-    /// @example [module name].MyClass:2
-    std::string uuid;
-    /// @brief A module where the type is defined.
-    std::shared_ptr<ir::Module> module;
-    /// @brief Parent class where the class in inherited from
-    DefinedType* parent = nullptr;
-    /// @brief VTable holding all it's functions
-    std::vector<std::shared_ptr<ir::Func>> classVtable;
-    /// @brief The ast representation for the type
-    Syntax::Statement::DefinedTypeDef* ast = nullptr;
-    /// @brief Whether or not the type is a struct
-    bool _struct = false;
+private:
+  /// @brief a list of fields this class has
+  std::vector<ClassField*> fields;
+  /// @brief Definition of where in the stack this class is stored
+  /// @example [module name].MyClass:2
+  std::string uuid;
+  /// @brief A module where the type is defined.
+  std::shared_ptr<ir::Module> module;
+  /// @brief Parent class where the class in inherited from
+  DefinedType* parent = nullptr;
+  /// @brief VTable holding all it's functions
+  std::vector<std::shared_ptr<ir::Func>> classVtable;
+  /// @brief The ast representation for the type
+  Syntax::Statement::DefinedTypeDef* ast = nullptr;
+  /// @brief Whether or not the type is a struct
+  bool _struct = false;
 
-  public:
-    DefinedType(const std::string& name,
-                const std::string uuid,
-                std::shared_ptr<ir::Module>
-                        module,
-                Syntax::Statement::DefinedTypeDef* ast = nullptr,
-                std::vector<ClassField*> fields = {},
-                DefinedType* parent = nullptr,
-                std::vector<Type*> generics = {},
-                bool isStruct = false);
-    DefinedType(const DefinedType&) = default;
-    DefinedType& operator=(DefinedType const&) = delete;
-    /**
-     * @param other another type to check.
-     *
-     * @note Class types will only be checked
-     *  if the @param other is also a defined type.
-     *
-     *  For other types such as: function types and
-     *  primitive types, this function will automatically
-     *  return false.
-     */
-    virtual bool is(Type* other) const override {
-        if (auto c = utils::cast<DefinedType>(other)) { return is(c); }
+public:
+  DefinedType(const std::string& name,
+              const std::string uuid,
+              std::shared_ptr<ir::Module>
+                      module,
+              Syntax::Statement::DefinedTypeDef* ast = nullptr,
+              std::vector<ClassField*> fields = {},
+              DefinedType* parent = nullptr,
+              std::vector<Type*> generics = {},
+              bool isStruct = false);
+  DefinedType(const DefinedType&) = default;
+  DefinedType& operator=(DefinedType const&) = delete;
+  /**
+   * @param other another type to check.
+   *
+   * @note Class types will only be checked
+   *  if the @param other is also a defined type.
+   *
+   *  For other types such as: function types and
+   *  primitive types, this function will automatically
+   *  return false.
+   */
+  virtual bool is(Type* other) const override {
+    if (auto c = utils::cast<DefinedType>(other)) { return is(c); }
 
-        return false;
-    }
+    return false;
+  }
 
-    /**
-     * @brief Check whether one defiend type equals
-     *  another defined type.
-     *
-     * @param other Type to check
-     * @return true/false depending on the equality
-     */
-    virtual bool is(DefinedType* other) const;
+  /**
+   * @brief Check whether one defiend type equals
+   *  another defined type.
+   *
+   * @param other Type to check
+   * @return true/false depending on the equality
+   */
+  virtual bool is(DefinedType* other) const;
 
-    /// @brief Get the type represented as a "human-readable" string
-    std::string getPrettyName() const override;
-    /// @return the mangled version of the type
-    std::string getMangledName() const override;
-    /// @return The ast representation for the type
-    Syntax::Statement::DefinedTypeDef* getAST() const;
-    /// @return The size of the class virtual table
-    int getVtableSize();
-    /// @brief Increase the size of the virtual table
-    int addVtableItem(std::shared_ptr<ir::Func> f);
-    /// @return a vector containing all the functions in a vtable
-    std::vector<std::shared_ptr<ir::Func>> getVTable() const;
-    /// @return the parent class it inherits from
-    /// @note It may be std::nullptr if it does not inherit from
-    ///  anything!
-    auto getParent() const { return parent; }
-    /// @brief Set the parent class it inherits from
-    void setParent(DefinedType* p) { parent = p; }
-    /// @return true/false depending on whether the class has a parent
-    auto hasParent() const { return parent != nullptr; }
-    /// @return A list containing all the fields declared for the class
-    /// @note It does not include the parent fields!
-    auto getFields() const { return fields; }
-    /// @brief Set the fields for the class
-    void setFields(std::vector<ClassField*> fields) { this->fields = fields; }
-    /// @brief Append a new field (ClassField) to the list
-    void addField(ClassField* f);
-    /// @c Type::toRef() for information about this function.
-    /// @note It essentially does the same thing except it adds
-    ///  generics if needed
-    Syntax::Expression::TypeRef* toRef() override;
-    /// @return true/false depending on whether the type is a struct
-    bool isStruct() const { return _struct; }
+  /// @brief Get the type represented as a "human-readable" string
+  std::string getPrettyName() const override;
+  /// @return the mangled version of the type
+  std::string getMangledName() const override;
+  /// @return The ast representation for the type
+  Syntax::Statement::DefinedTypeDef* getAST() const;
+  /// @return The size of the class virtual table
+  int getVtableSize();
+  /// @brief Increase the size of the virtual table
+  int addVtableItem(std::shared_ptr<ir::Func> f);
+  /// @return a vector containing all the functions in a vtable
+  std::vector<std::shared_ptr<ir::Func>> getVTable() const;
+  /// @return the parent class it inherits from
+  /// @note It may be std::nullptr if it does not inherit from
+  ///  anything!
+  auto getParent() const { return parent; }
+  /// @brief Set the parent class it inherits from
+  void setParent(DefinedType* p) { parent = p; }
+  /// @return true/false depending on whether the class has a parent
+  auto hasParent() const { return parent != nullptr; }
+  /// @return A list containing all the fields declared for the class
+  /// @note It does not include the parent fields!
+  auto getFields() const { return fields; }
+  /// @brief Set the fields for the class
+  void setFields(std::vector<ClassField*> fields) { this->fields = fields; }
+  /// @brief Append a new field (ClassField) to the list
+  void addField(ClassField* f);
+  /// @c Type::toRef() for information about this function.
+  /// @note It essentially does the same thing except it adds
+  ///  generics if needed
+  Syntax::Expression::TypeRef* toRef() override;
+  /// @return true/false depending on whether the type is a struct
+  bool isStruct() const { return _struct; }
 
-    /// @brief Whether or not the type has a vtable
-    bool hasVtable() const { return classVtable.size() > 0; }
+  /// @brief Whether or not the type has a vtable
+  bool hasVtable() const { return classVtable.size() > 0; }
 
-    /// @brief override function.
-    virtual bool canCast(Type* ty) const override;
-    virtual bool canCast(DefinedType* ty) const;
+  /// @brief override function.
+  virtual bool canCast(Type* ty) const override;
+  virtual bool canCast(DefinedType* ty) const;
 
-  public:
-    /// @brief If the class has a constructor
-    bool hasConstructor = false;
+public:
+  /// @brief If the class has a constructor
+  bool hasConstructor = false;
 
-    SNOWBALL_TYPE_COPIABLE(DefinedType)
+  SNOWBALL_TYPE_COPIABLE(DefinedType)
 };
 
 }; // namespace types

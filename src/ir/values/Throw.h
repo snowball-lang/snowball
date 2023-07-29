@@ -21,21 +21,21 @@ namespace ir {
  * @see https://docs.oracle.com/javase/tutorial/essential/exceptions/throwing.html
  */
 class Throw : public AcceptorExtend<Throw, Value> {
-    // Expression used as value for the throw statement
-    std::shared_ptr<Value> expr = nullptr;
+  // Expression used as value for the throw statement
+  std::shared_ptr<Value> expr = nullptr;
 
-  public:
-    explicit Throw(std::shared_ptr<Value> expr) : expr(expr){};
+public:
+  explicit Throw(std::shared_ptr<Value> expr) : expr(expr){};
 
-    /**
-     * @return value to throw
-     * @note The value may be std::nullptr because
-     *  the user might do `throw;` for void functions
-     */
-    auto getExpr() { return expr; }
+  /**
+   * @return value to throw
+   * @note The value may be std::nullptr because
+   *  the user might do `throw;` for void functions
+   */
+  auto getExpr() { return expr; }
 
-    // Set a visit handler for the generators
-    SN_GENERATOR_VISITS
+  // Set a visit handler for the generators
+  SN_GENERATOR_VISITS
 };
 
 } // namespace ir

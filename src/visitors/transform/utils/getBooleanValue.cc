@@ -9,11 +9,11 @@ namespace snowball {
 namespace Syntax {
 
 std::shared_ptr<ir::Value> Transformer::getBooleanValue(std::shared_ptr<ir::Value> value) {
-    auto boolType = ctx->getBoolType();
-    if (utils::cast<types::BoolType>(value->getType())) { return value; }
-    if (auto v = tryCast(value, boolType); v != nullptr) { return utils::dyn_cast<ir::Value>(v); }
+  auto boolType = ctx->getBoolType();
+  if (utils::cast<types::BoolType>(value->getType())) { return value; }
+  if (auto v = tryCast(value, boolType); v != nullptr) { return utils::dyn_cast<ir::Value>(v); }
 
-    assert(false && "TODO: booleans for non-numeric types");
+  assert(false && "TODO: booleans for non-numeric types");
 }
 
 } // namespace Syntax

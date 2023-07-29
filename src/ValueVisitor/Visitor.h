@@ -24,14 +24,14 @@ namespace codegen {
  * type checking and for generating llvm ir.
  */
 class ValueVisitor {
-  public:
-    /**
-     * @brief Start the codegen process
-     *
-     * Transform the value tree into an output the
-     * can use for another process.
-     */
-    virtual void codegen() = 0;
+public:
+  /**
+   * @brief Start the codegen process
+   *
+   * Transform the value tree into an output the
+   * can use for another process.
+   */
+  virtual void codegen() = 0;
 
 #define VISIT(n) virtual void visit(ir::n*) = 0;
 #include "../defs/visits.def"

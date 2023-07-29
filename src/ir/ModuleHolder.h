@@ -9,16 +9,16 @@ namespace ir {
 
 /// Container class that holds a module pointer
 class ModuleHolder {
-  protected:
-    std::shared_ptr<Module> module;
+protected:
+  std::shared_ptr<Module> module;
 
-  public:
-    ModuleHolder() = default;
+public:
+  ModuleHolder() = default;
 
-    /// @brief Setter for a module pointer
-    void setModule(std::shared_ptr<Module> p_mod) { module = p_mod; }
-    /// @return A module pointer
-    std::shared_ptr<Module> getModule() { return module; }
+  /// @brief Setter for a module pointer
+  void setModule(std::shared_ptr<Module> p_mod) { module = p_mod; }
+  /// @return A module pointer
+  std::shared_ptr<Module> getModule() { return module; }
 };
 
 } // namespace ir

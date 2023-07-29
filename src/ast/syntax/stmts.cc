@@ -41,7 +41,7 @@ std::vector<Expression::Base*> ConstructorDef::getSuperArgs() const { return sup
 std::vector<Expression::Base*>::iterator ConstructorDef::superArgsBegin() { return superArgs.begin(); }
 std::vector<Expression::Base*>::iterator ConstructorDef::superArgsEnd() { return superArgs.end(); }
 std::map<Expression::Identifier*, Expression::Base*>::iterator ConstructorDef::initArgsBegin() {
-    return initArgs.begin();
+  return initArgs.begin();
 }
 std::map<Expression::Identifier*, Expression::Base*>::iterator ConstructorDef::initArgsEnd() { return initArgs.end(); }
 Namespace::Namespace(std::string name, std::vector<Node*> body) : body(body), name(name) { }

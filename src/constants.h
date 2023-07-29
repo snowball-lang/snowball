@@ -13,8 +13,8 @@ extern "C" {
 #if !defined(_SNOWBALL_VERSION) || !defined(_SNOWBALL_VERSION_NUMBER)
 #error "_SNOWBALL_VERSION and _SNOWBALL_VERSION_NUMBER must be defined!"
 #endif
-#define _SNOWBALL_BUILD_DATE     __DATE__
-#define _SNOWBALL_BUILD_TIME     __TIME__
+#define _SNOWBALL_BUILD_DATE __DATE__
+#define _SNOWBALL_BUILD_TIME __TIME__
 
 // Exports
 #ifdef _WIN32
@@ -57,7 +57,7 @@ extern "C" {
 
 #ifndef _SNOWBALL_ENABLE_INT64
 #define _SNOWBALL_ENABLE_INT64                                                                                         \
-    0 // if 1 enable snowball_int_t to be a 64bit int (instead of a                        \
+  0 // if 1 enable snowball_int_t to be a 64bit int (instead of a                        \
 				// 32bit int)
 #endif
 
@@ -72,7 +72,7 @@ typedef int32_t snowball_int_t;
 #endif
 
 #define UNREACHABLE                                                                                                    \
-    do { std::abort(); } while (0);
+  do { std::abort(); } while (0);
 
 // Debug
 #undef NDEBUG
@@ -94,9 +94,9 @@ typedef int32_t snowball_int_t;
 #define _SNOWBALL_FREE_DEBUG     0 // todo
 
 #define PRINT_LINE(...)                                                                                                \
-    printf(__VA_ARGS__);                                                                                               \
-    printf("\n");                                                                                                      \
-    fflush(stdout);
+  printf(__VA_ARGS__);                                                                                                 \
+  printf("\n");                                                                                                        \
+  fflush(stdout);
 
 #if _SNOWBALL_LEXER_DEBUG
 #define DEBUG_LEXER(...) PRINT_LINE(__VA_ARGS__)
@@ -118,8 +118,8 @@ typedef int32_t snowball_int_t;
 
 #if _SNOWBALL_SYMTABLE_DEBUG
 #define DEBUG_SYMTABLE(depth, ...)                                                                                     \
-    printf("%*s", depth * 4, " ");                                                                                     \
-    PRINT_LINE(__VA_ARGS__)
+  printf("%*s", depth * 4, " ");                                                                                       \
+  PRINT_LINE(__VA_ARGS__)
 #else
 #define DEBUG_SYMTABLE(...)
 #endif
@@ -237,7 +237,7 @@ typedef int32_t snowball_int_t;
 #define _SNOWBALL_KEYWORD__CATCH     "catch"
 
 #define _SNOWBALL_LAMBDA_FUNCTIONS                                                                                     \
-    { '(', 'l', 'a', 'm', 'b', 'd', 'a', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ')', 0 }
+  { '(', 'l', 'a', 'm', 'b', 'd', 'a', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ')', 0 }
 #define _SNOWBALL_LAMBDA_SIZE 17
 
 // LLVM IR constants
@@ -250,9 +250,9 @@ typedef int32_t snowball_int_t;
 // Compiler lines
 #if 0
 #define _SNOWBALL_COMPILER_ENTRY                                                                                       \
-    "Snowball " _SNOWBALL_VERSION " (" _SNOWBALL_BUILD_TYPE ": " _SNOWBALL_BUILD_DATE ", " _SNOWBALL_BUILD_TIME ")"
+  "Snowball " _SNOWBALL_VERSION " (" _SNOWBALL_BUILD_TYPE ": " _SNOWBALL_BUILD_DATE ", " _SNOWBALL_BUILD_TIME ")"
 #define _SNOWBALL_COMPILER_ENTRY_BK                                                                                    \
-    "\
+  "\
 Snowball " _SNOWBALL_VERSION " (" _SNOWBALL_BUILD_TYPE ": " _SNOWBALL_BUILD_DATE ", " _SNOWBALL_BUILD_TIME ")\n\
 Type \"help\", \"copyright\", \"credits\" or \"license\" for more information.\
 "
@@ -261,7 +261,7 @@ Type \"help\", \"copyright\", \"credits\" or \"license\" for more information.\
 // Licenses
 #define _SNOWBALL_LICENSE_NAME "MIT"
 #define _SNOWBALL_LICENSE_TEXT                                                                                         \
-    "\
+  "\
 The MIT License (MIT)\n\
 \n\
 Copyright (c) 2022 mauro-balades <mauro.balades@tutanota.com>\n\

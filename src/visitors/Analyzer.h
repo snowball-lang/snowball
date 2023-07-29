@@ -44,29 +44,29 @@ namespace Syntax {
  */
 class Analyzer : public AcceptorExtend<Analyzer, Visitor> {
 #include "../defs/accepts.def"
-  public:
-    Analyzer(SourceInfo* srci) : AcceptorExtend(srci){};
+public:
+  Analyzer(SourceInfo* srci) : AcceptorExtend(srci){};
 
-    /**
-     * A function that executes a pass manager on a vector of syntax
-     * nodes.
-     *
-     * The run function takes a vector of syntax nodes as its argument
-     * and iterates through them, calling the accept function on each
-     * node and passing this object as the argument. The accept function
-     * then invokes the appropriate method for the specific node type.
-     * This allows the pass manager to traverse the syntax tree and
-     * perform analysis or transformation on each node as needed.
-     *
-     * @param nodes The vector of syntax nodes to be processed by the
-     * pass manager.
-     */
-    void run(std::vector<Syntax::Node*> nodes) {
-        for (auto n : nodes) { n->accept(this); }
-    }
+  /**
+   * A function that executes a pass manager on a vector of syntax
+   * nodes.
+   *
+   * The run function takes a vector of syntax nodes as its argument
+   * and iterates through them, calling the accept function on each
+   * node and passing this object as the argument. The accept function
+   * then invokes the appropriate method for the specific node type.
+   * This allows the pass manager to traverse the syntax tree and
+   * perform analysis or transformation on each node as needed.
+   *
+   * @param nodes The vector of syntax nodes to be processed by the
+   * pass manager.
+   */
+  void run(std::vector<Syntax::Node*> nodes) {
+    for (auto n : nodes) { n->accept(this); }
+  }
 
-    // Default destructor
-    ~Analyzer() noexcept = default;
+  // Default destructor
+  ~Analyzer() noexcept = default;
 };
 
 } // namespace Syntax

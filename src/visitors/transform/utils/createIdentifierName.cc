@@ -8,27 +8,27 @@ namespace snowball {
 namespace Syntax {
 
 std::string TransformContext::createIdentifierName(const std::string name, bool includeBase) {
-    std::string result;
-    // bool alreadyGenerated = name.find('.') != std::string::npos;
+  std::string result;
+  // bool alreadyGenerated = name.find('.') != std::string::npos;
 
-    if (includeBase) {
-        // alreadyGenerated = true;
-        if (currentClass != nullptr) {
-            result = currentClass->getUUID() + "." + name;
-        } else {
-            auto currentModule = module->getUniqueName();
+  if (includeBase) {
+    // alreadyGenerated = true;
+    if (currentClass != nullptr) {
+      result = currentClass->getUUID() + "." + name;
+    } else {
+      auto currentModule = module->getUniqueName();
 
-            // TODO: include class name if exists.
-            result = currentModule + "." + name;
-        }
+      // TODO: include class name if exists.
+      result = currentModule + "." + name;
     }
+  }
 
-    if (!includeBase) {
-        auto currentModule = module->getUniqueName();
-        result = currentModule + "." + name;
-    }
+  if (!includeBase) {
+    auto currentModule = module->getUniqueName();
+    result = currentModule + "." + name;
+  }
 
-    return result;
+  return result;
 }
 
 } // namespace Syntax

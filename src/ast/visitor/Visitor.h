@@ -1,5 +1,5 @@
 
-#include "../../srci/SourcedObject.h"
+#include "../../sourceInfo/SourcedObject.h"
 #include "../syntax/nodes.h"
 
 #include <assert.h>
@@ -10,15 +10,15 @@
 #define __SNOWBALL_AST_VISITOR_H_
 
 #define ACCEPT(Node)                                                                                                   \
-    virtual void visit(Node* p_node) { assert(false && "BUG: Visitor::visit called"); }
+  virtual void visit(Node* p_node) { assert(false && "BUG: Visitor::visit called"); }
 
 namespace snowball {
 namespace Syntax {
 
 class Visitor : public SrcObject {
-  public:
-    Visitor(SourceInfo* srci) : SrcObject(srci){};
-    virtual void visitGlobal(std::vector<Node*>);
+public:
+  Visitor(SourceInfo* srci) : SrcObject(srci){};
+  virtual void visitGlobal(std::vector<Node*>);
 
 #include "../../defs/accepts.def"
 };

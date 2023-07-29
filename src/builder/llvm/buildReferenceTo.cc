@@ -10,26 +10,26 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ir::ReferenceTo* ref) {
-    auto val = ref->getValue();
-    auto llvmReferencedValue = build(val.get());
+  auto val = ref->getValue();
+  auto llvmReferencedValue = build(val.get());
 
-    llvm::Value* value = nullptr;
-    if (llvm::isa<llvm::LoadInst>(llvmReferencedValue)) {
-        // It's already a load instruction, we can just use that
-        auto load = llvm::cast<llvm::LoadInst>(llvmReferencedValue);
-        value = load->getOperand(0);
-    } else {
-        // TODO: actually do fix this
-        // assert(llvmReferencedValue->getType()->isPointerTy());
-        //auto currentBlock = builder->GetInsertBlock();
-        //builder->SetInsertPoint(ctx->getCurrentFunction()->getEntryBlock().getTerminator());
-        //auto alloca = builder->CreateAlloca(getLLVMType(val->getType()));
-        //builder->SetInsertPoint(currentBlock);
-        //builder->CreateStore(llvmReferencedValue, alloca);
-        value = llvmReferencedValue;
-    }
+  llvm::Value* value = nullptr;
+  if (llvm::isa<llvm::LoadInst>(llvmReferencedValue)) {
+    // It's already a load instruction, we can just use that
+    auto load = llvm::cast<llvm::LoadInst>(llvmReferencedValue);
+    value = load->getOperand(0);
+  } else {
+    // TODO: actually do fix this
+    // assert(llvmReferencedValue->getType()->isPointerTy());
+    // auto currentBlock = builder->GetInsertBlock();
+    // builder->SetInsertPoint(ctx->getCurrentFunction()->getEntryBlock().getTerminator());
+    // auto alloca = builder->CreateAlloca(getLLVMType(val->getType()));
+    // builder->SetInsertPoint(currentBlock);
+    // builder->CreateStore(llvmReferencedValue, alloca);
+    value = llvmReferencedValue;
+  }
 
-    this->value = value;
+  this->value = value;
 }
 
 } // namespace codegen

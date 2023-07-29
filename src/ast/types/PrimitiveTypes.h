@@ -33,17 +33,17 @@
 namespace snowball {
 namespace types {
 class PrimitiveType : public AcceptorExtend<PrimitiveType, Type> {
-  public:
-    PrimitiveType(std::string p_name) : AcceptorExtend(Kind::TYPE, p_name) { }
-    SNOWBALL_TYPE_COPIABLE(PrimitiveType)
+public:
+  PrimitiveType(std::string p_name) : AcceptorExtend(Kind::TYPE, p_name) { }
+  SNOWBALL_TYPE_COPIABLE(PrimitiveType)
 };
 
 /// @brief C object pointer type (it's the equivalent of `void*` in C)
 class CObjectType : public AcceptorExtend<CObjectType, PrimitiveType> {
-  public:
-    CObjectType() : AcceptorExtend(SN_COB_TYPE) { }
-    virtual bool canCast(Type* ty) const override { return true; }
-    SNOWBALL_TYPE_COPIABLE(CObjectType)
+public:
+  CObjectType() : AcceptorExtend(SN_COB_TYPE) { }
+  virtual bool canCast(Type* ty) const override { return true; }
+  SNOWBALL_TYPE_COPIABLE(CObjectType)
 };
 
 /**
@@ -51,82 +51,82 @@ class CObjectType : public AcceptorExtend<CObjectType, PrimitiveType> {
  *  a numeric type. (e.g. i32, f64, bool, etc...)
  */
 class NumericType : public AcceptorExtend<NumericType, PrimitiveType> {
-  public:
-    NumericType(std::string p_name) : AcceptorExtend(p_name){};
+public:
+  NumericType(std::string p_name) : AcceptorExtend(p_name){};
 
-    /// @brief override function. All numeric types
-    ///  can cast to any other numeric types.
-    virtual bool canCast(Type* ty) const override {
-        SNOWBALL_COBJ_CAST_CHECK
-        return NumericType::isNumericType(ty);
-    }
+  /// @brief override function. All numeric types
+  ///  can cast to any other numeric types.
+  virtual bool canCast(Type* ty) const override {
+    SNOWBALL_COBJ_CAST_CHECK
+    return NumericType::isNumericType(ty);
+  }
 
-  public:
-    /**
-     * @brief Check if a type is numeric.
-     * @note These are the numberic types:
-     *  ints: i[N], i64, i32, i16, i8,
-     *  floats: f64, f32,
-     *  boolean: i1
-     */
-    static bool isNumericType(Type* ty);
-    SNOWBALL_TYPE_COPIABLE(NumericType)
+public:
+  /**
+   * @brief Check if a type is numeric.
+   * @note These are the numberic types:
+   *  ints: i[N], i64, i32, i16, i8,
+   *  floats: f64, f32,
+   *  boolean: i1
+   */
+  static bool isNumericType(Type* ty);
+  SNOWBALL_TYPE_COPIABLE(NumericType)
 };
 
 /// @brief Representation of a void type.
 class VoidType : public AcceptorExtend<VoidType, PrimitiveType> {
-  public:
-    VoidType() : AcceptorExtend(SN_VOID_TYPE) { }
-    SNOWBALL_TYPE_COPIABLE(VoidType)
+public:
+  VoidType() : AcceptorExtend(SN_VOID_TYPE) { }
+  SNOWBALL_TYPE_COPIABLE(VoidType)
 };
 
 /// @brief Bool (represents 1-bit signed integer)
 class BoolType : public AcceptorExtend<BoolType, NumericType> {
-  public:
-    BoolType() : AcceptorExtend(SN_BOOL_TYPE) { }
-    SNOWBALL_TYPE_COPIABLE(BoolType)
+public:
+  BoolType() : AcceptorExtend(SN_BOOL_TYPE) { }
+  SNOWBALL_TYPE_COPIABLE(BoolType)
 };
 
 /// @brief String (represents int 8 pointer)
 class CharType : public AcceptorExtend<CharType, NumericType> {
-  public:
-    CharType() : AcceptorExtend(SN_CHR_TYPE) { }
-    SNOWBALL_TYPE_COPIABLE(CharType)
+public:
+  CharType() : AcceptorExtend(SN_CHR_TYPE) { }
+  SNOWBALL_TYPE_COPIABLE(CharType)
 };
 
 /// @brief Float 64 (represents 64-bit floating point)
 class Float64Type : public AcceptorExtend<Float64Type, NumericType> {
-  public:
-    Float64Type() : AcceptorExtend(SN_F64_TYPE) { }
-    SNOWBALL_TYPE_COPIABLE(Float64Type)
+public:
+  Float64Type() : AcceptorExtend(SN_F64_TYPE) { }
+  SNOWBALL_TYPE_COPIABLE(Float64Type)
 };
 
 /// @brief Float 32 (represents 32-bit floating point)
 class Float32Type : public AcceptorExtend<Float32Type, NumericType> {
-  public:
-    Float32Type() : AcceptorExtend(SN_F32_TYPE) { }
-    SNOWBALL_TYPE_COPIABLE(Float32Type)
+public:
+  Float32Type() : AcceptorExtend(SN_F32_TYPE) { }
+  SNOWBALL_TYPE_COPIABLE(Float32Type)
 };
 
 /// @brief Int 64 (represents 64-bit signed integer)
 class Int64Type : public AcceptorExtend<Int64Type, NumericType> {
-  public:
-    Int64Type() : AcceptorExtend(SN_INT64_TYPE) { }
-    SNOWBALL_TYPE_COPIABLE(Int64Type)
+public:
+  Int64Type() : AcceptorExtend(SN_INT64_TYPE) { }
+  SNOWBALL_TYPE_COPIABLE(Int64Type)
 };
 
 /// @brief Int 16 (represents 16-bit signed integer)
 class Int16Type : public AcceptorExtend<Int16Type, NumericType> {
-  public:
-    Int16Type() : AcceptorExtend(SN_INT16_TYPE) { }
-    SNOWBALL_TYPE_COPIABLE(Int16Type)
+public:
+  Int16Type() : AcceptorExtend(SN_INT16_TYPE) { }
+  SNOWBALL_TYPE_COPIABLE(Int16Type)
 };
 
 /// @brief Int 8 (represents 8-bit signed integer)
 class Int8Type : public AcceptorExtend<Int8Type, NumericType> {
-  public:
-    Int8Type() : AcceptorExtend(SN_INT8_TYPE) { }
-    SNOWBALL_TYPE_COPIABLE(Int8Type)
+public:
+  Int8Type() : AcceptorExtend(SN_INT8_TYPE) { }
+  SNOWBALL_TYPE_COPIABLE(Int8Type)
 };
 
 /**
@@ -139,13 +139,13 @@ class Int8Type : public AcceptorExtend<Int8Type, NumericType> {
  * experience in snowball.
  */
 class Int32Type : public AcceptorExtend<Int32Type, NumericType> {
-  public:
-    static const std::string TYPE_ALIAS;
+public:
+  static const std::string TYPE_ALIAS;
 
-    Int32Type() : AcceptorExtend(SN_INT32_TYPE) { }
+  Int32Type() : AcceptorExtend(SN_INT32_TYPE) { }
 
-    bool is(Type* other) const override { return (TYPE_ALIAS == other->getName()) || NumericType::is(other); }
-    SNOWBALL_TYPE_COPIABLE(Int32Type)
+  bool is(Type* other) const override { return (TYPE_ALIAS == other->getName()) || NumericType::is(other); }
+  SNOWBALL_TYPE_COPIABLE(Int32Type)
 };
 
 inline const std::string Int32Type::TYPE_ALIAS = "int";

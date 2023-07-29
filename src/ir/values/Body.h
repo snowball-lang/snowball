@@ -19,23 +19,23 @@ namespace ir {
  * instructions that are executed inside of it.
  */
 class Block : public AcceptorExtend<Func, Value> {
-    // Instructions stored inside a block
-    std::vector<std::shared_ptr<Value>> insts;
+  // Instructions stored inside a block
+  std::vector<std::shared_ptr<Value>> insts;
 
-  public:
-    explicit Block(std::vector<std::shared_ptr<Value>> insts) : insts(insts){};
+public:
+  explicit Block(std::vector<std::shared_ptr<Value>> insts) : insts(insts){};
 
-    /// @return body block instructions
-    auto getBlock() { return insts; }
-    /// @brief It prepends a new instruction to the block
-    void prepend(std::shared_ptr<Value> inst) { insts.insert(insts.begin(), inst); }
-    /// @brief It prepends a new set of instructions to the block
-    void prepend(std::vector<std::shared_ptr<Value>> inst) {
-        for (auto i = inst.rbegin(); i != inst.rend(); ++i) { prepend(*i); }
-    }
+  /// @return body block instructions
+  auto getBlock() { return insts; }
+  /// @brief It prepends a new instruction to the block
+  void prepend(std::shared_ptr<Value> inst) { insts.insert(insts.begin(), inst); }
+  /// @brief It prepends a new set of instructions to the block
+  void prepend(std::vector<std::shared_ptr<Value>> inst) {
+    for (auto i = inst.rbegin(); i != inst.rend(); ++i) { prepend(*i); }
+  }
 
-    // Set a visit handler for the generators
-    SN_GENERATOR_VISITS
+  // Set a visit handler for the generators
+  SN_GENERATOR_VISITS
 };
 
 } // namespace ir

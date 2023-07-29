@@ -19,22 +19,21 @@ namespace ir {
  *  in the IR.
  */
 class Cast : public AcceptorExtend<Cast, Value> {
-    /// @brief Expression used as value for the casting
-    std::shared_ptr<Value> expr = nullptr;
-    /// @brief Type to cast to
-    types::Type* castType;
+  /// @brief Expression used as value for the casting
+  std::shared_ptr<Value> expr = nullptr;
+  /// @brief Type to cast to
+  types::Type* castType;
 
-  public:
-    explicit Cast(std::shared_ptr<Value> expr, types::Type* castType)
-        : expr(expr), castType(castType){};
+public:
+  explicit Cast(std::shared_ptr<Value> expr, types::Type* castType) : expr(expr), castType(castType){};
 
-    /// @return value to cast
-    auto getExpr() { return expr; }
-    /// @return the result type to cast to
-    auto getCastType() { return castType; }
+  /// @return value to cast
+  auto getExpr() { return expr; }
+  /// @return the result type to cast to
+  auto getCastType() { return castType; }
 
-    // Set a visit handler for the generators
-    SN_GENERATOR_VISITS
+  // Set a visit handler for the generators
+  SN_GENERATOR_VISITS
 };
 
 } // namespace ir

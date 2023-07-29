@@ -11,23 +11,23 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ir::Return* ret) {
-    auto exprValue = ret->getExpr();
+  auto exprValue = ret->getExpr();
 
-    llvm::Value* val = nullptr;
-    if (exprValue != nullptr) {
-        auto expr = build(exprValue.get());
-        auto funcRet = ctx->getCurrentFunction()->getReturnType();
-        // case: "return x();" where x is a function returning a type that's not a pointer
-        if (!funcRet->isPointerTy() && expr->getType()->isPointerTy() && !expr->getType()->isFunctionTy()) {
-            expr = builder->CreateLoad(getLLVMType(exprValue->getType()), expr);
-        }
-
-        val = builder->CreateRet(expr);
-    } else {
-        val = builder->CreateRetVoid();
+  llvm::Value* val = nullptr;
+  if (exprValue != nullptr) {
+    auto expr = build(exprValue.get());
+    auto funcRet = ctx->getCurrentFunction()->getReturnType();
+    // case: "return x();" where x is a function returning a type that's not a pointer
+    if (!funcRet->isPointerTy() && expr->getType()->isPointerTy() && !expr->getType()->isFunctionTy()) {
+      expr = builder->CreateLoad(getLLVMType(exprValue->getType()), expr);
     }
 
-    this->value = val;
+    val = builder->CreateRet(expr);
+  } else {
+    val = builder->CreateRetVoid();
+  }
+
+  this->value = val;
 }
 
 } // namespace codegen

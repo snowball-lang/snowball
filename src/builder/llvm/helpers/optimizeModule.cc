@@ -37,92 +37,84 @@ namespace snowball {
 
 namespace {
 void applyDebugTransformations(llvm::Module* module, bool debug) {
-    if (debug) {
-        // remove tail calls and fix linkage for stack traces
-        for (auto& f : *module) {
+  if (debug) {
+    // remove tail calls and fix linkage for stack traces
+    for (auto& f : *module) {
 #ifdef __APPLE__
-            f.setLinkage(llvm::GlobalValue::ExternalLinkage);
+      f.setLinkage(llvm::GlobalValue::ExternalLinkage);
 #endif
-            if (!f.hasFnAttribute(llvm::Attribute::AttrKind::AlwaysInline))
-                f.addFnAttr(llvm::Attribute::AttrKind::NoInline);
-            f.addFnAttr("no-frame-pointer-elim", "true");
-            f.addFnAttr("no-frame-pointer-elim-non-leaf");
-            f.addFnAttr("no-jump-tables", "false");
-        }
-    } else {
-        llvm::StripDebugInfo(*module);
+      if (!f.hasFnAttribute(llvm::Attribute::AttrKind::AlwaysInline)) f.addFnAttr(llvm::Attribute::AttrKind::NoInline);
+      f.addFnAttr("no-frame-pointer-elim", "true");
+      f.addFnAttr("no-frame-pointer-elim-non-leaf");
+      f.addFnAttr("no-jump-tables", "false");
     }
+  } else {
+    llvm::StripDebugInfo(*module);
+  }
 }
 } // namespace
 
 namespace codegen {
 
 void LLVMBuilder::optimizeModule(app::Options::Optimization o) {
-    applyDebugTransformations(module.get(), o == app::Options::OPTIMIZE_O0);
+  applyDebugTransformations(module.get(), o == app::Options::OPTIMIZE_O0);
 
-    llvm::LoopAnalysisManager loop_analysis_manager;
-    llvm::FunctionAnalysisManager function_analysis_manager;
-    llvm::CGSCCAnalysisManager c_gscc_analysis_manager;
-    llvm::ModuleAnalysisManager module_analysis_manager;
+  llvm::LoopAnalysisManager loop_analysis_manager;
+  llvm::FunctionAnalysisManager function_analysis_manager;
+  llvm::CGSCCAnalysisManager c_gscc_analysis_manager;
+  llvm::ModuleAnalysisManager module_analysis_manager;
 
-    // Create the new pass manager builder.
-    // Take a look at the PassBuilder constructor parameters for more
-    // customization, e.g. specifying a TargetMachine or various
-    // debugging options.
-    llvm::PassBuilder pass_builder;
+  // Create the new pass manager builder.
+  // Take a look at the PassBuilder constructor parameters for more
+  // customization, e.g. specifying a TargetMachine or various
+  // debugging options.
+  llvm::PassBuilder pass_builder;
 
-    // Register all the basic analyses with the managers.
-    pass_builder.registerModuleAnalyses(module_analysis_manager);
-    pass_builder.registerCGSCCAnalyses(c_gscc_analysis_manager);
-    pass_builder.registerFunctionAnalyses(function_analysis_manager);
-    pass_builder.registerLoopAnalyses(loop_analysis_manager);
+  // Register all the basic analyses with the managers.
+  pass_builder.registerModuleAnalyses(module_analysis_manager);
+  pass_builder.registerCGSCCAnalyses(c_gscc_analysis_manager);
+  pass_builder.registerFunctionAnalyses(function_analysis_manager);
+  pass_builder.registerLoopAnalyses(loop_analysis_manager);
 
-    llvm::Triple moduleTriple(module->getTargetTriple());
-    llvm::TargetLibraryInfoImpl tlii(moduleTriple);
+  llvm::Triple moduleTriple(module->getTargetTriple());
+  llvm::TargetLibraryInfoImpl tlii(moduleTriple);
 
-    // cross register them too?
-    pass_builder.crossRegisterProxies(loop_analysis_manager, function_analysis_manager, c_gscc_analysis_manager,
-                                      module_analysis_manager);
-    function_analysis_manager.registerPass([&] { return llvm::TargetLibraryAnalysis(tlii); });
+  // cross register them too?
+  pass_builder.crossRegisterProxies(loop_analysis_manager, function_analysis_manager, c_gscc_analysis_manager,
+                                    module_analysis_manager);
+  function_analysis_manager.registerPass([&] { return llvm::TargetLibraryAnalysis(tlii); });
 
-    llvm::OptimizationLevel level;
-    switch (o) {
-        case app::Options::Optimization::OPTIMIZE_O0: level = llvm::OptimizationLevel::O0; break;
-        case app::Options::Optimization::OPTIMIZE_O1: level = llvm::OptimizationLevel::O1; break;
-        case app::Options::Optimization::OPTIMIZE_O2: level = llvm::OptimizationLevel::O2; break;
-        case app::Options::Optimization::OPTIMIZE_O3: level = llvm::OptimizationLevel::O3; break;
-        case app::Options::Optimization::OPTIMIZE_Os: level = llvm::OptimizationLevel::Os; break;
-        case app::Options::Optimization::OPTIMIZE_Oz: level = llvm::OptimizationLevel::Oz; break;
-        default: assert(false && "during code optimization");
-    }
-    std::vector<std::function<void(llvm::ModulePassManager &, llvm::OptimizationLevel)>>
-      PipelineStartEPCallbacks;
-    std::vector<std::function<void(llvm::ModulePassManager &, llvm::OptimizationLevel)>>
-        OptimizerLastEPCallbacks;
-    PipelineStartEPCallbacks.push_back(
-      [](llvm::ModulePassManager &MPM, llvm::OptimizationLevel Level) {
-        MPM.addPass(llvm::VerifierPass());
-      }
-    );
-    for (const auto &C : PipelineStartEPCallbacks)
-        pass_builder.registerPipelineStartEPCallback(C);
-    for (const auto &C : OptimizerLastEPCallbacks)
-        pass_builder.registerOptimizerLastEPCallback(C);
-    llvm::ModulePassManager mpm;
-    if (o == app::Options::OPTIMIZE_O0) {
-        mpm = pass_builder.buildThinLTODefaultPipeline(level, nullptr);
-    } else {
-        mpm = pass_builder.buildLTOPreLinkDefaultPipeline(level);
-    }
+  llvm::OptimizationLevel level;
+  switch (o) {
+    case app::Options::Optimization::OPTIMIZE_O0: level = llvm::OptimizationLevel::O0; break;
+    case app::Options::Optimization::OPTIMIZE_O1: level = llvm::OptimizationLevel::O1; break;
+    case app::Options::Optimization::OPTIMIZE_O2: level = llvm::OptimizationLevel::O2; break;
+    case app::Options::Optimization::OPTIMIZE_O3: level = llvm::OptimizationLevel::O3; break;
+    case app::Options::Optimization::OPTIMIZE_Os: level = llvm::OptimizationLevel::Os; break;
+    case app::Options::Optimization::OPTIMIZE_Oz: level = llvm::OptimizationLevel::Oz; break;
+    default: assert(false && "during code optimization");
+  }
+  std::vector<std::function<void(llvm::ModulePassManager&, llvm::OptimizationLevel)>> PipelineStartEPCallbacks;
+  std::vector<std::function<void(llvm::ModulePassManager&, llvm::OptimizationLevel)>> OptimizerLastEPCallbacks;
+  PipelineStartEPCallbacks.push_back(
+          [](llvm::ModulePassManager& MPM, llvm::OptimizationLevel Level) { MPM.addPass(llvm::VerifierPass()); });
+  for (const auto& C : PipelineStartEPCallbacks) pass_builder.registerPipelineStartEPCallback(C);
+  for (const auto& C : OptimizerLastEPCallbacks) pass_builder.registerOptimizerLastEPCallback(C);
+  llvm::ModulePassManager mpm;
+  if (o == app::Options::OPTIMIZE_O0) {
+    mpm = pass_builder.buildThinLTODefaultPipeline(level, nullptr);
+  } else {
+    mpm = pass_builder.buildLTOPreLinkDefaultPipeline(level);
+  }
 
-    llvm::legacy::PassManager codegen_pm;
-    //codegen_pm.add(
-    //  llvm::createTargetTransformInfoWrapperPass(target->getTargetIRAnalysis()));
+  llvm::legacy::PassManager codegen_pm;
+  // codegen_pm.add(
+  //   llvm::createTargetTransformInfoWrapperPass(target->getTargetIRAnalysis()));
 
-    mpm.run(*module, module_analysis_manager);
-    codegen_pm.run(*module);
+  mpm.run(*module, module_analysis_manager);
+  codegen_pm.run(*module);
 
-    applyDebugTransformations(module.get(), o == app::Options::OPTIMIZE_O0);
+  applyDebugTransformations(module.get(), o == app::Options::OPTIMIZE_O0);
 }
 
 } // namespace codegen

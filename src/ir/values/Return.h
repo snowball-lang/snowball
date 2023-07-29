@@ -19,21 +19,21 @@ namespace ir {
  *  in the IR.
  */
 class Return : public AcceptorExtend<Return, Value> {
-    // Expression used as value for the return statement
-    std::shared_ptr<Value> expr = nullptr;
+  // Expression used as value for the return statement
+  std::shared_ptr<Value> expr = nullptr;
 
-  public:
-    explicit Return(std::shared_ptr<Value> expr) : expr(expr){};
+public:
+  explicit Return(std::shared_ptr<Value> expr) : expr(expr){};
 
-    /**
-     * @return value to return
-     * @note The value may be std::nullptr because
-     *  the user might do `return;` for void functions
-     */
-    auto getExpr() { return expr; }
+  /**
+   * @return value to return
+   * @note The value may be std::nullptr because
+   *  the user might do `return;` for void functions
+   */
+  auto getExpr() { return expr; }
 
-    // Set a visit handler for the generators
-    SN_GENERATOR_VISITS
+  // Set a visit handler for the generators
+  SN_GENERATOR_VISITS
 };
 
 } // namespace ir

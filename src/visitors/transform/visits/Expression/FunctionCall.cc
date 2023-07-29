@@ -8,81 +8,80 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
-    auto callBackUp = ctx->latestCall;
-    ctx->latestCall = p_node;
-    auto [argValues, argTypes] =
-            utils::vectors_iterate<Syntax::Expression::Base*, std::shared_ptr<ir::Value>, types::Type*>(
-                    p_node->getArguments(),
-                    [&](Syntax::Expression::Base* a)
-                            -> std::pair<std::shared_ptr<ir::Value>, types::Type*> {
-                        auto val = trans(a);
-                        return {val, val->getType()};
-                    });
-    auto callee = p_node->getCallee();
-    std::shared_ptr<ir::Value> fn = nullptr;
-    if (auto x = utils::cast<Expression::Identifier>(callee)) {
-        auto g = utils::cast<Expression::GenericIdentifier>(callee);
-        auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
-        auto r = getFromIdentifier(x->getDBGInfo(), x->getIdentifier(), generics);
-        auto rTuple = std::tuple_cat(r, std::make_tuple(true));
-        fn = getFunction(p_node, rTuple, x->getNiceName(), argTypes, generics);
-    } else if (auto x = utils::cast<Expression::Index>(callee)) {
-        bool inModule = false;
-        std::string baseName;
-        auto indexBase = x->getBase();
-        auto [r, b] = getFromIndex(x->getDBGInfo(), x, x->isStatic);
-        if (auto b = utils::cast<Expression::Identifier>(indexBase)) {
-            auto r = getFromIdentifier(b);
-            auto m = std::get<4>(r);
-            utils::assert_value_type<std::shared_ptr<ir::Module>&, decltype(*m)>();
+  auto callBackUp = ctx->latestCall;
+  ctx->latestCall = p_node;
+  auto [argValues, argTypes] =
+          utils::vectors_iterate<Syntax::Expression::Base*, std::shared_ptr<ir::Value>, types::Type*>(
+                  p_node->getArguments(),
+                  [&](Syntax::Expression::Base* a) -> std::pair<std::shared_ptr<ir::Value>, types::Type*> {
+                    auto val = trans(a);
+                    return {val, val->getType()};
+                  });
+  auto callee = p_node->getCallee();
+  std::shared_ptr<ir::Value> fn = nullptr;
+  if (auto x = utils::cast<Expression::Identifier>(callee)) {
+    auto g = utils::cast<Expression::GenericIdentifier>(callee);
+    auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
+    auto r = getFromIdentifier(x->getDBGInfo(), x->getIdentifier(), generics);
+    auto rTuple = std::tuple_cat(r, std::make_tuple(true));
+    fn = getFunction(p_node, rTuple, x->getNiceName(), argTypes, generics);
+  } else if (auto x = utils::cast<Expression::Index>(callee)) {
+    bool inModule = false;
+    std::string baseName;
+    auto indexBase = x->getBase();
+    auto [r, b] = getFromIndex(x->getDBGInfo(), x, x->isStatic);
+    if (auto b = utils::cast<Expression::Identifier>(indexBase)) {
+      auto r = getFromIdentifier(b);
+      auto m = std::get<4>(r);
+      utils::assert_value_type<std::shared_ptr<ir::Module>&, decltype(*m)>();
 
-            inModule = m.has_value();
-            auto ir = std::tuple_cat(r, std::make_tuple(false));
+      inModule = m.has_value();
+      auto ir = std::tuple_cat(r, std::make_tuple(false));
 
-            baseName = getNiceBaseName(ir) + "::";
-        } else if (auto b = utils::cast<Expression::Index>(indexBase)) {
-            auto [r, _] = getFromIndex(b->getDBGInfo(), b, b->isStatic);
-            auto m = std::get<4>(r);
-            utils::assert_value_type<std::shared_ptr<ir::Module>&, decltype(*m)>();
+      baseName = getNiceBaseName(ir) + "::";
+    } else if (auto b = utils::cast<Expression::Index>(indexBase)) {
+      auto [r, _] = getFromIndex(b->getDBGInfo(), b, b->isStatic);
+      auto m = std::get<4>(r);
+      utils::assert_value_type<std::shared_ptr<ir::Module>&, decltype(*m)>();
 
-            inModule = m.has_value();
-            baseName = getNiceBaseName(r) + "::";
-        } else if (auto b = utils::cast<Expression::TypeRef>(indexBase)) {
-            baseName = transformType(b)->getPrettyName() + "::";
-        }
-        auto g = utils::cast<Expression::GenericIdentifier>(x->getIdentifier());
-        auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
-        auto name = baseName + x->getIdentifier()->getNiceName();
-        auto c = getFunction(p_node, r, name, argTypes, generics);
-        // TODO: actually check if base is a module with:
-        // "getFromIdentifier" of the module
-        if ((x->isStatic && (!c->isStatic())) && (!inModule)) {
-            E<TYPE_ERROR>(p_node,
-                          FMT("Can't access class method '%s' "
-                              "that's not static as if it was one!",
-                              c->getNiceName().c_str()));
-        } else if ((!x->isStatic) && c->isStatic()) {
-            E<TYPE_ERROR>(p_node,
-                          FMT("Can't access static class method '%s' "
-                              "as with a non-static index expression!",
-                              c->getNiceName().c_str()));
-        }
-        if (b.has_value()) {
-            auto baseType = (*b)->getType();
-            if (utils::cast<types::PrimitiveType>(baseType) || utils::cast<types::ReferenceType>(baseType)) {
-                argValues.insert(argValues.begin(), *b);
-                argTypes.insert(argTypes.begin(), baseType);
-            } else {
-                auto reference = builder.createReferenceTo(p_node->getDBGInfo(), *b);
-                argValues.insert(argValues.begin(), reference);
-                argTypes.insert(argTypes.begin(), reference->getType());
-            }
-        }
-        fn = c;
-    } else {
-        fn = trans(callee);
+      inModule = m.has_value();
+      baseName = getNiceBaseName(r) + "::";
+    } else if (auto b = utils::cast<Expression::TypeRef>(indexBase)) {
+      baseName = transformType(b)->getPrettyName() + "::";
     }
-    // clang-format off
+    auto g = utils::cast<Expression::GenericIdentifier>(x->getIdentifier());
+    auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
+    auto name = baseName + x->getIdentifier()->getNiceName();
+    auto c = getFunction(p_node, r, name, argTypes, generics);
+    // TODO: actually check if base is a module with:
+    // "getFromIdentifier" of the module
+    if ((x->isStatic && (!c->isStatic())) && (!inModule)) {
+      E<TYPE_ERROR>(p_node,
+                    FMT("Can't access class method '%s' "
+                        "that's not static as if it was one!",
+                        c->getNiceName().c_str()));
+    } else if ((!x->isStatic) && c->isStatic()) {
+      E<TYPE_ERROR>(p_node,
+                    FMT("Can't access static class method '%s' "
+                        "as with a non-static index expression!",
+                        c->getNiceName().c_str()));
+    }
+    if (b.has_value()) {
+      auto baseType = (*b)->getType();
+      if (utils::cast<types::PrimitiveType>(baseType) || utils::cast<types::ReferenceType>(baseType)) {
+        argValues.insert(argValues.begin(), *b);
+        argTypes.insert(argTypes.begin(), baseType);
+      } else {
+        auto reference = builder.createReferenceTo(p_node->getDBGInfo(), *b);
+        argValues.insert(argValues.begin(), reference);
+        argTypes.insert(argTypes.begin(), reference->getType());
+      }
+    }
+    fn = c;
+  } else {
+    fn = trans(callee);
+  }
+  // clang-format off
     auto call = builder.createCall(p_node->getDBGInfo(), fn, argValues);
     if (auto t = utils::cast<types::FunctionType>(fn->getType())) {
         if (t->getArgs().size() <= argTypes.size()) {
@@ -167,25 +166,25 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 E<TYPE_ERROR>(p_node, "Function call missing arguments!");
             }
         }
-        // clang-format on
-        if ((argValues.size() == 2) && services::OperatorService::isOperator(func->getName(true))) {
-            auto t = argValues.at(0)->getType();
-            auto val = argValues.at(1);
-            auto t2 = val->getType();
-            if (types::NumericType::isNumericType(t)) {
-                if (t->is(t2)) {
-                } else if (auto cast = tryCast(val, t); cast != nullptr) {
-                    argValues.at(1) = cast;
-                }
-            }
+    // clang-format on
+    if ((argValues.size() == 2) && services::OperatorService::isOperator(func->getName(true))) {
+      auto t = argValues.at(0)->getType();
+      auto val = argValues.at(1);
+      auto t2 = val->getType();
+      if (types::NumericType::isNumericType(t)) {
+        if (t->is(t2)) {
+        } else if (auto cast = tryCast(val, t); cast != nullptr) {
+          argValues.at(1) = cast;
         }
+      }
     }
-    // Set an updated version of the call arguments
-    call->setArguments(argValues);
-    call->isInitialization = p_node->isInitialization;
-    this->value = call;
+  }
+  // Set an updated version of the call arguments
+  call->setArguments(argValues);
+  call->isInitialization = p_node->isInitialization;
+  this->value = call;
 
-    ctx->latestCall = callBackUp;
+  ctx->latestCall = callBackUp;
 }
 
 } // namespace Syntax

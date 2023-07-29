@@ -19,17 +19,17 @@ namespace ir {
  * identifier.
  */
 class ValueExtract : public AcceptorExtend<ValueExtract, Value> {
-    // Value being extracted
-    std::shared_ptr<Value> value;
+  // Value being extracted
+  std::shared_ptr<Value> value;
 
-  public:
-    explicit ValueExtract(std::shared_ptr<Value> variable) : value(variable){};
+public:
+  explicit ValueExtract(std::shared_ptr<Value> variable) : value(variable){};
 
-    /// @return The stored value
-    auto getValue() { return value; }
+  /// @return The stored value
+  auto getValue() { return value; }
 
-    // Set a visit handler for the generators
-    SN_GENERATOR_VISITS
+  // Set a visit handler for the generators
+  SN_GENERATOR_VISITS
 };
 
 } // namespace ir

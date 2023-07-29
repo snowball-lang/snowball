@@ -20,38 +20,38 @@ namespace snowball {
 namespace types {
 
 class TypeAlias : public AcceptorExtend<TypeAlias, BaseType> {
-    friend AcceptorExtend;
+  friend AcceptorExtend;
 
-  private:
-    /// @brief Base class that this type is pointing to
-    Type* base = nullptr;
+private:
+  /// @brief Base class that this type is pointing to
+  Type* base = nullptr;
 
-  public:
-    TypeAlias(const std::string name, Type* base);
-    TypeAlias(const TypeAlias& other) = default;
+public:
+  TypeAlias(const std::string name, Type* base);
+  TypeAlias(const TypeAlias& other) = default;
 
-    /**
-     * @param other another type to check.
-     */
-    virtual bool is(Type* other) const override { return base->is(other); }
+  /**
+   * @param other another type to check.
+   */
+  virtual bool is(Type* other) const override { return base->is(other); }
 
-    /// @brief Get the type represented as a "human-readable" string
-    std::string getPrettyName() const override;
-    /// @return the mangled version of the type
-    std::string getMangledName() const override;
-    /// @return The pointed type this type is pointing to
-    Type* getBaseType() const;
+  /// @brief Get the type represented as a "human-readable" string
+  std::string getPrettyName() const override;
+  /// @return the mangled version of the type
+  std::string getMangledName() const override;
+  /// @return The pointed type this type is pointing to
+  Type* getBaseType() const;
 
-    /// @c Type::toRef() for information about this function.
-    /// @note It essentially does the same thing except it adds
-    ///  generics if needed
-    Syntax::Expression::TypeRef* toRef() override;
+  /// @c Type::toRef() for information about this function.
+  /// @note It essentially does the same thing except it adds
+  ///  generics if needed
+  Syntax::Expression::TypeRef* toRef() override;
 
-    /// @brief override function. All numeric types
-    ///  can cast to any other numeric types.
-    bool canCast(Type* ty) const override;
+  /// @brief override function. All numeric types
+  ///  can cast to any other numeric types.
+  bool canCast(Type* ty) const override;
 
-    SNOWBALL_TYPE_COPIABLE(TypeAlias)
+  SNOWBALL_TYPE_COPIABLE(TypeAlias)
 };
 
 }; // namespace types

@@ -9,10 +9,10 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Expression::Cast) {
-    auto val = trans(p_node->getValue());
-    auto t = transformType(p_node->getType());
-    auto v = builder.createCast(p_node->getDBGInfo(), val, t);
-    this->value = v;
+  auto val = trans(p_node->getValue());
+  auto t = transformType(p_node->getType());
+  auto v = builder.createCast(p_node->getDBGInfo(), val, t);
+  this->value = v;
 }
 
 } // namespace Syntax

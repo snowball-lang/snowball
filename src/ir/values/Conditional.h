@@ -21,29 +21,29 @@ namespace ir {
  * exists.
  */
 class Conditional : public AcceptorExtend<Func, Value> {
-    // Instructions stored inside a block
-    std::shared_ptr<Block> insts;
-    // the expression to be evaluated
-    std::shared_ptr<Value> cond;
-    // The "else" statement block if the condition is false
-    std::shared_ptr<Block> elseBlock;
+  // Instructions stored inside a block
+  std::shared_ptr<Block> insts;
+  // the expression to be evaluated
+  std::shared_ptr<Value> cond;
+  // The "else" statement block if the condition is false
+  std::shared_ptr<Block> elseBlock;
 
-  public:
-    explicit Conditional(std::shared_ptr<Value> cond, std::shared_ptr<Block> insts,
-                         std::shared_ptr<Block> elseBlock = nullptr)
-        : cond(cond), insts(insts), elseBlock(elseBlock){};
+public:
+  explicit Conditional(std::shared_ptr<Value> cond, std::shared_ptr<Block> insts,
+                       std::shared_ptr<Block> elseBlock = nullptr)
+      : cond(cond), insts(insts), elseBlock(elseBlock){};
 
-    /// @return body block instructions to execute
-    //   if the condition is met
-    auto getBlock() { return insts; }
-    /// @return the expression to be evaluated
-    auto getCondition() { return cond; }
+  /// @return body block instructions to execute
+  //   if the condition is met
+  auto getBlock() { return insts; }
+  /// @return the expression to be evaluated
+  auto getCondition() { return cond; }
 
-    /// @return Get "else" statement
-    auto getElse() { return elseBlock; }
+  /// @return Get "else" statement
+  auto getElse() { return elseBlock; }
 
-    // Set a visit handler for the generators
-    SN_GENERATOR_VISITS
+  // Set a visit handler for the generators
+  SN_GENERATOR_VISITS
 };
 
 } // namespace ir

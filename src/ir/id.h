@@ -12,29 +12,29 @@ using id_t = std::uint64_t;
 
 /// Mixin class for IR nodes that need ids.
 class IdMixin {
-  private:
-    /// the global id counter
-    static id_t currentId;
+private:
+  /// the global id counter
+  static id_t currentId;
 
-    IdMixin& operator=(const IdMixin&) = delete;
+  IdMixin& operator=(const IdMixin&) = delete;
 
-  protected:
-    /// the instance's id
-    id_t id;
+protected:
+  /// the instance's id
+  id_t id;
 
-  public:
-    /// Resets the global id counter.
-    static void resetId();
+public:
+  /// Resets the global id counter.
+  static void resetId();
 
-    IdMixin(const IdMixin&) = default;
-    IdMixin() : id(currentId++) { }
+  IdMixin(const IdMixin&) = default;
+  IdMixin() : id(currentId++) { }
 
-    /// @return the node's id.
-    virtual id_t getId() const { return id; }
-    /// @brief Set a "constant" ID to the IDMixin object it inherits
-    ///  from.
-    /// @note This must be used wisely and not very often!
-    virtual void setId(id_t i) { id = i; }
+  /// @return the node's id.
+  virtual id_t getId() const { return id; }
+  /// @brief Set a "constant" ID to the IDMixin object it inherits
+  ///  from.
+  /// @note This must be used wisely and not very often!
+  virtual void setId(id_t i) { id = i; }
 };
 
 } // namespace ir

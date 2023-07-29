@@ -8,7 +8,7 @@ namespace snowball {
 namespace Syntax {
 
 bool Transformer::isInModuleContext(std::shared_ptr<ir::Module> m) {
-    return ctx->module->getUniqueName() == m->getUniqueName();
+  return ctx->module->getUniqueName() == m->getUniqueName();
 }
 
 } // namespace Syntax

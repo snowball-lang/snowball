@@ -9,28 +9,28 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Expression::NewInstance) {
-    auto call = p_node->getCall();
-    auto expr = p_node->getType();
+  auto call = p_node->getCall();
+  auto expr = p_node->getType();
 
-    assert(utils::cast<Expression::TypeRef>(expr));
-    auto ident = Syntax::N<Expression::Identifier>(
-            services::OperatorService::getOperatorMangle(services::OperatorService::CONSTRUCTOR));
-    ident->setDBGInfo(expr->getDBGInfo());
-    auto index = Syntax::N<Expression::Index>(expr, ident, true);
-    index->setDBGInfo(expr->getDBGInfo());
+  assert(utils::cast<Expression::TypeRef>(expr));
+  auto ident = Syntax::N<Expression::Identifier>(
+          services::OperatorService::getOperatorMangle(services::OperatorService::CONSTRUCTOR));
+  ident->setDBGInfo(expr->getDBGInfo());
+  auto index = Syntax::N<Expression::Index>(expr, ident, true);
+  index->setDBGInfo(expr->getDBGInfo());
 
-    call->setCallee(index);
-    auto c = utils::dyn_cast<ir::Call>(trans(call));
-    assert(c != nullptr);
+  call->setCallee(index);
+  auto c = utils::dyn_cast<ir::Call>(trans(call));
+  assert(c != nullptr);
 
-    auto typeRef = utils::cast<Expression::TypeRef>(expr);
-    auto type = transformType(typeRef);
+  auto typeRef = utils::cast<Expression::TypeRef>(expr);
+  auto type = transformType(typeRef);
 
-    // Make a copy of the value
-    auto v = builder.createObjectInitialization(p_node->getDBGInfo(), c->getCallee(), c->getArguments(),
-                                                p_node->atHeap());
-    builder.setType(v, v->initializeAtHeap ? type->getPointerTo() : type);
-    this->value = v;
+  // Make a copy of the value
+  auto v =
+          builder.createObjectInitialization(p_node->getDBGInfo(), c->getCallee(), c->getArguments(), p_node->atHeap());
+  builder.setType(v, v->initializeAtHeap ? type->getPointerTo() : type);
+  this->value = v;
 }
 
 } // namespace Syntax

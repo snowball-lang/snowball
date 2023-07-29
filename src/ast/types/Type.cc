@@ -11,15 +11,12 @@ Type::Type(Kind p_kind, std::string p_name, bool isMutable) : kind(p_kind), name
 Type::Type(Kind p_kind, bool isMutable) : kind(p_kind), _mutable(isMutable) { }
 
 Syntax::Expression::TypeRef* Type::toRef() {
-    auto ty = Syntax::TR(getName(), NO_DBGINFO, nullptr, getName());
-    return ty;
+  auto ty = Syntax::TR(getName(), NO_DBGINFO, nullptr, getName());
+  return ty;
 }
 
-Type* Type::getPointerTo() 
-    { return new ReferenceType(this); }
-Type* Type::copy() const  { 
-    assert(!"called copy to not-specialised type!");
-}
+Type* Type::getPointerTo() { return new ReferenceType(this); }
+Type* Type::copy() const { assert(!"called copy to not-specialised type!"); }
 
 } // namespace types
 } // namespace snowball

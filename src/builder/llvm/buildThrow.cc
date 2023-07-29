@@ -11,11 +11,11 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ir::Throw* extract) {
-    auto expr = extract->getExpr();
-    auto value = build(expr.get());
-    auto exception = createException(value, expr->getType());
-    auto [type, throwFunction] = getThrowFunction();
-    this->value = createCall(type, throwFunction, {exception});
+  auto expr = extract->getExpr();
+  auto value = build(expr.get());
+  auto exception = createException(value, expr->getType());
+  auto [type, throwFunction] = getThrowFunction();
+  this->value = createCall(type, throwFunction, {exception});
 }
 
 } // namespace codegen

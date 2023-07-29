@@ -16,17 +16,16 @@ namespace transform {
 
 /// @brief Representation of a saved state for the context
 struct MacroInstance {
-    using StackType = std::map<std::string, std::pair<Node*, Macro::ArguementType>>;
+  using StackType = std::map<std::string, std::pair<Node*, Macro::ArguementType>>;
 
-    // The stack of items
-    StackType stack = {};
-    // The module that the macro is defined in
-    std::shared_ptr<ir::Module> module = nullptr;
-    // The macro that is being transformed
-    Macro* macro = nullptr;
+  // The stack of items
+  StackType stack = {};
+  // The module that the macro is defined in
+  std::shared_ptr<ir::Module> module = nullptr;
+  // The macro that is being transformed
+  Macro* macro = nullptr;
 
-    explicit MacroInstance(Macro* macro, std::shared_ptr<ir::Module> module = nullptr) :
-        macro(macro), module(module) { }
+  explicit MacroInstance(Macro* macro, std::shared_ptr<ir::Module> module = nullptr) : macro(macro), module(module) { }
 };
 } // namespace transform
 } // namespace Syntax

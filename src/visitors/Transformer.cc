@@ -28,52 +28,51 @@ namespace Syntax {
 
 Transformer::Transformer(std::shared_ptr<ir::Module> mod, SourceInfo* srci, bool allowTests)
     : AcceptorExtend<Transformer, Visitor>(srci) {
-    builder = ir::IRBuilder(mod);
-    ctx = new TransformContext(mod, builder, allowTests);
-    initializeCoreRuntime();
+  builder = ir::IRBuilder(mod);
+  ctx = new TransformContext(mod, builder, allowTests);
+  initializeCoreRuntime();
 }
 
 std::shared_ptr<ir::Value> Transformer::trans(Node* node) {
-    if (auto x = utils::cast<AttributeHolder>(node)) {
-        if (x->hasAttribute(Attributes::CFG)) {
-            auto args = x->getAttributeArgs(Attributes::CFG);
-            for (auto [type, _] : args) {
-                if (type == "test") {
-                    if (!ctx->testMode) {
-                        return nullptr; // TODO: check if this causes problems
-                    }
-                } else {
-                    E<SYNTAX_ERROR>(node, "Unknown attribute!",
-                                    {.info = FMT("Unknown config attribute '%s'", type.c_str())});
-                }
-            }
+  if (auto x = utils::cast<AttributeHolder>(node)) {
+    if (x->hasAttribute(Attributes::CFG)) {
+      auto args = x->getAttributeArgs(Attributes::CFG);
+      for (auto [type, _] : args) {
+        if (type == "test") {
+          if (!ctx->testMode) {
+            return nullptr; // TODO: check if this causes problems
+          }
+        } else {
+          E<SYNTAX_ERROR>(node, "Unknown attribute!", {.info = FMT("Unknown config attribute '%s'", type.c_str())});
         }
+      }
     }
+  }
 
-    node->accept(this);
-    return this->value;
+  node->accept(this);
+  return this->value;
 }
 
 std::vector<std::shared_ptr<ir::Module>> Transformer::getModules() const { return modules; }
 void Transformer::addModule(std::shared_ptr<ir::Module> m) {
-    ctx->cache->addModule(m->getUniqueName(), m);
-    modules.push_back(m);
+  ctx->cache->addModule(m->getUniqueName(), m);
+  modules.push_back(m);
 }
 auto Transformer::getModule() const { return ctx->module; }
 void Transformer::visitGlobal(std::vector<Node*> p_nodes) {
-    ctx->withScope([&] {
-        initializePerModuleMacros();
+  ctx->withScope([&] {
+    initializePerModuleMacros();
 
-        bool backup = ctx->generateFunction;
-        ctx->generateFunction = false;
-        for (auto node : p_nodes) {
-            SN_TRANSFORMER_CAN_GENERATE(node) { node->accept(this); }
-        }
+    bool backup = ctx->generateFunction;
+    ctx->generateFunction = false;
+    for (auto node : p_nodes) {
+      SN_TRANSFORMER_CAN_GENERATE(node) { node->accept(this); }
+    }
 
-        ctx->generateFunction = true;
-        AcceptorExtend::visitGlobal(p_nodes);
-        ctx->generateFunction = backup;
-    });
+    ctx->generateFunction = true;
+    AcceptorExtend::visitGlobal(p_nodes);
+    ctx->generateFunction = backup;
+  });
 }
 
 // mark: - noops

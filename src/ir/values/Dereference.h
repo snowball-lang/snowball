@@ -20,19 +20,19 @@ namespace ir {
  * @brief Representation of a dereference to a value in the IR.
  */
 class DereferenceTo : public AcceptorExtend<ReferenceTo, Value> {
-    // Expression used as value for the dereference statement
-    std::shared_ptr<Value> value;
+  // Expression used as value for the dereference statement
+  std::shared_ptr<Value> value;
 
-  public:
-    explicit DereferenceTo(std::shared_ptr<Value> value) : value(value){};
+public:
+  explicit DereferenceTo(std::shared_ptr<Value> value) : value(value){};
 
-    /**
-     * @return The value it's being dereferenced to from.
-     */
-    auto getValue() const { return value; }
+  /**
+   * @return The value it's being dereferenced to from.
+   */
+  auto getValue() const { return value; }
 
-    // Set a visit handler for the generators
-    SN_GENERATOR_VISITS
+  // Set a visit handler for the generators
+  SN_GENERATOR_VISITS
 };
 
 } // namespace ir

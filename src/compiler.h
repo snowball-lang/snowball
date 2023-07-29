@@ -4,7 +4,7 @@
 #include "ir/module/MainModule.h"
 #include "ir/module/Module.h"
 #include "lexer/lexer.h"
-#include "source_info.h"
+#include "SourceInfo.h"
 #include "vendor/toml.hpp"
 
 #include <filesystem>
@@ -18,74 +18,72 @@ namespace snowball {
 
 /**
  * @brief Global context for the compiler
- * 
+ *
  * @details
  * This struct holds all the global context for the compiler. This is used to pass
  * information between different parts of the compiler.
-*/
+ */
 struct GlobalContext {
-    bool isTest = false;
-    bool withStd = true;
-    bool withCXXStd = true;
-    bool isThreaded = false;
+  bool isTest = false;
+  bool withStd = true;
+  bool withCXXStd = true;
+  bool isThreaded = false;
 
-    bool isDynamic = true;
+  bool isDynamic = true;
 };
 
 /**
  * @brief snowball Compiler
- * 
+ *
  * @details
  * Main class that handles all the compiling process of snowball. Note that it does not
  * actually compile, the llvm builder does the actual compilation. This class is more of
  * a wrapper around the whole compiler functionality.
  */
 class Compiler {
-    // variables
-    std::string _code;
-    fs::path _path;
+  // variables
+  std::string source;
+  fs::path path;
 
-    fs::path _cwd;
-    app::Options::Optimization opt_level;
+  fs::path cwd;
+  app::Options::Optimization opt_level;
 
-    GlobalContext* _globalContext;
+  GlobalContext* globalContext;
 
-    SourceInfo* _source_info;
-    bool _initialized = false;
-    bool _enabledTests = false;
+  SourceInfo* srcInfo;
+  bool initialized = false;
+  bool testsEnabled = false;
 
-    std::shared_ptr<ir::MainModule> module;
+  std::shared_ptr<ir::MainModule> module;
 
-  public:
-    Compiler(std::string p_code, std::string p_path);
+public:
+  Compiler(std::string p_code, std::string p_path);
 
-    void initialize();
-    void compile(bool verbose = true);
+  void initialize();
+  void compile(bool verbose = true);
 
-    void cleanup();
+  void cleanup();
 
-    static toml::parse_result get_config();
-    void enable_tests() { _enabledTests = true; }
+  static toml::parse_result getConfiguration();
+  void enable_tests() { testsEnabled = true; }
 
-    // Get
-    SourceInfo* getSource_info() const { return _source_info; }
+  // Get
+  ~Compiler(){};
 
-    ~Compiler(){};
+  std::vector<std::string> linkedLibraries;
+  fs::path configFolder;
 
-    std::vector<std::string> linked_libraries;
-    fs::path config_folder;
+  // TODO
+  int emitBinary(std::string, bool = true);
+  int emitObject(std::string, bool = true);
+  int emitLLVMIr(std::string, bool = true);
+  int emitASM(std::string, bool = true);
 
-    // TODO
-    int emit_binary(std::string, bool = true);
-    int emit_object(std::string, bool = true);
-    int emit_llvmir(std::string, bool = true);
-    int emit_assembly(std::string, bool = true);
+  void setOptimization(app::Options::Optimization o) { opt_level = o; }
 
-    void set_optimization(app::Options::Optimization o) { opt_level = o; }
-
-  private:
-    // methods
-    void create_source_info();
+private:
+  // methods
+  void createSourceInfo();
 };
 } // namespace snowball
 

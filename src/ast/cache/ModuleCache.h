@@ -19,15 +19,15 @@ namespace cacheComponents {
  *  for caching modules that are imported.
  */
 class Modules {
-  protected:
-    /// @brief A global map containing each module.
-    std::map<std::string, std::shared_ptr<ir::Module>> modules;
+protected:
+  /// @brief A global map containing each module.
+  std::map<std::string, std::shared_ptr<ir::Module>> modules;
 
-  public:
-    /// @brief add a new module to the cache
-    void addModule(const std::string& uuid, std::shared_ptr<ir::Module> module);
-    /// @brief get a module from the cache
-    std::optional<std::shared_ptr<ir::Module>> getModule(const std::string& uuid);
+public:
+  /// @brief add a new module to the cache
+  void addModule(const std::string& uuid, std::shared_ptr<ir::Module> module);
+  /// @brief get a module from the cache
+  std::optional<std::shared_ptr<ir::Module>> getModule(const std::string& uuid);
 };
 
 } // namespace cacheComponents

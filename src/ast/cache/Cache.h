@@ -1,6 +1,6 @@
 
 
-#include "../../srci/SourcedObject.h"
+#include "../../sourceInfo/SourcedObject.h"
 #include "../syntax/nodes.h"
 
 #include <assert.h>

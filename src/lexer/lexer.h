@@ -1,6 +1,6 @@
 
 #include "../errors.h"
-#include "../source_info.h"
+#include "../SourceInfo.h"
 #include "../utils/logger.h"
 #include "tokens/token.h"
 
@@ -26,28 +26,28 @@ namespace snowball {
  * such as location and line numbers.
  */
 class Lexer {
-  public:
-    Lexer(SourceInfo* p_source_info);
+public:
+  Lexer(SourceInfo* p_source_info);
 
-    void tokenize();
-    std::vector<Token> tokens = {};
+  void tokenize();
+  std::vector<Token> tokens = {};
 
-    ~Lexer(){};
+  ~Lexer(){};
 
-  private:
-    // methods
-    void handle_eof(bool p_consume = true);
-    void consume(TokenType p_tk, int p_eat_size = 1);
-    void lexer_error(Error m_error, std::string m_msg, int char_length = 1, ErrorInfo info = {});
+private:
+  // methods
+  void handle_eof(bool p_consume = true);
+  void consume(TokenType p_tk, int p_eat_size = 1);
+  void lexer_error(Error m_error, std::string m_msg, int char_length = 1, ErrorInfo info = {});
 
-    // vars
-    SourceInfo* _source_info;
-    std::string code;
+  // vars
+  SourceInfo* srcInfo;
+  std::string code;
 
-    int cur_line = 1;
-    int cur_col = 1;
+  int cur_line = 1;
+  int cur_col = 1;
 
-    int char_ptr = 0;
+  int char_ptr = 0;
 };
 } // namespace snowball
 

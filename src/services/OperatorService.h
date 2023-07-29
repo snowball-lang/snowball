@@ -18,47 +18,47 @@ namespace services {
  *  utility-related things
  */
 class OperatorService {
-  public:
+public:
 #define OPERATOR(o, n, s, p) o = n,
-    /**
-     * @brief A list containing all of the possible overload-able
-     *  operators that a class can define.
-     */
-    enum OperatorType
-    {
+  /**
+   * @brief A list containing all of the possible overload-able
+   *  operators that a class can define.
+   */
+  enum OperatorType
+  {
 #include "../defs/operators.def"
-    };
+  };
 #undef OPERATOR
-    /**
-     * @brief A list containing the respective operator identifier
-     *  as a list of strings
-     */
-    static const std::vector<std::string> operators;
-    /**
-     * @brief A vector that contains the corresponding operator
-     *  names (nice names for output)
-     */
-    static const std::vector<std::string> operatorNames;
+  /**
+   * @brief A list containing the respective operator identifier
+   *  as a list of strings
+   */
+  static const std::vector<std::string> operators;
+  /**
+   * @brief A vector that contains the corresponding operator
+   *  names (nice names for output)
+   */
+  static const std::vector<std::string> operatorNames;
 
-  public:
-    /// @brief Get the respective operator identifier
-    static std::string getOperatorId(OperatorType id);
-    /// @brief Get operator identifier but with an "#"
-    ///  prepended to it.
-    static std::string getOperatorMangle(OperatorType id);
-    /// @brief Check if a name is a operator-like name
-    static bool isOperator(const std::string& name);
-    /// @brief Operator ID to constructor
-    static const std::string& operatorName(OperatorType id);
-    /// @return the corresponding ID from a @param name
-    static OperatorType operatorID(const std::string& name);
-    /// @brief Check if an operator is unary
-    static bool isUnary(OperatorType op_type);
-    /// @brief Check if a name has equality towards an operator ID
-    template <OperatorType op>
-    static bool opEquals(const std::string& name) {
-        return (isOperator(name) && operatorID(name) == op);
-    }
+public:
+  /// @brief Get the respective operator identifier
+  static std::string getOperatorId(OperatorType id);
+  /// @brief Get operator identifier but with an "#"
+  ///  prepended to it.
+  static std::string getOperatorMangle(OperatorType id);
+  /// @brief Check if a name is a operator-like name
+  static bool isOperator(const std::string& name);
+  /// @brief Operator ID to constructor
+  static const std::string& operatorName(OperatorType id);
+  /// @return the corresponding ID from a @param name
+  static OperatorType operatorID(const std::string& name);
+  /// @brief Check if an operator is unary
+  static bool isUnary(OperatorType op_type);
+  /// @brief Check if a name has equality towards an operator ID
+  template <OperatorType op>
+  static bool opEquals(const std::string& name) {
+    return (isOperator(name) && operatorID(name) == op);
+  }
 };
 
 #define OPERATOR(o, n, s, p) s,

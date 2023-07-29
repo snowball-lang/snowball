@@ -16,68 +16,68 @@ namespace snowball {
 namespace codegen {
 
 llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func* fn) {
-    ctx->setCurrentFunction(nullptr);
+  ctx->setCurrentFunction(nullptr);
 
-    // llvmFn->getDe
+  // llvmFn->getDe
+  std::string bufStr;
+  llvm::raw_string_ostream buf(bufStr);
+
+  buf << "define ";
+  llvmFn->getReturnType()->print(buf);
+  buf << " @\"" << llvmFn->getName() << "\"(";
+
+  auto args = fn->getArgs();
+  for (int i = 0; i < args.size(); i++) {
+    auto l_front = args.begin();
+    std::advance(l_front, i);
+
+    llvmFn->getArg(i)->getType()->print(buf);
+    buf << " %" << l_front->first;
+
+    if (i < (args.size() - 1)) buf << ", ";
+  }
+
+  buf << ") { \nentry:\n\t";
+  buf << fn->getLLVMBody();
+  buf << "\n}";
+
+  auto code = buf.str();
+  bufStr.clear();
+
+  auto llvmBuffer = llvm::MemoryBuffer::getMemBuffer(code);
+
+  llvm::SMDiagnostic err;
+  std::unique_ptr<llvm::Module> sub = llvm::parseIR(llvmBuffer->getMemBufferRef(), err, *context);
+  if (!sub) {
     std::string bufStr;
     llvm::raw_string_ostream buf(bufStr);
+    err.print("LLVM", buf);
+    DUMP_S(code.c_str())
+    DUMP_S(buf.str().c_str())
+    assert(false && "TODO: (LLVM ERROR)");
+  }
 
-    buf << "define ";
-    llvmFn->getReturnType()->print(buf);
-    buf << " @\"" << llvmFn->getName() << "\"(";
+  sub->setDataLayout(module->getDataLayout());
 
-    auto args = fn->getArgs();
-    for (int i = 0; i < args.size(); i++) {
-        auto l_front = args.begin();
-        std::advance(l_front, i);
+  llvm::Linker linker(*module);
+  const bool fail = linker.linkInModule(std::move(sub));
+  assert(!fail);
 
-        llvmFn->getArg(i)->getType()->print(buf);
-        buf << " %" << l_front->first;
+  auto func = module->getFunction(fn->getMangle());
+  assert(func && "function not linked in");
+  func->setLinkage(llvm::GlobalValue::PrivateLinkage);
+  func->addFnAttr(llvm::Attribute::AttrKind::NoInline); // TODO: user decides,
+                                                        // this is default
+  func->setSubprogram(getDISubprogramForFunc(fn));
 
-        if (i < (args.size() - 1)) buf << ", ";
-    }
+  func->takeName(llvmFn);
+  func->setName(fn->getMangle());
 
-    buf << ") { \nentry:\n\t";
-    buf << fn->getLLVMBody();
-    buf << "\n}";
+  llvmFn->replaceAllUsesWith(llvmFn);
+  if (fn->isStatic() && (!fn->hasParent())) llvmFn->removeFromParent();
 
-    auto code = buf.str();
-    bufStr.clear();
-
-    auto llvmBuffer = llvm::MemoryBuffer::getMemBuffer(code);
-
-    llvm::SMDiagnostic err;
-    std::unique_ptr<llvm::Module> sub = llvm::parseIR(llvmBuffer->getMemBufferRef(), err, *context);
-    if (!sub) {
-        std::string bufStr;
-        llvm::raw_string_ostream buf(bufStr);
-        err.print("LLVM", buf);
-        DUMP_S(code.c_str())
-        DUMP_S(buf.str().c_str())
-        assert(false && "TODO: (LLVM ERROR)");
-    }
-
-    sub->setDataLayout(module->getDataLayout());
-
-    llvm::Linker linker(*module);
-    const bool fail = linker.linkInModule(std::move(sub));
-    assert(!fail);
-
-    auto func = module->getFunction(fn->getMangle());
-    assert(func && "function not linked in");
-    func->setLinkage(llvm::GlobalValue::PrivateLinkage);
-    func->addFnAttr(llvm::Attribute::AttrKind::NoInline); // TODO: user decides,
-                                                          // this is default
-    func->setSubprogram(getDISubprogramForFunc(fn));
-
-    func->takeName(llvmFn);
-    func->setName(fn->getMangle());
-
-    llvmFn->replaceAllUsesWith(llvmFn);
-    if (fn->isStatic() && (!fn->hasParent())) llvmFn->removeFromParent();
-
-    setDebugInfoLoc(nullptr);
-    return func;
+  setDebugInfoLoc(nullptr);
+  return func;
 }
 
 } // namespace codegen

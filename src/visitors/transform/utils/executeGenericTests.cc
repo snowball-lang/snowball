@@ -8,17 +8,17 @@ namespace snowball {
 namespace Syntax {
 
 void Transformer::executeGenericTests(Expression::WhereClause* clause, types::Type* generic) {
-    if (clause == nullptr) { return; }
-    for (auto test : clause->getChecks()) {
-        auto genericsCopy = test->getGenerics();
-        auto generics = genericsCopy;
-        generics.insert(generics.begin(), generic->toRef());
-        test->setGenerics(generics);
+  if (clause == nullptr) { return; }
+  for (auto test : clause->getChecks()) {
+    auto genericsCopy = test->getGenerics();
+    auto generics = genericsCopy;
+    generics.insert(generics.begin(), generic->toRef());
+    test->setGenerics(generics);
 
-        transformType(test);
-        // Reset generics
-        test->setGenerics(genericsCopy);
-    }
+    transformType(test);
+    // Reset generics
+    test->setGenerics(genericsCopy);
+  }
 }
 
 } // namespace Syntax

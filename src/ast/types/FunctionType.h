@@ -45,77 +45,76 @@ namespace snowball {
 namespace types {
 
 class FunctionType : public AcceptorExtend<FunctionType, Type> {
-    // Function's argument type.
-    std::vector<Type*> args;
-    // Function's return type.
-    Type* retTy;
-    // Whether or not a function is declared
-    // as variadic.
-    bool variadic = false;
+  // Function's argument type.
+  std::vector<Type*> args;
+  // Function's return type.
+  Type* retTy;
+  // Whether or not a function is declared
+  // as variadic.
+  bool variadic = false;
 
-  public:
-    FunctionType(std::vector<Type*> args,
-                 Type*
-                         retTy,
-                 bool isVariadic = false,
-                 bool isMutable = true,
-                 const std::string& name = "<fn type>")
-        : AcceptorExtend(Kind::TYPE, name, isMutable), args(args), retTy(retTy), variadic(isVariadic) { }
-    FunctionType(const FunctionType& other) = default;
+public:
+  FunctionType(std::vector<Type*> args,
+               Type* retTy,
+               bool isVariadic = false,
+               bool isMutable = true,
+               const std::string& name = "<fn type>")
+      : AcceptorExtend(Kind::TYPE, name, isMutable), args(args), retTy(retTy), variadic(isVariadic) { }
+  FunctionType(const FunctionType& other) = default;
 
-    /**
-     * @param other another (non-functional) type.
-     *
-     * This function will always return false if the type
-     * is not a functional type since you can't compare
-     * functional types with "normal" types. e.g.:
-     *    function void (i32) == string
-     *
-     * This will just wont work. C++ will just look for the
-     * actual function corresponding to a FunctionType and this
-     * function will just have the purpose as a fallback.
-     */
-    virtual bool is(Type* other) const override {
-        if (auto f = utils::cast<FunctionType>(other)) { return is(f); }
+  /**
+   * @param other another (non-functional) type.
+   *
+   * This function will always return false if the type
+   * is not a functional type since you can't compare
+   * functional types with "normal" types. e.g.:
+   *    function void (i32) == string
+   *
+   * This will just wont work. C++ will just look for the
+   * actual function corresponding to a FunctionType and this
+   * function will just have the purpose as a fallback.
+   */
+  virtual bool is(Type* other) const override {
+    if (auto f = utils::cast<FunctionType>(other)) { return is(f); }
 
-        return false;
-    }
+    return false;
+  }
 
-    /**
-     * @brief Check whether one function type matches
-     * another function type.
-     *
-     * @param other Function type to check
-     * @return true/false depending on the equality
-     */
-    virtual bool is(FunctionType* other);
+  /**
+   * @brief Check whether one function type matches
+   * another function type.
+   *
+   * @param other Function type to check
+   * @return true/false depending on the equality
+   */
+  virtual bool is(FunctionType* other);
 
-    /// @return function argument types
-    std::vector<Type*> getArgs() const { return args; }
-    /// @return function return types
-    Type* getRetType() const { return retTy; }
-    /// @return If the function is declared as variadic
-    bool isVariadic() { return variadic; }
+  /// @return function argument types
+  std::vector<Type*> getArgs() const { return args; }
+  /// @return function return types
+  Type* getRetType() const { return retTy; }
+  /// @return If the function is declared as variadic
+  bool isVariadic() { return variadic; }
 
-    // std::string getName() const override; // TODO:
+  // std::string getName() const override; // TODO:
 
-    /**
-     * @brief Get the function represented as a "human-readable"
-     *  string
-     */
-    std::string getPrettyName() const override;
-    std::string getMangledName() const override;
+  /**
+   * @brief Get the function represented as a "human-readable"
+   *  string
+   */
+  std::string getPrettyName() const override;
+  std::string getMangledName() const override;
 
-  public:
-    /**
-     * Create a function type based on the given node.
-     *
-     * @param fn Function value to process
-     * @return FunctionType* resultant type
-     */
-    static FunctionType* from(ir::Func* fn, Syntax::Statement::FunctionDef* node = nullptr);
+public:
+  /**
+   * Create a function type based on the given node.
+   *
+   * @param fn Function value to process
+   * @return FunctionType* resultant type
+   */
+  static FunctionType* from(ir::Func* fn, Syntax::Statement::FunctionDef* node = nullptr);
 
-    SNOWBALL_TYPE_COPIABLE(FunctionType)
+  SNOWBALL_TYPE_COPIABLE(FunctionType)
 };
 
 }; // namespace types

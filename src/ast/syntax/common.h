@@ -1,7 +1,7 @@
 
 
 #include "../../common.h"
-#include "../../srci/DBGSourceInfo.h"
+#include "../../sourceInfo/DBGSourceInfo.h"
 
 #include <assert.h>
 #include <map>
@@ -21,31 +21,33 @@ namespace snowball {
 ///  for a node.
 enum Attributes
 {
-    // Default attributes
-    INVALID,
-    CFG,
+  // Default attributes
+  INVALID,
+  CFG,
 
-    // FUNCTION ATTRIBUTES
-    TEST,
-    LLVM_FUNC,
-    INTERNAL_LINKAGE,
-    EXTERNAL_LINKAGE,
-    INLINE,
-    NO_INLINE,
-    NO_MANGLE,
-    NOT_IMPLEMENTED,
-    EXPORT,
+  // FUNCTION ATTRIBUTES
+  TEST,
+  LLVM_FUNC,
+  INTERNAL_LINKAGE,
+  EXTERNAL_LINKAGE,
+  INLINE,
+  NO_INLINE,
+  NO_MANGLE,
+  NOT_IMPLEMENTED,
+  EXPORT,
 
-    // Function internal attributes
-    TYPECHECKED,
-    ALLOW_FOR_TEST,
+  // Function internal attributes
+  TYPECHECKED,
+  ALLOW_FOR_TEST,
 
-    // Import attributes
-    MACROS,
+  // Import attributes
+  MACROS,
 };
 
 namespace Syntax {
-namespace transform {struct MacroInstance;}
+namespace transform {
+struct MacroInstance;
+}
 // Forward declarations
 class Visitor;
 class WhereClause;
@@ -55,89 +57,89 @@ class WhereClause;
  * stores and checks attributes for a node.
  */
 class AttributeHolder {
-    using StoreType = std::map<std::string, std::string>;
-    std::map<Attributes, StoreType> arguments;
+  using StoreType = std::map<std::string, std::string>;
+  std::map<Attributes, StoreType> arguments;
 
-  public:
-    /**
-     * Checks if a specific attribute is set for the node.
-     *
-     * @param attribute The attribute to check.
-     * @return True if the attribute is set, false otherwise.
-     */
-    bool hasAttribute(Attributes attribute) const { return (m_attributes & (1 << static_cast<int>(attribute))) != 0; }
-    /**
-     * Sets the bit for a specific attribute in the `m_attributes`
-     * variable.
-     *
-     * @param attribute The attribute to add.
-     */
-    auto addAttribute(Attributes attribute, StoreType args = {}) {
-        arguments[attribute] = args;
-        return m_attributes |= (1 << static_cast<int>(attribute));
+public:
+  /**
+   * Checks if a specific attribute is set for the node.
+   *
+   * @param attribute The attribute to check.
+   * @return True if the attribute is set, false otherwise.
+   */
+  bool hasAttribute(Attributes attribute) const { return (m_attributes & (1 << static_cast<int>(attribute))) != 0; }
+  /**
+   * Sets the bit for a specific attribute in the `m_attributes`
+   * variable.
+   *
+   * @param attribute The attribute to add.
+   */
+  auto addAttribute(Attributes attribute, StoreType args = {}) {
+    arguments[attribute] = args;
+    return m_attributes |= (1 << static_cast<int>(attribute));
+  }
+  /**
+   * Sets a new list of attributes to the current holder
+   */
+  void setAttributes(unsigned int attribute, std::map<Attributes, StoreType> args) {
+    m_attributes = attribute;
+    arguments = args;
+  }
+  /**
+   * Returns the respective unsigned integer for the attributes
+   */
+  auto getAttributes() const { return m_attributes; }
+  /**
+   * Sets the attributes from a holder
+   */
+  void setAttributes(AttributeHolder* holder) {
+    for (int i = -1; i < (int)holder->getAttributes(); i++) {
+      arguments[static_cast<Attributes>(i)] = holder->getAttributeArgs(static_cast<Attributes>(i));
     }
-    /**
-     * Sets a new list of attributes to the current holder
-     */
-    void setAttributes(unsigned int attribute, std::map<Attributes, StoreType> args) {
-        m_attributes = attribute;
-        arguments = args;
-    }
-    /**
-     * Returns the respective unsigned integer for the attributes
-     */
-    auto getAttributes() const { return m_attributes; }
-    /**
-     * Sets the attributes from a holder
-     */
-    void setAttributes(AttributeHolder* holder) {
-        for (int i = -1; i < (int)holder->getAttributes(); i++) {
-            arguments[static_cast<Attributes>(i)] = holder->getAttributeArgs(static_cast<Attributes>(i));
-        }
-        m_attributes = holder->m_attributes;
-    }
-    /**
-     * Clears the bit for a specific attribute in the `m_attributes`
-     * variable.
-     *
-     * @param attribute The attribute to remove.
-     */
-    void removeAttribute(Attributes attribute) { m_attributes &= ~(1 << static_cast<int>(attribute)); }
-    /**
-     * Clears all attributes for the node by setting `m_attributes`
-     * to zero.
-     */
-    void clearAttributes() { m_attributes = 0; }
+    m_attributes = holder->m_attributes;
+  }
+  /**
+   * Clears the bit for a specific attribute in the `m_attributes`
+   * variable.
+   *
+   * @param attribute The attribute to remove.
+   */
+  void removeAttribute(Attributes attribute) { m_attributes &= ~(1 << static_cast<int>(attribute)); }
+  /**
+   * Clears all attributes for the node by setting `m_attributes`
+   * to zero.
+   */
+  void clearAttributes() { m_attributes = 0; }
 
-    /**
-     * Gets the arguments for a specific attribute.
-     * @param attribute The attribute to get the arguments for.
-     * @return A vector containing the arguments for the attribute.
-     */
-    StoreType getAttributeArgs(Attributes attribute) const {
-        auto it = arguments.find(attribute);
-        if (it == arguments.end()) return {};
-        return it->second;
-    }
+  /**
+   * Gets the arguments for a specific attribute.
+   * @param attribute The attribute to get the arguments for.
+   * @return A vector containing the arguments for the attribute.
+   */
+  StoreType getAttributeArgs(Attributes attribute) const {
+    auto it = arguments.find(attribute);
+    if (it == arguments.end()) return {};
+    return it->second;
+  }
 
-  private:
-    /** The bit field storing the attributes for the node. */
-    unsigned int m_attributes = 0;
+private:
+  /** The bit field storing the attributes for the node. */
+  unsigned int m_attributes = 0;
 };
 
 struct Macro;
 
 struct Node : public DBGObject, public AttributeHolder {
-  public:
-    Node() = default;
-    ~Node() noexcept = default;
+public:
+  Node() = default;
+  ~Node() noexcept = default;
 
-    virtual void accept(Syntax::Visitor* v) = 0;
+  virtual void accept(Syntax::Visitor* v) = 0;
 
-    transform::MacroInstance* parentMacro = nullptr;
-    /// @brief A flag that tells if the current node is
-    ///  an operator
-    bool isOperator = false;
+  transform::MacroInstance* parentMacro = nullptr;
+  /// @brief A flag that tells if the current node is
+  ///  an operator
+  bool isOperator = false;
 };
 
 /**
@@ -151,52 +153,52 @@ struct Base : public AcceptorExtend<Base, Node> { };
 // Making a reference to the type. This should only appear on the
 // parser stage
 struct TypeRef : public types::Type, public Base {
-    std::vector<TypeRef*> generics;
+  std::vector<TypeRef*> generics;
 
-    /// @brief Internal type when using @fn types::Type::toRef().
-    /// @note this shoudn't be used for normal usage!
-    types::Type* internalType = nullptr;
+  /// @brief Internal type when using @fn types::Type::toRef().
+  /// @note this shoudn't be used for normal usage!
+  types::Type* internalType = nullptr;
 
-    /// @brief AST used to declare this TypeRef.
-    /// @note this shoudn't be used for normal usage!
-    Expression::Base* internalAST = nullptr;
+  /// @brief AST used to declare this TypeRef.
+  /// @note this shoudn't be used for normal usage!
+  Expression::Base* internalAST = nullptr;
 
-    /// @brief The id of the type
-    std::string id;
+  /// @brief The id of the type
+  std::string id;
 
-  public:
-    TypeRef(std::string p_name, DBGSourceInfo* p_dbg, std::vector<TypeRef*> p_generics = {}, std::string id = "");
-    TypeRef(std::string p_name, DBGSourceInfo* p_dbg, types::Type* internalType, std::string id);
-    TypeRef(Expression::Base* p_ast, std::string p_name, DBGSourceInfo* p_dbg, std::string id);
+public:
+  TypeRef(std::string p_name, DBGSourceInfo* p_dbg, std::vector<TypeRef*> p_generics = {}, std::string id = "");
+  TypeRef(std::string p_name, DBGSourceInfo* p_dbg, types::Type* internalType, std::string id);
+  TypeRef(Expression::Base* p_ast, std::string p_name, DBGSourceInfo* p_dbg, std::string id);
 
-    /// @brief Get type's generics
-    std::vector<TypeRef*> getGenerics();
-    /// @return A good looking, human readable representation of
-    ///  this type.
-    std::string getPrettyName() const override;
-    /// @brief Set a generic list for this type
-    void setGenerics(std::vector<TypeRef*> g);
+  /// @brief Get type's generics
+  std::vector<TypeRef*> getGenerics();
+  /// @return A good looking, human readable representation of
+  ///  this type.
+  std::string getPrettyName() const override;
+  /// @brief Set a generic list for this type
+  void setGenerics(std::vector<TypeRef*> g);
 
-    /// @return Internal type when using @fn types::Type::toRef().
-    /// @note this shoudn't be used for normal usage!
-    auto _getInternalType() { return internalType; }
+  /// @return Internal type when using @fn types::Type::toRef().
+  /// @note this shoudn't be used for normal usage!
+  auto _getInternalType() { return internalType; }
 
-    /// @return AST used to declare this TypeRef.
-    /// @note this shoudn't be used for normal usage!
-    auto _getInternalAST() { return internalAST; }
+  /// @return AST used to declare this TypeRef.
+  /// @note this shoudn't be used for normal usage!
+  auto _getInternalAST() { return internalAST; }
 
-    /// @return true if it's a delctype(...)
-    virtual bool isTypeDecl() { return false; }
-    /// @return true if the type is a pointer
-    virtual bool isReferenceType() { return false; }
-    /// @return true if the type is a function
-    virtual bool isFunctionType() { return false; }
+  /// @return true if it's a delctype(...)
+  virtual bool isTypeDecl() { return false; }
+  /// @return true if the type is a pointer
+  virtual bool isReferenceType() { return false; }
+  /// @return true if the type is a function
+  virtual bool isFunctionType() { return false; }
 
-    /// @return The id of the type
-    auto getId() { return id; }
+  /// @return The id of the type
+  auto getId() { return id; }
 
-    ACCEPT()
-    ~TypeRef() noexcept = default;
+  ACCEPT()
+  ~TypeRef() noexcept = default;
 };
 
 /**
@@ -209,16 +211,16 @@ struct TypeRef : public types::Type, public Base {
  * declaration.
  */
 struct DeclType : public TypeRef {
-    Base* value;
+  Base* value;
 
-  public:
-    DeclType(Base* value, DBGSourceInfo* srcInfo);
+public:
+  DeclType(Base* value, DBGSourceInfo* srcInfo);
 
-    /// @return the expr value to get the type from
-    auto getExpr() { return value; }
-    bool isTypeDecl() override { return true; }
+  /// @return the expr value to get the type from
+  auto getExpr() { return value; }
+  bool isTypeDecl() override { return true; }
 
-    ~DeclType() noexcept = default;
+  ~DeclType() noexcept = default;
 };
 
 /**
@@ -230,22 +232,22 @@ struct DeclType : public TypeRef {
  * to access the type value and determine if it is a function type.
  */
 struct FuncType : public TypeRef {
-    /// @brief The return value of the function
-    TypeRef* returnValue;
-    /// @brief The arguments of the function
-    std::vector<TypeRef*> args;
+  /// @brief The return value of the function
+  TypeRef* returnValue;
+  /// @brief The arguments of the function
+  std::vector<TypeRef*> args;
 
-  public:
-    FuncType(std::vector<TypeRef*> args, TypeRef* returnValue, DBGSourceInfo* srcInfo);
+public:
+  FuncType(std::vector<TypeRef*> args, TypeRef* returnValue, DBGSourceInfo* srcInfo);
 
-    /// @return the arguments of the function
-    auto getArgs() { return args; }
-    /// @return the return value of the function
-    auto getReturnValue() { return returnValue; }
+  /// @return the arguments of the function
+  auto getArgs() { return args; }
+  /// @return the return value of the function
+  auto getReturnValue() { return returnValue; }
 
-    bool isFunctionType() override { return true; }
+  bool isFunctionType() override { return true; }
 
-    ~FuncType() noexcept = default;
+  ~FuncType() noexcept = default;
 };
 
 /**
@@ -257,16 +259,16 @@ struct FuncType : public TypeRef {
  * to access the type value and determine if it is a pointer type.
  */
 struct ReferenceType : public TypeRef {
-    TypeRef* baseType;
+  TypeRef* baseType;
 
-  public:
-    ReferenceType(TypeRef* baseType, DBGSourceInfo* srcInfo);
+public:
+  ReferenceType(TypeRef* baseType, DBGSourceInfo* srcInfo);
 
-    /// @return the expr value to get the type from
-    auto getBaseType() { return baseType; }
-    bool isReferenceType() override { return true; }
+  /// @return the expr value to get the type from
+  auto getBaseType() { return baseType; }
+  bool isReferenceType() override { return true; }
 
-    ~ReferenceType() noexcept = default;
+  ~ReferenceType() noexcept = default;
 };
 
 /**
@@ -282,80 +284,80 @@ struct ReferenceType : public TypeRef {
  * @endcode
  */
 struct WhereClause {
-  public:
-    using ChecksVectorType = std::vector<TypeRef*>;
+public:
+  using ChecksVectorType = std::vector<TypeRef*>;
 
-  private:
-    /**
-     * @brief A vector containing the checks that should be executed
-     *  for each generic argument.
-     */
-    ChecksVectorType checks;
+private:
+  /**
+   * @brief A vector containing the checks that should be executed
+   *  for each generic argument.
+   */
+  ChecksVectorType checks;
 
-  public:
-    WhereClause(ChecksVectorType checks) : checks(checks) { }
-    explicit WhereClause(TypeRef* check) : checks(ChecksVectorType{check}) { }
+public:
+  WhereClause(ChecksVectorType checks) : checks(checks) { }
+  explicit WhereClause(TypeRef* check) : checks(ChecksVectorType{check}) { }
 
-    /// @return The checks to perform
-    auto getChecks() { return checks; }
+  /// @return The checks to perform
+  auto getChecks() { return checks; }
 
-    ~WhereClause() = default;
+  ~WhereClause() = default;
 };
 
 /// Function signature parameter helper node (name: type).
 struct Param {
-    // Parameter's name.
-    std::string name;
+  // Parameter's name.
+  std::string name;
 
-    // Parameter's type. Note, if the prarameter
-    // type is "Generic", `type` actually refers
-    // to the default generic parameter.
-    TypeRef* type = nullptr;
-    /// @brief default value used for the function
-    Syntax::Expression::Base* defaultValue = nullptr;
-    /// @brief The where clause for the parameter-
-    /// @note This only should be for generic parameters!
-    WhereClause* whereClause = nullptr;
-    /// @brief Parameter status (aka: parameter type)
-    enum Status
-    {
-        Normal,
-        Generic
-    } status;
+  // Parameter's type. Note, if the prarameter
+  // type is "Generic", `type` actually refers
+  // to the default generic parameter.
+  TypeRef* type = nullptr;
+  /// @brief default value used for the function
+  Syntax::Expression::Base* defaultValue = nullptr;
+  /// @brief The where clause for the parameter-
+  /// @note This only should be for generic parameters!
+  WhereClause* whereClause = nullptr;
+  /// @brief Parameter status (aka: parameter type)
+  enum Status
+  {
+    Normal,
+    Generic
+  } status;
 
-  public:
-    /// @brief Create a new param instance
-    explicit Param(std::string name = "", TypeRef* type = nullptr, Status generic = Normal);
+public:
+  /// @brief Create a new param instance
+  explicit Param(std::string name = "", TypeRef* type = nullptr, Status generic = Normal);
 
-    /// Get the param status, whether
-    /// it is a generic parameter or a normal one
-    auto getStatus() { return status; }
-    /// @return The parameter's type
-    TypeRef* getType() const { return type; };
-    /// @brief Set parameter's type
-    void setType(TypeRef* ty) { type = ty; };
-    /// @brief Set the default value to the parameter
-    void setDefaultValue(Base* b) { defaultValue = b; }
-    /// @brief Parameter's name
-    std::string getName() const { return name; };
-    /// @brief check if the function contains a default value
-    bool hasDefaultValue() { return defaultValue != nullptr; }
-    /// @return default value if it exists
-    auto getDefaultValue() {
-        assert(status == Normal);
-        assert(hasDefaultValue());
-        return defaultValue;
-    }
-    /// @return The where clause for this generic parameter
-    auto getWhereClause() const {
-        assert(status == Generic);
-        return whereClause;
-    };
-    /// @brief Set The where clause for this generic parameter
-    void setWhereClause(WhereClause* clause) {
-        assert(status == Generic);
-        whereClause = clause;
-    };
+  /// Get the param status, whether
+  /// it is a generic parameter or a normal one
+  auto getStatus() { return status; }
+  /// @return The parameter's type
+  TypeRef* getType() const { return type; };
+  /// @brief Set parameter's type
+  void setType(TypeRef* ty) { type = ty; };
+  /// @brief Set the default value to the parameter
+  void setDefaultValue(Base* b) { defaultValue = b; }
+  /// @brief Parameter's name
+  std::string getName() const { return name; };
+  /// @brief check if the function contains a default value
+  bool hasDefaultValue() { return defaultValue != nullptr; }
+  /// @return default value if it exists
+  auto getDefaultValue() {
+    assert(status == Normal);
+    assert(hasDefaultValue());
+    return defaultValue;
+  }
+  /// @return The where clause for this generic parameter
+  auto getWhereClause() const {
+    assert(status == Generic);
+    return whereClause;
+  };
+  /// @brief Set The where clause for this generic parameter
+  void setWhereClause(WhereClause* clause) {
+    assert(status == Generic);
+    whereClause = clause;
+  };
 };
 } // namespace Expression
 
@@ -370,27 +372,27 @@ namespace Statement {
  */
 template <typename T = Expression::Param*>
 struct GenericContainer {
-    using GenericList = std::vector<T>;
-    GenericList generics;
+  using GenericList = std::vector<T>;
+  GenericList generics;
 
-    bool _generic = false;
+  bool _generic = false;
 
-  public:
-    GenericContainer() = default;
-    GenericContainer(GenericList generics) : _generic(true), generics(generics){};
+public:
+  GenericContainer() = default;
+  GenericContainer(GenericList generics) : _generic(true), generics(generics){};
 
-    GenericList getGenerics() const { return generics; }
-    void setGenerics(GenericList list) { 
-      _generic = true;
-      generics = std::move(list); 
-    }
+  GenericList getGenerics() const { return generics; }
+  void setGenerics(GenericList list) {
+    _generic = true;
+    generics = std::move(list);
+  }
 
-    /// @return iterator to the first generic
-    auto genericsBegin() { return generics.begin(); }
-    /// @return iterator beyond the last generic
-    auto genericsEnd() { return generics.end(); }
-    /// @return true if the node has generics
-    bool isGeneric() { return _generic; }
+  /// @return iterator to the first generic
+  auto genericsBegin() { return generics.begin(); }
+  /// @return iterator beyond the last generic
+  auto genericsEnd() { return generics.end(); }
+  /// @return true if the node has generics
+  bool isGeneric() { return _generic; }
 };
 } // namespace Statement
 

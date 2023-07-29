@@ -5,32 +5,32 @@ namespace snowball {
 namespace Syntax {
 
 SN_DEFINITE_ASSIGMENT_VISIT(Statement::Return) {
-    if (auto x = p_node->getValue()) { x->accept(this); }
+  if (auto x = p_node->getValue()) { x->accept(this); }
 }
 
 SN_DEFINITE_ASSIGMENT_VISIT(Expression::NewInstance) {
-    for (auto a : p_node->getCall()->getArguments()) { a->accept(this); }
+  for (auto a : p_node->getCall()->getArguments()) { a->accept(this); }
 }
 
 SN_DEFINITE_ASSIGMENT_VISIT(Expression::Cast) { p_node->getValue()->accept(this); }
 SN_DEFINITE_ASSIGMENT_VISIT(Expression::GenericIdentifier) {
-    utils::cast<Expression::Identifier>(p_node)->accept(this);
+  utils::cast<Expression::Identifier>(p_node)->accept(this);
 }
 SN_DEFINITE_ASSIGMENT_VISIT(Statement::Raise) { p_node->getExpr()->accept(this); }
 
 SN_DEFINITE_ASSIGMENT_VISIT(Statement::Namespace) {
-    for (auto x : p_node->getBody()) { x->accept(this); }
+  for (auto x : p_node->getBody()) { x->accept(this); }
 }
 
 SN_DEFINITE_ASSIGMENT_VISIT(Expression::FunctionCall) {
-    for (auto a : p_node->getArguments()) { a->accept(this); }
+  for (auto a : p_node->getArguments()) { a->accept(this); }
 }
 
 SN_DEFINITE_ASSIGMENT_VISIT(Statement::DefinedTypeDef) {
-    auto bk = this->insideClass;
-    this->insideClass = p_node;
-    for (auto fn : p_node->getFunctions()) { fn->accept(this); }
-    this->insideClass = bk;
+  auto bk = this->insideClass;
+  this->insideClass = p_node;
+  for (auto fn : p_node->getFunctions()) { fn->accept(this); }
+  this->insideClass = bk;
 }
 
 } // namespace Syntax

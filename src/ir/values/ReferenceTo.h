@@ -20,19 +20,19 @@ namespace ir {
  * @brief Representation of a reference to a value in the IR.
  */
 class ReferenceTo : public AcceptorExtend<ReferenceTo, Value> {
-    // Expression used as value for the reference statement
-    std::shared_ptr<Value> value;
+  // Expression used as value for the reference statement
+  std::shared_ptr<Value> value;
 
-  public:
-    explicit ReferenceTo(std::shared_ptr<Value> value) : value(value){};
+public:
+  explicit ReferenceTo(std::shared_ptr<Value> value) : value(value){};
 
-    /**
-     * @return The value it's being referenced to from.
-     */
-    auto getValue() const { return value; }
+  /**
+   * @return The value it's being referenced to from.
+   */
+  auto getValue() const { return value; }
 
-    // Set a visit handler for the generators
-    SN_GENERATOR_VISITS
+  // Set a visit handler for the generators
+  SN_GENERATOR_VISITS
 };
 
 } // namespace ir

@@ -10,16 +10,15 @@ using namespace snowball::Syntax::Statement;
 namespace snowball::parser {
 
 Syntax::Statement::Return* Parser::parseReturn() {
-    assert(is<TokenType::KWORD_RETURN>());
+  assert(is<TokenType::KWORD_RETURN>());
 
-    auto info = DBGSourceInfo::fromToken(m_source_info, m_current);
+  auto info = DBGSourceInfo::fromToken(m_source_info, m_current);
 
-    Syntax::Expression::Base* expr = nullptr;
-    if (!is<TokenType::SYM_SEMI_COLLON>(peek()))
-        expr = parseExpr(false);
-    auto node = Syntax::N<Return>(expr);
-    node->setDBGInfo(info);
+  Syntax::Expression::Base* expr = nullptr;
+  if (!is<TokenType::SYM_SEMI_COLLON>(peek())) expr = parseExpr(false);
+  auto node = Syntax::N<Return>(expr);
+  node->setDBGInfo(info);
 
-    return node;
+  return node;
 }
 } // namespace snowball::parser

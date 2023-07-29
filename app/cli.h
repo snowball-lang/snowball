@@ -8,74 +8,74 @@
 namespace snowball {
 namespace app {
 struct Options {
-    enum EmitType
-    {
-        EXECUTABLE,
-        OBJECT,
-        LLVM_IR,
-        ASSEMBLY
-    };
+  enum EmitType
+  {
+    EXECUTABLE,
+    OBJECT,
+    LLVM_IR,
+    ASSEMBLY
+  };
 
-    enum Optimization
-    {
-        OPTIMIZE_O0 = 0x00,
-        OPTIMIZE_O1 = 0x01,
-        OPTIMIZE_O2 = 0x02,
-        OPTIMIZE_O3 = 0x03,
-        OPTIMIZE_Os = 0x04,
-        OPTIMIZE_Oz = 0x05
-    };
+  enum Optimization
+  {
+    OPTIMIZE_O0 = 0x00,
+    OPTIMIZE_O1 = 0x01,
+    OPTIMIZE_O2 = 0x02,
+    OPTIMIZE_O3 = 0x03,
+    OPTIMIZE_Os = 0x04,
+    OPTIMIZE_Oz = 0x05
+  };
 
-    struct BuildOptions {
-        bool is_test = false;
-        Optimization opt = OPTIMIZE_O1;
-        EmitType emit_type = EXECUTABLE;
+  struct BuildOptions {
+    bool is_test = false;
+    Optimization opt = OPTIMIZE_O1;
+    EmitType emit_type = EXECUTABLE;
 
-        bool silent = false;
-        std::string file = "";
-        std::string output = "";
-        bool no_progress = false;
-    } build_opts;
+    bool silent = false;
+    std::string file = "";
+    std::string output = "";
+    bool no_progress = false;
+  } build_opts;
 
-    struct RunOptions : BuildOptions {
-        bool jit = false;
-    } run_opts;
+  struct RunOptions : BuildOptions {
+    bool jit = false;
+  } run_opts;
 
-    struct TestOptions {
-        bool silent = false;
-        bool no_progress = false;
-        Optimization opt = OPTIMIZE_O0;
-    } test_opts;
+  struct TestOptions {
+    bool silent = false;
+    bool no_progress = false;
+    Optimization opt = OPTIMIZE_O0;
+  } test_opts;
 
-    struct InitOptions {
-        bool cfg = false;
-        bool lib = false;
-        bool yes = false;
-        bool skip_cfg = false;
-    } init_opts;
+  struct InitOptions {
+    bool cfg = false;
+    bool lib = false;
+    bool yes = false;
+    bool skip_cfg = false;
+  } init_opts;
 
-    enum Command
-    {
-        UNKNOWN = -1,
+  enum Command
+  {
+    UNKNOWN = -1,
 
-        BUILD,
-        RUN,
-        TEST,
-        INIT
-    } command = UNKNOWN;
+    BUILD,
+    RUN,
+    TEST,
+    INIT
+  } command = UNKNOWN;
 };
 
 class CLI {
-  public:
-    CLI(int argc, char** argv);
+public:
+  CLI(int argc, char** argv);
 
-    Options parse();
-    static void help();
+  Options parse();
+  static void help();
 
-  private:
-    int current_index = 0;
-    std::string current_arg;
-    std::vector<std::string> args;
+private:
+  int current_index = 0;
+  std::string current_arg;
+  std::vector<std::string> args;
 };
 } // namespace app
 } // namespace snowball

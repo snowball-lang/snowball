@@ -20,17 +20,17 @@ Transformer::getNiceBaseName(std::tuple<std::optional<std::shared_ptr<ir::Value>
                                         std::optional<std::shared_ptr<ir::Module>>,
                                         bool /* (Ignore) Accept private members */>
                                      base) {
-    if (auto x = std::get<0>(base)) {
-        return "(" + x.value()->getType()->getPrettyName() + ")";
-    } else if (auto x = std::get<1>(base)) {
-        return "(" + x.value()->getPrettyName() + ")";
-    } else if (std::get<2>(base) || std::get<3>(base)) {
-        return "<BUG>";
-    } else if (auto x = std::get<4>(base)) {
-        return x.value()->getName();
-    }
+  if (auto x = std::get<0>(base)) {
+    return "(" + x.value()->getType()->getPrettyName() + ")";
+  } else if (auto x = std::get<1>(base)) {
+    return "(" + x.value()->getPrettyName() + ")";
+  } else if (std::get<2>(base) || std::get<3>(base)) {
+    return "<BUG>";
+  } else if (auto x = std::get<4>(base)) {
+    return x.value()->getName();
+  }
 
-    assert(false);
+  assert(false);
 }
 
 } // namespace Syntax

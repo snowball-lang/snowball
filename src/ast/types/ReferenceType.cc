@@ -16,38 +16,37 @@
 namespace snowball {
 namespace types {
 
-ReferenceType::ReferenceType(Type* base)
-    : AcceptorExtend(Kind::TYPE, base->getName() + "&"), base(base) {
-    setMutable(base->isMutable());
+ReferenceType::ReferenceType(Type* base) : AcceptorExtend(Kind::TYPE, base->getName() + "&"), base(base) {
+  setMutable(base->isMutable());
 }
 Type* ReferenceType::getPointedType() const { return base; }
 std::string ReferenceType::getPrettyName() const {
-    auto baseName = base->getPrettyName();
-    return baseName + "&";
+  auto baseName = base->getPrettyName();
+  return baseName + "&";
 }
 
 std::string ReferenceType::getMangledName() const {
-    auto mangledBase = base->getMangledName();
-    return mangledBase + ".r";
+  auto mangledBase = base->getMangledName();
+  return mangledBase + ".r";
 }
 
 Syntax::Expression::TypeRef* ReferenceType::toRef() {
-    auto tRef = Syntax::TR("$referenceType:" + std::to_string(getId()), nullptr, this, "<pointer>");
-    return tRef;
+  auto tRef = Syntax::TR("$referenceType:" + std::to_string(getId()), nullptr, this, "<pointer>");
+  return tRef;
 }
 
 Type* ReferenceType::getBaseType() const {
-    if (auto c = utils::cast<ReferenceType>(base)) { return c->getBaseType(); }
+  if (auto c = utils::cast<ReferenceType>(base)) { return c->getBaseType(); }
 
-    return base;
+  return base;
 }
 
 bool ReferenceType::canCast(Type* ty) const {
-    SNOWBALL_COBJ_CAST_CHECK
-    SNOWBALL_MUTABLE_CAST_CHECK
+  SNOWBALL_COBJ_CAST_CHECK
+  SNOWBALL_MUTABLE_CAST_CHECK
 
-    if (auto c = utils::cast<ReferenceType>(ty)) return base->canCast(c->getPointedType());
-    return false;
+  if (auto c = utils::cast<ReferenceType>(ty)) return base->canCast(c->getPointedType());
+  return false;
 }
 
 }; // namespace types

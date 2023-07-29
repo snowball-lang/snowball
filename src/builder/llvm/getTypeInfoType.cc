@@ -9,9 +9,7 @@
 namespace snowball {
 namespace codegen {
 
-llvm::StructType* LLVMBuilder::getTypeInfoType() {
-    return llvm::StructType::get(builder->getInt32Ty());
-}
+llvm::StructType* LLVMBuilder::getTypeInfoType() { return llvm::StructType::get(builder->getInt32Ty()); }
 
 } // namespace codegen
 } // namespace snowball

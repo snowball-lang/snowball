@@ -8,13 +8,13 @@ namespace snowball {
 namespace Syntax {
 
 std::vector<Expression::Param*> Transformer::getActualFunctionArgs(cacheComponents::Functions::FunctionStore node) {
-    auto args = node.function->getArgs();
-    if ((node.state->currentClass != nullptr) && (!node.function->isStatic()) && (args.size() > 0) &&
-        (args.at(0)->getName() == "self")) {
-        args.erase(args.begin());
-    }
+  auto args = node.function->getArgs();
+  if ((node.state->currentClass != nullptr) && (!node.function->isStatic()) && (args.size() > 0) &&
+      (args.at(0)->getName() == "self")) {
+    args.erase(args.begin());
+  }
 
-    return args;
+  return args;
 }
 
 } // namespace Syntax

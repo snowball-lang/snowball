@@ -15,23 +15,23 @@ namespace snowball {
 namespace codegen {
 
 llvm::GlobalVariable* LLVMBuilder::createVirtualTable(types::DefinedType* ty, llvm::StructType* vtableType) {
-    auto structName = (std::string)_SN_VTABLE_PREFIX + ty->getMangledName();
+  auto structName = (std::string)_SN_VTABLE_PREFIX + ty->getMangledName();
 
-    std::vector<llvm::Constant*> functions;
-    for (auto fn : ty->getVTable()) {
-        fn->visit(this);
-        auto c = llvm::cast<llvm::Constant>(this->value);
+  std::vector<llvm::Constant*> functions;
+  for (auto fn : ty->getVTable()) {
+    fn->visit(this);
+    auto c = llvm::cast<llvm::Constant>(this->value);
 
-        functions.push_back(c);
-    }
+    functions.push_back(c);
+  }
 
-    module->getOrInsertGlobal(structName, vtableType);
+  module->getOrInsertGlobal(structName, vtableType);
 
-    auto vTable = module->getNamedGlobal(structName);
+  auto vTable = module->getNamedGlobal(structName);
 
-    auto s = llvm::ConstantStruct::get(vtableType, functions);
-    vTable->setInitializer(s);
-    return vTable;
+  auto s = llvm::ConstantStruct::get(vtableType, functions);
+  vTable->setInitializer(s);
+  return vTable;
 }
 
 } // namespace codegen
