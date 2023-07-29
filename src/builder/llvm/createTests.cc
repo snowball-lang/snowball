@@ -94,7 +94,9 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
                                                             "  %s=> %%i%%%s of the tests passed. 🧪\n\n", BOLD, RESET, BOLD, RESET), "test.msg"),
                          builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), successCount),
                                             builder->CreateLoad(builder->getInt32Ty(), failCount)),
-                         builder->CreateMul(builder->CreateSDiv(builder->CreateLoad(builder->getInt32Ty(), successCount),
+                         testIndex == 1
+                         ? builder->getInt32(0) // Prevent division by zero
+                         : builder->CreateMul(builder->CreateSDiv(builder->CreateLoad(builder->getInt32Ty(), successCount),
                                              builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), successCount),
                                                                 builder->CreateLoad(builder->getInt32Ty(), failCount))),
                                             builder->getInt32(100))});
