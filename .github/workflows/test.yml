@@ -51,7 +51,9 @@ jobs:
       - name: Build in Docker
         run: bash -ex build_scripts/release_build.sh
       - name: Install snowball
-        run: sudo make install
+        run: |
+          sudo make install
+          cp -r stdlib/ ~/.snowball/
 
       - name: Execute tests
         run: |
