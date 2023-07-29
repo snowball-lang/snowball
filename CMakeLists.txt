@@ -169,7 +169,7 @@ endif()
 if (${BUILD_FOR_WIN})
   add_compile_definitions(LD_PATH="ld")
 else()
-  add_compile_definitions(LD_PATH="/usr/bin/ld")
+  add_compile_definitions(LD_PATH="/usr/bin/clang-16")
 endif()
 
 

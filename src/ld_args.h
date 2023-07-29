@@ -33,8 +33,7 @@
 #else
 #define LD_ARGS()                                                                                                      \
     {                                                                                                                  \
-        LD_PATH, "-dynamic-linker", "/lib64/ld-linux-x86-64.so.2", "/usr/lib/x86_64-linux-gnu/crt1.o",                 \
-                "/usr/lib/x86_64-linux-gnu/crti.o", "/usr/lib/x86_64-linux-gnu/crtn.o", LLVM_LDFLAGS,                  \
+        LD_PATH, LLVM_LDFLAGS,                  \
                 "-L" STATICLIB_DIR PATH_SEPARATOR _SNOWBALL_LIBRARY_OBJ, p_input, "-lSnowballRuntime", "-lc", "-lm"    \
     }
 #endif

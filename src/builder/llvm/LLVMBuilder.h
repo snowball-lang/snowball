@@ -28,22 +28,11 @@
 namespace snowball {
 namespace codegen {
 
-namespace {
-int typeIdxLookup(const std::string &name) {
-  static std::unordered_map<std::string, int> cache;
-  static int next = 1000;
-  if (name.empty())
-    return 0;
-  auto it = cache.find(name);
-  if (it != cache.end()) {
-    return it->second;
-  } else {
-    const int myID = next++;
-    cache[name] = myID;
-    return myID;
-  }
-}
-} // namespace
+namespace llvm_utils {
+int typeIdxLookup(const std::string &name);
+} // namespace llvm_utils
+
+using namespace llvm_utils;
 
 /**
  * @brief Some context so that we can know

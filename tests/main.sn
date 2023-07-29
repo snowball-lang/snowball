@@ -18,9 +18,9 @@ use Core::System;
 
 pub fn main() i32 {
     // TODO: Make this work!
-    //try {
-    //    raise new Exception("Hello, World!");
-    //} catch(e: Exception&) {
-    //    System::println(e.what());
-    //}
+    try {
+        raise new Exception("Hello, World!");
+    } catch(e: Exception&) {
+        System::println(e.what());
+    }
 }

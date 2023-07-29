@@ -86,7 +86,6 @@ void LLVMBuilder::visit(ir::TryCatch* node) {
 
     auto caughtException = builder->CreateLandingPad(padType, catchInstances.size());
     caughtException->setCleanup(true);
-    builder->CreateCall(getPrintfFunction(), {builder->CreateGlobalStringPtr("error: \n")});
 
     for (auto catchVar : info.catchVars) {
         auto varName = "snowball.typeidx." + catchVar->getType()->getMangledName();
@@ -94,15 +93,13 @@ void LLVMBuilder::visit(ir::TryCatch* node) {
         if (!tidx) {
             tidx = new llvm::GlobalVariable(
                 *module, llvm::StructType::get(builder->getInt32Ty()), /*isConstant=*/true, llvm::GlobalValue::PrivateLinkage,
-                llvm::ConstantStruct::get(getTypeInfoType(), builder->getInt32(typeIdxLookup(varName))), varName);
+                llvm::ConstantStruct::get(getTypeInfoType(), builder->getInt32(typeIdxLookup(catchVar->getType()->getMangledName()))), varName);
             tidx->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
         }
         caughtException->addClause(tidx);
     }
 
     auto unwindException = builder->CreateExtractValue(caughtException, 0);
-    auto retTypeInfoIndex = builder->CreateExtractValue(caughtException, 1);
-
     builder->CreateStore(caughtException, info.exceptionPad);
     
     builder->CreateStore(caughtResultStorage, caughtResultStorage);

@@ -1,6 +1,6 @@
 // Content modified from the original: 
 // https://github.com/codeplaysoftware/llvm-leg/blob/master/examples/ExceptionDemo/ExceptionDemo.cpp
-#define DEBUG
+//#define DEBUG
 
 #include <cassert>
 #include <cstdint>
@@ -676,7 +676,6 @@ _Unwind_Reason_Code ourPersonality(int version,
                                    struct _Unwind_Exception *exceptionObject,
                                    _Unwind_Context_t context) {
 #ifdef DEBUG
-  printf("We are in ourPersonality(...).\n");
   fprintf(stderr,
           "We are in ourPersonality(...):actions is <%d>.\n",
           actions);
