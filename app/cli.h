@@ -26,15 +26,6 @@ struct Options {
         OPTIMIZE_Oz = 0x05
     };
 
-    struct RunOptions {
-        Optimization opt = OPTIMIZE_O1;
-        bool silent = false;
-        bool jit = false;
-
-        std::string file = "";
-        bool no_progress = false;
-    } run_opts;
-
     struct BuildOptions {
         bool is_test = false;
         Optimization opt = OPTIMIZE_O1;
@@ -45,6 +36,10 @@ struct Options {
         std::string output = "";
         bool no_progress = false;
     } build_opts;
+
+    struct RunOptions : BuildOptions {
+        bool jit = false;
+    } run_opts;
 
     struct TestOptions {
         bool silent = false;

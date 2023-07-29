@@ -3,7 +3,6 @@
 #include "builder/llvm/LLVMBuilder.h"
 #include "ir/module/MainModule.h"
 #include "ir/module/Module.h"
-#include "ld_args.h"
 #include "lexer/lexer.h"
 #include "parser/Parser.h"
 #include "utils/utils.h"
@@ -11,6 +10,7 @@
 #include "visitors/Transformer.h"
 #include "visitors/TypeChecker.h"
 #include "visitors/analyzers/DefinitveAssigment.h"
+#include "builder/linker/Linker.h"
 
 #include <filesystem>
 #include <fstream>
@@ -62,6 +62,9 @@ void Compiler::compile(bool silent) {
         auto tokens = lexer->tokens;
         if (tokens.size() != 0) {
             SHOW_STATUS(Logger::compiling(Logger::progress(0.50)))
+
+            _globalContext = new GlobalContext();
+            _globalContext->isTest = _enabledTests;
 
             auto parser = new parser::Parser(tokens, _source_info);
 #if _SNOWBALL_TIMERS_DEBUG
@@ -175,48 +178,22 @@ int Compiler::emit_assembly(std::string p_output, bool p_pmessage) {
 }
 
 int Compiler::emit_binary(std::string out, bool log) {
-    std::string objfile = Logger::format("%s.so", out.c_str());
+    std::vector<std::string> extraLinkerArgs = {};
+    auto objfile = linker::Linker::getSharedLibraryName(out);
     DEBUG_CODEGEN("Emitting object file... (%s)", objfile.c_str());
     int objstatus = emit_object(objfile, false);
     if (objstatus != EXIT_SUCCESS) return objstatus;
-
-    // object file written, now invoke llc
-    // int ldstatus = execl(LD_PATH, "", NULL);
-    std::string ldcommand;
-    std::string p_input = Logger::format("%s.so", out.c_str());
-    std::vector<std::string> ld_args = LD_ARGS();
-
-    for (int i = 0; i < ld_args.size(); i++) {
-        ldcommand += ld_args[i];
-        ldcommand += " ";
+    auto linker = linker::Linker(_globalContext, LD_PATH);
+    for (auto lib : linked_libraries) {
+        linker.addLibrary(lib);
     }
-    for (int i = 0; i < linked_libraries.size(); i++) {
-        ldcommand += "-l:" + linked_libraries[i] + " ";
-        DEBUG_CODEGEN("Linking library: %s", linked_libraries[i].c_str());
-    }
-
-#if _SNOWBALL_CODEGEN_DEBUG
-    ldcommand += "--verbose ";
-#endif
-
-    ldcommand += " -o";
-    ldcommand += out;
-
-    DEBUG_CODEGEN("Invoking linker (" LD_PATH " with stdlib at " STATICLIB_DIR ")");
-    DEBUG_CODEGEN("Linker command: %s", ldcommand.c_str());
-
-    int ldstatus = system(ldcommand.c_str());
-    if (ldstatus) {
-        remove(objfile.c_str());
-        throw SNError(LINKER_ERR, Logger::format("Linking with " LD_PATH " failed with code %d", ldstatus));
-    }
-
+    // TODO: add user-defined extra ld args
+    linker.link(objfile, out, extraLinkerArgs);
     if (log) Logger::success(Logger::format("Snowball project successfully compiled! 🥳", BGRN, RESET, out.c_str()));
 
     // clean up
     DEBUG_CODEGEN("Cleaning up object file... (%s)", objfile.c_str());
     remove(objfile.c_str());
-
     return EXIT_SUCCESS;
 }
 

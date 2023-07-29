@@ -110,6 +110,7 @@ fn [[
         return false;
       }
     } catch (e: Exception&) {
+      CLib::printf("\e[1;31merror \n");
       CLib::printf("\n UNEXPECTED EXCEPTION:\n");
       CLib::printf("   --> %s\n", e.what());
       CLib::printf("\e[0m\n");

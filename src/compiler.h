@@ -17,12 +17,28 @@ namespace fs = std::filesystem;
 namespace snowball {
 
 /**
+ * @brief Global context for the compiler
+ * 
+ * @details
+ * This struct holds all the global context for the compiler. This is used to pass
+ * information between different parts of the compiler.
+*/
+struct GlobalContext {
+    bool isTest = false;
+    bool withStd = true;
+    bool withCXXStd = true;
+    bool isThreaded = false;
+
+    bool isDynamic = true;
+};
+
+/**
  * @brief snowball Compiler
- *
- * Main class that handles all the compiling
- * process of snowball. Note that it does not
- * actually compile, the llvm builder does the
- * actual compilation.
+ * 
+ * @details
+ * Main class that handles all the compiling process of snowball. Note that it does not
+ * actually compile, the llvm builder does the actual compilation. This class is more of
+ * a wrapper around the whole compiler functionality.
  */
 class Compiler {
     // variables
@@ -31,6 +47,8 @@ class Compiler {
 
     fs::path _cwd;
     app::Options::Optimization opt_level;
+
+    GlobalContext* _globalContext;
 
     SourceInfo* _source_info;
     bool _initialized = false;
