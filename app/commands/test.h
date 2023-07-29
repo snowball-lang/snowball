@@ -77,11 +77,12 @@ int test(app::Options::TestOptions p_opts) {
 
     if (!p_opts.silent) {
         auto time = std::chrono::system_clock::to_time_t(date);
-        auto t = std::ctime(&time);
-        if (t[strlen(t)-1] == '\n') t[strlen(t)-1] = '\0';
+        //if (t[strlen(t)-1] == '\n') t[strlen(t)-1] = '\0';
+        char buffer[12]; // __DATE__ format requires 12 characters (including null terminator)
+        std::strftime(buffer, sizeof(buffer), "%b %d %Y", std::localtime(&time));
         Logger::message("Finished", FMT("test target(s) in %s%i%sms", BOLD, duration, RESET));
         Logger::compiling(FMT("version: %s%s%s\n", BOLD, _SNOWBALL_VERSION, RESET), "Snowball");
-        Logger::compiling(FMT("Build date: %s%s%s\n", BOLD, t, RESET), "Date");
+        Logger::compiling(FMT("Build date: %s%s%s\n", BOLD, buffer, RESET), "Date");
         Logger::message("Running", FMT("unittests (%s)", filename.c_str()));
         Logger::compiling("Good luck with the tests! 🙏😽\n", "Motivation");
     }
