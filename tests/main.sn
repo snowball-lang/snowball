@@ -18,10 +18,6 @@ use Core::System;
 
 pub fn main() i32 {
     // TODO: Make this work!
-    System::println("hello")
-    try {
-        raise new Exception("Hello, World!");
-    } catch(e: Exception&) {
-        System::println(e.what());
-    }
+    let a = 10.to_string();
+    System::println(a);
 }

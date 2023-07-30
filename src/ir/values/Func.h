@@ -54,7 +54,7 @@ private:
   types::Type* retTy;
   /// @brief Parent class that this function is defined
   ///  in.
-  types::DefinedType* parent = nullptr;
+  types::Type* parent = nullptr;
 
   /// Function parameters are the names listed in
   /// the function definition. Function arguments
@@ -158,7 +158,7 @@ public:
     return symbols;
   }
   /// @brief set from what parent this function is declared inside
-  void setParent(types::DefinedType* x) { parent = x; }
+  void setParent(types::Type* x) { parent = x; }
   /// @brief get from what parent this function is declared inside
   auto getParent() const { return parent; }
   /// @return whether or not the function is defiend within a

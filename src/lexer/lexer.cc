@@ -495,8 +495,12 @@ void Lexer::tokenize() {
             default: lexer_error(Error::BUG, FMT("Unreachable number mode \"%i\"", mode), num.size());
           }
 
-          // "1." parsed as 1.0 which should be error.
-          if (num[num.size() - 1] == '.') lexer_error(Error::SYNTAX_ERROR, "invalid numeric value.");
+          bool appendDot = false;
+          if (num[num.size() - 1] == '.') {
+            num.erase(num.size() - 1);
+            mode = INT;  
+            appendDot = true;
+          }
 
           Token tk;
           tk.line = cur_line;
@@ -511,6 +515,10 @@ void Lexer::tokenize() {
           tokens.emplace_back(tk);
           if (isRange) { // we add '..' if it's a range expr (1..5)
             consume(TokenType::SYM_DOT);
+            consume(TokenType::SYM_DOT);
+            this->char_ptr -= 1;
+          }
+          if (appendDot) {
             consume(TokenType::SYM_DOT);
             this->char_ptr -= 1;
           }

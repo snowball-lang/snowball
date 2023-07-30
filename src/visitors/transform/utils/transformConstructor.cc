@@ -8,7 +8,8 @@ namespace Syntax {
 
 std::vector<std::shared_ptr<ir::Value>> Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
   auto instrList = std::vector<std::shared_ptr<ir::Value>>();
-  auto currentClass = ctx->getCurrentClass();
+  auto currentClass = utils::cast<types::DefinedType>(ctx->getCurrentClass());
+  assert(currentClass && "Current class is not a defined type!");
   if (p_node->hasSuperArgs()) {
     auto [selfArg, foundSelfArg] = ctx->getInCurrentScope("self");
     assert(foundSelfArg);
@@ -21,7 +22,7 @@ std::vector<std::shared_ptr<ir::Value>> Transformer::transformConstructor(Statem
     utils::dyn_cast<ir::ObjectInitialization>(val)->createdObject = selfArg->getValue();
     instrList.emplace_back(val);
   }
-  for (auto field : ctx->getCurrentClass()->getFields()) {
+  for (auto field : currentClass->getFields()) {
     auto name = field->name;
     auto initializedValue = field->initializedValue;
     if (initializedValue) {

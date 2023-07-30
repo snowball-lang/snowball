@@ -57,11 +57,13 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
       fn->setModule(ctx->module);
       fn->setAttributes(node);
       auto isExtern = node->isExtern();
-      if (((ctx->getCurrentClass() || !fn->isStatic()) || fn->isPrivate()) && !isEntryPoint && !isExtern &&
+      if (((fn->hasParent() || !fn->isStatic()) || fn->isPrivate()) && !isEntryPoint && !isExtern &&
           !fn->hasAttribute(Attributes::EXTERNAL_LINKAGE) && !fn->hasAttribute(Attributes::EXPORT))
         fn->addAttribute(Attributes::INTERNAL_LINKAGE);
       if (auto c = ctx->getCurrentClass(true)) {
-        if (node->isVirtual()) { fn->setVirtualIndex(c->addVtableItem(fn)); }
+        auto pClass = utils::cast<types::DefinedType>(c);
+        if (pClass != nullptr)
+          if (node->isVirtual()) { fn->setVirtualIndex(pClass->addVtableItem(fn)); }
       }
 
       ir::Func::FunctionArgs newArgs = {};

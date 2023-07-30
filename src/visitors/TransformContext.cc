@@ -51,6 +51,17 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
                    OperatorService::getOperatorId(OperatorService::OperatorType::NOTEQ),
            }}};
 
+  auto createToStringFunction = [&](types::Type* ty, std::string format) {
+    auto fn = builder.createFunction(NO_DBGINFO, "#toString", true, false);
+    auto type = builder.createFunctionType(std::vector<types::Type*>{ty}, raw_CharType);
+    fn->setType(type);
+    fn->setRetTy(raw_CharType);
+    fn->setPrivacy(PrivacyStatus::PUBLIC);
+    fn->getRetTy()->setMutable(false);
+    fn->getType()->setMutable(false);
+    defineFunction(fn, ty->getName());
+  };
+
   for (int asPointer = 0; asPointer < 2; ++asPointer) {
     for (auto [ty, operators] : overloadTypes) {
       for (auto op : operators) {

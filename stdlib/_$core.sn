@@ -1,5 +1,58 @@
 use Core::CLib;
 
+// Primitive type's exports
+
+
+class [[extends]] i8 {
+  pub:
+    /**
+    * @brief Converts the number to a string.
+    * @return The string representation of the number.
+    */
+    fn [[internal_linkage, inline]] to_string() String
+      { return String::fromNumber(*self, "%i"); }
+}
+
+class [[extends]] i16 {
+  pub:
+    /**
+    * @brief Converts the number to a string.
+    * @return The string representation of the number.
+    */
+    fn [[internal_linkage, inline]] to_string() String
+      { return String::fromNumber(*self, "%i"); }
+}
+
+class [[extends]] i32 {
+  pub:
+    /**
+    * @brief Converts the number to a string.
+    * @return The string representation of the number.
+    */
+    fn [[internal_linkage, inline]] to_string() String
+      { return String::fromNumber(*self, "%i"); }
+}
+
+class [[extends]] i64 {
+  pub:
+    /**
+    * @brief Converts the number to a string.
+    * @return The string representation of the number.
+    */
+    fn [[internal_linkage, inline]] to_string() String
+      { return String::fromNumber(*self, "%ld"); }
+}
+
+class [[extends]] char {
+  pub:
+    /**
+    * @brief Converts the character to a string.
+    * @return The string representation of the character.
+    */
+    fn [[internal_linkage, inline]] to_string() String 
+      { return new String{self}; }
+}
+
 namespace Core {
 
 /**
@@ -265,14 +318,14 @@ pub class Iter<_IteratorType: Core::Sized> {
  * for working with ranges of elements. It supports common Range
  * manipulation operations such as iteration, element access, and more.
  */
-pub class Range: Iterable<i32> {
+pub class Range<_Number_Type: Core::IsNumeric = i32>: Iterable<_Number_Type> {
   pub:
     /**
      * @brief Range constructor.
      * @param[in] start The start of the range.
      * @param[in] end The end of the range.
      */
-    Range(start: i32, end: i32) : 
+    Range(start: _Number_Type, end: _Number_Type) : 
       super(), _start(start), _end(end) 
     {
       self.iter_index = self._start;
@@ -281,36 +334,36 @@ pub class Range: Iterable<i32> {
      * @brief Range constructor with default start.
      * @param[in] end The end of the range.
      */
-    Range(end: i32) : super(), _end(end) {}
+    Range(end: _Number_Type) : super(), _end(end) {}
     /**
      * @brief Returns the size of the range.
      * @return The size of the range.
      */
-    fn [[internal_linkage, inline]] size() i32 
+    fn [[internal_linkage, inline]] size() _Number_Type
       { return self._end - self._start; }
     /**
      * @brief Returns the start of the range.
      * @return The start of the range.
      */
-    fn [[internal_linkage, inline]] begin() i32 
+    fn [[internal_linkage, inline]] begin() _Number_Type
       { return self._start; }
     /**
      * @brief Returns the end of the range.
      * @return The end of the range.
      */
-    fn [[internal_linkage, inline]] end() i32 
+    fn [[internal_linkage, inline]] end() _Number_Type
       { return self._end; }
     /**
      * @brief Returns the next element in the iteration.
      * @return The next element in the iteration.
      */
-    virt fn [[internal_linkage]] next() mut Iter<i32>
+    virt fn [[internal_linkage]] next() mut Iter<_Number_Type>
     {
       if self.iter_index > self.end() 
       {
-        return Iter<?i32>::invalid();
+        return Iter<?_Number_Type>::invalid();
       }
-      let iter = Iter<?i32>::valid(self.iter_index);
+      let iter = Iter<?_Number_Type>::valid(self.iter_index);
       self.iter_index = self.iter_index + 1;
       return iter;
     }
@@ -321,9 +374,9 @@ pub class Range: Iterable<i32> {
       { self.iter_index = self._start; }
   priv:
     /** The start of the range. */
-    let _start: i32 = 0;
+    let _start: _Number_Type = 0;
     /** The end of the range. */
-    let _end: i32;
+    let _end: _Number_Type;
 };
 /**
  * @class Vector
@@ -501,6 +554,12 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       //}
       return CLib::c_string::strcmp(self.buffer, other.buffer) == 0;
     }
+    /**
+     * @brief Utility function to avoid constant checking if a type is a stirng.
+     * @return It's self (aka, a string representation of the string).
+     */
+    fn [[internal_linkage, inline]] to_string() StringView<char>
+      { return *self; }
   priv:
     /** The capacity of the string. */
     let mut capacity: i32 = 10;
@@ -509,7 +568,8 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
     /** The buffer containing the string. */
     let buffer: StringType = "";
 
-  priv:
+  // Static exports
+  pub:
     /**
      * @brief Creates a new string from a number.
      * @param[in] num The number to create the string from.
@@ -524,29 +584,13 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       return new StringView<_CharType>{buffer}; 
     }
 
-  // Static exports
-  pub:
     /**
-     * @brief Constructs a string from a long integer. 
-     * @param[in] num The integer to construct the string from.
-     */
-    static fn [[internal_linkage, inline]] from(num: i64)
-      StringView<_CharType> 
-    { return Self::fromNumber(num, "%ld"); }
-    /**
-     * @brief Constructs a string from an integer. 
-     * @param[in] num The integer to construct the string from.
-     */
-    static fn [[internal_linkage, inline]] from(num: i32)
-      StringView<_CharType> 
-    { return Self::fromNumber(num, "%i"); }
-
-    /**
-      * @brief Constructs a string from a vector of characters.
-      * @param[in] buffer The vector of characters to construct the string from.
+      * @brief Constructs a string from an unknown type.
+      * @param[in] buffer The buffer to construct the string from.
+      * @return The constructed string.
       */
     static fn [[internal_linkage, inline]] from<T>(buffer: T)
-      StringView<char> { return new StringView<char>{buffer}; }
+      StringView<char> { return buffer.to_string(); }
 }
 
 } // namespace Core
@@ -557,6 +601,6 @@ type Vector<T> = Core::Vector<T>;
 type Iter<T> = Core::Iter<T>;
 type Exception = Core::Exception;
 type IndexError = Core::IndexError;
-type Range = Core::Range;
+type Range<T = i32> = Core::Range<T>;
 type String = StringView<>;
 // TODO (implement wchar): using WideString as StringView<wchar&>

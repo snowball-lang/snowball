@@ -68,7 +68,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     }
     if (b.has_value()) {
       auto baseType = (*b)->getType();
-      if (utils::cast<types::PrimitiveType>(baseType) || utils::cast<types::ReferenceType>(baseType)) {
+      if ((utils::cast<types::PrimitiveType>(baseType) && OperatorService::isOperator(c->getName(true))) || utils::cast<types::ReferenceType>(baseType)) {
         argValues.insert(argValues.begin(), *b);
         argTypes.insert(argTypes.begin(), baseType);
       } else {

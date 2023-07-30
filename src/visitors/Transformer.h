@@ -174,6 +174,15 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    */
   bool typeGenericsMatch(Expression::TypeRef* ty, types::Type* comp);
   /**
+   * @brief It performs a type extension from the given AST node.
+   * @note It will error if the type is not a class or if the class
+   * does not exist.
+   * 
+   * @param node The AST node to extend from.
+   * @param uuid The UUID of the class to extend from.
+   */
+  void transformTypeExtension(Statement::DefinedTypeDef* node, std::string uuid);
+  /**
    * @brief It generates super call and variale assignment for the
    *  class.
    * @return Both the super call and generated assigment values as if it was

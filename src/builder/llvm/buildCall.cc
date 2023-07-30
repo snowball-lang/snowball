@@ -45,14 +45,16 @@ void LLVMBuilder::visit(ir::Call* call) {
     isConstructor = true;
     assert(instance);
     assert(c->hasParent());
-    auto p = c->getParent();
+    auto parent = c->getParent();
 
     llvm::Value* object = nullptr;
     if (instance->createdObject) {
       object = build(instance->createdObject.get());
       object = builder->CreatePointerCast(object, instanceType);
     } else {
-      object = allocateObject(p, instance->initializeAtHeap);
+      auto classType = utils::cast<types::DefinedType>(parent);
+      assert(classType && "Class type is not a defined type!");
+      object = allocateObject(classType, instance->initializeAtHeap);
     }
 
     args.insert(args.begin(), object);

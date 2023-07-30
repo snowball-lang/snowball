@@ -14,8 +14,20 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
   next(); // East "class"
 
   bool isPublic = false;
+  bool extends = false;
   if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-3, true))) {
     isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
+  }
+
+  std::map<Attributes, std::map<std::string, std::string>> attributes;
+  if (is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek())) {
+    attributes = parseAttributes([&](std::string attr) {
+      if (attr == "extends") {
+        extends = true;
+        return Attributes::CLASS_EXTENDS;
+      }
+      return Attributes::INVALID;
+    });
   }
 
   auto name = assert_tok<TokenType::IDENTIFIER>("class identifier").to_string();
@@ -90,6 +102,9 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         if (pk.type == TokenType::KWORD_STATIC) {
           next();
           createError<ARGUMENT_ERROR>("Virtual methods can't be static!");
+        } else if (extends) {
+          next();
+          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* virtual methods!");
         } else if (pk.type != TokenType::KWORD_FUNC) {
           next();
           createError<SYNTAX_ERROR>("Expected keyword \"func\" after virtual declaration!");
@@ -102,11 +117,16 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         cls->addVariable(var);
 
         assert_tok<TokenType::SYM_SEMI_COLLON>("a ';'");
+        if (extends) {
+          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* variables!");
+        }
       } break;
 
       case TokenType::BRACKET_RCURLY: {
         cls->hasConstructor = hasConstructor;
         m_current_class = classBackup;
+        for (auto attr : attributes)
+          cls->addAttribute(attr.first, attr.second);
         return cls;
       }
 
@@ -116,6 +136,9 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         cls->addTypeAlias(typeDef);
 
         assert_tok<TokenType::SYM_SEMI_COLLON>("a ';'");
+        if (extends) {
+          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* type aliases!");
+        }
       } break;
 
       // note: This case should be always at the bottom!

@@ -40,6 +40,9 @@ enum Attributes
   TYPECHECKED,
   ALLOW_FOR_TEST,
 
+  // Class attributes
+  CLASS_EXTENDS,
+
   // Import attributes
   MACROS,
 };

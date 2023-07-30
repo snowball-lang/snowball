@@ -139,6 +139,8 @@ public:
 
     return s;
   }
+  /// @brief If the scope is the global scope
+  bool isGlobalScope() { return stack.size() == 2; }
 };
 
 } // namespace Syntax

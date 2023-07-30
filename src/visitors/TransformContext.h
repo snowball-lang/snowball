@@ -27,7 +27,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
   // Current function being generated
   std::shared_ptr<ir::Func> currentFunction = std::shared_ptr<ir::Func>(nullptr);
   // Current class being transformed
-  types::DefinedType* currentClass = nullptr;
+  types::Type* currentClass = nullptr;
   // The IRBuilder instance that's being used to generate the IR
   ir::IRBuilder& builder;
 
@@ -50,7 +50,7 @@ public:
   ///  is useful (for example) when you want to generate functions
   ///  that got inherited but still want it to "be part of" the parent
   ///  type.
-  types::DefinedType* actuallCurrentClass = nullptr;
+  types::Type* actuallCurrentClass = nullptr;
   /// @brief A node representing the last call being transformed sort of
   ///  like the first call in a backtrace list
   /// @todo maybe make it a list and display all of the calls if a flag like
@@ -109,7 +109,7 @@ public:
     return actual ? actuallCurrentClass == nullptr ? currentClass : actuallCurrentClass : currentClass;
   }
   /// @brief Defined the new type being generated
-  void setCurrentClass(types::DefinedType* c) { currentClass = c; }
+  void setCurrentClass(types::Type* c) { currentClass = c; }
 
   /**
    * @brief Add function to stack.

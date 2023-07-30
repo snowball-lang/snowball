@@ -21,12 +21,24 @@ void LLVMBuilder::visit(ir::ReferenceTo* ref) {
   } else {
     // TODO: actually do fix this
     // assert(llvmReferencedValue->getType()->isPointerTy());
+    if (utils::cast<types::PrimitiveType>(val->getType())) {
+      auto currentBlock = builder->GetInsertBlock();
+      builder->SetInsertPoint(ctx->getCurrentFunction()->getEntryBlock().getTerminator());
+      auto alloca = builder->CreateAlloca(getLLVMType(val->getType()));
+      builder->SetInsertPoint(currentBlock);
+      builder->CreateStore(llvmReferencedValue, alloca);
+      value = alloca;
+    } else {
+      value = llvmReferencedValue;
+    }
     // auto currentBlock = builder->GetInsertBlock();
     // builder->SetInsertPoint(ctx->getCurrentFunction()->getEntryBlock().getTerminator());
     // auto alloca = builder->CreateAlloca(getLLVMType(val->getType()));
     // builder->SetInsertPoint(currentBlock);
+    // if (utils::cast<types::PrimitiveType>(val->getType()) == nullptr)
+    //   llvmReferencedValue = builder->CreateLoad(getLLVMType(ref->getValue()->getType()), llvmReferencedValue);
     // builder->CreateStore(llvmReferencedValue, alloca);
-    value = llvmReferencedValue;
+    // value = alloca;
   }
 
   this->value = value;
