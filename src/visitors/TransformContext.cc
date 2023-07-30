@@ -35,21 +35,45 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
 
 #undef DEFINE_TYPE
 
-  std::vector<std::pair<types::Type*, std::vector<std::string>>> overloadTypes = {
-          {raw_BoolType, OperatorService::operators},
-          {raw_Float64Type, OperatorService::operators},
-          {raw_Float32Type, OperatorService::operators},
-          {raw_Int64Type, OperatorService::operators},
-          {raw_Int32Type, OperatorService::operators},
-          {raw_Int16Type, OperatorService::operators},
-          {raw_Int8Type, OperatorService::operators},
-          {raw_CharType, OperatorService::operators},
+  std::vector<std::tuple<types::Type*, std::vector<std::string>, std::vector<std::string>>> overloadTypes = {
+          {raw_BoolType, OperatorService::operators, {
+            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
+          }},   
+
+          {raw_Float64Type, OperatorService::operators, {
+            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
+          }},
+
+          {raw_Float32Type, OperatorService::operators, {
+            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
+          }},
+
+          {raw_Int64Type, OperatorService::operators, {
+            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
+          }},
+
+          {raw_Int32Type, OperatorService::operators, {
+            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
+          }},
+
+          {raw_Int16Type, OperatorService::operators, {
+            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
+          }},
+
+          {raw_Int8Type, OperatorService::operators, {
+            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
+          }},
+
+          {raw_CharType, OperatorService::operators, {
+            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
+          }},
+
 
           {raw_CObjectType,
            {
-                   OperatorService::getOperatorId(OperatorService::OperatorType::EQEQ),
-                   OperatorService::getOperatorId(OperatorService::OperatorType::NOTEQ),
-           }}};
+            OperatorService::getOperatorId(OperatorService::OperatorType::EQEQ),
+            OperatorService::getOperatorId(OperatorService::OperatorType::NOTEQ),
+           }, { }}};
 
   auto createToStringFunction = [&](types::Type* ty, std::string format) {
     auto fn = builder.createFunction(NO_DBGINFO, "#toString", true, false);
@@ -63,9 +87,10 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
   };
 
   for (int asPointer = 0; asPointer < 2; ++asPointer) {
-    for (auto [ty, operators] : overloadTypes) {
+    for (auto [ty, operators, blocked] : overloadTypes) {
       for (auto op : operators) {
-        for (auto [overload, _] : overloadTypes) {
+        if (std::find(blocked.begin(), blocked.end(), op) != blocked.end()) continue;
+        for (auto [overload, _, _2] : overloadTypes) {
           auto opType = OperatorService::operatorID(op);
           auto unary = OperatorService::isUnary(opType);
           auto classType = asPointer ? unary ? ty : ty->getPointerTo() : ty;
@@ -84,6 +109,7 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
           fn->setPrivacy(PrivacyStatus::PUBLIC);
           fn->getType()->setMutable(isMut);
           fn->getRetTy()->setMutable(isMut);
+          fn->addAttribute(Attributes::BUILTIN);
           defineFunction(fn, ty->getName());
         }
       }

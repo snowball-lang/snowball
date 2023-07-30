@@ -20,6 +20,7 @@ namespace codegen {
 
 bool LLVMBuilder::buildOperator(ir::Call* call) {
   if (auto fn = utils::dyn_cast<ir::Func>(call->getCallee())) {
+    if (!fn->hasAttribute(Attributes::BUILTIN)) return false;
     auto args = call->getArguments();
     auto opName = fn->getName(true);
     if (services::OperatorService::isOperator(opName) &&

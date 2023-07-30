@@ -498,7 +498,7 @@ void Lexer::tokenize() {
           bool appendDot = false;
           if (num[num.size() - 1] == '.') {
             num.erase(num.size() - 1);
-            mode = INT;  
+            mode = INT;
             appendDot = true;
           }
 

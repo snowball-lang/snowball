@@ -27,11 +27,10 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
+  auto name = p_node->getName();
   if (p_node->hasAttribute(Attributes::TEST) && (!ctx->testMode || !ctx->isMainModule))
     return;
   else if (p_node->hasAttribute(Attributes::TEST)) { p_node->addAttribute(Attributes::ALLOW_FOR_TEST); }
-
-  auto name = p_node->getName();
   ADD_SELF_ARG
 
   if (!ctx->generateFunction && !(IS_MAIN)) {
@@ -39,7 +38,7 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     //  Check if the function requirements match the main function
     auto uuid = ctx->createIdentifierName(name);
     // TODO: check for already existing functions (for no mangled versions)
-    if (p_node->hasAttribute(Attributes::NO_MANGLE) || p_node->hasAttribute(Attributes::EXPORT)) {
+    if (p_node->hasAttribute(Attributes::NO_MANGLE) || p_node->hasAttribute(Attributes::EXPORT) || p_node->isExtern()) {
       auto hasExportName = p_node->hasAttribute(Attributes::EXPORT);
       auto exportName = p_node->getAttributeArgs(Attributes::EXPORT).find("name");
       if (exportName != p_node->getAttributeArgs(Attributes::EXPORT).end()) { name = exportName->second; }
@@ -68,7 +67,8 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     return;
   }
 
-  if (ctx->generateFunction && !p_node->isGeneric()) { transformFunction({p_node, ctx->saveState()}, {}); }
+  if (ctx->generateFunction && !p_node->isGeneric()) 
+    transformFunction({p_node, ctx->saveState()}, {});
 }
 
 } // namespace Syntax

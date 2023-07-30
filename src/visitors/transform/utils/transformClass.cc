@@ -147,6 +147,7 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
         fn->setArgs({{"other", arg}});
         fn->setType(type);
         fn->setPrivacy(PrivacyStatus::PUBLIC);
+        fn->addAttribute(Attributes::BUILTIN);
         ctx->defineFunction(fn);
       }
 

@@ -1,10 +1,10 @@
 
 #include "../app/cli.h"
+#include "SourceInfo.h"
 #include "common.h"
 #include "ir/module/MainModule.h"
 #include "ir/module/Module.h"
 #include "lexer/lexer.h"
-#include "SourceInfo.h"
 #include "vendor/toml.hpp"
 
 #include <filesystem>

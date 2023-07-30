@@ -35,6 +35,7 @@ enum Attributes
   NO_MANGLE,
   NOT_IMPLEMENTED,
   EXPORT,
+  BUILTIN,
 
   // Function internal attributes
   TYPECHECKED,

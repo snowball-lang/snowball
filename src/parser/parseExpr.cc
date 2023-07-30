@@ -134,7 +134,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
           auto indexExpr = parseExpr(false);
           auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
           auto bop = Syntax::N<Syntax::Expression::BinaryOp>(Syntax::Expression::BinaryOp::OpType::INDEX);
-          bop->isOperator = true;
+          bop->isOperator = false;
           bop->setDBGInfo(dbg);
           next();
           assert_tok<TokenType::BRACKET_RSQUARED>("']'");
@@ -148,7 +148,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
           if (!isStatic && is<TokenType::SYM_DOT>(peek(1, true))) { // Range expr (1..5)
             auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
             auto bop = Syntax::N<Syntax::Expression::BinaryOp>(Syntax::Expression::BinaryOp::OpType::RANGE);
-            bop->isOperator = true;
+            bop->isOperator = false;
             bop->setDBGInfo(dbg);
             bop->left = expr;
             next(1);

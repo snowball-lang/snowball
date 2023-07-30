@@ -57,7 +57,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
 
       if (indexValue == nullptr && v.has_value()) { indexValue = v.value(); }
       if (!indexValue && !ty.has_value() && !fns.has_value() && !ovs.has_value() && !mod.has_value()) {
-        // TODO: operator
+        if (OperatorService::isOperator(name)) name = OperatorService::operatorName(OperatorService::operatorID(name));
         E<VARIABLE_ERROR>(dbgInfo,
                           FMT("Coudn't find '%s' inside type '%s'!", name.c_str(), x->getPrettyName().c_str()));
       }
@@ -73,7 +73,6 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
       auto [v, ty, fns, ovs, mod] = getFromIdentifier(dbgInfo, name, generics, type->getName());
 
       if ((!fns.has_value()) && (!ovs.has_value())) {
-        // TODO: operator
         if (OperatorService::isOperator(name)) name = OperatorService::operatorName(OperatorService::operatorID(name));
         E<VARIABLE_ERROR>(
                 dbgInfo,

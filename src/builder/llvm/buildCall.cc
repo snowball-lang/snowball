@@ -60,7 +60,6 @@ void LLVMBuilder::visit(ir::Call* call) {
     args.insert(args.begin(), object);
     llvmCall = createCall(calleeType, callee, args);
     this->value = instance->initializeAtHeap ? object : builder->CreateLoad(instanceType, object);
-    ;
   } else if (auto c = utils::dyn_cast<ir::Func>(calleeValue); c != nullptr && c->inVirtualTable()) {
     assert(c->hasParent());
 

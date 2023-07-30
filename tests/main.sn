@@ -17,7 +17,9 @@ use pkg::tuples;
 use Core::System;
 
 pub fn main() i32 {
-    // TODO: Make this work!
-    let a = 10.to_string();
+    let mut a = new Vector<String&>();
+    a.push("awd");
+    a.push("awd");
+    a.push("awd");
     System::println(a);
 }

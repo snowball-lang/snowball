@@ -1,6 +1,6 @@
 
-#include "../errors.h"
 #include "../SourceInfo.h"
+#include "../errors.h"
 #include "../utils/logger.h"
 #include "tokens/token.h"
 

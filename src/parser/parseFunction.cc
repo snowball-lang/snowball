@@ -301,15 +301,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
   std::vector<Syntax::Expression::Param*> generics;
   if (is<TokenType::OP_LT>()) {
     isGeneric = true;
-    if (isExtern) {
-      createError<SYNTAX_ERROR>("Can't define an external function with generics");
-    } else if (isConstructor) {
-      createError<SYNTAX_ERROR>("Can't define a constructor with generics");
-    } else if (isOperator) {
-      createError<SYNTAX_ERROR>("Can't define an operator with generics");
-    } else if (isLambda) {
-      createError<SYNTAX_ERROR>("Can't define a lambda with generics");
-    }
+    if (isLambda) { createError<SYNTAX_ERROR>("Can't define a lambda with generics"); }
 
     generics = parseGenericParams();
     width = (m_current.get_pos().second - dbg.second);

@@ -1,0 +1,24 @@
+class [[extends]] char {
+  pub:
+    /**
+    * @brief It creates a `+` operator for the character.
+    * @param[in] other The character to concatenate the character with.
+    * @return The addition result.
+    */
+    operator [[inline, llvm_function]] +(other: i32) char& 
+    { 
+      %0 = getelementptr i8, ptr %self, i32 %other
+      ret ptr %0
+    }
+
+    /**
+    * @brief It creates an index operator for the character.
+    * @param[in] index The index of the character to get.
+    * @return The character at the specified index.
+    */
+    operator [[inline, llvm_function]] [](index: i32) char& 
+    { 
+      %0 = getelementptr i8, ptr %self, i32 %index
+      ret ptr %0
+    }
+}

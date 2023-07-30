@@ -33,9 +33,9 @@
 #define SN_TRANSFORMER_VISIT(Node) void Transformer::visit(Node* p_node)
 #define SN_TRANSFORMER_CAN_GENERATE(node)                                                                              \
   if (utils::cast<Statement::BodiedFunction>(node) || utils::cast<Statement::ImportStmt>(node) ||                      \
-      utils::cast<Statement::LLVMFunction>(node) || utils::cast<Statement::ConstructorDef>(node) ||                    \
-      utils::cast<Statement::Namespace>(node) || utils::cast<Statement::DefinedTypeDef>(node) ||                       \
-      utils::cast<Statement::TypeAlias>(node))
+      utils::cast<Statement::LLVMFunction>(node) || utils::cast<Statement::ExternFnDef>(node) ||                       \
+      utils::cast<Statement::ConstructorDef>(node) || utils::cast<Statement::Namespace>(node) ||                       \
+      utils::cast<Statement::DefinedTypeDef>(node) || utils::cast<Statement::TypeAlias>(node))
 
 namespace snowball {
 namespace Syntax {
@@ -177,7 +177,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * @brief It performs a type extension from the given AST node.
    * @note It will error if the type is not a class or if the class
    * does not exist.
-   * 
+   *
    * @param node The AST node to extend from.
    * @param uuid The UUID of the class to extend from.
    */

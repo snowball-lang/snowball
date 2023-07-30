@@ -117,16 +117,13 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         cls->addVariable(var);
 
         assert_tok<TokenType::SYM_SEMI_COLLON>("a ';'");
-        if (extends) {
-          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* variables!");
-        }
+        if (extends) { createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* variables!"); }
       } break;
 
       case TokenType::BRACKET_RCURLY: {
         cls->hasConstructor = hasConstructor;
         m_current_class = classBackup;
-        for (auto attr : attributes)
-          cls->addAttribute(attr.first, attr.second);
+        for (auto attr : attributes) cls->addAttribute(attr.first, attr.second);
         return cls;
       }
 
@@ -136,9 +133,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         cls->addTypeAlias(typeDef);
 
         assert_tok<TokenType::SYM_SEMI_COLLON>("a ';'");
-        if (extends) {
-          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* type aliases!");
-        }
+        if (extends) { createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* type aliases!"); }
       } break;
 
       // note: This case should be always at the bottom!

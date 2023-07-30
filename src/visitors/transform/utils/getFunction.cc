@@ -89,7 +89,7 @@ Transformer::getFunction(DBGObject* dbgInfo,
         for (auto arg = args.begin(); ((arg != args.end()) && equal && !isIdentifier); ++arg) {
           auto i = std::distance(args.begin(), arg);
           if (i < numArgs) {
-            equal = arg->second->getType()->is(arguments.at(i));
+            equal = arguments.at(i)->is(arg->second->getType());
           } else {
             auto defArg = arg->second->getDefaultValue();
             if (!defArg && (!f->isVariadic())) {
@@ -102,6 +102,7 @@ Transformer::getFunction(DBGObject* dbgInfo,
         }
         auto fnGenerics = f->getGenerics();
         // TODO: allow variadic generics
+        // what is going on here, we are checking the same generics always!
         if (fnGenerics.size() == generics.size()) {
           for (auto generic = fnGenerics.begin(); (generic != fnGenerics.end()) && equal; ++generic) {
             auto i = std::distance(fnGenerics.begin(), generic);

@@ -210,19 +210,23 @@ void LLVMBuilder::codegen() {
       auto f = fn->get();
       if (!f->isDeclaration()) {
         auto llvmFn = funcs.at(f->getId());
-        f->hasAttribute(Attributes::LLVM_FUNC) ? buildLLVMFunction(llvmFn, f) : buildBodiedFunction(llvmFn, f);
+        if (f->hasAttribute(Attributes::LLVM_FUNC)) {
+          auto old = buildLLVMFunction(llvmFn, f);
+          funcs.at(f->getId()) = old;
+        } else {
+          buildBodiedFunction(llvmFn, f);
+          llvmFn->dump();
+          setPersonalityFunction(llvmFn);
+          std::string module_error_string;
+          llvm::raw_string_ostream module_error_stream(module_error_string);
+          llvm::verifyFunction(*llvmFn, &module_error_stream);
 
-        setPersonalityFunction(llvmFn);
-
-        std::string module_error_string;
-        llvm::raw_string_ostream module_error_stream(module_error_string);
-        llvm::verifyFunction(*llvmFn, &module_error_stream);
-
-        if (!module_error_string.empty()) {
-#ifdef _SNOWBALL_BYTECODE_DEBUG
-          dump();
-#endif
-          throw SNError(Error::LLVM_INTERNAL, module_error_string);
+          if (!module_error_string.empty()) {
+  #ifdef _SNOWBALL_BYTECODE_DEBUG
+            dump();
+  #endif
+            throw SNError(Error::LLVM_INTERNAL, module_error_string);
+          }
         }
       }
     }
@@ -237,6 +241,7 @@ void LLVMBuilder::codegen() {
   initializeRuntime();
   dbg.builder->finalize();
 
+dump();
   std::string module_error_string;
   llvm::raw_string_ostream module_error_stream(module_error_string);
   llvm::verifyModule(*module.get(), &module_error_stream);

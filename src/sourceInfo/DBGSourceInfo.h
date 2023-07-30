@@ -1,8 +1,8 @@
 
 
+#include "../SourceInfo.h"
 #include "../common.h"
 #include "../lexer/tokens/token.h"
-#include "../SourceInfo.h"
 #include "../utils/logger.h"
 #include "SourcedObject.h"
 

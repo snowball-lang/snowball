@@ -1,7 +1,15 @@
+use Core::Internal::Preloads;
 use Core::CLib;
 
-// Primitive type's exports
-
+class [[extends]] char {
+  pub:
+    /**
+    * @brief Converts the character to a string.
+    * @return The string representation of the character.
+    */
+    fn [[internal_linkage, inline]] to_string() String 
+      { return new String{self}; }
+}
 
 class [[extends]] i8 {
   pub:
@@ -41,16 +49,6 @@ class [[extends]] i64 {
     */
     fn [[internal_linkage, inline]] to_string() String
       { return String::fromNumber(*self, "%ld"); }
-}
-
-class [[extends]] char {
-  pub:
-    /**
-    * @brief Converts the character to a string.
-    * @return The string representation of the character.
-    */
-    fn [[internal_linkage, inline]] to_string() String 
-      { return new String{self}; }
 }
 
 namespace Core {
@@ -198,8 +196,8 @@ pub class Exception {
       * @brief Exception constructor from a string.
       * @param[in] m The message of the exception.
       */
-    Exception(m: String) : msg(m.c_str()) 
-      { }
+    //Exception(m: String) : msg(m.c_str()) 
+    //  { }
     /**
      * @brief Returns the message of the exception.
      * @return The message of the exception.
@@ -328,7 +326,7 @@ pub class Range<_Number_Type: Core::IsNumeric = i32>: Iterable<_Number_Type> {
     Range(start: _Number_Type, end: _Number_Type) : 
       super(), _start(start), _end(end) 
     {
-      self.iter_index = self._start;
+      self.iter_index = self._start-1;
     }
     /**
      * @brief Range constructor with default start.
@@ -359,19 +357,19 @@ pub class Range<_Number_Type: Core::IsNumeric = i32>: Iterable<_Number_Type> {
      */
     virt fn [[internal_linkage]] next() mut Iter<_Number_Type>
     {
-      if self.iter_index > self.end() 
+      self.iter_index = self.iter_index + 1;
+      if self.iter_index >= self.end() 
       {
         return Iter<?_Number_Type>::invalid();
       }
       let iter = Iter<?_Number_Type>::valid(self.iter_index);
-      self.iter_index = self.iter_index + 1;
       return iter;
     }
     /**
      * @brief It resets the iteration.
      */
     fn [[inline]] reset() mut 
-      { self.iter_index = self._start; }
+      { self.iter_index = self._start-1; }
   priv:
     /** The start of the range. */
     let _start: _Number_Type = 0;
@@ -411,6 +409,16 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
       }
       UA::__ua_set(self.buffer, self.length, value as cobj);
       self.length = self.length + 1;
+    }
+    /**
+     * @brief It works the same as push() except that it builds 
+     *        the element in-place. from a generic type.
+     * @param[in] args The arguments to build the element from.
+     */
+    fn [[internal_linkage]] push<T>(value: T) mut 
+    {
+      let x = new _StoreType{value};
+      self.push(x);
     }
     /**
      * @return The size of the vector.
@@ -473,8 +481,14 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
      * @return A string representation of the vector.
      */
     fn [[internal_linkage]] to_string<>() String {
-      // TODO: Implement this
-      //return x.to_str()
+      let mut result = new String{""};
+      for i in 0..self.length {
+        result = result + String::from(self.at(i));
+        if i != self.length - 1 {
+          result = result + new String{", "};
+        }
+      }
+      return result;
     }
 
   priv:
@@ -524,6 +538,14 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       super(), buffer(other.buffer), length(other.length), 
       capacity(other.capacity) { }
     /**
+     * @brief Constructs a string from another string given it's length.
+     * @param[in] other The string to construct the string from.
+     * @param[in] length The length of the string.
+     */
+    StringView(other: StringType, length: i32) : 
+      super(), buffer(other), length(length), 
+      capacity(length + 10) { }
+    /**
       * @return The size of the string.
       */
     fn [[internal_linkage, inline]] size() i32 
@@ -538,28 +560,58 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
      * @param[in] other The string to compare the string with.
      * @return The result of the comparison.
      */
-    operator [[internal_linkage, inline]] ==(other: StringView<_CharType>) bool
+    operator [[internal_linkage, inline]] ==(other: Self) bool
     {
       if self.length != other.length 
       {
         return false;
       }
-      // TODO:
-      //for i in 0..self.length 
-      //{
-      //  if self.buffer[i] != other.buffer[i] 
-      //  {
-      //    return false;
-      //  }
-      //}
-      return CLib::c_string::strcmp(self.buffer, other.buffer) == 0;
+      for i in 0..self.length 
+      {
+        if self.buffer[i] != other.buffer[i] 
+        {
+          return false;
+        }
+      }
+      return true;
+    }
+    /**
+     * @brief It concatenates the string with another string. 
+     * @param[in] other The string to concatenate the string with.
+     * @return The concatenated string.
+     *
+     * @note it needs to be a c-string compatible type in order to make sure
+     *       we find a null terminator.
+     */
+    operator [[internal_linkage, inline]] +(other: StringType) Self
+    {
+      let len1 = self.length;
+      let len2 = CLib::c_string::strlen(other);
+      let res = self.concat(self.buffer, other, len1, len2);
+      return new Self{res};
+    }
+    /**
+     * @brief It concatenates the string with another string.
+     * @param[in] other The string to concatenate the string with.
+     * @return The concatenated string.
+     *
+     * @note it needs to be generic in order to make sure `char::+` 
+     *  has been defined.
+     */
+    operator [[internal_linkage, inline]] +(other: Self) Self
+    { 
+      let result = self.concat(self.buffer, other.buffer, self.length, other.length); 
+      return new Self{result};
     }
     /**
      * @brief Utility function to avoid constant checking if a type is a stirng.
      * @return It's self (aka, a string representation of the string).
      */
-    fn [[internal_linkage, inline]] to_string() StringView<char>
-      { return *self; }
+    fn [[internal_linkage, inline]] to_string() Self
+    { 
+      let base = new Self{"\""};
+      return base + *self + "\""; 
+    }
   priv:
     /** The capacity of the string. */
     let mut capacity: i32 = 10;
@@ -581,9 +633,11 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
     { 
       let buffer: Self::StringType = 
         CLib::__internal::alloca_and_snprintf(10, format, num);
-      return new StringView<_CharType>{buffer}; 
+      return new Self{buffer}; 
     }
-
+    static fn [[internal_linkage, inline]] from(other: Self)
+      StringView<_CharType> 
+      { return other; }
     /**
       * @brief Constructs a string from an unknown type.
       * @param[in] buffer The buffer to construct the string from.
@@ -591,6 +645,26 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       */
     static fn [[internal_linkage, inline]] from<T>(buffer: T)
       StringView<char> { return buffer.to_string(); }
+  
+  // Internal exports
+  priv:
+    /**
+     * @brief It concatenates 2 strings.
+     * @param[in] str1 The first string to append.
+     * @param[in] str2 The second string to append.
+     * @param[in] len1 The length of the first string.
+     * @param[in] len2 The length of the second string.
+     * @return The appended string.
+     */
+    fn [[internal_linkage]] concat(str1: StringType, str2: StringType,  
+      len1: i32, len2: i32) StringType
+    {
+      let sum = len1 + len2;
+      let buffer = CLib::malloc(sum) as StringType;
+      CLib::memcpy(buffer as cobj, str1 as cobj, len1);
+      CLib::memcpy((buffer + len1) as cobj, str2 as cobj, len2);
+      return buffer;
+    }
 }
 
 } // namespace Core
