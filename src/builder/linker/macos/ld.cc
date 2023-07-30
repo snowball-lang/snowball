@@ -1,5 +1,6 @@
-// only generate for linux
-#if defined(__linux__) || defined(__gnu_linux__) || defined(__linux) || defined(__LINUX__)
+// only generate for macos
+#if defined(__APPLE__) || defined(__MACH__) || defined(__DARWIN__) || defined(__darwin__) \\
+   || defined(__APPLE_CC__) || defined(__OSX__) || defined(__MACH) || defined(__MACOS__)
 
 #include "../../../constants.h"
 #include "../Linker.h"
@@ -13,23 +14,6 @@ namespace linker {
 void Linker::constructLinkerArgs(std::string& input, std::string& output, std::vector<std::string>& args) {
   const bool isIAMCU = target.isOSIAMCU();
   linkerArgs.clear();
-  if (ctx->withStd) {
-    // TODO: check if this works for all platforms
-    linkerArgs.push_back("-dynamic-linker");
-    linkerArgs.push_back("/lib64/ld-linux-x86-64.so.2");
-
-    auto path = std::string("/usr") + PATH_SEPARATOR + _SNOWBALL_LIBRARY_OBJ;
-    auto triple = getPlatformTriple();
-    assert(!triple.empty() && "Unsupported platform for linking!");
-    auto platformPath = fs::path(path) / triple;
-    linkerArgs.push_back(platformPath / "crt1.o");
-    linkerArgs.push_back(platformPath / "crti.o");
-    if (!isIAMCU) {
-      linkerArgs.push_back(platformPath / "crtn.o");
-    } else {
-      // TODO: add crtbegin.o and crtend.o
-    }
-  }
   for (auto& lib : linkedLibraries) {
     linkerArgs.push_back("-l:" + lib);
     DEBUG_CODEGEN("Linking library: %s", lib.c_str());
@@ -45,10 +29,43 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   if (ctx->isThreaded) linkerArgs.push_back("-lpthread");
   for (auto& arg : args) linkerArgs.push_back(arg);
   if (ctx->withStd) {
-    linkerArgs.push_back("--eh-frame-hdr");
     for (auto llvmArg : utils::split(LLVM_LDFLAGS, " ")) { linkerArgs.push_back(llvmArg); }
   }
   if (!ctx->isDynamic) linkerArgs.push_back("-static");
+  else linkerArgs.push_back("-dynamic");
+
+  switch (target.getArch()) {
+    case llvm::Triple::ArchType::arm:
+      linkerArgs.push_back("-arch");
+      linkerArgs.push_back("arm");
+      break;
+    case llvm::Triple::ArchType::aarch64:
+      linkerArgs.push_back("-arch");
+      linkerArgs.push_back("arm64");
+      break;
+    case llvm::Triple::ArchType::x86:
+      linkerArgs.push_back("-arch");
+      linkerArgs.push_back("i386");
+      break;
+    case llvm::Triple::ArchType::x86_64:
+      linkerArgs.push_back("-arch");
+      linkerArgs.push_back("x86_64");
+      break;
+    default:
+      break;
+  }
+
+  linkerArgs.push_back("-macosx_version_min");
+  linkerArgs.push_back("10.15.0");
+  linkerArgs.push_back("-syslibroot");
+  linkerArgs.push_back("/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk");
+
+  linkerArgs.push_back("-L.");
+  linkerArgs.push_back("-L/opt/homebrew/lib");
+  linkerArgs.push_back("-L/opt/homebrew/opt/zstd/lib");
+  linkerArgs.push_back("-L/opt/homebrew/lib");
+  linkerArgs.push_back("-lSystem");
+
   linkerArgs.push_back("-o");
   linkerArgs.push_back(output);
 #if _SNOWBALL_CODEGEN_DEBUG
