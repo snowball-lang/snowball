@@ -84,6 +84,11 @@ llvm::FunctionType* LLVMBuilder::getLLVMFunctionType(types::FunctionType* fn) {
           vector_iterate<types::Type*, llvm::Type*>(fn->getArgs(), [&](types::Type* arg) { return getLLVMType(arg); });
 
   auto ret = getLLVMType(fn->getRetType());
+  if (utils::cast<types::DefinedType>(fn->getRetType())) {
+    ret = builder->getVoidTy();
+    argTypes.insert(argTypes.begin(), builder->getInt8PtrTy());
+  }
+
   return llvm::FunctionType::get(ret, argTypes, fn->isVariadic());
 }
 

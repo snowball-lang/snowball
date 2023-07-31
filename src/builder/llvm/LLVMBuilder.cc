@@ -215,7 +215,7 @@ void LLVMBuilder::codegen() {
           funcs.at(f->getId()) = old;
         } else {
           buildBodiedFunction(llvmFn, f);
-          llvmFn->dump();
+          
           setPersonalityFunction(llvmFn);
           std::string module_error_string;
           llvm::raw_string_ostream module_error_stream(module_error_string);
@@ -241,7 +241,8 @@ void LLVMBuilder::codegen() {
   initializeRuntime();
   dbg.builder->finalize();
 
-dump();
+
+  DEBUG_CODEGEN("Finished codegen, proceeding to verify module");
   std::string module_error_string;
   llvm::raw_string_ostream module_error_stream(module_error_string);
   llvm::verifyModule(*module.get(), &module_error_stream);
@@ -252,6 +253,8 @@ dump();
 #endif
     throw SNError(Error::LLVM_INTERNAL, module_error_string);
   }
+
+  DEBUG_CODEGEN("Finished verifying module, proceeding to optimize module (if requested)");
 }
 #undef LOOP_FUNCTIONS
 

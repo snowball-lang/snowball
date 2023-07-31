@@ -147,9 +147,16 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
       return new Inst(std::forward<Args>(args)...);
     }
   } h;
-  /**
-   * Information for each try-catch block.
-   */
+  /// Create a new alloca instruction
+  llvm::AllocaInst* createAlloca(llvm::Type* ty) {
+    auto backupBlock = builder->GetInsertBlock();
+    auto entryBlock = ctx->getCurrentFunction()->getEntryBlock().getTerminator();
+    builder->SetInsertPoint(entryBlock);
+    auto alloca = builder->CreateAlloca(ty);
+    builder->SetInsertPoint(backupBlock);
+    return alloca;
+  }
+  /// Information for each try-catch block.
   struct TryCatchInfo {
     /// The catch block
     llvm::BasicBlock* catchBlock;

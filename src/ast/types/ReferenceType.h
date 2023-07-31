@@ -58,6 +58,9 @@ public:
   ///  can cast to any other numeric types.
   bool canCast(Type* ty) const override;
 
+  /// @brief let's make it polymorphic
+  virtual bool isReference() const { return true; }
+
   SNOWBALL_TYPE_COPIABLE(ReferenceType)
 };
 

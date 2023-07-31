@@ -1,5 +1,5 @@
 // only generate for macos
-#if defined(__APPLE__) || defined(__MACH__) || defined(__DARWIN__) || defined(__darwin__) \\
+#if defined(__APPLE__) || defined(__MACH__) || defined(__DARWIN__) || defined(__darwin__) \
    || defined(__APPLE_CC__) || defined(__OSX__) || defined(__MACH) || defined(__MACOS__)
 
 #include "../../../constants.h"

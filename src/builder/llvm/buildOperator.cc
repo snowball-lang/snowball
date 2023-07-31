@@ -29,7 +29,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
       llvm::Value* right = nullptr;
       if (args.size() > 1) right = build(args.at(1).get());
       auto baseType = args.at(0)->getType();
-      if (auto x = utils::cast<types::ReferenceType>(baseType)) baseType = x->getBaseType();
+      if (auto x = utils::cast<types::ReferenceType>(baseType)) baseType = x->getPointedType();
       if (utils::cast<types::BoolType>(baseType) || utils::cast<types::Int8Type>(baseType) ||
           utils::cast<types::Int16Type>(baseType) || utils::cast<types::Int32Type>(baseType) ||
           utils::cast<types::Int64Type>(baseType) || utils::cast<types::CharType>(baseType) ||

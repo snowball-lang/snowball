@@ -43,6 +43,7 @@ int LLVMBuilder::emitObjectFile(std::string out, bool log, bool object) {
 
   llvm::legacy::PassManager pass;
   auto FileType = object ? llvm::CGFT_ObjectFile : llvm::CGFT_AssemblyFile;
+  DEBUG_CODEGEN("Emitting object file... (%s)", out.c_str());
   if (target->addPassesToEmitFile(pass, dest, nullptr, FileType)) {
     remove(out.c_str());
     throw SNError(Error::LLVM_INTERNAL, "TargetMachine can't emit a file of this type");
@@ -50,6 +51,7 @@ int LLVMBuilder::emitObjectFile(std::string out, bool log, bool object) {
 
   if (log) Logger::success("Snowball project compiled to an object file! ✨\n");
 
+  DEBUG_CODEGEN("Running object pass manager...");
   pass.run(*module.get());
   dest.flush();
 

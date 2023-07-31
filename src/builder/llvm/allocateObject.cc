@@ -17,7 +17,7 @@ llvm::Value* LLVMBuilder::allocateObject(types::DefinedType* ty, bool heapAlloca
             builder->CreateCall(getAllocaFunction(), {builder->getInt32(dataLayout.getTypeAllocSize(llvmType))});
     cast = builder->CreatePointerCast(allocation, llvmTypePtr);
   } else {
-    cast = builder->CreateAlloca(llvmType);
+    cast = createAlloca(llvmType);
   }
   if (ty->isStruct() || !ty->hasVtable()) return cast;
 

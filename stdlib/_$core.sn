@@ -411,16 +411,6 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
       self.length = self.length + 1;
     }
     /**
-     * @brief It works the same as push() except that it builds 
-     *        the element in-place. from a generic type.
-     * @param[in] args The arguments to build the element from.
-     */
-    fn [[internal_linkage]] push<T>(value: T) mut 
-    {
-      let x = new _StoreType{value};
-      self.push(x);
-    }
-    /**
      * @return The size of the vector.
      */
     fn [[internal_linkage, inline]] size() i32 { return self.length; }
@@ -482,12 +472,15 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
      */
     fn [[internal_linkage]] to_string<>() String {
       let mut result = new String{""};
+      let separator = new String{", "};
+
       for i in 0..self.length {
         result = result + String::from(self.at(i));
         if i != self.length - 1 {
-          result = result + new String{", "};
+          result = result + separator;
         }
       }
+      CLib::printf("result: %s", result.c_str());
       return result;
     }
 
@@ -644,7 +637,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       * @return The constructed string.
       */
     static fn [[internal_linkage, inline]] from<T>(buffer: T)
-      StringView<char> { return buffer.to_string(); }
+      StringView<_CharType> { return buffer.to_string(); }
   
   // Internal exports
   priv:

@@ -22,10 +22,7 @@ void LLVMBuilder::visit(ir::ReferenceTo* ref) {
     // TODO: actually do fix this
     // assert(llvmReferencedValue->getType()->isPointerTy());
     if (utils::cast<types::PrimitiveType>(val->getType())) {
-      auto currentBlock = builder->GetInsertBlock();
-      builder->SetInsertPoint(ctx->getCurrentFunction()->getEntryBlock().getTerminator());
-      auto alloca = builder->CreateAlloca(getLLVMType(val->getType()));
-      builder->SetInsertPoint(currentBlock);
+      auto alloca = createAlloca(getLLVMType(val->getType()));
       builder->CreateStore(llvmReferencedValue, alloca);
       value = alloca;
     } else {

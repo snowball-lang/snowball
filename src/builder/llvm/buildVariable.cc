@@ -15,7 +15,8 @@ void LLVMBuilder::visit(ir::Variable* variable) {
     this->value = store;
     return;
   }
-  this->value = builder->CreateLoad(getLLVMType(variable->getType()), store);
+  auto type = variable->getType();
+  this->value = builder->CreateLoad(getLLVMType(type), store);
 }
 
 } // namespace codegen

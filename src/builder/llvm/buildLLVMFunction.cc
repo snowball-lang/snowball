@@ -75,8 +75,6 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
                                                         // this is default
   func->setSubprogram(getDISubprogramForFunc(fn));
   
-  llvmFn->dump();
-  func->dump(); 
   llvmFn->replaceAllUsesWith(func);
   llvmFn->eraseFromParent();
   setDebugInfoLoc(nullptr);

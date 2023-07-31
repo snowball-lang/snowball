@@ -30,8 +30,13 @@ void LLVMBuilder::visit(ir::Func* func) {
 
 llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Func* fn) {
   ctx->setCurrentFunction(llvmFn);
-
+  
   auto returnType = getLLVMType(fn->getRetTy());
+  bool retIsArg = false;
+  if (utils::cast<types::DefinedType>(fn->getRetTy())) {
+    returnType = builder->getVoidTy();
+    retIsArg = true;
+  }
 
   auto entry = h.create<llvm::BasicBlock>(*context, "entry", llvmFn);
   auto body = h.create<llvm::BasicBlock>(*context, "body", llvmFn);
@@ -41,7 +46,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
   setDebugInfoLoc(nullptr);
 
   auto fnArgs = fn->getArgs();
-  auto llvmArgsIter = llvmFn->arg_begin();
+  auto llvmArgsIter = llvmFn->arg_begin() + retIsArg;
   for (auto varIter = fnArgs.begin(); varIter != fnArgs.end(); ++varIter) {
     auto var = varIter->second;
     auto storage = builder->CreateAlloca(getLLVMType(var->getType()), nullptr, "arg." + var->getName());
@@ -62,7 +67,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     auto scope = llvmFn->getSubprogram();
     auto debugVar = dbg.builder->createParameterVariable(scope,
                                                          var->getName(),
-                                                         var->getIndex() + 1, // lua vibes... :]
+                                                         var->getIndex() + 1 + retIsArg, // lua vibes... :]
                                                          file,
                                                          dbgInfo->line,
                                                          getDIType(var->getType()),
@@ -73,6 +78,13 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
                                llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
                                entry);
     ++llvmArgsIter;
+  }
+
+  if (retIsArg) {
+    auto arg = llvmFn->arg_begin();
+    auto attrBuilder = llvm::AttrBuilder(*context);
+    attrBuilder.addStructRetAttr(getLLVMType(fn->getRetTy()));
+    arg->addAttrs(attrBuilder);
   }
 
   // Generate all the used variables
@@ -107,7 +119,8 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
 
   // Create return type
   if (!builder->GetInsertBlock()->getTerminator()) {
-    if (utils::cast<types::VoidType>(fn->getRetTy())) {
+    if (utils::cast<types::VoidType>(fn->getRetTy())
+      || utils::cast<types::DefinedType>(fn->getRetTy())) {
       builder->CreateRetVoid();
     } else if (fn->isConstructor()) {
       // note: 0 should be always the "self" parameter

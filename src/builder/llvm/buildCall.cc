@@ -35,7 +35,8 @@ void LLVMBuilder::visit(ir::Call* call) {
     allocatedValueType = getLLVMType(retType);
     // It's a function returning a type that's not a pointer
     // We need to allocate the value
-    allocatedValue = builder->CreateAlloca(allocatedValueType);
+    allocatedValue = createAlloca(allocatedValueType);
+    args.insert(args.begin(), allocatedValue);
   }
 
   setDebugInfoLoc(call);
@@ -58,6 +59,7 @@ void LLVMBuilder::visit(ir::Call* call) {
     }
 
     args.insert(args.begin(), object);
+    setDebugInfoLoc(call);
     llvmCall = createCall(calleeType, callee, args);
     this->value = instance->initializeAtHeap ? object : builder->CreateLoad(instanceType, object);
   } else if (auto c = utils::dyn_cast<ir::Func>(calleeValue); c != nullptr && c->inVirtualTable()) {
@@ -67,23 +69,30 @@ void LLVMBuilder::visit(ir::Call* call) {
     auto parent = c->getParent();
 
     auto f = llvm::cast<llvm::Function>(callee);
-    auto parentValue = args.at(/* self = */ 0);
+    // note: allocatedValue != nullptr is because there are 2 possible cases:
+    // 1. The function returns a type that's not a pointer (meaning self is at index 1)
+    // 2. The function does not return a type that's not a pointer (meaning self is at index 0)
+    auto parentValue = args.at(/* self = */ allocatedValue != nullptr);
     auto parentType = call->getArguments().at(/* self = */ 0)->getType();
-    auto loadedVtable = builder->CreateLoad(parentValue->getType(), parentValue);
+    auto loadedVtable = builder->CreateLoad(getLLVMType(parentType), parentValue);
     auto pointer = builder->CreateInBoundsGEP(loadedVtable->getType(), loadedVtable, {builder->getInt32(index)});
     auto calleePointer = builder->CreateLoad(pointer->getType(), pointer);
     llvmCall = createCall(calleeType, (llvm::Function*)calleePointer, args);
     if (allocatedValue) {
-      builder->CreateStore(llvmCall, allocatedValue);
-      this->value = allocatedValue;
+      //builder->CreateStore(llvmCall, allocatedValue);
+      //auto alloca = createAlloca(allocatedValueType);
+      //builder->CreateStore(llvmCall, alloca);
+      //builder->CreateMemCpy(alloca, llvm::MaybeAlign(), allocatedValue, llvm::MaybeAlign(),
+      //        module->getDataLayout().getTypeAllocSize(allocatedValueType), 0);
+      //this->value = allocatedValue;
+      this->value = builder->CreateLoad(allocatedValueType, allocatedValue);
     } else {
       this->value = llvmCall;
     }
   } else {
-    // TODO: invoke if it's inside a try block
     llvmCall = createCall(calleeType, callee, args);
     if (allocatedValue) {
-      builder->CreateStore(llvmCall, allocatedValue);
+      //builder->CreateStore(llvmCall, allocatedValue);
       this->value = builder->CreateLoad(allocatedValueType, allocatedValue);
     } else {
       this->value = llvmCall;

@@ -13,7 +13,7 @@ void LLVMBuilder::visit(ir::IndexExtract* index) {
   auto indexValue = index->getValue();
   auto valueType = indexValue->getType();
   auto basedType = valueType;
-  if (auto x = utils::cast<types::ReferenceType>(basedType)) basedType = x->getBaseType();
+  if (auto x = utils::cast<types::ReferenceType>(basedType)) basedType = x->getPointedType();
   auto defiendType = utils::cast<types::DefinedType>(basedType);
   if (auto alias = utils::cast<types::TypeAlias>(basedType)) {
     assert(!"Found a local type alias in the index extract!");
