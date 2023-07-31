@@ -602,8 +602,9 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
      */
     fn [[internal_linkage, inline]] to_string() Self
     { 
-      let base = new Self{"\""};
-      return base + *self + "\""; 
+      let res = new Self{self.concat("\"", self.buffer, 1, self.length)}
+        .concat("\"", 1);
+      return new Self{res}; 
     }
   priv:
     /** The capacity of the string. */
@@ -658,6 +659,14 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       CLib::memcpy((buffer + len1) as cobj, str2 as cobj, len2);
       return buffer;
     }
+    /**
+     * @brief It concatenates 2 strings (self being the start of it).
+     * @param[in] str The string to append.
+     * @param[in] len The length of the string.
+     * @return The appended string.
+     */
+    fn [[internal_linkage]] concat(str: StringType, len: i32) StringType 
+      { return self.concat(self.buffer, str, self.length, len); }
 }
 
 } // namespace Core
