@@ -35,11 +35,11 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
     DEBUG_CODEGEN("Linking library: %s", lib.c_str());
   }
   if (ctx->withCXXStd) {
-    auto libs = utils::get_lib_folder();
+    auto libs = utils::get_lib_folder() / ".." / _SNOWBALL_LIBRARY_OBJ;
     linkerArgs.push_back("-lm");
     linkerArgs.push_back("-lunwind");
     linkerArgs.push_back("-lc");
-    linkerArgs.push_back("-L" libs / ".." / _SNOWBALL_LIBRARY_OBJ);
+    linkerArgs.push_back("-L" + libs.string());
     linkerArgs.push_back("-lSnowballRuntime");
   }
   linkerArgs.push_back(input);
