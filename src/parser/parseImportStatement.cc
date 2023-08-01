@@ -27,12 +27,41 @@ Syntax::Statement::ImportStmt* Parser::parseImportStatement() {
   paths.push_back(assert_tok<TokenType::IDENTIFIER>("an identifier").to_string());
   next();
 
+  std::vector<std::pair<std::string, std::string>> vars;
   while (is<TokenType::SYM_COLCOL>()) {
     next();
     if (is<TokenType::IDENTIFIER>()) {
       paths.push_back(m_current.to_string());
     } else if (is<TokenType::SYM_DOT>() && is<TokenType::SYM_DOT>(peek())) {
       paths.push_back("..");
+    } else if (is<TokenType::BRACKET_LCURLY>() && is<TokenType::BRACKET_LCURLY>(peek())) {
+      // var imports
+      next(1);
+      while (!is<TokenType::BRACKET_RCURLY>()) {
+        if (is<TokenType::IDENTIFIER>()) {
+          std::string name = m_current.to_string();
+          std::string alias = name;
+          next();
+          if (is<TokenType::KWORD_AS>()) {
+            next();
+            alias = assert_tok<TokenType::IDENTIFIER>("an identifier for variable alias").to_string();
+            next();
+          }
+          vars.push_back({name, alias});
+          if (is<TokenType::SYM_COMMA>()) {
+            next();
+          } else {
+            break;
+          }
+        } else {
+          createError<SYNTAX_ERROR>("an identifier for variable import");
+        }
+      }
+
+      consume<TokenType::BRACKET_RCURLY>("'}'");
+      consume<TokenType::BRACKET_RCURLY>("'}'");
+      createError<TODO>("variable imports");
+      break;
     } else {
       prev();
       break;

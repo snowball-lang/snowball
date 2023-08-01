@@ -9,6 +9,16 @@ class [[extends]] char {
     */
     fn [[internal_linkage, inline]] to_string() String 
       { return new String{self}; }
+    /**
+     * @brief Utility function to create addition between a character and a string.
+     * @param[in] other The string to concatenate the character with.
+     * @return The concatenated string.
+     * @example
+     *  | let a = "hello" + (" world".to_string())
+     * @/example
+     */
+    operator [[internal_linkage, inline]] +(other: String) String
+      { return new String{self} + other; }
 }
 
 class [[extends]] i8 {
@@ -471,7 +481,7 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
      * @return A string representation of the vector.
      */
     fn [[internal_linkage]] to_string<>() String {
-      let mut result = new String{""};
+      let mut result = "[".to_string();
       let separator = new String{", "};
 
       for i in 0..self.length {
@@ -480,7 +490,7 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
           result = result + separator;
         }
       }
-      return result;
+      return result + "]";
     }
 
   priv:
@@ -604,11 +614,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
      * @return It's self (aka, a string representation of the string).
      */
     fn [[internal_linkage, inline]] to_string() Self
-    { 
-      let quote = "\"".to_string();
-
-      return quote + *self + quote;
-    }
+      { return "\"" + *self + "\""; }
   priv:
     /** The capacity of the string. */
     let mut capacity: i32 = 10;
