@@ -19,11 +19,11 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
     DEBUG_CODEGEN("Linking library: %s", lib.c_str());
   }
   if (ctx->withCXXStd) {
-    linkerArgs.push_back("-L" STATICLIB_DIR PATH_SEPARATOR _SNOWBALL_LIBRARY_OBJ);
+    auto libs = utils::get_lib_folder();
+    linkerArgs.push_back("-L" libs / ".." / _SNOWBALL_LIBRARY_OBJ);
     linkerArgs.push_back("-lSnowballRuntime");
   }
   linkerArgs.push_back(input);
-  if (ctx->isThreaded) linkerArgs.push_back("-lpthread");
   for (auto& arg : args) linkerArgs.push_back(arg);
   if (ctx->withStd) {
     for (auto llvmArg : utils::split(LLVM_LDFLAGS, " ")) { linkerArgs.push_back(llvmArg); }
