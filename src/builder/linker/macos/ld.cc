@@ -14,6 +14,7 @@ namespace linker {
 void Linker::constructLinkerArgs(std::string& input, std::string& output, std::vector<std::string>& args) {
   const bool isIAMCU = target.isOSIAMCU();
   linkerArgs.clear();
+  // TODO: dynamic
   linkerArgs.push_back("-syslibroot");
   linkerArgs.push_back("/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk");
   for (auto& lib : linkedLibraries) {

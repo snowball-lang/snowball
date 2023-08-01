@@ -411,6 +411,11 @@ private:
     if (auto x = utils::cast<types::ReferenceType>(ty)) return x->getBaseType();
     return ty;
   }
+  /**
+   * @brief It creates a name that can be used to reference an exported
+   * function from another shared library.
+   */
+  std::string getSharedLibraryName(std::string name);
 };
 
 } // namespace codegen

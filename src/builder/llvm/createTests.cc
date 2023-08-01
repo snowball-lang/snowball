@@ -30,7 +30,7 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
   builder->CreateStore(builder->getInt32(0), failCount);
 
   auto end = llvm::BasicBlock::Create(builder->getContext(), "end", mainFunction);
-  auto testFunction = module->getFunction("sn.test.try"); // Always match this
+  auto testFunction = module->getFunction(getSharedLibraryName("sn.test.try")); // Always match this
   int testIndex = 1;
   for (auto [fn, llvmFunc] : ctx->tests) {
     auto name = fn->getNiceName();
