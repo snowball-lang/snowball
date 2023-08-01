@@ -19,15 +19,15 @@ error() {
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ "$ARCH" == "arm64" ]]; then
-        //brew uninstall --ignore-dependencies zstd
-        //brew fetch --force --bottle-tag=arm64_big_sur zstd
-        //zstdResult=$(brew --cache --bottle-tag=arm64_big_sur zstd)
-        //brew install $zstdResult
-        //# most recent: 1.5.5
-        //rm -rf /usr/local/lib/libzstd.1.dylib
-        //sudo ln -s /opt/homebrew/Cellar/zstd/1.5.5/lib/libzstd.1.5.5.dylib /usr/local/lib/libzstd.1.dylib
-        //sudo mkdir -p usr/local/opt/zstd/lib/ && find / -name "libzstd.1.dylib" -exec ln -s  {} /usr/local/opt/zstd/lib/libzstd.1.dylib \;
-        //lipo -info /opt/homebrew/Cellar/zstd/1.5.5/lib/libzstd.1.5.5.dylib
+        #brew uninstall --ignore-dependencies zstd
+        #brew fetch --force --bottle-tag=arm64_big_sur zstd
+        #zstdResult=$(brew --cache --bottle-tag=arm64_big_sur zstd)
+        #brew install $zstdResult
+        ## most recent: 1.5.5
+        #rm -rf /usr/local/lib/libzstd.1.dylib
+        #sudo ln -s /opt/homebrew/Cellar/zstd/1.5.5/lib/libzstd.1.5.5.dylib /usr/local/lib/libzstd.1.dylib
+        #sudo mkdir -p usr/local/opt/zstd/lib/ && find / -name "libzstd.1.dylib" -exec ln -s  {} /usr/local/opt/zstd/lib/libzstd.1.dylib \;
+        #lipo -info /opt/homebrew/Cellar/zstd/1.5.5/lib/libzstd.1.5.5.dylib
 
         brew fetch --force --bottle-tag=arm64_big_sur llvm@16
         llvmResult=$(brew --cache --bottle-tag=arm64_big_sur llvm@16)
