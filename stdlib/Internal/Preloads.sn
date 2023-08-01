@@ -16,9 +16,10 @@ class [[extends]] char {
     * @param[in] index The index of the character to get.
     * @return The character at the specified index.
     */
-    operator [[inline, llvm_function]] [](index: i32) char& 
+    operator [[inline, llvm_function]] [](index: i32) char
     { 
       %0 = getelementptr i8, ptr %self, i32 %index
-      ret ptr %0
+      %1 = load i8, ptr %0, align 1
+      ret i8 %1
     }
 }

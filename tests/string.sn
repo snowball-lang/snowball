@@ -1,3 +1,4 @@
+use Core::System;
 
 namespace tests {
 
@@ -9,6 +10,22 @@ fn [[test]] empty() i32 {
 fn [[test(expect = 5)]] size() i32 {
     let s = new String("hello");
     return s.size();
+}
+
+fn [[test]] equals() i32 {
+    let s = new String("hello");
+    return s == "hello".to_string();
+}
+
+fn [[test]] not_equals() i32 {
+    let s = new String("hello");
+    return s != "world".to_string();
+}
+
+fn [[test]] concat() i32 {
+    let mut s = new String{"hello"};
+    s = s + " world";
+    return s == "hello world".to_string();
 }
 
 }

@@ -480,7 +480,6 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
           result = result + separator;
         }
       }
-      CLib::printf("result: %s", result.c_str());
       return result;
     }
 
@@ -569,6 +568,13 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       return true;
     }
     /**
+     * @brief It checks if the 2 strings are not equal.
+     * @param[in] other The string to compare the string with.
+     * @return The result of the comparison.
+     */
+    operator [[internal_linkage, inline]] !=(other: Self) bool
+      { return !(self == other); }
+    /**
      * @brief It concatenates the string with another string. 
      * @param[in] other The string to concatenate the string with.
      * @return The concatenated string.
@@ -587,9 +593,6 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
      * @brief It concatenates the string with another string.
      * @param[in] other The string to concatenate the string with.
      * @return The concatenated string.
-     *
-     * @note it needs to be generic in order to make sure `char::+` 
-     *  has been defined.
      */
     operator [[internal_linkage, inline]] +(other: Self) Self
     { 
@@ -602,9 +605,9 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
      */
     fn [[internal_linkage, inline]] to_string() Self
     { 
-      let res = new Self{self.concat("\"", self.buffer, 1, self.length)}
-        .concat("\"", 1);
-      return new Self{res}; 
+      let quote = "\"".to_string();
+
+      return quote + *self + quote;
     }
   priv:
     /** The capacity of the string. */
