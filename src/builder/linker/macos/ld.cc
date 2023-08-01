@@ -14,6 +14,8 @@ namespace linker {
 void Linker::constructLinkerArgs(std::string& input, std::string& output, std::vector<std::string>& args) {
   const bool isIAMCU = target.isOSIAMCU();
   linkerArgs.clear();
+  linkerArgs.push_back("-syslibroot");
+  linkerArgs.push_back("/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk");
   for (auto& lib : linkedLibraries) {
     linkerArgs.push_back("-l:" + lib);
     DEBUG_CODEGEN("Linking library: %s", lib.c_str());
@@ -54,14 +56,14 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
 
   linkerArgs.push_back("-macosx_version_min");
   linkerArgs.push_back("10.15.0");
-  linkerArgs.push_back("-syslibroot");
-  linkerArgs.push_back("/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk");
 
   linkerArgs.push_back("-L.");
   linkerArgs.push_back("-L/opt/homebrew/lib");
   linkerArgs.push_back("-L/usr/local/lib");
   linkerArgs.push_back("-L/usr/lib");
   linkerArgs.push_back("-L/opt/homebrew/opt/zstd/lib");
+
+  // TODO: we might not find it and we will need to search for System.B
   linkerArgs.push_back("-lSystem");
 
   linkerArgs.push_back("-o");
