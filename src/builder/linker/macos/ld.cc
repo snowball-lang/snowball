@@ -59,8 +59,9 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
 
   linkerArgs.push_back("-L.");
   linkerArgs.push_back("-L/opt/homebrew/lib");
+  linkerArgs.push_back("-L/usr/local/lib");
+  linkerArgs.push_back("-L/usr/lib");
   linkerArgs.push_back("-L/opt/homebrew/opt/zstd/lib");
-  linkerArgs.push_back("-L/opt/homebrew/lib");
   linkerArgs.push_back("-lSystem");
 
   linkerArgs.push_back("-o");
