@@ -25,7 +25,9 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         brew install $zstdResult
 
         # most recent: 1.5.5
+        rm -rf /usr/local/lib/libzstd.1.dylib
         sudo ln -s /opt/homebrew/Cellar/zstd/1.5.5/lib/libzstd.1.5.5.dylib /usr/local/lib/libzstd.1.dylib
+        lipo -info /usr/local/lib/libzstd.1.dylib
 
         brew fetch --force --bottle-tag=arm64_big_sur llvm@16
         llvmResult=$(brew --cache --bottle-tag=arm64_big_sur llvm@16)
