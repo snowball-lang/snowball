@@ -104,7 +104,8 @@
         "any": "cpp",
         "stdint.h": "c",
         "gc.h": "c",
-        "__verbose_abort": "cpp"
+        "__verbose_abort": "cpp",
+        "runtime.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "todo-tree.tree.scanMode": "workspace",

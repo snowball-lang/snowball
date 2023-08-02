@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-extern const char* f() __asm__("sn.core.libs.System.input");
+#include "sym.h"
+
+extern const char* f() _SN_SYM("sn.core.libs.System.input");
 const char* f() {
     int size = 10;
     char *str;
