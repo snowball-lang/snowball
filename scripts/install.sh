@@ -232,5 +232,5 @@ printf "\n    ${green}snowball-${OS}-${ARCH}${normal} - successfully installed w
 log info "Snowball successfully installed at: $(pwd)"
 log info "Open a new terminal session or update your PATH to use snowball"
 echo ""
-log info "Checkoutt the documentation at: https://github.com/snowball-lang/docs"
+log info "Checkoutt the documentation at: https://snowball-lang.gitbook.io/docs/fundamentals/hello-world"
 log info "Happy coding! 🐱"
