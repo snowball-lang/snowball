@@ -35,11 +35,11 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   else linkerArgs.push_back("-dynamic");
 
   linkerArgs.push_back("-arch");
-  linkerArgs.push_back(triple.getArchTypeForDarwinArchName());
+  linkerArgs.push_back(target.getArchTypeForDarwinArchName());
 
   linkerArgs.push_back("-macosx_version_min");
   llvm::VersionTuple version;
-  auto succ = triple.getMacOSXVersion(version);
+  auto succ = target.getMacOSXVersion(version);
   assert(succ);
   linkerArgs.push_back(version.getAsString());
 
