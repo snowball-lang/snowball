@@ -24,4 +24,10 @@ pub fn main() i32 {
     a.push(&"awd".to_string());
     a.push(&"awd".to_string());
     System::println(a);
+
+    try {
+        raise new Exception("awd");
+    } catch (e: Exception&) {
+        System::println(e.what());
+    }
 }

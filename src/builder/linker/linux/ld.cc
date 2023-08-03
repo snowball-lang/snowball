@@ -37,7 +37,7 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   if (ctx->withCXXStd) {
     auto libs = utils::get_lib_folder() / ".." / _SNOWBALL_LIBRARY_OBJ;
     linkerArgs.push_back("-lm");
-    linkerArgs.push_back("-lunwind");
+    //linkerArgs.push_back("-lunwind");
     linkerArgs.push_back("-lc");
     linkerArgs.push_back("-L" + libs.string());
     linkerArgs.push_back("-lSnowballRuntime");
@@ -45,8 +45,9 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   linkerArgs.push_back(input);
   if (ctx->isThreaded) linkerArgs.push_back("-lpthread");
   for (auto& arg : args) linkerArgs.push_back(arg);
+  // TODO: should this be with ctc->withStd?
+  linkerArgs.push_back("--eh-frame-hdr");
   if (ctx->withStd) {
-    linkerArgs.push_back("--eh-frame-hdr");
     for (auto llvmArg : utils::split(LLVM_LDFLAGS, " ")) { linkerArgs.push_back(llvmArg); }
   }
   if (!ctx->isDynamic) linkerArgs.push_back("-static");
