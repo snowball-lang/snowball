@@ -216,7 +216,7 @@ update_config_file "$shell"
 printf "\n    ${green}snowball-${OS}-${ARCH}${normal} - successfully installed with stdlib\n\n"
 
 log info "Snowball successfully installed at: $(pwd)"
-log info "Snowball is ready to use! type: `snowball --help` to check that it works."
+log info "Snowball is ready to use! type: \`snowball --help\` to check that it works."
 echo ""
 log info "Checkoutt the documentation at: https://snowball-lang.gitbook.io/docs/fundamentals/hello-world"
 log info "Happy coding! 🐱"

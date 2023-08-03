@@ -69,5 +69,11 @@ jobs:
         if: success() && matrix.DIST != 'ce-specific'
         run: |
           curl -fsSL https://raw.githubusercontent.com/snowball-lang/snowball/dev/scripts/install.sh | sudo -E bash -s -- -y
-          snowball --version
-          snowball test
+          readelf -d ~/.snowball/bin/snowball | grep 'NEEDED'
+
+          ls ~/.snowball/
+          ls ~/.snowball/bin/
+          ls ~/.snowball/lib/
+
+          ~/.snowball/bin/snowball --version
+          ~/.snowball/bin/snowball test
