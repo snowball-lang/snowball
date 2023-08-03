@@ -34,8 +34,10 @@ mv release/snowball release/bin/snowball
 
 if [[ "$NAME" == "darwin" ]]; then
     patchelf --set-rpath '@loader_path/../lib' release/bin/snowball
+    patchelf --set-rpath '@loader_path/../lib' release/lib/libSnowball.dylib
 else
     patchelf --set-rpath '$ORIGIN/../lib' release/bin/snowball
+    patchelf --set-rpath '$ORIGIN/../lib' release/lib/libSnowball.so
 fi
 
 cp -R ./stdlib release/stdlib
