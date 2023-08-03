@@ -1,6 +1,6 @@
 // only generate for macos
-//#if defined(__APPLE__) || defined(__MACH__) || defined(__DARWIN__) || defined(__darwin__) \
-//   || defined(__APPLE_CC__) || defined(__OSX__) || defined(__MACH) || defined(__MACOS__)
+#if defined(__APPLE__) || defined(__MACH__) || defined(__DARWIN__) || defined(__darwin__) \
+   || defined(__APPLE_CC__) || defined(__OSX__) || defined(__MACH) || defined(__MACOS__)
 
 #include "../../../constants.h"
 #include "../Linker.h"
@@ -36,7 +36,7 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
 
   linkerArgs.push_back("-arch");
   // TODO: check this out: https://codebrowser.dev/llvm/clang/lib/Driver/ToolChain.cpp.html
-  linkerArgs.push_back(target.getArchName());
+  linkerArgs.push_back(target.getArchName().str());
 
   linkerArgs.push_back("-macosx_version_min");
   llvm::VersionTuple version;
@@ -65,4 +65,4 @@ std::string Linker::getSharedLibraryName(std::string& library) { return library 
 } // namespace linker
 } // namespace snowball
 
-//#endif
+#endif

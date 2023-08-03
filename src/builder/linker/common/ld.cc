@@ -35,6 +35,7 @@ std::string Linker::getPlatformTriple() {
     case llvm::Triple::x86_64: return "x86_64-linux-gnu";
     case llvm::Triple::aarch64: return "aarch64-linux-gnu";
     case llvm::Triple::aarch64_be: return "aarch64_be-linux-gnu";
+    default: return "";
   };
 
   return "";
