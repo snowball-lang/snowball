@@ -169,10 +169,12 @@ add_command_to_path() {
         log info "Updating $config_file ..."
         echo "" >> "$config_file"
         log info "executing \"export PATH=\"\$PATH:$EXPORT_COMMAND\"\""
-        echo "export PATH=\"\$PATH:$EXPORT_COMMAND\"" >> "$config_file"
+        echo "export PATH=\"$EXPORT_COMMAND:\$PATH\"" >> "$config_file"
     else
         log warn "Skipping update of $config_file."
     fi
+
+    export PATH="$EXPORT_COMMAND:$PATH"
 }
 
 # function to update the appropriate config file based on the shell
@@ -230,7 +232,7 @@ update_config_file "$shell"
 printf "\n    ${green}snowball-${OS}-${ARCH}${normal} - successfully installed with stdlib\n\n"
 
 log info "Snowball successfully installed at: $(pwd)"
-log info "Open a new terminal session or update your PATH to use snowball"
+log info "Snowball is ready to use! type: `snowball --help` to check that it works."
 echo ""
 log info "Checkoutt the documentation at: https://snowball-lang.gitbook.io/docs/fundamentals/hello-world"
 log info "Happy coding! 🐱"
