@@ -9,4 +9,3 @@
 #endif
 
 #endif // _SNOWBALL_SYMBOLS_EXPORT_H_
-

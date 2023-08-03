@@ -22,10 +22,10 @@ jobs:
           #   DIST: 'macos-11'
           #   NAME: 'darwin'
           - ARCH: 'x86_64'
-            DIST: 'macos-11'
+            DIST: 'macos-13'
             NAME: 'darwin'
           - ARCH: 'arm64'
-            DIST: 'macos-11'
+            DIST: 'macos-13'
             NAME: 'darwin'
           # - ARCH: 'x86_64'
           #   DIST: 'windows-latest'
@@ -64,3 +64,10 @@ jobs:
           asset_content_type: application/gzip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install and test snowball
+        if: success()
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/snowball-lang/snowball/dev/scripts/install.sh | sudo -E bash -s -- -y
+          snowball --version
+          snowball test

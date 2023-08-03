@@ -34,29 +34,14 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   if (!ctx->isDynamic) linkerArgs.push_back("-static");
   else linkerArgs.push_back("-dynamic");
 
-  switch (target.getArch()) {
-    case llvm::Triple::ArchType::arm:
-      linkerArgs.push_back("-arch");
-      linkerArgs.push_back("arm");
-      break;
-    case llvm::Triple::ArchType::aarch64:
-      linkerArgs.push_back("-arch");
-      linkerArgs.push_back("arm64");
-      break;
-    case llvm::Triple::ArchType::x86:
-      linkerArgs.push_back("-arch");
-      linkerArgs.push_back("i386");
-      break;
-    case llvm::Triple::ArchType::x86_64:
-      linkerArgs.push_back("-arch");
-      linkerArgs.push_back("x86_64");
-      break;
-    default:
-      break;
-  }
+  linkerArgs.push_back("-arch");
+  linkerArgs.push_back(triple.getArchTypeForDarwinArchName());
 
   linkerArgs.push_back("-macosx_version_min");
-  linkerArgs.push_back("10.15.0");
+  llvm::VersionTuple version;
+  auto succ = triple.getMacOSXVersion(version);
+  assert(succ);
+  linkerArgs.push_back(version.getAsString());
 
   linkerArgs.push_back("-L.");
   linkerArgs.push_back("-L/opt/homebrew/lib");
@@ -74,7 +59,7 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
 #endif
 }
 
-std::string Linker::getSharedLibraryName(std::string& library) { return library + ".so"; }
+std::string Linker::getSharedLibraryName(std::string& library) { return library + ".dylib"; }
 
 } // namespace linker
 } // namespace snowball
