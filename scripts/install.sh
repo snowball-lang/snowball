@@ -100,11 +100,8 @@ if [[ -d "$SNOWBALL_INSTALL_DIR" ]]; then
         log info "Removing previous installation..."
         rm -rf "$SNOWBALL_INSTALL_DIR"
         if [[ "$OSTYPE" == "darwin"* ]]; then
-            log info "Removing libSnowball.dylib from $LIB_FOLDER"
-            rm -f "$LIB_FOLDER/libSnowball.dylib"
-        else
-            log info "Removing libSnowball.so from $LIB_FOLDER"
-            rm -f "$LIB_FOLDER/libSnowball.so"
+            log info "Removing previus snowball installation"
+            rm -rf $SNOWBALL_INSTALL_DIR
         fi
     else
         log info "Skipping removal of previous installation..."
@@ -116,19 +113,6 @@ log info "Creating target directory: $SNOWBALL_INSTALL_DIR"
 mkdir -p $SNOWBALL_INSTALL_DIR
 cd $SNOWBALL_INSTALL_DIR
 x=$(curl -L https://github.com/snowball-lang/snowball/releases/latest/download/"$SNOWBALL_BUILD_ARCHIVE" | tar zxvf - --strip-components=1)
-
-log info "Moving required shared libraries to lib folder"
-log warn "You may need to use 'sudo' password for this action"
-
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    log info "Moving libSnowball.dylib to $LIB_FOLDER"
-    cp lib/libSnowball.dylib $LIB_FOLDER/libSnowball.dylib
-    cp lib/libSnowballRuntime.dylib $LIB_FOLDER/libSnowballRuntime.dylib    
-else
-    log info "Moving libSnowball.so to $LIB_FOLDER"
-    cp lib/libSnowball.so $LIB_FOLDER/libSnowball.so
-    cp lib/libSnowballRuntime.so $LIB_FOLDER/libSnowballRuntime.so    
-fi
 
 log info "Exporting snowball to PATH"
 
@@ -168,7 +152,7 @@ add_command_to_path() {
     if [[ "$add_to_path" == "y" ]]; then
         log info "Updating $config_file ..."
         echo "" >> "$config_file"
-        log info "executing \"export PATH=\"\$PATH:$EXPORT_COMMAND\"\""
+        log info "executing \"export PATH=\"$EXPORT_COMMAND:\$PATH\"\""
         echo "export PATH=\"$EXPORT_COMMAND:\$PATH\"" >> "$config_file"
     else
         log warn "Skipping update of $config_file."

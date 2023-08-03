@@ -32,7 +32,9 @@ mkdir -p release/bin
 cp -a ./bin/Release/. release/
 mv release/snowball release/bin/snowball
 
-if [[ "$NAME" == "ce-specific" ]]; then
+if [[ "$NAME" == "darwin" ]]; then
+    patchelf --set-rpath '@loader_path/../lib' release/bin/snowball
+else
     patchelf --set-rpath '$ORIGIN/../lib' release/bin/snowball
 fi
 
