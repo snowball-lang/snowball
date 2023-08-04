@@ -1,3 +1,4 @@
+#include "../../../utils/utils.h"
 #include "../../../constants.h"
 #include "../Linker.h"
 
@@ -16,19 +17,15 @@ int Linker::link(std::string& input, std::string& output, std::vector<std::strin
   rpaths.insert(rpaths.begin(), (current / ".." / "lib").string());
 
   constructLinkerArgs(input, output, args);
-  std::string ldcommand = ldPath + " ";
-  for (int i = 0; i < linkerArgs.size(); i++) {
-    ldcommand += linkerArgs[i];
-    ldcommand += " ";
-  }
+  linkerArgs.insert(linkerArgs.begin(), ldPath);
   DEBUG_CODEGEN("Invoking linker (" LD_PATH " with stdlib at " STATICLIB_DIR ")");
-  DEBUG_CODEGEN("Linker command: %s", ldcommand.c_str());
-  int ldstatus = system(ldcommand.c_str());
+  DEBUG_CODEGEN("Linker command: %s", utils::join(linkerArgs.begin(), linkerArgs.end(), " ").c_str());
+  int ldstatus = os::Driver::run(linkerArgs);
   if (ldstatus) { throw SNError(LINKER_ERR, Logger::format("Linking with " LD_PATH " failed with code %d", ldstatus)); }
 
 #if __APPLE__
   if (ctx->opt == app::Options::Optimization::OPTIMIZE_O0)
-    system(FMT("dsymutil %s", output.c_str()).c_str());
+    os::Driver::run({"dsymutil", output});
 #endif
 
   return EXIT_SUCCESS;

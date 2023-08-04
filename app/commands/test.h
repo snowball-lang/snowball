@@ -36,7 +36,7 @@ int test(app::Options::TestOptions p_opts) {
   std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 
   // TODO: check for output
-  std::string output = _SNOWBALL_OUT_DEFAULT;
+  std::string output = _SNOWBALL_OUT_DEFAULT("snowball-test-case", Options::EmitType::EXECUTABLE, false);
   std::string build_type = "";
 
   filename = parsed_config["package"]["main"].value_or<std::string>((fs::current_path() / "src" / "main.sn"));

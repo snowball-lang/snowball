@@ -23,6 +23,7 @@ int build(app::Options::BuildOptions p_opts) {
   std::string filename = p_opts.file;
   std::string package_name = "file";
   std::string package_version = "<unknown version>";
+  bool isStaticLib = false; // TODO: implement static library support
 
   if (p_opts.file.empty()) {
     toml::parse_result parsed_config = Compiler::getConfiguration();
@@ -70,20 +71,12 @@ int build(app::Options::BuildOptions p_opts) {
   std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 
   // TODO: check for output
-  std::string output;
-  switch (p_opts.emit_type) {
-    case app::Options::EmitType::EXECUTABLE: output = _SNOWBALL_OUT_DEFAULT; break;
-    case app::Options::EmitType::OBJECT: output = _SNOWBALL_OBJ_OUT_DEFAULT; break;
-    case app::Options::EmitType::LLVM_IR: output = _SNOWBALL_LLIR_OUT_DEFAULT; break;
-    case app::Options::EmitType::ASSEMBLY: output = _SNOWBALL_ASM_OUT_DEFAULT; break;
-  }
-
-  if (!p_opts.output.empty()) { output = p_opts.output; }
-
   Compiler* compiler = new Compiler(content, filename);
   compiler->initialize();
+  std::string output = _SNOWBALL_OUT_DEFAULT(package_name, 
+    p_opts.emit_type, !compiler->getGlobalContext()->isDynamic);
+  if (!p_opts.output.empty()) { output = p_opts.output; }
   compiler->setOptimization(p_opts.opt);
-
   if (p_opts.is_test) { compiler->enable_tests(); }
 
   auto start = high_resolution_clock::now();

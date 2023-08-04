@@ -74,11 +74,12 @@ public:
   std::vector<std::string> linkedLibraries;
   fs::path configFolder;
 
-  // TODO
   int emitBinary(std::string, bool = true);
   int emitObject(std::string, bool = true);
   int emitLLVMIr(std::string, bool = true);
   int emitASM(std::string, bool = true);
+
+  GlobalContext* getGlobalContext() { return globalContext; }
 
   void setOptimization(app::Options::Optimization o) { 
     globalContext->opt = o;

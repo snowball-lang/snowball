@@ -48,15 +48,13 @@ extern "C" {
 
 // Values
 
-#define _SNOWBALL_STR_FACTOR       16
-#define _SNOWBALL_MAX_LENGTH       2147483647
-#define _SNOWBALL_OUT_DEFAULT      ".sn" PATH_SEPARATOR "bin" PATH_SEPARATOR "out.o"
-#define _SNOWBALL_ASM_OUT_DEFAULT  ".sn" PATH_SEPARATOR "bin" PATH_SEPARATOR "out.s"
-#define _SNOWBALL_LLIR_OUT_DEFAULT ".sn" PATH_SEPARATOR "bin" PATH_SEPARATOR "out.ll"
-#define _SNOWBALL_OBJ_OUT_DEFAULT  ".sn" PATH_SEPARATOR "bin" PATH_SEPARATOR "out.o"
+#define _SNOWBALL_STR_FACTOR           16
+#define _SNOWBALL_MAX_LENGTH           2147483647
+#define _SNOWBALL_OUT_DEFAULT(x, t, s) (".sn" PATH_SEPARATOR "bin" PATH_SEPARATOR +          \
+  (os::Driver::getOutputFilename(x, t, s)))
 
 #ifndef _SNOWBALL_ENABLE_INT64
-#define _SNOWBALL_ENABLE_INT64                                                                                         \
+#define _SNOWBALL_ENABLE_INT64                                                           \
   0 // if 1 enable snowball_int_t to be a 64bit int (instead of a                        \
 				// 32bit int)
 #endif
