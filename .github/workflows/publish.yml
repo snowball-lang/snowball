@@ -66,7 +66,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install and test snowball
-        if: success() && matrix.DIST != 'ce-specific'
+        if: success() && (matrix.DIST != 'ce-specific') || !(matrix.NAME == 'darwin' && matrix.ARCH == 'arm64')
         run: |
           curl -fsSL https://raw.githubusercontent.com/snowball-lang/snowball/dev/scripts/install.sh | sudo -E bash -s -- -y
           
