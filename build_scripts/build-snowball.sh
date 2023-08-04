@@ -32,5 +32,15 @@ mkdir -p release/bin
 cp -a ./bin/Release/. release/
 mv release/snowball release/bin/snowball
 
+if [[ "$NAME" == "darwin" ]]; then
+    #brew install patchelf
+#
+    #patchelf --set-rpath '@loader_path/../lib' release/bin/snowball
+    #patchelf --set-rpath '@loader_path/../lib' release/lib/libSnowball.dylib
+else
+    patchelf --set-rpath '$ORIGIN/../lib' release/bin/snowball
+    patchelf --set-rpath '$ORIGIN/../lib' release/lib/libSnowball.so
+fi
+
 cp -R ./stdlib release/stdlib
 tar -czvf "$label".tar.gz -C release/ .
