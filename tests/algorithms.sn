@@ -1,0 +1,117 @@
+use Core::Math;
+
+namespace test {
+
+fn linear_search(arr: Vector<i32>, x: i32) i32 {
+    let n = arr.size();
+    for i in 0..n {
+        if arr[i] == x {
+            return i;
+        }
+    }
+    return -1;
+}
+
+fn [[test(expect = 3)]] linear_search() i32 {
+    let mut arr = new Vector<i32>{};
+    arr.push(2);
+    arr.push(3);
+    arr.push(4);
+    arr.push(10);
+    let x = 10;
+    let result = linear_search(arr, x);
+    return result;
+}
+
+fn ternary_search(arr: Vector<i32>, l: i32, r: i32, x: i32) i32 {
+    if (r >= l) {
+        let mid1 = l + (r - l) / 3;
+        let mid2 = r - (r - l) / 3;
+        if (arr[mid1] == x) {
+            return mid1;
+        }
+        if (arr[mid2] == x) {
+            return mid2;
+        }
+        if (x < arr[mid1]) {
+            return ternary_search(arr, l, mid1 - 1, x);
+        } else if (x > arr[mid2]) {
+            return ternary_search(arr, mid2 + 1, r, x);
+        } else {
+            return ternary_search(arr, mid1 + 1, mid2 - 1, x);
+        }
+    }
+    return -1;
+}
+
+fn [[test(expect = 3)]] ternary_search() i32 {
+    let mut arr = new Vector<i32>{};
+    arr.push(2);
+    arr.push(3);
+    arr.push(4);
+    arr.push(10);
+    let x = 10;
+    let result = ternary_search(arr, 0, arr.size() - 1, x);
+    return result;
+}
+
+fn binary_search(arr: Vector<i32>, l: i32, r: i32, x: i32) i32 {
+    if (r >= l) {
+        let mid = l + (r - l) / 2;
+        if (arr[mid] == x) {
+            return mid;
+        }
+        if (arr[mid] > x) {
+            return binary_search(arr, l, mid - 1, x);
+        }
+        return binary_search(arr, mid + 1, r, x);
+    }
+    return -1;
+}
+
+fn [[test(expect = 3)]] binary_search() i32 {
+    let mut arr = new Vector<i32>{};
+    arr.push(2);
+    arr.push(3);
+    arr.push(4);
+    arr.push(10);
+    let x = 10;
+    let result = binary_search(arr, 0, arr.size() - 1, x);
+    return result;
+}
+
+//fn jump_search(arr: Vector<i32>, x: i32) i32 {
+//    let n = arr.size();
+//    let mut step = Math::sqrt(n);
+//    let mut prev = 0;
+//    while (arr[Math::min(step, n) - 1] < x) {
+//        prev = step;
+//        step += Math::sqrt(n);
+//        if (prev >= n) {
+//            return -1;
+//        }
+//    }
+//    while (arr[prev] < x) {
+//        prev += 1;
+//        if (prev == Math::min(step, n)) {
+//            return -1;
+//        }
+//    }
+//    if (arr[prev] == x) {
+//        return prev;
+//    }
+//    return -1;
+//}
+//
+//fn [[test(expect = 3)]] jump_search() i32 {
+//    let mut arr = new Vector<i32>{};
+//    arr.push(2);
+//    arr.push(3);
+//    arr.push(4);
+//    arr.push(10);
+//    let x = 10;
+//    let result = jump_search(arr, x);
+//    return result;
+//}
+
+}

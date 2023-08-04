@@ -578,12 +578,19 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       return true;
     }
     /**
+     * @brief It checks if the 2 strings are equal without a known type.
+     * @param[in] other The string to compare the string with.
+     * @return The result of the comparison.
+     */
+    operator [[internal_linkage, inline]] ==<T>(other: T) bool
+      { return self == Self::from(other); }
+    /**
      * @brief It checks if the 2 strings are not equal.
      * @param[in] other The string to compare the string with.
      * @return The result of the comparison.
      */
-    operator [[internal_linkage, inline]] !=(other: Self) bool
-      { return !(self == other); }
+    operator [[internal_linkage, inline]] !=<T>(other: T) bool
+      { return !(self == Self::from(other)); }
     /**
      * @brief It concatenates the string with another string. 
      * @param[in] other The string to concatenate the string with.

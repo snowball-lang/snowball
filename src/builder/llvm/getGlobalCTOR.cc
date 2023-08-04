@@ -17,6 +17,7 @@ llvm::Function* LLVMBuilder::getGlobalCTOR(bool createIfNone) {
   if ((!fn) && createIfNone) {
     auto prototype = llvm::FunctionType::get(builder->getVoidTy(), {});
     fn = h.create<llvm::Function>(prototype, llvm::Function::ExternalLinkage, mangle, *module);
+    // TODO: set di info
   } else if (fn) {
     return fn;
   } else if (!fn && (!createIfNone)) {

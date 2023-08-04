@@ -33,6 +33,10 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
   auto innerFnType = cast<types::FunctionType>(func->getType());
   assert(innerFnType != nullptr);
 
+  if (auto x = module->getFunction(func->getMangle()); x != nullptr) {
+    return x;
+  }
+
   auto fnType = llvm::cast<llvm::FunctionType>(getLLVMFunctionType(innerFnType));
   auto name = func->getMangle();
   auto fn = llvm::Function::Create(

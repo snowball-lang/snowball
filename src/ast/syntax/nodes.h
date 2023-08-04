@@ -541,20 +541,21 @@ struct VariableDecl : public AcceptorExtend<VariableDecl, Base>, public Acceptor
   Expression::Base* value;
   /// @brief Whether the variable can change or not
   bool _mutable = false;
-  /**
-   * @brief User defined type
-   * @example
-   *   let a: f32 = 2
-   *   ----- converted ir =
-   *   variable
-   *      value: cast "2"(i32) -> f32
-   *   ----- it can also be written as:
-   *   let a = 2 as f32
-   */
+  // @brief User defined type
+  // @example
+  //   let a: f32 = 2
+  //   ----- converted ir =
+  //   variable
+  //      value: cast "2"(i32) -> f32
+  //   ----- it can also be written as:
+  //   let a = 2 as f32
   Expression::TypeRef* definedType = nullptr;
+  /// @brief If the variable is actually a constant expression.
+  bool isConstant = false;
 
 public:
-  VariableDecl(const std::string& name, Expression::Base* value = nullptr, bool isMutable = false);
+  VariableDecl(const std::string& name, Expression::Base* value = nullptr, bool isMutable = false,
+    bool isConstant = false);
 
   /// @brief Get the identifier assign to the variable
   std::string getName() const;
@@ -569,6 +570,8 @@ public:
   void setDefinedType(Expression::TypeRef* t);
   /// @return true if the variable has been initialied
   bool isInitialized();
+  /// @brief If the variable is actually declared as a constant
+  bool isContantDecl();
 
   // Set an acceptance call
   ACCEPT()

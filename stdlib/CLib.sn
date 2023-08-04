@@ -114,7 +114,6 @@ pub extern fn snprintf(char&, i32, char&, ...) i32;
  * @note(1) The behavior is undefined if a program calls exit more than once.
  */
 pub extern fn exit(i32);
-
 /**
  * @brief Returns a null pointer for a given pointer type.
  * @tparam PtrType - pointer type
@@ -123,7 +122,6 @@ pub extern fn exit(i32);
 pub fn [[inline]] null_ptr<PtrType: Core::Sized = cobj>() PtrType {
     return 0 as cobj as PtrType;
 }
-
 /**
  * @brief It checks if a pointer is null.
  * @param ptr(cobj) - pointer to be checked
@@ -132,7 +130,6 @@ pub fn [[inline]] null_ptr<PtrType: Core::Sized = cobj>() PtrType {
 pub fn [[inline]] is_null(ptr: cobj) bool {
     return ptr == null_ptr();
 }
-
 /**
  * @brief a namespace that contains functions for manipulating strings.
  * @note(1) All functions in this namespace are thread-safe.
@@ -197,5 +194,16 @@ pub static fn [[inline]] alloca_and_snprintf<T>
     snprintf(buffer, bytes, format, value);
     return buffer;
 } 
-
 } // namespace __internal
+/**
+ * @brief a namespace that contains some utility math functions.
+*/
+namespace cmath {
+/**
+ * @brief It converts a string into a double.
+ * @param str(char&) - string to be converted
+
+ * @return f64 - number
+*/
+pub extern fn strtod(char&, cobj) f64;
+}

@@ -13,6 +13,7 @@ use pkg::macros;
 use pkg::syntax;
 use pkg::clib;
 use pkg::tuples;
+use pkg::algorithms;
 
 use Core::System;
 //use Core::System::{{ println }};

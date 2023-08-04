@@ -82,14 +82,13 @@ int test(app::Options::TestOptions p_opts) {
     Logger::message("Finished", FMT("test target(s) in %s%i%sms", BOLD, duration, RESET));
     Logger::compiling(FMT("version: %s%s%s\n", BOLD, _SNOWBALL_VERSION, RESET), "Snowball");
     Logger::compiling(FMT("Build date: %s%s%s\n", BOLD, buffer, RESET), "Date");
-    Logger::message("Running", FMT("unittests (%s)", filename.c_str()));
     Logger::compiling("Good luck with the tests! 🙏😽\n", "Motivation");
+    Logger::message("Running", FMT("unittests (%s)", filename.c_str()));
   }
 
   char* args[] = {strdup(output.c_str()), NULL};
   int result = execvp(args[0], args);
 
-  DUMP_S("HELLOOOO")
   // This shoudnt be executed
   return result;
 }

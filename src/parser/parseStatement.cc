@@ -37,6 +37,8 @@ Syntax::Node* Parser::parseStatement(Token pk) {
       break;
     }
 
+    // TODO: can const be declared at block level in rust?
+
     case TokenType::KWORD_FOR: {
       next();
       return parseForLoop();

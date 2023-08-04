@@ -183,6 +183,15 @@ void LLVMBuilder::codegen() {
   auto generateModule = [&](std::shared_ptr<ir::Module> m) {
     this->iModule = m;
 
+    // Generate the functions from the end to the front.
+    auto functions = m->getFunctions();
+
+    // Iterate every function with a reversed iterator.
+    // This first loop will declare all of the functions
+    // to the module, it does not matter whether they are
+    // bodied or not.
+    ITERATE_FUNCTIONS { visit(fn->get()); }
+
     // Generate all the variables defined in this module.
     for (auto v : m->getVariables()) { addGlobalVariable(v); }
 
@@ -193,15 +202,6 @@ void LLVMBuilder::codegen() {
 
       builder->CreateRetVoid();
     }
-
-    // Generate the functions from the end to the front.
-    auto functions = m->getFunctions();
-
-    // Iterate every function with a reversed iterator.
-    // This first loop will declare all of the functions
-    // to the module, it does not matter whether they are
-    // bodied or not.
-    ITERATE_FUNCTIONS { visit(fn->get()); }
 
     // This second loop will generate all the functions that
     // are bodied. We do 2 loops in order to prevent any weird
@@ -241,7 +241,6 @@ void LLVMBuilder::codegen() {
 
   initializeRuntime();
   dbg.builder->finalize();
-
 
   DEBUG_CODEGEN("Finished codegen, proceeding to verify module");
   std::string module_error_string;

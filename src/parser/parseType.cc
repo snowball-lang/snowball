@@ -70,12 +70,14 @@ TypeRef* Parser::parseType() {
   }
   auto dbg = new DBGSourceInfo(m_source_info, pos, m_current.get_pos().second - pos.second);
   auto t = Syntax::TR(ast, name, dbg, id);
-  t->setGenerics(generics);
-  while (is<TokenType::OP_BIT_AND>()) {
-    next();
-    auto base = t;
+  t->setGenerics(generics); // TODO: fix &&
+  while (is<TokenType::OP_BIT_AND>()) { // we treat op and as 2 bit ands
+    //for (int i = 0; i < is<TokenType::OP_AND>(); i++) {
+      next();
+      auto base = t;
 
-    t = Syntax::N<ReferenceType>(base, dbg);
+      t = Syntax::N<ReferenceType>(base, dbg);
+    //}
   }
   return t;
 }

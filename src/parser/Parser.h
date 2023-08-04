@@ -315,6 +315,11 @@ private:
    * for           ::=  "for" [expr] ":" [expr] "{" [block] "}"
    */
   Syntax::Statement::ForLoop* parseForLoop();
+  /**
+   * constant      ::=  "const" <identifier> ":" <type> "=" [expr] ";"
+   */
+  Syntax::Statement::VariableDecl* parseConstant();
+
   /// @brief Parses a statement
   /// @return a statement
   Syntax::Node* parseStatement(Token pk);
