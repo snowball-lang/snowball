@@ -13,6 +13,16 @@ namespace linker {
 void Linker::constructLinkerArgs(std::string& input, std::string& output, std::vector<std::string>& args) {
   const bool isIAMCU = target.isOSIAMCU();
   linkerArgs.clear();
+  if (ctx->isDynamic) {
+    linkerArgs.push_back("--export-dynamic");
+    //linkerArgs.push_back("-Bdynamic");
+  } else {
+    linkerArgs.push_back("-static");
+    linkerArgs.push_back("-pie");
+    linkerArgs.push_back("--no-dynamic-linker");
+    linkerArgs.push_back("-z");
+    linkerArgs.push_back("text");
+  }
   if (ctx->withStd) {
     // TODO: check if this works for all platforms
     linkerArgs.push_back("-dynamic-linker");
@@ -36,11 +46,17 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   }
   if (ctx->withCXXStd) {
     auto libs = utils::get_lib_folder() / ".." / _SNOWBALL_LIBRARY_OBJ;
+    linkerArgs.push_back("-L/usr/lib/../lib64");
+    linkerArgs.push_back("-L/lib/../lib64");
+    linkerArgs.push_back("-L/usr/bin/../lib/gcc/x86_64-linux-gnu/12");
+    linkerArgs.push_back("-L/usr/lib/x86_64-linux-gnu");
+    linkerArgs.push_back("-L/lib/x86_64-linux-gnu");
+    linkerArgs.push_back("-L/lib");
+    linkerArgs.push_back("-L/usr/lib");
+    linkerArgs.push_back("-lsnowballrt");
     linkerArgs.push_back("-lm");
-    //linkerArgs.push_back("-lunwind");
     linkerArgs.push_back("-lc");
     linkerArgs.push_back("-L" + libs.string());
-    linkerArgs.push_back("-lSnowballRuntime");
   }
   linkerArgs.push_back(input);
   if (ctx->isThreaded) linkerArgs.push_back("-lpthread");
@@ -51,6 +67,8 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
     for (auto llvmArg : utils::split(LLVM_LDFLAGS, " ")) { linkerArgs.push_back(llvmArg); }
   }
   if (!ctx->isDynamic) linkerArgs.push_back("-static");
+  for (auto& rpath : rpaths)
+    linkerArgs.push_back("--rpath=" + rpath);
   linkerArgs.push_back("-o");
   linkerArgs.push_back(output);
 #if _SNOWBALL_CODEGEN_DEBUG
@@ -58,7 +76,8 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
 #endif
 }
 
-std::string Linker::getSharedLibraryName(std::string& library) { return library + ".so"; }
+std::string Linker::getSharedLibraryName(std::string& library) 
+  { return library + ".so"; }
 
 } // namespace linker
 } // namespace snowball

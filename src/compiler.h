@@ -30,6 +30,7 @@ struct GlobalContext {
   bool isThreaded = false;
 
   bool isDynamic = true;
+  app::Options::Optimization opt = app::Options::Optimization::OPTIMIZE_O0;
 };
 
 /**
@@ -79,7 +80,10 @@ public:
   int emitLLVMIr(std::string, bool = true);
   int emitASM(std::string, bool = true);
 
-  void setOptimization(app::Options::Optimization o) { opt_level = o; }
+  void setOptimization(app::Options::Optimization o) { 
+    globalContext->opt = o;
+    opt_level = o; 
+  }
 
 private:
   // methods

@@ -24,7 +24,11 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   if (ctx->withCXXStd) {
     auto libs = utils::get_lib_folder() / ".." / _SNOWBALL_LIBRARY_OBJ;
     linkerArgs.push_back("-L" + libs.string());
-    linkerArgs.push_back("-lSnowballRuntime");
+    linkerArgs.push_back("-lsnowballrt");
+  } else {
+    linkerArgs.push_back("--no-dynamic-linker");
+    linkerArgs.push_back("-z");
+    linkerArgs.push_back("text");
   }
   linkerArgs.push_back(input);
   for (auto& arg : args) linkerArgs.push_back(arg);
@@ -52,6 +56,9 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
 
   // TODO: we might not find it and we will need to search for System.B
   linkerArgs.push_back("-lSystem");
+
+  for (auto& rpath : rpaths)
+    linkerArgs.push_back("--rpath=" + rpath);
 
   linkerArgs.push_back("-o");
   linkerArgs.push_back(output);

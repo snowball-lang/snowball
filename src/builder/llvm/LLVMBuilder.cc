@@ -127,7 +127,8 @@ LLVMBuilder::LLVMBuilder(std::shared_ptr<ir::MainModule> mod, bool testMode) : i
 std::unique_ptr<llvm::Module> LLVMBuilder::newModule() {
   auto m = std::make_unique<llvm::Module>("snowball compiled project", *context);
 
-  target = llvm::EngineBuilder().selectTarget();
+  auto engine = llvm::EngineBuilder();
+  target = engine.selectTarget();
 
   m->setDataLayout(target->createDataLayout());
   m->setTargetTriple(target->getTargetTriple().str());

@@ -32,6 +32,9 @@ Compiler::Compiler(std::string p_code, std::string p_path) {
 void Compiler::initialize() {
   initialized = true;
   createSourceInfo();
+  
+  globalContext = new GlobalContext();
+  globalContext->isTest = testsEnabled;
 
   configFolder = cwd / ".sn";
   if (!fs::exists(configFolder)) fs::create_directory(configFolder);
@@ -62,9 +65,6 @@ void Compiler::compile(bool silent) {
     auto tokens = lexer->tokens;
     if (tokens.size() != 0) {
       SHOW_STATUS(Logger::compiling(Logger::progress(0.50)))
-
-      globalContext = new GlobalContext();
-      globalContext->isTest = testsEnabled;
 
       auto parser = new parser::Parser(tokens, srcInfo);
 #if _SNOWBALL_TIMERS_DEBUG

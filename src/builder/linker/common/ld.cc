@@ -12,6 +12,9 @@ Linker::Linker(GlobalContext* ctx, std::string ldPath) : ctx(ctx), ldPath(ldPath
 void Linker::addLibrary(std::string& library) { linkedLibraries.push_back(library); }
 
 int Linker::link(std::string& input, std::string& output, std::vector<std::string>& args) {
+  auto current = utils::get_lib_folder();
+  rpaths.insert(rpaths.begin(), (current / ".." / "lib").string());
+
   constructLinkerArgs(input, output, args);
   std::string ldcommand = ldPath + " ";
   for (int i = 0; i < linkerArgs.size(); i++) {
@@ -22,6 +25,12 @@ int Linker::link(std::string& input, std::string& output, std::vector<std::strin
   DEBUG_CODEGEN("Linker command: %s", ldcommand.c_str());
   int ldstatus = system(ldcommand.c_str());
   if (ldstatus) { throw SNError(LINKER_ERR, Logger::format("Linking with " LD_PATH " failed with code %d", ldstatus)); }
+
+#if __APPLE__
+  if (ctx->opt == app::Options::Optimization::OPTIMIZE_O0)
+    system(FMT("dsymutil %s", output.c_str()).c_str());
+#endif
+
   return EXIT_SUCCESS;
 }
 

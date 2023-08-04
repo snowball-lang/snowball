@@ -20,10 +20,10 @@ bash build_scripts/release.sh
 mkdir -p ./bin/Release/lib
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    mv libSnowballRuntime.dylib ./bin/Release/lib
+    mv libsnowballrt.dylib ./bin/Release/lib
     mv libSnowball.dylib ./bin/Release/lib
 else
-    mv libSnowballRuntime.so ./bin/Release/lib
+    mv libsnowballrt.so ./bin/Release/lib
     mv libSnowball.so ./bin/Release/lib
 fi
 

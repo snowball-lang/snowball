@@ -68,6 +68,8 @@ set(LLVM_ENABLE_ZLIB OFF CACHE BOOL "" FORCE)
 set(LLVM_INCLUDE_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(LLVM_INCLUDE_DOCS OFF CACHE BOOL "" FORCE)
 
+set(CMAKE_CXX_FLAGS "-fPIC")
+
 add_definitions(${LLVM_DEFINITIONS})
 
 message(STATUS ${LLVM_DEFINITIONS})
@@ -131,10 +133,10 @@ llvm_map_components_to_libnames(llvm_libs
 ##################################################    Targets     ##################################################
 if (${BUILD_FOR_WIN})
   add_library(snowball STATIC ${PROJECT_FILES})
-  add_library(SnowballRuntime STATIC ${RUNTIME_FILES})
+  add_library(snowballrt STATIC ${RUNTIME_FILES})
 else()
   add_library(snowball SHARED ${PROJECT_FILES})
-  add_library(SnowballRuntime SHARED ${RUNTIME_FILES})
+  add_library(snowballrt SHARED ${RUNTIME_FILES})
 endif()
 
 add_executable(snowballexe ${APP_FILES})
@@ -203,7 +205,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<INSTALL_INTERFACE:include> PRIVATE source)
     target_include_directories(${PROJECT_NAME} PUBLIC ${LLVM_INCLUDE_DIRS} ${PROJECT_INCLUDE_DIRS})
-    target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES} SnowballRuntime)
+    target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES} snowballrt)
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
 add_compile_definitions("_SN_DEBUG=$<CONFIG:Debug>")
@@ -248,7 +250,7 @@ install(TARGETS ${PROJECT_NAME} EXPORT MyLibConfig
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(TARGETS SnowballRuntime EXPORT MyLibConfig
+install(TARGETS snowballrt EXPORT MyLibConfig
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY  DESTINATION ${CMAKE_INSTALL_BINDIR}
     RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})

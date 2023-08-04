@@ -46,9 +46,9 @@ Section "snowball (required)"
   ; See: https://nsis.sourceforge.io/Reference/File
   ; MAKE SURE YOU PUT ALL THE FILES HERE IN THE UNINSTALLER TOO
 
-  File "..\..\libSnowballRuntime.so"
+  File "..\..\libsnowballrt.so"
 
-  CopyFiles /SILENT /FILESONLY "$INSTDIR\lib" "..\..\libSnowballRuntime.so"
+  CopyFiles /SILENT /FILESONLY "$INSTDIR\lib" "..\..\libsnowballrt.so"
 
   
   ; Write the installation path into the registry
