@@ -33,6 +33,7 @@ cp -a ./bin/Release/. release/
 mv release/snowball release/bin/snowball
 
 if [[ "$NAME" == "darwin" ]]; then
+    echo "TODO: rpath for darwin"
     #brew install patchelf
 #
     #patchelf --set-rpath '@loader_path/../lib' release/bin/snowball
