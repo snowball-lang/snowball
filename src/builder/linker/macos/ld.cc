@@ -42,7 +42,7 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   // TODO: check this out: https://codebrowser.dev/llvm/clang/lib/Driver/ToolChain.cpp.html
   linkerArgs.push_back(target.getArchName().str());
 
-  linkerArgs.push_back("-macosx_version_min");
+  linkerArgs.push_back("-macos_version_min");
   llvm::VersionTuple version;
   auto succ = target.getMacOSXVersion(version);
   assert(succ);
