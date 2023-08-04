@@ -144,8 +144,6 @@ else()
   message(STATUS "rpath: $ORIGIN/../lib")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-rpath=$ORIGIN/../lib")
 endif()
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
 
 add_executable(snowballexe ${APP_FILES})
 target_include_directories(snowballexe PUBLIC ${APP_HEADERS_DIR})
