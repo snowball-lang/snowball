@@ -83,9 +83,6 @@ Transformer::getFunction(DBGObject* dbgInfo,
   std::shared_ptr<ir::Func> foundFunction = nullptr;
   if (functions) {
     for (auto f : *functions) {
-      if (name == "(mut Core::_$core::Core::Range<i32>)::next") {
-        DUMP_S("HELLO")
-      }
       auto args = f->getArgs(false);
       size_t numArgs = arguments.size();
       auto argsVector = utils::list_to_vector(args);
@@ -134,9 +131,6 @@ Transformer::getFunction(DBGObject* dbgInfo,
                                  arguments,
                                  generics,
                                  isIdentifier);
-  if (hasSelf) {
-    arguments.erase(arguments.begin());
-  }
   switch (res) {
     case Ok: {
       if (foundFunction && shouldUseGeneratedFunction(foundFunction, arguments)) 
