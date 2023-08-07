@@ -53,7 +53,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
     auto name = baseName + x->getIdentifier()->getNiceName();
     if (b.has_value())
-      argTypes.insert(argTypes.begin(), b.value()->getType());
+      argTypes.insert(argTypes.begin(), b.value()->getType()->getPointerTo());
     auto c = getFunction(p_node, r, name, argTypes, generics, false, b.has_value());
     if (b.has_value()) argTypes.erase(argTypes.begin());
     // TODO: actually check if base is a module with:
