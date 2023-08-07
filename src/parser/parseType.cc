@@ -12,7 +12,7 @@ namespace snowball::parser {
 
 TypeRef* Parser::parseType() {
   throwIfNotType();
-  assert(is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() || is<TokenType::KWORD_FUNC>());
+  assert(is<TokenType::KWORD_MUTABLE>() || is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() || is<TokenType::KWORD_FUNC>());
   auto pos = m_current.get_pos();
   if (is<TokenType::KWORD_DECLTYPE>()) {
     auto w = m_current.get_width();

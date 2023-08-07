@@ -81,6 +81,9 @@ Transformer::getFunction(DBGObject* dbgInfo,
   }
 
   std::shared_ptr<ir::Func> foundFunction = nullptr;
+  if (name == "(Core::_$core::Core::StringView<char>&)::concat") {
+    DUMP_S("HELLO")
+  }
   if (functions) {
     for (auto f : *functions) {
       auto args = f->getArgs(false);
@@ -88,9 +91,10 @@ Transformer::getFunction(DBGObject* dbgInfo,
       auto argsVector = utils::list_to_vector(args);
       if (ir::Func::argumentSizesEqual(argsVector, arguments, f->isVariadic()) || isIdentifier) {
         bool equal = true;
-        for (auto arg = args.begin(); (arg != args.end()) && equal && !isIdentifier; arg++) {
+        for (auto arg = args.begin(); (arg != args.end()) && equal && !isIdentifier; ++arg) {
           auto i = std::distance(args.begin(), arg);
           if (i < numArgs) {
+            auto sec = arg->second->getType();
             equal = arguments.at(i)->is(arg->second->getType());
           } else {
             auto defArg = arg->second->getDefaultValue();
@@ -126,14 +130,14 @@ Transformer::getFunction(DBGObject* dbgInfo,
       }
     }
   }
-  if (hasSelf) {
-    arguments.erase(arguments.begin());
-  }
   auto [fn, args, res] =
           getBestFittingFunction(overloads.has_value() ? overloads.value() : std::vector<Cache::FunctionStore>{},
                                  arguments,
                                  generics,
                                  isIdentifier);
+  if (hasSelf) {
+    arguments.erase(arguments.begin());
+  }
   switch (res) {
     case Ok: {
       if (foundFunction != nullptr) return checkIfContextEqual(foundFunction);

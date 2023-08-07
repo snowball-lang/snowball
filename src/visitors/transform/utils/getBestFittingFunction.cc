@@ -14,7 +14,7 @@ Transformer::getBestFittingFunction(const std::vector<Cache::FunctionStore>& ove
   std::vector<std::pair<Cache::FunctionStore, std::vector<types::Type*>>> functions;
   for (auto n : overloads) {
     auto fn = n.function;
-    if (ir::Func::argumentSizesEqual(getActualFunctionArgs(n), arguments, fn->isVariadic()) || isIdentifier) {
+    if (ir::Func::argumentSizesEqual(fn->getArgs(), arguments, fn->isVariadic()) || isIdentifier) {
       auto genericArguments = utils::vector_iterate<Expression::TypeRef*, types::Type*>(
               generics, [&](auto g) { return transformType(g); });
       auto [deducedArgs, errors] = deduceFunction(n, arguments, genericArguments);
@@ -40,7 +40,7 @@ Transformer::getBestFittingFunction(const std::vector<Cache::FunctionStore>& ove
       genericIndex = genericIterator;
     } else {
       ctx->withState(foundFunction.first.state, [&] {
-        auto fnArgs = getActualFunctionArgs(foundFunction.first);
+        auto fnArgs = foundFunction.first.function->getArgs();
         bool argsEqual = (fnArgs.size() == 0) && (arguments.size() == 0);
         bool argsNeedCasting = false;
         for (auto i = 0; (i < fnArgs.size()) && !argsEqual; i++) {

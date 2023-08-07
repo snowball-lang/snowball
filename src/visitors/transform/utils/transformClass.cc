@@ -3,18 +3,21 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
+  // Set the default '=' operator for the class 
 #define GENERATE_EQUALIZERS \
   for (int allowPointer = 0; allowPointer < 2; ++allowPointer) { \
-    auto pointerRef = transformedType->getPointerTo()->toRef(); \
-    auto fnAST = N<Statement::FunctionDef>( \
-      OperatorService::getOperatorMangle(OperatorService::OperatorType::EQ), \
-      PrivacyStatus::PUBLIC \
-    ); \
-    fnAST->setArgs({new Expression::Param("other", allowPointer ? pointerRef : transformedType->toRef())}); \
-    fnAST->setRetType(pointerRef); \
-    fnAST->addAttribute(Attributes::BUILTIN); \
-    fnAST->setDBGInfo(ty->getDBGInfo()); \
-    trans(fnAST); \
+    auto argType = allowPointer ? transformedType->getPointerTo() : transformedType; \
+    auto fn = builder.createFunction( \
+            ty->getDBGInfo(), services::OperatorService::getOperatorMangle(OperatorType::EQ), true, false); \
+    auto arg = builder.createArgument(NO_DBGINFO, "other", argType); \
+    auto selfArg = builder.createArgument(NO_DBGINFO, "self", transformedType->getPointerTo()); \
+    auto typeArgs = std::vector<types::Type*>{transformedType->getPointerTo(), argType}; \
+    auto type = builder.createFunctionType(typeArgs, transformedType); \
+    fn->setArgs({{"self", selfArg}, {"other", arg}}); \
+    fn->setType(type); \
+    fn->setPrivacy(PrivacyStatus::PUBLIC); \
+    fn->addAttribute(Attributes::BUILTIN); \
+    ctx->defineFunction(fn); \
   }
 
 namespace snowball {
@@ -143,7 +146,6 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
       }
       // Generate the function bodies
       ctx->generateFunction = true;
-      GENERATE_EQUALIZERS
       for (auto fn : ty->getFunctions()) { trans(fn); }
       ctx->generateFunction = backupGenerateFunction;
       auto parentHasConstructor =

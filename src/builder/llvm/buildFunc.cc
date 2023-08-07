@@ -12,6 +12,11 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ir::Func* func) {
+  if (func->hasAttribute(Attributes::BUILTIN) || func->hasAttribute(Attributes::BUILTIN_NO_POINTER)) {
+    this->value = nullptr;
+    return;
+  }
+
   if (auto it = funcs.find(func->getId()); it != funcs.end()) {
     this->value = it->second;
     return;

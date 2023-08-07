@@ -36,8 +36,10 @@ enum Attributes
   NOT_IMPLEMENTED,
   EXPORT,
 
+  // Builting related attributes
   BUILTIN,
   BUILTIN_NO_POINTER,
+  NO_POINTER_SELF,
 
   // Function internal attributes
   TYPECHECKED,

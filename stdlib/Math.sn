@@ -13,15 +13,7 @@ pub extern fn "llvm.sqrt.f64" as sqrt(f64) f64;
  * @return The cube root of the given number.
  */
 pub extern fn "llvm.cbrt.f64" as cbrt(f64) f64;
-/**
- * It returns the minimum of two given numbers.
- *
- * @param x The first number.
- * @param y The second number.
- * @return The minimum of the two given numbers.
- */
-pub fn min<T: Core::IsNumeric>(x: T, y: T) T 
-  { if x < y { return x } else return y }
+
 /**
  * The constant value of pi, accurate to 35 decimal places.
  * @example PI // returns 3.141592653589793238462643383279502884197
@@ -30,22 +22,22 @@ pub const PI: f32 = 3.141592653589793238462643383279502884197;
 /**
  * @brief The natural logarithm of pi.
  */
-pub const LOGPI: f32 = 1.144729885849400174143427351353058711647;
+pub const logpi: f32 = 1.144729885849400174143427351353058711647;
 /**
  * @brief The square root of pi.
  */
-pub const SQRTPI: f32 = 1.772453850905516027298167483341145182798;
+pub const sqrtpi: f32 = 1.772453850905516027298167483341145182798;
 /**
  * @brief Positive infinity constant.
  */
-pub const INF: f64 = CLib::cmath::strtod("Inf", 0);
+pub const inf: f64 = CLib::cmath::strtod("Inf", 0);
 /**
  * @brief NaN constant.
  * 
  * @note This needs to be defined using `strtod` as there is no built-in NaN value in C++.
  * @todo Implement `nanf` and `nanl` functions to define `nanf` and `nanl` constants respectively.
  */
-pub const NAN: f64 = CLib::cmath::strtod("NaN", 0);
+pub const nan: f64 = CLib::cmath::strtod("NaN", 0);
 /**
  * @brief Check if a floating-point number is NaN (not-a-number).
  * 
