@@ -61,6 +61,8 @@ public:
   /// @brief let's make it polymorphic
   virtual bool isReference() const { return true; }
 
+  virtual void setMutable(bool m) override;
+
   SNOWBALL_TYPE_COPIABLE(ReferenceType)
 };
 

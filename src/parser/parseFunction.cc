@@ -81,6 +81,10 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
         return Attributes::NO_MANGLE;
       } else if (attr == "export") {
         return Attributes::EXPORT;
+      } else if (attr == "__internal__") {
+        return Attributes::BUILTIN;
+      } else if (attr == "__primitive_internal__") {
+        return Attributes::BUILTIN_NO_POINTER;
       }
       return Attributes::INVALID;
     });
@@ -248,8 +252,6 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
       }
     }
 
-    if (opType == services::OperatorService::EQ) { createError<SYNTAX_ERROR>("Can't overload the '=' operator!"); }
-
     name = services::OperatorService::getOperatorMangle(opType);
     externName = name;
   } else if (isLambda) {
@@ -329,6 +331,12 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
       next(2);
       isVarArg = true;
     } else {
+      bool isMutable = false;
+      if (is<TokenType::KWORD_MUTABLE>()) {
+        isMutable = true;
+        next();
+      }
+
       auto name = m_current.to_string();
       consume<TokenType::IDENTIFIER>("an identifier").to_string();
 
@@ -520,6 +528,27 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
   }
 
   if (!hasBlock && isLLVMFunction) { createError<SYNTAX_ERROR>("LLVM defined functions must have a body!"); }
+
+  if (isOperator && arguments.size() == 0) {
+    // Transform to unary operators for +, - (TODO: some more)
+    auto op = services::OperatorService::operatorID(name);
+    OperatorService::OperatorType newType;
+    bool valid = true;
+    switch (op) {
+      case services::OperatorService::OperatorType::MINUS: {
+        newType = OperatorService::OperatorType::UMINUS;
+        break;
+      }
+      case services::OperatorService::OperatorType::PLUS: {
+        newType = OperatorService::OperatorType::UPLUS;
+        break;
+      }
+      default: valid = false;
+    }
+    if (valid) {
+      name = OperatorService::getOperatorMangle(newType);
+    }
+  }
 
   FunctionDef* fn = nullptr;
   if (isConstructor) {

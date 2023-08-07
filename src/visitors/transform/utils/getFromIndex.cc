@@ -61,7 +61,6 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
         E<VARIABLE_ERROR>(dbgInfo,
                           FMT("Coudn't find '%s' inside type '%s'!", name.c_str(), x->getPrettyName().c_str()));
       }
-
       return {indexValue ? std::make_optional(indexValue) : std::nullopt, ty, fns, ovs, mod, isInClassContext(x)};
     } else {
       // Case: index from a (for example) constant. You can access
@@ -76,7 +75,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
         if (OperatorService::isOperator(name)) name = OperatorService::operatorName(OperatorService::operatorID(name));
         E<VARIABLE_ERROR>(
                 dbgInfo,
-                FMT("Coudn't find a function '%s' inside type '%s'!", name.c_str(), type->getPrettyName().c_str()));
+                FMT("Coudn't find function '%s' inside type '%s'!", name.c_str(), type->getPrettyName().c_str()));
       }
 
       return {std::nullopt, std::nullopt, fns, ovs, std::nullopt, false};

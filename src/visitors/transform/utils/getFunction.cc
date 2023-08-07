@@ -16,9 +16,11 @@ Transformer::getFunction(DBGObject* dbgInfo,
                                     bool /* Accept private members */>
                                  store,
                          const std::string& name,
-                         const std::vector<types::Type*>& arguments,
+                         std::vector<types::Type*> _arguments,
                          const std::vector<Expression::TypeRef*>& generics,
-                         bool isIdentifier) {
+                         bool isIdentifier,
+                         bool hasSelf) {
+  auto arguments = _arguments;
   auto [val, ty, functions, overloads, mod, canBePrivate] = store;
   auto checkIfContextEqual = [&dbgInfo = dbgInfo, name = name, canBePrivate = canBePrivate](
                                      std::shared_ptr<ir::Func> fn) -> std::shared_ptr<ir::Func> {
@@ -48,7 +50,7 @@ Transformer::getFunction(DBGObject* dbgInfo,
 
     if (ir::Func::argumentSizesEqual(argsVector, arguments, fnType->isVariadic())) {
       bool equal = true;
-      for (auto arg = argsVector.begin(); ((arg != argsVector.end()) && (equal)); ++arg) {
+      for (auto arg = argsVector.begin(); (arg != argsVector.end()) && (equal); ++arg) {
         auto i = std::distance(argsVector.begin(), arg);
         if (i < numArgs) {
           equal = (*arg)->is(arguments.at(i));
@@ -81,14 +83,18 @@ Transformer::getFunction(DBGObject* dbgInfo,
   std::shared_ptr<ir::Func> foundFunction = nullptr;
   if (functions) {
     for (auto f : *functions) {
-      auto args = f->getArgs(true);
+      if (name == "(mut Core::_$core::Core::Range<i32>)::next") {
+        DUMP_S("HELLO")
+      }
+      auto args = f->getArgs(false);
       size_t numArgs = arguments.size();
       auto argsVector = utils::list_to_vector(args);
       if (ir::Func::argumentSizesEqual(argsVector, arguments, f->isVariadic()) || isIdentifier) {
         bool equal = true;
-        for (auto arg = args.begin(); ((arg != args.end()) && equal && !isIdentifier); ++arg) {
+        for (auto arg = args.begin(); (arg != args.end()) && equal && !isIdentifier; ++arg) {
           auto i = std::distance(args.begin(), arg);
           if (i < numArgs) {
+            auto sec = arg->second->getType();
             equal = arguments.at(i)->is(arg->second->getType());
           } else {
             auto defArg = arg->second->getDefaultValue();
@@ -103,7 +109,7 @@ Transformer::getFunction(DBGObject* dbgInfo,
         auto fnGenerics = f->getGenerics();
         // TODO: allow variadic generics
         // what is going on here, we are checking the same generics always!
-        if (fnGenerics.size() == generics.size()) {
+        if (fnGenerics.size() == generics.size() && equal) {
           for (auto generic = fnGenerics.begin(); (generic != fnGenerics.end()) && equal; ++generic) {
             auto i = std::distance(fnGenerics.begin(), generic);
             equal = (*generic).second->is(generics.at(i));
@@ -111,8 +117,14 @@ Transformer::getFunction(DBGObject* dbgInfo,
 
           // TODO: check for ambiguous functions
           if (equal) {
+            //if (foundFunction != nullptr) {
+            //  E<TYPE_ERROR>(dbgInfo,
+            //                FMT("Ambiguous function call to '%s(%s)' found!",
+            //                    name.c_str(),
+            //                    Expression::FunctionCall::getArgumentsAsString(arguments).c_str()));
+            //}
             foundFunction = f;
-            break;
+            break; // do not check for ambiguous functions
           }
         }
       }
@@ -123,6 +135,9 @@ Transformer::getFunction(DBGObject* dbgInfo,
                                  arguments,
                                  generics,
                                  isIdentifier);
+  if (hasSelf) {
+    arguments.erase(arguments.begin());
+  }
   switch (res) {
     case Ok: {
       if (foundFunction != nullptr) return checkIfContextEqual(foundFunction);
@@ -155,7 +170,7 @@ Transformer::getFunction(DBGObject* dbgInfo,
       // there's one
       //  overload
       E<VARIABLE_ERROR>(dbgInfo,
-                        FMT("No matches found for %s(%s)",
+                        FMT("No matches found for `%s(%s)`",
                             name.c_str(),
                             Expression::FunctionCall::getArgumentsAsString(arguments).c_str()),
                         {.info = "No function overloads found for this function!",

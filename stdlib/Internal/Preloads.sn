@@ -22,4 +22,392 @@ class [[extends]] char {
       %1 = load i8, ptr %0, align 1
       ret i8 %1
     }
+
+    operator [[__primitive_internal__]] +(other: char) char {}
+    operator [[__primitive_internal__]] -(other: char) char {}
+    operator [[__primitive_internal__]] *(other: char) char {}
+    operator [[__primitive_internal__]] /(other: char) char {}
+    operator [[__primitive_internal__]] %(other: char) char {}
+    operator [[__primitive_internal__]] ^(other: char) char {}
+    operator [[__primitive_internal__]] |(other: char) char {}
+    operator [[__primitive_internal__]] &(other: char) char {}
+    operator [[__primitive_internal__]] <<(other: char) char {}
+    //operator [[__primitive_internal__]] >>(other: char) char {}
+    operator [[__primitive_internal__]] <(other: char) bool {}
+    operator [[__primitive_internal__]] >(other: char) bool {}
+    operator [[__primitive_internal__]] <=(other: char) bool {}
+    operator [[__primitive_internal__]] >=(other: char) bool {}
+    operator [[__primitive_internal__]] ==(other: char) bool {}
+    operator [[__primitive_internal__]] !=(other: char) bool {}
+    operator [[__primitive_internal__]] -() char {}
+    //operator [[__primitive_internal__]] ++() char {}
+    //operator [[__primitive_internal__]] --() char {}
+    operator [[__primitive_internal__]] +=(other: char) char {}
+    operator [[__primitive_internal__]] -=(other: char) char {}
+    operator [[__primitive_internal__]] *=(other: char) char {}
+    operator [[__primitive_internal__]] /=(other: char) char {}
+    operator [[__primitive_internal__]] %=(other: char) char {}
+    operator [[__primitive_internal__]] ^=(other: char) char {}
+    operator [[__primitive_internal__]] |=(other: char) char {}
+    operator [[__primitive_internal__]] &=(other: char) char {}
+    operator [[__primitive_internal__]] <<=(other: char) char {}
+    operator [[__primitive_internal__]] >>=(other: char) char {}
+    operator [[__primitive_internal__]] =(other: char) char {}
+    operator [[__primitive_internal__]] !=(other: char) char {}
+    operator [[__primitive_internal__]] !() bool {}
+    operator [[__primitive_internal__]] ||(other: char) bool {}
+    operator [[__primitive_internal__]] &&(other: char) bool {}
+
+    // override with char&
+    operator [[__primitive_internal__]] =(other: char&) char& {}
+    operator [[__internal__]] =(other: char) char& {}
+    operator [[__internal__]] =(other: char&) char& {}
 }
+
+class [[extends]] i8 {
+  pub:
+    operator [[__primitive_internal__]] +(other: i8) i8 {}
+    operator [[__primitive_internal__]] -(other: i8) i8 {}
+    operator [[__primitive_internal__]] *(other: i8) i8 {}
+    operator [[__primitive_internal__]] /(other: i8) i8 {}
+    operator [[__primitive_internal__]] %(other: i8) i8 {}
+    operator [[__primitive_internal__]] ^(other: i8) i8 {}
+    operator [[__primitive_internal__]] |(other: i8) i8 {}
+    operator [[__primitive_internal__]] &(other: i8) i8 {}
+    operator [[__primitive_internal__]] <<(other: i8) i8 {}
+    //operator [[__primitive_internal__]] >>(other: i8) i8 {}
+    operator [[__primitive_internal__]] <(other: i8) bool {}
+    operator [[__primitive_internal__]] >(other: i8) bool {}
+    operator [[__primitive_internal__]] <=(other: i8) bool {}
+    operator [[__primitive_internal__]] >=(other: i8) bool {}
+    operator [[__primitive_internal__]] ==(other: i8) bool {}
+    operator [[__primitive_internal__]] !=(other: i8) bool {}
+    operator [[__primitive_internal__]] -() i8 {}
+    //operator [[__primitive_internal__]] ++() i8 {}
+    //operator [[__primitive_internal__]] --() i8 {}
+    operator [[__primitive_internal__]] +=(other: i8) i8 {}
+    operator [[__primitive_internal__]] -=(other: i8) i8 {}
+    operator [[__primitive_internal__]] *=(other: i8) i8 {}
+    operator [[__primitive_internal__]] /=(other: i8) i8 {}
+    operator [[__primitive_internal__]] %=(other: i8) i8 {}
+    operator [[__primitive_internal__]] ^=(other: i8) i8 {}
+    operator [[__primitive_internal__]] |=(other: i8) i8 {}
+    operator [[__primitive_internal__]] &=(other: i8) i8 {}
+    operator [[__primitive_internal__]] <<=(other: i8) i8 {}
+    operator [[__primitive_internal__]] >>=(other: i8) i8 {}
+    operator [[__primitive_internal__]] =(other: i8) i8 {}
+    operator [[__primitive_internal__]] !() bool {}
+    operator [[__primitive_internal__]] ||(other: i8) bool {}
+    operator [[__primitive_internal__]] &&(other: i8) bool {}
+
+    // override with i8&
+    operator [[__primitive_internal__]] =(other: i8&) i8& {}
+    operator [[__internal__]] =(other: i8) i8& {}
+}
+
+class [[extends]] i16 {
+  pub:
+    operator [[__primitive_internal__]] +(other: i16) i16 {}
+    operator [[__primitive_internal__]] -(other: i16) i16 {}
+    operator [[__primitive_internal__]] *(other: i16) i16 {}
+    operator [[__primitive_internal__]] /(other: i16) i16 {}
+    operator [[__primitive_internal__]] %(other: i16) i16 {}
+    operator [[__primitive_internal__]] ^(other: i16) i16 {}
+    operator [[__primitive_internal__]] |(other: i16) i16 {}
+    operator [[__primitive_internal__]] &(other: i16) i16 {}
+    operator [[__primitive_internal__]] <<(other: i16) i16 {}
+    //operator [[__primitive_internal__]] >>(other: i16) i16 {}
+    operator [[__primitive_internal__]] <(other: i16) bool {}
+    operator [[__primitive_internal__]] >(other: i16) bool {}
+    operator [[__primitive_internal__]] <=(other: i16) bool {}
+    operator [[__primitive_internal__]] >=(other: i16) bool {}
+    operator [[__primitive_internal__]] ==(other: i16) bool {}
+    operator [[__primitive_internal__]] !=(other: i16) bool {}
+    operator [[__primitive_internal__]] -() i16 {}
+    //operator [[__primitive_internal__]] ++() i16 {}
+    //operator [[__primitive_internal__]] --() i16 {}
+    operator [[__primitive_internal__]] +=(other: i16) i16 {}
+    operator [[__primitive_internal__]] -=(other: i16) i16 {}
+    operator [[__primitive_internal__]] *=(other: i16) i16 {}
+    operator [[__primitive_internal__]] /=(other: i16) i16 {}
+    operator [[__primitive_internal__]] %=(other: i16) i16 {}
+    operator [[__primitive_internal__]] ^=(other: i16) i16 {}
+    operator [[__primitive_internal__]] |=(other: i16) i16 {}
+    operator [[__primitive_internal__]] &=(other: i16) i16 {}
+    operator [[__primitive_internal__]] <<=(other: i16) i16 {}
+    operator [[__primitive_internal__]] >>=(other: i16) i16 {}
+    operator [[__primitive_internal__]] =(other: i16) i16 {}
+    operator [[__primitive_internal__]] !() bool {}
+    operator [[__primitive_internal__]] ||(other: i16) bool {}
+    operator [[__primitive_internal__]] &&(other: i16) bool {}
+
+    // override with i16&
+    operator [[__primitive_internal__]] =(other: i16&) i16& {}
+    operator [[__internal__]] =(other: i16) i16& {}
+}
+
+class [[extends]] i32 {
+  pub:
+    operator [[__primitive_internal__]] +(other: i32) i32 {}
+    operator [[__primitive_internal__]] -(other: i32) i32 {}
+    operator [[__primitive_internal__]] *(other: i32) i32 {}
+    operator [[__primitive_internal__]] /(other: i32) i32 {}
+    operator [[__primitive_internal__]] %(other: i32) i32 {}
+    operator [[__primitive_internal__]] ^(other: i32) i32 {}
+    operator [[__primitive_internal__]] |(other: i32) i32 {}
+    operator [[__primitive_internal__]] &(other: i32) i32 {}
+    operator [[__primitive_internal__]] <<(other: i32) i32 {}
+    //operator [[__primitive_internal__]] >>(other: i32) i32 {}
+    operator [[__primitive_internal__]] <(other: i32) bool {}
+    operator [[__primitive_internal__]] >(other: i32) bool {}
+    operator [[__primitive_internal__]] <=(other: i32) bool {}
+    operator [[__primitive_internal__]] >=(other: i32) bool {}
+    operator [[__primitive_internal__]] ==(other: i32) bool {}
+    operator [[__primitive_internal__]] !=(other: i32) bool {}
+    operator [[__primitive_internal__]] -() i32 {}
+    //operator [[__primitive_internal__]] ++() i32 {}
+    //operator [[__primitive_internal__]] --() i32 {}
+    operator [[__primitive_internal__]] +=(other: i32) i32 {}
+    operator [[__primitive_internal__]] -=(other: i32) i32 {}
+    operator [[__primitive_internal__]] *=(other: i32) i32 {}
+    operator [[__primitive_internal__]] /=(other: i32) i32 {}
+    operator [[__primitive_internal__]] %=(other: i32) i32 {}
+    operator [[__primitive_internal__]] ^=(other: i32) i32 {}
+    operator [[__primitive_internal__]] |=(other: i32) i32 {}
+    operator [[__primitive_internal__]] &=(other: i32) i32 {}
+    operator [[__primitive_internal__]] <<=(other: i32) i32 {}
+    operator [[__primitive_internal__]] >>=(other: i32) i32 {}
+    operator [[__primitive_internal__]] =(other: i32) i32 {}
+    operator [[__primitive_internal__]] !() bool {}
+    operator [[__primitive_internal__]] ||(other: i32) bool {}
+    operator [[__primitive_internal__]] &&(other: i32) bool {}
+
+    // override with i32&
+    operator [[__primitive_internal__]] =(other: i32&) i32& {}
+    operator [[__internal__]] =(other: i32&) i32& {}
+}
+
+class [[extends]] i64 {
+  pub:
+    // override with i64&
+    operator [[__primitive_internal__]] =(other: i64&) i64& {}
+    operator [[__internal__]] =(other: i64) i64& {}
+
+    operator [[__primitive_internal__]] +(other: i64) i64 {}
+    operator [[__primitive_internal__]] -(other: i64) i64 {}
+    operator [[__primitive_internal__]] *(other: i64) i64 {}
+    operator [[__primitive_internal__]] /(other: i64) i64 {}
+    operator [[__primitive_internal__]] %(other: i64) i64 {}
+    operator [[__primitive_internal__]] ^(other: i64) i64 {}
+    operator [[__primitive_internal__]] |(other: i64) i64 {}
+    operator [[__primitive_internal__]] &(other: i64) i64 {}
+    operator [[__primitive_internal__]] <<(other: i64) i64 {}
+    //operator [[__primitive_internal__]] >>(other: i64) i64 {}
+    operator [[__primitive_internal__]] <(other: i64) bool {}
+    operator [[__primitive_internal__]] >(other: i64) bool {}
+    operator [[__primitive_internal__]] <=(other: i64) bool {}
+    operator [[__primitive_internal__]] >=(other: i64) bool {}
+    operator [[__primitive_internal__]] ==(other: i64) bool {}
+    operator [[__primitive_internal__]] !=(other: i64) bool {}
+    operator [[__primitive_internal__]] -() i64 {}
+    //operator [[__primitive_internal__]] ++() i64 {}
+    //operator [[__primitive_internal__]] --() i64 {}
+    operator [[__primitive_internal__]] +=(other: i64) i64 {}
+    operator [[__primitive_internal__]] -=(other: i64) i64 {}
+    operator [[__primitive_internal__]] *=(other: i64) i64 {}
+    operator [[__primitive_internal__]] /=(other: i64) i64 {}
+    operator [[__primitive_internal__]] %=(other: i64) i64 {}
+    operator [[__primitive_internal__]] ^=(other: i64) i64 {}
+    operator [[__primitive_internal__]] |=(other: i64) i64 {}
+    operator [[__primitive_internal__]] &=(other: i64) i64 {}
+    operator [[__primitive_internal__]] <<=(other: i64) i64 {}
+    operator [[__primitive_internal__]] >>=(other: i64) i64 {}
+    operator [[__primitive_internal__]] =(other: i64) i64 {}
+    operator [[__primitive_internal__]] !() bool {}
+    operator [[__primitive_internal__]] ||(other: i64) bool {}
+    operator [[__primitive_internal__]] &&(other: i64) bool {}
+}
+
+class [[extends]] f32 {
+  pub:
+    // override with f32&
+    operator [[__primitive_internal__]] =(other: f32&) f32& {}
+    operator [[__internal__]] =(other: f32) f32& {}
+
+    operator [[__primitive_internal__]] +(other: f32) f32 {}
+    operator [[__primitive_internal__]] -(other: f32) f32 {}
+    operator [[__primitive_internal__]] *(other: f32) f32 {}
+    operator [[__primitive_internal__]] /(other: f32) f32 {}
+    operator [[__primitive_internal__]] %(other: f32) f32 {}
+    operator [[__primitive_internal__]] ^(other: f32) f32 {}
+    operator [[__primitive_internal__]] |(other: f32) f32 {}
+    operator [[__primitive_internal__]] &(other: f32) f32 {}
+    operator [[__primitive_internal__]] <<(other: f32) f32 {}
+    //operator [[__primitive_internal__]] >>(other: f32) f32 {}
+    operator [[__primitive_internal__]] <(other: f32) bool {}
+    operator [[__primitive_internal__]] >(other: f32) bool {}
+    operator [[__primitive_internal__]] <=(other: f32) bool {}
+    operator [[__primitive_internal__]] >=(other: f32) bool {}
+    operator [[__primitive_internal__]] ==(other: f32) bool {}
+    operator [[__primitive_internal__]] !=(other: f32) bool {}
+    operator [[__primitive_internal__]] -() f32 {}
+    //operator [[__primitive_internal__]] ++() f32 {}
+    //operator [[__primitive_internal__]] --() f32 {}
+    operator [[__primitive_internal__]] +=(other: f32) f32 {}
+    operator [[__primitive_internal__]] -=(other: f32) f32 {}
+    operator [[__primitive_internal__]] *=(other: f32) f32 {}
+    operator [[__primitive_internal__]] /=(other: f32) f32 {}
+    operator [[__primitive_internal__]] %=(other: f32) f32 {}
+    operator [[__primitive_internal__]] ^=(other: f32) f32 {}
+    operator [[__primitive_internal__]] |=(other: f32) f32 {}
+    operator [[__primitive_internal__]] &=(other: f32) f32 {}
+    operator [[__primitive_internal__]] <<=(other: f32) f32 {}
+    operator [[__primitive_internal__]] >>=(other: f32) f32 {}
+    operator [[__primitive_internal__]] =(other: f32) f32 {}
+    operator [[__primitive_internal__]] !() bool {}
+    operator [[__primitive_internal__]] ||(other: f32) bool {}
+    operator [[__primitive_internal__]] &&(other: f32) bool {}
+}
+
+class [[extends]] f64 {
+  pub:
+    // override with f64&
+    operator [[__primitive_internal__]] =(other: f64&) f64& {}
+    operator [[__internal__]] =(other: f64) f64& {}
+
+    operator [[__primitive_internal__]] +(other: f64) f64 {}
+    operator [[__primitive_internal__]] -(other: f64) f64 {}
+    operator [[__primitive_internal__]] *(other: f64) f64 {}
+    operator [[__primitive_internal__]] /(other: f64) f64 {}
+    operator [[__primitive_internal__]] %(other: f64) f64 {}
+    operator [[__primitive_internal__]] ^(other: f64) f64 {}
+    operator [[__primitive_internal__]] |(other: f64) f64 {}
+    operator [[__primitive_internal__]] &(other: f64) f64 {}
+    operator [[__primitive_internal__]] <<(other: f64) f64 {}
+    //operator [[__primitive_internal__]] >>(other: f64) f64 {}
+    operator [[__primitive_internal__]] <(other: f64) bool {}
+    operator [[__primitive_internal__]] >(other: f64) bool {}
+    operator [[__primitive_internal__]] <=(other: f64) bool {}
+    operator [[__primitive_internal__]] >=(other: f64) bool {}
+    operator [[__primitive_internal__]] ==(other: f64) bool {}
+    operator [[__primitive_internal__]] !=(other: f64) bool {}
+    operator [[__primitive_internal__]] -() f64 {}
+    //operator [[__primitive_internal__]] ++() f64 {}
+    //operator [[__primitive_internal__]] --() f64 {}
+    operator [[__primitive_internal__]] +=(other: f64) f64 {}
+    operator [[__primitive_internal__]] -=(other: f64) f64 {}
+    operator [[__primitive_internal__]] *=(other: f64) f64 {}
+    operator [[__primitive_internal__]] /=(other: f64) f64 {}
+    operator [[__primitive_internal__]] %=(other: f64) f64 {}
+    operator [[__primitive_internal__]] ^=(other: f64) f64 {}
+    operator [[__primitive_internal__]] |=(other: f64) f64 {}
+    operator [[__primitive_internal__]] &=(other: f64) f64 {}
+    operator [[__primitive_internal__]] <<=(other: f64) f64 {}
+    operator [[__primitive_internal__]] >>=(other: f64) f64 {}
+    operator [[__primitive_internal__]] =(other: f64) f64 {}
+    operator [[__primitive_internal__]] !() bool {}
+    operator [[__primitive_internal__]] ||(other: f64) bool {}
+    operator [[__primitive_internal__]] &&(other: f64) bool {}
+}
+
+class [[extends]] bool {
+  pub:
+    // override with bool&
+    operator [[__primitive_internal__]] =(other: bool&) bool& {}
+    operator [[__internal__]] =(other: bool) bool& {}
+
+    operator [[__primitive_internal__]] +(other: bool) bool {}
+    operator [[__primitive_internal__]] -(other: bool) bool {}
+    operator [[__primitive_internal__]] *(other: bool) bool {}
+    operator [[__primitive_internal__]] /(other: bool) bool {}
+    operator [[__primitive_internal__]] %(other: bool) bool {}
+    operator [[__primitive_internal__]] ^(other: bool) bool {}
+    operator [[__primitive_internal__]] |(other: bool) bool {}
+    operator [[__primitive_internal__]] &(other: bool) bool {}
+    operator [[__primitive_internal__]] <<(other: bool) bool {}
+    //operator [[__primitive_internal__]] >>(other: bool) bool {}
+    operator [[__primitive_internal__]] <(other: bool) bool {}
+    operator [[__primitive_internal__]] >(other: bool) bool {}
+    operator [[__primitive_internal__]] <=(other: bool) bool {}
+    operator [[__primitive_internal__]] >=(other: bool) bool {}
+    operator [[__primitive_internal__]] ==(other: bool) bool {}
+    operator [[__primitive_internal__]] !=(other: bool) bool {}
+    operator [[__primitive_internal__]] -() bool {}
+    //operator [[__primitive_internal__]] ++() bool {}
+    //operator [[__primitive_internal__]] --() bool {}
+    operator [[__primitive_internal__]] +=(other: bool) bool {}
+    operator [[__primitive_internal__]] -=(other: bool) bool {}
+    operator [[__primitive_internal__]] *=(other: bool) bool {}
+    operator [[__primitive_internal__]] /=(other: bool) bool {}
+    operator [[__primitive_internal__]] %=(other: bool) bool {}
+    operator [[__primitive_internal__]] ^=(other: bool) bool {}
+    operator [[__primitive_internal__]] |=(other: bool) bool {}
+    operator [[__primitive_internal__]] &=(other: bool) bool {}
+    operator [[__primitive_internal__]] <<=(other: bool) bool {}
+    operator [[__primitive_internal__]] >>=(other: bool) bool {}
+    operator [[__primitive_internal__]] =(other: bool) bool {}
+    operator [[__primitive_internal__]] !() bool {}
+    operator [[__primitive_internal__]] ||(other: bool) bool {}
+    operator [[__primitive_internal__]] &&(other: bool) bool {}
+}
+
+class [[extends]] cobj {
+  pub:
+    operator [[__internal__]] =(other: cobj) cobj& {}
+    operator [[__primitive_internal__]] ==(other: cobj) bool {}
+    operator [[__primitive_internal__]] !=(other: cobj) bool {}
+    operator [[__primitive_internal__]] !() bool {}
+    operator [[__primitive_internal__]] ||(other: cobj) bool {}
+    operator [[__primitive_internal__]] &&(other: cobj) bool {}
+
+    // override with cobj&
+    operator [[__primitive_internal__]] =(other: cobj&) cobj& {}
+}
+
+
+
+
+
+
+
+
+//  std::vector<std::tuple<types::Type*, std::vector<std::string>, std::vector<std::string>>> overloadTypes = {
+//          {raw_BoolType, OperatorService::operators, {
+//            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
+//          }},   
+//
+//          {raw_Float64Type, OperatorService::operators, {
+//            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
+//          }},
+//
+//          {raw_Float32Type, OperatorService::operators, {
+//            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
+//          }},
+//
+//          {raw_Int64Type, OperatorService::operators, {
+//            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
+//          }},
+//
+//          {raw_Int32Type, OperatorService::operators, {
+//            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
+//          }},
+//
+//          {raw_Int16Type, OperatorService::operators, {
+//            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
+//          }},
+//
+//          {raw_Int8Type, OperatorService::operators, {
+//            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
+//          }},
+//
+//          {raw_CharType, OperatorService::operators, {
+//            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
+//          }},
+//
+//
+//          {raw_CObjectType,
+//           {
+//            OperatorService::getOperatorId(OperatorService::OperatorType::EQEQ),
+//            OperatorService::getOperatorId(OperatorService::OperatorType::NOTEQ),
+//           }, { }}};
+//

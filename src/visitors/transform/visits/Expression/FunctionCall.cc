@@ -52,7 +52,10 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     auto g = utils::cast<Expression::GenericIdentifier>(x->getIdentifier());
     auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
     auto name = baseName + x->getIdentifier()->getNiceName();
-    auto c = getFunction(p_node, r, name, argTypes, generics);
+    if (b.has_value())
+      argTypes.insert(argTypes.begin(), b.value()->getType()->getPointerTo());
+    auto c = getFunction(p_node, r, name, argTypes, generics, false, b.has_value());
+    if (b.has_value()) argTypes.erase(argTypes.begin());
     // TODO: actually check if base is a module with:
     // "getFromIdentifier" of the module
     if ((x->isStatic && (!c->isStatic())) && (!inModule)) {
@@ -67,6 +70,19 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                         c->getNiceName().c_str()));
     }
     if (b.has_value()) {
+      if (auto t = utils::cast<types::ReferenceType>(b.value()->getType())) {
+        if (utils::cast<types::ReferenceType>(t->getPointedType())) {
+          E<TYPE_ERROR>(p_node,
+            FMT("Can't access class method '%s' "
+                "from a reference to a reference!",
+                c->getNiceName().c_str()),
+          {
+            .tail = callBackUp == nullptr 
+              ? nullptr : EI<>(callBackUp, "this is the call causing the error"),
+          });
+        }
+      }
+
       auto baseType = (*b)->getType();
       if ((utils::cast<types::PrimitiveType>(baseType) && OperatorService::isOperator(c->getName(true))) ||
           utils::cast<types::ReferenceType>(baseType)) {

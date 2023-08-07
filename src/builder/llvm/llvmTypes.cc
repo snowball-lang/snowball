@@ -42,29 +42,34 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
     assert(!"Unreachable type case found!");
     return getLLVMType(a->getBaseType());
   } else if (auto c = cast<types::DefinedType>(t)) {
-    if (auto it = types.find(c->getId()); it != types.end()) { return it->second; }
-
+    llvm::StructType* s;
+    if (auto it = types.find(c->getId()); it != types.end()) {
+      auto structItems = llvm::cast<llvm::StructType>(it->second)->elements();
+      // We didn't generate the vtable yet
+      if (!(structItems.size() == c->getFields().size() && c->hasVtable()))
+        return it->second; 
+      else {
+        s = llvm::cast<llvm::StructType>(it->second);
+      }
+    } else {
+      s = llvm::StructType::create(*context,
+        (c->isStruct() ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) + c->getMangledName());
+      types.insert({c->getId(), s});
+    }
     auto fields = c->getFields();
     auto generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Type*>(
             fields, [&](types::DefinedType::ClassField* t) { return getLLVMType(t->type); });
-
-    auto s = llvm::StructType::create(*context,
-                                      (c->isStruct() ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) + c->getMangledName());
-    types.insert({c->getId(), s});
     if (c->hasVtable()) { // Ignore vtables for structs
       if (auto v = ctx->getVtableTy(c->getId())) {
         generatedFields.insert(generatedFields.begin(), v);
       } else {
         auto structName = (std::string)_SN_VTABLE_PREFIX + c->getMangledName();
         std::vector<llvm::Type*> types;
-
-        for (auto fn : c->getVTable()) { types.push_back(getLLVMType(fn->getType())); }
-
+        for (auto fn : c->getVTable())
+          types.push_back(getLLVMType(fn->getType()));
         auto vtable = llvm::StructType::create(module->getContext(), structName);
-
         vtable->setBody(types);
         generatedFields.insert(generatedFields.begin(), vtable->getPointerTo());
-
         ctx->addVtableTy(c->getId(), vtable);
       }
     }

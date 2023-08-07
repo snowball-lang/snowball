@@ -80,6 +80,9 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
         auto a = builder.createArgument(node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
                                         arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
         a->setType(transformType(arg->getType()));
+        if (i != 0 && arg->getName() != "self")
+          a->getType()->setMutable(arg->isMutable());
+        a->setMutability(a->getType()->isMutable());
         newArgs.insert(newArgs.end(), {arg->getName(), a});
       }
 
@@ -97,8 +100,9 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
         ctx->withScope([&]() {
           int argIndex = 0;
           for (auto arg : newArgs) {
-            auto ref = builder.createVariable(node->getDBGInfo(), arg.first, true, arg.second->getType()->isMutable());
+            auto ref = builder.createVariable(node->getDBGInfo(), arg.first, true, arg.second->isMutable());
             builder.setType(ref, arg.second->getType());
+            ref->getType()->setMutable(arg.second->isMutable());
             auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, ref);
             ref->setId(arg.second->getId());
             ctx->addItem(arg.first, refItem);
@@ -108,7 +112,9 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
           auto body = bodiedFn->getBody();
           if (!bodyReturns(body->getStmts()) &&
               !((utils::cast<types::NumericType>(returnType)) || (utils::cast<types::VoidType>(returnType))) &&
-              !fn->isConstructor() && !node->hasAttribute(Attributes::NOT_IMPLEMENTED)) {
+              !fn->isConstructor() && !node->hasAttribute(Attributes::NOT_IMPLEMENTED) 
+              && !node->hasAttribute(Attributes::BUILTIN)
+              && !node->hasAttribute(Attributes::BUILTIN_NO_POINTER)) {
             E<TYPE_ERROR>(node,
                           "Function lacks ending return statement!",
                           {.info = "Function does not return on all "
