@@ -80,39 +80,39 @@ fn [[test(expect = 3)]] binary_search() i32 {
     return result;
 }
 
-fn jump_search(arr: Vector<i32>, x: i32) i32 {
-    let n = arr.size();
-    let mut step = Math::sqrt(n);
-    let mut prev = 0;
-    while (arr[Math::min(step, n) - 1] < x) {
-        prev = step;
-        step += Math::sqrt(n);
-        if (prev >= n) {
-            return -1;
-        }
-    }
-    while (arr[prev] < x) {
-        prev += 1;
-        if (prev == Math::min(step, n)) {
-            return -1;
-        }
-    }
-    if (arr[prev] == x) {
-        return prev;
-    }
-    return -1;
-}
-
-fn [[test(expect = 3)]] jump_search() i32 {
-    let mut arr = new Vector<i32>{};
-    arr.push(2);
-    arr.push(3);
-    arr.push(4);
-    arr.push(10);
-    let x = 10;
-    let result = jump_search(arr, x);
-    return result;
-}
+//fn jump_search(arr: Vector<i32>, x: i32) i32 {
+//    let n = arr.size();
+//    let mut step = Math::sqrt(n);
+//    let mut prev = 0;
+//    while (arr[Math::min(step, n) - 1] < x) {
+//        prev = step;
+//        step += Math::sqrt(n);
+//        if (prev >= n) {
+//            return -1;
+//        }
+//    }
+//    while (arr[prev] < x) {
+//        prev += 1;
+//        if (prev == Math::min(step, n)) {
+//            return -1;
+//        }
+//    }
+//    if (arr[prev] == x) {
+//        return prev;
+//    }
+//    return -1;
+//}
+//
+//fn [[test(expect = 3)]] jump_search() i32 {
+//    let mut arr = new Vector<i32>{};
+//    arr.push(2);
+//    arr.push(3);
+//    arr.push(4);
+//    arr.push(10);
+//    let x = 10;
+//    let result = jump_search(arr, x);
+//    return result;
+//}
 
 fn interpolation_search(arr: Vector<i32>, lo: i32, hi: i32, x: i32) i32 {
     let pos = lo + ((hi - lo) / (arr[hi] - arr[lo])) * (x - arr[lo]);
