@@ -7,10 +7,10 @@
 
   Snowball is a low-weight, statically typed, object oriented programming language with garbage collector and module system.
     <br />
-    <a href=""><strong>Explore the docs »</strong></a>
+    <a href="https://snowball-lang.gitbook.io/docs/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="">Website</a> ·<a href="">Report Bug</a>·<a href="">Request Feature</a>
+    <a href="">Website</a> · <a href="">Report Bug</a> · <a href="">Request Feature</a>
 </p>
 
 <hr>
