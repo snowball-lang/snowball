@@ -93,7 +93,7 @@ public:
   /// @return If the function is mutable
   virtual bool isMutable() const { return _mutable; }
   /// @brief Set the mutability of the type
-  void setMutable(bool m) { _mutable = m; }
+  virtual void setMutable(bool m);
 };
 
 }; // namespace types

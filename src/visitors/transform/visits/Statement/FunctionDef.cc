@@ -9,20 +9,6 @@ using namespace snowball::Syntax::transform;
 #define IS_PUBLIC (p_node->getPrivacy() == Statement::Privacy::PUBLIC)
 #define IS_MAIN   (name == "main" && ctx->module->isMain())
 
-#define ADD_SELF_ARG                                                                                                   \
-  if (auto c = ctx->getCurrentClass(true)) {                                                                           \
-    auto args = p_node->getArgs();                                                                                     \
-    auto pointer = c->getPointerTo();                                                                                  \
-    pointer->setMutable(p_node->isMutable() || p_node->isConstructor());                                               \
-    if (!(args.size() > 0 && args.at(0)->getName() == "self") && !p_node->isStatic()) {                                \
-      auto self = new Expression::Param("self", pointer->toRef());                                                     \
-      args.insert(args.begin(), self);                                                                                 \
-      p_node->setArgs(args);                                                                                           \
-    } else if (!p_node->isStatic()) { /* "self" already set by another class */                                        \
-      args.at(0)->setType(pointer->toRef());                                                                           \
-    }                                                                                                                  \
-  }
-
 namespace snowball {
 namespace Syntax {
 
@@ -31,7 +17,19 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
   if (p_node->hasAttribute(Attributes::TEST) && (!ctx->testMode || !ctx->isMainModule))
     return;
   else if (p_node->hasAttribute(Attributes::TEST)) { p_node->addAttribute(Attributes::ALLOW_FOR_TEST); }
-  ADD_SELF_ARG
+  
+  if (auto c = ctx->getCurrentClass(true)) {
+    auto args = p_node->getArgs();
+    auto pointer = p_node->hasAttribute(Attributes::BUILTIN_NO_POINTER) ? c->copy() : c->getPointerTo();
+    pointer->setMutable(p_node->isMutable() || p_node->isConstructor());
+    if (!(args.size() > 0 && args.at(0)->getName() == "self") && !p_node->isStatic()) {
+      auto self = new Expression::Param("self", pointer->toRef());
+      args.insert(args.begin(), self);
+      p_node->setArgs(args);
+    } else if (!p_node->isStatic()) { /* "self" already set by another class */
+      args.at(0)->setType(pointer->toRef());
+    }
+  }
 
   if (!ctx->generateFunction && !(IS_MAIN)) {
     // assert(!services::OperatorService::isOperator(name));

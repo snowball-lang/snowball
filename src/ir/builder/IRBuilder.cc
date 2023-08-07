@@ -147,6 +147,7 @@ Type<types::TypeAlias> IRBuilder::createTypeAlias(DBGSourceInfo* dbg, std::strin
   ty->setModule(module);
   ty->setSourceInfo(module->getSourceInfo());
   ty->setDBGInfo(dbg);
+  ty->setMutable(base->isMutable());
   return ty;
 }
 SharedValue<BinaryOp> IRBuilder::createBinaryOp(SharedValue<Call> call) {

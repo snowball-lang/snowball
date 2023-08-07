@@ -69,7 +69,7 @@ void Functions::performInheritance(types::DefinedType* ty, types::DefinedType* p
     name = childUUID + "." + name;
     setTransformedFunction(name, std::make_shared<transform::Item>(*item));
     for (auto x : functions) {
-      if (x->inVirtualTable()) { auto vtableIndex = ty->addVtableItem(x); }
+      if (x->inVirtualTable()) { ty->addVtableItem(x); }
     }
   }
 
