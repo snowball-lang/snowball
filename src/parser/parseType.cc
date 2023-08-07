@@ -50,6 +50,7 @@ TypeRef* Parser::parseType() {
   }
   bool isMutable = false;
   if (is<TokenType::KWORD_MUTABLE>()) {
+    createError<TODO>("mutable types");
     isMutable = true;
     next();
   }
