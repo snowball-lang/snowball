@@ -49,6 +49,7 @@ types::Type* Transformer::transformTypeAlias(const std::string& uuid,
       alias->setPrivacy(ty->getPrivacy());
       alias->setGenerics(generics);
       alias->setUUID(uuid);
+      alias->setMutable(aliasedType->isMutable());
       transformedType = alias;
       // auto item = std::make_shared<transform::Item>(alias);
       // ctx->cache->setTransformedType(uuid, item);

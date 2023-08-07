@@ -239,7 +239,7 @@ VISIT(Return) {
                       fn->getRetTy()->getPrettyName().c_str()));
   }
 
-  if (!fn->getRetTy()->is(p_node->getType())) {
+  if (!p_node->getType()->is(fn->getRetTy())) {
     E<TYPE_ERROR>(p_node,
                   FMT("Return type (%s) does not match parent "
                       "function's return type (%s)!",
@@ -299,14 +299,30 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
                           "unmutable "
                           "variable",
                           {.note = "This error is caused by the 'mut' keyword "
-                                   "not being present in \nthe variable"
-                                   "declaration.",
+                                   "not being present in \nthe variable "
+                                   "declaration.\n\nvalue type: " + value->getType()->getPrettyName(),
                            .help = "Try to make the variable mutable by adding "
                                    "the 'mut' keyword.",
                            .tail = EI<>(value->getDBGInfo(), "", {.info = "This variable is not mutable!"})});
       }
-    } else if (isAssignment)
+    } else if (isAssignment) {
+      if ((utils::dyn_cast<ir::Variable>(value) == nullptr            
+        && utils::dyn_cast<ir::VariableDeclaration>(value) == nullptr
+        && utils::dyn_cast<ir::ValueExtract>(value) == nullptr
+        && utils::dyn_cast<ir::IndexExtract>(value) == nullptr
+      ) && utils::cast<types::PrimitiveType>(value->getType())) {
+        E<VARIABLE_ERROR>(p_node,
+                          "Expression is not assignable!",
+                          {.note = "This error is caused by the expression not "
+                                   "being assignable.",
+                           .help = "Try to make the expression assignable by "
+                                   "adding the 'mut' keyword to the variable "
+                                   "declaration.",
+                           .tail = EI<>(value->getDBGInfo(), "", {.info = "This expression is not assignable!"})});
+      }
       return;
+    }
+      
     // TODO: check for operator sides being equal.
   }
 
@@ -331,7 +347,7 @@ bool TypeChecker::isMutable(std::shared_ptr<ir::Value> value) {
   if (auto x = utils::dyn_cast<ir::Variable>(value)) return x->isMutable();
   if (auto x = utils::dyn_cast<ir::IndexExtract>(value)) return x->getField()->isMutable;
   if (auto x = utils::dyn_cast<ir::VariableDeclaration>(value)) return x->isMutable();
-  auto b = utils::cast<types::ReferenceType>(value->getType());
+  if (auto x = utils::dyn_cast<ir::ValueExtract>(value)) return isMutable(x->getValue());
   return value->getType()->isMutable();
 }
 

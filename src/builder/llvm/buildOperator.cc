@@ -2,6 +2,7 @@
 #include "../../ir/values/Call.h"
 #include "../../ir/values/Func.h"
 #include "../../ir/values/IndexExtract.h"
+#include "../../ir/values/ReferenceTo.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 
@@ -25,16 +26,23 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
     auto opName = fn->getName(true);
     if (services::OperatorService::isOperator(opName) &&
         !services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(opName)) {
-      auto left = build(args.at(0).get());
+      auto leftVal = args.at(0);
+      if (auto x = utils::dyn_cast<ir::ReferenceTo>(leftVal)) 
+        leftVal = x->getValue();
+      auto left = build(leftVal.get());
       llvm::Value* right = nullptr;
       if (args.size() > 1) right = build(args.at(1).get());
       auto baseType = args.at(0)->getType();
+      if (llvm::isa<llvm::AllocaInst>(left)) {
+        auto l = llvm::cast<llvm::AllocaInst>(left);
+        left = builder->CreateLoad(l->getAllocatedType(), l, ".load");
+      }
+      
       if (auto x = utils::cast<types::ReferenceType>(baseType)) baseType = x->getPointedType();
       if (utils::cast<types::BoolType>(baseType) || utils::cast<types::Int8Type>(baseType) ||
           utils::cast<types::Int16Type>(baseType) || utils::cast<types::Int32Type>(baseType) ||
           utils::cast<types::Int64Type>(baseType) || utils::cast<types::CharType>(baseType) ||
           utils::cast<types::CObjectType>(baseType)) {
-
         switch (services::OperatorService::operatorID(opName)) {
           OPERATOR_INSTANCE(EQEQ, CreateICmpEQ)
           OPERATOR_INSTANCE(PLUS, CreateAdd)
@@ -68,8 +76,11 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             if (auto index = utils::dyn_cast<ir::IndexExtract>(args.at(0))) {
               createInsertValue(right, index->getIndex(), left, baseType);
             } else {
-              auto l = llvm::cast<llvm::LoadInst>(left);
-              auto v = l->getOperand(0);
+              auto v = left;
+              if (llvm::isa<llvm::LoadInst>(v)) {
+                auto l = llvm::cast<llvm::LoadInst>(left);
+                v = l->getOperand(0);
+              }
 
               builder->CreateStore(right, v);
             }

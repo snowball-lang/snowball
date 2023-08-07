@@ -107,9 +107,11 @@ std::string BinaryOp::to_string() const {
 
 std::string FunctionCall::getArgumentsAsString(const std::vector<types::Type*> args) {
   std::string result;
+  int i = 0;
   for (auto arg = args.begin(); arg != args.end(); ++arg) {
     result += (*arg)->getPrettyName();
-    if (arg != args.end() && args.size() != 1) { result += ", "; }
+    if (i != args.size()-1) { result += ", "; }
+    i++;
   }
 
   return result;

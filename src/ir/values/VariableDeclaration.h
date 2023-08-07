@@ -13,6 +13,7 @@
 
 namespace snowball {
 namespace ir {
+class Argument;
 
 /// @brief Representation of a variable declaration in the IR
 /// Variable declarations can be then used as a way to store values
@@ -22,8 +23,12 @@ class VariableDeclaration : public IdMixin, public AcceptorExtend<Variable, Valu
   std::string identifier;
   // Value stored into the current variable
   std::shared_ptr<Value> value;
+
+protected:
   // Whether or not the variable is mutable
   bool _isMutable = false;
+
+  friend Argument;
 
 public:
   // Create a new variable declaration

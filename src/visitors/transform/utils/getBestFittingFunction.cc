@@ -49,7 +49,7 @@ Transformer::getBestFittingFunction(const std::vector<Cache::FunctionStore>& ove
             argsEqual = true;
             continue;
           }
-          argsEqual = type->is(arguments.at(i));
+          argsEqual = arguments.at(i)->is(type);
           if (!argsEqual) {
             if (arguments.at(i)->canCast(type)) {
               argsEqual = true;
