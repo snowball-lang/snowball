@@ -52,8 +52,14 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     auto g = utils::cast<Expression::GenericIdentifier>(x->getIdentifier());
     auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
     auto name = baseName + x->getIdentifier()->getNiceName();
-    if (b.has_value())
-      argTypes.insert(argTypes.begin(), b.value()->getType()->getPointerTo());
+    if (b.has_value()) {
+      if (utils::cast<types::PrimitiveType>((*b)->getType()) ||
+        utils::cast<types::ReferenceType>((*b)->getType())) {
+        argTypes.insert(argTypes.begin(), b.value()->getType());
+      } else {
+        argTypes.insert(argTypes.begin(), b.value()->getType()->getPointerTo());
+      }
+    }
     auto c = getFunction(p_node, r, name, argTypes, generics, false, b.has_value());
     if (b.has_value()) argTypes.erase(argTypes.begin());
     // TODO: actually check if base is a module with:
@@ -84,7 +90,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
       }
 
       auto baseType = (*b)->getType();
-      if ((utils::cast<types::PrimitiveType>(baseType) && OperatorService::isOperator(c->getName(true))) ||
+      if ((utils::cast<types::PrimitiveType>(baseType)) ||
           utils::cast<types::ReferenceType>(baseType)) {
         argValues.insert(argValues.begin(), *b);
         argTypes.insert(argTypes.begin(), baseType);

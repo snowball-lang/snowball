@@ -62,6 +62,7 @@ class [[extends]] char {
     operator [[__primitive_internal__]] =(other: char&) char& {}
     operator [[__internal__]] =(other: char) char& {}
     operator [[__internal__]] =(other: char&) char& {}
+    operator [[__internal__]] !() bool {}
 }
 
 class [[extends]] i8 {

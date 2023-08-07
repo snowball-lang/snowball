@@ -16,6 +16,13 @@ namespace snowball {
 namespace Syntax {
 
 types::Type* Transformer::transformType(Expression::TypeRef* ty) {
+  if (ty->isMutable()) {
+    ty->setMutable(false); // stop infinite loops
+    auto x = transformType(ty);
+    ty->setMutable(true);
+    x->setMutable(true);
+    return x;
+  }
   auto name = ty->getPrettyName();
   auto id = ty->getId();
   if (id.empty()) { id = ty->getName(); }

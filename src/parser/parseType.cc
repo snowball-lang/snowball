@@ -12,7 +12,7 @@ namespace snowball::parser {
 
 TypeRef* Parser::parseType() {
   throwIfNotType();
-  assert(is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() || is<TokenType::KWORD_FUNC>());
+  assert(is<TokenType::KWORD_MUTABLE>() || is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() || is<TokenType::KWORD_FUNC>());
   auto pos = m_current.get_pos();
   if (is<TokenType::KWORD_DECLTYPE>()) {
     auto w = m_current.get_width();
@@ -48,7 +48,11 @@ TypeRef* Parser::parseType() {
     ty->setDBGInfo(dbg);
     return ty;
   }
-
+  bool isMutable = false;
+  if (is<TokenType::KWORD_MUTABLE>()) {
+    isMutable = true;
+    next();
+  }
   auto ident = parseIdentifier(true);
   Base* ast = ident;
   auto name = ident->getIdentifier();
@@ -79,6 +83,7 @@ TypeRef* Parser::parseType() {
       t = Syntax::N<ReferenceType>(base, dbg);
     //}
   }
+  t->setMutable(isMutable);
   return t;
 }
 

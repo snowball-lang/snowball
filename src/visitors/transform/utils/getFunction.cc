@@ -83,9 +83,6 @@ Transformer::getFunction(DBGObject* dbgInfo,
   std::shared_ptr<ir::Func> foundFunction = nullptr;
   if (functions) {
     for (auto f : *functions) {
-      if (name == "(mut Core::_$core::Core::Range<i32>)::next") {
-        DUMP_S("HELLO")
-      }
       auto args = f->getArgs(false);
       size_t numArgs = arguments.size();
       auto argsVector = utils::list_to_vector(args);
@@ -107,7 +104,6 @@ Transformer::getFunction(DBGObject* dbgInfo,
           }
         }
         auto fnGenerics = f->getGenerics();
-        // TODO: allow variadic generics
         // what is going on here, we are checking the same generics always!
         if (fnGenerics.size() == generics.size() && equal) {
           for (auto generic = fnGenerics.begin(); (generic != fnGenerics.end()) && equal; ++generic) {
@@ -135,16 +131,16 @@ Transformer::getFunction(DBGObject* dbgInfo,
                                  arguments,
                                  generics,
                                  isIdentifier);
-  if (hasSelf) {
-    arguments.erase(arguments.begin());
-  }
   switch (res) {
     case Ok: {
-      if (foundFunction != nullptr) return checkIfContextEqual(foundFunction);
+      if (foundFunction && shouldUseGeneratedFunction(foundFunction, arguments)) 
+        return checkIfContextEqual(foundFunction);
       return checkIfContextEqual(transformFunction(fn, args));
     }
 
     case NoMatchesFound: {
+      if (hasSelf)
+        arguments.erase(arguments.begin());
       if (foundFunction != nullptr) return checkIfContextEqual(foundFunction);
       if ((!overloads.has_value()) && (!functions.has_value()))
         E<VARIABLE_ERROR>(dbgInfo, FMT("Function '%s' is not defined!", name.c_str()));
@@ -191,6 +187,8 @@ Transformer::getFunction(DBGObject* dbgInfo,
     }
 
     case AmbiguityConflict: {
+      if (hasSelf)
+        arguments.erase(arguments.begin());
       CompilerError* tailErrors = nullptr;
       ADD_FUNCTION_ERROR(overloads, overload.function)
       E<TYPE_ERROR>(dbgInfo,

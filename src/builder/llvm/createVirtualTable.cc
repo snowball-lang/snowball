@@ -26,8 +26,8 @@ llvm::GlobalVariable* LLVMBuilder::createVirtualTable(types::DefinedType* ty, ll
   }
 
   module->getOrInsertGlobal(structName, vtableType);
-
   auto vTable = module->getNamedGlobal(structName);
+  vTable->setLinkage(llvm::GlobalValue::LinkageTypes::InternalLinkage);
 
   auto s = llvm::ConstantStruct::get(vtableType, functions);
   vTable->setInitializer(s);

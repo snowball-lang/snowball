@@ -139,7 +139,7 @@ fn [[test(expect = 3)]] interpolation_search() i32 {
     return result;
 }
 
-fn bubble_sort(mut arr: Vector<i32>) Vector<i32> {
+fn bubble_sort(mut arr: Vector<mut i32>) Vector<i32> {
     let n = arr.size();
     for i in 0..n {
         for j in 0..n - i - 1 {

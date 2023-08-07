@@ -96,7 +96,7 @@ private:
    *  for parsing a type.
    */
   bool isTypeValid() const {
-    return is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() || is<TokenType::KWORD_FUNC>();
+    return is<TokenType::KWORD_MUTABLE>() || is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() || is<TokenType::KWORD_FUNC>();
   }
 
   /**

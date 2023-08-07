@@ -85,6 +85,8 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
         return Attributes::BUILTIN;
       } else if (attr == "__primitive_internal__") {
         return Attributes::BUILTIN_NO_POINTER;
+      } else if (attr == "__no_pointer_self__") {
+        return Attributes::NO_POINTER_SELF; 
       }
       return Attributes::INVALID;
     });
