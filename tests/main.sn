@@ -4,31 +4,22 @@
 //  Fibonacci example for the lang                  じし(_,)ノ
 //  Docs: https://snowball-lang.gitbook.io/docs/
 
-use pkg::option;
-use pkg::vector;
-use pkg::chars;
-use pkg::cls;
-use pkg::string;
-use pkg::macros;
-use pkg::syntax;
-use pkg::clib;
-use pkg::tuples;
-use pkg::algorithms;
+//use pkg::option;
+//use pkg::vector;
+//use pkg::chars;
+//use pkg::cls;
+//use pkg::string;
+//use pkg::macros;
+//use pkg::syntax;
+//use pkg::clib;
+//use pkg::tuples;
+//use pkg::algorithms;
 
-use Core::System;
+//use Core::System;
 //use Core::System::{{ println }};
 
 pub fn main() i32 {
 
-    let mut a = new Vector<String&>{};
-    a.push(&"awd".to_string());
-    a.push(&"awd".to_string());
-    a.push(&"awd".to_string());
-    System::println(a);
-
-    try {
-        raise new Exception("awd");
-    } catch (e: Exception&) {
-        System::println(e.what());
-    }
+    //let a = new Vector<i32>{};
+    //a.at(0) = 214;
 }

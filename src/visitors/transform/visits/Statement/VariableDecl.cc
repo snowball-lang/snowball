@@ -8,7 +8,7 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
-  auto definedType = p_node->getDefinedType() == nullptr ? nullptr : transformType(p_node->getDefinedType());
+  auto definedType = p_node->getDefinedType() == nullptr ? nullptr : transformType(p_node->getDefinedType())->copy();
   auto variableName = p_node->getName();
   auto variableValue = p_node->getValue();
   auto isMutable = p_node->isMutable();
@@ -53,7 +53,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
       }
     }
 
-    auto ty = val->getType();
+    auto ty = val->getType()->copy();
     ty->setMutable(isMutable);
     builder.setType(var, ty);
   } else {

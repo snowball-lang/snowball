@@ -80,38 +80,87 @@ fn [[test(expect = 3)]] binary_search() i32 {
     return result;
 }
 
-//fn jump_search(arr: Vector<i32>, x: i32) i32 {
-//    let n = arr.size();
-//    let mut step = Math::sqrt(n);
-//    let mut prev = 0;
-//    while (arr[Math::min(step, n) - 1] < x) {
-//        prev = step;
-//        step += Math::sqrt(n);
-//        if (prev >= n) {
-//            return -1;
-//        }
-//    }
-//    while (arr[prev] < x) {
-//        prev += 1;
-//        if (prev == Math::min(step, n)) {
-//            return -1;
-//        }
-//    }
-//    if (arr[prev] == x) {
-//        return prev;
-//    }
-//    return -1;
-//}
-//
-//fn [[test(expect = 3)]] jump_search() i32 {
-//    let mut arr = new Vector<i32>{};
-//    arr.push(2);
-//    arr.push(3);
-//    arr.push(4);
-//    arr.push(10);
-//    let x = 10;
-//    let result = jump_search(arr, x);
-//    return result;
-//}
+fn jump_search(arr: Vector<i32>, x: i32) i32 {
+    let n = arr.size();
+    let mut step = Math::sqrt(n);
+    let mut prev = 0;
+    while (arr[Math::min(step, n) - 1] < x) {
+        prev = step;
+        step += Math::sqrt(n);
+        if (prev >= n) {
+            return -1;
+        }
+    }
+    while (arr[prev] < x) {
+        prev += 1;
+        if (prev == Math::min(step, n)) {
+            return -1;
+        }
+    }
+    if (arr[prev] == x) {
+        return prev;
+    }
+    return -1;
+}
+
+fn [[test(expect = 3)]] jump_search() i32 {
+    let mut arr = new Vector<i32>{};
+    arr.push(2);
+    arr.push(3);
+    arr.push(4);
+    arr.push(10);
+    let x = 10;
+    let result = jump_search(arr, x);
+    return result;
+}
+
+fn interpolation_search(arr: Vector<i32>, lo: i32, hi: i32, x: i32) i32 {
+    let pos = lo + ((hi - lo) / (arr[hi] - arr[lo])) * (x - arr[lo]);
+    if (arr[pos] == x) {
+        return pos;
+    }
+    if (arr[pos] < x) {
+        return interpolation_search(arr, pos + 1, hi, x);
+    }
+    if (arr[pos] > x) {
+        return interpolation_search(arr, lo, pos - 1, x);
+    }
+    return -1;
+}
+
+fn [[test(expect = 3)]] interpolation_search() i32 {
+    let mut arr = new Vector<i32>{};
+    arr.push(2);
+    arr.push(3);
+    arr.push(4);
+    arr.push(10);
+    let x = 10;
+    let result = interpolation_search(arr, 0, arr.size() - 1, x);
+    return result;
+}
+
+fn bubble_sort(mut arr: Vector<i32>) Vector<i32> {
+    let n = arr.size();
+    for i in 0..n {
+        for j in 0..n - i - 1 {
+            if (arr[j] > arr[j + 1]) {
+                let temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+    return arr;
+}
+
+fn [[test]] bubble_sort() i32 {
+    let mut arr = new Vector<i32>{};
+    arr.push(2);
+    arr.push(3);
+    arr.push(4);
+    arr.push(10);
+    let result = bubble_sort(arr);
+    return result.to_string() == "[2, 3, 4, 10]"; // nasty but easy comparison
+}
 
 }

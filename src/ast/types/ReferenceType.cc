@@ -36,8 +36,8 @@ Syntax::Expression::TypeRef* ReferenceType::toRef() {
 }
 
 Type* ReferenceType::getBaseType() const {
-  if (auto c = utils::cast<ReferenceType>(base)) { return c->getBaseType(); }
-
+  if (auto c = utils::cast<ReferenceType>(base)) 
+    return c->getBaseType();
   return base;
 }
 
@@ -47,6 +47,11 @@ bool ReferenceType::canCast(Type* ty) const {
 
   if (auto c = utils::cast<ReferenceType>(ty)) return base->canCast(c->getPointedType());
   return false;
+}
+
+void ReferenceType::setMutable(bool m) {
+  base->setMutable(m);
+  _mutable = m;
 }
 
 }; // namespace types

@@ -216,9 +216,10 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
                          bool /* Accept private members */>
                       stores,
               const std::string& name,
-              const std::vector<types::Type*>& arguments,
+              std::vector<types::Type*> arguments,
               const std::vector<Expression::TypeRef*>& generics = {},
-              bool isIdentifier = false);
+              bool isIdentifier = false,
+              bool hasSelf = false);
   /**
    * @brief Transform a function that hasn't been generated yet.
    * @arg arguments - deduced arguments to unify

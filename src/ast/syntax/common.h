@@ -35,7 +35,9 @@ enum Attributes
   NO_MANGLE,
   NOT_IMPLEMENTED,
   EXPORT,
+
   BUILTIN,
+  BUILTIN_NO_POINTER,
 
   // Function internal attributes
   TYPECHECKED,
@@ -328,6 +330,8 @@ struct Param {
     Normal,
     Generic
   } status;
+  /// @brief If the argument is mutable or not
+  bool mutableArg = false;
 
 public:
   /// @brief Create a new param instance
@@ -362,6 +366,10 @@ public:
     assert(status == Generic);
     whereClause = clause;
   };
+  /// @brief Set the parameter's mutability
+  void setMutable(bool m = true) { mutableArg = m; }
+  /// @brief If the variable is mutable or not
+  bool isMutable() { return mutableArg; }
 };
 } // namespace Expression
 
