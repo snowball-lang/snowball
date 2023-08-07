@@ -41,9 +41,9 @@ Transformer::getBestFittingFunction(const std::vector<Cache::FunctionStore>& ove
     } else {
       ctx->withState(foundFunction.first.state, [&] {
         auto fnArgs = foundFunction.first.function->getArgs();
-        bool argsEqual = (fnArgs.size() == 0) && (arguments.size() == 0);
+        bool argsEqual = ir::Func::argumentSizesEqual(fnArgs, arguments, foundFunction.first.function->isVariadic());
         bool argsNeedCasting = false;
-        for (auto i = 0; (i < fnArgs.size()) && !argsEqual; i++) {
+        for (auto i = 0; (i < fnArgs.size()) && argsEqual; i++) {
           auto type = transformType(fnArgs.at(i)->getType());
           if ((fnArgs.at(i)->hasDefaultValue() || isIdentifier) && arguments.size() < fnArgs.size()) {
             argsEqual = true;
@@ -74,11 +74,12 @@ Transformer::getBestFittingFunction(const std::vector<Cache::FunctionStore>& ove
   else if (matchedFunctions.size() == 1) {
     auto matched = matchedFunctions.at(0);
     return {matched.first, matched.second, FunctionFetchResponse::Ok};
-  } else if (exactFunctionExists)
-    return {bestFunction.first, bestFunction.second, FunctionFetchResponse::Ok};
-  else if (genericIndex != -1)
+  }else if (genericIndex != -1)
     return {matchedFunctions.at(genericIndex).first, matchedFunctions.at(genericIndex).second,
             FunctionFetchResponse::Ok};
+  else if (exactFunctionExists)
+    return {bestFunction.first, bestFunction.second, FunctionFetchResponse::Ok};
+  
   return {{nullptr}, {}, FunctionFetchResponse::NoMatchesFound};
 }
 

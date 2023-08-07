@@ -43,7 +43,7 @@ Transformer::deduceFunction(cacheComponents::Functions::FunctionStore s,
                             const std::vector<types::Type*>& arguments,
                             const std::vector<types::Type*>& generics) {
   auto function = s.function;
-  auto fnArgs = getActualFunctionArgs(s);
+  auto fnArgs = function->getArgs();
 
   std::vector<types::Type*> deducedTypes;
 

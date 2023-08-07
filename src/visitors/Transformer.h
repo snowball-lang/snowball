@@ -208,18 +208,25 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    */
   std::shared_ptr<ir::Func>
   getFunction(DBGObject* dbgInfo,
-              std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-                         std::optional<types::Type*>,
-                         std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                         std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
-                         std::optional<std::shared_ptr<ir::Module>>,
-                         bool /* Accept private members */>
-                      stores,
-              const std::string& name,
-              std::vector<types::Type*> arguments,
-              const std::vector<Expression::TypeRef*>& generics = {},
-              bool isIdentifier = false,
-              bool hasSelf = false);
+    std::tuple<std::optional<std::shared_ptr<ir::Value>>,
+      std::optional<types::Type*>,
+      std::optional<std::deque<std::shared_ptr<ir::Func>>>,
+      std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+      std::optional<std::shared_ptr<ir::Module>>,
+      bool /* Accept private members */>
+      stores,
+    const std::string& name,
+    std::vector<types::Type*> arguments,
+    const std::vector<Expression::TypeRef*>& generics = {},
+    bool isIdentifier = false,
+    bool hasSelf = false);
+  /**
+   * It decides whether or not a generated function should be used or if
+   *  and overloaded function should by checking the closest match.
+   * 
+   * @note `true` means that it should use the generated function.
+  */
+  bool shouldUseGeneratedFunction(std::shared_ptr<ir::Func> fn, std::vector<types::Type*> arguments);
   /**
    * @brief Transform a function that hasn't been generated yet.
    * @arg arguments - deduced arguments to unify

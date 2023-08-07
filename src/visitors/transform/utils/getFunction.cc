@@ -81,9 +81,6 @@ Transformer::getFunction(DBGObject* dbgInfo,
   }
 
   std::shared_ptr<ir::Func> foundFunction = nullptr;
-  if (name == "(Core::_$core::Core::StringView<char>&)::concat") {
-    DUMP_S("HELLO")
-  }
   if (functions) {
     for (auto f : *functions) {
       auto args = f->getArgs(false);
@@ -94,7 +91,6 @@ Transformer::getFunction(DBGObject* dbgInfo,
         for (auto arg = args.begin(); (arg != args.end()) && equal && !isIdentifier; ++arg) {
           auto i = std::distance(args.begin(), arg);
           if (i < numArgs) {
-            auto sec = arg->second->getType();
             equal = arguments.at(i)->is(arg->second->getType());
           } else {
             auto defArg = arg->second->getDefaultValue();
@@ -107,7 +103,6 @@ Transformer::getFunction(DBGObject* dbgInfo,
           }
         }
         auto fnGenerics = f->getGenerics();
-        // TODO: allow variadic generics
         // what is going on here, we are checking the same generics always!
         if (fnGenerics.size() == generics.size() && equal) {
           for (auto generic = fnGenerics.begin(); (generic != fnGenerics.end()) && equal; ++generic) {
@@ -135,16 +130,16 @@ Transformer::getFunction(DBGObject* dbgInfo,
                                  arguments,
                                  generics,
                                  isIdentifier);
-  if (hasSelf) {
-    arguments.erase(arguments.begin());
-  }
   switch (res) {
     case Ok: {
-      if (foundFunction != nullptr) return checkIfContextEqual(foundFunction);
+      if (foundFunction && shouldUseGeneratedFunction(foundFunction, arguments)) 
+        return checkIfContextEqual(foundFunction);
       return checkIfContextEqual(transformFunction(fn, args));
     }
 
     case NoMatchesFound: {
+      if (hasSelf)
+        arguments.erase(arguments.begin());
       if (foundFunction != nullptr) return checkIfContextEqual(foundFunction);
       if ((!overloads.has_value()) && (!functions.has_value()))
         E<VARIABLE_ERROR>(dbgInfo, FMT("Function '%s' is not defined!", name.c_str()));
@@ -191,6 +186,8 @@ Transformer::getFunction(DBGObject* dbgInfo,
     }
 
     case AmbiguityConflict: {
+      if (hasSelf)
+        arguments.erase(arguments.begin());
       CompilerError* tailErrors = nullptr;
       ADD_FUNCTION_ERROR(overloads, overload.function)
       E<TYPE_ERROR>(dbgInfo,

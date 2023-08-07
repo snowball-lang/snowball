@@ -48,7 +48,11 @@ TypeRef* Parser::parseType() {
     ty->setDBGInfo(dbg);
     return ty;
   }
-
+  bool isMutable = false;
+  if (is<TokenType::KWORD_MUTABLE>()) {
+    isMutable = true;
+    next();
+  }
   auto ident = parseIdentifier(true);
   Base* ast = ident;
   auto name = ident->getIdentifier();
@@ -79,6 +83,7 @@ TypeRef* Parser::parseType() {
       t = Syntax::N<ReferenceType>(base, dbg);
     //}
   }
+  t->setMutable(isMutable);
   return t;
 }
 

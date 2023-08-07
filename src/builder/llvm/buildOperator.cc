@@ -72,8 +72,12 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
           OPERATOR_UINSTANCE(UMINUS, CreateNeg)
           case services::OperatorService::NOT: {
             auto size_in_bits = ((llvm::IntegerType*)left->getType())->getBitWidth();
-            this->value = builder->CreateICmpEQ(
-                    left, llvm::ConstantInt::get(builder->getIntNTy((unsigned)size_in_bits), 0, false));
+            if (left->getType()->isPointerTy()) 
+              this->value = builder->CreateICmpEQ(
+                      left, llvm::ConstantPointerNull::get(builder->getIntNTy((unsigned)size_in_bits)->getPointerTo()));
+            else
+              this->value = builder->CreateICmpEQ(
+                      left, llvm::ConstantInt::get(builder->getIntNTy((unsigned)size_in_bits), 0, false));
             break;
           }
 

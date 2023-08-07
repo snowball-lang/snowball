@@ -18,6 +18,10 @@ use pkg::tuples;
 //use Core::System;
 //use Core::System::{{ println }};
 
+fn test(x: i32, b: f32) {
+
+}
+
 pub fn main() i32 {
 
     //let a = new Vector<i32>{};
