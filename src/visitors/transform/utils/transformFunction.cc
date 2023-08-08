@@ -80,7 +80,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
         auto a = builder.createArgument(node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
                                         arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
         a->setType(transformType(arg->getType()));
-        if (i != 0 && arg->getName() != "self")
+        if (arg->getName() != "self")
           a->getType()->setMutable(arg->isMutable());
         a->setMutability(a->getType()->isMutable());
         newArgs.insert(newArgs.end(), {arg->getName(), a});

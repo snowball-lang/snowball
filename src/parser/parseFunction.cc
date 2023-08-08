@@ -341,13 +341,11 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
 
       auto name = m_current.to_string();
       consume<TokenType::IDENTIFIER>("an identifier").to_string();
-
       consume<TokenType::SYM_COLLON>("':'");
-
-      throwIfNotType();
       auto type = parseType();
 
       auto arg = new Syntax::Expression::Param(name, type);
+      arg->setMutable(isMutable);
       if (is<TokenType::OP_EQ>()) {
         auto expr = parseExpr(false);
         arg->setDefaultValue(expr);
