@@ -30,7 +30,7 @@ fn [[test(expect = 42)]] test_value_from_func() i32 {
 }
 
 fn [[test]] pointer_value() i32 {
-    let x = new Optional::Option<char&>("hello");
+    let x = new Optional::Option<&char>("hello");
     return !x.empty();
 }
 
@@ -54,7 +54,7 @@ fn [[test]] access_empty() i32 {
     let x = new Optional::Option<i32>();
     try {
         x.val();
-    } catch (_: Optional::BadOptionAccess&) {
+    } catch (_: &Optional::BadOptionAccess) {
         return true;
     }
     return 0;

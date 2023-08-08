@@ -12,7 +12,7 @@ namespace snowball::parser {
 
 TypeRef* Parser::parseType() {
   throwIfNotType();
-  assert(is<TokenType::KWORD_MUTABLE>() || is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() || is<TokenType::KWORD_FUNC>());
+  assert(is<TokenType::OP_BIT_AND>() || is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() || is<TokenType::KWORD_FUNC>());
   auto pos = m_current.get_pos();
   if (is<TokenType::KWORD_DECLTYPE>()) {
     auto w = m_current.get_width();
@@ -48,9 +48,13 @@ TypeRef* Parser::parseType() {
     ty->setDBGInfo(dbg);
     return ty;
   }
+  int referenceDepth = 0;
+  while (is<TokenType::OP_BIT_AND>()) { // we treat op and as 2 bit ands
+      referenceDepth++;
+      next();
+  }
   bool isMutable = false;
   if (is<TokenType::KWORD_MUTABLE>()) {
-    createError<TODO>("mutable types");
     isMutable = true;
     next();
   }
@@ -75,14 +79,10 @@ TypeRef* Parser::parseType() {
   }
   auto dbg = new DBGSourceInfo(m_source_info, pos, m_current.get_pos().second - pos.second);
   auto t = Syntax::TR(ast, name, dbg, id);
-  t->setGenerics(generics); // TODO: fix &&
-  while (is<TokenType::OP_BIT_AND>()) { // we treat op and as 2 bit ands
-    //for (int i = 0; i < is<TokenType::OP_AND>(); i++) {
-      next();
-      auto base = t;
-
-      t = Syntax::N<ReferenceType>(base, dbg);
-    //}
+  t->setGenerics(generics);
+  for (int i = 0; i < referenceDepth; i++) {
+    auto base = t;
+    t = Syntax::N<ReferenceType>(base, dbg);
   }
   t->setMutable(isMutable);
   return t;

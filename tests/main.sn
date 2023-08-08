@@ -3,17 +3,17 @@
 //                                                ⠀ l、ﾞ~ヽ 
 //  Fibonacci example for the lang                  じし(_,)ノ
 //  Docs: https://snowball-lang.gitbook.io/docs/
-
-use pkg::option;
-use pkg::vector;
-use pkg::chars;
-use pkg::cls;
-use pkg::string;
-use pkg::macros;
-use pkg::syntax;
-use pkg::clib;
-use pkg::tuples;
-use pkg::algorithms;
+//
+//use pkg::option;
+//use pkg::vector;
+//use pkg::chars;
+//use pkg::cls;
+//use pkg::string;
+//use pkg::macros;
+//use pkg::syntax;
+//use pkg::clib;
+//use pkg::tuples;
+//use pkg::algorithms;
 
 //use Core::System;
 //use Core::System::{{ println }};
@@ -23,6 +23,9 @@ fn test(x: i32, b: f32) {
 }
 
 pub fn main() i32 {
+    test(1, 2);
+    test(1, 2);
+    test(1, 2);
 
     //let a = new Vector<i32>{};
     //a.at(0) = 214;

@@ -13,7 +13,7 @@ pub static fn exit(exitCode: i32 = 0) { CLib::exit(exitCode); }
  * @param msg the 64-bit integer value to print
  * @return the number of characters printed
  */
-pub static fn [[inline]] print<T>(msg: T, end: char& = "") i32 { 
+pub static fn [[inline]] print<T>(msg: T, end: &char = "") i32 { 
     let m = String::from(msg).c_str();
     return CLib::printf("%s%s", m, end); 
 }

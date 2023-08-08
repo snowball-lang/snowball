@@ -77,7 +77,7 @@ pub extern fn memcpy(cobj, cobj, i32) void;
  * @note(3) A typical cause of failure for puts is running out of space on the file system, when stdout is
  *  redirected to a file.
  */
-pub extern fn puts(char&) i32;
+pub extern fn puts(&char) i32;
 /**
  * @brief Writes a character to the standard output (stdout).
  * @param character(i32) - The `i32` promotion of the character to be written.
@@ -97,17 +97,17 @@ pub extern fn getchar() char;
  *  in the resulting string replacing their respective specifiers.
  * @return On success, the total number of characters written is returned.
  */
-pub extern fn printf(char&, ...) i32;
+pub extern fn printf(&char, ...) i32;
 /**
  * @brief Writes the string pointed by format to the character string pointed by str. If format includes format
  *  specifiers (subsequences beginning with %), the additional arguments following format are formatted and inserted
  *  in the resulting string replacing their respective specifiers.
- * @param str(char&) - pointer to a buffer where the resulting C-string is stored.
+ * @param str(&char) - pointer to a buffer where the resulting C-string is stored.
  * @param size(i32) - maximum number of bytes to be used in the buffer.
  * @return On success, the total number of characters written is returned.
  *  If a writing error occurs, the error indicator (ferror) is set and a negative number is returned.
  */
-pub extern fn snprintf(char&, i32, char&, ...) i32;
+pub extern fn snprintf(&char, i32, &char, ...) i32;
 /**
  * @brief Causes normal program termination to occur.
  * @param exit_code(i32) - exit status of the program
@@ -137,31 +137,31 @@ pub fn [[inline]] is_null(ptr: cobj) bool {
 namespace c_string {
 /**
  * @brief It returns the length of string based on the null-terminator.
- * @param str(char&) - string to be measured
+ * @param str(&char) - string to be measured
  * @return i32 - length of the string
  */
-pub extern fn strlen(char&) i32;
+pub extern fn strlen(&char) i32;
 /**
  * @brief It checks if the two strings are equal.
- * @param str1(char&) - first string
- * @param str2(char&) - second string
+ * @param str1(&char) - first string
+ * @param str2(&char) - second string
  * @return bool - true if the strings are equal, false otherwise
  */
-pub extern fn strcmp(char&, char&) bool;
+pub extern fn strcmp(&char, &char) bool;
 /**
  * @brief It copies the string pointed by source into the array pointed by destination, including the terminating null character (and stopping at that point).
- * @param destination(char&) - pointer to the destination array where the content is to be copied.
- * @param source(char&) - C string to be copied.
- * @return char& - pointer to the destination string destination.
+ * @param destination(&char) - pointer to the destination array where the content is to be copied.
+ * @param source(&char) - C string to be copied.
+ * @return &char - pointer to the destination string destination.
  */
-pub extern fn strcpy(char&, char&) char&;
+pub extern fn strcpy(&char, &char) &char;
 /**
  * @brief It concatenates the string pointed to by source to the end of the string pointed to by destination.
- * @param destination(char&) - pointer to the destination array, which should contain a C string, and be large enough to contain the concatenated resulting string.
- * @param source(char&) - C string to be appended. This should not overlap destination.
- * @return char& - pointer to the destination string destination.
+ * @param destination(&char) - pointer to the destination array, which should contain a C string, and be large enough to contain the concatenated resulting string.
+ * @param source(&char) - C string to be appended. This should not overlap destination.
+ * @return &char - pointer to the destination string destination.
  */
-pub extern fn strcat(char&, char&) char&;
+pub extern fn strcat(&char, &char) &char;
 } // namespace c_string
 
 pub namespace __internal {
@@ -183,14 +183,14 @@ pub namespace __internal {
 /**
  * @brief Allocates a buffer on the stack and writes the formatted string to it.
  * @param bytes(i32) - number of bytes to allocate
- * @param format(char&) - format string
+ * @param format(&char) - format string
  * @param value(T) - value to be formatted
- * @return char& - pointer to the buffer
+ * @return &char - pointer to the buffer
  */
 pub static fn [[inline]] alloca_and_snprintf<T>
-    (bytes: i32, format: char&, value: T) char& 
+    (bytes: i32, format: &char, value: T) &char 
 {
-    let buffer = malloc(bytes) as char&; // TODO: use sn.alloca
+    let buffer = malloc(bytes) as &char; // TODO: use sn.alloca
     snprintf(buffer, bytes, format, value);
     return buffer;
 } 
@@ -201,9 +201,9 @@ pub static fn [[inline]] alloca_and_snprintf<T>
 namespace cmath {
 /**
  * @brief It converts a string into a double.
- * @param str(char&) - string to be converted
+ * @param str(&char) - string to be converted
 
  * @return f64 - number
 */
-pub extern fn strtod(char&, cobj) f64;
+pub extern fn strtod(&char, cobj) f64;
 }

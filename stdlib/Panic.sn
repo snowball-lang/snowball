@@ -5,7 +5,7 @@ use Core::System;
  * @brief It emits a panic message and exits the program.
  * @param message The message to emit.
  */
-pub fn [[inline]] panic(message: char& = "Something went wrong! 🐱") {
+pub fn [[inline]] panic(message: &char = "Something went wrong! 🐱") {
     // TODO: mark function with '!'
     CLib::printf("\n\n--------------------\n");
     CLib::printf("Program panicked with message: %s\n", message);

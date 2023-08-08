@@ -33,7 +33,7 @@ class [[extends]] char {
       * @note If any of the strings is null, it returns false.
       *    If both are null, it returns true.
       */
-    operator [[internal_linkage, inline]] ==(other: char&) bool
+    operator [[internal_linkage, inline]] ==(other: &char) bool
     {
       if !self && !other 
         { return true; }
@@ -49,9 +49,9 @@ class [[extends]] i8 {
     * @brief Converts the number to a string.
     * @return The string representation of the number.
     */
-    fn [[internal_linkage, inline, __no_pointer_self__]] to_string() String
+    fn [[inline, __no_pointer_self__]] to_string() String
       { return String::fromNumber(self, "%i"); }
-    fn [[internal_linkage, inline]] to_string() String
+    fn [[inline]] to_string() String
       { return (*self).to_string(); }
 }
 
@@ -61,9 +61,9 @@ class [[extends]] i16 {
     * @brief Converts the number to a string.
     * @return The string representation of the number.
     */
-    fn [[internal_linkage, inline, __no_pointer_self__]] to_string() String
+    fn [[inline, __no_pointer_self__]] to_string() String
       { return String::fromNumber(self, "%i"); }
-    fn [[internal_linkage, inline]] to_string() String
+    fn [[inline]] to_string() String
       { return (*self).to_string(); }
 }
 
@@ -122,27 +122,27 @@ pub namespace UA {
  *       required for storing and manipulating universal arrays.
  */
 pub struct UniversalArray 
-  { pub let items: cobj&; };
+  { pub let items: &cobj; };
 /**
  * @brief Allocates a universal array of elements.
  * @param[in] size The size of the universal array to allocate.
  * @return The allocated universal array.
  */
-pub extern fn [[no_inline]] "sn.ua.alloc" as __ua_alloc(i32) UniversalArray&;
+pub extern fn [[no_inline]] "sn.ua.alloc" as __ua_alloc(i32) &UniversalArray;
 /**
  * @brief Resizes a universal array of elements.
  * @param[in] array The universal array to resize.
  * @param[in] size The new size of the universal array.
  * @return The resized universal array.
  */
-pub extern fn "sn.ua.resize" as __ua_resize(UniversalArray&, i32) UniversalArray&;
+pub extern fn "sn.ua.resize" as __ua_resize(&UniversalArray, i32) &UniversalArray;
 /**
  * @brief Sets an element in a universal array.
  * @param[in] array The universal array to set the element in.
  * @param[in] index The index of the element to set.
  * @param[in] item The element to set.
  */
-pub extern fn "sn.ua.set" as __ua_set(UniversalArray&, i32, cobj);
+pub extern fn "sn.ua.set" as __ua_set(&UniversalArray, i32, cobj);
 
 /**
  * @brief Gets an element from a universal array.
@@ -150,7 +150,7 @@ pub extern fn "sn.ua.set" as __ua_set(UniversalArray&, i32, cobj);
  * @param[in] index The index of the element to get.
  * @return The element at the specified index.
  */
-pub extern fn "sn.ua.get" as __ua_get(UniversalArray&, i32) cobj;
+pub extern fn "sn.ua.get" as __ua_get(&UniversalArray, i32) cobj;
 
 } /* namespace UA */;
 
@@ -176,7 +176,7 @@ fn [[
   no_inline
 ]] snowball_test(
   func: fn () => i32,
-  name: char&,
+  name: &char,
   index: i32,
   skip: bool = false,
   expect: i32 = 1
@@ -200,7 +200,7 @@ fn [[
         CLib::printf("\e[0m\n");
         return false;
       }
-    } catch (e: Exception&) {
+    } catch (e: &Exception) {
       CLib::printf("\e[1;31merror \n");
       CLib::printf("\n UNEXPECTED EXCEPTION:\n");
       CLib::printf("   --> %s\n", e.what());
@@ -230,7 +230,7 @@ pub class Exception {
      * @brief Exception constructor.
      * @param[in] m The message of the exception.
      */ 
-    Exception(m: char&) : msg(m) 
+    Exception(m: &char) : msg(m) 
       { }
     /**
       * @brief Exception constructor from a string.
@@ -242,11 +242,11 @@ pub class Exception {
      * @brief Returns the message of the exception.
      * @return The message of the exception.
      */
-    fn what() char& 
+    fn what() &char 
       { return self.msg; }
   priv:
     /** The message of the exception. */
-    let msg: char&;
+    let msg: &char;
 }
 /**
  * @class IndexError
@@ -481,15 +481,15 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
      * @brief Returns the data of the vector.
      * @return The data of the vector.
      */
-    fn [[internal_linkage, inline]] data() _StoreType&
-      { return (*self.buffer.items) as _StoreType&; }
+    fn [[internal_linkage, inline]] data() &_StoreType
+      { return (*self.buffer.items) as &_StoreType; }
     /**
      * @brief A wrapper over the at() method. 
      * @param[in] index The index of the element to return.
      * @return The element at the specified index.
      * @see Vector<_StoreType>::at()
      */
-    operator [[internal_linkage, inline]] [](index: i32) _StoreType
+    operator [[internal_linkage, inline]] [](index: i32) mut &mut _StoreType
       { return self.at(index); }
     /**
      * @brief It inserts an element at the specified index.
@@ -530,7 +530,7 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
     /** The size of the vector. */
     let mut length: i32 = 0;
     /** The buffer containing the vector. */
-    let mut buffer: UA::UniversalArray&;
+    let mut buffer: &UA::UniversalArray;
 }
 
 /**
@@ -548,7 +548,7 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
  */
 pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
   pub:
-    type StringType = _CharType&;
+    type StringType = &_CharType;
 
     /**
      * @brief Default constructor.
@@ -567,7 +567,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
      * @brief Constructs a string from another string.
      * @param[in] other The string to construct the string from.
      */
-    StringView(other: StringView<_CharType>&) : 
+    StringView(other: &StringView<_CharType>) : 
       super(), buffer(other.buffer), length(other.length), 
       capacity(other.capacity) { }
     /**
@@ -669,7 +669,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
      * @param[in] format The format of the number.
      * @return The created string.
      */
-    static fn [[internal_linkage, inline]] fromNumber<T>(num: T, format: char& = "%ld")
+    static fn [[internal_linkage, inline]] fromNumber<T>(num: T, format: &char = "%ld")
       StringView<_CharType> 
     { 
       let buffer: Self::StringType = 
@@ -726,4 +726,4 @@ type Exception = Core::Exception;
 type IndexError = Core::IndexError;
 type Range<T = i32> = Core::Range<T>;
 type String = StringView<>;
-// TODO (implement wchar): using WideString as StringView<wchar&>
+// TODO (implement wchar): using WideString as StringView<&wchar>

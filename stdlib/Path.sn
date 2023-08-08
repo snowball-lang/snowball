@@ -1,6 +1,6 @@
 
 // TODO: support all platforms
-let path_sep: char& = "/";
+let path_sep: &char = "/";
 
 /**
  * A path to a file or directory.

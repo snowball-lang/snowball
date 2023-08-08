@@ -92,7 +92,8 @@ Transformer::getFunction(DBGObject* dbgInfo,
           auto i = std::distance(args.begin(), arg);
           if (i < numArgs) {
             auto sec = arg->second->getType();
-            equal = arguments.at(i)->is(arg->second->getType());
+            equal = arguments.at(i)->is(arg->second->getType()) 
+              || arguments.at(i)->canCast(arg->second->getType());
           } else {
             auto defArg = arg->second->getDefaultValue();
             if (!defArg && (!f->isVariadic())) {

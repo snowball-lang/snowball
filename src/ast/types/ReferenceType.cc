@@ -16,13 +16,13 @@
 namespace snowball {
 namespace types {
 
-ReferenceType::ReferenceType(Type* base) : AcceptorExtend(Kind::TYPE, base->getName() + "&"), base(base) {
+ReferenceType::ReferenceType(Type* base) : AcceptorExtend(Kind::TYPE, "&" + base->getName()), base(base) {
   setMutable(base->isMutable());
 }
 Type* ReferenceType::getPointedType() const { return base; }
 std::string ReferenceType::getPrettyName() const {
   auto baseName = base->getPrettyName();
-  return baseName + "&";
+  return "&" + baseName;
 }
 
 std::string ReferenceType::getMangledName() const {

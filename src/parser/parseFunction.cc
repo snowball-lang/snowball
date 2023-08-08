@@ -323,7 +323,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     if (is<TokenType::BRACKET_RPARENT>(pk)) { break; }
 
     next();
-    if (isExtern && is<TokenType::IDENTIFIER>() && (!is<TokenType::SYM_COLCOL>(peek()))) {
+    if (isExtern && isTypeValid() && (!is<TokenType::SYM_COLCOL>(peek()))) {
       throwIfNotType();
       auto type = parseType();
 
@@ -375,14 +375,13 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
   }
 
   Syntax::Expression::TypeRef* returnType = nullptr;
-  if (is<TokenType::IDENTIFIER>()) {
+  if (isTypeValid()) {
     if (isConstructor) {
       createError<SYNTAX_ERROR>("Contructor can't have return types.",
                                 {.info = "Constructors return type default to the parent's "
                                          "class type!"});
     }
 
-    throwIfNotType();
     returnType = parseType();
   } else {
     auto info = new DBGSourceInfo(m_source_info, m_current.get_pos(), m_current.get_width());

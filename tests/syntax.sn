@@ -134,7 +134,7 @@ fn [[test(expect = 10)]] range_loop() i32 {
 fn [[test]] try_catch() i32 {
     try {
         raise new Exception("test");
-    } catch(e: Exception&) {
+    } catch(e: &Exception) {
         return e.what() == "test";
     }
 
