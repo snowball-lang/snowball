@@ -6,18 +6,19 @@ using namespace snowball::Syntax::transform;
   // Set the default '=' operator for the class 
 #define GENERATE_EQUALIZERS \
   for (int allowPointer = 0; allowPointer < 2; ++allowPointer) { \
-    auto argType = allowPointer ? transformedType->getPointerTo() : transformedType; \
-    auto fn = builder.createFunction( \
-            ty->getDBGInfo(), services::OperatorService::getOperatorMangle(OperatorType::EQ), true, false); \
-    auto arg = builder.createArgument(NO_DBGINFO, "other", argType); \
-    auto selfArg = builder.createArgument(NO_DBGINFO, "self", transformedType->getPointerTo()); \
-    auto typeArgs = std::vector<types::Type*>{transformedType->getPointerTo(), argType}; \
-    auto type = builder.createFunctionType(typeArgs, transformedType); \
-    fn->setArgs({{"self", selfArg}, {"other", arg}}); \
-    fn->setType(type); \
-    fn->setPrivacy(PrivacyStatus::PUBLIC); \
+    auto fn = Syntax::N<Statement::FunctionDef>(\
+      OperatorService::getOperatorMangle(OperatorType::EQ), \
+      Statement::Privacy::Status::PUBLIC \
+    ); \
     fn->addAttribute(Attributes::BUILTIN); \
-    ctx->defineFunction(fn); \
+    fn->setArgs({ \
+      new Expression::Param( \
+        "other", \
+        allowPointer ? transformedType->getPointerTo()->toRef() : transformedType->toRef() \
+      ) \
+    }); \
+    fn->setRetType(ctx->getVoidType()->toRef()); \
+    trans(fn); \
   }
 
 namespace snowball {
@@ -132,7 +133,8 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
       transformedType->setDBGInfo(ty->getDBGInfo());
       transformedType->setSourceInfo(ty->getSourceInfo());
       bool allowConstructor = (!ty->hasConstructor) && baseFields.size() == 0;
-      if (parentType != nullptr) ctx->cache->performInheritance(transformedType, parentType, allowConstructor);
+      if (parentType != nullptr) 
+        ctx->cache->performInheritance(transformedType, parentType, allowConstructor);
       assert(!ty->isStruct() || (ty->isStruct() && ty->getFunctions().size() == 0));
       // Create function definitions
       ctx->generateFunction = false;
@@ -146,6 +148,7 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
       }
       // Generate the function bodies
       ctx->generateFunction = true;
+      GENERATE_EQUALIZERS
       for (auto fn : ty->getFunctions()) { trans(fn); }
       ctx->generateFunction = backupGenerateFunction;
       auto parentHasConstructor =

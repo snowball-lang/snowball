@@ -18,7 +18,7 @@
 //use Core::System;
 //use Core::System::{{ println }};
 
-fn test(x: i32, b: f32) {
+fn test<T>(x: T, b: f32) {
 
 }
 

@@ -15,10 +15,10 @@ std::shared_ptr<transform::ContextState>& Functions::getFunctionState(id_t id) {
 void Functions::setFunctionState(id_t id, std::shared_ptr<transform::ContextState>& s) { functionStates[id] = s; }
 void Functions::setFunction(const std::string& name, Statement::FunctionDef* p_fn,
                             std::shared_ptr<transform::ContextState> state) {
-  functions[name].push_back({p_fn, state});
+  functions[name].push_front({p_fn, state});
 }
 
-std::optional<std::vector<Functions::FunctionStore>> Functions::getFunction(const std::string name) {
+std::optional<std::deque<Functions::FunctionStore>> Functions::getFunction(const std::string name) {
   auto f = functions.find(name);
   if (f != functions.end()) return f->second;
 

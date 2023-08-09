@@ -46,7 +46,7 @@ public:
 
 protected:
   /// @brief A global map containing each function.
-  std::map<std::string, std::vector<FunctionStore>> functions;
+  std::map<std::string, std::deque<FunctionStore>> functions;
   /// @brief a list of already transformed functions
   std::map<std::string, std::shared_ptr<transform::Item>> createdFunctions;
   /// @brief A map of states used for generated functions.
@@ -58,7 +58,7 @@ public:
   void setFunction(const std::string& name, Statement::FunctionDef* p_fn,
                    std::shared_ptr<transform::ContextState> state);
   /// @return All function overloads for a function
-  std::optional<std::vector<FunctionStore>> getFunction(const std::string name);
+  std::optional<std::deque<FunctionStore>> getFunction(const std::string name);
   /// @return Get the current state of an already defined
   /// function.
   std::shared_ptr<transform::ContextState>& getFunctionState(id_t id);

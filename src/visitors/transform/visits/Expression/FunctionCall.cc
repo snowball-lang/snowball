@@ -120,7 +120,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                             "to a parameter with type '%s'!",
                             arg->getPrettyName().c_str(),
                             deduced->getPrettyName().c_str()),
-                        ErrorInfo{.info = "This is the call causing the error.",
+                        ErrorInfo{.info = "This is the call causing the error! (argument index: " + std::to_string(i+1) + ")",
                             .note = utils::dyn_cast<ir::Func>(fn) == nullptr
                             ? FMT("Errored trying to cal function with type `%s`",
                                     t->getPrettyName().c_str())

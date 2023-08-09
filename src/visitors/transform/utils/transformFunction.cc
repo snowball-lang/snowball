@@ -8,8 +8,10 @@ namespace Syntax {
 
 std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fnStore,
                                                          const std::vector<types::Type*>& deducedTypes,
-                                                         bool isEntryPoint) {
+                                                         bool isEntryPoint,
+                                                         std::deque<std::shared_ptr<ir::Func>> overloads) {
   auto node = fnStore.function;
+  bool dontAddToModule = false;
 
   // get the function name and store it for readability
   auto name = node->getName();
@@ -59,11 +61,6 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
       if (((fn->hasParent() || !fn->isStatic()) || fn->isPrivate()) && !isEntryPoint && !isExtern &&
           !fn->hasAttribute(Attributes::EXTERNAL_LINKAGE) && !fn->hasAttribute(Attributes::EXPORT))
         fn->addAttribute(Attributes::INTERNAL_LINKAGE);
-      if (auto c = ctx->getCurrentClass(true)) {
-        auto pClass = utils::cast<types::DefinedType>(c);
-        if (pClass != nullptr)
-          if (node->isVirtual()) { fn->setVirtualIndex(pClass->addVtableItem(fn)); }
-      }
 
       ir::Func::FunctionArgs newArgs = {};
       if (fn->isConstructor()) {
@@ -83,12 +80,24 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
         if (arg->getName() != "self")
           a->getType()->setMutable(arg->isMutable());
         a->setMutability(a->getType()->isMutable());
-        newArgs.insert(newArgs.end(), {arg->getName(), a});
+        newArgs.push_back({arg->getName(), a});
       }
 
       fn->setArgs(newArgs);
       auto fnType = types::FunctionType::from(fn.get(), node);
       fn->setType(fnType);
+      if (auto x = shouldReturnOverload(fn, overloads)) {
+        fn = x;
+        dontAddToModule = true;
+        return;
+      }
+
+      if (auto c = ctx->getCurrentClass(true)) {
+        auto pClass = utils::cast<types::DefinedType>(c);
+        if (pClass != nullptr)
+          if (node->isVirtual()) { fn->setVirtualIndex(pClass->addVtableItem(fn)); }
+      }
+
       ctx->defineFunction(fn);
 
       // Generate a bodied for functions that have
@@ -146,10 +155,12 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
       }
     });
 
+    if (dontAddToModule) return;
     ctx->module->addFunction(fn);
   });
 
-  ctx->cache->setFunctionState(fn->getId(), fnStore.state);
+  if (!dontAddToModule)
+    ctx->cache->setFunctionState(fn->getId(), fnStore.state);
   return fn;
 }
 

@@ -7,7 +7,7 @@ namespace snowball {
 namespace Syntax {
 
 std::tuple<Cache::FunctionStore, std::vector<types::Type*>, Transformer::FunctionFetchResponse>
-Transformer::getBestFittingFunction(const std::vector<Cache::FunctionStore>& overloads,
+Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& overloads,
                                     const std::vector<types::Type*>& arguments,
                                     const std::vector<Expression::TypeRef*>& generics,
                                     bool isIdentifier) {
@@ -71,15 +71,15 @@ Transformer::getBestFittingFunction(const std::vector<Cache::FunctionStore>& ove
   }
   if (((matchedFunctions.size() > 1) && (!exactFunctionExists) && (genericIndex == -1)) || (genericCount > 1))
     return {{nullptr}, {}, FunctionFetchResponse::AmbiguityConflict};
+  else if (exactFunctionExists)
+    return {bestFunction.first, bestFunction.second, FunctionFetchResponse::Ok};
   else if (matchedFunctions.size() == 1) {
     auto matched = matchedFunctions.at(0);
     return {matched.first, matched.second, FunctionFetchResponse::Ok};
-  }else if (genericIndex != -1)
+  } else if (genericIndex != -1)
     return {matchedFunctions.at(genericIndex).first, matchedFunctions.at(genericIndex).second,
             FunctionFetchResponse::Ok};
-  else if (exactFunctionExists)
-    return {bestFunction.first, bestFunction.second, FunctionFetchResponse::Ok};
-  
+
   return {{nullptr}, {}, FunctionFetchResponse::NoMatchesFound};
 }
 

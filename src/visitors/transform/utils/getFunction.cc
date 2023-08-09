@@ -11,7 +11,7 @@ Transformer::getFunction(DBGObject* dbgInfo,
                          std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                                     std::optional<types::Type*>,
                                     std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                                    std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+                                    std::optional<std::deque<Cache::FunctionStore>>,
                                     std::optional<std::shared_ptr<ir::Module>>,
                                     bool /* Accept private members */>
                                  store,
@@ -79,70 +79,18 @@ Transformer::getFunction(DBGObject* dbgInfo,
   } else if (mod) {
     E<TYPE_ERROR>(dbgInfo, FMT("Silly billy, you can't call modules! ('%s')", name.c_str()));
   }
-
-  std::shared_ptr<ir::Func> foundFunction = nullptr;
-  if (functions) {
-    for (auto f : *functions) {
-      auto args = f->getArgs(false);
-      size_t numArgs = arguments.size();
-      auto argsVector = utils::list_to_vector(args);
-      if (ir::Func::argumentSizesEqual(argsVector, arguments, f->isVariadic()) || isIdentifier) {
-        bool equal = true;
-        for (auto arg = args.begin(); (arg != args.end()) && equal && !isIdentifier; ++arg) {
-          auto i = std::distance(args.begin(), arg);
-          if (i < numArgs) {
-            auto sec = arg->second->getType();
-            equal = arguments.at(i)->is(arg->second->getType()) 
-              || arguments.at(i)->canCast(arg->second->getType());
-          } else {
-            auto defArg = arg->second->getDefaultValue();
-            if (!defArg && (!f->isVariadic())) {
-              equal = false;
-              break;
-            } else {
-              equal = true;
-            }
-          }
-        }
-        auto fnGenerics = f->getGenerics();
-        // what is going on here, we are checking the same generics always!
-        if (fnGenerics.size() == generics.size() && equal) {
-          for (auto generic = fnGenerics.begin(); (generic != fnGenerics.end()) && equal; ++generic) {
-            auto i = std::distance(fnGenerics.begin(), generic);
-            equal = (*generic).second->is(generics.at(i));
-          }
-
-          // TODO: check for ambiguous functions
-          if (equal) {
-            //if (foundFunction != nullptr) {
-            //  E<TYPE_ERROR>(dbgInfo,
-            //                FMT("Ambiguous function call to '%s(%s)' found!",
-            //                    name.c_str(),
-            //                    Expression::FunctionCall::getArgumentsAsString(arguments).c_str()));
-            //}
-            foundFunction = f;
-            break; // do not check for ambiguous functions
-          }
-        }
-      }
-    }
+  if (name == "(mut Core::_$core::Core::Range<i32>)::next") {
+    DUMP_S("DUMPING RANGE NEXT")
   }
-  auto [fn, args, res] =
-          getBestFittingFunction(overloads.has_value() ? overloads.value() : std::vector<Cache::FunctionStore>{},
-                                 arguments,
-                                 generics,
-                                 isIdentifier);
+  auto [fn, args, res] = getBestFittingFunction(overloads.has_value() ? overloads.value() : std::deque<Cache::FunctionStore>{}, arguments, generics, isIdentifier);
   switch (res) {
     case Ok: {
-      if (foundFunction && shouldUseGeneratedFunction(foundFunction, arguments)) 
-        return checkIfContextEqual(foundFunction);
-      return checkIfContextEqual(transformFunction(fn, args));
+      return checkIfContextEqual(transformFunction(fn, args, false, functions.has_value() ? functions.value() : std::deque<std::shared_ptr<ir::Func>>{}));
     }
 
     case NoMatchesFound: {
       if (hasSelf)
         arguments.erase(arguments.begin());
-      if (foundFunction != nullptr) return checkIfContextEqual(foundFunction);
       if ((!overloads.has_value()) && (!functions.has_value()))
         E<VARIABLE_ERROR>(dbgInfo, FMT("Function '%s' is not defined!", name.c_str()));
       CompilerError* tailErrors = nullptr;
@@ -188,7 +136,7 @@ Transformer::getFunction(DBGObject* dbgInfo,
     }
 
     case AmbiguityConflict: {
-      if (hasSelf)
+      if (hasSelf)  
         arguments.erase(arguments.begin());
       CompilerError* tailErrors = nullptr;
       ADD_FUNCTION_ERROR(overloads, overload.function)

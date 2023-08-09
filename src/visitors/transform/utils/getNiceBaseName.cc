@@ -16,7 +16,7 @@ std::string
 Transformer::getNiceBaseName(std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                                         std::optional<types::Type*>,
                                         std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                                        std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+                                        std::optional<std::deque<Cache::FunctionStore>>,
                                         std::optional<std::shared_ptr<ir::Module>>,
                                         bool /* (Ignore) Accept private members */>
                                      base) {

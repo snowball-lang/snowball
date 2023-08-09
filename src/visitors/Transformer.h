@@ -67,7 +67,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
   using StoreType = std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                                std::optional<types::Type*>,
                                std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                               std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+                               std::optional<std::deque<Cache::FunctionStore>>,
                                std::optional<std::shared_ptr<ir::Module>>>;
   // Context used to keep track of what's going on
   // and to manage a stack.
@@ -159,8 +159,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * generated function.
    *  @c deduceFunction
    */
-  std::tuple<cacheComponents::Functions::FunctionStore, std::vector<types::Type*>, FunctionFetchResponse>
-  getBestFittingFunction(const std::vector<cacheComponents::Functions::FunctionStore>& overloads,
+  std::tuple<Cache::FunctionStore, std::vector<types::Type*>, FunctionFetchResponse>
+  getBestFittingFunction(const std::deque<Cache::FunctionStore>& overloads,
                          const std::vector<types::Type*>& arguments,
                          const std::vector<Expression::TypeRef*>& generics = {},
                          bool isIdentifier = false);
@@ -211,7 +211,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     std::tuple<std::optional<std::shared_ptr<ir::Value>>,
       std::optional<types::Type*>,
       std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-      std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+      std::optional<std::deque<Cache::FunctionStore>>,
       std::optional<std::shared_ptr<ir::Module>>,
       bool /* Accept private members */>
       stores,
@@ -223,17 +223,15 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
   /**
    * It decides whether or not a generated function should be used or if
    *  and overloaded function should by checking the closest match.
-   * 
-   * @note `true` means that it should use the generated function.
   */
-  bool shouldUseGeneratedFunction(std::shared_ptr<ir::Func> fn, std::vector<types::Type*> arguments);
+  std::shared_ptr<ir::Func> shouldReturnOverload(std::shared_ptr<ir::Func> fn, std::deque<std::shared_ptr<ir::Func>> overloads);
   /**
    * @brief Transform a function that hasn't been generated yet.
    * @arg arguments - deduced arguments to unify
    */
   std::shared_ptr<ir::Func> transformFunction(cacheComponents::Functions::FunctionStore node,
                                               const std::vector<types::Type*>& deducedTypes,
-                                              bool isEntryPoint = false);
+                                              bool isEntryPoint = false, std::deque<std::shared_ptr<ir::Func>> overloads = {});
   /**
    * @brief Gets the `real` user defined list for the arguments.
    * This is because, when generating a function, we add the "self"
@@ -334,7 +332,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
   std::string getNiceBaseName(std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                                          std::optional<types::Type*>,
                                          std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                                         std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+                                         std::optional<std::deque<Cache::FunctionStore>>,
                                          std::optional<std::shared_ptr<ir::Module>>,
                                          bool /* (Ignore) Accept private members */>
                                       base);
@@ -390,7 +388,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
   std::pair<std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                        std::optional<types::Type*>,
                        std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                       std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+                       std::optional<std::deque<Cache::FunctionStore>>,
                        std::optional<std::shared_ptr<ir::Module>>,
                        bool /* Accept private members */>,
             std::optional<std::shared_ptr<ir::Value>>>

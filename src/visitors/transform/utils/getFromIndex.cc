@@ -12,7 +12,7 @@ namespace Syntax {
 std::pair<std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                      std::optional<types::Type*>,
                      std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                     std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+                     std::optional<std::deque<Cache::FunctionStore>>,
                      std::optional<std::shared_ptr<ir::Module>>,
                      bool /* Accept private members */>,
           std::optional<std::shared_ptr<ir::Value>>>
@@ -21,7 +21,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
           -> std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                         std::optional<types::Type*>,
                         std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                        std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+                        std::optional<std::deque<Cache::FunctionStore>>,
                         std::optional<std::shared_ptr<ir::Module>>,
                         bool /* Accept private members */> {
     if (auto x = utils::cast<types::ReferenceType>(type)) { type = x->getBaseType(); }
@@ -88,7 +88,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
           -> std::tuple<std::optional<std::shared_ptr<ir::Value>>,
                         std::optional<types::Type*>,
                         std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                        std::optional<std::vector<cacheComponents::Functions::FunctionStore>>,
+                        std::optional<std::deque<Cache::FunctionStore>>,
                         std::optional<std::shared_ptr<ir::Module>>,
                         bool /* Accept private members */> {
     // TODO: dont allow operators for modules

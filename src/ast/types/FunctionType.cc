@@ -29,15 +29,16 @@ std::string FunctionType::getPrettyName() const {
   return FMT("function (%s) mut -> %s", stringArgs.c_str(), stringRet.c_str());
 }
 
-bool FunctionType::is(FunctionType* other) {
+bool FunctionType::is(FunctionType* other) const {
   auto otherArgs = other->getArgs();
-  bool argumentsEqual = std::all_of(otherArgs.begin(), otherArgs.end(), [&, idx = 0](Type* i) mutable {
-    return args.at(idx)->is(i);
+  if (args.size() != otherArgs.size()) return false;
+  bool argumentsEqual = args.size() == 0 ? true : std::all_of(otherArgs.begin(), otherArgs.end(), [&, idx = 0](Type* i) mutable {
     idx++;
+    return args.at(idx-1)->is(i);
   });
 
   auto returnEquals = retTy->is(other->getRetType());
-  return returnEquals && argumentsEqual;
+  return returnEquals && argumentsEqual && (variadic == other->isVariadic());
 }
 
 std::string FunctionType::getMangledName() const {

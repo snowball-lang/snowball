@@ -87,7 +87,7 @@ public:
    * @param other Function type to check
    * @return true/false depending on the equality
    */
-  virtual bool is(FunctionType* other);
+  virtual bool is(FunctionType* other) const;
 
   /// @return function argument types
   std::vector<Type*> getArgs() const { return args; }
