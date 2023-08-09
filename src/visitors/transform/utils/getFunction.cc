@@ -79,9 +79,6 @@ Transformer::getFunction(DBGObject* dbgInfo,
   } else if (mod) {
     E<TYPE_ERROR>(dbgInfo, FMT("Silly billy, you can't call modules! ('%s')", name.c_str()));
   }
-  if (name == "(mut Core::_$core::Core::Range<i32>)::next") {
-    DUMP_S("DUMPING RANGE NEXT")
-  }
   auto [fn, args, res] = getBestFittingFunction(overloads.has_value() ? overloads.value() : std::deque<Cache::FunctionStore>{}, arguments, generics, isIdentifier);
   switch (res) {
     case Ok: {

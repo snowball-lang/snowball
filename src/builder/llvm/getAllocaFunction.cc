@@ -15,6 +15,9 @@ llvm::Function* LLVMBuilder::getAllocaFunction() {
   f->addRetAttr(llvm::Attribute::NonNull);
   f->addRetAttr(llvm::Attribute::NoAlias);
   f->addRetAttr(llvm::Attribute::NoUndef);
+  f->setDoesNotThrow();
+  f->setCannotDuplicate();
+  f->setDoesNotRecurse();
   return f;
 }
 
