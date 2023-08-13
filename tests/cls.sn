@@ -104,4 +104,23 @@ fn [[test(expect = 0)]] generic_access_stack() i32 {
   return t.a;
 }
 
+class InheritedVirtualTest: VirtualTest {
+  pub:
+    InheritedVirtualTest() : super() {}
+    virt fn test() i32 {
+      return false;
+    }
+}
+
+fn [[test(expect = 0)]] inherited_virtual_stack() i32 {
+  let t = new InheritedVirtualTest{};
+  //t.test();
+  return false;
+}
+
+fn [[test(expect = 0)]] inherited_virtual_heap() i32 {
+  let t = new InheritedVirtualTest();
+  //return t.test();
+}
+
 }

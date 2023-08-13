@@ -31,7 +31,7 @@ std::string ReferenceType::getMangledName() const {
 }
 
 Syntax::Expression::TypeRef* ReferenceType::toRef() {
-  auto tRef = Syntax::TR("$referenceType:" + std::to_string(getId()), nullptr, this, "<pointer>");
+  auto tRef = new Syntax::Expression::ReferenceType(base->toRef(), getDBGInfo());
   return tRef;
 }
 

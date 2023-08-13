@@ -17,7 +17,8 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
   if (p_node->hasAttribute(Attributes::TEST) && (!ctx->testMode || !ctx->isMainModule))
     return;
   else if (p_node->hasAttribute(Attributes::TEST)) { p_node->addAttribute(Attributes::ALLOW_FOR_TEST); }
-  
+
+  p_node = p_node->copy();
   if (auto c = ctx->getCurrentClass(true)) {
     auto args = p_node->getArgs();
     auto pointer = (p_node->hasAttribute(Attributes::BUILTIN_NO_POINTER) || p_node->hasAttribute(Attributes::NO_POINTER_SELF)) ? c->copy() : c->getPointerTo();
@@ -55,7 +56,7 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
         ctx->exported.push_back(name);
       }
     }
-    ctx->cache->setFunction(uuid, std::move(p_node), ctx->saveState());
+    ctx->cache->setFunction(uuid, p_node, ctx->saveState());
     return;
   }
 

@@ -105,7 +105,8 @@
         "stdint.h": "c",
         "gc.h": "c",
         "__verbose_abort": "cpp",
-        "runtime.h": "c"
+        "runtime.h": "c",
+        "forward_list": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "todo-tree.tree.scanMode": "workspace",

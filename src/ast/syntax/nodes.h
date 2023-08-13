@@ -526,6 +526,9 @@ public:
   /// Check if the function is declared as a constructor
   virtual bool isConstructor() { return false; }
 
+  /// @brief Copy the function
+  virtual FunctionDef* copy() { return new FunctionDef(*this); }
+
   // Set an acceptance call
   ACCEPT()
 };
@@ -1020,6 +1023,9 @@ public:
   virtual bool isExtern() override { return true; }
   /// @return Get external function's name.
   std::string getExternalName() { return externalName; }
+
+  // Copy the function
+  virtual ExternFnDef* copy() override { return new ExternFnDef(*this); }
 };
 
 /**
@@ -1040,6 +1046,9 @@ public:
 
   /// @return Get function's body declaration.
   Block* getBody() { return block; }
+
+  // Copy the function
+  virtual BodiedFunction* copy() override { return new BodiedFunction(*this); }
 };
 
 /**
@@ -1103,6 +1112,9 @@ public:
 
   /// @return `true` if the function is declared as a constructor
   bool isConstructor() override { return true; }
+
+  // Copy the function
+  virtual ConstructorDef* copy() override { return new ConstructorDef(*this); }
 };
 
 /**
@@ -1123,6 +1135,9 @@ public:
 
   /// @return Get function's body declaration.
   auto getBody() { return block; }
+
+  // Copy the function
+  virtual LLVMFunction* copy() override { return new LLVMFunction(*this); }
 };
 
 }; // namespace Statement

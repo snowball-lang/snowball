@@ -165,6 +165,19 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
                          const std::vector<Expression::TypeRef*>& generics = {},
                          bool isIdentifier = false);
   /**
+   * It tries to check if a type can be "casted" into another type.
+   * @note It will return CastType::None if the types are not compatible.
+   *  we don't return valid cast if they are the same type, because that 
+   *  is not a cast
+   */
+  enum class CastType
+  {
+    NoCast,
+    Valid,
+    AutoDeref,
+    AutoRef
+  }; CastType canCast(types::Type* from, types::Type* to);
+  /**
    * @brief Compares if generics equal by checking both classes.
    * @note (1) This function will also generate the @param ty generics
    * if there are any present.

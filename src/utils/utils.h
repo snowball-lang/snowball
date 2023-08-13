@@ -127,6 +127,11 @@ void assert_value_type() {
   static_assert(std::is_same<T, X>::value, "value types must be the same!");
 }
 
+template <typename T>
+T* copy(T* x) {
+  return new T(*x);
+}
+
 #if _SNOWBALL_TIMERS_DEBUG
 template <typename F, typename... Ts>
 double _timer(F&& f, Ts&&... args) {

@@ -27,9 +27,21 @@ llvm::Value* LLVMBuilder::allocateObject(types::DefinedType* ty, bool heapAlloca
     vtablePointer = v;
   } else {
     auto t = ctx->getVtableTy(ty->getId());
-    assert(t != nullptr);
-
+    if (!t) {
+      t = llvm::StructType::create(*context, (std::string)_SN_VTABLE_PREFIX + ty->getMangledName());
+      std::vector<llvm::Type*> types;
+      for (auto fn : ty->getVTable()) {
+        types.push_back(getLLVMType(fn->getType()));
+      }
+      t->setBody(types);
+      ctx->addVtableTy(ty->getId(), t);
+    }
+    
     vtablePointer = createVirtualTable(ty, t);
+    // insert vtable to the start of the type declaration
+    auto body = llvm::cast<llvm::StructType>(llvmType)->elements().vec();
+    body[0] = t;
+    llvm::cast<llvm::StructType>(llvmType)->setBody(body);
   }
 
   auto pointer = builder->CreateInBoundsGEP(llvmType, cast, {builder->getInt32(0), builder->getInt32(0)});

@@ -104,6 +104,7 @@ class [[extends]] i8 {
     // override with &i8
     operator [[__primitive_internal__]] =(other: &i8) &i8 {}
     operator [[__internal__]] =(other: i8) &i8 {}
+    operator [[__internal__]] ==(other: i8) bool {}
 }
 
 class [[extends]] i16 {
@@ -145,6 +146,7 @@ class [[extends]] i16 {
     // override with &i16
     operator [[__primitive_internal__]] =(other: &i16) &i16 {}
     operator [[__internal__]] =(other: i16) &i16 {}
+    operator [[__internal__]] ==(other: i16) bool {}
 }
 
 class [[extends]] i32 {
@@ -186,6 +188,8 @@ class [[extends]] i32 {
     // override with &i32
     operator [[__primitive_internal__]] =(other: &i32) &i32 {}
     operator [[__internal__]] =(other: &i32) &i32 {}
+    operator [[__internal__]] =(other: i32) &i32 {}
+    operator [[__internal__]] ==(other: i32) bool {}
 }
 
 class [[extends]] i64 {
@@ -227,6 +231,11 @@ class [[extends]] i64 {
     operator [[__primitive_internal__]] !() bool {}
     operator [[__primitive_internal__]] ||(other: i64) bool {}
     operator [[__primitive_internal__]] &&(other: i64) bool {}
+
+    // override with &i64
+    operator [[__primitive_internal__]] =(other: &i64) &i64 {}
+    operator [[__internal__]] =(other: &i64) &i64 {}
+    operator [[__internal__]] ==(other: i64) bool {}
 }
 
 class [[extends]] f32 {
@@ -268,6 +277,11 @@ class [[extends]] f32 {
     operator [[__primitive_internal__]] !() bool {}
     operator [[__primitive_internal__]] ||(other: f32) bool {}
     operator [[__primitive_internal__]] &&(other: f32) bool {}
+
+    // override with &f32
+    operator [[__primitive_internal__]] =(other: &f32) &f32 {}
+    operator [[__internal__]] =(other: &f32) &f32 {}
+    operator [[__internal__]] ==(other: f32) bool {}
 }
 
 class [[extends]] f64 {
@@ -309,6 +323,11 @@ class [[extends]] f64 {
     operator [[__primitive_internal__]] !() bool {}
     operator [[__primitive_internal__]] ||(other: f64) bool {}
     operator [[__primitive_internal__]] &&(other: f64) bool {}
+
+    // override with &f64
+    operator [[__primitive_internal__]] =(other: &f64) &f64 {}
+    operator [[__internal__]] =(other: &f64) &f64 {}
+    operator [[__internal__]] ==(other: f64) bool {}
 }
 
 class [[extends]] bool {
@@ -350,6 +369,11 @@ class [[extends]] bool {
     operator [[__primitive_internal__]] !() bool {}
     operator [[__primitive_internal__]] ||(other: bool) bool {}
     operator [[__primitive_internal__]] &&(other: bool) bool {}
+
+    // override with &bool
+    operator [[__primitive_internal__]] =(other: &bool) &bool {}
+    operator [[__internal__]] =(other: &bool) &bool {}
+    operator [[__internal__]] ==(other: bool) bool {}
 }
 
 class [[extends]] cobj {
@@ -364,51 +388,3 @@ class [[extends]] cobj {
     // override with &cobj
     operator [[__primitive_internal__]] =(other: &cobj) &cobj {}
 }
-
-
-
-
-
-
-
-
-//  std::vector<std::tuple<types::Type*, std::vector<std::string>, std::vector<std::string>>> overloadTypes = {
-//          {raw_BoolType, OperatorService::operators, {
-//            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
-//          }},   
-//
-//          {raw_Float64Type, OperatorService::operators, {
-//            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
-//          }},
-//
-//          {raw_Float32Type, OperatorService::operators, {
-//            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
-//          }},
-//
-//          {raw_Int64Type, OperatorService::operators, {
-//            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
-//          }},
-//
-//          {raw_Int32Type, OperatorService::operators, {
-//            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
-//          }},
-//
-//          {raw_Int16Type, OperatorService::operators, {
-//            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
-//          }},
-//
-//          {raw_Int8Type, OperatorService::operators, {
-//            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
-//          }},
-//
-//          {raw_CharType, OperatorService::operators, {
-//            OperatorService::getOperatorId(OperatorService::OperatorType::INDEX)
-//          }},
-//
-//
-//          {raw_CObjectType,
-//           {
-//            OperatorService::getOperatorId(OperatorService::OperatorType::EQEQ),
-//            OperatorService::getOperatorId(OperatorService::OperatorType::NOTEQ),
-//           }, { }}};
-//

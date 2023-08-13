@@ -54,18 +54,18 @@ int DefinedType::addVtableItem(std::shared_ptr<ir::Func> f) {
   classVtable.push_back(f);
   return getVtableSize() - 1;
 }
-std::vector<std::shared_ptr<ir::Func>> DefinedType::getVTable() const { return classVtable; }
-
+std::vector<std::shared_ptr<ir::Func>> DefinedType::getVTable() 
+  const { return classVtable; }
 bool DefinedType::is(DefinedType* other) const {
   auto otherArgs = other->getGenerics();
   bool genericSizeEqual = otherArgs.size() == generics.size();
   bool argumentsEqual = genericSizeEqual ? std::all_of(otherArgs.begin(),
-                                                       otherArgs.end(),
-                                                       [&, idx = 0](Type* i) mutable {
-                                                         return generics.at(idx)->is(i);
-                                                         idx++;
-                                                       })
-                                         : false;
+    otherArgs.end(),
+    [&, idx = 0](Type* i) mutable {
+      idx++;
+      return generics.at(idx-1)->is(i);
+    })
+    : false;
   return (other->getUUID() == uuid) && argumentsEqual;
 }
 
@@ -77,7 +77,10 @@ std::string DefinedType::getPrettyName() const {
   if (generics.size() > 0) {
     genericString = "<";
 
-    for (auto g : generics) { genericString += g->getPrettyName(); }
+    for (auto g : generics) { 
+      genericString += g->getPrettyName(); 
+      if (g != generics.back()) genericString += ", ";
+    }
 
     genericString += ">";
   }

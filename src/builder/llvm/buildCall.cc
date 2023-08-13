@@ -77,6 +77,7 @@ void LLVMBuilder::visit(ir::Call* call) {
     auto loadedVtable = builder->CreateLoad(getLLVMType(parentType), parentValue);
     auto pointer = builder->CreateInBoundsGEP(loadedVtable->getType(), loadedVtable, {builder->getInt32(index)});
     auto calleePointer = builder->CreateLoad(pointer->getType(), pointer);
+    builder->CreateAssumption(builder->CreateIsNotNull(calleePointer));
     llvmCall = createCall(calleeType, (llvm::Function*)calleePointer, args);
     if (allocatedValue) {
       //builder->CreateStore(llvmCall, allocatedValue);

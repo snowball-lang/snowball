@@ -96,6 +96,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
   for (auto v : fn->getSymbols()) {
     auto llvmType = getLLVMType(v->getType());
     auto storage = builder->CreateAlloca(llvmType, nullptr, "var." + v->getIdentifier());
+    builder->CreateStore(llvm::Constant::getNullValue(llvmType), storage);
     ctx->addSymbol(v->getId(), storage);
 
     // debug info

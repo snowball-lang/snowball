@@ -11,6 +11,9 @@
 
 #define OPERATOR_INSTANCE(x, f)                                                                                        \
   case services::OperatorService::x:                                                                                   \
+    if (auto x = utils::cast<types::ReferenceType>(args.at(0)->getType()); left->getType()->isPointerTy() && x != nullptr) {                  \
+      left = builder->CreateLoad(getLLVMType(x->getPointedType()), left);                                                                                \
+    }                                                                                                                  \
     this->value = builder->f(left, right);                                                                             \
     break;
 #define OPERATOR_UINSTANCE(x, f)                                                                                       \
@@ -34,12 +37,8 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
       llvm::Value* right = nullptr;
       if (args.size() > 1) right = build(args.at(1).get());
       auto baseType = args.at(0)->getType();
-      if (llvm::isa<llvm::AllocaInst>(left)) {
-        auto l = llvm::cast<llvm::AllocaInst>(left);
-        left = builder->CreateLoad(l->getAllocatedType(), l, ".load");
-      }
-      
-      if (auto x = utils::cast<types::ReferenceType>(baseType)) baseType = x->getPointedType();
+      if (auto x = utils::cast<types::ReferenceType>(baseType)) 
+        baseType = x->getPointedType();
       if (utils::cast<types::BoolType>(baseType) || utils::cast<types::Int8Type>(baseType) ||
           utils::cast<types::Int16Type>(baseType) || utils::cast<types::Int32Type>(baseType) ||
           utils::cast<types::Int64Type>(baseType) || utils::cast<types::CharType>(baseType) ||
@@ -87,7 +86,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
               createInsertValue(right, index->getIndex(), left, baseType);
             } else {
               auto v = left;
-              if (llvm::isa<llvm::LoadInst>(v)) {
+              if (llvm::isa<llvm::LoadInst>(left)) {
                 auto l = llvm::cast<llvm::LoadInst>(left);
                 v = l->getOperand(0);
               }

@@ -26,7 +26,7 @@ UniversalArray_T* ua_resize(UniversalArray_T* ua, int size) {
 }
 
 void* ua_get(UniversalArray_T* ua, int index) {
-    return (void*)ua->data[index];
+    return (void*)&ua->data[index];
 }
 
 void ua_set(UniversalArray_T* ua, int index, void* value) {

@@ -28,7 +28,7 @@ void LLVMBuilder::visit(ir::ValueExtract* extract) {
     assert(false && "BUG: Value extract type not supported!");
   }
 
-  this->value = builder->CreateLoad(getLLVMType(var->getType()), value);
+  this->value = builder->CreateLoad(getLLVMType(var->getType()), value, ".extr");
 }
 
 } // namespace codegen

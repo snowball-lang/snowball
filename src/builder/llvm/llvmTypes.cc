@@ -59,21 +59,9 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
     auto fields = c->getFields();
     auto generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Type*>(
             fields, [&](types::DefinedType::ClassField* t) { return getLLVMType(t->type); });
-    if (c->hasVtable()) { // Ignore vtables for structs
-      if (auto v = ctx->getVtableTy(c->getId())) {
-        generatedFields.insert(generatedFields.begin(), v);
-      } else {
-        auto structName = (std::string)_SN_VTABLE_PREFIX + c->getMangledName();
-        std::vector<llvm::Type*> types;
-        for (auto fn : c->getVTable())
-          types.push_back(getLLVMType(fn->getType()));
-        auto vtable = llvm::StructType::create(module->getContext(), structName);
-        vtable->setBody(types);
-        generatedFields.insert(generatedFields.begin(), vtable->getPointerTo());
-        ctx->addVtableTy(c->getId(), vtable);
-      }
+    if (c->hasVtable()) {
+      generatedFields.insert(generatedFields.begin(), builder->getInt8PtrTy());
     }
-
     s->setBody(generatedFields);
     return s;
   } else {

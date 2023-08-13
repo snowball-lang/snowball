@@ -469,13 +469,13 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
      * @return The element at the specified index.
      * @note It returns a reference to the element at the specified index.
      */
-    fn [[internal_linkage]] at(index: i32) _StoreType
+    fn [[internal_linkage]] at(index: i32) &mut _StoreType
     {
       if index < 0 || index >= self.length 
       {
         raise new IndexError("Index out of bounds.");
       }
-      return UA::__ua_get(self.buffer, index) as _StoreType;
+      return UA::__ua_get(self.buffer, index) as &_StoreType;
     }
     /**
      * @brief Returns the data of the vector.
@@ -489,7 +489,7 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
      * @return The element at the specified index.
      * @see Vector<_StoreType>::at()
      */
-    operator [[internal_linkage, inline]] [](index: i32) mut &mut _StoreType
+    operator [[internal_linkage, inline]] [](index: i32) &mut _StoreType
       { return self.at(index); }
     /**
      * @brief It inserts an element at the specified index.
@@ -514,7 +514,6 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
     fn [[internal_linkage]] to_string<>() String {
       let mut result = "[".to_string();
       let separator = new String{", "};
-
       for i in 0..self.length {
         result = result + String::from(self[i]);
         if i != self.length - 1 {

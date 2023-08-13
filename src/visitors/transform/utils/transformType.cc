@@ -23,6 +23,28 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     x->setMutable(true);
     return x;
   }
+
+  if (ty->isReferenceType()) {
+    auto pointer = utils::cast<Expression::ReferenceType>(ty);
+    assert(pointer);
+
+    auto x = transformType(pointer->getBaseType())->getPointerTo();
+    return x;
+  } else if (ty->isTypeDecl()) {
+    auto decl = utils::cast<Expression::DeclType>(ty);
+    assert(decl);
+
+    auto val = trans(decl->getExpr());
+    return val->getType()->copy();
+  } else if (ty->isFunctionType()) {
+    auto fn = utils::cast<Expression::FuncType>(ty);
+    assert(fn);
+    std::vector<types::Type*> args;
+    for (auto arg : fn->getArgs()) args.push_back(transformType(arg));
+    auto ret = transformType(fn->getReturnValue());
+    return builder.createFunctionType(args, ret);
+  }
+
   auto name = ty->getPrettyName();
   auto id = ty->getId();
   if (id.empty()) { id = ty->getName(); }
@@ -94,29 +116,6 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
 continueTypeFetch:
   // TODO: maybe move up in the function to prevent problems with generics?
   if (auto x = ty->_getInternalType()) { return x->copy(); }
-
-  if (ty->isTypeDecl()) {
-    auto decl = utils::cast<Expression::DeclType>(ty);
-    assert(decl);
-
-    auto val = trans(decl->getExpr());
-    return val->getType()->copy();
-  } else if (ty->isFunctionType()) {
-    auto fn = utils::cast<Expression::FuncType>(ty);
-    assert(fn);
-    std::vector<types::Type*> args;
-    for (auto arg : fn->getArgs()) args.push_back(transformType(arg));
-    auto ret = transformType(fn->getReturnValue());
-    return builder.createFunctionType(args, ret);
-  }
-
-  if (ty->isReferenceType()) {
-    auto pointer = utils::cast<Expression::ReferenceType>(ty);
-    assert(pointer);
-
-    auto x = transformType(pointer->getBaseType())->getPointerTo();
-    return x;
-  }
 
   auto uuid = ctx->createIdentifierName(id, false);
   bool existsWithGenerics = false;

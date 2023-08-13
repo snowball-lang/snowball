@@ -51,7 +51,7 @@ Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& over
           }
           argsEqual = arguments.at(i)->is(type);
           if (!argsEqual) {
-            if (arguments.at(i)->canCast(type)) {
+            if (canCast(arguments.at(i), type) != CastType::NoCast) {
               argsEqual = true;
               argsNeedCasting = true;
             }

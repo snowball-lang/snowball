@@ -94,6 +94,7 @@ Transformer::getFunction(DBGObject* dbgInfo,
 #define ADD_FUNCTION_ERROR(id, idx)                                                                                    \
   for (auto overload : id.value()) {                                                                                   \
     if (idx->getDBGInfo() == nullptr) continue;                                                                        \
+    if (idx->hasAttribute(Attributes::BUILTIN) || idx->hasAttribute(Attributes::BUILTIN_NO_POINTER)) continue;         \
     auto err = EI<>(idx, "", {.info = "A possible function overload found here"});                                     \
     if (tailErrors == nullptr) {                                                                                       \
       tailErrors = err;                                                                                                \
@@ -109,8 +110,7 @@ Transformer::getFunction(DBGObject* dbgInfo,
       else
         ADD_FUNCTION_ERROR(overloads, overload.function)
       // TODO: throw a note that sugest's it's correct types: only if
-      // there's one
-      //  overload
+      // TODO: better error for operators: no operator found for `i32 + String` or something.
       E<VARIABLE_ERROR>(dbgInfo,
                         FMT("No matches found for `%s(%s)`",
                             name.c_str(),
