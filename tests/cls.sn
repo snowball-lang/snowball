@@ -114,13 +114,12 @@ class InheritedVirtualTest: VirtualTest {
 
 fn [[test(expect = 0)]] inherited_virtual_stack() i32 {
   let t = new InheritedVirtualTest{};
-  //t.test();
-  return false;
+  return t.test();
 }
 
 fn [[test(expect = 0)]] inherited_virtual_heap() i32 {
   let t = new InheritedVirtualTest();
-  //return t.test();
+  return t.test();
 }
 
 }

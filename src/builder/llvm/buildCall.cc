@@ -65,7 +65,7 @@ void LLVMBuilder::visit(ir::Call* call) {
   } else if (auto c = utils::dyn_cast<ir::Func>(calleeValue); c != nullptr && c->inVirtualTable()) {
     assert(c->hasParent());
 
-    auto index = c->getVirtualIndex();
+    auto index = c->getVirtualIndex() + 1; // avoid class info
     auto parent = c->getParent();
 
     auto f = llvm::cast<llvm::Function>(callee);
@@ -73,12 +73,22 @@ void LLVMBuilder::visit(ir::Call* call) {
     // 1. The function returns a type that's not a pointer (meaning self is at index 1)
     // 2. The function does not return a type that's not a pointer (meaning self is at index 0)
     auto parentValue = args.at(/* self = */ allocatedValue != nullptr);
-    auto parentType = call->getArguments().at(/* self = */ 0)->getType();
-    auto loadedVtable = builder->CreateLoad(getLLVMType(parentType), parentValue);
-    auto pointer = builder->CreateInBoundsGEP(loadedVtable->getType(), loadedVtable, {builder->getInt32(index)});
-    auto calleePointer = builder->CreateLoad(pointer->getType(), pointer);
-    builder->CreateAssumption(builder->CreateIsNotNull(calleePointer));
-    llvmCall = createCall(calleeType, (llvm::Function*)calleePointer, args);
+    auto parentIR = call->getArguments().at(/* self = */ 0);
+    auto parentType = parentIR->getType();
+    auto definedType = utils::cast<types::DefinedType>(parentType);
+    if (auto x = utils::cast<types::ReferenceType>(parentType))
+      definedType = utils::cast<types::DefinedType>(x->getPointedType());
+    assert(definedType && "Parent type is not a defined type!");
+    auto vtableType = ctx->getVtableTy(definedType->getId());
+    // vtable structure:
+    // class instance = { [0] = vtable, ... }
+    // vtable = { [size x ptr] } { [0] = fn1, [1] = fn2, ... } }
+    auto vtable = builder->CreateLoad(vtableType->getPointerTo(), builder->CreateConstInBoundsGEP1_32(
+            vtableType, builder->CreatePointerCast(parentValue, vtableType->getPointerTo()), 0));
+    auto fn = builder->CreateLoad(builder->getPtrTy(), builder->CreateConstInBoundsGEP2_32(
+            vtableType->elements()[0], vtable, 0, index));
+    builder->CreateAssumption(builder->CreateIsNotNull(fn));
+    llvmCall = createCall(calleeType, (llvm::Function*)fn, args);
     if (allocatedValue) {
       //builder->CreateStore(llvmCall, allocatedValue);
       //auto alloca = createAlloca(allocatedValueType);

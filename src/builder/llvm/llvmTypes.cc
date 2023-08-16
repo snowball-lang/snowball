@@ -60,7 +60,7 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
     auto generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Type*>(
             fields, [&](types::DefinedType::ClassField* t) { return getLLVMType(t->type); });
     if (c->hasVtable()) {
-      generatedFields.insert(generatedFields.begin(), builder->getInt8PtrTy());
+      generatedFields.insert(generatedFields.begin(), builder->getPtrTy());
     }
     s->setBody(generatedFields);
     return s;
