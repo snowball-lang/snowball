@@ -7,8 +7,14 @@ namespace snowball {
 namespace Syntax {
 
 SN_DEFINITE_ASSIGMENT_VISIT(Statement::TryCatch) {
-  p_node->getTryBlock()->accept(this);
-  for (auto& p_node : p_node->getCatchBlocks()) { p_node->getBlock()->accept(this); }
+  asBlock([&] {
+    for (auto i : p_node->getTryBlock()->getStmts()) { i->accept(this); }
+  });
+  for (auto& p_node : p_node->getCatchBlocks()) { 
+    asBlock([&] {
+      for (auto i : p_node->getBlock()->getStmts()) { i->accept(this); }
+    });
+  }
 }
 
 } // namespace Syntax

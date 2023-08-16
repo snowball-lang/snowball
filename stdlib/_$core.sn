@@ -402,8 +402,7 @@ pub class Range<_Number_Type: Core::IsNumeric = i32>: Iterable<_Number_Type> {
       {
         return Iter<?_Number_Type>::invalid();
       }
-      let iter = Iter<?_Number_Type>::valid(self.iter_index);
-      return iter;
+      return Iter<?_Number_Type>::valid(self.iter_index);
     }
     /**
      * @brief It resets the iteration.
