@@ -273,6 +273,10 @@ private:
    */
   llvm::FunctionType* getLLVMFunctionType(types::FunctionType* fn);
   /**
+   * @brief It creates a new vtable type for a given type.
+   */
+  llvm::StructType* getVtableType(types::DefinedType* ty);
+  /**
    * @brief Generate a bodied function. Notes: bodied
    * functions will have it's own scope meaning that we
    * cant get any variables from this function after it

@@ -79,6 +79,7 @@ void LLVMBuilder::visit(ir::Call* call) {
     if (auto x = utils::cast<types::ReferenceType>(parentType))
       definedType = utils::cast<types::DefinedType>(x->getPointedType());
     assert(definedType && "Parent type is not a defined type!");
+    getVtableType(definedType); // generate vtable type (if not generated yet)
     auto vtableType = ctx->getVtableTy(definedType->getId());
     // vtable structure:
     // class instance = { [0] = vtable, ... }

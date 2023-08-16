@@ -28,10 +28,7 @@ llvm::Value* LLVMBuilder::allocateObject(types::DefinedType* ty, bool heapAlloca
   } else {
     auto t = ctx->getVtableTy(ty->getId());
     if (!t) {
-      t = llvm::StructType::create(*context, (std::string)_SN_VTABLE_PREFIX + ty->getMangledName());
-      auto arrType = llvm::ArrayType::get(llvm::Type::getInt8PtrTy(*context), ty->getVtableSize()+1);
-      t->setBody(arrType);
-      ctx->addVtableTy(ty->getId(), t);
+      t = getVtableType(ty);
     }
     
     vtablePointer = createVirtualTable(ty, t);
@@ -43,7 +40,6 @@ llvm::Value* LLVMBuilder::allocateObject(types::DefinedType* ty, bool heapAlloca
 
   auto pointer = builder->CreateConstInBoundsGEP1_32(llvmType, cast, 0);
   builder->CreateStore(vtablePointer, pointer);
-  //builder->CreateStore(vtablePointer, pointer);
   return cast;
 }
 

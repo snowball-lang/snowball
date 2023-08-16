@@ -27,17 +27,21 @@ llvm::GlobalVariable* LLVMBuilder::createVirtualTable(types::DefinedType* ty, ll
     functions.push_back(c);
   }
 
+  auto vTy = ctx->getVtableTy(ty->getId());
+  assert(vTy && "Vtable type not found!");
+  vTy->setBody(llvm::ArrayType::get(llvm::Type::getInt8PtrTy(*context), functions.size()+1));
+
   module->getOrInsertGlobal(structName, vtableType);
   auto vTable = module->getNamedGlobal(structName);
   vTable->setLinkage(llvm::GlobalValue::LinkageTypes::InternalLinkage);
   vTable->setConstant(true);
   vTable->setDSOLocal(true);
   vTable->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
+
   // set comdat any
   vTable->setComdat(module->getOrInsertComdat(structName));
 
-
-  auto arr = llvm::ConstantArray::get(llvm::ArrayType::get(llvm::Type::getInt8PtrTy(*context), functions.size()), functions);
+  auto arr = llvm::ConstantArray::get(llvm::ArrayType::get(llvm::Type::getInt8PtrTy(*context), functions.size()+1), functions);
   auto s = llvm::ConstantStruct::get(vtableType, arr);
   vTable->setInitializer(s);
   return vTable;

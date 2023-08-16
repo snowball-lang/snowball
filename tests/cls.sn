@@ -104,21 +104,36 @@ fn [[test(expect = 0)]] generic_access_stack() i32 {
   return t.a;
 }
 
-class InheritedVirtualTest: VirtualTest {
+class InheritedOverrideVirtualTest: VirtualTest {
   pub:
-    InheritedVirtualTest() : super() {}
+    InheritedOverrideVirtualTest() : super() {}
     virt fn test() i32 {
       return false;
     }
 }
 
-fn [[test(expect = 0)]] inherited_virtual_stack() i32 {
-  let t = new InheritedVirtualTest{};
+fn [[test(expect = 0)]] inherited_override_virtual_stack() i32 {
+  let t = new InheritedOverrideVirtualTest{};
   return t.test();
 }
 
-fn [[test(expect = 0)]] inherited_virtual_heap() i32 {
-  let t = new InheritedVirtualTest();
+fn [[test(expect = 0)]] inherited_override_virtual_heap() i32 {
+  let t = new InheritedOverrideVirtualTest();
+  return t.test();
+}
+
+class InheritanceVirtualTest: VirtualTest {
+  pub:
+    InheritanceVirtualTest() : super() {}
+}
+
+fn [[test]] inheritance_virtual_stack() i32 {
+  let t = new InheritanceVirtualTest{};
+  return t.test();
+}
+
+fn [[test]] inheritance_virtual_heap() i32 {
+  let t = new InheritanceVirtualTest();
   return t.test();
 }
 
