@@ -14,7 +14,7 @@ namespace snowball {
 namespace codegen {
 
 llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
-  auto srcInfo = x->getDBGInfo();
+  const auto& srcInfo = x->getDBGInfo();
 
   auto file = dbg.getFile(srcInfo->getSourceInfo()->getPath());
   auto derivedType = llvm::cast<llvm::DIDerivedType>(getDIType(x->getType()));

@@ -12,7 +12,7 @@
 #include <type_traits>
 #include <vector>
 
-#define GET_CHAR(m_off) (((size_t)char_ptr + m_off >= code.size()) ? '\0' : code.at((size_t)char_ptr + m_off))
+#define GET_CHAR(m_off) (((size_t)char_ptr + m_off >= codeSize) ? '\0' : code.at((size_t)char_ptr + m_off))
 #define EAT_CHAR(m_num)                                                                                                \
   {                                                                                                                    \
     char_ptr += m_num;                                                                                                 \
@@ -30,17 +30,19 @@
 #define IS_TEXT(c)     ((c == '_') || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))
 
 namespace snowball {
-Lexer::Lexer(SourceInfo* p_source_info) : code(p_source_info->getSource()), srcInfo(p_source_info) { }
+Lexer::Lexer(const SourceInfo* p_source_info) : srcInfo(p_source_info) { }
 
 void Lexer::tokenize() {
   tokens = {};
-  if ((int)code.size() == 0) return;
+  const auto& code = srcInfo->getSource();
+  auto codeSize = code.size();
+  if (codeSize == 0) return;
 
   // Iterate every character of the source code
   // and tokenize that char. Tokenizing it will
   // mean that respective Token for the current
   // char will also be added to the Token array
-  while (char_ptr < (int)code.size()) {
+  while (char_ptr < (int)codeSize) {
     switch (GET_CHAR(0)) {
       case 0: handle_eof(); break;
 
@@ -691,7 +693,7 @@ void Lexer::consume(TokenType p_tk, int p_eat_size) {
 
 void Lexer::lexer_error(Error m_error, std::string m_msg, int char_length, ErrorInfo info) {
   DBGSourceInfo* dbg_info =
-          new DBGSourceInfo((SourceInfo*)srcInfo, std::pair<int, int>(cur_line, cur_col), char_length);
+          new DBGSourceInfo(srcInfo, std::pair<int, int>(cur_line, cur_col), char_length);
   throw LexerError(m_error, std::string(m_msg), dbg_info, info);
 }
 } // namespace snowball

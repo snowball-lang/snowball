@@ -52,7 +52,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
                 assert(!ifs.fail());
                 std::string content((std::istreambuf_iterator<char>(ifs)),
                                     (std::istreambuf_iterator<char>()));
-                auto srcInfo = new SourceInfo(content, filePath);
+                const SourceInfo* srcInfo = new SourceInfo(content, filePath);
                 auto lexer = new Lexer(srcInfo);
 #if _SNOWBALL_TIMERS_DEBUG
                 DEBUG_TIMER("Lexer: %fs (%s)", utils::_timer([&] {

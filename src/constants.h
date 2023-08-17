@@ -175,6 +175,10 @@ typedef int32_t snowball_int_t;
 #error "_SNOWBALL_PACKAGES_DIR must be defined! (e.g. \".sn/packages\")"
 #endif
 
+#ifndef _SNOWBALL_LLVM_PACKAGE_VERSION
+#error "_SNOWBALL_LLVM_PACKAGE_VERSION must be defined! (e.g. \"16.0.6\")"
+#endif
+
 // path of ld compiler used for linking
 #ifndef LD_PATH
 #error "LD_PATH must be defined! (e.g. \"/usr/bin/ld\")"

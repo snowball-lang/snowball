@@ -27,6 +27,7 @@ Compiler::Compiler(std::string p_code, std::string p_path) {
   source = p_code;
   cwd = fs::current_path();
   path = path / p_path;
+  srcInfo = nullptr;
 }
 
 void Compiler::initialize() {
@@ -194,7 +195,6 @@ int Compiler::emitBinary(std::string out, bool log) {
 }
 
 void Compiler::createSourceInfo() {
-  SourceInfo* source_info = new SourceInfo(source, path);
-  srcInfo = source_info;
+  srcInfo = new SourceInfo(source, path);
 }
 } // namespace snowball

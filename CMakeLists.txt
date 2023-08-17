@@ -185,6 +185,7 @@ add_compile_definitions(STATICLIB_DIR="${STATICLIB_DIR}")
 
 add_compile_definitions(_SNOWBALL_LIBRARY_OBJ="${_SNOWBALL_LIBRARY_OBJ}")
 add_compile_definitions(_SNOWBALL_LIBRARY_DIR="${_SNOWBALL_LIBRARY_DIR}")
+add_compile_definitions(_SNOWBALL_LLVM_PACKAGE_VERSION="${LLVM_PACKAGE_VERSION}")
 add_compile_definitions(_SNOWBALL_PACKAGES_DIR=".sn/packages")
 
 set(CONFIG_NAME "llvm-config")

@@ -45,7 +45,7 @@ namespace Syntax {
 class Analyzer : public AcceptorExtend<Analyzer, Visitor> {
 #include "../defs/accepts.def"
 public:
-  Analyzer(SourceInfo* srci) : AcceptorExtend(srci){};
+  Analyzer(const SourceInfo* srci) : AcceptorExtend(srci){};
 
   /**
    * A function that executes a pass manager on a vector of syntax

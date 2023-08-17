@@ -24,8 +24,8 @@ namespace snowball {
  */
 class DBGSourceInfo : public SrcObject {
 public:
-  DBGSourceInfo(SourceInfo* source_info, uint32_t p_line);
-  DBGSourceInfo(SourceInfo* source_info, std::pair<int, int> p_pos, uint32_t p_width);
+  DBGSourceInfo(const SourceInfo* source_info, uint32_t p_line);
+  DBGSourceInfo(const SourceInfo* source_info, std::pair<int, int> p_pos, uint32_t p_width);
 
   uint32_t width = 0;
   uint32_t line = 0;
@@ -46,7 +46,7 @@ public:
    * @brief Create a new instance  of dbg source info
    * using a token as reference.
    */
-  static auto fromToken(SourceInfo* i, Token tk) { return new DBGSourceInfo(i, tk.get_pos(), tk.get_width()); }
+  static auto fromToken(const SourceInfo* i, Token tk) { return new DBGSourceInfo(i, tk.get_pos(), tk.get_width()); }
 };
 
 /**

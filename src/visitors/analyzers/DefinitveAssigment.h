@@ -194,7 +194,7 @@ class DefiniteAssigment : public Analyzer {
 #include "../../defs/accepts.def"
 public:
   using Analyzer::Analyzer;
-  DefiniteAssigment(SourceInfo* srci) : Analyzer(srci){};
+  DefiniteAssigment(const SourceInfo* srci) : Analyzer(srci){};
 
   // Default destructor
   ~DefiniteAssigment() noexcept = default;

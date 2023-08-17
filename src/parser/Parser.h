@@ -25,11 +25,11 @@ class Parser {
   Token m_current;
   std::vector<Token> m_tokens;
 
-  SourceInfo* m_source_info;
+  const SourceInfo* m_source_info;
   Syntax::Statement::DefinedTypeDef* m_current_class = nullptr;
 
 public:
-  Parser(std::vector<Token> p_tokens, SourceInfo* p_source_info);
+  Parser(std::vector<Token> p_tokens, const SourceInfo* p_source_info);
   ~Parser() noexcept = default;
 
 private:

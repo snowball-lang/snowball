@@ -51,7 +51,7 @@ class Compiler {
 
   GlobalContext* globalContext;
 
-  SourceInfo* srcInfo;
+  const SourceInfo* srcInfo = (snowball::SourceInfo*)nullptr;
   bool initialized = false;
   bool testsEnabled = false;
 

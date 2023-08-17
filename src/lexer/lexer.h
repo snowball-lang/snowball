@@ -27,7 +27,7 @@ namespace snowball {
  */
 class Lexer {
 public:
-  Lexer(SourceInfo* p_source_info);
+  Lexer(const SourceInfo* p_source_info);
 
   void tokenize();
   std::vector<Token> tokens = {};
@@ -41,8 +41,7 @@ private:
   void lexer_error(Error m_error, std::string m_msg, int char_length = 1, ErrorInfo info = {});
 
   // vars
-  SourceInfo* srcInfo;
-  std::string code;
+  const SourceInfo* srcInfo;
 
   int cur_line = 1;
   int cur_col = 1;
