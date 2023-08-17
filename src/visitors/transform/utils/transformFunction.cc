@@ -45,7 +45,6 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
 
       // Get the respective return type for this function
       auto returnType = transformType(node->getRetType());
-
       // Create a new function value and store it's return type.
       fn = builder.createFunction(node->getDBGInfo(), name,
                                   (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)),
@@ -136,8 +135,6 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
             assert(constructor != nullptr);
             fn->getType()->setMutable(true);
             prependedInsts = transformConstructor(constructor);
-          } else {
-            fn->getType()->setMutable(node->isMutable());
           }
 
           auto block = trans(body);

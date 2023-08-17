@@ -236,8 +236,8 @@ pub class Exception {
       * @brief Exception constructor from a string.
       * @param[in] m The message of the exception.
       */
-    //Exception(m: String) : msg(m.c_str()) 
-    //  { }
+    Exception<T: Core::Sized>(m: T) : msg(m.c_str()) 
+      { }
     /**
      * @brief Returns the message of the exception.
      * @return The message of the exception.
@@ -470,9 +470,13 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
      */
     fn [[internal_linkage]] at(index: i32) &mut _StoreType
     {
-      if index < 0 || index >= self.length 
+      if index < 0 
       {
-        raise new IndexError("Index out of bounds.");
+        return self.at(self.length + index);
+      } 
+      else if index >= self.length 
+      {
+        raise new IndexError("Index out of bounds. Cannot access element at index " + index.to_string());
       }
       return UA::__ua_get(self.buffer, index) as &_StoreType;
     }

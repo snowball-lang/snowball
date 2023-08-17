@@ -278,18 +278,18 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
     assert(binOp);
     if (isAssignment && accessingSelf && !ctx->getCurrentFunction()->getType()->isMutable()) {
       E<VARIABLE_ERROR>(p_node,
-                        "You can't call a mutating method on an immutable instance!",
-                        {.info = "This function is mutable!",
-                         .note = "This error is caused by the function being "
-                                 "mutable, but the value being nonmutable.",
-                         .help = "Try to make the value mutable by adding the 'mut' "
-                                 "keyword or make the function\nnonmutable by "
-                                 "removing the 'mut' keyword from it's declaration.",
-                         .tail = EI<>(value->getDBGInfo(),
-                                      "",
-                                      {
-                                              .info = "This value is nonmutable!",
-                                      })});
+        "You can't call a mutating method on an immutable instance!",
+        {.info = "This function is mutable!",
+         .note = "This error is caused by the function being "
+                 "mutable, but the value being nonmutable.",
+         .help = "Try to make the value mutable by adding the 'mut' "
+                 "keyword or make the function\nnonmutable by "
+                 "removing the 'mut' keyword from it's declaration.",
+         .tail = EI<>(value->getDBGInfo(),
+                      "",
+                      {
+                              .info = "This value is nonmutable!",
+                      })});
     }
 
     if (isAssignment && !binOp->ignoreMutability && !isMutable) {
@@ -300,7 +300,7 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
                           "variable",
                           {.note = "This error is caused by the 'mut' keyword "
                                    "not being present in \nthe variable "
-                                   "declaration.\n\nvalue type: " + value->getType()->getPrettyName(),
+                                   "declaration.\n\nvalue type: " + (std::string)BOLD + fn->getRetTy()->getPrettyName() + RESET,
                            .help = "Try to make the variable mutable by adding "
                                    "the 'mut' keyword.",
                            .tail = EI<>(value->getDBGInfo(), "", {.info = "This variable is not mutable!"})});
@@ -310,6 +310,10 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
         && utils::dyn_cast<ir::VariableDeclaration>(value) == nullptr
         && utils::dyn_cast<ir::ValueExtract>(value) == nullptr
         && utils::dyn_cast<ir::IndexExtract>(value) == nullptr
+        && utils::dyn_cast<ir::Argument>(value) == nullptr
+        && utils::dyn_cast<ir::DereferenceTo>(value) == nullptr
+        && utils::dyn_cast<ir::ReferenceTo>(value) == nullptr
+        && utils::dyn_cast<ir::Call>(value) == nullptr
       ) && utils::cast<types::PrimitiveType>(value->getType())) {
         E<VARIABLE_ERROR>(p_node,
                           "Expression is not assignable!",

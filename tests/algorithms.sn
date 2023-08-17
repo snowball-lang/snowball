@@ -87,13 +87,13 @@ fn jump_search(arr: Vector<i32>, x: i32) i32 {
     let mut prev = 0;
     while (arr[Math::min(step, n) - 1] < x) {
         prev = step;
-        step += Math::sqrt(n);
+        step = step + Math::sqrt(n);
         if (prev >= n) {
             return -1;
         }
     }
     while (arr[prev] < x) {
-        prev += 1;
+        prev = prev + 1;
         if (prev == Math::min(step, n)) {
             return -1;
         }

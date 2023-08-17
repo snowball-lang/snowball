@@ -80,11 +80,11 @@ TypeRef* Parser::parseType() {
   auto dbg = new DBGSourceInfo(m_source_info, pos, m_current.get_pos().second - pos.second);
   auto t = Syntax::TR(ast, name, dbg, id);
   t->setGenerics(generics);
+  t->setMutable(isMutable);
   for (int i = 0; i < referenceDepth; i++) {
     auto base = t;
     t = Syntax::N<ReferenceType>(base, dbg);
   }
-  t->setMutable(isMutable);
   return t;
 }
 
