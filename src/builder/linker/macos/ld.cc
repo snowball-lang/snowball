@@ -14,12 +14,11 @@ namespace linker {
 void Linker::constructLinkerArgs(std::string& input, std::string& output, std::vector<std::string>& args) {
   const bool isIAMCU = target.isOSIAMCU();
   linkerArgs.clear();
-  //linkerArgs.push_back("-demangle");
+  linkerArgs.push_back("-demangle");
   linkerArgs.push_back("-lto_library");
   linkerArgs.push_back("/opt/homebrew/Cellar/llvm/" _SNOWBALL_LLVM_PACKAGE_VERSION "/lib/libLTO.dylib");
   linkerArgs.push_back("-syslibroot");
   linkerArgs.push_back("/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk");
-  linkerArgs.push_back("-no_pie");
   for (auto& lib : linkedLibraries) {
     linkerArgs.push_back("-l:" + lib);
     DEBUG_CODEGEN("Linking library: %s", lib.c_str());
