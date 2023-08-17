@@ -1,6 +1,6 @@
 // only generate for macos
-#if defined(__APPLE__) || defined(__MACH__) || defined(__DARWIN__) || defined(__darwin__) \
-   || defined(__APPLE_CC__) || defined(__OSX__) || defined(__MACH) || defined(__MACOS__)
+#if defined(__APPLE__) || defined(__MACH__) || defined(__DARWIN__) || defined(__darwin__) || defined(__APPLE_CC__) ||  \
+        defined(__OSX__) || defined(__MACH) || defined(__MACOS__)
 
 #include "../../../constants.h"
 #include "../Linker.h"
@@ -35,8 +35,10 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   if (ctx->withStd) {
     for (auto llvmArg : utils::split(LLVM_LDFLAGS, " ")) { linkerArgs.push_back(llvmArg); }
   }
-  if (!ctx->isDynamic) linkerArgs.push_back("-static");
-  else linkerArgs.push_back("-dynamic");
+  if (!ctx->isDynamic)
+    linkerArgs.push_back("-static");
+  else
+    linkerArgs.push_back("-dynamic");
 
   linkerArgs.push_back("-arch");
   // TODO: check this out: https://codebrowser.dev/llvm/clang/lib/Driver/ToolChain.cpp.html
@@ -51,8 +53,7 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   // TODO: we might not find it and we will need to search for System.B
   linkerArgs.push_back("-lSystem");
 
-  for (auto& rpath : rpaths)
-    linkerArgs.push_back("-rpath=" + rpath);
+  for (auto& rpath : rpaths) linkerArgs.push_back("-rpath=" + rpath);
 
   linkerArgs.push_back("-o");
   linkerArgs.push_back(output);

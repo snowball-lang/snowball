@@ -84,7 +84,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
       } else if (attr == "__internal__") {
         return Attributes::BUILTIN;
       } else if (attr == "__no_pointer_self__") {
-        return Attributes::NO_POINTER_SELF; 
+        return Attributes::NO_POINTER_SELF;
       }
       return Attributes::INVALID;
     });
@@ -542,9 +542,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
       }
       default: valid = false;
     }
-    if (valid) {
-      name = OperatorService::getOperatorMangle(newType);
-    }
+    if (valid) { name = OperatorService::getOperatorMangle(newType); }
   }
 
   FunctionDef* fn = nullptr;

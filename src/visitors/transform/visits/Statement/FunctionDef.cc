@@ -66,8 +66,7 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     return;
   }
 
-  if (ctx->generateFunction && !p_node->isGeneric()) 
-    transformFunction({p_node, ctx->saveState()}, {});
+  if (ctx->generateFunction && !p_node->isGeneric()) transformFunction({p_node, ctx->saveState()}, {});
 }
 
 } // namespace Syntax

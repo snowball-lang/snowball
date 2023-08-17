@@ -78,26 +78,29 @@ void LLVMBuilder::visit(ir::Call* call) {
     auto definedType = utils::cast<types::DefinedType>(parentType);
     if (auto x = utils::cast<types::ReferenceType>(parentType))
       definedType = utils::cast<types::DefinedType>(x->getPointedType());
-    else assert(false && "Parent type is not a reference type!");
+    else
+      assert(false && "Parent type is not a reference type!");
     assert(definedType && "Parent type is not a defined type!");
     getVtableType(definedType); // generate vtable type (if not generated yet)
     auto vtableType = ctx->getVtableTy(definedType->getId());
     // vtable structure:
     // class instance = { [0] = vtable, ... }
     // vtable = { [size x ptr] } { [0] = fn1, [1] = fn2, ... } }
-    auto vtable = builder->CreateLoad(vtableType->getPointerTo(), builder->CreateConstInBoundsGEP1_32(
-            vtableType, builder->CreatePointerCast(parentValue, vtableType->getPointerTo()), 0));
-    auto fn = builder->CreateLoad(builder->getPtrTy(), builder->CreateConstInBoundsGEP2_32(
-            vtableType->elements()[0], vtable, 0, index));
+    auto vtable = builder->CreateLoad(
+            vtableType->getPointerTo(),
+            builder->CreateConstInBoundsGEP1_32(
+                    vtableType, builder->CreatePointerCast(parentValue, vtableType->getPointerTo()), 0));
+    auto fn = builder->CreateLoad(builder->getPtrTy(),
+                                  builder->CreateConstInBoundsGEP2_32(vtableType->elements()[0], vtable, 0, index));
     builder->CreateAssumption(builder->CreateIsNotNull(fn));
     llvmCall = createCall(calleeType, (llvm::Function*)fn, args);
     if (allocatedValue) {
-      //builder->CreateStore(llvmCall, allocatedValue);
-      //auto alloca = createAlloca(allocatedValueType);
-      //builder->CreateStore(llvmCall, alloca);
-      //builder->CreateMemCpy(alloca, llvm::MaybeAlign(), allocatedValue, llvm::MaybeAlign(),
-      //        module->getDataLayout().getTypeAllocSize(allocatedValueType), 0);
-      //this->value = allocatedValue;
+      // builder->CreateStore(llvmCall, allocatedValue);
+      // auto alloca = createAlloca(allocatedValueType);
+      // builder->CreateStore(llvmCall, alloca);
+      // builder->CreateMemCpy(alloca, llvm::MaybeAlign(), allocatedValue, llvm::MaybeAlign(),
+      //         module->getDataLayout().getTypeAllocSize(allocatedValueType), 0);
+      // this->value = allocatedValue;
       this->value = builder->CreateLoad(allocatedValueType, allocatedValue);
     } else {
       this->value = llvmCall;
@@ -105,33 +108,30 @@ void LLVMBuilder::visit(ir::Call* call) {
   } else {
     llvmCall = createCall(calleeType, callee, args);
     if (allocatedValue) {
-      //builder->CreateStore(llvmCall, allocatedValue);
+      // builder->CreateStore(llvmCall, allocatedValue);
       this->value = builder->CreateLoad(allocatedValueType, allocatedValue);
     } else {
       this->value = llvmCall;
     }
   }
 
-#define SET_CALL_ATTRIBUTES(type) \
-  if (llvm::isa<type>(llvmCall)) { \
-    auto call = llvm::cast<type>(llvmCall); \
-    auto calledFunction = call->getCalledFunction(); \
-    if (auto f = utils::dyn_cast<ir::Func>(calleeValue)) { \
-      auto valBackup = this->value; \
-      calledFunction = llvm::cast<llvm::Function>(build(f.get())); \
-      this->value = valBackup; \
-    } \
-    if (calledFunction) { \
-      auto attrSet = calledFunction->getAttributes(); \
-      call->setAttributes(attrSet); \
-    }\
+#define SET_CALL_ATTRIBUTES(type)                                                                                      \
+  if (llvm::isa<type>(llvmCall)) {                                                                                     \
+    auto call = llvm::cast<type>(llvmCall);                                                                            \
+    auto calledFunction = call->getCalledFunction();                                                                   \
+    if (auto f = utils::dyn_cast<ir::Func>(calleeValue)) {                                                             \
+      auto valBackup = this->value;                                                                                    \
+      calledFunction = llvm::cast<llvm::Function>(build(f.get()));                                                     \
+      this->value = valBackup;                                                                                         \
+    }                                                                                                                  \
+    if (calledFunction) {                                                                                              \
+      auto attrSet = calledFunction->getAttributes();                                                                  \
+      call->setAttributes(attrSet);                                                                                    \
+    }                                                                                                                  \
   }
 
-  SET_CALL_ATTRIBUTES (llvm::CallInst) 
-  else SET_CALL_ATTRIBUTES(llvm::InvokeInst)
-  else {
-    assert(false);
-  }
+  SET_CALL_ATTRIBUTES(llvm::CallInst)
+  else SET_CALL_ATTRIBUTES(llvm::InvokeInst) else { assert(false); }
 }
 
 } // namespace codegen

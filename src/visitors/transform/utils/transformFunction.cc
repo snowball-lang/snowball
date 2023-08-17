@@ -9,7 +9,8 @@ namespace Syntax {
 std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fnStore,
                                                          const std::vector<types::Type*>& deducedTypes,
                                                          bool isEntryPoint,
-                                                         std::deque<std::shared_ptr<ir::Func>> overloads) {
+                                                         std::deque<std::shared_ptr<ir::Func>>
+                                                                 overloads) {
   auto node = fnStore.function;
   bool dontAddToModule = false;
 
@@ -76,8 +77,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
         auto a = builder.createArgument(node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
                                         arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
         a->setType(transformType(arg->getType()));
-        if (arg->getName() != "self")
-          a->getType()->setMutable(arg->isMutable());
+        if (arg->getName() != "self") a->getType()->setMutable(arg->isMutable());
         a->setMutability(a->getType()->isMutable());
         newArgs.push_back({arg->getName(), a});
       }
@@ -120,8 +120,8 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
           auto body = bodiedFn->getBody();
           if (!bodyReturns(body->getStmts()) &&
               !((utils::cast<types::NumericType>(returnType)) || (utils::cast<types::VoidType>(returnType))) &&
-              !fn->isConstructor() && !node->hasAttribute(Attributes::NOT_IMPLEMENTED) 
-              && !node->hasAttribute(Attributes::BUILTIN)) {
+              !fn->isConstructor() && !node->hasAttribute(Attributes::NOT_IMPLEMENTED) &&
+              !node->hasAttribute(Attributes::BUILTIN)) {
             E<TYPE_ERROR>(node,
                           "Function lacks ending return statement!",
                           {.info = "Function does not return on all "
@@ -155,8 +155,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
     ctx->module->addFunction(fn);
   });
 
-  if (!dontAddToModule)
-    ctx->cache->setFunctionState(fn->getId(), fnStore.state);
+  if (!dontAddToModule) ctx->cache->setFunctionState(fn->getId(), fnStore.state);
   return fn;
 }
 

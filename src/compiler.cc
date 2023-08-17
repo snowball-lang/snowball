@@ -32,7 +32,7 @@ Compiler::Compiler(std::string p_code, std::string p_path) {
 void Compiler::initialize() {
   initialized = true;
   createSourceInfo();
-  
+
   globalContext = new GlobalContext();
   globalContext->isTest = testsEnabled;
 

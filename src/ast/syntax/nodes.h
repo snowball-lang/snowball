@@ -558,7 +558,7 @@ struct VariableDecl : public AcceptorExtend<VariableDecl, Base>, public Acceptor
 
 public:
   VariableDecl(const std::string& name, Expression::Base* value = nullptr, bool isMutable = false,
-    bool isConstant = false);
+               bool isConstant = false);
 
   /// @brief Get the identifier assign to the variable
   std::string getName() const;
@@ -811,8 +811,8 @@ struct ConditionalConstExpr : public AcceptorExtend<ConditionalConstExpr, Base> 
   Block* elseBlock = nullptr;
 
 public:
-  explicit ConditionalConstExpr(
-          Expression::Identifier* name, std::vector<Node*> args, Block* insts, Block* elseBlock = nullptr)
+  explicit ConditionalConstExpr(Expression::Identifier* name, std::vector<Node*> args, Block* insts,
+                                Block* elseBlock = nullptr)
       : name(name), args(args), insts(insts), elseBlock(elseBlock){};
 
   /// @return body block instructions to execute

@@ -1,5 +1,5 @@
-#include "../../../utils/utils.h"
 #include "../../../constants.h"
+#include "../../../utils/utils.h"
 #include "../Linker.h"
 
 #include <llvm/Support/Host.h>
@@ -24,8 +24,7 @@ int Linker::link(std::string& input, std::string& output, std::vector<std::strin
   if (ldstatus) { throw SNError(LINKER_ERR, Logger::format("Linking with " LD_PATH " failed with code %d", ldstatus)); }
 
 #if __APPLE__
-  if (ctx->opt == app::Options::Optimization::OPTIMIZE_O0)
-    os::Driver::run({"dsymutil", output});
+  if (ctx->opt == app::Options::Optimization::OPTIMIZE_O0) os::Driver::run({"dsymutil", output});
 #endif
 
   return EXIT_SUCCESS;

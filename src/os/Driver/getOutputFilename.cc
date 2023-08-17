@@ -8,10 +8,12 @@ std::string Driver::getOutputFilename(std::string input, app::Options::EmitType 
   std::string output = input;
   switch (type) {
     case app::Options::EmitType::EXECUTABLE: output; break;
-    case app::Options::EmitType::OBJECT: 
-        if (isStatic) output += ".a";
-        else output += ".dylib";
-        break;
+    case app::Options::EmitType::OBJECT:
+      if (isStatic)
+        output += ".a";
+      else
+        output += ".dylib";
+      break;
     case app::Options::EmitType::LLVM_IR: output += ".ll"; break;
     case app::Options::EmitType::ASSEMBLY: output += ".s"; break;
   }
@@ -20,9 +22,11 @@ std::string Driver::getOutputFilename(std::string input, app::Options::EmitType 
   switch (type) {
     case app::Options::EmitType::EXECUTABLE: output; break;
     case app::Options::EmitType::OBJECT:
-        if (isStatic) output += ".a";
-        else output += ".so";
-        break;
+      if (isStatic)
+        output += ".a";
+      else
+        output += ".so";
+      break;
     case app::Options::EmitType::LLVM_IR: output += ".ll"; break;
     case app::Options::EmitType::ASSEMBLY: output += ".s"; break;
   }
@@ -31,9 +35,11 @@ std::string Driver::getOutputFilename(std::string input, app::Options::EmitType 
   switch (type) {
     case app::Options::EmitType::EXECUTABLE: output += ".exe"; break;
     case app::Options::EmitType::OBJECT:
-        if (isStatic) output += ".a";
-        else output += ".dll";
-        break;
+      if (isStatic)
+        output += ".a";
+      else
+        output += ".dll";
+      break;
     case app::Options::EmitType::LLVM_IR: output += ".ll"; break;
     case app::Options::EmitType::ASSEMBLY: output += ".s"; break;
   }
@@ -42,5 +48,5 @@ std::string Driver::getOutputFilename(std::string input, app::Options::EmitType 
 #endif
   return output;
 }
-}
-}
+} // namespace os
+} // namespace snowball

@@ -32,10 +32,11 @@ std::string FunctionType::getPrettyName() const {
 bool FunctionType::is(FunctionType* other) const {
   auto otherArgs = other->getArgs();
   if (args.size() != otherArgs.size()) return false;
-  bool argumentsEqual = args.size() == 0 ? true : std::all_of(otherArgs.begin(), otherArgs.end(), [&, idx = 0](Type* i) mutable {
-    idx++;
-    return args.at(idx-1)->is(i);
-  });
+  bool argumentsEqual =
+          args.size() == 0 ? true : std::all_of(otherArgs.begin(), otherArgs.end(), [&, idx = 0](Type* i) mutable {
+            idx++;
+            return args.at(idx - 1)->is(i);
+          });
 
   auto returnEquals = retTy->is(other->getRetType());
   return returnEquals && argumentsEqual && (variadic == other->isVariadic());

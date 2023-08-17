@@ -19,12 +19,8 @@ bool Transformer::isInClassContext(types::Type* ty) {
 
       auto colon = clsUUID.find(":");
       auto tyColon = tyUUID.find(":");
-      if (colon != std::string::npos) {
-        clsUUID = clsUUID.substr(0, colon);
-      }
-      if (tyColon != std::string::npos) {
-        tyUUID = tyUUID.substr(0, tyColon);
-      }
+      if (colon != std::string::npos) { clsUUID = clsUUID.substr(0, colon); }
+      if (tyColon != std::string::npos) { tyUUID = tyUUID.substr(0, tyColon); }
 
       return clsUUID == tyUUID;
     }

@@ -81,9 +81,9 @@ public:
 
   GlobalContext* getGlobalContext() { return globalContext; }
 
-  void setOptimization(app::Options::Optimization o) { 
+  void setOptimization(app::Options::Optimization o) {
     globalContext->opt = o;
-    opt_level = o; 
+    opt_level = o;
   }
 
 private:

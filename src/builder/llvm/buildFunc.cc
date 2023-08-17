@@ -35,7 +35,7 @@ void LLVMBuilder::visit(ir::Func* func) {
 
 llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Func* fn) {
   ctx->setCurrentFunction(llvmFn);
-  
+
   auto returnType = getLLVMType(fn->getRetTy());
   bool retIsArg = false;
   if (utils::cast<types::DefinedType>(fn->getRetTy())) {
@@ -125,8 +125,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
 
   // Create return type
   if (!builder->GetInsertBlock()->getTerminator()) {
-    if (utils::cast<types::VoidType>(fn->getRetTy())
-      || utils::cast<types::DefinedType>(fn->getRetTy())) {
+    if (utils::cast<types::VoidType>(fn->getRetTy()) || utils::cast<types::DefinedType>(fn->getRetTy())) {
       builder->CreateRetVoid();
     } else if (fn->isConstructor()) {
       // note: 0 should be always the "self" parameter

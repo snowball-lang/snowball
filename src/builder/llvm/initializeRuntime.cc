@@ -11,7 +11,8 @@ namespace codegen {
 
 void LLVMBuilder::initializeRuntime() {
   auto ty = llvm::FunctionType::get(builder->getVoidTy(), {}, false);
-  auto f = llvm::cast<llvm::Function>(module->getOrInsertFunction(getSharedLibraryName("sn.runtime.initialize"), ty).getCallee());
+  auto f = llvm::cast<llvm::Function>(
+          module->getOrInsertFunction(getSharedLibraryName("sn.runtime.initialize"), ty).getCallee());
   f->addFnAttr(llvm::Attribute::AlwaysInline);
   f->addFnAttr(llvm::Attribute::NoUnwind);
   auto mainFunction = module->getFunction(_SNOWBALL_FUNCTION_ENTRY);

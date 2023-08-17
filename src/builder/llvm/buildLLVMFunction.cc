@@ -16,8 +16,8 @@ namespace snowball {
 namespace codegen {
 
 llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func* fn) {
-  //auto existant = module->getFunction(fn->getMangle());
-  //if (existant) return existant;
+  // auto existant = module->getFunction(fn->getMangle());
+  // if (existant) return existant;
   ctx->setCurrentFunction(nullptr);
 
   // llvmFn->getDe
@@ -55,9 +55,7 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
     llvm::raw_string_ostream buf(bufStr);
     err.print("LLVM", buf);
     Logger::error("Error generating user-defined llvm function");
-    for (auto line : utils::split(code, "\n")) {
-      Logger::error(line);
-    }
+    for (auto line : utils::split(code, "\n")) { Logger::error(line); }
 
     throw SNError(Error::LLVM_INTERNAL, buf.str());
   }
@@ -74,7 +72,7 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
   func->addFnAttr(llvm::Attribute::AttrKind::NoInline); // TODO: user decides,
                                                         // this is default
   func->setSubprogram(getDISubprogramForFunc(fn));
-  
+
   llvmFn->replaceAllUsesWith(func);
   llvmFn->eraseFromParent();
   setDebugInfoLoc(nullptr);

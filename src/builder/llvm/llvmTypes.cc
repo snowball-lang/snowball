@@ -47,13 +47,11 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
       auto structItems = llvm::cast<llvm::StructType>(it->second)->elements();
       // We didn't generate the vtable yet
       if (!(structItems.size() == c->getFields().size() && c->hasVtable()))
-        return it->second; 
-      else {
-        s = llvm::cast<llvm::StructType>(it->second);
-      }
+        return it->second;
+      else { s = llvm::cast<llvm::StructType>(it->second); }
     } else {
       s = llvm::StructType::create(*context,
-        (c->isStruct() ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) + c->getMangledName());
+                                   (c->isStruct() ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) + c->getMangledName());
       types.insert({c->getId(), s});
     }
     auto fields = c->getFields();

@@ -28,9 +28,9 @@ using namespace std::chrono;
 
 #define EXECUTABLE_ENTRY "src/main.sn"
 #define EXECUTABLE_MAIN                                                                                                \
-  "use Core::System;\n"                                                                                                 \
+  "use Core::System;\n"                                                                                                \
                                                                                                                        \
-  "\npub fn main() i32 {\n"                                                                                                \
+  "\npub fn main() i32 {\n"                                                                                            \
   "   System::println(\"Hello, World\")\n"                                                                             \
   "}"
 

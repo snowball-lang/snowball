@@ -27,8 +27,8 @@ class Linker {
   /// @brief The target triple.
   llvm::Triple target;
   /// @brief A list of rpaths to be added to the executable.
-  std::vector<std::string> rpaths
-    = { "/usr/local/lib", "/usr/lib", "/usr/lib/x86_64-linux-gnu", "/lib/x86_64-linux-gnu", "/lib" };
+  std::vector<std::string> rpaths = {"/usr/local/lib", "/usr/lib", "/usr/lib/x86_64-linux-gnu", "/lib/x86_64-linux-gnu",
+                                     "/lib"};
 
 public:
   /**

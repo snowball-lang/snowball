@@ -15,11 +15,8 @@ Syntax::Expression::TypeRef* Type::toRef() {
   return ty;
 }
 
-Type* Type::getPointerTo() {
-  return new ReferenceType(copy()); 
-}
+Type* Type::getPointerTo() { return new ReferenceType(copy()); }
 Type* Type::copy() const { assert(!"called copy to not-specialised type!"); }
-void Type::setMutable(bool m)
- { _mutable = m; }
+void Type::setMutable(bool m) { _mutable = m; }
 } // namespace types
 } // namespace snowball

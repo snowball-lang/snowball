@@ -216,16 +216,16 @@ void LLVMBuilder::codegen() {
           funcs.at(f->getId()) = old;
         } else {
           buildBodiedFunction(llvmFn, f);
-          
+
           setPersonalityFunction(llvmFn);
           std::string module_error_string;
           llvm::raw_string_ostream module_error_stream(module_error_string);
           llvm::verifyFunction(*llvmFn, &module_error_stream);
 
           if (!module_error_string.empty()) {
-  #ifdef _SNOWBALL_BYTECODE_DEBUG
+#ifdef _SNOWBALL_BYTECODE_DEBUG
             dump();
-  #endif
+#endif
             throw SNError(Error::LLVM_INTERNAL, module_error_string);
           }
         }

@@ -6,20 +6,20 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::shared_ptr<ir::Func>
-Transformer::getFunction(DBGObject* dbgInfo,
-                         std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-                                    std::optional<types::Type*>,
-                                    std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                                    std::optional<std::deque<Cache::FunctionStore>>,
-                                    std::optional<std::shared_ptr<ir::Module>>,
-                                    bool /* Accept private members */>
-                                 store,
-                         const std::string& name,
-                         std::vector<types::Type*> _arguments,
-                         const std::vector<Expression::TypeRef*>& generics,
-                         bool isIdentifier,
-                         bool hasSelf) {
+std::shared_ptr<ir::Func> Transformer::getFunction(DBGObject* dbgInfo,
+                                                   std::tuple<std::optional<std::shared_ptr<ir::Value>>,
+                                                              std::optional<types::Type*>,
+                                                              std::optional<std::deque<std::shared_ptr<ir::Func>>>,
+                                                              std::optional<std::deque<Cache::FunctionStore>>,
+                                                              std::optional<std::shared_ptr<ir::Module>>,
+                                                              bool /* Accept private members */>
+                                                           store,
+                                                   const std::string& name,
+                                                   std::vector<types::Type*>
+                                                           _arguments,
+                                                   const std::vector<Expression::TypeRef*>& generics,
+                                                   bool isIdentifier,
+                                                   bool hasSelf) {
   auto arguments = _arguments;
   auto [val, ty, functions, overloads, mod, canBePrivate] = store;
   auto checkIfContextEqual = [&dbgInfo = dbgInfo, name = name, canBePrivate = canBePrivate](
@@ -39,10 +39,10 @@ Transformer::getFunction(DBGObject* dbgInfo,
     auto fnType = utils::cast<types::FunctionType>(v->getType());
     if (fnType == nullptr) {
       E<TYPE_ERROR>(dbgInfo,
-        FMT("Value with name '%s' (with type: '%s') "
-            "is not callable!",
-            name.c_str(),
-            v->getType()->getPrettyName().c_str()));
+                    FMT("Value with name '%s' (with type: '%s') "
+                        "is not callable!",
+                        name.c_str(),
+                        v->getType()->getPrettyName().c_str()));
     }
     auto argsVector = fnType->getArgs();
     size_t numArgs = arguments.size();
@@ -75,22 +75,26 @@ Transformer::getFunction(DBGObject* dbgInfo,
   } else if (mod) {
     E<TYPE_ERROR>(dbgInfo, FMT("Silly billy, you can't call modules! ('%s')", name.c_str()));
   }
-  auto [fn, args, res] = getBestFittingFunction(overloads.has_value() ? overloads.value() : std::deque<Cache::FunctionStore>{}, arguments, generics, isIdentifier);
+  auto [fn, args, res] =
+          getBestFittingFunction(overloads.has_value() ? overloads.value() : std::deque<Cache::FunctionStore>{},
+                                 arguments,
+                                 generics,
+                                 isIdentifier);
   switch (res) {
     case Ok: {
-      return checkIfContextEqual(transformFunction(fn, args, false, functions.has_value() ? functions.value() : std::deque<std::shared_ptr<ir::Func>>{}));
+      return checkIfContextEqual(transformFunction(
+              fn, args, false, functions.has_value() ? functions.value() : std::deque<std::shared_ptr<ir::Func>>{}));
     }
 
     case NoMatchesFound: {
-      if (hasSelf)
-        arguments.erase(arguments.begin());
+      if (hasSelf) arguments.erase(arguments.begin());
       if ((!overloads.has_value()) && (!functions.has_value()))
         E<VARIABLE_ERROR>(dbgInfo, FMT("Function '%s' is not defined!", name.c_str()));
       CompilerError* tailErrors = nullptr;
 #define ADD_FUNCTION_ERROR(id, idx)                                                                                    \
   for (auto overload : id.value()) {                                                                                   \
     if (idx->getDBGInfo() == nullptr) continue;                                                                        \
-    if (idx->hasAttribute(Attributes::BUILTIN)) continue;         \
+    if (idx->hasAttribute(Attributes::BUILTIN)) continue;                                                              \
     auto err = EI<>(idx, "", {.info = "A possible function overload found here"});                                     \
     if (tailErrors == nullptr) {                                                                                       \
       tailErrors = err;                                                                                                \
@@ -129,8 +133,7 @@ Transformer::getFunction(DBGObject* dbgInfo,
     }
 
     case AmbiguityConflict: {
-      if (hasSelf)  
-        arguments.erase(arguments.begin());
+      if (hasSelf) arguments.erase(arguments.begin());
       CompilerError* tailErrors = nullptr;
       ADD_FUNCTION_ERROR(overloads, overload.function)
       E<TYPE_ERROR>(dbgInfo,

@@ -1,7 +1,7 @@
 
-#include "../Driver.h"
-#include "../../utils/utils.h"
 #include "../../constants.h"
+#include "../../utils/utils.h"
+#include "../Driver.h"
 
 namespace snowball {
 namespace os {
@@ -11,5 +11,5 @@ int Driver::run(std::vector<std::string> args) {
   int status = std::system(command.c_str());
   return status;
 }
-}
-}
+} // namespace os
+} // namespace snowball

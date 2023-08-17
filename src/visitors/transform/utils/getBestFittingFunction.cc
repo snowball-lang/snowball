@@ -59,24 +59,17 @@ Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& over
               // we need to prioritize the casting type
               int castPriority = 0;
               switch (castType) {
-                case CastType::NoCast:
-                  assert(false && "This should never happen");
-                case CastType::AutoDeref:
-                  castPriority = 1;
-                  break;
-                case CastType::AutoRef:
-                  castPriority = 2;
-                  break;
-                case CastType::Valid:
-                  castPriority = 3;
-                  break;
-                default:
-                  assert(false && "Invalid cast type given at deducing function");
+                case CastType::NoCast: assert(false && "This should never happen");
+                case CastType::AutoDeref: castPriority = 1; break;
+                case CastType::AutoRef: castPriority = 2; break;
+                case CastType::Valid: castPriority = 3; break;
+                default: assert(false && "Invalid cast type given at deducing function");
               }
               // Succeded arg should be higher depending on the cast priority
-              succeededArgs = (succeededArgs+1) * (castPriority + 1);
+              succeededArgs = (succeededArgs + 1) * (castPriority + 1);
             }
-          }        }
+          }
+        }
         if (argsEqual) {
           if (!argsNeedCasting) {
             exactFunctionExists = true;
@@ -102,10 +95,10 @@ Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& over
       }
     }
     // we dont return it if they all have the same amount of succeeded arguments
-    if (maxIndex != -1 && !std::all_of(matchedFunctionsPerception.begin(), matchedFunctionsPerception.end(),
-                                        [&](auto i) { return i == max; })) {
-      return {matchedFunctions.at(maxIndex).first, matchedFunctions.at(maxIndex).second,
-              FunctionFetchResponse::Ok};
+    if (maxIndex != -1 &&
+        !std::all_of(matchedFunctionsPerception.begin(), matchedFunctionsPerception.end(),
+                     [&](auto i) { return i == max; })) {
+      return {matchedFunctions.at(maxIndex).first, matchedFunctions.at(maxIndex).second, FunctionFetchResponse::Ok};
     }
     return {{nullptr}, {}, FunctionFetchResponse::AmbiguityConflict};
   } else if (exactFunctionExists)

@@ -37,7 +37,8 @@ int run(app::Options::RunOptions p_opts) {
   std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 
   // TODO: check for output
-  std::string output = fs::current_path() / _SNOWBALL_OUT_DEFAULT("snowball-output", Options::EmitType::EXECUTABLE, false);
+  std::string output =
+          fs::current_path() / _SNOWBALL_OUT_DEFAULT("snowball-output", Options::EmitType::EXECUTABLE, false);
 
   auto compiler = new Compiler(content, filename);
   compiler->initialize();

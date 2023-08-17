@@ -11,8 +11,9 @@
 
 #define OPERATOR_INSTANCE(x, f)                                                                                        \
   case services::OperatorService::x:                                                                                   \
-    if (auto x = utils::cast<types::ReferenceType>(args.at(0)->getType()); left->getType()->isPointerTy() && x != nullptr) {                  \
-      left = builder->CreateLoad(getLLVMType(x->getPointedType()), left);                                                                                \
+    if (auto x = utils::cast<types::ReferenceType>(args.at(0)->getType());                                             \
+        left->getType()->isPointerTy() && x != nullptr) {                                                              \
+      left = builder->CreateLoad(getLLVMType(x->getPointedType()), left);                                              \
     }                                                                                                                  \
     this->value = builder->f(left, right);                                                                             \
     break;
@@ -30,14 +31,12 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
     if (services::OperatorService::isOperator(opName) &&
         !services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(opName)) {
       auto leftVal = args.at(0);
-      if (auto x = utils::dyn_cast<ir::ReferenceTo>(leftVal)) 
-        leftVal = x->getValue();
+      if (auto x = utils::dyn_cast<ir::ReferenceTo>(leftVal)) leftVal = x->getValue();
       auto left = build(leftVal.get());
       llvm::Value* right = nullptr;
       if (args.size() > 1) right = build(args.at(1).get());
       auto baseType = args.at(0)->getType();
-      if (auto x = utils::cast<types::ReferenceType>(baseType)) 
-        baseType = x->getPointedType();
+      if (auto x = utils::cast<types::ReferenceType>(baseType)) baseType = x->getPointedType();
       if (utils::cast<types::BoolType>(baseType) || utils::cast<types::Int8Type>(baseType) ||
           utils::cast<types::Int16Type>(baseType) || utils::cast<types::Int32Type>(baseType) ||
           utils::cast<types::Int64Type>(baseType) || utils::cast<types::CharType>(baseType) ||
@@ -70,7 +69,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
           OPERATOR_UINSTANCE(UMINUS, CreateNeg)
           case services::OperatorService::NOT: {
             auto size_in_bits = ((llvm::IntegerType*)left->getType())->getBitWidth();
-            if (left->getType()->isPointerTy()) 
+            if (left->getType()->isPointerTy())
               this->value = builder->CreateICmpEQ(
                       left, llvm::ConstantPointerNull::get(builder->getIntNTy((unsigned)size_in_bits)->getPointerTo()));
             else

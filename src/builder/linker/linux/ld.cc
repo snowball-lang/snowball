@@ -15,7 +15,7 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   linkerArgs.clear();
   if (ctx->isDynamic) {
     linkerArgs.push_back("--export-dynamic");
-    //linkerArgs.push_back("-Bdynamic");
+    // linkerArgs.push_back("-Bdynamic");
   } else {
     linkerArgs.push_back("-static");
     linkerArgs.push_back("-pie");
@@ -67,8 +67,7 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
     for (auto llvmArg : utils::split(LLVM_LDFLAGS, " ")) { linkerArgs.push_back(llvmArg); }
   }
   if (!ctx->isDynamic) linkerArgs.push_back("-static");
-  for (auto& rpath : rpaths)
-    linkerArgs.push_back("--rpath=" + rpath);
+  for (auto& rpath : rpaths) linkerArgs.push_back("--rpath=" + rpath);
   linkerArgs.push_back("-o");
   linkerArgs.push_back(output);
 #if _SNOWBALL_CODEGEN_DEBUG
@@ -76,8 +75,7 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
 #endif
 }
 
-std::string Linker::getSharedLibraryName(std::string& library) 
-  { return library + ".so"; }
+std::string Linker::getSharedLibraryName(std::string& library) { return library + ".so"; }
 
 } // namespace linker
 } // namespace snowball

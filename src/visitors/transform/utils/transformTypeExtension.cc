@@ -24,8 +24,7 @@ void Transformer::transformTypeExtension(Statement::DefinedTypeDef* node, std::s
       }
       auto backup = ctx->getCurrentClass();
       ctx->setCurrentClass(item->getType());
-      for (auto fn : node->getFunctions())
-        trans(fn);
+      for (auto fn : node->getFunctions()) trans(fn);
       ctx->setCurrentClass(backup);
       return; // :D
     } else {

@@ -3,22 +3,16 @@
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
 
-  // Set the default '=' operator for the class 
-#define GENERATE_EQUALIZERS \
-  for (int allowPointer = 0; allowPointer < 2; ++allowPointer) { \
-    auto fn = Syntax::N<Statement::FunctionDef>(\
-      OperatorService::getOperatorMangle(OperatorType::EQ), \
-      Statement::Privacy::Status::PUBLIC \
-    ); \
-    fn->addAttribute(Attributes::BUILTIN); \
-    fn->setArgs({ \
-      new Expression::Param( \
-        "other", \
-        allowPointer ? transformedType->getPointerTo()->toRef() : transformedType->toRef() \
-      ) \
-    }); \
-    fn->setRetType(ctx->getVoidType()->toRef()); \
-    trans(fn); \
+// Set the default '=' operator for the class
+#define GENERATE_EQUALIZERS                                                                                            \
+  for (int allowPointer = 0; allowPointer < 2; ++allowPointer) {                                                       \
+    auto fn = Syntax::N<Statement::FunctionDef>(OperatorService::getOperatorMangle(OperatorType::EQ),                  \
+                                                Statement::Privacy::Status::PUBLIC);                                   \
+    fn->addAttribute(Attributes::BUILTIN);                                                                             \
+    fn->setArgs({new Expression::Param(                                                                                \
+            "other", allowPointer ? transformedType->getPointerTo()->toRef() : transformedType->toRef())});            \
+    fn->setRetType(ctx->getVoidType()->toRef());                                                                       \
+    trans(fn);                                                                                                         \
   }
 
 namespace snowball {
@@ -56,7 +50,14 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
       auto existantTypes = ctx->cache->getTransformedType(uuid);
       auto _uuid = baseUuid + ":" + utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
       auto basedName = ty->getName();
-      transformedType = new types::DefinedType(basedName, _uuid, ctx->module, ty, std::vector<types::DefinedType::ClassField*>{}, nullptr, std::vector<types::Type*>{}, ty->isStruct());
+      transformedType = new types::DefinedType(basedName,
+                                               _uuid,
+                                               ctx->module,
+                                               ty,
+                                               std::vector<types::DefinedType::ClassField*>{},
+                                               nullptr,
+                                               std::vector<types::Type*>{},
+                                               ty->isStruct());
       transformedType->setModule(ctx->module);
       transformedType->setUUID(_uuid);
       auto item = std::make_shared<transform::Item>(transformedType);
@@ -103,28 +104,28 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
       ctx->generateFunction = true;
       for (auto ty : ty->getTypeAliases()) { trans(ty); }
       auto baseFields = vector_iterate<Statement::VariableDecl*, types::DefinedType::ClassField*>(
-        ty->getVariables(), [&](auto v) {
-          auto definedType = v->getDefinedType();
-          if (!definedType)
-            E<SYNTAX_ERROR>(v->getDBGInfo(),
-              "Can't infer type!",
-              {.info = "The type of this variable can't be inferred!",
-                .note = "This rule only applies to variables inside classes.",
-                .help = "You can't infer the type of a variable "
-                  "without specifying it's type.\n"
-                  "For example, you can't do this:\n"
-                  "   let a = 10\n"
-                  "You have to do this:\n"
-                  "   let a: i32 = 10\n"
-                  "Or this:\n"
-                  "   let a = 10: i32"});
-          auto varTy = transformType(definedType);
-          varTy->setMutable(v->isMutable());
-          auto field = new types::DefinedType::ClassField(v->getName(), varTy, v->getPrivacy(), v->getValue(),
-                                                          v->isMutable());
-          field->setDBGInfo(v->getDBGInfo());
-          return field;
-        });
+              ty->getVariables(), [&](auto v) {
+                auto definedType = v->getDefinedType();
+                if (!definedType)
+                  E<SYNTAX_ERROR>(v->getDBGInfo(),
+                                  "Can't infer type!",
+                                  {.info = "The type of this variable can't be inferred!",
+                                   .note = "This rule only applies to variables inside classes.",
+                                   .help = "You can't infer the type of a variable "
+                                           "without specifying it's type.\n"
+                                           "For example, you can't do this:\n"
+                                           "   let a = 10\n"
+                                           "You have to do this:\n"
+                                           "   let a: i32 = 10\n"
+                                           "Or this:\n"
+                                           "   let a = 10: i32"});
+                auto varTy = transformType(definedType);
+                varTy->setMutable(v->isMutable());
+                auto field = new types::DefinedType::ClassField(v->getName(), varTy, v->getPrivacy(), v->getValue(),
+                                                                v->isMutable());
+                field->setDBGInfo(v->getDBGInfo());
+                return field;
+              });
       auto fields = getMemberList(ty->getVariables(), baseFields, parentType);
       transformedType->setParent(parentType);
       transformedType->setFields(fields);
@@ -133,8 +134,7 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
       transformedType->setDBGInfo(ty->getDBGInfo());
       transformedType->setSourceInfo(ty->getSourceInfo());
       bool allowConstructor = (!ty->hasConstructor) && baseFields.size() == 0;
-      if (parentType != nullptr) 
-        ctx->cache->performInheritance(transformedType, parentType, allowConstructor);
+      if (parentType != nullptr) ctx->cache->performInheritance(transformedType, parentType, allowConstructor);
       assert(!ty->isStruct() || (ty->isStruct() && ty->getFunctions().size() == 0));
       // Create function definitions
       ctx->generateFunction = false;

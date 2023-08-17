@@ -36,8 +36,7 @@ Syntax::Expression::TypeRef* ReferenceType::toRef() {
 }
 
 Type* ReferenceType::getBaseType() const {
-  if (auto c = utils::cast<ReferenceType>(base)) 
-    return c->getBaseType();
+  if (auto c = utils::cast<ReferenceType>(base)) return c->getBaseType();
   return base;
 }
 

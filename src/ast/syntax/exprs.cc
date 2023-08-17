@@ -110,7 +110,7 @@ std::string FunctionCall::getArgumentsAsString(const std::vector<types::Type*> a
   int i = 0;
   for (auto arg = args.begin(); arg != args.end(); ++arg) {
     result += (*arg)->getPrettyName();
-    if (i != args.size()-1) { result += ", "; }
+    if (i != args.size() - 1) { result += ", "; }
     i++;
   }
 

@@ -64,11 +64,10 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    *  for functions that need these 4 return types
    *  as a result.
    */
-  using StoreType = std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-                               std::optional<types::Type*>,
-                               std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                               std::optional<std::deque<Cache::FunctionStore>>,
-                               std::optional<std::shared_ptr<ir::Module>>>;
+  using StoreType =
+          std::tuple<std::optional<std::shared_ptr<ir::Value>>, std::optional<types::Type*>,
+                     std::optional<std::deque<std::shared_ptr<ir::Func>>>,
+                     std::optional<std::deque<Cache::FunctionStore>>, std::optional<std::shared_ptr<ir::Module>>>;
   // Context used to keep track of what's going on
   // and to manage a stack.
   TransformContext* ctx;
@@ -167,7 +166,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
   /**
    * It tries to check if a type can be "casted" into another type.
    * @note It will return CastType::None if the types are not compatible.
-   *  we don't return valid cast if they are the same type, because that 
+   *  we don't return valid cast if they are the same type, because that
    *  is not a cast
    */
   enum class CastType
@@ -176,7 +175,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     Valid,
     AutoDeref,
     AutoRef
-  }; CastType canCast(types::Type* from, types::Type* to);
+  };
+  CastType canCast(types::Type* from, types::Type* to);
   /**
    * @brief Compares if generics equal by checking both classes.
    * @note (1) This function will also generate the @param ty generics
@@ -208,8 +208,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * @note It also executes some checks such as generic checks and
    * more
    */
-  types::Type*
-  transformTypeAlias(const std::string& uuid, cacheComponents::Types::TypeStore& base, Expression::TypeRef* typeRef);
+  types::Type* transformTypeAlias(const std::string& uuid, cacheComponents::Types::TypeStore& base,
+                                  Expression::TypeRef* typeRef);
   /**
    * @brief Fetch a function and get it's most fitting overload.
    *
@@ -221,30 +221,30 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    */
   std::shared_ptr<ir::Func>
   getFunction(DBGObject* dbgInfo,
-    std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-      std::optional<types::Type*>,
-      std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-      std::optional<std::deque<Cache::FunctionStore>>,
-      std::optional<std::shared_ptr<ir::Module>>,
-      bool /* Accept private members */>
-      stores,
-    const std::string& name,
-    std::vector<types::Type*> arguments,
-    const std::vector<Expression::TypeRef*>& generics = {},
-    bool isIdentifier = false,
-    bool hasSelf = false);
+              std::tuple<std::optional<std::shared_ptr<ir::Value>>, std::optional<types::Type*>,
+                         std::optional<std::deque<std::shared_ptr<ir::Func>>>,
+                         std::optional<std::deque<Cache::FunctionStore>>, std::optional<std::shared_ptr<ir::Module>>,
+                         bool /* Accept private members */>
+                      stores,
+              const std::string& name,
+              std::vector<types::Type*>
+                      arguments,
+              const std::vector<Expression::TypeRef*>& generics = {},
+              bool isIdentifier = false,
+              bool hasSelf = false);
   /**
    * It decides whether or not a generated function should be used or if
    *  and overloaded function should by checking the closest match.
-  */
-  std::shared_ptr<ir::Func> shouldReturnOverload(std::shared_ptr<ir::Func> fn, std::deque<std::shared_ptr<ir::Func>> overloads);
+   */
+  std::shared_ptr<ir::Func> shouldReturnOverload(std::shared_ptr<ir::Func> fn,
+                                                 std::deque<std::shared_ptr<ir::Func>> overloads);
   /**
    * @brief Transform a function that hasn't been generated yet.
    * @arg arguments - deduced arguments to unify
    */
   std::shared_ptr<ir::Func> transformFunction(cacheComponents::Functions::FunctionStore node,
-                                              const std::vector<types::Type*>& deducedTypes,
-                                              bool isEntryPoint = false, std::deque<std::shared_ptr<ir::Func>> overloads = {});
+                                              const std::vector<types::Type*>& deducedTypes, bool isEntryPoint = false,
+                                              std::deque<std::shared_ptr<ir::Func>> overloads = {});
   /**
    * @brief Gets the `real` user defined list for the arguments.
    * This is because, when generating a function, we add the "self"
@@ -308,8 +308,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * @note If the statement type is not supported, it will just panic!
    * @arg typeRef is only needed if base is `DefinedTypeDef`!
    */
-  types::Type*
-  transformTypeFromBase(const std::string& uuid, cacheComponents::Types::TypeStore& base, Expression::TypeRef* typeRef);
+  types::Type* transformTypeFromBase(const std::string& uuid, cacheComponents::Types::TypeStore& base,
+                                     Expression::TypeRef* typeRef);
   /**
    * @brief It tryes to cast a value to x type. If it fails, it will
    * return a nullptr.
@@ -342,13 +342,12 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * constructing the base name.
    * @return A string containing the constructed base name.
    */
-  std::string getNiceBaseName(std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-                                         std::optional<types::Type*>,
-                                         std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                                         std::optional<std::deque<Cache::FunctionStore>>,
-                                         std::optional<std::shared_ptr<ir::Module>>,
-                                         bool /* (Ignore) Accept private members */>
-                                      base);
+  std::string
+  getNiceBaseName(std::tuple<std::optional<std::shared_ptr<ir::Value>>, std::optional<types::Type*>,
+                             std::optional<std::deque<std::shared_ptr<ir::Func>>>,
+                             std::optional<std::deque<Cache::FunctionStore>>,
+                             std::optional<std::shared_ptr<ir::Module>>, bool /* (Ignore) Accept private members */>
+                          base);
   /**
    * Check if the body of a function returns a value.
    *
@@ -398,11 +397,9 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * @return It may return a value, a type pointer or a vector
    * containing function overloads
    */
-  std::pair<std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-                       std::optional<types::Type*>,
+  std::pair<std::tuple<std::optional<std::shared_ptr<ir::Value>>, std::optional<types::Type*>,
                        std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                       std::optional<std::deque<Cache::FunctionStore>>,
-                       std::optional<std::shared_ptr<ir::Module>>,
+                       std::optional<std::deque<Cache::FunctionStore>>, std::optional<std::shared_ptr<ir::Module>>,
                        bool /* Accept private members */>,
             std::optional<std::shared_ptr<ir::Value>>>
   getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool isStatic);

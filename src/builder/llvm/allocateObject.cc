@@ -27,10 +27,8 @@ llvm::Value* LLVMBuilder::allocateObject(types::DefinedType* ty, bool heapAlloca
     vtablePointer = v;
   } else {
     auto t = ctx->getVtableTy(ty->getId());
-    if (!t) {
-      t = getVtableType(ty);
-    }
-    
+    if (!t) { t = getVtableType(ty); }
+
     vtablePointer = createVirtualTable(ty, t);
     // insert vtable to the start of the type declaration
     auto body = llvm::cast<llvm::StructType>(llvmType)->elements().vec();
@@ -38,11 +36,12 @@ llvm::Value* LLVMBuilder::allocateObject(types::DefinedType* ty, bool heapAlloca
     llvm::cast<llvm::StructType>(llvmType)->setBody(body);
   }
 
-  auto numElements = llvm::cast<llvm::ArrayType>(llvm::cast<llvm::StructType>(ctx->getVtableTy(ty->getId()))->elements()[0])->getNumElements();
+  auto numElements =
+          llvm::cast<llvm::ArrayType>(llvm::cast<llvm::StructType>(ctx->getVtableTy(ty->getId()))->elements()[0])
+                  ->getNumElements();
   auto element = llvm::ConstantExpr::getGetElementPtr(
-    llvm::StructType::get(llvm::ArrayType::get(builder->getPtrTy(), numElements)), (llvm::Constant*)vtablePointer, llvm::ArrayRef<llvm::Constant*>{builder->getInt32(0),
-    builder->getInt32(0), builder->getInt32(2)}, true, 1
-  );
+          llvm::StructType::get(llvm::ArrayType::get(builder->getPtrTy(), numElements)), (llvm::Constant*)vtablePointer,
+          llvm::ArrayRef<llvm::Constant*>{builder->getInt32(0), builder->getInt32(0), builder->getInt32(2)}, true, 1);
   builder->CreateStore(element, cast);
   return cast;
 }
