@@ -23,6 +23,7 @@ SN_TRANSFORMER_VISIT(Statement::ForLoop) {
   //       x(i);
   //       $i = $iter_value.next();
   //   }
+  //   $iter.reset();
   // }
 
   auto var = p_node->getVar();
@@ -69,9 +70,12 @@ SN_TRANSFORMER_VISIT(Statement::ForLoop) {
   stmts.insert(stmts.begin(), iterValue);
   stmts.push_back(eq);
   auto whileLoop = Syntax::N<Syntax::Statement::WhileLoop>(validCall, Syntax::N<Syntax::Block>(stmts));
+  auto resetIdent = Syntax::N<Syntax::Expression::Identifier>("reset");
+  auto resetIndex = Syntax::N<Syntax::Expression::Index>(iterIdent, resetIdent);
+  auto resetCall = Syntax::N<Syntax::Expression::FunctionCall>(resetIndex, std::vector<Syntax::Expression::Base*>());
 
   // wrap everything in a block
-  auto blockStmt = Syntax::N<Syntax::Block>(std::vector<Node*>{iteratorValue, iterVar, whileLoop});
+  auto blockStmt = Syntax::N<Syntax::Block>(std::vector<Node*>{iteratorValue, iterVar, whileLoop, resetCall});
   // Mutate dbg info incase there's an error
   // ik... it's ugly :[ but it works
   blockStmt->setDBGInfo(expr->getDBGInfo());
