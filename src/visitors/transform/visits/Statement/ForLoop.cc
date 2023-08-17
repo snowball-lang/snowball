@@ -71,7 +71,7 @@ SN_TRANSFORMER_VISIT(Statement::ForLoop) {
   stmts.push_back(eq);
   auto whileLoop = Syntax::N<Syntax::Statement::WhileLoop>(validCall, Syntax::N<Syntax::Block>(stmts));
   auto resetIdent = Syntax::N<Syntax::Expression::Identifier>("reset");
-  auto resetIndex = Syntax::N<Syntax::Expression::Index>(iterIdent, resetIdent);
+  auto resetIndex = Syntax::N<Syntax::Expression::Index>(Syntax::N<Syntax::Expression::Identifier>(iterName), resetIdent);
   auto resetCall = Syntax::N<Syntax::Expression::FunctionCall>(resetIndex, std::vector<Syntax::Expression::Base*>());
 
   // wrap everything in a block
@@ -79,6 +79,9 @@ SN_TRANSFORMER_VISIT(Statement::ForLoop) {
   // Mutate dbg info incase there's an error
   // ik... it's ugly :[ but it works
   blockStmt->setDBGInfo(expr->getDBGInfo());
+  resetIdent->setDBGInfo(expr->getDBGInfo());
+  resetIndex->setDBGInfo(expr->getDBGInfo());
+  resetCall->setDBGInfo(expr->getDBGInfo());
   validCall->setDBGInfo(expr->getDBGInfo());
   whileLoop->setDBGInfo(expr->getDBGInfo());
   iterVar->setDBGInfo(expr->getDBGInfo());
