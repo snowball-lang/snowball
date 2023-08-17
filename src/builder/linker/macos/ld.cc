@@ -17,6 +17,7 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   linkerArgs.push_back("-demangle");
   linkerArgs.push_back("-lto_library");
   linkerArgs.push_back("/opt/homebrew/Cellar/llvm/" _SNOWBALL_LLVM_PACKAGE_VERSION "/lib/libLTO.dylib");
+  linkerArgs.push_back("-no_deduplicate");
   linkerArgs.push_back("-syslibroot");
   linkerArgs.push_back("/Library/Developer/CommandLineTools/SDKs/MacOSX13.sdk");
   for (auto& lib : linkedLibraries) {
