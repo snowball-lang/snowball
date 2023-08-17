@@ -14,8 +14,7 @@ namespace linker {
 void Linker::constructLinkerArgs(std::string& input, std::string& output, std::vector<std::string>& args) {
   const bool isIAMCU = target.isOSIAMCU();
   linkerArgs.clear();
-  // TODO: dynamic
-  linkerArgs.push_back("-demangle");
+  //linkerArgs.push_back("-demangle");
   linkerArgs.push_back("-lto_library");
   linkerArgs.push_back("/opt/homebrew/Cellar/llvm/" _SNOWBALL_LLVM_PACKAGE_VERSION "/lib/libLTO.dylib");
   linkerArgs.push_back("-syslibroot");
