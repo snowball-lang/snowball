@@ -34,4 +34,11 @@ fn [[test]] to_string() i32 {
     return v.to_string() == "[1, 2, 3]";
 }
 
+fn [[test(expect = 5)]] change_value() i32 {
+    let mut v = new Vector<i32>();
+    v.push(1);
+    v[0] = 5;
+    return v[0];
+}
+
 }

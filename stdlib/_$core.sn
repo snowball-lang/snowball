@@ -724,4 +724,6 @@ type Exception = Core::Exception;
 type IndexError = Core::IndexError;
 type Range<T = i32> = Core::Range<T>;
 type String = StringView<>;
+type Iterable<T: Core::Sized> = Core::Iterable<T>;
+
 // TODO (implement wchar): using WideString as StringView<&wchar>

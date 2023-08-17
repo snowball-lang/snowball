@@ -23,7 +23,8 @@ void LLVMBuilder::visit(ir::IndexExtract* index) {
   // We add "1" becasue index #0 is a pointer to the virtual
   // table.
   // TODO: support for structs without vtable.
-  auto i = index->getIndex() + defiendType->hasVtable();
+  // we do ctx->getVtableTy instead of x->hasVtable to avoid any issues when cloning
+  auto i = index->getIndex() + (ctx->getVtableTy(defiendType->getId()) != nullptr);
   auto extract = builder->CreateStructGEP(getLLVMType(basedType), v, i);
   this->value = builder->CreateLoad(getLLVMType(index->getType()), extract);
 }

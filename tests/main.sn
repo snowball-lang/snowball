@@ -5,7 +5,7 @@
 //  Docs: https://snowball-lang.gitbook.io/docs/
 //
 //use pkg::option;
-use pkg::cls;
+//use pkg::cls;
 //use pkg::vector;
 //use pkg::chars;
 //use pkg::string;
@@ -13,38 +13,14 @@ use pkg::cls;
 //use pkg::syntax;
 //use pkg::clib;
 //use pkg::tuples;
-//use pkg::algorithms;
+use pkg::algorithms;
 
 use Core::System;
 //use Core::System::{{ println }};
 
-class X {
-    pub:
-        X() {}
-        fn to_string() String {
-            return "X".to_string();
-        }
-};
 
-class Hello {
-  pub:
-    Hello() {}
-    virt fn say() X {
-        return new X{};
-    }
-}
 
 pub fn main() i32 {
-    let a = new Hello{};
-    let mut i = 0;
-    let mut x: X;
-    while ( i < 10 ) {
-        x = a.say();
-        i = i + 1;
-    }
-
-    System::println(x)
-
-//    let mut x = 0..10;
-//    let i = x.next();
+  let mut x = 0..10;
+  let i = x.next();
 }

@@ -49,6 +49,9 @@ class VirtualTest {
     virt fn test() i32 {
       return true;
     }
+  priv:
+    let a: i32 = 0;
+    let b: i32 = 2;
 }
 
 fn [[test]] virtual_stack() i32 {

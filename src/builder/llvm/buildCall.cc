@@ -65,7 +65,7 @@ void LLVMBuilder::visit(ir::Call* call) {
   } else if (auto c = utils::dyn_cast<ir::Func>(calleeValue); c != nullptr && c->inVirtualTable()) {
     assert(c->hasParent());
 
-    auto index = c->getVirtualIndex() + 1; // avoid class info
+    auto index = c->getVirtualIndex(); // avoid class info
     auto parent = c->getParent();
 
     auto f = llvm::cast<llvm::Function>(callee);
@@ -78,6 +78,7 @@ void LLVMBuilder::visit(ir::Call* call) {
     auto definedType = utils::cast<types::DefinedType>(parentType);
     if (auto x = utils::cast<types::ReferenceType>(parentType))
       definedType = utils::cast<types::DefinedType>(x->getPointedType());
+    else assert(false && "Parent type is not a reference type!");
     assert(definedType && "Parent type is not a defined type!");
     getVtableType(definedType); // generate vtable type (if not generated yet)
     auto vtableType = ctx->getVtableTy(definedType->getId());
@@ -111,21 +112,24 @@ void LLVMBuilder::visit(ir::Call* call) {
     }
   }
 
-  if (llvm::isa<llvm::CallInst>(llvmCall)) {
-    auto call = llvm::cast<llvm::CallInst>(llvmCall);
-    auto calledFunction = call->getCalledFunction();
-    if (calledFunction) {
-      auto attrSet = calledFunction->getAttributes();
-      call->setAttributes(attrSet);
-    }
-  } else if (llvm::isa<llvm::InvokeInst>(llvmCall)) {
-    auto call = llvm::cast<llvm::InvokeInst>(llvmCall);
-    auto calledFunction = call->getCalledFunction();
-    if (calledFunction) {
-      auto attrSet = calledFunction->getAttributes();
-      call->setAttributes(attrSet);
-    }
-  } else {
+#define SET_CALL_ATTRIBUTES(type) \
+  if (llvm::isa<type>(llvmCall)) { \
+    auto call = llvm::cast<type>(llvmCall); \
+    auto calledFunction = call->getCalledFunction(); \
+    if (auto f = utils::dyn_cast<ir::Func>(calleeValue)) { \
+      auto valBackup = this->value; \
+      calledFunction = llvm::cast<llvm::Function>(build(f.get())); \
+      this->value = valBackup; \
+    } \
+    if (calledFunction) { \
+      auto attrSet = calledFunction->getAttributes(); \
+      call->setAttributes(attrSet); \
+    }\
+  }
+
+  SET_CALL_ATTRIBUTES (llvm::CallInst) 
+  else SET_CALL_ATTRIBUTES(llvm::InvokeInst)
+  else {
     assert(false);
   }
 }

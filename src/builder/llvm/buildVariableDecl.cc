@@ -30,14 +30,11 @@ void LLVMBuilder::visit(ir::VariableDeclaration* variable) {
     generatedValue = builder->CreatePointerCast(generatedValue, storeBaseType);
   }
 
-  //if (auto x = utils::cast<types::DefinedType>(variable->getValue()->getType())) {
-  //    if (llvm::isa<llvm::LoadInst>(generatedValue)) {
-  //      generatedValue = llvm::cast<llvm::LoadInst>(generatedValue)->getOperand(0);
-  //    }
-//
-  //    builder->CreateMemCpy(generatedValue, llvm::MaybeAlign(), store, llvm::MaybeAlign(),
-  //    module->getDataLayout().getTypeAllocSize(storeBaseType), 0);
-  //} else {
+  //if (utils::cast<types::DefinedType>(variable->getType()) && llvm::isa<llvm::LoadInst>(generatedValue)) {
+  //  generatedValue = llvm::cast<llvm::LoadInst>(generatedValue)->getOperand(0);
+  //  builder->CreateMemCpy(generatedValue, llvm::MaybeAlign(), store, llvm::MaybeAlign(),
+  //                        module->getDataLayout().getTypeAllocSize(storeBaseType), 0);
+  //} else
     builder->CreateStore(generatedValue, store);
   //}
 }

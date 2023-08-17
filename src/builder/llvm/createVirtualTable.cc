@@ -18,7 +18,8 @@ llvm::GlobalVariable* LLVMBuilder::createVirtualTable(types::DefinedType* ty, ll
   auto structName = (std::string)_SN_VTABLE_PREFIX + ty->getMangledName();
 
   std::vector<llvm::Constant*> functions = {
-    llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(*context)) // TODO: class info
+    llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(*context)),
+    llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(*context)), // TODO: class info
   };
   for (auto fn : ty->getVTable()) {
     fn->visit(this);
@@ -29,7 +30,7 @@ llvm::GlobalVariable* LLVMBuilder::createVirtualTable(types::DefinedType* ty, ll
 
   auto vTy = ctx->getVtableTy(ty->getId());
   assert(vTy && "Vtable type not found!");
-  vTy->setBody(llvm::ArrayType::get(llvm::Type::getInt8PtrTy(*context), functions.size()+1));
+  vTy->setBody(llvm::ArrayType::get(llvm::Type::getInt8PtrTy(*context), functions.size()));
 
   module->getOrInsertGlobal(structName, vtableType);
   auto vTable = module->getNamedGlobal(structName);
@@ -41,7 +42,7 @@ llvm::GlobalVariable* LLVMBuilder::createVirtualTable(types::DefinedType* ty, ll
   // set comdat any
   vTable->setComdat(module->getOrInsertComdat(structName));
 
-  auto arr = llvm::ConstantArray::get(llvm::ArrayType::get(llvm::Type::getInt8PtrTy(*context), functions.size()+1), functions);
+  auto arr = llvm::ConstantArray::get(llvm::ArrayType::get(llvm::Type::getInt8PtrTy(*context), functions.size()), functions);
   auto s = llvm::ConstantStruct::get(vtableType, arr);
   vTable->setInitializer(s);
   return vTable;

@@ -18,6 +18,7 @@ llvm::Value* LLVMBuilder::createInsertValue(llvm::Value* v, uint32_t i, llvm::Va
   if (llvm::isa<llvm::LoadInst>(rhs)) {
     auto l = llvm::cast<llvm::LoadInst>(rhs);
     rhs = l->getOperand(0);
+    l->eraseFromParent();
   }
   // auto lhs = builder->CreateExtractValue(leftValue, i);
   // llvm::Value* load = builder->CreateLoad(getLLVMType(refType), lhs);

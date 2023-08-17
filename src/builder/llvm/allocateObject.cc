@@ -38,8 +38,12 @@ llvm::Value* LLVMBuilder::allocateObject(types::DefinedType* ty, bool heapAlloca
     llvm::cast<llvm::StructType>(llvmType)->setBody(body);
   }
 
-  auto pointer = builder->CreateConstInBoundsGEP1_32(llvmType, cast, 0);
-  builder->CreateStore(vtablePointer, pointer);
+  auto numElements = llvm::cast<llvm::ArrayType>(llvm::cast<llvm::StructType>(ctx->getVtableTy(ty->getId()))->elements()[0])->getNumElements();
+  auto element = llvm::ConstantExpr::getGetElementPtr(
+    llvm::StructType::get(llvm::ArrayType::get(builder->getPtrTy(), numElements)), (llvm::Constant*)vtablePointer, llvm::ArrayRef<llvm::Constant*>{builder->getInt32(0),
+    builder->getInt32(0), builder->getInt32(2)}, true, 1
+  );
+  builder->CreateStore(element, cast);
   return cast;
 }
 
