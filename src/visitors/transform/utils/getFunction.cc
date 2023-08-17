@@ -39,15 +39,13 @@ Transformer::getFunction(DBGObject* dbgInfo,
     auto fnType = utils::cast<types::FunctionType>(v->getType());
     if (fnType == nullptr) {
       E<TYPE_ERROR>(dbgInfo,
-                    FMT("Value with name '%s' (with type: '%s') "
-                        "is not callable!",
-                        name.c_str(),
-                        v->getType()->getPrettyName().c_str()));
+        FMT("Value with name '%s' (with type: '%s') "
+            "is not callable!",
+            name.c_str(),
+            v->getType()->getPrettyName().c_str()));
     }
-
     auto argsVector = fnType->getArgs();
     size_t numArgs = arguments.size();
-
     if (ir::Func::argumentSizesEqual(argsVector, arguments, fnType->isVariadic())) {
       bool equal = true;
       for (auto arg = argsVector.begin(); (arg != argsVector.end()) && (equal); ++arg) {
@@ -63,11 +61,9 @@ Transformer::getFunction(DBGObject* dbgInfo,
           }
         }
       }
-
       // TODO: check for ambiguous functions
       if (equal) { return std::reinterpret_pointer_cast<ir::Func>(v); }
     }
-
     E<TYPE_ERROR>(dbgInfo,
                   FMT("Call parameters to '%s' does not match it's "
                       "function type ('%s')!",
@@ -94,7 +90,7 @@ Transformer::getFunction(DBGObject* dbgInfo,
 #define ADD_FUNCTION_ERROR(id, idx)                                                                                    \
   for (auto overload : id.value()) {                                                                                   \
     if (idx->getDBGInfo() == nullptr) continue;                                                                        \
-    if (idx->hasAttribute(Attributes::BUILTIN) || idx->hasAttribute(Attributes::BUILTIN_NO_POINTER)) continue;         \
+    if (idx->hasAttribute(Attributes::BUILTIN)) continue;         \
     auto err = EI<>(idx, "", {.info = "A possible function overload found here"});                                     \
     if (tailErrors == nullptr) {                                                                                       \
       tailErrors = err;                                                                                                \

@@ -23,40 +23,40 @@ class [[extends]] char {
       ret i8 %1
     }
 
-    operator [[__primitive_internal__]] +(other: char)  char {}
-    operator [[__primitive_internal__]] -(other: char)  char {}
-    operator [[__primitive_internal__]] *(other: char)  char {}
-    operator [[__primitive_internal__]] /(other: char)  char {}
-    operator [[__primitive_internal__]] %(other: char)  char {}
-    operator [[__primitive_internal__]] ^(other: char)  char {}
-    operator [[__primitive_internal__]] |(other: char)  char {}
-    operator [[__primitive_internal__]] &(other: char)  char {}
-    operator [[__primitive_internal__]] <<(other: char) char {}
-    operator [[__primitive_internal__]] <(other: char)  bool {}
-    operator [[__primitive_internal__]] >(other: char)  bool {}
-    operator [[__primitive_internal__]] <=(other: char) bool {}
-    operator [[__primitive_internal__]] >=(other: char) bool {}
-    operator [[__primitive_internal__]] ==(other: char) bool {}
-    operator [[__primitive_internal__]] !=(other: char) bool {}
-    operator [[__primitive_internal__]] -()             char {}
-    operator [[__primitive_internal__]] +=(other: char) char {}
-    operator [[__primitive_internal__]] -=(other: char) char {}
-    operator [[__primitive_internal__]] *=(other: char) char {}
-    operator [[__primitive_internal__]] /=(other: char) char {}
-    operator [[__primitive_internal__]] %=(other: char) char {}
-    operator [[__primitive_internal__]] ^=(other: char) char {}
-    operator [[__primitive_internal__]] |=(other: char) char {}
-    operator [[__primitive_internal__]] &=(other: char) char {}
-    operator [[__primitive_internal__]] <<=(other: char)char {}
-    operator [[__primitive_internal__]] >>=(other: char)char {}
-    operator [[__primitive_internal__]] =(other: char)  char {}
-    operator [[__primitive_internal__]] !=(other: char) char {}
-    operator [[__primitive_internal__]] !()             bool {}
-    operator [[__primitive_internal__]] ||(other: char) bool {}
-    operator [[__primitive_internal__]] &&(other: char) bool {}
+    operator [[__internal__, __no_pointer_self__]] +(other: char)  char {}
+    operator [[__internal__, __no_pointer_self__]] -(other: char)  char {}
+    operator [[__internal__, __no_pointer_self__]] *(other: char)  char {}
+    operator [[__internal__, __no_pointer_self__]] /(other: char)  char {}
+    operator [[__internal__, __no_pointer_self__]] %(other: char)  char {}
+    operator [[__internal__, __no_pointer_self__]] ^(other: char)  char {}
+    operator [[__internal__, __no_pointer_self__]] |(other: char)  char {}
+    operator [[__internal__, __no_pointer_self__]] &(other: char)  char {}
+    operator [[__internal__, __no_pointer_self__]] <<(other: char) char {}
+    operator [[__internal__, __no_pointer_self__]] <(other: char)  bool {}
+    operator [[__internal__, __no_pointer_self__]] >(other: char)  bool {}
+    operator [[__internal__, __no_pointer_self__]] <=(other: char) bool {}
+    operator [[__internal__, __no_pointer_self__]] >=(other: char) bool {}
+    operator [[__internal__, __no_pointer_self__]] ==(other: char) bool {}
+    operator [[__internal__, __no_pointer_self__]] !=(other: char) bool {}
+    operator [[__internal__, __no_pointer_self__]] -()             char {}
+    operator [[__internal__, __no_pointer_self__]] +=(other: char) char {}
+    operator [[__internal__, __no_pointer_self__]] -=(other: char) char {}
+    operator [[__internal__, __no_pointer_self__]] *=(other: char) char {}
+    operator [[__internal__, __no_pointer_self__]] /=(other: char) char {}
+    operator [[__internal__, __no_pointer_self__]] %=(other: char) char {}
+    operator [[__internal__, __no_pointer_self__]] ^=(other: char) char {}
+    operator [[__internal__, __no_pointer_self__]] |=(other: char) char {}
+    operator [[__internal__, __no_pointer_self__]] &=(other: char) char {}
+    operator [[__internal__, __no_pointer_self__]] <<=(other: char)char {}
+    operator [[__internal__, __no_pointer_self__]] >>=(other: char)char {}
+    operator [[__internal__, __no_pointer_self__]] =(other: char)  char {}
+    operator [[__internal__, __no_pointer_self__]] !=(other: char) char {}
+    operator [[__internal__, __no_pointer_self__]] !()             bool {}
+    operator [[__internal__, __no_pointer_self__]] ||(other: char) bool {}
+    operator [[__internal__, __no_pointer_self__]] &&(other: char) bool {}
 
     // override with &char
-    operator [[__primitive_internal__]] =(other: &char) &char {}
+    operator [[__internal__, __no_pointer_self__]] =(other: &char) &char {}
     operator [[__internal__]] =(other: char)            &char {}
     operator [[__internal__]] =(other: &char)           &char {}
     operator [[__internal__]] !()                       bool {}
@@ -64,288 +64,309 @@ class [[extends]] char {
 
 class [[extends]] i8 {
   pub:
-    operator [[__primitive_internal__]] +(other: i8) i8 {}
-    operator [[__primitive_internal__]] -(other: i8) i8 {}
-    operator [[__primitive_internal__]] *(other: i8) i8 {}
-    operator [[__primitive_internal__]] /(other: i8) i8 {}
-    operator [[__primitive_internal__]] %(other: i8) i8 {}
-    operator [[__primitive_internal__]] ^(other: i8) i8 {}
-    operator [[__primitive_internal__]] |(other: i8) i8 {}
-    operator [[__primitive_internal__]] &(other: i8) i8 {}
-    operator [[__primitive_internal__]] <<(other: i8) i8 {}
-    //operator [[__primitive_internal__]] >>(other: i8) i8 {}
-    operator [[__primitive_internal__]] <(other: i8) bool {}
-    operator [[__primitive_internal__]] >(other: i8) bool {}
-    operator [[__primitive_internal__]] <=(other: i8) bool {}
-    operator [[__primitive_internal__]] >=(other: i8) bool {}
-    operator [[__primitive_internal__]] ==(other: i8) bool {}
-    operator [[__primitive_internal__]] !=(other: i8) bool {}
-    operator [[__primitive_internal__]] -() i8 {}
-    //operator [[__primitive_internal__]] ++() i8 {}
-    //operator [[__primitive_internal__]] --() i8 {}
-    operator [[__primitive_internal__]] +=(other: i8) i8 {}
-    operator [[__primitive_internal__]] -=(other: i8) i8 {}
-    operator [[__primitive_internal__]] *=(other: i8) i8 {}
-    operator [[__primitive_internal__]] /=(other: i8) i8 {}
-    operator [[__primitive_internal__]] %=(other: i8) i8 {}
-    operator [[__primitive_internal__]] ^=(other: i8) i8 {}
-    operator [[__primitive_internal__]] |=(other: i8) i8 {}
-    operator [[__primitive_internal__]] &=(other: i8) i8 {}
-    operator [[__primitive_internal__]] <<=(other: i8) i8 {}
-    operator [[__primitive_internal__]] >>=(other: i8) i8 {}
-    operator [[__primitive_internal__]] =(other: i8) i8 {}
-    operator [[__primitive_internal__]] !() bool {}
-    operator [[__primitive_internal__]] ||(other: i8) bool {}
-    operator [[__primitive_internal__]] &&(other: i8) bool {}
+    operator [[__internal__, __no_pointer_self__]] +(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] -(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] *(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] /(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] %(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] ^(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] |(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] &(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] <<(other: i8) i8 {}
+    //operator [[__internal__, __no_pointer_self__]] >>(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] <(other: i8) bool {}
+    operator [[__internal__, __no_pointer_self__]] >(other: i8) bool {}
+    operator [[__internal__, __no_pointer_self__]] <=(other: i8) bool {}
+    operator [[__internal__, __no_pointer_self__]] >=(other: i8) bool {}
+    operator [[__internal__, __no_pointer_self__]] ==(other: i8) bool {}
+    operator [[__internal__, __no_pointer_self__]] !=(other: i8) bool {}
+    operator [[__internal__, __no_pointer_self__]] -() i8 {}
+    //operator [[__internal__, __no_pointer_self__]] ++() i8 {}
+    //operator [[__internal__, __no_pointer_self__]] --() i8 {}
+    operator [[__internal__, __no_pointer_self__]] +=(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] -=(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] *=(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] /=(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] %=(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] ^=(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] |=(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] &=(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] <<=(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] >>=(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] =(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] !() bool {}
+    operator [[__internal__, __no_pointer_self__]] ||(other: i8) bool {}
+    operator [[__internal__, __no_pointer_self__]] &&(other: i8) bool {}
+
+    operator [[__internal__]] =(other: &i8) &i8 {}
+    operator [[__internal__]] =(other: i8) &i8 {}
 }
 
 class [[extends]] i16 {
   pub:
-    operator [[__primitive_internal__]] +(other: i16) i16 {}
-    operator [[__primitive_internal__]] -(other: i16) i16 {}
-    operator [[__primitive_internal__]] *(other: i16) i16 {}
-    operator [[__primitive_internal__]] /(other: i16) i16 {}
-    operator [[__primitive_internal__]] %(other: i16) i16 {}
-    operator [[__primitive_internal__]] ^(other: i16) i16 {}
-    operator [[__primitive_internal__]] |(other: i16) i16 {}
-    operator [[__primitive_internal__]] &(other: i16) i16 {}
-    operator [[__primitive_internal__]] <<(other: i16) i16 {}
-    //operator [[__primitive_internal__]] >>(other: i16) i16 {}
-    operator [[__primitive_internal__]] <(other: i16) bool {}
-    operator [[__primitive_internal__]] >(other: i16) bool {}
-    operator [[__primitive_internal__]] <=(other: i16) bool {}
-    operator [[__primitive_internal__]] >=(other: i16) bool {}
-    operator [[__primitive_internal__]] ==(other: i16) bool {}
-    operator [[__primitive_internal__]] !=(other: i16) bool {}
-    operator [[__primitive_internal__]] -() i16 {}
-    //operator [[__primitive_internal__]] ++() i16 {}
-    //operator [[__primitive_internal__]] --() i16 {}
-    operator [[__primitive_internal__]] +=(other: i16) i16 {}
-    operator [[__primitive_internal__]] -=(other: i16) i16 {}
-    operator [[__primitive_internal__]] *=(other: i16) i16 {}
-    operator [[__primitive_internal__]] /=(other: i16) i16 {}
-    operator [[__primitive_internal__]] %=(other: i16) i16 {}
-    operator [[__primitive_internal__]] ^=(other: i16) i16 {}
-    operator [[__primitive_internal__]] |=(other: i16) i16 {}
-    operator [[__primitive_internal__]] &=(other: i16) i16 {}
-    operator [[__primitive_internal__]] <<=(other: i16) i16 {}
-    operator [[__primitive_internal__]] >>=(other: i16) i16 {}
-    operator [[__primitive_internal__]] =(other: i16) i16 {}
-    operator [[__primitive_internal__]] !() bool {}
-    operator [[__primitive_internal__]] ||(other: i16) bool {}
-    operator [[__primitive_internal__]] &&(other: i16) bool {}
+    operator [[__internal__, __no_pointer_self__]] +(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] -(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] *(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] /(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] %(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] ^(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] |(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] &(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] <<(other: i16) i16 {}
+    //operator [[__internal__, __no_pointer_self__]] >>(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] <(other: i16) bool {}
+    operator [[__internal__, __no_pointer_self__]] >(other: i16) bool {}
+    operator [[__internal__, __no_pointer_self__]] <=(other: i16) bool {}
+    operator [[__internal__, __no_pointer_self__]] >=(other: i16) bool {}
+    operator [[__internal__, __no_pointer_self__]] ==(other: i16) bool {}
+    operator [[__internal__, __no_pointer_self__]] !=(other: i16) bool {}
+    operator [[__internal__, __no_pointer_self__]] -() i16 {}
+    //operator [[__internal__, __no_pointer_self__]] ++() i16 {}
+    //operator [[__internal__, __no_pointer_self__]] --() i16 {}
+    operator [[__internal__, __no_pointer_self__]] +=(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] -=(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] *=(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] /=(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] %=(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] ^=(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] |=(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] &=(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] <<=(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] >>=(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] =(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] !() bool {}
+    operator [[__internal__, __no_pointer_self__]] ||(other: i16) bool {}
+    operator [[__internal__, __no_pointer_self__]] &&(other: i16) bool {}
+
+    operator [[__internal__]] =(other: &i16) &i16 {}
+    operator [[__internal__]] =(other: i16) &i16 {}
 }
 
 class [[extends]] i32 {
   pub:
-    operator [[__primitive_internal__]] +(other: i32) i32 {}
-    operator [[__primitive_internal__]] -(other: i32) i32 {}
-    operator [[__primitive_internal__]] *(other: i32) i32 {}
-    operator [[__primitive_internal__]] /(other: i32) i32 {}
-    operator [[__primitive_internal__]] %(other: i32) i32 {}
-    operator [[__primitive_internal__]] ^(other: i32) i32 {}
-    operator [[__primitive_internal__]] |(other: i32) i32 {}
-    operator [[__primitive_internal__]] &(other: i32) i32 {}
-    operator [[__primitive_internal__]] <<(other: i32) i32 {}
-    //operator [[__primitive_internal__]] >>(other: i32) i32 {}
-    operator [[__primitive_internal__]] <(other: i32) bool {}
-    operator [[__primitive_internal__]] >(other: i32) bool {}
-    operator [[__primitive_internal__]] <=(other: i32) bool {}
-    operator [[__primitive_internal__]] >=(other: i32) bool {}
-    operator [[__primitive_internal__]] ==(other: i32) bool {}
-    operator [[__primitive_internal__]] !=(other: i32) bool {}
-    operator [[__primitive_internal__]] -() i32 {}
-    //operator [[__primitive_internal__]] ++() i32 {}
-    //operator [[__primitive_internal__]] --() i32 {}
-    operator [[__primitive_internal__]] +=(other: i32) i32 {}
-    operator [[__primitive_internal__]] -=(other: i32) i32 {}
-    operator [[__primitive_internal__]] *=(other: i32) i32 {}
-    operator [[__primitive_internal__]] /=(other: i32) i32 {}
-    operator [[__primitive_internal__]] %=(other: i32) i32 {}
-    operator [[__primitive_internal__]] ^=(other: i32) i32 {}
-    operator [[__primitive_internal__]] |=(other: i32) i32 {}
-    operator [[__primitive_internal__]] &=(other: i32) i32 {}
-    operator [[__primitive_internal__]] <<=(other: i32) i32 {}
-    operator [[__primitive_internal__]] >>=(other: i32) i32 {}
-    operator [[__primitive_internal__]] =(other: i32) i32 {}
-    operator [[__primitive_internal__]] !() bool {}
-    operator [[__primitive_internal__]] ||(other: i32) bool {}
-    operator [[__primitive_internal__]] &&(other: i32) bool {}
+    operator [[__internal__, __no_pointer_self__]] +(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] -(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] *(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] /(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] %(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] ^(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] |(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] &(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] <<(other: i32) i32 {}
+    //operator [[__internal__, __no_pointer_self__]] >>(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] <(other: i32) bool {}
+    operator [[__internal__, __no_pointer_self__]] >(other: i32) bool {}
+    operator [[__internal__, __no_pointer_self__]] <=(other: i32) bool {}
+    operator [[__internal__, __no_pointer_self__]] >=(other: i32) bool {}
+    operator [[__internal__, __no_pointer_self__]] ==(other: i32) bool {}
+    operator [[__internal__, __no_pointer_self__]] !=(other: i32) bool {}
+    operator [[__internal__, __no_pointer_self__]] -() i32 {}
+    //operator [[__internal__, __no_pointer_self__]] ++() i32 {}
+    //operator [[__internal__, __no_pointer_self__]] --() i32 {}
+    operator [[__internal__, __no_pointer_self__]] +=(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] -=(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] *=(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] /=(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] %=(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] ^=(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] |=(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] &=(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] <<=(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] >>=(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] =(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] !() bool {}
+    operator [[__internal__, __no_pointer_self__]] ||(other: i32) bool {}
+    operator [[__internal__, __no_pointer_self__]] &&(other: i32) bool {}
+
+    operator [[__internal__]] =(other: &i32) &i32 {}
+    operator [[__internal__]] =(other: i32) &i32 {}
 }
 
 class [[extends]] i64 {
   pub:
     // override with &i64
-    operator [[__primitive_internal__]] =(other: &i64) &i64 {}
+    operator [[__internal__, __no_pointer_self__]] =(other: &i64) &i64 {}
     operator [[__internal__]] =(other: i64) &i64 {}
 
-    operator [[__primitive_internal__]] +(other: i64) i64 {}
-    operator [[__primitive_internal__]] -(other: i64) i64 {}
-    operator [[__primitive_internal__]] *(other: i64) i64 {}
-    operator [[__primitive_internal__]] /(other: i64) i64 {}
-    operator [[__primitive_internal__]] %(other: i64) i64 {}
-    operator [[__primitive_internal__]] ^(other: i64) i64 {}
-    operator [[__primitive_internal__]] |(other: i64) i64 {}
-    operator [[__primitive_internal__]] &(other: i64) i64 {}
-    operator [[__primitive_internal__]] <<(other: i64) i64 {}
-    //operator [[__primitive_internal__]] >>(other: i64) i64 {}
-    operator [[__primitive_internal__]] <(other: i64) bool {}
-    operator [[__primitive_internal__]] >(other: i64) bool {}
-    operator [[__primitive_internal__]] <=(other: i64) bool {}
-    operator [[__primitive_internal__]] >=(other: i64) bool {}
-    operator [[__primitive_internal__]] ==(other: i64) bool {}
-    operator [[__primitive_internal__]] !=(other: i64) bool {}
-    operator [[__primitive_internal__]] -() i64 {}
-    //operator [[__primitive_internal__]] ++() i64 {}
-    //operator [[__primitive_internal__]] --() i64 {}
-    operator [[__primitive_internal__]] +=(other: i64) i64 {}
-    operator [[__primitive_internal__]] -=(other: i64) i64 {}
-    operator [[__primitive_internal__]] *=(other: i64) i64 {}
-    operator [[__primitive_internal__]] /=(other: i64) i64 {}
-    operator [[__primitive_internal__]] %=(other: i64) i64 {}
-    operator [[__primitive_internal__]] ^=(other: i64) i64 {}
-    operator [[__primitive_internal__]] |=(other: i64) i64 {}
-    operator [[__primitive_internal__]] &=(other: i64) i64 {}
-    operator [[__primitive_internal__]] <<=(other: i64) i64 {}
-    operator [[__primitive_internal__]] >>=(other: i64) i64 {}
-    operator [[__primitive_internal__]] =(other: i64) i64 {}
-    operator [[__primitive_internal__]] !() bool {}
-    operator [[__primitive_internal__]] ||(other: i64) bool {}
-    operator [[__primitive_internal__]] &&(other: i64) bool {}
+    operator [[__internal__, __no_pointer_self__]] +(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] -(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] *(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] /(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] %(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] ^(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] |(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] &(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] <<(other: i64) i64 {}
+    //operator [[__internal__, __no_pointer_self__]] >>(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] <(other: i64) bool {}
+    operator [[__internal__, __no_pointer_self__]] >(other: i64) bool {}
+    operator [[__internal__, __no_pointer_self__]] <=(other: i64) bool {}
+    operator [[__internal__, __no_pointer_self__]] >=(other: i64) bool {}
+    operator [[__internal__, __no_pointer_self__]] ==(other: i64) bool {}
+    operator [[__internal__, __no_pointer_self__]] !=(other: i64) bool {}
+    operator [[__internal__, __no_pointer_self__]] -() i64 {}
+    //operator [[__internal__, __no_pointer_self__]] ++() i64 {}
+    //operator [[__internal__, __no_pointer_self__]] --() i64 {}
+    operator [[__internal__, __no_pointer_self__]] +=(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] -=(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] *=(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] /=(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] %=(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] ^=(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] |=(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] &=(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] <<=(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] >>=(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] =(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] !() bool {}
+    operator [[__internal__, __no_pointer_self__]] ||(other: i64) bool {}
+    operator [[__internal__, __no_pointer_self__]] &&(other: i64) bool {}
+
+    operator [[__internal__]] =(other: &i64) &i64 {}
+    operator [[__internal__]] =(other: i64) &i64 {}
 }
 
 class [[extends]] f32 {
   pub:
     // override with &f32
-    operator [[__primitive_internal__]] =(other: &f32) &f32 {}
+    operator [[__internal__, __no_pointer_self__]] =(other: &f32) &f32 {}
     operator [[__internal__]] =(other: f32) &f32 {}
 
-    operator [[__primitive_internal__]] +(other: f32) f32 {}
-    operator [[__primitive_internal__]] -(other: f32) f32 {}
-    operator [[__primitive_internal__]] *(other: f32) f32 {}
-    operator [[__primitive_internal__]] /(other: f32) f32 {}
-    operator [[__primitive_internal__]] %(other: f32) f32 {}
-    operator [[__primitive_internal__]] ^(other: f32) f32 {}
-    operator [[__primitive_internal__]] |(other: f32) f32 {}
-    operator [[__primitive_internal__]] &(other: f32) f32 {}
-    operator [[__primitive_internal__]] <<(other: f32) f32 {}
-    //operator [[__primitive_internal__]] >>(other: f32) f32 {}
-    operator [[__primitive_internal__]] <(other: f32) bool {}
-    operator [[__primitive_internal__]] >(other: f32) bool {}
-    operator [[__primitive_internal__]] <=(other: f32) bool {}
-    operator [[__primitive_internal__]] >=(other: f32) bool {}
-    operator [[__primitive_internal__]] ==(other: f32) bool {}
-    operator [[__primitive_internal__]] !=(other: f32) bool {}
-    operator [[__primitive_internal__]] -() f32 {}
-    //operator [[__primitive_internal__]] ++() f32 {}
-    //operator [[__primitive_internal__]] --() f32 {}
-    operator [[__primitive_internal__]] +=(other: f32) f32 {}
-    operator [[__primitive_internal__]] -=(other: f32) f32 {}
-    operator [[__primitive_internal__]] *=(other: f32) f32 {}
-    operator [[__primitive_internal__]] /=(other: f32) f32 {}
-    operator [[__primitive_internal__]] %=(other: f32) f32 {}
-    operator [[__primitive_internal__]] ^=(other: f32) f32 {}
-    operator [[__primitive_internal__]] |=(other: f32) f32 {}
-    operator [[__primitive_internal__]] &=(other: f32) f32 {}
-    operator [[__primitive_internal__]] <<=(other: f32) f32 {}
-    operator [[__primitive_internal__]] >>=(other: f32) f32 {}
-    operator [[__primitive_internal__]] =(other: f32) f32 {}
-    operator [[__primitive_internal__]] !() bool {}
-    operator [[__primitive_internal__]] ||(other: f32) bool {}
-    operator [[__primitive_internal__]] &&(other: f32) bool {}
+    operator [[__internal__, __no_pointer_self__]] +(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] -(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] *(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] /(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] %(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] ^(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] |(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] &(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] <<(other: f32) f32 {}
+    //operator [[__internal__, __no_pointer_self__]] >>(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] <(other: f32) bool {}
+    operator [[__internal__, __no_pointer_self__]] >(other: f32) bool {}
+    operator [[__internal__, __no_pointer_self__]] <=(other: f32) bool {}
+    operator [[__internal__, __no_pointer_self__]] >=(other: f32) bool {}
+    operator [[__internal__, __no_pointer_self__]] ==(other: f32) bool {}
+    operator [[__internal__, __no_pointer_self__]] !=(other: f32) bool {}
+    operator [[__internal__, __no_pointer_self__]] -() f32 {}
+    //operator [[__internal__, __no_pointer_self__]] ++() f32 {}
+    //operator [[__internal__, __no_pointer_self__]] --() f32 {}
+    operator [[__internal__, __no_pointer_self__]] +=(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] -=(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] *=(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] /=(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] %=(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] ^=(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] |=(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] &=(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] <<=(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] >>=(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] =(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] !() bool {}
+    operator [[__internal__, __no_pointer_self__]] ||(other: f32) bool {}
+    operator [[__internal__, __no_pointer_self__]] &&(other: f32) bool {}
+
+    operator [[__internal__]] =(other: &f32) &f32 {}
+    operator [[__internal__]] =(other: f32) &f32 {}
 }
 
 class [[extends]] f64 {
   pub:
     // override with &f64
-    operator [[__primitive_internal__]] =(other: &f64) &f64 {}
+    operator [[__internal__, __no_pointer_self__]] =(other: &f64) &f64 {}
     operator [[__internal__]] =(other: f64) &f64 {}
 
-    operator [[__primitive_internal__]] +(other: f64) f64 {}
-    operator [[__primitive_internal__]] -(other: f64) f64 {}
-    operator [[__primitive_internal__]] *(other: f64) f64 {}
-    operator [[__primitive_internal__]] /(other: f64) f64 {}
-    operator [[__primitive_internal__]] %(other: f64) f64 {}
-    operator [[__primitive_internal__]] ^(other: f64) f64 {}
-    operator [[__primitive_internal__]] |(other: f64) f64 {}
-    operator [[__primitive_internal__]] &(other: f64) f64 {}
-    operator [[__primitive_internal__]] <<(other: f64) f64 {}
-    //operator [[__primitive_internal__]] >>(other: f64) f64 {}
-    operator [[__primitive_internal__]] <(other: f64) bool {}
-    operator [[__primitive_internal__]] >(other: f64) bool {}
-    operator [[__primitive_internal__]] <=(other: f64) bool {}
-    operator [[__primitive_internal__]] >=(other: f64) bool {}
-    operator [[__primitive_internal__]] ==(other: f64) bool {}
-    operator [[__primitive_internal__]] !=(other: f64) bool {}
-    operator [[__primitive_internal__]] -() f64 {}
-    //operator [[__primitive_internal__]] ++() f64 {}
-    //operator [[__primitive_internal__]] --() f64 {}
-    operator [[__primitive_internal__]] +=(other: f64) f64 {}
-    operator [[__primitive_internal__]] -=(other: f64) f64 {}
-    operator [[__primitive_internal__]] *=(other: f64) f64 {}
-    operator [[__primitive_internal__]] /=(other: f64) f64 {}
-    operator [[__primitive_internal__]] %=(other: f64) f64 {}
-    operator [[__primitive_internal__]] ^=(other: f64) f64 {}
-    operator [[__primitive_internal__]] |=(other: f64) f64 {}
-    operator [[__primitive_internal__]] &=(other: f64) f64 {}
-    operator [[__primitive_internal__]] <<=(other: f64) f64 {}
-    operator [[__primitive_internal__]] >>=(other: f64) f64 {}
-    operator [[__primitive_internal__]] =(other: f64) f64 {}
-    operator [[__primitive_internal__]] !() bool {}
-    operator [[__primitive_internal__]] ||(other: f64) bool {}
-    operator [[__primitive_internal__]] &&(other: f64) bool {}
+    operator [[__internal__, __no_pointer_self__]] +(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] -(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] *(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] /(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] %(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] ^(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] |(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] &(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] <<(other: f64) f64 {}
+    //operator [[__internal__, __no_pointer_self__]] >>(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] <(other: f64) bool {}
+    operator [[__internal__, __no_pointer_self__]] >(other: f64) bool {}
+    operator [[__internal__, __no_pointer_self__]] <=(other: f64) bool {}
+    operator [[__internal__, __no_pointer_self__]] >=(other: f64) bool {}
+    operator [[__internal__, __no_pointer_self__]] ==(other: f64) bool {}
+    operator [[__internal__, __no_pointer_self__]] !=(other: f64) bool {}
+    operator [[__internal__, __no_pointer_self__]] -() f64 {}
+    //operator [[__internal__, __no_pointer_self__]] ++() f64 {}
+    //operator [[__internal__, __no_pointer_self__]] --() f64 {}
+    operator [[__internal__, __no_pointer_self__]] +=(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] -=(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] *=(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] /=(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] %=(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] ^=(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] |=(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] &=(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] <<=(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] >>=(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] =(other: f64) f64 {}
+    operator [[__internal__, __no_pointer_self__]] !() bool {}
+    operator [[__internal__, __no_pointer_self__]] ||(other: f64) bool {}
+    operator [[__internal__, __no_pointer_self__]] &&(other: f64) bool {}
+
+    operator [[__internal__]] =(other: &f64) &f64 {}
+    operator [[__internal__]] =(other: f64) &f64 {}
 }
 
 class [[extends]] bool {
   pub:
     // override with &bool
-    operator [[__primitive_internal__]] =(other: &bool) &bool {}
+    operator [[__internal__, __no_pointer_self__]] =(other: &bool) &bool {}
     operator [[__internal__]] =(other: bool) &bool {}
 
-    operator [[__primitive_internal__]] +(other: bool) bool {}
-    operator [[__primitive_internal__]] -(other: bool) bool {}
-    operator [[__primitive_internal__]] *(other: bool) bool {}
-    operator [[__primitive_internal__]] /(other: bool) bool {}
-    operator [[__primitive_internal__]] %(other: bool) bool {}
-    operator [[__primitive_internal__]] ^(other: bool) bool {}
-    operator [[__primitive_internal__]] |(other: bool) bool {}
-    operator [[__primitive_internal__]] &(other: bool) bool {}
-    operator [[__primitive_internal__]] <<(other: bool) bool {}
-    //operator [[__primitive_internal__]] >>(other: bool) bool {}
-    operator [[__primitive_internal__]] <(other: bool) bool {}
-    operator [[__primitive_internal__]] >(other: bool) bool {}
-    operator [[__primitive_internal__]] <=(other: bool) bool {}
-    operator [[__primitive_internal__]] >=(other: bool) bool {}
-    operator [[__primitive_internal__]] ==(other: bool) bool {}
-    operator [[__primitive_internal__]] !=(other: bool) bool {}
-    operator [[__primitive_internal__]] -() bool {}
-    //operator [[__primitive_internal__]] ++() bool {}
-    //operator [[__primitive_internal__]] --() bool {}
-    operator [[__primitive_internal__]] +=(other: bool) bool {}
-    operator [[__primitive_internal__]] -=(other: bool) bool {}
-    operator [[__primitive_internal__]] *=(other: bool) bool {}
-    operator [[__primitive_internal__]] /=(other: bool) bool {}
-    operator [[__primitive_internal__]] %=(other: bool) bool {}
-    operator [[__primitive_internal__]] ^=(other: bool) bool {}
-    operator [[__primitive_internal__]] |=(other: bool) bool {}
-    operator [[__primitive_internal__]] &=(other: bool) bool {}
-    operator [[__primitive_internal__]] <<=(other: bool) bool {}
-    operator [[__primitive_internal__]] >>=(other: bool) bool {}
-    operator [[__primitive_internal__]] =(other: bool) bool {}
-    operator [[__primitive_internal__]] !() bool {}
-    operator [[__primitive_internal__]] ||(other: bool) bool {}
-    operator [[__primitive_internal__]] &&(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] +(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] -(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] *(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] /(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] %(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] ^(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] |(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] &(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] <<(other: bool) bool {}
+    //operator [[__internal__, __no_pointer_self__]] >>(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] <(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] >(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] <=(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] >=(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] ==(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] !=(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] -() bool {}
+    //operator [[__internal__, __no_pointer_self__]] ++() bool {}
+    //operator [[__internal__, __no_pointer_self__]] --() bool {}
+    operator [[__internal__, __no_pointer_self__]] +=(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] -=(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] *=(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] /=(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] %=(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] ^=(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] |=(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] &=(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] <<=(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] >>=(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] =(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] !() bool {}
+    operator [[__internal__, __no_pointer_self__]] ||(other: bool) bool {}
+    operator [[__internal__, __no_pointer_self__]] &&(other: bool) bool {}
+
+    operator [[__internal__]] =(other: &bool) &bool {}
+    operator [[__internal__]] =(other: bool) &bool {}
 }
 
 class [[extends]] cobj {
   pub:
     operator [[__internal__]] =(other: cobj) &cobj {}
-    operator [[__primitive_internal__]] ==(other: cobj) bool {}
-    operator [[__primitive_internal__]] !=(other: cobj) bool {}
-    operator [[__primitive_internal__]] !() bool {}
-    operator [[__primitive_internal__]] ||(other: cobj) bool {}
-    operator [[__primitive_internal__]] &&(other: cobj) bool {}
+    operator [[__internal__, __no_pointer_self__]] ==(other: cobj) bool {}
+    operator [[__internal__, __no_pointer_self__]] !=(other: cobj) bool {}
+    operator [[__internal__, __no_pointer_self__]] !() bool {}
+    operator [[__internal__, __no_pointer_self__]] ||(other: cobj) bool {}
+    operator [[__internal__, __no_pointer_self__]] &&(other: cobj) bool {}
 
     // override with &cobj
-    operator [[__primitive_internal__]] =(other: &cobj) &cobj {}
+    operator [[__internal__, __no_pointer_self__]] =(other: &cobj) &cobj {}
 }

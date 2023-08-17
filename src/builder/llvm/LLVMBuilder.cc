@@ -209,8 +209,7 @@ void LLVMBuilder::codegen() {
     // has not been generated yet.
     ITERATE_FUNCTIONS {
       auto f = fn->get();
-      if (!f->isDeclaration() && !f->hasAttribute(Attributes::BUILTIN) &&
-          !f->hasAttribute(Attributes::BUILTIN_NO_POINTER)) {
+      if (!f->isDeclaration() && !f->hasAttribute(Attributes::BUILTIN)) {
         auto llvmFn = funcs.at(f->getId());
         if (f->hasAttribute(Attributes::LLVM_FUNC)) {
           auto old = buildLLVMFunction(llvmFn, f);

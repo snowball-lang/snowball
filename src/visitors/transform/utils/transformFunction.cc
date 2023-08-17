@@ -121,8 +121,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
           if (!bodyReturns(body->getStmts()) &&
               !((utils::cast<types::NumericType>(returnType)) || (utils::cast<types::VoidType>(returnType))) &&
               !fn->isConstructor() && !node->hasAttribute(Attributes::NOT_IMPLEMENTED) 
-              && !node->hasAttribute(Attributes::BUILTIN)
-              && !node->hasAttribute(Attributes::BUILTIN_NO_POINTER)) {
+              && !node->hasAttribute(Attributes::BUILTIN)) {
             E<TYPE_ERROR>(node,
                           "Function lacks ending return statement!",
                           {.info = "Function does not return on all "

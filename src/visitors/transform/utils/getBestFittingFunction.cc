@@ -28,6 +28,7 @@ Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& over
   bool exactFunctionExists = false;
   std::pair<Cache::FunctionStore, std::vector<types::Type*>> bestFunction = {{nullptr}, {}};
   std::vector<std::pair<Cache::FunctionStore, std::vector<types::Type*>>> matchedFunctions;
+  std::vector<int> matchedFunctionsPerception;
   int genericIndex = -1;
   int genericCount = 0;
   int genericIterator = 0;
@@ -43,6 +44,7 @@ Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& over
         auto fnArgs = foundFunction.first.function->getArgs();
         bool argsEqual = ir::Func::argumentSizesEqual(fnArgs, arguments, foundFunction.first.function->isVariadic());
         bool argsNeedCasting = false;
+        int succeededArgs = 0;
         for (auto i = 0; (i < fnArgs.size()) && argsEqual; i++) {
           auto type = transformType(fnArgs.at(i)->getType());
           if ((fnArgs.at(i)->hasDefaultValue() || isIdentifier) && arguments.size() < fnArgs.size()) {
@@ -51,27 +53,62 @@ Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& over
           }
           argsEqual = arguments.at(i)->is(type);
           if (!argsEqual) {
-            if (canCast(arguments.at(i), type) != CastType::NoCast) {
+            if (auto castType = canCast(arguments.at(i), type); castType != CastType::NoCast) {
               argsEqual = true;
               argsNeedCasting = true;
+              // we need to prioritize the casting type
+              int castPriority = 0;
+              switch (castType) {
+                case CastType::NoCast:
+                  assert(false && "This should never happen");
+                case CastType::AutoDeref:
+                  castPriority = 1;
+                  break;
+                case CastType::AutoRef:
+                  castPriority = 2;
+                  break;
+                case CastType::Valid:
+                  castPriority = 3;
+                  break;
+                default:
+                  assert(false && "Invalid cast type given at deducing function");
+              }
+              // Succeded arg should be higher depending on the cast priority
+              succeededArgs = (succeededArgs+1) * (castPriority + 1);
             }
-          }
-        }
+          }        }
         if (argsEqual) {
           if (!argsNeedCasting) {
             exactFunctionExists = true;
             bestFunction = foundFunction;
           } else {
             matchedFunctions.push_back(foundFunction);
+            matchedFunctionsPerception.push_back(succeededArgs);
           }
         }
       });
     }
     genericIterator++;
   }
-  if (((matchedFunctions.size() > 1) && (!exactFunctionExists) && (genericIndex == -1)) || (genericCount > 1))
+  if (((matchedFunctions.size() > 1) && (!exactFunctionExists) && (genericIndex == -1)) || (genericCount > 1)) {
+    // we check if there's a function that succeeded more than the others
+    // but if they all have the same amount of succeeded arguments, we throw an ambiguity error
+    int max = 0;
+    int maxIndex = -1;
+    for (auto i = 0; i < matchedFunctionsPerception.size(); i++) {
+      if (matchedFunctionsPerception.at(i) > max) {
+        max = matchedFunctionsPerception.at(i);
+        maxIndex = i;
+      }
+    }
+    // we dont return it if they all have the same amount of succeeded arguments
+    if (maxIndex != -1 && !std::all_of(matchedFunctionsPerception.begin(), matchedFunctionsPerception.end(),
+                                        [&](auto i) { return i == max; })) {
+      return {matchedFunctions.at(maxIndex).first, matchedFunctions.at(maxIndex).second,
+              FunctionFetchResponse::Ok};
+    }
     return {{nullptr}, {}, FunctionFetchResponse::AmbiguityConflict};
-  else if (exactFunctionExists)
+  } else if (exactFunctionExists)
     return {bestFunction.first, bestFunction.second, FunctionFetchResponse::Ok};
   else if (matchedFunctions.size() == 1) {
     auto matched = matchedFunctions.at(0);

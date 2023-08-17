@@ -38,7 +38,6 @@ enum Attributes
 
   // Builting related attributes
   BUILTIN,
-  BUILTIN_NO_POINTER,
   NO_POINTER_SELF,
 
   // Function internal attributes

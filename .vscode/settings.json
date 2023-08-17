@@ -110,5 +110,8 @@
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "todo-tree.tree.scanMode": "workspace",
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "docify.commentService.autoTranslationService": "English",
+    "docify.commentService.sidePanelReviewMode": true,
+    "docify.commentService.docstringFormat": "JsDoc"
 }

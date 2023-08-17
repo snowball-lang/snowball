@@ -27,10 +27,6 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
   if (ty->isReferenceType()) {
     auto pointer = utils::cast<Expression::ReferenceType>(ty);
     assert(pointer);
-    if (pointer->getBaseType()->isMutable()) {
-      DUMP_S("HERE")
-    }
-
     auto x = transformType(pointer->getBaseType())->getPointerTo();
     return x;
   } else if (ty->isTypeDecl()) {
