@@ -40,7 +40,9 @@ llvm::GlobalVariable* LLVMBuilder::createVirtualTable(types::DefinedType* ty, ll
   vTable->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
 
   // set comdat any
+#ifdef __linux__ 
   vTable->setComdat(module->getOrInsertComdat(structName));
+#endif
 
   auto arr = llvm::ConstantArray::get(llvm::ArrayType::get(llvm::Type::getInt8PtrTy(*context), functions.size()), functions);
   auto s = llvm::ConstantStruct::get(vtableType, arr);
