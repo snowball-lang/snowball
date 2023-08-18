@@ -11,15 +11,6 @@
 #ifndef __SNOWBALL_TYPECHECKER_H_
 #define __SNOWBALL_TYPECHECKER_H_
 
-/**
- * @brief Type checker class
- *
- * This class type checks everything after the
- * AST has been converted into a module.
- *
- * This type checks may be things like; Checking
- * if types equal, validating function calls, etc.
- */
 namespace snowball {
 namespace codegen {
 
@@ -42,6 +33,27 @@ public:
 };
 }; // namespace typecheck
 
+/**
+ * @brief TypeChecker class
+ *
+ * The TypeChecker class is responsible for performing comprehensive type checking
+ * on the codebase once the Abstract Syntax Tree (AST) has been transformed into a module.
+ * Type checking involves a thorough analysis of various aspects of the code to ensure
+ * type-related correctness and coherence.
+ *
+ * During this phase, the TypeChecker examines and enforces a range of type-related rules
+ * and validations. This includes but is not limited to:
+ * - Verifying that types are consistent and compatible across different parts of the code.
+ * - Validating the correctness of function calls, ensuring that the provided arguments
+ *   match the expected parameter types and that the return types align appropriately.
+ * - Cross-referencing variable assignments and expressions to confirm type compatibility.
+ * - Detecting and reporting type mismatches, undefined symbols, and other potential issues.
+ *
+ * By meticulously evaluating the type-related aspects of the code, the TypeChecker contributes
+ * to the overall robustness and reliability of the software. It aids developers in catching
+ * subtle errors that might lead to runtime crashes or unexpected behavior, fostering a more
+ * stable and predictable software development process.
+ */
 class TypeChecker : public AcceptorExtend<TypeChecker, codegen::ValueVisitor> {
   // Program represented by a module.
   std::shared_ptr<ir::Module> module;

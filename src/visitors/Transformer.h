@@ -359,10 +359,15 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * @param exprs A vector of Node pointers representing the
    * statements in the body of a function.
    *
-   * @return      A boolean indicating whether the function returns a
+   * @return A boolean indicating whether the function returns a
    * value.
    */
   bool bodyReturns(std::vector<Node*> exprs);
+  /**
+   * It returns information about an expansion.
+   * @note It will return a nullptr if the expansion is not valid.
+   */
+  const DBGObject*& getExpansionData();
   /**
    * It executes a variaety of user-defined tests for a class/function/...
    * generics. If there are no tests, it does not do anything.

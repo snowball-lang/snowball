@@ -1,6 +1,5 @@
 
 #include "errors.h"
-
 #include "utils/utils.h"
 
 #define RET_ERROR_IF_CODE(x, err)                                                                                      \

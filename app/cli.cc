@@ -172,6 +172,8 @@ Options CLI::parse() {
 
         if (current_arg == "exec") {
           opts.build_opts.emit_type = Options::EmitType::EXECUTABLE;
+        } else if (current_arg == "snowball-ir") {
+          opts.build_opts.emit_type = Options::EmitType::SNOWBALL_IR;
         } else if (current_arg == "lib") {
           opts.build_opts.emit_type = Options::EmitType::OBJECT;
         } else if (current_arg == "llvm-ir") {
@@ -181,7 +183,7 @@ Options CLI::parse() {
         } else {
           throw SNError(Error::ARGUMENT_ERROR,
                         "Valid build output types are: exec, lib, "
-                        "llvm-ir and asm");
+                        "llvm-ir, asm and snowball-ir");
         }
       } else if (IF_ANY_ARG("--output", "-o")) {
         CHECK_ARG("an output file")

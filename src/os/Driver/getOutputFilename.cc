@@ -16,6 +16,7 @@ std::string Driver::getOutputFilename(std::string input, app::Options::EmitType 
       break;
     case app::Options::EmitType::LLVM_IR: output += ".ll"; break;
     case app::Options::EmitType::ASSEMBLY: output += ".s"; break;
+    case app::Options::EmitType::SNOWBALL_IR: output += ".sir"; break;
   }
 #elif __linux__
   std::string output = input;
@@ -29,6 +30,7 @@ std::string Driver::getOutputFilename(std::string input, app::Options::EmitType 
       break;
     case app::Options::EmitType::LLVM_IR: output += ".ll"; break;
     case app::Options::EmitType::ASSEMBLY: output += ".s"; break;
+    case app::Options::EmitType::SNOWBALL_IR: output += ".sir"; break;
   }
 #elif _WIN32
   std::string output = input;
@@ -42,6 +44,7 @@ std::string Driver::getOutputFilename(std::string input, app::Options::EmitType 
       break;
     case app::Options::EmitType::LLVM_IR: output += ".ll"; break;
     case app::Options::EmitType::ASSEMBLY: output += ".s"; break;
+    case app::Options::EmitType::SNOWBALL_IR: output += ".sir"; break;
   }
 #else
 #error "Unsupported platform"

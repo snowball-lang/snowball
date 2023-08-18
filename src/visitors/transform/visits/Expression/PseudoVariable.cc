@@ -77,12 +77,12 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
     transformMacro(p_node, macroInstance);
     return;
   } else {
-    if (auto parent = ctx->currentMacroInstance) {
+    if (auto parent = ctx->getCurrentMacro()) {
       auto arg = parent->stack.find(pseudo);
       if (arg != parent->stack.end()) {
         auto backup = parent;
         auto [node, type] = (*arg).second;
-        if (node->parentMacro != nullptr) ctx->currentMacroInstance = node->parentMacro;
+        if (node->parentMacro != nullptr) ctx->macroBacktrace.push_back({p_node->getDBGInfo(), node->parentMacro});
         if (!p_node->asStatement && type == Macro::ArguementType::STATEMENT) {
           E<PSEUDO_ERROR>(p_node, FMT("Macro arguement '%s' is not an expression!", pseudo.c_str()),
                           {.info = "Trying to use a statement macro as an expression macro.",
@@ -96,7 +96,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
                                         })});
         }
         trans(node);
-        if (node->parentMacro != nullptr) ctx->currentMacroInstance = backup;
+        if (node->parentMacro != nullptr) ctx->macroBacktrace.pop_back();
         return;
       }
     }

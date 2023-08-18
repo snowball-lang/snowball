@@ -26,6 +26,8 @@ test.ll
 .ninja_log
 build.ninja
 
+analysis.txt
+
 # Compiled Static libraries
 *.lai
 *.la

@@ -15,7 +15,8 @@ struct Options {
     EXECUTABLE,
     OBJECT,
     LLVM_IR,
-    ASSEMBLY
+    ASSEMBLY,
+    SNOWBALL_IR,
   };
 
   enum Optimization

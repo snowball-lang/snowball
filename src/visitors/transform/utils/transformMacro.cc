@@ -67,11 +67,11 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
       E<PSEUDO_ERROR>(p_node,
                       FMT("Macro '%s' already has an arguement with name '%s'!", macroName.c_str(), name.c_str()));
     }
-    arg->parentMacro = ctx->currentMacroInstance;
+    arg->parentMacro = ctx->getCurrentMacro();
     macroInstance->stack.insert(std::make_pair(name, std::make_pair(arg, deducedArgType)));
   }
   if (macroName == "pkg") {
-    if (ctx->currentMacroInstance == nullptr) {
+    if (ctx->getCurrentMacro() == nullptr) {
       E<PSEUDO_ERROR>(p_node, "Can't use `@pkg` macro outside a parent macro!",
                       {.info = "This is the macro that was used",
                        .note = "This special macro is only available inside a parent macro.",
@@ -79,14 +79,13 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
     }
     auto expr = args.at(0);
     auto backupModule = ctx->module;
-    ctx->module = ctx->currentMacroInstance->module;
+    ctx->module = ctx->getCurrentMacro()->module;
     trans(expr);
     ctx->module = backupModule;
   } else {
-    auto backup = ctx->currentMacroInstance;
-    ctx->currentMacroInstance = macroInstance;
+    ctx->macroBacktrace.push_back({p_node->getDBGInfo(), macroInstance});
     for (auto inst : macro->getBody()->getStmts()) { trans(inst); }
-    ctx->currentMacroInstance = backup;
+    ctx->macroBacktrace.pop_back();
   }
   macroInstance->stack.clear();
 }

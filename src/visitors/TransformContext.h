@@ -57,7 +57,8 @@ public:
   ///  "--show-full-backtrace" is set.
   Expression::FunctionCall* latestCall = nullptr;
   /// @brief The current macro instance being transformed
-  transform::MacroInstance* currentMacroInstance = nullptr;
+  std::vector<std::pair<DBGSourceInfo*, transform::MacroInstance*>> 
+    macroBacktrace = {};
 
 private:
   /// Utility function to get a primitive type
@@ -110,6 +111,11 @@ public:
   }
   /// @brief Defined the new type being generated
   void setCurrentClass(types::Type* c) { currentClass = c; }
+
+  transform::MacroInstance* getCurrentMacro() {
+    if (macroBacktrace.empty()) return nullptr;
+    return macroBacktrace.back().second;
+  }
 
   /**
    * @brief Add function to stack.

@@ -78,6 +78,7 @@ public:
   int emitObject(std::string, bool = true);
   int emitLLVMIr(std::string, bool = true);
   int emitASM(std::string, bool = true);
+  int emitSnowballIr(std::string, bool = true);
 
   GlobalContext* getGlobalContext() { return globalContext; }
 

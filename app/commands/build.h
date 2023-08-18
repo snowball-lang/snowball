@@ -44,15 +44,19 @@ int build(app::Options::BuildOptions p_opts) {
 
   std::string build_type;
   if (p_opts.is_test) {
-    build_type = "test";
-  } else if (p_opts.emit_type == Options::EmitType::EXECUTABLE) {
-    build_type = "executable";
+    build_type = "test + ";
+  }
+  
+  if (p_opts.emit_type == Options::EmitType::EXECUTABLE) {
+    build_type += "executable";
+  } else if (p_opts.emit_type == Options::EmitType::SNOWBALL_IR) {
+    build_type += "snowball-ir";
   } else if (p_opts.emit_type == Options::EmitType::LLVM_IR) {
-    build_type = "llvm-ir";
+    build_type += "llvm-ir";
   } else if (p_opts.emit_type == Options::EmitType::OBJECT) {
-    build_type = "library";
+    build_type += "library";
   } else if (p_opts.emit_type == Options::EmitType::ASSEMBLY) {
-    build_type = "assembly";
+    build_type += "assembly";
   } else {
     throw SNError(BUG, FMT("Unhandled emit type for build process ('%i')", p_opts.emit_type));
   }
@@ -97,6 +101,8 @@ int build(app::Options::BuildOptions p_opts) {
   int status;
   if (p_opts.emit_type == app::Options::EmitType::OBJECT) {
     status = compiler->emitObject(output, !p_opts.silent);
+  } else if (p_opts.emit_type == app::Options::EmitType::SNOWBALL_IR) {
+    status = compiler->emitSnowballIr(output, !p_opts.silent);
   } else if (p_opts.emit_type == app::Options::EmitType::LLVM_IR) {
     status = compiler->emitLLVMIr(output, !p_opts.silent);
   } else if (p_opts.emit_type == app::Options::EmitType::ASSEMBLY) {

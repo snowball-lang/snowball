@@ -2,6 +2,7 @@
 
 #include "builder/linker/Linker.h"
 #include "builder/llvm/LLVMBuilder.h"
+#include "builder/sn-ir/SnowballIREmitter.h"
 #include "ir/module/MainModule.h"
 #include "ir/module/Module.h"
 #include "lexer/lexer.h"
@@ -191,6 +192,13 @@ int Compiler::emitBinary(std::string out, bool log) {
   // clean up
   DEBUG_CODEGEN("Cleaning up object file... (%s)", objfile.c_str());
   remove(objfile.c_str());
+  return EXIT_SUCCESS;
+}
+
+int Compiler::emitSnowballIr(std::string p_output, bool p_pmessage) {
+  auto builder = new codegen::SnowballIREmitter(module);
+  builder->codegen(p_output);
+  if (p_pmessage) Logger::success("Snowball project transpiled to snowball IR code! 🎉\n");
   return EXIT_SUCCESS;
 }
 
