@@ -1,0 +1,98 @@
+
+/**
+ * @class SourceLocation
+ * @brief A class to represent a location in a source file.
+ *
+ * This class is used to represent a location in a source file. It is
+ * used as an utility class to pass around source locations.
+ * 
+ * @example
+ * fn foo(x: SourceLocation = SourceLocation::current()) {
+ *   // ...
+ * }
+ *
+ * foo(); // Passes the current source location. from the call site.
+ * @endcode
+ *
+ * @see SourceLocation::current()
+ */
+pub class SourceLocation {
+  pub:
+    /**
+     * @brief Construct a new SourceLocation object from the current location.
+     *
+     * @param file The file name.
+     * @param line The line number.
+     * @param column The column number.
+     * @param function The function name.
+     * @return SourceLocation
+     *
+     * @note These arguments should **NOT** be passed manually.
+     */
+    static fn current(
+      file: String = (@FILE).to_string(),
+      line: i32 = @LINE,
+      column: i32 = @COLUMN,
+      function: String = (@FUNCTION).to_string()
+    ) SourceLocation {
+      return new SourceLocation{file, line, column, function};
+    }
+
+    /**
+     * @return The file name.
+     */
+    fn file() String { return self.file; }
+    /**
+     * @return The line number.
+     */
+    fn line() i32 { return self.line; }
+    /**
+     * @return The column number.
+     */
+    fn column() i32 { return self.column; }
+    /**
+     * @return The function name.
+     */
+    fn function() String { return self.function; }
+  priv:
+    let file: String;     /// < The file name.
+    let line: i32;        /// < The line number.
+    let column: i32;      /// < The column number.
+    let function: String; /// < The function name.
+
+    /**
+     * @brief Construct a new SourceLocation object.
+     *
+     * @param file The file name.
+     * @param line The line number.
+     * @param column The column number.
+     * @param function The function name.
+     */
+    SourceLocation(
+      file: String,
+      line: i32,
+      column: i32,
+      function: String
+    ) : file(file), line(line), 
+      column(column), function(function) 
+    {}
+}
+
+/**
+ * @brief A macro to get the current source location.
+ *
+ * This macro is used to get the current source location. It is used as
+ * an utility macro to pass around source locations.
+ * 
+ * @example
+ * fn foo(x: SourceLocation = @current_location()) {
+ *   // ...
+ * }
+ *
+ * foo(); // Passes the current source location. from the call site.
+ * @endcode
+ *
+ * @see SourceLocation
+ */
+macro [[export]] current_location() =
+  @pkg(SourceLocation::SourceLocation::current())

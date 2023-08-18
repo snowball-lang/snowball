@@ -71,8 +71,17 @@ Syntax::Macro* Parser::parseMacro() {
     }
   }
   consume<TokenType::BRACKET_RPARENT>("')'");
+  if (is<TokenType::OP_EQ>()) {
+    isStatementMacro = false;
+    auto expr = parseExpr(false);
+    auto macro = Syntax::N<Syntax::Macro>(name, args, Syntax::N<Syntax::Block>(std::vector<Syntax::Node*>{expr}), isStatementMacro);
+    macro->setDBGInfo(dbg);
+    for (auto [n, a] : attributes) { macro->addAttribute(n, a); }
+    return macro;
+  }
+
   assert_tok<TokenType::BRACKET_LCURLY>("'{'");
-  auto body = parseBlock();
+  auto body = parseBlock(); 
   auto macro = Syntax::N<Syntax::Macro>(name, args, body, isStatementMacro);
   macro->setDBGInfo(dbg);
   for (auto [n, a] : attributes) { macro->addAttribute(n, a); }

@@ -12,9 +12,10 @@ namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
   std::string stringValue;
+  int intValue = -1;
   std::string pseudo = p_node->getIdentifier();
 
-  if (pseudo == "FN") {
+  if (pseudo == "FUNCTION") {
     if (auto x = ctx->getCurrentFunction()) {
       stringValue = x->getNiceName();
     } else {
@@ -38,12 +39,16 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
     }
   } else if (pseudo == "FILE") {
     stringValue = getSourceInfo()->getPath();
+  } else if (pseudo == "LINE_STR") {
+    stringValue = std::to_string(p_node->getDBGInfo()->pos.first + 1);
   } else if (pseudo == "LINE") {
-    stringValue = std::to_string(p_node->getDBGInfo()->pos.first - 1);
+    intValue = p_node->getDBGInfo()->pos.first + 1;
   } else if (pseudo == "FILE_LINE") {
     stringValue = getSourceInfo()->getPath() + ":" + std::to_string(p_node->getDBGInfo()->pos.first);
-  } else if (pseudo == "COLUMN") {
+  } else if (pseudo == "COLUMN_STR") {
     stringValue = std::to_string(p_node->getDBGInfo()->pos.second);
+  } else if (pseudo == "COLUMN") {
+    intValue = p_node->getDBGInfo()->pos.second;
   } else if (pseudo == "SN_VERSION") {
     stringValue = _SNOWBALL_VERSION;
   } else if (pseudo == "DATE") {
@@ -99,12 +104,20 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
     E<PSEUDO_ERROR>(p_node, FMT("Pseudo variable with name '%s' hasn't been found!", pseudo.c_str()));
   }
 
-  // We add " to both sides because the generator removes them and we
-  // prevent the values
-  //  from being lost.
-  auto val = new Syntax::Expression::ConstantValue(Expression::ConstantValue::ConstantType::String,
-                                                   "\"" + stringValue + "\"");
-  trans(val);
+
+  if (stringValue.empty()) {
+    assert(intValue != -1);
+    auto val = new Syntax::Expression::ConstantValue(Expression::ConstantValue::ConstantType::Number,
+      std::to_string(intValue));
+    trans(val);
+  } else {
+    // We add " to both sides because the generator removes them and we
+    // prevent the values
+    //  from being lost.
+    auto val = new Syntax::Expression::ConstantValue(Expression::ConstantValue::ConstantType::String,
+                                                    "\"" + stringValue + "\"");
+    trans(val);
+  }
 }
 
 } // namespace Syntax

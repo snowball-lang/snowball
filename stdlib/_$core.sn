@@ -640,6 +640,13 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       return new Self{res};
     }
     /**
+     * @brief It concatenates the string with another string from an unknown type. 
+     * @param[in] other The string to concatenate the string with.
+     * @return The concatenated string.
+     */
+    operator [[internal_linkage, inline]] +<T>(other: T) Self
+      { return self + Self::from(other); }
+    /**
      * @brief It concatenates the string with another string.
      * @param[in] other The string to concatenate the string with.
      * @return The concatenated string.

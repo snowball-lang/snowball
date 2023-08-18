@@ -14,13 +14,12 @@ use pkg::syntax;
 use pkg::clib;
 use pkg::tuples;
 use pkg::algorithms;
+use pkg::source_location;
 
 use Core::System;
+use Core::Panic;
 //use Core::System::{{ println }};
 
-
-
 pub fn main() i32 {
-  let mut x = 0..10;
-  let i = x.next();
+  Panic::panic("emm sucks!!!")
 }

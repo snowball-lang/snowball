@@ -1,0 +1,22 @@
+use Core::System;
+use [[use_macro(current_location)]] Core::SourceLocation;
+
+namespace tests {
+
+fn source_location_wrapper(
+x: SourceLocation::SourceLocation = @current_location()
+) SourceLocation::SourceLocation {
+    return x;
+}
+
+// TODO: test this better, I dont think line number is correct
+fn [[test]] test_source_location() i32 {
+    // TODO: should this be -1 or equal for the line?
+    let curr = @current_location();
+    let x = source_location_wrapper();
+    // -1 because the macro is on the line above
+    return x.file() == curr.file() && x.line() == curr.line() && x.column() == curr.column()
+        && x.function() == curr.function();
+}
+
+}

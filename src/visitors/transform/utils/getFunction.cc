@@ -33,48 +33,6 @@ std::shared_ptr<ir::Func> Transformer::getFunction(DBGObject* dbgInfo,
 
     return fn;
   };
-
-  if (val) {
-    auto v = *val;
-    auto fnType = utils::cast<types::FunctionType>(v->getType());
-    if (fnType == nullptr) {
-      E<TYPE_ERROR>(dbgInfo,
-                    FMT("Value with name '%s' (with type: '%s') "
-                        "is not callable!",
-                        name.c_str(),
-                        v->getType()->getPrettyName().c_str()));
-    }
-    auto argsVector = fnType->getArgs();
-    size_t numArgs = arguments.size();
-    if (ir::Func::argumentSizesEqual(argsVector, arguments, fnType->isVariadic())) {
-      bool equal = true;
-      for (auto arg = argsVector.begin(); (arg != argsVector.end()) && (equal); ++arg) {
-        auto i = std::distance(argsVector.begin(), arg);
-        if (i < numArgs) {
-          equal = (*arg)->is(arguments.at(i));
-        } else {
-          if (!fnType->isVariadic()) {
-            equal = false;
-            break;
-          } else {
-            equal = true;
-          }
-        }
-      }
-      // TODO: check for ambiguous functions
-      if (equal) { return std::reinterpret_pointer_cast<ir::Func>(v); }
-    }
-    E<TYPE_ERROR>(dbgInfo,
-                  FMT("Call parameters to '%s' does not match it's "
-                      "function type ('%s')!",
-                      name.c_str(),
-                      v->getType()->getPrettyName().c_str()));
-  } else if (ty) {
-    // TODO: Call smth like Type::operator ()(..args)
-    E<TYPE_ERROR>(dbgInfo, FMT("Value with name '%s' is a type that can't be called!", name.c_str()));
-  } else if (mod) {
-    E<TYPE_ERROR>(dbgInfo, FMT("Silly billy, you can't call modules! ('%s')", name.c_str()));
-  }
   auto [fn, args, res] =
           getBestFittingFunction(overloads.has_value() ? overloads.value() : std::deque<Cache::FunctionStore>{},
                                  arguments,
@@ -87,6 +45,48 @@ std::shared_ptr<ir::Func> Transformer::getFunction(DBGObject* dbgInfo,
     }
 
     case NoMatchesFound: {
+      if (val) {
+        auto v = *val;
+        auto fnType = utils::cast<types::FunctionType>(v->getType());
+        if (fnType == nullptr) {
+          E<TYPE_ERROR>(dbgInfo,
+                        FMT("Value with name '%s' (with type: '%s') "
+                            "is not callable!",
+                            name.c_str(),
+                            v->getType()->getPrettyName().c_str()));
+        }
+        auto argsVector = fnType->getArgs();
+        size_t numArgs = arguments.size();
+        if (ir::Func::argumentSizesEqual(argsVector, arguments, fnType->isVariadic())) {
+          bool equal = true;
+          for (auto arg = argsVector.begin(); (arg != argsVector.end()) && (equal); ++arg) {
+            auto i = std::distance(argsVector.begin(), arg);
+            if (i < numArgs) {
+              equal = (*arg)->is(arguments.at(i));
+            } else {
+              if (!fnType->isVariadic()) {
+                equal = false;
+                break;
+              } else {
+                equal = true;
+              }
+            }
+          }
+          // TODO: check for ambiguous functions
+          if (equal) { return std::reinterpret_pointer_cast<ir::Func>(v); }
+        }
+        E<TYPE_ERROR>(dbgInfo,
+                      FMT("Call parameters to '%s' does not match it's "
+                          "function type ('%s')!",
+                          name.c_str(),
+                          v->getType()->getPrettyName().c_str()));
+      } else if (ty) {
+        // TODO: Call smth like Type::operator ()(..args)
+        E<TYPE_ERROR>(dbgInfo, FMT("Value with name '%s' is a type that can't be called!", name.c_str()));
+      } else if (mod) {
+        E<TYPE_ERROR>(dbgInfo, FMT("Silly billy, you can't call modules! ('%s')", name.c_str()));
+      }
+
       if (hasSelf) arguments.erase(arguments.begin());
       if ((!overloads.has_value()) && (!functions.has_value()))
         E<VARIABLE_ERROR>(dbgInfo, FMT("Function '%s' is not defined!", name.c_str()));

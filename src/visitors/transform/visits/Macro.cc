@@ -10,6 +10,12 @@ SN_TRANSFORMER_VISIT(Macro) {
   auto macroName = p_node->getName();
   if (ctx->getItem(macroName).second)
     Syntax::E<VARIABLE_ERROR>(p_node, FMT("Macro with name '%s' is already defined!", macroName.c_str()));
+  if (!p_node->isMacroStatement()) {
+    for (const auto& arg : p_node->getArgs()) {
+      if (std::get<1>(arg) == Macro::ArguementType::STATEMENT)
+        Syntax::E<SYNTAX_ERROR>(p_node, "Expression macro cannot have statement arguements!");
+    }
+  }
   auto instance = new MacroInstance(p_node, ctx->module);
   auto item = std::make_shared<Item>(instance);
   // TODO: export to module
