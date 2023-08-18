@@ -330,7 +330,7 @@ private:
    * @param parseFn function to parse the attribute
    * @return a vector of attributes
    */
-  std::map<Attributes, std::map<std::string, std::string>>
+  std::unordered_map<Attributes, std::unordered_map<std::string, std::string>>
   parseAttributes(std::function<Attributes(std::string)> parseFn);
 };
 

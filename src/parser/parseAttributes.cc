@@ -6,13 +6,13 @@
 
 namespace snowball::parser {
 
-std::map<Attributes, std::map<std::string, std::string>>
+std::unordered_map<Attributes, std::unordered_map<std::string, std::string>>
 Parser::parseAttributes(std::function<Attributes(std::string)> parseFn) {
   assert(is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek()));
   next();
-  std::map<Attributes, std::map<std::string, std::string>> attributes;
+  std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> attributes;
   while (true) {
-    std::map<std::string, std::string> attrArgs;
+    std::unordered_map<std::string, std::string> attrArgs;
     next();
     assert_tok<TokenType::IDENTIFIER>("an identifier");
     auto attr = m_current.to_string();

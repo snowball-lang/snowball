@@ -60,3 +60,4 @@ install_manifest.txt
 .cache/
 
 compile_commands.json
+callgrind.out.*

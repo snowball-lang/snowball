@@ -19,7 +19,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
     isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
   }
 
-  std::map<Attributes, std::map<std::string, std::string>> attributes;
+  std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> attributes;
   if (is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek())) {
     attributes = parseAttributes([&](std::string attr) {
       if (attr == "extends") {

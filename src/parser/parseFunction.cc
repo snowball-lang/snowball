@@ -39,7 +39,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
   bool hasSuperArgs = false;
 
   std::map<Expression::Identifier*, Expression::Base*> constructorInitArgs;
-  std::map<Attributes, std::map<std::string, std::string>> attributes;
+  std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> attributes;
   bool isLLVMFunction = false;
 
   // Check if the tokens behind the function keyword

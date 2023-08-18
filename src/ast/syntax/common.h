@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #ifndef __SNOWBALL_AST_COMMON_NODES_H_
 #define __SNOWBALL_AST_COMMON_NODES_H_
@@ -64,8 +65,8 @@ class WhereClause;
  * stores and checks attributes for a node.
  */
 class AttributeHolder {
-  using StoreType = std::map<std::string, std::string>;
-  std::map<Attributes, StoreType> arguments;
+  using StoreType = std::unordered_map<std::string, std::string>;
+  std::unordered_map<Attributes, StoreType> arguments;
 
 public:
   /**
@@ -88,7 +89,7 @@ public:
   /**
    * Sets a new list of attributes to the current holder
    */
-  void setAttributes(unsigned int attribute, std::map<Attributes, StoreType> args) {
+  void setAttributes(unsigned int attribute, std::unordered_map<Attributes, StoreType>& args) {
     m_attributes = attribute;
     arguments = args;
   }
@@ -97,12 +98,14 @@ public:
    */
   auto getAttributes() const { return m_attributes; }
   /**
+   * Returns all the arguments for the attributes
+   */
+  auto& getAllAttributeArgs() { return arguments; }
+  /**
    * Sets the attributes from a holder
    */
   void setAttributes(AttributeHolder* holder) {
-    for (int i = -1; i < (int)holder->getAttributes(); i++) {
-      arguments[static_cast<Attributes>(i)] = holder->getAttributeArgs(static_cast<Attributes>(i));
-    }
+    arguments = std::move(holder->getAllAttributeArgs());
     m_attributes = holder->m_attributes;
   }
   /**

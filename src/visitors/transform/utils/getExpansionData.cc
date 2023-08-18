@@ -8,7 +8,7 @@ namespace snowball {
 namespace Syntax {
 
 const DBGObject*& getExpansionData() {
-    
+    // TODO:
 }
 
 } // namespace Syntax
