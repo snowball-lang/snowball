@@ -417,6 +417,22 @@ void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
                          .help = "Try removing the '" + name + "' attribute from the function."});
       }
     }
+  } else if (p_node->hasAttribute(Attributes::BENCH)) {
+    if (p_node->isDeclaration())
+      E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Benchmark functions must have a body!",
+                      {.info = "This function is a benchmark function!",
+                       .note = "This error is caused by the function not having a body.",
+                       .help = "Try adding a body to the function."});
+    else if (p_node->getArgs().size() > 0)
+      E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Benchmark functions can't have arguments!",
+                      {.info = "This function is a benchmark function!",
+                       .note = "This error is caused by the function having arguments.",
+                       .help = "Try removing the arguments from the function."});
+    else if (p_node->hasAttribute(Attributes::INLINE))
+      E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Benchmark functions can't be inline!",
+                      {.info = "This function is a benchmark function!",
+                       .note = "This error is caused by the function having the 'inline' attribute.",
+                       .help = "Try removing the 'inline' attribute from the function."});
   } else if (p_node->hasAttribute(Attributes::INLINE)) {
     if (p_node->isDeclaration())
       E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Inline functions must have a body!",

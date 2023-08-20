@@ -4,6 +4,7 @@
 #include "app/commands/init.h"
 #include "app/commands/run.h"
 #include "app/commands/test.h"
+#include "app/commands/bench.h"
 #include "constants.h"
 #include "utils/utils.h"
 #include "vendor/toml.hpp"
@@ -45,6 +46,8 @@ int _main(int argc, char** argv) {
       return app::commands::test(opts.test_opts);
     } else if (opts.command == app::Options::INIT) {
       return app::commands::init(opts.init_opts);
+    } else if (opts.command == app::Options::BENCH) {
+      return app::commands::bench(opts.bench_opts);
     } else {
       throw SNError(Error::TODO, FMT("Command with type %i not yet supported", opts.command));
     }

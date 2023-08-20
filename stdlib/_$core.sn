@@ -1,5 +1,6 @@
 use Core::Internal::Preloads;
 use Core::CLib;
+use Core::Ptr;
 
 class [[extends]] char {
   pub:
@@ -91,68 +92,7 @@ class [[extends]] i64 {
       { return (*self).to_string(); }
 }
 
-namespace Core {
-
-/**
- * @namespace UA
- * @brief The namespace containing the universal array library.
- *
- * The UA namespace contains the universal array library. It provides
- * various operations and functionalities for working with universal
- * arrays of elements. It supports common universal array manipulation
- * operations such as element insertion, element removal, element access,
- * and more.
- *
- * @note The UA namespace is designed to be efficient and memory-safe.
- *       It automatically manages the memory allocation and deallocation
- *       required for storing and manipulating universal arrays.
- */
-pub namespace UA {
-/**
- * @class UniversalArray
- * @brief A class representing a universal array of elements.
- *
- * The UniversalArray class provides various operations and functionalities
- * for working with universal arrays of elements. It supports common
- * UniversalArray manipulation operations such as element insertion,
- * element removal, element access, and more.
- *
- * @note The UniversalArray class is designed to be efficient and memory-safe.
- *       It automatically manages the memory allocation and deallocation
- *       required for storing and manipulating universal arrays.
- */
-pub struct UniversalArray 
-  { pub let items: &cobj; };
-/**
- * @brief Allocates a universal array of elements.
- * @param[in] size The size of the universal array to allocate.
- * @return The allocated universal array.
- */
-pub extern fn [[no_inline]] "sn.ua.alloc" as __ua_alloc(i32) &UniversalArray;
-/**
- * @brief Resizes a universal array of elements.
- * @param[in] array The universal array to resize.
- * @param[in] size The new size of the universal array.
- * @return The resized universal array.
- */
-pub extern fn "sn.ua.resize" as __ua_resize(&UniversalArray, i32) &UniversalArray;
-/**
- * @brief Sets an element in a universal array.
- * @param[in] array The universal array to set the element in.
- * @param[in] index The index of the element to set.
- * @param[in] item The element to set.
- */
-pub extern fn "sn.ua.set" as __ua_set(&UniversalArray, i32, cobj);
-
-/**
- * @brief Gets an element from a universal array.
- * @param[in] array The universal array to get the element from.
- * @param[in] index The index of the element to get.
- * @return The element at the specified index.
- */
-pub extern fn "sn.ua.get" as __ua_get(&UniversalArray, i32) cobj;
-
-} /* namespace UA */;
+pub namespace Core {
 
 /**
  * @namespace __internal
@@ -211,6 +151,84 @@ fn [[
     CLib::printf("\e[1;33mwip\e[0m\n");
   }
   return true;
+}
+
+fn [[
+  export(name = "sn.bench.run"),
+  cfg(bench),
+  no_inline
+]] snowball_bench(
+  functions: &cobj,
+  names: &char,
+  size: i32,
+) {
+  if size == 0 { return; }
+  let mut results = new Vector<i32>{};
+  for i in 0..size {
+    let func = functions[i] as fn () => void;
+    let start = CLib::time(Ptr::null_ptr<?i32>());
+    func();
+    let end = CLib::time(Ptr::null_ptr<?i32>());
+    // unix time to ms
+    let result = (end - start) * 1000;
+    results.push(result);
+  }
+
+  let mut max: i32 = 0;
+  let mut min: i32 = 1000000000;
+  let mut sum: i32 = 0;
+  for i in 0..size {
+    let result = *results[i];
+    if result > max {
+      max = result;
+    }
+    if result < min {
+      min = result;
+    }
+    sum = sum + result;
+  }
+
+  let mut avg: f32 = sum / size;
+  for i in 0..size {
+    let name = names.at(i);
+    let mut result = (*results[i]) as f64;
+    let mut color = "\e[1;32m";
+    if result > avg {
+      color = "\e[1;31m";
+    }
+    // ms or s
+    let mut unit = "ms";
+    let mut divider = 1;
+    if result >= 1000.0 {
+      unit = "s";
+      divider = 1000;
+    }
+    CLib::printf(" \e[1m%s\e[0m: %s%f%s\e[0m\n", name, color, result / divider, unit);
+  }
+
+  // ms or s
+  let mut unit = "ms";
+  let mut divider = 1;
+
+  CLib::printf("\n");
+  if min >= 1000 {
+    unit = "s";
+    divider = 1000;
+    min = min / divider;
+  }
+  CLib::printf(" \e[1;32mmin\e[0m: %d%s\n", min, unit);
+  if max >= 1000 {
+    unit = "s";
+    divider = 1000;
+    max = max / divider;
+  } else unit = "ms";
+  CLib::printf(" \e[1;31mmax\e[0m: %d%s\n", max, unit);
+  if avg >= 1000 {
+    unit = "s";
+    divider = 1000;
+    avg = avg / divider;
+  } else unit = "ms";
+  CLib::printf(" \e[1mavg\e[0m: %d%s\n", avg, unit);
 }
 
 } /* namespace __internal */;
@@ -303,7 +321,7 @@ pub class Iter<_IteratorType: Core::Sized> {
     /// @brief if the iterator is valid
     let _valid: bool = false;
     /// @brief the value of the iterator
-    let _value: _IteratorType = CLib::null_ptr<?_IteratorType>();
+    let _value: &_IteratorType = Ptr::null_ptr<?_IteratorType>();
   pub:
     /**
      * @brief Iter constructor.
@@ -314,7 +332,7 @@ pub class Iter<_IteratorType: Core::Sized> {
      * @brief Iter constructor.
      * @param[in] value The value of the iterator.
      */
-    Iter(value: _IteratorType) : _value(value),
+    Iter(value: &_IteratorType) : _value(value),
       _valid(true) {}
     /**
      * @brief Returns the value of the iterator.
@@ -326,7 +344,7 @@ pub class Iter<_IteratorType: Core::Sized> {
       {
         raise new IndexError("Invalid iterator access!");
       }
-      return self._value; 
+      return *self._value; 
     }
     /**
      * @brief Returns if the iterator is valid.
@@ -345,7 +363,7 @@ pub class Iter<_IteratorType: Core::Sized> {
      * @brief Returns a valid iterator.
      * @return A valid iterator.
      */
-    static fn [[inline]] valid(val: _IteratorType) Iter<_IteratorType> 
+    static fn [[inline]] valid(val: &_IteratorType) Iter<_IteratorType> 
       { return new Iter<_IteratorType>{val}; }
 }
 /**
@@ -428,25 +446,26 @@ pub class Range<_Number_Type: Core::IsNumeric = i32>: Iterable<_Number_Type> {
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating vectors.
  */
-pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
+pub class Vector<_StoreType: Core::Sized, Allocator: Core::Sized = Ptr::Allocator<_StoreType>>: Iterable<_StoreType> {
   pub:
     /**
      * @brief Default constructor.
      * Constructs an empty vector.
      */
-    Vector() : super(), 
-      buffer(UA::__ua_alloc(self.capacity)) {}
+    Vector() : super() {}
     /**
      * @brief It pushes an element to the back of the vector.
      * @param[in] value The element to push to the back of the vector.
      */
     fn [[internal_linkage]] push(value: _StoreType) mut
     { 
-      if self.length + 1 >= self.capacity 
+      if self.length >= self.capacity 
       {
-        self.resize(self.capacity + 10);
+        self.resize();
       }
-      UA::__ua_set(self.buffer, self.length, value as cobj);
+      // TODO: wrap in unsafe block
+      Ptr::write(Ptr::add(self.buffer.ptr(), self.length), value);
+
       self.length = self.length + 1;
     }
     /**
@@ -457,10 +476,27 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
      * @brief Resizes the vector.
      * @param[in] capacity The new capacity of the vector.
      */
-    fn [[internal_linkage]] resize(capacity: i32) mut
+    fn [[internal_linkage]] resize() mut
     { 
-      self.capacity = capacity;
-      self.buffer = UA::__ua_resize(self.buffer, self.capacity); 
+      // we make sure we dont overflow
+      if self.capacity == 0 { self.reserve(1); }
+      else if self.capacity == 1 { self.reserve(4) }
+      else self.reserve(self.capacity * 2);
+    }
+    /**
+     * @brief Reserves a capacity for the vector.
+     * @param[in] capacity The capacity to reserve for the vector.
+     */
+    fn [[internal_linkage]] reserve(new_capacity: i32) mut
+    {
+      if Ptr::is_null(self.buffer.ptr()) 
+      {
+        self.buffer = Allocator::alloc(new_capacity);
+      } else if self.capacity < new_capacity 
+      {
+        self.buffer = Allocator::realloc(self.buffer, new_capacity);
+      }
+      self.capacity = new_capacity;
     }
     /**
      * @brief Returns the element at the specified index.
@@ -478,14 +514,8 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
       {
         raise new IndexError("Index out of bounds. Cannot access element at index " + index.to_string());
       }
-      return UA::__ua_get(self.buffer, index) as &_StoreType;
+      return (self.buffer.ptr() as cobj)[index];
     }
-    /**
-     * @brief Returns the data of the vector.
-     * @return The data of the vector.
-     */
-    fn [[internal_linkage, inline]] data() &_StoreType
-      { return (*self.buffer.items) as &_StoreType; }
     /**
      * @brief A wrapper over the at() method. 
      * @param[in] index The index of the element to return.
@@ -506,8 +536,8 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
         self.push(value);
         return;
       }
-      let cur = UA::__ua_get(self.buffer, index) as _StoreType;
-      UA::__ua_set(self.buffer, index, value as cobj);
+      let cur = self[index];
+      self[index] = value;
       self.insert(index + 1, cur);
     }
     /**
@@ -528,11 +558,11 @@ pub class Vector<_StoreType: Core::Sized>: Iterable<_StoreType> {
 
   priv:
     /** The capacity of the vector. */
-    let mut capacity: i32 = 10;
+    let mut capacity: i64 = 0;
     /** The size of the vector. */
-    let mut length: i32 = 0;
+    let mut length: i64 = 0;
     /** The buffer containing the vector. */
-    let mut buffer: &UA::UniversalArray;
+    let mut buffer: Ptr::NonNull<_StoreType> = Allocator::alloc(0);
 }
 
 /**
@@ -738,3 +768,4 @@ type String = StringView<>;
 type Iterable<T: Core::Sized> = Core::Iterable<T>;
 
 // TODO (implement wchar): using WideString as StringView<&wchar>
+

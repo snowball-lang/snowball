@@ -4,7 +4,7 @@
 //  Fibonacci example for the lang                  じし(_,)ノ
 //  Docs: https://snowball-lang.gitbook.io/docs/
 //
-use pkg::option;
+//use pkg::option;
 use pkg::cls;
 use pkg::vector;
 use pkg::chars;

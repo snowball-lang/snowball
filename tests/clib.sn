@@ -3,11 +3,6 @@ use Core::CLib;
 
 namespace tests {
 
-fn [[test]] null_ptr() i32 {
-    let x = CLib::null_ptr<?&char>();
-    return x == 0 as &char;
-}
-
 fn [[test(expect = 5)]] strlen() i32 {
     let x = CLib::c_string::strlen("hello");
     return x;

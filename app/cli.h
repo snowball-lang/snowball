@@ -31,6 +31,7 @@ struct Options {
 
   struct BuildOptions {
     bool is_test = false;
+    bool is_bench = false;
     Optimization opt = OPTIMIZE_O1;
     EmitType emit_type = EXECUTABLE;
 
@@ -50,6 +51,12 @@ struct Options {
     Optimization opt = OPTIMIZE_O0;
   } test_opts;
 
+  struct BenchmarkOptions {
+    bool silent = false;
+    bool no_progress = false;
+    Optimization opt = OPTIMIZE_O0;
+  } bench_opts;
+
   struct InitOptions {
     bool cfg = false;
     bool lib = false;
@@ -64,7 +71,8 @@ struct Options {
     BUILD,
     RUN,
     TEST,
-    INIT
+    INIT,
+    BENCH,
   } command = UNKNOWN;
 };
 

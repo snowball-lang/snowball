@@ -12,10 +12,10 @@ class [[extends]] char {
     }
 
     /**
-    * @brief It creates an index operator for the character.
-    * @param[in] index The index of the character to get.
-    * @return The character at the specified index.
-    */
+     * @brief It creates an index operator for the character.
+     * @param[in] index The index of the character to get.
+     * @return The character at the specified index.
+     */
     operator [[inline, llvm_function]] [](index: i32) char
     { 
       %0 = getelementptr i8, ptr %self, i32 %index
@@ -23,11 +23,23 @@ class [[extends]] char {
       ret i8 %1
     }
 
+    /**
+     * @brief It creates an index operator for the character.
+     * @param[in] index The index of the character to get.
+     * @return The character at the specified index.
+     */
+    fn [[inline, llvm_function]] at(index: i32) &char
+    { 
+      %0 = getelementptr ptr, ptr %self, i32 %index
+      %1 = load ptr, ptr %0, align 1
+      ret ptr %1
+    }
+
     operator [[__internal__, __no_pointer_self__]] +(other: char)  char {}
     operator [[__internal__, __no_pointer_self__]] -(other: char)  char {}
     operator [[__internal__, __no_pointer_self__]] *(other: char)  char {}
-    operator [[__internal__, __no_pointer_self__]] /(other: char)  char {}
-    operator [[__internal__, __no_pointer_self__]] %(other: char)  char {}
+    operator [[__internal__, __no_pointer_self__]] /(other: char)  f32 {}
+    operator [[__internal__, __no_pointer_self__]] %(other: char)  f32 {}
     operator [[__internal__, __no_pointer_self__]] ^(other: char)  char {}
     operator [[__internal__, __no_pointer_self__]] |(other: char)  char {}
     operator [[__internal__, __no_pointer_self__]] &(other: char)  char {}
@@ -67,8 +79,9 @@ class [[extends]] i8 {
     operator [[__internal__, __no_pointer_self__]] +(other: i8) i8 {}
     operator [[__internal__, __no_pointer_self__]] -(other: i8) i8 {}
     operator [[__internal__, __no_pointer_self__]] *(other: i8) i8 {}
-    operator [[__internal__, __no_pointer_self__]] /(other: i8) i8 {}
-    operator [[__internal__, __no_pointer_self__]] %(other: i8) i8 {}
+    operator [[__internal__, __no_pointer_self__]] /(other: i8) f32 {}
+    operator [[__internal__, __no_pointer_self__]] /(other: f32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] %(other: i8) f32 {}
     operator [[__internal__, __no_pointer_self__]] ^(other: i8) i8 {}
     operator [[__internal__, __no_pointer_self__]] |(other: i8) i8 {}
     operator [[__internal__, __no_pointer_self__]] &(other: i8) i8 {}
@@ -107,7 +120,8 @@ class [[extends]] i16 {
     operator [[__internal__, __no_pointer_self__]] +(other: i16) i16 {}
     operator [[__internal__, __no_pointer_self__]] -(other: i16) i16 {}
     operator [[__internal__, __no_pointer_self__]] *(other: i16) i16 {}
-    operator [[__internal__, __no_pointer_self__]] /(other: i16) i16 {}
+    operator [[__internal__, __no_pointer_self__]] /(other: i16) f32 {}
+    operator [[__internal__, __no_pointer_self__]] /(other: f32) f32 {}
     operator [[__internal__, __no_pointer_self__]] %(other: i16) i16 {}
     operator [[__internal__, __no_pointer_self__]] ^(other: i16) i16 {}
     operator [[__internal__, __no_pointer_self__]] |(other: i16) i16 {}
@@ -147,7 +161,8 @@ class [[extends]] i32 {
     operator [[__internal__, __no_pointer_self__]] +(other: i32) i32 {}
     operator [[__internal__, __no_pointer_self__]] -(other: i32) i32 {}
     operator [[__internal__, __no_pointer_self__]] *(other: i32) i32 {}
-    operator [[__internal__, __no_pointer_self__]] /(other: i32) i32 {}
+    operator [[__internal__, __no_pointer_self__]] /(other: i32) f32 {}
+    operator [[__internal__, __no_pointer_self__]] /(other: f32) f32 {}
     operator [[__internal__, __no_pointer_self__]] %(other: i32) i32 {}
     operator [[__internal__, __no_pointer_self__]] ^(other: i32) i32 {}
     operator [[__internal__, __no_pointer_self__]] |(other: i32) i32 {}
@@ -191,7 +206,8 @@ class [[extends]] i64 {
     operator [[__internal__, __no_pointer_self__]] +(other: i64) i64 {}
     operator [[__internal__, __no_pointer_self__]] -(other: i64) i64 {}
     operator [[__internal__, __no_pointer_self__]] *(other: i64) i64 {}
-    operator [[__internal__, __no_pointer_self__]] /(other: i64) i64 {}
+    operator [[__internal__, __no_pointer_self__]] /(other: i64) f32 {}
+    operator [[__internal__, __no_pointer_self__]] /(other: f32) f32 {}
     operator [[__internal__, __no_pointer_self__]] %(other: i64) i64 {}
     operator [[__internal__, __no_pointer_self__]] ^(other: i64) i64 {}
     operator [[__internal__, __no_pointer_self__]] |(other: i64) i64 {}
@@ -367,6 +383,23 @@ class [[extends]] cobj {
     operator [[__internal__, __no_pointer_self__]] ||(other: cobj) bool {}
     operator [[__internal__, __no_pointer_self__]] &&(other: cobj) bool {}
 
+    operator [[llvm_function, inline]] [](index: i32) cobj
+    {
+      %0 = getelementptr inbounds ptr, ptr %self, i32 %index
+      ret ptr %0
+    }
+
     // override with &cobj
+    operator [[__internal__]] =(other: &cobj) &cobj {}
     operator [[__internal__, __no_pointer_self__]] =(other: &cobj) &cobj {}
+
+    /**
+     * @brief It writes an offset to the pointer.
+     * @param[in] offset The offset to write.
+     * @return The pointer with the offset written.
+     */
+    operator [[__no_pointer_self__, llvm_function]] +(offset: i32) cobj {
+      %0 = getelementptr inbounds ptr, ptr %self, i32 %offset
+      ret ptr %0
+    }
 }

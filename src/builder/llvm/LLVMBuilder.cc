@@ -73,8 +73,9 @@
 namespace snowball {
 namespace codegen {
 
-LLVMBuilder::LLVMBuilder(std::shared_ptr<ir::MainModule> mod, bool testMode) : iModule(mod) {
+LLVMBuilder::LLVMBuilder(std::shared_ptr<ir::MainModule> mod, bool testMode, bool benchMode) : iModule(mod) {
   ctx->testMode = testMode;
+  ctx->benchmarkMode = benchMode;
   llvm::InitializeAllTargetInfos();
   llvm::InitializeAllTargets();
   llvm::InitializeAllTargetMCs();
@@ -211,6 +212,13 @@ void LLVMBuilder::codegen() {
       auto f = fn->get();
       if (!f->isDeclaration() && !f->hasAttribute(Attributes::BUILTIN)) {
         auto llvmFn = funcs.at(f->getId());
+
+        if (utils::cast<types::ReferenceType>(f->getRetTy())) {
+          auto bytes = module->getDataLayout().getTypeSizeInBits(llvmFn->getReturnType());
+          //auto dereferenceable = llvm::Attribute::get(*context, llvm::Attribute::DereferenceableOrNull, bytes);
+          //llvmFn->addRetAttr(dereferenceable);   
+        }
+
         if (f->hasAttribute(Attributes::LLVM_FUNC)) {
           auto old = buildLLVMFunction(llvmFn, f);
           funcs.at(f->getId()) = old;

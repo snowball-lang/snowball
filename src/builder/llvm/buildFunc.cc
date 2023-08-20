@@ -27,6 +27,9 @@ void LLVMBuilder::visit(ir::Func* func) {
   if (func->hasAttribute(Attributes::ALLOW_FOR_TEST)) {
     fn->addFnAttr(llvm::Attribute::NoInline);
     ctx->tests.insert(std::make_pair(func, fn));
+  } else if (func->hasAttribute(Attributes::ALLOW_FOR_BENCH)) {
+    fn->addFnAttr(llvm::Attribute::NoInline);
+    ctx->benchmarks.insert(std::make_pair(func, fn));
   }
 
   funcs.insert({func->getId(), fn});

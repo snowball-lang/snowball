@@ -433,7 +433,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
   std::shared_ptr<ir::Value> trans(Node* node);
 
 public:
-  Transformer(std::shared_ptr<ir::Module> mod, const SourceInfo* srci, bool allowTests = false);
+  Transformer(std::shared_ptr<ir::Module> mod, const SourceInfo* srci, bool allowTests = false,
+              bool allowBenchmark = false);
 
   using AcceptorExtend<Transformer, Visitor>::visit;
   using AcceptorExtend<Transformer, Visitor>::visitGlobal;

@@ -1,4 +1,5 @@
 use [[use_macro]] Core::Assert;
+use Core::System;
 
 namespace tests {
 
@@ -37,7 +38,9 @@ fn [[test]] to_string() i32 {
 fn [[test(expect = 5)]] change_value() i32 {
     let mut v = new Vector<i32>();
     v.push(1);
+    System::println(v[0]);
     v[0] = 5;
+    System::println(v[0]);
     return v[0];
 }
 

@@ -73,6 +73,10 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
                                                         // this is default
   func->setSubprogram(getDISubprogramForFunc(fn));
 
+  if (utils::cast<types::ReferenceType>(fn->getRetTy()) || utils::cast<types::CObjectType>(fn->getRetTy())) {
+    auto bytes = module->getDataLayout().getTypeSizeInBits(func->getReturnType());
+  }
+
   llvmFn->replaceAllUsesWith(func);
   llvmFn->eraseFromParent();
   setDebugInfoLoc(nullptr);

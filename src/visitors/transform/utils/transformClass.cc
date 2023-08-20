@@ -63,12 +63,6 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
       auto item = std::make_shared<transform::Item>(transformedType);
       ctx->cache->setTransformedType(baseUuid, item, _uuid);
       auto classGenerics = ty->getGenerics();
-      // Fill out the remaining non-required tempalte parameters
-      if (classGenerics.size() > generics.size()) {
-        for (auto i = generics.size(); i < classGenerics.size(); ++i) {
-          generics.push_back(transformType(classGenerics[i]->type));
-        }
-      }
       auto selfType = std::make_shared<Item>(transformedType);
       ctx->addItem("Self", selfType);
       for (int genericCount = 0; genericCount < generics.size(); genericCount++) {
@@ -79,6 +73,18 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
         // item->setDBGInfo(generic->getDBGInfo());
         ctx->addItem(generic->getName(), item);
         executeGenericTests(generic->getWhereClause(), generatedGeneric);
+      }
+      // Fill out the remaining non-required tempalte parameters
+      if (classGenerics.size() > generics.size()) {
+        for (auto i = generics.size(); i < classGenerics.size(); ++i) {
+          auto generic = classGenerics[i];
+          auto generatedGeneric = transformType(generic->type);
+          auto item = std::make_shared<transform::Item>(generatedGeneric->copy());
+          // TODO:
+          // item->setDBGInfo(generic->getDBGInfo());
+          ctx->addItem(generic->getName(), item);
+          executeGenericTests(generic->getWhereClause(), generatedGeneric);
+        }
       }
       types::DefinedType* parentType = nullptr;
       if (auto x = ty->getParent()) {
@@ -160,12 +166,10 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
                          .note = "No constructor has been defined or can be inherited.",
                          .help = "You have to define a constructor for this class.\n"
                                  "For example:\n"
-                                 "1 |   class Test {\n"
-                                 "2 |       Test() {\n"
-                                 "3 |           // ...\n"
-                                 "4 |       }\n"
-                                 "5 |   }\n"
-                                 "6 |"});
+                                 "1 | class Test {\n"
+                                 "2 |   Test() { ... }\n"
+                                 "3 | }\n"
+                                 "4 |"});
       }
 
       ctx->setCurrentClass(backupClass);

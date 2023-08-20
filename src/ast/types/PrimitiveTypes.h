@@ -38,14 +38,6 @@ public:
   SNOWBALL_TYPE_COPIABLE(PrimitiveType)
 };
 
-/// @brief C object pointer type (it's the equivalent of `void*` in C)
-class CObjectType : public AcceptorExtend<CObjectType, PrimitiveType> {
-public:
-  CObjectType() : AcceptorExtend(SN_COB_TYPE) { }
-  virtual bool canCast(Type* ty) const override { return true; }
-  SNOWBALL_TYPE_COPIABLE(CObjectType)
-};
-
 /**
  * @brief This is a primitive type that acts like
  *  a numeric type. (e.g. i32, f64, bool, etc...)
@@ -57,7 +49,6 @@ public:
   /// @brief override function. All numeric types
   ///  can cast to any other numeric types.
   virtual bool canCast(Type* ty) const override {
-    SNOWBALL_COBJ_CAST_CHECK
     return NumericType::isNumericType(ty);
   }
 
@@ -73,6 +64,14 @@ public:
   SNOWBALL_TYPE_COPIABLE(NumericType)
 };
 
+/// @brief C object pointer type (it's the equivalent of `void*` in C)
+class CObjectType : public AcceptorExtend<CObjectType, PrimitiveType> {
+public:
+  CObjectType() : AcceptorExtend(SN_COB_TYPE) { }
+  virtual bool canCast(Type* ty) const override { return !NumericType::isNumericType(ty); }
+  SNOWBALL_TYPE_COPIABLE(CObjectType)
+};
+
 /// @brief Representation of a void type.
 class VoidType : public AcceptorExtend<VoidType, PrimitiveType> {
 public:
@@ -84,6 +83,7 @@ public:
 class BoolType : public AcceptorExtend<BoolType, NumericType> {
 public:
   BoolType() : AcceptorExtend(SN_BOOL_TYPE) { }
+  
   SNOWBALL_TYPE_COPIABLE(BoolType)
 };
 

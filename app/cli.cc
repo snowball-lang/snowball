@@ -41,6 +41,9 @@ Options CLI::parse() {
         Logger::log("  --test [-t]               - Build "
                     "project as it was for "
                     "testing");
+        Logger::log("  --bench [-b]              - Build "
+                    "project as it was for "
+                    "benchmarking");
         Logger::log("  -{opt}                    - Optimize "
                     "your project at a "
                     "certain level");
@@ -121,6 +124,14 @@ Options CLI::parse() {
         Logger::info("You can get your tests as an executable "
                      "by executing:\n   "
                      "-> `snowball build test`");
+      } else if (IF_ARG("bench")) {
+        Logger::log("Snowball (C) MIT");
+        Logger::log("Usage: snowball bench [options]\n");
+        Logger::log("Help:");
+        Logger::log("  Build and execute your benchmarks\n");
+        Logger::info("You can get your benchmarks as an "
+                     "executable by executing:\n   "
+                     "-> `snowball build bench`");
       } else if (IF_ARG("init")) {
         Logger::log("Snowball (C) MIT");
         Logger::log("Usage: snowball init [options]\n");
@@ -157,6 +168,8 @@ Options CLI::parse() {
 
       if (IF_ANY_ARG("--test", "-t")) {
         opts.build_opts.is_test = true;
+      } else if (IF_ANY_ARG("--bench", "-b")) {
+        opts.build_opts.is_bench = true;
       } else if (IF_ANY_ARG("--silent", "-s")) {
         opts.build_opts.silent = true;
       } else if (IF_ARG("--no-progress")) {
@@ -264,9 +277,32 @@ Options CLI::parse() {
         throw SNError(Error::ARGUMENT_ERROR, FMT("Unexpected argument for the test command: %s", current_arg.c_str()));
       }
     }
+  } else if (current_arg == "bench") {
+    opts.command = Options::Command::BENCH;
 
-    // TODO
-    // TODO: optimization level for tests
+    while (current_index < args.size() - 1) {
+      NEXT_ARGUMENT();
+
+      if (IF_ANY_ARG("--silent", "-s")) {
+        opts.bench_opts.silent = true;
+      } else if (IF_ARG("--no-progress")) {
+        opts.bench_opts.no_progress = true;
+      } else if (IF_ANY_ARG("-g", "-O0")) {
+        opts.bench_opts.opt = Options::Optimization::OPTIMIZE_O0;
+      } else if (IF_ARG("-O1")) {
+        opts.bench_opts.opt = Options::Optimization::OPTIMIZE_O1;
+      } else if (IF_ARG("-O2")) {
+        opts.bench_opts.opt = Options::Optimization::OPTIMIZE_O2;
+      } else if (IF_ARG("-O3")) {
+        opts.bench_opts.opt = Options::Optimization::OPTIMIZE_O3;
+      } else if (IF_ARG("-Os")) {
+        opts.bench_opts.opt = Options::Optimization::OPTIMIZE_Os;
+      } else if (IF_ARG("-Oz")) {
+        opts.bench_opts.opt = Options::Optimization::OPTIMIZE_Oz;
+      } else {
+        throw SNError(Error::ARGUMENT_ERROR, FMT("Unexpected argument for the bench command: %s", current_arg.c_str()));
+      }
+    }
   } else if (current_arg == "init") {
     opts.command = Options::Command::INIT;
 

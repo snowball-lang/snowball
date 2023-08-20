@@ -16,6 +16,20 @@
  */
 pub extern fn malloc(i32) cobj;
 /**
+ * @brief Allocates memory for an array of num objects of size size and initializes all bytes in the allocated storage to zero.
+ * @param num(i32) - number of objects to allocate
+ * @param size(i32) - size of each object
+ * @return cobj - a pointer to the memory block allocated by the function.
+ *  The type of this pointer is always void*, which can be cast to the desired type of data pointer
+ *  in order to be dereferenceable.
+ * @note(1) If size is zero, the return value depends on the particular library implementation (it may or may not be a null pointer),
+ *  but the returned pointer shall not be dereferenced.
+ * @note(2) If the function failed to allocate the requested block of memory, a null pointer is returned.
+ * @note(3) calloc is thread-safe: it behaves as though only accessing the memory locations visible through its argument,
+ *  and not any static storage.
+ */
+pub extern fn calloc(i32, i32) cobj;
+/**
  * @brief Reallocates the given area of memory.
  * If ptr is not NULL, it must be previously allocated by malloc(),
  *  calloc() or realloc() and not yet freed with a call to free or
@@ -115,21 +129,11 @@ pub extern fn snprintf(&char, i32, &char, ...) i32;
  */
 pub extern fn exit(i32);
 /**
- * @brief Returns a null pointer for a given pointer type.
- * @tparam PtrType - pointer type
- * @return PtrType - null pointer
+ * @brief It gets the current time.
+ * @param seconds(&i32) - pointer to a variable where the number of seconds elapsed since the Epoch is stored.
+ * @return i32 - If the time is successfully obtained, the return value is the same as the parameter seconds.
  */
-pub fn [[inline]] null_ptr<PtrType: Core::Sized = cobj>() PtrType {
-    return 0 as cobj as PtrType;
-}
-/**
- * @brief It checks if a pointer is null.
- * @param ptr(cobj) - pointer to be checked
- * @return bool - true if the pointer is null, false otherwise
- */
-pub fn [[inline]] is_null(ptr: cobj) bool {
-    return ptr == null_ptr();
-}
+pub extern fn time(&i32) i32;
 /**
  * @brief a namespace that contains functions for manipulating strings.
  * @note(1) All functions in this namespace are thread-safe.

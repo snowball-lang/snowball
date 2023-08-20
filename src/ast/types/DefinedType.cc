@@ -129,7 +129,7 @@ bool DefinedType::canCast(Type* ty) const {
 
 bool DefinedType::canCast(DefinedType* ty) const {
   // TODO: test this:
-  return getParent() && (ty->is(getParent()));
+  return hasParent() && (ty->is(getParent()));
 }
 
 }; // namespace types

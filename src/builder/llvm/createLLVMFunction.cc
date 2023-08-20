@@ -18,10 +18,8 @@ namespace {
 void setDereferenceableAttribute(llvm::Argument& arg, unsigned bytes) {
   if (arg.getType()->isPointerTy()) {
     auto dereferenceable = llvm::Attribute::get(arg.getContext(), llvm::Attribute::Dereferenceable, bytes);
-    auto nonull = llvm::Attribute::get(arg.getContext(), llvm::Attribute::NonNull);
     auto noundef = llvm::Attribute::get(arg.getContext(), llvm::Attribute::NoUndef);
     auto aligment = llvm::Attribute::get(arg.getContext(), llvm::Attribute::Alignment, 8);
-    arg.addAttr(nonull);
     arg.addAttr(dereferenceable);
     arg.addAttr(noundef);
     arg.addAttr(aligment);

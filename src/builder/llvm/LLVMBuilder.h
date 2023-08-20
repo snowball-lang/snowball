@@ -55,8 +55,12 @@ class LLVMBuilderContext {
 public:
   // A map of test functions containing their names
   std::map<std::shared_ptr<ir::Func>, llvm::Function*> tests;
+  // A map of benchmark functions containing their names
+  std::map<std::shared_ptr<ir::Func>, llvm::Function*> benchmarks;
   // If the module is compiled in test mode
   bool testMode = false;
+  // If the module is compiled in benchmark mode
+  bool benchmarkMode = false;
   /// @return Current function being generated
   auto getCurrentFunction() { return currentFunction; }
   /// @return Change the current function to a new one
@@ -185,7 +189,8 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
 
 public:
   // Create a new instance of a llvm builder
-  LLVMBuilder(std::shared_ptr<ir::MainModule> mod, bool testMode = false);
+  LLVMBuilder(std::shared_ptr<ir::MainModule> mod, bool testMode = false,
+              bool benchmarkMode = false);
   /**
    * @brief Dump the LLVM IR code to stdout.
    *
@@ -299,6 +304,10 @@ private:
    */
   void createTests(llvm::Function* mainFunction);
   /**
+   * @brief It generates the benchmark functions for the current module.
+   */
+  void createBenchmark(llvm::Function* mainFunction);
+  /**
    * @brief It generates a function call or an invoke instruction
    * depending on the current context.
    */
@@ -323,12 +332,11 @@ private:
   /**
    * @brief It creates an insert value instruction.
    * @param v Value to insert
-   * @param i Index to insert the value
    * @param rhs Base value to insert the value
    * @param refType Reference type to insert the value
    * @return llvm::Value* Resultant llvm value
    */
-  llvm::Value* createInsertValue(llvm::Value* v, uint32_t i, llvm::Value* rhs, types::Type* refType);
+  llvm::Value* createInsertValue(llvm::Value* v, llvm::Value* rhs, types::Type* refType);
   /**
    * @brief Get a wrapper for a function. Subprogram is considered
    * also as a function description.

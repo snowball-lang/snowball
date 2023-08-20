@@ -25,6 +25,7 @@ namespace snowball {
  */
 struct GlobalContext {
   bool isTest = false;
+  bool isBench = false;
   bool withStd = true;
   bool withCXXStd = true;
   bool isThreaded = false;
@@ -54,6 +55,7 @@ class Compiler {
   const SourceInfo* srcInfo = (snowball::SourceInfo*)nullptr;
   bool initialized = false;
   bool testsEnabled = false;
+  bool benchmarkEnabled = false;
 
   std::shared_ptr<ir::MainModule> module;
 
@@ -67,6 +69,7 @@ public:
 
   static toml::parse_result getConfiguration();
   void enable_tests() { testsEnabled = true; }
+  void enable_benchmark() { benchmarkEnabled = true; }
 
   // Get
   ~Compiler(){};

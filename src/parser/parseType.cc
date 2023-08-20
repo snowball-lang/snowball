@@ -13,7 +13,7 @@ namespace snowball::parser {
 TypeRef* Parser::parseType() {
   throwIfNotType();
   assert(is<TokenType::OP_BIT_AND>() || is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() ||
-         is<TokenType::KWORD_FUNC>());
+         is<TokenType::KWORD_FUNC>() || is<TokenType::OP_AND>());
   auto pos = m_current.get_pos();
   if (is<TokenType::KWORD_DECLTYPE>()) {
     auto w = m_current.get_width();
@@ -50,7 +50,11 @@ TypeRef* Parser::parseType() {
     return ty;
   }
   int referenceDepth = 0;
-  while (is<TokenType::OP_BIT_AND>()) { // we treat op and as 2 bit ands
+  while (is<TokenType::OP_AND>()) { // we treat op and as 2 bit ands
+    referenceDepth += 2;
+    next();
+  }
+  while (is<TokenType::OP_BIT_AND>()) {
     referenceDepth++;
     next();
   }

@@ -1,5 +1,6 @@
 use Core::Optional;
 use Core::CLib;
+use Core::System;
 
 namespace tests {
 
@@ -25,7 +26,8 @@ fn [[test]] with_value_from_class() i32 {
 }
 
 fn [[test(expect = 42)]] test_value_from_func() i32 {
-    let x = Optional::Some<?i32>(42);
+    let x = Optional::Some(42);
+    let a = x.val();
     return x.val();
 }
 

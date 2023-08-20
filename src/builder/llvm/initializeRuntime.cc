@@ -25,6 +25,12 @@ void LLVMBuilder::initializeRuntime() {
       mainFunction = (llvm::Function*)module->getOrInsertFunction(_SNOWBALL_FUNCTION_ENTRY, fnType).getCallee();
       setPersonalityFunction(mainFunction);
       body = llvm::BasicBlock::Create(builder->getContext(), "test_entry", mainFunction);
+    } else if (ctx->benchmarkMode) {
+      mainFunction->eraseFromParent();
+      auto fnType = llvm::FunctionType::get(builder->getInt32Ty(), {});
+      mainFunction = (llvm::Function*)module->getOrInsertFunction(_SNOWBALL_FUNCTION_ENTRY, fnType).getCallee();
+      setPersonalityFunction(mainFunction);
+      body = llvm::BasicBlock::Create(builder->getContext(), "benchmark_entry", mainFunction);
     } else {
       body = &mainFunction->front();
     }
@@ -43,6 +49,9 @@ void LLVMBuilder::initializeRuntime() {
   } else if (ctx->testMode) {
     builder->CreateCall(f, {});
     createTests(mainFunction);
+  } else if (ctx->benchmarkMode) {
+    builder->CreateCall(f, {});
+    createBenchmark(mainFunction);
   } else {
     llvm::CallInst::Create(f, {}, "", &body->front());
   }

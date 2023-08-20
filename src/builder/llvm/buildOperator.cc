@@ -36,11 +36,16 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
       llvm::Value* right = nullptr;
       if (args.size() > 1) right = build(args.at(1).get());
       auto baseType = args.at(0)->getType();
-      if (auto x = utils::cast<types::ReferenceType>(baseType)) baseType = x->getPointedType();
-      if (utils::cast<types::BoolType>(baseType) || utils::cast<types::Int8Type>(baseType) ||
-          utils::cast<types::Int16Type>(baseType) || utils::cast<types::Int32Type>(baseType) ||
-          utils::cast<types::Int64Type>(baseType) || utils::cast<types::CharType>(baseType) ||
-          utils::cast<types::CObjectType>(baseType)) {
+      auto unchangedBaseType = baseType;
+      auto realType = baseType;
+      if (auto x = utils::cast<types::ReferenceType>(baseType)) {
+        baseType = x->getPointedType();
+        realType = x->getBaseType();
+      }
+      if (utils::cast<types::BoolType>(realType) || utils::cast<types::Int8Type>(realType) ||
+          utils::cast<types::Int16Type>(realType) || utils::cast<types::Int32Type>(realType) ||
+          utils::cast<types::Int64Type>(realType) || utils::cast<types::CharType>(realType) ||
+          utils::cast<types::CObjectType>(realType)) {
         switch (services::OperatorService::operatorID(opName)) {
           OPERATOR_INSTANCE(EQEQ, CreateICmpEQ)
           OPERATOR_INSTANCE(PLUS, CreateAdd)
@@ -61,7 +66,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
           OPERATOR_INSTANCE(BIT_AND_EQ, CreateAnd)
           OPERATOR_INSTANCE(BIT_XOR, CreateXor)
           OPERATOR_INSTANCE(BIT_XOR_EQ, CreateXor)
-          OPERATOR_INSTANCE(LT, CreateICmpSLT)
+          OPERATOR_INSTANCE(LT, CreateICmpULT)
           OPERATOR_INSTANCE(GT, CreateICmpSGT)
           OPERATOR_INSTANCE(LTEQ, CreateICmpSLE)
           OPERATOR_INSTANCE(GTEQ, CreateICmpSGE)
@@ -81,7 +86,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
           // TODO: remainder oeprators (!, +=, etc...)
           case services::OperatorService::EQ: {
             if (auto index = utils::dyn_cast<ir::IndexExtract>(args.at(0))) {
-              createInsertValue(right, index->getIndex(), left, baseType);
+              createInsertValue(right, left, baseType);
             } else {
               auto v = left;
               if (llvm::isa<llvm::LoadInst>(left)) {
@@ -134,14 +139,11 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
 
           // TODO: remainder oeprators (!, +=, etc...)
           case services::OperatorService::EQ: {
-            if (auto index = utils::dyn_cast<ir::IndexExtract>(args.at(0))) {
-              createInsertValue(right, index->getIndex(), left, baseType);
-            } else {
-              auto l = llvm::cast<llvm::LoadInst>(left);
-              auto v = l->getOperand(0);
-
-              builder->CreateStore(right, v);
+            while (utils::cast<types::ReferenceType>(baseType)) {
+              right = builder->CreateLoad(getLLVMType(baseType), right, ".load");
+              baseType = utils::cast<types::ReferenceType>(baseType)->getPointedType();
             }
+            createInsertValue(right, left, unchangedBaseType);
 
             break;
           }
@@ -159,15 +161,9 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
               auto l = llvm::cast<llvm::LoadInst>(leftValue);
               leftValue = l->getOperand(0);
             }
-            if (auto index = utils::dyn_cast<ir::IndexExtract>(args.at(0))) {
-              createInsertValue(rightValue, index->getIndex(), leftValue, baseType);
-            } else {
-              // builder->CreateMemCpy(rightValue, llvm::MaybeAlign(), leftValue, llvm::MaybeAlign(),
-              // module->getDataLayout().getTypeAllocSize(leftValue->getType()), 0);
-              if (!utils::cast<types::ReferenceType>(baseType) && !llvm::isa<llvm::LoadInst>(rightValue))
-                rightValue = builder->CreateLoad(getLLVMType(baseType), rightValue, ".load");
-              builder->CreateStore(rightValue, leftValue);
-            }
+            //if (!utils::cast<types::ReferenceType>(baseType) && !llvm::isa<llvm::LoadInst>(rightValue))
+            //  rightValue = builder->CreateLoad(getLLVMType(baseType), rightValue, ".load");
+            createInsertValue(rightValue, leftValue, unchangedBaseType);
 
             break;
           }

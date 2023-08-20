@@ -28,6 +28,7 @@ enum Attributes
 
   // FUNCTION ATTRIBUTES
   TEST,
+  BENCH,
   LLVM_FUNC,
   INTERNAL_LINKAGE,
   EXTERNAL_LINKAGE,
@@ -36,7 +37,7 @@ enum Attributes
   NO_MANGLE,
   NOT_IMPLEMENTED,
   EXPORT,
-
+  
   // Builting related attributes
   BUILTIN,
   NO_POINTER_SELF,
@@ -44,6 +45,7 @@ enum Attributes
   // Function internal attributes
   TYPECHECKED,
   ALLOW_FOR_TEST,
+  ALLOW_FOR_BENCH,
 
   // Class attributes
   CLASS_EXTENDS,

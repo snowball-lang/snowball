@@ -81,6 +81,8 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
         return Attributes::NO_MANGLE;
       } else if (attr == "export") {
         return Attributes::EXPORT;
+      } else if (attr == "bench") {
+        return Attributes::BENCH;
       } else if (attr == "__internal__") {
         return Attributes::BUILTIN;
       } else if (attr == "__no_pointer_self__") {
@@ -326,6 +328,12 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
       auto type = parseType();
 
       auto arg = new Syntax::Expression::Param(FMT("$extern-arg-%i", argumentCount), type);
+      if (is<TokenType::OP_EQ>()) {
+        auto expr = parseExpr(false);
+        arg->setDefaultValue(expr);
+        next();
+      }
+
       arguments.push_back(arg);
     } else if (is<TokenType::SYM_DOT>() && is<TokenType::SYM_DOT>(peek()) && is<TokenType::SYM_DOT>(peek(1, true))) {
       next(2);
@@ -472,7 +480,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
                                    .note = "The function body must be a '0' for now.",
                                    .help = "You have to set the function body to '0'.\n"
                                            "For example:\n"
-                                           "1 |   virt fn my_fn() = 0\n"
+                                           "1 |  virt fn my_fn() = 0\n"
                                            "2 |"});
       }
 
@@ -482,7 +490,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
                                    .note = "The function body must be a '0' for now.",
                                    .help = "You have to set the function body to '0'.\n"
                                            "For example:\n"
-                                           "1 |   virt fn my_fn() = 0\n"
+                                           "1 |  virt fn my_fn() = 0\n"
                                            "2 |"});
       }
 

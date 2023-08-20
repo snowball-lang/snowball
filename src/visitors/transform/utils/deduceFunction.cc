@@ -6,7 +6,25 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::optional<types::Type*> Transformer::deduceFunctionType(snowball::Syntax::Expression::Param* generic,
+namespace {
+bool genericMatch(Expression::Param* generic, Expression::TypeRef* arg) {
+  if (auto x = utils::cast<Expression::ReferenceType>(arg)) {
+    return genericMatch(generic, x->getBaseType());
+  }
+
+  return arg->getName() == generic->getName();
+}
+
+types::Type* matchedGeneric(Expression::Param* generic, types::Type* arg) {
+  if (auto x = utils::cast<types::ReferenceType>(arg)) {
+    return matchedGeneric(generic, x->getPointedType());
+  }
+
+  return arg;
+}
+}
+
+std::optional<types::Type*> Transformer::deduceFunctionType(Expression::Param* generic,
                                                             const std::vector<Expression::Param*>& fnArgs,
                                                             const std::vector<types::Type*>& arguments,
                                                             const std::vector<types::Type*>& generics,
@@ -23,12 +41,12 @@ std::optional<types::Type*> Transformer::deduceFunctionType(snowball::Syntax::Ex
 
   // Check if the generic is used inside the variables
   const auto it = std::find_if(fnArgs.begin(), fnArgs.end(), [&](const auto& arg) {
-    return arg->getType()->getName() == generic->getName();
+    return genericMatch(generic, arg->getType());
   });
 
   if (it != fnArgs.end()) {
     const auto argIdx = std::distance(fnArgs.begin(), it);
-    const auto deducedType = arguments[argIdx];
+    const auto deducedType = matchedGeneric(generic, arguments[argIdx]);
     return deducedType;
   }
 

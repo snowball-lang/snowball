@@ -37,6 +37,8 @@ public:
   std::shared_ptr<ir::Module> module = nullptr;
   // If test mode is enabled
   bool testMode = false;
+  // If benchmark mode is enabled
+  bool benchMode = false;
   // We are compiling the main module
   bool isMainModule = false;
   // A list of exported functions and variables without mangle
@@ -73,7 +75,8 @@ private:
 
 public:
   // Create a new instance of a context
-  TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder, bool testMode = false);
+  TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder, bool testMode = false,
+    bool benchMode = false);
 
   // clang-format off
 

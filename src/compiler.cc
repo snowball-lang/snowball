@@ -37,6 +37,7 @@ void Compiler::initialize() {
 
   globalContext = new GlobalContext();
   globalContext->isTest = testsEnabled;
+  globalContext->isBench = benchmarkEnabled;
 
   configFolder = cwd / ".sn";
   if (!fs::exists(configFolder)) fs::create_directory(configFolder);
@@ -82,7 +83,7 @@ void Compiler::compile(bool silent) {
       mainModule->setSourceInfo(srcInfo);
 
       auto simplifier =
-              new Syntax::Transformer(mainModule->downcasted_shared_from_this<ir::Module>(), srcInfo, testsEnabled);
+              new Syntax::Transformer(mainModule->downcasted_shared_from_this<ir::Module>(), srcInfo, testsEnabled, benchmarkEnabled);
 #if _SNOWBALL_TIMERS_DEBUG
       DEBUG_TIMER("Simplifier: %fs", utils::_timer([&] { simplifier->visitGlobal(ast); }));
 #else
@@ -143,7 +144,7 @@ toml::parse_result Compiler::getConfiguration() {
 void Compiler::cleanup() { }
 
 int Compiler::emitObject(std::string out, bool log) {
-  auto builder = new codegen::LLVMBuilder(module, testsEnabled);
+  auto builder = new codegen::LLVMBuilder(module, testsEnabled, benchmarkEnabled);
   builder->codegen();
   builder->optimizeModule(opt_level);
 
@@ -155,7 +156,7 @@ int Compiler::emitObject(std::string out, bool log) {
 }
 
 int Compiler::emitLLVMIr(std::string p_output, bool p_pmessage) {
-  auto builder = new codegen::LLVMBuilder(module, testsEnabled);
+  auto builder = new codegen::LLVMBuilder(module, testsEnabled, benchmarkEnabled);
   builder->codegen();
   builder->optimizeModule(opt_level);
 
@@ -168,7 +169,7 @@ int Compiler::emitLLVMIr(std::string p_output, bool p_pmessage) {
 }
 
 int Compiler::emitASM(std::string p_output, bool p_pmessage) {
-  auto builder = new codegen::LLVMBuilder(module, testsEnabled);
+  auto builder = new codegen::LLVMBuilder(module, testsEnabled, benchmarkEnabled);
   builder->codegen();
   builder->optimizeModule(opt_level);
 

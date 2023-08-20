@@ -14,9 +14,16 @@ namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
   auto name = p_node->getName();
+  if (p_node->hasAttribute(Attributes::TEST) && p_node->hasAttribute(Attributes::BENCH)) {
+    E<SYNTAX_ERROR>(p_node, "Function cannot be both a test and a benchmark!");
+  }
+
   if (p_node->hasAttribute(Attributes::TEST) && (!ctx->testMode || !ctx->isMainModule))
     return;
+  if (p_node->hasAttribute(Attributes::BENCH) && (!ctx->benchMode || !ctx->isMainModule))
+    return;
   else if (p_node->hasAttribute(Attributes::TEST)) { p_node->addAttribute(Attributes::ALLOW_FOR_TEST); }
+  else if (p_node->hasAttribute(Attributes::BENCH)) { p_node->addAttribute(Attributes::ALLOW_FOR_BENCH); }
 
   p_node = p_node->copy();
   if (auto c = ctx->getCurrentClass(true)) {

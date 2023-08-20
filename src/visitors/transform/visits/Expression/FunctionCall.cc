@@ -75,18 +75,18 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                         c->getNiceName().c_str()));
     }
     if (b.has_value()) {
-      if (auto t = utils::cast<types::ReferenceType>(b.value()->getType())) {
-        if (utils::cast<types::ReferenceType>(t->getPointedType())) {
-          E<TYPE_ERROR>(p_node,
-                        FMT("Can't access class method '%s' "
-                            "from a reference to a reference!",
-                            c->getNiceName().c_str()),
-                        {
-                                .tail = callBackUp == nullptr ? nullptr
-                                                              : EI<>(callBackUp, "this is the call causing the error"),
-                        });
-        }
-      }
+      //if (auto t = utils::cast<types::ReferenceType>(b.value()->getType())) {
+      //  if (utils::cast<types::ReferenceType>(t->getPointedType()) && !c->hasAttribute(Attributes::BUILTIN)) {
+      //    E<TYPE_ERROR>(p_node,
+      //                  FMT("Can't access class method '%s' "
+      //                      "from a reference to a reference!",
+      //                      c->getNiceName().c_str()),
+      //                  {
+      //                          .tail = callBackUp == nullptr ? nullptr
+      //                                                        : EI<>(callBackUp, "this is the call causing the error"),
+      //                  });
+      //  }
+      //}
 
       auto baseType = (*b)->getType();
       if ((utils::cast<types::PrimitiveType>(baseType)) || utils::cast<types::ReferenceType>(baseType)) {
@@ -111,7 +111,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 auto deduced = t->getArgs().at(i);
                 if (arg->is(deduced)) { /* ok */
                 } else if (auto x = tryCast(argValues.at(i), deduced); x != nullptr) {
-                    argValues.at(i) = x;
+                  argValues.at(i) = x;
                 } else {
                     E<TYPE_ERROR>(p_node,
                         FMT("Can't assign value with type '%s' "

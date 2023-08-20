@@ -1,5 +1,5 @@
 
-num = 50000 # 50k
+num = 500000 
 name = "tests/main.sn"
 with open(name, "w") as f:
     f.write("use Core::System\n")

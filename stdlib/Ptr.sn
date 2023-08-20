@@ -1,0 +1,114 @@
+use Core::CLib;
+
+/**
+ * A wrapper for non-null references to types that bypass the `Core::Sized` check.
+ * This ensures that the reference is not null and provides methods to access the underlying value.
+ *
+ * @tparam T - type of the value
+ * @note This class is a wrapper for non-null references to types that bypass the `Core::Sized` check.
+ * This ensures that the reference is not null and provides methods to access the underlying value.
+ *
+ * @example
+ * ```
+ * use Panic::panic;
+ * use Core::Ptr;
+ * use [[use_macros]] Core::Assert;
+ *
+ * let value: i32 = 42;
+ * let non_null_value = new NonNull{&value};
+ * @assert(*non_null_value.ptr() == value);
+ * ```
+ * @endexample
+ */
+pub class NonNull<T: Core::Sized> {
+    /**
+     * The underlying non-null reference value.
+     */
+    let value: &T;
+  pub:
+    /**
+     * Creates a new `NonNull` instance from a non-null reference.
+     *
+     * @throws Panic if the provided reference is a null pointer reference.
+     * @param value A reference to a value that implements the `Sized` trait.
+     */
+    NonNull(value: &T) 
+      : value(value)
+    {
+      if value == null_ptr<?T>() {
+        // TODO: Panic::panic("Null pointer dereference");
+      }
+    }
+    /**
+     * Returns a reference to the underlying non-null value.
+     * @return A reference to the underlying value.
+     */
+    fn [[inline]] ptr() &T { return self.value; }
+}
+
+/**
+ * @brief Returns a null pointer for a given pointer type.
+ * @tparam PtrType - pointer type
+ * @return PtrType - null pointer
+ */
+pub fn [[inline]] null_ptr<PtrType: Core::Sized = cobj>() &PtrType {
+  return 0 as cobj as &PtrType;
+}
+/**
+ * @brief It checks if a pointer is null.
+ * @param ptr(cobj) - pointer to be checked
+ * @return bool - true if the pointer is null, false otherwise
+ */
+pub fn [[inline]] is_null(ptr: cobj) bool {
+  return ptr == null_ptr();
+}
+
+/**
+ * @brief An utility class to allocate memory blocks for a given type.
+ * @tparam T - type of the memory block
+ */
+pub class Allocator<T: Core::Sized> {
+  pub:
+    Allocator() {}
+
+    /**
+     * Allocates a memory block for a given type.
+     * @param size - size of the memory block to be allocated
+     * @return NonNull{T} - a non-null pointer to the allocated memory block
+     */
+    static fn [[inline]] alloc(size: i32) NonNull<T> {
+      return new NonNull<T>{CLib::malloc(size) as &T};
+    }
+    /**
+     * Allocates a memory block for a given type and initializes it with zeros.
+     * @param size - size of the memory block to be allocated
+     * @return NonNull{T} - a non-null pointer to the allocated memory block
+     */
+    static fn [[inline]] alloc_zeroed(size: i32) NonNull<T> {
+      return new NonNull<T>{CLib::calloc(size, 1)};
+    }
+    /**
+     * Reallocates a memory block for a given type.
+     * @param ptr - pointer to the memory block to be reallocated
+     * @param size - size of the memory block to be reallocated
+     * @return NonNull{T} - a non-null pointer to the reallocated memory block
+     */
+    static fn [[inline]] realloc(ptr: NonNull<T>, size: i32) NonNull<T> {
+      return new NonNull<T>{CLib::realloc(ptr.ptr(), size)};
+    }
+    /**
+     * It frees a memory block.
+     * @param ptr - pointer to the memory block to be freed
+     */
+    static fn [[inline]] free(ptr: NonNull<T>) {
+      CLib::free(ptr.ptr());
+    }
+}
+
+pub fn [[inline]] add<T: Core::Sized>(ptr: &T, offset: i32) &T {
+  return (ptr as cobj + offset) as &T;
+}
+
+pub fn [[inline]] write<T: Core::Sized>(mut ptr: &T, value: T) {
+  *ptr = value;
+}

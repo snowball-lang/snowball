@@ -1,4 +1,5 @@
 use Core::CLib;
+use Core::Ptr;
 
 /**
  * @brief The error thrown when an `Option` is empty.
@@ -17,11 +18,11 @@ pub class BadOptionAccess: Exception
  * The `Option` type is also used in the return type of functions that are not
  * guaranteed to return a value, like `Array::pop` or `Hash::delete`.
  */
-pub class Option<_StoreType> {
+pub class Option<_StoreType: Core::Sized> {
     /**
      * The value stored in the `Option`.
      */
-    let _value: _StoreType = CLib::null_ptr<?_StoreType>();
+    let _value: &_StoreType = Ptr::null_ptr<?_StoreType>();
     /**
      * Whether the `Option` is engaged.
      */
@@ -41,7 +42,7 @@ pub class Option<_StoreType> {
     /**
      * @brief Returns the value stored in the `Option`.
      */
-    fn [[inline]] val() _StoreType 
+    fn [[inline]] val() &mut _StoreType
     {
       self.assert_not_empty();
       return self._value;
@@ -57,7 +58,7 @@ pub class Option<_StoreType> {
      * @return The value stored in the `Option` or the
      *        given default value if the `Option` is empty.
      */
-    fn [[inline]] value_or(default_value: _StoreType) _StoreType
+    fn [[inline]] value_or(default_value: &_StoreType) &mut _StoreType
     {
       if (self.empty()) {
         return default_value;

@@ -126,6 +126,10 @@ void LLVMBuilder::visit(ir::Call* call) {
     }                                                                                                                  \
     if (calledFunction) {                                                                                              \
       auto attrSet = calledFunction->getAttributes();                                                                  \
+      if (calledFunction->getReturnType()->isPointerTy()) {                                                            \
+        auto bytes = module->getDataLayout().getTypeSizeInBits(calledFunction->getReturnType());                                 \
+        attrSet = attrSet.addRetAttribute(*context, llvm::Attribute::NonNull);                                                                        \
+      }                                                                                                                \
       call->setAttributes(attrSet);                                                                                    \
     }                                                                                                                  \
   }

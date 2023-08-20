@@ -21,9 +21,23 @@ inline const std::string IS_NUMERIC_CHECK_STYPE = "Core::IsNumeric";
 inline const std::string IS_POINTER_CHECK_STYPE = "Core::IsPointer";
 inline const std::string CASTABLE_TO_CHECK_STYPE = "Core::CastableTo";
 inline const std::string IMPLEMENTS_CHECK_STYPE = "Core::Implements";
+inline const std::string REMOVE_REFERENCES_STYPE = "Core::RemoveReferences";
 
 types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
   auto n = ty->getName();
+
+  STYPE_INSTANCE(REMOVE_REFERENCES_STYPE) {
+    ASSERT_GENERICS(1, REMOVE_REFERENCES_STYPE)
+
+    auto generic = generics.at(0);
+    auto type = transformType(generic);
+
+    if (auto ref = utils::cast<types::ReferenceType>(type)) {
+      return ref->getPointedType();
+    }
+
+    return type;
+  }
 
   STYPE_INSTANCE(FUNCTION_RETURN_STYPE) {
     ASSERT_GENERICS(1, FUNCTION_RETURN_STYPE)
