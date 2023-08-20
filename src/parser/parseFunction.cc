@@ -54,9 +54,16 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
   } else if (is<TokenType::KWORD_STATIC>(pk)) {
     CHECK_PRIVACY(isStatic)
   } else if (is<TokenType::KWORD_VIRTUAL>(pk)) {
-    CHECK_PRIVACY(isVirtual)
+    if (is<TokenType::KWORD_MUTABLE>(pk)) {
+      isVirtual = true;
+      CHECK_PRIVACY(isMutable)
+    } else {
+      CHECK_PRIVACY(isVirtual)
+    }
   } else if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(pk)) {
     isPublic = pk.type == TokenType::KWORD_PUBLIC;
+  } else if (is<TokenType::KWORD_MUTABLE>(pk)) {
+    CHECK_PRIVACY(isMutable)
   }
 
   auto dbg = m_current.get_pos();
@@ -374,11 +381,6 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
 
   next();
   consume<TokenType::BRACKET_RPARENT>("')'");
-
-  if (is<TokenType::KWORD_MUTABLE>()) {
-    isMutable = true;
-    next();
-  }
 
   Syntax::Expression::TypeRef* returnType = nullptr;
   if (isTypeValid()) {

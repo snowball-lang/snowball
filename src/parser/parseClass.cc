@@ -76,10 +76,18 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
 
       case TokenType::KWORD_STATIC: {
         auto pk = peek();
+        if (pk.type == TokenType::KWORD_MUTABLE) {
+          next();
+          createError<ARGUMENT_ERROR>("Static members can't be mutable!", {
+            .note = "To fix this error, you can remove the 'static' or 'mut' keyword.",
+            .help = "If you want to have a static mutable member, you can use a \nstatic pointer to a mutable member."
+          });
+        }
+        
         if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_VAR &&
             pk.type != TokenType::KWORD_OPERATOR && (!IS_CONSTRUCTOR(pk))) {
           next();
-          createError<SYNTAX_ERROR>("expected keyword \"func\", \"let\", \"operator\" or a "
+          createError<SYNTAX_ERROR>("expected keyword \"fn\", \"let\", \"operator\" or a "
                                     "constructor "
                                     "declaration after static member");
         }
@@ -97,6 +105,14 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         cls->addFunction(func);
       } break;
 
+      case TokenType::KWORD_MUTABLE: {
+        auto pk = peek();
+        if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_OPERATOR) {
+          next();
+          createError<SYNTAX_ERROR>("expected keyword \"fn\" or \"operator\" after mutable declaration!");
+        }
+      } break;
+
       case TokenType::KWORD_VIRTUAL: {
         auto pk = peek();
         if (pk.type == TokenType::KWORD_STATIC) {
@@ -105,9 +121,9 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         } else if (extends) {
           next();
           createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* virtual methods!");
-        } else if (pk.type != TokenType::KWORD_FUNC) {
+        } else if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_MUTABLE) {
           next();
-          createError<SYNTAX_ERROR>("Expected keyword \"func\" after virtual declaration!");
+          createError<SYNTAX_ERROR>("Expected keyword \"fn\" or \"mut\" after virtual declaration!");
         }
       } break;
 

@@ -304,7 +304,7 @@ pub class Iterable<_IteratorType: Core::Sized> {
     /**
      * @brief It resets the iteration.
      */
-    fn [[inline]] reset() mut 
+    mut fn [[inline]] reset() 
       { self.iter_index = 0; }
 }
 
@@ -413,7 +413,7 @@ pub class Range<_Number_Type: Core::IsNumeric = i32>: Iterable<_Number_Type> {
      * @brief Returns the next element in the iteration.
      * @return The next element in the iteration.
      */
-    virt fn [[internal_linkage]] next() mut Iter<_Number_Type>
+    virt mut fn [[internal_linkage]] next() Iter<_Number_Type>
     {
       self.iter_index = self.iter_index + 1;
       if self.iter_index >= self.end() 
@@ -425,7 +425,7 @@ pub class Range<_Number_Type: Core::IsNumeric = i32>: Iterable<_Number_Type> {
     /**
      * @brief It resets the iteration.
      */
-    fn [[inline]] reset() mut 
+    mut fn [[inline]] reset() 
       { self.iter_index = self._start-1; }
   priv:
     /** The start of the range. */
@@ -457,7 +457,7 @@ pub class Vector<_StoreType: Core::Sized, Allocator: Core::Sized = Ptr::Allocato
      * @brief It pushes an element to the back of the vector.
      * @param[in] value The element to push to the back of the vector.
      */
-    fn [[internal_linkage]] push(value: _StoreType) mut
+    mut fn [[internal_linkage]] push(value: _StoreType)
     { 
       if self.length >= self.capacity 
       {
@@ -476,7 +476,7 @@ pub class Vector<_StoreType: Core::Sized, Allocator: Core::Sized = Ptr::Allocato
      * @brief Resizes the vector.
      * @param[in] capacity The new capacity of the vector.
      */
-    fn [[internal_linkage]] resize() mut
+    mut fn [[internal_linkage]] resize()
     { 
       // we make sure we dont overflow
       if self.capacity == 0 { self.reserve(1); }
@@ -487,7 +487,7 @@ pub class Vector<_StoreType: Core::Sized, Allocator: Core::Sized = Ptr::Allocato
      * @brief Reserves a capacity for the vector.
      * @param[in] capacity The capacity to reserve for the vector.
      */
-    fn [[internal_linkage]] reserve(new_capacity: i32) mut
+    mut fn [[internal_linkage]] reserve(new_capacity: i32)
     {
       if Ptr::is_null(self.buffer.ptr()) 
       {
@@ -529,7 +529,7 @@ pub class Vector<_StoreType: Core::Sized, Allocator: Core::Sized = Ptr::Allocato
      * @param[in] index The index to insert the element at.
      * @param[in] value The element to insert.
      */
-    fn [[internal_linkage]] insert(index: i32, value: _StoreType) mut
+    mut fn [[internal_linkage]] insert(index: i32, value: _StoreType)
     {
       if index >= self.length 
       {
