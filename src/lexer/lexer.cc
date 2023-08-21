@@ -584,6 +584,8 @@ void Lexer::tokenize() {
             tk.type = TokenType::KWORD_STATIC;
           } else if (identifier == _SNOWBALL_KEYWORD__IMPORT) {
             tk.type = TokenType::KWORD_IMPORT;
+          } else if (identifier == _SNOWBALL_KEYWORD__UNSAFE) {
+            tk.type = TokenType::KWORD_UNSAFE;
           } else if (identifier == _SNOWBALL_KEYWORD__CONSTEXPR) {
             tk.type = TokenType::KWORD_CONSTEXPR;
           } else if (identifier == _SNOWBALL_KEYWORD__NAMESPACE) {

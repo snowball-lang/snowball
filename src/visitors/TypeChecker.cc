@@ -44,7 +44,11 @@ VISIT(Func) {
   auto backup = ctx->getCurrentFunction();
   ctx->setCurrentFunction(p_node);
   auto body = p_node->getBody();
+  if (p_node->hasAttribute(Attributes::UNSAFE)) 
+    ctx->unsafeContext = true;
   if (body) body->visit(this);
+  if (p_node->hasAttribute(Attributes::UNSAFE)) 
+    ctx->unsafeContext = false;
 
   ctx->setCurrentFunction(backup);
 }
@@ -108,6 +112,15 @@ VISIT(Call) {
                        .help = "Try implementing the function or removing the \n"
                                "'= 0' attribute from it or override it from a \n"
                                "child class.",
+                       .tail = EI<>(fn->getDBGInfo(), "", {.info = "This is the function declaration."})});
+    } else if (fn->hasAttribute(Attributes::UNSAFE) && !ctx->unsafeContext) {
+      E<SYNTAX_ERROR>(p_node,
+                      FMT("Function '%s' is unsafe!", fn->getName(true).c_str()),
+                      {.info = "This function is unsafe!",
+                       .note = "This error is caused by the function having the \n"
+                               "'unsafe' attribute.",
+                       .help = "Try wrapping the call in an `unsafe { ... }` block\nor removing the 'unsafe' "
+                               "attribute from the function.\n\nsee more: https://snowball-lang.gitbook.io/docs/language-reference/unsafe-snowball",
                        .tail = EI<>(fn->getDBGInfo(), "", {.info = "This is the function declaration."})});
     }
     fn->visit(this);
@@ -249,7 +262,11 @@ VISIT(Return) {
 }
 
 VISIT(Block) {
+  if (p_node->hasAttribute(Attributes::UNSAFE)) 
+    ctx->unsafeContext = true;
   for (auto i : p_node->getBlock()) { i->visit(this); }
+  if (p_node->hasAttribute(Attributes::UNSAFE)) 
+    ctx->unsafeContext = false;
 }
 
 void TypeChecker::codegen() {

@@ -173,6 +173,7 @@ enum class TokenType
   KWORD_CLASS,          // Symbol: class
   KWORD_AS,             // Symbol: as
   KWORD_IMPORT,         // Symbol: use
+  KWORD_UNSAFE,         // Symbol: unsafe
   KWORD_CONSTEXPR,      // Symbol: constexpr
   KWORD_TYPEDEF,        // Symbol: type
   KWORD_MUTABLE,        // Symbol: mut
@@ -278,6 +279,7 @@ struct Token {
       case TokenType::KWORD_VIRTUAL: return _SNOWBALL_KEYWORD__VIRTUAL;
       case TokenType::KWORD_PRIVATE: return _SNOWBALL_KEYWORD__PRIVATE;
       case TokenType::KWORD_IMPORT: return _SNOWBALL_KEYWORD__IMPORT;
+      case TokenType::KWORD_UNSAFE: return _SNOWBALL_KEYWORD__UNSAFE;
       case TokenType::KWORD_CONSTEXPR: return _SNOWBALL_KEYWORD__CONSTEXPR;
       case TokenType::KWORD_NAMESPACE: return _SNOWBALL_KEYWORD__NAMESPACE;
       case TokenType::KWORD_STRUCT: return _SNOWBALL_KEYWORD__STRUCT;

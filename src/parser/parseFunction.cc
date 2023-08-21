@@ -29,6 +29,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
   bool isVirtual = false;
   bool isMutable = false;
   bool isGeneric = false;
+  bool isUnsafe = false;
   bool isNotImplemented = false;
 
   std::string name;
@@ -49,7 +50,12 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
   //     ^^^
   // to indicate that the function is public.
   auto pk = peek(-3, true);
-  if (is<TokenType::KWORD_EXTERN>(pk)) {
+fetch_attrs:
+  if (is<TokenType::KWORD_UNSAFE>(pk)) {
+    isUnsafe = true;
+    pk = peek(-4, true);
+    goto fetch_attrs;
+  } else if (is<TokenType::KWORD_EXTERN>(pk)) {
     CHECK_PRIVACY(isExtern)
   } else if (is<TokenType::KWORD_STATIC>(pk)) {
     CHECK_PRIVACY(isStatic)
@@ -572,6 +578,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
     fn = Syntax::N<FunctionDef>(name);
   }
   for (auto [n, a] : attributes) { fn->addAttribute(n, a); }
+  if (isUnsafe) fn->addAttribute(Attributes::UNSAFE);
   fn->setVirtual(isVirtual);
   fn->setVariadic(isVarArg);
   fn->setPrivacy(privacy);

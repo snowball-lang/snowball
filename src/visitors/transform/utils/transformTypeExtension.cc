@@ -35,7 +35,10 @@ void Transformer::transformTypeExtension(Statement::DefinedTypeDef* node, std::s
     }
   }
 
-  assert(false && "TODO: transformTypeExtension");
+  E<VARIABLE_ERROR>(node, "Can't extend an undefined type!",
+                    {.info = FMT("'%s' is not defined in the currect context!", name.c_str()),
+                     .note = "Only types can be extended!",
+                     .help = "Define this type or remove the 'extends' keyword from this class."});
 }
 
 } // namespace Syntax

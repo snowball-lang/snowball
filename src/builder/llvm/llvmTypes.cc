@@ -22,8 +22,6 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
     return builder->getInt16Ty();
   } else if (cast<types::Int8Type>(t)) {
     return builder->getInt8Ty();
-  } else if (cast<types::CObjectType>(t)) {
-    return builder->getInt8PtrTy();
   } else if (cast<types::Float32Type>(t)) {
     return builder->getFloatTy();
   } else if (cast<types::Float64Type>(t)) {

@@ -12,6 +12,7 @@ SN_TRANSFORMER_VISIT(Block) {
     for (auto inst : p_node->getStmts()) { insts.push_back(trans(inst)); }
 
     auto val = builder.createBlock(p_node->getDBGInfo(), insts);
+    val->setAttributes(p_node);
     this->value = val;
   });
 }

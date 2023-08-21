@@ -30,7 +30,6 @@ TransformContext::TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilde
   DEFINE_TYPE(Int32Type)
   DEFINE_TYPE(Int16Type)
   DEFINE_TYPE(Int8Type)
-  DEFINE_TYPE(CObjectType)
   DEFINE_TYPE(VoidType)
   DEFINE_TYPE(CharType)
 

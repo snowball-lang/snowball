@@ -44,8 +44,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
       }
       if (utils::cast<types::BoolType>(realType) || utils::cast<types::Int8Type>(realType) ||
           utils::cast<types::Int16Type>(realType) || utils::cast<types::Int32Type>(realType) ||
-          utils::cast<types::Int64Type>(realType) || utils::cast<types::CharType>(realType) ||
-          utils::cast<types::CObjectType>(realType)) {
+          utils::cast<types::Int64Type>(realType) || utils::cast<types::CharType>(realType)) {
         switch (services::OperatorService::operatorID(opName)) {
           OPERATOR_INSTANCE(EQEQ, CreateICmpEQ)
           OPERATOR_INSTANCE(PLUS, CreateAdd)

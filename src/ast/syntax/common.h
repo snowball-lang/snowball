@@ -37,6 +37,7 @@ enum Attributes
   NO_MANGLE,
   NOT_IMPLEMENTED,
   EXPORT,
+  UNSAFE, // also used for blocks
   
   // Builting related attributes
   BUILTIN,

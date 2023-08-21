@@ -29,6 +29,9 @@ public:
   /// @brief Set a new function that's being type checked
   void setCurrentFunction(ir::Func* f) { currentFunction = f; }
 
+  /// @brief If we are in an unsafe context
+  bool unsafeContext = false;
+
   Context() = default;
 };
 }; // namespace typecheck

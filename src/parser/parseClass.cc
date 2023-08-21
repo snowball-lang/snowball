@@ -85,11 +85,19 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         }
         
         if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_VAR &&
-            pk.type != TokenType::KWORD_OPERATOR && (!IS_CONSTRUCTOR(pk))) {
+            pk.type != TokenType::KWORD_OPERATOR && pk.type != TokenType::KWORD_UNSAFE && (!IS_CONSTRUCTOR(pk))) {
           next();
-          createError<SYNTAX_ERROR>("expected keyword \"fn\", \"let\", \"operator\" or a "
+          createError<SYNTAX_ERROR>("expected keyword \"fn\", \"let\", \"operator\", \"unsafe\" or a "
                                     "constructor "
                                     "declaration after static member");
+        }
+      } break;
+
+      case TokenType::KWORD_UNSAFE: {
+        auto pk = peek();
+        if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_OPERATOR) {
+          next();
+          createError<SYNTAX_ERROR>("expected keyword \"fn\" or \"operator\" after unsafe declaration!");
         }
       } break;
 
@@ -107,9 +115,9 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
 
       case TokenType::KWORD_MUTABLE: {
         auto pk = peek();
-        if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_OPERATOR) {
+        if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_OPERATOR && pk.type != TokenType::KWORD_UNSAFE) {
           next();
-          createError<SYNTAX_ERROR>("expected keyword \"fn\" or \"operator\" after mutable declaration!");
+          createError<SYNTAX_ERROR>("expected keyword \"fn\", \"unsafe\" or \"operator\" after mutable declaration!");
         }
       } break;
 

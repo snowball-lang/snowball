@@ -86,8 +86,6 @@ public:
     types::Type* getStringType() { return getPrimitiveType(SN_STR_TYPE); }
     /// @brief Get the char primitive type
     types::Type* getCharType() { return getPrimitiveType(SN_CHR_TYPE); }
-    /// @brief Get the equivalent of `void*` type in C
-    types::Type* getCObjectType() { return getPrimitiveType(SN_COB_TYPE); }
     /// @brief Get the float 64 primitive type
     types::Type* getF64Type() { return getPrimitiveType(SN_F64_TYPE); }
     /// @brief Get the float 32 primitive type

@@ -14,6 +14,14 @@ Syntax::Node* Parser::parseStatement(Token pk) {
       createError<UNEXPECTED_EOF>("Found an unexpected EOF while parsing a block");
     }
 
+    case TokenType::KWORD_UNSAFE: {
+      next(1);
+      assert_tok<TokenType::BRACKET_LCURLY>("'{' expected after 'unsafe' keyword");
+      auto b = parseBlock();
+      b->addAttribute(Attributes::UNSAFE);
+      return b;
+    } break;
+
     case TokenType::BRACKET_LCURLY: {
       next();
       return parseBlock();

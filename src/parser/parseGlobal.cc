@@ -33,9 +33,9 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
           auto pk = peek();
           if (!is<TokenType::KWORD_FUNC>(pk) && !is<TokenType::KWORD_VAR>(pk) && !is<TokenType::KWORD_TYPEDEF>(pk) &&
               !is<TokenType::KWORD_NAMESPACE>(pk) && !is<TokenType::KWORD_STRUCT>(pk) &&
-              !is<TokenType::KWORD_STATIC>(pk) && !is<TokenType::KWORD_CLASS>(pk) && !is<TokenType::KWORD_EXTERN>(pk) &&
+              !is<TokenType::KWORD_STATIC>(pk) && !is<TokenType::KWORD_UNSAFE>(pk) && !is<TokenType::KWORD_CLASS>(pk) && !is<TokenType::KWORD_EXTERN>(pk) &&
               !is<TokenType::KWORD_CONST>(pk)) {
-            createError<SYNTAX_ERROR>("expected keyword \"fn\", \"static\", \"namespace\", \"class\", "
+            createError<SYNTAX_ERROR>("expected keyword \"fn\", \"static\", \"unsafe\" \"namespace\", \"class\", "
                                       "\"let\", \"const\" "
                                       "or "
                                       "\"extern\" after pub/priv declaration");
@@ -56,9 +56,19 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
 
         case TokenType::KWORD_STATIC: {
           auto pk = peek();
-          if (!is<TokenType::KWORD_FUNC>(pk)) {
-            createError<SYNTAX_ERROR>("expected 'fn' keyword after a "
+          if (!is<TokenType::KWORD_FUNC>(pk) || !is<TokenType::KWORD_UNSAFE>(pk)) {
+            createError<SYNTAX_ERROR>("expected 'fn' or 'unsafe' keyword after a "
                                       "static function declaration");
+          }
+
+          break;
+        }
+
+        case TokenType::KWORD_UNSAFE: {
+          auto pk = peek();
+          if (!is<TokenType::KWORD_FUNC>(pk)) {
+            createError<SYNTAX_ERROR>("expected 'fn' keyword after an "
+                                      "unsafe function declaration");
           }
 
           break;

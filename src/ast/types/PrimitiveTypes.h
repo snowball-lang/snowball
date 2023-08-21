@@ -18,7 +18,6 @@
 #define SN_INT8_TYPE  "i8"
 #define SN_F64_TYPE   "f64"
 #define SN_F32_TYPE   "f32"
-#define SN_COB_TYPE   "cobj"
 #define SN_VOID_TYPE  "void"
 
 /**
@@ -62,14 +61,6 @@ public:
    */
   static bool isNumericType(Type* ty);
   SNOWBALL_TYPE_COPIABLE(NumericType)
-};
-
-/// @brief C object pointer type (it's the equivalent of `void*` in C)
-class CObjectType : public AcceptorExtend<CObjectType, PrimitiveType> {
-public:
-  CObjectType() : AcceptorExtend(SN_COB_TYPE) { }
-  virtual bool canCast(Type* ty) const override { return !NumericType::isNumericType(ty); }
-  SNOWBALL_TYPE_COPIABLE(CObjectType)
 };
 
 /// @brief Representation of a void type.
