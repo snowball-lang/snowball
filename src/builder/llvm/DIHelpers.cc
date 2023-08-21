@@ -54,7 +54,10 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
   } else if (auto x = cast<types::ReferenceType>(ty)) {
     auto type = getDIType(x->getPointedType());
     return dbg.builder->createPointerType(type, layout.getTypeAllocSizeInBits(llvmType));
-  }
+  } else if (auto x = cast<types::PointerType>(ty)) {
+    auto type = getDIType(x->getPointedType());
+    return dbg.builder->createPointerType(type, layout.getTypeAllocSizeInBits(llvmType));
+  } 
 
   else if (auto f = cast<types::FunctionType>(ty)) {
     std::vector<llvm::Metadata*> argTypes = {getDIType(f->getRetType())};

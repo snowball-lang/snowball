@@ -10,13 +10,17 @@ namespace {
 bool genericMatch(Expression::Param* generic, Expression::TypeRef* arg) {
   if (auto x = utils::cast<Expression::ReferenceType>(arg)) {
     return genericMatch(generic, x->getBaseType());
-  }
+  } else if (auto x = utils::cast<Expression::PointerType>(arg)) {
+    return genericMatch(generic, x->getBaseType());
+  } 
 
   return arg->getName() == generic->getName();
 }
 
 types::Type* matchedGeneric(Expression::Param* generic, types::Type* arg) {
   if (auto x = utils::cast<types::ReferenceType>(arg)) {
+    return matchedGeneric(generic, x->getPointedType());
+  } else if (auto x = utils::cast<types::PointerType>(arg)) {
     return matchedGeneric(generic, x->getPointedType());
   }
 

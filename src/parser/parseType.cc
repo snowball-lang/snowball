@@ -49,6 +49,22 @@ TypeRef* Parser::parseType() {
     ty->setDBGInfo(dbg);
     return ty;
   }
+  std::vector<bool> pointerDepth; // true = mutable, false = immutable
+  while (is<TokenType::OP_MUL>()) {
+    next();
+    if (is<TokenType::KWORD_CONST>()) {
+      pointerDepth.push_back(false);
+      next();
+    } else if (is<TokenType::KWORD_MUTABLE>()) {
+      pointerDepth.push_back(true);
+      next();
+    } else {
+      createError<SYNTAX_ERROR>("Expected 'const' or 'mut' after '*' (pointer type specifier)", {
+        .note = "If you want to use '*' as a multiplication operator, use parentheses around the expression",
+        .help = "check the documentation for more information (https://snowball-lang.gitbook.io/docs/language-reference/types/pointer-types)",
+      });
+    }
+  }
   int referenceDepth = 0;
   while (is<TokenType::OP_AND>()) { // we treat op and as 2 bit ands
     referenceDepth += 2;
@@ -89,6 +105,10 @@ TypeRef* Parser::parseType() {
   for (int i = 0; i < referenceDepth; i++) {
     auto base = t;
     t = Syntax::N<ReferenceType>(base, dbg);
+  }
+  for (int i = 0; i < pointerDepth.size(); i++) {
+    auto base = t;
+    t = Syntax::N<PointerType>(base, pointerDepth[i], dbg);
   }
   return t;
 }

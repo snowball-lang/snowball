@@ -37,6 +37,7 @@ enum Attributes
   NO_MANGLE,
   NOT_IMPLEMENTED,
   EXPORT,
+  UNSAFE_FUNC_NOT_BODY,
   UNSAFE, // also used for blocks
   
   // Builting related attributes
@@ -204,6 +205,8 @@ public:
   virtual bool isTypeDecl() { return false; }
   /// @return true if the type is a pointer
   virtual bool isReferenceType() { return false; }
+  /// @return true if the type is a pointer
+  virtual bool isPointerType() { return false; }
   /// @return true if the type is a function
   virtual bool isFunctionType() { return false; }
 
@@ -282,6 +285,27 @@ public:
   bool isReferenceType() override { return true; }
 
   ~ReferenceType() noexcept = default;
+};
+
+/**
+ * @class PointerType
+ * @brief A struct representing a pointer type that derives from
+ * TypeRef.
+ *
+ * This struct holds a pointer to a TypeRef object and provides methods
+ * to access the type value and determine if it is a pointer type.
+ */
+struct PointerType : public TypeRef {
+  TypeRef* baseType;
+
+public:
+  PointerType(TypeRef* baseType, bool isMutable, DBGSourceInfo* srcInfo);
+
+  /// @return the expr value to get the type from
+  auto getBaseType() { return baseType; }
+  bool isPointerType() override { return true; }
+
+  ~PointerType() noexcept = default;
 };
 
 /**

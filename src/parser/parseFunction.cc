@@ -100,6 +100,8 @@ fetch_attrs:
         return Attributes::BUILTIN;
       } else if (attr == "__no_pointer_self__") {
         return Attributes::NO_POINTER_SELF;
+      } else if (attr == "unsafe_fn_not_body") {
+        return Attributes::UNSAFE_FUNC_NOT_BODY;
       }
       return Attributes::INVALID;
     });

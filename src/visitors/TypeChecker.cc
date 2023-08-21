@@ -5,6 +5,7 @@
 #include "../ast/syntax/nodes.h"
 #include "../ast/types/FunctionType.h"
 #include "../ast/types/PrimitiveTypes.h"
+#include "../ast/types/PointerType.h"
 #include "../ast/types/ReferenceType.h"
 #include "../ir/values/Argument.h"
 #include "../ir/values/Call.h"
@@ -44,10 +45,10 @@ VISIT(Func) {
   auto backup = ctx->getCurrentFunction();
   ctx->setCurrentFunction(p_node);
   auto body = p_node->getBody();
-  if (p_node->hasAttribute(Attributes::UNSAFE)) 
+  if (p_node->hasAttribute(Attributes::UNSAFE) && !p_node->hasAttribute(Attributes::UNSAFE_FUNC_NOT_BODY)) 
     ctx->unsafeContext = true;
   if (body) body->visit(this);
-  if (p_node->hasAttribute(Attributes::UNSAFE)) 
+  if (p_node->hasAttribute(Attributes::UNSAFE) && !p_node->hasAttribute(Attributes::UNSAFE_FUNC_NOT_BODY)) 
     ctx->unsafeContext = false;
 
   ctx->setCurrentFunction(backup);
@@ -73,7 +74,17 @@ VISIT(DereferenceTo) {
              FMT("Value used for reference '%s' has a value with 'void' "
                  "type!",
                  p_node->getType()->getPrettyName().c_str()));
-  if (!utils::cast<types::ReferenceType>(val->getType())) {
+  if (utils::cast<types::PointerType>(val->getType())) {
+    if (!ctx->unsafeContext) {
+      E<SYNTAX_ERROR>(p_node,
+                      FMT("Pointer dereference is unsafe!"),
+                      {.info = "This pointer dereference is unsafe!",
+                       .note = "This error is caused by the pointer dereference being unsafe.",
+                       .help = "Try wrapping the pointer dereference in an `unsafe { ... }` block\nor adding the "
+                               "'unsafe' attribute to the function.\n\nsee more: https://snowball-lang.gitbook.io/docs/language-reference/unsafe-snowball",
+                       .tail = EI<>(val->getDBGInfo(), "", {.info = "This is the pointer declaration."})});
+    }
+  } else if (!utils::cast<types::ReferenceType>(val->getType())) {
     E<TYPE_ERROR>(p_node,
                   FMT("Value used for dereference '%s' is not a "
                       "reference!",
@@ -382,7 +393,20 @@ bool TypeChecker::accessingSelf(std::shared_ptr<ir::Value> value) {
 }
 
 void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
-  if (p_node->hasAttribute(Attributes::TEST)) {
+  if (p_node->hasAttribute(Attributes::UNSAFE)) {
+    // TODO:
+    if (p_node->getAttributeArgs(Attributes::UNSAFE_FUNC_NOT_BODY).size() != 0) {
+      E<SYNTAX_ERROR>(p_node->getDBGInfo(), "This attribute can't have arguments!",
+                      {.info = "This function is an unsafe function!",
+                       .note = "This error is caused giving arguments to this attribute.",
+                       .help = "Try removing the arguments from the attribute."});
+    }
+  } else if (p_node->hasAttribute(Attributes::UNSAFE_FUNC_NOT_BODY)) {
+    E<SYNTAX_ERROR>(p_node->getDBGInfo(), "This attribute may only be used on unsafe functions!",
+                    {.info = "This function is not an unsafe function!",
+                     .note = "This error is caused by the function having the 'unsafe_func_not_body' attribute.",
+                     .help = "Try removing the 'unsafe_func_not_body' attribute from the function or by making the function 'unsafe'."});
+  } else if (p_node->hasAttribute(Attributes::TEST)) {
     if (p_node->isDeclaration())
       E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions must have a body!",
                       {.info = "This function is a test function!",

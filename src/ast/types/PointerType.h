@@ -12,13 +12,13 @@
 #include <string>
 #include <vector>
 
-#ifndef __SNOWBALL_AST_REFERENCE_TYPES_H_
-#define __SNOWBALL_AST_REFERENCE_TYPES_H_
+#ifndef __SNOWBALL_AST_POINTER_TYPES_H_
+#define __SNOWBALL_AST_POINTER_TYPES_H_
 
 namespace snowball {
 namespace types {
 
-class ReferenceType : public AcceptorExtend<ReferenceType, Type>, public DBGObject, public ir::IdMixin {
+class PointerType : public AcceptorExtend<PointerType, Type>, public DBGObject, public ir::IdMixin {
   friend AcceptorExtend;
 
 private:
@@ -26,14 +26,14 @@ private:
   Type* base = nullptr;
 
 public:
-  ReferenceType(Type* base);
-  ReferenceType(const ReferenceType& other) = default;
+  PointerType(Type* base, bool isMutable);
+  PointerType(const PointerType& other) = default;
 
   /**
    * @param other another type to check.
    */
   virtual bool is(Type* other) const override {
-    if (auto c = utils::cast<ReferenceType>(other)) { return base->is(c->getPointedType()); }
+    if (auto c = utils::cast<PointerType>(other)) { return base->is(c->getPointedType()); }
 
     return false;
   }
@@ -43,10 +43,10 @@ public:
   /// @return the mangled version of the type
   std::string getMangledName() const override;
   /// @return The pointed type this type is pointing to
-  /// @see ReferenceType::base
+  /// @see PointerType::base
   Type* getPointedType() const;
   /// @return The base type being pointed.
-  /// @example i32**** -> i32
+  /// @example ****i32 -> i32
   Type* getBaseType() const;
 
   /// @c Type::toRef() for information about this function.
@@ -63,10 +63,10 @@ public:
 
   virtual void setMutable(bool m) override;
 
-  SNOWBALL_TYPE_COPIABLE(ReferenceType)
+  SNOWBALL_TYPE_COPIABLE(PointerType)
 };
 
 }; // namespace types
 }; // namespace snowball
 
-#endif // __SNOWBALL_AST_REFERENCE_TYPES_H_
+#endif // __SNOWBALL_AST_POINTER_TYPES_H_

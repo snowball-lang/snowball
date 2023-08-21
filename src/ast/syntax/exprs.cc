@@ -17,6 +17,10 @@ FuncType::FuncType(std::vector<TypeRef*> args, TypeRef* returnValue, DBGSourceIn
     : args(args), returnValue(returnValue), TypeRef("fn(...)", srcInfo){};
 ReferenceType::ReferenceType(TypeRef* baseType, DBGSourceInfo* srcInfo)
     : baseType(baseType), TypeRef(baseType->getName() + "&", srcInfo){};
+PointerType::PointerType(TypeRef* baseType, bool isMutable, DBGSourceInfo* srcInfo)
+    : baseType(baseType), TypeRef(baseType->getName() + "*", srcInfo){
+  setMutable(isMutable);
+};
 PseudoVariable::PseudoVariable(std::string identifier) : identifier(identifier){};
 void PseudoVariable::setArgs(std::vector<Node*> args) {
   this->args = args;

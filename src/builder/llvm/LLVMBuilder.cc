@@ -215,8 +215,12 @@ void LLVMBuilder::codegen() {
 
         if (utils::cast<types::ReferenceType>(f->getRetTy())) {
           auto bytes = module->getDataLayout().getTypeSizeInBits(llvmFn->getReturnType());
-          //auto dereferenceable = llvm::Attribute::get(*context, llvm::Attribute::DereferenceableOrNull, bytes);
-          //llvmFn->addRetAttr(dereferenceable);   
+          auto dereferenceable = llvm::Attribute::get(*context, llvm::Attribute::Dereferenceable, bytes);
+          auto noundef = llvm::Attribute::get(*context, llvm::Attribute::NoUndef);
+          auto aligment = llvm::Attribute::get(*context, llvm::Attribute::Alignment, 8);
+          llvmFn->addRetAttr(dereferenceable);
+          llvmFn->addRetAttr(noundef);
+          llvmFn->addRetAttr(aligment);
         }
 
         if (f->hasAttribute(Attributes::LLVM_FUNC)) {

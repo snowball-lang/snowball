@@ -75,6 +75,12 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
 
   if (utils::cast<types::ReferenceType>(fn->getRetTy())) {
     auto bytes = module->getDataLayout().getTypeSizeInBits(func->getReturnType());
+    auto dereferenceable = llvm::Attribute::get(*context, llvm::Attribute::Dereferenceable, bytes);
+    auto noundef = llvm::Attribute::get(*context, llvm::Attribute::NoUndef);
+    auto aligment = llvm::Attribute::get(*context, llvm::Attribute::Alignment, 8);
+    llvmFn->addRetAttr(dereferenceable);
+    llvmFn->addRetAttr(noundef);
+    llvmFn->addRetAttr(aligment);
   }
 
   llvmFn->replaceAllUsesWith(func);
