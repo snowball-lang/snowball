@@ -56,7 +56,8 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
 
         case TokenType::KWORD_STATIC: {
           auto pk = peek();
-          if (!is<TokenType::KWORD_FUNC>(pk) || !is<TokenType::KWORD_UNSAFE>(pk)) {
+          if (!is<TokenType::KWORD_FUNC>(pk) && !is<TokenType::KWORD_UNSAFE>(pk)) {
+            next();
             createError<SYNTAX_ERROR>("expected 'fn' or 'unsafe' keyword after a "
                                       "static function declaration");
           }

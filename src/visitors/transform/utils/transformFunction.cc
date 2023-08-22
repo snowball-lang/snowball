@@ -65,7 +65,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
       ir::Func::FunctionArgs newArgs = {};
       if (fn->isConstructor()) {
         auto a = builder.createArgument(node->getDBGInfo(), "self", 0, (Syntax::Expression::Base*)nullptr);
-        auto ty = ctx->getCurrentClass(true)->getPointerTo();
+        auto ty = ctx->getCurrentClass(true)->getReferenceTo();
         ty->setMutable(node->isMutable());
         a->setType(ty);
         newArgs.emplace(newArgs.begin(), std::make_pair("self", a));

@@ -10,7 +10,7 @@ using namespace snowball::Syntax::transform;
                                                 Statement::Privacy::Status::PUBLIC);                                   \
     fn->addAttribute(Attributes::BUILTIN);                                                                             \
     fn->setArgs({new Expression::Param(                                                                                \
-            "other", allowPointer ? transformedType->getPointerTo()->toRef() : transformedType->toRef())});            \
+            "other", allowPointer ? transformedType->getReferenceTo()->toRef() : transformedType->toRef())});            \
     fn->setRetType(ctx->getVoidType()->toRef());                                                                       \
     trans(fn);                                                                                                         \
   }
@@ -159,7 +159,8 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
       ctx->generateFunction = backupGenerateFunction;
       auto parentHasConstructor =
               allowConstructor && parentType != nullptr && !parentType->isStruct() && parentType->hasConstructor;
-      if (!parentHasConstructor && !transformedType->hasConstructor && !transformedType->isStruct()) {
+      if (!parentHasConstructor && !transformedType->hasConstructor && !transformedType->isStruct()
+        && !ty->hasAttribute(Attributes::BUILTIN)) {
         E<SYNTAX_ERROR>(ty,
                         "This class does not have a constructor!",
                         {.info = "This class does not have a constructor!",

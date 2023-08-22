@@ -61,6 +61,7 @@ Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& over
               switch (castType) {
                 case CastType::NoCast: assert(false && "This should never happen");
                 case CastType::AutoDeref:
+                case CastType::ToPointer:
                 case CastType::AutoRef: castPriority = 2; break;
                 case CastType::Valid: castPriority = 3; break;
                 default: assert(false && "Invalid cast type given at deducing function");

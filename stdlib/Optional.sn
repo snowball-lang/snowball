@@ -22,7 +22,7 @@ pub class Option<_StoreType: Core::Sized> {
     /**
      * The value stored in the `Option`.
      */
-    let _value: &_StoreType = Ptr::null_ptr<?_StoreType>();
+    let _value: &_StoreType = *Ptr::null_ptr<?_StoreType>();
     /**
      * Whether the `Option` is engaged.
      */

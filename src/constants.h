@@ -48,6 +48,8 @@ extern "C" {
 
 // Values
 
+#define _SNOWBALL_CONST_PTR  "$const-pointer"
+
 #define _SNOWBALL_STR_FACTOR 16
 #define _SNOWBALL_MAX_LENGTH 2147483647
 #define _SNOWBALL_OUT_DEFAULT(x, t, s)                                                                                 \

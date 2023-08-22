@@ -56,7 +56,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
       if (utils::cast<types::PrimitiveType>((*b)->getType()) || utils::cast<types::ReferenceType>((*b)->getType())) {
         argTypes.insert(argTypes.begin(), b.value()->getType());
       } else {
-        argTypes.insert(argTypes.begin(), b.value()->getType()->getPointerTo());
+        argTypes.insert(argTypes.begin(), b.value()->getType()->getReferenceTo());
       }
     }
     auto c = getFunction(p_node, r, name, argTypes, generics, false, b.has_value());

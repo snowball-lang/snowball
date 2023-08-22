@@ -96,7 +96,7 @@ private:
    *  for parsing a type.
    */
   bool isTypeValid() const {
-    return is<TokenType::OP_BIT_AND>() || is<TokenType::OP_AND>() || is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() ||
+    return is<TokenType::OP_BIT_AND>() || is<TokenType::OP_AND>() || is<TokenType::OP_MUL>() || is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() ||
             is<TokenType::KWORD_FUNC>();
   }
 

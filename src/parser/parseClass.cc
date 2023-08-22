@@ -25,12 +25,23 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
       if (attr == "extends") {
         extends = true;
         return Attributes::CLASS_EXTENDS;
+      } else if (attr == "__internal__") {
+        return Attributes::BUILTIN;
       }
       return Attributes::INVALID;
     });
   }
 
-  auto name = assert_tok<TokenType::IDENTIFIER>("class identifier").to_string();
+  std::string name;
+  // TODO: check this is only for std lib builds!!!
+  if (is<TokenType::OP_MUL>()) {
+    next();
+    assert_tok<TokenType::KWORD_CONST>("'const'");
+    name = "$const-pointer";
+  } else {
+    name = assert_tok<TokenType::IDENTIFIER>("class identifier").to_string();
+  }
+
   auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
 
   Syntax::Expression::TypeRef* parentClass = nullptr;

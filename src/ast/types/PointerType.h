@@ -18,7 +18,7 @@
 namespace snowball {
 namespace types {
 
-class PointerType : public AcceptorExtend<PointerType, Type>, public DBGObject, public ir::IdMixin {
+class PointerType : public AcceptorExtend<PointerType, Type>, public DBGObject {
   friend AcceptorExtend;
 
 private:

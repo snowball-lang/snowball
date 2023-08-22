@@ -16,13 +16,13 @@
 namespace snowball {
 namespace types {
 
-PointerType::PointerType(Type* base, bool isMutable) : AcceptorExtend(Kind::TYPE, "*" + base->getName()), base(base) {
+PointerType::PointerType(Type* base, bool isMutable) : AcceptorExtend(Kind::TYPE, isMutable ? "*" + base->getName() : "$const-pointer"), base(base) {
   setMutable(isMutable);
 }
 Type* PointerType::getPointedType() const { return base; }
 std::string PointerType::getPrettyName() const {
   auto baseName = base->getPrettyName();
-  return "*" + (std::string)(isMutable() ? "mut" : "const") + baseName;
+  return "*" + (std::string)(isMutable() ? "mut " : "const ") + baseName;
 }
 
 std::string PointerType::getMangledName() const {

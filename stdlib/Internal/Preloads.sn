@@ -374,32 +374,24 @@ class [[extends]] bool {
     operator [[__internal__]] =(other: bool) &bool {}
 }
 
-class [[extends]] cobj {
+class [[__internal__]] *const <T> {
   pub:
-    operator [[__internal__]] =(other: cobj) &cobj {}
-    operator [[__internal__, __no_pointer_self__]] ==(other: cobj) bool {}
-    operator [[__internal__, __no_pointer_self__]] !=(other: cobj) bool {}
-    operator [[__internal__, __no_pointer_self__]] !() bool {}
-    operator [[__internal__, __no_pointer_self__]] ||(other: cobj) bool {}
-    operator [[__internal__, __no_pointer_self__]] &&(other: cobj) bool {}
-
-    operator [[llvm_function, inline]] [](index: i32) cobj
-    {
-      %0 = getelementptr inbounds ptr, ptr %self, i32 %index
+    unsafe operator [[inline, first_arg_is_self, llvm_function]] +(self: *const T, other: i32) *const T
+    { 
+      %0 = getelementptr ptr, ptr %self, i32 %other
       ret ptr %0
+    } 
+
+    unsafe fn [[inline, first_arg_is_self]] as_ref<>(self: *const T) &T 
+    {
+      return &*self;
     }
 
-    // override with &cobj
-    operator [[__internal__]] =(other: &cobj) &cobj {}
-    operator [[__internal__, __no_pointer_self__]] =(other: &cobj) &cobj {}
+    operator [[__internal__, first_arg_is_self]] =(self: *const T, other: *const T) *const T {}
 
-    /**
-     * @brief It writes an offset to the pointer.
-     * @param[in] offset The offset to write.
-     * @return The pointer with the offset written.
-     */
-    operator [[__no_pointer_self__, llvm_function]] +(offset: i32) cobj {
-      %0 = getelementptr inbounds ptr, ptr %self, i32 %offset
-      ret ptr %0
+    fn [[inline, first_arg_is_self, llvm_function]] is_null(self: *const T) bool
+    {
+      %0 = icmp eq ptr %self, null
+      ret i1 %0
     }
 }

@@ -27,7 +27,7 @@ fn [[test(expect = 0)]] malloc() i32 {
 fn [[test(expect = 0)]] realloc() i32 {
     let mut x = CLib::malloc(20) as &char;
     CLib::c_string::strcpy(x, "hello");
-    x = CLib::realloc(x as cobj, 30) as &char;
+    x = CLib::realloc(x, 30) as &char;
     CLib::c_string::strcat(x, " world");
     return CLib::c_string::strcmp(x, "hello world");
 }

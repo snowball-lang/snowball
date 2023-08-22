@@ -20,8 +20,8 @@
 //use Core::Panic;
 ////use Core::System::{{ println }};
 
-pub unsafe fn x() {
-
+pub unsafe fn x() *const i32 {
+  return 0 as *const i32;
 }
 
 pub fn main() i32 {

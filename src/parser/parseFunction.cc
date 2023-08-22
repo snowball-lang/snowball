@@ -8,8 +8,8 @@
 
 #define CHECK_PRIVACY(var)                                                                                             \
   var = true;                                                                                                          \
-  if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-4, true))) {                                         \
-    isPublic = is<TokenType::KWORD_PUBLIC>(peek(-4, true));                                                            \
+  if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(peekCount-1, true))) {                                         \
+    isPublic = is<TokenType::KWORD_PUBLIC>(peek(peekCount-1, true));                                                            \
   }
 
 using namespace snowball::Syntax;
@@ -49,11 +49,12 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
   //     pub fn ...
   //     ^^^
   // to indicate that the function is public.
-  auto pk = peek(-3, true);
+  int peekCount = -3;
 fetch_attrs:
+  auto pk = peek(peekCount, true);
   if (is<TokenType::KWORD_UNSAFE>(pk)) {
     isUnsafe = true;
-    pk = peek(-4, true);
+    peekCount--;
     goto fetch_attrs;
   } else if (is<TokenType::KWORD_EXTERN>(pk)) {
     CHECK_PRIVACY(isExtern)
@@ -102,6 +103,8 @@ fetch_attrs:
         return Attributes::NO_POINTER_SELF;
       } else if (attr == "unsafe_fn_not_body") {
         return Attributes::UNSAFE_FUNC_NOT_BODY;
+      } else if (attr == "first_arg_is_self") {
+        return Attributes::FIRST_ARG_IS_SELF;
       }
       return Attributes::INVALID;
     });

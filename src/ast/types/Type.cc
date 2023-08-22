@@ -3,6 +3,7 @@
 
 #include "../syntax/nodes.h"
 #include "ReferenceType.h"
+#include "PointerType.h"
 
 namespace snowball {
 namespace types {
@@ -15,7 +16,8 @@ Syntax::Expression::TypeRef* Type::toRef() {
   return ty;
 }
 
-Type* Type::getPointerTo() { return new ReferenceType(copy()); }
+Type* Type::getReferenceTo() { return new ReferenceType(copy()); }
+Type* Type::getPointerTo(bool isMutable) { return new PointerType(copy(), isMutable); }
 Type* Type::copy() const { assert(!"called copy to not-specialised type!"); }
 void Type::setMutable(bool m) { _mutable = m; }
 } // namespace types

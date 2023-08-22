@@ -27,7 +27,18 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
   if (ty->isReferenceType()) {
     auto pointer = utils::cast<Expression::ReferenceType>(ty);
     assert(pointer);
-    auto x = transformType(pointer->getBaseType())->getPointerTo();
+    auto x = transformType(pointer->getBaseType())->getReferenceTo();
+    return x;
+  } else if (ty->isPointerType()) {
+    auto pointer = utils::cast<Expression::PointerType>(ty);
+    assert(pointer);
+    auto baseType = transformType(pointer->getBaseType());
+    auto x = baseType->getPointerTo(pointer->isMutable());
+
+    auto typeRef = TR(_SNOWBALL_CONST_PTR, nullptr, std::vector<Expression::TypeRef*>{
+      baseType->toRef()
+    });
+    transformType(typeRef);
     return x;
   } else if (ty->isTypeDecl()) {
     auto decl = utils::cast<Expression::DeclType>(ty);
@@ -42,6 +53,9 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     for (auto arg : fn->getArgs()) args.push_back(transformType(arg));
     auto ret = transformType(fn->getReturnValue());
     return builder.createFunctionType(args, ret);
+  } else if (auto x = ty->_getInternalType()) { 
+    // TODO: maybe move up in the function to prevent problems with generics?
+    return x->copy();
   }
 
   auto name = ty->getPrettyName();
@@ -113,9 +127,6 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
   }
 
 continueTypeFetch:
-  // TODO: maybe move up in the function to prevent problems with generics?
-  if (auto x = ty->_getInternalType()) { return x->copy(); }
-
   auto uuid = ctx->createIdentifierName(id, false);
   bool existsWithGenerics = false;
 

@@ -21,8 +21,6 @@ void LLVMBuilder::visit(ir::Cast* c) {
   auto ty = c->getCastType();
   auto llvmType = getLLVMType(ty);
 
-  // TODO: cobj casting
-
   // Check if both types are integers
   if (IS_INTEGER(vTy) && IS_INTEGER(ty)) {                    // i[n] <-> i[n]
     this->value = builder->CreateIntCast(v, llvmType, false); // TODO: check if it's actually signed
@@ -35,11 +33,8 @@ void LLVMBuilder::visit(ir::Cast* c) {
   } else if (IS_FLOAT(ty) && IS_FLOAT(vTy)) { // float <-> float
     // cast float to another float
     this->value = builder->CreateFPCast(v, llvmType);
-  } else if (utils::cast<types::ReferenceType>(ty)) { // ref <-> cobj
-    this->value = builder->CreatePointerCast(v, llvmType);
   } else {
-    assert(utils::cast<types::ReferenceType>(vTy));
-    assert(utils::cast<types::ReferenceType>(ty));
+    assert(utils::cast<types::ReferenceType>(ty) || utils::cast<types::PointerType>(ty));
     this->value = builder->CreatePointerCast(v, llvmType);
   }
 }

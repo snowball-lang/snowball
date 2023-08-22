@@ -73,7 +73,7 @@ SharedValue<DereferenceTo> IRBuilder::createDereferenceTo(DBGSourceInfo* dbgInfo
 }
 SharedValue<ReferenceTo> IRBuilder::createReferenceTo(DBGSourceInfo* dbgInfo, SharedValue<> value) {
   auto ref = N<ReferenceTo>(dbgInfo, value);
-  ref->setType(value->getType()->getPointerTo());
+  ref->setType(value->getType()->getReferenceTo());
   return ref;
 }
 SharedValue<StringValue> IRBuilder::createStringValue(DBGSourceInfo* dbgInfo, const std::string value) {

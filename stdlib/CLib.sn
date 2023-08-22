@@ -2,10 +2,19 @@
  * @file Common bindings for the C standard library
  */
 
+pub type c_obj = *const void;
+pub type c_int = i32;
+pub type c_char = i8;
+pub type c_bool = bool;
+pub type c_float = f32;
+pub type c_double = f64;
+pub type c_long = i64;
+// TODO: add more types
+
 /**
  * @brief Allocates size bytes of uninitialized storage.
- * @param size(i32) - number of bytes to allocate
- * @return cobj - a pointer that is suitably aligned for
+ * @param size(c_int) - number of bytes to allocate
+ * @return c_obj - a pointer that is suitably aligned for
  *  any object type with fundamental alignment.
  * @note(1) If size is zero, the behavior of malloc is implementation-defined.
  *  For example, a null pointer may be returned. Alternatively, a non-null
@@ -14,12 +23,12 @@
  * @note(2) malloc is thread-safe: it behaves as though only accessing the memory
  *  locations visible through its argument, and not any static storage.
  */
-pub extern fn malloc(i32) cobj;
+pub extern fn malloc(c_int) c_obj;
 /**
  * @brief Allocates memory for an array of num objects of size size and initializes all bytes in the allocated storage to zero.
- * @param num(i32) - number of objects to allocate
- * @param size(i32) - size of each object
- * @return cobj - a pointer to the memory block allocated by the function.
+ * @param num(c_int) - number of objects to allocate
+ * @param size(c_int) - size of each object
+ * @return c_obj - a pointer to the memory block allocated by the function.
  *  The type of this pointer is always void*, which can be cast to the desired type of data pointer
  *  in order to be dereferenceable.
  * @note(1) If size is zero, the return value depends on the particular library implementation (it may or may not be a null pointer),
@@ -28,17 +37,17 @@ pub extern fn malloc(i32) cobj;
  * @note(3) calloc is thread-safe: it behaves as though only accessing the memory locations visible through its argument,
  *  and not any static storage.
  */
-pub extern fn calloc(i32, i32) cobj;
+pub extern fn calloc(c_int, c_int) c_obj;
 /**
  * @brief Reallocates the given area of memory.
  * If ptr is not NULL, it must be previously allocated by malloc(),
  *  calloc() or realloc() and not yet freed with a call to free or
  *  realloc. Otherwise, the results are undefined.
  *
- * @param ptr(cobj) - pointer to the memory area to be reallocated
- * @param new_size(i32) - new size of the array in bytes
+ * @param ptr(c_obj) - pointer to the memory area to be reallocated
+ * @param new_size(c_int) - new size of the array in bytes
  *
- * @return i32 - On success, returns the pointer to the beginning of newly allocated
+ * @return c_int - On success, returns the pointer to the beginning of newly allocated
  *  memory. To avoid a memory leak, the returned pointer must be deallocated with free()
  *  or realloc(). The original pointer ptr is invalidated and any access to it is undefined
  *  behavior (even if reallocation was in-place).
@@ -50,10 +59,10 @@ pub extern fn calloc(i32, i32) cobj;
  *  returned (in which case the old memory block may or may not be freed), or some non-null
  *  pointer may be returned that may not be used to access storage).
  */
-pub extern fn realloc(cobj, i32) cobj;
+pub extern fn realloc(c_obj, c_int) c_obj;
 /**
  * @brief Deallocates the space previously allocated by malloc(), calloc() or realloc().
- * @param ptr(cobj) - pointer to the memory to deallocate
+ * @param ptr(c_obj) - pointer to the memory to deallocate
  *
  * @note(1) The behavior is undefined if the value of ptr does not equal a value returned
  *  earlier by malloc(), calloc(), realloc()
@@ -65,24 +74,24 @@ pub extern fn realloc(cobj, i32) cobj;
  *
  * @return (none)
  */
-pub extern fn free(cobj) void;
+pub extern fn free(c_obj) void;
 /**
  * @brief (memcpy) Copies count bytes from the object pointed to by src to the object pointed to by dest.
- * @param dest(cobj) - pointer to the object to copy to
- * @param src(cobj) - pointer to the object to copy from
- * @param count(i32) - number of bytes to copy
- * @return cobj - dest
+ * @param dest(c_obj) - pointer to the object to copy to
+ * @param src(c_obj) - pointer to the object to copy from
+ * @param count(c_int) - number of bytes to copy
+ * @return c_obj - dest
  * @note(1) If the objects overlap, the behavior is undefined.
  * @note(2) If either dest or src is a null pointer, the behavior is undefined, even if count is zero.
  * @note(3) If the objects are not TriviallyCopyable, the behavior of memcpy is not specified and may be undefined.
  * @note(4) If the objects are potentially-overlapping or not TriviallyCopyable, use memmove or memcpy_s instead.
  */
-pub extern fn memcpy(cobj, cobj, i32) void;
+pub extern fn memcpy(c_obj, c_obj, c_int) void;
 /**
  * @brief Writes every character from the null-terminated string str and one additional newline
  *  character '\n' to the output stream stdout, as if by repeatedly executing @fn fputc.
  * @param str(String) This is the string to be written.
- * @return (i32) If successful, non-negative value is returned. On error, the function returns EOF.
+ * @return (c_int) If successful, non-negative value is returned. On error, the function returns EOF.
  *
  * @note(1) The puts function appends the newline character to the output, while fputs function does not.
  * @note(2) Different implementations return different non-negative numbers: some return the last character
@@ -91,49 +100,49 @@ pub extern fn memcpy(cobj, cobj, i32) void;
  * @note(3) A typical cause of failure for puts is running out of space on the file system, when stdout is
  *  redirected to a file.
  */
-pub extern fn puts(&char) i32;
+pub extern fn puts(&char) c_int;
 /**
  * @brief Writes a character to the standard output (stdout).
- * @param character(i32) - The `i32` promotion of the character to be written.
- *  The value is internally converted to an `unsigned i32` when written.
+ * @param character(c_int) - The `c_int` promotion of the character to be written.
+ *  The value is internally converted to an `unsigned c_int` when written.
  * @return On success, the character written is returned.
  *  If a writing error occurs, EOF is returned.
  */
-pub extern fn putchar(char) i32;
+pub extern fn putchar(c_char) c_int;
 /**
  * @brief Reads the next character from stdin.
  * @return The obtained character on success or EOF on failure.
  */
-pub extern fn getchar() char;
+pub extern fn getchar() c_char;
 /**
  * @brief Writes the string pointed by format to the standard output (stdout). If format includes format
  *  specifiers (subsequences beginning with %), the additional arguments following format are formatted and inserted
  *  in the resulting string replacing their respective specifiers.
  * @return On success, the total number of characters written is returned.
  */
-pub extern fn printf(&char, ...) i32;
+pub extern fn printf(&c_char, ...) c_int;
 /**
  * @brief Writes the string pointed by format to the character string pointed by str. If format includes format
  *  specifiers (subsequences beginning with %), the additional arguments following format are formatted and inserted
  *  in the resulting string replacing their respective specifiers.
  * @param str(&char) - pointer to a buffer where the resulting C-string is stored.
- * @param size(i32) - maximum number of bytes to be used in the buffer.
+ * @param size(c_int) - maximum number of bytes to be used in the buffer.
  * @return On success, the total number of characters written is returned.
  *  If a writing error occurs, the error indicator (ferror) is set and a negative number is returned.
  */
-pub extern fn snprintf(&char, i32, &char, ...) i32;
+pub extern fn snprintf(*const c_char, c_int, &c_char, ...) c_int;
 /**
  * @brief Causes normal program termination to occur.
- * @param exit_code(i32) - exit status of the program
+ * @param exit_code(c_int) - exit status of the program
  * @note(1) The behavior is undefined if a program calls exit more than once.
  */
-pub extern fn exit(i32);
+pub extern fn exit(c_int);
 /**
  * @brief It gets the current time.
- * @param seconds(&i32) - pointer to a variable where the number of seconds elapsed since the Epoch is stored.
- * @return i32 - If the time is successfully obtained, the return value is the same as the parameter seconds.
+ * @param seconds(&c_int) - pointer to a variable where the number of seconds elapsed since the Epoch is stored.
+ * @return c_int - If the time is successfully obtained, the return value is the same as the parameter seconds.
  */
-pub extern fn time(&i32) i32;
+pub extern fn time(&c_int) c_int;
 /**
  * @brief a namespace that contains functions for manipulating strings.
  * @note(1) All functions in this namespace are thread-safe.
@@ -142,38 +151,38 @@ namespace c_string {
 /**
  * @brief It returns the length of string based on the null-terminator.
  * @param str(&char) - string to be measured
- * @return i32 - length of the string
+ * @return c_int - length of the string
  */
-pub extern fn strlen(&char) i32;
+pub extern fn strlen(&c_char) c_int;
 /**
  * @brief It checks if the two strings are equal.
  * @param str1(&char) - first string
  * @param str2(&char) - second string
  * @return bool - true if the strings are equal, false otherwise
  */
-pub extern fn strcmp(&char, &char) bool;
+pub extern fn strcmp(&c_char, &c_char) bool;
 /**
  * @brief It copies the string pointed by source into the array pointed by destination, including the terminating null character (and stopping at that point).
  * @param destination(&char) - pointer to the destination array where the content is to be copied.
  * @param source(&char) - C string to be copied.
  * @return &char - pointer to the destination string destination.
  */
-pub extern fn strcpy(&char, &char) &char;
+pub extern fn strcpy(&c_char, &c_char) &c_char;
 /**
  * @brief It concatenates the string pointed to by source to the end of the string pointed to by destination.
  * @param destination(&char) - pointer to the destination array, which should contain a C string, and be large enough to contain the concatenated resulting string.
  * @param source(&char) - C string to be appended. This should not overlap destination.
  * @return &char - pointer to the destination string destination.
  */
-pub extern fn strcat(&char, &char) &char;
+pub extern fn strcat(&c_char, &c_char) &c_char;
 } // namespace c_string
 
 pub namespace __internal {
 
 /**
  * @brief Allocates size bytes of uninitialized storage.
- * @param size(i32) - number of bytes to allocate
- * @return cobj - a pointer that is suitably aligned for
+ * @param size(c_int) - number of bytes to allocate
+ * @return c_obj - a pointer that is suitably aligned for
  *  any object type with fundamental alignment.
  * @note(1) If size is zero, the behavior of malloc is implementation-defined.
  *  For example, a null pointer may be returned. Alternatively, a non-null
@@ -183,20 +192,20 @@ pub namespace __internal {
  *  locations visible through its argument, and not any static storage.
  */
 // TODO: avoid conflicts
-// extern fn "sn.alloca" as __alloca(i32) cobj;
+// extern fn "sn.alloca" as __alloca(c_int) c_obj;
 /**
  * @brief Allocates a buffer on the stack and writes the formatted string to it.
- * @param bytes(i32) - number of bytes to allocate
+ * @param bytes(c_int) - number of bytes to allocate
  * @param format(&char) - format string
  * @param value(T) - value to be formatted
  * @return &char - pointer to the buffer
  */
-pub static fn [[inline]] alloca_and_snprintf<T>
-    (bytes: i32, format: &char, value: T) &char 
+pub static unsafe fn [[inline]] alloca_and_snprintf<T>
+    (bytes: c_int, format: &c_char, value: T) &c_char 
 {
-    let buffer = malloc(bytes) as &char; // TODO: use sn.alloca
+    let buffer: *const i8 = malloc(bytes); // TODO: use sn.alloca
     snprintf(buffer, bytes, format, value);
-    return buffer;
+    return &*(buffer as *const c_char);
 } 
 } // namespace __internal
 /**
@@ -209,5 +218,5 @@ namespace cmath {
 
  * @return f64 - number
 */
-pub extern fn strtod(&char, cobj) f64;
+pub extern fn strtod(&c_char, c_obj) f64;
 }

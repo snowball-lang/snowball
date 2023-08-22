@@ -70,10 +70,20 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
       auto g = utils::cast<Expression::GenericIdentifier>(index->getIdentifier());
       auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
 
-      auto [v, ty, fns, ovs, mod] = getFromIdentifier(dbgInfo, name, generics, type->getName());
+      if (type->getName() == _SNOWBALL_CONST_PTR) {
+        DUMP_S("HERE")
+      }
+      auto uuid = type->getName();
+      if (auto x = utils::cast<types::PointerType>(type)) {
+        auto str = getPointerTypeUUID(x);
+        if (!str.empty()) uuid = str;
+      }
+
+      auto [v, ty, fns, ovs, mod] = getFromIdentifier(dbgInfo, name, generics, uuid);
 
       if ((!fns.has_value()) && (!ovs.has_value())) {
-        if (OperatorService::isOperator(name)) name = OperatorService::operatorName(OperatorService::operatorID(name));
+        if (OperatorService::isOperator(name)) 
+          name = OperatorService::operatorName(OperatorService::operatorID(name));
         E<VARIABLE_ERROR>(
                 dbgInfo,
                 FMT("Coudn't find function '%s' inside type '%s'!", name.c_str(), type->getPrettyName().c_str()));

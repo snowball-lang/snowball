@@ -72,11 +72,14 @@ public:
   virtual std::string getMangledName() const { return "T" + std::to_string(name.size()) + name; };
 
   /// @return if a type can be casted to this type
-  virtual bool canCast(Type* ty) const { assert(!"called cantCast to not-specialised type!"); }
+  virtual bool canCast(Type* ty) const { return false; }
 
-  /// @brief Create a *new* pointer type with this type as base
+  /// @brief Create a *new* reference type with this type as base
   /// @return a std::shared_ptr<ReferenceType> but casted into a `Type`
-  virtual Type* getPointerTo();
+  virtual Type* getReferenceTo();
+  /// @brief Create a *new* pointer type with this type as base
+  /// @return a std::shared_ptr<PointerType> but casted into a `Type`
+  virtual Type* getPointerTo(bool isMutable);
 
   /// @brief Create a new copy of this type
   /// @return a Type* but casted into a `Type`

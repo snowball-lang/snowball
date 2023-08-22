@@ -26,9 +26,9 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
   else if (p_node->hasAttribute(Attributes::BENCH)) { p_node->addAttribute(Attributes::ALLOW_FOR_BENCH); }
 
   p_node = p_node->copy();
-  if (auto c = ctx->getCurrentClass(true)) {
+  if (auto c = ctx->getCurrentClass(true); c != nullptr && !p_node->hasAttribute(Attributes::FIRST_ARG_IS_SELF)) {
     auto args = p_node->getArgs();
-    auto pointer = (p_node->hasAttribute(Attributes::NO_POINTER_SELF)) ? c->copy() : c->getPointerTo();
+    auto pointer = (p_node->hasAttribute(Attributes::NO_POINTER_SELF)) ? c->copy() : c->getReferenceTo();
     pointer->setMutable(p_node->isMutable() || p_node->isConstructor());
     if (!(args.size() > 0 && args.at(0)->getName() == "self") && !p_node->isStatic()) {
       auto self = new Expression::Param("self", pointer->toRef());
@@ -36,6 +36,13 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
       p_node->setArgs(args);
     } else if (!p_node->isStatic()) { /* "self" already set by another class */
       args.at(0)->setType(pointer->toRef());
+    }
+  } else if (p_node->hasAttribute(Attributes::FIRST_ARG_IS_SELF)) {
+    const auto& args = p_node->getArgs();
+    if (args.size() < 1) {
+      E<SYNTAX_ERROR>(p_node, "Function with 'first_arg_is_self' attribute must have at least one argument!");
+    } else if (args.at(0)->getName() != "self") {
+      E<SYNTAX_ERROR>(p_node, "First argument of function with 'first_arg_is_self' attribute must be named 'self'!");
     }
   }
 

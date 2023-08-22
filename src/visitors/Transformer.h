@@ -175,7 +175,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     NoCast,
     Valid,
     AutoDeref,
-    AutoRef
+    AutoRef,
+    ToPointer
   };
   CastType canCast(types::Type* from, types::Type* to);
   /**
@@ -298,6 +299,12 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * @return True if the module has a valid context, false otherwise.
    */
   bool isInModuleContext(std::shared_ptr<ir::Module> mod);
+  /**
+   * @brief It get's the correct UUID for the given pointer type for a given type.
+   * @param ty The type to get the pointer type from.
+   * @note It will return a nullptr if the type is not a pointer.
+   */
+  std::string getPointerTypeUUID(types::PointerType* ty);
   /**
    * @brief It generates a a new types::Type instance from a
    * Statement::Base pointer.

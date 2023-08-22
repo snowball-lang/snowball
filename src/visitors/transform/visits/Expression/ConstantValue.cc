@@ -17,7 +17,7 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
       // Remove the "" from the string value
       str = str.substr(1, str.size() - 2);
       value = builder.createStringValue(p_node->getDBGInfo(), str);
-      value->setType(ctx->getCharType()->getPointerTo());
+      value->setType(ctx->getCharType()->getReferenceTo());
       break;
     }
 

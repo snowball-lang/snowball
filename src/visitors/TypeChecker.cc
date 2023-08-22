@@ -216,6 +216,14 @@ VISIT(Cast) {
   }
 
   if (v->getType()->is(t)) return;
+
+  // we allow casting from void pointers to any other pointer type
+  if (utils::cast<types::PointerType>(v->getType()) && utils::cast<types::PointerType>(t)) {
+    if (utils::cast<types::VoidType>(utils::cast<types::PointerType>(v->getType())->getBaseType()) || utils::cast<types::VoidType>(utils::cast<types::PointerType>(t)->getBaseType())) {
+      return;
+    }
+  }
+
   if (!v->getType()->canCast(t)) {
     E<TYPE_ERROR>(p_node,
                   FMT("Can't create a casting operator from type `%s` "

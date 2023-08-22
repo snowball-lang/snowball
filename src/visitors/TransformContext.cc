@@ -3,6 +3,7 @@
 
 #include "../ast/syntax/nodes.h"
 #include "../ast/types/FunctionType.h"
+#include "../ast/types/PointerType.h"
 #include "../ir/values/Argument.h"
 #include "TransformState.h"
 
