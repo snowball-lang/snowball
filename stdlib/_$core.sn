@@ -124,7 +124,7 @@ fn [[
   let mut tty = "should pass";
   if expect != 1 {
     // TODO:
-    tty = CLib::__internal::alloca_and_snprintf(25, "expecting \e[1m`%i`\e[0m", expect);
+    //tty = ("expecting \e[1m`%i`\e[0m".to_string() + expect).c_str();
   }
   CLib::printf(" Testing (\e[1m#%i\e[0m) \e[1m%s\e[0m [%s] ... ", index, name, tty);
   // TODO: Add support for exceptions
@@ -714,8 +714,11 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
     static fn [[internal_linkage, inline]] fromNumber<T>(num: T, format: &char = "%ld")
       StringView<_CharType> 
     { 
-      let buffer: Self::StringType = 
-        CLib::__internal::alloca_and_snprintf(10, format, num);
+      let mut buffer: Self::StringType;
+      unsafe 
+      {
+        buffer = CLib::__internal::alloca_and_snprintf(10, format, num);
+      }
       return new Self{buffer}; 
     }
     static fn [[internal_linkage, inline]] from(other: Self)

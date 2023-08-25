@@ -51,17 +51,19 @@ void LLVMBuilder::visit(ir::Call* call) {
     llvm::Value* object = nullptr;
     if (instance->createdObject) {
       object = build(instance->createdObject.get());
-      object = builder->CreatePointerCast(object, instanceType);
     } else {
       auto classType = utils::cast<types::DefinedType>(parent);
       assert(classType && "Class type is not a defined type!");
-      object = allocateObject(classType, instance->initializeAtHeap);
+      object = allocateObject(classType);
     }
 
-    args.insert(args.begin(), object);
+    auto alloca = createAlloca(instanceType->getPointerTo());
+    builder->CreateStore(object, alloca);
+
+    args.insert(args.begin(), alloca);
     setDebugInfoLoc(call);
     llvmCall = createCall(calleeType, callee, args);
-    this->value = instance->initializeAtHeap ? object : builder->CreateLoad(instanceType, object);
+    this->value = object;
   } else if (auto c = utils::dyn_cast<ir::Func>(calleeValue); c != nullptr && c->inVirtualTable()) {
     assert(c->hasParent());
 

@@ -39,9 +39,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
       ctx->module->addVariable(varDecl);
     }
 
-    if (definedType == nullptr || definedType->is(val->getType())) {
-      this->value = varDecl;
-    } else {
+    if (!(definedType == nullptr || definedType->is(val->getType()))) {
       if (auto v = tryCast(val, definedType); v != nullptr) {
         this->value = v;
       } else {
@@ -55,7 +53,9 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
 
     auto ty = val->getType()->copy();
     ty->setMutable(isMutable);
-    builder.setType(var, ty);
+    var->setType(ty);
+
+    this->value = varDecl;
   } else {
     auto varDecl = builder.createVariableDeclaration(p_node->getDBGInfo(), variableName, nullptr, isMutable);
     varDecl->setId(var->getId());

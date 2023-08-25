@@ -18,7 +18,7 @@ llvm::Value* LLVMBuilder::createInsertValue(llvm::Value* v, llvm::Value* rhs, ty
   while (llvm::isa<llvm::LoadInst>(rhs)) {
     auto l = llvm::cast<llvm::LoadInst>(rhs);
     rhs = l->getOperand(0);
-    l->eraseFromParent();
+    //l->eraseFromParent();
   }
   // auto lhs = builder->CreateExtractValue(leftValue, i);
   // llvm::Value* load = builder->CreateLoad(getLLVMType(refType), lhs);
@@ -26,7 +26,7 @@ llvm::Value* LLVMBuilder::createInsertValue(llvm::Value* v, llvm::Value* rhs, ty
   if (auto x = utils::cast<types::ReferenceType>(refType); x && utils::cast<types::NumericType>(x->getBaseType()) && llvm::isa<llvm::LoadInst>(v)) {
     auto l = llvm::cast<llvm::LoadInst>(v);
     v = l->getOperand(0);
-    l->eraseFromParent();
+    //l->eraseFromParent();
   }
 
   return builder->CreateStore(v, rhs);

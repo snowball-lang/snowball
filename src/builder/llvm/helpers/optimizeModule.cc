@@ -32,6 +32,7 @@
 #include <llvm/Transforms/Scalar.h>
 #include <llvm/Transforms/Scalar/GVN.h>
 #include <llvm/Transforms/Scalar/Reassociate.h>
+#include <llvm/Transforms/Utils.h>
 
 namespace snowball {
 
@@ -103,6 +104,26 @@ void LLVMBuilder::optimizeModule(app::Options::Optimization o) {
   llvm::ModulePassManager mpm;
   if (o == app::Options::OPTIMIZE_O0) {
     mpm = pass_builder.buildThinLTODefaultPipeline(level, nullptr);
+
+    std::unique_ptr<llvm::legacy::FunctionPassManager> functionPassManager =
+      std::make_unique<llvm::legacy::FunctionPassManager>(module.get());
+
+    // Promote allocas to registers.
+    functionPassManager->add(llvm::createPromoteMemoryToRegisterPass());
+    // Do simple "peephole" optimizations
+    functionPassManager->add(llvm::createInstructionCombiningPass());
+    // Reassociate expressions.
+    functionPassManager->add(llvm::createReassociatePass());
+    // Eliminate Common SubExpressions.
+    functionPassManager->add(llvm::createGVNPass());
+    // Simplify the control flow graph (deleting unreachable blocks etc).
+    functionPassManager->add(llvm::createCFGSimplificationPass());
+
+    functionPassManager->doInitialization();
+
+    for (auto &function : module->getFunctionList()) {
+      functionPassManager->run(function);
+    }
   } else {
     mpm = pass_builder.buildLTOPreLinkDefaultPipeline(level);
   }

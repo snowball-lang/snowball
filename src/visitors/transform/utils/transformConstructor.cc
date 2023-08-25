@@ -19,7 +19,11 @@ std::vector<std::shared_ptr<ir::Value>> Transformer::transformConstructor(Statem
     auto newInstance = Syntax::N<Expression::NewInstance>(p_node->getDBGInfo(), superArgs, parentClassRef);
     newInstance->setDBGInfo(p_node->getDBGInfo());
     auto val = trans(newInstance);
-    utils::dyn_cast<ir::ObjectInitialization>(val)->createdObject = selfArg->getValue();
+    if (auto ptr = utils::dyn_cast<ir::ReferenceTo>(val)) {
+      utils::dyn_cast<ir::ObjectInitialization>(ptr->getValue())->createdObject = selfArg->getValue();
+    } else {
+      utils::dyn_cast<ir::ObjectInitialization>(val)->createdObject = selfArg->getValue();
+    }
     instrList.emplace_back(val);
   }
   for (auto field : currentClass->getFields()) {

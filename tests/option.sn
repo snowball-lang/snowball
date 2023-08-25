@@ -4,7 +4,7 @@ use Core::System;
 
 namespace tests {
 
-fn [[test]] empty_from_func() i32 {
+fn [[test(expect = 1)]] empty_from_func() i32 {
     let x = Optional::None<?i32>();
     //CLib::printf("x: %i", Optional::None<?i32>().empty()) 
     return x.empty();
@@ -22,7 +22,7 @@ fn [[test]] with_value_from_func() i32 {
 
 fn [[test]] with_value_from_class() i32 {
     let x = new Optional::Option<i32>(42);
-    return !x.empty();
+    return x.val();
 }
 
 fn [[test(expect = 42)]] test_value_from_func() i32 {

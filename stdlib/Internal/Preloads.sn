@@ -76,6 +76,10 @@ class [[extends]] char {
 
 class [[extends]] i8 {
   pub:
+
+    operator [[__internal__]] =(other: &i8) &i8 {}
+    operator [[__internal__]] =(other: i8) &i8 {}
+    
     operator [[__internal__, __no_pointer_self__]] +(other: i8) i8 {}
     operator [[__internal__, __no_pointer_self__]] -(other: i8) i8 {}
     operator [[__internal__, __no_pointer_self__]] *(other: i8) i8 {}
@@ -110,9 +114,6 @@ class [[extends]] i8 {
     operator [[__internal__, __no_pointer_self__]] !() bool {}
     operator [[__internal__, __no_pointer_self__]] ||(other: i8) bool {}
     operator [[__internal__, __no_pointer_self__]] &&(other: i8) bool {}
-
-    operator [[__internal__]] =(other: &i8) &i8 {}
-    operator [[__internal__]] =(other: i8) &i8 {}
 }
 
 class [[extends]] i16 {
@@ -382,9 +383,9 @@ class [[__internal__]] *const <T> {
       ret ptr %0
     } 
 
-    unsafe fn [[inline, first_arg_is_self]] as_ref<>(self: *const T) &T 
+    unsafe fn [[inline, first_arg_is_self, llvm_function]] as_ref<>(self: *const T) &T 
     {
-      return &*self;
+      ret ptr %self
     }
 
     operator [[__internal__, first_arg_is_self]] =(self: *const T, other: *const T) *const T {}

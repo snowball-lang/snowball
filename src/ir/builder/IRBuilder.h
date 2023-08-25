@@ -114,12 +114,8 @@ public:
   /// @brief Create a extraction node from a value
   SharedValue<ValueExtract> createValueExtract(DBGSourceInfo* dbgInfo, SharedValue<> value);
   /// @brief Create a object initialization node
-  SharedValue<ObjectInitialization> createObjectInitialization(DBGSourceInfo* dbgInfo, SharedValue<> value,
+  SharedValue<Value> createObjectInitialization(DBGSourceInfo* dbgInfo, types::Type* type, SharedValue<> value,
                                                                ValueVec<> args, bool atHeap = false);
-  /// @brief Create a object initialization node with an already created object
-  SharedValue<ObjectInitialization> createObjectInitialization(DBGSourceInfo* dbgInfo, SharedValue<> value,
-                                                               ValueVec<> args, SharedValue<> createdObject,
-                                                               bool atHeap = false);
   /// @brief Create a new conditional instruction (if/else)
   SharedValue<Conditional> createConditional(DBGSourceInfo* dbgInfo, SharedValue<> condition,
                                              SharedValue<Block> thenBlock, SharedValue<Block> elseBlock);

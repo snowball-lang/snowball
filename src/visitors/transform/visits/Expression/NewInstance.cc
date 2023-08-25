@@ -27,9 +27,7 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
   auto type = transformType(typeRef);
 
   // Make a copy of the value
-  auto v =
-          builder.createObjectInitialization(p_node->getDBGInfo(), c->getCallee(), c->getArguments(), p_node->atHeap());
-  builder.setType(v, v->initializeAtHeap ? type->getReferenceTo() : type);
+  auto v = builder.createObjectInitialization(p_node->getDBGInfo(), type, c->getCallee(), c->getArguments(), p_node->atHeap());
   this->value = v;
 }
 

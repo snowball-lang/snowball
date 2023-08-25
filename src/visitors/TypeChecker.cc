@@ -386,6 +386,10 @@ bool TypeChecker::isMutable(std::shared_ptr<ir::Value> value) {
   if (auto x = utils::dyn_cast<ir::IndexExtract>(value)) return x->getField()->isMutable;
   if (auto x = utils::dyn_cast<ir::VariableDeclaration>(value)) return x->isMutable();
   if (auto x = utils::dyn_cast<ir::ValueExtract>(value)) return isMutable(x->getValue());
+  if (auto x = utils::dyn_cast<ir::Argument>(value)) return x->isMutable();
+  if (auto x = utils::dyn_cast<ir::DereferenceTo>(value)) return isMutable(x->getValue());
+  if (auto x = utils::dyn_cast<ir::ReferenceTo>(value)) return isMutable(x->getValue());
+
   return value->getType()->isMutable();
 }
 

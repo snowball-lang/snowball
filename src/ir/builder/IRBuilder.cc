@@ -117,17 +117,12 @@ SharedValue<TryCatch> IRBuilder::createTryCatch(DBGSourceInfo* dbgInfo, SharedVa
                                                 std::vector<SharedValue<VariableDeclaration>> catchVars) {
   return N<TryCatch>(dbgInfo, tryBlock, catchBlocks, catchVars);
 }
-SharedValue<ObjectInitialization> IRBuilder::createObjectInitialization(DBGSourceInfo* dbgInfo, SharedValue<> value,
+SharedValue<Value> IRBuilder::createObjectInitialization(DBGSourceInfo* dbgInfo, types::Type* type, SharedValue<> value,
                                                                         ValueVec<> args, bool atHeap) {
-  auto init = N<ObjectInitialization>(dbgInfo, value, args);
-  init->initializeAtHeap = atHeap;
-  return init;
-}
-SharedValue<ObjectInitialization> IRBuilder::createObjectInitialization(DBGSourceInfo* dbgInfo, SharedValue<> value,
-                                                                        ValueVec<> args, SharedValue<> createdObject,
-                                                                        bool atHeap) {
-  auto init = createObjectInitialization(dbgInfo, value, args, atHeap);
-  init->createdObject = createdObject;
+  std::shared_ptr<ir::Value> init = N<ObjectInitialization>(dbgInfo, value, args);
+  setType(init, type);
+  if (atHeap) 
+    init = createReferenceTo(dbgInfo, init);
   return init;
 }
 SharedValue<Conditional> IRBuilder::createConditional(DBGSourceInfo* dbgInfo, SharedValue<> condition,

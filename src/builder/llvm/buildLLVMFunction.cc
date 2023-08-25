@@ -74,7 +74,7 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
   func->setSubprogram(getDISubprogramForFunc(fn));
 
   if (utils::cast<types::ReferenceType>(fn->getRetTy())) {
-    auto bytes = module->getDataLayout().getTypeSizeInBits(func->getReturnType());
+    auto bytes = module->getDataLayout().getTypeSizeInBits(getLLVMType(fn->getRetTy()));
     auto dereferenceable = llvm::Attribute::get(*context, llvm::Attribute::Dereferenceable, bytes);
     auto noundef = llvm::Attribute::get(*context, llvm::Attribute::NoUndef);
     auto aligment = llvm::Attribute::get(*context, llvm::Attribute::Alignment, 8);
