@@ -25,7 +25,7 @@ class ASTContext {
   using Item = std::shared_ptr<T>;
   using Scope = std::map<std::string, Item>;
 
-protected:
+ protected:
   /** A scope is a representation of a "block" where all
    * the variables are stored into it. Variables can be
    * accessed from parent scopes and the order of finding
@@ -45,7 +45,7 @@ protected:
    */
   std::list<Scope> stack = {};
 
-public:
+ public:
   ASTContext() {
     // Create a global scope for primitive types
     addScope();

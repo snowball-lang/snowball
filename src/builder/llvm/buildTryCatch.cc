@@ -85,11 +85,10 @@ void LLVMBuilder::visit(ir::TryCatch* node) {
     auto varName = "snowball.typeidx." + catchVar->getType()->getMangledName();
     llvm::GlobalVariable* tidx = module->getGlobalVariable(varName);
     if (!tidx) {
-      tidx = new llvm::GlobalVariable(
-              *module, llvm::StructType::get(builder->getInt32Ty()), /*isConstant=*/true,
+      tidx = new llvm::GlobalVariable(*module, llvm::StructType::get(builder->getInt32Ty()), /*isConstant=*/true,
               llvm::GlobalValue::PrivateLinkage,
-              llvm::ConstantStruct::get(getTypeInfoType(),
-                                        builder->getInt32(typeIdxLookup(catchVar->getType()->getMangledName()))),
+              llvm::ConstantStruct::get(
+                      getTypeInfoType(), builder->getInt32(typeIdxLookup(catchVar->getType()->getMangledName()))),
               varName);
       tidx->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
     }
@@ -106,12 +105,11 @@ void LLVMBuilder::visit(ir::TryCatch* node) {
   // auto depthMax = builder->getInt64(trycatch.size());
   // builder->CreateStore(depthMax, tc.delegateDepth);
 
-  auto unwindExceptionClass = builder->CreateLoad(
-          builder->getInt64Ty(),
-          builder->CreateStructGEP(unwindType, builder->CreatePointerCast(unwindException, unwindType->getPointerTo()),
-                                   0));
+  auto unwindExceptionClass = builder->CreateLoad(builder->getInt64Ty(),
+          builder->CreateStructGEP(
+                  unwindType, builder->CreatePointerCast(unwindException, unwindType->getPointerTo()), 0));
   builder->CreateCondBr(builder->CreateICmpEQ(unwindExceptionClass, builder->getInt64(exception_class())),
-                        info.catchRouteBlock, externalExcBlock);
+          info.catchRouteBlock, externalExcBlock);
 
   // MARK: external exception block
   builder->SetInsertPoint(externalExcBlock);

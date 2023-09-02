@@ -13,7 +13,7 @@ namespace snowball::parser {
 TypeRef* Parser::parseType() {
   throwIfNotType();
   assert(is<TokenType::OP_BIT_AND>() || is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() ||
-         is<TokenType::KWORD_FUNC>() || is<TokenType::OP_AND>() || is<TokenType::OP_MUL>());
+          is<TokenType::KWORD_FUNC>() || is<TokenType::OP_AND>() || is<TokenType::OP_MUL>());
   auto pos = m_current.get_pos();
   if (is<TokenType::KWORD_DECLTYPE>()) {
     auto w = m_current.get_width();
@@ -59,10 +59,13 @@ TypeRef* Parser::parseType() {
       pointerDepth.push_back(true);
       next();
     } else {
-      createError<SYNTAX_ERROR>("Expected 'const' or 'mut' after '*' (pointer type specifier)", {
-        .note = "If you want to use '*' as a multiplication operator, use parentheses around the expression",
-        .help = "check the documentation for more information (https://snowball-lang.gitbook.io/docs/language-reference/types/pointer-types)",
-      });
+      createError<SYNTAX_ERROR>("Expected 'const' or 'mut' after '*' (pointer type specifier)",
+              {
+                      .note = "If you want to use '*' as a multiplication operator, use parentheses around the "
+                              "expression",
+                      .help = "check the documentation for more information "
+                              "(https://snowball-lang.gitbook.io/docs/language-reference/types/pointer-types)",
+              });
     }
   }
   int referenceDepth = 0;

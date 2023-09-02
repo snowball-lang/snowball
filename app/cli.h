@@ -77,13 +77,13 @@ struct Options {
 };
 
 class CLI {
-public:
+ public:
   CLI(int argc, char** argv);
 
   Options parse();
   static void help();
 
-private:
+ private:
   int current_index = 0;
   std::string current_arg;
   std::vector<std::string> args;

@@ -16,7 +16,8 @@
 namespace snowball {
 namespace types {
 
-PointerType::PointerType(Type* base, bool isMutable) : AcceptorExtend(Kind::TYPE, isMutable ? "*" + base->getName() : "$const-pointer"), base(base) {
+PointerType::PointerType(Type* base, bool isMutable)
+    : AcceptorExtend(Kind::TYPE, isMutable ? "*" + base->getName() : "$const-pointer"), base(base) {
   setMutable(isMutable);
 }
 Type* PointerType::getPointedType() const { return base; }
@@ -36,22 +37,18 @@ Syntax::Expression::TypeRef* PointerType::toRef() {
 }
 
 Type* PointerType::getBaseType() const {
-  if (auto c = utils::cast<PointerType>(base)) 
-    return c->getBaseType();
+  if (auto c = utils::cast<PointerType>(base)) return c->getBaseType();
   return base;
 }
 
 bool PointerType::canCast(Type* ty) const {
   SNOWBALL_MUTABLE_CAST_CHECK
 
-  if (auto c = utils::cast<PointerType>(ty)) 
-    return base->canCast(c->getPointedType());
+  if (auto c = utils::cast<PointerType>(ty)) return base->canCast(c->getPointedType());
   return false;
 }
 
-void PointerType::setMutable(bool m) {
-  _mutable = m;
-}
+void PointerType::setMutable(bool m) { _mutable = m; }
 
 }; // namespace types
 }; // namespace snowball

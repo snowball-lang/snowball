@@ -24,7 +24,7 @@ class Throw : public AcceptorExtend<Throw, Value> {
   // Expression used as value for the throw statement
   std::shared_ptr<Value> expr = nullptr;
 
-public:
+ public:
   explicit Throw(std::shared_ptr<Value> expr) : expr(expr){};
 
   /**

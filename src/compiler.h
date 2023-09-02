@@ -59,7 +59,7 @@ class Compiler {
 
   std::shared_ptr<ir::MainModule> module;
 
-public:
+ public:
   Compiler(std::string p_code, std::string p_path);
 
   void initialize();
@@ -90,7 +90,7 @@ public:
     opt_level = o;
   }
 
-private:
+ private:
   // methods
   void createSourceInfo();
 };

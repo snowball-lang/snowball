@@ -38,13 +38,13 @@ namespace types {
 class ReferenceType;
 
 class Type {
-protected:
+ protected:
   // Type's name
   std::string name;
   // Whether or not a type is mutable
   bool _mutable = false;
 
-public:
+ public:
   enum Kind
   {
     TYPE,
@@ -52,7 +52,7 @@ public:
     REF
   } kind;
 
-public:
+ public:
   explicit Type(Kind p_kind, bool isMutable = false);
   explicit Type(Kind p_kind, std::string p_name, bool isMutable = false);
 

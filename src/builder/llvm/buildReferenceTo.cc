@@ -13,31 +13,17 @@ void LLVMBuilder::visit(ir::ReferenceTo* ref) {
   auto val = ref->getValue();
   auto llvmReferencedValue = build(val.get());
 
-  llvm::Value* value = nullptr;
-  if (llvm::isa<llvm::LoadInst>(llvmReferencedValue)) {
-    // It's already a load instruction, we can just use that
-    auto load = llvm::cast<llvm::LoadInst>(llvmReferencedValue);
-    value = load->getOperand(0);
-  } else {
-    // TODO: actually do fix this
-    // assert(llvmReferencedValue->getType()->isPointerTy());
-    if (utils::cast<types::PrimitiveType>(val->getType()) == nullptr) {
-      llvmReferencedValue = builder->CreateLoad(getLLVMType(ref->getValue()->getType()), llvmReferencedValue);
-    }
-    auto alloca = createAlloca(getLLVMType(val->getType()));
-    builder->CreateStore(llvmReferencedValue, alloca);
-    value = alloca;
-    // auto currentBlock = builder->GetInsertBlock();
-    // builder->SetInsertPoint(ctx->getCurrentFunction()->getEntryBlock().getTerminator());
-    // auto alloca = builder->CreateAlloca(getLLVMType(val->getType()));
-    // builder->SetInsertPoint(currentBlock);
-    // if (utils::cast<types::PrimitiveType>(val->getType()) == nullptr)
-    //   llvmReferencedValue = builder->CreateLoad(getLLVMType(ref->getValue()->getType()), llvmReferencedValue);
-    // builder->CreateStore(llvmReferencedValue, alloca);
-    // value = alloca;
+  if (!llvmReferencedValue->getType()->isPointerTy() || ctx->doNotLoadInMemory) {
+    auto tempVal = createAlloca(getLLVMType(val->getType()));
+    builder->CreateStore(llvmReferencedValue, tempVal);
+    llvmReferencedValue = tempVal;
   }
 
-  this->value = value;
+  auto tempVal = createAlloca(getLLVMType(ref->getType()));
+  builder->CreateStore(llvmReferencedValue, tempVal);
+  ctx->doNotLoadInMemory = false;
+
+  this->value = tempVal;
 }
 
 } // namespace codegen

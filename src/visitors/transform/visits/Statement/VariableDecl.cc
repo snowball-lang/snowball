@@ -20,9 +20,9 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
 
   if (ctx->getInScope(variableName, ctx->currentScope()).second) {
     E<VARIABLE_ERROR>(p_node,
-                      FMT("Variable with name '%s' is already "
-                          "defined in the current scope!",
-                          variableName.c_str()));
+            FMT("Variable with name '%s' is already "
+                "defined in the current scope!",
+                    variableName.c_str()));
   }
 
   auto var = builder.createVariable(p_node->getDBGInfo(), variableName, false, isMutable);
@@ -44,10 +44,10 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
         this->value = v;
       } else {
         E<VARIABLE_ERROR>(p_node,
-                          FMT("Can't assign value with type '%s' to "
-                              "the variable with type '%s'!",
-                              val->getType()->getPrettyName().c_str(),
-                              definedType->getPrettyName().c_str()));
+                FMT("Can't assign value with type '%s' to "
+                    "the variable with type '%s'!",
+                        val->getType()->getPrettyName().c_str(),
+                        definedType->getPrettyName().c_str()));
       }
     }
 

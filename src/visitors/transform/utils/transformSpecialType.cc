@@ -9,7 +9,7 @@
   auto generics = ty->getGenerics();                                                                                   \
   if (generics.size() != n) {                                                                                          \
     E<TYPE_ERROR>(ty->getDBGInfo(),                                                                                    \
-                  FMT("Expected '%i' generics for '%s' but got '%i' instead", n, t.c_str(), generics.size()));         \
+            FMT("Expected '%i' generics for '%s' but got '%i' instead", n, t.c_str(), generics.size()));               \
   }
 
 namespace snowball {
@@ -32,9 +32,7 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
     auto generic = generics.at(0);
     auto type = transformType(generic);
 
-    if (auto ref = utils::cast<types::ReferenceType>(type)) {
-      return ref->getPointedType();
-    }
+    if (auto ref = utils::cast<types::ReferenceType>(type)) { return ref->getPointedType(); }
 
     return type;
   }
@@ -48,10 +46,10 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
     if (fnType) { return fnType->getRetType(); }
 
     E<TYPE_ERROR>(ty,
-                  FMT("Type '%i' expected first generic parameter to "
-                      "be a function but it found type '%s'.",
-                      FUNCTION_RETURN_STYPE.c_str(),
-                      type->getPrettyName().c_str()));
+            FMT("Type '%i' expected first generic parameter to "
+                "be a function but it found type '%s'.",
+                    FUNCTION_RETURN_STYPE.c_str(),
+                    type->getPrettyName().c_str()));
   }
 
   STYPE_INSTANCE(SIZED_TYPE_CHECK_STYPE) {
@@ -63,16 +61,16 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
     // TODO: check for other instances
     if (utils::cast<types::VoidType>(type)) {
       E<TYPE_ERROR>(ty,
-                    FMT("Type '%s' is expected to contain a known size at compile time but "
-                        "found '%s'.",
-                        SIZED_TYPE_CHECK_STYPE.c_str(),
-                        type->getPrettyName().c_str()),
-                    ErrorInfo{
-                            // TODO: instead of showing the call, show somthing like (for all
-                            // the errors here and some generic related errors):
-                            //  typeGenerationBacktrace.at(1)
-                            //.tail = ctx->createErrorTail(ctx->latestCall)
-                    });
+              FMT("Type '%s' is expected to contain a known size at compile time but "
+                  "found '%s'.",
+                      SIZED_TYPE_CHECK_STYPE.c_str(),
+                      type->getPrettyName().c_str()),
+              ErrorInfo{
+                      // TODO: instead of showing the call, show somthing like (for all
+                      // the errors here and some generic related errors):
+                      //  typeGenerationBacktrace.at(1)
+                      //.tail = ctx->createErrorTail(ctx->latestCall)
+              });
     }
 
     return type;
@@ -87,8 +85,8 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
     // TODO: check for other instances
     if (auto x = utils::cast<types::PrimitiveType>(type); !((x == nullptr) || types::NumericType::isNumericType(x))) {
       E<TYPE_ERROR>(ty,
-                    FMT("Type '%s' is expected to be a numeric type but found '%s'!", IS_NUMERIC_CHECK_STYPE.c_str(),
-                        type->getPrettyName().c_str()));
+              FMT("Type '%s' is expected to be a numeric type but found '%s'!", IS_NUMERIC_CHECK_STYPE.c_str(),
+                      type->getPrettyName().c_str()));
     }
 
     return type;
@@ -103,15 +101,15 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
     // TODO: check for other instances
     if (!utils::cast<types::ReferenceType>(type)) {
       E<TYPE_ERROR>(ty,
-                    FMT("Type '%s' is expected to contain a pointer type but found '%s'.",
-                        IS_POINTER_CHECK_STYPE.c_str(),
-                        type->getPrettyName().c_str()),
-                    ErrorInfo{
-                            // TODO: instead of showing the call, show somthing like (for all
-                            // the errors here and some generic related errors):
-                            //  typeGenerationBacktrace.at(1)
-                            //.tail = ctx->createErrorTail(ctx->latestCall)
-                    });
+              FMT("Type '%s' is expected to contain a pointer type but found '%s'.",
+                      IS_POINTER_CHECK_STYPE.c_str(),
+                      type->getPrettyName().c_str()),
+              ErrorInfo{
+                      // TODO: instead of showing the call, show somthing like (for all
+                      // the errors here and some generic related errors):
+                      //  typeGenerationBacktrace.at(1)
+                      //.tail = ctx->createErrorTail(ctx->latestCall)
+              });
     }
 
     return type;
@@ -129,9 +127,9 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
     // TODO: check for other instances
     if (!childType->canCast(parentType)) {
       E<TYPE_ERROR>(ty,
-                    FMT("Type '%s' expected type '%s' to be able to cast to '%s' but it can't!",
-                        CASTABLE_TO_CHECK_STYPE.c_str(), childType->getPrettyName().c_str(),
-                        parentType->getPrettyName().c_str()));
+              FMT("Type '%s' expected type '%s' to be able to cast to '%s' but it can't!",
+                      CASTABLE_TO_CHECK_STYPE.c_str(), childType->getPrettyName().c_str(),
+                      parentType->getPrettyName().c_str()));
     }
 
     return childType;
@@ -149,9 +147,8 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
     auto definedType = utils::cast<types::DefinedType>(childType);
     if (!definedType || !definedType->hasParent() || !definedType->getParent()->is(parentType)) {
       E<TYPE_ERROR>(ty,
-                    FMT("Type '%s' expected type '%s' to be a subtype of '%s' but it isn't!",
-                        IMPLEMENTS_CHECK_STYPE.c_str(), childType->getPrettyName().c_str(),
-                        parentType->getPrettyName().c_str()));
+              FMT("Type '%s' expected type '%s' to be a subtype of '%s' but it isn't!", IMPLEMENTS_CHECK_STYPE.c_str(),
+                      childType->getPrettyName().c_str(), parentType->getPrettyName().c_str()));
     }
 
     return childType;

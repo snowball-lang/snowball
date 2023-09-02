@@ -35,7 +35,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
     auto arg = node->getArgs().at(i);
 
     auto a = builder.createArgument(node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
-                                    arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
+            arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
     a->setType(transformType(arg->getType()));
     newArgs.insert(newArgs.end(), {arg->getName(), a});
   }
@@ -67,9 +67,9 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
       auto body = bodiedFn->getBody();
 
       if (!fn->isConstructor() && !bodyReturns(body->getStmts()) &&
-          !((utils::cast<types::NumericType>(returnType)) || (utils::cast<types::VoidType>(returnType)))) {
-        E<TYPE_ERROR>(node, "Function lacks ending return statement!",
-                      {.info = "Function does not return on all paths!"});
+              !((utils::cast<types::NumericType>(returnType)) || (utils::cast<types::VoidType>(returnType)))) {
+        E<TYPE_ERROR>(
+                node, "Function lacks ending return statement!", {.info = "Function does not return on all paths!"});
       }
 
       auto functionBody = utils::dyn_cast<ir::Block>(trans(body));

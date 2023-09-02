@@ -12,8 +12,8 @@ SN_DEFINITE_ASSIGMENT_VISIT(Statement::VariableDecl) {
 
   if (this->scopes.front().find(x) != this->scopes.front().end()) {
     E<VARIABLE_ERROR>(p_node->getDBGInfo(),
-                      FMT("Variable '%s' has already been defined!", x.c_str()),
-                      {.info = FMT("Defined with the same name at the same scope level.", x.c_str())});
+            FMT("Variable '%s' has already been defined!", x.c_str()),
+            {.info = FMT("Defined with the same name at the same scope level.", x.c_str())});
   }
 
   if (p_node->isInitialized()) { p_node->getValue()->accept(this); }

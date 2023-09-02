@@ -31,7 +31,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
   // The IRBuilder instance that's being used to generate the IR
   ir::IRBuilder& builder;
 
-public:
+ public:
   // Module given to us so we can
   // identify where in the program we are.
   std::shared_ptr<ir::Module> module = nullptr;
@@ -59,10 +59,9 @@ public:
   ///  "--show-full-backtrace" is set.
   Expression::FunctionCall* latestCall = nullptr;
   /// @brief The current macro instance being transformed
-  std::vector<std::pair<DBGSourceInfo*, transform::MacroInstance*>> 
-    macroBacktrace = {};
+  std::vector<std::pair<DBGSourceInfo*, transform::MacroInstance*>> macroBacktrace = {};
 
-private:
+ private:
   /// Utility function to get a primitive type
   /// @param name Type name to search for
   /// @return Primitive type shared pointer
@@ -73,10 +72,10 @@ private:
     return ty->getType();
   }
 
-public:
+ public:
   // Create a new instance of a context
-  TransformContext(std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder, bool testMode = false,
-    bool benchMode = false);
+  TransformContext(
+          std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder, bool testMode = false, bool benchMode = false);
 
   // clang-format off
 
@@ -158,7 +157,7 @@ public:
 
   ~TransformContext() noexcept = default;
 
-public:
+ public:
   // The cache. Look at `class Cache` to know more
   // about it and what it does.
   Cache* cache;
@@ -168,7 +167,7 @@ public:
   // A flag that shows if a function should be generated
   bool generateFunction = false;
 
-public:
+ public:
   /// @brief get a saved state of the context
   std::shared_ptr<transform::ContextState> saveState();
   /// @brief set a state to the current context

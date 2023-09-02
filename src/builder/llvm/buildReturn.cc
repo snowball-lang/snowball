@@ -19,20 +19,21 @@ void LLVMBuilder::visit(ir::Return* ret) {
   if (exprValue != nullptr) {
     auto expr = build(exprValue.get());
     auto funcRet = ctx->getCurrentFunction()->getReturnType();
-    // case: "return x();" where x is a function returning a type that's not a pointer
+
+    // case: "let a = x();" where x is a function returning a type that's not a pointer
+    // We store the value into the first argument of the function.
+    // This is because we can't return a struct that's not a pointer.
+    // read more here: https://discourse.llvm.org/t/c-returning-struct-by-value/40518
     if (utils::cast<types::DefinedType>(ret->getType())) {
       auto retArg = ctx->getCurrentFunction()->getArg(0);
-      if (llvm::isa<llvm::LoadInst>(expr)) { expr = llvm::cast<llvm::LoadInst>(expr)->getOperand(0); }
-
-      if (utils::dyn_cast<ir::IndexExtract>(exprValue)) {
-        builder->CreateMemCpy(retArg, llvm::MaybeAlign(), expr, llvm::MaybeAlign(),
-                              module->getDataLayout().getTypeAllocSize(getLLVMType(ret->getType())), 0);
-      } else {
-        expr->replaceAllUsesWith(retArg);
-      }
+      auto store = builder->CreateStore(expr, retArg);
 
       builder->CreateRetVoid();
       return;
+    }
+
+    if (utils::cast<types::PointerType>(ret->getType()) && llvm::isa<llvm::LoadInst>(expr)) {
+      val = llvm::cast<llvm::LoadInst>(expr)->getPointerOperand();
     }
 
     val = builder->CreateRet(expr);

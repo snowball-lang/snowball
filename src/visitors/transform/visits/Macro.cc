@@ -7,6 +7,8 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Macro) {
+  if (ctx->generateFunction) return; // noop
+
   auto macroName = p_node->getName();
   if (ctx->getItem(macroName).second)
     Syntax::E<VARIABLE_ERROR>(p_node, FMT("Macro with name '%s' is already defined!", macroName.c_str()));

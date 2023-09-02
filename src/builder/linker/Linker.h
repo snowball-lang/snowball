@@ -1,5 +1,5 @@
 #include "../../compiler.h"
-#include <llvm/TargetParser/Triple.h>
+#include <llvm/ADT/Triple.h>
 
 #ifndef __SNOWBALL_CODEGEN_LINKER_H_
 #define __SNOWBALL_CODEGEN_LINKER_H_
@@ -27,10 +27,10 @@ class Linker {
   /// @brief The target triple.
   llvm::Triple target;
   /// @brief A list of rpaths to be added to the executable.
-  std::vector<std::string> rpaths = {"/usr/local/lib", "/usr/lib", "/usr/lib/x86_64-linux-gnu", "/lib/x86_64-linux-gnu",
-                                     "/lib"};
+  std::vector<std::string> rpaths = {
+          "/usr/local/lib", "/usr/lib", "/usr/lib/x86_64-linux-gnu", "/lib/x86_64-linux-gnu", "/lib"};
 
-public:
+ public:
   /**
    * @brief Default constructor for the Linker class.
    *
@@ -71,7 +71,7 @@ public:
    */
   static std::string getSharedLibraryName(std::string& library);
 
-private:
+ private:
   /**
    * @brief Constructs the linker arguments based on input, output, and additional arguments.
    *

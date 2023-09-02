@@ -17,17 +17,17 @@ static const SourceInfo* TEMP_DBG_INFO = new SourceInfo("<error>", "<source>");
 ///          It is also used to store the source code itself.
 /// @see SrcObject
 class SrcObject {
-protected:
-  const SourceInfo*m_srci;
+ protected:
+  const SourceInfo* m_srci;
 
-public:
-  SrcObject(const SourceInfo*i) : m_srci(i) { }
-  SrcObject() : m_srci(TEMP_DBG_INFO) {}
+ public:
+  SrcObject(const SourceInfo* i) : m_srci(i) { }
+  SrcObject() : m_srci(TEMP_DBG_INFO) { }
 
   /// @brief get the instance of the source info
   auto& getSourceInfo() const { return m_srci; }
   /// @brief Declare a new instance of source info
-  void setSourceInfo(const SourceInfo*i) { m_srci = i; }
+  void setSourceInfo(const SourceInfo* i) { m_srci = i; }
 };
 
 } // namespace snowball

@@ -72,7 +72,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
         next();
         assert_tok<TokenType::BRACKET_RPARENT>("')'");
       } else if (TOKEN(VALUE_NUMBER) || TOKEN(VALUE_FLOAT) || TOKEN(VALUE_STRING) || TOKEN(VALUE_CHAR) ||
-                 TOKEN(VALUE_BOOL)) {
+              TOKEN(VALUE_BOOL)) {
         auto ty = Syntax::Expression::ConstantValue::deduceType(m_current.type);
 
         expr = Syntax::N<Syntax::Expression::ConstantValue>(ty, m_current.to_string());
@@ -96,7 +96,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
         expr = Syntax::N<Syntax::Expression::NewInstance>(call, ty, toTheHeap);
         expr->setDBGInfo(call->getDBGInfo());
       } else if (TOKEN(OP_NOT) || TOKEN(OP_PLUS) || TOKEN(OP_MINUS) || TOKEN(OP_BIT_NOT) || TOKEN(OP_BIT_AND) ||
-                 TOKEN(OP_MUL)) {
+              TOKEN(OP_MUL)) {
         if (tk.type == TokenType::OP_NOT)
           exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(Operators::OperatorType::NOT));
         else if (tk.type == TokenType::OP_PLUS)
@@ -120,68 +120,67 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
       } else {
         createError<SYNTAX_ERROR>(FMT("Expected a valid expression but got '%s'", m_current.to_string().c_str()));
       }
+    }
 
-      if (expr->getDBGInfo() == nullptr) expr->setDBGInfo(dbg);
+    if (expr->getDBGInfo() == nullptr) expr->setDBGInfo(dbg);
 
-      while (true) {
-        tk = peek(0, true);
-        if (is<TokenType::BRACKET_LPARENT>(tk)) {
-          next();
-          // auto callee = expr;
-          expr = parseFunctionCall(expr);
-        } else if (is<TokenType::BRACKET_LSQUARED>(tk)) {
-          next();
-          auto indexExpr = parseExpr(false);
+    while (true) {
+      tk = peek(0, true);
+      if (is<TokenType::BRACKET_LPARENT>(tk)) {
+        next();
+        // auto callee = expr;
+        expr = parseFunctionCall(expr);
+      } else if (is<TokenType::BRACKET_LSQUARED>(tk)) {
+        next();
+        auto indexExpr = parseExpr(false);
+        auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
+        auto bop = Syntax::N<Syntax::Expression::BinaryOp>(Syntax::Expression::BinaryOp::OpType::INDEX);
+        bop->isOperator = false;
+        bop->setDBGInfo(dbg);
+        next();
+        assert_tok<TokenType::BRACKET_RSQUARED>("']'");
+
+        bop->left = expr;
+        bop->right = indexExpr;
+        expr = bop;
+      } else if (is<TokenType::SYM_COLCOL>(tk) || is<TokenType::SYM_DOT>(tk)) {
+        auto isStatic = is<TokenType::SYM_COLCOL>(tk);
+        auto x = peek(1, true);
+        if (!isStatic && is<TokenType::SYM_DOT>(peek(1, true))) { // Range expr (1..5)
           auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
-          auto bop = Syntax::N<Syntax::Expression::BinaryOp>(Syntax::Expression::BinaryOp::OpType::INDEX);
+          auto bop = Syntax::N<Syntax::Expression::BinaryOp>(Syntax::Expression::BinaryOp::OpType::RANGE);
           bop->isOperator = false;
           bop->setDBGInfo(dbg);
-          next();
-          assert_tok<TokenType::BRACKET_RSQUARED>("']'");
-
           bop->left = expr;
-          bop->right = indexExpr;
-          expr = bop;
-        } else if (is<TokenType::SYM_COLCOL>(tk) || is<TokenType::SYM_DOT>(tk)) {
-          auto isStatic = is<TokenType::SYM_COLCOL>(tk);
-          auto x = peek(1, true);
-          if (!isStatic && is<TokenType::SYM_DOT>(peek(1, true))) { // Range expr (1..5)
-            auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
-            auto bop = Syntax::N<Syntax::Expression::BinaryOp>(Syntax::Expression::BinaryOp::OpType::RANGE);
-            bop->isOperator = false;
-            bop->setDBGInfo(dbg);
-            bop->left = expr;
-            next(1);
-            bop->right = parseExpr(false);
-            expr = bop;
-          } else {
-            next(1);
-            assert_tok<TokenType::IDENTIFIER>("an identifier");
-            auto index = parseIdentifier();
-
-            auto dbgInfo = new DBGSourceInfo(m_source_info,
-                                             expr->getDBGInfo()->pos,
-                                             expr->getDBGInfo()->width + index->getDBGInfo()->width + (isStatic + 1));
-            expr = Syntax::N<Syntax::Expression::Index>(expr, index, isStatic);
-            expr->setDBGInfo(dbgInfo);
-          }
-        } else if (is<TokenType::KWORD_AS>(tk)) {
           next(1);
-          throwIfNotType();
-
-          auto ty = parseType();
-          prev();
+          bop->right = parseExpr(false);
+          expr = bop;
+        } else {
+          next(1);
+          assert_tok<TokenType::IDENTIFIER>("an identifier");
+          auto index = parseIdentifier();
 
           auto dbgInfo = new DBGSourceInfo(m_source_info,
-                                           expr->getDBGInfo()->pos,
-                                           expr->getDBGInfo()->width + expr->getDBGInfo()->width + 2 +
-                                                   ty->getDBGInfo()->width);
-
-          expr = Syntax::N<Syntax::Expression::Cast>(expr, ty);
+                  expr->getDBGInfo()->pos,
+                  expr->getDBGInfo()->width + index->getDBGInfo()->width + (isStatic + 1));
+          expr = Syntax::N<Syntax::Expression::Index>(expr, index, isStatic);
           expr->setDBGInfo(dbgInfo);
-        } else {
-          break;
         }
+      } else if (is<TokenType::KWORD_AS>(tk)) {
+        next(1);
+        throwIfNotType();
+
+        auto ty = parseType();
+        prev();
+
+        auto dbgInfo = new DBGSourceInfo(m_source_info,
+                expr->getDBGInfo()->pos,
+                expr->getDBGInfo()->width + expr->getDBGInfo()->width + 2 + ty->getDBGInfo()->width);
+
+        expr = Syntax::N<Syntax::Expression::Cast>(expr, ty);
+        expr->setDBGInfo(dbgInfo);
+      } else {
+        break;
       }
     }
 

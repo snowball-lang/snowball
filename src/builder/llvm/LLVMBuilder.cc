@@ -73,6 +73,31 @@
 namespace snowball {
 namespace codegen {
 
+llvm::Value* LLVMBuilder::build(ir::Value* v) {
+  setDebugInfoLoc(v);
+  v->visit(this);
+  return this->value;
+}
+
+llvm::Value* LLVMBuilder::load(llvm::Value* v, types::Type* ty) {
+  auto llvmType = getLLVMType(ty);
+
+  // TODO: not sure about global variable
+  if (ctx->doNotLoadInMemory || llvm::isa<llvm::Constant>(v) || llvm::isa<llvm::GlobalVariable>(v)) {
+    ctx->doNotLoadInMemory = false;
+    return v;
+  }
+
+  //if (llvm::isa<llvm::LoadInst>(v) && utils::cast<types::ReferenceType>(ty) != nullptr) {
+  //  ctx->doNotLoadInMemory = false;
+  //  return v;
+  //}
+
+  if (v->getType()->isPointerTy() && utils::cast<types::PointerType>(ty) == nullptr)
+    return builder->CreateLoad(llvmType, v, ".ptr-load");
+  return v;
+}
+
 LLVMBuilder::LLVMBuilder(std::shared_ptr<ir::MainModule> mod, bool testMode, bool benchMode) : iModule(mod) {
   ctx->testMode = testMode;
   ctx->benchmarkMode = benchMode;
@@ -143,17 +168,17 @@ std::unique_ptr<llvm::Module> LLVMBuilder::newModule() {
   dbg.builder = std::make_unique<llvm::DIBuilder>(*m);
   llvm::DIFile* file = dbg.getFile(srcInfo->getPath());
   dbg.unit = dbg.builder->createCompileUnit(llvm::dwarf::DW_LANG_C,
-                                            file,
-                                            ("Snowball version " _SNOWBALL_VERSION),
-                                            !dbg.debug,
-                                            {},
-                                            /*RV=*/0);
+          file,
+          ("Snowball version " _SNOWBALL_VERSION),
+          !dbg.debug,
+          {},
+          /*RV=*/0);
 
   m->addModuleFlag(llvm::Module::Warning, "Debug Info Version", llvm::DEBUG_METADATA_VERSION);
   m->addModuleFlag(llvm::Module::Warning, "Snowball Compiler ID", _SNOWBALL_VERSION_NUMBER);
   m->addModuleFlag(llvm::Module::Warning,
-                   "Snowball Compiler Version",
-                   llvm::ConstantDataArray::getString(*context, _SNOWBALL_VERSION, true));
+          "Snowball Compiler Version",
+          llvm::ConstantDataArray::getString(*context, _SNOWBALL_VERSION, true));
   // darwin only supports dwarf2
   if (llvm::Triple(m->getTargetTriple()).isOSDarwin()) { m->addModuleFlag(llvm::Module::Warning, "Dwarf Version", 2); }
 
@@ -182,6 +207,9 @@ void LLVMBuilder::print(llvm::raw_fd_ostream& s) { module->print(s, nullptr); }
 #define ITERATE_FUNCTIONS for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn)
 void LLVMBuilder::codegen() {
   auto generateModule = [&](std::shared_ptr<ir::Module> m) {
+    // reset context
+    ctx->doNotLoadInMemory = false;
+
     this->iModule = m;
 
     // Generate the functions from the end to the front.
@@ -213,15 +241,15 @@ void LLVMBuilder::codegen() {
       if (!f->isDeclaration() && !f->hasAttribute(Attributes::BUILTIN)) {
         auto llvmFn = funcs.at(f->getId());
 
-        //if (utils::cast<types::ReferenceType>(f->getRetTy())) {
-        //  auto bytes = module->getDataLayout().getTypeSizeInBits(getLLVMType(f->getRetTy()));
-        //  auto dereferenceable = llvm::Attribute::get(*context, llvm::Attribute::Dereferenceable, bytes);
-        //  auto noundef = llvm::Attribute::get(*context, llvm::Attribute::NoUndef);
-        //  auto aligment = llvm::Attribute::get(*context, llvm::Attribute::Alignment, 8);
-        //  llvmFn->addRetAttr(dereferenceable);
-        //  llvmFn->addRetAttr(noundef);
-        //  llvmFn->addRetAttr(aligment);
-        //}
+        // if (utils::cast<types::ReferenceType>(f->getRetTy())) {
+        //   auto bytes = module->getDataLayout().getTypeSizeInBits(getLLVMType(f->getRetTy()));
+        //   auto dereferenceable = llvm::Attribute::get(*context, llvm::Attribute::Dereferenceable, bytes);
+        //   auto noundef = llvm::Attribute::get(*context, llvm::Attribute::NoUndef);
+        //   auto aligment = llvm::Attribute::get(*context, llvm::Attribute::Alignment, 8);
+        //   llvmFn->addRetAttr(dereferenceable);
+        //   llvmFn->addRetAttr(noundef);
+        //   llvmFn->addRetAttr(aligment);
+        // }
 
         if (f->hasAttribute(Attributes::LLVM_FUNC)) {
           auto old = buildLLVMFunction(llvmFn, f);

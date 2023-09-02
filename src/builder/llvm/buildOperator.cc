@@ -11,14 +11,10 @@
 
 #define OPERATOR_INSTANCE(x, f)                                                                                        \
   case services::OperatorService::x:                                                                                   \
-    if (auto x = utils::cast<types::ReferenceType>(args.at(0)->getType());                                             \
-        left->getType()->isPointerTy() && x != nullptr) {                                                              \
-      left = builder->CreateLoad(getLLVMType(x->getPointedType()), left);                                              \
-    }                                                                                                                  \
-    this->value = builder->f(left, right);                                                                             \
+    this->value = builder->f(load(left, baseType), load(right, baseType));                                             \
     break;
 #define OPERATOR_UINSTANCE(x, f)                                                                                       \
-  case services::OperatorService::x: this->value = builder->f(left); break;
+  case services::OperatorService::x: this->value = builder->f(load(left, baseType)); break;
 
 namespace snowball {
 namespace codegen {
@@ -29,10 +25,8 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
     auto args = call->getArguments();
     auto opName = fn->getName(true);
     if (services::OperatorService::isOperator(opName) &&
-        !services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(opName)) {
-      auto leftVal = args.at(0);
-      if (auto x = utils::dyn_cast<ir::ReferenceTo>(leftVal)) leftVal = x->getValue();
-      auto left = build(leftVal.get());
+            !services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(opName)) {
+      auto left = build(args.at(0).get());
       llvm::Value* right = nullptr;
       if (args.size() > 1) right = build(args.at(1).get());
       auto baseType = args.at(0)->getType();
@@ -43,8 +37,8 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
         realType = x->getBaseType();
       }
       if (utils::cast<types::BoolType>(realType) || utils::cast<types::Int8Type>(realType) ||
-          utils::cast<types::Int16Type>(realType) || utils::cast<types::Int32Type>(realType) ||
-          utils::cast<types::Int64Type>(realType) || utils::cast<types::CharType>(realType)) {
+              utils::cast<types::Int16Type>(realType) || utils::cast<types::Int32Type>(realType) ||
+              utils::cast<types::Int64Type>(realType) || utils::cast<types::CharType>(realType)) {
         switch (services::OperatorService::operatorID(opName)) {
           OPERATOR_INSTANCE(EQEQ, CreateICmpEQ)
           OPERATOR_INSTANCE(PLUS, CreateAdd)
@@ -72,6 +66,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
 
           OPERATOR_UINSTANCE(UMINUS, CreateNeg)
           case services::OperatorService::NOT: {
+            left = load(left, baseType);
             auto size_in_bits = ((llvm::IntegerType*)left->getType())->getBitWidth();
             if (left->getType()->isPointerTy())
               this->value = builder->CreateICmpEQ(
@@ -84,18 +79,8 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
 
           // TODO: remainder oeprators (!, +=, etc...)
           case services::OperatorService::EQ: {
-            if (auto index = utils::dyn_cast<ir::IndexExtract>(args.at(0))) {
-              createInsertValue(right, left, baseType);
-            } else {
-              auto v = left;
-              if (llvm::isa<llvm::LoadInst>(left)) {
-                auto l = llvm::cast<llvm::LoadInst>(left);
-                v = l->getOperand(0);
-              }
-
-              builder->CreateStore(right, v);
-            }
-
+            right = load(right, baseType);
+            builder->CreateStore(right, left);
             break;
           }
 
@@ -132,18 +117,15 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
 
           OPERATOR_UINSTANCE(UMINUS, CreateNeg)
           case services::OperatorService::NOT: {
-            this->value = builder->CreateFCmpOEQ(left, llvm::ConstantFP::get(builder->getFloatTy(), 0.0f));
+            this->value =
+                    builder->CreateFCmpOEQ(load(left, baseType), llvm::ConstantFP::get(builder->getFloatTy(), 0.0f));
             break;
           }
 
           // TODO: remainder oeprators (!, +=, etc...)
           case services::OperatorService::EQ: {
-            while (utils::cast<types::ReferenceType>(baseType)) {
-              right = builder->CreateLoad(getLLVMType(baseType), right, ".load");
-              baseType = utils::cast<types::ReferenceType>(baseType)->getPointedType();
-            }
-            createInsertValue(right, left, unchangedBaseType);
-
+            right = load(right, baseType);
+            builder->CreateStore(right, left);
             break;
           }
 
@@ -154,16 +136,8 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
       } else {
         switch (services::OperatorService::operatorID(opName)) {
           case services::OperatorService::EQ: {
-            llvm::Value* leftValue = left;
-            llvm::Value* rightValue = right;
-            if (llvm::isa<llvm::LoadInst>(leftValue)) {
-              auto l = llvm::cast<llvm::LoadInst>(leftValue);
-              leftValue = l->getOperand(0);
-            }
-            //if (!utils::cast<types::ReferenceType>(baseType) && !llvm::isa<llvm::LoadInst>(rightValue))
-            //  rightValue = builder->CreateLoad(getLLVMType(baseType), rightValue, ".load");
-            createInsertValue(rightValue, leftValue, unchangedBaseType);
-
+            right = load(right, baseType);
+            builder->CreateStore(right, left);
             break;
           }
 

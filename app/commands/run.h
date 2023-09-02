@@ -29,7 +29,7 @@ int run(app::Options::RunOptions p_opts) {
     SNError(Error::IO_ERROR,
             FMT("Package main file not found in snowball "
                 "project! \n\t(searching for: '%s')",
-                filename.c_str()))
+                    filename.c_str()))
             .print_error();
     return EXIT_FAILURE;
   }

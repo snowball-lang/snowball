@@ -1,10 +1,10 @@
 
 #include "app/cli.h"
+#include "app/commands/bench.h"
 #include "app/commands/build.h"
 #include "app/commands/init.h"
 #include "app/commands/run.h"
 #include "app/commands/test.h"
-#include "app/commands/bench.h"
 #include "constants.h"
 #include "utils/utils.h"
 #include "vendor/toml.hpp"

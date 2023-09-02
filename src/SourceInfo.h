@@ -11,7 +11,7 @@ namespace snowball {
  *  where and what it's currently compiling
  */
 class SourceInfo {
-public:
+ public:
   SourceInfo(std::string p_code = "", std::string p_path = "<anonimus>")
       : source(p_code), path(p_path), source_length(p_code.size()){};
 
@@ -23,7 +23,7 @@ public:
   const int source_length = 0;
   ~SourceInfo() noexcept = default;
 
-private:
+ private:
   std::string source;
   std::string path;
 };

@@ -7,9 +7,8 @@ namespace snowball {
 using namespace utils;
 namespace Syntax {
 
-types::Type* Transformer::transformTypeAlias(const std::string& uuid,
-                                             cacheComponents::Types::TypeStore& base,
-                                             Expression::TypeRef* typeRef) {
+types::Type* Transformer::transformTypeAlias(
+        const std::string& uuid, cacheComponents::Types::TypeStore& base, Expression::TypeRef* typeRef) {
   auto ty = utils::cast<Statement::TypeAlias>(base.type);
   assert(ty);
 

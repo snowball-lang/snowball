@@ -30,11 +30,11 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
   std::shared_ptr<ir::Module> importedModule = nullptr;
   if (ctx->getItem(exportName).second)
     Syntax::E<IMPORT_ERROR>(p_node, FMT("Import with name '%s' is already defined!", exportName.c_str()),
-                            {.info = "This is the import that was used",
-                             .note = "It may be possible that you have imported the same module twice\n"
-                                     "or that this symbol is already defined in the same stack.",
-                             .help = "If you want to import the same module twice, you can use the 'as'\n"
-                                     "keyword to give it a different name."});
+            {.info = "This is the import that was used",
+                    .note = "It may be possible that you have imported the same module twice\n"
+                            "or that this symbol is already defined in the same stack.",
+                    .help = "If you want to import the same module twice, you can use the 'as'\n"
+                            "keyword to give it a different name."});
   if (auto m = ctx->imports->cache->getModule(filePath)) {
     importedModule = m.value();
     auto item = std::make_shared<Item>(std::move(m.value()));
@@ -100,22 +100,22 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
       }
       auto macro = macros.find(name);
       if (macro == macros.end()) {
-        E<ATTRIBUTE_ERROR>(p_node, FMT("Macro '%s' does not exist!", name.c_str()),
-                           {.info = "This is the macro that was used",
-                            .note = "It may be possible that you forgot to use the 'export' keyword\n"
-                                    "or that this macro does not exist in the imported module.",
-                            .help = "If you want to import the macro from the module, you need to use\n"
-                                    "the 'export' keyword in front of the macro."});
+        E<ATTRIBUTE_ERROR>(p_node, FMT("Macro '%s' does not exist or hasn't been exported!", name.c_str()),
+                {.info = "This is the macro that was used",
+                        .note = "It may be possible that you forgot to use the 'export' keyword\n"
+                                "or that this macro does not exist in the imported module.",
+                        .help = "If you want to import the macro from the module, you need to use\n"
+                                "the 'export' keyword in front of the macro."});
       }
 
       auto item = std::make_shared<Item>(macro->second);
       if (ctx->getInCurrentScope(name).second)
         Syntax::E<IMPORT_ERROR>(p_node, FMT("Import with name '%s' is already defined!", name.c_str()),
-                                {.info = "This is the import that was used",
-                                 .note = "It may be possible that you have imported the same module twice\n"
-                                         "or that this symbol is already defined in the same stack.",
-                                 .help = "If you want to import the same module twice, you can use the 'as'\n"
-                                         "keyword to give it a different name."});
+                {.info = "This is the import that was used",
+                        .note = "It may be possible that you have imported the same module twice\n"
+                                "or that this symbol is already defined in the same stack.",
+                        .help = "If you want to import the same module twice, you can use the 'as'\n"
+                                "keyword to give it a different name."});
       ctx->addItem(name, item);
     }
 
@@ -124,11 +124,11 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
         auto item = std::make_shared<Item>(macro);
         if (ctx->getInCurrentScope(name).second)
           Syntax::E<IMPORT_ERROR>(p_node, FMT("Import with name '%s' is already defined!", name.c_str()),
-                                  {.info = "This is the import that was used",
-                                   .note = "It may be possible that you have imported the same module twice\n"
-                                           "or that this symbol is already defined in the same stack.",
-                                   .help = "If you want to import the same module twice, you can use the 'as'\n"
-                                           "keyword to give it a different name."});
+                  {.info = "This is the import that was used",
+                          .note = "It may be possible that you have imported the same module twice\n"
+                                  "or that this symbol is already defined in the same stack.",
+                          .help = "If you want to import the same module twice, you can use the 'as'\n"
+                                  "keyword to give it a different name."});
         ctx->addItem(name, item);
       }
     }

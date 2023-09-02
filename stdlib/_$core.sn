@@ -1,5 +1,5 @@
 use Core::Internal::Preloads;
-use Core::CLib;
+use [[use_macro(c_str)]] Core::CLib;
 use Core::Ptr;
 
 class [[extends]] char {
@@ -22,7 +22,9 @@ class [[extends]] char {
       { return new String{self} + other; }
 
     fn [[inline, __no_pointer_self__]] to_string() String
-      { return new String{&self}; }
+    { 
+      return new String{&self, 1}; 
+    }
 
     /**
       * @brief It performs equality check between a string strings of characters.
@@ -126,29 +128,29 @@ fn [[
     // TODO:
     //tty = ("expecting \e[1m`%i`\e[0m".to_string() + expect).c_str();
   }
-  CLib::printf(" Testing (\e[1m#%i\e[0m) \e[1m%s\e[0m [%s] ... ", index, name, tty);
+  CLib::printf(@c_str(" Testing (\e[1m#%i\e[0m) \e[1m%s\e[0m [%s] ... "), index, name, tty);
   // TODO: Add support for exceptions
   if !skip {
     try {
       let result = func();
       if result == expect {
-        CLib::printf("\e[1;32mnice!\e[0m\n");
+        CLib::printf(@c_str("\e[1;32mnice!\e[0m\n"));
       } else {
-        CLib::printf("\e[1;31merror \n");
-        CLib::printf("\n UNEXPECTED RESULT:\n");
-        CLib::printf("   --> Expected a success return value (%i) but got `%i`\n", expect, result);
-        CLib::printf("\e[0m\n");
+        CLib::printf(@c_str("\e[1;31merror \n"));
+        CLib::printf(@c_str("\n UNEXPECTED RESULT:\n"));
+        CLib::printf(@c_str("   --> Expected a success return value (%i) but got `%i`\n"), expect, result);
+        CLib::printf(@c_str("\e[0m\n"));
         return false;
       }
     } catch (e: &Exception) {
-      CLib::printf("\e[1;31merror \n");
-      CLib::printf("\n UNEXPECTED EXCEPTION:\n");
-      CLib::printf("   --> %s\n", e.what());
-      CLib::printf("\e[0m\n");
+      CLib::printf(@c_str("\e[1;31merror \n"));
+      CLib::printf(@c_str("\n UNEXPECTED EXCEPTION:\n"));
+      CLib::printf(@c_str("   --> %s\n"), e.what());
+      CLib::printf(@c_str("\e[0m\n"));
       return false;
     }
   } else {
-    CLib::printf("\e[1;33mwip\e[0m\n");
+    CLib::printf(@c_str("\e[1;33mwip\e[0m\n"));
   }
   return true;
 }
@@ -332,7 +334,7 @@ pub class Iter<_IteratorType: Core::Sized> {
      * @brief Iter constructor.
      * @param[in] value The value of the iterator.
      */
-    Iter(value: &_IteratorType) : _value(Ptr::to_pointer(value)),
+    Iter(value: _IteratorType) : _value(Ptr::to_pointer(value)),
       _valid(true) {}
     /**
      * @brief Returns the value of the iterator.
@@ -363,7 +365,7 @@ pub class Iter<_IteratorType: Core::Sized> {
      * @brief Returns a valid iterator.
      * @return A valid iterator.
      */
-    static fn [[inline]] valid(val: &_IteratorType) Iter<_IteratorType> 
+    static fn [[inline]] valid(val: _IteratorType) Iter<_IteratorType> 
       { return new Iter<_IteratorType>{val}; }
 }
 /**
@@ -648,7 +650,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
      * @param[in] other The string to compare the string with.
      * @return The result of the comparison.
      */
-    operator [[internal_linkage, inline]] ==<T>(other: T) bool
+    operator [[internal_linkage, inline]] ==(other: StringType) bool
       { return self == Self::from(other); }
     /**
      * @brief It checks if the 2 strings are not equal.

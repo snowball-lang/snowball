@@ -26,7 +26,7 @@ class MainModule : public Module {
   /// @brief a list of generated modules through the whole project
   std::vector<std::shared_ptr<ir::Module>> modules;
 
-public:
+ public:
   /**
    * @brief Utility method to easily downcast.
    * Useful when a child doesn't inherit directly from
@@ -39,7 +39,7 @@ public:
     return std::dynamic_pointer_cast<Down>(Module::shared_from_this());
   }
 
-public:
+ public:
   MainModule() : Module("$main"){};
 
   /// @return true because it's the entry point

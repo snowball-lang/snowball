@@ -14,31 +14,31 @@ Func::Func(std::string identifier, bool declaration, bool variadic, types::Defin
     : declaration(declaration), variadic(variadic), identifier(identifier), parent(parent) { }
 
 Func::Func(std::string identifier,
-           Func::FunctionArgs arguments,
-           bool declaration,
-           bool variadic,
-           types::DefinedType* parent)
+        Func::FunctionArgs arguments,
+        bool declaration,
+        bool variadic,
+        types::DefinedType* parent)
     : declaration(declaration), variadic(variadic), identifier(identifier), parent(parent) {
   setArgs(arguments);
 }
 
 Func::Func(std::string identifier,
-           std::shared_ptr<Block>
-                   body,
-           bool declaration,
-           bool variadic,
-           types::DefinedType* parent)
+        std::shared_ptr<Block>
+                body,
+        bool declaration,
+        bool variadic,
+        types::DefinedType* parent)
     : declaration(declaration), variadic(variadic), identifier(identifier), parent(parent) {
   setBody(body);
 }
 
 Func::Func(std::string identifier,
-           std::shared_ptr<Block>
-                   body,
-           Func::FunctionArgs arguments,
-           bool declaration,
-           bool variadic,
-           types::DefinedType* parent)
+        std::shared_ptr<Block>
+                body,
+        Func::FunctionArgs arguments,
+        bool declaration,
+        bool variadic,
+        types::DefinedType* parent)
     : declaration(declaration), variadic(variadic), identifier(identifier), parent(parent) {
   setBody(body);
   setArgs(arguments);

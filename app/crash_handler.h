@@ -80,7 +80,7 @@ extern DWORD CrashHandlerException(EXCEPTION_POINTERS* ep);
 class CrashHandler {
   bool disabled;
 
-public:
+ public:
   void initialize();
 
   void disable();
@@ -168,7 +168,7 @@ class symbol {
   sym_type* sym;
   static const int max_name_len = 1024;
 
-public:
+ public:
   symbol(HANDLE process, DWORD64 address) : sym((sym_type*)::operator new(sizeof(*sym) + max_name_len)) {
     memset(sym, '\0', sizeof(*sym) + max_name_len);
     sym->SizeOfStruct = sizeof(*sym);
@@ -190,7 +190,7 @@ public:
 class get_mod_info {
   HANDLE process;
 
-public:
+ public:
   get_mod_info(HANDLE h) : process(h) { }
 
   module_data operator()(HMODULE module) {
@@ -284,7 +284,7 @@ CrashHandlerException(EXCEPTION_POINTERS* ep) {
     }
 
     if (!StackWalk64(image_type, process, hThread, &frame, context, nullptr, SymFunctionTableAccess64,
-                     SymGetModuleBase64, nullptr))
+                SymGetModuleBase64, nullptr))
       break;
   } while (frame.AddrReturn.Offset != 0 && n < 256);
 
@@ -336,12 +336,12 @@ std::string _get_exec_path() {
 }
 
 int _execute(const std::string& p_path,
-             const std::vector<std::string>& p_arguments,
-             bool p_blocking,
-             int* r_child_id,
-             std::string* r_pipe,
-             int* r_exitcode,
-             bool read_stderr = true /*,Mutex *p_pipe_mutex*/) {
+        const std::vector<std::string>& p_arguments,
+        bool p_blocking,
+        int* r_child_id,
+        std::string* r_pipe,
+        int* r_exitcode,
+        bool read_stderr = true /*,Mutex *p_pipe_mutex*/) {
 
 #ifdef __EMSCRIPTEN__
   // Don't compile this code at all to avoid undefined references.
@@ -364,7 +364,7 @@ int _execute(const std::string& p_path,
     if (!f) {
       printf("ERR_CANT_OPEN, Cannot pipe stream from process running "
              "with following arguments\n\t%s.\n",
-             argss.c_str());
+              argss.c_str());
       return -1;
     }
 

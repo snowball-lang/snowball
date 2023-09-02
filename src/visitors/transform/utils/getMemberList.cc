@@ -8,11 +8,11 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::vector<types::DefinedType::ClassField*>
-Transformer::getMemberList(std::vector<Syntax::Statement::VariableDecl*> fieldNodes,
-                           std::vector<types::DefinedType::ClassField*>
-                                   fields,
-                           types::DefinedType* parent) {
+std::vector<types::DefinedType::ClassField*> Transformer::getMemberList(
+        std::vector<Syntax::Statement::VariableDecl*> fieldNodes,
+        std::vector<types::DefinedType::ClassField*>
+                fields,
+        types::DefinedType* parent) {
   std::vector<types::DefinedType::ClassField*> member_list;
   assert(fields.size() == fieldNodes.size());
 
@@ -32,9 +32,9 @@ Transformer::getMemberList(std::vector<Syntax::Statement::VariableDecl*> fieldNo
         exists = true;
         if (!field->type->is(member->type)) {
           E<TYPE_ERROR>(fieldNodes.at(i),
-                        "Member with the same name '" + field->name +
-                                "' exists in parent with a different "
-                                "type.");
+                  "Member with the same name '" + field->name +
+                          "' exists in parent with a different "
+                          "type.");
         }
         break;
       }

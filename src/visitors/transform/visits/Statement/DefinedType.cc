@@ -20,9 +20,9 @@ SN_TRANSFORMER_VISIT(Statement::DefinedTypeDef) {
 
   if (x.has_value() && (!ctx->generateFunction)) {
     E<VARIABLE_ERROR>(p_node,
-                      FMT("Class with name '%s' is already defined in "
-                          "the current scope!",
-                          name.c_str()));
+            FMT("Class with name '%s' is already defined in "
+                "the current scope!",
+                    name.c_str()));
   } else if (!ctx->generateFunction || (p_node->getGenerics().size() > 0)) {
     ctx->cache->setType(uuid, p_node, state);
     return;

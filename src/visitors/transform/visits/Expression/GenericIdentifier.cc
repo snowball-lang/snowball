@@ -18,12 +18,12 @@ SN_TRANSFORMER_VISIT(Expression::GenericIdentifier) {
     E<VARIABLE_ERROR>(p_node, "Values cant contain generics!");
   } else if (functions || overloads) {
     auto c = getFunction(p_node,
-                         {value, type, functions, overloads, mod,
-                          /*TODO: test this: */ false},
-                         name,
-                         {},
-                         p_node->getGenerics(),
-                         true);
+            {value, type, functions, overloads, mod,
+                    /*TODO: test this: */ false},
+            name,
+            {},
+            p_node->getGenerics(),
+            true);
 
     auto var = builder.createValueExtract(p_node->getDBGInfo(), c);
     this->value = var;

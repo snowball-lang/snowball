@@ -76,7 +76,7 @@ class Item : public DBGObject {
   // another file.
   MacroPtr macro = nullptr;
 
-public:
+ public:
   // The type used to represent what this
   // item holds as value.
   enum Type

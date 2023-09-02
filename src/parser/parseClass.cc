@@ -89,14 +89,14 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         auto pk = peek();
         if (pk.type == TokenType::KWORD_MUTABLE) {
           next();
-          createError<ARGUMENT_ERROR>("Static members can't be mutable!", {
-            .note = "To fix this error, you can remove the 'static' or 'mut' keyword.",
-            .help = "If you want to have a static mutable member, you can use a \nstatic pointer to a mutable member."
-          });
+          createError<ARGUMENT_ERROR>("Static members can't be mutable!",
+                  {.note = "To fix this error, you can remove the 'static' or 'mut' keyword.",
+                          .help = "If you want to have a static mutable member, you can use a \nstatic pointer to a "
+                                  "mutable member."});
         }
-        
+
         if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_VAR &&
-            pk.type != TokenType::KWORD_OPERATOR && pk.type != TokenType::KWORD_UNSAFE && (!IS_CONSTRUCTOR(pk))) {
+                pk.type != TokenType::KWORD_OPERATOR && pk.type != TokenType::KWORD_UNSAFE && (!IS_CONSTRUCTOR(pk))) {
           next();
           createError<SYNTAX_ERROR>("expected keyword \"fn\", \"let\", \"operator\", \"unsafe\" or a "
                                     "constructor "
@@ -126,7 +126,8 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
 
       case TokenType::KWORD_MUTABLE: {
         auto pk = peek();
-        if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_OPERATOR && pk.type != TokenType::KWORD_UNSAFE) {
+        if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_OPERATOR &&
+                pk.type != TokenType::KWORD_UNSAFE) {
           next();
           createError<SYNTAX_ERROR>("expected keyword \"fn\", \"unsafe\" or \"operator\" after mutable declaration!");
         }

@@ -18,12 +18,14 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     E<SYNTAX_ERROR>(p_node, "Function cannot be both a test and a benchmark!");
   }
 
-  if (p_node->hasAttribute(Attributes::TEST) && (!ctx->testMode || !ctx->isMainModule))
-    return;
+  if (p_node->hasAttribute(Attributes::TEST) && (!ctx->testMode || !ctx->isMainModule)) return;
   if (p_node->hasAttribute(Attributes::BENCH) && (!ctx->benchMode || !ctx->isMainModule))
     return;
-  else if (p_node->hasAttribute(Attributes::TEST)) { p_node->addAttribute(Attributes::ALLOW_FOR_TEST); }
-  else if (p_node->hasAttribute(Attributes::BENCH)) { p_node->addAttribute(Attributes::ALLOW_FOR_BENCH); }
+  else if (p_node->hasAttribute(Attributes::TEST)) {
+    p_node->addAttribute(Attributes::ALLOW_FOR_TEST);
+  } else if (p_node->hasAttribute(Attributes::BENCH)) {
+    p_node->addAttribute(Attributes::ALLOW_FOR_BENCH);
+  }
 
   p_node = p_node->copy();
   if (auto c = ctx->getCurrentClass(true); c != nullptr && !p_node->hasAttribute(Attributes::FIRST_ARG_IS_SELF)) {
@@ -58,14 +60,14 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
 
       if (std::find(ctx->exported.begin(), ctx->exported.end(), name) != ctx->exported.end()) {
         E<VARIABLE_ERROR>(p_node->getDBGInfo(), "Unmangled export already exists!",
-                          {.info = "This function name is already exported as unmangled.",
-                           .note = "This symbols is exported on another location with the "
-                                   "'no_mangle' or 'export' attribute.",
-                           .help = "Try renaming the function or removing the 'no_mangle' "
-                                   "or the 'export' "
-                                   "attribute. If you want \n"
-                                   "to export the function as unmangled, remove the "
-                                   "mangled version of the function."});
+                {.info = "This function name is already exported as unmangled.",
+                        .note = "This symbols is exported on another location with the "
+                                "'no_mangle' or 'export' attribute.",
+                        .help = "Try renaming the function or removing the 'no_mangle' "
+                                "or the 'export' "
+                                "attribute. If you want \n"
+                                "to export the function as unmangled, remove the "
+                                "mangled version of the function."});
       } else {
         ctx->exported.push_back(name);
       }

@@ -23,7 +23,7 @@ class ReferenceTo : public AcceptorExtend<ReferenceTo, Value> {
   // Expression used as value for the reference statement
   std::shared_ptr<Value> value;
 
-public:
+ public:
   explicit ReferenceTo(std::shared_ptr<Value> value) : value(value){};
 
   /**

@@ -8,7 +8,7 @@
 
 #define IS_INTEGER(x)                                                                                                  \
   (utils::cast<types::Int8Type>(x) || utils::cast<types::Int16Type>(x) || utils::cast<types::Int32Type>(x) ||          \
-   utils::cast<types::Int64Type>(x) || utils::cast<types::BoolType>(x) || utils::cast<types::CharType>(x))
+          utils::cast<types::Int64Type>(x) || utils::cast<types::BoolType>(x) || utils::cast<types::CharType>(x))
 #define IS_FLOAT(x) (utils::cast<types::Float32Type>(x) || utils::cast<types::Float64Type>(x))
 
 namespace snowball {
@@ -20,6 +20,13 @@ void LLVMBuilder::visit(ir::Cast* c) {
   auto llvmValueType = getLLVMType(vTy);
   auto ty = c->getCastType();
   auto llvmType = getLLVMType(ty);
+
+  v = load(v, vTy);
+
+  if (v->getType() == llvmType) {
+    this->value = v;
+    return;
+  }
 
   // Check if both types are integers
   if (IS_INTEGER(vTy) && IS_INTEGER(ty)) {                    // i[n] <-> i[n]
@@ -33,6 +40,8 @@ void LLVMBuilder::visit(ir::Cast* c) {
   } else if (IS_FLOAT(ty) && IS_FLOAT(vTy)) { // float <-> float
     // cast float to another float
     this->value = builder->CreateFPCast(v, llvmType);
+  } else if (IS_INTEGER(vTy) && utils::cast<types::PointerType>(ty)) { // i[n] -> *
+    this->value = builder->CreateIntToPtr(v, llvmType);
   } else {
     assert(utils::cast<types::ReferenceType>(ty) || utils::cast<types::PointerType>(ty));
     this->value = builder->CreatePointerCast(v, llvmType);

@@ -53,7 +53,8 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
     auto name = baseName + x->getIdentifier()->getNiceName();
     if (b.has_value()) {
-      if (utils::cast<types::PrimitiveType>((*b)->getType()) || utils::cast<types::ReferenceType>((*b)->getType())) {
+      if (utils::cast<types::PrimitiveType>((*b)->getType()) || utils::cast<types::ReferenceType>((*b)->getType()) ||
+              utils::cast<types::PointerType>((*b)->getType())) {
         argTypes.insert(argTypes.begin(), b.value()->getType());
       } else {
         argTypes.insert(argTypes.begin(), b.value()->getType()->getReferenceTo());
@@ -65,31 +66,33 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     // "getFromIdentifier" of the module
     if ((x->isStatic && (!c->isStatic())) && (!inModule)) {
       E<TYPE_ERROR>(p_node,
-                    FMT("Can't access class method '%s' "
-                        "that's not static as if it was one!",
-                        c->getNiceName().c_str()));
+              FMT("Can't access class method '%s' "
+                  "that's not static as if it was one!",
+                      c->getNiceName().c_str()));
     } else if ((!x->isStatic) && c->isStatic()) {
       E<TYPE_ERROR>(p_node,
-                    FMT("Can't access static class method '%s' "
-                        "as with a non-static index expression!",
-                        c->getNiceName().c_str()));
+              FMT("Can't access static class method '%s' "
+                  "as with a non-static index expression!",
+                      c->getNiceName().c_str()));
     }
     if (b.has_value()) {
-      //if (auto t = utils::cast<types::ReferenceType>(b.value()->getType())) {
-      //  if (utils::cast<types::ReferenceType>(t->getPointedType()) && !c->hasAttribute(Attributes::BUILTIN)) {
-      //    E<TYPE_ERROR>(p_node,
-      //                  FMT("Can't access class method '%s' "
-      //                      "from a reference to a reference!",
-      //                      c->getNiceName().c_str()),
-      //                  {
-      //                          .tail = callBackUp == nullptr ? nullptr
-      //                                                        : EI<>(callBackUp, "this is the call causing the error"),
-      //                  });
-      //  }
-      //}
+      // if (auto t = utils::cast<types::ReferenceType>(b.value()->getType())) {
+      //   if (utils::cast<types::ReferenceType>(t->getPointedType()) && !c->hasAttribute(Attributes::BUILTIN)) {
+      //     E<TYPE_ERROR>(p_node,
+      //                   FMT("Can't access class method '%s' "
+      //                       "from a reference to a reference!",
+      //                       c->getNiceName().c_str()),
+      //                   {
+      //                           .tail = callBackUp == nullptr ? nullptr
+      //                                                         : EI<>(callBackUp, "this is the call causing the
+      //                                                         error"),
+      //                   });
+      //   }
+      // }
 
       auto baseType = (*b)->getType();
-      if ((utils::cast<types::PrimitiveType>(baseType)) || utils::cast<types::ReferenceType>(baseType)) {
+      if ((utils::cast<types::PrimitiveType>(baseType)) || utils::cast<types::ReferenceType>(baseType) ||
+              utils::cast<types::PointerType>(baseType)) {
         argValues.insert(argValues.begin(), *b);
         argTypes.insert(argTypes.begin(), baseType);
       } else {

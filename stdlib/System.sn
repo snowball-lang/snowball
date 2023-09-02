@@ -1,4 +1,4 @@
-use Core::CLib;
+use [[use_macro(c_str)]] Core::CLib;
 
 /**
  * @brief Causes the program to terminate with the specified exit code.
@@ -13,9 +13,9 @@ pub static fn exit(exitCode: i32 = 0) { CLib::exit(exitCode); }
  * @param msg the 64-bit integer value to print
  * @return the number of characters printed
  */
-pub static fn [[inline]] print<T>(msg: T, end: &char = "") i32 { 
+pub static fn [[inline]] print<T>(msg: T, end: &char = "") i32 {
     let m = String::from(msg).c_str();
-    return CLib::printf("%s%s", m, end); 
+    return CLib::printf(@c_str("%s%s"), m, end); 
 }
 /**
  * Prints @arg msg to standard output with a new

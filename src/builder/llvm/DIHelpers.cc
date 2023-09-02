@@ -23,17 +23,17 @@ llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
   std::string baseName = x->getNiceName();
 
   llvm::DISubprogram* subprogram = dbg.builder->createFunction(file,
-                                                               baseName,
-                                                               x->getMangle(),
-                                                               file,
-                                                               srcInfo->line,
-                                                               llvm::cast<llvm::DISubroutineType>(subroutineType),
-                                                               /*ScopeLine=*/0,
-                                                               llvm::DINode::FlagPrototyped,
-                                                               llvm::DISubprogram::toSPFlags(
-                                                                       /*IsLocalToUnit=*/true,
-                                                                       /*IsDefinition=*/true,
-                                                                       /*IsOptimized=*/!dbg.debug));
+          baseName,
+          x->getMangle(),
+          file,
+          srcInfo->line,
+          llvm::cast<llvm::DISubroutineType>(subroutineType),
+          /*ScopeLine=*/0,
+          llvm::DINode::FlagPrototyped,
+          llvm::DISubprogram::toSPFlags(
+                  /*IsLocalToUnit=*/true,
+                  /*IsDefinition=*/true,
+                  /*IsOptimized=*/!dbg.debug));
   return subprogram;
 }
 
@@ -43,7 +43,7 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
   auto& layout = module->getDataLayout();
 
   if (cast<types::Int64Type>(ty) || cast<types::Int32Type>(ty) || cast<types::Int16Type>(ty) ||
-      cast<types::Int8Type>(ty) || cast<types::BoolType>(ty) || cast<types::CharType>(ty)) {
+          cast<types::Int8Type>(ty) || cast<types::BoolType>(ty) || cast<types::CharType>(ty)) {
     return dbg.builder->createBasicType(
             ty->getName(), layout.getTypeAllocSizeInBits(llvmType), llvm::dwarf::DW_ATE_signed);
   } else if (cast<types::Float32Type>(ty) || cast<types::Float64Type>(ty)) {
@@ -57,7 +57,7 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
   } else if (auto x = cast<types::PointerType>(ty)) {
     auto type = getDIType(x->getPointedType());
     return dbg.builder->createPointerType(type, layout.getTypeAllocSizeInBits(llvmType));
-  } 
+  }
 
   else if (auto f = cast<types::FunctionType>(ty)) {
     std::vector<llvm::Metadata*> argTypes = {getDIType(f->getRetType())};
@@ -79,28 +79,28 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     if (auto p = c->getParent()) { parentDIType = getDIType(c->getParent()); }
     // TODO: create struct type if it's a struct
     auto debugType = dbg.builder->createClassType(file,
-                                                  c->getPrettyName(),
-                                                  file,
-                                                  dbgInfo->line,
-                                                  /* TODO: */ 0,
-                                                  0,
-                                                  0,
-                                                  llvm::DINode::FlagZero,
-                                                  parentDIType,
-                                                  dbg.builder->getOrCreateArray(generatedFields));
+            c->getPrettyName(),
+            file,
+            dbgInfo->line,
+            /* TODO: */ 0,
+            0,
+            0,
+            llvm::DINode::FlagZero,
+            parentDIType,
+            dbg.builder->getOrCreateArray(generatedFields));
 
     generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Metadata*>(
             fields, [&](types::DefinedType::ClassField* t) {
               // TODO: custom line for fields?
               return dbg.builder->createMemberType(debugType,
-                                                   t->name,
-                                                   file,
-                                                   dbgInfo->line,
-                                                   layout.getTypeAllocSizeInBits(getLLVMType(t->type)),
-                                                   /*AlignInBits=*/0,
-                                                   0,
-                                                   llvm::DINode::FlagZero,
-                                                   getDIType(t->type));
+                      t->name,
+                      file,
+                      dbgInfo->line,
+                      layout.getTypeAllocSizeInBits(getLLVMType(t->type)),
+                      /*AlignInBits=*/0,
+                      0,
+                      llvm::DINode::FlagZero,
+                      getDIType(t->type));
             });
 
     return debugType;

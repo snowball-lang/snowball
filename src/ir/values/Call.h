@@ -23,7 +23,7 @@ class Call : public AcceptorExtend<Call, Value> {
   // Arguments passed to the function
   std::vector<std::shared_ptr<Value>> arguments;
 
-public:
+ public:
   explicit Call(std::shared_ptr<Value> callee, std::vector<std::shared_ptr<Value>> args = {})
       : callee(callee), arguments(args){};
 
@@ -39,7 +39,7 @@ public:
   // Set a visit handler for the generators
   SN_GENERATOR_VISITS
 
-public:
+ public:
   /**
    * @brief A variable used to fix a special occation for
    *  variable mutability. Uninitialized variables should
@@ -62,7 +62,7 @@ public:
 class ObjectInitialization : public AcceptorExtend<ObjectInitialization, Call> {
   friend Call;
 
-public:
+ public:
   explicit ObjectInitialization(std::shared_ptr<Value> callee, std::vector<std::shared_ptr<Value>> args = {})
       : AcceptorExtend(callee, args) { }
 
@@ -74,7 +74,7 @@ public:
 class BinaryOp : public AcceptorExtend<BinaryOp, Call> {
   friend Call;
 
-public:
+ public:
   explicit BinaryOp(std::shared_ptr<Value> callee, std::vector<std::shared_ptr<Value>> args = {})
       : AcceptorExtend(callee, args) { }
 

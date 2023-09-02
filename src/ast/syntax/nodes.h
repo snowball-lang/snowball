@@ -34,7 +34,7 @@ class Visitor;
 struct Block : AcceptorExtend<Block, Node> {
   std::vector<Node*> stmts;
 
-public:
+ public:
   Block() : AcceptorExtend(){};
   Block(std::vector<Node*> s) : AcceptorExtend(), stmts(s) { }
   ~Block() noexcept = default;
@@ -65,7 +65,7 @@ namespace Expression {
  *   123, "hello", 89.12, null are constant values.
  */
 struct ConstantValue : public AcceptorExtend<ConstantValue, Base> {
-public:
+ public:
   /**
    * This enum allows a constant value to be
    * differentiate from the other ones.
@@ -75,7 +75,7 @@ public:
 #include "../../defs/ct.def"
   };
 
-private:
+ private:
   /**
    * The value holding the constant as a string.
    * This constant value can be any of the types.
@@ -88,7 +88,7 @@ private:
   // Constant value type to know what is what.
   ConstantType type;
 
-public:
+ public:
   using AcceptorExtend::AcceptorExtend;
 
   ConstantValue(ConstantType type, std::string value) : type(type), value(value){};
@@ -100,7 +100,7 @@ public:
 
   ACCEPT()
 
-public:
+ public:
   /**
    * @brief Deduce the constant type based on the token type.
    * @return Respective constant type
@@ -118,13 +118,13 @@ public:
  *    | |_____ value to cast from
  */
 struct Cast : public AcceptorExtend<Cast, Base> {
-private:
+ private:
   /// @brief Value that's needed to be casted
   Base* value;
   /// @brief Result type thats casted to
   TypeRef* type;
 
-public:
+ public:
   using AcceptorExtend::AcceptorExtend;
 
   Cast(Base* value, TypeRef* ty) : type(ty), value(value){};
@@ -177,7 +177,7 @@ struct FunctionCall : public AcceptorExtend<FunctionCall, Base> {
    */
   bool isInitialization = false;
 
-public:
+ public:
   using AcceptorExtend::AcceptorExtend;
 
   FunctionCall(Base* callee, std::vector<Base*> arguments = {})
@@ -190,7 +190,7 @@ public:
   /// @brief Set a new call expression to this call
   void setCallee(Base* c) { callee = c; }
 
-public:
+ public:
   /// @return string representation of a function call arguments
   static std::string getArgumentsAsString(const std::vector<types::Type*> args);
 
@@ -208,7 +208,7 @@ public:
  *   c = [type]::[new operator](_c)
  */
 struct NewInstance : public AcceptorExtend<NewInstance, Base> {
-private:
+ private:
   /// @brief Call representation containing the arguments
   FunctionCall* call;
   /// @brief Type that's being initialized
@@ -217,7 +217,7 @@ private:
   ///  the instance on the heap or on the stack.
   bool createAtHeap = true;
 
-public:
+ public:
   using AcceptorExtend::AcceptorExtend;
 
   NewInstance(FunctionCall* call, TypeRef* ty, bool createAtHeap = true)
@@ -242,7 +242,7 @@ struct Identifier : public AcceptorExtend<Identifier, Base> {
   // The value used as identifier
   std::string identifier;
 
-public:
+ public:
   // using AcceptorExtend::AcceptorExtend;
 
   Identifier(const std::string& identifier) : identifier(identifier), AcceptorExtend(){};
@@ -275,7 +275,7 @@ struct PseudoVariable : public AcceptorExtend<PseudoVariable, Base> {
   /// @brief Wether or not the variable has arguments
   bool hasArguments = false;
 
-public:
+ public:
   PseudoVariable(std::string identifier);
   /// @return Get the pseudo variable identifier without the
   /// prefix
@@ -305,7 +305,7 @@ struct Index : public AcceptorExtend<Index, Base> {
   /// @note Identifier can also have generics!
   Identifier* identifier;
 
-public:
+ public:
   /// @brief Wether the extract is marked as static or not
   bool const isStatic = false;
 
@@ -330,7 +330,7 @@ struct GenericIdentifier : public AcceptorExtend<GenericIdentifier, Identifier> 
   /// @brief Generics stored into the identifier
   std::vector<Expression::TypeRef*> generics;
 
-public:
+ public:
   using AcceptorExtend::AcceptorExtend;
   GenericIdentifier(const std::string& idnt, std::vector<Expression::TypeRef*> generics = {})
       : AcceptorExtend<GenericIdentifier, Identifier>(idnt), generics(generics){};
@@ -348,7 +348,7 @@ public:
  * @extends AcceptorExtend<BinaryOp, Base>
  */
 struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
-public:
+ public:
   using OpType = services::OperatorService::OperatorType;
 
   Base* left;         ///< Left node
@@ -378,11 +378,11 @@ public:
 
   BinaryOp(OpType t) : op_type(t) {
     unary = (op_type == OpType::NOT || op_type == OpType::BIT_NOT || op_type == OpType::UPLUS ||
-             op_type == OpType::UMINUS || op_type == OpType::REFERENCE || op_type == OpType::DEREFERENCE);
+            op_type == OpType::UMINUS || op_type == OpType::REFERENCE || op_type == OpType::DEREFERENCE);
   };
   ~BinaryOp() noexcept = default;
 
-public:
+ public:
   /**
    * @brief A variable used to fix a special occation for
    *  variable mutability. Uninitialized variables should
@@ -426,7 +426,7 @@ struct Privacy {
     PRIVATE = 1
   } status = PRIVATE;
 
-public:
+ public:
   Privacy() { status = PRIVATE; }
 
   Privacy(Status status);
@@ -444,7 +444,7 @@ public:
   auto isPublic() { return status == PUBLIC; }
   auto isPrivate() { return !isPublic(); }
 
-public:
+ public:
   /// @brief Convert an integer to a Status
   /// @param p_status Integer to transform (note: it will be
   /// inverted)
@@ -477,7 +477,7 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
   // as mutable.
   bool _mutable = false;
 
-public:
+ public:
   FunctionDef(const std::string name, Privacy::Status prvc = PRIVATE);
 
   /// @brief Get function's identifier
@@ -556,9 +556,9 @@ struct VariableDecl : public AcceptorExtend<VariableDecl, Base>, public Acceptor
   /// @brief If the variable is actually a constant expression.
   bool isConstant = false;
 
-public:
-  VariableDecl(const std::string& name, Expression::Base* value = nullptr, bool isMutable = false,
-               bool isConstant = false);
+ public:
+  VariableDecl(
+          const std::string& name, Expression::Base* value = nullptr, bool isMutable = false, bool isConstant = false);
 
   /// @brief Get the identifier assign to the variable
   std::string getName() const;
@@ -598,7 +598,7 @@ struct TypeAlias : public AcceptorExtend<TypeAlias, Base>,
   /// @brief The type being refered by the alias
   Expression::TypeRef* type;
 
-public:
+ public:
   explicit TypeAlias(const std::string& identifier, Expression::TypeRef* type) : identifier(identifier), type(type){};
 
   /// @return The name of the alias to be exported as
@@ -631,11 +631,11 @@ struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
   /// @brief Wether or not the class is a struct
   bool _struct = false;
 
-public:
+ public:
   DefinedTypeDef(std::string name,
-                 Expression::TypeRef* extends = nullptr,
-                 Privacy::Status prvc = PRIVATE,
-                 bool _struct = false);
+          Expression::TypeRef* extends = nullptr,
+          Privacy::Status prvc = PRIVATE,
+          bool _struct = false);
 
   /// @brief Get class name
   std::string getName() const;
@@ -673,7 +673,7 @@ public:
 
   // Set an acceptance call
   ACCEPT()
-public:
+ public:
   /// @brief If the class has a constructor
   bool hasConstructor = false;
 };
@@ -688,7 +688,7 @@ struct Raise : public AcceptorExtend<Raise, Base> {
   /// @brief Expression to be raised
   Expression::Base* expr;
 
-public:
+ public:
   Raise(Expression::Base* expr) : expr(expr){};
 
   /// @return Get the expression to be raised
@@ -712,7 +712,7 @@ struct Conditional : public AcceptorExtend<Conditional, Base> {
   // The "else" statement block if the condition is false
   Block* elseBlock;
 
-public:
+ public:
   explicit Conditional(Expression::Base* cond, Block* insts, Block* elseBlock = nullptr)
       : cond(cond), insts(insts), elseBlock(elseBlock){};
 
@@ -732,7 +732,7 @@ public:
  * @brief Representation of a try-catch block in the AST.
  */
 struct TryCatch : public AcceptorExtend<TryCatch, Base> {
-public:
+ public:
   struct CatchBlock {
     /// @brief The exception type to catch
     Expression::TypeRef* exceptionType;
@@ -741,7 +741,7 @@ public:
     /// @brief The block to execute if the exception is caught
     Block* block;
 
-  public:
+   public:
     CatchBlock(Expression::TypeRef* exceptionType, std::string exceptionVar, Block* block)
         : exceptionType(exceptionType), exceptionVar(exceptionVar), block(block){};
 
@@ -753,13 +753,13 @@ public:
     auto getBlock() { return block; }
   };
 
-private:
+ private:
   /// @brief The block to execute
   Block* tryBlock;
   /// @brief The block to execute if an exception is caught
   std::vector<CatchBlock*> catchBlocks;
 
-public:
+ public:
   TryCatch(Block* tryBlock, std::vector<CatchBlock*> catchBlocks) : tryBlock(tryBlock), catchBlocks(catchBlocks){};
 
   /// @return The block to execute
@@ -782,7 +782,7 @@ struct ForLoop : public AcceptorExtend<ForLoop, Base> {
   /// @brief The block to execute
   Block* block;
 
-public:
+ public:
   ForLoop(std::string var, Expression::Base* expr, Block* block) : var(var), expr(expr), block(block){};
 
   /// @return The variable to iterate
@@ -810,9 +810,9 @@ struct ConditionalConstExpr : public AcceptorExtend<ConditionalConstExpr, Base> 
   // The "else" statement block if the condition is false
   Block* elseBlock = nullptr;
 
-public:
-  explicit ConditionalConstExpr(Expression::Identifier* name, std::vector<Node*> args, Block* insts,
-                                Block* elseBlock = nullptr)
+ public:
+  explicit ConditionalConstExpr(
+          Expression::Identifier* name, std::vector<Node*> args, Block* insts, Block* elseBlock = nullptr)
       : name(name), args(args), insts(insts), elseBlock(elseBlock){};
 
   /// @return body block instructions to execute
@@ -856,7 +856,7 @@ struct WhileLoop : public AcceptorExtend<WhileLoop, Base> {
    */
   bool doWhile = false;
 
-public:
+ public:
   explicit WhileLoop(Expression::Base* cond, Block* insts, bool isDoWhile = false)
       : cond(cond), insts(insts), doWhile(isDoWhile){};
 
@@ -907,7 +907,7 @@ struct ImportStmt : public AcceptorExtend<ImportStmt, Base> {
   /// current file.
   std::string exportSymbol;
 
-public:
+ public:
   /// @brief Representation of the kind of import statement this
   /// is. import statements can have different functionality such
   /// as:
@@ -924,10 +924,10 @@ public:
     ALL
   } type = DEFAULT;
 
-public:
+ public:
   ImportStmt(const std::vector<std::string> path = {}, const std::string package = "pkg", ImportType ty = DEFAULT);
 
-public:
+ public:
   /// @brief get the package name where it's imported from
   std::string getPackage() const;
   /// @return The defined path for the package
@@ -965,10 +965,10 @@ struct Namespace : public AcceptorExtend<Namespace, Base> {
   /// @brief Body of the namespace
   std::vector<Node*> body;
 
-public:
+ public:
   Namespace(std::string name, std::vector<Node*> body);
 
-public:
+ public:
   /// @return Name of the namespace
   std::string getName() const;
   /// @return Body of the namespace
@@ -988,7 +988,7 @@ struct Return : public AcceptorExtend<Return, Base> {
   // Function's return type
   Expression::Base* value = nullptr;
 
-public:
+ public:
   Return(Expression::Base* value);
 
   /// @return the value holt by the variable
@@ -1012,7 +1012,7 @@ struct ExternFnDef : public AcceptorExtend<ExternFnDef, FunctionDef> {
   // External function for the function.
   std::string externalName;
 
-public:
+ public:
   using AcceptorExtend::AcceptorExtend;
 
   template <class... Args>
@@ -1038,7 +1038,7 @@ struct BodiedFunction : public AcceptorExtend<BodiedFunction, FunctionDef> {
   // a function executes when it's called.
   Block* block;
 
-public:
+ public:
   using AcceptorExtend::AcceptorExtend;
 
   template <class... Args>
@@ -1084,7 +1084,7 @@ struct ConstructorDef : public AcceptorExtend<ConstructorDef, BodiedFunction> {
   /// @brief Wether or not the constructor has super arguments
   bool _hasSuperArgs = false;
 
-public:
+ public:
   using AcceptorExtend::AcceptorExtend;
 
   template <class... Args>
@@ -1127,7 +1127,7 @@ struct LLVMFunction : public AcceptorExtend<LLVMFunction, FunctionDef> {
   // intructions a function executes when it's called.
   std::string block;
 
-public:
+ public:
   using AcceptorExtend::AcceptorExtend;
 
   template <class... Args>
@@ -1156,7 +1156,7 @@ namespace Expression {
  * evaluated when called.
  */
 struct LambdaFunction : public AcceptorExtend<LambdaFunction, Expression::Base> {
-public:
+ public:
   using AcceptorExtend::AcceptorExtend;
 
   /* Function used inside the lambda since a lambda struct is
@@ -1182,7 +1182,7 @@ public:
  * @note Macros can be used as statements or expressions.
  */
 struct Macro : public AcceptorExtend<Macro, Node> {
-public:
+ public:
   enum ArguementType
   {
     STATEMENT,
@@ -1194,19 +1194,19 @@ public:
     CONSTANT_STRING,
   };
 
-private:
+ private:
   std::string name;
   std::vector<std::tuple<std::string, ArguementType, Node*>> args;
   Block* body;
 
   bool isStatement = false;
 
-public:
+ public:
   Macro(std::string name,
-        std::vector<std::tuple<std::string, ArguementType, Node*>>
-                args,
-        Block* body,
-        bool isStatement = false)
+          std::vector<std::tuple<std::string, ArguementType, Node*>>
+                  args,
+          Block* body,
+          bool isStatement = false)
       : name(name), args(args), body(body), isStatement(isStatement){};
 
   /// @return Get macro's name

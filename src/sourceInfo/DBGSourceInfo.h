@@ -23,7 +23,7 @@ namespace snowball {
  * display the contents of a line.
  */
 class DBGSourceInfo : public SrcObject {
-public:
+ public:
   DBGSourceInfo(const SourceInfo* source_info, uint32_t p_line);
   DBGSourceInfo(const SourceInfo* source_info, std::pair<int, int> p_pos, uint32_t p_width);
 
@@ -35,7 +35,7 @@ public:
   std::string line_str;
   std::string line_after;
 
-public:
+ public:
   std::string get_pos_str() const;
   void prepare_for_error();
   friend SrcObject;
@@ -59,10 +59,10 @@ public:
  * This just saves some messy code.
  */
 class DBGObject : public SrcObject {
-protected:
+ protected:
   DBGSourceInfo* dbg = nullptr;
 
-public:
+ public:
   /// @brief Contruct a new DBGObject
   DBGObject();
 

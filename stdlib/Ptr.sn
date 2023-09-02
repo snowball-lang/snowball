@@ -49,7 +49,7 @@ pub class NonNull<T: Core::Sized> {
  * @return PtrType - null pointer
  */
 pub fn [[inline]] null_ptr<PtrType: Core::Sized>() *const PtrType {
-  unsafe { return CLib::malloc(0); }
+  unsafe { return 0 as *const void as *const PtrType; }
 }
 
 /**

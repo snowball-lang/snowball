@@ -10,6 +10,7 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ir::StringValue* value) {
+  ctx->doNotLoadInMemory = true;
   this->value = builder->CreateGlobalStringPtr(value->getConstantValue(), ".str");
 }
 

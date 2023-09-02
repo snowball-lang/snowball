@@ -8,8 +8,8 @@
 
 #define CHECK_PRIVACY(var)                                                                                             \
   var = true;                                                                                                          \
-  if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(peekCount-1, true))) {                                         \
-    isPublic = is<TokenType::KWORD_PUBLIC>(peek(peekCount-1, true));                                                            \
+  if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(peekCount - 1, true))) {                              \
+    isPublic = is<TokenType::KWORD_PUBLIC>(peek(peekCount - 1, true));                                                 \
   }
 
 using namespace snowball::Syntax;
@@ -19,7 +19,7 @@ namespace snowball::parser {
 
 FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isLambda) {
   assert((is<TokenType::KWORD_FUNC>() && (!isConstructor && !isOperator)) ||
-         (is<TokenType::IDENTIFIER>() && (isConstructor && !isOperator)) || (isOperator));
+          (is<TokenType::IDENTIFIER>() && (isConstructor && !isOperator)) || (isOperator));
 
   if (!isConstructor && (!isLambda)) next();
 
@@ -397,8 +397,8 @@ fetch_attrs:
   if (isTypeValid()) {
     if (isConstructor) {
       createError<SYNTAX_ERROR>("Contructor can't have return types.",
-                                {.info = "Constructors return type default to the parent's "
-                                         "class type!"});
+              {.info = "Constructors return type default to the parent's "
+                       "class type!"});
     }
 
     returnType = parseType();
@@ -489,22 +489,22 @@ fetch_attrs:
       auto number = m_current.to_string();
       if (number != "0") {
         createError<SYNTAX_ERROR>("Expected a '0' for the function body!",
-                                  {.info = "Expected a '0' for the function body!",
-                                   .note = "The function body must be a '0' for now.",
-                                   .help = "You have to set the function body to '0'.\n"
-                                           "For example:\n"
-                                           "1 |  virt fn my_fn() = 0\n"
-                                           "2 |"});
+                {.info = "Expected a '0' for the function body!",
+                        .note = "The function body must be a '0' for now.",
+                        .help = "You have to set the function body to '0'.\n"
+                                "For example:\n"
+                                "1 |  virt fn my_fn() = 0\n"
+                                "2 |"});
       }
 
       if (!isVirtual) {
         createError<SYNTAX_ERROR>("Function body can only be '0' for virtual functions!",
-                                  {.info = "Function body can only be '0' for virtual functions!",
-                                   .note = "The function body must be a '0' for now.",
-                                   .help = "You have to set the function body to '0'.\n"
-                                           "For example:\n"
-                                           "1 |  virt fn my_fn() = 0\n"
-                                           "2 |"});
+                {.info = "Function body can only be '0' for virtual functions!",
+                        .note = "The function body must be a '0' for now.",
+                        .help = "You have to set the function body to '0'.\n"
+                                "For example:\n"
+                                "1 |  virt fn my_fn() = 0\n"
+                                "2 |"});
       }
 
       isNotImplemented = true;

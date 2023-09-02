@@ -15,8 +15,7 @@ Transformer::StoreType Transformer::getFromIdentifier(Expression::Identifier* s)
   return getFromIdentifier(s->getDBGInfo(), s->getIdentifier(), generics);
 }
 Transformer::StoreType Transformer::getFromIdentifier(DBGSourceInfo* dbgInfo, const std::string identifier,
-                                                      std::vector<Expression::TypeRef*> generics,
-                                                      const std::string p_uuid) {
+        std::vector<Expression::TypeRef*> generics, const std::string p_uuid) {
   // Transform the base first
   auto [item, success] = ctx->getItem(identifier);
 
@@ -36,10 +35,10 @@ Transformer::StoreType Transformer::getFromIdentifier(DBGSourceInfo* dbgInfo, co
       return {std::nullopt, std::nullopt, std::nullopt, std::nullopt, item->getModule()};
     } else if (item->isMacro()) {
       E<SYNTAX_ERROR>(dbgInfo, "Macros cannot be used as values!",
-                      {.info = "This is the macro that was used",
-                       .note = "Macros are not values, they are used to generate code at compile time.",
-                       .help = "If you want to use a macro as a value, you can use the '@' symbol before \nand "
-                               "identifier to use a function-like macro."});
+              {.info = "This is the macro that was used",
+                      .note = "Macros are not values, they are used to generate code at compile time.",
+                      .help = "If you want to use a macro as a value, you can use the '@' symbol before \nand "
+                              "identifier to use a function-like macro."});
     } else {
       assert(false && "BUG: Unhandled value type!");
     }

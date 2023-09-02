@@ -15,15 +15,19 @@ use pkg::option;
 //use pkg::tuples;
 //use pkg::algorithms;
 //use pkg::source_location;
-//
-//use Core::System;
+
+use Core::System;
 //use Core::Panic;
 ////use Core::System::{{ println }};
 
-pub unsafe fn x() *const i32 {
-  return 0 as *const i32;
-}
+use Core::Optional;
 
 pub fn main() i32 {
-  unsafe { x(); }  
+  let x = Optional::Some(42);
+  let a = x.has_value();
+  if a {
+    System::println("a")
+  } else {
+    System::println("b")
+  }
 }

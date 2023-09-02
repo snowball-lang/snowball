@@ -10,7 +10,8 @@ Transformer::CastType Transformer::canCast(types::Type* from, types::Type* to) {
 
   // Check auto deref
   if (auto ptr = utils::cast<types::ReferenceType>(from)) {
-    if (ptr->getPointedType()->is(to)) { return CastType::AutoDeref; }
+    // if (ptr->getPointedType()->is(to)) { return CastType::AutoDeref; }
+    
   }
 
   // Check auto ref
@@ -19,19 +20,22 @@ Transformer::CastType Transformer::canCast(types::Type* from, types::Type* to) {
   }
 
   // same thing but for pointers
-  
+
   // Check auto deref or "*void to *x"
   if (auto ptr = utils::cast<types::PointerType>(from)) {
-    if (ptr->getPointedType()->is(to)) { return CastType::AutoDeref; }
-    else if (utils::cast<types::VoidType>(ptr->getPointedType()) && utils::cast<types::PointerType>(to)) 
-      { return CastType::Valid; }
+    // if (ptr->getPointedType()->is(to)) { return CastType::AutoDeref; }
+    if (utils::cast<types::VoidType>(ptr->getPointedType()) && utils::cast<types::PointerType>(to)) {
+      return CastType::Valid;
+    }
   }
 
   // Check auto ref or "*x to *void"
   if (auto ptr = utils::cast<types::PointerType>(to)) {
-    if (ptr->getPointedType()->is(from)) { return CastType::ToPointer; }
-    else if (utils::cast<types::VoidType>(ptr->getPointedType()) && utils::cast<types::PointerType>(from)) 
-      { return CastType::Valid; }
+    if (ptr->getPointedType()->is(from)) {
+      return CastType::ToPointer;
+    } else if (utils::cast<types::VoidType>(ptr->getPointedType()) && utils::cast<types::PointerType>(from)) {
+      return CastType::Valid;
+    }
   }
 
   // Check valid cast

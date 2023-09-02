@@ -32,7 +32,7 @@
 namespace snowball {
 namespace types {
 class PrimitiveType : public AcceptorExtend<PrimitiveType, Type> {
-public:
+ public:
   PrimitiveType(std::string p_name) : AcceptorExtend(Kind::TYPE, p_name) { }
   SNOWBALL_TYPE_COPIABLE(PrimitiveType)
 };
@@ -42,16 +42,14 @@ public:
  *  a numeric type. (e.g. i32, f64, bool, etc...)
  */
 class NumericType : public AcceptorExtend<NumericType, PrimitiveType> {
-public:
+ public:
   NumericType(std::string p_name) : AcceptorExtend(p_name){};
 
   /// @brief override function. All numeric types
   ///  can cast to any other numeric types.
-  virtual bool canCast(Type* ty) const override {
-    return NumericType::isNumericType(ty);
-  }
+  virtual bool canCast(Type* ty) const override { return NumericType::isNumericType(ty); }
 
-public:
+ public:
   /**
    * @brief Check if a type is numeric.
    * @note These are the numberic types:
@@ -65,57 +63,57 @@ public:
 
 /// @brief Representation of a void type.
 class VoidType : public AcceptorExtend<VoidType, PrimitiveType> {
-public:
+ public:
   VoidType() : AcceptorExtend(SN_VOID_TYPE) { }
   SNOWBALL_TYPE_COPIABLE(VoidType)
 };
 
 /// @brief Bool (represents 1-bit signed integer)
 class BoolType : public AcceptorExtend<BoolType, NumericType> {
-public:
+ public:
   BoolType() : AcceptorExtend(SN_BOOL_TYPE) { }
-  
+
   SNOWBALL_TYPE_COPIABLE(BoolType)
 };
 
 /// @brief String (represents int 8 pointer)
 class CharType : public AcceptorExtend<CharType, NumericType> {
-public:
+ public:
   CharType() : AcceptorExtend(SN_CHR_TYPE) { }
   SNOWBALL_TYPE_COPIABLE(CharType)
 };
 
 /// @brief Float 64 (represents 64-bit floating point)
 class Float64Type : public AcceptorExtend<Float64Type, NumericType> {
-public:
+ public:
   Float64Type() : AcceptorExtend(SN_F64_TYPE) { }
   SNOWBALL_TYPE_COPIABLE(Float64Type)
 };
 
 /// @brief Float 32 (represents 32-bit floating point)
 class Float32Type : public AcceptorExtend<Float32Type, NumericType> {
-public:
+ public:
   Float32Type() : AcceptorExtend(SN_F32_TYPE) { }
   SNOWBALL_TYPE_COPIABLE(Float32Type)
 };
 
 /// @brief Int 64 (represents 64-bit signed integer)
 class Int64Type : public AcceptorExtend<Int64Type, NumericType> {
-public:
+ public:
   Int64Type() : AcceptorExtend(SN_INT64_TYPE) { }
   SNOWBALL_TYPE_COPIABLE(Int64Type)
 };
 
 /// @brief Int 16 (represents 16-bit signed integer)
 class Int16Type : public AcceptorExtend<Int16Type, NumericType> {
-public:
+ public:
   Int16Type() : AcceptorExtend(SN_INT16_TYPE) { }
   SNOWBALL_TYPE_COPIABLE(Int16Type)
 };
 
 /// @brief Int 8 (represents 8-bit signed integer)
 class Int8Type : public AcceptorExtend<Int8Type, NumericType> {
-public:
+ public:
   Int8Type() : AcceptorExtend(SN_INT8_TYPE) { }
   SNOWBALL_TYPE_COPIABLE(Int8Type)
 };
@@ -130,7 +128,7 @@ public:
  * experience in snowball.
  */
 class Int32Type : public AcceptorExtend<Int32Type, NumericType> {
-public:
+ public:
   static const std::string TYPE_ALIAS;
 
   Int32Type() : AcceptorExtend(SN_INT32_TYPE) { }

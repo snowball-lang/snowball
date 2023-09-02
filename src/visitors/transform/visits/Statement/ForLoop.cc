@@ -71,7 +71,8 @@ SN_TRANSFORMER_VISIT(Statement::ForLoop) {
   stmts.push_back(eq);
   auto whileLoop = Syntax::N<Syntax::Statement::WhileLoop>(validCall, Syntax::N<Syntax::Block>(stmts));
   auto resetIdent = Syntax::N<Syntax::Expression::Identifier>("reset");
-  auto resetIndex = Syntax::N<Syntax::Expression::Index>(Syntax::N<Syntax::Expression::Identifier>(iterName), resetIdent);
+  auto resetIndex =
+          Syntax::N<Syntax::Expression::Index>(Syntax::N<Syntax::Expression::Identifier>(iterName), resetIdent);
   auto resetCall = Syntax::N<Syntax::Expression::FunctionCall>(resetIndex, std::vector<Syntax::Expression::Base*>());
 
   // wrap everything in a block

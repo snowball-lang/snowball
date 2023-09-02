@@ -13,7 +13,7 @@ ReferenceAlignment: Left
 AlignConsecutiveMacros: true
 
 AccessModifierOffset: -2
-AlignAfterOpenBracket: true
+AlignAfterOpenBracket: false
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AlignEscapedNewlinesLeft: false

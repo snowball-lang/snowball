@@ -8,9 +8,9 @@ namespace Syntax {
 
 std::tuple<Cache::FunctionStore, std::vector<types::Type*>, Transformer::FunctionFetchResponse>
 Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& overloads,
-                                    const std::vector<types::Type*>& arguments,
-                                    const std::vector<Expression::TypeRef*>& generics,
-                                    bool isIdentifier) {
+        const std::vector<types::Type*>& arguments,
+        const std::vector<Expression::TypeRef*>& generics,
+        bool isIdentifier) {
   std::vector<std::pair<Cache::FunctionStore, std::vector<types::Type*>>> functions;
   for (auto n : overloads) {
     auto fn = n.function;
@@ -97,19 +97,20 @@ Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& over
     }
     // we dont return it if they all have the same amount of succeeded arguments
     if (maxIndex != -1 &&
-        !std::all_of(matchedFunctionsPerception.begin(), matchedFunctionsPerception.end(),
-                     [&](auto i) { return i == max; })) {
+            !std::all_of(matchedFunctionsPerception.begin(), matchedFunctionsPerception.end(),
+                    [&](auto i) { return i == max; })) {
       return {matchedFunctions.at(maxIndex).first, matchedFunctions.at(maxIndex).second, FunctionFetchResponse::Ok};
     }
     return {{nullptr}, {}, FunctionFetchResponse::AmbiguityConflict};
   } else if (exactFunctionExists)
     return {bestFunction.first, bestFunction.second, FunctionFetchResponse::Ok};
+  else if (genericIndex != -1)
+    return {matchedFunctions.at(genericIndex).first, matchedFunctions.at(genericIndex).second,
+            FunctionFetchResponse::Ok};
   else if (matchedFunctions.size() == 1) {
     auto matched = matchedFunctions.at(0);
     return {matched.first, matched.second, FunctionFetchResponse::Ok};
-  } else if (genericIndex != -1)
-    return {matchedFunctions.at(genericIndex).first, matchedFunctions.at(genericIndex).second,
-            FunctionFetchResponse::Ok};
+  }
 
   return {{nullptr}, {}, FunctionFetchResponse::NoMatchesFound};
 }

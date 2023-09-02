@@ -36,12 +36,12 @@ SN_DEFINITE_ASSIGMENT_VISIT(Statement::FunctionDef) {
             // TODO: add highlight of variable from
             // "insideClass"
             E<VARIABLE_ERROR>(p_node->getDBGInfo(),
-                              FMT("Class variable '%s' has not "
-                                  "been definitivly assigned!",
-                                  name.c_str()),
-                              {.info = FMT("The constructor does not define "
-                                           "'self::%s' on all paths.",
-                                           name.c_str())});
+                    FMT("Class variable '%s' has not "
+                        "been definitivly assigned!",
+                            name.c_str()),
+                    {.info = FMT("The constructor does not define "
+                                 "'self::%s' on all paths.",
+                             name.c_str())});
           }
         }
       }

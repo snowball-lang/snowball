@@ -31,8 +31,20 @@ class [[extends]] char {
     fn [[inline, llvm_function]] at(index: i32) &char
     { 
       %0 = getelementptr ptr, ptr %self, i32 %index
-      %1 = load ptr, ptr %0, align 1
-      ret ptr %1
+      ret ptr %0
+    }
+
+    /**
+     * @brief It inserts a character into the string.
+     * @param[in] index The index to insert the character at.
+     * @param[in] character The character to insert.
+     * @return The character at the specified index.
+     */
+    mut fn [[inline, llvm_function]] insert(index: i32, character: char) &char
+    { 
+      %0 = getelementptr ptr, ptr %self, i32 %index
+      store i8 %character, ptr %0, align 1
+      ret ptr %0
     }
 
     operator [[__internal__, __no_pointer_self__]] +(other: char)  char {}
@@ -64,14 +76,13 @@ class [[extends]] char {
     operator [[__internal__, __no_pointer_self__]] =(other: char)  char {}
     operator [[__internal__, __no_pointer_self__]] !=(other: char) char {}
     operator [[__internal__, __no_pointer_self__]] !()             bool {}
+    operator [[__internal__]]                      !()             bool {}
     operator [[__internal__, __no_pointer_self__]] ||(other: char) bool {}
     operator [[__internal__, __no_pointer_self__]] &&(other: char) bool {}
 
     // override with &char
-    operator [[__internal__, __no_pointer_self__]] =(other: &char) &char {}
-    operator [[__internal__]] =(other: char)            &char {}
-    operator [[__internal__]] =(other: &char)           &char {}
-    operator [[__internal__]] !()                       bool {}
+    operator [[__internal__]] =(other: &char) &char {}
+    operator [[__internal__]] =(other: char) &char {}
 }
 
 class [[extends]] i8 {

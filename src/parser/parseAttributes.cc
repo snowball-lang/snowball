@@ -6,8 +6,8 @@
 
 namespace snowball::parser {
 
-std::unordered_map<Attributes, std::unordered_map<std::string, std::string>>
-Parser::parseAttributes(std::function<Attributes(std::string)> parseFn) {
+std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> Parser::parseAttributes(
+        std::function<Attributes(std::string)> parseFn) {
   assert(is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek()));
   next();
   std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> attributes;
@@ -22,8 +22,8 @@ Parser::parseAttributes(std::function<Attributes(std::string)> parseFn) {
     } else {
       parsed = parseFn(attr);
       if (parsed == Attributes::INVALID) {
-        createError<ATTRIBUTE_ERROR>("Trying to use an undefined attribute!",
-                                     {.info = FMT("Attribute '%s' is not defined!", attr.c_str())});
+        createError<ATTRIBUTE_ERROR>(
+                "Trying to use an undefined attribute!", {.info = FMT("Attribute '%s' is not defined!", attr.c_str())});
       }
     }
     if (is<TokenType::BRACKET_LPARENT>(peek())) {

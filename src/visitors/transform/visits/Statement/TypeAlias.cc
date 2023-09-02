@@ -15,9 +15,9 @@ SN_TRANSFORMER_VISIT(Statement::TypeAlias) {
 
   if (x.has_value() && (!ctx->generateFunction)) {
     E<VARIABLE_ERROR>(p_node,
-                      FMT("Type alias with name '%s' is already "
-                          "defined in the current scope!",
-                          name.c_str()));
+            FMT("Type alias with name '%s' is already "
+                "defined in the current scope!",
+                    name.c_str()));
   } else if (ctx->generateFunction && (!p_node->isGeneric())) {
     if (ctx->cache->getTransformedType(uuid) != std::nullopt) return;
     auto baseType = transformType(p_node->getType());

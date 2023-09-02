@@ -23,7 +23,7 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
       if (auto x = utils::cast<types::ReferenceType>(type)) {
         type = x->getPointedType();
       } else if (auto x = utils::cast<types::PointerType>(type)) {
-        type = x->getPointedType(); // this will error if it's not in unsafe context at the type checker. 
+        type = x->getPointedType(); // this will error if it's not in unsafe context at the type checker.
       } else {
         E<DEREFERENCE_ERROR>(p_node, "Can't dereference a non-pointer type!");
       }

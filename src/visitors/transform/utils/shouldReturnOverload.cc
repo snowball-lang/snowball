@@ -7,8 +7,8 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::shared_ptr<ir::Func> Transformer::shouldReturnOverload(std::shared_ptr<ir::Func> fn,
-                                                            std::deque<std::shared_ptr<ir::Func>> overloads) {
+std::shared_ptr<ir::Func> Transformer::shouldReturnOverload(
+        std::shared_ptr<ir::Func> fn, std::deque<std::shared_ptr<ir::Func>> overloads) {
   for (auto overload : overloads) {
     bool equals = fn->getType()->is(overload->getType());
     // check generic parameters too

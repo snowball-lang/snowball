@@ -50,16 +50,16 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
         return it->second;
       else { s = llvm::cast<llvm::StructType>(it->second); }
     } else {
-      s = llvm::StructType::create(*context,
-                                   (c->isStruct() ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) + c->getMangledName());
+      s = llvm::StructType::create(
+              *context, (c->isStruct() ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) + c->getMangledName());
       types.insert({c->getId(), s});
     }
     auto fields = c->getFields();
     auto generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Type*>(
             fields, [&](types::DefinedType::ClassField* t) { return getLLVMType(t->type); });
     if (c->hasVtable()) {
-      getVtableType(c); // generate vtable type
-      generatedFields.insert(generatedFields.begin(), builder->getPtrTy());
+      auto t = getVtableType(c); // generate vtable type
+      generatedFields.insert(generatedFields.begin(), t->getPointerTo());
     }
     s->setBody(generatedFields);
     return s;

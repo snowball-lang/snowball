@@ -4,7 +4,7 @@
 
 pub type c_obj = *const void;
 pub type c_int = i32;
-pub type c_char = i8;
+pub type c_char = char;
 pub type c_bool = bool;
 pub type c_float = f32;
 pub type c_double = f64;
@@ -120,7 +120,7 @@ pub extern fn getchar() c_char;
  *  in the resulting string replacing their respective specifiers.
  * @return On success, the total number of characters written is returned.
  */
-pub extern fn printf(&c_char, ...) c_int;
+pub extern fn printf(*const c_char, ...) c_int;
 /**
  * @brief Writes the string pointed by format to the character string pointed by str. If format includes format
  *  specifiers (subsequences beginning with %), the additional arguments following format are formatted and inserted
@@ -143,6 +143,12 @@ pub extern fn exit(c_int);
  * @return c_int - If the time is successfully obtained, the return value is the same as the parameter seconds.
  */
 pub extern fn time(&c_int) c_int;
+/**
+ * @brief It transforms a string into a C string.
+ * @param str(&char) - string to be converted
+ * @return &char - C string
+ */
+macro [[export]] c_str(x: const[str]) = (@x as *const char);   
 /**
  * @brief a namespace that contains functions for manipulating strings.
  * @note(1) All functions in this namespace are thread-safe.
@@ -204,7 +210,7 @@ pub static unsafe fn [[inline]] alloca_and_snprintf<T>(bytes: c_int, format: &c_
 {
     let buffer: *const i8 = malloc(bytes * 4); // TODO: use sn.alloca
     if buffer.is_null() { 
-        printf("%i\n", value);
+        printf(@c_str("%i\n"), value);
     }
     snprintf(buffer, bytes, format, value);
     return (buffer as *const c_char).as_ref();

@@ -18,12 +18,11 @@ namespace ir {
  * @brief Representation of block in the IR. This contains
  * instructions that are executed inside of it.
  */
-class Block : public AcceptorExtend<Block, Value>,
-            public AcceptorExtend<Func, Syntax::AttributeHolder> {
+class Block : public AcceptorExtend<Block, Value>, public AcceptorExtend<Func, Syntax::AttributeHolder> {
   // Instructions stored inside a block
   std::vector<std::shared_ptr<Value>> insts;
 
-public:
+ public:
   explicit Block(std::vector<std::shared_ptr<Value>> insts) : insts(insts){};
 
   /// @return body block instructions

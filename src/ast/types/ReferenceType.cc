@@ -43,8 +43,7 @@ Type* ReferenceType::getBaseType() const {
 bool ReferenceType::canCast(Type* ty) const {
   SNOWBALL_MUTABLE_CAST_CHECK
 
-  if (auto c = utils::cast<ReferenceType>(ty)) 
-    return base->canCast(c->getPointedType());
+  if (auto c = utils::cast<ReferenceType>(ty)) return base->canCast(c->getPointedType());
   return false;
 }
 

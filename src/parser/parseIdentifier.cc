@@ -10,14 +10,14 @@ namespace snowball::parser {
 
 Syntax::Expression::Identifier* Parser::parseIdentifier(bool isKnownType, bool allowGenerics) {
   if (!is<TokenType::IDENTIFIER>())
-    createError<SYNTAX_ERROR>("Expected an identifier but got '" + m_current.to_string() + "'",
-                              {.info = "Not a valid identifier"});
+    createError<SYNTAX_ERROR>(
+            "Expected an identifier but got '" + m_current.to_string() + "'", {.info = "Not a valid identifier"});
   auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
   auto genericContainsQuestion = is<TokenType::SYM_QUESTION>(peek(1, true));
   if (allowGenerics && (is<TokenType::OP_LT>(peek()) && (isKnownType || genericContainsQuestion))) {
     if (genericContainsQuestion && isKnownType)
-      createError<SYNTAX_ERROR>("Expected a valid generic expression but got '?'",
-                                {.info = "Not a valid generic expression"});
+      createError<SYNTAX_ERROR>(
+              "Expected a valid generic expression but got '?'", {.info = "Not a valid generic expression"});
 
     auto name = m_current.to_string();
     next();

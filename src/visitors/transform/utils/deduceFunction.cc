@@ -12,27 +12,36 @@ bool genericMatch(Expression::Param* generic, Expression::TypeRef* arg) {
     return genericMatch(generic, x->getBaseType());
   } else if (auto x = utils::cast<Expression::PointerType>(arg)) {
     return genericMatch(generic, x->getBaseType());
-  } 
+  }
 
   return arg->getName() == generic->getName();
 }
 
-types::Type* matchedGeneric(Expression::Param* generic, types::Type* arg) {
-  if (auto x = utils::cast<types::ReferenceType>(arg)) {
-    return matchedGeneric(generic, x->getPointedType());
-  } else if (auto x = utils::cast<types::PointerType>(arg)) {
-    return matchedGeneric(generic, x->getPointedType());
-  }
+#define HANDLE_POINTER(checkType, astType, checker)                                                                    \
+  (getPointerDepth(arg, [&](types::Type* x) -> types::Type* {                                                          \
+    if (auto t = utils::cast<checkType>(x)) { return t->getPointedType(); }                                            \
+    return nullptr;                                                                                                    \
+  }) < getPointerDepth(generic->getType(), [&](Expression::TypeRef* x) -> Expression::TypeRef* {                       \
+    if (x->isReferenceType()) { return utils::cast<astType>(x)->getBaseType(); }                                       \
+    return nullptr;                                                                                                    \
+  })) return matchedGeneric(generic, utils::cast<checkType>(arg)->getPointedType());
 
-  return arg;
+types::Type* matchedGeneric(Expression::Param* generic, types::Type* arg) {
+  // we need to match with "genericMatch"
+  if HANDLE_POINTER (types::ReferenceType, Expression::ReferenceType, x->isReferenceType())
+    else if HANDLE_POINTER (types::PointerType, Expression::PointerType, x->isPointertype())
+
+            return arg;
 }
-}
+
+#undef HANDLE_POINTER
+} // namespace
 
 std::optional<types::Type*> Transformer::deduceFunctionType(Expression::Param* generic,
-                                                            const std::vector<Expression::Param*>& fnArgs,
-                                                            const std::vector<types::Type*>& arguments,
-                                                            const std::vector<types::Type*>& generics,
-                                                            const std::vector<types::Type*>& deducedTypes) {
+        const std::vector<Expression::Param*>& fnArgs,
+        const std::vector<types::Type*>& arguments,
+        const std::vector<types::Type*>& generics,
+        const std::vector<types::Type*>& deducedTypes) {
   // I'm pretty sure this function works, but I'm a programmer, not a
   // magician.
 
@@ -44,9 +53,8 @@ std::optional<types::Type*> Transformer::deduceFunctionType(Expression::Param* g
   }
 
   // Check if the generic is used inside the variables
-  const auto it = std::find_if(fnArgs.begin(), fnArgs.end(), [&](const auto& arg) {
-    return genericMatch(generic, arg->getType());
-  });
+  const auto it = std::find_if(
+          fnArgs.begin(), fnArgs.end(), [&](const auto& arg) { return genericMatch(generic, arg->getType()); });
 
   if (it != fnArgs.end()) {
     const auto argIdx = std::distance(fnArgs.begin(), it);
@@ -60,10 +68,10 @@ std::optional<types::Type*> Transformer::deduceFunctionType(Expression::Param* g
   return std::nullopt;
 }
 
-std::pair<std::vector<types::Type*>, std::string>
-Transformer::deduceFunction(cacheComponents::Functions::FunctionStore s,
-                            const std::vector<types::Type*>& arguments,
-                            const std::vector<types::Type*>& generics) {
+std::pair<std::vector<types::Type*>, std::string> Transformer::deduceFunction(
+        cacheComponents::Functions::FunctionStore s,
+        const std::vector<types::Type*>& arguments,
+        const std::vector<types::Type*>& generics) {
   auto function = s.function;
   auto fnArgs = function->getArgs();
 

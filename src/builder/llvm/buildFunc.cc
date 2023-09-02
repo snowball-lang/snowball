@@ -11,6 +11,15 @@
 namespace snowball {
 namespace codegen {
 
+namespace {
+void setDereferenceableAttribute(llvm::Argument& arg, unsigned bytes) {
+  auto dereferenceable = llvm::Attribute::get(arg.getContext(), llvm::Attribute::Dereferenceable, bytes);
+  auto noundef = llvm::Attribute::get(arg.getContext(), llvm::Attribute::NoUndef);
+  arg.addAttr(dereferenceable);
+  arg.addAttr(noundef);
+}
+} // namespace
+
 void LLVMBuilder::visit(ir::Func* func) {
   if (func->hasAttribute(Attributes::BUILTIN)) {
     this->value = nullptr;
@@ -38,6 +47,7 @@ void LLVMBuilder::visit(ir::Func* func) {
 
 llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Func* fn) {
   ctx->setCurrentFunction(llvmFn);
+  ctx->doNotLoadInMemory = false;
 
   auto returnType = getLLVMType(fn->getRetTy());
   bool retIsArg = false;
@@ -74,17 +84,17 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     auto file = dbg.getFile(src->getPath());
     auto scope = llvmFn->getSubprogram();
     auto debugVar = dbg.builder->createParameterVariable(scope,
-                                                         var->getName(),
-                                                         var->getIndex() + 1 + retIsArg, // lua vibes... :]
-                                                         file,
-                                                         dbgInfo->line,
-                                                         getDIType(var->getType()),
-                                                         dbg.debug);
+            var->getName(),
+            var->getIndex() + 1 + retIsArg, // lua vibes... :]
+            file,
+            dbgInfo->line,
+            getDIType(var->getType()),
+            dbg.debug);
     dbg.builder->insertDeclare(storage,
-                               debugVar,
-                               dbg.builder->createExpression(),
-                               llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
-                               entry);
+            debugVar,
+            dbg.builder->createExpression(),
+            llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
+            entry);
     ++llvmArgsIter;
   }
 
@@ -93,6 +103,16 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     auto attrBuilder = llvm::AttrBuilder(*context);
     attrBuilder.addStructRetAttr(getLLVMType(fn->getRetTy()));
     arg->addAttrs(attrBuilder);
+  }
+
+  auto& layout = module->getDataLayout();
+  for (int i = 0; i < fn->getArgs().size(); ++i) {
+    auto llvmArg = llvmFn->arg_begin() + i + retIsArg;
+    auto arg = utils::at(fn->getArgs(), i);
+    if (auto x = utils::cast<types::ReferenceType>((arg).second->getType())) {
+      auto bytes = layout.getTypeAllocSize(getLLVMType(x));
+      setDereferenceableAttribute(*llvmArg, bytes);
+    }
   }
 
   // Generate all the used variables
@@ -111,10 +131,10 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     auto debugVar = dbg.builder->createAutoVariable(
             scope, v->getIdentifier(), file, dbgInfo->line, getDIType(v->getType()), dbg.debug);
     dbg.builder->insertDeclare(storage,
-                               debugVar,
-                               dbg.builder->createExpression(),
-                               llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
-                               entry);
+            debugVar,
+            dbg.builder->createExpression(),
+            llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
+            entry);
   }
 
   builder->CreateBr(body);
@@ -123,7 +143,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
   builder->SetInsertPoint(body);
 
   // Codegen for the current body
-  fn->getBody()->visit(this);
+  (void)build(fn->getBody().get());
   setDebugInfoLoc(nullptr);
 
   // Create return type

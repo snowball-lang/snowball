@@ -192,7 +192,7 @@ class DefiniteAssigment : public Analyzer {
   void visitConstructor(Statement::FunctionDef* p_node);
 
 #include "../../defs/accepts.def"
-public:
+ public:
   using Analyzer::Analyzer;
   DefiniteAssigment(const SourceInfo* srci) : Analyzer(srci){};
 

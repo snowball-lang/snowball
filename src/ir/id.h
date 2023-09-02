@@ -12,17 +12,17 @@ using id_t = std::uint64_t;
 
 /// Mixin class for IR nodes that need ids.
 class IdMixin {
-private:
+ private:
   /// the global id counter
   static id_t currentId;
 
   IdMixin& operator=(const IdMixin&) = delete;
 
-protected:
+ protected:
   /// the instance's id
   id_t id;
 
-public:
+ public:
   /// Resets the global id counter.
   static void resetId();
 

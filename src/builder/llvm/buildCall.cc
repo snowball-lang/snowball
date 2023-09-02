@@ -25,12 +25,12 @@ void LLVMBuilder::visit(ir::Call* call) {
   setDebugInfoLoc(call);
 
   auto args = utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value*>(
-          call->getArguments(), [&](std::shared_ptr<ir::Value> arg) { return build(arg.get()); });
+          call->getArguments(), [&](std::shared_ptr<ir::Value> arg) { return load(build(arg.get()), arg->getType()); });
   llvm::Value* llvmCall = nullptr;
   llvm::Value* allocatedValue = nullptr;
   llvm::Type* allocatedValueType = nullptr;
   if (auto c = utils::cast<types::FunctionType>(calleeValue->getType());
-      c != nullptr && utils::cast<types::BaseType>(c->getRetType())) {
+          c != nullptr && utils::cast<types::BaseType>(c->getRetType())) {
     auto retType = c->getRetType();
     allocatedValueType = getLLVMType(retType);
     // It's a function returning a type that's not a pointer
@@ -88,12 +88,11 @@ void LLVMBuilder::visit(ir::Call* call) {
     // vtable structure:
     // class instance = { [0] = vtable, ... }
     // vtable = { [size x ptr] } { [0] = fn1, [1] = fn2, ... } }
-    auto vtable = builder->CreateLoad(
-            vtableType->getPointerTo(),
+    auto vtable = builder->CreateLoad(vtableType->getPointerTo(),
             builder->CreateConstInBoundsGEP1_32(
                     vtableType, builder->CreatePointerCast(parentValue, vtableType->getPointerTo()), 0));
-    auto fn = builder->CreateLoad(builder->getPtrTy(),
-                                  builder->CreateConstInBoundsGEP2_32(vtableType->elements()[0], vtable, 0, index));
+    auto fn = builder->CreateLoad(vtableType->getPointerTo(),
+            builder->CreateConstInBoundsGEP2_32(vtableType->elements()[0], vtable, 0, index));
     builder->CreateAssumption(builder->CreateIsNotNull(fn));
     llvmCall = createCall(calleeType, (llvm::Function*)fn, args);
     if (allocatedValue) {
@@ -108,6 +107,12 @@ void LLVMBuilder::visit(ir::Call* call) {
       this->value = llvmCall;
     }
   } else {
+    if (!llvm::isa<llvm::Function>(callee)) {
+      // we are calling a value instead of a direct function.
+      // this means we need to dereference the value first
+      // and then call it.
+      callee = load(callee, fnType);
+    }
     llvmCall = createCall(calleeType, callee, args);
     if (allocatedValue) {
       // builder->CreateStore(llvmCall, allocatedValue);
@@ -121,16 +126,18 @@ void LLVMBuilder::visit(ir::Call* call) {
   if (llvm::isa<type>(llvmCall)) {                                                                                     \
     auto call = llvm::cast<type>(llvmCall);                                                                            \
     auto calledFunction = call->getCalledFunction();                                                                   \
+    bool retIsReference = false;                                                                                       \
     if (auto f = utils::dyn_cast<ir::Func>(calleeValue)) {                                                             \
       auto valBackup = this->value;                                                                                    \
+      retIsReference = utils::cast<types::ReferenceType>(f->getRetTy()) != nullptr;                                    \
       calledFunction = llvm::cast<llvm::Function>(build(f.get()));                                                     \
       this->value = valBackup;                                                                                         \
     }                                                                                                                  \
     if (calledFunction) {                                                                                              \
       auto attrSet = calledFunction->getAttributes();                                                                  \
-      if (calledFunction->getReturnType()->isPointerTy()) {                                                            \
-        auto bytes = module->getDataLayout().getTypeSizeInBits(calledFunction->getReturnType());                                 \
-        attrSet = attrSet.addRetAttribute(*context, llvm::Attribute::NonNull);                                                                        \
+      if (retIsReference) {                                                                                            \
+        auto bytes = module->getDataLayout().getTypeSizeInBits(calledFunction->getReturnType());                       \
+        attrSet = attrSet.addRetAttribute(*context, llvm::Attribute::NonNull);                                         \
       }                                                                                                                \
       call->setAttributes(attrSet);                                                                                    \
     }                                                                                                                  \

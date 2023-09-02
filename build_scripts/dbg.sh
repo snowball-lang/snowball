@@ -1,5 +1,6 @@
 set -ex
 mkdir -p bin/Debug
+# TODO: remove "-DCLANG_ENABLE_OPAQUE_POINTERS=OFF" line when support for llvm 16
 cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr/local -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug \
 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
 -DLLVM_ENABLE_BACKTRACES=OFF \

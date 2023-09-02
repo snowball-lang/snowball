@@ -36,7 +36,7 @@ class WhileLoop : public AcceptorExtend<WhileLoop, Value> {
   // each iteration
   bool doWhile = false;
 
-public:
+ public:
   explicit WhileLoop(std::shared_ptr<Value> cond, std::shared_ptr<Block> insts, bool doWhile = false)
       : cond(cond), insts(insts), doWhile(doWhile){};
 

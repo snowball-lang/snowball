@@ -23,7 +23,7 @@ class Context {
   // Current function being typechecked
   ir::Func* currentFunction = nullptr;
 
-public:
+ public:
   /// @return The current function being type checked
   auto getCurrentFunction() { return currentFunction; }
   /// @brief Set a new function that's being type checked
@@ -82,7 +82,7 @@ class TypeChecker : public AcceptorExtend<TypeChecker, codegen::ValueVisitor> {
   /// @brief It performs checks on a function declaration
   void checkFunctionDeclaration(ir::Func* p_node);
 
-public:
+ public:
   TypeChecker(std::shared_ptr<ir::Module> mod);
   ~TypeChecker() noexcept = default;
 
@@ -94,7 +94,7 @@ public:
    */
   void codegen() override;
 
-private:
+ private:
   /// @brief Typecheck the value given
   void visit(ir::Value* v) { v->visit(this); }
 

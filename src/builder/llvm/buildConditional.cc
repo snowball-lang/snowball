@@ -14,16 +14,16 @@ namespace codegen {
 void LLVMBuilder::visit(ir::Conditional* c) {
   auto parent = ctx->getCurrentFunction();
   assert(parent);
-  auto trueBB = h.create<llvm::BasicBlock>(*context, "", parent);
-  auto falseBB = h.create<llvm::BasicBlock>(*context, "", parent);
-  auto continueBB = h.create<llvm::BasicBlock>(*context, "", parent);
-  auto cond = build(c->getCondition().get());
+  auto trueBB = h.create<llvm::BasicBlock>(*context, "cond.then", parent);
+  auto falseBB = h.create<llvm::BasicBlock>(*context, "cond.else", parent);
+  auto continueBB = h.create<llvm::BasicBlock>(*context, "cond.cont", parent);
+  auto cond = load(build(c->getCondition().get()), c->getCondition()->getType());
   builder->CreateCondBr(cond, trueBB, falseBB);
   builder->SetInsertPoint(trueBB);
-  c->getBlock()->visit(this);
+  build(c->getBlock().get());
   CREATE_CONTINUE(false)
   builder->SetInsertPoint(falseBB);
-  if (auto x = c->getElse()) { x->visit(this); }
+  if (auto x = c->getElse()) { build(x.get()); }
   CREATE_CONTINUE((c->getElse() == nullptr))
   builder->SetInsertPoint(continueBB);
 }

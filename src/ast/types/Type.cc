@@ -2,8 +2,8 @@
 #include "Type.h"
 
 #include "../syntax/nodes.h"
-#include "ReferenceType.h"
 #include "PointerType.h"
+#include "ReferenceType.h"
 
 namespace snowball {
 namespace types {

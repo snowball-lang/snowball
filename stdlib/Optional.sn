@@ -58,6 +58,11 @@ pub class Option<_StoreType: Core::Sized> {
       return !self._engage;
     }
     /**
+     * @brief Whether the `Option` is engaged.
+     */
+    fn [[inline]] has_value() bool
+      { return self._engage; }
+    /**
      * @return The value stored in the `Option` or the
      *        given default value if the `Option` is empty.
      */

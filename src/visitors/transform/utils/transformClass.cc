@@ -5,22 +5,23 @@ using namespace snowball::Syntax::transform;
 
 // Set the default '=' operator for the class
 #define GENERATE_EQUALIZERS                                                                                            \
-  for (int allowPointer = 0; allowPointer < 2; ++allowPointer) {                                                       \
-    auto fn = Syntax::N<Statement::FunctionDef>(OperatorService::getOperatorMangle(OperatorType::EQ),                  \
-                                                Statement::Privacy::Status::PUBLIC);                                   \
-    fn->addAttribute(Attributes::BUILTIN);                                                                             \
-    fn->setArgs({new Expression::Param(                                                                                \
-            "other", allowPointer ? transformedType->getReferenceTo()->toRef() : transformedType->toRef())});            \
-    fn->setRetType(ctx->getVoidType()->toRef());                                                                       \
-    trans(fn);                                                                                                         \
+  if (ty->getName() != _SNOWBALL_CONST_PTR) {                                                                          \
+    for (int allowPointer = 0; allowPointer < 2; ++allowPointer) {                                                     \
+      auto fn = Syntax::N<Statement::FunctionDef>(                                                                     \
+              OperatorService::getOperatorMangle(OperatorType::EQ), Statement::Privacy::Status::PUBLIC);               \
+      fn->addAttribute(Attributes::BUILTIN);                                                                           \
+      fn->setArgs({new Expression::Param(                                                                              \
+              "other", allowPointer ? transformedType->getReferenceTo()->toRef() : transformedType->toRef())});        \
+      fn->setRetType(ctx->getVoidType()->toRef());                                                                     \
+      trans(fn);                                                                                                       \
+    }                                                                                                                  \
   }
 
 namespace snowball {
 namespace Syntax {
 
-types::DefinedType* Transformer::transformClass(const std::string& uuid,
-                                                cacheComponents::Types::TypeStore& classStore,
-                                                Expression::TypeRef* typeRef) {
+types::DefinedType* Transformer::transformClass(
+        const std::string& uuid, cacheComponents::Types::TypeStore& classStore, Expression::TypeRef* typeRef) {
   auto ty = utils::cast<Statement::DefinedTypeDef>(classStore.type);
   assert(ty);
 
@@ -51,13 +52,13 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
       auto _uuid = baseUuid + ":" + utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
       auto basedName = ty->getName();
       transformedType = new types::DefinedType(basedName,
-                                               _uuid,
-                                               ctx->module,
-                                               ty,
-                                               std::vector<types::DefinedType::ClassField*>{},
-                                               nullptr,
-                                               std::vector<types::Type*>{},
-                                               ty->isStruct());
+              _uuid,
+              ctx->module,
+              ty,
+              std::vector<types::DefinedType::ClassField*>{},
+              nullptr,
+              std::vector<types::Type*>{},
+              ty->isStruct());
       transformedType->setModule(ctx->module);
       transformedType->setUUID(_uuid);
       auto item = std::make_shared<transform::Item>(transformedType);
@@ -92,14 +93,14 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
         parentType = utils::cast<types::DefinedType>(parent);
         if (!parentType) {
           E<TYPE_ERROR>(ty,
-                        FMT("Can't inherit from '%s'", parent->getPrettyName().c_str()),
-                        {.info = "This is not a defined type!",
-                         .help = "Classes can only inherit from other "
-                                 "classes or "
-                                 "structs meaning\n that you can't "
-                                 "inherit from `i32` "
-                                 "(for example) because it's\n a "
-                                 "primitive type."});
+                  FMT("Can't inherit from '%s'", parent->getPrettyName().c_str()),
+                  {.info = "This is not a defined type!",
+                          .help = "Classes can only inherit from other "
+                                  "classes or "
+                                  "structs meaning\n that you can't "
+                                  "inherit from `i32` "
+                                  "(for example) because it's\n a "
+                                  "primitive type."});
         }
       }
       auto backupGenerateFunction = ctx->generateFunction;
@@ -114,21 +115,21 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
                 auto definedType = v->getDefinedType();
                 if (!definedType)
                   E<SYNTAX_ERROR>(v->getDBGInfo(),
-                                  "Can't infer type!",
-                                  {.info = "The type of this variable can't be inferred!",
-                                   .note = "This rule only applies to variables inside classes.",
-                                   .help = "You can't infer the type of a variable "
-                                           "without specifying it's type.\n"
-                                           "For example, you can't do this:\n"
-                                           "   let a = 10\n"
-                                           "You have to do this:\n"
-                                           "   let a: i32 = 10\n"
-                                           "Or this:\n"
-                                           "   let a = 10: i32"});
+                          "Can't infer type!",
+                          {.info = "The type of this variable can't be inferred!",
+                                  .note = "This rule only applies to variables inside classes.",
+                                  .help = "You can't infer the type of a variable "
+                                          "without specifying it's type.\n"
+                                          "For example, you can't do this:\n"
+                                          "   let a = 10\n"
+                                          "You have to do this:\n"
+                                          "   let a: i32 = 10\n"
+                                          "Or this:\n"
+                                          "   let a = 10: i32"});
                 auto varTy = transformType(definedType);
                 varTy->setMutable(v->isMutable());
-                auto field = new types::DefinedType::ClassField(v->getName(), varTy, v->getPrivacy(), v->getValue(),
-                                                                v->isMutable());
+                auto field = new types::DefinedType::ClassField(
+                        v->getName(), varTy, v->getPrivacy(), v->getValue(), v->isMutable());
                 field->setDBGInfo(v->getDBGInfo());
                 return field;
               });
@@ -159,18 +160,18 @@ types::DefinedType* Transformer::transformClass(const std::string& uuid,
       ctx->generateFunction = backupGenerateFunction;
       auto parentHasConstructor =
               allowConstructor && parentType != nullptr && !parentType->isStruct() && parentType->hasConstructor;
-      if (!parentHasConstructor && !transformedType->hasConstructor && !transformedType->isStruct()
-        && !ty->hasAttribute(Attributes::BUILTIN)) {
+      if (!parentHasConstructor && !transformedType->hasConstructor && !transformedType->isStruct() &&
+              !ty->hasAttribute(Attributes::BUILTIN)) {
         E<SYNTAX_ERROR>(ty,
-                        "This class does not have a constructor!",
-                        {.info = "This class does not have a constructor!",
-                         .note = "No constructor has been defined or can be inherited.",
-                         .help = "You have to define a constructor for this class.\n"
-                                 "For example:\n"
-                                 "1 | class Test {\n"
-                                 "2 |   Test() { ... }\n"
-                                 "3 | }\n"
-                                 "4 |"});
+                "This class does not have a constructor!",
+                {.info = "This class does not have a constructor!",
+                        .note = "No constructor has been defined or can be inherited.",
+                        .help = "You have to define a constructor for this class.\n"
+                                "For example:\n"
+                                "1 | class Test {\n"
+                                "2 |   Test() { ... }\n"
+                                "3 | }\n"
+                                "4 |"});
       }
 
       ctx->setCurrentClass(backupClass);

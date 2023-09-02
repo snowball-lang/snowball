@@ -22,7 +22,7 @@ llvm::GlobalVariable* LLVMBuilder::createVirtualTable(types::DefinedType* ty, ll
           llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(*context)), // TODO: class info
   };
   for (auto fn : ty->getVTable()) {
-    fn->visit(this);
+    (void)build(fn.get());
     auto c = llvm::cast<llvm::Constant>(this->value);
 
     functions.push_back(c);
@@ -44,8 +44,8 @@ llvm::GlobalVariable* LLVMBuilder::createVirtualTable(types::DefinedType* ty, ll
   vTable->setComdat(module->getOrInsertComdat(structName));
 #endif
 
-  auto arr = llvm::ConstantArray::get(llvm::ArrayType::get(llvm::Type::getInt8PtrTy(*context), functions.size()),
-                                      functions);
+  auto arr = llvm::ConstantArray::get(
+          llvm::ArrayType::get(llvm::Type::getInt8PtrTy(*context), functions.size()), functions);
   auto s = llvm::ConstantStruct::get(vtableType, arr);
   vTable->setInitializer(s);
   return vTable;

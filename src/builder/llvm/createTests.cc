@@ -19,8 +19,8 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
   mainFunction->addFnAttr(llvm::Attribute::OptimizeNone);
 
   builder->CreateCall(printFunction,
-                      {builder->CreateGlobalStringPtr(
-                              FMT("\nExecuting %s%i%s test(s)...\n", BBLU, ctx->tests.size(), RESET), "test.msg")});
+          {builder->CreateGlobalStringPtr(
+                  FMT("\nExecuting %s%i%s test(s)...\n", BBLU, ctx->tests.size(), RESET), "test.msg")});
 
   auto successCount = builder->CreateAlloca(builder->getInt32Ty(), nullptr, "success.count");
   auto failCount = builder->CreateAlloca(builder->getInt32Ty(), nullptr, "fail.count");
@@ -39,8 +39,7 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
     auto doesExpect = attrArgs.find("expect") != attrArgs.end();
     auto expect = doesExpect ? std::stoi(attrArgs["expect"]) : 1;
     auto namePtr = builder->CreateGlobalStringPtr(name, "test.alloca");
-    auto call = builder->CreateCall(
-            testFunction,
+    auto call = builder->CreateCall(testFunction,
             {llvmFunc, namePtr, builder->getInt32(testIndex), builder->getInt1(shouldSkip), builder->getInt32(expect)});
     auto shouldContinue = builder->CreateICmpEQ(call, builder->getInt32(1));
     if (shouldSkip) {
@@ -68,8 +67,7 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
   }
 
   if (ctx->tests.size() == 0) {
-    builder->CreateCall(
-            printFunction,
+    builder->CreateCall(printFunction,
             {builder->CreateGlobalStringPtr(FMT("\n%s"
                                                 "  Oops! It seems like our tests have gone on vacation!\n\n"
                                                 "  They must be off sunbathing on a tropical beach or enjoying some\n"
@@ -79,34 +77,33 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
                                                 "  it a high-five?\n\n"
                                                 "  Remember, real programmers write self-assured code that\n"
                                                 "  doesn't need tests to prove its awesomeness! 😉%s\n",
-                                                BYEL, RESET),
-                                            "test.msg")});
+                                                    BYEL, RESET),
+                    "test.msg")});
   }
 
   builder->CreateCall(printFunction, {builder->CreateGlobalStringPtr(FMT("\nTest results:\n"), "test.msg")});
   builder->CreateCall(printFunction,
-                      {builder->CreateGlobalStringPtr(FMT("  %s+ %%i%s test(s) passed; ", BGRN, RESET), "test.msg"),
-                       builder->CreateLoad(builder->getInt32Ty(), successCount)});
+          {builder->CreateGlobalStringPtr(FMT("  %s+ %%i%s test(s) passed; ", BGRN, RESET), "test.msg"),
+                  builder->CreateLoad(builder->getInt32Ty(), successCount)});
   builder->CreateCall(printFunction,
-                      {builder->CreateGlobalStringPtr(FMT("\n  %s- %%i%s test(s) failed; ", BRED, RESET), "test.msg"),
-                       builder->CreateLoad(builder->getInt32Ty(), failCount)});
+          {builder->CreateGlobalStringPtr(FMT("\n  %s- %%i%s test(s) failed; ", BRED, RESET), "test.msg"),
+                  builder->CreateLoad(builder->getInt32Ty(), failCount)});
   builder->CreateCall(printFunction,
-                      {builder->CreateGlobalStringPtr(FMT("\n  %s? %%i%s test(s) skipped; ", BYEL, RESET), "test.msg"),
-                       builder->getInt32(skipCount)});
-  builder->CreateCall(
-          printFunction,
+          {builder->CreateGlobalStringPtr(FMT("\n  %s? %%i%s test(s) skipped; ", BYEL, RESET), "test.msg"),
+                  builder->getInt32(skipCount)});
+  builder->CreateCall(printFunction,
           {builder->CreateGlobalStringPtr(FMT("\n  %s= %%i%s executed test(s) total\n"
                                               "  %s=> %%i%%%s of the tests passed. 🧪\n\n",
-                                              BOLD, RESET, BOLD, RESET),
-                                          "test.msg"),
-           builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), successCount),
-                              builder->CreateLoad(builder->getInt32Ty(), failCount)),
-           testIndex == 1 ? builder->getInt32(0) // Prevent division by zero
+                                                  BOLD, RESET, BOLD, RESET),
+                   "test.msg"),
+                  builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), successCount),
+                          builder->CreateLoad(builder->getInt32Ty(), failCount)),
+                  testIndex == 1
+                          ? builder->getInt32(0) // Prevent division by zero
                           : builder->CreateMul(
-                                    builder->CreateSDiv(
-                                            builder->CreateLoad(builder->getInt32Ty(), successCount),
+                                    builder->CreateSDiv(builder->CreateLoad(builder->getInt32Ty(), successCount),
                                             builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), successCount),
-                                                               builder->CreateLoad(builder->getInt32Ty(), failCount))),
+                                                    builder->CreateLoad(builder->getInt32Ty(), failCount))),
                                     builder->getInt32(100))});
 
   builder->CreateBr(end);

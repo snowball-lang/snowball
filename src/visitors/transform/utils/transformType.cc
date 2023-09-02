@@ -35,9 +35,7 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     auto baseType = transformType(pointer->getBaseType());
     auto x = baseType->getPointerTo(pointer->isMutable());
 
-    auto typeRef = TR(_SNOWBALL_CONST_PTR, nullptr, std::vector<Expression::TypeRef*>{
-      baseType->toRef()
-    });
+    auto typeRef = TR(_SNOWBALL_CONST_PTR, nullptr, std::vector<Expression::TypeRef*>{baseType->toRef()});
     transformType(typeRef);
     return x;
   } else if (ty->isTypeDecl()) {
@@ -53,7 +51,7 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     for (auto arg : fn->getArgs()) args.push_back(transformType(arg));
     auto ret = transformType(fn->getReturnValue());
     return builder.createFunctionType(args, ret);
-  } else if (auto x = ty->_getInternalType()) { 
+  } else if (auto x = ty->_getInternalType()) {
     // TODO: maybe move up in the function to prevent problems with generics?
     return x->copy();
   }
@@ -105,16 +103,16 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     } else if (type.has_value()) {
       if (auto x = utils::cast<types::BaseType>(type.value()); x && x->isPrivate() && !canPrivate) {
         E<TYPE_ERROR>(ty,
-                      FMT("Can't use '%s' as a type!", name.c_str()),
-                      {.info = "This is a private type and you can't access it from here!",
-                       .note = "Private types can only be accessed from inside the "
-                               "module they are defined in.",
-                       .help = "If you are trying to access a private type from "
-                               "outside the module, you can't\ndo that. "
-                               "If you are trying to access a private type from "
-                               "inside the module, \nyou can't do that either. "
-                               "You can only access private types from inside "
-                               "the\nmodule they are defined in."});
+                FMT("Can't use '%s' as a type!", name.c_str()),
+                {.info = "This is a private type and you can't access it from here!",
+                        .note = "Private types can only be accessed from inside the "
+                                "module they are defined in.",
+                        .help = "If you are trying to access a private type from "
+                                "outside the module, you can't\ndo that. "
+                                "If you are trying to access a private type from "
+                                "inside the module, \nyou can't do that either. "
+                                "You can only access private types from inside "
+                                "the\nmodule they are defined in."});
       }
 
       returnedType = *type;
@@ -153,9 +151,9 @@ continueTypeFetch:
 
   if (existsWithGenerics) {
     E<TYPE_ERROR>(ty,
-                  FMT("Type '%s' requires to have no template "
-                      "parameters but at least one has been given?",
-                      name.c_str()));
+            FMT("Type '%s' requires to have no template "
+                "parameters but at least one has been given?",
+                    name.c_str()));
   }
 
   if (returnedType == nullptr) E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
@@ -163,9 +161,9 @@ continueTypeFetch:
     auto compAsDefinedType = utils::cast<GenericContainer<types::Type*>>(returnedType);
     auto compGenerics = compAsDefinedType == nullptr ? std::vector<types::Type*>{} : compAsDefinedType->getGenerics();
     E<TYPE_ERROR>(ty,
-                  FMT("Type generics for '%s' don't match with '%s' ones!",
-                      returnedType->getPrettyName().c_str(),
-                      ty->getPrettyName().c_str()));
+            FMT("Type generics for '%s' don't match with '%s' ones!",
+                    returnedType->getPrettyName().c_str(),
+                    ty->getPrettyName().c_str()));
   }
 
   if (auto alias = utils::cast<types::TypeAlias>(returnedType)) { returnedType = alias->getBaseType(); }

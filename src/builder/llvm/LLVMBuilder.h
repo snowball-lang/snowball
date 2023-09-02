@@ -3,8 +3,8 @@
 #include "../../ValueVisitor/Visitor.h"
 #include "../../ast/types/DefinedType.h"
 #include "../../ast/types/FunctionType.h"
-#include "../../ast/types/ReferenceType.h"
 #include "../../ast/types/PointerType.h"
+#include "../../ast/types/ReferenceType.h"
 #include "../../ast/types/TypeAlias.h"
 #include "../../ir/id.h"
 #include "../../ir/module/MainModule.h"
@@ -53,7 +53,7 @@ class LLVMBuilderContext {
   // A container for all the vtable struct types.
   std::map<ir::id_t, llvm::StructType*> vtableType;
 
-public:
+ public:
   // A map of test functions containing their names
   std::map<std::shared_ptr<ir::Func>, llvm::Function*> tests;
   // A map of benchmark functions containing their names
@@ -92,6 +92,8 @@ public:
     return item == vtableType.end() ? nullptr : item->second;
   }
   // TODO: add a function to clear functions, symbols, etc as cleanup
+  /// @brief A flag to avoid loading a value in memory
+  bool doNotLoadInMemory = false;
 };
 
 /**
@@ -188,10 +190,9 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
   // Target machine that the module will be compiled into
   llvm::TargetMachine* target;
 
-public:
+ public:
   // Create a new instance of a llvm builder
-  LLVMBuilder(std::shared_ptr<ir::MainModule> mod, bool testMode = false,
-              bool benchmarkMode = false);
+  LLVMBuilder(std::shared_ptr<ir::MainModule> mod, bool testMode = false, bool benchmarkMode = false);
   /**
    * @brief Dump the LLVM IR code to stdout.
    *
@@ -236,7 +237,7 @@ public:
 #include "../../defs/visits.def"
 #undef VISIT
 
-private:
+ private:
   /**
    * @brief Create a new LLVM module
    * @return An unique ptr to a new module
@@ -247,6 +248,13 @@ private:
    * @return An unique pointer to the new context.
    */
   void newContext();
+  /**
+   * It loads a value if it's a pointer type.
+   * @param v Value to load
+   * @param ty Type to load
+   * @return llvm::Value* Resultant llvm value
+   */
+  llvm::Value* load(llvm::Value* v, types::Type* ty);
   /**
    * Helper function to create a new function declaration
    *
@@ -331,14 +339,6 @@ private:
    */
   bool buildOperator(ir::Call* call);
   /**
-   * @brief It creates an insert value instruction.
-   * @param v Value to insert
-   * @param rhs Base value to insert the value
-   * @param refType Reference type to insert the value
-   * @return llvm::Value* Resultant llvm value
-   */
-  llvm::Value* createInsertValue(llvm::Value* v, llvm::Value* rhs, types::Type* refType);
-  /**
    * @brief Get a wrapper for a function. Subprogram is considered
    * also as a function description.
    *
@@ -408,12 +408,11 @@ private:
    * note: for the result of this function, `value`
    * can be accessed. This used instead of a return
    * value because c++ wants to make my life misserable.
+   *
+   * @note It may not return "value" if the value is a
+   *  statement.
    */
-  llvm::Value* build(ir::Value* v) {
-    setDebugInfoLoc(v);
-    v->visit(this);
-    return this->value;
-  }
+  llvm::Value* build(ir::Value* v);
   /**
    * @brief Fetch the base type of a pointer type.
    * @param ty Pointer type to fetch the base type from.

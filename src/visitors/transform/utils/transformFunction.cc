@@ -7,10 +7,10 @@ namespace snowball {
 namespace Syntax {
 
 std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fnStore,
-                                                         const std::vector<types::Type*>& deducedTypes,
-                                                         bool isEntryPoint,
-                                                         std::deque<std::shared_ptr<ir::Func>>
-                                                                 overloads) {
+        const std::vector<types::Type*>& deducedTypes,
+        bool isEntryPoint,
+        std::deque<std::shared_ptr<ir::Func>>
+                overloads) {
   auto node = fnStore.function;
   bool dontAddToModule = false;
 
@@ -48,8 +48,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
       auto returnType = transformType(node->getRetType());
       // Create a new function value and store it's return type.
       fn = builder.createFunction(node->getDBGInfo(), name,
-                                  (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)),
-                                  node->isVariadic());
+              (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)), node->isVariadic());
       fn->setParent(ctx->getCurrentClass());
       fn->setRetTy(returnType);
       fn->setPrivacy(node->getPrivacy());
@@ -59,7 +58,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
       fn->setAttributes(node);
       auto isExtern = node->isExtern();
       if (((fn->hasParent() || !fn->isStatic()) || fn->isPrivate()) && !isEntryPoint && !isExtern &&
-          !fn->hasAttribute(Attributes::EXTERNAL_LINKAGE) && !fn->hasAttribute(Attributes::EXPORT))
+              !fn->hasAttribute(Attributes::EXTERNAL_LINKAGE) && !fn->hasAttribute(Attributes::EXPORT))
         fn->addAttribute(Attributes::INTERNAL_LINKAGE);
 
       ir::Func::FunctionArgs newArgs = {};
@@ -75,7 +74,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
         auto arg = node->getArgs().at(i);
 
         auto a = builder.createArgument(node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
-                                        arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
+                arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
         a->setType(transformType(arg->getType()));
         if (arg->getName() != "self") a->getType()->setMutable(arg->isMutable());
         a->setMutability(a->getType()->isMutable());
@@ -119,13 +118,13 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
 
           auto body = bodiedFn->getBody();
           if (!bodyReturns(body->getStmts()) &&
-              !((utils::cast<types::NumericType>(returnType)) || (utils::cast<types::VoidType>(returnType))) &&
-              !fn->isConstructor() && !node->hasAttribute(Attributes::NOT_IMPLEMENTED) &&
-              !node->hasAttribute(Attributes::BUILTIN)) {
+                  !((utils::cast<types::NumericType>(returnType)) || (utils::cast<types::VoidType>(returnType))) &&
+                  !fn->isConstructor() && !node->hasAttribute(Attributes::NOT_IMPLEMENTED) &&
+                  !node->hasAttribute(Attributes::BUILTIN)) {
             E<TYPE_ERROR>(node,
-                          "Function lacks ending return statement!",
-                          {.info = "Function does not return on all "
-                                   "paths!"});
+                    "Function lacks ending return statement!",
+                    {.info = "Function does not return on all "
+                             "paths!"});
           }
 
           std::vector<std::shared_ptr<ir::Value>> prependedInsts;

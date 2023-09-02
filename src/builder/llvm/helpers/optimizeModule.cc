@@ -81,8 +81,8 @@ void LLVMBuilder::optimizeModule(app::Options::Optimization o) {
   llvm::TargetLibraryInfoImpl tlii(moduleTriple);
 
   // cross register them too?
-  pass_builder.crossRegisterProxies(loop_analysis_manager, function_analysis_manager, c_gscc_analysis_manager,
-                                    module_analysis_manager);
+  pass_builder.crossRegisterProxies(
+          loop_analysis_manager, function_analysis_manager, c_gscc_analysis_manager, module_analysis_manager);
   function_analysis_manager.registerPass([&] { return llvm::TargetLibraryAnalysis(tlii); });
 
   llvm::OptimizationLevel level;
@@ -104,9 +104,11 @@ void LLVMBuilder::optimizeModule(app::Options::Optimization o) {
   llvm::ModulePassManager mpm;
   if (o == app::Options::OPTIMIZE_O0) {
     mpm = pass_builder.buildThinLTODefaultPipeline(level, nullptr);
+  } else {
+    mpm = pass_builder.buildLTOPreLinkDefaultPipeline(level);
 
     std::unique_ptr<llvm::legacy::FunctionPassManager> functionPassManager =
-      std::make_unique<llvm::legacy::FunctionPassManager>(module.get());
+            std::make_unique<llvm::legacy::FunctionPassManager>(module.get());
 
     // Promote allocas to registers.
     functionPassManager->add(llvm::createPromoteMemoryToRegisterPass());
@@ -121,11 +123,7 @@ void LLVMBuilder::optimizeModule(app::Options::Optimization o) {
 
     functionPassManager->doInitialization();
 
-    for (auto &function : module->getFunctionList()) {
-      functionPassManager->run(function);
-    }
-  } else {
-    mpm = pass_builder.buildLTOPreLinkDefaultPipeline(level);
+    for (auto& function : module->getFunctionList()) { functionPassManager->run(function); }
   }
 
   llvm::legacy::PassManager codegen_pm;

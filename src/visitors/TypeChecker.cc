@@ -4,8 +4,8 @@
 #include "../ast/errors/error.h"
 #include "../ast/syntax/nodes.h"
 #include "../ast/types/FunctionType.h"
-#include "../ast/types/PrimitiveTypes.h"
 #include "../ast/types/PointerType.h"
+#include "../ast/types/PrimitiveTypes.h"
 #include "../ast/types/ReferenceType.h"
 #include "../ir/values/Argument.h"
 #include "../ir/values/Call.h"
@@ -45,10 +45,10 @@ VISIT(Func) {
   auto backup = ctx->getCurrentFunction();
   ctx->setCurrentFunction(p_node);
   auto body = p_node->getBody();
-  if (p_node->hasAttribute(Attributes::UNSAFE) && !p_node->hasAttribute(Attributes::UNSAFE_FUNC_NOT_BODY)) 
+  if (p_node->hasAttribute(Attributes::UNSAFE) && !p_node->hasAttribute(Attributes::UNSAFE_FUNC_NOT_BODY))
     ctx->unsafeContext = true;
   if (body) body->visit(this);
-  if (p_node->hasAttribute(Attributes::UNSAFE) && !p_node->hasAttribute(Attributes::UNSAFE_FUNC_NOT_BODY)) 
+  if (p_node->hasAttribute(Attributes::UNSAFE) && !p_node->hasAttribute(Attributes::UNSAFE_FUNC_NOT_BODY))
     ctx->unsafeContext = false;
 
   ctx->setCurrentFunction(backup);
@@ -70,25 +70,26 @@ VISIT(DereferenceTo) {
   val->visit(this);
 
   cantBeVoid(p_node,
-             val->getType(),
-             FMT("Value used for reference '%s' has a value with 'void' "
-                 "type!",
-                 p_node->getType()->getPrettyName().c_str()));
+          val->getType(),
+          FMT("Value used for reference '%s' has a value with 'void' "
+              "type!",
+                  p_node->getType()->getPrettyName().c_str()));
   if (utils::cast<types::PointerType>(val->getType())) {
     if (!ctx->unsafeContext) {
       E<SYNTAX_ERROR>(p_node,
-                      FMT("Pointer dereference is unsafe!"),
-                      {.info = "This pointer dereference is unsafe!",
-                       .note = "This error is caused by the pointer dereference being unsafe.",
-                       .help = "Try wrapping the pointer dereference in an `unsafe { ... }` block\nor adding the "
-                               "'unsafe' attribute to the function.\n\nsee more: https://snowball-lang.gitbook.io/docs/language-reference/unsafe-snowball",
-                       .tail = EI<>(val->getDBGInfo(), "", {.info = "This is the pointer declaration."})});
+              FMT("Pointer dereference is unsafe!"),
+              {.info = "This pointer dereference is unsafe!",
+                      .note = "This error is caused by the pointer dereference being unsafe.",
+                      .help = "Try wrapping the pointer dereference in an `unsafe { ... }` block\nor adding the "
+                              "'unsafe' attribute to the function.\n\nsee more: "
+                              "https://snowball-lang.gitbook.io/docs/language-reference/unsafe-snowball",
+                      .tail = EI<>(val->getDBGInfo(), "", {.info = "This is the pointer declaration."})});
     }
   } else if (!utils::cast<types::ReferenceType>(val->getType())) {
     E<TYPE_ERROR>(p_node,
-                  FMT("Value used for dereference '%s' is not a "
-                      "reference!",
-                      p_node->getType()->getPrettyName().c_str()));
+            FMT("Value used for dereference '%s' is not a "
+                "reference!",
+                    p_node->getType()->getPrettyName().c_str()));
   }
 }
 
@@ -97,10 +98,10 @@ VISIT(ReferenceTo) {
   val->visit(this);
 
   cantBeVoid(p_node,
-             val->getType(),
-             FMT("Value used for reference '%s' has a value with 'void' "
-                 "type!",
-                 p_node->getType()->getPrettyName().c_str()));
+          val->getType(),
+          FMT("Value used for reference '%s' has a value with 'void' "
+              "type!",
+                  p_node->getType()->getPrettyName().c_str()));
 }
 
 VISIT(Call) {
@@ -116,23 +117,24 @@ VISIT(Call) {
   if (fn) {
     if (fn->hasAttribute(Attributes::NOT_IMPLEMENTED)) {
       E<SYNTAX_ERROR>(p_node,
-                      FMT("Function '%s' is not implemented!", fn->getName(true).c_str()),
-                      {.info = "This function is not implemented!",
-                       .note = "This error is caused by the function having the \n"
-                               "'not implemented' attribute.",
-                       .help = "Try implementing the function or removing the \n"
-                               "'= 0' attribute from it or override it from a \n"
-                               "child class.",
-                       .tail = EI<>(fn->getDBGInfo(), "", {.info = "This is the function declaration."})});
+              FMT("Function '%s' is not implemented!", fn->getName(true).c_str()),
+              {.info = "This function is not implemented!",
+                      .note = "This error is caused by the function having the \n"
+                              "'not implemented' attribute.",
+                      .help = "Try implementing the function or removing the \n"
+                              "'= 0' attribute from it or override it from a \n"
+                              "child class.",
+                      .tail = EI<>(fn->getDBGInfo(), "", {.info = "This is the function declaration."})});
     } else if (fn->hasAttribute(Attributes::UNSAFE) && !ctx->unsafeContext) {
       E<SYNTAX_ERROR>(p_node,
-                      FMT("Function '%s' is unsafe!", fn->getName(true).c_str()),
-                      {.info = "This function is unsafe!",
-                       .note = "This error is caused by the function having the \n"
-                               "'unsafe' attribute.",
-                       .help = "Try wrapping the call in an `unsafe { ... }` block\nor removing the 'unsafe' "
-                               "attribute from the function.\n\nsee more: https://snowball-lang.gitbook.io/docs/language-reference/unsafe-snowball",
-                       .tail = EI<>(fn->getDBGInfo(), "", {.info = "This is the function declaration."})});
+              FMT("Function '%s' is unsafe!", fn->getName(true).c_str()),
+              {.info = "This function is unsafe!",
+                      .note = "This error is caused by the function having the \n"
+                              "'unsafe' attribute.",
+                      .help = "Try wrapping the call in an `unsafe { ... }` block\nor removing the 'unsafe' "
+                              "attribute from the function.\n\nsee more: "
+                              "https://snowball-lang.gitbook.io/docs/language-reference/unsafe-snowball",
+                      .tail = EI<>(fn->getDBGInfo(), "", {.info = "This is the function declaration."})});
     }
     fn->visit(this);
   }
@@ -150,10 +152,10 @@ VISIT(VariableDeclaration) {
   val->visit(this);
 
   cantBeVoid(p_node,
-             val->getType(),
-             FMT("Value used for variable '%s' has a value with 'void' "
-                 "type!",
-                 p_node->getIdentifier().c_str()));
+          val->getType(),
+          FMT("Value used for variable '%s' has a value with 'void' "
+              "type!",
+                  p_node->getIdentifier().c_str()));
 }
 
 VISIT(Throw) {
@@ -173,17 +175,17 @@ VISIT(TryCatch) {
 
 VISIT(IndexExtract) {
   cantBeVoid(p_node,
-             p_node->getType(),
-             "Value used for index extraction has a value with 'void' "
-             "type!");
+          p_node->getType(),
+          "Value used for index extraction has a value with 'void' "
+          "type!");
 }
 
 VISIT(Variable) {
   cantBeVoid(p_node,
-             p_node->getType(),
-             FMT("Value used for variable '%s' has a value with 'void' "
-                 "type!",
-                 p_node->getIdentifier().c_str()));
+          p_node->getType(),
+          FMT("Value used for variable '%s' has a value with 'void' "
+              "type!",
+                  p_node->getIdentifier().c_str()));
 }
 
 VISIT(Argument) {
@@ -219,36 +221,44 @@ VISIT(Cast) {
 
   // we allow casting from void pointers to any other pointer type
   if (utils::cast<types::PointerType>(v->getType()) && utils::cast<types::PointerType>(t)) {
-    if (utils::cast<types::VoidType>(utils::cast<types::PointerType>(v->getType())->getBaseType()) || utils::cast<types::VoidType>(utils::cast<types::PointerType>(t)->getBaseType())) {
+    if (utils::cast<types::VoidType>(utils::cast<types::PointerType>(v->getType())->getBaseType()) ||
+            utils::cast<types::VoidType>(utils::cast<types::PointerType>(t)->getBaseType())) {
+      return;
+    }
+  }
+
+  // we also allow "&x to *x" 
+  if (utils::cast<types::ReferenceType>(v->getType()) && utils::cast<types::PointerType>(t)) {
+    if (utils::cast<types::ReferenceType>(v->getType())->getPointedType()->is(utils::cast<types::PointerType>(t)->getBaseType())) {
       return;
     }
   }
 
   if (!v->getType()->canCast(t)) {
     E<TYPE_ERROR>(p_node,
-                  FMT("Can't create a casting operator from type `%s` "
-                      "to type `%s`!",
-                      v->getType()->getPrettyName().c_str(),
-                      t->getPrettyName().c_str()),
-                  {.note = "This error is caused by the types not being "
-                           "castable.",
-                   .help = "Casting operators allow for type conversions between "
-                           "different data types.\n"
-                           "However, in this case, it is not possible to create a "
-                           "casting operator from \n"
-                           "the specified source type to the desired target type.\n\n"
-                           "Please ensure that the types involved in the casting "
-                           "operation are compatible \n"
-                           "and that there is a valid casting mechanism defined "
-                           "between them. Check the \n"
-                           "documentation or language specifications to verify the "
-                           "supported casting operations \n"
-                           "and rules for the involved types.\n\n"
-                           "If the desired type conversion is not directly supported, "
-                           "you may need to consider \n"
-                           "alternative approaches such as using explicit conversion "
-                           "functions or implementing \n"
-                           "custom conversion logic to achieve the desired result."});
+            FMT("Can't create a casting operator from type `%s` "
+                "to type `%s`!",
+                    v->getType()->getPrettyName().c_str(),
+                    t->getPrettyName().c_str()),
+            {.note = "This error is caused by the types not being "
+                     "castable.",
+                    .help = "Casting operators allow for type conversions between "
+                            "different data types.\n"
+                            "However, in this case, it is not possible to create a "
+                            "casting operator from \n"
+                            "the specified source type to the desired target type.\n\n"
+                            "Please ensure that the types involved in the casting "
+                            "operation are compatible \n"
+                            "and that there is a valid casting mechanism defined "
+                            "between them. Check the \n"
+                            "documentation or language specifications to verify the "
+                            "supported casting operations \n"
+                            "and rules for the involved types.\n\n"
+                            "If the desired type conversion is not directly supported, "
+                            "you may need to consider \n"
+                            "alternative approaches such as using explicit conversion "
+                            "functions or implementing \n"
+                            "custom conversion logic to achieve the desired result."});
   }
 }
 
@@ -259,33 +269,31 @@ VISIT(Return) {
   if (p_node->getExpr() != nullptr) p_node->getExpr()->visit(this);
   if ((utils::cast<types::VoidType>(fn->getRetTy()) != nullptr) && (p_node->getExpr() != nullptr)) {
     E<TYPE_ERROR>(p_node,
-                  FMT("Nonvalue returning function cant have a "
-                      "return containing an expression (%s)!",
-                      p_node->getType()->getPrettyName().c_str()));
+            FMT("Nonvalue returning function cant have a "
+                "return containing an expression (%s)!",
+                    p_node->getType()->getPrettyName().c_str()));
   }
 
   if ((utils::cast<types::VoidType>(fn->getRetTy()) == nullptr) && (p_node->getExpr() == nullptr)) {
     E<TYPE_ERROR>(p_node,
-                  FMT("Can't return \"nothing\" in a function with "
-                      "non-void return type (%s)!",
-                      fn->getRetTy()->getPrettyName().c_str()));
+            FMT("Can't return \"nothing\" in a function with "
+                "non-void return type (%s)!",
+                    fn->getRetTy()->getPrettyName().c_str()));
   }
 
   if (!p_node->getType()->is(fn->getRetTy())) {
     E<TYPE_ERROR>(p_node,
-                  FMT("Return type (%s) does not match parent "
-                      "function's return type (%s)!",
-                      p_node->getType()->getPrettyName().c_str(),
-                      fn->getRetTy()->getPrettyName().c_str()));
+            FMT("Return type (%s) does not match parent "
+                "function's return type (%s)!",
+                    p_node->getType()->getPrettyName().c_str(),
+                    fn->getRetTy()->getPrettyName().c_str()));
   }
 }
 
 VISIT(Block) {
-  if (p_node->hasAttribute(Attributes::UNSAFE)) 
-    ctx->unsafeContext = true;
+  if (p_node->hasAttribute(Attributes::UNSAFE)) ctx->unsafeContext = true;
   for (auto i : p_node->getBlock()) { i->visit(this); }
-  if (p_node->hasAttribute(Attributes::UNSAFE)) 
-    ctx->unsafeContext = false;
+  if (p_node->hasAttribute(Attributes::UNSAFE)) ctx->unsafeContext = false;
 }
 
 void TypeChecker::codegen() {
@@ -314,49 +322,51 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
     assert(binOp);
     if (isAssignment && accessingSelf && !ctx->getCurrentFunction()->getType()->isMutable()) {
       E<VARIABLE_ERROR>(p_node,
-                        "You can't call a mutating method on an immutable instance!",
-                        {.info = "This function is mutable!",
-                         .note = "This error is caused by the function being "
-                                 "mutable, but the value being nonmutable.",
-                         .help = "Try to make the value mutable by adding the 'mut' "
-                                 "keyword or make the function\nnonmutable by "
-                                 "removing the 'mut' keyword from it's declaration.",
-                         .tail = EI<>(value->getDBGInfo(),
-                                      "",
-                                      {
-                                              .info = "This value is nonmutable!",
-                                      })});
+              "You can't call a mutating method on an immutable instance!",
+              {.info = "This function is mutable!",
+                      .note = "This error is caused by the function being "
+                              "mutable, but the value being nonmutable.",
+                      .help = "Try to make the value mutable by adding the 'mut' "
+                              "keyword or make the function\nnonmutable by "
+                              "removing the 'mut' keyword from it's declaration.",
+                      .tail = EI<>(value->getDBGInfo(),
+                              "",
+                              {
+                                      .info = "This value is nonmutable!",
+                              })});
     }
 
     if (isAssignment && !binOp->ignoreMutability && !isMutable) {
       if (!p_node->isInitialization) {
         E<VARIABLE_ERROR>(p_node,
-                          "You can't assign a new value to a "
-                          "unmutable "
-                          "variable",
-                          {.note = "This error is caused by the 'mut' keyword "
-                                   "not being present in \nthe variable "
-                                   "declaration.\n\nvalue type: " +
-                                   (std::string)BOLD + fn->getRetTy()->getPrettyName() + RESET,
-                           .help = "Try to make the variable mutable by adding "
-                                   "the 'mut' keyword.",
-                           .tail = EI<>(value->getDBGInfo(), "", {.info = "This variable is not mutable!"})});
+                "You can't assign a new value to a "
+                "unmutable "
+                "variable",
+                {.note = "This error is caused by the 'mut' keyword "
+                         "not being present in \nthe variable "
+                         "declaration.\n\nvalue type: " +
+                                (std::string)BOLD + fn->getRetTy()->getPrettyName() + RESET,
+                        .help = "Try to make the variable mutable by adding "
+                                "the 'mut' keyword.",
+                        .tail = EI<>(value->getDBGInfo(), "", {.info = "This variable is not mutable!"})});
       }
     } else if (isAssignment) {
       if ((utils::dyn_cast<ir::Variable>(value) == nullptr &&
-           utils::dyn_cast<ir::VariableDeclaration>(value) == nullptr &&
-           utils::dyn_cast<ir::ValueExtract>(value) == nullptr && utils::dyn_cast<ir::IndexExtract>(value) == nullptr &&
-           utils::dyn_cast<ir::Argument>(value) == nullptr && utils::dyn_cast<ir::DereferenceTo>(value) == nullptr &&
-           utils::dyn_cast<ir::ReferenceTo>(value) == nullptr && utils::dyn_cast<ir::Call>(value) == nullptr) &&
-          utils::cast<types::PrimitiveType>(value->getType())) {
+                  utils::dyn_cast<ir::VariableDeclaration>(value) == nullptr &&
+                  utils::dyn_cast<ir::ValueExtract>(value) == nullptr &&
+                  utils::dyn_cast<ir::IndexExtract>(value) == nullptr &&
+                  utils::dyn_cast<ir::Argument>(value) == nullptr &&
+                  utils::dyn_cast<ir::DereferenceTo>(value) == nullptr &&
+                  utils::dyn_cast<ir::ReferenceTo>(value) == nullptr && utils::dyn_cast<ir::Call>(value) == nullptr) &&
+              utils::cast<types::PrimitiveType>(value->getType())) {
         E<VARIABLE_ERROR>(p_node,
-                          "Expression is not assignable!",
-                          {.note = "This error is caused by the expression not "
-                                   "being assignable.",
-                           .help = "Try to make the expression assignable by "
-                                   "adding the 'mut' keyword to the variable "
-                                   "declaration.",
-                           .tail = EI<>(value->getDBGInfo(), "", {.info = "This expression is not assignable!"})});
+                "Expression is not assignable!",
+                {.note = "This error is caused by the expression not "
+                         "being assignable.",
+                        .help = "Try to make the expression assignable by "
+                                "adding the 'mut' keyword to the variable "
+                                "declaration.",
+                        .tail = EI<>(value->getDBGInfo(), "", {.info = "This expression is not assignable!"})});
       }
       return;
     }
@@ -366,18 +376,18 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
 
   if (!fn->isConstructor() && (fn->getType()->isMutable() && !isMutable)) {
     E<VARIABLE_ERROR>(p_node,
-                      "You can't call a mutating method on an immutable instance!",
-                      {.info = "This function is mutable!",
-                       .note = "This error is caused by the function being "
-                               "mutable, but the value being nonmutable.",
-                       .help = "Try to make the value mutable by adding the 'mut' "
-                               "keyword or make the function\nnonmutable by "
-                               "removing the 'mut' keyword from it's declaration.",
-                       .tail = EI<>(value->getDBGInfo(),
-                                    "",
-                                    {
-                                            .info = "This value is nonmutable!",
-                                    })});
+            "You can't call a mutating method on an immutable instance!",
+            {.info = "This function is mutable!",
+                    .note = "This error is caused by the function being "
+                            "mutable, but the value being nonmutable.",
+                    .help = "Try to make the value mutable by adding the 'mut' "
+                            "keyword or make the function\nnonmutable by "
+                            "removing the 'mut' keyword from it's declaration.",
+                    .tail = EI<>(value->getDBGInfo(),
+                            "",
+                            {
+                                    .info = "This value is nonmutable!",
+                            })});
   }
 }
 
@@ -409,96 +419,97 @@ void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
     // TODO:
     if (p_node->getAttributeArgs(Attributes::UNSAFE_FUNC_NOT_BODY).size() != 0) {
       E<SYNTAX_ERROR>(p_node->getDBGInfo(), "This attribute can't have arguments!",
-                      {.info = "This function is an unsafe function!",
-                       .note = "This error is caused giving arguments to this attribute.",
-                       .help = "Try removing the arguments from the attribute."});
+              {.info = "This function is an unsafe function!",
+                      .note = "This error is caused giving arguments to this attribute.",
+                      .help = "Try removing the arguments from the attribute."});
     }
   } else if (p_node->hasAttribute(Attributes::UNSAFE_FUNC_NOT_BODY)) {
     E<SYNTAX_ERROR>(p_node->getDBGInfo(), "This attribute may only be used on unsafe functions!",
-                    {.info = "This function is not an unsafe function!",
-                     .note = "This error is caused by the function having the 'unsafe_func_not_body' attribute.",
-                     .help = "Try removing the 'unsafe_func_not_body' attribute from the function or by making the function 'unsafe'."});
+            {.info = "This function is not an unsafe function!",
+                    .note = "This error is caused by the function having the 'unsafe_func_not_body' attribute.",
+                    .help = "Try removing the 'unsafe_func_not_body' attribute from the function or by making the "
+                            "function 'unsafe'."});
   } else if (p_node->hasAttribute(Attributes::TEST)) {
     if (p_node->isDeclaration())
       E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions must have a body!",
-                      {.info = "This function is a test function!",
-                       .note = "This error is caused by the function not having a body.",
-                       .help = "Try adding a body to the function."});
+              {.info = "This function is a test function!",
+                      .note = "This error is caused by the function not having a body.",
+                      .help = "Try adding a body to the function."});
     else if (!utils::cast<types::Int32Type>(p_node->getRetTy()))
       E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions must return an integer!",
-                      {.info = "This function is a test function!",
-                       .note = "This error is caused by the function not returning an integer.",
-                       .help = "Try changing the return type to an integer."});
+              {.info = "This function is a test function!",
+                      .note = "This error is caused by the function not returning an integer.",
+                      .help = "Try changing the return type to an integer."});
     else if (p_node->getArgs().size() > 0)
       E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions can't have arguments!",
-                      {.info = "This function is a test function!",
-                       .note = "This error is caused by the function having arguments.",
-                       .help = "Try removing the arguments from the function."});
+              {.info = "This function is a test function!",
+                      .note = "This error is caused by the function having arguments.",
+                      .help = "Try removing the arguments from the function."});
     else if (p_node->hasAttribute(Attributes::INLINE))
       E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions can't be inline!",
-                      {.info = "This function is a test function!",
-                       .note = "This error is caused by the function having the 'inline' attribute.",
-                       .help = "Try removing the 'inline' attribute from the function."});
+              {.info = "This function is a test function!",
+                      .note = "This error is caused by the function having the 'inline' attribute.",
+                      .help = "Try removing the 'inline' attribute from the function."});
 
     auto args = p_node->getAttributeArgs(Attributes::TEST);
     for (auto [name, value] : args) {
       if (name == "expect") {
         if (value == "") {
           E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions must have an 'expect' value!",
-                          {.info = "This function is a test function!",
-                           .note = "This error is caused by the function not having an 'expect' value.",
-                           .help = "Try adding an 'expect' value to the function."});
+                  {.info = "This function is a test function!",
+                          .note = "This error is caused by the function not having an 'expect' value.",
+                          .help = "Try adding an 'expect' value to the function."});
         } else if (!utils::isNumber(value)) {
           E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions 'expect' value must be a number!",
-                          {.info = "This function is a test function!",
-                           .note = "This error is caused by the function having an 'expect' value that is "
-                                   "not a number.",
-                           .help = "Try changing the 'expect' value to a number."});
+                  {.info = "This function is a test function!",
+                          .note = "This error is caused by the function having an 'expect' value that is "
+                                  "not a number.",
+                          .help = "Try changing the 'expect' value to a number."});
         }
       } else if (name == "skip") {
         if (value != "") {
           E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions 'skip' value must be empty!",
-                          {.info = "This function is a test function!",
-                           .note = "This error is caused by the function having a 'skip' value that is not "
-                                   "empty.",
-                           .help = "Try removing the 'skip' value from the function."});
+                  {.info = "This function is a test function!",
+                          .note = "This error is caused by the function having a 'skip' value that is not "
+                                  "empty.",
+                          .help = "Try removing the 'skip' value from the function."});
         }
       } else {
         E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions can't have the '" + name + "' attribute!",
-                        {.info = "This function is a test function!",
-                         .note = "This error is caused by the function having the '" + name + "' attribute.",
-                         .help = "Try removing the '" + name + "' attribute from the function."});
+                {.info = "This function is a test function!",
+                        .note = "This error is caused by the function having the '" + name + "' attribute.",
+                        .help = "Try removing the '" + name + "' attribute from the function."});
       }
     }
   } else if (p_node->hasAttribute(Attributes::BENCH)) {
     if (p_node->isDeclaration())
       E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Benchmark functions must have a body!",
-                      {.info = "This function is a benchmark function!",
-                       .note = "This error is caused by the function not having a body.",
-                       .help = "Try adding a body to the function."});
+              {.info = "This function is a benchmark function!",
+                      .note = "This error is caused by the function not having a body.",
+                      .help = "Try adding a body to the function."});
     else if (p_node->getArgs().size() > 0)
       E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Benchmark functions can't have arguments!",
-                      {.info = "This function is a benchmark function!",
-                       .note = "This error is caused by the function having arguments.",
-                       .help = "Try removing the arguments from the function."});
+              {.info = "This function is a benchmark function!",
+                      .note = "This error is caused by the function having arguments.",
+                      .help = "Try removing the arguments from the function."});
     else if (p_node->hasAttribute(Attributes::INLINE))
       E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Benchmark functions can't be inline!",
-                      {.info = "This function is a benchmark function!",
-                       .note = "This error is caused by the function having the 'inline' attribute.",
-                       .help = "Try removing the 'inline' attribute from the function."});
+              {.info = "This function is a benchmark function!",
+                      .note = "This error is caused by the function having the 'inline' attribute.",
+                      .help = "Try removing the 'inline' attribute from the function."});
   } else if (p_node->hasAttribute(Attributes::INLINE)) {
     if (p_node->isDeclaration())
       E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Inline functions must have a body!",
-                      {.info = "This function is an inline function!",
-                       .note = "This error is caused by the function not having a body.",
-                       .help = "Try adding a body to the function."});
+              {.info = "This function is an inline function!",
+                      .note = "This error is caused by the function not having a body.",
+                      .help = "Try adding a body to the function."});
     else if (p_node->hasAttribute(Attributes::NO_INLINE))
       E<SYNTAX_ERROR>(p_node->getDBGInfo(),
-                      "Inline functions can't have the 'no_inline' attribute!",
-                      {.info = "This function is an inlined function!",
-                       .note = "This error is caused by the function having the 'no_inline' "
-                               "attribute.",
-                       .help = "Try removing the 'no_inline' attribute from the function."});
+              "Inline functions can't have the 'no_inline' attribute!",
+              {.info = "This function is an inlined function!",
+                      .note = "This error is caused by the function having the 'no_inline' "
+                              "attribute.",
+                      .help = "Try removing the 'no_inline' attribute from the function."});
   }
 }
 

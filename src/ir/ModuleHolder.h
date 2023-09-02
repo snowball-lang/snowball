@@ -9,10 +9,10 @@ namespace ir {
 
 /// Container class that holds a module pointer
 class ModuleHolder {
-protected:
+ protected:
   std::shared_ptr<Module> module;
 
-public:
+ public:
   ModuleHolder() = default;
 
   /// @brief Setter for a module pointer

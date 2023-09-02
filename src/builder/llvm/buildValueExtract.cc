@@ -15,6 +15,7 @@ void LLVMBuilder::visit(ir::ValueExtract* extract) {
 
   llvm::Value* value = nullptr;
   if (auto f = utils::dyn_cast<ir::Func>(var)) {
+    ctx->doNotLoadInMemory = true;
     auto fn = funcs.at(f->getId());
     this->value = fn;
     return;
@@ -28,7 +29,12 @@ void LLVMBuilder::visit(ir::ValueExtract* extract) {
     assert(false && "BUG: Value extract type not supported!");
   }
 
-  this->value = builder->CreateLoad(getLLVMType(var->getType()), value, ".extr");
+  if (!utils::cast<types::ReferenceType>(var->getType())) {
+    value = load(value, var->getType());
+    ctx->doNotLoadInMemory = true;
+  }
+
+  this->value = value;
 }
 
 } // namespace codegen

@@ -17,16 +17,16 @@ namespace snowball {
 namespace types {
 
 DefinedType::DefinedType(const std::string& name,
-                         const std::string uuid,
-                         std::shared_ptr<ir::Module>
-                                 module,
-                         Syntax::Statement::DefinedTypeDef* ast,
-                         std::vector<ClassField*>
-                                 fields,
-                         DefinedType* parent,
-                         std::vector<Type*>
-                                 generics,
-                         bool isStruct)
+        const std::string uuid,
+        std::shared_ptr<ir::Module>
+                module,
+        Syntax::Statement::DefinedTypeDef* ast,
+        std::vector<ClassField*>
+                fields,
+        DefinedType* parent,
+        std::vector<Type*>
+                generics,
+        bool isStruct)
     : AcceptorExtend(Kind::CLASS, name)
     , uuid(uuid)
     , parent(parent)
@@ -38,10 +38,10 @@ DefinedType::DefinedType(const std::string& name,
   setPrivacy(PUBLIC);
 }
 DefinedType::ClassField::ClassField(const std::string& name,
-                                    Type* type,
-                                    Privacy privacy,
-                                    Syntax::Expression::Base* initializedValue,
-                                    bool isMutable)
+        Type* type,
+        Privacy privacy,
+        Syntax::Expression::Base* initializedValue,
+        bool isMutable)
     : name(name)
     , type(type)
     , Syntax::Statement::Privacy(privacy)
@@ -59,11 +59,11 @@ bool DefinedType::is(DefinedType* other) const {
   auto otherArgs = other->getGenerics();
   bool genericSizeEqual = otherArgs.size() == generics.size();
   bool argumentsEqual = genericSizeEqual ? std::all_of(otherArgs.begin(),
-                                                       otherArgs.end(),
-                                                       [&, idx = 0](Type* i) mutable {
-                                                         idx++;
-                                                         return generics.at(idx - 1)->is(i);
-                                                       })
+                                                   otherArgs.end(),
+                                                   [&, idx = 0](Type* i) mutable {
+                                                     idx++;
+                                                     return generics.at(idx - 1)->is(i);
+                                                   })
                                          : false;
   return (other->getUUID() == uuid) && argumentsEqual;
 }
