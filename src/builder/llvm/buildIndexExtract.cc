@@ -25,7 +25,7 @@ void LLVMBuilder::visit(ir::IndexExtract* index) {
   auto i = index->getIndex() + (ctx->getVtableTy(defiendType->getId()) != nullptr);
 
   auto leftArray = build(indexValue.get());
-  if (utils::cast<types::ReferenceType>(valueType))
+  if (utils::is<types::ReferenceType>(valueType))
     leftArray = builder->CreateLoad(getLLVMType(basedType)->getPointerTo(), leftArray);
 
   auto extract = builder->CreateStructGEP(getLLVMType(basedType), leftArray, i);

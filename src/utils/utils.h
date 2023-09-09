@@ -96,6 +96,11 @@ Desired* cast(Current curr) {
   return dynamic_cast<Desired*>(curr);
 }
 
+template <typename Desired, typename Current>
+bool is(Current curr) {
+  return cast<Desired, Current>(curr) != nullptr;
+}
+
 template <typename T>
 std::shared_ptr<T> copy_shared(std::shared_ptr<T> x) {
   return std::make_shared<T>(*x);

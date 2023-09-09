@@ -598,7 +598,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       * @param[in] buffer The vector of characters to construct the string from.
       */
     StringView(buffer: StringType) : 
-      super(), buffer(buffer), length(CLib::c_string::strlen(buffer))
+      super(), buffer(buffer), length(CLib::c_string::strlen(buffer as *const CLib::c_char))
       { self.capacity = self.length + 10; }
     /**
      * @brief Constructs a string from another string.
@@ -670,7 +670,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
     operator [[internal_linkage, inline]] +(other: StringType) Self
     {
       let len1 = self.length;
-      let len2 = CLib::c_string::strlen(other);
+      let len2 = CLib::c_string::strlen(other as *const char);
       let res = self.concat(self.buffer, other, len1, len2);
       return new Self{res};
     }

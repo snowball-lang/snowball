@@ -12,12 +12,14 @@
 namespace snowball {
 namespace codegen {
 
+using namespace utils;
+
 void LLVMBuilder::visit(ir::Return* ret) {
   auto exprValue = ret->getExpr();
 
   llvm::Value* val = nullptr;
   if (exprValue != nullptr) {
-    auto expr = build(exprValue.get());
+    auto e = build(exprValue.get());
     auto funcRet = ctx->getCurrentFunction()->getReturnType();
 
     // case: "let a = x();" where x is a function returning a type that's not a pointer
@@ -26,17 +28,23 @@ void LLVMBuilder::visit(ir::Return* ret) {
     // read more here: https://discourse.llvm.org/t/c-returning-struct-by-value/40518
     if (utils::cast<types::DefinedType>(ret->getType())) {
       auto retArg = ctx->getCurrentFunction()->getArg(0);
-      auto store = builder->CreateStore(expr, retArg);
+
+      if (llvm::isa<llvm::LoadInst>(e)) {
+        e = llvm::cast<llvm::LoadInst>(e)->getPointerOperand();
+      }
+
+      builder->CreateMemCpy(retArg, llvm::MaybeAlign(), e, llvm::MaybeAlign(), builder->getInt32(module->getDataLayout().getTypeAllocSize(getLLVMType(ret->getType()))), 0);
+      //auto store = builder->CreateStore(load(e, ret->getType()), retArg);
 
       builder->CreateRetVoid();
       return;
     }
 
-    if (utils::cast<types::PointerType>(ret->getType()) && llvm::isa<llvm::LoadInst>(expr)) {
-      val = llvm::cast<llvm::LoadInst>(expr)->getPointerOperand();
+    if ((is<types::PointerType>(ret->getType()) || is<types::ReferenceType>(ret->getType())) && llvm::isa<llvm::LoadInst>(e)) {
+      e = llvm::cast<llvm::LoadInst>(e)->getPointerOperand();
     }
 
-    val = builder->CreateRet(expr);
+    val = builder->CreateRet(e);
   } else {
     val = builder->CreateRetVoid();
   }

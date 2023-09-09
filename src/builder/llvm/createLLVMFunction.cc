@@ -14,6 +14,17 @@ using namespace snowball::utils;
 namespace snowball {
 namespace codegen {
 
+namespace {
+void setDereferenceableAttribute(llvm::Argument& arg, unsigned bytes) {
+  auto dereferenceable = llvm::Attribute::get(arg.getContext(), llvm::Attribute::Dereferenceable, bytes);
+  auto noundef = llvm::Attribute::get(arg.getContext(), llvm::Attribute::NoUndef);
+  auto nonull = llvm::Attribute::get(arg.getContext(), llvm::Attribute::NonNull);
+  arg.addAttr(dereferenceable);
+  arg.addAttr(noundef);
+  arg.addAttr(nonull);
+}
+} // namespace
+
 llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
   auto innerFnType = cast<types::FunctionType>(func->getType());
   assert(innerFnType != nullptr);
@@ -44,6 +55,28 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
   if (!func->isDeclaration()) {
     auto DISubprogram = getDISubprogramForFunc(func);
     callee->setSubprogram(DISubprogram);
+  }
+
+  bool retIsArg = utils::is<types::DefinedType>(func->getRetTy());
+  if (retIsArg) {
+    auto arg = fn->arg_begin();
+    auto attrBuilder = llvm::AttrBuilder(*context);
+    attrBuilder.addStructRetAttr(getLLVMType(func->getRetTy()));
+    attrBuilder.addAttribute(llvm::Attribute::NoCapture);
+    attrBuilder.addAttribute(llvm::Attribute::NoUndef);
+    attrBuilder.addAttribute(llvm::Attribute::NonNull);
+    attrBuilder.addAttribute(llvm::Attribute::WriteOnly);
+    arg->addAttrs(attrBuilder);
+  }
+  
+  auto& layout = module->getDataLayout();
+  for (int i = 0; i < func->getArgs().size(); ++i) {
+    auto llvmArg = fn->arg_begin() + i + retIsArg;
+    auto arg = utils::at(func->getArgs(), i);
+    if (auto x = utils::cast<types::ReferenceType>((arg).second->getType())) {
+      auto bytes = layout.getTypeAllocSize(getLLVMType(x));
+      setDereferenceableAttribute(*llvmArg, bytes);
+    }
   }
 
   return callee;

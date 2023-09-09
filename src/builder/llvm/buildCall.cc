@@ -57,10 +57,7 @@ void LLVMBuilder::visit(ir::Call* call) {
       object = allocateObject(classType);
     }
 
-    auto alloca = createAlloca(instanceType->getPointerTo());
-    builder->CreateStore(object, alloca);
-
-    args.insert(args.begin(), alloca);
+    args.insert(args.begin(), object);
     setDebugInfoLoc(call);
     llvmCall = createCall(calleeType, callee, args);
     this->value = object;

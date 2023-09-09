@@ -23,11 +23,11 @@ use Core::System;
 use Core::Optional;
 
 pub fn main() i32 {
-  let x = Optional::Some(42);
-  let a = x.has_value();
-  if a {
+  //let x = Optional::Some(42);
+  //let a = x.has_value();
+  //if a {
     System::println("a")
-  } else {
-    System::println("b")
-  }
+  //} else {
+  //  System::println("b")
+  //}
 }

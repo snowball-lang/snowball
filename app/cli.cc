@@ -61,6 +61,9 @@ Options CLI::parse() {
         Logger::log("  asm                       - Emit the "
                     "assembly code to "
                     "file");
+        Logger::log("  snowball-ir               - Emit the "
+                    "snowball-ir code to "
+                    "file");
         Logger::log("");
         Logger::log("Optimization levels:");
         Logger::log("  O0 [g]                    - Disable as many "

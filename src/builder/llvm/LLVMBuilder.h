@@ -229,6 +229,13 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
    * desired file.
    */
   int emitObjectFile(std::string out, bool log, bool object = true);
+  /**
+   * @brief It builds a value as an expression.
+   * @param v Value to build
+  */
+  llvm::Value* expr(ir::Value* v) {
+    return load(build(v), v->getType());
+  }
 
   // mark: build functions
   using AcceptorExtend::AcceptorExtend;

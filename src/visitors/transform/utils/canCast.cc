@@ -10,8 +10,7 @@ Transformer::CastType Transformer::canCast(types::Type* from, types::Type* to) {
 
   // Check auto deref
   if (auto ptr = utils::cast<types::ReferenceType>(from)) {
-    // if (ptr->getPointedType()->is(to)) { return CastType::AutoDeref; }
-    
+    if (ptr->getPointedType()->is(to)) { return CastType::AutoDeref; }
   }
 
   // Check auto ref

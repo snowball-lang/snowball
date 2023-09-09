@@ -33,6 +33,7 @@
 #include <llvm/Transforms/Scalar/GVN.h>
 #include <llvm/Transforms/Scalar/Reassociate.h>
 #include <llvm/Transforms/Utils.h>
+#include <llvm/Analysis/TargetTransformInfo.h>
 
 namespace snowball {
 
@@ -106,9 +107,11 @@ void LLVMBuilder::optimizeModule(app::Options::Optimization o) {
     mpm = pass_builder.buildThinLTODefaultPipeline(level, nullptr);
   } else {
     mpm = pass_builder.buildLTOPreLinkDefaultPipeline(level);
+  }
 
+  { // simple optimizations done for each function. It does not depend on the optimization level.
     std::unique_ptr<llvm::legacy::FunctionPassManager> functionPassManager =
-            std::make_unique<llvm::legacy::FunctionPassManager>(module.get());
+      std::make_unique<llvm::legacy::FunctionPassManager>(module.get());
 
     // Promote allocas to registers.
     functionPassManager->add(llvm::createPromoteMemoryToRegisterPass());
@@ -127,13 +130,13 @@ void LLVMBuilder::optimizeModule(app::Options::Optimization o) {
   }
 
   llvm::legacy::PassManager codegen_pm;
-  // codegen_pm.add(
-  //   llvm::createTargetTransformInfoWrapperPass(target->getTargetIRAnalysis()));
+  codegen_pm.add(
+    llvm::createTargetTransformInfoWrapperPass(target->getTargetIRAnalysis()));
 
-  mpm.run(*module, module_analysis_manager);
   codegen_pm.run(*module);
+  mpm.run(*module, module_analysis_manager);
 
-  applyDebugTransformations(module.get(), o == app::Options::OPTIMIZE_O0);
+  applyDebugTransformations(module.get(), dbg.debug);
 }
 
 } // namespace codegen

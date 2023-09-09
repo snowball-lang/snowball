@@ -11,15 +11,6 @@
 namespace snowball {
 namespace codegen {
 
-namespace {
-void setDereferenceableAttribute(llvm::Argument& arg, unsigned bytes) {
-  auto dereferenceable = llvm::Attribute::get(arg.getContext(), llvm::Attribute::Dereferenceable, bytes);
-  auto noundef = llvm::Attribute::get(arg.getContext(), llvm::Attribute::NoUndef);
-  arg.addAttr(dereferenceable);
-  arg.addAttr(noundef);
-}
-} // namespace
-
 void LLVMBuilder::visit(ir::Func* func) {
   if (func->hasAttribute(Attributes::BUILTIN)) {
     this->value = nullptr;
@@ -96,23 +87,6 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
             llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
             entry);
     ++llvmArgsIter;
-  }
-
-  if (retIsArg) {
-    auto arg = llvmFn->arg_begin();
-    auto attrBuilder = llvm::AttrBuilder(*context);
-    attrBuilder.addStructRetAttr(getLLVMType(fn->getRetTy()));
-    arg->addAttrs(attrBuilder);
-  }
-
-  auto& layout = module->getDataLayout();
-  for (int i = 0; i < fn->getArgs().size(); ++i) {
-    auto llvmArg = llvmFn->arg_begin() + i + retIsArg;
-    auto arg = utils::at(fn->getArgs(), i);
-    if (auto x = utils::cast<types::ReferenceType>((arg).second->getType())) {
-      auto bytes = layout.getTypeAllocSize(getLLVMType(x));
-      setDereferenceableAttribute(*llvmArg, bytes);
-    }
   }
 
   // Generate all the used variables

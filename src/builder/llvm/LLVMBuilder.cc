@@ -71,6 +71,8 @@
 #include <llvm/Transforms/Utils/Debugify.h>
 
 namespace snowball {
+using namespace utils;
+
 namespace codegen {
 
 llvm::Value* LLVMBuilder::build(ir::Value* v) {
@@ -88,12 +90,7 @@ llvm::Value* LLVMBuilder::load(llvm::Value* v, types::Type* ty) {
     return v;
   }
 
-  //if (llvm::isa<llvm::LoadInst>(v) && utils::cast<types::ReferenceType>(ty) != nullptr) {
-  //  ctx->doNotLoadInMemory = false;
-  //  return v;
-  //}
-
-  if (v->getType()->isPointerTy() && utils::cast<types::PointerType>(ty) == nullptr)
+  if (v->getType()->isPointerTy() && !is<types::PointerType>(ty))
     return builder->CreateLoad(llvmType, v, ".ptr-load");
   return v;
 }
@@ -206,7 +203,7 @@ void LLVMBuilder::print(llvm::raw_fd_ostream& s) { module->print(s, nullptr); }
 
 #define ITERATE_FUNCTIONS for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn)
 void LLVMBuilder::codegen() {
-  auto generateModule = [&](std::shared_ptr<ir::Module> m) {
+  auto generateModule = [&](std::shared_ptr<ir::Module> m, bool build) {
     // reset context
     ctx->doNotLoadInMemory = false;
 
@@ -215,58 +212,60 @@ void LLVMBuilder::codegen() {
     // Generate the functions from the end to the front.
     auto functions = m->getFunctions();
 
-    // Iterate every function with a reversed iterator.
-    // This first loop will declare all of the functions
-    // to the module, it does not matter whether they are
-    // bodied or not.
-    ITERATE_FUNCTIONS { visit(fn->get()); }
+    if (!build) {
+      // Iterate every function with a reversed iterator.
+      // This first loop will declare all of the functions
+      // to the module, it does not matter whether they are
+      // bodied or not.
+      ITERATE_FUNCTIONS { visit(fn->get()); }
+    } else {
+      // Generate all the variables defined in this module.
+      for (auto v : m->getVariables()) { addGlobalVariable(v); }
 
-    // Generate all the variables defined in this module.
-    for (auto v : m->getVariables()) { addGlobalVariable(v); }
+      // Terminate the global ctor if exists
+      if (auto x = getGlobalCTOR(false)) {
+        auto& ctorBody = x->getEntryBlock();
+        builder->SetInsertPoint(&ctorBody);
 
-    // Terminate the global ctor if exists
-    if (auto x = getGlobalCTOR(false)) {
-      auto& ctorBody = x->getEntryBlock();
-      builder->SetInsertPoint(&ctorBody);
+        builder->CreateRetVoid();
+      }
 
-      builder->CreateRetVoid();
-    }
+      // This second loop will generate all the functions that
+      // are bodied. We do 2 loops in order to prevent any weird
+      // situation when a function calls an undefined function that
+      // has not been generated yet.
+      ITERATE_FUNCTIONS {
+        auto f = fn->get();
+        if (!f->isDeclaration() && !f->hasAttribute(Attributes::BUILTIN)) {
+          auto llvmFn = funcs.at(f->getId());
 
-    // This second loop will generate all the functions that
-    // are bodied. We do 2 loops in order to prevent any weird
-    // situation when a function calls an undefined function that
-    // has not been generated yet.
-    ITERATE_FUNCTIONS {
-      auto f = fn->get();
-      if (!f->isDeclaration() && !f->hasAttribute(Attributes::BUILTIN)) {
-        auto llvmFn = funcs.at(f->getId());
+          // if (utils::cast<types::ReferenceType>(f->getRetTy())) {
+          //   auto bytes = module->getDataLayout().getTypeSizeInBits(getLLVMType(f->getRetTy()));
+          //   auto dereferenceable = llvm::Attribute::get(*context, llvm::Attribute::Dereferenceable, bytes);
+          //   auto noundef = llvm::Attribute::get(*context, llvm::Attribute::NoUndef);
+          //   auto aligment = llvm::Attribute::get(*context, llvm::Attribute::Alignment, 8);
+          //   llvmFn->addRetAttr(dereferenceable);
+          //   llvmFn->addRetAttr(noundef);
+          //   llvmFn->addRetAttr(aligment);
+          // }
 
-        // if (utils::cast<types::ReferenceType>(f->getRetTy())) {
-        //   auto bytes = module->getDataLayout().getTypeSizeInBits(getLLVMType(f->getRetTy()));
-        //   auto dereferenceable = llvm::Attribute::get(*context, llvm::Attribute::Dereferenceable, bytes);
-        //   auto noundef = llvm::Attribute::get(*context, llvm::Attribute::NoUndef);
-        //   auto aligment = llvm::Attribute::get(*context, llvm::Attribute::Alignment, 8);
-        //   llvmFn->addRetAttr(dereferenceable);
-        //   llvmFn->addRetAttr(noundef);
-        //   llvmFn->addRetAttr(aligment);
-        // }
+          if (f->hasAttribute(Attributes::LLVM_FUNC)) {
+            auto old = buildLLVMFunction(llvmFn, f);
+            funcs.at(f->getId()) = old;
+          } else {
+            buildBodiedFunction(llvmFn, f);
 
-        if (f->hasAttribute(Attributes::LLVM_FUNC)) {
-          auto old = buildLLVMFunction(llvmFn, f);
-          funcs.at(f->getId()) = old;
-        } else {
-          buildBodiedFunction(llvmFn, f);
+            setPersonalityFunction(llvmFn);
+            std::string module_error_string;
+            llvm::raw_string_ostream module_error_stream(module_error_string);
+            llvm::verifyFunction(*llvmFn, &module_error_stream);
 
-          setPersonalityFunction(llvmFn);
-          std::string module_error_string;
-          llvm::raw_string_ostream module_error_stream(module_error_string);
-          llvm::verifyFunction(*llvmFn, &module_error_stream);
-
-          if (!module_error_string.empty()) {
-#ifdef _SNOWBALL_BYTECODE_DEBUG
-            dump();
-#endif
-            throw SNError(Error::LLVM_INTERNAL, module_error_string);
+            if (!module_error_string.empty()) {
+  #ifdef _SNOWBALL_BYTECODE_DEBUG
+              dump();
+  #endif
+              throw SNError(Error::LLVM_INTERNAL, module_error_string);
+            }
           }
         }
       }
@@ -276,8 +275,12 @@ void LLVMBuilder::codegen() {
   auto mainModule = utils::dyn_cast<ir::MainModule>(iModule);
   assert(mainModule);
 
-  for (auto m : mainModule->getModules()) generateModule(m);
-  generateModule(mainModule);
+#define INIT_MODULES(build) \
+  for (auto m : mainModule->getModules()) generateModule(m, build); \
+  generateModule(mainModule, build);
+
+  INIT_MODULES(false); // Create function declarations
+  INIT_MODULES(true); // Create function bodies
 
   initializeRuntime();
   dbg.builder->finalize();

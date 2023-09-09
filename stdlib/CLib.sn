@@ -142,7 +142,7 @@ pub extern fn exit(c_int);
  * @param seconds(&c_int) - pointer to a variable where the number of seconds elapsed since the Epoch is stored.
  * @return c_int - If the time is successfully obtained, the return value is the same as the parameter seconds.
  */
-pub extern fn time(&c_int) c_int;
+pub extern fn time(*const c_int) c_int;
 /**
  * @brief It transforms a string into a C string.
  * @param str(&char) - string to be converted
@@ -159,7 +159,7 @@ namespace c_string {
  * @param str(&char) - string to be measured
  * @return c_int - length of the string
  */
-pub extern fn strlen(&c_char) c_int;
+pub extern fn strlen(*const c_char) c_int;
 /**
  * @brief It checks if the two strings are equal.
  * @param str1(&char) - first string
