@@ -56,10 +56,14 @@ void applyDebugTransformations(llvm::Module* module, bool debug) {
 }
 } // namespace
 
+#ifndef PERFORM_SIMPLE_OPTS
+#define PERFORM_SIMPLE_OPTS 1
+#endif
+
 namespace codegen {
 
-void LLVMBuilder::optimizeModule(app::Options::Optimization o) {
-  applyDebugTransformations(module.get(), o == app::Options::OPTIMIZE_O0);
+void LLVMBuilder::optimizeModule() {
+  applyDebugTransformations(module.get(), dbg.debug);
 
   llvm::LoopAnalysisManager loop_analysis_manager;
   llvm::FunctionAnalysisManager function_analysis_manager;
@@ -87,7 +91,7 @@ void LLVMBuilder::optimizeModule(app::Options::Optimization o) {
   function_analysis_manager.registerPass([&] { return llvm::TargetLibraryAnalysis(tlii); });
 
   llvm::OptimizationLevel level;
-  switch (o) {
+  switch (ctx->optimizationLevel) {
     case app::Options::Optimization::OPTIMIZE_O0: level = llvm::OptimizationLevel::O0; break;
     case app::Options::Optimization::OPTIMIZE_O1: level = llvm::OptimizationLevel::O1; break;
     case app::Options::Optimization::OPTIMIZE_O2: level = llvm::OptimizationLevel::O2; break;
@@ -103,12 +107,13 @@ void LLVMBuilder::optimizeModule(app::Options::Optimization o) {
   for (const auto& C : PipelineStartEPCallbacks) pass_builder.registerPipelineStartEPCallback(C);
   for (const auto& C : OptimizerLastEPCallbacks) pass_builder.registerOptimizerLastEPCallback(C);
   llvm::ModulePassManager mpm;
-  if (o == app::Options::OPTIMIZE_O0) {
+  if (dbg.debug) {
     mpm = pass_builder.buildThinLTODefaultPipeline(level, nullptr);
   } else {
     mpm = pass_builder.buildLTOPreLinkDefaultPipeline(level);
   }
 
+#if PERFORM_SIMPLE_OPTS
   { // simple optimizations done for each function. It does not depend on the optimization level.
     std::unique_ptr<llvm::legacy::FunctionPassManager> functionPassManager =
       std::make_unique<llvm::legacy::FunctionPassManager>(module.get());
@@ -128,6 +133,7 @@ void LLVMBuilder::optimizeModule(app::Options::Optimization o) {
 
     for (auto& function : module->getFunctionList()) { functionPassManager->run(function); }
   }
+#endif
 
   llvm::legacy::PassManager codegen_pm;
   codegen_pm.add(
@@ -135,8 +141,6 @@ void LLVMBuilder::optimizeModule(app::Options::Optimization o) {
 
   codegen_pm.run(*module);
   mpm.run(*module, module_analysis_manager);
-
-  applyDebugTransformations(module.get(), dbg.debug);
 }
 
 } // namespace codegen

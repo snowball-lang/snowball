@@ -144,9 +144,9 @@ toml::parse_result Compiler::getConfiguration() {
 void Compiler::cleanup() { }
 
 int Compiler::emitObject(std::string out, bool log) {
-  auto builder = new codegen::LLVMBuilder(module, testsEnabled, benchmarkEnabled);
+  auto builder = new codegen::LLVMBuilder(module, opt_level, testsEnabled, benchmarkEnabled);
   builder->codegen();
-  builder->optimizeModule(opt_level);
+  builder->optimizeModule();
 
 #if _SNOWBALL_BYTECODE_DEBUG
   builder->dump();
@@ -156,9 +156,9 @@ int Compiler::emitObject(std::string out, bool log) {
 }
 
 int Compiler::emitLLVMIr(std::string p_output, bool p_pmessage) {
-  auto builder = new codegen::LLVMBuilder(module, testsEnabled, benchmarkEnabled);
+  auto builder = new codegen::LLVMBuilder(module, opt_level, testsEnabled, benchmarkEnabled);
   builder->codegen();
-  builder->optimizeModule(opt_level);
+  builder->optimizeModule();
 
   std::error_code EC;
   llvm::raw_fd_ostream dest(p_output, EC);
@@ -169,9 +169,9 @@ int Compiler::emitLLVMIr(std::string p_output, bool p_pmessage) {
 }
 
 int Compiler::emitASM(std::string p_output, bool p_pmessage) {
-  auto builder = new codegen::LLVMBuilder(module, testsEnabled, benchmarkEnabled);
+  auto builder = new codegen::LLVMBuilder(module, opt_level, testsEnabled, benchmarkEnabled);
   builder->codegen();
-  builder->optimizeModule(opt_level);
+  builder->optimizeModule();
 
   auto res = builder->emitObjectFile(p_output, false, false);
   if (p_pmessage) Logger::success("Snowball project transpiled to llvm IR code! 🎉\n");

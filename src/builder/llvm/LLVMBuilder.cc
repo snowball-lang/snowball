@@ -95,9 +95,11 @@ llvm::Value* LLVMBuilder::load(llvm::Value* v, types::Type* ty) {
   return v;
 }
 
-LLVMBuilder::LLVMBuilder(std::shared_ptr<ir::MainModule> mod, bool testMode, bool benchMode) : iModule(mod) {
+LLVMBuilder::LLVMBuilder(std::shared_ptr<ir::MainModule> mod, app::Options::Optimization optimizationLevel, bool testMode, bool benchMode) : iModule(mod) {
   ctx->testMode = testMode;
   ctx->benchmarkMode = benchMode;
+  ctx->optimizationLevel = optimizationLevel;
+  dbg.debug = ctx->optimizationLevel == app::Options::Optimization::OPTIMIZE_O0;
   llvm::InitializeAllTargetInfos();
   llvm::InitializeAllTargets();
   llvm::InitializeAllTargetMCs();

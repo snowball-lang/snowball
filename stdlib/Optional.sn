@@ -1,4 +1,4 @@
-use Core::CLib;
+use [[use_macros]] Core::CLib;
 use Core::Ptr;
 
 /**
@@ -42,13 +42,10 @@ pub class Option<_StoreType: Core::Sized> {
     /**
      * @brief Returns the value stored in the `Option`.
      */
-    fn [[inline]] val() &mut _StoreType
+    fn [[inline]] val() _StoreType
     {
       self.assert_not_empty();
-      unsafe {
-        let x = *self._value;
-      }
-      unsafe { return self._value.as_ref(); }
+      unsafe { return *self._value; }
     }
     /**
      * @brief Returns whether the `Option` is empty.
@@ -66,12 +63,12 @@ pub class Option<_StoreType: Core::Sized> {
      * @return The value stored in the `Option` or the
      *        given default value if the `Option` is empty.
      */
-    fn [[inline]] value_or(default_value: &_StoreType) &mut _StoreType
+    fn [[inline]] value_or(default_value: _StoreType) _StoreType
     {
       if (self.empty()) {
         return default_value;
       }
-      unsafe { return self._value.as_ref(); }
+      return self.val();
     }
   priv:
     /**

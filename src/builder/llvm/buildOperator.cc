@@ -28,7 +28,15 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             !services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(opName)) {
       auto left = build(args.at(0).get());
       llvm::Value* right = nullptr;
-      if (args.size() > 1) right = build(args.at(1).get());
+      if (args.size() > 1) {
+        auto& arg = args.at(1);
+        if (utils::is<ir::ReferenceTo>(arg.get()) && services::OperatorService::operatorID(opName) == services::OperatorService::EQ) {
+          auto ref = utils::cast<ir::ReferenceTo>(arg.get());
+          right = build(ref->getValue().get()); // TODO: this is a hack
+        } else {
+          right = build(arg.get());
+        }
+      }
       auto baseType = args.at(0)->getType();
       auto unchangedBaseType = baseType;
       auto realType = baseType;

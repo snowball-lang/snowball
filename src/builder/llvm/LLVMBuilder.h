@@ -94,6 +94,8 @@ class LLVMBuilderContext {
   // TODO: add a function to clear functions, symbols, etc as cleanup
   /// @brief A flag to avoid loading a value in memory
   bool doNotLoadInMemory = false;
+  /// @brief Optimization level
+  app::Options::Optimization optimizationLevel = app::Options::Optimization::OPTIMIZE_O0;
 };
 
 /**
@@ -192,7 +194,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
 
  public:
   // Create a new instance of a llvm builder
-  LLVMBuilder(std::shared_ptr<ir::MainModule> mod, bool testMode = false, bool benchmarkMode = false);
+  LLVMBuilder(std::shared_ptr<ir::MainModule> mod, app::Options::Optimization optimizationLevel = app::Options::Optimization::OPTIMIZE_O0, bool testMode = false, bool benchmarkMode = false);
   /**
    * @brief Dump the LLVM IR code to stdout.
    *
@@ -223,7 +225,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
    * @note If the optimization level has been to '0', it will obiously
    * will not execute those optimization passes
    */
-  void optimizeModule(app::Options::Optimization o);
+  void optimizeModule();
   /**
    * @brief Compile the LLVM-IR code into an object file into the
    * desired file.

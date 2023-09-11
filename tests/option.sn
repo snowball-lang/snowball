@@ -17,12 +17,12 @@ fn [[test]] empty_from_class() i32 {
 
 fn [[test]] with_value_from_func() i32 {
     let x = Optional::Some(42);
-    return x.has_value();
+    return !x.empty();
 }
 
 fn [[test]] with_value_from_class() i32 {
     let x = new Optional::Option<i32>(42);
-    return x.val();
+    return !x.empty();
 }
 
 fn [[test(expect = 42)]] test_value_from_func() i32 {
