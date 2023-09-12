@@ -639,6 +639,9 @@ struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
 
   /// @brief Get class name
   std::string getName() const;
+  /// @brief Set a new class name
+  /// @note This shoudn't be used unless you know what you're doing
+  void unsafeSetName(const std::string& name);
 
   /// Add a function to the function list
   void addFunction(FunctionDef* fnDef);

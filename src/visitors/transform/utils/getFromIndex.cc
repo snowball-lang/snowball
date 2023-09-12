@@ -72,12 +72,17 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
 
       auto uuid = type->getName();
       if (auto x = utils::cast<types::PointerType>(type)) {
-        auto str = getPointerTypeUUID(x);
+        if (!x->isMutable()) {
+          auto str = getBuiltinTypeUUID(x->getPointedType(), _SNOWBALL_CONST_PTR);
+          if (!str.empty()) uuid = str;
+        } // todo: *mut x
+      } else if (auto x = utils::cast<types::NumericType>(type);
+                 x && !utils::is<types::CharType>(x)) {
+        auto str = getBuiltinTypeUUID(x, _SNOWBALL_INT_IMPL);
         if (!str.empty()) uuid = str;
       }
 
       auto [v, ty, fns, ovs, mod] = getFromIdentifier(dbgInfo, name, generics, uuid);
-
       if ((!fns.has_value()) && (!ovs.has_value())) {
         if (OperatorService::isOperator(name)) name = OperatorService::operatorName(OperatorService::operatorID(name));
         E<VARIABLE_ERROR>(dbgInfo,

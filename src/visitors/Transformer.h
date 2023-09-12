@@ -298,11 +298,11 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    */
   bool isInModuleContext(std::shared_ptr<ir::Module> mod);
   /**
-   * @brief It get's the correct UUID for the given pointer type for a given type.
-   * @param ty The type to get the pointer type from.
+   * @brief It get's the correct UUID for the given builtin type for a given type.
+   * @param ty The type to get the builtin type from.
    * @note It will return a nullptr if the type is not a pointer.
    */
-  std::string getPointerTypeUUID(types::PointerType* ty);
+  std::string getBuiltinTypeUUID(types::Type* ty, const std::string& name);
   /**
    * @brief It generates a a new types::Type instance from a
    * Statement::Base pointer.

@@ -5,7 +5,7 @@ using namespace snowball::Syntax::transform;
 
 // Set the default '=' operator for the class
 #define GENERATE_EQUALIZERS                                                                                            \
-  if (ty->getName() != _SNOWBALL_CONST_PTR) {                                                                          \
+  if (ty->getName() != _SNOWBALL_CONST_PTR && ty->getName() != _SNOWBALL_INT_IMPL) {                                                                          \
     for (int allowPointer = 0; allowPointer < 2; ++allowPointer) {                                                     \
       auto fn = Syntax::N<Statement::FunctionDef>(                                                                     \
               OperatorService::getOperatorMangle(OperatorType::EQ), Statement::Privacy::Status::PUBLIC);               \

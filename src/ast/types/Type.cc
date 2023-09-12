@@ -12,7 +12,7 @@ Type::Type(Kind p_kind, std::string p_name, bool isMutable) : kind(p_kind), name
 Type::Type(Kind p_kind, bool isMutable) : kind(p_kind), _mutable(isMutable) { }
 
 Syntax::Expression::TypeRef* Type::toRef() {
-  auto ty = Syntax::TR(getName(), NO_DBGINFO, nullptr, getName());
+  auto ty = Syntax::TR(getName(), NO_DBGINFO, this, getName());
   return ty;
 }
 

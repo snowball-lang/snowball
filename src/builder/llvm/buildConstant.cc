@@ -12,7 +12,7 @@ namespace codegen {
 void LLVMBuilder::visit(ir::StringValue* value) {
   ctx->doNotLoadInMemory = true;
   this->value = builder->CreateGlobalStringPtr(value->getConstantValue(), ".str" + utils::gen_random<10>());
-  auto arr = llvm::cast<llvm::ArrayType>(this->value->getType()->getPointerElementType());
+  auto arr = llvm::ArrayType::get(builder->getInt8Ty(), value->getConstantValue().size() + 1);
   this->value = builder->CreateInBoundsGEP(arr, this->value, {builder->getInt32(0), builder->getInt32(0)});
 }
 

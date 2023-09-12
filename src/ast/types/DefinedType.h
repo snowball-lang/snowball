@@ -153,8 +153,8 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
   /// @brief If the class has a constructor
   bool hasConstructor = false;
 
-  virtual id_t sizeOf() const override;
-  virtual id_t alignmentOf() const override;
+  virtual std::int64_t sizeOf() const override;
+  virtual std::int64_t alignmentOf() const override;
 
   SNOWBALL_TYPE_COPIABLE(DefinedType)
 };

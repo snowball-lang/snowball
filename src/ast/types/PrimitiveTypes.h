@@ -67,8 +67,8 @@ class VoidType : public AcceptorExtend<VoidType, PrimitiveType> {
   VoidType() : AcceptorExtend(SN_VOID_TYPE) { }
   SNOWBALL_TYPE_COPIABLE(VoidType)
 
-  virtual id_t sizeOf() const override { return 0; }
-  virtual id_t alignmentOf() const override { return 0; }
+  virtual std::int64_t sizeOf() const override { return 0; }
+  virtual std::int64_t alignmentOf() const override { return 0; }
 };
 
 /// @brief String (represents int 8 pointer)
@@ -77,22 +77,22 @@ class CharType : public AcceptorExtend<CharType, NumericType> {
   CharType() : AcceptorExtend(SN_CHR_TYPE) { }
   SNOWBALL_TYPE_COPIABLE(CharType)
 
-  virtual id_t sizeOf() const override { return 1; }
-  virtual id_t alignmentOf() const override { return 1; }
+  virtual std::int64_t sizeOf() const override { return 1; }
+  virtual std::int64_t alignmentOf() const override { return 1; }
 };
 
 
 /// @brief Float (N) (represents N-bit floating point)
 class FloatType : public AcceptorExtend<FloatType, NumericType> {
-  int bits;
+  std::int32_t bits;
  public:
-  FloatType(int bits) : bits(bits), 
+  FloatType(std::int32_t bits) : bits(bits), 
     AcceptorExtend("f"+std::to_string(bits)) { }
-  int getBits() const { return bits; }
+  std::int32_t getBits() const { return bits; }
   SNOWBALL_TYPE_COPIABLE(FloatType)
 
-  virtual id_t sizeOf() const override { return bits / 8; }
-  virtual id_t alignmentOf() const override { return bits / 8; }
+  virtual std::int64_t sizeOf() const override { return bits / 8; }
+  virtual std::int64_t alignmentOf() const override { return bits / 8; }
 };
 
 /**
@@ -100,19 +100,19 @@ class FloatType : public AcceptorExtend<FloatType, NumericType> {
  * @note This is a base class for all integer types.
  */
 class IntType : public AcceptorExtend<IntType, NumericType> {
-  int bits;
+  std::int32_t bits;
  public:
-  IntType(int bits) : bits(bits), 
+  IntType(std::int32_t bits) : bits(bits), 
     AcceptorExtend(bits == 1 ? "bool" : "i"+std::to_string(bits)) { }
-  int getBits() const { return bits; }
+  std::int32_t getBits() const { return bits; }
   SNOWBALL_TYPE_COPIABLE(IntType)
 
-  virtual id_t sizeOf() const override { return bits / 8; }
-  virtual id_t alignmentOf() const override { return bits / 8; }
+  virtual std::int64_t sizeOf() const override { return bits == 1 ? 1 : (std::int64_t)(bits / 8); }
+  virtual std::int64_t alignmentOf() const override { return bits == 1 ? 1 : (std::int64_t)(bits / 8); }
 };
 
 /// @brief Utility method to check if a type is an integer type.
-static bool isIntType(Type* ty, int bits = 32) {
+static bool isIntType(Type* ty, std::int32_t bits = 32) {
   if (auto x = utils::cast<IntType>(ty)) 
     return x->getBits() == bits;
   return false;
@@ -121,7 +121,7 @@ static bool isIntType(Type* ty, int bits = 32) {
 static bool isInt32Type(Type* ty) { return isIntType(ty, 32); }
 
 /// @brief Utility method to check if a type is a float type.
-static bool isFloatType(Type* ty, int bits = 32) {
+static bool isFloatType(Type* ty, std::int32_t bits = 32) {
   if (auto x = utils::cast<FloatType>(ty)) 
     return x->getBits() == bits;
   return false;

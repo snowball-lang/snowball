@@ -37,7 +37,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
   if (is<TokenType::OP_MUL>()) {
     next();
     assert_tok<TokenType::KWORD_CONST>("'const'");
-    name = "$const-pointer";
+    name = _SNOWBALL_CONST_PTR;
   } else {
     name = assert_tok<TokenType::IDENTIFIER>("class identifier").to_string();
   }
@@ -68,6 +68,11 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
           name, parentClass, Syntax::Statement::Privacy::fromInt(isPublic));
   cls->setGenerics(generics);
   cls->setDBGInfo(dbg);
+  for (auto attr : attributes) cls->addAttribute(attr.first, attr.second);
+  if (cls->hasAttribute(Attributes::BUILTIN) && name == "IntegerImpl") {
+    cls->unsafeSetName(_SNOWBALL_INT_IMPL);
+  }
+
   auto classBackup = m_current_class;
   m_current_class = cls;
   while (true) {
@@ -159,7 +164,6 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
       case TokenType::BRACKET_RCURLY: {
         cls->hasConstructor = hasConstructor;
         m_current_class = classBackup;
-        for (auto attr : attributes) cls->addAttribute(attr.first, attr.second);
         return cls;
       }
 

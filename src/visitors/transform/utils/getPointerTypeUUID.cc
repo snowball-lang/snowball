@@ -16,18 +16,17 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::string Transformer::getPointerTypeUUID(types::PointerType* ty) {
-  if (ty->isMutable()) return ""; // TODO:
-  auto pointers = ctx->cache->getTransformedType(_SNOWBALL_CONST_PTR).value();
+std::string Transformer::getBuiltinTypeUUID(types::Type* ty, const std::string& name) {
+  auto pointers = ctx->cache->getTransformedType(name).value();
   int uuid = 0;
   for (const auto& x : pointers) {
     auto ptr = utils::cast<types::DefinedType>(x->getType());
     assert(ptr);
-    assert(ptr->getName() == _SNOWBALL_CONST_PTR);
+    assert(ptr->getName() == name);
     assert(ptr->getGenerics().size() == 1);
 
     auto pointedType = ptr->getGenerics().at(0);
-    if (ty->getPointedType()->is(pointedType)) return ty->getName() + ":" + std::to_string(uuid);
+    if (ty->is(pointedType)) return name + ":" + std::to_string(uuid);
     uuid++;
   }
   assert(!"Pointer type not found");

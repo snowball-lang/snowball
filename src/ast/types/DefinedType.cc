@@ -133,10 +133,13 @@ bool DefinedType::canCast(DefinedType* ty) const {
 }
 
 // - https://en.wikipedia.org/wiki/Data_structure_alignment#Computing_padding
-id_t DefinedType::sizeOf() const {
-  auto address = (id_t)0;
+std::int64_t DefinedType::sizeOf() const {
+  auto address = (std::int64_t)0;
   for (const auto& f : fields) {
     auto typeSize = f->type->sizeOf();
+    if (typeSize == 0) {
+      DUMP_S("HELP")
+    }
     auto typeAlignment = f->type->alignmentOf();
     address += (address - (address % typeAlignment)) % typeAlignment;
 		address += (typeAlignment - (address % typeAlignment)) % typeAlignment;
@@ -148,8 +151,8 @@ id_t DefinedType::sizeOf() const {
 	return address;
 }
 
-id_t DefinedType::alignmentOf() const {
-  auto maximumAlignment = (id_t)0;
+std::int64_t DefinedType::alignmentOf() const {
+  auto maximumAlignment = (std::int64_t)0;
   for (const auto& f : fields) {
     auto alignment = f->type->alignmentOf();
     if (alignment > maximumAlignment) maximumAlignment = alignment;

@@ -106,3 +106,55 @@ class [[__internal__]] *const <T> {
       ret i1 %0
     }
 }
+
+/// @brief Integer type implementation.
+/// @tparam IntegerType The integer type to implement.
+/// @details This class implements the integer type.
+/// @note This class is not meant to be used directly.
+/// @internal
+class [[__internal__]] IntegerImpl<IntegerType> {
+  pub:
+    // Equality operators
+    operator [[__internal__]] ==(self: IntegerType, other: IntegerType) bool {}
+    operator [[__internal__]] !=(self: IntegerType, other: IntegerType) bool {}
+    operator [[__internal__]]  <(self: IntegerType, other: IntegerType) bool {}
+    operator [[__internal__]]  >(self: IntegerType, other: IntegerType) bool {}
+    operator [[__internal__]] <=(self: IntegerType, other: IntegerType) bool {}
+    operator [[__internal__]] >=(self: IntegerType, other: IntegerType) bool {} 
+
+    // Assignment operators
+    operator [[__internal__]] =(self: IntegerType, other: IntegerType) IntegerType {}
+    operator [[__internal__]] +=(self: IntegerType, other: IntegerType) IntegerType {}
+    operator [[__internal__]] -=(self: IntegerType, other: IntegerType) IntegerType {}
+    operator [[__internal__]] *=(self: IntegerType, other: IntegerType) IntegerType {}
+    operator [[__internal__]] /=(self: IntegerType, other: IntegerType) f32 {}
+    operator [[__internal__]] %=(self: IntegerType, other: IntegerType) IntegerType {}
+    operator [[__internal__]] ^=(self: IntegerType, other: IntegerType) IntegerType {}
+    operator [[__internal__]] |=(self: IntegerType, other: IntegerType) IntegerType {}
+    operator [[__internal__]] &=(self: IntegerType, other: IntegerType) IntegerType {}
+    operator [[__internal__]] <<=(self: IntegerType, other: IntegerType) IntegerType {}
+    operator [[__internal__]] >>=(self: IntegerType, other: IntegerType) IntegerType {}
+
+    // Arithmetic operators
+    operator [[__internal__]] +(self: IntegerType, other: IntegerType) IntegerType {}
+    operator [[__internal__]] -(self: IntegerType, other: IntegerType) IntegerType {}
+    operator [[__internal__]] *(self: IntegerType, other: IntegerType) IntegerType {}
+    operator [[__internal__]] /(self: IntegerType, other: IntegerType) f32 {}
+    operator [[__internal__]] %(self: IntegerType, other: IntegerType) IntegerType {}
+    operator [[__internal__]] ^(self: IntegerType, other: IntegerType) IntegerType {}
+    operator [[__internal__]] |(self: IntegerType, other: IntegerType) IntegerType {}
+    operator [[__internal__]] &(self: IntegerType, other: IntegerType) IntegerType {}
+    operator [[__internal__]] <<(self: IntegerType, other: IntegerType) IntegerType {}
+    //operator [[__internal__]] >>(self: IntegerType, other: IntegerType) IntegerType {}
+
+    // Unary operators
+    operator [[__internal__]] -(self: IntegerType) IntegerType {}
+    operator [[__internal__]] +(self: IntegerType) IntegerType {}
+
+    // Logical operators
+    operator [[__internal__]] !(self: IntegerType) bool {}
+    operator [[__internal__]] &&(self: IntegerType, other: IntegerType) bool {}
+    operator [[__internal__]] ||(self: IntegerType, other: IntegerType) bool {}
+}
+
+

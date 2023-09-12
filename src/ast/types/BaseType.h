@@ -49,8 +49,8 @@ class BaseType : public Type,
   /// @brief Set the UUID of the type.
   void setUUID(const std::string uuid);
 
-  virtual id_t sizeOf() const override { assert(false); }
-  virtual id_t alignmentOf() const override { assert(false); }
+  virtual std::int64_t sizeOf() const override { assert(false); }
+  virtual std::int64_t alignmentOf() const override { assert(false); }
 
   SNOWBALL_TYPE_COPIABLE(BaseType)
 };

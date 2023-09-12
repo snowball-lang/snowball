@@ -64,6 +64,7 @@ DefinedTypeDef::DefinedTypeDef(std::string name, Expression::TypeRef* extends, P
     : name(name), extends(extends), AcceptorExtend<DefinedTypeDef, Privacy>(prvc), _struct(_struct) { }
 void DefinedTypeDef::addFunction(FunctionDef* fnDef) { functions.push_back(fnDef); }
 void DefinedTypeDef::addVariable(VariableDecl* var) { variables.push_back(var); }
+void DefinedTypeDef::unsafeSetName(const std::string& name) { this->name = name; }
 bool DefinedTypeDef::isStruct() { return _struct; }
 std::vector<TypeAlias*>& DefinedTypeDef::getTypeAliases() { return typeAliases; }
 void DefinedTypeDef::addTypeAlias(TypeAlias* alias) { typeAliases.push_back(alias); }
