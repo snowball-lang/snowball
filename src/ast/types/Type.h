@@ -95,6 +95,11 @@ class Type {
   virtual bool isMutable() const { return _mutable; }
   /// @brief Set the mutability of the type
   virtual void setMutable(bool m);
+
+  /// @return The size of the type in bytes
+  virtual id_t sizeOf() const { assert(!"called sizeOf to not-specialised type!"); }
+  /// @return The alignment of the type in bytes
+  virtual id_t alignmentOf() const { assert(!"called alignmentOf to not-specialised type!"); }
 };
 
 }; // namespace types

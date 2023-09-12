@@ -44,9 +44,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
         baseType = x->getPointedType();
         realType = x->getBaseType();
       }
-      if (utils::cast<types::BoolType>(realType) || utils::cast<types::Int8Type>(realType) ||
-              utils::cast<types::Int16Type>(realType) || utils::cast<types::Int32Type>(realType) ||
-              utils::cast<types::Int64Type>(realType) || utils::cast<types::CharType>(realType)) {
+      if (utils::cast<types::IntType>(realType) || utils::cast<types::CharType>(realType)) {
         switch (services::OperatorService::operatorID(opName)) {
           OPERATOR_INSTANCE(EQEQ, CreateICmpEQ)
           OPERATOR_INSTANCE(PLUS, CreateAdd)
@@ -96,7 +94,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
         }
 
         return true;
-      } else if (utils::cast<types::Float32Type>(baseType) || utils::cast<types::Float64Type>(baseType)) {
+      } else if (utils::is<types::FloatType>(baseType)) {
         // this->value = builder->Create
         switch (services::OperatorService::operatorID(opName)) {
           OPERATOR_INSTANCE(EQEQ, CreateFCmpUEQ)

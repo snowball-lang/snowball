@@ -435,7 +435,7 @@ void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
               {.info = "This function is a test function!",
                       .note = "This error is caused by the function not having a body.",
                       .help = "Try adding a body to the function."});
-    else if (!utils::cast<types::Int32Type>(p_node->getRetTy()))
+    else if (!types::isInt32Type(p_node->getRetTy()))
       E<SYNTAX_ERROR>(p_node->getDBGInfo(), "Test functions must return an integer!",
               {.info = "This function is a test function!",
                       .note = "This error is caused by the function not returning an integer.",

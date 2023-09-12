@@ -33,7 +33,7 @@ void LLVMBuilder::visit(ir::Return* ret) {
         e = llvm::cast<llvm::LoadInst>(e)->getPointerOperand();
       }
 
-      builder->CreateMemCpy(retArg, llvm::MaybeAlign(), e, llvm::MaybeAlign(), builder->getInt32(module->getDataLayout().getTypeAllocSize(getLLVMType(ret->getType()))), 0);
+      builder->CreateMemCpy(retArg, llvm::MaybeAlign(), e, llvm::MaybeAlign(), builder->getInt64(ret->getType()->sizeOf()), 0);
       //auto store = builder->CreateStore(load(e, ret->getType()), retArg);
 
       builder->CreateRetVoid();

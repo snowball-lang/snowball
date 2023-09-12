@@ -103,8 +103,6 @@ fetch_attrs:
         return Attributes::NO_POINTER_SELF;
       } else if (attr == "unsafe_fn_not_body") {
         return Attributes::UNSAFE_FUNC_NOT_BODY;
-      } else if (attr == "first_arg_is_self") {
-        return Attributes::FIRST_ARG_IS_SELF;
       }
       return Attributes::INVALID;
     });
@@ -364,9 +362,15 @@ fetch_attrs:
       }
 
       auto name = m_current.to_string();
-      consume<TokenType::IDENTIFIER>("an identifier").to_string();
+      consume<TokenType::IDENTIFIER>("an identifier");
       consume<TokenType::SYM_COLLON>("':'");
       auto type = parseType();
+
+      if (name == "self" && argumentCount == 0) {
+        attributes[Attributes::FIRST_ARG_IS_SELF] = {};
+      } else if (name == "self") {
+        createError<SYNTAX_ERROR>("'self' can only be used as the first argument inside a class non-static function!");
+      }
 
       auto arg = new Syntax::Expression::Param(name, type);
       arg->setMutable(isMutable);

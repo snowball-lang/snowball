@@ -132,5 +132,32 @@ bool DefinedType::canCast(DefinedType* ty) const {
   return hasParent() && (ty->is(getParent()));
 }
 
+// - https://en.wikipedia.org/wiki/Data_structure_alignment#Computing_padding
+id_t DefinedType::sizeOf() const {
+  auto address = (id_t)0;
+  for (const auto& f : fields) {
+    auto typeSize = f->type->sizeOf();
+    auto typeAlignment = f->type->alignmentOf();
+    address += (address - (address % typeAlignment)) % typeAlignment;
+		address += (typeAlignment - (address % typeAlignment)) % typeAlignment;
+		address += typeSize;
+  }
+  auto alignment = alignmentOf();
+	address += (address - (address % alignment)) % alignment;
+	address += (alignment - (address % alignment)) % alignment;
+	return address;
+}
+
+id_t DefinedType::alignmentOf() const {
+  auto maximumAlignment = (id_t)0;
+  for (const auto& f : fields) {
+    auto alignment = f->type->alignmentOf();
+    if (alignment > maximumAlignment) maximumAlignment = alignment;
+  }
+  return maximumAlignment;
+}
+
+
+
 }; // namespace types
 }; // namespace snowball

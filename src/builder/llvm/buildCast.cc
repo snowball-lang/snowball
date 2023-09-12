@@ -7,9 +7,8 @@
 #include <llvm/IR/Value.h>
 
 #define IS_INTEGER(x)                                                                                                  \
-  (utils::cast<types::Int8Type>(x) || utils::cast<types::Int16Type>(x) || utils::cast<types::Int32Type>(x) ||          \
-          utils::cast<types::Int64Type>(x) || utils::cast<types::BoolType>(x) || utils::cast<types::CharType>(x))
-#define IS_FLOAT(x) (utils::cast<types::Float32Type>(x) || utils::cast<types::Float64Type>(x))
+  (utils::cast<types::IntType>(x) || utils::cast<types::CharType>(x))
+#define IS_FLOAT(x) (utils::cast<types::FloatType>(x))
 
 namespace snowball {
 namespace codegen {

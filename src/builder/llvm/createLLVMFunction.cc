@@ -69,13 +69,11 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
     arg->addAttrs(attrBuilder);
   }
   
-  auto& layout = module->getDataLayout();
   for (int i = 0; i < func->getArgs().size(); ++i) {
     auto llvmArg = fn->arg_begin() + i + retIsArg;
     auto arg = utils::at(func->getArgs(), i);
     if (auto x = utils::cast<types::ReferenceType>((arg).second->getType())) {
-      auto bytes = layout.getTypeAllocSize(getLLVMType(x));
-      setDereferenceableAttribute(*llvmArg, bytes);
+      setDereferenceableAttribute(*llvmArg, x->sizeOf());
     }
   }
 

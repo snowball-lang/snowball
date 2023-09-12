@@ -14,20 +14,19 @@ namespace snowball {
 namespace codegen {
 
 llvm::Type* LLVMBuilder::getLLVMType(types::Type* t) {
-  if (cast<types::Int64Type>(t)) {
-    return builder->getInt64Ty();
-  } else if (cast<types::Int32Type>(t)) {
-    return builder->getInt32Ty();
-  } else if (cast<types::Int16Type>(t)) {
-    return builder->getInt16Ty();
-  } else if (cast<types::Int8Type>(t)) {
-    return builder->getInt8Ty();
-  } else if (cast<types::Float32Type>(t)) {
-    return builder->getFloatTy();
-  } else if (cast<types::Float64Type>(t)) {
-    return builder->getDoubleTy();
-  } else if (cast<types::BoolType>(t)) {
-    return builder->getInt1Ty();
+  if (auto x = cast<types::IntType>(t)) {
+    return builder->getIntNTy(x->getBits());
+  } else if (auto x = cast<types::FloatType>(t)) {
+    switch (x->getBits()) {
+    case 16:
+      return builder->getHalfTy();
+    case 32:
+      return builder->getFloatTy();
+    case 64:
+      return builder->getDoubleTy();
+    default:
+      assert(!"Unreachable type case found!");
+    }
   } else if (cast<types::VoidType>(t)) {
     return builder->getVoidTy();
   } else if (cast<types::CharType>(t)) {

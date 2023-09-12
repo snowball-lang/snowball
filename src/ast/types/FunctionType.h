@@ -114,6 +114,9 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
    */
   static FunctionType* from(ir::Func* fn, Syntax::Statement::FunctionDef* node = nullptr);
 
+  virtual id_t sizeOf() const override { return 8; }
+  virtual id_t alignmentOf() const override { return 8; }
+
   SNOWBALL_TYPE_COPIABLE(FunctionType)
 };
 

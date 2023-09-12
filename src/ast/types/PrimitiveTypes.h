@@ -66,14 +66,9 @@ class VoidType : public AcceptorExtend<VoidType, PrimitiveType> {
  public:
   VoidType() : AcceptorExtend(SN_VOID_TYPE) { }
   SNOWBALL_TYPE_COPIABLE(VoidType)
-};
 
-/// @brief Bool (represents 1-bit signed integer)
-class BoolType : public AcceptorExtend<BoolType, NumericType> {
- public:
-  BoolType() : AcceptorExtend(SN_BOOL_TYPE) { }
-
-  SNOWBALL_TYPE_COPIABLE(BoolType)
+  virtual id_t sizeOf() const override { return 0; }
+  virtual id_t alignmentOf() const override { return 0; }
 };
 
 /// @brief String (represents int 8 pointer)
@@ -81,63 +76,59 @@ class CharType : public AcceptorExtend<CharType, NumericType> {
  public:
   CharType() : AcceptorExtend(SN_CHR_TYPE) { }
   SNOWBALL_TYPE_COPIABLE(CharType)
+
+  virtual id_t sizeOf() const override { return 1; }
+  virtual id_t alignmentOf() const override { return 1; }
 };
 
-/// @brief Float 64 (represents 64-bit floating point)
-class Float64Type : public AcceptorExtend<Float64Type, NumericType> {
- public:
-  Float64Type() : AcceptorExtend(SN_F64_TYPE) { }
-  SNOWBALL_TYPE_COPIABLE(Float64Type)
-};
 
-/// @brief Float 32 (represents 32-bit floating point)
-class Float32Type : public AcceptorExtend<Float32Type, NumericType> {
+/// @brief Float (N) (represents N-bit floating point)
+class FloatType : public AcceptorExtend<FloatType, NumericType> {
+  int bits;
  public:
-  Float32Type() : AcceptorExtend(SN_F32_TYPE) { }
-  SNOWBALL_TYPE_COPIABLE(Float32Type)
-};
+  FloatType(int bits) : bits(bits), 
+    AcceptorExtend("f"+std::to_string(bits)) { }
+  int getBits() const { return bits; }
+  SNOWBALL_TYPE_COPIABLE(FloatType)
 
-/// @brief Int 64 (represents 64-bit signed integer)
-class Int64Type : public AcceptorExtend<Int64Type, NumericType> {
- public:
-  Int64Type() : AcceptorExtend(SN_INT64_TYPE) { }
-  SNOWBALL_TYPE_COPIABLE(Int64Type)
-};
-
-/// @brief Int 16 (represents 16-bit signed integer)
-class Int16Type : public AcceptorExtend<Int16Type, NumericType> {
- public:
-  Int16Type() : AcceptorExtend(SN_INT16_TYPE) { }
-  SNOWBALL_TYPE_COPIABLE(Int16Type)
-};
-
-/// @brief Int 8 (represents 8-bit signed integer)
-class Int8Type : public AcceptorExtend<Int8Type, NumericType> {
- public:
-  Int8Type() : AcceptorExtend(SN_INT8_TYPE) { }
-  SNOWBALL_TYPE_COPIABLE(Int8Type)
+  virtual id_t sizeOf() const override { return bits / 8; }
+  virtual id_t alignmentOf() const override { return bits / 8; }
 };
 
 /**
- * Int 32 (represents 32-bit signed integer)
- *
- * One differentiation that this type has with the other types
- * is that int 32 has it’s unique type name and it’s alias name.
- * It’s former type name is “i32” but it’s alias is “Int”. This
- * is because it adds a way for users to have a more high-level
- * experience in snowball.
+ * Int (N) (represents N-bit signed integer)
+ * @note This is a base class for all integer types.
  */
-class Int32Type : public AcceptorExtend<Int32Type, NumericType> {
+class IntType : public AcceptorExtend<IntType, NumericType> {
+  int bits;
  public:
-  static const std::string TYPE_ALIAS;
+  IntType(int bits) : bits(bits), 
+    AcceptorExtend(bits == 1 ? "bool" : "i"+std::to_string(bits)) { }
+  int getBits() const { return bits; }
+  SNOWBALL_TYPE_COPIABLE(IntType)
 
-  Int32Type() : AcceptorExtend(SN_INT32_TYPE) { }
-
-  bool is(Type* other) const override { return (TYPE_ALIAS == other->getName()) || NumericType::is(other); }
-  SNOWBALL_TYPE_COPIABLE(Int32Type)
+  virtual id_t sizeOf() const override { return bits / 8; }
+  virtual id_t alignmentOf() const override { return bits / 8; }
 };
 
-inline const std::string Int32Type::TYPE_ALIAS = "int";
+/// @brief Utility method to check if a type is an integer type.
+static bool isIntType(Type* ty, int bits = 32) {
+  if (auto x = utils::cast<IntType>(ty)) 
+    return x->getBits() == bits;
+  return false;
+}
+
+static bool isInt32Type(Type* ty) { return isIntType(ty, 32); }
+
+/// @brief Utility method to check if a type is a float type.
+static bool isFloatType(Type* ty, int bits = 32) {
+  if (auto x = utils::cast<FloatType>(ty)) 
+    return x->getBits() == bits;
+  return false;
+}
+
+static bool isFloat32Type(Type* ty) { return isFloatType(ty, 32); }
+static bool isDoubleType(Type* ty) { return isFloatType(ty, 64); }
 
 }; // namespace types
 }; // namespace snowball

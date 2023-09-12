@@ -63,6 +63,9 @@ class PointerType : public AcceptorExtend<PointerType, Type>, public DBGObject {
 
   virtual void setMutable(bool m) override;
 
+  virtual id_t sizeOf() const override { return 8; }
+  virtual id_t alignmentOf() const override { return 8; }
+
   SNOWBALL_TYPE_COPIABLE(PointerType)
 };
 

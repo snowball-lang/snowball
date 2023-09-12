@@ -54,13 +54,15 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
   } else if (auto x = ty->_getInternalType()) {
     // TODO: maybe move up in the function to prevent problems with generics?
     return x->copy();
+  } else if (auto x = transformSpecialType(ty)) { 
+    return x->copy(); 
   }
-
+   
+ 
   auto name = ty->getPrettyName();
   auto id = ty->getId();
   if (id.empty()) { id = ty->getName(); }
   types::Type* returnedType = nullptr;
-  if (auto x = transformSpecialType(ty)) { return x->copy(); }
   auto ast = ty->_getInternalAST();
   if (ast == nullptr) {
     if (ty->getGenerics().size() > 0) {
@@ -156,7 +158,7 @@ continueTypeFetch:
                     name.c_str()));
   }
 
-  if (returnedType == nullptr) E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found!", name.c_str()));
+  if (returnedType == nullptr) E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found from the current context!", name.c_str()));
   if (!typeGenericsMatch(ty, returnedType)) {
     auto compAsDefinedType = utils::cast<GenericContainer<types::Type*>>(returnedType);
     auto compGenerics = compAsDefinedType == nullptr ? std::vector<types::Type*>{} : compAsDefinedType->getGenerics();

@@ -39,24 +39,21 @@ llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
 
 llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
   auto llvmType = getLLVMType(ty);
-
-  auto& layout = module->getDataLayout();
-
-  if (cast<types::Int64Type>(ty) || cast<types::Int32Type>(ty) || cast<types::Int16Type>(ty) ||
-          cast<types::Int8Type>(ty) || cast<types::BoolType>(ty) || cast<types::CharType>(ty)) {
+  
+  if (is<types::IntType>(ty) || cast<types::CharType>(ty)) {
     return dbg.builder->createBasicType(
-            ty->getName(), layout.getTypeAllocSizeInBits(llvmType), llvm::dwarf::DW_ATE_signed);
-  } else if (cast<types::Float32Type>(ty) || cast<types::Float64Type>(ty)) {
+            ty->getName(), ty->sizeOf() * 8, llvm::dwarf::DW_ATE_signed);
+  } else if (is<types::FloatType>(ty)) {
     return dbg.builder->createBasicType(
-            ty->getName(), layout.getTypeAllocSizeInBits(llvmType), llvm::dwarf::DW_ATE_float);
+            ty->getName(), ty->sizeOf() * 8, llvm::dwarf::DW_ATE_float);
   } else if (cast<types::VoidType>(ty)) {
     return nullptr;
   } else if (auto x = cast<types::ReferenceType>(ty)) {
     auto type = getDIType(x->getPointedType());
-    return dbg.builder->createPointerType(type, layout.getTypeAllocSizeInBits(llvmType));
+    return dbg.builder->createPointerType(type, ty->sizeOf() * 8);
   } else if (auto x = cast<types::PointerType>(ty)) {
     auto type = getDIType(x->getPointedType());
-    return dbg.builder->createPointerType(type, layout.getTypeAllocSizeInBits(llvmType));
+    return dbg.builder->createPointerType(type, ty->sizeOf() * 8);
   }
 
   else if (auto f = cast<types::FunctionType>(ty)) {
@@ -65,7 +62,7 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     for (auto argType : f->getArgs()) { argTypes.push_back(getDIType(argType)); }
 
     auto subroutineType = dbg.builder->createSubroutineType(llvm::MDTuple::get(*context, argTypes));
-    return dbg.builder->createPointerType(subroutineType, layout.getTypeAllocSizeInBits(llvmType));
+    return dbg.builder->createPointerType(subroutineType, ty->sizeOf() * 8);
   } else if (auto c = cast<types::TypeAlias>(ty)) {
     return getDIType(c->getBaseType());
   } else if (auto c = cast<types::DefinedType>(ty)) {
@@ -96,7 +93,7 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
                       t->name,
                       file,
                       dbgInfo->line,
-                      layout.getTypeAllocSizeInBits(getLLVMType(t->type)),
+                      t->type->sizeOf() * 8,
                       /*AlignInBits=*/0,
                       0,
                       llvm::DINode::FlagZero,

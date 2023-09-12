@@ -25,19 +25,10 @@ TransformContext::TransformContext(
   auto _##t = std::make_shared<transform::Item>(raw_##t);                                                              \
   addItem(raw_##t->getName(), _##t);
 
-  DEFINE_TYPE(BoolType)
-  DEFINE_TYPE(Float64Type)
-  DEFINE_TYPE(Float32Type)
-  DEFINE_TYPE(Int64Type)
-  DEFINE_TYPE(Int32Type)
-  DEFINE_TYPE(Int16Type)
-  DEFINE_TYPE(Int8Type)
   DEFINE_TYPE(VoidType)
   DEFINE_TYPE(CharType)
 
 #undef DEFINE_TYPE
-
-  addItem(types::Int32Type::TYPE_ALIAS, _Int32Type);
 
   auto coreMod = std::make_shared<ir::Module>("Core", imports->CORE_UUID);
   auto coreModItem = std::make_shared<transform::Item>(coreMod);

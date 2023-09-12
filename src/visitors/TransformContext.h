@@ -80,23 +80,21 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
   // clang-format off
 
     /// @brief Get the bool primitive type
-    types::Type* getBoolType() { return getPrimitiveType(SN_BOOL_TYPE); }
-    /// @brief Get the string primitive type
-    types::Type* getStringType() { return getPrimitiveType(SN_STR_TYPE); }
+    types::Type* getBoolType() { return new types::IntType(1); }
     /// @brief Get the char primitive type
     types::Type* getCharType() { return getPrimitiveType(SN_CHR_TYPE); }
     /// @brief Get the float 64 primitive type
-    types::Type* getF64Type() { return getPrimitiveType(SN_F64_TYPE); }
+    types::Type* getF64Type() { return new types::FloatType(64); }
     /// @brief Get the float 32 primitive type
-    types::Type* getF32Type() { return getPrimitiveType(SN_F32_TYPE); }
+    types::Type* getF32Type() { return new types::FloatType(32); }
     /// @brief Get the int 64 primitive type
-    types::Type* getInt64Type() { return getPrimitiveType(SN_INT64_TYPE); }
+    types::Type* getInt64Type() { return new types::IntType(64); }
     /// @brief Get the int 32 primitive type
-    types::Type* getInt32Type() { return getPrimitiveType(SN_INT32_TYPE); }
+    types::Type* getInt32Type() { return new types::IntType(32); }
     /// @brief Get the int 16 primitive type
-    types::Type* getInt16Type() { return getPrimitiveType(SN_INT16_TYPE); }
+    types::Type* getInt16Type() { return new types::IntType(16); }
     /// @brief Get the int 8 primitive type
-    types::Type* getInt8Type() { return getPrimitiveType(SN_INT8_TYPE); }
+    types::Type* getInt8Type() { return new types::IntType(8); }
     /// @brief Get the void type representation
     types::Type* getVoidType() { return getPrimitiveType(SN_VOID_TYPE); }
   // clang-format on

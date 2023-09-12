@@ -51,6 +51,9 @@ class TypeAlias : public AcceptorExtend<TypeAlias, BaseType> {
   ///  can cast to any other numeric types.
   bool canCast(Type* ty) const override;
 
+  virtual id_t sizeOf() const override { return base->sizeOf(); }
+  virtual id_t alignmentOf() const override { return base->alignmentOf(); }
+
   SNOWBALL_TYPE_COPIABLE(TypeAlias)
 };
 
