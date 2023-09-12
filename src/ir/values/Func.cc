@@ -69,7 +69,16 @@ bool Func::isExternal(std::string name) { return !utils::startsWith(name, _SN_MA
 
 std::string Func::getNiceName() {
   auto base = hasParent() ? (parent->getPrettyName() + "::") : module->isMain() ? "" : module->getName() + "::";
-  auto n = base + getName();
+  std::string generics = "";
+  if (isGeneric()) {
+    generics = "<";
+    for (auto g : getGenerics()) {
+      generics += g.second->getPrettyName();
+      if (g != getGenerics().back()) generics += ", ";
+    }
+    generics += ">";
+  }
+  auto n = base + getName() + generics;
 
   return n;
 }

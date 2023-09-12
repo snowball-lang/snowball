@@ -20,7 +20,6 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
   // Cast the function into a bodied one, if it's not bodied,
   // we will get nullptr as a result.
   auto bodiedFn = cast<Statement::BodiedFunction>(node);
-  bool isGeneric = node->getGenerics().size() > 0;
 
   std::shared_ptr<ir::Func> fn = nullptr;
   ctx->withState(fnStore.state, [&]() {
@@ -53,7 +52,8 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
       fn->setRetTy(returnType);
       fn->setPrivacy(node->getPrivacy());
       fn->setStatic(node->isStatic());
-      fn->setGenerics(fnGenerics);
+      if (node->isGeneric())
+        fn->setGenerics(fnGenerics);
       fn->setModule(ctx->module);
       fn->setAttributes(node);
       auto isExtern = node->isExtern();

@@ -137,9 +137,6 @@ std::int64_t DefinedType::sizeOf() const {
   auto address = (std::int64_t)0;
   for (const auto& f : fields) {
     auto typeSize = f->type->sizeOf();
-    if (typeSize == 0) {
-      DUMP_S("HELP")
-    }
     auto typeAlignment = f->type->alignmentOf();
     address += (address - (address % typeAlignment)) % typeAlignment;
 		address += (typeAlignment - (address % typeAlignment)) % typeAlignment;
