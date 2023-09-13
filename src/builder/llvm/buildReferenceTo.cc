@@ -13,14 +13,19 @@ void LLVMBuilder::visit(ir::ReferenceTo* ref) {
   auto val = ref->getValue();
   auto llvmReferencedValue = build(val.get());
 
-  if (!llvmReferencedValue->getType()->isPointerTy() || ctx->doNotLoadInMemory) {
-    auto tempVal = createAlloca(getLLVMType(val->getType()));
-    builder->CreateStore(llvmReferencedValue, tempVal);
-    llvmReferencedValue = tempVal;
-  }
+  //if (!llvmReferencedValue->getType()->isPointerTy() || ctx->doNotLoadInMemory) {
+  //  auto tempVal = createAlloca(getLLVMType(val->getType()));
+  //  builder->CreateStore(llvmReferencedValue, tempVal);
+  //  llvmReferencedValue = tempVal;
+  //}
 
-  auto tempVal = createAlloca(getLLVMType(ref->getType()));
+  //if (llvm::isa<llvm::LoadInst>(llvmReferencedValue)) {
+  //  llvmReferencedValue = llvm::cast<llvm::LoadInst>(llvmReferencedValue)->getPointerOperand();
+  //}
+
+  auto tempVal = (llvm::Value*)createAlloca(getLLVMType(ref->getType()), ".ref-temp");
   builder->CreateStore(llvmReferencedValue, tempVal);
+  //builder->CreateMemCpy(tempVal, llvm::MaybeAlign(), llvmReferencedValue, llvm::MaybeAlign(), ref->getType()->sizeOf(), false);
   ctx->doNotLoadInMemory = false;
 
   this->value = tempVal;

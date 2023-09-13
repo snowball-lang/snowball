@@ -10,6 +10,7 @@
 #include "../../ir/module/MainModule.h"
 #include "../../ir/values/Func.h"
 #include "../../ir/values/Value.h"
+#include "../../ir/values/ReferenceTo.h"
 
 #include <cstdint>
 #include <llvm/IR/Constants.h>
@@ -157,11 +158,11 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
     }
   } h;
   /// Create a new alloca instruction
-  llvm::AllocaInst* createAlloca(llvm::Type* ty) {
+  llvm::AllocaInst* createAlloca(llvm::Type* ty, std::string name = "") {
     auto backupBlock = builder->GetInsertBlock();
     auto entryBlock = ctx->getCurrentFunction()->getEntryBlock().getTerminator();
     builder->SetInsertPoint(entryBlock);
-    auto alloca = builder->CreateAlloca(ty);
+    auto alloca = builder->CreateAlloca(ty, nullptr, name);
     builder->SetInsertPoint(backupBlock);
     return alloca;
   }
@@ -236,6 +237,10 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
    * @param v Value to build
   */
   llvm::Value* expr(ir::Value* v) {
+    if (auto x = utils::cast<ir::ReferenceTo>(v)) {
+      auto val = x->getValue();
+      load(build(val.get()), val->getType());
+    }
     return load(build(v), v->getType());
   }
 
@@ -284,7 +289,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
    * @brief A allocates a new object inside the LLVM IR code and cast
    * it into the desired type.
    */
-  llvm::Value* allocateObject(types::DefinedType* ty);
+  llvm::Value* allocateObject(types::DefinedType* ty, bool atHeap = false);
   /**
    * @brief It creates a new struct type and a new constant struct
    * value for a virtual table for @param ty

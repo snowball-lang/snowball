@@ -25,7 +25,7 @@ void LLVMBuilder::visit(ir::Call* call) {
   setDebugInfoLoc(call);
 
   auto args = utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value*>(
-          call->getArguments(), [&](std::shared_ptr<ir::Value> arg) { return load(build(arg.get()), arg->getType()); });
+          call->getArguments(), [&](std::shared_ptr<ir::Value> arg) { return expr(arg.get()); });
   llvm::Value* llvmCall = nullptr;
   llvm::Value* allocatedValue = nullptr;
   llvm::Type* allocatedValueType = nullptr;
@@ -35,7 +35,7 @@ void LLVMBuilder::visit(ir::Call* call) {
     allocatedValueType = getLLVMType(retType);
     // It's a function returning a type that's not a pointer
     // We need to allocate the value
-    allocatedValue = createAlloca(allocatedValueType);
+    allocatedValue = createAlloca(allocatedValueType, ".sret-temp");
     args.insert(args.begin(), allocatedValue);
   }
 
@@ -54,7 +54,7 @@ void LLVMBuilder::visit(ir::Call* call) {
     } else {
       auto classType = utils::cast<types::DefinedType>(parent);
       assert(classType && "Class type is not a defined type!");
-      object = allocateObject(classType);
+      object = allocateObject(classType, instance->allocateAtHeap());
     }
 
     args.insert(args.begin(), object);

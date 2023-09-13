@@ -61,10 +61,15 @@ class Call : public AcceptorExtend<Call, Value> {
  */
 class ObjectInitialization : public AcceptorExtend<ObjectInitialization, Call> {
   friend Call;
+  /// @brief If the object should be allocated in the heap
+  bool atHeap = false;
 
  public:
-  explicit ObjectInitialization(std::shared_ptr<Value> callee, std::vector<std::shared_ptr<Value>> args = {})
-      : AcceptorExtend(callee, args) { }
+  explicit ObjectInitialization(std::shared_ptr<Value> callee, bool atHeap = false, std::vector<std::shared_ptr<Value>> args = {})
+      : AcceptorExtend(callee, args), atHeap(atHeap) { }
+
+  /// @return Wether or not the object should be allocated in the heap.
+  bool allocateAtHeap() const { return atHeap; }
 
   /// @brief The created object value.
   /// @note It can be nullptr if the object requires a new allocation.

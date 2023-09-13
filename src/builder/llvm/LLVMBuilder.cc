@@ -90,6 +90,13 @@ llvm::Value* LLVMBuilder::load(llvm::Value* v, types::Type* ty) {
     return v;
   }
 
+  // TODO: not sure about alloca
+  // We don't need to load a value if it's not an alloca instruction.
+  // because this reference could from a function call.
+  // example: sn.alloca(10); // do not load
+  if (is<types::ReferenceType>(ty) && !llvm::isa<llvm::AllocaInst>(v)) 
+    return v;
+
   if (v->getType()->isPointerTy() && !is<types::PointerType>(ty))
     return builder->CreateLoad(llvmType, v, ".ptr-load");
   return v;
