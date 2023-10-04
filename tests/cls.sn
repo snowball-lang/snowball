@@ -3,16 +3,12 @@ namespace test {
 class Test {
   pub:
     Test() {}
+    let succ: bool = true;
 }
 
 fn [[test]] init_heap() i32 {
   let t = new Test();
-  return true;
-}
-
-fn [[test]] init_stack() i32 {
-  let t = new Test{};
-  return true;
+  return t.succ;
 }
 
 class ValueAccessTest {
@@ -21,23 +17,12 @@ class ValueAccessTest {
     ValueAccessTest() {}
 }
 
-fn [[test(expect = 0)]] value_access_stack() i32 {
-  let t = new ValueAccessTest{};
-  return t.a;
-}
-
 fn [[test(expect = 0)]] value_access_heap() i32 {
   let t = new ValueAccessTest();
   return t.a;
 }
 
-fn [[test]] value_access_stack_set() i32 {
-  let t = new ValueAccessTest{};
-  t.a = 1;
-  return t.a;
-}
-
-fn [[test]] value_access_heap_set() i32 {
+fn [[test]] value_access_set() i32 {
   let t = new ValueAccessTest();
   t.a = 1;
   return t.a;
@@ -56,12 +41,12 @@ class VirtualTest {
 
 fn [[test]] virtual_stack() i32 {
   // TODO: what's going on here
-  let t = new VirtualTest{};
+  let t = new VirtualTest();
   return t.test();
 }
 
 fn [[test]] virtual_heap() i32 {
-  let t = new VirtualTest();
+  let t = &new VirtualTest();
   return t.test();
 }
 
@@ -72,7 +57,7 @@ class TypeInsideClassTest {
 }
 
 fn [[test]] type_inside_class() i32 {
-  let t: TypeInsideClassTest::x = new VirtualTest{};
+  let t: TypeInsideClassTest::x = new VirtualTest();
   return true;
 }
 
@@ -102,8 +87,8 @@ class GenericAccessTest<T> {
     GenericAccessTest() {}
 }
 
-fn [[test(expect = 0)]] generic_access_stack() i32 {
-  let t = new GenericAccessTest<i32>{};
+fn [[test(expect = 0)]] generic_access() i32 {
+  let t = new GenericAccessTest<i32>();
   return t.a;
 }
 
@@ -115,12 +100,7 @@ class InheritedOverrideVirtualTest: VirtualTest {
     }
 }
 
-fn [[test(expect = 0)]] inherited_override_virtual_stack() i32 {
-  let t = new InheritedOverrideVirtualTest{};
-  return t.test();
-}
-
-fn [[test(expect = 0)]] inherited_override_virtual_heap() i32 {
+fn [[test(expect = 0)]] inherited_override_virtual() i32 {
   let t = new InheritedOverrideVirtualTest();
   return t.test();
 }
@@ -130,12 +110,7 @@ class InheritanceVirtualTest: VirtualTest {
     InheritanceVirtualTest() : super() {}
 }
 
-fn [[test]] inheritance_virtual_stack() i32 {
-  let t = new InheritanceVirtualTest{};
-  return t.test();
-}
-
-fn [[test]] inheritance_virtual_heap() i32 {
+fn [[test]] inheritance_virtual() i32 {
   let t = new InheritanceVirtualTest();
   return t.test();
 }

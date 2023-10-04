@@ -14,6 +14,9 @@ namespace snowball {
 namespace Syntax::transform {
 class MacroInstance;
 } // namespace Syntax::transform
+namespace types {
+class DefinedType;
+}
 namespace ir {
 
 class Func;
@@ -69,6 +72,9 @@ class Module : public SrcObject, public std::enable_shared_from_this<Module> {
 
     return ret;
   }
+
+  /// @brief A list containing the definitive type information
+  std::map<id_t, std::shared_ptr<types::DefinedType>> typeInformation;
 };
 } // namespace ir
 } // namespace snowball

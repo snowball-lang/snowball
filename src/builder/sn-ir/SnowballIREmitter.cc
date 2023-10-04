@@ -3,6 +3,7 @@
 #include "../../ir/module/MainModule.h"
 #include "../../ir/module/Module.h"
 #include "../../ir/values/all.h"
+#include "../llvm/LLVMIRChunk.h"
 
 namespace snowball {
 namespace codegen {
@@ -50,7 +51,14 @@ void SnowballIREmitter::visit(std::shared_ptr<ir::Module> m) {
       addContent(";\n");
     else if (f->hasAttribute(Attributes::LLVM_FUNC)) {
       addContent(" [LLVM] {\n");
-      addContent("    " + f->getLLVMBody() + "\n");
+      for (const auto& chunk : f->getLLVMBody()) {
+        if (chunk.type == Syntax::LLVMIRChunk::TypeAccess) {
+          addContent(chunk.ty->getMangledName());
+        } else {
+          assert(chunk.type == Syntax::LLVMIRChunk::LLCode);
+          addContent(chunk.code);
+        }
+      }
       addContent("  }\n");
     } else if (!f->isDeclaration()) {
       addContent(" ");

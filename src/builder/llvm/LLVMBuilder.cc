@@ -35,7 +35,6 @@
 #include <llvm/LinkAllIR.h>
 #include <llvm/LinkAllPasses.h>
 #include <llvm/Linker/Linker.h>
-#include <llvm/MC/SubtargetFeature.h>
 #include <llvm/MC/TargetRegistry.h>
 #include <llvm/Passes/PassBuilder.h>
 #include <llvm/Support/Allocator.h>
@@ -63,7 +62,6 @@
 #include <llvm/Transforms/IPO/AlwaysInliner.h>
 #include <llvm/Transforms/IPO/GlobalDCE.h>
 #include <llvm/Transforms/IPO/Internalize.h>
-#include <llvm/Transforms/IPO/PassManagerBuilder.h>
 #include <llvm/Transforms/IPO/StripDeadPrototypes.h>
 #include <llvm/Transforms/IPO/StripSymbols.h>
 #include <llvm/Transforms/IPO/WholeProgramDevirt.h>
@@ -93,11 +91,11 @@ llvm::Value* LLVMBuilder::load(llvm::Value* v, types::Type* ty) {
   // TODO: not sure about alloca
   // We don't need to load a value if it's not an alloca instruction.
   // because this reference could from a function call.
-  // example: sn.alloca(10); // do not load
-  if (is<types::ReferenceType>(ty) && !llvm::isa<llvm::AllocaInst>(v)) 
-    return v;
+  // example: malloc(10); // do not load
+  //if (llvmType->isPointerTy() && llvm::isa<llvm::CallInst>(v)) 
+  //  return v;
 
-  if (v->getType()->isPointerTy() && !is<types::PointerType>(ty))
+  if (v->getType()->isPointerTy())
     return builder->CreateLoad(llvmType, v, ".ptr-load");
   return v;
 }
@@ -133,7 +131,7 @@ LLVMBuilder::LLVMBuilder(std::shared_ptr<ir::MainModule> mod, app::Options::Opti
   llvm::initializeSelectOptimizePass(registry);
   llvm::initializeCodeGenPreparePass(registry);
   llvm::initializeAtomicExpandPass(registry);
-  llvm::initializeRewriteSymbolsLegacyPassPass(registry);
+  llvm::initializeMergeICmpsLegacyPassPass(registry);
   llvm::initializeWinEHPreparePass(registry);
   llvm::initializeDwarfEHPrepareLegacyPassPass(registry);
   llvm::initializeSafeStackLegacyPassPass(registry);
@@ -173,7 +171,7 @@ std::unique_ptr<llvm::Module> LLVMBuilder::newModule() {
   // debug info setup
   dbg.builder = std::make_unique<llvm::DIBuilder>(*m);
   llvm::DIFile* file = dbg.getFile(srcInfo->getPath());
-  dbg.unit = dbg.builder->createCompileUnit(llvm::dwarf::DW_LANG_C,
+  dbg.unit = dbg.builder->createCompileUnit(llvm::dwarf::DW_LANG_C_plus_plus,
           file,
           ("Snowball version " _SNOWBALL_VERSION),
           !dbg.debug,
@@ -191,7 +189,10 @@ std::unique_ptr<llvm::Module> LLVMBuilder::newModule() {
   return m;
 }
 
-void LLVMBuilder::newContext() { context = std::make_unique<llvm::LLVMContext>(); }
+void LLVMBuilder::newContext() { 
+  context = std::make_unique<llvm::LLVMContext>(); 
+  //context->setOpaquePointers(false);
+}
 
 llvm::DIFile* LLVMBuilder::DebugInfo::getFile(const std::string& path) {
   std::string filename;
@@ -287,6 +288,11 @@ void LLVMBuilder::codegen() {
 #define INIT_MODULES(build) \
   for (auto m : mainModule->getModules()) generateModule(m, build); \
   generateModule(mainModule, build);
+
+  for (const auto& m : mainModule->getModules()) {
+    ctx->typeInfo.insert(m->typeInformation.begin(), m->typeInformation.end());
+  }
+  ctx->typeInfo.insert(mainModule->typeInformation.begin(), mainModule->typeInformation.end());
 
   INIT_MODULES(false); // Create function declarations
   INIT_MODULES(true); // Create function bodies

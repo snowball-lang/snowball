@@ -1,6 +1,7 @@
 
 #include "../../ir/values/Argument.h"
 #include "../../ir/values/VariableDeclaration.h"
+#include "../../ir/values/Call.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 
@@ -12,6 +13,7 @@ namespace codegen {
 
 void LLVMBuilder::visit(ir::VariableDeclaration* variable) {
   llvm::Value* store = nullptr;
+  ctx->doNotLoadInMemory = false;
   if (auto a = utils::cast<ir::Argument>(variable->getValue().get())) {
     auto id = a->getId();
     store = ctx->getSymbol(id);
@@ -19,8 +21,14 @@ void LLVMBuilder::visit(ir::VariableDeclaration* variable) {
     auto id = variable->getId();
     store = ctx->getSymbol(id);
   }
-  auto generatedValue = build(variable->getValue().get());
-  builder->CreateStore(load(generatedValue, variable->getType()), store);
+  if (utils::is<ir::Call>(variable->getValue().get()) && utils::is<types::DefinedType>(variable->getType())) {
+    ctx->callStoreValue = store;
+    build(variable->getValue().get());
+    ctx->callStoreValue = nullptr;
+  } else {
+    auto generatedValue = expr(variable->getValue().get());
+    builder->CreateStore(generatedValue, store);
+  }
 }
 
 } // namespace codegen

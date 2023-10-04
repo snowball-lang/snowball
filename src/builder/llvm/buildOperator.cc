@@ -30,12 +30,12 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
       llvm::Value* right = nullptr;
       if (args.size() > 1) {
         auto& arg = args.at(1);
-        if (utils::is<ir::ReferenceTo>(arg.get()) && services::OperatorService::operatorID(opName) == services::OperatorService::EQ) {
-          auto ref = utils::cast<ir::ReferenceTo>(arg.get());
-          right = build(ref->getValue().get()); // TODO: this is a hack
-        } else {
+      //  if (utils::is<ir::ReferenceTo>(arg.get()) && services::OperatorService::operatorID(opName) == services::OperatorService::EQ) {
+      //    auto ref = utils::cast<ir::ReferenceTo>(arg.get());
+      //    right = build(ref->getValue().get()); // TODO: this is a hack
+      //  } else {
           right = build(arg.get());
-        }
+      //  }
       }
       auto baseType = args.at(0)->getType();
       auto unchangedBaseType = baseType;
@@ -85,7 +85,8 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
 
           // TODO: remainder oeprators (!, +=, etc...)
           case services::OperatorService::EQ: {
-            right = load(right, baseType);
+            ctx->doNotLoadInMemory = false;
+            right = load(right, unchangedBaseType);
             builder->CreateStore(right, left);
             break;
           }
@@ -130,6 +131,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
 
           // TODO: remainder oeprators (!, +=, etc...)
           case services::OperatorService::EQ: {
+            ctx->doNotLoadInMemory = false;
             right = load(right, baseType);
             builder->CreateStore(right, left);
             break;
@@ -142,6 +144,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
       } else {
         switch (services::OperatorService::operatorID(opName)) {
           case services::OperatorService::EQ: {
+            ctx->doNotLoadInMemory = false;
             right = load(right, baseType);
             builder->CreateStore(right, left);
             break;

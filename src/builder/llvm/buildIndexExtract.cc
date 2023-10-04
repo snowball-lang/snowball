@@ -22,12 +22,13 @@ void LLVMBuilder::visit(ir::IndexExtract* index) {
   // table.
   // TODO: support for structs without vtable.
   // we do ctx->getVtableTy instead of x->hasVtable to avoid any issues when cloning
-  auto i = index->getIndex() + (ctx->getVtableTy(defiendType->getId()) != nullptr);
+  auto i = index->getIndex() + (ctx->typeInfo.find(defiendType->getId())->second->hasVtable);
 
-  auto leftArray = build(indexValue.get());
-  if (utils::is<types::ReferenceType>(valueType))
-    leftArray = builder->CreateLoad(getLLVMType(basedType)->getPointerTo(), leftArray);
-
+  auto leftArray = expr(indexValue.get());
+  //if (utils::is<types::ReferenceType>(index->getType()) || utils::is<types::PointerType>(index->getType()))
+  //leftArray = builder->CreateLoad(getLLVMType(basedType), leftArray);
+  if ((!leftArray->getType()->isPointerTy()) && llvm::isa<llvm::LoadInst>(leftArray))
+    leftArray = llvm::cast<llvm::LoadInst>(leftArray)->getPointerOperand();
   auto extract = builder->CreateStructGEP(getLLVMType(basedType), leftArray, i);
   this->value = extract;
 }

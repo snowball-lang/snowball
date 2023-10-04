@@ -107,7 +107,10 @@ VISIT(ReferenceTo) {
 VISIT(Call) {
   auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee());
   bool validMethod = fn != nullptr && fn->hasParent() && !fn->isStatic();
-  if (utils::cast<types::FunctionType>(p_node->getCallee()->getType()) == nullptr) {
+  if (utils::is<ir::ZeroInitialized>(p_node)) return;
+  if (p_node->getCallee() == nullptr) {
+    E<BUG>(p_node, "Call has no callee!");
+  } else if (utils::cast<types::FunctionType>(p_node->getCallee()->getType()) == nullptr) {
     E<TYPE_ERROR>(p_node, FMT("Value trying to be called is not callable!"));
   }
 

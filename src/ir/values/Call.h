@@ -28,7 +28,7 @@ class Call : public AcceptorExtend<Call, Value> {
       : callee(callee), arguments(args){};
 
   /// @return function call arguments
-  auto& getArguments() { return arguments; }
+  auto getArguments() { return arguments; }
   /// @return function call arguments
   auto getCallee() const { return callee; }
   /// @brief Set a new list of arguments to the current call
@@ -61,21 +61,17 @@ class Call : public AcceptorExtend<Call, Value> {
  */
 class ObjectInitialization : public AcceptorExtend<ObjectInitialization, Call> {
   friend Call;
-  /// @brief If the object should be allocated in the heap
-  bool atHeap = false;
 
  public:
-  explicit ObjectInitialization(std::shared_ptr<Value> callee, bool atHeap = false, std::vector<std::shared_ptr<Value>> args = {})
-      : AcceptorExtend(callee, args), atHeap(atHeap) { }
-
-  /// @return Wether or not the object should be allocated in the heap.
-  bool allocateAtHeap() const { return atHeap; }
+  explicit ObjectInitialization(std::shared_ptr<Value> callee, std::vector<std::shared_ptr<Value>> args = {})
+      : AcceptorExtend(callee, args) { }
 
   /// @brief The created object value.
   /// @note It can be nullptr if the object requires a new allocation.
   std::shared_ptr<ir::Value> createdObject = nullptr;
 };
 
+/// @brief Representation of a binary operator
 class BinaryOp : public AcceptorExtend<BinaryOp, Call> {
   friend Call;
 
@@ -87,6 +83,16 @@ class BinaryOp : public AcceptorExtend<BinaryOp, Call> {
 
   /// @brief Wether or not ignore mutability checks
   bool ignoreMutability = false;
+};
+
+/// @brief Representation of a zeroinitialized value
+class ZeroInitialized : public AcceptorExtend<ZeroInitialized, Call> {
+  friend Call;
+
+ public:
+  explicit ZeroInitialized() : AcceptorExtend(nullptr, {}) { }
+
+  virtual bool isOperator() const { return false; };
 };
 
 } // namespace ir

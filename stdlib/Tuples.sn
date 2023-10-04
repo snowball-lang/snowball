@@ -46,7 +46,7 @@ pub class Pair<T: Core::Sized, U: Core::Sized> {
  * @return A `Pair` object with the given values.
  */
 pub fn make_pair<T, U>(first: T, second: U) Pair<T, U> {
-  return new Pair<T, U>{first, second};
+  return new Pair<T, U>(first, second);
 }
 
 // Mark: - Triple
@@ -104,5 +104,5 @@ pub class Triple<T: Core::Sized, U: Core::Sized, V: Core::Sized> {
  * @return A `Triple` object with the given values.
  */
 pub fn make_triple<T, U, V>(first: T, second: U, third: V) Triple<T, U, V> {
-  return new Triple<T, U, V>{first, second, third};
+  return new Triple<T, U, V>(first, second, third);
 }

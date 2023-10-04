@@ -612,7 +612,7 @@ void end_stack(void* exep) {
 
   // TODO: Class name and location
   std::ostringstream buf;
-  buf << "\n\e[1;31merror\e[1;37m: Unhandled exception";
+  buf << "\n\n\e[1;31m[error]\e[1;37m: FATAL UNHANDLED EXCEPTION";
   if (strcmp(hdr->message, "") != 0) {
     buf << ": \033[0m";
     buf << hdr->message;
@@ -621,11 +621,12 @@ void end_stack(void* exep) {
   }
 
   if (!showBacktrace) {
-    buf << "\n \e[1;37minfo\e[0m: You can export the enviroment variable \e[1;37m`SN_BACKTRACE=1`\e[0m to enable backtrace logging.";
+    buf << "\n \e[1;37m[info]\e[0m: Export the enviroment variable \e[1;37m`SN_BACKTRACE=1`\e[0m to enable backtrace logging.";
   }
 
   buf << "\n\n";
   auto output = buf.str();
+  fflush(stdout);
   fwrite(output.data(), 1, output.size(), stderr);
   abort();
 }

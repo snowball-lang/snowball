@@ -114,7 +114,7 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
   SharedValue<ValueExtract> createValueExtract(DBGSourceInfo* dbgInfo, SharedValue<> value);
   /// @brief Create a object initialization node
   SharedValue<Value> createObjectInitialization(
-          DBGSourceInfo* dbgInfo, types::Type* type, SharedValue<> value, ValueVec<> args, bool atHeap = false);
+          DBGSourceInfo* dbgInfo, types::Type* type, SharedValue<> value, ValueVec<> args);
   /// @brief Create a new conditional instruction (if/else)
   SharedValue<Conditional> createConditional(
           DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> thenBlock, SharedValue<Block> elseBlock);
@@ -129,6 +129,8 @@ class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
           std::vector<Type<>> args, Type<> retType, bool isVarArg = false, bool isMutable = false);
   /// @brief Create a new type alias
   Type<types::TypeAlias> createTypeAlias(DBGSourceInfo* dbg, std::string name, Type<> base);
+  /// @brief Create a zero-initialized value
+  SharedValue<ZeroInitialized> createZeroInitialized(DBGSourceInfo* dbg, Type<> type); 
   /// @brief It sets a type to a value
   /// @important When to use this function?
   ///  1. val1->setType(val2->getType())

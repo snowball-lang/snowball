@@ -145,11 +145,13 @@ types::DefinedType* Transformer::transformClass(
       assert(!ty->isStruct() || (ty->isStruct() && ty->getFunctions().size() == 0));
       // Create function definitions
       ctx->generateFunction = false;
+      ctx->module->typeInformation.insert({transformedType->getId(), std::shared_ptr<types::DefinedType>(transformedType)});
       GENERATE_EQUALIZERS
       for (auto fn : ty->getFunctions()) {
-        if (services::OperatorService::opEquals<OperatorType::CONSTRUCTOR>(fn->getName())) {
+        if (services::OperatorService::opEquals<OperatorType::CONSTRUCTOR>(fn->getName()))
           transformedType->hasConstructor = true;
-        }
+        if (fn->isVirtual())
+          transformedType->hasVtable = true;
 
         trans(fn);
       }

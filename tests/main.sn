@@ -6,7 +6,7 @@
 //
 use pkg::option;
 //use pkg::cls;
-//use pkg::vector;
+use pkg::vector;
 //use pkg::chars;
 //use pkg::string;
 //use pkg::macros;
@@ -22,6 +22,10 @@ use Core::System;
 
 use Core::Optional;
 
+fn x(a: &i32) {
+  
+}
+
 pub fn main() i32 {
   //let x = Optional::Some(42);
   //let a = x.has_value();
@@ -30,4 +34,5 @@ pub fn main() i32 {
   //} else {
   //  System::println("b")
   //}
+  x(42)
 }

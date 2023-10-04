@@ -16,7 +16,7 @@ fn linear_search(arr: Vector<i32>, x: i32) i32 {
 
 fn [[bench]] linear_search() {
     // let's make it huge
-    let mut arr = new Vector<i32>{};
+    let mut arr = new Vector<i32>();
     for i in 0..100000000 {
         arr.push(i);
     }
@@ -26,7 +26,7 @@ fn [[bench]] linear_search() {
 }
 
 fn [[test(expect = 3)]] linear_search() i32 {
-    let mut arr = new Vector<i32>{};
+    let mut arr = new Vector<i32>();
     arr.push(2);
     arr.push(3);
     arr.push(4);
@@ -59,7 +59,7 @@ fn ternary_search(arr: Vector<i32>, l: i32, r: i32, x: i32) i32 {
 
 fn [[bench]] ternary_search() {
     // let's make it huge
-    let mut arr = new Vector<i32>{};
+    let mut arr = new Vector<i32>();
     for i in 0..10000000 {
         arr.push(i);
     }
@@ -69,7 +69,7 @@ fn [[bench]] ternary_search() {
 }
 
 fn [[test(expect = 3)]] ternary_search() i32 {
-    let mut arr = new Vector<i32>{};
+    let mut arr = new Vector<i32>();
     arr.push(2);
     arr.push(3);
     arr.push(4);
@@ -95,7 +95,7 @@ fn binary_search(arr: Vector<i32>, l: i32, r: i32, x: i32) i32 {
 
 fn [[bench]] binary_search() {
     // let's make it huge
-    let mut arr = new Vector<i32>{};
+    let mut arr = new Vector<i32>();
     for i in 0..10000000 {
         arr.push(i);
     }
@@ -105,7 +105,7 @@ fn [[bench]] binary_search() {
 }
 
 fn [[test(expect = 3)]] binary_search() i32 {
-    let mut arr = new Vector<i32>{};
+    let mut arr = new Vector<i32>();
     arr.push(2);
     arr.push(3);
     arr.push(4);
@@ -140,7 +140,7 @@ fn jump_search(arr: Vector<i32>, x: i32) i32 {
 
 fn [[bench]] jump_search() {
     // let's make it huge
-    let mut arr = new Vector<i32>{};
+    let mut arr = new Vector<i32>();
     for i in 0..10000000 {
         arr.push(i);
     }
@@ -150,7 +150,7 @@ fn [[bench]] jump_search() {
 }
 
 fn [[test(expect = 3)]] jump_search() i32 {
-    let mut arr = new Vector<i32>{};
+    let mut arr = new Vector<i32>();
     arr.push(2);
     arr.push(3);
     arr.push(4);
@@ -189,7 +189,7 @@ fn interpolation_search(arr: Vector<i32>, lo: i32, hi: i32, x: i32) i32 {
 //}
 
 fn [[test(expect = 3)]] interpolation_search() i32 {
-    let mut arr = new Vector<i32>{};
+    let mut arr = new Vector<i32>();
     arr.push(2);
     arr.push(3);
     arr.push(4);
@@ -224,7 +224,7 @@ fn bubble_sort(mut arr: Vector<i32>) Vector<i32> {
 //}
 
 fn [[test]] bubble_sort() i32 {
-    let mut arr = new Vector<i32>{};
+    let mut arr = new Vector<i32>();
     arr.push(2);
     arr.push(3);
     arr.push(4);

@@ -21,6 +21,7 @@ llvm::GlobalVariable* LLVMBuilder::createVirtualTable(types::DefinedType* ty, ll
           llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(*context)),
           llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(*context)), // TODO: class info
   };
+  ty = ctx->typeInfo.at(ty->getId()).get();
   for (auto fn : ty->getVTable()) {
     (void)build(fn.get());
     auto c = llvm::cast<llvm::Constant>(this->value);

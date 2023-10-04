@@ -25,6 +25,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     auto r = getFromIdentifier(x->getDBGInfo(), x->getIdentifier(), generics);
     auto rTuple = std::tuple_cat(r, std::make_tuple(true));
     fn = getFunction(p_node, rTuple, x->getNiceName(), argTypes, generics);
+    assert(fn);
   } else if (auto x = utils::cast<Expression::Index>(callee)) {
     bool inModule = false;
     std::string baseName;
@@ -89,7 +90,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
       //                   });
       //   }
       // }
-
+      
       auto baseType = (*b)->getType();
       if ((utils::cast<types::PrimitiveType>(baseType)) || utils::cast<types::ReferenceType>(baseType) ||
               utils::cast<types::PointerType>(baseType)) {
@@ -105,34 +106,38 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
   } else {
     fn = trans(callee);
   }
+  assert(fn);
   // clang-format off
     auto call = builder.createCall(p_node->getDBGInfo(), fn, argValues);
     if (auto t = utils::cast<types::FunctionType>(fn->getType())) {
-        if (t->getArgs().size() <= argTypes.size()) {
-            for (int i = 0; i < t->getArgs().size(); i++) {
-                auto arg = argTypes.at(i);
-                auto deduced = t->getArgs().at(i);
-                if (arg->is(deduced)) { /* ok */
-                } else if (auto x = tryCast(argValues.at(i), deduced); x != nullptr) {
-                  argValues.at(i) = x;
-                } else {
-                    E<TYPE_ERROR>(p_node,
-                        FMT("Can't assign value with type '%s' "
-                            "to a parameter with type '%s'!",
-                            arg->getPrettyName().c_str(),
-                            deduced->getPrettyName().c_str()),
-                        ErrorInfo{.info = "This is the call causing the error! (argument index: " + std::to_string(i+1) + ")",
-                            .note = utils::dyn_cast<ir::Func>(fn) == nullptr
-                            ? FMT("Errored trying to cal function with type `%s`",
-                                    t->getPrettyName().c_str())
-                            : FMT("Errored trying to call function `%s`!\n With type `%s`",
-                                    utils::dyn_cast<ir::Func>(fn)->getNiceName().c_str(),
-                                    t->getPrettyName().c_str()),
-                            .tail = EI<>(argValues.at(i), "",
-                                {.info = "this is the value that's causing the error",
-                                .help = "Maybe try to convert a cast to the correct type?"})});
-                }
+      auto isContructor = utils::dyn_cast<ir::Func>(fn) && utils::dyn_cast<ir::Func>(fn)->isConstructor();
+      if (t->getArgs().size() <= argTypes.size() || /**sorry**/
+        ((t->getArgs().size()-1 <= argTypes.size()) && isContructor)) {
+        for (int i = 0; i < t->getArgs().size()-isContructor; i++) {
+          auto arg = argTypes.at(i);
+          auto deduced = t->getArgs().at(i+isContructor);
+          if (arg->is(deduced)) { /* ok */
+          } else if (auto x = tryCast(argValues.at(i), deduced); x != nullptr) {
+            argValues.at(i) = x;
+            argTypes.at(i) = deduced;
+          } else {
+              E<TYPE_ERROR>(p_node,
+                FMT("Can't assign value with type '%s' "
+                  "to a parameter with type '%s'!",
+                  arg->getPrettyName().c_str(),
+                  deduced->getPrettyName().c_str()),
+                ErrorInfo{.info = "This is the call causing the error! (argument index: " + std::to_string(i+1) + ")",
+                  .note = utils::dyn_cast<ir::Func>(fn) == nullptr
+                  ? FMT("Errored trying to cal function with type `%s`",
+                    t->getPrettyName().c_str())
+                  : FMT("Errored trying to call function `%s`!\n With type `%s`",
+                    utils::dyn_cast<ir::Func>(fn)->getNiceName().c_str(),
+                    t->getPrettyName().c_str()),
+                  .tail = EI<>(argValues.at(i), "",
+                    {.info = "this is the value that's causing the error",
+                    .help = "Maybe try to convert a cast to the correct type?"})});
             }
+          }
         }
 
         builder.setType(call, t->getRetType());
@@ -191,20 +196,10 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
             }
         }
     // clang-format on
-    if ((argValues.size() == 2) && services::OperatorService::isOperator(func->getName(true))) {
-      auto t = argValues.at(0)->getType();
-      auto val = argValues.at(1);
-      auto t2 = val->getType();
-      if (types::NumericType::isNumericType(t)) {
-        if (t->is(t2)) {
-        } else if (auto cast = tryCast(val, t); cast != nullptr) {
-          argValues.at(1) = cast;
-        }
-      }
-    }
   }
   // Set an updated version of the call arguments
   call->setArguments(argValues);
+
   call->isInitialization = p_node->isInitialization;
   this->value = call;
 

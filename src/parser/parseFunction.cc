@@ -61,16 +61,16 @@ fetch_attrs:
   } else if (is<TokenType::KWORD_STATIC>(pk)) {
     CHECK_PRIVACY(isStatic)
   } else if (is<TokenType::KWORD_VIRTUAL>(pk)) {
-    if (is<TokenType::KWORD_MUTABLE>(pk)) {
-      isVirtual = true;
-      CHECK_PRIVACY(isMutable)
-    } else {
-      CHECK_PRIVACY(isVirtual)
-    }
+    CHECK_PRIVACY(isVirtual)
   } else if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(pk)) {
     isPublic = pk.type == TokenType::KWORD_PUBLIC;
   } else if (is<TokenType::KWORD_MUTABLE>(pk)) {
-    CHECK_PRIVACY(isMutable)
+    if (is<TokenType::KWORD_VIRTUAL>(peek(peekCount - 1, true))) {
+      isMutable = true;
+      CHECK_PRIVACY(isVirtual)
+    } else {
+      CHECK_PRIVACY(isMutable)
+    }
   }
 
   auto dbg = m_current.get_pos();
@@ -482,6 +482,7 @@ fetch_attrs:
 
   Syntax::Block* block = nullptr;
   std::string llvmCode;
+  std::vector<Syntax::Expression::TypeRef*> llvmTypesUsed;
   bool hasBlock = false;
 
   if (isExtern) {
@@ -529,6 +530,13 @@ fetch_attrs:
 
         if (is<TokenType::BRACKET_LCURLY>()) {
           depth++;
+          if (is<TokenType::OP_EQ>(peek())) {
+            next(1);
+            llvmTypesUsed.push_back(parseType());
+            depth--;
+            // TODO: make sure they are in the same line
+            assert_tok<TokenType::BRACKET_RCURLY>("'}'");
+          }
         } else if (is<TokenType::BRACKET_RCURLY>()) {
           depth--;
         } else if (is<TokenType::_EOF>()) {
@@ -580,7 +588,7 @@ fetch_attrs:
   } else if (isExtern) {
     fn = Syntax::N<ExternFnDef>(externName, name);
   } else if (isLLVMFunction) {
-    fn = Syntax::N<LLVMFunction>(llvmCode, name);
+    fn = Syntax::N<LLVMFunction>(llvmCode, llvmTypesUsed, name);
   } else if (hasBlock) {
     fn = Syntax::N<BodiedFunction>(block, name);
   } else {

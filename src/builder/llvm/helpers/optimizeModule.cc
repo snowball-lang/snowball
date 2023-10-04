@@ -57,7 +57,7 @@ void applyDebugTransformations(llvm::Module* module, bool debug) {
 } // namespace
 
 #ifndef PERFORM_SIMPLE_OPTS
-#define PERFORM_SIMPLE_OPTS 1
+#define PERFORM_SIMPLE_OPTS 0
 #endif
 
 namespace codegen {
@@ -133,13 +133,13 @@ void LLVMBuilder::optimizeModule() {
 
     for (auto& function : module->getFunctionList()) { functionPassManager->run(function); }
   }
-#endif
-
+  
   llvm::legacy::PassManager codegen_pm;
   codegen_pm.add(
     llvm::createTargetTransformInfoWrapperPass(target->getTargetIRAnalysis()));
 
   codegen_pm.run(*module);
+#endif
   mpm.run(*module, module_analysis_manager);
 }
 

@@ -40,8 +40,8 @@ TypeRef::TypeRef(std::string p_name, DBGSourceInfo* p_dbg, types::Type* internal
     : internalType(internalType), types::Type(REF, p_name), id(id) {
   setDBGInfo(p_dbg);
 }
-NewInstance::NewInstance(DBGSourceInfo* dbg, std::vector<Base*> args, TypeRef* ty, bool createAtHeap)
-    : type(ty), createAtHeap(createAtHeap) {
+NewInstance::NewInstance(DBGSourceInfo* dbg, std::vector<Base*> args, TypeRef* ty)
+    : type(ty) {
   auto call = Syntax::N<FunctionCall>(ty->toRef(), args);
   call->setDBGInfo(dbg);
   this->call = call;
@@ -176,6 +176,7 @@ std::string Macro::arguementTypeToString(Macro::ArguementType t) {
     case Macro::ArguementType::CONSTANT_STRING: return "constant string";
     case Macro::ArguementType::CONSTANT_NUMBER: return "constant number";
     case Macro::ArguementType::CONSTANT_CHAR: return "constant char";
+    case Macro::ArguementType::TYPE: return "type";
     default: E<BUG>(FMT("Unknown arguement type '%i'!", t));
   }
 

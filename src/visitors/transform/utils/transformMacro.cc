@@ -32,7 +32,7 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
       arg = args.at(i);
     }
     Macro::ArguementType deducedArgType;
-    if (utils::cast<Expression::Base>(arg)) {
+    if (utils::is<Expression::Base>(arg)) {
       if (auto x = utils::cast<Expression::ConstantValue>(arg)) {
         deducedArgType = Macro::ArguementType::CONSTANT;
         auto ty = x->getType();
@@ -47,10 +47,12 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
             deducedArgType = Macro::ArguementType::CONSTANT_CHAR;
           }
         }
+      } else if (utils::is<Expression::TypeRef>(arg)) {
+        deducedArgType = Macro::ArguementType::TYPE;
       } else {
         deducedArgType = Macro::ArguementType::EXPRESSION;
       }
-    } else if (utils::cast<Statement::Base>(arg)) {
+    } else if (utils::is<Statement::Base>(arg)) {
       deducedArgType = Macro::ArguementType::STATEMENT;
     } else if (auto x = utils::cast<Macro>(arg)) {
       deducedArgType = x->isMacroStatement() ? Macro::ArguementType::STATEMENT : Macro::ArguementType::EXPRESSION;
@@ -82,6 +84,10 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
     ctx->module = ctx->getCurrentMacro()->module;
     trans(expr);
     ctx->module = backupModule;
+  } else if (macroName == "zero_initialized") {
+    auto type = utils::cast<Expression::TypeRef>(args.at(0));
+    auto tr = transformType(type);
+    this->value = builder.createZeroInitialized(NO_DBGINFO, tr);
   } else {
     ctx->macroBacktrace.push_back({p_node->getDBGInfo(), macroInstance});
     for (auto inst : macro->getBody()->getStmts()) { trans(inst); }

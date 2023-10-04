@@ -66,7 +66,7 @@ pub class Allocator<T: Core::Sized> {
      * @return NonNull{T} - a non-null pointer to the allocated memory block
      */
     static fn [[inline]] alloc(size: i32) NonNull<T> {
-      return new NonNull<T>{CLib::malloc(size) as *const T};
+      return new NonNull<T>(CLib::malloc(size) as *const T);
     }
     /**
      * Allocates a memory block for a given type and initializes it with zeros.
@@ -74,7 +74,7 @@ pub class Allocator<T: Core::Sized> {
      * @return NonNull{T} - a non-null pointer to the allocated memory block
      */
     static fn [[inline]] alloc_zeroed(size: i32) NonNull<T> {
-      return new NonNull<T>{CLib::calloc(size, 1)};
+      return new NonNull<T>(CLib::calloc(size, 1));
     }
     /**
      * Reallocates a memory block for a given type.
@@ -83,7 +83,7 @@ pub class Allocator<T: Core::Sized> {
      * @return NonNull{T} - a non-null pointer to the reallocated memory block
      */
     static fn [[inline]] realloc(ptr: NonNull<T>, size: i32) NonNull<T> {
-      return new NonNull<T>{CLib::realloc(ptr.ptr(), size)};
+      return new NonNull<T>(CLib::realloc(ptr.ptr(), size));
     }
     /**
      * It frees a memory block.

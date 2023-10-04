@@ -7,43 +7,31 @@
 namespace snowball {
 namespace codegen {
 
-llvm::Value* LLVMBuilder::allocateObject(types::DefinedType* ty, bool atHeap) {
-  auto llvmType = getLLVMType(ty);
-  auto llvmTypePtr = getLLVMType(ty)->getPointerTo();
-  llvm::Value* cast = nullptr;
-  if (atHeap) {
-    //auto alloca = createAlloca(llvmType, ".alloc");
-    cast = builder->CreateCall(getAllocaFunction(), builder->getInt64(ty->sizeOf()), FMT(".alloc.%s", llvmType->getStructName()));
-    //builder->CreateStore(cast, alloca);
-    //cast = alloca;
-  } else {
-    cast = builder->CreateAlloca(llvmType, nullptr, FMT(".alloc.%s", llvmType->getStructName()));
-  }
-  if (ty->isStruct() || !ty->hasVtable()) return cast;
+llvm::Value* LLVMBuilder::allocateObject(types::DefinedType* ty) {
+  auto llvmType = llvm::cast<llvm::StructType>(getLLVMType(ty));
+  llvm::Value* cast = builder->CreateAlloca(llvmType, nullptr, FMT(".alloc.%s", llvmType->getStructName()));
 
-  // Class specific stuff
-  llvm::Value* vtablePointer = nullptr;
-  if (auto v = ctx->getVtable(ty->getId())) {
-    vtablePointer = v;
-  } else {
-    auto t = ctx->getVtableTy(ty->getId());
-    if (!t) { t = getVtableType(ty); }
-
-    vtablePointer = createVirtualTable(ty, t);
-    // insert vtable to the start of the type declaration
-    auto body = llvm::cast<llvm::StructType>(llvmType)->elements().vec();
-    body[0] = t->getPointerTo();
-    llvm::cast<llvm::StructType>(llvmType)->setBody(body);
+  auto initializerName = FMT("__const.%s.%s", ctx->getCurrentFunction()->getName().str().c_str(), ty->getName().c_str());
+  auto constInitializer = module->getNamedGlobal(initializerName);
+  if (!constInitializer) {
+    std::vector<llvm::Constant*> elements;
+    for (auto field : llvmType->elements()) {
+      if (field->isPointerTy()) {
+        elements.push_back(llvm::ConstantPointerNull::get(llvm::cast<llvm::PointerType>(field)));
+      } else if (field->isStructTy()) {
+        elements.push_back(llvm::UndefValue::get(field));
+      } else {
+        elements.push_back(llvm::Constant::getNullValue(field));
+      }
+    }
+    auto structInitializer = llvm::ConstantStruct::get((llvm::StructType*)llvmType, elements);
+    constInitializer = new llvm::GlobalVariable(
+            *module, llvmType, true, llvm::GlobalValue::PrivateLinkage, structInitializer, initializerName,
+            nullptr, llvm::GlobalVariable::NotThreadLocal);
+    constInitializer->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
   }
 
-  auto numElements =
-          llvm::cast<llvm::ArrayType>(llvm::cast<llvm::StructType>(ctx->getVtableTy(ty->getId()))->elements()[0])
-                  ->getNumElements();
-  auto element = llvm::ConstantExpr::getGetElementPtr(
-          llvm::StructType::get(llvm::ArrayType::get(builder->getInt8PtrTy(), numElements)),
-          (llvm::Constant*)vtablePointer,
-          llvm::ArrayRef<llvm::Constant*>{builder->getInt32(0), builder->getInt32(0), builder->getInt32(2)}, true, 1);
-  builder->CreateStore(element, cast);
+  //builder->CreateMemCpy(cast, llvm::MaybeAlign(), constInitializer, llvm::MaybeAlign(), ty->sizeOf());
   return cast;
 }
 

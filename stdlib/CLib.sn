@@ -209,9 +209,9 @@ pub namespace __internal {
 pub static unsafe fn [[inline]] alloca_and_snprintf<T>(bytes: c_int, format: &c_char, value: T) &c_char 
 {
     let buffer: *const i8 = malloc(bytes * 4); // TODO: use sn.alloca
-    if buffer.is_null() { 
-        printf(@c_str("%i\n"), value);
-    }
+    //if buffer.is_null() { 
+    //    printf(@c_str("%i\n"), value);
+    //}
     snprintf(buffer, bytes, format, value);
     return (buffer as *const c_char).as_ref();
 } 

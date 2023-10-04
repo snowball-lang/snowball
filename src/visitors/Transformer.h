@@ -18,6 +18,7 @@
 #include "../ir/values/Throw.h"
 #include "../ir/values/ValueExtract.h"
 #include "../utils/utils.h"
+#include "../builder/llvm/LLVMIRChunk.h"
 
 #include <assert.h>
 #include <deque>
@@ -435,6 +436,13 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
   void addModule(std::shared_ptr<ir::Module> m);
   /// @brief Transform a node into a value.
   std::shared_ptr<ir::Value> trans(Node* node);
+  /// @brief Transform a node into a list of LLVM IR chunks.
+  /// @example 
+  ///   %0 = alloca {=MyClassType}
+  ///  This will return a list of chunks:
+  ///   [0]: { type: LLCode, code: "%0 = alloca " }
+  ///   [1]: { type: TypeAccess, ty: MyClassType }
+  std::vector<LLVMIRChunk> getLLVMBody(std::string block, std::vector<Syntax::Expression::TypeRef*> getTypesUsed);
 
  public:
   Transformer(std::shared_ptr<ir::Module> mod, const SourceInfo* srci, bool allowTests = false,

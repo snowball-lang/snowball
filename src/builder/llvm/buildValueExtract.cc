@@ -29,11 +29,6 @@ void LLVMBuilder::visit(ir::ValueExtract* extract) {
     assert(false && "BUG: Value extract type not supported!");
   }
 
-  if (!utils::cast<types::ReferenceType>(var->getType())) {
-    value = load(value, var->getType());
-    ctx->doNotLoadInMemory = true;
-  }
-
   this->value = value;
 }
 

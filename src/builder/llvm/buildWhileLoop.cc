@@ -20,13 +20,13 @@ void LLVMBuilder::visit(ir::WhileLoop* c) {
     (void)build(c->getBlock().get());
     if (!builder->GetInsertBlock()->getTerminator()) { builder->CreateBr(condBB); }
     builder->SetInsertPoint(condBB);
-    auto cond = load(build(c->getCondition().get()), c->getCondition()->getType());
+    auto cond = expr(c->getCondition().get());
     builder->CreateCondBr(cond, whileBB, continueBB);
     builder->SetInsertPoint(continueBB);
   } else {
     builder->CreateBr(condBB);
     builder->SetInsertPoint(condBB);
-    auto cond = load(build(c->getCondition().get()), c->getCondition()->getType());
+    auto cond = expr(c->getCondition().get());
     builder->CreateCondBr(cond, whileBB, continueBB);
     builder->SetInsertPoint(whileBB);
     (void)build(c->getBlock().get());

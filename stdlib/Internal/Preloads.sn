@@ -7,8 +7,8 @@ class [[extends]] char {
     */
     operator [[inline, llvm_function]] +(other: i32) &char 
     { 
-      %0 = getelementptr i8, ptr %self, i32 %other
-      ret ptr %0
+      %0 = getelementptr i8, i8* %self, i32 %other
+      ret i8* %0
     }
 
     /**
@@ -18,8 +18,8 @@ class [[extends]] char {
      */
     operator [[inline, llvm_function]] [](index: i32) char
     { 
-      %0 = getelementptr i8, ptr %self, i32 %index
-      %1 = load i8, ptr %0, align 1
+      %0 = getelementptr i8, i8* %self, i32 %index
+      %1 = load i8, i8* %0, align 1
       ret i8 %1
     }
 
@@ -30,8 +30,8 @@ class [[extends]] char {
      */
     fn [[inline, llvm_function]] at(index: i32) &char
     { 
-      %0 = getelementptr ptr, ptr %self, i32 %index
-      ret ptr %0
+      %0 = getelementptr i8, i8* %self, i32 %index
+      ret i8* %0
     }
 
     /**
@@ -42,9 +42,9 @@ class [[extends]] char {
      */
     mut fn [[inline, llvm_function]] insert(index: i32, character: char) &char
     { 
-      %0 = getelementptr ptr, ptr %self, i32 %index
-      store i8 %character, ptr %0, align 1
-      ret ptr %0
+      %0 = getelementptr i8, i8* %self, i32 %index
+      store i8 %character, i8* %0, align 1
+      ret i8* %0
     }
 
     operator [[__internal__, __no_pointer_self__]] +(other: char)  char {}
@@ -89,20 +89,20 @@ class [[__internal__]] *const <T> {
   pub:
     unsafe operator [[inline, llvm_function]] +(self: *const T, other: i32) *const T
     { 
-      %0 = getelementptr ptr, ptr %self, i32 %other
-      ret ptr %0
+      %0 = getelementptr {=T}, {=*const T} %self, i32 %other
+      ret {=*const T} %0
     } 
 
     unsafe fn [[inline, llvm_function]] as_ref<>(self: *const T) &T 
     {
-      ret ptr %self
+      ret {=*const T} %self
     }
 
     operator [[__internal__]] =(self: *const T, other: *const T) *const T {}
 
     fn [[inline, llvm_function]] is_null(self: *const T) bool
     {
-      %0 = icmp eq ptr %self, null
+      %0 = icmp eq {=*const T} %self, null
       ret i1 %0
     }
 }

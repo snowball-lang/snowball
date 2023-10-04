@@ -62,10 +62,8 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
     auto arg = fn->arg_begin();
     auto attrBuilder = llvm::AttrBuilder(*context);
     attrBuilder.addStructRetAttr(getLLVMType(func->getRetTy()));
-    attrBuilder.addAttribute(llvm::Attribute::NoCapture);
     attrBuilder.addAttribute(llvm::Attribute::NoUndef);
     attrBuilder.addAttribute(llvm::Attribute::NonNull);
-    attrBuilder.addAttribute(llvm::Attribute::WriteOnly);
     arg->addAttrs(attrBuilder);
   }
   

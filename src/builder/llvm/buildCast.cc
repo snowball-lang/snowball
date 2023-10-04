@@ -23,6 +23,8 @@ void LLVMBuilder::visit(ir::Cast* c) {
   v = load(v, vTy);
 
   if (v->getType() == llvmType) {
+    // note: this will always be true for pointer casting since llvm 15 (using opaque pointers)
+    this->ctx->doNotLoadInMemory = true;
     this->value = v;
     return;
   }
@@ -41,9 +43,11 @@ void LLVMBuilder::visit(ir::Cast* c) {
     this->value = builder->CreateFPCast(v, llvmType);
   } else if (IS_INTEGER(vTy) && utils::cast<types::PointerType>(ty)) { // i[n] -> *
     this->value = builder->CreateIntToPtr(v, llvmType);
+    this->ctx->doNotLoadInMemory = true;
   } else {
     assert(utils::cast<types::ReferenceType>(ty) || utils::cast<types::PointerType>(ty));
     this->value = builder->CreatePointerCast(v, llvmType);
+    this->ctx->doNotLoadInMemory = true;
   }
 }
 

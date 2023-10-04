@@ -42,13 +42,13 @@ fn [[test(expect = 42)]] value_default() i32 {
 }
 
 fn [[test]] empty_value_class() i32 {
-    let x = new Optional::Option<String>{};
+    let x = new Optional::Option<String>();
     return x.empty();
 }
 
 fn [[test(expect = 5)]] value_class() i32 {
     let s = "hello".to_string();
-    let x = new Optional::Option<String>{s};
+    let x = new Optional::Option<String>(s);
     return x.val().size();
 }
 
@@ -56,7 +56,7 @@ fn [[test]] access_empty() i32 {
     let x = new Optional::Option<i32>();
     try {
         x.val();
-    } catch (_: &Optional::BadOptionAccess) {
+    } catch (_: Optional::BadOptionAccess) {
         return true;
     }
     return 0;

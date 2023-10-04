@@ -22,16 +22,15 @@ bool genericMatch(Expression::Param* generic, Expression::TypeRef* arg) {
     if (auto t = utils::cast<checkType>(x)) { return t->getPointedType(); }                                            \
     return nullptr;                                                                                                    \
   }) < getPointerDepth(generic->getType(), [&](Expression::TypeRef* x) -> Expression::TypeRef* {                       \
-    if (x->isReferenceType()) { return utils::cast<astType>(x)->getBaseType(); }                                       \
+    if (checker) { return utils::cast<astType>(x)->getBaseType(); }                                       \
     return nullptr;                                                                                                    \
   })) return matchedGeneric(generic, utils::cast<checkType>(arg)->getPointedType());
 
 types::Type* matchedGeneric(Expression::Param* generic, types::Type* arg) {
   // we need to match with "genericMatch"
   if HANDLE_POINTER (types::ReferenceType, Expression::ReferenceType, x->isReferenceType())
-    else if HANDLE_POINTER (types::PointerType, Expression::PointerType, x->isPointertype())
-
-            return arg;
+  else if HANDLE_POINTER (types::PointerType, Expression::PointerType, x->isPointerType())
+  return arg;
 }
 
 #undef HANDLE_POINTER

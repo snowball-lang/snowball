@@ -33,7 +33,6 @@ std::shared_ptr<ir::Func> Transformer::getFunction(DBGObject* dbgInfo,
 
     return fn;
   };
-  if (name == "(Core::_$core::Core::StringView<char>)::from") { DUMP_S("from") }
   auto [fn, args, res] =
           getBestFittingFunction(overloads.has_value() ? overloads.value() : std::deque<Cache::FunctionStore>{},
                   arguments,

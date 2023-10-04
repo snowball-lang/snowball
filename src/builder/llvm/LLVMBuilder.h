@@ -55,6 +55,10 @@ class LLVMBuilderContext {
   std::map<ir::id_t, llvm::StructType*> vtableType;
 
  public:
+  // A value used to return a struct from a function
+  bool retValueUsedFromArg = false;
+  // A value used to store a value into a variable
+  llvm::Value* callStoreValue = nullptr;
   // A map of test functions containing their names
   std::map<std::shared_ptr<ir::Func>, llvm::Function*> tests;
   // A map of benchmark functions containing their names
@@ -97,6 +101,8 @@ class LLVMBuilderContext {
   bool doNotLoadInMemory = false;
   /// @brief Optimization level
   app::Options::Optimization optimizationLevel = app::Options::Optimization::OPTIMIZE_O0;
+  // Type information about ALLLL the types being used
+  std::map<ir::id_t, std::shared_ptr<types::DefinedType>> typeInfo;
 };
 
 /**
@@ -237,10 +243,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
    * @param v Value to build
   */
   llvm::Value* expr(ir::Value* v) {
-    if (auto x = utils::cast<ir::ReferenceTo>(v)) {
-      auto val = x->getValue();
-      load(build(val.get()), val->getType());
-    }
+    this->ctx->doNotLoadInMemory = false;
     return load(build(v), v->getType());
   }
 
@@ -280,7 +283,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
    * @brief Transform a built in snowball type
    * to an llvm type.
    */
-  llvm::Type* getLLVMType(types::Type* t);
+  llvm::Type* getLLVMType(types::Type* t, bool translateVoid = false);
   /**
    * @brief Fetch the C stdlib printf function
    */
@@ -289,7 +292,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
    * @brief A allocates a new object inside the LLVM IR code and cast
    * it into the desired type.
    */
-  llvm::Value* allocateObject(types::DefinedType* ty, bool atHeap = false);
+  llvm::Value* allocateObject(types::DefinedType* ty);
   /**
    * @brief It creates a new struct type and a new constant struct
    * value for a virtual table for @param ty

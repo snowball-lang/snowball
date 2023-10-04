@@ -78,6 +78,18 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
                                           .info = "Macro arguement declaration here.",
                                   })});
         }
+        if (utils::is<Expression::TypeRef>(node)) {
+          E<SYNTAX_ERROR>(p_node, FMT("Macro arguement '%s' is a type!", pseudo.c_str()),
+                  {.info = "Trying to use a type as an expression macro.",
+                          .note = "You can't use a type as an expression macro.\n"
+                                  "You can use the type as a type instead.",
+                          .help = "Try using the type as a type instead or declare the\n"
+                                  "macro as an expression macro.",
+                          .tail = EI<>(node->getDBGInfo(), "",
+                                  {
+                                          .info = "Macro arguement declaration here.",
+                                  })});
+        }
         trans(node);
         if (node->parentMacro != nullptr) ctx->macroBacktrace.pop_back();
         return;

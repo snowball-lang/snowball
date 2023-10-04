@@ -143,7 +143,7 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
   bool isStruct() const { return _struct; }
 
   /// @brief Whether or not the type has a vtable
-  bool hasVtable() const { return classVtable.size() > 0; }
+  bool hasVtable = false;
 
   /// @brief override function.
   virtual bool canCast(Type* ty) const override;

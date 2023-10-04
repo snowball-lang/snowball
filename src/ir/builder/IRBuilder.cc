@@ -46,6 +46,11 @@ SharedValue<Argument> IRBuilder::createArgument(
         DBGSourceInfo* dbgInfo, const std::string& name, int index, Syntax::Expression::Base* defaultValue) {
   return N<Argument>(dbgInfo, name, index, defaultValue);
 }
+SharedValue<ZeroInitialized> IRBuilder::createZeroInitialized(DBGSourceInfo* dbg, Type<> type) {
+  auto zero = N<ZeroInitialized>(dbg);
+  zero->setType(type); // already copied
+  return zero;
+}
 SharedValue<Argument> IRBuilder::createArgument(DBGSourceInfo* dbgInfo, const std::string& name, int index, Type<> type,
         Syntax::Expression::Base* defaultValue) {
   auto arg = createArgument(dbgInfo, name, index, defaultValue);
@@ -116,9 +121,9 @@ SharedValue<TryCatch> IRBuilder::createTryCatch(DBGSourceInfo* dbgInfo, SharedVa
   return N<TryCatch>(dbgInfo, tryBlock, catchBlocks, catchVars);
 }
 SharedValue<Value> IRBuilder::createObjectInitialization(
-        DBGSourceInfo* dbgInfo, types::Type* type, SharedValue<> value, ValueVec<> args, bool atHeap) {
-  std::shared_ptr<ir::Value> init = N<ObjectInitialization>(dbgInfo, value, atHeap, args);
-  setType(init, atHeap ? type->getReferenceTo() : type);
+        DBGSourceInfo* dbgInfo, types::Type* type, SharedValue<> value, ValueVec<> args) {
+  std::shared_ptr<ir::Value> init = N<ObjectInitialization>(dbgInfo, value, args);
+  setType(init, type);
   return init;
 }
 SharedValue<Conditional> IRBuilder::createConditional(

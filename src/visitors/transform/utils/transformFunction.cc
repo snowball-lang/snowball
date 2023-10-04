@@ -93,7 +93,11 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
       if (auto c = ctx->getCurrentClass(true)) {
         auto pClass = utils::cast<types::DefinedType>(c);
         if (pClass != nullptr)
-          if (node->isVirtual()) { fn->setVirtualIndex(pClass->addVtableItem(fn)); }
+          if (node->isVirtual()) { 
+            auto index = pClass->getModule()->typeInformation.at(pClass->getId())->addVtableItem(fn);
+            //pClass->addVtableItem(fn); // just in case
+            fn->setVirtualIndex(index); 
+          }
       }
 
       ctx->defineFunction(fn);
@@ -146,7 +150,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
         assert(node->isExtern());
         fn->setExternalName(e->getExternalName());
       } else if (auto e = utils::cast<Statement::LLVMFunction>(node)) {
-        fn->setLLVMBody(e->getBody());
+        fn->setLLVMBody(getLLVMBody(e->getBody(), e->getTypesUsed()));
       }
     });
 

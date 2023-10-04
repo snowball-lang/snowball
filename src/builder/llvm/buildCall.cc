@@ -17,6 +17,10 @@ namespace codegen {
 void LLVMBuilder::visit(ir::Call* call) {
   bool isConstructor = false;
   if (buildOperator(call)) return; // TODO: maybe jump to cleanup?
+  if (utils::is<ir::ZeroInitialized>(call)) {
+    this->value = llvm::Constant::getNullValue(getLLVMType(call->getType()));
+    return;
+  }
 
   auto calleeValue = call->getCallee();
   auto callee = build(calleeValue.get());
@@ -33,9 +37,17 @@ void LLVMBuilder::visit(ir::Call* call) {
           c != nullptr && utils::cast<types::BaseType>(c->getRetType())) {
     auto retType = c->getRetType();
     allocatedValueType = getLLVMType(retType);
-    // It's a function returning a type that's not a pointer
-    // We need to allocate the value
-    allocatedValue = createAlloca(allocatedValueType, ".sret-temp");
+    if (ctx->retValueUsedFromArg) {
+      allocatedValue = ctx->getCurrentFunction()->getArg(0);
+      ctx->retValueUsedFromArg = false;
+    } else if (ctx->callStoreValue != nullptr) {
+      allocatedValue = ctx->callStoreValue;
+      ctx->callStoreValue = nullptr;
+    } else {
+      // It's a function returning a type that's not a pointer
+      // We need to allocate the value
+      allocatedValue = createAlloca(getLLVMType(retType), ".ret-temp");
+    }
     args.insert(args.begin(), allocatedValue);
   }
 
@@ -46,21 +58,24 @@ void LLVMBuilder::visit(ir::Call* call) {
     isConstructor = true;
     assert(instance);
     assert(c->hasParent());
-    auto parent = c->getParent();
 
     llvm::Value* object = nullptr;
     if (instance->createdObject) {
       object = build(instance->createdObject.get());
     } else {
-      auto classType = utils::cast<types::DefinedType>(parent);
+      auto classType = utils::cast<types::DefinedType>(instance->getType());
       assert(classType && "Class type is not a defined type!");
-      object = allocateObject(classType, instance->allocateAtHeap());
+      object = allocateObject(classType);
+      ctx->doNotLoadInMemory = true;
     }
 
-    args.insert(args.begin(), object);
+    args.insert(args.begin(), load(object, instance->getType()->getReferenceTo()));
     setDebugInfoLoc(call);
     llvmCall = createCall(calleeType, callee, args);
     this->value = object;
+    if (ctx->callStoreValue != nullptr) {
+      builder->CreateStore(builder->CreateLoad(instanceType, object), ctx->callStoreValue);
+    }
   } else if (auto c = utils::dyn_cast<ir::Func>(calleeValue); c != nullptr && c->inVirtualTable()) {
     assert(c->hasParent());
 
@@ -85,24 +100,18 @@ void LLVMBuilder::visit(ir::Call* call) {
     // vtable structure:
     // class instance = { [0] = vtable, ... }
     // vtable = { [size x ptr] } { [0] = fn1, [1] = fn2, ... } }
-    auto vtable = builder->CreateLoad(vtableType->getPointerTo(),
-            builder->CreateConstInBoundsGEP1_32(
-                    vtableType, builder->CreatePointerCast(parentValue, vtableType->getPointerTo()), 0));
-    auto fn = builder->CreateLoad(vtableType->getPointerTo(),
-            builder->CreateConstInBoundsGEP2_32(vtableType->elements()[0], vtable, 0, index));
+    auto vtable = builder->CreateLoad(vtableType->getPointerTo(), parentValue);
+    auto fn = builder->CreateLoad(calleeType->getPointerTo(),
+            builder->CreateConstInBoundsGEP1_32(vtableType->getPointerTo(), vtable, index));
     builder->CreateAssumption(builder->CreateIsNotNull(fn));
     llvmCall = createCall(calleeType, (llvm::Function*)fn, args);
-    if (allocatedValue) {
       // builder->CreateStore(llvmCall, allocatedValue);
       // auto alloca = createAlloca(allocatedValueType);
       // builder->CreateStore(llvmCall, alloca);
       // builder->CreateMemCpy(alloca, llvm::MaybeAlign(), allocatedValue, llvm::MaybeAlign(),
       //         module->getDataLayout().getTypeAllocSize(allocatedValueType), 0);
       // this->value = allocatedValue;
-      this->value = builder->CreateLoad(allocatedValueType, allocatedValue);
-    } else {
-      this->value = llvmCall;
-    }
+    this->value = allocatedValue ? allocatedValue : llvmCall;
   } else {
     if (!llvm::isa<llvm::Function>(callee)) {
       // we are calling a value instead of a direct function.
@@ -111,12 +120,7 @@ void LLVMBuilder::visit(ir::Call* call) {
       callee = load(callee, fnType);
     }
     llvmCall = createCall(calleeType, callee, args);
-    if (allocatedValue) {
-      // builder->CreateStore(llvmCall, allocatedValue);
-      this->value = builder->CreateLoad(allocatedValueType, allocatedValue);
-    } else {
-      this->value = llvmCall;
-    }
+    this->value = allocatedValue ? allocatedValue : llvmCall;
   }
 
 #define SET_CALL_ATTRIBUTES(type)                                                                                      \
@@ -139,6 +143,8 @@ void LLVMBuilder::visit(ir::Call* call) {
     }                                                                                                                  \
   }
 
+  if (!allocatedValue)
+    ctx->doNotLoadInMemory = true;
   SET_CALL_ATTRIBUTES(llvm::CallInst)
   else SET_CALL_ATTRIBUTES(llvm::InvokeInst) else { assert(false); }
 }

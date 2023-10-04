@@ -213,23 +213,18 @@ struct NewInstance : public AcceptorExtend<NewInstance, Base> {
   FunctionCall* call;
   /// @brief Type that's being initialized
   TypeRef* type;
-  /// @brief Wether or not the `new` operator should create
-  ///  the instance on the heap or on the stack.
-  bool createAtHeap = true;
 
  public:
   using AcceptorExtend::AcceptorExtend;
 
-  NewInstance(FunctionCall* call, TypeRef* ty, bool createAtHeap = true)
-      : type(ty), call(call), createAtHeap(createAtHeap){};
-  NewInstance(DBGSourceInfo* dbg, std::vector<Base*> args, TypeRef* ty, bool createAtHeap = true);
+  NewInstance(FunctionCall* call, TypeRef* ty)
+      : type(ty), call(call) {};
+  NewInstance(DBGSourceInfo* dbg, std::vector<Base*> args, TypeRef* ty);
 
   /// @return Get the call value from the operator
   auto getCall() { return call; }
   /// @brief Get the type trying to be initialized
   auto getType() { return type; }
-  /// @see NewInstance::createAtHeap
-  auto atHeap() { return createAtHeap; }
 
   ACCEPT()
 };
@@ -1129,15 +1124,20 @@ struct LLVMFunction : public AcceptorExtend<LLVMFunction, FunctionDef> {
   // Function's block. This block contains all the LLVM IR
   // intructions a function executes when it's called.
   std::string block;
+  // Types being used inside the function
+  std::vector<Expression::TypeRef*> llvmTypesUsed;
 
  public:
   using AcceptorExtend::AcceptorExtend;
 
   template <class... Args>
-  LLVMFunction(std::string block, Args&... args) : block(block), AcceptorExtend(std::forward<Args>(args)...){};
+  LLVMFunction(std::string block, std::vector<Expression::TypeRef*> llvmTypesUsed, Args&... args) 
+    : block(block), llvmTypesUsed(llvmTypesUsed), AcceptorExtend(std::forward<Args>(args)...){};
 
   /// @return Get function's body declaration.
   auto getBody() { return block; }
+  /// @return Get function's types used.
+  auto getTypesUsed() { return llvmTypesUsed; }
 
   // Copy the function
   virtual LLVMFunction* copy() override { return new LLVMFunction(*this); }
@@ -1191,6 +1191,7 @@ struct Macro : public AcceptorExtend<Macro, Node> {
     STATEMENT,
     EXPRESSION,
     CONSTANT,
+    TYPE,
 
     CONSTANT_CHAR,
     CONSTANT_NUMBER,

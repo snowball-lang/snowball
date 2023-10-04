@@ -10,6 +10,7 @@
 #include "Value.h"
 #include "Variable.h"
 #include "VariableDeclaration.h"
+#include "../../builder/llvm/LLVMIRChunk.h"
 
 #include <cassert>
 #include <map>
@@ -18,6 +19,7 @@
 #ifndef __SNOWBALL_FUNC_VAL_H_
 #define __SNOWBALL_FUNC_VAL_H_
 namespace snowball {
+
 namespace ir {
 
 /// @brief Representation of a function in the IR
@@ -69,7 +71,7 @@ class Func : public AcceptorExtend<Func, Value>,
 
   /// There are the LLVM Ir instructions executed inside
   /// the function
-  std::string llvmBody;
+  std::vector<Syntax::LLVMIRChunk> llvmBody;
 
   /// A list of variables used *anywhere* around the function.
   /// This is so that we allocate a new variable at the start
@@ -131,7 +133,7 @@ class Func : public AcceptorExtend<Func, Value>,
 
   /// @brief Declare a new LLVM IR body
   /// @param llvmBody the LLVM IR instructions
-  void setLLVMBody(std::string llvmBody) { this->llvmBody = llvmBody; }
+  void setLLVMBody(std::vector<Syntax::LLVMIRChunk> llvmBody) { this->llvmBody = llvmBody; }
   /// @return the LLVM ir body for this function
   auto getLLVMBody() {
     assert(!isDeclaration() && hasAttribute(Attributes::LLVM_FUNC));

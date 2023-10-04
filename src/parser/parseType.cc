@@ -111,6 +111,9 @@ TypeRef* Parser::parseType() {
   }
   for (int i = 0; i < pointerDepth.size(); i++) {
     auto base = t;
+    if (base->isReferenceType()) {
+      createError<SYNTAX_ERROR>("Cannot have a pointer to a reference type!");
+    }
     t = Syntax::N<PointerType>(base, pointerDepth[i], dbg);
   }
   return t;

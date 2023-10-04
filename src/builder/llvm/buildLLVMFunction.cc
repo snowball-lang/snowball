@@ -2,6 +2,7 @@
 #include "../../errors.h"
 #include "../../ir/values/Argument.h"
 #include "../../utils/utils.h"
+#include "LLVMIRChunk.h"
 #include "LLVMBuilder.h"
 
 #include <llvm/AsmParser/Parser.h>
@@ -40,7 +41,16 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
   }
 
   buf << ") { \nentry:\n\t";
-  buf << fn->getLLVMBody();
+
+  for (const auto& chunk : fn->getLLVMBody()) {
+    if (chunk.type == Syntax::LLVMIRChunk::TypeAccess) {
+      getLLVMType(chunk.ty, true)->print(buf, false, true);
+    } else {
+      assert(chunk.type == Syntax::LLVMIRChunk::LLCode);
+      buf << chunk.code;
+    }
+  }
+
   buf << "\n}";
 
   auto code = buf.str();

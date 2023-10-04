@@ -43,7 +43,14 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
               prev();
               while (true) {
                 next();
-                args.push_back(parseStatement(peek()));
+                auto pk = peek();
+                if (is<TokenType::SYM_COLLON>(pk)) {
+                  next(1);
+                  args.push_back(parseType());
+                  prev();
+                } else {
+                  args.push_back(parseStatement(pk));
+                }
                 if (is<TokenType::SYM_COMMA>(peek())) {
                 } else {
                   next();
@@ -82,18 +89,11 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
         next();
 
         auto ty = parseType();
-        bool toTheHeap = true;
+        assert_tok<TokenType::BRACKET_LPARENT>("'('");
 
-        if (is<TokenType::BRACKET_LCURLY>()) {
-          toTheHeap = false;
-        } else {
-          assert_tok<TokenType::BRACKET_LPARENT>("'(' or '{'");
-        }
+        auto call = parseFunctionCall(ty);
 
-        auto call = parseFunctionCall(
-                ty, toTheHeap ? TokenType::BRACKET_RPARENT : TokenType::BRACKET_RCURLY, toTheHeap ? ")" : "}");
-
-        expr = Syntax::N<Syntax::Expression::NewInstance>(call, ty, toTheHeap);
+        expr = Syntax::N<Syntax::Expression::NewInstance>(call, ty);
         expr->setDBGInfo(call->getDBGInfo());
       } else if (TOKEN(OP_NOT) || TOKEN(OP_PLUS) || TOKEN(OP_MINUS) || TOKEN(OP_BIT_NOT) || TOKEN(OP_BIT_AND) ||
               TOKEN(OP_MUL)) {

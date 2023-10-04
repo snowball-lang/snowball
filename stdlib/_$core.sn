@@ -2,6 +2,7 @@ use Core::Internal::Preloads;
 use [[use_macro(c_str)]] Core::CLib;
 use Core::Ptr;
 
+
 class [[extends]] char {
   pub:
     /**
@@ -9,7 +10,7 @@ class [[extends]] char {
      * @return The string representation of the character.
      */
     fn [[internal_linkage, inline]] to_string() String 
-      { return new String{self}; }
+      { return new String(self); }
     /**
      * @brief Utility function to create addition between a character and a string.
      * @param[in] other The string to concatenate the character with.
@@ -19,11 +20,11 @@ class [[extends]] char {
      * @/example
      */
     operator [[internal_linkage, inline]] +(other: String) String
-      { return new String{self} + other; }
+      { return new String(self) + other; }
 
     fn [[inline, __no_pointer_self__]] to_string() String
     { 
-      return new String{&self, 1}; 
+      return new String(&self, 1); 
     }
 
     /**
@@ -275,7 +276,7 @@ pub class Iter<_IteratorType: Core::Sized> {
     /// @brief if the iterator is valid
     let _valid: bool = false;
     /// @brief the value of the iterator
-    let _value: *const _IteratorType = Ptr::null_ptr<?_IteratorType>();
+    let _value: _IteratorType = @zero_initialized(:_IteratorType);
   pub:
     /**
      * @brief Iter constructor.
@@ -286,19 +287,19 @@ pub class Iter<_IteratorType: Core::Sized> {
      * @brief Iter constructor.
      * @param[in] value The value of the iterator.
      */
-    Iter(value: _IteratorType) : _value(Ptr::to_pointer(value)),
+    Iter(value: _IteratorType) : _value(value),
       _valid(true) {}
     /**
      * @brief Returns the value of the iterator.
      * @return The value of the iterator.
      */
-    fn [[internal_linkage, inline]] value() _IteratorType 
+    fn [[internal_linkage, inline]] value() &_IteratorType 
     { 
       if !self._valid 
       {
         raise new IndexError("Invalid iterator access!");
       }
-      return *self._value; 
+      return &self._value; 
     }
     /**
      * @brief Returns if the iterator is valid.
@@ -312,13 +313,13 @@ pub class Iter<_IteratorType: Core::Sized> {
      * @return An invalid iterator.
      */
     static fn [[inline]] invalid() Iter<_IteratorType> 
-      { return new Iter<_IteratorType>{}; }
+      { return new Iter<_IteratorType>(); }
     /**
      * @brief Returns a valid iterator.
      * @return A valid iterator.
      */
     static fn [[inline]] valid(val: _IteratorType) Iter<_IteratorType> 
-      { return new Iter<_IteratorType>{val}; }
+      { return new Iter<_IteratorType>(val); }
 }
 /**
  * @class Range 
@@ -446,7 +447,7 @@ pub class Vector<
      */
     mut fn [[internal_linkage]] reserve(new_capacity: i32)
     {
-      if Ptr::is_null(self.buffer.ptr()) 
+      if self.buffer.ptr().is_null() 
       {
         self.buffer = Allocator::alloc(new_capacity);
       } else if self.capacity < new_capacity 
@@ -503,7 +504,7 @@ pub class Vector<
      */
     fn [[internal_linkage]] to_string<>() String {
       let mut result = "[".to_string();
-      let separator = new String{", "};
+      let separator = new String(", ");
       for i in 0..self.length {
         result = result + String::from(self[i]);
         if i != self.length - 1 {
@@ -624,7 +625,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       let len1 = self.length;
       let len2 = CLib::c_string::strlen(other as *const char);
       let res = self.concat(self.buffer, other, len1, len2);
-      return new Self{res};
+      return new Self(res);
     }
     /**
      * @brief It concatenates the string with another string from an unknown type. 
@@ -641,7 +642,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
     operator [[internal_linkage, inline]] +(other: Self) Self
     { 
       let result = self.concat(self.buffer, other.buffer, self.length, other.length); 
-      return new Self{result};
+      return new Self(result);
     }
     /**
      * @brief Utility function to avoid constant checking if a type is a stirng.
@@ -673,7 +674,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       {
         buffer = CLib::__internal::alloca_and_snprintf(10, format, num);
       }
-      return new Self{buffer}; 
+      return new Self(buffer); 
     }
     static fn [[internal_linkage, inline]] from(other: Self)
       StringView<_CharType> 
@@ -728,6 +729,7 @@ type Exception = Core::Exception;
 type IndexError = Core::IndexError;
 type Range<T = i32> = Core::Range<T>;
 type String = StringView<>;
+type Box<T> = Box<T>;
 type Iterable<T: Core::Sized> = Core::Iterable<T>;
 
 // TODO (implement wchar): using WideString as StringView<&wchar>

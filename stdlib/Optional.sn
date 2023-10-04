@@ -22,7 +22,7 @@ pub class Option<_StoreType: Core::Sized> {
     /**
      * The value stored in the `Option`.
      */
-    let _value: *const _StoreType = Ptr::null_ptr<?_StoreType>();
+    let _value: _StoreType = @zero_initialized(:_StoreType);
     /**
      * Whether the `Option` is engaged.
      */
@@ -42,10 +42,10 @@ pub class Option<_StoreType: Core::Sized> {
     /**
      * @brief Returns the value stored in the `Option`.
      */
-    fn [[inline]] val() _StoreType
+    fn [[inline]] val() &_StoreType
     {
       self.assert_not_empty();
-      unsafe { return *self._value; }
+      return &self._value;
     }
     /**
      * @brief Returns whether the `Option` is empty.
@@ -65,7 +65,7 @@ pub class Option<_StoreType: Core::Sized> {
      */
     fn [[inline]] value_or(default_value: _StoreType) _StoreType
     {
-      if (self.empty()) {
+      if self.empty() {
         return default_value;
       }
       return self.val();
@@ -86,10 +86,10 @@ pub class Option<_StoreType: Core::Sized> {
  * @param value The value to store in the `Option`.
  */
 pub fn [[inline]] Some<_StoreType>(value: _StoreType) Option<_StoreType>
-  { return new Option<_StoreType>{value}; }
+  { return new Option<_StoreType>(value); }
 /**
  * @brief Creates a new empty `Option`.
  */
 pub fn [[inline]] None<_StoreType>() Option<_StoreType>
-  { return new Option<_StoreType>{}; }
+  { return new Option<_StoreType>(); }
   

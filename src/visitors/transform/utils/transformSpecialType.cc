@@ -40,7 +40,7 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
                   "found '%s' instead.",
                       n.c_str(), bitsString.c_str()));
     }
-    auto bits = std::stoi(bitsString);
+    auto bits = std::stoi(bitsString); // TODO: check if it's a digit
     // The number of bits must be from 1 to 2^23 (8,388,608)
     // we asume it's greater than 0 a negative number would end in a syntax error
     if (bits < 1 || bits > pow(2, 23)) {
@@ -67,7 +67,7 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
                   "found '%s' instead.",
                       n.c_str(), bitsString.c_str()));
     }
-    auto bits = std::stoi(bitsString);
+    auto bits = std::stoi(bitsString); // TODO: check if it's a digit
     // The number of bits must be 16, 32 or 64
     if (bits != 16 && bits != 32 && bits != 64) {
       E<TYPE_ERROR>(ty,

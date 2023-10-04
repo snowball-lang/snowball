@@ -32,6 +32,8 @@ Syntax::Macro* Parser::parseMacro() {
     Syntax::Macro::ArguementType argType;
     if (type == "expr") {
       argType = Syntax::Macro::ArguementType::EXPRESSION;
+    } else if (type == "type") {
+      argType = Syntax::Macro::ArguementType::TYPE;
     } else if (type == "const") {
       argType = Syntax::Macro::ArguementType::CONSTANT;
       next();

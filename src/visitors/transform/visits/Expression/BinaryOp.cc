@@ -42,7 +42,7 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
     auto rangeIdent = Syntax::N<Expression::Identifier>("Range");
     auto rangeType = Syntax::N<Expression::TypeRef>(rangeIdent, "Range", p_node->getDBGInfo(), "Range");
     auto call = Syntax::N<Expression::FunctionCall>(rangeIdent, std::vector<Expression::Base*>{left, right});
-    auto init = Syntax::N<Expression::NewInstance>(call, rangeType, false);
+    auto init = Syntax::N<Expression::NewInstance>(call, rangeType);
     init->setDBGInfo(p_node->getDBGInfo());
     call->setDBGInfo(p_node->getDBGInfo());
     rangeIdent->setDBGInfo(p_node->getDBGInfo());
