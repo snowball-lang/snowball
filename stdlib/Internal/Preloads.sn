@@ -105,6 +105,12 @@ class [[__internal__]] *const <T> {
       %0 = icmp eq {=*const T} %self, null
       ret i1 %0
     }
+
+    fn [[inline, llvm_function]] unchecked_get(self: *const T, index: i32) &T
+    {
+      %0 = getelementptr {=*const T}, {=*const T} %self, i32 %index
+      ret {=&T} %0
+    }
 }
 
 /// @brief Integer type implementation.

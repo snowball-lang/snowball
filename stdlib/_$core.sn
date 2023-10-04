@@ -421,9 +421,9 @@ pub class Vector<
       {
         self.resize();
       }
-      // TODO: wrap in unsafe block
-      Ptr::write(Ptr::add(self.buffer.ptr(), self.length), value);
-
+      unsafe {
+        Ptr::write(Ptr::add(self.buffer.ptr(), self.length), value);
+      }
       self.length = self.length + 1;
     }
     /**
@@ -470,7 +470,9 @@ pub class Vector<
       } 
       else if index >= self.length 
       {
-        raise new IndexError("Index out of bounds. Cannot access element at index " + index.to_string());
+        raise new IndexError("Index out of bounds.");
+        // TODO: int impl
+        //raise new IndexError("Index out of bounds. Cannot access element at index " + index.to_string());
       }
       return self.buffer.ptr().unchecked_get(index);
     }
@@ -660,22 +662,6 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
 
   // Static exports
   pub:
-    /**
-     * @brief Creates a new string from a number.
-     * @param[in] num The number to create the string from.
-     * @param[in] format The format of the number.
-     * @return The created string.
-     */
-    static fn [[internal_linkage, inline]] fromNumber<T>(num: T, format: &char = "%ld")
-      StringView<_CharType> 
-    { 
-      let mut buffer: Self::StringType;
-      unsafe 
-      {
-        buffer = CLib::__internal::alloca_and_snprintf(10, format, num);
-      }
-      return new Self(buffer); 
-    }
     static fn [[internal_linkage, inline]] from(other: Self)
       StringView<_CharType> 
       { return other; }

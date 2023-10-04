@@ -21,7 +21,7 @@ bool genericMatch(Expression::Param* generic, Expression::TypeRef* arg) {
   (getPointerDepth(arg, [&](types::Type* x) -> types::Type* {                                                          \
     if (auto t = utils::cast<checkType>(x)) { return t->getPointedType(); }                                            \
     return nullptr;                                                                                                    \
-  }) < getPointerDepth(generic->getType(), [&](Expression::TypeRef* x) -> Expression::TypeRef* {                       \
+  })-1 == getPointerDepth(generic->getType(), [&](Expression::TypeRef* x) -> Expression::TypeRef* {                       \
     if (checker) { return utils::cast<astType>(x)->getBaseType(); }                                       \
     return nullptr;                                                                                                    \
   })) return matchedGeneric(generic, utils::cast<checkType>(arg)->getPointedType());

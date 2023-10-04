@@ -98,7 +98,7 @@ pub fn [[inline]] add<T: Core::Sized>(ptr: *const T, offset: i32) *const T {
   return (ptr + offset) as *const T;
 }
 
-pub fn [[inline]] write<T: Core::Sized>(mut ptr: *const T, value: T) {
+pub unsafe fn [[inline]] write<T: Core::Sized>(mut ptr: *const T, value: T) {
   *ptr = value;
 }
 
