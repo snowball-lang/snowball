@@ -36,8 +36,12 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
   // TODO: check this is only for std lib builds!!!
   if (is<TokenType::OP_MUL>()) {
     next();
-    assert_tok<TokenType::KWORD_CONST>("'const'");
-    name = _SNOWBALL_CONST_PTR;
+    if (is<TokenType::KWORD_MUTABLE>()) {
+      name = _SNOWBALL_MUT_PTR;
+    } else {
+      assert_tok<TokenType::KWORD_CONST>("'const' or 'mut'");
+      name = _SNOWBALL_CONST_PTR;
+    }
   } else {
     name = assert_tok<TokenType::IDENTIFIER>("class identifier").to_string();
   }

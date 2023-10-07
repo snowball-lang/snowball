@@ -30,12 +30,15 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
       auto left = build(args.at(0).get());
       llvm::Value* right = nullptr;
       {
-        auto& arg = args.at(0);
-        if (utils::is<ir::DereferenceTo>(arg.get()) && services::OperatorService::operatorID(opName) == services::OperatorService::EQ) {
-          left = builder->CreateLoad(left->getType()->getPointerTo(), llvm::cast<llvm::LoadInst>(left)->getPointerOperand());
-        } if (args.size() > 1) // else {
+        if (args.size() > 1) {
+          ctx->doNotLoadInMemory = false;
           right = build(args.at(1).get());
-        //  }
+        }
+        if (services::OperatorService::opEquals<services::OperatorService::EQ>(opName)) {
+          if (utils::is<ir::DereferenceTo>(args.at(0).get()) && !left->getType()->isPointerTy() && llvm::isa<llvm::LoadInst>(left)) {
+            left = builder->CreateLoad(left->getType()->getPointerTo(), ((llvm::LoadInst*)left)->getPointerOperand());
+          }
+        }
       }
       auto baseType = args.at(0)->getType();
       auto unchangedBaseType = baseType;
@@ -86,7 +89,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
           // TODO: remainder oeprators (!, +=, etc...)
           case services::OperatorService::EQ: {
             ctx->doNotLoadInMemory = false;
-            right = load(right, unchangedBaseType);
+            right = load(right, args.at(1)->getType());
             builder->CreateStore(right, left);
             break;
           }
@@ -146,7 +149,18 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
           case services::OperatorService::EQ: {
             ctx->doNotLoadInMemory = false;
             right = load(right, baseType);
-            builder->CreateStore(right, left);
+            // TODO: check carefully specific places where we NEED to copy instead of moving
+            //if (utils::is<types::PointerType>(args.at(0)->getType())) {
+            //  auto a = createAlloca(left->getType(), ".move-temp");
+            //  auto align = args.at(0)->getType()->alignmentOf();
+            //  builder->CreateLifetimeStart(a, builder->getInt64(args.at(0)->getType()->sizeOf()));
+            //  builder->CreateStore(right, a);
+            //  
+            //  builder->CreateMemCpy(left, llvm::MaybeAlign(align), a, llvm::MaybeAlign(align), builder->getInt64(args.at(0)->getType()->sizeOf()), 0);
+            //  builder->CreateLifetimeEnd(a, builder->getInt64(args.at(0)->getType()->sizeOf()));
+            //} else {
+              builder->CreateStore(right, left);
+            //}
             break;
           }
 

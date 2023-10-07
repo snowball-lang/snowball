@@ -44,13 +44,12 @@ VISIT(Func) {
   checkFunctionDeclaration(p_node);
   auto backup = ctx->getCurrentFunction();
   ctx->setCurrentFunction(p_node);
+  auto unsafeBk = ctx->unsafeContext;
   auto body = p_node->getBody();
   if (p_node->hasAttribute(Attributes::UNSAFE) && !p_node->hasAttribute(Attributes::UNSAFE_FUNC_NOT_BODY))
     ctx->unsafeContext = true;
   if (body) body->visit(this);
-  if (p_node->hasAttribute(Attributes::UNSAFE) && !p_node->hasAttribute(Attributes::UNSAFE_FUNC_NOT_BODY))
-    ctx->unsafeContext = false;
-
+  ctx->unsafeContext = unsafeBk;
   ctx->setCurrentFunction(backup);
 }
 
@@ -120,7 +119,7 @@ VISIT(Call) {
   if (fn) {
     if (fn->hasAttribute(Attributes::NOT_IMPLEMENTED)) {
       E<SYNTAX_ERROR>(p_node,
-              FMT("Function '%s' is not implemented!", fn->getName(true).c_str()),
+              FMT("Function '%s' is not implemented!", fn->getNiceName().c_str()),
               {.info = "This function is not implemented!",
                       .note = "This error is caused by the function having the \n"
                               "'not implemented' attribute.",
@@ -130,7 +129,7 @@ VISIT(Call) {
                       .tail = EI<>(fn->getDBGInfo(), "", {.info = "This is the function declaration."})});
     } else if (fn->hasAttribute(Attributes::UNSAFE) && !ctx->unsafeContext) {
       E<SYNTAX_ERROR>(p_node,
-              FMT("Function '%s' is unsafe!", fn->getName(true).c_str()),
+              FMT("Function '%s' is unsafe!", fn->getNiceName().c_str()),
               {.info = "This function is unsafe!",
                       .note = "This error is caused by the function having the \n"
                               "'unsafe' attribute.",
@@ -294,9 +293,15 @@ VISIT(Return) {
 }
 
 VISIT(Block) {
+  auto bk = ctx->unsafeContext;
+  auto isU = p_node->hasAttribute(Attributes::UNSAFE);
+  if (isU) {
+    DUMP_S("A")
+  }
   if (p_node->hasAttribute(Attributes::UNSAFE)) ctx->unsafeContext = true;
-  for (auto i : p_node->getBlock()) { i->visit(this); }
-  if (p_node->hasAttribute(Attributes::UNSAFE)) ctx->unsafeContext = false;
+  for (auto i : p_node->getBlock()) 
+    i->visit(this);
+  if (p_node->hasAttribute(Attributes::UNSAFE)) ctx->unsafeContext = bk;
 }
 
 void TypeChecker::codegen() {

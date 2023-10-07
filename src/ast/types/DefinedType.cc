@@ -85,7 +85,14 @@ std::string DefinedType::getPrettyName() const {
   }
 
   std::string mut = isMutable() ? "mut " : "";
-  return mut + n + genericString;
+  auto res = mut + n + genericString;
+  if (getName() == _SNOWBALL_CONST_PTR) {
+    res = "(*const " + generics.at(0)->getName() + ")";
+  } else if (getName() == _SNOWBALL_MUT_PTR) {
+    res = "(*mut " + generics.at(0)->getName() + ")";
+  } 
+
+  return res;
 }
 
 std::string DefinedType::getMangledName() const {

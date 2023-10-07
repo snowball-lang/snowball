@@ -72,10 +72,8 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
 
       auto uuid = type->getName();
       if (auto x = utils::cast<types::PointerType>(type)) {
-        if (!x->isMutable()) {
-          auto str = getBuiltinTypeUUID(x->getPointedType(), _SNOWBALL_CONST_PTR);
-          if (!str.empty()) uuid = str;
-        } // todo: *mut x
+        auto str = getBuiltinTypeUUID(x->getPointedType(), x->isMutable() ? _SNOWBALL_MUT_PTR : _SNOWBALL_CONST_PTR);
+        if (!str.empty()) uuid = str;
       } else if (auto x = utils::cast<types::NumericType>(type);
                  x && !utils::is<types::CharType>(x)) {
         auto str = getBuiltinTypeUUID(x, _SNOWBALL_INT_IMPL);

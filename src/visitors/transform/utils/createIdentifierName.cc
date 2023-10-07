@@ -12,6 +12,7 @@ std::string TransformContext::createIdentifierName(const std::string name, bool 
   // bool alreadyGenerated = name.find('.') != std::string::npos;
 
   if (name == _SNOWBALL_CONST_PTR) return _SNOWBALL_CONST_PTR;
+  else if (name == _SNOWBALL_MUT_PTR) return _SNOWBALL_MUT_PTR;
   else if (name == _SNOWBALL_INT_IMPL) return _SNOWBALL_INT_IMPL;
 
   if (includeBase) {

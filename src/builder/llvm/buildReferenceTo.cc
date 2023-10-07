@@ -29,6 +29,9 @@ void LLVMBuilder::visit(ir::ReferenceTo* ref) {
     tempVal = createAlloca(llvmReferencedValue->getType(), ".ref-temp");
     builder->CreateStore(llvmReferencedValue, tempVal);
   } else {
+    if (llvm::isa<llvm::LoadInst>(llvmReferencedValue)) {
+      llvmReferencedValue = llvm::cast<llvm::LoadInst>(llvmReferencedValue)->getPointerOperand();
+    }
     tempVal = llvmReferencedValue;
   }
 

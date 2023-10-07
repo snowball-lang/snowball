@@ -20,7 +20,8 @@ SN_TRANSFORMER_VISIT(Statement::Return) {
     if (p_node->getValue() != nullptr) {
       returnValue = trans(p_node->getValue());
       auto type = returnValue->getType();
-      if (auto cast = tryCast(returnValue, functionType->getRetType()); cast != nullptr) returnValue = cast;
+      if (auto cast = tryCast(returnValue, functionType->getRetType()); cast != nullptr) 
+        returnValue = cast;
     } else {
       E<SYNTAX_ERROR>(p_node, "You must return a value inside a non-void function!",
               {.info = "Non-void functions must contain return statements"});

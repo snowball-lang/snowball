@@ -79,6 +79,10 @@ TypeRef* Parser::parseType() {
   }
   bool isMutable = false;
   if (is<TokenType::KWORD_MUTABLE>()) {
+    if (pointerDepth.size() > 0) {
+      createError<SYNTAX_ERROR>("Cannot have a mutable pointer to a mutable type!");
+    }
+    
     isMutable = true;
     next();
   }

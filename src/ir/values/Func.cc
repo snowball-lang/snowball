@@ -78,7 +78,11 @@ std::string Func::getNiceName() {
     }
     generics += ">";
   }
+  auto name = getName();
   auto n = base + getName() + generics;
+  if (utils::startsWith(base, _SNOWBALL_CONST_PTR_DECL) || utils::startsWith(base, _SNOWBALL_MUT_PTR_DECL)) {
+    n = base + getName();
+  }
 
   return n;
 }

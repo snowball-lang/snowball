@@ -16,7 +16,7 @@ namespace snowball {
 namespace Syntax {
 
 types::Type* Transformer::transformType(Expression::TypeRef* ty) {
-  if (ty->isMutable()) {
+  if (ty->isMutable() && ty->getName() != _SNOWBALL_MUT_PTR && !ty->isPointerType()) {
     ty->setMutable(false); // stop infinite loops
     auto x = transformType(ty);
     ty->setMutable(true);
@@ -35,7 +35,11 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     auto baseType = transformType(pointer->getBaseType());
     auto x = baseType->getPointerTo(pointer->isMutable());
 
-    auto typeRef = TR(_SNOWBALL_CONST_PTR, nullptr, std::vector<Expression::TypeRef*>{baseType->toRef()});
+    if (pointer->isMutable()) {
+      DUMP_S("YEAHHH")
+    }
+
+    auto typeRef = TR(pointer->isMutable() ? _SNOWBALL_MUT_PTR : _SNOWBALL_CONST_PTR, nullptr, std::vector<Expression::TypeRef*>{baseType->toRef()});
     transformType(typeRef);
     return x;
   } else if (ty->isTypeDecl()) {

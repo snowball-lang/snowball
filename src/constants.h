@@ -49,7 +49,12 @@ extern "C" {
 // Values
 
 #define _SNOWBALL_CONST_PTR "$const-pointer"
+#define _SNOWBALL_MUT_PTR "$mut-pointer"
 #define _SNOWBALL_INT_IMPL  "$integer-impl"
+
+// Make sure this is always correct!
+#define _SNOWBALL_CONST_PTR_DECL "Core::Internal::Preloads::$const-pointer"
+#define _SNOWBALL_MUT_PTR_DECL  "Core::Internal::Preloads::$mut-pointer"
 
 #define _SNOWBALL_STR_FACTOR 16
 #define _SNOWBALL_MAX_LENGTH 2147483647

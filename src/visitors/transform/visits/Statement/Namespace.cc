@@ -21,7 +21,7 @@ SN_TRANSFORMER_VISIT(Statement::Namespace) {
     auto sharedModule = std::make_shared<Item>(mod);
     auto backup = ctx->module;
     ctx->module = mod;
-    ctx->withScope([&]() {
+    ctx->withScope([&]() { // ERROR: defined macros inside namespaces get's deleted since the scope also gets deleted
       for (auto x : body) { SN_TRANSFORMER_CAN_GENERATE(x) trans(x); }
     });
     ctx->module = backup;

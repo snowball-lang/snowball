@@ -30,15 +30,14 @@ Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& over
   std::vector<std::pair<Cache::FunctionStore, std::vector<types::Type*>>> matchedFunctions;
   std::vector<int> matchedFunctionsPerception;
   int genericIndex = -1;
-  int genericCount = 0;
-  int genericIterator = 0;
+  int genericCount = -1;
   // Check for the best function overload
   for (auto foundFunction : functions) {
     if (foundFunction.second.size() > 0) {
       // Automatically accept generic functions
       matchedFunctions.push_back(foundFunction);
+      genericIndex++;
       genericCount++;
-      genericIndex = genericIterator;
     } else {
       ctx->withState(foundFunction.first.state, [&] {
         auto fnArgs = foundFunction.first.function->getArgs();
@@ -82,7 +81,6 @@ Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& over
         }
       });
     }
-    genericIterator++;
   }
   if (((matchedFunctions.size() > 1) && (!exactFunctionExists) && (genericIndex == -1)) || (genericCount > 1)) {
     // we check if there's a function that succeeded more than the others

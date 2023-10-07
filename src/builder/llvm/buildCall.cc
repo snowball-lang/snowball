@@ -143,10 +143,11 @@ void LLVMBuilder::visit(ir::Call* call) {
     }                                                                                                                  \
   }
 
-  if (!allocatedValue)
-    ctx->doNotLoadInMemory = true;
   SET_CALL_ATTRIBUTES(llvm::CallInst)
   else SET_CALL_ATTRIBUTES(llvm::InvokeInst) else { assert(false); }
+
+  if (!allocatedValue)
+    ctx->doNotLoadInMemory = true;
 }
 
 } // namespace codegen

@@ -23,7 +23,7 @@ fn [[test]] not_equals() i32 {
 }
 
 fn [[test]] concat() i32 {
-    let mut s = new String{"hello"};
+    let mut s = new String("hello");
     s = s + " world";
     return s == "hello world".to_string();
 }

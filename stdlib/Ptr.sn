@@ -35,6 +35,9 @@ pub class NonNull<T: Core::Sized> {
     NonNull(value: *const T) 
       : value(value)
     {
+      if (value.is_null()) {
+        // TODO: panic!
+      }
     }
     /**
      * Returns a reference to the underlying non-null value.
@@ -94,13 +97,19 @@ pub class Allocator<T: Core::Sized> {
     }
 }
 
-pub fn [[inline]] add<T: Core::Sized>(ptr: *const T, offset: i32) *const T {
-  return (ptr + offset) as *const T;
+pub fn [[inline]] add<T: Core::Sized>(ptr: *const T, offset: i32) *mut T {
+  return (ptr + offset) as *mut T;
 }
 
 pub unsafe fn [[inline]] write<T: Core::Sized>(mut ptr: *const T, value: T) {
   *ptr = value;
 }
+
+//pub unsafe fn [[inline, llvm_function]] write<T: Core::Sized>(mut ptr: *const T, value: T) {
+//  %0 = load {=*const T}, {=*const T} %ptr, align 8
+//  store {=T} %value, {=*const T} %0, align 8
+//  ret void
+//}
 
 pub fn [[inline]] to_pointer<T: Core::Sized>(value: &T) *const T {
   unsafe { return value as *const T; }

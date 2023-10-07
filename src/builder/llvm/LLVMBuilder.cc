@@ -74,6 +74,7 @@ using namespace utils;
 namespace codegen {
 
 llvm::Value* LLVMBuilder::build(ir::Value* v) {
+  ctx->doNotLoadInMemory = false;
   setDebugInfoLoc(v);
   v->visit(this);
   return this->value;
