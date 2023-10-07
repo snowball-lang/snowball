@@ -133,11 +133,10 @@ class [[__internal__]] *mut <T> {
       ret i1 %0
     }
 
-    fn [[inline, llvm_function]] unchecked_get(self: *const T, index: i32) &T
-    {
-      %0 = getelementptr {=*mut T}, {=*mut T} %self, i32 %index
-      ret {=&T} %0
-    }
+    fn [[inline]] unchecked_get(mut self: *const T, index: i32) &T
+    {unsafe{
+      return (self + index).as_ref();
+    }}
 }
 
 /// @brief Integer type implementation.

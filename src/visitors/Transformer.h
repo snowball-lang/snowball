@@ -202,9 +202,9 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * @brief It generates super call and variale assignment for the
    *  class.
    * @return Both the super call and generated assigment values as if it was
-   *  a block.
+   *  a block. (super call is the second pair argument)
    */
-  std::vector<std::shared_ptr<ir::Value>> transformConstructor(Statement::ConstructorDef* p_node);
+  std::pair<std::vector<std::shared_ptr<ir::Value>>, std::shared_ptr<ir::Call>> transformConstructor(Statement::ConstructorDef* p_node);
   /**
    * @brief It generates a type alias based on the `TypeRef` given to
    * us.

@@ -136,7 +136,9 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
             auto constructor = utils::cast<Statement::ConstructorDef>(node);
             assert(constructor != nullptr);
             fn->getType()->setMutable(true);
-            prependedInsts = transformConstructor(constructor);
+            auto [insts, superCall] = transformConstructor(constructor);
+            prependedInsts = insts;
+            fn->superCall = superCall;
           }
 
           auto block = trans(body);

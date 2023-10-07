@@ -126,6 +126,14 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     if (utils::is<types::ReferenceType>(self)) {
       self = utils::cast<types::ReferenceType>(self)->getPointedType();
     }
+
+    if (fn->superCall) {
+      auto superBranch = h.create<llvm::BasicBlock>(*context, "super-call", llvmFn);
+      builder->CreateBr(superBranch);
+      builder->SetInsertPoint(superBranch);
+      (void)build((ir::Value*)fn->superCall.get());
+    }
+
     assert(utils::is<types::DefinedType>(self) && "Constructor self type is not a defined type!");
     if (ctx->typeInfo.at(utils::cast<types::DefinedType>(self)->getId())->hasVtable) {
       auto storeBranch = h.create<llvm::BasicBlock>(*context, "vtable-store", llvmFn);

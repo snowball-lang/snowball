@@ -227,6 +227,9 @@ class Func : public AcceptorExtend<Func, Value>,
 
     return (numFunctionArgs - numDefaultArgs == numProvidedArgs) || (numFunctionArgs <= arguments.size() && isVariadic);
   }
+
+  /// @brief `super()` call value if it's present and if the function is a constructor.
+  std::shared_ptr<Call> superCall = nullptr;
 };
 
 } // namespace ir

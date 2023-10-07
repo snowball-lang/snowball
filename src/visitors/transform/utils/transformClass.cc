@@ -155,6 +155,17 @@ types::DefinedType* Transformer::transformClass(
 
         trans(fn);
       }
+      if (!transformedType->hasVtable) {
+        auto p = transformedType;
+        while (p->hasParent()) {
+          p = p->getParent();
+          p = p->getModule()->typeInformation.find(p->getId())->second.get();
+          if (p->hasVtable) {
+            transformedType->hasVtable = true;
+            break;
+          }
+        }
+      }
       // Generate the function bodies
       ctx->generateFunction = true;
       GENERATE_EQUALIZERS

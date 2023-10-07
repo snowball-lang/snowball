@@ -6,8 +6,8 @@
 //
 use pkg::option;
 use pkg::chars;
-//use pkg::cls;
 use pkg::vector;
+use pkg::cls;
 //use pkg::string;
 //use pkg::macros;
 //use pkg::syntax;

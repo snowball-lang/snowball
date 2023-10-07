@@ -6,9 +6,10 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::vector<std::shared_ptr<ir::Value>> Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
+std::pair<std::vector<std::shared_ptr<ir::Value>>, std::shared_ptr<ir::Call>> Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
   auto instrList = std::vector<std::shared_ptr<ir::Value>>();
   auto currentClass = utils::cast<types::DefinedType>(ctx->getCurrentClass());
+  std::shared_ptr<ir::Call> superCall = nullptr;
   assert(currentClass && "Current class is not a defined type!");
   if (p_node->hasSuperArgs()) {
     auto [selfArg, foundSelfArg] = ctx->getInCurrentScope("self");
@@ -18,13 +19,13 @@ std::vector<std::shared_ptr<ir::Value>> Transformer::transformConstructor(Statem
     auto parentClassRef = parentClass->toRef();
     auto newInstance = Syntax::N<Expression::NewInstance>(p_node->getDBGInfo(), superArgs, parentClassRef);
     newInstance->setDBGInfo(p_node->getDBGInfo());
-    auto val = trans(newInstance);
-    if (auto ptr = utils::dyn_cast<ir::ReferenceTo>(val)) {
+    superCall = utils::dyn_cast<ir::Call>(trans(newInstance));
+    assert(superCall);
+    if (auto ptr = utils::dyn_cast<ir::ReferenceTo>(superCall)) {
       utils::dyn_cast<ir::ObjectInitialization>(ptr->getValue())->createdObject = selfArg->getValue();
     } else {
-      utils::dyn_cast<ir::ObjectInitialization>(val)->createdObject = selfArg->getValue();
+      utils::dyn_cast<ir::ObjectInitialization>(superCall)->createdObject = selfArg->getValue();
     }
-    instrList.emplace_back(val);
   }
   for (auto field : currentClass->getFields()) {
     auto name = field->name;
@@ -64,7 +65,7 @@ std::vector<std::shared_ptr<ir::Value>> Transformer::transformConstructor(Statem
     instrList.emplace_back(assigmentValue);
   }
 
-  return instrList;
+  return {instrList, superCall};
 }
 
 } // namespace Syntax
