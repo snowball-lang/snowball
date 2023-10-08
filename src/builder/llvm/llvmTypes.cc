@@ -82,14 +82,20 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid) {
   return nullptr; // to avoid warnings
 }
 
-llvm::FunctionType* LLVMBuilder::getLLVMFunctionType(types::FunctionType* fn) {
+llvm::FunctionType* LLVMBuilder::getLLVMFunctionType(types::FunctionType* fn, const ir::Func* func) {
   auto argTypes =
           vector_iterate<types::Type*, llvm::Type*>(fn->getArgs(), [&](types::Type* arg) { return getLLVMType(arg); });
 
   auto ret = getLLVMType(fn->getRetType());
-  if (utils::is<types::DefinedType>(fn->getRetType())) {
+  if (utils::is<types::DefinedType>(fn->getRetType()) && !(func && func->getAttributeArgs(Attributes::LLVM_FUNC).count("sanitise_void_return"))) {
     argTypes.insert(argTypes.begin(), ret->getPointerTo());
     ret = builder->getVoidTy();
+  }
+
+  if (func && func->getAttributeArgs(Attributes::LLVM_FUNC).count("sanitise_void_return")) {
+    if (ret->isVoidTy()) {
+      ret = builder->getInt8Ty();
+    }
   }
 
   return llvm::FunctionType::get(ret, argTypes, fn->isVariadic());

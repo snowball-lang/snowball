@@ -25,11 +25,11 @@ void LLVMBuilder::visit(ir::Call* call) {
   auto calleeValue = call->getCallee();
   auto callee = build(calleeValue.get());
   auto fnType = utils::cast<types::FunctionType>(calleeValue->getType());
-  auto calleeType = getLLVMFunctionType(fnType);
+  auto calleeType = getLLVMFunctionType(fnType, utils::cast<ir::Func>(calleeValue.get()));
   setDebugInfoLoc(call);
 
   auto args = utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value*>(
-          call->getArguments(), [&](std::shared_ptr<ir::Value> arg) { return expr(arg.get()); });
+          call->getArguments(), [this](std::shared_ptr<ir::Value> arg) { return expr(arg.get()); });
   llvm::Value* llvmCall = nullptr;
   llvm::Value* allocatedValue = nullptr;
   llvm::Type* allocatedValueType = nullptr;

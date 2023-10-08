@@ -31,7 +31,7 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
 
   if (auto x = module->getFunction(func->getMangle()); x != nullptr) { return x; }
 
-  auto fnType = llvm::cast<llvm::FunctionType>(getLLVMFunctionType(innerFnType));
+  auto fnType = llvm::cast<llvm::FunctionType>(getLLVMFunctionType(innerFnType, func));
   auto name = func->getMangle();
   auto fn = llvm::Function::Create(fnType,
           ((func->isStatic() && (!func->hasParent())) || func->hasAttribute(Attributes::INTERNAL_LINKAGE))

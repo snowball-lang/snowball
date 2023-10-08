@@ -1,52 +1,5 @@
 class [[extends]] char {
   pub:
-    /**
-    * @brief It creates a `+` operator for the character.
-    * @param[in] other The character to concatenate the character with.
-    * @return The addition result.
-    */
-    operator [[inline, llvm_function]] +(other: i32) &char 
-    { 
-      %0 = getelementptr i8, i8* %self, i32 %other
-      ret i8* %0
-    }
-
-    /**
-     * @brief It creates an index operator for the character.
-     * @param[in] index The index of the character to get.
-     * @return The character at the specified index.
-     */
-    operator [[inline, llvm_function]] [](index: i32) char
-    { 
-      %0 = getelementptr i8, i8* %self, i32 %index
-      %1 = load i8, i8* %0, align 1
-      ret i8 %1
-    }
-
-    /**
-     * @brief It creates an index operator for the character.
-     * @param[in] index The index of the character to get.
-     * @return The character at the specified index.
-     */
-    fn [[inline, llvm_function]] at(index: i32) &char
-    { 
-      %0 = getelementptr i8, i8* %self, i32 %index
-      ret i8* %0
-    }
-
-    /**
-     * @brief It inserts a character into the string.
-     * @param[in] index The index to insert the character at.
-     * @param[in] character The character to insert.
-     * @return The character at the specified index.
-     */
-    mut fn [[inline, llvm_function]] insert(index: i32, character: char) &char
-    { 
-      %0 = getelementptr i8, i8* %self, i32 %index
-      store i8 %character, i8* %0, align 1
-      ret i8* %0
-    }
-
     operator [[__internal__, __no_pointer_self__]] +(other: char)  char {}
     operator [[__internal__, __no_pointer_self__]] -(other: char)  char {}
     operator [[__internal__, __no_pointer_self__]] *(other: char)  char {}
@@ -61,7 +14,6 @@ class [[extends]] char {
     operator [[__internal__, __no_pointer_self__]] <=(other: char) bool {}
     operator [[__internal__, __no_pointer_self__]] >=(other: char) bool {}
     operator [[__internal__, __no_pointer_self__]] ==(other: char) bool {}
-    operator [[__internal__, __no_pointer_self__]] !=(other: char) bool {}
     operator [[__internal__, __no_pointer_self__]] -()             char {}
     mut operator [[__internal__, __no_pointer_self__]] +=(other: char) char {}
     mut operator [[__internal__, __no_pointer_self__]] -=(other: char) char {}
@@ -87,9 +39,9 @@ class [[extends]] char {
 
 class [[__internal__]] *const <T> {
   pub:
-    unsafe operator [[inline, llvm_function]] +(self: *const T, other: i32) *const T
+    unsafe operator [[inline, llvm_function]] +(self: *const T, other: i64) *const T
     { 
-      %0 = getelementptr {=T}, {=*const T} %self, i32 %other
+      %0 = getelementptr {=T}, {=*const T} %self, i64 %other
       ret {=*const T} %0
     } 
 
@@ -110,13 +62,21 @@ class [[__internal__]] *const <T> {
     {unsafe{
       return (self + index).as_ref();
     }}
+
+    operator [[inline, llvm_function(sanitise_void_return)]] [](self: *const T, index: i64) T
+    { 
+      %0 = getelementptr inbounds {=T}, {=*const T} %self, i64 0
+      %1 = load {=T}, {=*const T} %0, align 1
+      ret {=T} %1
+    }
+    operator !(self: *const T) bool { return self.is_null(); }
 }
 
 class [[__internal__]] *mut <T> {
   pub:
-    unsafe operator [[inline, llvm_function]] +(mut self: *const T, other: i32) *mut T
+    unsafe operator [[inline, llvm_function]] +(mut self: *const T, other: i64) *mut T
     { 
-      %0 = getelementptr {=T}, {=*mut T} %self, i32 %other
+      %0 = getelementptr {=T}, {=*mut T} %self, i64 %other
       ret {=*mut T} %0
     } 
 
@@ -127,16 +87,25 @@ class [[__internal__]] *mut <T> {
 
     mut operator [[__internal__]] =(mut self: *const T, mut other: *const T) *const T {}
 
-    fn [[inline, llvm_function]] is_null(mut self: *const T) bool
+    fn [[inline, llvm_function]] is_null(mut self: *mut T) bool
     {
       %0 = icmp eq {=*mut T} %self, null
       ret i1 %0
     }
 
-    fn [[inline]] unchecked_get(mut self: *const T, index: i32) &T
+    fn [[inline]] unchecked_get(mut self: *mut T, index: i32) &T
     {unsafe{
       return (self + index).as_ref();
     }}
+
+    operator [[inline, llvm_function(sanitise_void_return)]] [](mut self: *mut T, index: i64) T
+    { 
+      %0 = getelementptr inbounds {=T}, {=*mut T} %self, i64 0
+      %1 = load {=T}, {=*mut T} %0, align 1
+      ret {=T} %1
+    }
+
+    operator [[inline]] !(mut self: *mut T) bool { return self.is_null(); }
 }
 
 /// @brief Integer type implementation.

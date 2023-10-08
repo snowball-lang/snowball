@@ -119,7 +119,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * @return A pair of the deduced argument types and a message
    * indicating any errors (empty string if there was success).
    */
-  std::pair<std::vector<types::Type*>, std::string> deduceFunction(cacheComponents::Functions::FunctionStore s,
+  std::tuple<std::vector<types::Type*>, std::string, int> deduceFunction(cacheComponents::Functions::FunctionStore s,
           const std::vector<types::Type*>& arguments,
           const std::vector<types::Type*>& generics = {});
   /**
@@ -131,7 +131,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * on type names.
    *  @c deduceFunction
    */
-  std::optional<types::Type*> deduceFunctionType(snowball::Syntax::Expression::Param* generic,
+  std::pair<std::optional<types::Type*>, int> deduceFunctionType(snowball::Syntax::Expression::Param* generic,
           const std::vector<Expression::Param*>& fnArgs,
           const std::vector<types::Type*>& arguments,
           const std::vector<types::Type*>& generics,
@@ -466,16 +466,6 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
   // Default destructor
   ~Transformer() noexcept = default;
 };
-
-namespace transform {
-/// @brief It fetches the depth of a pointer type.
-template <typename T, typename Callable>
-int getPointerDepth(T* ty, Callable&& validator) {
-  if (ty == nullptr) { return 0; }
-  if (auto ptr = validator(ty)) { return 1 + getPointerDepth(ptr, validator); }
-  return 0;
-}
-} // namespace transform
 
 } // namespace Syntax
 } // namespace snowball

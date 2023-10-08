@@ -302,7 +302,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
    * @brief Get llvm corresponding function type from an
    * already generate snowball type.
    */
-  llvm::FunctionType* getLLVMFunctionType(types::FunctionType* fn);
+  llvm::FunctionType* getLLVMFunctionType(types::FunctionType* fn, const ir::Func* func = nullptr);
   /**
    * @brief It creates a new vtable type for a given type.
    */

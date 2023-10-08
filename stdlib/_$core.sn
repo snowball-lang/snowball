@@ -9,8 +9,8 @@ class [[extends]] char {
      * @brief Converts the character to a string.
      * @return The string representation of the character.
      */
-    fn [[internal_linkage, inline]] to_string() String 
-      { return new String(self); }
+    fn [[inline]] to_string() String 
+      { return new String(self as *const char); }
     /**
      * @brief Utility function to create addition between a character and a string.
      * @param[in] other The string to concatenate the character with.
@@ -19,12 +19,12 @@ class [[extends]] char {
      *  | let a = "hello" + (" world".to_string())
      * @/example
      */
-    operator [[internal_linkage, inline]] +(other: String) String
-      { return new String(self) + other; }
+    operator [[inline]] +(other: String) String
+      { return new String(self as *const char) + other; }
 
     fn [[inline, __no_pointer_self__]] to_string() String
     { 
-      return new String(&self, 1); 
+      return new String(self, 1); // TODO: deprecate this once `str` is implemented 
     }
 
     /**
@@ -37,7 +37,7 @@ class [[extends]] char {
       * @note If any of the strings is null, it returns false.
       *    If both are null, it returns true.
       */
-    operator [[internal_linkage, inline]] ==(other: &char) bool
+    operator [[internal_linkage, inline]] ==(other: *const char) bool
     {
       if !self && !other 
         { return true; }
@@ -293,7 +293,7 @@ pub class Iter<_IteratorType: Core::Sized> {
      * @brief Returns the value of the iterator.
      * @return The value of the iterator.
      */
-    fn [[internal_linkage, inline]] value() &_IteratorType 
+    fn [[internal_linkage, inline]] value() _IteratorType 
     { 
       if !self._valid 
       {
@@ -540,7 +540,7 @@ pub class Vector<
  */
 pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
   pub:
-    type StringType = &_CharType;
+    type StringType = *const _CharType;
 
     /**
      * @brief Default constructor.
@@ -627,15 +627,8 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       let len1 = self.length;
       let len2 = CLib::c_string::strlen(other as *const char);
       let res = self.concat(self.buffer, other, len1, len2);
-      return new Self(res);
+      return new Self(res, len1 + len2);
     }
-    /**
-     * @brief It concatenates the string with another string from an unknown type. 
-     * @param[in] other The string to concatenate the string with.
-     * @return The concatenated string.
-     */
-    operator [[internal_linkage, inline]] +<T>(other: T) Self
-      { return self + Self::from(other); }
     /**
      * @brief It concatenates the string with another string.
      * @param[in] other The string to concatenate the string with.
@@ -644,21 +637,21 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
     operator [[internal_linkage, inline]] +(other: Self) Self
     { 
       let result = self.concat(self.buffer, other.buffer, self.length, other.length); 
-      return new Self(result);
+      return new Self(result, self.length + other.length);
     }
     /**
      * @brief Utility function to avoid constant checking if a type is a stirng.
      * @return It's self (aka, a string representation of the string).
      */
     fn [[internal_linkage, inline]] to_string() Self
-      { return "\"" + *self + "\""; }
+      { return "\"" + *self + @c_str("\""); }
   priv:
     /** The capacity of the string. */
     let mut capacity: i32 = 10;
     /** The size of the string. */
     let mut length: i32 = 0;
     /** The buffer containing the string. */
-    let buffer: StringType = "";
+    let buffer: StringType = @zero_initialized(:StringType);
 
   // Static exports
   pub:
@@ -671,8 +664,10 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       * @return The constructed string.
       */
     static fn [[internal_linkage, inline]] from<T>(buffer: T)
-      StringView<_CharType> { return buffer.to_string(); }
-  
+      StringView<_CharType> { unsafe {return buffer.to_string();} }
+    static fn [[internal_linkage, inline]] from<T>(buffer: *const T)
+      StringView<_CharType> { unsafe {return buffer.as_ref().to_string();} }
+
   // Internal exports
   priv:
     /**
@@ -689,10 +684,10 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       unsafe 
       {
         let sum = len1 + len2;
-        let buffer = CLib::malloc(sum) as *const _CharType;
-        CLib::memcpy(buffer, Ptr::to_pointer(str1), len1);
-        CLib::memcpy(buffer + len1, Ptr::to_pointer(str2), len2);
-        return (buffer as *const CLib::c_char).as_ref();
+        let buffer = CLib::malloc(sum+1) as StringType;
+        CLib::memcpy(buffer, str1, len1);
+        CLib::memcpy(buffer + len1, str2, len2);
+        return buffer;
       }
     }
     /**

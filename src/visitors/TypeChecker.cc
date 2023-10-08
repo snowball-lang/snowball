@@ -294,10 +294,6 @@ VISIT(Return) {
 
 VISIT(Block) {
   auto bk = ctx->unsafeContext;
-  auto isU = p_node->hasAttribute(Attributes::UNSAFE);
-  if (isU) {
-    DUMP_S("A")
-  }
   if (p_node->hasAttribute(Attributes::UNSAFE)) ctx->unsafeContext = true;
   for (auto i : p_node->getBlock()) 
     i->visit(this);
@@ -518,7 +514,25 @@ void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
                       .note = "This error is caused by the function having the 'no_inline' "
                               "attribute.",
                       .help = "Try removing the 'no_inline' attribute from the function."});
-  }
+  } else if (p_node->hasAttribute(Attributes::LLVM_FUNC)) {
+    auto args = p_node->getAttributeArgs(Attributes::LLVM_FUNC);
+    for (auto [name, value] : args) {
+      if (name == "sanitise_void_return") {
+        if (value != "") {
+          E<SYNTAX_ERROR>(p_node->getDBGInfo(), "LLVM functions 'sanitise_void_return' value must be empty!",
+                  {.info = "This function is an LLVM function!",
+                          .note = "This error is caused by the function having a 'sanitise_void_return' "
+                                  "value that is not empty.",
+                          .help = "Try removing the 'sanitise_void_return' value from the function."});
+        }
+      } else {
+        E<SYNTAX_ERROR>(p_node->getDBGInfo(), "LLVM functions can't have the '" + name + "' attribute!",
+                {.info = "This function is an LLVM function!",
+                        .note = "This error is caused by the function having the '" + name + "' attribute.",
+                        .help = "Try removing the '" + name + "' attribute from the function."});
+      }
+    }
+  } 
 }
 
 } // namespace codegen

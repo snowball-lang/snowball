@@ -126,13 +126,18 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                   "to a parameter with type '%s'!",
                   arg->getPrettyName().c_str(),
                   deduced->getPrettyName().c_str()),
-                ErrorInfo{.info = "This is the call causing the error! (argument index: " + std::to_string(i+1) + ")",
+                ErrorInfo{.info = "Argument at index " + std::to_string(i+1) + " caused an error in the function call",
                   .note = utils::dyn_cast<ir::Func>(fn) == nullptr
                   ? FMT("Errored trying to cal function with type `%s`",
                     t->getPrettyName().c_str())
-                  : FMT("Errored trying to call function `%s`!\n With type `%s`",
+                  : FMT("Errored trying to call function %s`%s`%s!\n\nWith type %s%s`%s`%s",
+                    BOLD,
                     utils::dyn_cast<ir::Func>(fn)->getNiceName().c_str(),
-                    t->getPrettyName().c_str()),
+                    RESET,
+                    BOLD,
+                    UNDERLINE,
+                    t->getPrettyName().c_str(),
+                    RESET),
                   .tail = EI<>(argValues.at(i), "",
                     {.info = "this is the value that's causing the error",
                     .help = "Maybe try to convert a cast to the correct type?"})});

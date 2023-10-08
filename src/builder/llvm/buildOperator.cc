@@ -98,7 +98,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
         }
 
         return true;
-      } else if (utils::is<types::FloatType>(baseType)) {
+      } else if (utils::is<types::FloatType>(realType)) {
         // this->value = builder->Create
         switch (services::OperatorService::operatorID(opName)) {
           OPERATOR_INSTANCE(EQEQ, CreateFCmpUEQ)

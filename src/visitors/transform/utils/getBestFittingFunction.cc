@@ -12,14 +12,16 @@ Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& over
         const std::vector<Expression::TypeRef*>& generics,
         bool isIdentifier) {
   std::vector<std::pair<Cache::FunctionStore, std::vector<types::Type*>>> functions;
+  std::vector<int> importances;
   for (auto n : overloads) {
     auto fn = n.function;
     if (ir::Func::argumentSizesEqual(fn->getArgs(), arguments, fn->isVariadic()) || isIdentifier) {
       auto genericArguments = utils::vector_iterate<Expression::TypeRef*, types::Type*>(
               generics, [&](auto g) { return transformType(g); });
-      auto [deducedArgs, errors] = deduceFunction(n, arguments, genericArguments);
+      auto [deducedArgs, errors, importance] = deduceFunction(n, arguments, genericArguments);
       if (errors.empty()) {
         functions.push_back({n, deducedArgs});
+        importances.push_back(importance);
       } else {
         E<TYPE_ERROR>(fn, errors, {.tail = EI<>(ctx->latestCall->getDBGInfo(), "", {.info = "Called from here"})});
       }
@@ -31,13 +33,18 @@ Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& over
   std::vector<int> matchedFunctionsPerception;
   int genericIndex = -1;
   int genericCount = -1;
+  int i = 0;
   // Check for the best function overload
   for (auto foundFunction : functions) {
     if (foundFunction.second.size() > 0) {
       // Automatically accept generic functions
       matchedFunctions.push_back(foundFunction);
-      genericIndex++;
-      genericCount++;
+      auto importance = importances.at(i);
+      if (importance > genericCount) {
+        genericIndex = i;
+        genericCount = importance;
+      }
+      i++;
     } else {
       ctx->withState(foundFunction.first.state, [&] {
         auto fnArgs = foundFunction.first.function->getArgs();
@@ -82,7 +89,7 @@ Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& over
       });
     }
   }
-  if (((matchedFunctions.size() > 1) && (!exactFunctionExists) && (genericIndex == -1)) || (genericCount > 1)) {
+  if ((matchedFunctions.size() > 1) && (!exactFunctionExists) && (genericIndex == -1)) {
     // we check if there's a function that succeeded more than the others
     // but if they all have the same amount of succeeded arguments, we throw an ambiguity error
     int max = 0;

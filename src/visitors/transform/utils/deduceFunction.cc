@@ -17,26 +17,43 @@ bool genericMatch(Expression::Param* generic, Expression::TypeRef* arg) {
   return arg->getName() == generic->getName();
 }
 
-#define HANDLE_POINTER(checkType, astType, checker)                                                                    \
-  (getPointerDepth(arg, [&](types::Type* x) -> types::Type* {                                                          \
-    if (auto t = utils::cast<checkType>(x)) { return t->getPointedType(); }                                            \
-    return nullptr;                                                                                                    \
-  })-1 == getPointerDepth(generic->getType(), [&](Expression::TypeRef* x) -> Expression::TypeRef* {                       \
-    if (checker) { return utils::cast<astType>(x)->getBaseType(); }                                       \
-    return nullptr;                                                                                                    \
-  })) return matchedGeneric(generic, utils::cast<checkType>(arg)->getPointedType());
+std::pair<types::Type*, int> matchedGeneric(Expression::Param* generic, types::Type* arg) {
+  // We need to match with "genericMatch"
+  // e.g. fn foo<T>(x: &T) T { x }
+  //     foo(&1)
+  //     T = i32
+  int importance = 0;
 
-types::Type* matchedGeneric(Expression::Param* generic, types::Type* arg) {
-  // we need to match with "genericMatch"
-  if HANDLE_POINTER (types::ReferenceType, Expression::ReferenceType, x->isReferenceType())
-  else if HANDLE_POINTER (types::PointerType, Expression::PointerType, x->isPointerType())
-  return arg;
+  // Check if the generic is a reference type
+  if (auto genericRefType = utils::cast<types::ReferenceType>(arg)) {
+    if (generic->getType()->isReferenceType()) {
+      // If both are reference types, match the pointed type
+      return {genericRefType->getPointedType(), 2};
+    } else {
+      // If generic is a reference but arg is not, try matching the non-reference arg
+      return {arg, 1};
+    }
+  }
+
+  // Check if the generic is a pointer type
+  if (auto genericPointerType = utils::cast<types::PointerType>(arg)) {
+    if (generic->getType()->isPointerType()) {
+      // If both are pointer types, match the pointed type
+      return {genericPointerType->getPointedType(), 2};
+    } else {
+      // If generic is a pointer but arg is not, try matching the non-pointer arg
+      return {arg, 1};
+    }
+  }
+
+  // If the generic is neither a reference nor a pointer, return the argument as is
+  return {arg, 0};
 }
 
 #undef HANDLE_POINTER
 } // namespace
 
-std::optional<types::Type*> Transformer::deduceFunctionType(Expression::Param* generic,
+std::pair<std::optional<types::Type*>, int> Transformer::deduceFunctionType(Expression::Param* generic,
         const std::vector<Expression::Param*>& fnArgs,
         const std::vector<types::Type*>& arguments,
         const std::vector<types::Type*>& generics,
@@ -48,7 +65,7 @@ std::optional<types::Type*> Transformer::deduceFunctionType(Expression::Param* g
   const auto genericsSize = generics.size();
   if (genericsSize > deducedTypes.size()) {
     const auto index = deducedTypes.size();
-    return generics[index];
+    return {generics[index], 1};
   }
 
   // Check if the generic is used inside the variables
@@ -57,17 +74,17 @@ std::optional<types::Type*> Transformer::deduceFunctionType(Expression::Param* g
 
   if (it != fnArgs.end()) {
     const auto argIdx = std::distance(fnArgs.begin(), it);
-    const auto deducedType = matchedGeneric(generic, arguments[argIdx]);
-    return deducedType;
+    const auto [deducedType, imp] = matchedGeneric(*it, arguments[argIdx]);
+    return {deducedType, imp};
   }
 
   // Check if the generic has a default type and non was found
-  if (generic->type != nullptr) { return transformType(generic->type); }
+  if (generic->type != nullptr) { return {transformType(generic->type), 0}; }
 
-  return std::nullopt;
+  return {std::nullopt, -1};
 }
 
-std::pair<std::vector<types::Type*>, std::string> Transformer::deduceFunction(
+std::tuple<std::vector<types::Type*>, std::string, int> Transformer::deduceFunction(
         cacheComponents::Functions::FunctionStore s,
         const std::vector<types::Type*>& arguments,
         const std::vector<types::Type*>& generics) {
@@ -75,17 +92,19 @@ std::pair<std::vector<types::Type*>, std::string> Transformer::deduceFunction(
   auto fnArgs = function->getArgs();
 
   std::vector<types::Type*> deducedTypes;
+  int importance = 0;
 
   for (const auto& generic : function->getGenerics()) {
-    const auto deducedType = deduceFunctionType(generic, fnArgs, arguments, generics, deducedTypes);
+    const auto [deducedType, imp] = deduceFunctionType(generic, fnArgs, arguments, generics, deducedTypes);
     if (deducedType.has_value()) {
       deducedTypes.push_back(deducedType.value());
+      importance += imp;
     } else {
-      return {{}, FMT("Cannot deduce type '%s' in function call!", generic->getName().c_str())};
+      return {{}, FMT("Cannot deduce type '%s' in function call!", generic->getName().c_str()), -1};
     }
   }
 
-  return {deducedTypes, ""};
+  return {deducedTypes, "", importance};
 }
 
 } // namespace Syntax

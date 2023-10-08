@@ -97,7 +97,7 @@ pub class Allocator<T: Core::Sized> {
     }
 }
 
-pub fn [[inline]] add<T: Core::Sized>(ptr: *const T, offset: i32) *mut T {
+pub unsafe fn [[inline]] add<T: Core::Sized>(ptr: *const T, offset: i32) *mut T {
   return (ptr + offset) as *mut T;
 }
 
