@@ -44,7 +44,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
       }
 
       // Get the respective return type for this function
-      auto returnType = transformType(node->getRetType());
+      auto returnType = transformSizedType(node->getRetType(), true, "Function return type must be sized but found '%s' (which is not sized)");
       // Create a new function value and store it's return type.
       fn = getBuilder().createFunction(node->getDBGInfo(), name,
               (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)), node->isVariadic());
@@ -75,7 +75,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
 
         auto a = getBuilder().createArgument(node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
                 arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
-        a->setType(transformType(arg->getType()));
+        a->setType(transformSizedType(arg->getType(), false, "Function argument types but be sized but found '%s' (which is not sized)"));
         if (arg->getName() != "self") a->getType()->setMutable(arg->isMutable());
         a->setMutability(a->getType()->isMutable());
         newArgs.push_back({arg->getName(), a});

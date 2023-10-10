@@ -193,7 +193,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
 
     assert(false && "TODO: index index");
   } else if (auto x = utils::cast<Expression::TypeRef>(base)) {
-    auto ty = transformType(x);
+    auto ty = transformSizedType(x, false, "Can't access method calls from unsized types (%s)!");
 
     if (ty && (!isStatic)) {
       E<TYPE_ERROR>(dbgInfo,

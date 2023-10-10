@@ -52,7 +52,7 @@ Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& over
         bool argsNeedCasting = false;
         int succeededArgs = 0;
         for (auto i = 0; (i < fnArgs.size()) && argsEqual; i++) {
-          auto type = transformType(fnArgs.at(i)->getType());
+          auto type = transformSizedType(fnArgs.at(i)->getType(), false, "Function argument types but be sized but found '%s' (which is not sized)");
           if ((fnArgs.at(i)->hasDefaultValue() || isIdentifier) && arguments.size() < fnArgs.size()) {
             argsEqual = true;
             continue;

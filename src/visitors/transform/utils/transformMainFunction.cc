@@ -23,7 +23,7 @@ void Transformer::transformMainFunction(Statement::FunctionDef* p_node) {
   } // TODO: main function cant be variadic!
 
   auto rawRetTy = p_node->getRetType();
-  auto returnType = transformType(rawRetTy);
+  auto returnType = transformType(rawRetTy); // we asume it's sized
 
   if (!types::isInt32Type(returnType)) {
     E<SYNTAX_ERROR>(rawRetTy, "Program entry's return type must be of type 'i32'!");

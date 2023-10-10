@@ -14,7 +14,7 @@ SN_TRANSFORMER_VISIT(Statement::TryCatch) {
 
   for (auto catchBlock : p_node->getCatchBlocks()) {
     auto name = catchBlock->getExceptionVar();
-    auto type = transformType(catchBlock->getExceptionType());
+    auto type = transformSizedType(catchBlock->getExceptionType(), false, "Cannot catch unsized type '%s'");
     auto block = catchBlock->getBlock();
 
     ctx->withScope([&] {

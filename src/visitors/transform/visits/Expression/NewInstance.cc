@@ -24,7 +24,7 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
   assert(c != nullptr);
 
   auto typeRef = utils::cast<Expression::TypeRef>(expr);
-  auto type = transformType(typeRef);
+  auto type = transformSizedType(typeRef, false, "Can't create instance of unsized type '%s'!");
 
   // Make a copy of the value
   auto v = getBuilder().createObjectInitialization(

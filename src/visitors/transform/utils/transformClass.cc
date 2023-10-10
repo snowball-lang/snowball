@@ -88,18 +88,21 @@ types::DefinedType* Transformer::transformClass(
       }
       types::DefinedType* parentType = nullptr;
       if (auto x = ty->getParent()) {
-        auto parent = transformType(x);
+        auto parent = transformSizedType(x, false, "Parent types must be sized but found '%s' (which is not sized)");
         parentType = utils::cast<types::DefinedType>(parent);
         if (!parentType) {
           E<TYPE_ERROR>(ty,
                   FMT("Can't inherit from '%s'", parent->getPrettyName().c_str()),
                   {.info = "This is not a defined type!",
-                          .help = "Classes can only inherit from other "
-                                  "classes or "
-                                  "structs meaning\n that you can't "
-                                  "inherit from `i32` "
-                                  "(for example) because it's\n a "
-                                  "primitive type."});
+                    .note = "Classes can only inherit from other "
+                            "classes or "
+                            "structs meaning\n that you can't "
+                            "inherit from `i32` "
+                            "(for example) because it's\n a "
+                            "primitive type.",
+                  .help = "If trying to implement from an interface, "
+                           "use the `implements` keyword "
+                           "instead.\n"});
         }
       }
       auto backupGenerateFunction = ctx->generateFunction;
@@ -125,7 +128,7 @@ types::DefinedType* Transformer::transformClass(
                                           "   let a: i32 = 10\n"
                                           "Or this:\n"
                                           "   let a = 10: i32"});
-                auto varTy = transformType(definedType);
+                auto varTy = transformSizedType(definedType, false, "Class fields must be sized but found '%s' (which is not sized)");
                 varTy->setMutable(v->isMutable());
                 auto field = new types::DefinedType::ClassField(
                         v->getName(), varTy, v->getPrivacy(), v->getValue(), v->isMutable());

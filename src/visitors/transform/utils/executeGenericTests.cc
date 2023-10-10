@@ -15,10 +15,14 @@ void Transformer::executeGenericTests(Expression::WhereClause* clause, types::Ty
 
     if (auto interface = utils::cast<types::InterfaceType>(type)) {
       bool found = false;
-      for (auto impl : implementations) {
-        if (impl->is(interface)) {
-          found = true;
-          break;
+      if ((utils::is<types::PointerType>(generic) || utils::is<types::ReferenceType>(generic)) && (interface->is(ctx->getBuiltinTypeImpl("Sized")))) {
+        found = true;
+      } else {
+        for (auto impl : implementations) {
+          if (impl->is(interface)) {
+            found = true;
+            break;
+          }
         }
       }
       if (!found) {

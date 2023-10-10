@@ -8,7 +8,7 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
-  auto definedType = p_node->getDefinedType() == nullptr ? nullptr : transformType(p_node->getDefinedType())->copy();
+  auto definedType = p_node->getDefinedType() == nullptr ? nullptr : transformSizedType(p_node->getDefinedType(), false, "Cannot declare variable with unsized type '%s'");
   auto variableName = p_node->getName();
   auto variableValue = p_node->getValue();
   auto isMutable = p_node->isMutable();

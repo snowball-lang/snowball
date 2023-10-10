@@ -233,8 +233,14 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
           bool isIdentifier = false,
           bool hasSelf = false);
   /**
-   * @brief It asserts that a type is `Sized`
-  */
+   * @brief It asserts that a type is `Sized`.
+   * @note It will error if the type is not sized.
+   * @param message The message to display if the type is not sized.
+   * @param dbgInfo The debug information to use when reporting an error.
+   * @note Message format will contain following string arguments:
+   * - The first one is the type name.
+   */
+  void assertSizedType(types::Type* ty, const std::string message, DBGObject* dbgInfo);
   /**
    * It decides whether or not a generated function should be used or if
    *  and overloaded function should by checking the closest match.
@@ -465,6 +471,9 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
 
   /// @brief Transform a "parsed type" into a "real type"
   types::Type* transformType(Expression::TypeRef* ty);
+  /// @brief Transform a "parsed type" into a "real type" and it checks if
+  ///        the type is sized.
+  types::Type* transformSizedType(Expression::TypeRef* ty, bool ignoreVoid = false, const std::string message = "Expected type '%s' to be sized!");
   /// @return a list of generated modules through the whole project
   std::vector<std::shared_ptr<ir::Module>> getModules() const;
 
