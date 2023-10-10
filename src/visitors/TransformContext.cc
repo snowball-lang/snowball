@@ -34,15 +34,19 @@ TransformContext::TransformContext(
   auto coreModItem = std::make_shared<transform::Item>(coreMod);
   addItem("Core", coreModItem);
 
-  std::vector<std::string> coreBuiltins = {"ReturnType", "Sized", "IsNumeric", "IsPointer", "CastableTo"};
+  std::vector<std::string> coreBuiltins = {"Sized", "Numeric"};
 
-  for (auto builtin : coreBuiltins) {
-    auto baseUuid = imports->CORE_UUID + "." + builtin;
-    auto transformedType = new types::DefinedType(builtin.c_str(), baseUuid, coreMod);
+  for (const auto& builtin : coreBuiltins) {
+    const auto baseUuid = imports->CORE_UUID + builtin;
+    auto transformedType = new types::InterfaceType(builtin, baseUuid, coreMod, {});
 
     auto item = std::make_shared<transform::Item>(transformedType);
-    cache->setTransformedType(baseUuid, item);
+    addItem(builtin, item);
+    coreInterfaces.insert({builtin, transformedType});
   }
+
+  _CharType->getType()->addImpl(coreInterfaces["Sized"]);
+  _CharType->getType()->addImpl(coreInterfaces["Numeric"]);
 };
 
 /// @brief get a saved state of the context
@@ -62,6 +66,7 @@ void TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
   this->stack = st;
   this->module = s->module;
   this->uuidStack = s->uuidStack;
+  this->builder.setModule(s->module);
   setCurrentClass(s->currentClass);
 }
 
@@ -89,5 +94,11 @@ std::pair<std::shared_ptr<transform::Item>, bool> TransformContext::getItem(cons
     return {nullptr, false};
 }
 #endif
+
+types::InterfaceType* TransformContext::getBuiltinTypeImpl(const std::string name) {
+  auto impl = coreInterfaces.find(name);
+  assert(impl != coreInterfaces.end());
+  return impl->second;
+}
 
 } // namespace snowball::Syntax

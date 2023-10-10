@@ -97,7 +97,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         argValues.insert(argValues.begin(), *b);
         argTypes.insert(argTypes.begin(), baseType);
       } else {
-        auto reference = builder.createReferenceTo(p_node->getDBGInfo(), *b);
+        auto reference = getBuilder().createReferenceTo(p_node->getDBGInfo(), *b);
         argValues.insert(argValues.begin(), reference);
         argTypes.insert(argTypes.begin(), reference->getType());
       }
@@ -108,7 +108,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
   }
   assert(fn);
   // clang-format off
-    auto call = builder.createCall(p_node->getDBGInfo(), fn, argValues);
+    auto call = getBuilder().createCall(p_node->getDBGInfo(), fn, argValues);
     if (auto t = utils::cast<types::FunctionType>(fn->getType())) {
       auto isContructor = utils::dyn_cast<ir::Func>(fn) && utils::dyn_cast<ir::Func>(fn)->isConstructor();
       if (t->getArgs().size() <= argTypes.size() || /**sorry**/
@@ -145,7 +145,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
           }
         }
 
-        builder.setType(call, t->getRetType());
+        getBuilder().setType(call, t->getRetType());
     } else {
         assert(false && "TODO: other function values?!?!?");
     }

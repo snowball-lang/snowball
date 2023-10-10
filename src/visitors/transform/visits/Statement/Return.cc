@@ -27,14 +27,14 @@ SN_TRANSFORMER_VISIT(Statement::Return) {
               {.info = "Non-void functions must contain return statements"});
     }
 
-    ret = builder.createReturn(p_node->getDBGInfo(), returnValue);
+    ret = getBuilder().createReturn(p_node->getDBGInfo(), returnValue);
   } else {
     if (p_node->getValue() != nullptr) {
       E<SYNTAX_ERROR>(p_node, "You can't return a value inside a void function!",
               {.info = "Void functions can't contain return statements"});
     }
 
-    ret = builder.createVoidReturn(p_node->getDBGInfo());
+    ret = getBuilder().createVoidReturn(p_node->getDBGInfo());
     ret->setType(ctx->getVoidType());
   }
   this->value = ret;

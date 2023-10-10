@@ -59,8 +59,7 @@ types::DefinedType* Transformer::transformClass(
               nullptr,
               std::vector<types::Type*>{},
               ty->isStruct());
-      transformedType->setModule(ctx->module);
-      transformedType->setUUID(_uuid);
+      transformedType->addImpl(ctx->getBuiltinTypeImpl("Sized"));
       auto item = std::make_shared<transform::Item>(transformedType);
       ctx->cache->setTransformedType(baseUuid, item, _uuid);
       auto classGenerics = ty->getGenerics();
@@ -73,7 +72,7 @@ types::DefinedType* Transformer::transformClass(
         // TODO:
         // item->setDBGInfo(generic->getDBGInfo());
         ctx->addItem(generic->getName(), item);
-        executeGenericTests(generic->getWhereClause(), generatedGeneric);
+        executeGenericTests(generic->getWhereClause(), generatedGeneric, generic->getName());
       }
       // Fill out the remaining non-required tempalte parameters
       if (classGenerics.size() > generics.size()) {
@@ -84,7 +83,7 @@ types::DefinedType* Transformer::transformClass(
           // TODO:
           // item->setDBGInfo(generic->getDBGInfo());
           ctx->addItem(generic->getName(), item);
-          executeGenericTests(generic->getWhereClause(), generatedGeneric);
+          executeGenericTests(generic->getWhereClause(), generatedGeneric, generic->getName());
         }
       }
       types::DefinedType* parentType = nullptr;

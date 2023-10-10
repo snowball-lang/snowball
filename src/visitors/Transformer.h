@@ -1,6 +1,7 @@
 
 #include "../ast/syntax/nodes.h"
 #include "../ast/types/DefinedType.h"
+#include "../ast/types/Interface.h"
 #include "../ast/types/FunctionType.h"
 #include "../ast/types/PointerType.h"
 #include "../ast/types/ReferenceType.h"
@@ -75,8 +76,6 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
   TransformContext* ctx;
   // Transformed value from the last call
   std::shared_ptr<ir::Value> value;
-  // IR builder used to create new instructions
-  ir::IRBuilder builder;
   /**
    * Function fetch response.
    *
@@ -234,6 +233,9 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
           bool isIdentifier = false,
           bool hasSelf = false);
   /**
+   * @brief It asserts that a type is `Sized`
+  */
+  /**
    * It decides whether or not a generated function should be used or if
    *  and overloaded function should by checking the closest match.
    */
@@ -380,7 +382,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * @note If any test fail, an error would be reported meaning that if
    *  the program is still being executed all tests had passed.
    */
-  void executeGenericTests(Syntax::Expression::WhereClause* clause, types::Type* generic);
+  void executeGenericTests(Syntax::Expression::WhereClause* clause, types::Type* generic,
+    const std::string& name);
   /**
    * @brief Creates a type.
    *
@@ -402,6 +405,10 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
   types::DefinedType* transformClass(const std::string& uuid,
           cacheComponents::Types::TypeStore& classStore,
           Expression::TypeRef* typeRef = nullptr);
+  /**
+   * Fetch the builder from the current context.
+   */
+  ir::IRBuilder& getBuilder();
   /**
    * @brief Get a value from an index node.
    * @return It may return a value, a type pointer or a vector

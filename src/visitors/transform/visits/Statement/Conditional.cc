@@ -15,7 +15,7 @@ SN_TRANSFORMER_VISIT(Statement::Conditional) {
   std::shared_ptr<ir::Block> falsyBody = nullptr;
   if (auto x = p_node->getElse()) { falsyBody = utils::dyn_cast<ir::Block>(trans(x)); }
 
-  auto cond = builder.createConditional(p_node->getDBGInfo(), expr, truthyBody, falsyBody);
+  auto cond = getBuilder().createConditional(p_node->getDBGInfo(), expr, truthyBody, falsyBody);
   this->value = utils::dyn_cast<ir::Value>(cond);
 }
 

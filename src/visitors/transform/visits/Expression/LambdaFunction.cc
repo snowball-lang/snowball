@@ -22,7 +22,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
 //  // Create a new function value and store it's return type.
 //  char l[] = _SNOWBALL_LAMBDA_FUNCTIONS;
 //  auto name = parent->getName() + "::" + l + '\00';
-//  auto fn = builder.createFunction(node->getDBGInfo(), name, false, node->isVariadic());
+//  auto fn = getBuilder().createFunction(node->getDBGInfo(), name, false, node->isVariadic());
 //  fn->setParent(ctx->getCurrentClass());
 //  fn->setRetTy(returnType);
 //  fn->setPrivacy(Statement::Privacy::PUBLIC);
@@ -34,7 +34,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
 //  for (int i = 0; i < node->getArgs().size(); i++) {
 //    auto arg = node->getArgs().at(i);
 //
-//    auto a = builder.createArgument(node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
+//    auto a = getBuilder().createArgument(node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
 //            arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
 //    a->setType(transformType(arg->getType()));
 //    newArgs.insert(newArgs.end(), {arg->getName(), a});
@@ -54,9 +54,9 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
 //    ctx->withScope([&]() {
 //      int argIndex = 0;
 //      for (auto arg : newArgs) {
-//        auto ref = builder.createVariable(node->getDBGInfo(), arg.first, true /* TODO: is mutable */);
+//        auto ref = getBuilder().createVariable(node->getDBGInfo(), arg.first, true /* TODO: is mutable */);
 //
-//        builder.setType(ref, arg.second->getType());
+//        getBuilder().setType(ref, arg.second->getType());
 //        auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, ref);
 //
 //        ref->setId(arg.second->getId());

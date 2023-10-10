@@ -2,7 +2,6 @@ use Core::Internal::Preloads;
 use [[use_macro(c_str)]] Core::CLib;
 use Core::Ptr;
 
-
 class [[extends]] char {
   pub:
     /**
@@ -22,7 +21,7 @@ class [[extends]] char {
     operator [[inline]] +(other: String) String
       { return new String(self as *const char) + other; }
 
-    fn [[inline, __no_pointer_self__]] to_string() String
+    fn [[inline]] to_string(self: char) String
     { 
       return new String(self, 1); // TODO: deprecate this once `str` is implemented 
     }
@@ -188,6 +187,8 @@ fn [[
 
 } /* namespace __internal */;
 
+}
+
 /**
  * @class Exception
  * @brief A class representing an exception.
@@ -209,7 +210,7 @@ pub class Exception {
       * @brief Exception constructor from a string.
       * @param[in] m The message of the exception.
       */
-    Exception<T: Core::Sized>(m: T) : msg(m.c_str()) 
+    Exception<T: Sized>() : msg(m.c_str()) 
       { }
     /**
      * @brief Returns the message of the exception.
@@ -240,7 +241,7 @@ pub class IndexError: Exception
  * for working with iterables. It supports common Iterable
  * manipulation operations such as iteration, element access, and more.
  */
-pub class Iterable<_IteratorType: Core::Sized> {
+pub class Iterable<_IteratorType: Sized> {
     /// @brief The index of the iterator.
     let mut iter_index: i32 = 0;
   pub:
@@ -272,7 +273,7 @@ pub class Iterable<_IteratorType: Core::Sized> {
  * with iterators. It supports common Iter manipulation operations
  * such as iteration, element access, and more.
  */
-pub class Iter<_IteratorType: Core::Sized> {
+pub class Iter<_IteratorType: Sized> {
     /// @brief if the iterator is valid
     let _valid: bool = false;
     /// @brief the value of the iterator
@@ -329,7 +330,7 @@ pub class Iter<_IteratorType: Core::Sized> {
  * for working with ranges of elements. It supports common Range
  * manipulation operations such as iteration, element access, and more.
  */
-pub class Range<_Number_Type: Core::IsNumeric = i32>: Iterable<_Number_Type> {
+pub class Range<_Number_Type: Numeric = i32>: Iterable<_Number_Type> {
   pub:
     /**
      * @brief Range constructor.
@@ -402,8 +403,8 @@ pub class Range<_Number_Type: Core::IsNumeric = i32>: Iterable<_Number_Type> {
  *       required for storing and manipulating vectors.
  */
 pub class Vector<
-  _StoreType: Core::Sized, 
-  Allocator: Core::Sized = Ptr::Allocator<_StoreType>
+  _StoreType: Sized,
+  Allocator: Sized = Ptr::Allocator<_StoreType>
 >: Iterable<_StoreType> {
   pub:
     /**
@@ -538,7 +539,7 @@ pub class Vector<
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating strings.
  */
-pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
+pub class StringView<_CharType: Sized>: Iterable<_CharType> {
   pub:
     type StringType = *const _CharType;
 
@@ -700,18 +701,7 @@ pub class StringView<_CharType: Core::Sized = char>: Iterable<_CharType> {
       { return self.concat(self.buffer, str, self.length, len); }
 }
 
-} // namespace Core
-
-// Type exports
-type StringView<T = char> = Core::StringView<T>;
-type Vector<T> = Core::Vector<T>;
-type Iter<T> = Core::Iter<T>;
-type Exception = Core::Exception;
-type IndexError = Core::IndexError;
-type Range<T = i32> = Core::Range<T>;
-type String = StringView<>;
-type Box<T> = Box<T>;
-type Iterable<T: Core::Sized> = Core::Iterable<T>;
+type String = StringView<char>;
 
 // TODO (implement wchar): using WideString as StringView<&wchar>
 

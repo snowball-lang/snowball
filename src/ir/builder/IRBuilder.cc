@@ -140,7 +140,7 @@ Type<types::FunctionType> IRBuilder::createFunctionType(
 }
 Type<types::TypeAlias> IRBuilder::createTypeAlias(DBGSourceInfo* dbg, std::string name, Type<> base) {
   auto ty = new types::TypeAlias(name, base);
-  ty->setModule(module);
+  ty->unsafeSetModule(module);
   ty->setSourceInfo(module->getSourceInfo());
   ty->setDBGInfo(dbg);
   ty->setMutable(base->isMutable());

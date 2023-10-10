@@ -11,7 +11,7 @@ SN_TRANSFORMER_VISIT(Block) {
     std::vector<std::shared_ptr<ir::Value>> insts;
     for (auto inst : p_node->getStmts()) { insts.push_back(trans(inst)); }
 
-    auto val = builder.createBlock(p_node->getDBGInfo(), insts);
+    auto val = getBuilder().createBlock(p_node->getDBGInfo(), insts);
     val->setAttributes(p_node);
     this->value = val;
   });

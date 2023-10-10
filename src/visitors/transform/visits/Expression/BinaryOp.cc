@@ -14,7 +14,7 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
   if (p_node->unary) {
     if (opType == Expression::BinaryOp::OpType::REFERENCE) {
       auto value = trans(p_node->left);
-      auto ref = builder.createReferenceTo(p_node->getDBGInfo(), value);
+      auto ref = getBuilder().createReferenceTo(p_node->getDBGInfo(), value);
       this->value = ref;
       return;
     } else if (opType == Expression::BinaryOp::OpType::DEREFERENCE) {
@@ -28,7 +28,7 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
         E<DEREFERENCE_ERROR>(p_node, "Can't dereference a non-pointer type!");
       }
 
-      auto ref = builder.createDereferenceTo(p_node->getDBGInfo(), value, type);
+      auto ref = getBuilder().createDereferenceTo(p_node->getDBGInfo(), value, type);
       this->value = ref;
       return;
     }
@@ -62,7 +62,7 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
 
     auto val = trans(call);
     auto assigmentAsCall = utils::dyn_cast<ir::Call>(val);
-    auto assigmentValue = builder.createBinaryOp(assigmentAsCall);
+    auto assigmentValue = getBuilder().createBinaryOp(assigmentAsCall);
     this->value = assigmentValue;
   }
 }

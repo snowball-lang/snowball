@@ -15,7 +15,7 @@ SN_TRANSFORMER_VISIT(Statement::WhileLoop) {
   auto block = trans(p_node->getBlock());
   auto body = utils::dyn_cast<ir::Block>(block);
 
-  auto loop = builder.createWhileLoop(p_node->getDBGInfo(), expr, body, p_node->isDoWhile());
+  auto loop = getBuilder().createWhileLoop(p_node->getDBGInfo(), expr, body, p_node->isDoWhile());
   this->value = utils::dyn_cast<ir::Value>(loop);
 }
 

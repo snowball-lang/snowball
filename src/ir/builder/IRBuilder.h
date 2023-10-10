@@ -1,5 +1,6 @@
 
 #include "../../ast/types/DefinedType.h"
+#include "../../ast/types/Interface.h"
 #include "../../ast/types/FunctionType.h"
 #include "../../ast/types/PrimitiveTypes.h"
 #include "../../ast/types/TypeAlias.h"

@@ -6,6 +6,7 @@
 #include "../ir/values/Value.h"
 #include "../services/ImportService.h"
 #include "../sourceInfo/DBGSourceInfo.h"
+#include "../ast/types/Interface.h"
 #include "MacroInstance.h"
 #include "TransformItem.h"
 
@@ -30,7 +31,9 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
   types::Type* currentClass = nullptr;
   // The IRBuilder instance that's being used to generate the IR
   ir::IRBuilder& builder;
-
+  /// @brief A map containing all core interfaces
+  std::unordered_map<std::string, types::InterfaceType*> coreInterfaces = {};
+  
  public:
   // Module given to us so we can
   // identify where in the program we are.
@@ -77,24 +80,33 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
   TransformContext(
           std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder, bool testMode = false, bool benchMode = false);
 
-  // clang-format off
+  /**
+   * @brief Get a primitive number type
+  */
+  template <typename T> auto getPrimitiveNumberType(int bits) {
+    auto ty = new T(bits);
+    ty->addImpl(getBuiltinTypeImpl("Sized"));
+    ty->addImpl(getBuiltinTypeImpl("Numeric"));
+    return ty;
+  }
 
+  // clang-format off
     /// @brief Get the bool primitive type
     types::Type* getBoolType() { return new types::IntType(1); }
     /// @brief Get the char primitive type
     types::Type* getCharType() { return getPrimitiveType(SN_CHR_TYPE); }
     /// @brief Get the float 64 primitive type
-    types::Type* getF64Type() { return new types::FloatType(64); }
+    types::Type* getF64Type() { return getPrimitiveNumberType<types::FloatType>(64); }
     /// @brief Get the float 32 primitive type
-    types::Type* getF32Type() { return new types::FloatType(32); }
+    types::Type* getF32Type() { return getPrimitiveNumberType<types::FloatType>(32); }
     /// @brief Get the int 64 primitive type
-    types::Type* getInt64Type() { return new types::IntType(64); }
+    types::Type* getInt64Type() { return getPrimitiveNumberType<types::IntType>(64); }
     /// @brief Get the int 32 primitive type
-    types::Type* getInt32Type() { return new types::IntType(32); }
+    types::Type* getInt32Type() { return getPrimitiveNumberType<types::IntType>(32); }
     /// @brief Get the int 16 primitive type
-    types::Type* getInt16Type() { return new types::IntType(16); }
+    types::Type* getInt16Type() { return getPrimitiveNumberType<types::IntType>(16); }
     /// @brief Get the int 8 primitive type
-    types::Type* getInt8Type() { return new types::IntType(8); }
+    types::Type* getInt8Type() { return getPrimitiveNumberType<types::IntType>(8); }
     /// @brief Get the void type representation
     types::Type* getVoidType() { return getPrimitiveType(SN_VOID_TYPE); }
   // clang-format on
@@ -172,6 +184,13 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
   void setState(std::shared_ptr<transform::ContextState> s);
   /// @brief Execute function with saved state
   void withState(std::shared_ptr<transform::ContextState> s, std::function<void()> cb);
+
+  /// @brief Get a builtin type implementation
+  /// @param name Name of the type to get
+  /// @return A type implementation
+  types::InterfaceType* getBuiltinTypeImpl(const std::string name);
+
+  ir::IRBuilder& getBuilder() { return builder; }
 };
 
 } // namespace Syntax

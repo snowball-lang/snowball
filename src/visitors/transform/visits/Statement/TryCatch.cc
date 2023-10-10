@@ -18,10 +18,10 @@ SN_TRANSFORMER_VISIT(Statement::TryCatch) {
     auto block = catchBlock->getBlock();
 
     ctx->withScope([&] {
-      auto var = builder.createVariable(block->getDBGInfo(), name, type);
-      auto varDecl = builder.createVariableDeclaration(p_node->getDBGInfo(), name, nullptr);
+      auto var = getBuilder().createVariable(block->getDBGInfo(), name, type);
+      auto varDecl = getBuilder().createVariableDeclaration(p_node->getDBGInfo(), name, nullptr);
       varDecl->setId(var->getId());
-      builder.setType(varDecl, type);
+      getBuilder().setType(varDecl, type);
 
       auto item = std::make_shared<transform::Item>(transform::Item::VALUE, var);
       ctx->addItem(name, item);
@@ -32,7 +32,7 @@ SN_TRANSFORMER_VISIT(Statement::TryCatch) {
     });
   }
 
-  auto tryCatch = builder.createTryCatch(p_node->getDBGInfo(), tryBlock, catchBlocks, catchVars);
+  auto tryCatch = getBuilder().createTryCatch(p_node->getDBGInfo(), tryBlock, catchBlocks, catchVars);
   this->value = tryCatch;
 }
 

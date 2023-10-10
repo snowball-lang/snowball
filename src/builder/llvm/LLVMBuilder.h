@@ -2,6 +2,7 @@
 #include "../../../app/cli.h"
 #include "../../ValueVisitor/Visitor.h"
 #include "../../ast/types/DefinedType.h"
+#include "../../ast/types/Interface.h"
 #include "../../ast/types/FunctionType.h"
 #include "../../ast/types/PointerType.h"
 #include "../../ast/types/ReferenceType.h"

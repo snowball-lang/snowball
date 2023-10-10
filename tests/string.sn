@@ -26,7 +26,6 @@ fn [[test]] not_equals() i32 {
 fn [[test]] concat() i32 {
     let mut s = new String(@c_str("hello"));
     s = s + @c_str(" world");
-    System::println("hello world".to_string());
     return s == "hello world".to_string();
 }
 

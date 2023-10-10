@@ -25,7 +25,7 @@ SN_TRANSFORMER_VISIT(Expression::GenericIdentifier) {
             p_node->getGenerics(),
             true);
 
-    auto var = builder.createValueExtract(p_node->getDBGInfo(), c);
+    auto var = getBuilder().createValueExtract(p_node->getDBGInfo(), c);
     this->value = var;
     return;
   } else if (type) {

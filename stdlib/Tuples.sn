@@ -20,7 +20,7 @@
  * 
  * @see make_pair
  */
-pub class Pair<T: Core::Sized, U: Core::Sized> {
+pub class Pair<T: Sized, U: Sized> {
   pub:
     /// @brief The first element of the pair. 
     let first: T;
@@ -74,7 +74,7 @@ pub fn make_pair<T, U>(first: T, second: U) Pair<T, U> {
  * 
  * @see make_triple
  */
-pub class Triple<T: Core::Sized, U: Core::Sized, V: Core::Sized> {
+pub class Triple<T: Sized, U: Sized, V: Sized> {
   pub:
     /// @brief The first element of the triple. 
     let first: T;

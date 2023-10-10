@@ -16,7 +16,7 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
 
       // Remove the "" from the string value
       str = str.substr(1, str.size() - 2);
-      value = builder.createStringValue(p_node->getDBGInfo(), str);
+      value = getBuilder().createStringValue(p_node->getDBGInfo(), str);
       value->setType(ctx->getCharType()->getReferenceTo());
       break;
     }
@@ -33,8 +33,8 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
         n = std::stoll(str); // We asume the number is correct
       }
 
-      value = builder.createNumberValue(p_node->getDBGInfo(), n);
-      builder.setType(value, ctx->getInt32Type());
+      value = getBuilder().createNumberValue(p_node->getDBGInfo(), n);
+      getBuilder().setType(value, ctx->getInt32Type());
       break;
     }
 
@@ -42,8 +42,8 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
       auto str = p_node->getValue();
       auto d = std::stod(str);
 
-      value = builder.createFloatValue(p_node->getDBGInfo(), d);
-      builder.setType(value, ctx->getF64Type());
+      value = getBuilder().createFloatValue(p_node->getDBGInfo(), d);
+      getBuilder().setType(value, ctx->getF64Type());
       break;
     }
 
@@ -51,8 +51,8 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
       auto str = p_node->getValue();
       auto b = str == _SNOWBALL_KEYWORD__TRUE;
 
-      value = builder.createBooleanValue(p_node->getDBGInfo(), b);
-      builder.setType(value, ctx->getBoolType());
+      value = getBuilder().createBooleanValue(p_node->getDBGInfo(), b);
+      getBuilder().setType(value, ctx->getBoolType());
       break;
     }
 
@@ -61,8 +61,8 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
 
       str = str.substr(1, str.size() - 2);
       auto ascii = (int)str[0];
-      value = builder.createCharValue(p_node->getDBGInfo(), ascii);
-      builder.setType(value, ctx->getCharType());
+      value = getBuilder().createCharValue(p_node->getDBGInfo(), ascii);
+      getBuilder().setType(value, ctx->getCharType());
       break;
     }
 

@@ -44,7 +44,7 @@ std::pair<std::vector<std::shared_ptr<ir::Value>>, std::shared_ptr<ir::Call>> Tr
       indexExpr->setDBGInfo(field->getDBGInfo());
       auto val = trans(assign);
       auto assigmentAsCall = utils::dyn_cast<ir::Call>(val);
-      auto assigmentValue = builder.createBinaryOp(assigmentAsCall);
+      auto assigmentValue = getBuilder().createBinaryOp(assigmentAsCall);
       assigmentValue->ignoreMutability = true;
       instrList.emplace_back(assigmentValue);
     }
@@ -60,7 +60,7 @@ std::pair<std::vector<std::shared_ptr<ir::Value>>, std::shared_ptr<ir::Call>> Tr
     indexExpr->setDBGInfo(name->getDBGInfo());
     auto val = trans(assign);
     auto assigmentAsCall = utils::dyn_cast<ir::Call>(val);
-    auto assigmentValue = builder.createBinaryOp(assigmentAsCall);
+    auto assigmentValue = getBuilder().createBinaryOp(assigmentAsCall);
     assigmentValue->ignoreMutability = true;
     instrList.emplace_back(assigmentValue);
   }

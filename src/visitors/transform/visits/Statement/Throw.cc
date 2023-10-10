@@ -9,7 +9,7 @@ namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::Raise) {
   auto expr = trans(p_node->getExpr());
-  this->value = builder.createThrow(p_node->getDBGInfo(), expr);
+  this->value = getBuilder().createThrow(p_node->getDBGInfo(), expr);
 }
 
 } // namespace Syntax

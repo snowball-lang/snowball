@@ -1,11 +1,11 @@
 use Core::CLib;
 
 /**
- * A wrapper for non-null references to types that bypass the `Core::Sized` check.
+ * A wrapper for non-null references to types that bypass the `Sized` check.
  * This ensures that the reference is not null and provides methods to access the underlying value.
  *
  * @tparam T - type of the value
- * @note This class is a wrapper for non-null references to types that bypass the `Core::Sized` check.
+ * @note This class is a wrapper for non-null references to types that bypass the `Sized` check.
  * This ensures that the reference is not null and provides methods to access the underlying value.
  *
  * @example
@@ -20,7 +20,7 @@ use Core::CLib;
  * ```
  * @endexample
  */
-pub class NonNull<T: Core::Sized> {
+pub class NonNull<T: Sized> {
     /**
      * The underlying non-null reference value.
      */
@@ -51,7 +51,7 @@ pub class NonNull<T: Core::Sized> {
  * @tparam PtrType - pointer type
  * @return PtrType - null pointer
  */
-pub fn [[inline]] null_ptr<PtrType: Core::Sized>() *const PtrType {
+pub fn [[inline]] null_ptr<PtrType: Sized>() *const PtrType {
   unsafe { return 0 as *const void as *const PtrType; }
 }
 
@@ -59,7 +59,7 @@ pub fn [[inline]] null_ptr<PtrType: Core::Sized>() *const PtrType {
  * @brief An utility class to allocate memory blocks for a given type.
  * @tparam T - type of the memory block
  */
-pub class Allocator<T: Core::Sized> {
+pub class Allocator<T: Sized> {
   pub:
     Allocator() {}
 
@@ -97,20 +97,20 @@ pub class Allocator<T: Core::Sized> {
     }
 }
 
-pub unsafe fn [[inline]] add<T: Core::Sized>(ptr: *const T, offset: i32) *mut T {
+pub unsafe fn [[inline]] add<T: Sized>(ptr: *const T, offset: i32) *mut T {
   return (ptr + offset) as *mut T;
 }
 
-pub unsafe fn [[inline]] write<T: Core::Sized>(mut ptr: *const T, value: T) {
+pub unsafe fn [[inline]] write<T: Sized>(mut ptr: *const T, value: T) {
   *ptr = value;
 }
 
-//pub unsafe fn [[inline, llvm_function]] write<T: Core::Sized>(mut ptr: *const T, value: T) {
+//pub unsafe fn [[inline, llvm_function]] write<T: Sized>(mut ptr: *const T, value: T) {
 //  %0 = load {=*const T}, {=*const T} %ptr, align 8
 //  store {=T} %value, {=*const T} %0, align 8
 //  ret void
 //}
 
-pub fn [[inline]] to_pointer<T: Core::Sized>(value: &T) *const T {
+pub fn [[inline]] to_pointer<T: Sized>(value: &T) *const T {
   unsafe { return value as *const T; }
 }

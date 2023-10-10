@@ -17,7 +17,7 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
     auto casted = utils::dyn_cast<ir::Variable>(val);
     assert(casted != nullptr);
 
-    auto var = builder.createValueExtract(p_node->getDBGInfo(), casted);
+    auto var = getBuilder().createValueExtract(p_node->getDBGInfo(), casted);
     this->value = var;
     return;
   } else if (functions) {
@@ -31,7 +31,7 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
 
     // There can only be 1 function overload without casting
     auto function = functions->at(0);
-    this->value = builder.createValueExtract(p_node->getDBGInfo(), function);
+    this->value = getBuilder().createValueExtract(p_node->getDBGInfo(), function);
     return;
   } else if (type) {
     E<VARIABLE_ERROR>(p_node, "Can't use types as values!");

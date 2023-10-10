@@ -2,6 +2,7 @@
 #include "../../ast/syntax/common.h"
 #include "../../ast/syntax/nodes.h"
 #include "../../ast/types/DefinedType.h"
+#include "../../ast/types/Interface.h"
 #include "../../ast/types/FunctionType.h"
 #include "../../ast/types/TypeAlias.h"
 #include "../../ast/visitor/Visitor.h"

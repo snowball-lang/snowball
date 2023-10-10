@@ -40,14 +40,14 @@ types::Type* Transformer::transformTypeAlias(
         // TODO:
         // item->setDBGInfo(generic->getDBGInfo());
         ctx->addItem(generic->getName(), item);
-        executeGenericTests(generic->getWhereClause(), generatedGeneric);
+        executeGenericTests(generic->getWhereClause(), generatedGeneric, generic->getName());
       }
 
       auto aliasedType = transformType(ty->getType());
-      auto alias = builder.createTypeAlias(ty->getDBGInfo(), ty->getIdentifier(), aliasedType);
+      auto alias = getBuilder().createTypeAlias(ty->getDBGInfo(), ty->getIdentifier(), aliasedType);
       alias->setPrivacy(ty->getPrivacy());
       alias->setGenerics(generics);
-      alias->setUUID(uuid);
+      alias->unsafeSetUUID(uuid);
       alias->setMutable(aliasedType->isMutable());
       transformedType = alias;
       // auto item = std::make_shared<transform::Item>(alias);

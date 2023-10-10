@@ -30,7 +30,7 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
     // value
     if (auto casted = utils::dyn_cast<ir::Variable>(*value)) {
       // TODO: check for variable privacy
-      this->value = builder.createValueExtract(p_node->getDBGInfo(), casted);
+      this->value = getBuilder().createValueExtract(p_node->getDBGInfo(), casted);
       return;
     } else if (auto indexExtract = utils::dyn_cast<ir::IndexExtract>(*value)) {
       checkIfContextEqual(indexExtract->getField());
@@ -86,7 +86,7 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
                       function->getNiceName().c_str()));
     }
 
-    this->value = builder.createValueExtract(p_node->getDBGInfo(), function);
+    this->value = getBuilder().createValueExtract(p_node->getDBGInfo(), function);
     return;
   }
 

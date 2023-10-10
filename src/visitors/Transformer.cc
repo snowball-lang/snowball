@@ -28,7 +28,7 @@ namespace Syntax {
 
 Transformer::Transformer(std::shared_ptr<ir::Module> mod, const SourceInfo* srci, bool allowTests, bool allowBenchmarks)
     : AcceptorExtend<Transformer, Visitor>(srci) {
-  builder = ir::IRBuilder(mod);
+  auto builder = ir::IRBuilder(mod);
   ctx = new TransformContext(mod, builder, allowTests, allowBenchmarks);
   initializeCoreRuntime();
 }
@@ -82,6 +82,8 @@ void Transformer::visitGlobal(std::vector<Node*> p_nodes) {
 // mark: - noops
 
 SN_TRANSFORMER_VISIT(Expression::TypeRef) { assert(false); }
+
+ir::IRBuilder& Transformer::getBuilder() { return ctx->getBuilder(); }
 
 } // namespace Syntax
 } // namespace snowball

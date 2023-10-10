@@ -45,9 +45,9 @@ class BaseType : public Type,
   std::string getUUID() const;
 
   /// @brief Set the module where the type is defined.
-  void setModule(std::shared_ptr<ir::Module> m);
+  void unsafeSetModule(std::shared_ptr<ir::Module> m);
   /// @brief Set the UUID of the type.
-  void setUUID(const std::string uuid);
+  void unsafeSetUUID(const std::string uuid);
 
   virtual std::int64_t sizeOf() const override { assert(false); }
   virtual std::int64_t alignmentOf() const override { assert(false); }

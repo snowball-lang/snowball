@@ -33,11 +33,9 @@ std::shared_ptr<ir::Func> Transformer::getFunction(DBGObject* dbgInfo,
 
     return fn;
   };
-  auto [fn, args, res] =
-          getBestFittingFunction(overloads.has_value() ? overloads.value() : std::deque<Cache::FunctionStore>{},
-                  arguments,
-                  generics,
-                  isIdentifier);
+  auto [fn, args, res] = getBestFittingFunction(
+    overloads.has_value() ? overloads.value() : std::deque<Cache::FunctionStore>{},
+    arguments, generics, isIdentifier);
   switch (res) {
     case Ok: {
       return checkIfContextEqual(transformFunction(

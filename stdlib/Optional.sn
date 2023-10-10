@@ -18,7 +18,7 @@ pub class BadOptionAccess: Exception
  * The `Option` type is also used in the return type of functions that are not
  * guaranteed to return a value, like `Array::pop` or `Hash::delete`.
  */
-pub class Option<_StoreType: Core::Sized> {
+pub class Option<_StoreType: Sized> {
     /**
      * The value stored in the `Option`.
      */

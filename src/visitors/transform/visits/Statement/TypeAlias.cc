@@ -21,9 +21,9 @@ SN_TRANSFORMER_VISIT(Statement::TypeAlias) {
   } else if (ctx->generateFunction && (!p_node->isGeneric())) {
     if (ctx->cache->getTransformedType(uuid) != std::nullopt) return;
     auto baseType = transformType(p_node->getType());
-    auto typeAlias = builder.createTypeAlias(p_node->getDBGInfo(), name, baseType);
+    auto typeAlias = getBuilder().createTypeAlias(p_node->getDBGInfo(), name, baseType);
     typeAlias->setPrivacy(p_node->getPrivacy());
-    typeAlias->setUUID(uuid);
+    typeAlias->unsafeSetUUID(uuid);
     auto item = std::make_shared<transform::Item>(typeAlias);
     ctx->cache->setTransformedType(uuid, item);
     ctx->addItem(name, item);

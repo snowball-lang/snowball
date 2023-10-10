@@ -24,6 +24,9 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     return x;
   }
 
+  int uuidStackIndex = -1;
+  std::string uuidStackOverride = "";
+
   if (ty->isReferenceType()) {
     auto pointer = utils::cast<Expression::ReferenceType>(ty);
     assert(pointer);
@@ -34,11 +37,6 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     assert(pointer);
     auto baseType = transformType(pointer->getBaseType());
     auto x = baseType->getPointerTo(pointer->isMutable());
-
-    if (pointer->isMutable()) {
-      DUMP_S("YEAHHH")
-    }
-
     auto typeRef = TR(pointer->isMutable() ? _SNOWBALL_MUT_PTR : _SNOWBALL_CONST_PTR, nullptr, std::vector<Expression::TypeRef*>{baseType->toRef()});
     transformType(typeRef);
     return x;
@@ -54,7 +52,7 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     std::vector<types::Type*> args;
     for (auto arg : fn->getArgs()) args.push_back(transformType(arg));
     auto ret = transformType(fn->getReturnValue());
-    return builder.createFunctionType(args, ret);
+    return getBuilder().createFunctionType(args, ret);
   } else if (auto x = ty->_getInternalType()) {
     // TODO: maybe move up in the function to prevent problems with generics?
     return x->copy();
@@ -65,7 +63,7 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
       auto typeRef = TR(_SNOWBALL_INT_IMPL, NO_DBGINFO, std::vector<Expression::TypeRef*>{ x->toRef() });
       transformType(typeRef);
     }
-    return x->copy(); 
+    return x; 
   }
    
   auto name = ty->getPrettyName();
@@ -136,7 +134,10 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
   }
 
 continueTypeFetch:
-  auto uuid = ctx->createIdentifierName(id, false);
+  // If we can't find it in the stack, we need to fetch it from the cache
+  auto uuid = uuidStackOverride.empty()
+          ? ctx->createIdentifierName(id, false)
+          : (uuidStackOverride + "." + id);
   bool existsWithGenerics = false;
 
   if (auto x = ctx->cache->getTransformedType(uuid)) {
@@ -167,7 +168,15 @@ continueTypeFetch:
                     name.c_str()));
   }
 
-  if (returnedType == nullptr) E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found from the current context!", name.c_str()));
+  if (returnedType == nullptr) {
+    if (uuidStackIndex + 1 < ctx->uuidStack.size()) {
+      uuidStackIndex++;
+      uuidStackOverride = ctx->uuidStack[uuidStackIndex];
+      goto continueTypeFetch;
+    }
+
+    E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found from the current context!", name.c_str()));
+  }
   if (!typeGenericsMatch(ty, returnedType)) {
     auto compAsDefinedType = utils::cast<GenericContainer<types::Type*>>(returnedType);
     auto compGenerics = compAsDefinedType == nullptr ? std::vector<types::Type*>{} : compAsDefinedType->getGenerics();

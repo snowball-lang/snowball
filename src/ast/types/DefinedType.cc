@@ -28,14 +28,14 @@ DefinedType::DefinedType(const std::string& name,
                 generics,
         bool isStruct)
     : AcceptorExtend(Kind::CLASS, name)
-    , uuid(uuid)
     , parent(parent)
-    , module(module)
     , ast(ast)
     , fields(fields)
     , _struct(isStruct) {
   setGenerics(generics);
-  setPrivacy(PUBLIC);
+  setPrivacy(PRIVATE);
+  unsafeSetUUID(uuid);
+  unsafeSetModule(module);
 }
 DefinedType::ClassField::ClassField(const std::string& name,
         Type* type,

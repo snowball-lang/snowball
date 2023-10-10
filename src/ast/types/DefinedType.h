@@ -57,11 +57,6 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
  private:
   /// @brief a list of fields this class has
   std::vector<ClassField*> fields;
-  /// @brief Definition of where in the stack this class is stored
-  /// @example [module name].MyClass:2
-  std::string uuid;
-  /// @brief A module where the type is defined.
-  std::shared_ptr<ir::Module> module;
   /// @brief Parent class where the class in inherited from
   DefinedType* parent = nullptr;
   /// @brief VTable holding all it's functions

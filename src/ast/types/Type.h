@@ -5,6 +5,7 @@
 #include <cassert>
 #include <memory>
 #include <string>
+#include <vector>
 
 #define SNOWBALL_TYPE_COPIABLE(X)                                                                                      \
   Type* copy() const override { return new X(*this); }
@@ -36,6 +37,7 @@ class TypeRef;
 
 namespace types {
 class ReferenceType;
+class InterfaceType;
 
 class Type {
  protected:
@@ -43,13 +45,16 @@ class Type {
   std::string name;
   // Whether or not a type is mutable
   bool _mutable = false;
+  // A type implementation
+  std::vector<InterfaceType*> impls;
 
  public:
   enum Kind
   {
     TYPE,
     CLASS,
-    REF
+    REF,
+    INTERFACE,
   } kind;
 
  public:
@@ -100,6 +105,11 @@ class Type {
   virtual std::int64_t sizeOf() const { assert(!"called sizeOf to not-specialised type!"); }
   /// @return The alignment of the type in bytes
   virtual std::int64_t alignmentOf() const { assert(!"called alignmentOf to not-specialised type!"); }
+
+  /// @brief Get the type's implementation
+  std::vector<InterfaceType*> getImpls() const { return impls; }
+  /// @brief Add a type implementation
+  void addImpl(InterfaceType* impl) { impls.push_back(impl); }
 };
 
 }; // namespace types

@@ -25,14 +25,14 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
                     variableName.c_str()));
   }
 
-  auto var = builder.createVariable(p_node->getDBGInfo(), variableName, false, isMutable);
+  auto var = getBuilder().createVariable(p_node->getDBGInfo(), variableName, false, isMutable);
   auto item = std::make_shared<transform::Item>(transform::Item::Type::VALUE, var);
   // TODO: it should always be declared
   if (p_node->isInitialized()) {
     auto val = trans(variableValue);
-    auto varDecl = builder.createVariableDeclaration(p_node->getDBGInfo(), variableName, val, isMutable);
+    auto varDecl = getBuilder().createVariableDeclaration(p_node->getDBGInfo(), variableName, val, isMutable);
     varDecl->setId(var->getId());
-    builder.setType(varDecl, val->getType());
+    getBuilder().setType(varDecl, val->getType());
     if (auto f = ctx->getCurrentFunction().get()) {
       f->addSymbol(varDecl);
     } else {
@@ -57,16 +57,16 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
 
     this->value = varDecl;
   } else {
-    auto varDecl = builder.createVariableDeclaration(p_node->getDBGInfo(), variableName, nullptr, isMutable);
+    auto varDecl = getBuilder().createVariableDeclaration(p_node->getDBGInfo(), variableName, nullptr, isMutable);
     varDecl->setId(var->getId());
-    builder.setType(varDecl, definedType);
+    getBuilder().setType(varDecl, definedType);
     if (auto f = ctx->getCurrentFunction().get()) {
       f->addSymbol(varDecl);
     } else {
       ctx->module->addVariable(varDecl);
     }
 
-    builder.setType(var, definedType);
+    getBuilder().setType(var, definedType);
     this->value = var;
   }
 

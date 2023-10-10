@@ -38,7 +38,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
         // TODO:
         // item->setDBGInfo(generic->getDBGInfo());
         ctx->addItem(name, item);
-        executeGenericTests(nodeGeneric->getWhereClause(), generic);
+        executeGenericTests(nodeGeneric->getWhereClause(), generic, name);
 
         fnGenerics.push_back({name, generic});
       }
@@ -46,7 +46,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
       // Get the respective return type for this function
       auto returnType = transformType(node->getRetType());
       // Create a new function value and store it's return type.
-      fn = builder.createFunction(node->getDBGInfo(), name,
+      fn = getBuilder().createFunction(node->getDBGInfo(), name,
               (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)), node->isVariadic());
       fn->setParent(ctx->getCurrentClass());
       fn->setRetTy(returnType);
@@ -63,7 +63,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
 
       ir::Func::FunctionArgs newArgs = {};
       if (fn->isConstructor()) {
-        auto a = builder.createArgument(node->getDBGInfo(), "self", 0, (Syntax::Expression::Base*)nullptr);
+        auto a = getBuilder().createArgument(node->getDBGInfo(), "self", 0, (Syntax::Expression::Base*)nullptr);
         auto ty = ctx->getCurrentClass(true)->getReferenceTo();
         ty->setMutable(node->isMutable());
         a->setType(ty);
@@ -73,7 +73,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
       for (int i = 0; i < node->getArgs().size(); i++) {
         auto arg = node->getArgs().at(i);
 
-        auto a = builder.createArgument(node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
+        auto a = getBuilder().createArgument(node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
                 arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
         a->setType(transformType(arg->getType()));
         if (arg->getName() != "self") a->getType()->setMutable(arg->isMutable());
@@ -111,8 +111,8 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
         ctx->withScope([&]() {
           int argIndex = 0;
           for (auto arg : newArgs) {
-            auto ref = builder.createVariable(node->getDBGInfo(), arg.first, true, arg.second->isMutable());
-            builder.setType(ref, arg.second->getType());
+            auto ref = getBuilder().createVariable(node->getDBGInfo(), arg.first, true, arg.second->isMutable());
+            getBuilder().setType(ref, arg.second->getType());
             ref->getType()->setMutable(arg.second->isMutable());
             auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, ref);
             ref->setId(arg.second->getId());

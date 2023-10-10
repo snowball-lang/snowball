@@ -4,11 +4,12 @@
 //  Fibonacci example for the lang                  じし(_,)ノ
 //  Docs: https://snowball-lang.gitbook.io/docs/
 //
-use pkg::option;
-use pkg::chars;
-use pkg::vector;
-use pkg::cls;
-use pkg::string;
+//use pkg::option;
+//use pkg::chars;
+//use pkg::vector;
+//use pkg::cls;
+//use pkg::string;
+
 //use pkg::macros;
 //use pkg::syntax;
 //use pkg::clib;
@@ -22,17 +23,9 @@ use Core::System;
 
 use Core::Optional;
 
-fn x(a: &i32) {
-  
+fn x<T: Sized>(a: T) {
 }
 
 pub fn main() i32 {
-  //let x = Optional::Some(42);
-  //let a = x.has_value();
-  //if a {
-    System::println("a")
-  //} else {
-  //  System::println("b")
-  //}
-  x(42)
+    x<?void>(1);
 }

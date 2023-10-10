@@ -74,7 +74,8 @@ std::pair<std::optional<types::Type*>, int> Transformer::deduceFunctionType(Expr
 
   if (it != fnArgs.end()) {
     const auto argIdx = std::distance(fnArgs.begin(), it);
-    const auto [deducedType, imp] = matchedGeneric(*it, arguments[argIdx]);
+    const auto [deducedType, imp] = matchedGeneric(*it, arguments.at(argIdx));
+    DUMP(arguments[argIdx]->getImpls().size())
     return {deducedType, imp};
   }
 

@@ -87,7 +87,7 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
   } else if (macroName == "zero_initialized") {
     auto type = utils::cast<Expression::TypeRef>(args.at(0));
     auto tr = transformType(type);
-    this->value = builder.createZeroInitialized(NO_DBGINFO, tr);
+    this->value = getBuilder().createZeroInitialized(NO_DBGINFO, tr);
   } else {
     ctx->macroBacktrace.push_back({p_node->getDBGInfo(), macroInstance});
     for (auto inst : macro->getBody()->getStmts()) { trans(inst); }
