@@ -28,7 +28,7 @@ class Argument : public IdMixin, public AcceptorExtend<Argument, Value> {
   /// @brief If the variable is mutable or not
   bool mutability = false;
 
- public:
+public:
   auto operator=(Argument*&) = delete;
   explicit Argument(const std::string& name, int index = 0, Syntax::Expression::Base* defaultValue = nullptr)
       : name(name), index(index), defaultValue(defaultValue){};

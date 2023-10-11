@@ -26,7 +26,7 @@ class Value : public ModuleHolder, public DBGObject {
   Value(const Value&&) = delete;
   Value& operator=(const Value&) = delete;
 
- public:
+public:
   virtual ~Value() noexcept = default;
   Value() = default;
   Value(types::Type* p_type) { type = p_type; };

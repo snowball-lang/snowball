@@ -25,8 +25,8 @@ void DefiniteAssigment::asBlock(std::function<void()> cb) {
   withScope([&] { withState([&] { cb(); }); });
 }
 
-std::optional<std::pair<std::string, DefiniteAssigment::ReferenceStatus>> DefiniteAssigment::getIdentifier(
-        std::string x) {
+std::optional<std::pair<std::string, DefiniteAssigment::ReferenceStatus>> DefiniteAssigment::getIdentifier(std::string x
+) {
   for (auto s : scopes) {
     for (auto i : s) {
       if (i.first == x) { return i; }

@@ -14,8 +14,12 @@ Transformer::StoreType Transformer::getFromIdentifier(Expression::Identifier* s)
   auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
   return getFromIdentifier(s->getDBGInfo(), s->getIdentifier(), generics);
 }
-Transformer::StoreType Transformer::getFromIdentifier(DBGSourceInfo* dbgInfo, const std::string identifier,
-        std::vector<Expression::TypeRef*> generics, const std::string p_uuid) {
+Transformer::StoreType Transformer::getFromIdentifier(
+        DBGSourceInfo* dbgInfo,
+        const std::string identifier,
+        std::vector<Expression::TypeRef*> generics,
+        const std::string p_uuid
+) {
   // Transform the base first
   auto [item, success] = ctx->getItem(identifier);
 
@@ -34,11 +38,14 @@ Transformer::StoreType Transformer::getFromIdentifier(DBGSourceInfo* dbgInfo, co
     } else if (item->isModule()) {
       return {std::nullopt, std::nullopt, std::nullopt, std::nullopt, item->getModule()};
     } else if (item->isMacro()) {
-      E<SYNTAX_ERROR>(dbgInfo, "Macros cannot be used as values!",
+      E<SYNTAX_ERROR>(
+              dbgInfo,
+              "Macros cannot be used as values!",
               {.info = "This is the macro that was used",
-                      .note = "Macros are not values, they are used to generate code at compile time.",
-                      .help = "If you want to use a macro as a value, you can use the '@' symbol before \nand "
-                              "identifier to use a function-like macro."});
+               .note = "Macros are not values, they are used to generate code at compile time.",
+               .help = "If you want to use a macro as a value, you can use the '@' symbol before \nand "
+                       "identifier to use a function-like macro."}
+      );
     } else {
       assert(false && "BUG: Unhandled value type!");
     }
@@ -48,9 +55,9 @@ Transformer::StoreType Transformer::getFromIdentifier(DBGSourceInfo* dbgInfo, co
   std::string uuidStackOverride = "";
 fetchFromUUID:
   // If we can't find it in the stack, we need to fetch it from the cache
-  auto uuid = uuidStackOverride.empty()
-          ? p_uuid.empty() ? ctx->createIdentifierName(identifier, false) : (p_uuid + "." + identifier)
-          : (uuidStackOverride + "." + identifier);
+  auto uuid = uuidStackOverride.empty() ?
+          p_uuid.empty() ? ctx->createIdentifierName(identifier, false) : (p_uuid + "." + identifier) :
+          (uuidStackOverride + "." + identifier);
   std::optional<std::deque<std::shared_ptr<ir::Func>>> funcs = std::nullopt;
   if (auto x = ctx->cache->getTransformedFunction(uuid)) {
     assert(x->get()->isFunc());

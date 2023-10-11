@@ -24,13 +24,13 @@ class VariableDeclaration : public IdMixin, public AcceptorExtend<Variable, Valu
   // Value stored into the current variable
   std::shared_ptr<Value> value;
 
- protected:
+protected:
   // Whether or not the variable is mutable
   bool _isMutable = false;
 
   friend Argument;
 
- public:
+public:
   // Create a new variable declaration
   VariableDeclaration(const std::string& identifier, std::shared_ptr<Value> value, bool isMutable = false)
       : identifier(identifier), value(value), _isMutable(isMutable){};

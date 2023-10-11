@@ -19,7 +19,8 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
             /*isConstant=*/!var->isMutable(),
             /*Linkage=*/llvm::GlobalValue::ExternalLinkage,
             /*Initializer=*/0, // has initializer, specified below
-            /*Name=*/name);
+            /*Name=*/name
+    );
     gvar->setInitializer(llvm::cast<llvm::Constant>(c));
     ctx->addSymbol(var->getId(), gvar);
 
@@ -37,7 +38,8 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
           /*isConstant=*/0,
           /*Linkage=*/llvm::GlobalValue::CommonLinkage,
           /*Initializer=*/0, // has initializer, specified below
-          /*Name=*/name);
+          /*Name=*/name
+  );
 
   gvar->setInitializer(llvm::Constant::getNullValue(ty));
   ctx->addSymbol(var->getId(), gvar);
@@ -49,7 +51,8 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
   auto srcInfo = var->getDBGInfo();
   auto file = dbg.getFile(var->getSourceInfo()->getPath());
   auto debugVar = dbg.builder->createGlobalVariableExpression(
-          dbg.unit, var->getIdentifier(), var->getIdentifier(), file, srcInfo->line, getDIType(var->getType()), false);
+          dbg.unit, var->getIdentifier(), var->getIdentifier(), file, srcInfo->line, getDIType(var->getType()), false
+  );
   gvar->addDebugInfo(debugVar);
 }
 

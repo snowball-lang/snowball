@@ -29,12 +29,13 @@ void LLVMBuilder::visit(ir::Call* call) {
   setDebugInfoLoc(call);
 
   auto args = utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value*>(
-          call->getArguments(), [this](std::shared_ptr<ir::Value> arg) { return expr(arg.get()); });
+          call->getArguments(), [this](std::shared_ptr<ir::Value> arg) { return expr(arg.get()); }
+  );
   llvm::Value* llvmCall = nullptr;
   llvm::Value* allocatedValue = nullptr;
   llvm::Type* allocatedValueType = nullptr;
   if (auto c = utils::cast<types::FunctionType>(calleeValue->getType());
-          c != nullptr && utils::cast<types::BaseType>(c->getRetType())) {
+      c != nullptr && utils::cast<types::BaseType>(c->getRetType())) {
     auto retType = c->getRetType();
     allocatedValueType = getLLVMType(retType);
     if (ctx->retValueUsedFromArg) {
@@ -101,16 +102,17 @@ void LLVMBuilder::visit(ir::Call* call) {
     // class instance = { [0] = vtable, ... }
     // vtable = { [size x ptr] } { [0] = fn1, [1] = fn2, ... } }
     auto vtable = builder->CreateLoad(vtableType->getPointerTo(), parentValue);
-    auto fn = builder->CreateLoad(calleeType->getPointerTo(),
-            builder->CreateConstInBoundsGEP1_32(vtableType->getPointerTo(), vtable, index));
+    auto fn = builder->CreateLoad(
+            calleeType->getPointerTo(), builder->CreateConstInBoundsGEP1_32(vtableType->getPointerTo(), vtable, index)
+    );
     builder->CreateAssumption(builder->CreateIsNotNull(fn));
-    llvmCall = createCall(calleeType, (llvm::Function*)fn, args);
-      // builder->CreateStore(llvmCall, allocatedValue);
-      // auto alloca = createAlloca(allocatedValueType);
-      // builder->CreateStore(llvmCall, alloca);
-      // builder->CreateMemCpy(alloca, llvm::MaybeAlign(), allocatedValue, llvm::MaybeAlign(),
-      //         module->getDataLayout().getTypeAllocSize(allocatedValueType), 0);
-      // this->value = allocatedValue;
+    llvmCall = createCall(calleeType, (llvm::Function*) fn, args);
+    // builder->CreateStore(llvmCall, allocatedValue);
+    // auto alloca = createAlloca(allocatedValueType);
+    // builder->CreateStore(llvmCall, alloca);
+    // builder->CreateMemCpy(alloca, llvm::MaybeAlign(), allocatedValue, llvm::MaybeAlign(),
+    //         module->getDataLayout().getTypeAllocSize(allocatedValueType), 0);
+    // this->value = allocatedValue;
     this->value = allocatedValue ? allocatedValue : llvmCall;
   } else {
     if (!llvm::isa<llvm::Function>(callee)) {
@@ -136,9 +138,7 @@ void LLVMBuilder::visit(ir::Call* call) {
     }                                                                                                                  \
     if (calledFunction) {                                                                                              \
       auto attrSet = calledFunction->getAttributes();                                                                  \
-      if (retIsReference) {                                                                                            \
-        attrSet = attrSet.addRetAttribute(*context, llvm::Attribute::NonNull);                                         \
-      }                                                                                                                \
+      if (retIsReference) { attrSet = attrSet.addRetAttribute(*context, llvm::Attribute::NonNull); }                   \
       call->setAttributes(attrSet);                                                                                    \
     }                                                                                                                  \
   }
@@ -146,8 +146,7 @@ void LLVMBuilder::visit(ir::Call* call) {
   SET_CALL_ATTRIBUTES(llvm::CallInst)
   else SET_CALL_ATTRIBUTES(llvm::InvokeInst) else { assert(false); }
 
-  if (!allocatedValue)
-    ctx->doNotLoadInMemory = true;
+  if (!allocatedValue) ctx->doNotLoadInMemory = true;
 }
 
 } // namespace codegen

@@ -53,12 +53,14 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
   // as variadic.
   bool variadic = false;
 
- public:
-  FunctionType(std::vector<Type*> args,
+public:
+  FunctionType(
+          std::vector<Type*> args,
           Type* retTy,
           bool isVariadic = false,
           bool isMutable = true,
-          const std::string& name = "<fn type>")
+          const std::string& name = "<fn type>"
+  )
       : AcceptorExtend(Kind::TYPE, name, isMutable), args(args), retTy(retTy), variadic(isVariadic) { }
   FunctionType(const FunctionType& other) = default;
 
@@ -105,7 +107,7 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
   std::string getPrettyName() const override;
   std::string getMangledName() const override;
 
- public:
+public:
   /**
    * Create a function type based on the given node.
    *

@@ -29,7 +29,7 @@ using namespace std::chrono;
 using namespace snowball::utils;
 
 int _main(int argc, char** argv) {
-  srand((unsigned)time(NULL) * getpid());     
+  srand((unsigned) time(NULL) * getpid());
 
   try {
     if (argc == 1) {

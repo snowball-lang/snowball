@@ -21,21 +21,21 @@ namespace types {
 
 /**
  * @brief Interface types.
- * 
+ *
  * These can also be called as classes or objects. This
  * type is defined by the programmer. It can contain some extra
  * stuff such as generics and it's own defined members. Unlike
  * primitive types, in order to use these type and it's member,
  * a new initialization of the object is required.
- * 
+ *
  * @note This type is different from the DefinedType type.
  * The difference is that this type is used for interfaces
  * and the DefinedType is used for classes.
- * 
+ *
  * @see DefinedType
  */
 class InterfaceType : public BaseType {
- public:
+public:
   struct Member : public Syntax::Statement::Privacy, public DBGObject {
     enum Kind
     {
@@ -43,31 +43,27 @@ class InterfaceType : public BaseType {
       METHOD
     } kind;
 
-    explicit Member(const std::string& name,
-        Type* type,
-        Kind kind,
-        Privacy privacy = PRIVATE,
-        bool isMutable = false)
-      : name(name), type(type), kind(kind), Privacy(privacy), isMutable(isMutable) {};
+    explicit Member(const std::string& name, Type* type, Kind kind, Privacy privacy = PRIVATE, bool isMutable = false)
+        : name(name), type(type), kind(kind), Privacy(privacy), isMutable(isMutable){};
     const std::string name;
     Type* type;
 
     bool isMutable = false;
   };
 
- private:
+private:
   /// @brief a list of fields this class has
   std::vector<Member*> fields;
 
- public:
-  InterfaceType(const std::string& name,
-    const std::string uuid,
-    std::shared_ptr<ir::Module>
-            module,
-    std::vector<Member*> fields = {},
-    std::vector<Type*> generics = {})
-    : BaseType(INTERFACE, name),
-      fields(fields) {
+public:
+  InterfaceType(
+          const std::string& name,
+          const std::string uuid,
+          std::shared_ptr<ir::Module> module,
+          std::vector<Member*> fields = {},
+          std::vector<Type*> generics = {}
+  )
+      : BaseType(INTERFACE, name), fields(fields) {
     setGenerics(generics);
     unsafeSetUUID(uuid);
     unsafeSetModule(module);
@@ -109,16 +105,24 @@ class InterfaceType : public BaseType {
   /// @c Type::toRef() for information about this function.
   /// @note It essentially does the same thing except it adds
   ///  generics if needed
-  Syntax::Expression::TypeRef* toRef() override
-    { assert(false); return nullptr; }
+  Syntax::Expression::TypeRef* toRef() override {
+    assert(false);
+    return nullptr;
+  }
 
   /// @brief override function.
   virtual bool canCast(Type* ty) const override { return false; }
   virtual bool canCast(InterfaceType* ty) const { return false; }
 
- public:
-  virtual std::int64_t sizeOf() const override { assert(false); return -1; }
-  virtual std::int64_t alignmentOf() const override { assert(false); return -1; }
+public:
+  virtual std::int64_t sizeOf() const override {
+    assert(false);
+    return -1;
+  }
+  virtual std::int64_t alignmentOf() const override {
+    assert(false);
+    return -1;
+  }
 
   SNOWBALL_TYPE_COPIABLE(InterfaceType)
 };

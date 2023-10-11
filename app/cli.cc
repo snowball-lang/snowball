@@ -197,9 +197,11 @@ Options CLI::parse() {
         } else if (current_arg == "asm") {
           opts.build_opts.emit_type = Options::EmitType::ASSEMBLY;
         } else {
-          throw SNError(Error::ARGUMENT_ERROR,
+          throw SNError(
+                  Error::ARGUMENT_ERROR,
                   "Valid build output types are: exec, lib, "
-                  "llvm-ir, asm and snowball-ir");
+                  "llvm-ir, asm and snowball-ir"
+          );
         }
       } else if (IF_ANY_ARG("--output", "-o")) {
         CHECK_ARG("an output file")
@@ -320,9 +322,11 @@ Options CLI::parse() {
         opts.init_opts.cfg = true;
       } else if (IF_ARG("--skip-cfg")) {
         if (opts.init_opts.cfg == true) {
-          throw SNError(Error::ARGUMENT_ERROR,
+          throw SNError(
+                  Error::ARGUMENT_ERROR,
                   "Can't have argument `--skip-cfg` if "
-                  "argument `--cfg` has been passed");
+                  "argument `--cfg` has been passed"
+          );
         }
 
         opts.init_opts.skip_cfg = true;

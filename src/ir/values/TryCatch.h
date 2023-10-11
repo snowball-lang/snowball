@@ -28,12 +28,12 @@ class TryCatch : public AcceptorExtend<TryCatch, Value> {
   // Catch types
   std::vector<std::shared_ptr<VariableDeclaration>> catchVars;
 
- public:
-  explicit TryCatch(std::shared_ptr<Block> block,
-          std::vector<std::shared_ptr<Block>>
-                  catchBlocks,
-          std::vector<std::shared_ptr<VariableDeclaration>>
-                  catchVars)
+public:
+  explicit TryCatch(
+          std::shared_ptr<Block> block,
+          std::vector<std::shared_ptr<Block>> catchBlocks,
+          std::vector<std::shared_ptr<VariableDeclaration>> catchVars
+  )
       : block(block), catchBlocks(catchBlocks), catchVars(catchVars){};
 
   /// @return body block instructions to execute

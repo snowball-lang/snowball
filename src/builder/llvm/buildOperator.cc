@@ -1,9 +1,9 @@
 
 #include "../../ir/values/Call.h"
+#include "../../ir/values/Dereference.h"
 #include "../../ir/values/Func.h"
 #include "../../ir/values/IndexExtract.h"
 #include "../../ir/values/ReferenceTo.h"
-#include "../../ir/values/Dereference.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 
@@ -26,7 +26,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
     auto args = call->getArguments();
     auto opName = fn->getName(true);
     if (services::OperatorService::isOperator(opName) &&
-            !services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(opName)) {
+        !services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(opName)) {
       auto left = build(args.at(0).get());
       llvm::Value* right = nullptr;
       {
@@ -35,8 +35,9 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
           right = build(args.at(1).get());
         }
         if (services::OperatorService::opEquals<services::OperatorService::EQ>(opName)) {
-          if (utils::is<ir::DereferenceTo>(args.at(0).get()) && !left->getType()->isPointerTy() && llvm::isa<llvm::LoadInst>(left)) {
-            left = builder->CreateLoad(left->getType()->getPointerTo(), ((llvm::LoadInst*)left)->getPointerOperand());
+          if (utils::is<ir::DereferenceTo>(args.at(0).get()) && !left->getType()->isPointerTy() &&
+              llvm::isa<llvm::LoadInst>(left)) {
+            left = builder->CreateLoad(left->getType()->getPointerTo(), ((llvm::LoadInst*) left)->getPointerOperand());
           }
         }
       }
@@ -76,13 +77,15 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
           OPERATOR_UINSTANCE(UMINUS, CreateNeg)
           case services::OperatorService::NOT: {
             left = load(left, baseType);
-            auto size_in_bits = ((llvm::IntegerType*)left->getType())->getBitWidth();
+            auto size_in_bits = ((llvm::IntegerType*) left->getType())->getBitWidth();
             if (left->getType()->isPointerTy())
               this->value = builder->CreateICmpEQ(
-                      left, llvm::ConstantPointerNull::get(builder->getIntNTy((unsigned)size_in_bits)->getPointerTo()));
+                      left, llvm::ConstantPointerNull::get(builder->getIntNTy((unsigned) size_in_bits)->getPointerTo())
+              );
             else
               this->value = builder->CreateICmpEQ(
-                      left, llvm::ConstantInt::get(builder->getIntNTy((unsigned)size_in_bits), 0, false));
+                      left, llvm::ConstantInt::get(builder->getIntNTy((unsigned) size_in_bits), 0, false)
+              );
             break;
           }
 
@@ -150,16 +153,17 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             ctx->doNotLoadInMemory = false;
             right = load(right, baseType);
             // TODO: check carefully specific places where we NEED to copy instead of moving
-            //if (utils::is<types::PointerType>(args.at(0)->getType())) {
+            // if (utils::is<types::PointerType>(args.at(0)->getType())) {
             //  auto a = createAlloca(left->getType(), ".move-temp");
             //  auto align = args.at(0)->getType()->alignmentOf();
             //  builder->CreateLifetimeStart(a, builder->getInt64(args.at(0)->getType()->sizeOf()));
             //  builder->CreateStore(right, a);
-            //  
-            //  builder->CreateMemCpy(left, llvm::MaybeAlign(align), a, llvm::MaybeAlign(align), builder->getInt64(args.at(0)->getType()->sizeOf()), 0);
-            //  builder->CreateLifetimeEnd(a, builder->getInt64(args.at(0)->getType()->sizeOf()));
+            //
+            //  builder->CreateMemCpy(left, llvm::MaybeAlign(align), a, llvm::MaybeAlign(align),
+            //  builder->getInt64(args.at(0)->getType()->sizeOf()), 0); builder->CreateLifetimeEnd(a,
+            //  builder->getInt64(args.at(0)->getType()->sizeOf()));
             //} else {
-              builder->CreateStore(right, left);
+            builder->CreateStore(right, left);
             //}
             break;
           }

@@ -6,8 +6,8 @@
 
 namespace snowball::parser {
 
-std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> Parser::parseAttributes(
-        std::function<Attributes(std::string)> parseFn) {
+std::unordered_map<Attributes, std::unordered_map<std::string, std::string>>
+Parser::parseAttributes(std::function<Attributes(std::string)> parseFn) {
   assert(is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek()));
   next();
   std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> attributes;
@@ -23,7 +23,8 @@ std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> Par
       parsed = parseFn(attr);
       if (parsed == Attributes::INVALID) {
         createError<ATTRIBUTE_ERROR>(
-                "Trying to use an undefined attribute!", {.info = FMT("Attribute '%s' is not defined!", attr.c_str())});
+                "Trying to use an undefined attribute!", {.info = FMT("Attribute '%s' is not defined!", attr.c_str())}
+        );
       }
     }
     if (is<TokenType::BRACKET_LPARENT>(peek())) {
@@ -44,7 +45,8 @@ std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> Par
             attrArgs[name] = m_current.to_string();
           } else {
             createError<SYNTAX_ERROR>(
-                    FMT("Expected a string or a number value but found '%s' instead", peek().to_string().c_str()));
+                    FMT("Expected a string or a number value but found '%s' instead", peek().to_string().c_str())
+            );
           }
         } else {
           attrArgs[name] = "";

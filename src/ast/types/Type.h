@@ -40,7 +40,7 @@ class ReferenceType;
 class InterfaceType;
 
 class Type {
- protected:
+protected:
   // Type's name
   std::string name;
   // Whether or not a type is mutable
@@ -48,7 +48,7 @@ class Type {
   // A type implementation
   std::vector<InterfaceType*> impls;
 
- public:
+public:
   enum Kind
   {
     TYPE,
@@ -57,7 +57,7 @@ class Type {
     INTERFACE,
   } kind;
 
- public:
+public:
   explicit Type(Kind p_kind, bool isMutable = false);
   explicit Type(Kind p_kind, std::string p_name, bool isMutable = false);
 

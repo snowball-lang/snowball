@@ -11,78 +11,79 @@ namespace Syntax {
 SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
   E<TODO>("Not implementing lambdas until next year!");
 
-//  auto node = p_node->getFunc();
-//
-//  auto parent = ctx->getCurrentFunction();
-//  assert(parent != nullptr);
-//
-//  // Get the respective return type for this function
-//  auto returnType = transformType(node->getRetType());
-//
-//  // Create a new function value and store it's return type.
-//  char l[] = _SNOWBALL_LAMBDA_FUNCTIONS;
-//  auto name = parent->getName() + "::" + l + '\00';
-//  auto fn = getBuilder().createFunction(node->getDBGInfo(), name, false, node->isVariadic());
-//  fn->setParent(ctx->getCurrentClass());
-//  fn->setRetTy(returnType);
-//  fn->setPrivacy(Statement::Privacy::PUBLIC);
-//  fn->setStatic(false);
-//
-//  fn->setAttributes(node);
-//  ir::Func::FunctionArgs newArgs = {};
-//
-//  for (int i = 0; i < node->getArgs().size(); i++) {
-//    auto arg = node->getArgs().at(i);
-//
-//    auto a = getBuilder().createArgument(node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
-//            arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
-//    a->setType(transformType(arg->getType()));
-//    newArgs.insert(newArgs.end(), {arg->getName(), a});
-//  }
-//
-//  fn->setArgs(newArgs);
-//
-//  auto fnType = types::FunctionType::from(fn.get());
-//  fn->setType(fnType);
-//
-//  // Generate a bodied for functions that have
-//  // them defined.
-//  if (auto bodiedFn = utils::cast<Statement::BodiedFunction>(node)) {
-//    auto backupFunction = ctx->getCurrentFunction();
-//    ctx->setCurrentFunction(fn);
-//
-//    ctx->withScope([&]() {
-//      int argIndex = 0;
-//      for (auto arg : newArgs) {
-//        auto ref = getBuilder().createVariable(node->getDBGInfo(), arg.first, true /* TODO: is mutable */);
-//
-//        getBuilder().setType(ref, arg.second->getType());
-//        auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, ref);
-//
-//        ref->setId(arg.second->getId());
-//        ctx->addItem(arg.first, refItem);
-//        argIndex++;
-//      }
-//
-//      auto body = bodiedFn->getBody();
-//
-//      if (!fn->isConstructor() && !bodyReturns(body->getStmts()) &&
-//              !((utils::cast<types::NumericType>(returnType)) || (utils::cast<types::VoidType>(returnType)))) {
-//        E<TYPE_ERROR>(
-//                node, "Function lacks ending return statement!", {.info = "Function does not return on all paths!"});
-//      }
-//
-//      auto functionBody = utils::dyn_cast<ir::Block>(trans(body));
-//      fn->setBody(functionBody);
-//    });
-//
-//    ctx->setCurrentFunction(backupFunction);
-//  } else if (auto e = utils::cast<Statement::LLVMFunction>(node)) {
-//    fn->setLLVMBody(e->getBody());
-//  }
-//
-//  ctx->module->addFunction(fn);
-//  this->value = fn;
+  //  auto node = p_node->getFunc();
+  //
+  //  auto parent = ctx->getCurrentFunction();
+  //  assert(parent != nullptr);
+  //
+  //  // Get the respective return type for this function
+  //  auto returnType = transformType(node->getRetType());
+  //
+  //  // Create a new function value and store it's return type.
+  //  char l[] = _SNOWBALL_LAMBDA_FUNCTIONS;
+  //  auto name = parent->getName() + "::" + l + '\00';
+  //  auto fn = getBuilder().createFunction(node->getDBGInfo(), name, false, node->isVariadic());
+  //  fn->setParent(ctx->getCurrentClass());
+  //  fn->setRetTy(returnType);
+  //  fn->setPrivacy(Statement::Privacy::PUBLIC);
+  //  fn->setStatic(false);
+  //
+  //  fn->setAttributes(node);
+  //  ir::Func::FunctionArgs newArgs = {};
+  //
+  //  for (int i = 0; i < node->getArgs().size(); i++) {
+  //    auto arg = node->getArgs().at(i);
+  //
+  //    auto a = getBuilder().createArgument(node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
+  //            arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
+  //    a->setType(transformType(arg->getType()));
+  //    newArgs.insert(newArgs.end(), {arg->getName(), a});
+  //  }
+  //
+  //  fn->setArgs(newArgs);
+  //
+  //  auto fnType = types::FunctionType::from(fn.get());
+  //  fn->setType(fnType);
+  //
+  //  // Generate a bodied for functions that have
+  //  // them defined.
+  //  if (auto bodiedFn = utils::cast<Statement::BodiedFunction>(node)) {
+  //    auto backupFunction = ctx->getCurrentFunction();
+  //    ctx->setCurrentFunction(fn);
+  //
+  //    ctx->withScope([&]() {
+  //      int argIndex = 0;
+  //      for (auto arg : newArgs) {
+  //        auto ref = getBuilder().createVariable(node->getDBGInfo(), arg.first, true /* TODO: is mutable */);
+  //
+  //        getBuilder().setType(ref, arg.second->getType());
+  //        auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, ref);
+  //
+  //        ref->setId(arg.second->getId());
+  //        ctx->addItem(arg.first, refItem);
+  //        argIndex++;
+  //      }
+  //
+  //      auto body = bodiedFn->getBody();
+  //
+  //      if (!fn->isConstructor() && !bodyReturns(body->getStmts()) &&
+  //              !((utils::cast<types::NumericType>(returnType)) || (utils::cast<types::VoidType>(returnType)))) {
+  //        E<TYPE_ERROR>(
+  //                node, "Function lacks ending return statement!", {.info = "Function does not return on all
+  //                paths!"});
+  //      }
+  //
+  //      auto functionBody = utils::dyn_cast<ir::Block>(trans(body));
+  //      fn->setBody(functionBody);
+  //    });
+  //
+  //    ctx->setCurrentFunction(backupFunction);
+  //  } else if (auto e = utils::cast<Statement::LLVMFunction>(node)) {
+  //    fn->setLLVMBody(e->getBody());
+  //  }
+  //
+  //  ctx->module->addFunction(fn);
+  //  this->value = fn;
 }
 
 } // namespace Syntax

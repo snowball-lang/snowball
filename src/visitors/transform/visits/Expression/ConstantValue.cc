@@ -28,7 +28,7 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
       if (utils::startsWith(str, "0x") && utils::startsWith(str, "0X")) {
         n = std::stoll(str, nullptr, 16);
       } else if (utils::startsWith(str, "0x") && utils::startsWith(str, "0X")) {
-        n = std::stoul(str.substr(2, (size_t)(str.size() - 2)), nullptr, 2);
+        n = std::stoul(str.substr(2, (size_t) (str.size() - 2)), nullptr, 2);
       } else {
         n = std::stoll(str); // We asume the number is correct
       }
@@ -60,7 +60,7 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
       auto str = p_node->getValue();
 
       str = str.substr(1, str.size() - 2);
-      auto ascii = (int)str[0];
+      auto ascii = (int) str[0];
       value = getBuilder().createCharValue(p_node->getDBGInfo(), ascii);
       getBuilder().setType(value, ctx->getCharType());
       break;

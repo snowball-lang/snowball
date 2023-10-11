@@ -7,7 +7,7 @@
 namespace snowball {
 template <typename Derived, typename Parent>
 class AcceptorExtend : public Parent {
- public:
+public:
   using Parent::Parent;
 };
 
@@ -27,7 +27,7 @@ protected:
 
 template <typename EnumT, typename BaseEnumT>
 class InheritEnum {
- public:
+public:
   InheritEnum() { }
   InheritEnum(EnumT e) : enum_(e) { }
 
@@ -37,7 +37,7 @@ class InheritEnum {
 
   operator EnumT() const { return enum_; }
 
- private:
+private:
   // Note - the value is declared as a union mainly for as a debugging aid. If
   // the union is undesired and you have other methods of debugging, change it
   // to either of EnumT and do a cast for the constructor that accepts BaseEnumT.

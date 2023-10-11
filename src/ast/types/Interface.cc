@@ -19,15 +19,15 @@ namespace types {
 bool InterfaceType::is(InterfaceType* other) const {
   auto otherArgs = other->getGenerics();
   bool genericSizeEqual = otherArgs.size() == generics.size();
-  bool argumentsEqual = genericSizeEqual ? std::all_of(otherArgs.begin(),
+  bool argumentsEqual = genericSizeEqual ? std::all_of(
+                                                   otherArgs.begin(),
                                                    otherArgs.end(),
                                                    [&, idx = 0](Type* i) mutable {
                                                      idx++;
                                                      return generics.at(idx - 1)->is(i);
-                                                   })
-                                         : false;
-    DUMP_S(other->getUUID().c_str())
-    DUMP_S(uuid.c_str())
+                                                   }
+                                           ) :
+                                           false;
   return (other->getUUID() == uuid) && argumentsEqual;
 }
 
@@ -53,7 +53,7 @@ std::string InterfaceType::getPrettyName() const {
     res = "(*const " + generics.at(0)->getName() + ")";
   } else if (getName() == _SNOWBALL_MUT_PTR) {
     res = "(*mut " + generics.at(0)->getName() + ")";
-  } 
+  }
 
   return res;
 }

@@ -16,32 +16,25 @@
 namespace snowball {
 namespace types {
 
-DefinedType::DefinedType(const std::string& name,
+DefinedType::DefinedType(
+        const std::string& name,
         const std::string uuid,
-        std::shared_ptr<ir::Module>
-                module,
+        std::shared_ptr<ir::Module> module,
         Syntax::Statement::DefinedTypeDef* ast,
-        std::vector<ClassField*>
-                fields,
+        std::vector<ClassField*> fields,
         DefinedType* parent,
-        std::vector<Type*>
-                generics,
-        bool isStruct)
-    : AcceptorExtend(Kind::CLASS, name)
-    , parent(parent)
-    , ast(ast)
-    , fields(fields)
-    , _struct(isStruct) {
+        std::vector<Type*> generics,
+        bool isStruct
+)
+    : AcceptorExtend(Kind::CLASS, name), parent(parent), ast(ast), fields(fields), _struct(isStruct) {
   setGenerics(generics);
   setPrivacy(PRIVATE);
   unsafeSetUUID(uuid);
   unsafeSetModule(module);
 }
-DefinedType::ClassField::ClassField(const std::string& name,
-        Type* type,
-        Privacy privacy,
-        Syntax::Expression::Base* initializedValue,
-        bool isMutable)
+DefinedType::ClassField::ClassField(
+        const std::string& name, Type* type, Privacy privacy, Syntax::Expression::Base* initializedValue, bool isMutable
+)
     : name(name)
     , type(type)
     , Syntax::Statement::Privacy(privacy)
@@ -58,13 +51,15 @@ std::vector<std::shared_ptr<ir::Func>> DefinedType::getVTable() const { return c
 bool DefinedType::is(DefinedType* other) const {
   auto otherArgs = other->getGenerics();
   bool genericSizeEqual = otherArgs.size() == generics.size();
-  bool argumentsEqual = genericSizeEqual ? std::all_of(otherArgs.begin(),
+  bool argumentsEqual = genericSizeEqual ? std::all_of(
+                                                   otherArgs.begin(),
                                                    otherArgs.end(),
                                                    [&, idx = 0](Type* i) mutable {
                                                      idx++;
                                                      return generics.at(idx - 1)->is(i);
-                                                   })
-                                         : false;
+                                                   }
+                                           ) :
+                                           false;
   return (other->getUUID() == uuid) && argumentsEqual;
 }
 
@@ -90,7 +85,7 @@ std::string DefinedType::getPrettyName() const {
     res = "(*const " + generics.at(0)->getName() + ")";
   } else if (getName() == _SNOWBALL_MUT_PTR) {
     res = "(*mut " + generics.at(0)->getName() + ")";
-  } 
+  }
 
   return res;
 }
@@ -141,30 +136,28 @@ bool DefinedType::canCast(DefinedType* ty) const {
 
 // - https://en.wikipedia.org/wiki/Data_structure_alignment#Computing_padding
 std::int64_t DefinedType::sizeOf() const {
-  auto address = (std::int64_t)0;
+  auto address = (std::int64_t) 0;
   for (const auto& f : fields) {
     auto typeSize = f->type->sizeOf();
     auto typeAlignment = f->type->alignmentOf();
     address += (address - (address % typeAlignment)) % typeAlignment;
-		address += (typeAlignment - (address % typeAlignment)) % typeAlignment;
-		address += typeSize;
+    address += (typeAlignment - (address % typeAlignment)) % typeAlignment;
+    address += typeSize;
   }
   auto alignment = alignmentOf();
-	address += (address - (address % alignment)) % alignment;
-	address += (alignment - (address % alignment)) % alignment;
-	return address;
+  address += (address - (address % alignment)) % alignment;
+  address += (alignment - (address % alignment)) % alignment;
+  return address;
 }
 
 std::int64_t DefinedType::alignmentOf() const {
-  auto maximumAlignment = (std::int64_t)0;
+  auto maximumAlignment = (std::int64_t) 0;
   for (const auto& f : fields) {
     auto alignment = f->type->alignmentOf();
     if (alignment > maximumAlignment) maximumAlignment = alignment;
   }
   return maximumAlignment;
 }
-
-
 
 }; // namespace types
 }; // namespace snowball

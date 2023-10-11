@@ -22,11 +22,11 @@ namespace types {
 class TypeAlias : public AcceptorExtend<TypeAlias, BaseType> {
   friend AcceptorExtend;
 
- private:
+private:
   /// @brief Base class that this type is pointing to
   Type* base = nullptr;
 
- public:
+public:
   TypeAlias(const std::string name, Type* base);
   TypeAlias(const TypeAlias& other) = default;
 

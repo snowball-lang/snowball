@@ -38,7 +38,7 @@ class Module : public SrcObject, public std::enable_shared_from_this<Module> {
   // A list of exported macros
   std::unordered_map<std::string, Syntax::transform::MacroInstance*> exportedMacros = {};
 
- public:
+public:
   Module(std::string name, std::string uuid = "");
 
   /// @return module's name

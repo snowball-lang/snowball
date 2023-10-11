@@ -32,7 +32,7 @@
 namespace snowball {
 namespace types {
 class PrimitiveType : public AcceptorExtend<PrimitiveType, Type> {
- public:
+public:
   PrimitiveType(std::string p_name) : AcceptorExtend(Kind::TYPE, p_name) { }
   SNOWBALL_TYPE_COPIABLE(PrimitiveType)
 };
@@ -42,14 +42,14 @@ class PrimitiveType : public AcceptorExtend<PrimitiveType, Type> {
  *  a numeric type. (e.g. i32, f64, bool, etc...)
  */
 class NumericType : public AcceptorExtend<NumericType, PrimitiveType> {
- public:
+public:
   NumericType(std::string p_name) : AcceptorExtend(p_name){};
 
   /// @brief override function. All numeric types
   ///  can cast to any other numeric types.
   virtual bool canCast(Type* ty) const override { return NumericType::isNumericType(ty); }
 
- public:
+public:
   /**
    * @brief Check if a type is numeric.
    * @note These are the numberic types:
@@ -63,7 +63,7 @@ class NumericType : public AcceptorExtend<NumericType, PrimitiveType> {
 
 /// @brief Representation of a void type.
 class VoidType : public AcceptorExtend<VoidType, PrimitiveType> {
- public:
+public:
   VoidType() : AcceptorExtend(SN_VOID_TYPE) { }
   SNOWBALL_TYPE_COPIABLE(VoidType)
 
@@ -73,7 +73,7 @@ class VoidType : public AcceptorExtend<VoidType, PrimitiveType> {
 
 /// @brief String (represents int 8 pointer)
 class CharType : public AcceptorExtend<CharType, NumericType> {
- public:
+public:
   CharType() : AcceptorExtend(SN_CHR_TYPE) { }
   SNOWBALL_TYPE_COPIABLE(CharType)
 
@@ -81,13 +81,12 @@ class CharType : public AcceptorExtend<CharType, NumericType> {
   virtual std::int64_t alignmentOf() const override { return 1; }
 };
 
-
 /// @brief Float (N) (represents N-bit floating point)
 class FloatType : public AcceptorExtend<FloatType, NumericType> {
   std::int32_t bits;
- public:
-  FloatType(std::int32_t bits) : bits(bits), 
-    AcceptorExtend("f"+std::to_string(bits)) { }
+
+public:
+  FloatType(std::int32_t bits) : bits(bits), AcceptorExtend("f" + std::to_string(bits)) { }
   std::int32_t getBits() const { return bits; }
   SNOWBALL_TYPE_COPIABLE(FloatType)
 
@@ -101,9 +100,9 @@ class FloatType : public AcceptorExtend<FloatType, NumericType> {
  */
 class IntType : public AcceptorExtend<IntType, NumericType> {
   std::int32_t bits;
- public:
-  IntType(std::int32_t bits) : bits(bits), 
-    AcceptorExtend(bits == 1 ? "bool" : "i"+std::to_string(bits)) { }
+
+public:
+  IntType(std::int32_t bits) : bits(bits), AcceptorExtend(bits == 1 ? "bool" : "i" + std::to_string(bits)) { }
   std::int32_t getBits() const { return bits; }
   SNOWBALL_TYPE_COPIABLE(IntType)
 
@@ -113,8 +112,7 @@ class IntType : public AcceptorExtend<IntType, NumericType> {
 
 /// @brief Utility method to check if a type is an integer type.
 static bool isIntType(Type* ty, std::int32_t bits = 32) {
-  if (auto x = utils::cast<IntType>(ty)) 
-    return x->getBits() == bits;
+  if (auto x = utils::cast<IntType>(ty)) return x->getBits() == bits;
   return false;
 }
 
@@ -122,8 +120,7 @@ static bool isInt32Type(Type* ty) { return isIntType(ty, 32); }
 
 /// @brief Utility method to check if a type is a float type.
 static bool isFloatType(Type* ty, std::int32_t bits = 32) {
-  if (auto x = utils::cast<FloatType>(ty)) 
-    return x->getBits() == bits;
+  if (auto x = utils::cast<FloatType>(ty)) return x->getBits() == bits;
   return false;
 }
 

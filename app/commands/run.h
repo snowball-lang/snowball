@@ -19,9 +19,10 @@ int run(app::Options::RunOptions p_opts) {
   std::string filename = p_opts.file;
   if (p_opts.file.empty()) {
     toml::parse_result parsed_config = Compiler::getConfiguration();
-    filename = p_opts.file.empty() ? (std::string)(parsed_config["package"]["main"].value_or<std::string>(
-                                             (fs::current_path() / "src" / "main.sn")))
-                                   : p_opts.file;
+    filename = p_opts.file.empty() ?
+            (std::string
+            )(parsed_config["package"]["main"].value_or<std::string>((fs::current_path() / "src" / "main.sn"))) :
+            p_opts.file;
   }
 
   std::ifstream ifs(filename);
@@ -29,7 +30,7 @@ int run(app::Options::RunOptions p_opts) {
     SNError(Error::IO_ERROR,
             FMT("Package main file not found in snowball "
                 "project! \n\t(searching for: '%s')",
-                    filename.c_str()))
+                filename.c_str()))
             .print_error();
     return EXIT_FAILURE;
   }

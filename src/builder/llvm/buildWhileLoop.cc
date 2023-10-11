@@ -17,7 +17,7 @@ void LLVMBuilder::visit(ir::WhileLoop* c) {
   if (c->isDoWhile()) {
     builder->CreateBr(whileBB);
     builder->SetInsertPoint(whileBB);
-    (void)build(c->getBlock().get());
+    (void) build(c->getBlock().get());
     if (!builder->GetInsertBlock()->getTerminator()) { builder->CreateBr(condBB); }
     builder->SetInsertPoint(condBB);
     auto cond = expr(c->getCondition().get());
@@ -29,7 +29,7 @@ void LLVMBuilder::visit(ir::WhileLoop* c) {
     auto cond = expr(c->getCondition().get());
     builder->CreateCondBr(cond, whileBB, continueBB);
     builder->SetInsertPoint(whileBB);
-    (void)build(c->getBlock().get());
+    (void) build(c->getBlock().get());
     if (!builder->GetInsertBlock()->getTerminator()) { builder->CreateBr(condBB); }
     builder->SetInsertPoint(continueBB);
   }

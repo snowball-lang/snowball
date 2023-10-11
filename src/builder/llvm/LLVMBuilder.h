@@ -2,16 +2,16 @@
 #include "../../../app/cli.h"
 #include "../../ValueVisitor/Visitor.h"
 #include "../../ast/types/DefinedType.h"
-#include "../../ast/types/Interface.h"
 #include "../../ast/types/FunctionType.h"
+#include "../../ast/types/Interface.h"
 #include "../../ast/types/PointerType.h"
 #include "../../ast/types/ReferenceType.h"
 #include "../../ast/types/TypeAlias.h"
 #include "../../ir/id.h"
 #include "../../ir/module/MainModule.h"
 #include "../../ir/values/Func.h"
-#include "../../ir/values/Value.h"
 #include "../../ir/values/ReferenceTo.h"
+#include "../../ir/values/Value.h"
 
 #include <cstdint>
 #include <llvm/IR/Constants.h>
@@ -55,7 +55,7 @@ class LLVMBuilderContext {
   // A container for all the vtable struct types.
   std::map<ir::id_t, llvm::StructType*> vtableType;
 
- public:
+public:
   // A value used to return a struct from a function
   bool retValueUsedFromArg = false;
   // A value used to store a value into a variable
@@ -200,9 +200,14 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
   // Target machine that the module will be compiled into
   llvm::TargetMachine* target;
 
- public:
+public:
   // Create a new instance of a llvm builder
-  LLVMBuilder(std::shared_ptr<ir::MainModule> mod, app::Options::Optimization optimizationLevel = app::Options::Optimization::OPTIMIZE_O0, bool testMode = false, bool benchmarkMode = false);
+  LLVMBuilder(
+          std::shared_ptr<ir::MainModule> mod,
+          app::Options::Optimization optimizationLevel = app::Options::Optimization::OPTIMIZE_O0,
+          bool testMode = false,
+          bool benchmarkMode = false
+  );
   /**
    * @brief Dump the LLVM IR code to stdout.
    *
@@ -242,7 +247,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
   /**
    * @brief It builds a value as an expression.
    * @param v Value to build
-  */
+   */
   llvm::Value* expr(ir::Value* v) {
     this->ctx->doNotLoadInMemory = false;
     return load(build(v), v->getType());
@@ -255,7 +260,7 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
 #include "../../defs/visits.def"
 #undef VISIT
 
- private:
+private:
   /**
    * @brief Create a new LLVM module
    * @return An unique ptr to a new module

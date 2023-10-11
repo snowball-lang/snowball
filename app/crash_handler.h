@@ -80,7 +80,7 @@ extern DWORD CrashHandlerException(EXCEPTION_POINTERS* ep);
 class CrashHandler {
   bool disabled;
 
- public:
+public:
   void initialize();
 
   void disable();
@@ -168,8 +168,8 @@ class symbol {
   sym_type* sym;
   static const int max_name_len = 1024;
 
- public:
-  symbol(HANDLE process, DWORD64 address) : sym((sym_type*)::operator new(sizeof(*sym) + max_name_len)) {
+public:
+  symbol(HANDLE process, DWORD64 address) : sym((sym_type*) ::operator new(sizeof(*sym) + max_name_len)) {
     memset(sym, '\0', sizeof(*sym) + max_name_len);
     sym->SizeOfStruct = sizeof(*sym);
     sym->MaxNameLength = max_name_len;
@@ -190,7 +190,7 @@ class symbol {
 class get_mod_info {
   HANDLE process;
 
- public:
+public:
   get_mod_info(HANDLE h) : process(h) { }
 
   module_data operator()(HMODULE module) {
@@ -208,7 +208,7 @@ class get_mod_info {
     ret.module_name = temp;
     std::vector<char> img(ret.image_name.begin(), ret.image_name.end());
     std::vector<char> mod(ret.module_name.begin(), ret.module_name.end());
-    SymLoadModule64(process, 0, &img[0], &mod[0], (DWORD64)ret.base_address, ret.load_size);
+    SymLoadModule64(process, 0, &img[0], &mod[0], (DWORD64) ret.base_address, ret.load_size);
     return ret;
   }
 };
@@ -231,9 +231,9 @@ CrashHandlerException(EXCEPTION_POINTERS* ep) {
   if (!SymInitialize(process, nullptr, false)) return EXCEPTION_CONTINUE_SEARCH;
 
   SymSetOptions(SymGetOptions() | SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
-  EnumProcessModules(process, &module_handles[0], (DWORD)module_handles.size() * sizeof(HMODULE), &cbNeeded);
+  EnumProcessModules(process, &module_handles[0], (DWORD) module_handles.size() * sizeof(HMODULE), &cbNeeded);
   module_handles.resize(cbNeeded / sizeof(HMODULE));
-  EnumProcessModules(process, &module_handles[0], (DWORD)module_handles.size() * sizeof(HMODULE), &cbNeeded);
+  EnumProcessModules(process, &module_handles[0], (DWORD) module_handles.size() * sizeof(HMODULE), &cbNeeded);
   std::transform(module_handles.begin(), module_handles.end(), std::back_inserter(modules), get_mod_info(process));
   void* base = modules[0].base_address;
 
@@ -283,8 +283,17 @@ CrashHandlerException(EXCEPTION_POINTERS* ep) {
       n++;
     }
 
-    if (!StackWalk64(image_type, process, hThread, &frame, context, nullptr, SymFunctionTableAccess64,
-                SymGetModuleBase64, nullptr))
+    if (!StackWalk64(
+                image_type,
+                process,
+                hThread,
+                &frame,
+                context,
+                nullptr,
+                SymFunctionTableAccess64,
+                SymGetModuleBase64,
+                nullptr
+        ))
       break;
   } while (frame.AddrReturn.Offset != 0 && n < 256);
 
@@ -335,13 +344,15 @@ std::string _get_exec_path() {
   return pBuf;
 }
 
-int _execute(const std::string& p_path,
+int _execute(
+        const std::string& p_path,
         const std::vector<std::string>& p_arguments,
         bool p_blocking,
         int* r_child_id,
         std::string* r_pipe,
         int* r_exitcode,
-        bool read_stderr = true /*,Mutex *p_pipe_mutex*/) {
+        bool read_stderr = true /*,Mutex *p_pipe_mutex*/
+) {
 
 #ifdef __EMSCRIPTEN__
   // Don't compile this code at all to avoid undefined references.
@@ -364,7 +375,7 @@ int _execute(const std::string& p_path,
     if (!f) {
       printf("ERR_CANT_OPEN, Cannot pipe stream from process running "
              "with following arguments\n\t%s.\n",
-              argss.c_str());
+             argss.c_str());
       return -1;
     }
 
@@ -398,7 +409,7 @@ int _execute(const std::string& p_path,
     for (int i = 0; i < p_arguments.size(); i++) cs.push_back(p_arguments[i]);
 
     std::vector<char*> args;
-    for (int i = 0; i < cs.size(); i++) args.push_back((char*)cs[i].c_str());
+    for (int i = 0; i < cs.size(); i++) args.push_back((char*) cs[i].c_str());
     args.push_back(0);
 
     execvp(p_path.c_str(), &args[0]);
@@ -505,12 +516,12 @@ static void handle_crash(int sig) {
       if (output.find(" ??:") != std::string::npos) { // _start at ??:0 no symbol found
         fprintf(stderr,
                 "[%ld] <<unresolved symbols>> at %s\n",
-                (long int)i,
+                (long int) i,
                 /*fname,*/ strings[i]);
       } else {
         fprintf(stderr,
                 "[%ld] %s\n",
-                (long int)i,
+                (long int) i,
                 /*fname,*/ output.c_str());
       }
     }

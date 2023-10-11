@@ -22,7 +22,7 @@ class ValueExtract : public AcceptorExtend<ValueExtract, Value> {
   // Value being extracted
   std::shared_ptr<Value> value;
 
- public:
+public:
   explicit ValueExtract(std::shared_ptr<Value> variable) : value(variable){};
 
   /// @return The stored value

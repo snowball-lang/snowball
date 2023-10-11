@@ -22,7 +22,7 @@ class Return : public AcceptorExtend<Return, Value> {
   // Expression used as value for the return statement
   std::shared_ptr<Value> expr = nullptr;
 
- public:
+public:
   explicit Return(std::shared_ptr<Value> expr) : expr(expr){};
 
   /**

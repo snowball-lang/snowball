@@ -19,7 +19,7 @@ namespace snowball::parser {
 
 FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isLambda) {
   assert((is<TokenType::KWORD_FUNC>() && (!isConstructor && !isOperator)) ||
-          (is<TokenType::IDENTIFIER>() && (isConstructor && !isOperator)) || (isOperator));
+         (is<TokenType::IDENTIFIER>() && (isConstructor && !isOperator)) || (isOperator));
 
   if (!isConstructor && (!isLambda)) next();
 
@@ -266,7 +266,8 @@ fetch_attrs:
       snowballInvalidDefaultOperatorCase:
       default: {
         createError<SYNTAX_ERROR>(
-                FMT("Expected a valid operator type but instead got '%s'", m_current.to_string().c_str()));
+                FMT("Expected a valid operator type but instead got '%s'", m_current.to_string().c_str())
+        );
       }
     }
 
@@ -305,8 +306,8 @@ fetch_attrs:
       width = name.size();
     } else {
       std::string e = isExtern ? "Expected an identifier or a string constant but got "
-                                 "'%s' while parsing an extern function declaration"
-                               : "Expected an identifier but got '%s' while parsing a "
+                                 "'%s' while parsing an extern function declaration" :
+                                 "Expected an identifier but got '%s' while parsing a "
                                  "function declaration";
       createError<SYNTAX_ERROR>(FMT(e.c_str(), m_current.to_string().c_str()));
     }
@@ -400,9 +401,11 @@ fetch_attrs:
   Syntax::Expression::TypeRef* returnType = nullptr;
   if (isTypeValid()) {
     if (isConstructor) {
-      createError<SYNTAX_ERROR>("Contructor can't have return types.",
+      createError<SYNTAX_ERROR>(
+              "Contructor can't have return types.",
               {.info = "Constructors return type default to the parent's "
-                       "class type!"});
+                       "class type!"}
+      );
     }
 
     returnType = parseType();
@@ -436,7 +439,8 @@ fetch_attrs:
             break;
           } else {
             createError<SYNTAX_ERROR>(
-                    FMT("Expected a ',' or a ')' but found '%s' instead", m_current.to_string().c_str()));
+                    FMT("Expected a ',' or a ')' but found '%s' instead", m_current.to_string().c_str())
+            );
           }
         }
 
@@ -466,8 +470,8 @@ fetch_attrs:
         } else if (is<TokenType::BRACKET_LCURLY>()) {
           break;
         } else {
-          createError<SYNTAX_ERROR>(
-                  FMT("Expected a ',' or a '{' but found '%s' instead", m_current.to_string().c_str()));
+          createError<SYNTAX_ERROR>(FMT("Expected a ',' or a '{' but found '%s' instead", m_current.to_string().c_str())
+          );
         }
       }
     }
@@ -493,23 +497,27 @@ fetch_attrs:
     if (is<TokenType::VALUE_NUMBER>()) {
       auto number = m_current.to_string();
       if (number != "0") {
-        createError<SYNTAX_ERROR>("Expected a '0' for the function body!",
+        createError<SYNTAX_ERROR>(
+                "Expected a '0' for the function body!",
                 {.info = "Expected a '0' for the function body!",
-                        .note = "The function body must be a '0' for now.",
-                        .help = "You have to set the function body to '0'.\n"
-                                "For example:\n"
-                                "1 |  virt fn my_fn() = 0\n"
-                                "2 |"});
+                 .note = "The function body must be a '0' for now.",
+                 .help = "You have to set the function body to '0'.\n"
+                         "For example:\n"
+                         "1 |  virt fn my_fn() = 0\n"
+                         "2 |"}
+        );
       }
 
       if (!isVirtual) {
-        createError<SYNTAX_ERROR>("Function body can only be '0' for virtual functions!",
+        createError<SYNTAX_ERROR>(
+                "Function body can only be '0' for virtual functions!",
                 {.info = "Function body can only be '0' for virtual functions!",
-                        .note = "The function body must be a '0' for now.",
-                        .help = "You have to set the function body to '0'.\n"
-                                "For example:\n"
-                                "1 |  virt fn my_fn() = 0\n"
-                                "2 |"});
+                 .note = "The function body must be a '0' for now.",
+                 .help = "You have to set the function body to '0'.\n"
+                         "For example:\n"
+                         "1 |  virt fn my_fn() = 0\n"
+                         "2 |"}
+        );
       }
 
       isNotImplemented = true;

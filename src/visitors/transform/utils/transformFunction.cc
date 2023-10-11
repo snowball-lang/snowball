@@ -6,11 +6,12 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fnStore,
+std::shared_ptr<ir::Func> Transformer::transformFunction(
+        Cache::FunctionStore fnStore,
         const std::vector<types::Type*>& deducedTypes,
         bool isEntryPoint,
-        std::deque<std::shared_ptr<ir::Func>>
-                overloads) {
+        std::deque<std::shared_ptr<ir::Func>> overloads
+) {
   auto node = fnStore.function;
   bool dontAddToModule = false;
 
@@ -44,26 +45,31 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
       }
 
       // Get the respective return type for this function
-      auto returnType = transformSizedType(node->getRetType(), true, "Function return type must be sized but found '%s' (which is not sized)");
+      auto returnType = transformSizedType(
+              node->getRetType(), true, "Function return type must be sized but found '%s' (which is not sized)"
+      );
       // Create a new function value and store it's return type.
-      fn = getBuilder().createFunction(node->getDBGInfo(), name,
-              (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)), node->isVariadic());
+      fn = getBuilder().createFunction(
+              node->getDBGInfo(),
+              name,
+              (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)),
+              node->isVariadic()
+      );
       fn->setParent(ctx->getCurrentClass());
       fn->setRetTy(returnType);
       fn->setPrivacy(node->getPrivacy());
       fn->setStatic(node->isStatic());
-      if (node->isGeneric())
-        fn->setGenerics(fnGenerics);
+      if (node->isGeneric()) fn->setGenerics(fnGenerics);
       fn->setModule(ctx->module);
       fn->setAttributes(node);
       auto isExtern = node->isExtern();
       if (((fn->hasParent() || !fn->isStatic()) || fn->isPrivate()) && !isEntryPoint && !isExtern &&
-              !fn->hasAttribute(Attributes::EXTERNAL_LINKAGE) && !fn->hasAttribute(Attributes::EXPORT))
+          !fn->hasAttribute(Attributes::EXTERNAL_LINKAGE) && !fn->hasAttribute(Attributes::EXPORT))
         fn->addAttribute(Attributes::INTERNAL_LINKAGE);
 
       ir::Func::FunctionArgs newArgs = {};
       if (fn->isConstructor()) {
-        auto a = getBuilder().createArgument(node->getDBGInfo(), "self", 0, (Syntax::Expression::Base*)nullptr);
+        auto a = getBuilder().createArgument(node->getDBGInfo(), "self", 0, (Syntax::Expression::Base*) nullptr);
         auto ty = ctx->getCurrentClass(true)->getReferenceTo();
         ty->setMutable(node->isMutable());
         a->setType(ty);
@@ -73,9 +79,15 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
       for (int i = 0; i < node->getArgs().size(); i++) {
         auto arg = node->getArgs().at(i);
 
-        auto a = getBuilder().createArgument(node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
-                arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
-        a->setType(transformSizedType(arg->getType(), false, "Function argument types but be sized but found '%s' (which is not sized)"));
+        auto a = getBuilder().createArgument(
+                node->getDBGInfo(),
+                arg->getName(),
+                fn->isConstructor() + i,
+                arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr
+        );
+        a->setType(transformSizedType(
+                arg->getType(), false, "Function argument types but be sized but found '%s' (which is not sized)"
+        ));
         if (arg->getName() != "self") a->getType()->setMutable(arg->isMutable());
         a->setMutability(a->getType()->isMutable());
         newArgs.push_back({arg->getName(), a});
@@ -93,10 +105,10 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
       if (auto c = ctx->getCurrentClass(true)) {
         auto pClass = utils::cast<types::DefinedType>(c);
         if (pClass != nullptr)
-          if (node->isVirtual()) { 
+          if (node->isVirtual()) {
             auto index = pClass->getModule()->typeInformation.at(pClass->getId())->addVtableItem(fn);
-            //pClass->addVtableItem(fn); // just in case
-            fn->setVirtualIndex(index); 
+            // pClass->addVtableItem(fn); // just in case
+            fn->setVirtualIndex(index);
           }
       }
 
@@ -122,13 +134,15 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(Cache::FunctionStore fn
 
           auto body = bodiedFn->getBody();
           if (!bodyReturns(body->getStmts()) &&
-                  !((utils::cast<types::NumericType>(returnType)) || (utils::cast<types::VoidType>(returnType))) &&
-                  !fn->isConstructor() && !node->hasAttribute(Attributes::NOT_IMPLEMENTED) &&
-                  !node->hasAttribute(Attributes::BUILTIN)) {
-            E<TYPE_ERROR>(node,
+              !((utils::cast<types::NumericType>(returnType)) || (utils::cast<types::VoidType>(returnType))) &&
+              !fn->isConstructor() && !node->hasAttribute(Attributes::NOT_IMPLEMENTED) &&
+              !node->hasAttribute(Attributes::BUILTIN)) {
+            E<TYPE_ERROR>(
+                    node,
                     "Function lacks ending return statement!",
                     {.info = "Function does not return on all "
-                             "paths!"});
+                             "paths!"}
+            );
           }
 
           std::vector<std::shared_ptr<ir::Value>> prependedInsts;

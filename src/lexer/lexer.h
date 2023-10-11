@@ -26,7 +26,7 @@ namespace snowball {
  * such as location and line numbers.
  */
 class Lexer {
- public:
+public:
   Lexer(const SourceInfo* p_source_info);
 
   void tokenize();
@@ -34,7 +34,7 @@ class Lexer {
 
   ~Lexer(){};
 
- private:
+private:
   // methods
   void handle_eof(bool p_consume = true);
   void consume(TokenType p_tk, int p_eat_size = 1);

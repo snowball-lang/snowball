@@ -18,7 +18,7 @@ namespace services {
  *  utility-related things
  */
 class OperatorService {
- public:
+public:
 #define OPERATOR(o, n, s, p) o = n,
   /**
    * @brief A list containing all of the possible overload-able
@@ -40,7 +40,7 @@ class OperatorService {
    */
   static const std::vector<std::string> operatorNames;
 
- public:
+public:
   /// @brief Get the respective operator identifier
   static std::string getOperatorId(OperatorType id);
   /// @brief Get operator identifier but with an "#"

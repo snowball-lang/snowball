@@ -39,7 +39,7 @@ class SnowballIREmitter : public AcceptorExtend<SnowballIREmitter, codegen::Valu
   // String representation of the emitted IR code.
   std::stringstream output;
 
- public:
+public:
   /**
    * @brief Construct a SnowballIREmitter instance.
    * @param mod The IR module to be emitted.
@@ -60,7 +60,7 @@ class SnowballIREmitter : public AcceptorExtend<SnowballIREmitter, codegen::Valu
   // Deleting the default codegen() function to prevent accidental usage.
   void codegen() { assert(false); }
 
- private:
+private:
   /**
    * @brief Visit and emit IR code for a given IR value.
    * @param v The IR value to be visited and emitted.

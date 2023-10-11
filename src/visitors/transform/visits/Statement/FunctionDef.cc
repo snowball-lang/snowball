@@ -59,15 +59,18 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
       if (exportName != p_node->getAttributeArgs(Attributes::EXPORT).end()) { name = exportName->second; }
 
       if (std::find(ctx->exported.begin(), ctx->exported.end(), name) != ctx->exported.end()) {
-        E<VARIABLE_ERROR>(p_node->getDBGInfo(), "Unmangled export already exists!",
+        E<VARIABLE_ERROR>(
+                p_node->getDBGInfo(),
+                "Unmangled export already exists!",
                 {.info = "This function name is already exported as unmangled.",
-                        .note = "This symbols is exported on another location with the "
-                                "'no_mangle' or 'export' attribute.",
-                        .help = "Try renaming the function or removing the 'no_mangle' "
-                                "or the 'export' "
-                                "attribute. If you want \n"
-                                "to export the function as unmangled, remove the "
-                                "mangled version of the function."});
+                 .note = "This symbols is exported on another location with the "
+                         "'no_mangle' or 'export' attribute.",
+                 .help = "Try renaming the function or removing the 'no_mangle' "
+                         "or the 'export' "
+                         "attribute. If you want \n"
+                         "to export the function as unmangled, remove the "
+                         "mangled version of the function."}
+        );
       } else {
         ctx->exported.push_back(name);
       }

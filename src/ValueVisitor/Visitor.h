@@ -24,7 +24,7 @@ namespace codegen {
  * type checking and for generating llvm ir.
  */
 class ValueVisitor {
- public:
+public:
   /**
    * @brief Start the codegen process
    *

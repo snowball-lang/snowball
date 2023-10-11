@@ -8,7 +8,7 @@
 namespace snowball {
 namespace os {
 class Driver {
- public:
+public:
   /**
    * @brief It executes the given command.
    * @param args The command to execute.

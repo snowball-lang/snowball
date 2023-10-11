@@ -32,7 +32,7 @@ namespace cacheComponents {
  * be stored here.
  */
 class Functions {
- public:
+public:
   /**
    * @brief Representation of how functions are stored
    *  inside the cache. "State" refers to the transformer
@@ -44,7 +44,7 @@ class Functions {
     std::shared_ptr<transform::ContextState> state;
   };
 
- protected:
+protected:
   /// @brief A global map containing each function.
   std::map<std::string, std::deque<FunctionStore>> functions;
   /// @brief a list of already transformed functions
@@ -53,10 +53,10 @@ class Functions {
   /// @note this can be used for things such as; default arguments
   std::unordered_map<id_t, std::shared_ptr<transform::ContextState>> functionStates;
 
- public:
+public:
   /// @brief Set a new function overload
-  void setFunction(
-          const std::string& name, Statement::FunctionDef* p_fn, std::shared_ptr<transform::ContextState> state);
+  void
+  setFunction(const std::string& name, Statement::FunctionDef* p_fn, std::shared_ptr<transform::ContextState> state);
   /// @return All function overloads for a function
   std::optional<std::deque<FunctionStore>> getFunction(const std::string name);
   /// @return Get the current state of an already defined

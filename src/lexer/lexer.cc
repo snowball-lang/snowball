@@ -12,7 +12,7 @@
 #include <type_traits>
 #include <vector>
 
-#define GET_CHAR(m_off) (((size_t)char_ptr + m_off >= codeSize) ? '\0' : code.at((size_t)char_ptr + m_off))
+#define GET_CHAR(m_off) (((size_t) char_ptr + m_off >= codeSize) ? '\0' : code.at((size_t) char_ptr + m_off))
 #define EAT_CHAR(m_num)                                                                                                \
   {                                                                                                                    \
     char_ptr += m_num;                                                                                                 \
@@ -42,7 +42,7 @@ void Lexer::tokenize() {
   // and tokenize that char. Tokenizing it will
   // mean that respective Token for the current
   // char will also be added to the Token array
-  while (char_ptr < (int)codeSize) {
+  while (char_ptr < (int) codeSize) {
     switch (GET_CHAR(0)) {
       case 0: handle_eof(); break;
 
@@ -71,7 +71,8 @@ void Lexer::tokenize() {
               EAT_CHAR(2);
               break;
             } else if (GET_CHAR(0) == 0) {
-              lexer_error(Error::UNEXPECTED_EOF,
+              lexer_error(
+                      Error::UNEXPECTED_EOF,
                       "Found an unexpected EOF while parsing "
                       "a comment",
                       1,
@@ -83,7 +84,8 @@ void Lexer::tokenize() {
                                "symbol "
                                "\"*/\" at the end of the "
                                "comment to "
-                               "\nproperly close it."});
+                               "\nproperly close it."}
+              );
             } else if (GET_CHAR(0) == '\n') {
               EAT_LINE();
             } else {
@@ -237,31 +239,33 @@ void Lexer::tokenize() {
             switch (c) {
               case 0: // TODO: show the start of string
                       // location
-                lexer_error(Error::UNEXPECTED_EOF,
+                lexer_error(
+                        Error::UNEXPECTED_EOF,
                         "Unexpected EOF while lexing a "
                         "string scape!",
                         1,
                         {.info = "Coudn't find scape here!",
-                                .help = "The string in your code "
-                                        "contains "
-                                        "an "
-                                        "incomplete escape "
-                                        "sequence. Make "
-                                        "sure to provide the "
-                                        "\nnecessary "
-                                        "escape character or "
-                                        "complete the "
-                                        "escape sequence before "
-                                        "the end\n "
-                                        "of "
-                                        "the string. For example, "
-                                        "you can "
-                                        "add "
-                                        "a backslash (\"\") "
-                                        "\nbefore the "
-                                        "closing quotation mark "
-                                        "(\") to\n "
-                                        "properly escape it."});
+                         .help = "The string in your code "
+                                 "contains "
+                                 "an "
+                                 "incomplete escape "
+                                 "sequence. Make "
+                                 "sure to provide the "
+                                 "\nnecessary "
+                                 "escape character or "
+                                 "complete the "
+                                 "escape sequence before "
+                                 "the end\n "
+                                 "of "
+                                 "the string. For example, "
+                                 "you can "
+                                 "add "
+                                 "a backslash (\"\") "
+                                 "\nbefore the "
+                                 "closing quotation mark "
+                                 "(\") to\n "
+                                 "properly escape it."}
+                );
                 break;
               case '\\':
                 str += '\\';
@@ -298,21 +302,23 @@ void Lexer::tokenize() {
               default: lexer_error(Error::SYNTAX_ERROR, "invalid escape character", 2);
             }
           } else if (GET_CHAR(0) == 0) {
-            lexer_error(Error::UNEXPECTED_EOF,
+            lexer_error(
+                    Error::UNEXPECTED_EOF,
                     "Unexpected EOF while lexing character!",
                     1,
                     {.info = "No ending of the string found!",
-                            .help = "It appears that the character "
-                                    "declaration in "
-                                    "your code is incomplete. \nMake sure "
-                                    "to "
-                                    "provide a valid character between "
-                                    "the single "
-                                    "quotes (\'\'). Choose a\n valid "
-                                    "character "
-                                    "and close the declaration with a "
-                                    "single "
-                                    "quote (') to resolve this issue."});
+                     .help = "It appears that the character "
+                             "declaration in "
+                             "your code is incomplete. \nMake sure "
+                             "to "
+                             "provide a valid character between "
+                             "the single "
+                             "quotes (\'\'). Choose a\n valid "
+                             "character "
+                             "and close the declaration with a "
+                             "single "
+                             "quote (') to resolve this issue."}
+            );
             break;
           } else {
             str += GET_CHAR(0);
@@ -330,7 +336,7 @@ void Lexer::tokenize() {
         Token tk;
         tk.type = TokenType::VALUE_CHAR;
         tk.value = str; // method name may be builtin func
-        tk.col = cur_col - ((int)str.size() + (2 /* speech marks */));
+        tk.col = cur_col - ((int) str.size() + (2 /* speech marks */));
         tk.line = cur_line;
         tokens.emplace_back(tk);
 
@@ -346,9 +352,11 @@ void Lexer::tokenize() {
 
             switch (c) {
               case 0:
-                lexer_error(Error::UNEXPECTED_EOF,
+                lexer_error(
+                        Error::UNEXPECTED_EOF,
                         "unexpected EOF while lexing a "
-                        "string scape.");
+                        "string scape."
+                );
                 break;
               case '\\':
                 str += '\\';
@@ -385,22 +393,24 @@ void Lexer::tokenize() {
               default: lexer_error(Error::SYNTAX_ERROR, "invalid escape character", 2);
             }
           } else if (GET_CHAR(0) == 0) {
-            lexer_error(Error::UNEXPECTED_EOF,
+            lexer_error(
+                    Error::UNEXPECTED_EOF,
                     "Unexpected EOF while lexing character!",
                     1,
                     {.info = "No ending of the string found!",
-                            .help = "It appears that the character "
-                                    "declaration in "
-                                    "your code is incomplete. \nMake "
-                                    "sure to "
-                                    "provide a valid character "
-                                    "between the double "
-                                    "quotes (\"\"). \nChoose a valid "
-                                    "character "
-                                    "and close the declaration with a "
-                                    "double "
-                                    "quote \n(\") to resolve this "
-                                    "issue."});
+                     .help = "It appears that the character "
+                             "declaration in "
+                             "your code is incomplete. \nMake "
+                             "sure to "
+                             "provide a valid character "
+                             "between the double "
+                             "quotes (\"\"). \nChoose a valid "
+                             "character "
+                             "and close the declaration with a "
+                             "double "
+                             "quote \n(\") to resolve this "
+                             "issue."}
+            );
             break;
           } else {
             str += GET_CHAR(0);
@@ -416,7 +426,7 @@ void Lexer::tokenize() {
         Token tk;
         tk.type = TokenType::VALUE_STRING;
         tk.value = str; // method name may be builtin func
-        tk.col = cur_col - ((int)str.size() + (2 /* speech marks */));
+        tk.col = cur_col - ((int) str.size() + (2 /* speech marks */));
         tk.line = cur_line;
         tokens.emplace_back(tk);
 
@@ -537,7 +547,7 @@ void Lexer::tokenize() {
 
           Token tk;
           tk.value = identifier; // method name may be builtin func
-          tk.col = cur_col - (int)identifier.size();
+          tk.col = cur_col - (int) identifier.size();
           tk.line = cur_line;
 
           if (identifier == _SNOWBALL_KEYWORD__NEW) {
@@ -633,10 +643,12 @@ void Lexer::tokenize() {
 
         auto c = utils::getUTF8FromIndex(code, char_ptr);
         if (c == "🐒") {
-          lexer_error(Error::SYNTAX_ERROR,
+          lexer_error(
+                  Error::SYNTAX_ERROR,
                   "Unexpected MONKE found!",
                   1,
-                  {.info = "🐒🐒🐒🐒🐒🐒", .note = "This is just an easter egg!"});
+                  {.info = "🐒🐒🐒🐒🐒🐒", .note = "This is just an easter egg!"}
+          );
         } else {
           lexer_error(Error::SYNTAX_ERROR, FMT("Unexpected character found '%s' while lexing.", c.c_str()), 1);
         }

@@ -4,13 +4,13 @@
 #include "../../ast/types/DefinedType.h"
 #include "../../ast/types/Type.h"
 #include "../../ast/types/TypeAlias.h"
+#include "../../builder/llvm/LLVMIRChunk.h"
 #include "../../common.h"
 #include "../../constants.h"
 #include "Body.h"
 #include "Value.h"
 #include "Variable.h"
 #include "VariableDeclaration.h"
-#include "../../builder/llvm/LLVMIRChunk.h"
 
 #include <cassert>
 #include <map>
@@ -28,11 +28,11 @@ class Func : public AcceptorExtend<Func, Value>,
              public AcceptorExtend<Func, Syntax::Statement::Privacy>,
              public AcceptorExtend<Func, Syntax::Statement::GenericContainer<std::pair<std::string, types::Type*>>>,
              public AcceptorExtend<Func, Syntax::AttributeHolder> {
- public:
+public:
   // Utility types
   using FunctionArgs = std::list<std::pair<std::string, std::shared_ptr<Argument>>>;
 
- private:
+private:
   /// When a function is variadic, it means that
   /// it can take a variable number of arguments.
   bool variadic = false;
@@ -101,7 +101,7 @@ class Func : public AcceptorExtend<Func, Value>,
   Func(const Func&) = delete;
   Func& operator=(Func const&);
 
- public:
+public:
 #define DEFAULT bool declaration = false, bool variadic = false, types::DefinedType *ty = nullptr
 
   explicit Func(std::string identifier, DEFAULT);
@@ -190,7 +190,7 @@ class Func : public AcceptorExtend<Func, Value>,
 
   // Set a visit handler for the generators
   SN_GENERATOR_VISITS
- public:
+public:
   /**
    * @brief Static function to detect if it's external or not
    * @c setExternalName @c externalName
@@ -204,8 +204,8 @@ class Func : public AcceptorExtend<Func, Value>,
    *  arguments can be greater that the function arguments.
    */
   template <typename T>
-  static bool argumentSizesEqual(
-          std::vector<T> functionArgs, const std::vector<types::Type*> arguments, bool isVariadic = false) {
+  static bool
+  argumentSizesEqual(std::vector<T> functionArgs, const std::vector<types::Type*> arguments, bool isVariadic = false) {
     int numFunctionArgs = functionArgs.size();
     int numProvidedArgs = arguments.size();
     int numDefaultArgs = 0;

@@ -1,6 +1,6 @@
 
-#include <string>
 #include <filesystem>
+#include <string>
 
 #ifndef __SNOWBALL_SOURCE_INFO_H_
 #define __SNOWBALL_SOURCE_INFO_H_
@@ -12,9 +12,9 @@ namespace snowball {
  *  where and what it's currently compiling
  */
 class SourceInfo {
- public:
+public:
   SourceInfo(std::string p_code = "", std::string p_path = "<anonimus>")
-      : source(p_code), path(((std::filesystem::path)p_path).lexically_normal()), source_length(p_code.size()){};
+      : source(p_code), path(((std::filesystem::path) p_path).lexically_normal()), source_length(p_code.size()){};
 
   /// @brief Get the source content for the file
   std::string getSource() const { return source; };
@@ -24,7 +24,7 @@ class SourceInfo {
   const int source_length = 0;
   ~SourceInfo() noexcept = default;
 
- private:
+private:
   std::string source;
   std::string path;
 };

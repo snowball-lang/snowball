@@ -10,8 +10,8 @@ using namespace snowball::Syntax::Expression;
 
 namespace snowball::parser {
 
-FunctionCall* Parser::parseFunctionCall(
-        Syntax::Expression::Base* callee, TokenType terminator, std::string terminatorString) {
+FunctionCall*
+Parser::parseFunctionCall(Syntax::Expression::Base* callee, TokenType terminator, std::string terminatorString) {
   assert(callee != nullptr);
 
   std::vector<Base*> arguments;
@@ -30,7 +30,8 @@ FunctionCall* Parser::parseFunctionCall(
     } else {
       next();
       createError<SYNTAX_ERROR>(
-              FMT("Expected a ',' or a '%s' but found '%s' instead", terminatorString.c_str(), pk.to_string().c_str()));
+              FMT("Expected a ',' or a '%s' but found '%s' instead", terminatorString.c_str(), pk.to_string().c_str())
+      );
     }
   }
 

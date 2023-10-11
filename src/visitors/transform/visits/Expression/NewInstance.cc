@@ -14,7 +14,8 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
 
   assert(utils::cast<Expression::TypeRef>(expr));
   auto ident = Syntax::N<Expression::Identifier>(
-          services::OperatorService::getOperatorMangle(services::OperatorService::CONSTRUCTOR));
+          services::OperatorService::getOperatorMangle(services::OperatorService::CONSTRUCTOR)
+  );
   ident->setDBGInfo(expr->getDBGInfo());
   auto index = Syntax::N<Expression::Index>(expr, ident, true);
   index->setDBGInfo(expr->getDBGInfo());
@@ -27,8 +28,7 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
   auto type = transformSizedType(typeRef, false, "Can't create instance of unsized type '%s'!");
 
   // Make a copy of the value
-  auto v = getBuilder().createObjectInitialization(
-          p_node->getDBGInfo(), type, c->getCallee(), c->getArguments());
+  auto v = getBuilder().createObjectInitialization(p_node->getDBGInfo(), type, c->getCallee(), c->getArguments());
   this->value = v;
 }
 

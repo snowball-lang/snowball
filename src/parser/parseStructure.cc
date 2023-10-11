@@ -31,7 +31,8 @@ Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
   assert_tok<TokenType::BRACKET_LCURLY>("'{'");
   next();
   auto cls = Syntax::N<Syntax::Statement::DefinedTypeDef>(
-          name, nullptr, Syntax::Statement::Privacy::fromInt(isPublic), true);
+          name, nullptr, Syntax::Statement::Privacy::fromInt(isPublic), true
+  );
   cls->setGenerics(generics);
   cls->setDBGInfo(dbg);
 
@@ -59,7 +60,8 @@ Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
 
       default: {
         createError<SYNTAX_ERROR>(
-                FMT("Expected a valid member declaration but found '%s'", m_current.to_string().c_str()));
+                FMT("Expected a valid member declaration but found '%s'", m_current.to_string().c_str())
+        );
         break;
       }
     }

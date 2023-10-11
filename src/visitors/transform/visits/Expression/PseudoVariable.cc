@@ -25,9 +25,11 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
     if (auto x = ctx->getCurrentFunction()) {
       stringValue = x->getMangle();
     } else {
-      E<PSEUDO_ERROR>(p_node,
+      E<PSEUDO_ERROR>(
+              p_node,
               "Can't use @MANGLED_FN pseudo variable outside "
-              "a function!");
+              "a function!"
+      );
     }
   } else if (pseudo == "MOD") {
     stringValue = ctx->module->getName();
@@ -59,7 +61,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
     stringValue = buffer;
   } else if (pseudo == "SN_FOLDER") {
     stringValue = fs::path(get_exe_folder()).remove_filename();
-  } else { 
+  } else {
     if (auto parent = ctx->getCurrentMacro()) {
       auto arg = parent->stack.find(pseudo);
       if (arg != parent->stack.end()) {
@@ -67,49 +69,64 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
         auto [node, type] = (*arg).second;
         if (node->parentMacro != nullptr) ctx->macroBacktrace.push_back({p_node->getDBGInfo(), node->parentMacro});
         if (!p_node->asStatement && type == Macro::ArguementType::STATEMENT) {
-          E<PSEUDO_ERROR>(p_node, FMT("Macro arguement '%s' is not an expression!", pseudo.c_str()),
+          E<PSEUDO_ERROR>(
+                  p_node,
+                  FMT("Macro arguement '%s' is not an expression!", pseudo.c_str()),
                   {.info = "Trying to use a statement macro as an expression macro.",
-                          .note = "You can't use a statement macro as an expression macro.\n"
-                                  "You can use the macro as a statement instead.",
-                          .help = "Try using the macro as a statement instead or declare the\n"
-                                  "macro as an expression macro.",
-                          .tail = EI<>(node->getDBGInfo(), "",
-                                  {
-                                          .info = "Macro arguement declaration here.",
-                                  })});
+                   .note = "You can't use a statement macro as an expression macro.\n"
+                           "You can use the macro as a statement instead.",
+                   .help = "Try using the macro as a statement instead or declare the\n"
+                           "macro as an expression macro.",
+                   .tail =
+                           EI<>(node->getDBGInfo(),
+                                "",
+                                {
+                                        .info = "Macro arguement declaration here.",
+                                })}
+          );
         }
         if (utils::is<Expression::TypeRef>(node)) {
-          E<SYNTAX_ERROR>(p_node, FMT("Macro arguement '%s' is a type!", pseudo.c_str()),
+          E<SYNTAX_ERROR>(
+                  p_node,
+                  FMT("Macro arguement '%s' is a type!", pseudo.c_str()),
                   {.info = "Trying to use a type as an expression macro.",
-                          .note = "You can't use a type as an expression macro.\n"
-                                  "You can use the type as a type instead.",
-                          .help = "Try using the type as a type instead or declare the\n"
-                                  "macro as an expression macro.",
-                          .tail = EI<>(node->getDBGInfo(), "",
-                                  {
-                                          .info = "Macro arguement declaration here.",
-                                  })});
+                   .note = "You can't use a type as an expression macro.\n"
+                           "You can use the type as a type instead.",
+                   .help = "Try using the type as a type instead or declare the\n"
+                           "macro as an expression macro.",
+                   .tail =
+                           EI<>(node->getDBGInfo(),
+                                "",
+                                {
+                                        .info = "Macro arguement declaration here.",
+                                })}
+          );
         }
         trans(node);
         if (node->parentMacro != nullptr) ctx->macroBacktrace.pop_back();
         return;
       }
-    } 
-    
+    }
+
     if (auto [item, found] = ctx->getItem(pseudo); found) {
       auto macroInstance = item->getMacro();
       auto macro = macroInstance->macro;
       if (!p_node->asStatement && macro->isMacroStatement()) {
-        E<PSEUDO_ERROR>(p_node, FMT("Macro '%s' is not an expression!", pseudo.c_str()),
+        E<PSEUDO_ERROR>(
+                p_node,
+                FMT("Macro '%s' is not an expression!", pseudo.c_str()),
                 {.info = "Trying to use a statement macro as an expression macro.",
-                        .note = "You can't use a statement macro as an expression macro.\n"
-                                "You can use the macro as a statement instead.",
-                        .help = "Try using the macro as a statement instead or declare the\n"
-                                "macro as an expression macro.",
-                        .tail = EI<>(macro->getDBGInfo(), "",
-                                {
-                                        .info = "Macro declaration here.",
-                                })});
+                 .note = "You can't use a statement macro as an expression macro.\n"
+                         "You can use the macro as a statement instead.",
+                 .help = "Try using the macro as a statement instead or declare the\n"
+                         "macro as an expression macro.",
+                 .tail =
+                         EI<>(macro->getDBGInfo(),
+                              "",
+                              {
+                                      .info = "Macro declaration here.",
+                              })}
+        );
       }
       transformMacro(p_node, macroInstance);
       return;
@@ -121,14 +138,16 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
   if (stringValue.empty()) {
     assert(intValue != -1);
     auto val = new Syntax::Expression::ConstantValue(
-            Expression::ConstantValue::ConstantType::Number, std::to_string(intValue));
+            Expression::ConstantValue::ConstantType::Number, std::to_string(intValue)
+    );
     trans(val);
   } else {
     // We add " to both sides because the generator removes them and we
     // prevent the values
     //  from being lost.
     auto val = new Syntax::Expression::ConstantValue(
-            Expression::ConstantValue::ConstantType::String, "\"" + stringValue + "\"");
+            Expression::ConstantValue::ConstantType::String, "\"" + stringValue + "\""
+    );
     trans(val);
   }
 }

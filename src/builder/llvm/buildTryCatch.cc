@@ -85,11 +85,16 @@ void LLVMBuilder::visit(ir::TryCatch* node) {
     auto varName = "snowball.typeidx." + catchVar->getType()->getMangledName();
     llvm::GlobalVariable* tidx = module->getGlobalVariable(varName);
     if (!tidx) {
-      tidx = new llvm::GlobalVariable(*module, llvm::StructType::get(builder->getInt32Ty()), /*isConstant=*/true,
+      tidx = new llvm::GlobalVariable(
+              *module,
+              llvm::StructType::get(builder->getInt32Ty()),
+              /*isConstant=*/true,
               llvm::GlobalValue::PrivateLinkage,
               llvm::ConstantStruct::get(
-                      getTypeInfoType(), builder->getInt32(typeIdxLookup(catchVar->getType()->getMangledName()))),
-              varName);
+                      getTypeInfoType(), builder->getInt32(typeIdxLookup(catchVar->getType()->getMangledName()))
+              ),
+              varName
+      );
       tidx->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
     }
     caughtException->addClause(tidx);
@@ -105,11 +110,17 @@ void LLVMBuilder::visit(ir::TryCatch* node) {
   // auto depthMax = builder->getInt64(trycatch.size());
   // builder->CreateStore(depthMax, tc.delegateDepth);
 
-  auto unwindExceptionClass = builder->CreateLoad(builder->getInt64Ty(),
+  auto unwindExceptionClass = builder->CreateLoad(
+          builder->getInt64Ty(),
           builder->CreateStructGEP(
-                  unwindType, builder->CreatePointerCast(unwindException, unwindType->getPointerTo()), 0));
-  builder->CreateCondBr(builder->CreateICmpEQ(unwindExceptionClass, builder->getInt64(exception_class())),
-          info.catchRouteBlock, externalExcBlock);
+                  unwindType, builder->CreatePointerCast(unwindException, unwindType->getPointerTo()), 0
+          )
+  );
+  builder->CreateCondBr(
+          builder->CreateICmpEQ(unwindExceptionClass, builder->getInt64(exception_class())),
+          info.catchRouteBlock,
+          externalExcBlock
+  );
 
   // MARK: external exception block
   builder->SetInsertPoint(externalExcBlock);
@@ -119,8 +130,9 @@ void LLVMBuilder::visit(ir::TryCatch* node) {
   builder->SetInsertPoint(info.catchRouteBlock);
   unwindException = builder->CreateExtractValue(builder->CreateLoad(padType, info.exceptionPad), 0);
   llvm::Value* execVal = builder->CreatePointerCast(
-          builder->CreateConstGEP1_64(builder->getInt8Ty(), unwindException, (uint64_t)exception_offset()),
-          execType->getPointerTo());
+          builder->CreateConstGEP1_64(builder->getInt8Ty(), unwindException, (uint64_t) exception_offset()),
+          execType->getPointerTo()
+  );
 
   auto loadedExc = builder->CreateLoad(execType, execVal);
   auto objType = builder->CreateExtractValue(loadedExc, 0);
@@ -132,7 +144,7 @@ void LLVMBuilder::visit(ir::TryCatch* node) {
   builder->CreateBr(endBlock);
 
   builder->SetInsertPoint(info.catchRouteBlock);
-  auto castSwitch = builder->CreateSwitch(objType, defaultRouteBlock, (unsigned)catchInstances.size());
+  auto castSwitch = builder->CreateSwitch(objType, defaultRouteBlock, (unsigned) catchInstances.size());
 
   // TODO: support for "catch all"
   for (int i = 0; i < info.handlers.size(); i++) {
@@ -141,7 +153,7 @@ void LLVMBuilder::visit(ir::TryCatch* node) {
     auto type = getLLVMType(catchVars[i]->getType());
     auto BBlock = info.handlers[i];
     // builder->CreateBr((i < info.handlers.size()) ? info.handlers[i] : endBlock);
-    castSwitch->addCase(builder->getInt32((uint64_t)typeIdxLookup(mangledType)), BBlock);
+    castSwitch->addCase(builder->getInt32((uint64_t) typeIdxLookup(mangledType)), BBlock);
     auto block = catchInstances[i];
     builder->SetInsertPoint(BBlock);
     auto var = catchVars[i];

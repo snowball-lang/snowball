@@ -2,8 +2,8 @@
 #include "../../ast/syntax/common.h"
 #include "../../ast/syntax/nodes.h"
 #include "../../ast/types/DefinedType.h"
-#include "../../ast/types/Interface.h"
 #include "../../ast/types/FunctionType.h"
+#include "../../ast/types/Interface.h"
 #include "../../ast/types/TypeAlias.h"
 #include "../../ast/visitor/Visitor.h"
 #include "../../ir/module/Module.h"
@@ -193,7 +193,7 @@ class DefiniteAssigment : public Analyzer {
   void visitConstructor(Statement::FunctionDef* p_node);
 
 #include "../../defs/accepts.def"
- public:
+public:
   using Analyzer::Analyzer;
   DefiniteAssigment(const SourceInfo* srci) : Analyzer(srci){};
 

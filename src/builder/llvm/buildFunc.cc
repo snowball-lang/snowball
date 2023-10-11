@@ -1,8 +1,8 @@
 
+#include "../../ast/errors/error.h"
 #include "../../errors.h"
 #include "../../ir/values/Argument.h"
 #include "../../utils/utils.h"
-#include "../../ast/errors/error.h"
 #include "LLVMBuilder.h"
 
 #include <llvm/IR/Type.h>
@@ -57,7 +57,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
 
   auto fnArgs = fn->getArgs();
   auto llvmArgsIter = llvmFn->arg_begin() + retIsArg;
-  auto selfArg = (llvm::Value*)nullptr;
+  auto selfArg = (llvm::Value*) nullptr;
   auto selfArgVal = std::shared_ptr<ir::Value>(nullptr);
   for (auto varIter = fnArgs.begin(); varIter != fnArgs.end(); ++varIter) {
     auto var = varIter->second;
@@ -82,18 +82,22 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
 
     auto file = dbg.getFile(src->getPath());
     auto scope = llvmFn->getSubprogram();
-    auto debugVar = dbg.builder->createParameterVariable(scope,
+    auto debugVar = dbg.builder->createParameterVariable(
+            scope,
             var->getName(),
             var->getIndex() + 1 + retIsArg, // lua vibes... :]
             file,
             dbgInfo->line,
             getDIType(var->getType()),
-            dbg.debug);
-    dbg.builder->insertDeclare(storage,
+            dbg.debug
+    );
+    dbg.builder->insertDeclare(
+            storage,
             debugVar,
             dbg.builder->createExpression(),
             llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
-            entry);
+            entry
+    );
     ++llvmArgsIter;
   }
 
@@ -110,28 +114,28 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     auto file = dbg.getFile(src->getPath());
     auto scope = llvmFn->getSubprogram();
     auto debugVar = dbg.builder->createAutoVariable(
-            scope, v->getIdentifier(), file, dbgInfo->line, getDIType(v->getType()), dbg.debug);
-    dbg.builder->insertDeclare(storage,
+            scope, v->getIdentifier(), file, dbgInfo->line, getDIType(v->getType()), dbg.debug
+    );
+    dbg.builder->insertDeclare(
+            storage,
             debugVar,
             dbg.builder->createExpression(),
             llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
-            entry);
+            entry
+    );
   }
-
 
   if (fn->isConstructor()) {
     assert(selfArg != nullptr);
     assert(selfArgVal != nullptr);
     auto self = selfArgVal->getType();
-    if (utils::is<types::ReferenceType>(self)) {
-      self = utils::cast<types::ReferenceType>(self)->getPointedType();
-    }
+    if (utils::is<types::ReferenceType>(self)) { self = utils::cast<types::ReferenceType>(self)->getPointedType(); }
 
     if (fn->superCall) {
       auto superBranch = h.create<llvm::BasicBlock>(*context, "super-call", llvmFn);
       builder->CreateBr(superBranch);
       builder->SetInsertPoint(superBranch);
-      (void)build((ir::Value*)fn->superCall.get());
+      (void) build((ir::Value*) fn->superCall.get());
     }
 
     assert(utils::is<types::DefinedType>(self) && "Constructor self type is not a defined type!");
@@ -140,9 +144,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
       builder->CreateBr(storeBranch);
       builder->SetInsertPoint(storeBranch);
       auto ty = utils::cast<types::DefinedType>(self);
-      if (!ty) {
-        Syntax::E<BUG>("Constructor self type is not a defined type!");
-      }
+      if (!ty) { Syntax::E<BUG>("Constructor self type is not a defined type!"); }
       auto llvmType = llvm::cast<llvm::StructType>(getLLVMType(ty));
       auto cast = builder->CreateLoad(llvmType->getPointerTo(), selfArg);
 
@@ -158,30 +160,41 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
         auto body = llvm::cast<llvm::StructType>(llvmType)->elements().vec();
         llvm::cast<llvm::StructType>(llvmType)->setBody(body);
       }
-      
+
       auto numElements =
               llvm::cast<llvm::ArrayType>(llvm::cast<llvm::StructType>(ctx->getVtableTy(ty->getId()))->elements()[0])
                       ->getNumElements();
       auto element = llvm::ConstantExpr::getGetElementPtr(
               llvm::StructType::get(llvm::ArrayType::get(builder->getInt8PtrTy(), numElements)),
-              (llvm::Constant*)vtablePointer,
-              llvm::ArrayRef<llvm::Constant*>{builder->getInt32(0), builder->getInt32(0), builder->getInt32(2)}, true, 1);
-      auto vtableLoad = llvm::ConstantExpr::getBitCast(element, llvm::FunctionType::get(
-              builder->getInt32Ty(), {}, true
-      )->getPointerTo()->getPointerTo());
-      builder->CreateStore(vtableLoad, builder->CreateBitCast(cast, llvm::FunctionType::get(
-              builder->getInt32Ty(), {}, true
-      )->getPointerTo()->getPointerTo()->getPointerTo(), ".vtable-store-load"));
+              (llvm::Constant*) vtablePointer,
+              llvm::ArrayRef<llvm::Constant*>{builder->getInt32(0), builder->getInt32(0), builder->getInt32(2)},
+              true,
+              1
+      );
+      auto vtableLoad = llvm::ConstantExpr::getBitCast(
+              element, llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()
+      );
+      builder->CreateStore(
+              vtableLoad,
+              builder->CreateBitCast(
+                      cast,
+                      llvm::FunctionType::get(builder->getInt32Ty(), {}, true)
+                              ->getPointerTo()
+                              ->getPointerTo()
+                              ->getPointerTo(),
+                      ".vtable-store-load"
+              )
+      );
     }
   }
-  
+
   builder->CreateBr(body);
 
   // mark: body block
   builder->SetInsertPoint(body);
 
   // Codegen for the current body
-  (void)build(fn->getBody().get());
+  (void) build(fn->getBody().get());
   setDebugInfoLoc(nullptr);
 
   // Create return type

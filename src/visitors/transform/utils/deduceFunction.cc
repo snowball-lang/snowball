@@ -53,11 +53,13 @@ std::pair<types::Type*, int> matchedGeneric(Expression::Param* generic, types::T
 #undef HANDLE_POINTER
 } // namespace
 
-std::pair<std::optional<types::Type*>, int> Transformer::deduceFunctionType(Expression::Param* generic,
+std::pair<std::optional<types::Type*>, int> Transformer::deduceFunctionType(
+        Expression::Param* generic,
         const std::vector<Expression::Param*>& fnArgs,
         const std::vector<types::Type*>& arguments,
         const std::vector<types::Type*>& generics,
-        const std::vector<types::Type*>& deducedTypes) {
+        const std::vector<types::Type*>& deducedTypes
+) {
   // I'm pretty sure this function works, but I'm a programmer, not a
   // magician.
 
@@ -69,8 +71,9 @@ std::pair<std::optional<types::Type*>, int> Transformer::deduceFunctionType(Expr
   }
 
   // Check if the generic is used inside the variables
-  const auto it = std::find_if(
-          fnArgs.begin(), fnArgs.end(), [&](const auto& arg) { return genericMatch(generic, arg->getType()); });
+  const auto it = std::find_if(fnArgs.begin(), fnArgs.end(), [&](const auto& arg) {
+    return genericMatch(generic, arg->getType());
+  });
 
   if (it != fnArgs.end()) {
     const auto argIdx = std::distance(fnArgs.begin(), it);
@@ -88,7 +91,8 @@ std::pair<std::optional<types::Type*>, int> Transformer::deduceFunctionType(Expr
 std::tuple<std::vector<types::Type*>, std::string, int> Transformer::deduceFunction(
         cacheComponents::Functions::FunctionStore s,
         const std::vector<types::Type*>& arguments,
-        const std::vector<types::Type*>& generics) {
+        const std::vector<types::Type*>& generics
+) {
   auto function = s.function;
   auto fnArgs = function->getArgs();
 

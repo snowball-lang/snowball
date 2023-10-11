@@ -18,14 +18,10 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid) {
     return builder->getIntNTy(x->getBits());
   } else if (auto x = cast<types::FloatType>(t)) {
     switch (x->getBits()) {
-    case 16:
-      return builder->getHalfTy();
-    case 32:
-      return builder->getFloatTy();
-    case 64:
-      return builder->getDoubleTy();
-    default:
-      assert(!"Unreachable type case found!");
+      case 16: return builder->getHalfTy();
+      case 32: return builder->getFloatTy();
+      case 64: return builder->getDoubleTy();
+      default: assert(!"Unreachable type case found!");
     }
   } else if (cast<types::VoidType>(t)) {
     return translateVoid ? builder->getInt8Ty() : builder->getVoidTy();
@@ -34,8 +30,7 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid) {
   } else if (auto x = cast<types::ReferenceType>(t)) {
     return getLLVMType(x->getPointedType())->getPointerTo();
   } else if (auto x = cast<types::PointerType>(t)) {
-    if (is<types::VoidType>(x->getPointedType()))
-      return builder->getInt8PtrTy();
+    if (is<types::VoidType>(x->getPointedType())) return builder->getInt8PtrTy();
     return getLLVMType(x->getPointedType())->getPointerTo();
   } else if (auto f = cast<types::FunctionType>(t)) {
     return getLLVMFunctionType(f)->getPointerTo();
@@ -48,28 +43,32 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid) {
       return it->second;
     } else {
       s = llvm::StructType::create(
-              *context, (c->isStruct() ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) + c->getMangledName());
+              *context, (c->isStruct() ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) + c->getMangledName()
+      );
       types.insert({c->getId(), s});
       assert(ctx->typeInfo.find(c->getId()) != ctx->typeInfo.end());
       c = ctx->typeInfo.find(c->getId())->second.get();
     }
     auto fields = c->getFields();
     auto generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Type*>(
-            fields, [&](types::DefinedType::ClassField* t) { return getLLVMType(t->type); });
+            fields, [&](types::DefinedType::ClassField* t) { return getLLVMType(t->type); }
+    );
     if (c->hasVtable) {
       auto t = getVtableType(c); // generate vtable type
-      generatedFields.insert(generatedFields.begin(), llvm::FunctionType::get(
-              builder->getInt32Ty(), {}, true
-      )->getPointerTo()->getPointerTo());
+      generatedFields.insert(
+              generatedFields.begin(),
+              llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()
+      );
     } else if (c->hasParent()) {
       auto p = c;
       while (p->hasParent()) {
         p = p->getParent();
         p = ctx->typeInfo.find(p->getId())->second.get();
         auto t = getVtableType(p); // generate vtable type
-        generatedFields.insert(generatedFields.begin(), llvm::FunctionType::get(
-                builder->getInt32Ty(), {}, true
-        )->getPointerTo()->getPointerTo());
+        generatedFields.insert(
+                generatedFields.begin(),
+                llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()
+        );
       }
     }
     s->setBody(generatedFields);
@@ -87,15 +86,14 @@ llvm::FunctionType* LLVMBuilder::getLLVMFunctionType(types::FunctionType* fn, co
           vector_iterate<types::Type*, llvm::Type*>(fn->getArgs(), [&](types::Type* arg) { return getLLVMType(arg); });
 
   auto ret = getLLVMType(fn->getRetType());
-  if (utils::is<types::DefinedType>(fn->getRetType()) && !(func && func->getAttributeArgs(Attributes::LLVM_FUNC).count("sanitise_void_return"))) {
+  if (utils::is<types::DefinedType>(fn->getRetType()) &&
+      !(func && func->getAttributeArgs(Attributes::LLVM_FUNC).count("sanitise_void_return"))) {
     argTypes.insert(argTypes.begin(), ret->getPointerTo());
     ret = builder->getVoidTy();
   }
 
   if (func && func->getAttributeArgs(Attributes::LLVM_FUNC).count("sanitise_void_return")) {
-    if (ret->isVoidTy()) {
-      ret = builder->getInt8Ty();
-    }
+    if (ret->isVoidTy()) { ret = builder->getInt8Ty(); }
   }
 
   return llvm::FunctionType::get(ret, argTypes, fn->isVariadic());

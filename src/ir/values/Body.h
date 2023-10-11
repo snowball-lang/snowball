@@ -22,7 +22,7 @@ class Block : public AcceptorExtend<Block, Value>, public AcceptorExtend<Func, S
   // Instructions stored inside a block
   std::vector<std::shared_ptr<Value>> insts;
 
- public:
+public:
   explicit Block(std::vector<std::shared_ptr<Value>> insts) : insts(insts){};
 
   /// @return body block instructions

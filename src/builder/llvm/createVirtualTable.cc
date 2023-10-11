@@ -15,7 +15,7 @@ namespace snowball {
 namespace codegen {
 
 llvm::GlobalVariable* LLVMBuilder::createVirtualTable(types::DefinedType* ty, llvm::StructType* vtableType) {
-  auto structName = (std::string)_SN_VTABLE_PREFIX + ty->getMangledName();
+  auto structName = (std::string) _SN_VTABLE_PREFIX + ty->getMangledName();
 
   std::vector<llvm::Constant*> functions = {
           llvm::ConstantPointerNull::get(llvm::Type::getInt8PtrTy(*context)),
@@ -23,7 +23,7 @@ llvm::GlobalVariable* LLVMBuilder::createVirtualTable(types::DefinedType* ty, ll
   };
   ty = ctx->typeInfo.at(ty->getId()).get();
   for (auto fn : ty->getVTable()) {
-    (void)build(fn.get());
+    (void) build(fn.get());
     auto c = llvm::cast<llvm::Constant>(this->value);
 
     functions.push_back(c);
@@ -46,7 +46,8 @@ llvm::GlobalVariable* LLVMBuilder::createVirtualTable(types::DefinedType* ty, ll
 #endif
 
   auto arr = llvm::ConstantArray::get(
-          llvm::ArrayType::get(llvm::Type::getInt8PtrTy(*context), functions.size()), functions);
+          llvm::ArrayType::get(llvm::Type::getInt8PtrTy(*context), functions.size()), functions
+  );
   auto s = llvm::ConstantStruct::get(vtableType, arr);
   vTable->setInitializer(s);
   return vTable;

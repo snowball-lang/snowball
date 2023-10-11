@@ -7,17 +7,20 @@ namespace snowball {
 namespace Syntax {
 
 std::tuple<Cache::FunctionStore, std::vector<types::Type*>, Transformer::FunctionFetchResponse>
-Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& overloads,
+Transformer::getBestFittingFunction(
+        const std::deque<Cache::FunctionStore>& overloads,
         const std::vector<types::Type*>& arguments,
         const std::vector<Expression::TypeRef*>& generics,
-        bool isIdentifier) {
+        bool isIdentifier
+) {
   std::vector<std::pair<Cache::FunctionStore, std::vector<types::Type*>>> functions;
   std::vector<int> importances;
   for (auto n : overloads) {
     auto fn = n.function;
     if (ir::Func::argumentSizesEqual(fn->getArgs(), arguments, fn->isVariadic()) || isIdentifier) {
-      auto genericArguments = utils::vector_iterate<Expression::TypeRef*, types::Type*>(
-              generics, [&](auto g) { return transformType(g); });
+      auto genericArguments = utils::vector_iterate<Expression::TypeRef*, types::Type*>(generics, [&](auto g) {
+        return transformType(g);
+      });
       auto [deducedArgs, errors, importance] = deduceFunction(n, arguments, genericArguments);
       if (errors.empty()) {
         functions.push_back({n, deducedArgs});
@@ -52,7 +55,11 @@ Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& over
         bool argsNeedCasting = false;
         int succeededArgs = 0;
         for (auto i = 0; (i < fnArgs.size()) && argsEqual; i++) {
-          auto type = transformSizedType(fnArgs.at(i)->getType(), false, "Function argument types but be sized but found '%s' (which is not sized)");
+          auto type = transformSizedType(
+                  fnArgs.at(i)->getType(),
+                  false,
+                  "Function argument types but be sized but found '%s' (which is not sized)"
+          );
           if ((fnArgs.at(i)->hasDefaultValue() || isIdentifier) && arguments.size() < fnArgs.size()) {
             argsEqual = true;
             continue;
@@ -102,15 +109,17 @@ Transformer::getBestFittingFunction(const std::deque<Cache::FunctionStore>& over
     }
     // we dont return it if they all have the same amount of succeeded arguments
     if (maxIndex != -1 &&
-            !std::all_of(matchedFunctionsPerception.begin(), matchedFunctionsPerception.end(),
-                    [&](auto i) { return i == max; })) {
+        !std::all_of(matchedFunctionsPerception.begin(), matchedFunctionsPerception.end(), [&](auto i) {
+          return i == max;
+        })) {
       return {matchedFunctions.at(maxIndex).first, matchedFunctions.at(maxIndex).second, FunctionFetchResponse::Ok};
     }
     return {{nullptr}, {}, FunctionFetchResponse::AmbiguityConflict};
   } else if (exactFunctionExists)
     return {bestFunction.first, bestFunction.second, FunctionFetchResponse::Ok};
   else if (genericIndex != -1)
-    return {matchedFunctions.at(genericIndex).first, matchedFunctions.at(genericIndex).second,
+    return {matchedFunctions.at(genericIndex).first,
+            matchedFunctions.at(genericIndex).second,
             FunctionFetchResponse::Ok};
   else if (matchedFunctions.size() == 1) {
     auto matched = matchedFunctions.at(0);

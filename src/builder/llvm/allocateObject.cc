@@ -11,7 +11,8 @@ llvm::Value* LLVMBuilder::allocateObject(types::DefinedType* ty) {
   auto llvmType = llvm::cast<llvm::StructType>(getLLVMType(ty));
   llvm::Value* cast = builder->CreateAlloca(llvmType, nullptr, FMT(".alloc.%s", llvmType->getStructName()));
 
-  auto initializerName = FMT("__const.%s.%s", ctx->getCurrentFunction()->getName().str().c_str(), ty->getName().c_str());
+  auto initializerName =
+          FMT("__const.%s.%s", ctx->getCurrentFunction()->getName().str().c_str(), ty->getName().c_str());
   auto constInitializer = module->getNamedGlobal(initializerName);
   if (!constInitializer) {
     std::vector<llvm::Constant*> elements;
@@ -24,14 +25,21 @@ llvm::Value* LLVMBuilder::allocateObject(types::DefinedType* ty) {
         elements.push_back(llvm::Constant::getNullValue(field));
       }
     }
-    auto structInitializer = llvm::ConstantStruct::get((llvm::StructType*)llvmType, elements);
+    auto structInitializer = llvm::ConstantStruct::get((llvm::StructType*) llvmType, elements);
     constInitializer = new llvm::GlobalVariable(
-            *module, llvmType, true, llvm::GlobalValue::PrivateLinkage, structInitializer, initializerName,
-            nullptr, llvm::GlobalVariable::NotThreadLocal);
+            *module,
+            llvmType,
+            true,
+            llvm::GlobalValue::PrivateLinkage,
+            structInitializer,
+            initializerName,
+            nullptr,
+            llvm::GlobalVariable::NotThreadLocal
+    );
     constInitializer->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
   }
 
-  //builder->CreateMemCpy(cast, llvm::MaybeAlign(), constInitializer, llvm::MaybeAlign(), ty->sizeOf());
+  // builder->CreateMemCpy(cast, llvm::MaybeAlign(), constInitializer, llvm::MaybeAlign(), ty->sizeOf());
   return cast;
 }
 

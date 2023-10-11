@@ -33,14 +33,16 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
 
   auto fnType = llvm::cast<llvm::FunctionType>(getLLVMFunctionType(innerFnType, func));
   auto name = func->getMangle();
-  auto fn = llvm::Function::Create(fnType,
-          ((func->isStatic() && (!func->hasParent())) || func->hasAttribute(Attributes::INTERNAL_LINKAGE))
-                  ? llvm::Function::InternalLinkage
-                  : llvm::Function::ExternalLinkage,
+  auto fn = llvm::Function::Create(
+          fnType,
+          ((func->isStatic() && (!func->hasParent())) || func->hasAttribute(Attributes::INTERNAL_LINKAGE)) ?
+                  llvm::Function::InternalLinkage :
+                  llvm::Function::ExternalLinkage,
           name,
-          module.get());
+          module.get()
+  );
 
-  auto callee = (llvm::Function*)fn;
+  auto callee = (llvm::Function*) fn;
   auto attrSet = callee->getAttributes();
 
   if (func->hasAttribute(Attributes::INLINE)) {
@@ -66,7 +68,7 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
     attrBuilder.addAttribute(llvm::Attribute::NonNull);
     arg->addAttrs(attrBuilder);
   }
-  
+
   for (int i = 0; i < func->getArgs().size(); ++i) {
     auto llvmArg = fn->arg_begin() + i + retIsArg;
     auto arg = utils::at(func->getArgs(), i);

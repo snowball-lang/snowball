@@ -28,15 +28,15 @@ class Parser {
   const SourceInfo* m_source_info;
   Syntax::Statement::DefinedTypeDef* m_current_class = nullptr;
 
- public:
+public:
   Parser(std::vector<Token> p_tokens, const SourceInfo* p_source_info);
   ~Parser() noexcept = default;
 
- private:
+private:
   /// @brief Utility function to throw errors
   template <Error E, class... Args>
-  [[nodiscard]] auto createError(
-          std::pair<int, int> location, std::string message, ErrorInfo info = {}, Args&&... args) const {
+  [[nodiscard]] auto
+  createError(std::pair<int, int> location, std::string message, ErrorInfo info = {}, Args&&... args) const {
     auto dbg_info = new DBGSourceInfo(m_source_info, location, std::forward<Args>(args)...);
     throw ParserError(E, message, dbg_info, info);
   }
@@ -47,13 +47,13 @@ class Parser {
     createError<E>(pos, msg, info, m_current.to_string().size());
   }
 
- public:
+public:
   using NodeVec = std::vector<Syntax::Node*>;
   /// @brief Parse from the lexer tree
   /// @return AST containing parsed node
   NodeVec parse();
 
- private:
+private:
   // Utility functions for parsing
 
   /// Check if the current token is a certain token type
@@ -106,10 +106,12 @@ class Parser {
    */
   void throwIfNotType() const {
     if (!isTypeValid()) {
-      createError<SYNTAX_ERROR>(FMT("Expected a valid type declaration but found '%s' "
-                                    "instead",
-                                        m_current.to_string().c_str()),
-              {.info = "Types cant start like this"});
+      createError<SYNTAX_ERROR>(
+              FMT("Expected a valid type declaration but found '%s' "
+                  "instead",
+                  m_current.to_string().c_str()),
+              {.info = "Types cant start like this"}
+      );
     }
   }
 
@@ -124,9 +126,11 @@ class Parser {
   template <TokenType Ty>
   Token assert_tok(std::string expectation) {
     if (!is<Ty>()) {
-      createError<SYNTAX_ERROR>(FMT("Expected %s but got '%s'",
-              expectation.c_str(),
-              (is<TokenType::_EOF>(m_current) ? "an unexpected EOF" : m_current.to_string()).c_str()));
+      createError<SYNTAX_ERROR>(
+              FMT("Expected %s but got '%s'",
+                  expectation.c_str(),
+                  (is<TokenType::_EOF>(m_current) ? "an unexpected EOF" : m_current.to_string()).c_str())
+      );
     }
 
     return m_current;
@@ -157,7 +161,7 @@ class Parser {
    */
   Syntax::Expression::Base* buildOperatorTree(std::vector<Syntax::Expression::Base*>& exprs);
 
- private:
+private:
   // Parsing functions
 
   /**
@@ -176,8 +180,8 @@ class Parser {
    * arrowfn       ::=  [decorators] "fn" funcname "("
    * [parameter_list] ")" type "=>" stmt
    */
-  Syntax::Statement::FunctionDef* parseFunction(
-          bool isConstructor = false, bool isOperator = false, bool isLambda = false);
+  Syntax::Statement::FunctionDef*
+  parseFunction(bool isConstructor = false, bool isOperator = false, bool isLambda = false);
   /**
    * params        ::=  "<" [param_args] ">"
    * param_args    ::=  identifier ["=" default_type]
@@ -252,9 +256,11 @@ class Parser {
    *
    * @param callee expression being called
    */
-  Syntax::Expression::FunctionCall* parseFunctionCall(Syntax::Expression::Base* callee,
+  Syntax::Expression::FunctionCall* parseFunctionCall(
+          Syntax::Expression::Base* callee,
           TokenType terminator = TokenType::BRACKET_RPARENT,
-          std::string terminatorString = ")");
+          std::string terminatorString = ")"
+  );
   /**
    * function_call ::= [expr] "(" [args] ")"
    * arguments     ::= [[expr] "," ...]
@@ -329,8 +335,8 @@ class Parser {
    * @param parseFn function to parse the attribute
    * @return a vector of attributes
    */
-  std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> parseAttributes(
-          std::function<Attributes(std::string)> parseFn);
+  std::unordered_map<Attributes, std::unordered_map<std::string, std::string>>
+  parseAttributes(std::function<Attributes(std::string)> parseFn);
 };
 
 } // namespace parser

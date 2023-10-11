@@ -40,8 +40,7 @@ TypeRef::TypeRef(std::string p_name, DBGSourceInfo* p_dbg, types::Type* internal
     : internalType(internalType), types::Type(REF, p_name), id(id) {
   setDBGInfo(p_dbg);
 }
-NewInstance::NewInstance(DBGSourceInfo* dbg, std::vector<Base*> args, TypeRef* ty)
-    : type(ty) {
+NewInstance::NewInstance(DBGSourceInfo* dbg, std::vector<Base*> args, TypeRef* ty) : type(ty) {
   auto call = Syntax::N<FunctionCall>(ty->toRef(), args);
   call->setDBGInfo(dbg);
   this->call = call;

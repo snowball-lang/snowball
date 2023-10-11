@@ -4,6 +4,7 @@
 #include "../LLVMBuilder.h"
 
 #include <llvm/ADT/SmallVector.h>
+#include <llvm/Analysis/TargetTransformInfo.h>
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/CallingConv.h>
 #include <llvm/IR/Constants.h>
@@ -33,7 +34,6 @@
 #include <llvm/Transforms/Scalar/GVN.h>
 #include <llvm/Transforms/Scalar/Reassociate.h>
 #include <llvm/Transforms/Utils.h>
-#include <llvm/Analysis/TargetTransformInfo.h>
 
 namespace snowball {
 
@@ -87,7 +87,8 @@ void LLVMBuilder::optimizeModule() {
 
   // cross register them too?
   pass_builder.crossRegisterProxies(
-          loop_analysis_manager, function_analysis_manager, c_gscc_analysis_manager, module_analysis_manager);
+          loop_analysis_manager, function_analysis_manager, c_gscc_analysis_manager, module_analysis_manager
+  );
   function_analysis_manager.registerPass([&] { return llvm::TargetLibraryAnalysis(tlii); });
 
   llvm::OptimizationLevel level;
@@ -102,8 +103,9 @@ void LLVMBuilder::optimizeModule() {
   }
   std::vector<std::function<void(llvm::ModulePassManager&, llvm::OptimizationLevel)>> PipelineStartEPCallbacks;
   std::vector<std::function<void(llvm::ModulePassManager&, llvm::OptimizationLevel)>> OptimizerLastEPCallbacks;
-  PipelineStartEPCallbacks.push_back(
-          [](llvm::ModulePassManager& MPM, llvm::OptimizationLevel Level) { MPM.addPass(llvm::VerifierPass()); });
+  PipelineStartEPCallbacks.push_back([](llvm::ModulePassManager& MPM, llvm::OptimizationLevel Level) {
+    MPM.addPass(llvm::VerifierPass());
+  });
   for (const auto& C : PipelineStartEPCallbacks) pass_builder.registerPipelineStartEPCallback(C);
   for (const auto& C : OptimizerLastEPCallbacks) pass_builder.registerOptimizerLastEPCallback(C);
   llvm::ModulePassManager mpm;
@@ -116,7 +118,7 @@ void LLVMBuilder::optimizeModule() {
 #if PERFORM_SIMPLE_OPTS
   { // simple optimizations done for each function. It does not depend on the optimization level.
     std::unique_ptr<llvm::legacy::FunctionPassManager> functionPassManager =
-      std::make_unique<llvm::legacy::FunctionPassManager>(module.get());
+            std::make_unique<llvm::legacy::FunctionPassManager>(module.get());
 
     // Promote allocas to registers.
     functionPassManager->add(llvm::createPromoteMemoryToRegisterPass());
@@ -133,10 +135,9 @@ void LLVMBuilder::optimizeModule() {
 
     for (auto& function : module->getFunctionList()) { functionPassManager->run(function); }
   }
-  
+
   llvm::legacy::PassManager codegen_pm;
-  codegen_pm.add(
-    llvm::createTargetTransformInfoWrapperPass(target->getTargetIRAnalysis()));
+  codegen_pm.add(llvm::createTargetTransformInfoWrapperPass(target->getTargetIRAnalysis()));
 
   codegen_pm.run(*module);
 #endif

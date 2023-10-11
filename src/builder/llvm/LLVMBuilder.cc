@@ -93,15 +93,17 @@ llvm::Value* LLVMBuilder::load(llvm::Value* v, types::Type* ty) {
   // We don't need to load a value if it's not an alloca instruction.
   // because this reference could from a function call.
   // example: malloc(10); // do not load
-  //if (llvmType->isPointerTy() && llvm::isa<llvm::CallInst>(v)) 
+  // if (llvmType->isPointerTy() && llvm::isa<llvm::CallInst>(v))
   //  return v;
 
-  if (v->getType()->isPointerTy())
-    return builder->CreateLoad(llvmType, v, ".ptr-load");
+  if (v->getType()->isPointerTy()) return builder->CreateLoad(llvmType, v, ".ptr-load");
   return v;
 }
 
-LLVMBuilder::LLVMBuilder(std::shared_ptr<ir::MainModule> mod, app::Options::Optimization optimizationLevel, bool testMode, bool benchMode) : iModule(mod) {
+LLVMBuilder::LLVMBuilder(
+        std::shared_ptr<ir::MainModule> mod, app::Options::Optimization optimizationLevel, bool testMode, bool benchMode
+)
+    : iModule(mod) {
   ctx->testMode = testMode;
   ctx->benchmarkMode = benchMode;
   ctx->optimizationLevel = optimizationLevel;
@@ -172,27 +174,31 @@ std::unique_ptr<llvm::Module> LLVMBuilder::newModule() {
   // debug info setup
   dbg.builder = std::make_unique<llvm::DIBuilder>(*m);
   llvm::DIFile* file = dbg.getFile(srcInfo->getPath());
-  dbg.unit = dbg.builder->createCompileUnit(llvm::dwarf::DW_LANG_C_plus_plus,
+  dbg.unit = dbg.builder->createCompileUnit(
+          llvm::dwarf::DW_LANG_C_plus_plus,
           file,
           ("Snowball version " _SNOWBALL_VERSION),
           !dbg.debug,
           {},
-          /*RV=*/0);
+          /*RV=*/0
+  );
 
   m->addModuleFlag(llvm::Module::Warning, "Debug Info Version", llvm::DEBUG_METADATA_VERSION);
   m->addModuleFlag(llvm::Module::Warning, "Snowball Compiler ID", _SNOWBALL_VERSION_NUMBER);
-  m->addModuleFlag(llvm::Module::Warning,
+  m->addModuleFlag(
+          llvm::Module::Warning,
           "Snowball Compiler Version",
-          llvm::ConstantDataArray::getString(*context, _SNOWBALL_VERSION, true));
+          llvm::ConstantDataArray::getString(*context, _SNOWBALL_VERSION, true)
+  );
   // darwin only supports dwarf2
   if (llvm::Triple(m->getTargetTriple()).isOSDarwin()) { m->addModuleFlag(llvm::Module::Warning, "Dwarf Version", 2); }
 
   return m;
 }
 
-void LLVMBuilder::newContext() { 
-  context = std::make_unique<llvm::LLVMContext>(); 
-  //context->setOpaquePointers(false);
+void LLVMBuilder::newContext() {
+  context = std::make_unique<llvm::LLVMContext>();
+  // context->setOpaquePointers(false);
 }
 
 llvm::DIFile* LLVMBuilder::DebugInfo::getFile(const std::string& path) {
@@ -272,9 +278,9 @@ void LLVMBuilder::codegen() {
             llvm::verifyFunction(*llvmFn, &module_error_stream);
 
             if (!module_error_string.empty()) {
-  #ifdef _SNOWBALL_BYTECODE_DEBUG
+#ifdef _SNOWBALL_BYTECODE_DEBUG
               dump();
-  #endif
+#endif
               throw SNError(Error::LLVM_INTERNAL, module_error_string);
             }
           }
@@ -286,8 +292,8 @@ void LLVMBuilder::codegen() {
   auto mainModule = utils::dyn_cast<ir::MainModule>(iModule);
   assert(mainModule);
 
-#define INIT_MODULES(build) \
-  for (auto m : mainModule->getModules()) generateModule(m, build); \
+#define INIT_MODULES(build)                                                                                            \
+  for (auto m : mainModule->getModules()) generateModule(m, build);                                                    \
   generateModule(mainModule, build);
 
   for (const auto& m : mainModule->getModules()) {
@@ -296,7 +302,7 @@ void LLVMBuilder::codegen() {
   ctx->typeInfo.insert(mainModule->typeInformation.begin(), mainModule->typeInformation.end());
 
   INIT_MODULES(false); // Create function declarations
-  INIT_MODULES(true); // Create function bodies
+  INIT_MODULES(true);  // Create function bodies
 
   initializeRuntime();
   dbg.builder->finalize();

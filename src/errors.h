@@ -42,7 +42,7 @@ namespace errors {
 const char* get_error(Error code);
 
 class SNError {
- public:
+public:
   SNError(Error code, std::string err) {
     error = code;
     message = err;
@@ -72,10 +72,10 @@ struct ErrorInfo {
  * @brief A nice error is an error that is printed in a nice way.
  */
 class NiceError : public SNError {
- protected:
+protected:
   DBGSourceInfo* cb_dbg_info;
 
- public:
+public:
   ErrorInfo info;
   NiceError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})
       : SNError(code, err), cb_dbg_info(p_cb_dbg_info), info(info){};
@@ -86,7 +86,7 @@ class NiceError : public SNError {
  * @brief A lexer error is an error that occurs during lexing.
  */
 class LexerError : public NiceError {
- public:
+public:
   LexerError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})
       : NiceError(code, err, p_cb_dbg_info, info){};
 
@@ -97,7 +97,7 @@ class LexerError : public NiceError {
  * @brief A parser error is an error that occurs during parsing.
  */
 class ParserError : public NiceError {
- public:
+public:
   ParserError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})
       : NiceError(code, err, p_cb_dbg_info, info){};
 
@@ -108,7 +108,7 @@ class ParserError : public NiceError {
  * @brief A compiler error is an error that occurs during compilation.
  */
 class CompilerError : public NiceError {
- public:
+public:
   CompilerError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})
       : NiceError(code, err, p_cb_dbg_info, info){};
 

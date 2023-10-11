@@ -29,7 +29,7 @@ namespace types {
  * a new initialization of the object is required.
  */
 class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
- public:
+public:
   /**
    * @brief A class field represents all of the "elements" a
    *  type has stored into it.
@@ -38,11 +38,13 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
    *  is eqaul to another type.
    */
   struct ClassField : public Syntax::Statement::Privacy, public DBGObject {
-    explicit ClassField(const std::string& name,
+    explicit ClassField(
+            const std::string& name,
             Type* type,
             Privacy privacy = PRIVATE,
             Syntax::Expression::Base* initializedValue = nullptr,
-            bool isMutable = false);
+            bool isMutable = false
+    );
     const std::string name;
     Type* type;
 
@@ -54,7 +56,7 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
 
   friend AcceptorExtend;
 
- private:
+private:
   /// @brief a list of fields this class has
   std::vector<ClassField*> fields;
   /// @brief Parent class where the class in inherited from
@@ -66,16 +68,17 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
   /// @brief Whether or not the type is a struct
   bool _struct = false;
 
- public:
-  DefinedType(const std::string& name,
+public:
+  DefinedType(
+          const std::string& name,
           const std::string uuid,
-          std::shared_ptr<ir::Module>
-                  module,
+          std::shared_ptr<ir::Module> module,
           Syntax::Statement::DefinedTypeDef* ast = nullptr,
           std::vector<ClassField*> fields = {},
           DefinedType* parent = nullptr,
           std::vector<Type*> generics = {},
-          bool isStruct = false);
+          bool isStruct = false
+  );
   DefinedType(const DefinedType&) = default;
   DefinedType& operator=(DefinedType const&) = delete;
   /**
@@ -144,7 +147,7 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
   virtual bool canCast(Type* ty) const override;
   virtual bool canCast(DefinedType* ty) const;
 
- public:
+public:
   /// @brief If the class has a constructor
   bool hasConstructor = false;
 

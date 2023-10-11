@@ -6,7 +6,8 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::pair<std::vector<std::shared_ptr<ir::Value>>, std::shared_ptr<ir::Call>> Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
+std::pair<std::vector<std::shared_ptr<ir::Value>>, std::shared_ptr<ir::Call>>
+Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
   auto instrList = std::vector<std::shared_ptr<ir::Value>>();
   auto currentClass = utils::cast<types::DefinedType>(ctx->getCurrentClass());
   std::shared_ptr<ir::Call> superCall = nullptr;

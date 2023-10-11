@@ -28,14 +28,14 @@ class BaseType : public Type,
                  public Syntax::Statement::Privacy,
                  public Syntax::Statement::GenericContainer<Type*>,
                  public ir::IdMixin {
- protected:
+protected:
   /// @brief Definition of where in the stack this class is stored
   /// @example [module name].MyClass:2
   std::string uuid;
   /// @brief A module where the type is defined.
   std::shared_ptr<ir::Module> module;
 
- public:
+public:
   BaseType(Kind kind, const std::string name);
   BaseType(const BaseType& other) = default;
 

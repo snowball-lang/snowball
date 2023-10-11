@@ -16,7 +16,8 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                   [&](Syntax::Expression::Base* a) -> std::pair<std::shared_ptr<ir::Value>, types::Type*> {
                     auto val = trans(a);
                     return {val, val->getType()};
-                  });
+                  }
+          );
   auto callee = p_node->getCallee();
   std::shared_ptr<ir::Value> fn = nullptr;
   if (auto x = utils::cast<Expression::Identifier>(callee)) {
@@ -55,7 +56,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     auto name = baseName + x->getIdentifier()->getNiceName();
     if (b.has_value()) {
       if (utils::cast<types::PrimitiveType>((*b)->getType()) || utils::cast<types::ReferenceType>((*b)->getType()) ||
-              utils::cast<types::PointerType>((*b)->getType())) {
+          utils::cast<types::PointerType>((*b)->getType())) {
         argTypes.insert(argTypes.begin(), b.value()->getType());
       } else {
         argTypes.insert(argTypes.begin(), b.value()->getType()->getReferenceTo());
@@ -66,15 +67,19 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     // TODO: actually check if base is a module with:
     // "getFromIdentifier" of the module
     if ((x->isStatic && (!c->isStatic())) && (!inModule)) {
-      E<TYPE_ERROR>(p_node,
+      E<TYPE_ERROR>(
+              p_node,
               FMT("Can't access class method '%s' "
                   "that's not static as if it was one!",
-                      c->getNiceName().c_str()));
+                  c->getNiceName().c_str())
+      );
     } else if ((!x->isStatic) && c->isStatic()) {
-      E<TYPE_ERROR>(p_node,
+      E<TYPE_ERROR>(
+              p_node,
               FMT("Can't access static class method '%s' "
                   "as with a non-static index expression!",
-                      c->getNiceName().c_str()));
+                  c->getNiceName().c_str())
+      );
     }
     if (b.has_value()) {
       // if (auto t = utils::cast<types::ReferenceType>(b.value()->getType())) {
@@ -90,10 +95,10 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
       //                   });
       //   }
       // }
-      
+
       auto baseType = (*b)->getType();
       if ((utils::cast<types::PrimitiveType>(baseType)) || utils::cast<types::ReferenceType>(baseType) ||
-              utils::cast<types::PointerType>(baseType)) {
+          utils::cast<types::PointerType>(baseType)) {
         argValues.insert(argValues.begin(), *b);
         argTypes.insert(argTypes.begin(), baseType);
       } else {

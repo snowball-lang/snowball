@@ -21,7 +21,7 @@ OperatorService::OperatorType OperatorService::operatorID(const std::string& n) 
   auto it = std::find(operators.begin(), operators.end(), name);
   assert(it != operators.end());
 
-  return (OperatorService::OperatorType)std::distance(operators.begin(), it);
+  return (OperatorService::OperatorType) std::distance(operators.begin(), it);
 }
 
 std::string OperatorService::getOperatorMangle(OperatorService::OperatorType id) { return "#" + getOperatorId(id); }

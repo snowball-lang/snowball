@@ -16,7 +16,7 @@ namespace snowball {
 namespace Syntax {
 
 class Visitor : public SrcObject {
- public:
+public:
   Visitor(const SourceInfo* srci) : SrcObject(srci){};
   virtual void visitGlobal(std::vector<Node*>);
 

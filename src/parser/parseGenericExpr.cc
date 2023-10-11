@@ -37,8 +37,10 @@ std::vector<TypeRef*> Parser::parseGenericExpr() {
       next();
       break;
     } else {
-      createError<SYNTAX_ERROR>(FMT("Expected a vaid generic expression but got '%s'", m_current.to_string().c_str()),
-              {.info = "Not a valid generic expression"});
+      createError<SYNTAX_ERROR>(
+              FMT("Expected a vaid generic expression but got '%s'", m_current.to_string().c_str()),
+              {.info = "Not a valid generic expression"}
+      );
     }
   }
 

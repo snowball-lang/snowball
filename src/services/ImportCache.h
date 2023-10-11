@@ -20,7 +20,7 @@ class ImportCache {
   /// @note The map key is a full abstract path.
   std::map<std::filesystem::path, std::shared_ptr<ir::Module>> modules;
 
- public:
+public:
   ImportCache() noexcept = default;
 
   /// @brief Set a new module to the map

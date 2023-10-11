@@ -13,7 +13,7 @@ ReferenceAlignment: Left
 AlignConsecutiveMacros: true
 
 AccessModifierOffset: -2
-AlignAfterOpenBracket: false
+AlignAfterOpenBracket: BlockIndent
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AlignEscapedNewlinesLeft: false
@@ -28,8 +28,8 @@ AllowShortLoopsOnASingleLine: true
 AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: true
-BinPackArguments: true
-BinPackParameters: true
+BinPackArguments: false
+BinPackParameters: false
 BreakBeforeBraces: Custom
 BraceWrapping: {
     AfterClass: 'false'
@@ -51,7 +51,7 @@ BraceWrapping: {
 BreakAfterJavaFieldAnnotations: true
 BreakBeforeInheritanceComma: false
 BreakBeforeBinaryOperators: None
-BreakBeforeTernaryOperators: true
+BreakBeforeTernaryOperators: false
 BreakConstructorInitializersBeforeComma: true
 BreakStringLiterals: true
 
@@ -62,7 +62,7 @@ ContinuationIndentWidth: 8
 Cpp11BracedListStyle: true
 SpaceBeforeCpp11BracedList: false
 DerivePointerAlignment: false
-ExperimentalAutoDetectBinPacking: true
+ExperimentalAutoDetectBinPacking: false
 PackConstructorInitializers: NextLine
 ForEachMacros:   [ foreach ]
 IndentCaseLabels: true
@@ -86,7 +86,7 @@ PenaltyBreakString: 1000
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 60
 PointerAlignment: Left
-SpaceAfterCStyleCast: false
+SpaceAfterCStyleCast: true
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeParens: ControlStatements
 SpaceInEmptyParentheses: false

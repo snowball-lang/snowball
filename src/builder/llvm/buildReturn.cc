@@ -28,8 +28,8 @@ void LLVMBuilder::visit(ir::Return* ret) {
     if (utils::cast<types::DefinedType>(ret->getType())) {
       auto retArg = ctx->getCurrentFunction()->getArg(0);
       bool doNotMove = false;
-      if (is<ir::Call>(exprValue.get()) &&
-        !is<ir::ObjectInitialization>(exprValue.get()) && !is<ir::ObjectInitialization>(exprValue.get())) {
+      if (is<ir::Call>(exprValue.get()) && !is<ir::ObjectInitialization>(exprValue.get()) &&
+          !is<ir::ObjectInitialization>(exprValue.get())) {
         ctx->retValueUsedFromArg = true;
         doNotMove = true;
       }
@@ -41,14 +41,14 @@ void LLVMBuilder::visit(ir::Return* ret) {
       builder->CreateBr(sretBB);
       builder->SetInsertPoint(sretBB);
 
-      if (llvm::isa<llvm::LoadInst>(e)) {
-        e = llvm::cast<llvm::LoadInst>(e)->getPointerOperand();
-      }
+      if (llvm::isa<llvm::LoadInst>(e)) { e = llvm::cast<llvm::LoadInst>(e)->getPointerOperand(); }
 
       if (!doNotMove) {
-        builder->CreateMemCpy(retArg, llvm::MaybeAlign(), e, llvm::MaybeAlign(), builder->getInt64(ret->getType()->sizeOf()), 0);
+        builder->CreateMemCpy(
+                retArg, llvm::MaybeAlign(), e, llvm::MaybeAlign(), builder->getInt64(ret->getType()->sizeOf()), 0
+        );
       }
-      //auto store = builder->CreateStore(load(e, ret->getType()), retArg);
+      // auto store = builder->CreateStore(load(e, ret->getType()), retArg);
 
       builder->CreateRetVoid();
       return;

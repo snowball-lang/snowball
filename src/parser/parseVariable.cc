@@ -34,12 +34,15 @@ Syntax::Statement::VariableDecl* Parser::parseVariable() {
     if (is<TokenType::SYM_SEMI_COLLON>(peek(0, true))) next();
   } else if (!is<TokenType::SYM_SEMI_COLLON>()) {
     createError<SYNTAX_ERROR>(
-            "Invalid variable declaration syntax!", {.info = "Expected '=' for a variable declaration"});
+            "Invalid variable declaration syntax!", {.info = "Expected '=' for a variable declaration"}
+    );
   } else if (typeDef == nullptr) {
-    createError<SYNTAX_ERROR>("Undeclared type for uninitialized variable declaration!",
+    createError<SYNTAX_ERROR>(
+            "Undeclared type for uninitialized variable declaration!",
             {.info = "Variable declarations must have type definition if "
                      "it's not "
-                     "initialized"});
+                     "initialized"}
+    );
   }
 
   auto v = Syntax::N<Syntax::Statement::VariableDecl>(name, value, isMutable);

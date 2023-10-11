@@ -1,12 +1,12 @@
 
 #include "../ast/syntax/nodes.h"
+#include "../ast/types/Interface.h"
 #include "../ast/visitor/ASTContext.h"
 #include "../ast/visitor/Visitor.h"
 #include "../ir/builder/IRBuilder.h"
 #include "../ir/values/Value.h"
 #include "../services/ImportService.h"
 #include "../sourceInfo/DBGSourceInfo.h"
-#include "../ast/types/Interface.h"
 #include "MacroInstance.h"
 #include "TransformItem.h"
 
@@ -33,8 +33,8 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
   ir::IRBuilder& builder;
   /// @brief A map containing all core interfaces
   std::unordered_map<std::string, types::InterfaceType*> coreInterfaces = {};
-  
- public:
+
+public:
   // Module given to us so we can
   // identify where in the program we are.
   std::shared_ptr<ir::Module> module = nullptr;
@@ -64,7 +64,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
   /// @brief The current macro instance being transformed
   std::vector<std::pair<DBGSourceInfo*, transform::MacroInstance*>> macroBacktrace = {};
 
- private:
+private:
   /// Utility function to get a primitive type
   /// @param name Type name to search for
   /// @return Primitive type shared pointer
@@ -75,15 +75,17 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
     return ty->getType();
   }
 
- public:
+public:
   // Create a new instance of a context
   TransformContext(
-          std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder, bool testMode = false, bool benchMode = false);
+          std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder, bool testMode = false, bool benchMode = false
+  );
 
   /**
    * @brief Get a primitive number type
-  */
-  template <typename T> auto getPrimitiveNumberType(int bits) {
+   */
+  template <typename T>
+  auto getPrimitiveNumberType(int bits) {
     auto ty = new T(bits);
     ty->addImpl(getBuiltinTypeImpl("Sized"));
     ty->addImpl(getBuiltinTypeImpl("Numeric"));
@@ -167,7 +169,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
 
   ~TransformContext() noexcept = default;
 
- public:
+public:
   // The cache. Look at `class Cache` to know more
   // about it and what it does.
   Cache* cache;
@@ -177,7 +179,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
   // A flag that shows if a function should be generated
   bool generateFunction = false;
 
- public:
+public:
   /// @brief get a saved state of the context
   std::shared_ptr<transform::ContextState> saveState();
   /// @brief set a state to the current context

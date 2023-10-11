@@ -9,22 +9,24 @@ using namespace snowball::services;
 namespace snowball {
 namespace Syntax {
 
-std::pair<std::tuple<std::optional<std::shared_ptr<ir::Value>>,
+std::pair<
+        std::tuple<
+                std::optional<std::shared_ptr<ir::Value>>,
+                std::optional<types::Type*>,
+                std::optional<std::deque<std::shared_ptr<ir::Func>>>,
+                std::optional<std::deque<Cache::FunctionStore>>,
+                std::optional<std::shared_ptr<ir::Module>>,
+                bool /* Accept private members */>,
+        std::optional<std::shared_ptr<ir::Value>>>
+Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool isStatic) {
+  auto getFromType = [&](types::Type* type, std::shared_ptr<ir::Value> value = nullptr)
+          -> std::tuple<
+                  std::optional<std::shared_ptr<ir::Value>>,
                   std::optional<types::Type*>,
                   std::optional<std::deque<std::shared_ptr<ir::Func>>>,
                   std::optional<std::deque<Cache::FunctionStore>>,
                   std::optional<std::shared_ptr<ir::Module>>,
-                  bool /* Accept private members */>,
-        std::optional<std::shared_ptr<ir::Value>>>
-Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool isStatic) {
-  auto getFromType = [&](types::Type* type,
-                             std::shared_ptr<ir::Value> value =
-                                     nullptr) -> std::tuple<std::optional<std::shared_ptr<ir::Value>>,
-                                                      std::optional<types::Type*>,
-                                                      std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                                                      std::optional<std::deque<Cache::FunctionStore>>,
-                                                      std::optional<std::shared_ptr<ir::Module>>,
-                                                      bool /* Accept private members */> {
+                  bool /* Accept private members */> {
     if (auto x = utils::cast<types::ReferenceType>(type)) { type = x->getBaseType(); }
     if (auto x = utils::cast<types::TypeAlias>(type)) { type = x->getBaseType(); }
 
@@ -50,8 +52,9 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
           // assert(v == std::nullopt);
           assert(value != nullptr);
 
-          indexValue =
-                  getBuilder().createIndexExtract(dbgInfo, value, *fieldValue, std::distance(fields.begin(), fieldValue));
+          indexValue = getBuilder().createIndexExtract(
+                  dbgInfo, value, *fieldValue, std::distance(fields.begin(), fieldValue)
+          );
           getBuilder().setType(indexValue, (*fieldValue)->type);
         }
       }
@@ -60,7 +63,8 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
       if (!indexValue && !ty.has_value() && !fns.has_value() && !ovs.has_value() && !mod.has_value()) {
         if (OperatorService::isOperator(name)) name = OperatorService::operatorName(OperatorService::operatorID(name));
         E<VARIABLE_ERROR>(
-                dbgInfo, FMT("Coudn't find '%s' inside type '%s'!", name.c_str(), x->getPrettyName().c_str()));
+                dbgInfo, FMT("Coudn't find '%s' inside type '%s'!", name.c_str(), x->getPrettyName().c_str())
+        );
       }
       return {indexValue ? std::make_optional(indexValue) : std::nullopt, ty, fns, ovs, mod, isInClassContext(x)};
     } else {
@@ -74,8 +78,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
       if (auto x = utils::cast<types::PointerType>(type)) {
         auto str = getBuiltinTypeUUID(x->getPointedType(), x->isMutable() ? _SNOWBALL_MUT_PTR : _SNOWBALL_CONST_PTR);
         if (!str.empty()) uuid = str;
-      } else if (auto x = utils::cast<types::NumericType>(type);
-                 x && !utils::is<types::CharType>(x)) {
+      } else if (auto x = utils::cast<types::NumericType>(type); x && !utils::is<types::CharType>(x)) {
         auto str = getBuiltinTypeUUID(x, _SNOWBALL_INT_IMPL);
         if (!str.empty()) uuid = str;
       }
@@ -83,8 +86,10 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
       auto [v, ty, fns, ovs, mod] = getFromIdentifier(dbgInfo, name, generics, uuid);
       if ((!fns.has_value()) && (!ovs.has_value())) {
         if (OperatorService::isOperator(name)) name = OperatorService::operatorName(OperatorService::operatorID(name));
-        E<VARIABLE_ERROR>(dbgInfo,
-                FMT("Coudn't find function '%s' inside type '%s'!", name.c_str(), type->getPrettyName().c_str()));
+        E<VARIABLE_ERROR>(
+                dbgInfo,
+                FMT("Coudn't find function '%s' inside type '%s'!", name.c_str(), type->getPrettyName().c_str())
+        );
       }
 
       return {std::nullopt, std::nullopt, fns, ovs, std::nullopt, false};
@@ -93,7 +98,8 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     return {std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt, false};
   };
 
-  auto getFromModule = [&](std::shared_ptr<ir::Module> m) -> std::tuple<std::optional<std::shared_ptr<ir::Value>>,
+  auto getFromModule = [&](std::shared_ptr<ir::Module> m) -> std::tuple<
+                                                                  std::optional<std::shared_ptr<ir::Value>>,
                                                                   std::optional<types::Type*>,
                                                                   std::optional<std::deque<std::shared_ptr<ir::Func>>>,
                                                                   std::optional<std::deque<Cache::FunctionStore>>,
@@ -109,10 +115,12 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
             getFromIdentifier(dbgInfo, index->getIdentifier()->getIdentifier(), generics, fullUUID);
 
     if (!v.has_value() && !ty.has_value() && !fns.has_value() && !ovs.has_value() && !mod.has_value()) {
-      E<VARIABLE_ERROR>(dbgInfo,
+      E<VARIABLE_ERROR>(
+              dbgInfo,
               FMT("Coudn't find '%s' inside module '%s'!",
-                      index->getIdentifier()->getIdentifier().c_str(),
-                      m->getName().c_str()));
+                  index->getIdentifier()->getIdentifier().c_str(),
+                  m->getName().c_str())
+      );
     }
 
     return {v, ty, fns, ovs, mod, isInModuleContext(m)};
@@ -126,23 +134,29 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     if (val && (!isStatic)) {
       return {getFromType(val.value()->getType(), *val), val.value()};
     } else if (val) {
-      E<TYPE_ERROR>(dbgInfo,
+      E<TYPE_ERROR>(
+              dbgInfo,
               "Static method call / accesses can only be "
-              "used with types, not values!");
+              "used with types, not values!"
+      );
     }
 
     else if (mod && (!isStatic)) {
-      E<TYPE_ERROR>(dbgInfo,
+      E<TYPE_ERROR>(
+              dbgInfo,
               "Module members must be accessed by using "
-              "static indexes!");
+              "static indexes!"
+      );
     } else if (mod) {
       return {getFromModule(*mod), std::nullopt};
     }
 
     else if (type && (!isStatic)) {
-      E<TYPE_ERROR>(dbgInfo,
+      E<TYPE_ERROR>(
+              dbgInfo,
               "Can't use type references for method calls / "
-              "accesses!");
+              "accesses!"
+      );
     } else if (type) {
       return {getFromType(*type), std::nullopt};
     }
@@ -150,9 +164,11 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     else if (overloads || funcs) {
       E<TYPE_ERROR>(dbgInfo, "Can't use function pointer as index base!");
     } else {
-      E<VARIABLE_ERROR>(baseIdentifier->getDBGInfo(),
+      E<VARIABLE_ERROR>(
+              baseIdentifier->getDBGInfo(),
               FMT("Cannot find identifier `%s`!", baseIdentifier->getIdentifier().c_str()),
-              {.info = "this name is not defined"});
+              {.info = "this name is not defined"}
+      );
     }
 
     assert(false && "BUG: unhandled index value");
@@ -163,23 +179,29 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     if (v && (!isStatic)) {
       return {getFromType(v.value()->getType(), *v), v.value()};
     } else if (v) {
-      E<TYPE_ERROR>(dbgInfo,
+      E<TYPE_ERROR>(
+              dbgInfo,
               "Static method index can only be "
-              "used with types, not values!");
+              "used with types, not values!"
+      );
     }
 
     else if (mod && (!isStatic)) {
-      E<TYPE_ERROR>(dbgInfo,
+      E<TYPE_ERROR>(
+              dbgInfo,
               "Module members must be accessed by using "
-              "static indexes!");
+              "static indexes!"
+      );
     } else if (mod) {
       return {getFromModule(*mod), std::nullopt};
     }
 
     else if (t && (!isStatic)) {
-      E<TYPE_ERROR>(dbgInfo,
+      E<TYPE_ERROR>(
+              dbgInfo,
               "Can't use type references for method calls / "
-              "accesses!");
+              "accesses!"
+      );
     } else if (t) {
       return {getFromType(*t), std::nullopt};
     }
@@ -196,9 +218,11 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     auto ty = transformSizedType(x, false, "Can't access method calls from unsized types (%s)!");
 
     if (ty && (!isStatic)) {
-      E<TYPE_ERROR>(dbgInfo,
+      E<TYPE_ERROR>(
+              dbgInfo,
               "Can't use type references for method calls / "
-              "accesses!");
+              "accesses!"
+      );
     } else if (ty) {
       return {getFromType(ty), std::nullopt};
     }
@@ -207,9 +231,11 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     auto v = trans(base);
     return {getFromType(v->getType(), v), v};
   } else {
-    E<SYNTAX_ERROR>(dbgInfo,
+    E<SYNTAX_ERROR>(
+            dbgInfo,
             "Static acces/method call can only be used with "
-            "indentifiers!");
+            "indentifiers!"
+    );
   }
 
   return {{std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt, false}, std::nullopt};

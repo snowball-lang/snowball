@@ -18,19 +18,25 @@ void LLVMBuilder::createBenchmark(llvm::Function* mainFunction) {
   mainFunction->addFnAttr(llvm::Attribute::NoInline);
   mainFunction->addFnAttr(llvm::Attribute::OptimizeNone);
 
-  builder->CreateCall(printFunction,
-          {builder->CreateGlobalStringPtr(FMT("\nExecuting %s%i%s benchmark(s)... \n %snote:%s this can take a while! "
-                                              "you wont see any output until benchmarks are done.\n",
-                                                  BBLU,
-                                                  ctx->benchmarks.size(),
-                                                  RESET,
-                                                  BOLD,
-                                                  RESET),
-                  "bench.msg")});
+  builder->CreateCall(
+          printFunction,
+          {builder->CreateGlobalStringPtr(
+                  FMT("\nExecuting %s%i%s benchmark(s)... \n %snote:%s this can take a while! "
+                      "you wont see any output until benchmarks are done.\n",
+                      BBLU,
+                      ctx->benchmarks.size(),
+                      RESET,
+                      BOLD,
+                      RESET),
+                  "bench.msg"
+          )}
+  );
 
   if (ctx->benchmarks.empty()) {
-    builder->CreateCall(printFunction,
-            {builder->CreateGlobalStringPtr(FMT(" %soh no!%s No benchmarks found! 😿\n\n", BOLD, RESET), "bench.msg")});
+    builder->CreateCall(
+            printFunction,
+            {builder->CreateGlobalStringPtr(FMT(" %soh no!%s No benchmarks found! 😿\n\n", BOLD, RESET), "bench.msg")}
+    );
     builder->CreateRet(builder->getInt32(0));
     return;
   }
@@ -44,14 +50,18 @@ void LLVMBuilder::createBenchmark(llvm::Function* mainFunction) {
   }
 
   auto array = llvm::ConstantArray::get(
-          llvm::ArrayType::get(builder->getInt8PtrTy(), llvmBenchmarks.size()), llvmBenchmarks);
+          llvm::ArrayType::get(builder->getInt8PtrTy(), llvmBenchmarks.size()), llvmBenchmarks
+  );
   auto arrayGlobal = new llvm::GlobalVariable(
-          *module, array->getType(), true, llvm::GlobalValue::PrivateLinkage, array, "bench.array");
+          *module, array->getType(), true, llvm::GlobalValue::PrivateLinkage, array, "bench.array"
+  );
 
   auto nameArray = llvm::ConstantArray::get(
-          llvm::ArrayType::get(builder->getInt8PtrTy(), benchmarkNames.size()), benchmarkNames);
+          llvm::ArrayType::get(builder->getInt8PtrTy(), benchmarkNames.size()), benchmarkNames
+  );
   auto globalNameArray = new llvm::GlobalVariable(
-          *module, nameArray->getType(), true, llvm::GlobalValue::PrivateLinkage, nameArray, "bench.name.array");
+          *module, nameArray->getType(), true, llvm::GlobalValue::PrivateLinkage, nameArray, "bench.name.array"
+  );
 
   auto call = builder->CreateCall(benchFunc, {arrayGlobal, globalNameArray, builder->getInt32(llvmBenchmarks.size())});
 

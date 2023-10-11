@@ -44,7 +44,7 @@ namespace Syntax {
  */
 class Analyzer : public AcceptorExtend<Analyzer, Visitor> {
 #include "../defs/accepts.def"
- public:
+public:
   Analyzer(const SourceInfo* srci) : AcceptorExtend(srci){};
 
   /**

@@ -37,7 +37,7 @@ int build(app::Options::BuildOptions p_opts) {
     SNError(Error::IO_ERROR,
             FMT("Package main file not found in snowball "
                 "project! \n\t(searching for: '%s')",
-                    filename.c_str()))
+                filename.c_str()))
             .print_error();
     return EXIT_FAILURE;
   }
@@ -66,8 +66,10 @@ int build(app::Options::BuildOptions p_opts) {
   }
 
   if (!p_opts.silent)
-    Logger::message("Project",
-            FMT("%s v%s [%s%s%s]", package_name.c_str(), package_version.c_str(), BOLD, build_type.c_str(), RESET));
+    Logger::message(
+            "Project",
+            FMT("%s v%s [%s%s%s]", package_name.c_str(), package_version.c_str(), BOLD, build_type.c_str(), RESET)
+    );
 
   std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
 

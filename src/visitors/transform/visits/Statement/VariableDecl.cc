@@ -8,7 +8,9 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
-  auto definedType = p_node->getDefinedType() == nullptr ? nullptr : transformSizedType(p_node->getDefinedType(), false, "Cannot declare variable with unsized type '%s'");
+  auto definedType = p_node->getDefinedType() == nullptr ?
+          nullptr :
+          transformSizedType(p_node->getDefinedType(), false, "Cannot declare variable with unsized type '%s'");
   auto variableName = p_node->getName();
   auto variableValue = p_node->getValue();
   auto isMutable = p_node->isMutable();
@@ -19,10 +21,12 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
   }
 
   if (ctx->getInScope(variableName, ctx->currentScope()).second) {
-    E<VARIABLE_ERROR>(p_node,
+    E<VARIABLE_ERROR>(
+            p_node,
             FMT("Variable with name '%s' is already "
                 "defined in the current scope!",
-                    variableName.c_str()));
+                variableName.c_str())
+    );
   }
 
   auto var = getBuilder().createVariable(p_node->getDBGInfo(), variableName, false, isMutable);
@@ -43,11 +47,13 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
       if (auto v = tryCast(val, definedType); v != nullptr) {
         this->value = v;
       } else {
-        E<VARIABLE_ERROR>(p_node,
+        E<VARIABLE_ERROR>(
+                p_node,
                 FMT("Can't assign value with type '%s' to "
                     "the variable with type '%s'!",
-                        val->getType()->getPrettyName().c_str(),
-                        definedType->getPrettyName().c_str()));
+                    val->getType()->getPrettyName().c_str(),
+                    definedType->getPrettyName().c_str())
+        );
       }
     }
 

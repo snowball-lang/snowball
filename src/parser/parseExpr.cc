@@ -78,8 +78,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
         expr = parseExpr();
         next();
         assert_tok<TokenType::BRACKET_RPARENT>("')'");
-      } else if (TOKEN(VALUE_NUMBER) || TOKEN(VALUE_FLOAT) || TOKEN(VALUE_STRING) || TOKEN(VALUE_CHAR) ||
-              TOKEN(VALUE_BOOL)) {
+      } else if (TOKEN(VALUE_NUMBER) || TOKEN(VALUE_FLOAT) || TOKEN(VALUE_STRING) || TOKEN(VALUE_CHAR) || TOKEN(VALUE_BOOL)) {
         auto ty = Syntax::Expression::ConstantValue::deduceType(m_current.type);
 
         expr = Syntax::N<Syntax::Expression::ConstantValue>(ty, m_current.to_string());
@@ -95,8 +94,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
 
         expr = Syntax::N<Syntax::Expression::NewInstance>(call, ty);
         expr->setDBGInfo(call->getDBGInfo());
-      } else if (TOKEN(OP_NOT) || TOKEN(OP_PLUS) || TOKEN(OP_MINUS) || TOKEN(OP_BIT_NOT) || TOKEN(OP_BIT_AND) ||
-              TOKEN(OP_MUL)) {
+      } else if (TOKEN(OP_NOT) || TOKEN(OP_PLUS) || TOKEN(OP_MINUS) || TOKEN(OP_BIT_NOT) || TOKEN(OP_BIT_AND) || TOKEN(OP_MUL)) {
         if (tk.type == TokenType::OP_NOT)
           exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(Operators::OperatorType::NOT));
         else if (tk.type == TokenType::OP_PLUS)
@@ -160,9 +158,11 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
           assert_tok<TokenType::IDENTIFIER>("an identifier");
           auto index = parseIdentifier();
 
-          auto dbgInfo = new DBGSourceInfo(m_source_info,
+          auto dbgInfo = new DBGSourceInfo(
+                  m_source_info,
                   expr->getDBGInfo()->pos,
-                  expr->getDBGInfo()->width + index->getDBGInfo()->width + (isStatic + 1));
+                  expr->getDBGInfo()->width + index->getDBGInfo()->width + (isStatic + 1)
+          );
           expr = Syntax::N<Syntax::Expression::Index>(expr, index, isStatic);
           expr->setDBGInfo(dbgInfo);
         }
@@ -173,9 +173,11 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
         auto ty = parseType();
         prev();
 
-        auto dbgInfo = new DBGSourceInfo(m_source_info,
+        auto dbgInfo = new DBGSourceInfo(
+                m_source_info,
                 expr->getDBGInfo()->pos,
-                expr->getDBGInfo()->width + expr->getDBGInfo()->width + 2 + ty->getDBGInfo()->width);
+                expr->getDBGInfo()->width + expr->getDBGInfo()->width + 2 + ty->getDBGInfo()->width
+        );
 
         expr = Syntax::N<Syntax::Expression::Cast>(expr, ty);
         expr->setDBGInfo(dbgInfo);
@@ -247,7 +249,8 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
   if (auto x = utils::cast<Syntax::Expression::BinaryOp>(expr)) {
     if (!allowAssign && Syntax::Expression::BinaryOp::is_assignment(x)) {
       createError<SYNTAX_ERROR>(
-              expr->getDBGInfo()->pos, "assignment is not allowed inside expression.", {}, x->to_string().size());
+              expr->getDBGInfo()->pos, "assignment is not allowed inside expression.", {}, x->to_string().size()
+      );
     }
   }
 

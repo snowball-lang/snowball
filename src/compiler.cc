@@ -53,7 +53,7 @@ void Compiler::compile(bool silent) {
 #define SHOW_STATUS(_)
 #endif
 
-  chdir(((fs::path)path).parent_path().c_str());
+  chdir(((fs::path) path).parent_path().c_str());
   SHOW_STATUS(Logger::compiling(Logger::progress(0)));
 
   /* ignore_goto_errors() */ {
@@ -83,7 +83,8 @@ void Compiler::compile(bool silent) {
       mainModule->setSourceInfo(srcInfo);
 
       auto simplifier = new Syntax::Transformer(
-              mainModule->downcasted_shared_from_this<ir::Module>(), srcInfo, testsEnabled, benchmarkEnabled);
+              mainModule->downcasted_shared_from_this<ir::Module>(), srcInfo, testsEnabled, benchmarkEnabled
+      );
 #if _SNOWBALL_TIMERS_DEBUG
       DEBUG_TIMER("Simplifier: %fs", utils::_timer([&] { simplifier->visitGlobal(ast); }));
 #else
@@ -98,8 +99,8 @@ void Compiler::compile(bool silent) {
 
 #if _SNOWBALL_TIMERS_DEBUG
       DEBUG_TIMER("Passes: %fs", utils::_timer([&] {
-        for (auto pass : passes) pass->run(ast);
-      }));
+                    for (auto pass : passes) pass->run(ast);
+                  }));
 #else
       for (auto pass : passes) { pass->run(ast); }
 #endif
@@ -133,12 +134,14 @@ toml::parse_result Compiler::getConfiguration() {
   std::ifstream f(name.c_str());
   if (f.good()) { return toml::parse_file(name); }
 
-  throw SNError(Error::IO_ERROR,
+  throw SNError(
+          Error::IO_ERROR,
           FMT("Project configuration not found (%s)\n%shelp%s: try "
               "runing 'snowball init --cfg'",
-                  name.c_str(),
-                  BGRN,
-                  RESET));
+              name.c_str(),
+              BGRN,
+              RESET)
+  );
 }
 
 void Compiler::cleanup() { }

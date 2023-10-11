@@ -77,7 +77,8 @@ Syntax::Macro* Parser::parseMacro() {
     isStatementMacro = false;
     auto expr = parseExpr(false);
     auto macro = Syntax::N<Syntax::Macro>(
-            name, args, Syntax::N<Syntax::Block>(std::vector<Syntax::Node*>{expr}), isStatementMacro);
+            name, args, Syntax::N<Syntax::Block>(std::vector<Syntax::Node*>{expr}), isStatementMacro
+    );
     macro->setDBGInfo(dbg);
     for (auto [n, a] : attributes) { macro->addAttribute(n, a); }
     return macro;

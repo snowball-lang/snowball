@@ -30,7 +30,7 @@ class Linker {
   std::vector<std::string> rpaths = {
           "/usr/local/lib", "/usr/lib", "/usr/lib/x86_64-linux-gnu", "/lib/x86_64-linux-gnu", "/lib"};
 
- public:
+public:
   /**
    * @brief Default constructor for the Linker class.
    *
@@ -71,7 +71,7 @@ class Linker {
    */
   static std::string getSharedLibraryName(std::string& library);
 
- private:
+private:
   /**
    * @brief Constructs the linker arguments based on input, output, and additional arguments.
    *

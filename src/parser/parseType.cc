@@ -13,7 +13,7 @@ namespace snowball::parser {
 TypeRef* Parser::parseType() {
   throwIfNotType();
   assert(is<TokenType::OP_BIT_AND>() || is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() ||
-          is<TokenType::KWORD_FUNC>() || is<TokenType::OP_AND>() || is<TokenType::OP_MUL>());
+         is<TokenType::KWORD_FUNC>() || is<TokenType::OP_AND>() || is<TokenType::OP_MUL>());
   auto pos = m_current.get_pos();
   if (is<TokenType::KWORD_DECLTYPE>()) {
     auto w = m_current.get_width();
@@ -59,13 +59,15 @@ TypeRef* Parser::parseType() {
       pointerDepth.push_back(true);
       next();
     } else {
-      createError<SYNTAX_ERROR>("Expected 'const' or 'mut' after '*' (pointer type specifier)",
+      createError<SYNTAX_ERROR>(
+              "Expected 'const' or 'mut' after '*' (pointer type specifier)",
               {
                       .note = "If you want to use '*' as a multiplication operator, use parentheses around the "
                               "expression",
                       .help = "check the documentation for more information "
                               "(https://snowball-lang.gitbook.io/docs/language-reference/types/pointer-types)",
-              });
+              }
+      );
     }
   }
   int referenceDepth = 0;
@@ -79,10 +81,8 @@ TypeRef* Parser::parseType() {
   }
   bool isMutable = false;
   if (is<TokenType::KWORD_MUTABLE>()) {
-    if (pointerDepth.size() > 0) {
-      createError<SYNTAX_ERROR>("Cannot have a mutable pointer to a mutable type!");
-    }
-    
+    if (pointerDepth.size() > 0) { createError<SYNTAX_ERROR>("Cannot have a mutable pointer to a mutable type!"); }
+
     isMutable = true;
     next();
   }
@@ -115,9 +115,7 @@ TypeRef* Parser::parseType() {
   }
   for (int i = 0; i < pointerDepth.size(); i++) {
     auto base = t;
-    if (base->isReferenceType()) {
-      createError<SYNTAX_ERROR>("Cannot have a pointer to a reference type!");
-    }
+    if (base->isReferenceType()) { createError<SYNTAX_ERROR>("Cannot have a pointer to a reference type!"); }
     t = Syntax::N<PointerType>(base, pointerDepth[i], dbg);
   }
   return t;

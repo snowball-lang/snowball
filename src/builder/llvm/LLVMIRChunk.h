@@ -7,12 +7,16 @@ namespace Syntax {
 
 /// @brief A node representing a chunk of the LLVM IR block.
 struct LLVMIRChunk {
-  enum { LLCode, TypeAccess } type;
+  enum
+  {
+    LLCode,
+    TypeAccess
+  } type;
   std::string code;
   types::Type* ty;
 };
 
-}
+} // namespace Syntax
 } // namespace snowball
 
 #endif // __SNOWBALL_LLVM_IR_CHUNK_H_

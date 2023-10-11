@@ -334,7 +334,7 @@ struct Token {
   }
 
   std::pair<int, int> get_pos() const { return std::pair<int, int>(std::make_pair(line, col)); }
-  uint32_t get_width() const { return (uint32_t)to_string().size(); }
+  uint32_t get_width() const { return (uint32_t) to_string().size(); }
 };
 } // namespace snowball
 

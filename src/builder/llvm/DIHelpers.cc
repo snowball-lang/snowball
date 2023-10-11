@@ -22,7 +22,8 @@ llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
 
   std::string baseName = x->getNiceName();
 
-  llvm::DISubprogram* subprogram = dbg.builder->createFunction(file,
+  llvm::DISubprogram* subprogram = dbg.builder->createFunction(
+          file,
           baseName,
           x->getMangle(),
           file,
@@ -33,19 +34,19 @@ llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
           llvm::DISubprogram::toSPFlags(
                   /*IsLocalToUnit=*/true,
                   /*IsDefinition=*/true,
-                  /*IsOptimized=*/!dbg.debug));
+                  /*IsOptimized=*/!dbg.debug
+          )
+  );
   return subprogram;
 }
 
 llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
   auto llvmType = getLLVMType(ty);
-  
+
   if (is<types::IntType>(ty) || cast<types::CharType>(ty)) {
-    return dbg.builder->createBasicType(
-            ty->getName(), ty->sizeOf() * 8, llvm::dwarf::DW_ATE_signed);
+    return dbg.builder->createBasicType(ty->getName(), ty->sizeOf() * 8, llvm::dwarf::DW_ATE_signed);
   } else if (is<types::FloatType>(ty)) {
-    return dbg.builder->createBasicType(
-            ty->getName(), ty->sizeOf() * 8, llvm::dwarf::DW_ATE_float);
+    return dbg.builder->createBasicType(ty->getName(), ty->sizeOf() * 8, llvm::dwarf::DW_ATE_float);
   } else if (cast<types::VoidType>(ty)) {
     return nullptr;
   } else if (auto x = cast<types::ReferenceType>(ty)) {
@@ -75,7 +76,8 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     llvm::DIType* parentDIType = nullptr;
     if (auto p = c->getParent()) { parentDIType = getDIType(c->getParent()); }
     // TODO: create struct type if it's a struct
-    auto debugType = dbg.builder->createClassType(file,
+    auto debugType = dbg.builder->createClassType(
+            file,
             c->getPrettyName(),
             file,
             dbgInfo->line,
@@ -84,12 +86,15 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
             0,
             llvm::DINode::FlagZero,
             parentDIType,
-            dbg.builder->getOrCreateArray(generatedFields));
+            dbg.builder->getOrCreateArray(generatedFields)
+    );
 
     generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Metadata*>(
-            fields, [&](types::DefinedType::ClassField* t) {
+            fields,
+            [&](types::DefinedType::ClassField* t) {
               // TODO: custom line for fields?
-              return dbg.builder->createMemberType(debugType,
+              return dbg.builder->createMemberType(
+                      debugType,
                       t->name,
                       file,
                       dbgInfo->line,
@@ -97,8 +102,10 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
                       /*AlignInBits=*/0,
                       0,
                       llvm::DINode::FlagZero,
-                      getDIType(t->type));
-            });
+                      getDIType(t->type)
+              );
+            }
+    );
 
     return debugType;
   } else {

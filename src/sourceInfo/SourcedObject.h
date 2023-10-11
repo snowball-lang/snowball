@@ -17,10 +17,10 @@ static const SourceInfo* TEMP_DBG_INFO = new SourceInfo("<error>", "<source>");
 ///          It is also used to store the source code itself.
 /// @see SrcObject
 class SrcObject {
- protected:
+protected:
   const SourceInfo* m_srci;
 
- public:
+public:
   SrcObject(const SourceInfo* i) : m_srci(i) { }
   SrcObject() : m_srci(TEMP_DBG_INFO) { }
 

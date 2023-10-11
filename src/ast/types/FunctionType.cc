@@ -57,10 +57,11 @@ std::string FunctionType::getMangledName() const {
 
 FunctionType* FunctionType::from(ir::Func* fn, Syntax::Statement::FunctionDef* node) {
   auto args = utils::map<std::string, std::shared_ptr<ir::Argument>, Type*>(
-          fn->getArgs(), [&](auto map) -> auto{ return map.second->getType(); });
+          fn->getArgs(), [&](auto map) -> auto{ return map.second->getType(); }
+  );
   bool isMutable = node ? node->isMutable() : false;
   if (fn->hasParent() && (!fn->isStatic()) &&
-          services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(fn->getName())) {
+      services::OperatorService::opEquals<services::OperatorService::CONSTRUCTOR>(fn->getName())) {
     args.insert(args.begin(), fn->getParent());
   }
 

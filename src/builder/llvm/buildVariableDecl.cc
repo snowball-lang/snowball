@@ -1,7 +1,7 @@
 
 #include "../../ir/values/Argument.h"
-#include "../../ir/values/VariableDeclaration.h"
 #include "../../ir/values/Call.h"
+#include "../../ir/values/VariableDeclaration.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 
