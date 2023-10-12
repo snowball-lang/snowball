@@ -186,9 +186,7 @@ fn [[
 //}
 
 } /* namespace __internal */;
-
 }
-
 /**
  * @class Exception
  * @brief A class representing an exception.
@@ -701,7 +699,7 @@ pub class StringView<_CharType: Sized>: Iterable<_CharType> {
       { return self.concat(self.buffer, str, self.length, len); }
 }
 
-type String = StringView<char>;
+pub type String = StringView<char>;
 
 // TODO (implement wchar): using WideString as StringView<&wchar>
 

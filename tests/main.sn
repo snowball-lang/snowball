@@ -27,5 +27,5 @@ fn x<T: Sized>(a: T) {
 }
 
 pub fn main() i32 {
-    x(1);
+    let a = new Core::String("awd");
 }
