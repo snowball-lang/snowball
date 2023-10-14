@@ -17,7 +17,30 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
       // Remove the "" from the string value
       str = str.substr(1, str.size() - 2);
       value = getBuilder().createStringValue(p_node->getDBGInfo(), str);
-      value->setType(ctx->getCharType()->getReferenceTo());
+      value->setType(ctx->getCharType()->getPointerTo(false));
+      auto size = getBuilder().createNumberValue(p_node->getDBGInfo(), str.size());
+      size->setType(ctx->getInt32Type());
+
+      auto index = N<Expression::Index>(
+        ctx->module->getUniqueName() == (ctx->imports->CORE_UUID  + "_$core")
+          ? (Expression::Base*)N<Expression::Identifier>("String")
+          : (Expression::Base*)N<Expression::Index>(
+            N<Expression::Identifier>("Core"),
+            N<Expression::Identifier>("String"),
+            true
+          ),
+        N<Expression::Identifier>("from"),
+        true
+      );
+      index->setDBGInfo(p_node->getDBGInfo());
+
+      auto [result, _] = getFromIndex(p_node->getDBGInfo(), index, true);
+      auto fn = getFunction(p_node, result, "String::from", {value->getType(), size->getType()});
+
+      assert(fn != nullptr);
+      value = getBuilder().createCall(p_node->getDBGInfo(), fn, {value, size});
+      value->setType(fn->getRetTy());
+
       break;
     }
 

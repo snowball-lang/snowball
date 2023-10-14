@@ -12,7 +12,7 @@ pub fn [[inline]] panic(
   _location: SourceLocation::SourceLocation = @current_location()
 ) {
   System::println("\n\n--------------------");
-  CLib::printf("Program panicked with message: %s\n", message);
+  System::println("Program panicked with message: " + message)
   System::println(" at ".to_string() + _location.file() + "\e[1;37m:" + _location.line() + ":" + _location.column() + "\e[0m");
   System::println("\e[1;37mnote:\e[0m run with \e[1;37m`SN_BACKTRACE=1`\e[0m environment variable to get a backtrace\n");
   System::exit(127);

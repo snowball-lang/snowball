@@ -93,8 +93,8 @@ llvm::Value* LLVMBuilder::load(llvm::Value* v, types::Type* ty) {
   // We don't need to load a value if it's not an alloca instruction.
   // because this reference could from a function call.
   // example: malloc(10); // do not load
-  // if (llvmType->isPointerTy() && llvm::isa<llvm::CallInst>(v))
-  //  return v;
+  //if (llvmType->isPointerTy() && llvm::isa<llvm::CallInst>(v))
+  // return v;
 
   if (v->getType()->isPointerTy()) return builder->CreateLoad(llvmType, v, ".ptr-load");
   return v;

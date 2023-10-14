@@ -27,5 +27,6 @@ fn x<T: Sized>(a: T) {
 }
 
 pub fn main() i32 {
-    x(1);
+    let a: String = "🌊🌊🌊";
+    System::println(a)
 }

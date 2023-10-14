@@ -13,7 +13,6 @@ class [[extends]] char {
     operator [[__internal__, __no_pointer_self__]] >(other: char)  bool {}
     operator [[__internal__, __no_pointer_self__]] <=(other: char) bool {}
     operator [[__internal__, __no_pointer_self__]] >=(other: char) bool {}
-    operator [[__internal__, __no_pointer_self__]] ==(other: char) bool {}
     operator [[__internal__, __no_pointer_self__]] -()             char {}
     mut operator [[__internal__, __no_pointer_self__]] +=(other: char) char {}
     mut operator [[__internal__, __no_pointer_self__]] -=(other: char) char {}
@@ -35,6 +34,34 @@ class [[extends]] char {
     // override with &char
     operator [[__internal__]] =(other: &char) &char {}
     operator [[__internal__]] =(other: char) &char {}
+
+  /**
+   * @brief It performs equality check between a string strings of characters.
+   * @param[in] other The string to compare the character with.
+   * @return The result of the comparison.
+   *
+   * @note It needs to be a c-string compatible type in order to make sure
+   *       we find a null terminator.
+   * @note If any of the strings is null, it returns false.
+   *    If both are null, it returns true.
+   */
+  operator [[internal_linkage, inline]] ==(other: *const char) bool
+  {
+    let this = self as *const char;
+    if !self && !other 
+      { return true; }
+    if !self || !other 
+      { return false; } 
+    let mut i = 0;
+    while this[i] != 0 && other[i] != 0 
+    {
+      if this[i] != other[i] 
+      {
+        return false;
+      }
+      i = i + 1;
+    }
+  }
 }
 
 class [[__internal__]] *const <T> {
@@ -45,7 +72,7 @@ class [[__internal__]] *const <T> {
       ret {=*const T} %0
     } 
 
-    unsafe fn [[inline, llvm_function]] as_ref<>(self: *const T) &T 
+    unsafe fn [[inline, llvm_function]] as_ref(self: *const T) &T 
     {
       ret {=*const T} %self
     }
@@ -80,12 +107,12 @@ class [[__internal__]] *mut <T> {
       ret {=*mut T} %0
     } 
 
-    unsafe fn [[inline, llvm_function]] as_ref<>(mut self: *const T) &T 
+    unsafe fn [[inline, llvm_function]] as_ref(mut self: *const T) &T 
     {
       ret {=*mut T} %self
     }
 
-    mut operator [[__internal__]] =(mut self: *const T, mut other: *const T) *const T {}
+    mut operator [[__internal__]] =(mut self: *const T, mut other: *const T) *mut T {}
 
     fn [[inline, llvm_function]] is_null(mut self: *mut T) bool
     {
@@ -93,7 +120,7 @@ class [[__internal__]] *mut <T> {
       ret i1 %0
     }
 
-    fn [[inline]] unchecked_get(mut self: *mut T, index: i32) &T
+    fn [[inline]] unchecked_get(mut self: *mut T, index: i32) &mut T
     {unsafe{
       return (self + index).as_ref();
     }}

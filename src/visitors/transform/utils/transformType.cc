@@ -55,7 +55,9 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     std::vector<types::Type*> args;
     for (auto arg : fn->getArgs()) args.push_back(transformType(arg));
     auto ret = transformType(fn->getReturnValue());
-    return getBuilder().createFunctionType(args, ret);
+    auto ty = getBuilder().createFunctionType(args, ret);
+    ty->addImpl(ctx->getBuiltinTypeImpl("Sized"));
+    return ty;
   } else if (auto x = ty->_getInternalType()) {
     // TODO: maybe move up in the function to prevent problems with generics?
     return x->copy();

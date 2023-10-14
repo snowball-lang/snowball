@@ -148,7 +148,7 @@ pub extern fn time(*const c_int) c_int;
  * @param str(&char) - string to be converted
  * @return &char - C string
  */
-macro [[export]] c_str(x: const[str]) = (@x as *const char);   
+macro [[export]] c_str(x: const[str]) = (@x.bytes());   
 /**
  * @brief a namespace that contains functions for manipulating strings.
  * @note(1) All functions in this namespace are thread-safe.

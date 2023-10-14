@@ -2,51 +2,7 @@ use Core::Internal::Preloads;
 use [[use_macro(c_str)]] Core::CLib;
 use Core::Ptr;
 
-class [[extends]] char {
-  pub:
-    /**
-     * @brief Converts the character to a string.
-     * @return The string representation of the character.
-     */
-    fn [[inline]] to_string() String 
-      { return new String(self as *const char); }
-    /**
-     * @brief Utility function to create addition between a character and a string.
-     * @param[in] other The string to concatenate the character with.
-     * @return The concatenated string.
-     * @example
-     *  | let a = "hello" + (" world".to_string())
-     * @/example
-     */
-    operator [[inline]] +(other: String) String
-      { return new String(self as *const char) + other; }
-
-    fn [[inline]] to_string(self: char) String
-    { 
-      return new String(self, 1); // TODO: deprecate this once `str` is implemented 
-    }
-
-    /**
-      * @brief It performs equality check between a string strings of characters.
-      * @param[in] other The string to compare the character with.
-      * @return The result of the comparison.
-      *
-      * @note It needs to be a c-string compatible type in order to make sure
-      *       we find a null terminator.
-      * @note If any of the strings is null, it returns false.
-      *    If both are null, it returns true.
-      */
-    operator [[internal_linkage, inline]] ==(other: *const char) bool
-    {
-      if !self && !other 
-        { return true; }
-      if !self || !other 
-        { return false; } 
-      return self.to_string() == other; 
-    }
-}
-
-pub namespace Core {
+pub type String = StringView<char>;
 
 /**
  * @namespace __internal
@@ -187,8 +143,6 @@ fn [[
 
 } /* namespace __internal */;
 
-}
-
 /**
  * @class Exception
  * @brief A class representing an exception.
@@ -204,23 +158,17 @@ pub class Exception {
      * @brief Exception constructor.
      * @param[in] m The message of the exception.
      */ 
-    Exception(m: &char) : msg(m) 
-      { }
-    /**
-      * @brief Exception constructor from a string.
-      * @param[in] m The message of the exception.
-      */
-    Exception<T: Sized>() : msg(m.c_str()) 
+    Exception(m: String) : msg(m) 
       { }
     /**
      * @brief Returns the message of the exception.
      * @return The message of the exception.
      */
-    fn what() &char 
+    fn what() String
       { return self.msg; }
   priv:
     /** The message of the exception. */
-    let msg: &char;
+    let msg: String;
 }
 /**
  * @class IndexError
@@ -539,7 +487,7 @@ pub class Vector<
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating strings.
  */
-pub class StringView<_CharType: Sized>: Iterable<_CharType> {
+pub class StringView<_CharType: Sized> {
   pub:
     type StringType = *const _CharType;
 
@@ -547,39 +495,17 @@ pub class StringView<_CharType: Sized>: Iterable<_CharType> {
      * @brief Default constructor.
      * Constructs an empty string.
      */
-    StringView() : super() 
+    StringView()
       {}
     /**
-      * @brief Constructs a string from a vector of characters.
-      * @param[in] buffer The vector of characters to construct the string from.
-      */
-    StringView(buffer: StringType) : 
-      super(), buffer(buffer), length(CLib::c_string::strlen(buffer as *const CLib::c_char))
-      { self.capacity = self.length + 10; }
-    /**
-     * @brief Constructs a string from another string.
-     * @param[in] other The string to construct the string from.
+     * @return The size of the string.
      */
-    StringView(other: &StringView<_CharType>) : 
-      super(), buffer(other.buffer), length(other.length), 
-      capacity(other.capacity) { }
-    /**
-     * @brief Constructs a string from another string given it's length.
-     * @param[in] other The string to construct the string from.
-     * @param[in] length The length of the string.
-     */
-    StringView(other: StringType, length: i32) : 
-      super(), buffer(other), length(length), 
-      capacity(length + 10) { }
-    /**
-      * @return The size of the string.
-      */
     fn [[internal_linkage, inline]] size() i32 
       { return self.length; }
     /**
-      * @return The buffer containing the string.
-      */
-    fn [[internal_linkage, inline]] c_str() StringType
+     * @return The buffer containing the string.
+     */
+    fn [[internal_linkage, inline]] bytes() StringType
       { return self.buffer; }
     /**
      * @brief It compares the string with another string.
@@ -602,34 +528,12 @@ pub class StringView<_CharType: Sized>: Iterable<_CharType> {
       return true;
     }
     /**
-     * @brief It checks if the 2 strings are equal without a known type.
-     * @param[in] other The string to compare the string with.
-     * @return The result of the comparison.
-     */
-    operator [[internal_linkage, inline]] ==(other: StringType) bool
-      { return self == Self::from(other); }
-    /**
      * @brief It checks if the 2 strings are not equal.
      * @param[in] other The string to compare the string with.
      * @return The result of the comparison.
      */
-    operator [[internal_linkage, inline]] !=<T>(other: T) bool
-      { return !(self == Self::from(other)); }
-    /**
-     * @brief It concatenates the string with another string. 
-     * @param[in] other The string to concatenate the string with.
-     * @return The concatenated string.
-     *
-     * @note it needs to be a c-string compatible type in order to make sure
-     *       we find a null terminator.
-     */
-    operator [[internal_linkage, inline]] +(other: StringType) Self
-    {
-      let len1 = self.length;
-      let len2 = CLib::c_string::strlen(other as *const char);
-      let res = self.concat(self.buffer, other, len1, len2);
-      return new Self(res, len1 + len2);
-    }
+    operator [[internal_linkage, inline]] !=(other: Self) bool
+      { return !(self == other); }
     /**
      * @brief It concatenates the string with another string.
      * @param[in] other The string to concatenate the string with.
@@ -645,10 +549,28 @@ pub class StringView<_CharType: Sized>: Iterable<_CharType> {
      * @return It's self (aka, a string representation of the string).
      */
     fn [[internal_linkage, inline]] to_string() Self
-      { return "\"" + *self + @c_str("\""); }
+      { return "\"" + *self + "\""; }
+    /**
+     * @brief It returns character at the specified index.
+     * @param[in] index The index of the character to return.
+     * @return The character at the specified index.
+     */
+    operator [](index: i32) _CharType
+    {
+      if index < 0 
+      {
+        return self[self.length + index];
+      } 
+      else if index >= self.length 
+      {
+        raise new IndexError("Index out of bounds.");
+      }
+      unsafe {
+        return *(self.bytes() + index)
+      }
+    }
+    
   priv:
-    /** The capacity of the string. */
-    let mut capacity: i32 = 10;
     /** The size of the string. */
     let mut length: i32 = 0;
     /** The buffer containing the string. */
@@ -664,8 +586,16 @@ pub class StringView<_CharType: Sized>: Iterable<_CharType> {
       * @param[in] buffer The buffer to construct the string from.
       * @return The constructed string.
       */
+    static fn [[internal_linkage, inline]] from(buffer: Self)
+      StringView<_CharType> { return buffer; }
     static fn [[internal_linkage, inline]] from<T>(buffer: T)
-      StringView<_CharType> { unsafe {return buffer.to_string();} }
+      StringView<_CharType> { return buffer.to_string(); }
+    static fn [[internal_linkage, inline]] from(buffer: *const char, size: i32)
+      StringView<_CharType> { 
+      unsafe {
+        return new Self(buffer, size);
+      } 
+    }
     static fn [[internal_linkage, inline]] from<T>(buffer: *const T)
       StringView<_CharType> { unsafe {return buffer.as_ref().to_string();} }
 
@@ -699,9 +629,16 @@ pub class StringView<_CharType: Sized>: Iterable<_CharType> {
      */
     fn [[internal_linkage]] concat(str: StringType, len: i32) StringType 
       { return self.concat(self.buffer, str, self.length, len); }
+    
+  priv:
+    /**
+      * @brief Constructs a string from a vector of characters.
+      * @param[in] buffer The vector of characters to construct the string from.
+      */
+    StringView(buffer: StringType, length: i32) : 
+      buffer(buffer), length(length)
+      { }
 }
 
-type String = StringView<char>;
-
-// TODO (implement wchar): using WideString as StringView<&wchar>
+// TODO (implement wchar): using WideString as StringView<wchar>
 
