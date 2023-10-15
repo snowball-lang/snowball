@@ -264,8 +264,6 @@ pub class Iter<_IteratorType: Sized> {
  */
 pub class Range<_Number_Type: Numeric = i32> implements Iterable<_Number_Type> {
   pub:
-    let mut iter_index: i32;
-
     /**
      * @brief Range constructor.
      * @param[in] start The start of the range.

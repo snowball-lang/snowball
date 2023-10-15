@@ -8,14 +8,37 @@
 namespace snowball {
 namespace errors {
 
+namespace {
+/// @brief replace 'hello' with [white]'hello'[reset]
+std::string highlight(std::string str) {
+  std::string ret = "";
+  bool in_highlight = false;
+  for (size_t i = 0; i < str.size(); i++) {
+    if (str[i] == '\'') {
+      if (in_highlight) {
+        ret += RESET;
+        in_highlight = false;
+      } else {
+        ret += BWHT;
+        in_highlight = true;
+      }
+    }
+    ret += str[i];
+  }
+  return ret;
+}
+}
+
 void NiceError::print_error(bool asTail) const {
   cb_dbg_info->prepare_for_error();
 
   if (!asTail) {
     Logger::log("");
-    Logger::error(FMT("(%s%s%s) %s%s%s", BRED, get_error(error), RESET, BOLD, message.c_str(), RESET));
+    Logger::error(FMT("(%s%s%s) %s%s%s", BRED, get_error(error), RESET, BOLD, RESET, highlight(message).c_str()));
+    Logger::elog(FMT("%s╚══╤══╝", BLK));
+    Logger::elog(FMT("   ╰───╮%s", RESET));
     Logger::elog(
-            FMT("%s       ╭─[%s%s%s%s:%i:%i%s%s]%s",
+            FMT("%s       ├─[%s%s%s%s:%i:%i%s%s]%s",
                 BLK,
                 RESET,
                 BBLU,
@@ -43,17 +66,33 @@ void NiceError::print_error(bool asTail) const {
     );
   }
 
-  Logger::elog(FMT("%s       │%s", BLK, RESET));
+  //Logger::elog(FMT("%s       │%s", BLK, RESET));
   Logger::elog(FMT("%s       │%s", BLK, RESET));
   if (cb_dbg_info->line - 1 >= 1) // first line may not be available to log
-    Logger::elog(FMT("  %s%4i%s │ %s%s", BBLK, cb_dbg_info->line - 1, BLK, BWHT, cb_dbg_info->line_before.c_str()));
+    Logger::elog(FMT("  %s%4i%s │   %s", BBLK, cb_dbg_info->line - 1, BLK, cb_dbg_info->line_before.c_str()));
+
+  // highlight line where the error is
+  // e.g.  hello<String>(1, 2, 3)
+  //       ~~~~~
+  //   converted to
+  //        [white]hello[gray]<string>(1, 2, 3)
+  std::string line_str = "";
+  for (size_t i = 0; i < cb_dbg_info->line_str.size(); i++) {
+    if (i >= cb_dbg_info->pos.second-1 && i < cb_dbg_info->pos.second + cb_dbg_info->width-1) {
+      line_str += BWHT;
+    } else if (i >= cb_dbg_info->pos.second + cb_dbg_info->width-1) {
+      line_str += BLK;
+    }
+    line_str += cb_dbg_info->line_str[i];
+  }
+
   Logger::elog(
-          FMT(" %s %4i >%s %s%s\n       %s│%s %s%s %s%s",
-              BBLK,
+          FMT(" %s %4i%s >%s %s\n       %s│%s %s%s %s%s",
+              BWHT,
               cb_dbg_info->line,
               BLK,
-              BWHT,
-              cb_dbg_info->line_str.c_str(),
+              BLK,
+              line_str.c_str(),
               BLK,
               RESET,
               BRED,
@@ -61,12 +100,13 @@ void NiceError::print_error(bool asTail) const {
               info.info.c_str(),
               RESET)
   );
-  Logger::elog(FMT("  %s%4i%s │ %s%s", BBLK, cb_dbg_info->line + 1, BLK, BWHT, cb_dbg_info->line_after.c_str()));
+  Logger::elog(FMT("  %s%4i%s │   %s", BBLK, cb_dbg_info->line + 1, BLK, cb_dbg_info->line_after.c_str()));
 
   if (!info.note.empty()) {
     Logger::elog(FMT("%s       │", BLK));
+    Logger::elog(FMT("%s       │", BLK));
 
-    auto lines = utils::split(info.note, "\n");
+    auto lines = utils::split(highlight(info.note), "\n");
 
     Logger::elog(FMT("%s   note%s:%s %s", BCYN, BBLK, RESET, (*lines.begin()).c_str()));
 
@@ -84,9 +124,10 @@ void NiceError::print_error(bool asTail) const {
   }
 
   if (!info.help.empty()) {
-    Logger::elog(FMT("%s       │", BLK));
+    if (!info.note.empty())
+      Logger::elog(FMT("%s       │", BLK));
 
-    auto lines = utils::split(info.help, "\n");
+    auto lines = utils::split(highlight(info.help), "\n");
 
     Logger::elog(FMT("%s   help%s:%s %s", BGRN, BBLK, RESET, (*lines.begin()).c_str()));
 
