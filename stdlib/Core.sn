@@ -625,4 +625,3 @@ pub class StringView<Char: Sized = char> {
 }
 
 // TODO (implement wchar): using WideString as StringView<wchar>
-
