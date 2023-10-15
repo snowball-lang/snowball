@@ -89,6 +89,7 @@ void Transformer::implementTypes(types::DefinedType* ty, std::vector<Expression:
                 }
             }
         }
+        ty->addImpl(interface);
     }
 }
 

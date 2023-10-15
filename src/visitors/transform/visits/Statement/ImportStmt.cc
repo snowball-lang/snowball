@@ -23,6 +23,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
   // TODO: extension
   auto [filePath, error] = ctx->imports->getImportPath(package, path);
   if (!error.empty()) { E<IO_ERROR>(p_node, error); }
+  // TODO: don't allow user import Core::Core twice!
   auto uuid = package == "Core" ? ctx->imports->CORE_UUID + path[0] : ctx->imports->getModuleUUID(filePath);
   auto exportName = ctx->imports->getExportName(filePath, p_node->getExportSymbol());
   auto isExternalModule = ctx->imports->isExternalModule(package);
@@ -44,6 +45,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     ctx->addItem(exportName, item);
   } else {
     auto niceFullName = package + "::" + utils::join(path.begin(), path.end(), "::");
+    if (niceFullName == "Core::Core") niceFullName = "Core"; // TODO: remove this hack if possible
     auto mod = std::make_shared<ir::Module>(niceFullName, uuid);
     std::vector<std::string> uuidStack =
             ctx->uuidStack.size() == 0 ? std::vector<std::string>{} : std::vector<std::string>{ctx->uuidStack.front()};

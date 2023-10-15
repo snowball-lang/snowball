@@ -32,8 +32,10 @@ public:
   std::pair<int, int> pos;
 
   std::string line_before;
+  std::string line_before_before;
   std::string line_str;
   std::string line_after;
+  std::string line_after_after;
 
 public:
   std::string get_pos_str() const;

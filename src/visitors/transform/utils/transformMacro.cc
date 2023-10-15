@@ -83,7 +83,7 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
     if (ctx->getCurrentMacro() == nullptr) {
       E<PSEUDO_ERROR>(
               p_node,
-              "Can't use `@pkg` macro outside a parent macro!",
+              "Cant use `@pkg` macro outside a parent macro!",
               {.info = "This is the macro that was used",
                .note = "This special macro is only available inside a parent macro.",
                .help = "Try using the macro inside a parent macro."}

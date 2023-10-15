@@ -22,7 +22,7 @@ void Transformer::transformTypeExtension(Statement::DefinedTypeDef* node, std::s
       if (utils::cast<types::TypeAlias>(item->getType())) {
         E<SYNTAX_ERROR>(
                 node,
-                "Can't extend a type alias!",
+                "Cant extend a type alias!",
                 {.info = FMT("'%s' is a type alias!", item->toString().c_str()),
                  .note = "Only types can be extended!",
                  .help = "Remove the 'extends' keyword from this class."}
@@ -36,7 +36,7 @@ void Transformer::transformTypeExtension(Statement::DefinedTypeDef* node, std::s
     } else {
       E<SYNTAX_ERROR>(
               node,
-              "Can't extend a non-type!",
+              "Cant extend a non-type!",
               {.info = FMT("'%s' is not a type!", item->toString().c_str()),
                .note = "Only types can be extended!",
                .help = "Remove the 'extends' keyword from this class."}
@@ -46,7 +46,7 @@ void Transformer::transformTypeExtension(Statement::DefinedTypeDef* node, std::s
 
   E<VARIABLE_ERROR>(
           node,
-          "Can't extend an undefined type!",
+          "Cant extend an undefined type!",
           {.info = FMT("'%s' is not defined in the currect context!", name.c_str()),
            .note = "Only types can be extended!",
            .help = "Define this type or remove the 'extends' keyword from this class."}

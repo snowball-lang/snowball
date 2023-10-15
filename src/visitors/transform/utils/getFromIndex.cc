@@ -155,7 +155,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     else if (type && (!isStatic)) {
       E<TYPE_ERROR>(
               dbgInfo,
-              "Can't use type references for method calls / "
+              "Cant use type references for method calls / "
               "accesses!"
       );
     } else if (type) {
@@ -163,7 +163,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     }
 
     else if (overloads || funcs) {
-      E<TYPE_ERROR>(dbgInfo, "Can't use function pointer as index base!");
+      E<TYPE_ERROR>(dbgInfo, "Cant use function pointer as index base!");
     } else {
       E<VARIABLE_ERROR>(
               baseIdentifier->getDBGInfo(),
@@ -200,7 +200,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     else if (t && (!isStatic)) {
       E<TYPE_ERROR>(
               dbgInfo,
-              "Can't use type references for method calls / "
+              "Cant use type references for method calls / "
               "accesses!"
       );
     } else if (t) {
@@ -208,7 +208,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     }
 
     else if (ovs || fs) {
-      E<TYPE_ERROR>(dbgInfo, "Can't use function pointer as index base!");
+      E<TYPE_ERROR>(dbgInfo, "Cant use function pointer as index base!");
     } else {
       // TODO: include base name
       E<VARIABLE_ERROR>(dbgInfo, FMT("Identifier '%s' not found!", baseIdentifier->getIdentifier().c_str()));
@@ -216,12 +216,12 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
 
     assert(false && "TODO: index index");
   } else if (auto x = utils::cast<Expression::TypeRef>(base)) {
-    auto ty = transformSizedType(x, false, "Can't access method calls from unsized types (%s)!");
+    auto ty = transformSizedType(x, false, "Cant access method calls from unsized types (%s)!");
 
     if (ty && (!isStatic)) {
       E<TYPE_ERROR>(
               dbgInfo,
-              "Can't use type references for method calls / "
+              "Cant use type references for method calls / "
               "accesses!"
       );
     } else if (ty) {

@@ -103,7 +103,7 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
       goto continueTypeFetch;
     }
 
-    E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()), {.info = errorReason});
+    E<TYPE_ERROR>(ty, FMT("Cant use '%s' as a type!", name.c_str()), {.info = errorReason});
   } else if (auto x = utils::cast<Expression::Index>(ast)) {
     auto [_v, type, _o, _f, _m, canPrivate] = getFromIndex(ty->getDBGInfo(), x, true).first;
 
@@ -118,7 +118,7 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
       if (auto x = utils::cast<types::BaseType>(type.value()); x && x->isPrivate() && !canPrivate) {
         E<TYPE_ERROR>(
                 ty,
-                FMT("Can't use '%s' as a type!", name.c_str()),
+                FMT("Cant use '%s' as a type!", name.c_str()),
                 {.info = "This is a private type and you can't access it from here!",
                  .note = "Private types can only be accessed from inside the "
                          "module they are defined in.",
@@ -137,7 +137,7 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
       goto continueTypeFetch;
     }
 
-    E<TYPE_ERROR>(ty, FMT("Can't use '%s' as a type!", name.c_str()), {.info = errorReason});
+    E<TYPE_ERROR>(ty, FMT("Cant use '%s' as a type!", name.c_str()), {.info = errorReason});
   }
 
 continueTypeFetch:
@@ -184,18 +184,22 @@ continueTypeFetch:
 
     E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found from the current context!", name.c_str()));
   }
-  if (!typeGenericsMatch(ty, returnedType)) {
-    auto compAsDefinedType = utils::cast<GenericContainer<types::Type*>>(returnedType);
-    auto compGenerics = compAsDefinedType == nullptr ? std::vector<types::Type*>{} : compAsDefinedType->getGenerics();
-    E<TYPE_ERROR>(
-            ty,
-            FMT("Type generics for '%s' don't match with '%s' ones!",
-                returnedType->getPrettyName().c_str(),
-                ty->getPrettyName().c_str())
-    );
-  }
 
-  if (auto alias = utils::cast<types::TypeAlias>(returnedType)) { returnedType = alias->getBaseType(); }
+  // TODO: did we ever needed this?!?!?
+  //if (!typeGenericsMatch(ty, returnedType)) {
+  //  auto compAsDefinedType = utils::cast<GenericContainer<types::Type*>>(returnedType);
+  //  auto compGenerics = compAsDefinedType == nullptr ? std::vector<types::Type*>{} : compAsDefinedType->getGenerics();
+  //  typeGenericsMatch(ty, returnedType);
+  //  E<TYPE_ERROR>(
+  //          ty,
+  //          FMT("Type generics for '%s' dont match with '%s's generics!",
+  //              returnedType->getPrettyName().c_str(),
+  //              ty->getPrettyName().c_str())
+  //  );
+  //}
+
+  if (auto alias = utils::cast<types::TypeAlias>(returnedType)) 
+    { returnedType = alias->getBaseType(); }
 
   return returnedType->copy();
 }

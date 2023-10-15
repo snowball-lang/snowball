@@ -19,8 +19,8 @@
 namespace snowball {
 namespace Syntax {
 
-inline const std::string FUNCTION_RETURN_STYPE = "Core::ReturnType";
-inline const std::string REMOVE_REFERENCES_STYPE = "Core::RemoveReferences";
+inline const std::string FUNCTION_RETURN_STYPE = "Std::ReturnType";
+inline const std::string REMOVE_REFERENCES_STYPE = "Std::RemoveReferences";
 
 types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
   auto n = ty->getName();

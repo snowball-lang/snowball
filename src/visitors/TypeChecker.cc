@@ -234,7 +234,7 @@ VISIT(Cast) {
   assert(t->is(p_node->getType()));
 
   if (utils::cast<types::VoidType>(v->getType())) {
-    E<TYPE_ERROR>(p_node, FMT("Can't cast from void type ('%s')!", v->getType()->getPrettyName().c_str()));
+    E<TYPE_ERROR>(p_node, FMT("Cant cast from void type ('%s')!", v->getType()->getPrettyName().c_str()));
   }
 
   if (v->getType()->is(t)) return;
@@ -259,7 +259,7 @@ VISIT(Cast) {
   if (!v->getType()->canCast(t)) {
     E<TYPE_ERROR>(
             p_node,
-            FMT("Can't create a casting operator from type `%s` "
+            FMT("Cant create a casting operator from type `%s` "
                 "to type `%s`!",
                 v->getType()->getPrettyName().c_str(),
                 t->getPrettyName().c_str()),
@@ -295,7 +295,7 @@ VISIT(Return) {
     E<TYPE_ERROR>(
             p_node,
             FMT("Nonvalue returning function cant have a "
-                "return containing an expression (%s)!",
+                "return containing an expression ('%s')!",
                 p_node->getType()->getPrettyName().c_str())
     );
   }
@@ -303,7 +303,7 @@ VISIT(Return) {
   if ((utils::cast<types::VoidType>(fn->getRetTy()) == nullptr) && (p_node->getExpr() == nullptr)) {
     E<TYPE_ERROR>(
             p_node,
-            FMT("Can't return \"nothing\" in a function with "
+            FMT("Cant return \"nothing\" in a function with "
                 "non-void return type (%s)!",
                 fn->getRetTy()->getPrettyName().c_str())
     );
@@ -312,8 +312,8 @@ VISIT(Return) {
   if (!p_node->getType()->is(fn->getRetTy())) {
     E<TYPE_ERROR>(
             p_node,
-            FMT("Return type (%s) does not match parent "
-                "function's return type (%s)!",
+            FMT("Return type ('%s') does not match parent "
+                "function return type ('%s')!",
                 p_node->getType()->getPrettyName().c_str(),
                 fn->getRetTy()->getPrettyName().c_str())
     );

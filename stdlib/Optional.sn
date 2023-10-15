@@ -4,7 +4,7 @@ use Core::Ptr;
 /**
  * @brief The error thrown when an `Option` is empty.
  */
-pub class BadOptionAccess: Exception
+pub class BadOptionAccess extends Exception
   {}
 /**
  * A type that represents either a value or nothing at all.
@@ -18,11 +18,11 @@ pub class BadOptionAccess: Exception
  * The `Option` type is also used in the return type of functions that are not
  * guaranteed to return a value, like `Array::pop` or `Hash::delete`.
  */
-pub class Option<_StoreType: Sized> {
+pub class Option<T: Sized> {
     /**
      * The value stored in the `Option`.
      */
-    let _value: _StoreType = @zero_initialized(:_StoreType);
+    let _value: T = @zero_initialized(:T);
     /**
      * Whether the `Option` is engaged.
      */
@@ -37,12 +37,12 @@ pub class Option<_StoreType: Sized> {
      *
      * @param value The value to store in the `Option`.
      */
-    Option(value: _StoreType) : _value(value), 
+    Option(value: T) : _value(value), 
       _engage(true) {}
     /**
      * @brief Returns the value stored in the `Option`.
      */
-    fn [[inline]] val() &_StoreType
+    fn [[inline]] val() &T
     {
       self.assert_not_empty();
       return &self._value;
@@ -63,7 +63,7 @@ pub class Option<_StoreType: Sized> {
      * @return The value stored in the `Option` or the
      *        given default value if the `Option` is empty.
      */
-    fn [[inline]] value_or(default_value: _StoreType) _StoreType
+    fn [[inline]] value_or(default_value: T) T
     {
       if self.empty() {
         return default_value;

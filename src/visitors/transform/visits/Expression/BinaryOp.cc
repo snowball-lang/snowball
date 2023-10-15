@@ -25,7 +25,7 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
       } else if (auto x = utils::cast<types::PointerType>(type)) {
         type = x->getPointedType(); // this will error if it's not in unsafe context at the type checker.
       } else {
-        E<DEREFERENCE_ERROR>(p_node, "Can't dereference a non-pointer type!");
+        E<DEREFERENCE_ERROR>(p_node, "Cant dereference a non-pointer type!");
       }
 
       auto ref = getBuilder().createDereferenceTo(p_node->getDBGInfo(), value, type);

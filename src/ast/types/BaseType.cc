@@ -20,6 +20,10 @@ std::shared_ptr<ir::Module> BaseType::getModule() const { return module; }
 std::string BaseType::getUUID() const { return uuid; }
 void BaseType::unsafeSetUUID(std::string uuid) { this->uuid = uuid; }
 void BaseType::unsafeSetModule(std::shared_ptr<ir::Module> m) { module = m; }
+void BaseType::setDefaultGenerics(std::vector<Type*> generics) { defaultGenerics = generics; }
+void BaseType::setDefaultGenericStart(std::size_t start) { defaultGenericStart = start; }
+std::vector<Type*> BaseType::getDefaultGenerics() const { return defaultGenerics; }
+std::size_t BaseType::getDefaultGenericStart() const { return defaultGenericStart; }
 
 } // namespace types
 } // namespace snowball

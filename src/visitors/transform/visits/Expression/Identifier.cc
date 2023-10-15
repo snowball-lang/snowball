@@ -36,9 +36,9 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
     this->value = getBuilder().createValueExtract(p_node->getDBGInfo(), function);
     return;
   } else if (type) {
-    E<VARIABLE_ERROR>(p_node, "Can't use types as values!");
+    E<VARIABLE_ERROR>(p_node, "Cant use types as values!");
   } else if (mod) {
-    E<VARIABLE_ERROR>(p_node, "Can't use modules as values!");
+    E<VARIABLE_ERROR>(p_node, "Cant use modules as values!");
   } else if (overloads) {
     if (overloads->size() > 1) {
       E<VARIABLE_ERROR>(

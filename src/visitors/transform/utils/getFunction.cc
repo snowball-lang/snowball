@@ -120,9 +120,15 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
         ADD_FUNCTION_ERROR(overloads, overload.function)
       // TODO: throw a note that sugest's it's correct types: only if
       // TODO: better error for operators: no operator found for `i32 + String` or something.
+      getBestFittingFunction(
+          overloads.has_value() ? overloads.value() : std::deque<Cache::FunctionStore>{},
+          arguments,
+          generics,
+          isIdentifier
+  );
       E<VARIABLE_ERROR>(
               dbgInfo,
-              FMT("No matches found for `%s(%s)`",
+              FMT("No matches found for '%s(%s)'",
                   name.c_str(),
                   Expression::FunctionCall::getArgumentsAsString(arguments).c_str()),
               {.info = "No function overloads found for this function!",

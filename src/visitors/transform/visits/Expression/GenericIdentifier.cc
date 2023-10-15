@@ -36,9 +36,9 @@ SN_TRANSFORMER_VISIT(Expression::GenericIdentifier) {
     this->value = var;
     return;
   } else if (type) {
-    E<VARIABLE_ERROR>(p_node, "Can't use types as values!");
+    E<VARIABLE_ERROR>(p_node, "Cant use types as values!");
   } else if (mod) {
-    E<VARIABLE_ERROR>(p_node, "Can't use modules as values!");
+    E<VARIABLE_ERROR>(p_node, "Cant use modules as values!");
   }
 
   assert(false && "BUG: Unhandled value type!");

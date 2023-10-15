@@ -22,7 +22,7 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
       size->setType(ctx->getInt32Type());
 
       auto index = N<Expression::Index>(
-        ctx->module->getUniqueName() == (ctx->imports->CORE_UUID  + "_$core")
+        ctx->module->getUniqueName() == (ctx->imports->CORE_UUID  + "Core")
           ? (Expression::Base*)N<Expression::Identifier>("String")
           : (Expression::Base*)N<Expression::Index>(
             N<Expression::Identifier>("Core"),

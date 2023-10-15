@@ -49,7 +49,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
       } else {
         E<VARIABLE_ERROR>(
                 p_node,
-                FMT("Can't assign value with type '%s' to "
+                FMT("Cant assign value with type '%s' to "
                     "the variable with type '%s'!",
                     val->getType()->getPrettyName().c_str(),
                     definedType->getPrettyName().c_str())

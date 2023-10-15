@@ -2,7 +2,7 @@ use Core::Internal::Preloads;
 use [[use_macro(c_str)]] Core::CLib;
 use Core::Ptr;
 
-pub type String = StringView<char>;
+pub type String = StringView<>;
 
 /**
  * @namespace __internal
@@ -50,7 +50,7 @@ fn [[
         CLib::printf(@c_str("\e[0m\n"));
         return false;
       }
-    } catch (e: &Exception) {
+    } catch (e: Exception) {
       CLib::printf(@c_str("\e[1;31merror \n"));
       CLib::printf(@c_str("\n UNEXPECTED EXCEPTION:\n"));
       CLib::printf(@c_str("   --> %s\n"), e.what());
@@ -190,7 +190,7 @@ pub class IndexError extends Exception
  * manipulation operations such as iteration, element access, and more.
  */
 pub interface Iterable<IterType: Sized> {
-    let mut iter_index: i32;
+    let mut iter_index: i32 = 0;
   pub:
     fn next() Iter<IterType>;
     mut fn reset() { self.iter_index = 0; }
@@ -337,13 +337,13 @@ pub class Range<_Number_Type: Numeric = i32> implements Iterable<_Number_Type> {
 pub class Vector<
   _StoreType: Sized,
   Allocator: Sized = Ptr::Allocator<_StoreType>
-> extends Iterable<_StoreType> {
+> implements Iterable<_StoreType> {
   pub:
     /**
      * @brief Default constructor.
      * Constructs an empty vector.
      */
-    Vector() : super() {}
+    Vector() {}
     /**
      * @brief It pushes an element to the back of the vector.
      * @param[in] value The element to push to the back of the vector.
@@ -471,9 +471,9 @@ pub class Vector<
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating strings.
  */
-pub class StringView<_CharType: Sized> {
+pub class StringView<Char: Sized = char> {
   pub:
-    type StringType = *const _CharType;
+    type StringType = *const Char;
 
     /**
      * @brief Default constructor.
@@ -539,7 +539,7 @@ pub class StringView<_CharType: Sized> {
      * @param[in] index The index of the character to return.
      * @return The character at the specified index.
      */
-    operator [](index: i32) _CharType
+    operator [](index: i32) Char
     {
       if index < 0 
       {
@@ -563,7 +563,7 @@ pub class StringView<_CharType: Sized> {
   // Static exports
   pub:
     static fn [[internal_linkage, inline]] from(other: Self)
-      StringView<_CharType> 
+      StringView<Char> 
       { return other; }
     /**
       * @brief Constructs a string from an unknown type.
@@ -571,17 +571,17 @@ pub class StringView<_CharType: Sized> {
       * @return The constructed string.
       */
     static fn [[internal_linkage, inline]] from(buffer: Self)
-      StringView<_CharType> { return buffer; }
+      StringView<Char> { return buffer; }
     static fn [[internal_linkage, inline]] from<T>(buffer: T)
-      StringView<_CharType> { return buffer.to_string(); }
+      StringView<Char> { return buffer.to_string(); }
     static fn [[internal_linkage, inline]] from(buffer: *const char, size: i32)
-      StringView<_CharType> { 
+      StringView<Char> { 
       unsafe {
         return new Self(buffer, size);
       } 
     }
     static fn [[internal_linkage, inline]] from<T>(buffer: *const T)
-      StringView<_CharType> { unsafe {return buffer.as_ref().to_string();} }
+      StringView<Char> { unsafe {return buffer.as_ref().to_string();} }
 
   // Internal exports
   priv:

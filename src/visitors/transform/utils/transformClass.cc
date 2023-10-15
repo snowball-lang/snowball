@@ -48,6 +48,8 @@ types::BaseType* Transformer::transformClass(
   types::BaseType* transformedType;
   ctx->withState(classStore.state, [&]() {
     ctx->withScope([&] {
+      std::vector<types::Type*> defaultGenerics;
+      int defaultGenericStart = 0;
       auto tyFunctions = ty->getFunctions();
       auto backupClass = ctx->getCurrentClass();
       // TODO: maybe not reset completly, add nested classes in
@@ -90,7 +92,9 @@ types::BaseType* Transformer::transformClass(
       }
       // Fill out the remaining non-required tempalte parameters
       if (classGenerics.size() > generics.size()) {
-        for (auto i = generics.size(); i < classGenerics.size(); ++i) {
+        auto s = generics.size();
+        defaultGenericStart = s;
+        for (auto i = s; i < classGenerics.size(); ++i) {
           auto generic = classGenerics[i];
           auto generatedGeneric = transformType(generic->type);
           auto item = std::make_shared<transform::Item>(generatedGeneric->copy());
@@ -98,6 +102,8 @@ types::BaseType* Transformer::transformClass(
           // item->setDBGInfo(generic->getDBGInfo());
           ctx->addItem(generic->getName(), item);
           executeGenericTests(generic->getWhereClause(), generatedGeneric, generic->getName());
+          generics.push_back(generatedGeneric);
+          defaultGenerics.push_back(generatedGeneric);
         }
       }
       types::DefinedType* parentType = nullptr;
@@ -107,7 +113,7 @@ types::BaseType* Transformer::transformClass(
         if (!parentType) {
           E<TYPE_ERROR>(
                   x,
-                  FMT("Can't inherit from '%s'", parent->getPrettyName().c_str()),
+                  FMT("Cant inherit from '%s'", parent->getPrettyName().c_str()),
                   {.info = "This is not a class nor a struct type!",
                    .note = "Classes can only inherit from other "
                            "classes or "
@@ -129,6 +135,8 @@ types::BaseType* Transformer::transformClass(
       ctx->generateFunction = true;
       for (auto ty : ty->getTypeAliases()) { trans(ty); }
       transformedType->setGenerics(generics);
+      transformedType->setDefaultGenerics(defaultGenerics);
+      transformedType->setDefaultGenericStart(defaultGenericStart);
       transformedType->setPrivacy(ty->getPrivacy());
       transformedType->setDBGInfo(ty->getDBGInfo());
       transformedType->setSourceInfo(ty->getSourceInfo());
@@ -141,7 +149,7 @@ types::BaseType* Transformer::transformClass(
             if (!definedType)
               E<SYNTAX_ERROR>(
                 v->getDBGInfo(),
-                "Can't infer type!",
+                "Cant infer type!",
                 {.info = "The type of this variable can't be inferred!",
                   .note = "This rule only applies to variables inside classes.",
                   .help = "You can't infer the type of a variable "
@@ -164,14 +172,14 @@ types::BaseType* Transformer::transformClass(
         auto fields = getMemberList(ty->getVariables(), baseFields, parentType);
         ((types::DefinedType*)transformedType)->setParent(parentType);
         ((types::DefinedType*)transformedType)->setFields(fields);
-        fieldCount = fields.size();
+        fieldCount = baseFields.size();
       } else {
         for (auto v : ty->getVariables()) {
           auto definedType = v->getDefinedType();
           if (!definedType)
             E<SYNTAX_ERROR>(
               v->getDBGInfo(),
-              "Can't infer type!",
+              "Cant infer type!",
               {.info = "The type of this variable can't be inferred!",
                 .note = "This rule only applies to variables inside interfaces.",
                 .help = "You can't infer the type of a variable "
@@ -198,9 +206,9 @@ types::BaseType* Transformer::transformClass(
       if (!ty->isInterface())
         implementTypes((types::DefinedType*)transformedType, ty->getImpls(), tyFunctions);
       assert(!ty->isStruct() || (ty->isStruct() && ty->getFunctions().size() == 0));
-      // Create function definitions
-      ctx->generateFunction = false;
       if (!ty->isInterface()) {
+        // Create function definitions
+        ctx->generateFunction = false;
         types::DefinedType* classType = utils::cast<types::DefinedType>(transformedType);
         ctx->module->typeInformation.insert(
           {classType->getId(), std::shared_ptr<types::DefinedType>(classType)}
@@ -239,11 +247,13 @@ types::BaseType* Transformer::transformClass(
                   {.info = "This class does not have a constructor!",
                   .note = "No constructor has been defined or can be inherited.",
                   .help = FMT("You have to define a constructor for this class.\n"
-                          "For example:\n\n"
+                          "For example:\n"
+                          "  |\n"
                           "1 | class %s {\n"
+                          "  |\n"
                           "2 |   %s() { ... }\n"
                           "3 | }\n"
-                          "4 |", ty->getName().c_str(), ty->getName().c_str())}
+                          "  |", ty->getName().c_str(), ty->getName().c_str())}
           );
         }
       }

@@ -43,9 +43,9 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
     this->value = *value;
     return;
   } else if (type) {
-    E<VARIABLE_ERROR>(p_node, "Can't use types as values!");
+    E<VARIABLE_ERROR>(p_node, "Cant use types as values!");
   } else if (mod) {
-    E<VARIABLE_ERROR>(p_node, "Can't use modules as values!");
+    E<VARIABLE_ERROR>(p_node, "Cant use modules as values!");
   } else if (overloads || functions) {
     if ((overloads.has_value() && overloads->size() > 1) || (functions.has_value() && functions->size() > 1)) {
       E<VARIABLE_ERROR>(p_node, "Index points to a function with multiple overloads!");
@@ -74,7 +74,7 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
     if ((p_node->isStatic && (!function->isStatic())) && (!inModule)) {
       E<TYPE_ERROR>(
               p_node,
-              FMT("Can't access class method '%s' "
+              FMT("Cant access class method '%s' "
                   "that's not static as if it was one!",
                   function->getNiceName().c_str())
       );
@@ -88,7 +88,7 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
     } else if ((!p_node->isStatic) && function->isStatic()) {
       E<TYPE_ERROR>(
               p_node,
-              FMT("Can't access static class method '%s' "
+              FMT("Cant access static class method '%s' "
                   "as with a non-static index expression!",
                   function->getNiceName().c_str())
       );

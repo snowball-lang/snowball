@@ -26,7 +26,7 @@ std::string FunctionType::getPrettyName() const {
     stringArgs += "...";
   }
 
-  return FMT("function (%s) mut -> %s", stringArgs.c_str(), stringRet.c_str());
+  return FMT("function (%s) %s-> %s", stringArgs.c_str(), isMutable() ? "mut " : "", stringRet.c_str());
 }
 
 bool FunctionType::is(FunctionType* other) const {

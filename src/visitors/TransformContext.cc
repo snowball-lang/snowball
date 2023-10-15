@@ -31,9 +31,9 @@ TransformContext::TransformContext(
 
 #undef DEFINE_TYPE
 
-  auto coreMod = std::make_shared<ir::Module>("Core", imports->CORE_UUID);
+  auto coreMod = std::make_shared<ir::Module>("Std", imports->CORE_UUID);
   auto coreModItem = std::make_shared<transform::Item>(coreMod);
-  addItem("Core", coreModItem);
+  addItem("Std", coreModItem);
 
   std::vector<std::string> coreBuiltins = {"Sized", "Numeric"};
 

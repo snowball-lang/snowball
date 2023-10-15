@@ -14,9 +14,12 @@ bool Transformer::typeGenericsMatch(Expression::TypeRef* ty, types::Type* comp) 
   auto compAsDefinedType = utils::cast<Statement::GenericContainer<types::Type*>>(comp);
   auto compGenerics = compAsDefinedType == nullptr ? std::vector<types::Type*>{} : compAsDefinedType->getGenerics();
 
-  if (generatedGenerics.size() < compGenerics.size()) {
-    for (auto i = generatedGenerics.size(); i < compGenerics.size(); ++i) {
-      generatedGenerics.push_back(compGenerics.at(i));
+  auto compAsBase = utils::cast<types::BaseType>(comp);
+  if (compAsBase) {
+    if (generatedGenerics.size() <= compAsBase->getDefaultGenericStart()) {
+      for (auto i = generatedGenerics.size() - compAsBase->getDefaultGenericStart(); i < compAsBase->getDefaultGenerics().size(); ++i) {
+        generatedGenerics.push_back(compAsBase->getDefaultGenerics().at(i));
+      }
     }
   }
 

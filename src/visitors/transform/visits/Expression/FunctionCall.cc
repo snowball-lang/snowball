@@ -69,14 +69,14 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     if ((x->isStatic && (!c->isStatic())) && (!inModule)) {
       E<TYPE_ERROR>(
               p_node,
-              FMT("Can't access class method '%s' "
+              FMT("Cant access class method '%s' "
                   "that's not static as if it was one!",
                   c->getNiceName().c_str())
       );
     } else if ((!x->isStatic) && c->isStatic()) {
       E<TYPE_ERROR>(
               p_node,
-              FMT("Can't access static class method '%s' "
+              FMT("Cant access static class method '%s' "
                   "as with a non-static index expression!",
                   c->getNiceName().c_str())
       );
@@ -85,7 +85,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
       // if (auto t = utils::cast<types::ReferenceType>(b.value()->getType())) {
       //   if (utils::cast<types::ReferenceType>(t->getPointedType()) && !c->hasAttribute(Attributes::BUILTIN)) {
       //     E<TYPE_ERROR>(p_node,
-      //                   FMT("Can't access class method '%s' "
+      //                   FMT("Cant access class method '%s' "
       //                       "from a reference to a reference!",
       //                       c->getNiceName().c_str()),
       //                   {
@@ -127,7 +127,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
             argTypes.at(i) = deduced;
           } else {
               E<TYPE_ERROR>(p_node,
-                FMT("Can't assign value with type '%s' "
+                FMT("Cant assign value with type '%s' "
                   "to a parameter with type '%s'!",
                   arg->getPrettyName().c_str(),
                   deduced->getPrettyName().c_str()),

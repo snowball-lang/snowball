@@ -35,6 +35,11 @@ protected:
   /// @brief A module where the type is defined.
   std::shared_ptr<ir::Module> module;
 
+  /// @brief A list of default generic types.
+  std::vector<Type*> defaultGenerics;
+  /// @brief The start of the default generic types.
+  std::size_t defaultGenericStart = 0;
+
 public:
   BaseType(Kind kind, const std::string name);
   BaseType(const BaseType& other) = default;
@@ -51,6 +56,12 @@ public:
 
   virtual std::int64_t sizeOf() const override { assert(false); }
   virtual std::int64_t alignmentOf() const override { assert(false); }
+
+  void setDefaultGenerics(std::vector<Type*> generics);
+  void setDefaultGenericStart(std::size_t start);
+
+  std::vector<Type*> getDefaultGenerics() const;
+  std::size_t getDefaultGenericStart() const;
 
   SNOWBALL_TYPE_COPIABLE(BaseType)
 };

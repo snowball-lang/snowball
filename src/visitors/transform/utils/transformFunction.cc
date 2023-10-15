@@ -173,6 +173,8 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
     });
 
     if (dontAddToModule) return;
+    if (name == "x") 
+      DUMP_S("HEA")
     ctx->module->addFunction(fn);
   });
   return fn;

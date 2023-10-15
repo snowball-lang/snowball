@@ -14,16 +14,20 @@ std::string highlight(std::string str) {
   std::string ret = "";
   bool in_highlight = false;
   for (size_t i = 0; i < str.size(); i++) {
+    bool add = false;
     if (str[i] == '\'') {
       if (in_highlight) {
-        ret += RESET;
-        in_highlight = false;
+        add = true;
       } else {
         ret += BWHT;
         in_highlight = true;
       }
     }
     ret += str[i];
+    if (add) {
+      ret += RESET;
+      in_highlight = false;
+    }
   }
   return ret;
 }
@@ -68,8 +72,10 @@ void NiceError::print_error(bool asTail) const {
 
   //Logger::elog(FMT("%s       │%s", BLK, RESET));
   Logger::elog(FMT("%s       │%s", BLK, RESET));
-  if (cb_dbg_info->line - 1 >= 1) // first line may not be available to log
-    Logger::elog(FMT("  %s%4i%s │   %s", BBLK, cb_dbg_info->line - 1, BLK, cb_dbg_info->line_before.c_str()));
+  if ((((int)cb_dbg_info->line) - 2) >= 1) // first line may not be available to log
+    Logger::elog(FMT("  %s%4i%s │  %s", BBLK, cb_dbg_info->line - 2, BLK, cb_dbg_info->line_before_before.c_str()));
+  if ((((int)cb_dbg_info->line) - 1) >= 1) // first line may not be available to log
+    Logger::elog(FMT("  %s%4i%s │  %s", BBLK, cb_dbg_info->line - 1, BLK, cb_dbg_info->line_before.c_str()));
 
   // highlight line where the error is
   // e.g.  hello<String>(1, 2, 3)
@@ -87,7 +93,7 @@ void NiceError::print_error(bool asTail) const {
   }
 
   Logger::elog(
-          FMT(" %s %4i%s >%s %s\n       %s│%s %s%s %s%s",
+          FMT(" %s %4i%s >%s  %s\n       %s│%s  %s%s %s%s",
               BWHT,
               cb_dbg_info->line,
               BLK,
@@ -100,7 +106,10 @@ void NiceError::print_error(bool asTail) const {
               info.info.c_str(),
               RESET)
   );
-  Logger::elog(FMT("  %s%4i%s │   %s", BBLK, cb_dbg_info->line + 1, BLK, cb_dbg_info->line_after.c_str()));
+  if (!cb_dbg_info->line_after_after.empty() || !cb_dbg_info->line_after.empty())
+    Logger::elog(FMT("  %s%4i%s │  %s", BBLK, cb_dbg_info->line + 1, BLK, cb_dbg_info->line_after.c_str()));
+  if (!cb_dbg_info->line_after_after.empty())
+    Logger::elog(FMT("  %s%4i%s │  %s", BBLK, cb_dbg_info->line + 2, BLK, cb_dbg_info->line_after_after.c_str()));
 
   if (!info.note.empty()) {
     Logger::elog(FMT("%s       │", BLK));
@@ -124,8 +133,8 @@ void NiceError::print_error(bool asTail) const {
   }
 
   if (!info.help.empty()) {
-    if (!info.note.empty())
-      Logger::elog(FMT("%s       │", BLK));
+    //if (!info.note.empty())
+    Logger::elog(FMT("%s       │", BLK));
 
     auto lines = utils::split(highlight(info.help), "\n");
 

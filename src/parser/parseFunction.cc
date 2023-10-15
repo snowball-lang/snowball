@@ -322,7 +322,7 @@ fetch_attrs:
   std::vector<Syntax::Expression::Param*> generics;
   if (is<TokenType::OP_LT>()) {
     isGeneric = true;
-    if (isLambda) { createError<SYNTAX_ERROR>("Can't define a lambda with generics"); }
+    if (isLambda) { createError<SYNTAX_ERROR>("Cant define a lambda with generics"); }
 
     generics = parseGenericParams();
     width = (m_current.get_pos().second - dbg.second);
@@ -420,7 +420,7 @@ fetch_attrs:
       if (is<TokenType::KWORD_SUPER>()) {
         hasSuperArgs = true;
         if (!m_current_class->getParent()) {
-          createError<SYNTAX_ERROR>("Can't call super on a class that doesn't extend "
+          createError<SYNTAX_ERROR>("Cant call super on a class that doesn't extend "
                                     "from another class!");
         }
 

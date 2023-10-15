@@ -1,3 +1,4 @@
+
 //  Snowball compiler (MIT)                         ／l、
 //    https://github.com/snowball-lang/snowball   （ﾟ､ ｡７
 //                                                ⠀ l、ﾞ~ヽ 
@@ -17,16 +18,26 @@
 //use pkg::algorithms;
 //use pkg::source_location;
 
-use Core::System;
 //use Core::Panic;
 ////use Core::System::{{ println }};
 
+use Core::System;
 use Core::Optional;
 
-fn x<T: Sized>(a: T) {
+class M<T> {
+    pub:
+    M() {}
+}
+
+interface L {
+}
+
+fn x<T: Sized>() {
+    let a = new M<T>();
 }
 
 pub fn main() i32 {
     let a: String = "🌊🌊🌊";
-    System::println(a)
+    let b = new Vector<f32>();
+    x<?i32>()
 }
