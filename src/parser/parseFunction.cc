@@ -17,7 +17,7 @@ using namespace snowball::Syntax::Statement;
 
 namespace snowball::parser {
 
-FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isLambda) {
+FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isLambda, bool allowDecl) {
   assert((is<TokenType::KWORD_FUNC>() && (!isConstructor && !isOperator)) ||
          (is<TokenType::IDENTIFIER>() && (isConstructor && !isOperator)) || (isOperator));
 
@@ -526,6 +526,11 @@ fetch_attrs:
       next();
     } else {
       createError<SYNTAX_ERROR>("Expected a number literal for the function body!");
+    }
+  } else if (is<TokenType::SYM_SEMI_COLLON>()) {
+    next();
+    if (isConstructor) {
+      createError<SYNTAX_ERROR>("Constructors can't be declared as extern!");
     }
   } else {
     assert_tok<TokenType::BRACKET_LCURLY>("'{'");

@@ -31,7 +31,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
   assert_tok<TokenType::BRACKET_LCURLY>("'{'");
   next();
   auto cls = Syntax::N<Syntax::Statement::DefinedTypeDef>(
-          name, nullptr, Syntax::Statement::Privacy::fromInt(isPublic), true
+          name, nullptr, Syntax::Statement::Privacy::fromInt(isPublic), Syntax::Statement::DefinedTypeDef::Type::STRUCT
   );
   cls->setGenerics(generics);
   cls->setDBGInfo(dbg);

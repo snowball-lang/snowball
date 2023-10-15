@@ -624,6 +624,12 @@ void Lexer::tokenize() {
             tk.type = TokenType::KWORD_TRY;
           } else if (identifier == _SNOWBALL_KEYWORD__CATCH) {
             tk.type = TokenType::KWORD_CATCH;
+          } else if (identifier == _SNOWBALL_KEYWORD__INTER) {
+            tk.type = TokenType::KWORD_INTER;
+          } else if (identifier == _SNOWBALL_KEYWORD__EXTENDS) {
+            tk.type = TokenType::KWORD_EXTENDS;
+          } else if (identifier == _SNOWBALL_KEYWORD__IMPLS) {
+            tk.type = TokenType::KWORD_IMPLEMENTS;
           }
 
           else if (identifier == _SNOWBALL_KEYWORD__TRUE || identifier == _SNOWBALL_KEYWORD__FALSE) {

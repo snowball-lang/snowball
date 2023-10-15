@@ -23,7 +23,7 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-types::DefinedType* Transformer::transformClass(
+types::BaseType* Transformer::transformClass(
         const std::string& uuid, cacheComponents::Types::TypeStore& classStore, Expression::TypeRef* typeRef
 ) {
   auto ty = utils::cast<Statement::DefinedTypeDef>(classStore.type);
@@ -45,9 +45,10 @@ types::DefinedType* Transformer::transformClass(
                                        std::vector<types::Type*>{};
 
   // TODO: check if typeRef generics match class generics
-  types::DefinedType* transformedType;
+  types::BaseType* transformedType;
   ctx->withState(classStore.state, [&]() {
     ctx->withScope([&] {
+      auto tyFunctions = ty->getFunctions();
       auto backupClass = ctx->getCurrentClass();
       // TODO: maybe not reset completly, add nested classes in
       // the future
@@ -56,7 +57,13 @@ types::DefinedType* Transformer::transformClass(
       auto existantTypes = ctx->cache->getTransformedType(uuid);
       auto _uuid = baseUuid + ":" + utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
       auto basedName = ty->getName();
-      transformedType = new types::DefinedType(
+      transformedType = ty->isInterface() ? (types::BaseType*)new types::InterfaceType(
+              basedName,
+              _uuid,
+              ctx->module,
+              std::vector<types::InterfaceType::Member*>{},
+              std::vector<types::Type*>{}
+      ) : (types::BaseType*)new types::DefinedType(
               basedName,
               _uuid,
               ctx->module,
@@ -99,9 +106,9 @@ types::DefinedType* Transformer::transformClass(
         parentType = utils::cast<types::DefinedType>(parent);
         if (!parentType) {
           E<TYPE_ERROR>(
-                  ty,
+                  x,
                   FMT("Can't inherit from '%s'", parent->getPrettyName().c_str()),
-                  {.info = "This is not a defined type!",
+                  {.info = "This is not a class nor a struct type!",
                    .note = "Classes can only inherit from other "
                            "classes or "
                            "structs meaning\n that you can't "
@@ -109,7 +116,7 @@ types::DefinedType* Transformer::transformClass(
                            "(for example) because it's\n a "
                            "primitive type.",
                    .help = "If trying to implement from an interface, "
-                           "use the `implements` keyword "
+                           "use the `implements`\nkeyword "
                            "instead.\n"}
           );
         }
@@ -121,93 +128,125 @@ types::DefinedType* Transformer::transformClass(
       for (auto ty : ty->getTypeAliases()) { trans(ty); }
       ctx->generateFunction = true;
       for (auto ty : ty->getTypeAliases()) { trans(ty); }
-      auto baseFields = vector_iterate<Statement::VariableDecl*, types::DefinedType::ClassField*>(
-              ty->getVariables(),
-              [&](auto v) {
-                auto definedType = v->getDefinedType();
-                if (!definedType)
-                  E<SYNTAX_ERROR>(
-                          v->getDBGInfo(),
-                          "Can't infer type!",
-                          {.info = "The type of this variable can't be inferred!",
-                           .note = "This rule only applies to variables inside classes.",
-                           .help = "You can't infer the type of a variable "
-                                   "without specifying it's type.\n"
-                                   "For example, you can't do this:\n"
-                                   "   let a = 10\n"
-                                   "You have to do this:\n"
-                                   "   let a: i32 = 10\n"
-                                   "Or this:\n"
-                                   "   let a = 10: i32"}
-                  );
-                auto varTy = transformSizedType(
-                        definedType, false, "Class fields must be sized but found '%s' (which is not sized)"
-                );
-                varTy->setMutable(v->isMutable());
-                auto field = new types::DefinedType::ClassField(
-                        v->getName(), varTy, v->getPrivacy(), v->getValue(), v->isMutable()
-                );
-                field->setDBGInfo(v->getDBGInfo());
-                return field;
-              }
-      );
-      auto fields = getMemberList(ty->getVariables(), baseFields, parentType);
-      transformedType->setParent(parentType);
-      transformedType->setFields(fields);
       transformedType->setGenerics(generics);
       transformedType->setPrivacy(ty->getPrivacy());
       transformedType->setDBGInfo(ty->getDBGInfo());
       transformedType->setSourceInfo(ty->getSourceInfo());
-      bool allowConstructor = (!ty->hasConstructor) && baseFields.size() == 0;
-      if (parentType != nullptr) ctx->cache->performInheritance(transformedType, parentType, allowConstructor);
+      int fieldCount = 0;
+      if (!ty->isInterface()) {
+        auto baseFields = vector_iterate<Statement::VariableDecl*, types::DefinedType::ClassField*>(
+          ty->getVariables(),
+          [&](auto v) {
+            auto definedType = v->getDefinedType();
+            if (!definedType)
+              E<SYNTAX_ERROR>(
+                v->getDBGInfo(),
+                "Can't infer type!",
+                {.info = "The type of this variable can't be inferred!",
+                  .note = "This rule only applies to variables inside classes.",
+                  .help = "You can't infer the type of a variable "
+                    "without specifying it's type.\n"
+                    "For example, you can't do this:\n   let a = 10\n"
+                    "You have to do this:\n   let a: i32 = 10\n"
+                    "Or this:\n   let a = 10: i32"}
+              );
+            auto varTy = transformSizedType(
+                    definedType, false, "Class fields must be sized but found '%s' (which is not sized)"
+            );
+            varTy->setMutable(v->isMutable());
+            auto field = new types::DefinedType::ClassField(
+                    v->getName(), varTy, v->getPrivacy(), v->getValue(), v->isMutable()
+            );
+            field->setDBGInfo(v->getDBGInfo());
+            return field;
+          }
+        );
+        auto fields = getMemberList(ty->getVariables(), baseFields, parentType);
+        ((types::DefinedType*)transformedType)->setParent(parentType);
+        ((types::DefinedType*)transformedType)->setFields(fields);
+        fieldCount = fields.size();
+      } else {
+        for (auto v : ty->getVariables()) {
+          auto definedType = v->getDefinedType();
+          if (!definedType)
+            E<SYNTAX_ERROR>(
+              v->getDBGInfo(),
+              "Can't infer type!",
+              {.info = "The type of this variable can't be inferred!",
+                .note = "This rule only applies to variables inside interfaces.",
+                .help = "You can't infer the type of a variable "
+                  "without specifying it's type.\n"
+                  "For example, you can't do this:\n   let a = 10\n"
+                  "You have to do this:\n   let a: i32 = 10\n"
+                  "Or this:\n   let a = 10: i32"}
+            );
+          auto varTy = transformSizedType(
+                  definedType, false, "Interface fields must be sized but found '%s' (which is not sized)"
+          );
+          varTy->setMutable(v->isMutable());
+          auto field = new types::InterfaceType::Member(
+                  v->getName(), varTy, types::InterfaceType::Member::Kind::FIELD, v, v->getPrivacy(), v->isMutable()
+          );
+          field->setDBGInfo(v->getDBGInfo());
+          ((types::InterfaceType*)transformedType)->addField(field);
+          fieldCount++;
+        }
+      }
+      bool allowConstructor = (!ty->hasConstructor) && fieldCount == 0;
+      if (parentType != nullptr && !ty->isInterface()) 
+        ctx->cache->performInheritance((types::DefinedType*)transformedType, parentType, allowConstructor);
+      if (!ty->isInterface())
+        implementTypes((types::DefinedType*)transformedType, ty->getImpls(), tyFunctions);
       assert(!ty->isStruct() || (ty->isStruct() && ty->getFunctions().size() == 0));
       // Create function definitions
       ctx->generateFunction = false;
-      ctx->module->typeInformation.insert(
-              {transformedType->getId(), std::shared_ptr<types::DefinedType>(transformedType)}
-      );
-      GENERATE_EQUALIZERS
-      for (auto fn : ty->getFunctions()) {
-        if (services::OperatorService::opEquals<OperatorType::CONSTRUCTOR>(fn->getName()))
-          transformedType->hasConstructor = true;
-        if (fn->isVirtual()) transformedType->hasVtable = true;
+      if (!ty->isInterface()) {
+        types::DefinedType* classType = utils::cast<types::DefinedType>(transformedType);
+        ctx->module->typeInformation.insert(
+          {classType->getId(), std::shared_ptr<types::DefinedType>(classType)}
+        );
+        GENERATE_EQUALIZERS
+        for (auto fn : tyFunctions) {
+          if (services::OperatorService::opEquals<OperatorType::CONSTRUCTOR>(fn->getName()))
+            classType->hasConstructor = true;
+          if (fn->isVirtual()) classType->hasVtable = true;
 
-        trans(fn);
-      }
-      if (!transformedType->hasVtable) {
-        auto p = transformedType;
-        while (p->hasParent()) {
-          p = p->getParent();
-          p = p->getModule()->typeInformation.find(p->getId())->second.get();
-          if (p->hasVtable) {
-            transformedType->hasVtable = true;
-            break;
+          trans(fn);
+        }
+        if (!classType->hasVtable) {
+          auto p = classType;
+          while (p->hasParent()) {
+            p = p->getParent();
+            p = p->getModule()->typeInformation.find(p->getId())->second.get();
+            if (p->hasVtable) {
+              classType->hasVtable = true;
+              break;
+            }
           }
         }
+        // Generate the function bodies
+        ctx->generateFunction = true;
+        GENERATE_EQUALIZERS
+        for (auto fn : tyFunctions) { trans(fn); }
+        ctx->generateFunction = backupGenerateFunction;
+        auto parentHasConstructor =
+                allowConstructor && parentType != nullptr && !parentType->isStruct() && parentType->hasConstructor;
+        if (!parentHasConstructor && !classType->hasConstructor && !classType->isStruct() &&
+            !ty->hasAttribute(Attributes::BUILTIN)) {
+          E<SYNTAX_ERROR>(
+                  ty,
+                  "This class does not have a constructor!",
+                  {.info = "This class does not have a constructor!",
+                  .note = "No constructor has been defined or can be inherited.",
+                  .help = FMT("You have to define a constructor for this class.\n"
+                          "For example:\n\n"
+                          "1 | class %s {\n"
+                          "2 |   %s() { ... }\n"
+                          "3 | }\n"
+                          "4 |", ty->getName().c_str(), ty->getName().c_str())}
+          );
+        }
       }
-      // Generate the function bodies
-      ctx->generateFunction = true;
-      GENERATE_EQUALIZERS
-      for (auto fn : ty->getFunctions()) { trans(fn); }
-      ctx->generateFunction = backupGenerateFunction;
-      auto parentHasConstructor =
-              allowConstructor && parentType != nullptr && !parentType->isStruct() && parentType->hasConstructor;
-      if (!parentHasConstructor && !transformedType->hasConstructor && !transformedType->isStruct() &&
-          !ty->hasAttribute(Attributes::BUILTIN)) {
-        E<SYNTAX_ERROR>(
-                ty,
-                "This class does not have a constructor!",
-                {.info = "This class does not have a constructor!",
-                 .note = "No constructor has been defined or can be inherited.",
-                 .help = "You have to define a constructor for this class.\n"
-                         "For example:\n"
-                         "1 | class Test {\n"
-                         "2 |   Test() { ... }\n"
-                         "3 | }\n"
-                         "4 |"}
-        );
-      }
-
       ctx->setCurrentClass(backupClass);
     });
   });

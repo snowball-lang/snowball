@@ -34,7 +34,7 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
           if (!is<TokenType::KWORD_FUNC>(pk) && !is<TokenType::KWORD_VAR>(pk) && !is<TokenType::KWORD_TYPEDEF>(pk) &&
               !is<TokenType::KWORD_NAMESPACE>(pk) && !is<TokenType::KWORD_STRUCT>(pk) &&
               !is<TokenType::KWORD_STATIC>(pk) && !is<TokenType::KWORD_UNSAFE>(pk) && !is<TokenType::KWORD_CLASS>(pk) &&
-              !is<TokenType::KWORD_EXTERN>(pk) && !is<TokenType::KWORD_CONST>(pk)) {
+              !is<TokenType::KWORD_EXTERN>(pk) && !is<TokenType::KWORD_CONST>(pk) && !is<TokenType::KWORD_INTER>(pk)) {
             createError<SYNTAX_ERROR>("expected keyword \"fn\", \"static\", \"unsafe\" \"namespace\", \"class\", "
                                       "\"let\", \"const\" "
                                       "or "
@@ -100,7 +100,8 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
           break;
         }
 
-        case TokenType::KWORD_CLASS: {
+        case TokenType::KWORD_CLASS:
+        case TokenType::KWORD_INTER: {
           global.push_back(parseClass());
           break;
         }

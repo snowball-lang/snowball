@@ -10,8 +10,10 @@
 namespace snowball::parser {
 
 Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
-  assert(is<TokenType::KWORD_CLASS>());
-  next(); // East "class"
+  bool isInterface = is<TokenType::KWORD_INTER>();
+  assert(is<TokenType::KWORD_CLASS>() || isInterface);
+
+  next(); // East "class" or "interface"
 
   bool isPublic = false;
   bool extends = false;
@@ -50,6 +52,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
 
   Syntax::Expression::TypeRef* parentClass = nullptr;
   Syntax::Statement::GenericContainer<>::GenericList generics;
+  std::vector<Syntax::Expression::TypeRef*> impls;
 
   if (is<TokenType::OP_LT>(peek())) {
     next();
@@ -58,19 +61,33 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
   }
 
   next();
-  if (is<TokenType::SYM_COLLON>()) {
+  if (is<TokenType::KWORD_EXTENDS>()) {
     next();
     throwIfNotType();
     parentClass = parseType();
   }
+
+  if (is<TokenType::KWORD_IMPLEMENTS>()) {
+    next();
+    while (true) {
+      impls.push_back(parseType());
+      if (is<TokenType::SYM_COMMA>(peek())) {
+        next();
+        continue;
+      } else {
+        break;
+      }
+    }
+  } 
 
   assert_tok<TokenType::BRACKET_LCURLY>("'{'");
   bool inPrivateScope = true;
   bool hasConstructor = false;
 
   auto cls = Syntax::N<Syntax::Statement::DefinedTypeDef>(
-          name, parentClass, Syntax::Statement::Privacy::fromInt(isPublic)
+    name, parentClass, Syntax::Statement::Privacy::fromInt(isPublic), isInterface ? Syntax::Statement::DefinedTypeDef::Type::INTERFACE : Syntax::Statement::DefinedTypeDef::Type::CLASS
   );
+  cls->setImpls(impls);
   cls->setGenerics(generics);
   cls->setDBGInfo(dbg);
   for (auto attr : attributes) cls->addAttribute(attr.first, attr.second);
@@ -123,7 +140,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
       } break;
 
       case TokenType::KWORD_FUNC: {
-        auto func = parseFunction();
+        auto func = parseFunction(false, false, false, isInterface);
         func->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
         cls->addFunction(func);
       } break;
@@ -173,6 +190,9 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
       }
 
       case TokenType::KWORD_TYPEDEF: {
+        if (extends) { createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* type aliases!"); }
+        else if (isInterface) { createError<SYNTAX_ERROR>("Interfaces can't have type aliases!"); }
+
         auto typeDef = parseTypeAlias();
         typeDef->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
         cls->addTypeAlias(typeDef);
@@ -184,6 +204,8 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
       // note: This case should be always at the bottom!
       case TokenType::IDENTIFIER: {
         if (IS_CONSTRUCTOR(m_current)) {
+          if (isInterface) { createError<SYNTAX_ERROR>("Interfaces can't have constructors!"); }
+          else if (extends) { createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* constructors!"); }
           hasConstructor = true;
           auto func = parseFunction(true);
           func->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));

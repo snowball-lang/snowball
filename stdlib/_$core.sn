@@ -179,37 +179,21 @@ pub class Exception {
  * manipulation operations such as exception throwing, exception
  * catching, exception handling, and more.
  */
-pub class IndexError: Exception 
+pub class IndexError extends Exception 
   { }
 /**
- * @class Iterable
- * @brief A class representing an iterable.
+ * @interface Iterable
+ * @brief An interface representing an iterable.
  *
  * The Iterable class provides various operations and functionalities
  * for working with iterables. It supports common Iterable
  * manipulation operations such as iteration, element access, and more.
  */
-pub class Iterable<_IteratorType: Sized> {
-    /// @brief The index of the iterator.
-    let mut iter_index: i32 = 0;
+pub interface Iterable<IterType: Sized> {
+    let mut iter_index: i32;
   pub:
-    type IteratorType = Iter<_IteratorType>;
-
-    /**
-     * @brief Iterable constructor.
-     * @note It creates an invalid iterable.
-     */
-    Iterable() {}
-    /**
-     * @brief It continues the iteration.
-     * @return The next element in the iteration.
-     */
-    virt fn next() Iter<_IteratorType> = 0;
-    /**
-     * @brief It resets the iteration.
-     */
-    mut fn [[inline]] reset() 
-      { self.iter_index = 0; }
+    fn next() Iter<IterType>;
+    mut fn reset() { self.iter_index = 0; }
 }
 
 /**
@@ -278,15 +262,17 @@ pub class Iter<_IteratorType: Sized> {
  * for working with ranges of elements. It supports common Range
  * manipulation operations such as iteration, element access, and more.
  */
-pub class Range<_Number_Type: Numeric = i32>: Iterable<_Number_Type> {
+pub class Range<_Number_Type: Numeric = i32> implements Iterable<_Number_Type> {
   pub:
+    let mut iter_index: i32;
+
     /**
      * @brief Range constructor.
      * @param[in] start The start of the range.
      * @param[in] end The end of the range.
      */
     Range(start: _Number_Type, end: _Number_Type) : 
-      super(), _start(start), _end(end) 
+      _start(start), _end(end) 
     {
       self.iter_index = self._start-1;
     }
@@ -294,7 +280,7 @@ pub class Range<_Number_Type: Numeric = i32>: Iterable<_Number_Type> {
      * @brief Range constructor with default start.
      * @param[in] end The end of the range.
      */
-    Range(end: _Number_Type) : super(), _end(end) {}
+    Range(end: _Number_Type) : _end(end) {}
     /**
      * @brief Returns the size of the range.
      * @return The size of the range.
@@ -353,7 +339,7 @@ pub class Range<_Number_Type: Numeric = i32>: Iterable<_Number_Type> {
 pub class Vector<
   _StoreType: Sized,
   Allocator: Sized = Ptr::Allocator<_StoreType>
->: Iterable<_StoreType> {
+> extends Iterable<_StoreType> {
   pub:
     /**
      * @brief Default constructor.

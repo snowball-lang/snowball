@@ -190,6 +190,9 @@ enum class TokenType
   KWORD_TRY,            // Symbol: try
   KWORD_CATCH,          // Symbol: catch
   KWORD_CONTINUE,       // Symbol: continue
+  KWORD_INTER,          // Symbol: interface
+  KWORD_EXTENDS,        // Symbol: extends
+  KWORD_IMPLEMENTS,     // Symbol: implements
   KWORD__ENDING__POINT, // All keywords must be less than this
 
   /*
@@ -311,6 +314,9 @@ struct Token {
       case TokenType::KWORD_NEW: return _SNOWBALL_KEYWORD__NEW;
       case TokenType::KWORD_THROW: return _SNOWBALL_KEYWORD__THROW;
       case TokenType::KWORD_TRY: return _SNOWBALL_KEYWORD__TRY;
+      case TokenType::KWORD_INTER: return _SNOWBALL_KEYWORD__INTER;
+      case TokenType::KWORD_EXTENDS: return _SNOWBALL_KEYWORD__EXTENDS;
+      case TokenType::KWORD_IMPLEMENTS: return _SNOWBALL_KEYWORD__IMPLS;
       case TokenType::KWORD_CATCH:
         return _SNOWBALL_KEYWORD__CATCH;
 

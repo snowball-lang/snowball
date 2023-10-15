@@ -181,7 +181,7 @@ private:
    * [parameter_list] ")" type "=>" stmt
    */
   Syntax::Statement::FunctionDef*
-  parseFunction(bool isConstructor = false, bool isOperator = false, bool isLambda = false);
+  parseFunction(bool isConstructor = false, bool isOperator = false, bool isLambda = false, bool allowDecl = false);
   /**
    * params        ::=  "<" [param_args] ">"
    * param_args    ::=  identifier ["=" default_type]

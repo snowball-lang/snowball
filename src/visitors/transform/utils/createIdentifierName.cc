@@ -21,7 +21,7 @@ std::string TransformContext::createIdentifierName(const std::string name, bool 
   if (includeBase) {
     // alreadyGenerated = true;
     if (currentClass != nullptr) {
-      if (auto x = utils::cast<types::DefinedType>(currentClass)) {
+      if (auto x = utils::cast<types::BaseType>(currentClass)) {
         result = x->getUUID() + "." + name;
       } else if (utils::cast<types::PrimitiveType>(currentClass)) {
         result = currentClass->getName() + "." + name;

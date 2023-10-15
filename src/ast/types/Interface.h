@@ -13,6 +13,8 @@
 #include <string>
 #include <vector>
 
+#include "../syntax/nodes.h"
+
 #ifndef __SNOWBALL_AST_INTERFACES_TYPES_H_
 #define __SNOWBALL_AST_INTERFACES_TYPES_H_
 
@@ -43,10 +45,11 @@ public:
       METHOD
     } kind;
 
-    explicit Member(const std::string& name, Type* type, Kind kind, Privacy privacy = PRIVATE, bool isMutable = false)
-        : name(name), type(type), kind(kind), Privacy(privacy), isMutable(isMutable){};
+    explicit Member(const std::string& name, Type* type, Kind kind, Syntax::Statement::Base* ast, Privacy privacy = PRIVATE, bool isMutable = false)
+        : name(name), type(type), kind(kind), Privacy(privacy), isMutable(isMutable), ast(ast){};
     const std::string name;
     Type* type;
+    Syntax::Statement::Base* ast;
 
     bool isMutable = false;
   };
@@ -99,9 +102,11 @@ public:
   std::string getPrettyName() const override;
   /// @return the mangled version of the type
   std::string getMangledName() const override;
-  /// @return A list containing all the fields declared for the class
+  /// @return A list containing all the fields declared for the interface
   /// @note It does not include the parent fields!
   auto getFields() const { return fields; }
+  /// @brief Add a new field to the interface
+  void addField(Member* f) { fields.emplace_back(f); }
   /// @c Type::toRef() for information about this function.
   /// @note It essentially does the same thing except it adds
   ///  generics if needed

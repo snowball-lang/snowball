@@ -18,10 +18,10 @@ SN_TRANSFORMER_VISIT(Statement::ForLoop) {
   // {
   //   let mut $iter = 0..10
   //   let mut $iter_value = $iter.next()
-  //   while $iter_value->is_valid() {
-  //       let i = $iter_value->value();
+  //   while $iter_value.is_valid() {
+  //       let i = $iter_value.value();
   //       x(i);
-  //       $i = $iter_value.next();
+  //       $iter_value = $iter.next();
   //   }
   //   $iter.reset();
   // }

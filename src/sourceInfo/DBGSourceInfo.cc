@@ -15,6 +15,10 @@ DBGSourceInfo::DBGSourceInfo(const SourceInfo* p_source_info, std::pair<int, int
 
 void DBGSourceInfo::prepare_for_error() {
   uint64_t cur_line = 1;
+  line_before.clear();
+  line_str.clear();
+  line_after.clear();
+
   const auto& source = m_srci->getSource();
 
   for (auto c : source) {

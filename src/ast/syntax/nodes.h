@@ -535,8 +535,8 @@ public:
 struct VariableDecl : public AcceptorExtend<VariableDecl, Base>, public AcceptorExtend<VariableDecl, Privacy> {
   /// @brief Variables's identifier
   std::string name;
-  /// @brief Function's return type
-  Expression::Base* value;
+  /// @brief Variable's default value
+  Expression::Base* value = nullptr;
   /// @brief Whether the variable can change or not
   bool _mutable = false;
   // @brief User defined type
@@ -624,12 +624,19 @@ struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
   std::vector<TypeAlias*> typeAliases;
   /// @brief Class inheritance parent
   Expression::TypeRef* extends = nullptr;
-  /// @brief Wether or not the class is a struct
-  bool _struct = false;
+  /// @brief The defined type's type 
+  enum Type
+  {
+    CLASS,
+    STRUCT,
+    INTERFACE
+  } type = CLASS;
+  /// @brief Type implementations for interfaces
+  std::vector<Expression::TypeRef*> impls;
 
 public:
   DefinedTypeDef(
-          std::string name, Expression::TypeRef* extends = nullptr, Privacy::Status prvc = PRIVATE, bool _struct = false
+    std::string name, Expression::TypeRef* extends = nullptr, Privacy::Status prvc = PRIVATE, Type type = CLASS
   );
 
   /// @brief Get class name
@@ -665,6 +672,13 @@ public:
 
   /// @return If the class is a struct or not
   virtual bool isStruct();
+  /// @return If the class is an interface or not
+  virtual bool isInterface();
+
+  /// @brief Set class' implementations
+  void setImpls(std::vector<Expression::TypeRef*> impls);
+  /// @return Get class' implementations
+  std::vector<Expression::TypeRef*> getImpls() const;
 
   /// @return the parent class being inherited on
   Expression::TypeRef* getParent() const;

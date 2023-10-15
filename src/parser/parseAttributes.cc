@@ -14,8 +14,9 @@ Parser::parseAttributes(std::function<Attributes(std::string)> parseFn) {
   while (true) {
     std::unordered_map<std::string, std::string> attrArgs;
     next();
-    assert_tok<TokenType::IDENTIFIER>("an identifier");
     auto attr = m_current.to_string();
+    if (!(m_current.type > TokenType::KWORD__START__POINT && m_current.type < TokenType::KWORD__ENDING__POINT))
+      assert_tok<TokenType::IDENTIFIER>("an identifier");
     Attributes parsed;
     if (attr == "cfg") {
       parsed = Attributes::CFG;
