@@ -132,7 +132,7 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
                   name.c_str(),
                   Expression::FunctionCall::getArgumentsAsString(arguments).c_str()),
               {.info = "No function overloads found for this function!",
-               .note = "The function does exist but it's arguments are "
+               .note = "The function does exist but its arguments are "
                        "not correctly "
                        "defined.",
                .help = "The provided function name and arguments do not "

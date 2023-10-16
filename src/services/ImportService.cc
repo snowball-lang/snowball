@@ -53,7 +53,7 @@ ImportService::getImportPath(const std::string package, std::vector<std::string>
     if (exists) { foundExt = ext; }
   }
 
-  if (!exists) { return {"", FMT("Coudn't find module imported from '%s'!", package.c_str())}; }
+  if (!exists) { return {"", FMT("Coudnt find module '%s' imported from '%s'!", utils::join(path.begin(), path.end(), "::").c_str(), package.c_str())}; }
 
   return {fullPath.string() + foundExt, ""};
 }

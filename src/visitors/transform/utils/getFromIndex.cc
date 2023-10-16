@@ -63,7 +63,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
       if (!indexValue && !ty.has_value() && !fns.has_value() && !ovs.has_value() && !mod.has_value()) {
         if (OperatorService::isOperator(name)) name = OperatorService::operatorName(OperatorService::operatorID(name));
         E<VARIABLE_ERROR>(
-                dbgInfo, FMT("Coudn't find '%s' inside type '%s'!", name.c_str(), x->getPrettyName().c_str())
+                dbgInfo, FMT("Coudnt find '%s' inside type '%s'!", name.c_str(), x->getPrettyName().c_str())
         );
       }
       return {indexValue ? std::make_optional(indexValue) : std::nullopt, ty, fns, ovs, mod, isInClassContext(x)};
@@ -89,7 +89,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
         if (OperatorService::isOperator(name)) name = OperatorService::operatorName(OperatorService::operatorID(name));
         E<VARIABLE_ERROR>(
                 dbgInfo,
-                FMT("Coudn't find function '%s' inside type '%s'!", name.c_str(), type->getPrettyName().c_str())
+                FMT("Coudnt find function '%s' inside type '%s'!", name.c_str(), type->getPrettyName().c_str())
         );
       }
 
@@ -118,7 +118,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     if (!v.has_value() && !ty.has_value() && !fns.has_value() && !ovs.has_value() && !mod.has_value()) {
       E<VARIABLE_ERROR>(
               dbgInfo,
-              FMT("Coudn't find '%s' inside module '%s'!",
+              FMT("Coudnt find '%s' inside module '%s'!",
                   index->getIdentifier()->getIdentifier().c_str(),
                   m->getName().c_str())
       );

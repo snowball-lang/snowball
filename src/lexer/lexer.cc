@@ -244,7 +244,7 @@ void Lexer::tokenize() {
                         "Unexpected EOF while lexing a "
                         "string scape!",
                         1,
-                        {.info = "Coudn't find scape here!",
+                        {.info = "Coudnt find scape here!",
                          .help = "The string in your code "
                                  "contains "
                                  "an "

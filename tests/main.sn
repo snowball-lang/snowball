@@ -22,7 +22,7 @@
 ////use Core::System::{{ println }};
 
 use Core::System;
-use Core::Optional;
+use Core::Optionald;
 
 class M<T> {
     pub:
@@ -32,12 +32,10 @@ class M<T> {
 interface L {
 }
 
-fn x<T: Sized>() {
-    let a = new M<T>();
-}
+fn x<T>() {}
 
 pub fn main() i32 {
     let a: String = "🌊🌊🌊";
     let b = new Vector<f32>();
-    x<?i32>()
+    x(b)
 } 
