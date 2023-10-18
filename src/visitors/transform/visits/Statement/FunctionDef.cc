@@ -27,7 +27,7 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     p_node->addAttribute(Attributes::ALLOW_FOR_BENCH);
   }
 
-  p_node = p_node->copy();
+  p_node = p_node->copy(); // TODO: really?
   if (auto c = ctx->getCurrentClass(true); c != nullptr && !p_node->hasAttribute(Attributes::FIRST_ARG_IS_SELF)) {
     auto args = p_node->getArgs();
     auto pointer = (p_node->hasAttribute(Attributes::NO_POINTER_SELF)) ? c->copy() : c->getReferenceTo();
@@ -46,6 +46,19 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     } else if (args.at(0)->getName() != "self") {
       E<SYNTAX_ERROR>(p_node, "First argument of function with 'first_arg_is_self' attribute must be named 'self'!");
     }
+  }
+
+  if (p_node->isVirtual() && p_node->isGeneric()) {
+    E<SYNTAX_ERROR>(p_node, "Virtual functions cannot be generic!", {
+      .info = "Virtual functions cannot be generic!",
+      .note = "Virtual functions are not allowed to be generic because they\nare "
+              "not allowed to be "
+              "overloaded. This is because the virtual\nfunction table is "
+              "generated at compile time "
+              "and\ncannot be changed at runtime.\n\n"
+              "read more:\n - 'https://stackoverflow.com/questions/2354210/can-a-class-member-function-template-be-virtual'",
+      .help = "Try removing the 'virtual' or the 'generic' attribute."
+    });
   }
 
   if (!ctx->generateFunction && !(IS_MAIN)) {
