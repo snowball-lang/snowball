@@ -655,6 +655,7 @@ void TypeChecker::fixTypes(std::shared_ptr<types::BaseType> ty) {
         });
 
         if (it == finalVtable.end()) {
+          // TODO: only when "overriding"!!!
           fn->setVirtualIndex(vtableIndex++);
           finalVtable.push_back(fn);
         } else {
