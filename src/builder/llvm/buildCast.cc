@@ -6,8 +6,9 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
-#define IS_INTEGER(x) (utils::cast<types::IntType>(x) || utils::cast<types::CharType>(x))
-#define IS_FLOAT(x)   (utils::cast<types::FloatType>(x))
+#define IS_INTEGER(x) (utils::is<types::IntType>(x) || utils::is<types::CharType>(x))
+#define IS_FLOAT(x)   (utils::is<types::FloatType>(x))
+#define IS_DEFINED(x) (utils::is<types::DefinedType>(x) || utils::is<types::InterfaceType>(x))
 
 namespace snowball {
 namespace codegen {
@@ -43,6 +44,17 @@ void LLVMBuilder::visit(ir::Cast* c) {
   } else if (IS_INTEGER(vTy) && utils::cast<types::PointerType>(ty)) { // i[n] -> *
     this->value = builder->CreateIntToPtr(v, llvmType);
     this->ctx->doNotLoadInMemory = true;
+  } else if (IS_DEFINED(vTy) && IS_DEFINED(ty)) {
+    v->dump();
+    if (llvm::isa<llvm::LoadInst>(v)) {
+      auto ptr = llvm::cast<llvm::LoadInst>(v)->getPointerOperand();
+      this->value = builder->CreateLoad(llvmType, ptr);
+    } else if (llvm::isa<llvm::AllocaInst>(v)) {
+      this->value = builder->CreateLoad(llvmType, v);
+      ctx->doNotLoadInMemory = true;
+    } else {
+      assert(!"Unreachable type case found!");
+    }
   } else {
     assert(utils::cast<types::ReferenceType>(ty) || utils::cast<types::PointerType>(ty));
     this->value = builder->CreatePointerCast(v, llvmType);

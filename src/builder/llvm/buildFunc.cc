@@ -139,7 +139,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     }
 
     assert(utils::is<types::DefinedType>(self) && "Constructor self type is not a defined type!");
-    if (ctx->typeInfo.at(utils::cast<types::DefinedType>(self)->getId())->hasVtable) {
+    if (ctx->typeInfo.at(utils::cast<types::BaseType>(self)->getId())->hasVtable) {
       auto storeBranch = h.create<llvm::BasicBlock>(*context, "vtable-store", llvmFn);
       builder->CreateBr(storeBranch);
       builder->SetInsertPoint(storeBranch);

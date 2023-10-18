@@ -119,6 +119,8 @@ public:
   virtual std::int64_t sizeOf() const override { return 8; }
   virtual std::int64_t alignmentOf() const override { return 8; }
 
+  bool isIgnoringSelf(FunctionType* fn);
+
   SNOWBALL_TYPE_COPIABLE(FunctionType)
 };
 

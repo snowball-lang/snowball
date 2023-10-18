@@ -113,8 +113,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
       }
 
       ctx->defineFunction(fn);
-      if (!dontAddToModule) 
-        ctx->cache->setFunctionState(fn->getId(), fnStore.state);
+      if (!dontAddToModule) ctx->cache->setFunctionState(fn->getId(), fnStore.state);
 
       // Generate a bodied for functions that have
       // them defined.
@@ -173,8 +172,6 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
     });
 
     if (dontAddToModule) return;
-    if (name == "x") 
-      DUMP_S("HEA")
     ctx->module->addFunction(fn);
   });
   return fn;

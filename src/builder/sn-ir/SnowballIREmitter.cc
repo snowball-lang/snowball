@@ -91,7 +91,8 @@ void SnowballIREmitter::visit(ir::Return* r) {
 void SnowballIREmitter::visit(ir::Call* c) {
   if (c->getCallee())
     c->getCallee()->visit(this);
-  else addContent("<unknown>");
+  else
+    addContent("<unknown>");
   addContent("(");
   for (auto a : c->getArguments()) {
     a->visit(this);

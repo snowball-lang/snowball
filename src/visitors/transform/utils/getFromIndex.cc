@@ -30,7 +30,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     if (auto x = utils::cast<types::ReferenceType>(type)) { type = x->getBaseType(); }
     if (auto x = utils::cast<types::TypeAlias>(type)) { type = x->getBaseType(); }
 
-    if (auto x = utils::cast<types::DefinedType>(type)) {
+    if (auto x = utils::cast<types::BaseType>(type)) {
       auto g = utils::cast<Expression::GenericIdentifier>(index->getIdentifier());
       auto name = index->getIdentifier()->getIdentifier();
       auto generics = (g != nullptr) ? g->getGenerics() : std::vector<Expression::TypeRef*>{};
@@ -40,31 +40,33 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
 
       std::shared_ptr<ir::Value> indexValue = nullptr;
       if (!isStatic) {
-        auto fields = x->getFields();
-        bool fieldFound = false;
-        auto fieldValue = std::find_if(fields.begin(), fields.end(), [&](types::DefinedType::ClassField* f) {
-          bool e = f->name == name;
-          fieldFound = e;
-          return fieldFound;
-        });
 
-        if (fieldFound) {
-          // assert(v == std::nullopt);
-          assert(value != nullptr);
+#define FIND_FIELD(field_type)                                                                                         \
+  auto fields = ty->getFields();                                                                                       \
+  bool fieldFound = false;                                                                                             \
+  auto fieldValue = std::find_if(fields.begin(), fields.end(), [&](field_type* f) {                                    \
+    bool e = f->name == name;                                                                                          \
+    fieldFound = e;                                                                                                    \
+    return fieldFound;                                                                                                 \
+  });                                                                                                                  \
+  if (fieldFound) {                                                                                                    \
+    assert(value != nullptr);                                                                                          \
+    indexValue =                                                                                                       \
+            getBuilder().createIndexExtract(dbgInfo, value, *fieldValue, std::distance(fields.begin(), fieldValue));   \
+    getBuilder().setType(indexValue, (*fieldValue)->type);                                                             \
+  }
 
-          indexValue = getBuilder().createIndexExtract(
-                  dbgInfo, value, *fieldValue, std::distance(fields.begin(), fieldValue)
-          );
-          getBuilder().setType(indexValue, (*fieldValue)->type);
+        if (auto ty = utils::cast<types::DefinedType>(x)) {
+          FIND_FIELD(types::DefinedType::ClassField)
+        } else if (auto ty = utils::cast<types::InterfaceType>(x)) {
+          FIND_FIELD(types::InterfaceType::Member)
         }
       }
 
       if (indexValue == nullptr && v.has_value()) { indexValue = v.value(); }
       if (!indexValue && !ty.has_value() && !fns.has_value() && !ovs.has_value() && !mod.has_value()) {
         if (OperatorService::isOperator(name)) name = OperatorService::operatorName(OperatorService::operatorID(name));
-        E<VARIABLE_ERROR>(
-                dbgInfo, FMT("Coudnt find '%s' inside type '%s'!", name.c_str(), x->getPrettyName().c_str())
-        );
+        E<VARIABLE_ERROR>(dbgInfo, FMT("Coudnt find '%s' inside type '%s'!", name.c_str(), x->getPrettyName().c_str()));
       }
       return {indexValue ? std::make_optional(indexValue) : std::nullopt, ty, fns, ovs, mod, isInClassContext(x)};
     } else {
@@ -76,7 +78,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
 
       auto uuid = type->getName();
       if (auto x = utils::cast<types::PointerType>(type)) {
-        
+
         auto str = getBuiltinTypeUUID(x->getPointedType(), x->isMutable() ? _SNOWBALL_MUT_PTR : _SNOWBALL_CONST_PTR);
         if (!str.empty()) uuid = str;
       } else if (auto x = utils::cast<types::NumericType>(type); x && !utils::is<types::CharType>(x)) {
@@ -88,8 +90,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
       if ((!fns.has_value()) && (!ovs.has_value())) {
         if (OperatorService::isOperator(name)) name = OperatorService::operatorName(OperatorService::operatorID(name));
         E<VARIABLE_ERROR>(
-                dbgInfo,
-                FMT("Coudnt find function '%s' inside type '%s'!", name.c_str(), type->getPrettyName().c_str())
+                dbgInfo, FMT("Coudnt find member '%s' inside type '%s'!", name.c_str(), type->getPrettyName().c_str())
         );
       }
 

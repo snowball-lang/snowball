@@ -26,6 +26,14 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
 
   auto typeRef = utils::cast<Expression::TypeRef>(expr);
   auto type = transformSizedType(typeRef, false, "Cant create instance of unsized type '%s'!");
+  if (utils::is<types::InterfaceType>(type)) {
+    E<SYNTAX_ERROR>(
+            typeRef,
+            "Cant create instance of interface type!",
+            {.info = "This type is an interface type",
+             .note = "Interface types can only be used as references to objects that\nimplement the interface"}
+    );
+  }
 
   // Make a copy of the value
   auto v = getBuilder().createObjectInitialization(p_node->getDBGInfo(), type, c->getCallee(), c->getArguments());

@@ -529,9 +529,7 @@ fetch_attrs:
     }
   } else if (is<TokenType::SYM_SEMI_COLLON>()) {
     next();
-    if (isConstructor) {
-      createError<SYNTAX_ERROR>("Constructors can't be declared as extern!");
-    }
+    if (isConstructor) { createError<SYNTAX_ERROR>("Constructors can't be declared as extern!"); }
   } else {
     assert_tok<TokenType::BRACKET_LCURLY>("'{'");
     if (isLLVMFunction) {

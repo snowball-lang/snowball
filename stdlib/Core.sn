@@ -26,7 +26,7 @@ fn [[
   no_inline
 ]] snowball_test(
   func: fn () => i32,
-  name: &char,
+  name: *const char,
   index: i32,
   skip: bool = false,
   expect: i32 = 1
@@ -36,7 +36,7 @@ fn [[
     // TODO:
     //tty = ("expecting \e[1m`%i`\e[0m".to_string() + expect).c_str();
   }
-  CLib::printf(@c_str(" Testing (\e[1m#%i\e[0m) \e[1m%s\e[0m [%s] ... "), index, name, tty);
+  CLib::printf(@c_str(" Testing (\e[1m#%i\e[0m) \e[1m%s\e[0m [%s] ... "), index, name, tty.bytes());
   // TODO: Add support for exceptions
   if !skip {
     try {
@@ -192,8 +192,8 @@ pub class IndexError extends Exception
 pub interface Iterable<IterType: Sized> {
     let mut iter_index: i32 = 0;
   pub:
-    fn next() Iter<IterType>;
-    mut fn reset() { self.iter_index = 0; }
+    virt fn next() Iter<IterType>;
+    virt mut fn reset() { self.iter_index = 0; }
 }
 
 /**

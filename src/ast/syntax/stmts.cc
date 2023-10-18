@@ -60,13 +60,15 @@ Expression::TypeRef* VariableDecl::getDefinedType() { return definedType; }
 void VariableDecl::setDefinedType(Expression::TypeRef* t) { definedType = t; }
 Return::Return(Expression::Base* value) : value(value){};
 Expression::Base* Return::getValue() const { return value; }
-DefinedTypeDef::DefinedTypeDef(std::string name, Expression::TypeRef* extends, Privacy::Status prvc, DefinedTypeDef::Type type)
+DefinedTypeDef::DefinedTypeDef(
+        std::string name, Expression::TypeRef* extends, Privacy::Status prvc, DefinedTypeDef::Type type
+)
     : name(name), extends(extends), AcceptorExtend<DefinedTypeDef, Privacy>(prvc), type(type) { }
 void DefinedTypeDef::addFunction(FunctionDef* fnDef) { functions.push_back(fnDef); }
 void DefinedTypeDef::addVariable(VariableDecl* var) { variables.push_back(var); }
 void DefinedTypeDef::unsafeSetName(const std::string& name) { this->name = name; }
 bool DefinedTypeDef::isStruct() { return type == DefinedTypeDef::STRUCT; }
-//bool DefinedTypeDef::isClass() { return type == DefinedTypeDef::CLASS; }
+// bool DefinedTypeDef::isClass() { return type == DefinedTypeDef::CLASS; }
 bool DefinedTypeDef::isInterface() { return type == DefinedTypeDef::INTERFACE; }
 std::vector<TypeAlias*>& DefinedTypeDef::getTypeAliases() { return typeAliases; }
 void DefinedTypeDef::addTypeAlias(TypeAlias* alias) { typeAliases.push_back(alias); }

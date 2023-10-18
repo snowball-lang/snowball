@@ -39,6 +39,8 @@ protected:
   std::vector<Type*> defaultGenerics;
   /// @brief The start of the default generic types.
   std::size_t defaultGenericStart = 0;
+  /// @brief VTable holding all it's functions
+  std::vector<std::shared_ptr<ir::Func>> classVtable;
 
 public:
   BaseType(Kind kind, const std::string name);
@@ -54,6 +56,15 @@ public:
   /// @brief Set the UUID of the type.
   void unsafeSetUUID(const std::string uuid);
 
+  /// @return The size of the class virtual table
+  int getVtableSize();
+  /// @brief Increase the size of the virtual table
+  int addVtableItem(std::shared_ptr<ir::Func> f);
+  /// @return a vector containing all the functions in a vtable
+  std::vector<std::shared_ptr<ir::Func>>& getVTable();
+  /// @brief It overrides the virtual table
+  void unsafeOverrideVtable(std::vector<std::shared_ptr<ir::Func>> vtable);
+
   virtual std::int64_t sizeOf() const override { assert(false); }
   virtual std::int64_t alignmentOf() const override { assert(false); }
 
@@ -62,6 +73,9 @@ public:
 
   std::vector<Type*> getDefaultGenerics() const;
   std::size_t getDefaultGenericStart() const;
+
+  /// @brief Whether or not the type has a vtable
+  bool hasVtable = false;
 
   SNOWBALL_TYPE_COPIABLE(BaseType)
 };

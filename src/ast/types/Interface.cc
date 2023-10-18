@@ -31,6 +31,15 @@ bool InterfaceType::is(InterfaceType* other) const {
   return (other->getUUID() == uuid) && argumentsEqual;
 }
 
+Syntax::Expression::TypeRef* InterfaceType::toRef() {
+  auto tRef = Syntax::TR(getUUID(), nullptr, this, getUUID());
+  std::vector<Syntax::Expression::TypeRef*> genericRef;
+  for (auto g : generics) { genericRef.push_back(g->toRef()); }
+
+  tRef->setGenerics(genericRef);
+  return tRef;
+}
+
 std::string InterfaceType::getPrettyName() const {
   auto base = module->isMain() ? "" : module->getName() + "::";
   auto n = base + getName();
@@ -79,6 +88,31 @@ std::string InterfaceType::getMangledName() const {
 
   std::string mangled = prefix + mangledArgs + "IE"; // ClsE = end of class
   return mangled;
+}
+
+// - https://en.wikipedia.org/wiki/Data_structure_alignment#Computing_padding
+std::int64_t InterfaceType::sizeOf() const {
+  auto address = (std::int64_t) 0;
+  for (const auto& f : fields) {
+    auto typeSize = f->type->sizeOf();
+    auto typeAlignment = f->type->alignmentOf();
+    address += (address - (address % typeAlignment)) % typeAlignment;
+    address += (typeAlignment - (address % typeAlignment)) % typeAlignment;
+    address += typeSize;
+  }
+  auto alignment = alignmentOf();
+  address += (address - (address % alignment)) % alignment;
+  address += (alignment - (address % alignment)) % alignment;
+  return address;
+}
+
+std::int64_t InterfaceType::alignmentOf() const {
+  auto maximumAlignment = (std::int64_t) 0;
+  for (const auto& f : fields) {
+    auto alignment = f->type->alignmentOf();
+    if (alignment > maximumAlignment) maximumAlignment = alignment;
+  }
+  return maximumAlignment;
 }
 
 }; // namespace types

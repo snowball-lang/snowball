@@ -71,10 +71,9 @@ Syntax::Statement::ImportStmt* Parser::parseImportStatement() {
   }
 
   // TODO: handle all import types
-
   auto width = m_current.get_pos().second - dbg->pos.second;
   dbg->width = width;
-  
+
   prev();
   auto import = Syntax::N<Syntax::Statement::ImportStmt>(paths, package);
   import->setDBGInfo(dbg);

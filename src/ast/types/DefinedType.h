@@ -61,8 +61,6 @@ private:
   std::vector<ClassField*> fields;
   /// @brief Parent class where the class in inherited from
   DefinedType* parent = nullptr;
-  /// @brief VTable holding all it's functions
-  std::vector<std::shared_ptr<ir::Func>> classVtable;
   /// @brief The ast representation for the type
   Syntax::Statement::DefinedTypeDef* ast = nullptr;
   /// @brief Whether or not the type is a struct
@@ -112,12 +110,6 @@ public:
   std::string getMangledName() const override;
   /// @return The ast representation for the type
   Syntax::Statement::DefinedTypeDef* getAST() const;
-  /// @return The size of the class virtual table
-  int getVtableSize();
-  /// @brief Increase the size of the virtual table
-  int addVtableItem(std::shared_ptr<ir::Func> f);
-  /// @return a vector containing all the functions in a vtable
-  std::vector<std::shared_ptr<ir::Func>> getVTable() const;
   /// @return the parent class it inherits from
   /// @note It may be std::nullptr if it does not inherit from
   ///  anything!
@@ -139,9 +131,6 @@ public:
   Syntax::Expression::TypeRef* toRef() override;
   /// @return true/false depending on whether the type is a struct
   bool isStruct() const { return _struct; }
-
-  /// @brief Whether or not the type has a vtable
-  bool hasVtable = false;
 
   /// @brief override function.
   virtual bool canCast(Type* ty) const override;

@@ -69,5 +69,20 @@ FunctionType* FunctionType::from(ir::Func* fn, Syntax::Statement::FunctionDef* n
   return new FunctionType(args, ret, fn->isVariadic(), isMutable);
 }
 
+bool FunctionType::isIgnoringSelf(FunctionType* other) {
+  assert(other->getArgs().size() > 0);
+  assert(args.size() > 0);
+  auto otherArgs = other->getArgs();
+  if (args.size() != otherArgs.size()) return false;
+  bool argumentsEqual =
+          std::all_of(otherArgs.begin() + 1, otherArgs.end(), [&, idx = 1](Type* i) mutable {
+            idx++;
+            return args.at(idx - 1)->is(i);
+          });
+
+  auto returnEquals = retTy->is(other->getRetType());
+  return returnEquals && argumentsEqual && (variadic == other->isVariadic());
+}
+
 }; // namespace types
 }; // namespace snowball

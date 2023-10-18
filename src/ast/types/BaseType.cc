@@ -24,6 +24,13 @@ void BaseType::setDefaultGenerics(std::vector<Type*> generics) { defaultGenerics
 void BaseType::setDefaultGenericStart(std::size_t start) { defaultGenericStart = start; }
 std::vector<Type*> BaseType::getDefaultGenerics() const { return defaultGenerics; }
 std::size_t BaseType::getDefaultGenericStart() const { return defaultGenericStart; }
+int BaseType::getVtableSize() { return classVtable.size(); }
+void BaseType::unsafeOverrideVtable(std::vector<std::shared_ptr<ir::Func>> vtable) { classVtable = vtable; }
+int BaseType::addVtableItem(std::shared_ptr<ir::Func> f) {
+  classVtable.push_back(f);
+  return getVtableSize() - 1;
+}
+std::vector<std::shared_ptr<ir::Func>>& BaseType::getVTable() { return classVtable; }
 
 } // namespace types
 } // namespace snowball

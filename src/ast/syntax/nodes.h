@@ -624,7 +624,7 @@ struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
   std::vector<TypeAlias*> typeAliases;
   /// @brief Class inheritance parent
   Expression::TypeRef* extends = nullptr;
-  /// @brief The defined type's type 
+  /// @brief The defined type's type
   enum Type
   {
     CLASS,
@@ -636,7 +636,7 @@ struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
 
 public:
   DefinedTypeDef(
-    std::string name, Expression::TypeRef* extends = nullptr, Privacy::Status prvc = PRIVATE, Type type = CLASS
+          std::string name, Expression::TypeRef* extends = nullptr, Privacy::Status prvc = PRIVATE, Type type = CLASS
   );
 
   /// @brief Get class name

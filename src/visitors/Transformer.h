@@ -411,8 +411,12 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
   void executeGenericTests(Syntax::Expression::WhereClause* clause, types::Type* generic, const std::string& name);
   /**
    * @brief It "implements" the types into a class.
-  */
-  void implementTypes(types::DefinedType* ty, std::vector<Expression::TypeRef*> types, std::vector<Statement::FunctionDef*>& functions);
+   */
+  void implementTypes(
+          types::DefinedType* ty,
+          std::vector<Expression::TypeRef*> types,
+          std::vector<Statement::FunctionDef*>& functions
+  );
   /**
    * @brief Creates a type.
    *

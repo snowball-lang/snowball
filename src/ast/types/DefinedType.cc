@@ -42,12 +42,6 @@ DefinedType::ClassField::ClassField(
     , isMutable(isMutable) { }
 Syntax::Statement::DefinedTypeDef* DefinedType::getAST() const { return ast; }
 void DefinedType::addField(ClassField* f) { fields.emplace_back(f); }
-int DefinedType::getVtableSize() { return classVtable.size(); }
-int DefinedType::addVtableItem(std::shared_ptr<ir::Func> f) {
-  classVtable.push_back(f);
-  return getVtableSize() - 1;
-}
-std::vector<std::shared_ptr<ir::Func>> DefinedType::getVTable() const { return classVtable; }
 bool DefinedType::is(DefinedType* other) const {
   auto otherArgs = other->getGenerics();
   bool genericSizeEqual = otherArgs.size() == generics.size();

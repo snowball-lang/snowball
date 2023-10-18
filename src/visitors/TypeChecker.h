@@ -81,6 +81,9 @@ class TypeChecker : public AcceptorExtend<TypeChecker, codegen::ValueVisitor> {
   bool accessingSelf(std::shared_ptr<ir::Value> value);
   /// @brief It performs checks on a function declaration
   void checkFunctionDeclaration(ir::Func* p_node);
+  /// @brief It performs fixes to the generated types
+  /// @example Fixing vtables with overriden members
+  void fixTypes(std::shared_ptr<types::BaseType> ty);
 
 public:
   TypeChecker(std::shared_ptr<ir::Module> mod);

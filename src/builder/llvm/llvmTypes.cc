@@ -37,33 +37,48 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid) {
   } else if (auto a = cast<types::TypeAlias>(t)) {
     assert(!"Unreachable type case found!");
     return getLLVMType(a->getBaseType());
-  } else if (auto c = cast<types::DefinedType>(t)) {
+  } else if (auto c = cast<types::BaseType>(t)) {
     llvm::StructType* s;
     if (auto it = types.find(c->getId()); it != types.end()) {
       return it->second;
     } else {
+      auto isStruct = utils::cast<types::DefinedType>(c);
       s = llvm::StructType::create(
-              *context, (c->isStruct() ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) + c->getMangledName()
+              *context,
+              ((isStruct && isStruct->isStruct()) ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) + c->getMangledName()
       );
       types.insert({c->getId(), s});
       assert(ctx->typeInfo.find(c->getId()) != ctx->typeInfo.end());
       c = ctx->typeInfo.find(c->getId())->second.get();
     }
-    auto fields = c->getFields();
-    auto generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Type*>(
-            fields, [&](types::DefinedType::ClassField* t) { return getLLVMType(t->type); }
-    );
+    std::vector<llvm::Type*> generatedFields;
+    if (auto c = utils::cast<types::DefinedType>(t)) {
+      auto fields = c->getFields();
+      generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Type*>(
+              fields, [&](types::DefinedType::ClassField* t) { return getLLVMType(t->type); }
+      );
+    } else if (auto c = utils::cast<types::InterfaceType>(t)) {
+      auto fields = c->getFields();
+      generatedFields =
+              vector_iterate<types::InterfaceType::Member*, llvm::Type*>(fields, [&](types::InterfaceType::Member* t) {
+                return getLLVMType(t->type);
+              });
+    } else {
+      Syntax::E<BUG>(FMT("Undefined type! ('%s')", t->getName().c_str()));
+    }
+
     if (c->hasVtable) {
       auto t = getVtableType(c); // generate vtable type
       generatedFields.insert(
               generatedFields.begin(),
               llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()
       );
-    } else if (c->hasParent()) {
-      auto p = c;
+    } else if (auto x = utils::cast<types::DefinedType>(c); x && x->hasParent()) {
+      auto p = x;
       while (p->hasParent()) {
         p = p->getParent();
-        p = ctx->typeInfo.find(p->getId())->second.get();
+        p = utils::cast<types::DefinedType>(ctx->typeInfo.find(p->getId())->second.get());
+        if (!p) break;
         auto t = getVtableType(p); // generate vtable type
         generatedFields.insert(
                 generatedFields.begin(),

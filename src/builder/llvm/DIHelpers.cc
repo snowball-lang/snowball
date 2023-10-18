@@ -1,5 +1,6 @@
 
 #include "../../ast/errors/error.h"
+#include "../../ast/types/Interface.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 
@@ -66,17 +67,60 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     return dbg.builder->createPointerType(subroutineType, ty->sizeOf() * 8);
   } else if (auto c = cast<types::TypeAlias>(ty)) {
     return getDIType(c->getBaseType());
-  } else if (auto c = cast<types::DefinedType>(ty)) {
+  } else if (auto c = cast<types::BaseType>(ty)) {
+    auto asDefinedType = utils::cast<types::DefinedType>(c);
+    auto asInterfaceType = utils::cast<types::InterfaceType>(c);
+
     // TODO: add "VTableHolder" as argument
     auto dbgInfo = c->getDBGInfo();
     auto file = dbg.getFile(dbgInfo->getSourceInfo()->getPath());
 
-    auto fields = c->getFields();
     std::vector<llvm::Metadata*> generatedFields;
+    llvm::DICompositeType* debugType;
+    if (asDefinedType) {
+      generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Metadata*>(
+              asDefinedType->getFields(),
+              [&](types::DefinedType::ClassField* t) {
+                // TODO: custom line for fields?
+                return dbg.builder->createMemberType(
+                        nullptr,
+                        t->name,
+                        file,
+                        dbgInfo->line,
+                        t->type->sizeOf() * 8,
+                        /*AlignInBits=*/0,
+                        0,
+                        llvm::DINode::FlagZero,
+                        getDIType(t->type)
+                );
+              }
+      );
+    } else if (asInterfaceType) {
+      generatedFields = vector_iterate<types::InterfaceType::Member*, llvm::Metadata*>(
+              asInterfaceType->getFields(),
+              [&](types::InterfaceType::Member* t) {
+                // TODO: custom line for fields?
+                return dbg.builder->createMemberType(
+                        nullptr,
+                        t->name,
+                        file,
+                        dbgInfo->line,
+                        t->type->sizeOf() * 8,
+                        /*AlignInBits=*/0,
+                        0,
+                        llvm::DINode::FlagZero,
+                        getDIType(t->type)
+                );
+              }
+      );
+    } else {
+      Syntax::E<BUG>(FMT("Undefined fields type! (dbg) ('%s')", ty->getName().c_str()));
+    }
     llvm::DIType* parentDIType = nullptr;
-    if (auto p = c->getParent()) { parentDIType = getDIType(c->getParent()); }
+    if (asDefinedType)
+      if (auto p = asDefinedType->getParent()) { parentDIType = getDIType(asDefinedType->getParent()); }
     // TODO: create struct type if it's a struct
-    auto debugType = dbg.builder->createClassType(
+    debugType = dbg.builder->createClassType(
             file,
             c->getPrettyName(),
             file,
@@ -87,24 +131,6 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
             llvm::DINode::FlagZero,
             parentDIType,
             dbg.builder->getOrCreateArray(generatedFields)
-    );
-
-    generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Metadata*>(
-            fields,
-            [&](types::DefinedType::ClassField* t) {
-              // TODO: custom line for fields?
-              return dbg.builder->createMemberType(
-                      debugType,
-                      t->name,
-                      file,
-                      dbgInfo->line,
-                      t->type->sizeOf() * 8,
-                      /*AlignInBits=*/0,
-                      0,
-                      llvm::DINode::FlagZero,
-                      getDIType(t->type)
-              );
-            }
     );
 
     return debugType;

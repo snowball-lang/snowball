@@ -186,7 +186,7 @@ continueTypeFetch:
   }
 
   // TODO: did we ever needed this?!?!?
-  //if (!typeGenericsMatch(ty, returnedType)) {
+  // if (!typeGenericsMatch(ty, returnedType)) {
   //  auto compAsDefinedType = utils::cast<GenericContainer<types::Type*>>(returnedType);
   //  auto compGenerics = compAsDefinedType == nullptr ? std::vector<types::Type*>{} : compAsDefinedType->getGenerics();
   //  typeGenericsMatch(ty, returnedType);
@@ -198,8 +198,7 @@ continueTypeFetch:
   //  );
   //}
 
-  if (auto alias = utils::cast<types::TypeAlias>(returnedType)) 
-    { returnedType = alias->getBaseType(); }
+  if (auto alias = utils::cast<types::TypeAlias>(returnedType)) { returnedType = alias->getBaseType(); }
 
   return returnedType->copy();
 }

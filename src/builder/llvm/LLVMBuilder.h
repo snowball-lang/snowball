@@ -103,7 +103,7 @@ public:
   /// @brief Optimization level
   app::Options::Optimization optimizationLevel = app::Options::Optimization::OPTIMIZE_O0;
   // Type information about ALLLL the types being used
-  std::map<ir::id_t, std::shared_ptr<types::DefinedType>> typeInfo;
+  std::map<ir::id_t, std::shared_ptr<types::BaseType>> typeInfo;
 };
 
 /**
@@ -303,7 +303,7 @@ private:
    * @brief It creates a new struct type and a new constant struct
    * value for a virtual table for @param ty
    */
-  llvm::GlobalVariable* createVirtualTable(types::DefinedType* ty, llvm::StructType* vtableType);
+  llvm::GlobalVariable* createVirtualTable(types::BaseType* ty, llvm::StructType* vtableType);
   /**
    * @brief Get llvm corresponding function type from an
    * already generate snowball type.
@@ -312,7 +312,7 @@ private:
   /**
    * @brief It creates a new vtable type for a given type.
    */
-  llvm::StructType* getVtableType(types::DefinedType* ty);
+  llvm::StructType* getVtableType(types::BaseType* ty);
   /**
    * @brief Generate a bodied function. Notes: bodied
    * functions will have it's own scope meaning that we

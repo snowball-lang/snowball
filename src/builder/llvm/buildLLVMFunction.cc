@@ -26,7 +26,7 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
   llvm::raw_string_ostream buf(bufStr);
 
   buf << "define ";
-  llvmFn->getReturnType()->print(buf);
+  llvmFn->getReturnType()->print(buf, false, true);
   buf << " @\"" << llvmFn->getName() << "\"(";
 
   auto args = fn->getArgs();
@@ -34,7 +34,7 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
     auto l_front = args.begin();
     std::advance(l_front, i);
 
-    llvmFn->getArg(i)->getType()->print(buf);
+    llvmFn->getArg(i)->getType()->print(buf, false, true);
     buf << " %" << l_front->first;
 
     if (i < (args.size() - 1)) buf << ", ";

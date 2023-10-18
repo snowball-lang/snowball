@@ -15,7 +15,7 @@ namespace Syntax::transform {
 class MacroInstance;
 } // namespace Syntax::transform
 namespace types {
-class DefinedType;
+class BaseType;
 }
 namespace ir {
 
@@ -74,7 +74,7 @@ public:
   }
 
   /// @brief A list containing the definitive type information
-  std::map<id_t, std::shared_ptr<types::DefinedType>> typeInformation;
+  std::map<id_t, std::shared_ptr<types::BaseType>> typeInformation;
 };
 } // namespace ir
 } // namespace snowball

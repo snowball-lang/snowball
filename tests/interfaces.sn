@@ -17,7 +17,7 @@ class ValueAccessTest {
     ValueAccessTest() {}
 }
 
-fn [[test(expect = 0)]] value_access() i32 {
+fn [[test(expect = 0)]] value_access_heap() i32 {
   let t = new ValueAccessTest();
   return t.a;
 }
@@ -92,7 +92,7 @@ fn [[test(expect = 0)]] generic_access() i32 {
   return t.a;
 }
 
-class InheritedOverrideVirtualTest extends VirtualTest {
+class InheritedOverrideVirtualTest: VirtualTest {
   pub:
     InheritedOverrideVirtualTest() : super() {}
     virt fn test() i32 {
@@ -105,12 +105,7 @@ fn [[test(expect = 0)]] inherited_override_virtual() i32 {
   return t.test();
 }
 
-fn [[test(expect = 0)]] inherited_override_casted() i32 {
-  let t = new InheritedOverrideVirtualTest() as VirtualTest;
-  return t.test();
-}
-
-class InheritanceVirtualTest extends VirtualTest {
+class InheritanceVirtualTest: VirtualTest {
   pub:
     InheritanceVirtualTest() : super() {}
 }

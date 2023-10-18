@@ -15,7 +15,8 @@ void LLVMBuilder::visit(ir::IndexExtract* index) {
   auto basedType = valueType;
   if (auto x = utils::cast<types::ReferenceType>(basedType)) basedType = x->getPointedType();
   if (auto x = utils::cast<types::PointerType>(basedType)) basedType = x->getPointedType();
-  auto defiendType = utils::cast<types::DefinedType>(basedType);
+  auto defiendType = utils::cast<types::BaseType>(basedType);
+  ;
   assert(defiendType);
 
   // We add "1" becasue index #0 is a pointer to the virtual

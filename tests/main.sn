@@ -8,7 +8,7 @@
 //use pkg::option;
 //use pkg::chars;
 //use pkg::vector;
-//use pkg::cls;
+use pkg::cls;
 //use pkg::string;
 
 //use pkg::macros;
@@ -22,20 +22,8 @@
 ////use Core::System::{{ println }};
 
 use Core::System;
-use Core::Optionald;
-
-class M<T> {
-    pub:
-    M() {}
-}
-
-interface L {
-}
-
-fn x<T>() {}
+use Core::Optional;
 
 pub fn main() i32 {
     let a: String = "🌊🌊🌊";
-    let b = new Vector<f32>();
-    x(b)
 } 

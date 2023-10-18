@@ -31,7 +31,7 @@ std::string highlight(std::string str) {
   }
   return ret;
 }
-}
+} // namespace
 
 void NiceError::print_error(bool asTail) const {
   cb_dbg_info->prepare_for_error();
@@ -70,11 +70,11 @@ void NiceError::print_error(bool asTail) const {
     );
   }
 
-  //Logger::elog(FMT("%s       │%s", BLK, RESET));
+  // Logger::elog(FMT("%s       │%s", BLK, RESET));
   Logger::elog(FMT("%s       │%s", BLK, RESET));
-  if ((((int)cb_dbg_info->line) - 2) >= 1) // first line may not be available to log
+  if ((((int) cb_dbg_info->line) - 2) >= 1) // first line may not be available to log
     Logger::elog(FMT("  %s%4i%s │  %s", BBLK, cb_dbg_info->line - 2, BLK, cb_dbg_info->line_before_before.c_str()));
-  if ((((int)cb_dbg_info->line) - 1) >= 1) // first line may not be available to log
+  if ((((int) cb_dbg_info->line) - 1) >= 1) // first line may not be available to log
     Logger::elog(FMT("  %s%4i%s │  %s", BBLK, cb_dbg_info->line - 1, BLK, cb_dbg_info->line_before.c_str()));
 
   // highlight line where the error is
@@ -84,9 +84,9 @@ void NiceError::print_error(bool asTail) const {
   //        [white]hello[gray]<string>(1, 2, 3)
   std::string line_str = "";
   for (size_t i = 0; i < cb_dbg_info->line_str.size(); i++) {
-    if (i >= cb_dbg_info->pos.second-1 && i < cb_dbg_info->pos.second + cb_dbg_info->width-1) {
+    if (i >= cb_dbg_info->pos.second - 1 && i < cb_dbg_info->pos.second + cb_dbg_info->width - 1) {
       line_str += BWHT;
-    } else if (i >= cb_dbg_info->pos.second + cb_dbg_info->width-1) {
+    } else if (i >= cb_dbg_info->pos.second + cb_dbg_info->width - 1) {
       line_str += BLK;
     }
     line_str += cb_dbg_info->line_str[i];
@@ -133,7 +133,7 @@ void NiceError::print_error(bool asTail) const {
   }
 
   if (!info.help.empty()) {
-    //if (!info.note.empty())
+    // if (!info.note.empty())
     Logger::elog(FMT("%s       │", BLK));
 
     auto lines = utils::split(highlight(info.help), "\n");

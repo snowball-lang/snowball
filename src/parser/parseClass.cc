@@ -78,14 +78,18 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         break;
       }
     }
-  } 
+  }
 
   assert_tok<TokenType::BRACKET_LCURLY>("'{'");
   bool inPrivateScope = true;
   bool hasConstructor = false;
 
   auto cls = Syntax::N<Syntax::Statement::DefinedTypeDef>(
-    name, parentClass, Syntax::Statement::Privacy::fromInt(isPublic), isInterface ? Syntax::Statement::DefinedTypeDef::Type::INTERFACE : Syntax::Statement::DefinedTypeDef::Type::CLASS
+          name,
+          parentClass,
+          Syntax::Statement::Privacy::fromInt(isPublic),
+          isInterface ? Syntax::Statement::DefinedTypeDef::Type::INTERFACE :
+                        Syntax::Statement::DefinedTypeDef::Type::CLASS
   );
   cls->setImpls(impls);
   cls->setGenerics(generics);
@@ -190,8 +194,11 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
       }
 
       case TokenType::KWORD_TYPEDEF: {
-        if (extends) { createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* type aliases!"); }
-        else if (isInterface) { createError<SYNTAX_ERROR>("Interfaces can't have type aliases!"); }
+        if (extends) {
+          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* type aliases!");
+        } else if (isInterface) {
+          createError<SYNTAX_ERROR>("Interfaces can't have type aliases!");
+        }
 
         auto typeDef = parseTypeAlias();
         typeDef->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
@@ -204,8 +211,11 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
       // note: This case should be always at the bottom!
       case TokenType::IDENTIFIER: {
         if (IS_CONSTRUCTOR(m_current)) {
-          if (isInterface) { createError<SYNTAX_ERROR>("Interfaces can't have constructors!"); }
-          else if (extends) { createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* constructors!"); }
+          if (isInterface) {
+            createError<SYNTAX_ERROR>("Interfaces can't have constructors!");
+          } else if (extends) {
+            createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* constructors!");
+          }
           hasConstructor = true;
           auto func = parseFunction(true);
           func->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));

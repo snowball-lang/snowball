@@ -7,6 +7,7 @@
 #include "../syntax/common.h"
 #include "../syntax/nodes.h"
 #include "BaseType.h"
+#include "DefinedType.h"
 #include "Type.h"
 
 #include <memory>
@@ -38,20 +39,23 @@ namespace types {
  */
 class InterfaceType : public BaseType {
 public:
-  struct Member : public Syntax::Statement::Privacy, public DBGObject {
+  struct Member : public DefinedType::ClassField {
     enum Kind
     {
       FIELD,
       METHOD
     } kind;
 
-    explicit Member(const std::string& name, Type* type, Kind kind, Syntax::Statement::Base* ast, Privacy privacy = PRIVATE, bool isMutable = false)
-        : name(name), type(type), kind(kind), Privacy(privacy), isMutable(isMutable), ast(ast){};
-    const std::string name;
-    Type* type;
+    explicit Member(
+            const std::string& name,
+            Type* type,
+            Kind kind,
+            Syntax::Statement::Base* ast,
+            Privacy privacy = PRIVATE,
+            bool isMutable = false
+    )
+        : ClassField(name, type, privacy, nullptr, isMutable), kind(kind), ast(ast){};
     Syntax::Statement::Base* ast;
-
-    bool isMutable = false;
   };
 
 private:
@@ -110,24 +114,15 @@ public:
   /// @c Type::toRef() for information about this function.
   /// @note It essentially does the same thing except it adds
   ///  generics if needed
-  Syntax::Expression::TypeRef* toRef() override {
-    assert(false);
-    return nullptr;
-  }
+  Syntax::Expression::TypeRef* toRef() override;
 
   /// @brief override function.
   virtual bool canCast(Type* ty) const override { return false; }
   virtual bool canCast(InterfaceType* ty) const { return false; }
 
 public:
-  virtual std::int64_t sizeOf() const override {
-    assert(false);
-    return -1;
-  }
-  virtual std::int64_t alignmentOf() const override {
-    assert(false);
-    return -1;
-  }
+  virtual std::int64_t sizeOf() const override;
+  virtual std::int64_t alignmentOf() const override;
 
   SNOWBALL_TYPE_COPIABLE(InterfaceType)
 };

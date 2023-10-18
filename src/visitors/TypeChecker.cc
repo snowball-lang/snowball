@@ -328,6 +328,8 @@ VISIT(Block) {
 }
 
 void TypeChecker::codegen() {
+  for (auto [idx, ty] : module->typeInformation) { fixTypes(ty); }
+
   // Visit variables
   for (auto v : module->getVariables()) { visit(v.get()); }
 
@@ -617,6 +619,55 @@ void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
         );
       }
     }
+  }
+}
+
+void TypeChecker::fixTypes(std::shared_ptr<types::BaseType> ty) {
+  // fix it's virtual table, for example:
+  // [parent's vtable] -> [child's vtable]
+  // parentFn(i32)[vtable index is 0] "overriden by" childFn(i32)[vtable index is 1]
+  // we need to fix the vtable index of the childFn to 0 instead of 1 and
+  // remove the parentFn from the vtable and remove one from the index of the
+  // other functions
+  auto type = utils::dyn_cast<types::DefinedType>(ty);
+  if (type && type->hasVtable) {
+    std::vector<types::DefinedType*> parents;
+    std::vector<std::shared_ptr<ir::Func>> finalVtable;
+    parents.push_back(type.get());
+
+    // add parents from lowest to highest
+    auto parent = type->getParent();
+    while (parent) {
+      parents.push_back(parent);
+      parent = parent->getParent();
+    }
+
+    // reverse iterate over the parents
+    for (auto parent = parents.rbegin(); parent != parents.rend(); ++parent) {
+      int vtableIndex = 0;
+      auto parentVtable = (*parent)->getVTable();
+      for (auto fn : parentVtable) {
+        // add it if it's not already in the vtable
+        // we first check by name and then if the types exist
+        // in the vtable
+        auto it = std::find_if(finalVtable.begin(), finalVtable.end(), [&](auto& f) {
+          return f->getName() == fn->getName() && utils::cast<types::FunctionType>(f->getType())->isIgnoringSelf(utils::cast<types::FunctionType>(fn->getType()));
+        });
+
+        if (it == finalVtable.end()) {
+          fn->setVirtualIndex(vtableIndex++);
+          finalVtable.push_back(fn);
+        } else {
+          // if it's already in the vtable, we need to replace it
+          // with the new function
+          fn->setVirtualIndex(it - finalVtable.begin());
+          finalVtable.at(it - finalVtable.begin()) = fn;
+          vtableIndex = it - finalVtable.begin() + 1;
+        }
+      }
+    }
+
+    type->unsafeOverrideVtable(finalVtable);
   }
 }
 
