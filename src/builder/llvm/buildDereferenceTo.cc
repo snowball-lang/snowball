@@ -13,7 +13,7 @@ void LLVMBuilder::visit(ir::DereferenceTo* ref) {
   auto val = ref->getValue();
   auto type = ref->getType();
 
-  auto llvmVal = build(val.get());
+  auto llvmVal = expr(val.get());
   this->value = builder->CreateLoad(getLLVMType(type), llvmVal, ".deref");
 }
 

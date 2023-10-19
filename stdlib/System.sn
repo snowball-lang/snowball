@@ -15,9 +15,9 @@ pub static fn exit(exitCode: i32 = 0) { CLib::exit(exitCode); }
  */
 pub static fn [[inline]] print<T>(msg: T, end: String = "") i32 {
     let m = String::from(msg);
-    //for i in 0..m.size() {
-        CLib::putchar(m[1]);
-    //}
+    for i in 0..m.size() {
+        CLib::putchar(m[i]);
+    }
     if end.size() > 0 { return print(end); }
     return 0;
 }

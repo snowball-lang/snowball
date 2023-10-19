@@ -9,24 +9,24 @@ fn [[test]] empty() i32 {
 }
 
 fn [[test(expect = 5)]] size_char() i32 {
-    let s = new String(@c_str("hello"));
+    let s = String::from(@c_str("hello"), 5);
     return s.size();
 }
 
 fn [[test]] equals() i32 {
-    let s = new String(@c_str("hello"));
-    return s == "hello".to_string();
+    let s = "hello";
+    return s == "hello";
 }
 
 fn [[test]] not_equals() i32 {
-    let s = new String(@c_str("hello"));
-    return s != "world".to_string();
+    let s = "hello"
+    return s != "world";
 }
 
 fn [[test]] concat() i32 {
-    let mut s = new String(@c_str("hello"));
-    s = s + @c_str(" world");
-    return s == "hello world".to_string();
+    let mut s = "hello";
+    s = s + " world";
+    return s == "hello world";
 }
 
 }

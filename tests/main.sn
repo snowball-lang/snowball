@@ -5,11 +5,11 @@
 //  Fibonacci example for the lang                  じし(_,)ノ
 //  Docs: https://snowball-lang.gitbook.io/docs/
 //
-//use pkg::option;
-//use pkg::chars;
-//use pkg::vector;
+use pkg::option;
+use pkg::chars;
+use pkg::vector;
 use pkg::cls;
-//use pkg::string;
+use pkg::string;
 
 //use pkg::macros;
 //use pkg::syntax;

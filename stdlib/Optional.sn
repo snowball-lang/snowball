@@ -42,10 +42,10 @@ pub class Option<T: Sized> {
     /**
      * @brief Returns the value stored in the `Option`.
      */
-    fn [[inline]] val() &T
+    fn [[inline]] val() T
     {
       self.assert_not_empty();
-      return &self._value;
+      return self._value;
     }
     /**
      * @brief Returns whether the `Option` is empty.

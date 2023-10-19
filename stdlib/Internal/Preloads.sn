@@ -30,6 +30,7 @@ class [[extends]] char {
     operator [[__internal__]]                      !()             bool {}
     operator [[__internal__, __no_pointer_self__]] ||(other: char) bool {}
     operator [[__internal__, __no_pointer_self__]] &&(other: char) bool {}
+    operator [[__internal__, __no_pointer_self__]] ==(other: char) bool {}
 
     // override with &char
     operator [[__internal__]] =(other: &char) &char {}
@@ -153,6 +154,7 @@ class [[__internal__]] IntegerImpl<IntegerType> {
     // Assignment operators
     mut operator [[__internal__]] =(self: IntegerType, other: IntegerType) IntegerType {}
     mut operator [[__internal__]] =(self: &IntegerType, other: IntegerType) IntegerType {}
+    mut operator [[__internal__]] =(self: &IntegerType, other: &IntegerType) IntegerType {}
     mut operator [[__internal__]] +=(self: IntegerType, other: IntegerType) IntegerType {}
     mut operator [[__internal__]] -=(self: IntegerType, other: IntegerType) IntegerType {}
     mut operator [[__internal__]] *=(self: IntegerType, other: IntegerType) IntegerType {}

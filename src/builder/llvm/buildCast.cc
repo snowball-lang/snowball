@@ -19,6 +19,7 @@ void LLVMBuilder::visit(ir::Cast* c) {
   auto llvmValueType = getLLVMType(vTy);
   auto ty = c->getCastType();
   auto llvmType = getLLVMType(ty);
+  setDebugInfoLoc(c);
 
   v = load(v, vTy);
 

@@ -7,7 +7,7 @@
  * manipulation operations such as exception throwing, exception
  * catching, exception handling, and more.
  */
-pub class AssertionError: Exception 
+pub class AssertionError extends Exception 
   { }
 /**
  * @macro assert

@@ -13,6 +13,7 @@
 #include <unwind.h>
 
 #include "runtime.h"
+#include "exceptions.h"
 
 enum {
     // standard.
@@ -63,8 +64,10 @@ struct OurExceptionType_t {
 */
 struct SnowballExceptionInstance_t {
   // TODO: check if theres actually a vtable?
-  // void* _vtable;
+  //void* _vtable;
   char* message;
+
+  int length;
 };
 
 /// This is our Exception class which relies on a negative offset to calculate
@@ -81,6 +84,9 @@ struct OurBaseException_t {
 
   // Note: This is properly aligned in unwind.h
   struct _Unwind_Exception unwindException;
+
+  /// @brief Backtrace
+  struct snowball::Backtrace backtrace;
 };
 
 // Note: Not needed since we are C++
@@ -608,21 +614,19 @@ void end_stack(void* exep) {
   auto *base = (OurBaseException_t *)((char *)exep + exception_offset());
   void *obj = base->snowball_object;
   auto *hdr = (SnowballExceptionInstance_t *)obj;
-  bool showBacktrace = false;
 
   // TODO: Class name and location
   std::ostringstream buf;
-  buf << "\n\n\e[1;31m[error]\e[1;37m: FATAL UNHANDLED EXCEPTION";
-  if (strcmp(hdr->message, "") != 0) {
+  error_log(buf, "fatal unhandled exception");
+  if (hdr->length > 0) {
+    //hdr->message[hdr->length] = '\0';
     buf << ": \033[0m";
     buf << hdr->message;
   } else {
     buf << "\033[0m";
   }
 
-  if (!showBacktrace) {
-    buf << "\n \e[1;37m[info]\e[0m: Export the enviroment variable \e[1;37m`SN_BACKTRACE=1`\e[0m to enable backtrace logging.";
-  }
+  print_backtrace(base->backtrace, buf);
 
   buf << "\n\n";
   auto output = buf.str();
@@ -653,6 +657,8 @@ void *createOurException(void* obj, int type) {
   ret->snowball_object = obj;
   ret->unwindException.exception_class = snowball::ourBaseExceptionClass;
   ret->unwindException.exception_cleanup = snowball::deleteFromUnwindOurException;
+
+  snowball::get_backtrace(ret->backtrace);
 
 #ifdef DEBUG
   printf("Created exception of type <%d>.\n", type);

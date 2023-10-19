@@ -25,13 +25,12 @@ void LLVMBuilder::visit(ir::Return* ret) {
     // We store the value into the first argument of the function.
     // This is because we can't return a struct that's not a pointer.
     // read more here: https://discourse.llvm.org/t/c-returning-struct-by-value/40518
-    if (utils::cast<types::DefinedType>(ret->getType())) {
+    if (utils::is<types::BaseType>(ret->getType())) {
       auto retArg = ctx->getCurrentFunction()->getArg(0);
       bool doNotMove = false;
-      if (is<ir::Call>(exprValue.get()) && !is<ir::ObjectInitialization>(exprValue.get()) &&
-          !is<ir::ObjectInitialization>(exprValue.get())) {
-        ctx->retValueUsedFromArg = true;
-        doNotMove = true;
+      if (is<ir::Call>(exprValue.get()) && !is<ir::ObjectInitialization>(exprValue.get())) {
+        //ctx->retValueUsedFromArg = true;
+        //doNotMove = true;
       }
 
       auto e = build(exprValue.get());
@@ -47,12 +46,15 @@ void LLVMBuilder::visit(ir::Return* ret) {
         builder->CreateMemCpy(
                 retArg, llvm::MaybeAlign(), e, llvm::MaybeAlign(), builder->getInt64(ret->getType()->sizeOf()), 0
         );
+      } else {
+        builder->CreateUnreachable();
       }
       // auto store = builder->CreateStore(load(e, ret->getType()), retArg);
 
       builder->CreateRetVoid();
       return;
     }
+
     auto e = expr(exprValue.get());
     val = builder->CreateRet(e);
   } else {

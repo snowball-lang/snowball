@@ -32,7 +32,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
       {
         if (args.size() > 1) {
           ctx->doNotLoadInMemory = false;
-          right = build(args.at(1).get());
+          right = expr(args.at(1).get());
         }
         if (services::OperatorService::opEquals<services::OperatorService::EQ>(opName)) {
           if (utils::is<ir::DereferenceTo>(args.at(0).get()) && !left->getType()->isPointerTy() &&
@@ -91,8 +91,6 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
 
           // TODO: remainder oeprators (!, +=, etc...)
           case services::OperatorService::EQ: {
-            ctx->doNotLoadInMemory = false;
-            right = load(right, args.at(1)->getType());
             builder->CreateStore(right, left);
             break;
           }
@@ -137,8 +135,6 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
 
           // TODO: remainder oeprators (!, +=, etc...)
           case services::OperatorService::EQ: {
-            ctx->doNotLoadInMemory = false;
-            right = load(right, baseType);
             builder->CreateStore(right, left);
             break;
           }
@@ -150,8 +146,6 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
       } else {
         switch (services::OperatorService::operatorID(opName)) {
           case services::OperatorService::EQ: {
-            ctx->doNotLoadInMemory = false;
-            right = load(right, baseType);
             // TODO: check carefully specific places where we NEED to copy instead of moving
             // if (utils::is<types::PointerType>(args.at(0)->getType())) {
             //  auto a = createAlloca(left->getType(), ".move-temp");

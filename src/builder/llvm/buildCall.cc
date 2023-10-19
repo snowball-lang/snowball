@@ -71,7 +71,6 @@ void LLVMBuilder::visit(ir::Call* call) {
     }
 
     args.insert(args.begin(), load(object, instance->getType()->getReferenceTo()));
-    setDebugInfoLoc(call);
     llvmCall = createCall(calleeType, callee, args);
     this->value = object;
     if (ctx->callStoreValue != nullptr) {

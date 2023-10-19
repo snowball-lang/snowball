@@ -158,17 +158,19 @@ pub class Exception {
      * @brief Exception constructor.
      * @param[in] m The message of the exception.
      */ 
-    Exception(m: String) : msg(m) 
+    Exception(m: String) : msg(m.bytes()), length(m.size())
       { }
     /**
      * @brief Returns the message of the exception.
      * @return The message of the exception.
      */
     fn what() String
-      { return self.msg; }
+      { return String::from(self.msg, self.length); }
   priv:
     /** The message of the exception. */
-    let msg: String;
+    let msg: *const char;
+    /** The message length */
+    let length: i32;
 }
 /**
  * @class IndexError
@@ -525,7 +527,7 @@ pub class StringView<Char: Sized = char> {
      */
     operator [[internal_linkage, inline]] +(other: Self) Self
     { 
-      let result = self.concat(self.buffer, other.buffer, self.length, other.length); 
+      let result = Self::concat(self.bytes(), other.bytes(), self.length, other.length); 
       return new Self(result, self.length + other.length);
     }
     /**
@@ -593,26 +595,18 @@ pub class StringView<Char: Sized = char> {
      * @param[in] len2 The length of the second string.
      * @return The appended string.
      */
-    fn [[internal_linkage]] concat(str1: StringType, str2: StringType,  
+    static fn [[internal_linkage]] concat(str1: StringType, str2: StringType,  
       len1: i32, len2: i32) StringType
     {
       unsafe 
       {
         let sum = len1 + len2;
-        let buffer = CLib::malloc(sum+1) as StringType;
+        let buffer = CLib::malloc(sum) as StringType;
         CLib::memcpy(buffer, str1, len1);
         CLib::memcpy(buffer + len1, str2, len2);
         return buffer;
       }
     }
-    /**
-     * @brief It concatenates 2 strings (self being the start of it).
-     * @param[in] str The string to append.
-     * @param[in] len The length of the string.
-     * @return The appended string.
-     */
-    fn [[internal_linkage]] concat(str: StringType, len: i32) StringType 
-      { return self.concat(self.buffer, str, self.length, len); }
     
   priv:
     /**

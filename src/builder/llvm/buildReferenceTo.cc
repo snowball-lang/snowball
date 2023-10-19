@@ -26,8 +26,16 @@ void LLVMBuilder::visit(ir::ReferenceTo* ref) {
   // builder->CreateStore(llvmReferencedValue, tempVal);
   auto tempVal = (llvm::Value*) nullptr;
   if (llvm::isa<llvm::Constant>(llvmReferencedValue)) {
-    tempVal = createAlloca(llvmReferencedValue->getType(), ".ref-temp");
-    builder->CreateStore(llvmReferencedValue, tempVal);
+    auto var = new llvm::GlobalVariable(
+      *module,
+      getLLVMType(val->getType()),
+      false,
+      llvm::GlobalValue::LinkageTypes::InternalLinkage,
+      llvm::cast<llvm::Constant>(llvmReferencedValue),
+      "alloca_" + utils::gen_random<32>()
+    );
+    var->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
+    tempVal = var;
   } else {
     if (llvm::isa<llvm::LoadInst>(llvmReferencedValue)) {
       llvmReferencedValue = llvm::cast<llvm::LoadInst>(llvmReferencedValue)->getPointerOperand();

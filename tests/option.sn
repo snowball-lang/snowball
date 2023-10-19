@@ -31,9 +31,9 @@ fn [[test(expect = 42)]] test_value_from_func() i32 {
     return x.val();
 }
 
-fn [[test]] pointer_value() i32 {
-    let x = new Optional::Option<&char>("hello");
-    return !x.empty();
+fn [[test(expect = 24)]] pointer_value() i32 {
+    let x = new Optional::Option<&i32>(&24);
+    return *x.val();
 }
 
 fn [[test(expect = 42)]] value_default() i32 {
@@ -47,7 +47,7 @@ fn [[test]] empty_value_class() i32 {
 }
 
 fn [[test(expect = 5)]] value_class() i32 {
-    let s = "hello".to_string();
+    let s = "hello";
     let x = new Optional::Option<String>(s);
     return x.val().size();
 }
