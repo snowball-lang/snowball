@@ -74,7 +74,7 @@ fetch_attrs:
   }
 
   if (isOperator) {
-    consume<TokenType::KWORD_FUNC>("'fn' keyword"); 
+    consume<TokenType::KWORD_FUNC>("'func' keyword"); 
   }
 
   auto dbg = m_current.get_pos();

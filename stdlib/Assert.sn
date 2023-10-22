@@ -7,7 +7,7 @@
  * manipulation operations such as exception throwing, exception
  * catching, exception handling, and more.
  */
-pub class AssertionError extends Exception 
+public class AssertionError extends Exception 
   { }
 /**
  * @macro assert
@@ -17,6 +17,6 @@ pub class AssertionError extends Exception
  */
 macro [[export]] assert(condition: expr, message: const[str] = "Assertion failed!") {
   if !(@condition) {
-    raise @pkg(new AssertionError(@message));
+    throw @pkg(new AssertionError(@message));
   }
 }

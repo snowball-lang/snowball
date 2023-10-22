@@ -7,7 +7,7 @@
  * used as an utility class to pass around source locations.
  * 
  * @example
- * fn foo(x: SourceLocation = SourceLocation::current()) {
+ * func foo(x: SourceLocation = SourceLocation::current()) {
  *   // ...
  * }
  *
@@ -16,8 +16,8 @@
  *
  * @see SourceLocation::current()
  */
-pub class SourceLocation {
-  pub:
+public class SourceLocation {
+  public:
     /**
      * @brief Construct a new SourceLocation object from the current location.
      *
@@ -29,11 +29,11 @@ pub class SourceLocation {
      *
      * @note These arguments should **NOT** be passed manually.
      */
-    static fn current(
-      file: String = (@FILE).to_string(),
+    static func current(
+      file: String = @FILE,
       line: i32 = @LINE,
       column: i32 = @COLUMN,
-      function: String = (@FUNCTION).to_string()
+      function: String = @FUNCTION
     ) SourceLocation {
       return new SourceLocation{file, line, column, function};
     }
@@ -41,20 +41,20 @@ pub class SourceLocation {
     /**
      * @return The file name.
      */
-    fn file() String { return self.file; }
+    func file() String { return self.file; }
     /**
      * @return The line number.
      */
-    fn line() i32 { return self.line; }
+    func line() i32 { return self.line; }
     /**
      * @return The column number.
      */
-    fn column() i32 { return self.column; }
+    func column() i32 { return self.column; }
     /**
      * @return The function name.
      */
-    fn function() String { return self.function; }
-  priv:
+    func function() String { return self.function; }
+  private:
     let file: String;     /// < The file name.
     let line: i32;        /// < The line number.
     let column: i32;      /// < The column number.
@@ -85,7 +85,7 @@ pub class SourceLocation {
  * an utility macro to pass around source locations.
  * 
  * @example
- * fn foo(x: SourceLocation = @current_location()) {
+ * func foo(x: SourceLocation = @current_location()) {
  *   // ...
  * }
  *

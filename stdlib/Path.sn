@@ -11,7 +11,7 @@ const path_sep: &char = "/";
 class Path {
     /// The path as a string.
     let path: String;
-  pub:
+  public:
     /**
      * Create a new path from a string.
      */
@@ -20,26 +20,26 @@ class Path {
     /**
      * @return The path as a string.
      */
-    fn [[inline]] to_string() String 
+    func [[inline]] to_string() String 
       { return path; }
     /**
      * @return The path as a C string.
      */
-    fn [[inline]] to_cstr() CString 
+    func [[inline]] to_cstr() CString 
       { return path.c_str(); }
     /**
      * @brief Join two paths together.
      * @param other The path to join to this one.
      * @return The joined path.
      */ 
-    fn [[inline]] join(other: String) Path 
+    func [[inline]] join(other: String) Path 
       { return Path(path + path_sep + other); }
     /**
      * @brief Join two paths together.
      * @param other The path to join to this one.
      * @return The joined path.
      */
-    fn [[inline]] join(other: Path) Path 
+    func [[inline]] join(other: Path) Path 
       { return join(other.to_string()); }
 
     operator ==(other: Path) bool 

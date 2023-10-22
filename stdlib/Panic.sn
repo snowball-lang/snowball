@@ -1,19 +1,19 @@
-use Core::CLib;
-use Core::System;
-use [[use_macro(current_location)]] Core::SourceLocation;
+import Core::CLib;
+import Core::System;
+import[[use_macro(current_location)]] Core::SourceLocation;
 
 /**
  * @brief It emits a panic message and exits the program.
  * @param message The message to emit.
  * @param 
  */
-pub fn [[inline]] panic(
-  message: &char = "Something went wrong! 🐱", 
+public func [[inline]] panic(
+  message: *const char = "Something went wrong! 🐱", 
   _location: SourceLocation::SourceLocation = @current_location()
 ) {
   System::println("\n\n--------------------");
   System::println("Program panicked with message: " + message)
-  System::println(" at ".to_string() + _location.file() + "\e[1;37m:" + _location.line() + ":" + _location.column() + "\e[0m");
+  System::println(" at " + _location.file() + "\e[1;37m:" + _location.line() + ":" + _location.column() + "\e[0m");
   System::println("\e[1;37mnote:\e[0m run with \e[1;37m`SN_BACKTRACE=1`\e[0m environment variable to get a backtrace\n");
   System::exit(127);
 }
@@ -22,7 +22,7 @@ pub fn [[inline]] panic(
  * @brief It emits a panic message and exits the program.
  * @param message The message to emit.
  */
-pub fn [[inline]] panic<MessageType>(
+public func [[inline]] panic<MessageType>(
   message: MessageType, 
   _location: SourceLocation::SourceLocation = @current_location()
 ) {

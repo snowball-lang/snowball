@@ -1,58 +1,58 @@
-use Core::Optional;
-use Core::CLib;
-use Core::System;
+import Core::Optional;
+import Core::CLib;
+import Core::System;
 
 namespace tests {
 
-fn [[test(expect = 1)]] empty_from_func() i32 {
+func [[test(expect = 1)]] empty_from_func() i32 {
     let x = Optional::None<?i32>();
     //CLib::printf("x: %i", Optional::None<?i32>().empty()) 
     return x.empty();
 }
 
-fn [[test]] empty_from_class() i32 {
+func [[test]] empty_from_class() i32 {
     let x = new Optional::Option<i32>();
     return x.empty();
 }
 
-fn [[test]] with_value_from_func() i32 {
+func [[test]] with_value_from_func() i32 {
     let x = Optional::Some(42);
     return !x.empty();
 }
 
-fn [[test]] with_value_from_class() i32 {
+func [[test]] with_value_from_class() i32 {
     let x = new Optional::Option<i32>(42);
     return !x.empty();
 }
 
-fn [[test(expect = 42)]] test_value_from_func() i32 {
+func [[test(expect = 42)]] test_value_from_func() i32 {
     let x = Optional::Some(42);
     let a = x.val();
     return x.val();
 }
 
-fn [[test(expect = 24)]] pointer_value() i32 {
+func [[test(expect = 24)]] pointer_value() i32 {
     let x = new Optional::Option<&i32>(&24);
     return *x.val();
 }
 
-fn [[test(expect = 42)]] value_default() i32 {
+func [[test(expect = 42)]] value_default() i32 {
     let x = new Optional::Option<i32>();
     return x.value_or(42);
 }
 
-fn [[test]] empty_value_class() i32 {
+func [[test]] empty_value_class() i32 {
     let x = new Optional::Option<String>();
     return x.empty();
 }
 
-fn [[test(expect = 5)]] value_class() i32 {
+func [[test(expect = 5)]] value_class() i32 {
     let s = "hello";
     let x = new Optional::Option<String>(s);
     return x.val().size();
 }
 
-fn [[test]] access_empty() i32 {
+func [[test]] access_empty() i32 {
     let x = new Optional::Option<i32>();
     try {
         x.val();

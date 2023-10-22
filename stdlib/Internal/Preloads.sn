@@ -1,40 +1,40 @@
 class [[extends]] char {
-  pub:
-    operator fn [[__internal__, __no_pointer_self__]] +(other: char)  char {}
-    operator fn [[__internal__, __no_pointer_self__]] -(other: char)  char {}
-    operator fn [[__internal__, __no_pointer_self__]] *(other: char)  char {}
-    operator fn [[__internal__, __no_pointer_self__]] /(other: char)  f32 {}
-    operator fn [[__internal__, __no_pointer_self__]] %(other: char)  f32 {}
-    operator fn [[__internal__, __no_pointer_self__]] ^(other: char)  char {}
-    operator fn [[__internal__, __no_pointer_self__]] |(other: char)  char {}
-    operator fn [[__internal__, __no_pointer_self__]] &(other: char)  char {}
-    operator fn [[__internal__, __no_pointer_self__]] <<(other: char) char {}
-    operator fn [[__internal__, __no_pointer_self__]] <(other: char)  bool {}
-    operator fn [[__internal__, __no_pointer_self__]] >(other: char)  bool {}
-    operator fn [[__internal__, __no_pointer_self__]] <=(other: char) bool {}
-    operator fn [[__internal__, __no_pointer_self__]] >=(other: char) bool {}
-    operator fn [[__internal__, __no_pointer_self__]] -()             char {}
-    mut operator fn [[__internal__, __no_pointer_self__]] +=(other: char) char {}
-    mut operator fn [[__internal__, __no_pointer_self__]] -=(other: char) char {}
-    mut operator fn [[__internal__, __no_pointer_self__]] *=(other: char) char {}
-    mut operator fn [[__internal__, __no_pointer_self__]] /=(other: char) char {}
-    mut operator fn [[__internal__, __no_pointer_self__]] %=(other: char) char {}
-    mut operator fn [[__internal__, __no_pointer_self__]] ^=(other: char) char {}
-    mut operator fn [[__internal__, __no_pointer_self__]] |=(other: char) char {}
-    mut operator fn [[__internal__, __no_pointer_self__]] &=(other: char) char {}
-    mut operator fn [[__internal__, __no_pointer_self__]] <<=(other: char)char {}
-    mut operator fn [[__internal__, __no_pointer_self__]] >>=(other: char)char {}
-    mut operator fn [[__internal__, __no_pointer_self__]] =(other: char)  char {}
-    operator fn [[__internal__, __no_pointer_self__]] !=(other: char) char {}
-    operator fn [[__internal__, __no_pointer_self__]] !()             bool {}
-    operator fn [[__internal__]]                      !()             bool {}
-    operator fn [[__internal__, __no_pointer_self__]] ||(other: char) bool {}
-    operator fn [[__internal__, __no_pointer_self__]] &&(other: char) bool {}
-    operator fn [[__internal__, __no_pointer_self__]] ==(other: char) bool {}
+  public:
+    operator func [[__internal__, __no_pointer_self__]] +(other: char)  char {}
+    operator func [[__internal__, __no_pointer_self__]] -(other: char)  char {}
+    operator func [[__internal__, __no_pointer_self__]] *(other: char)  char {}
+    operator func [[__internal__, __no_pointer_self__]] /(other: char)  f32 {}
+    operator func [[__internal__, __no_pointer_self__]] %(other: char)  f32 {}
+    operator func [[__internal__, __no_pointer_self__]] ^(other: char)  char {}
+    operator func [[__internal__, __no_pointer_self__]] |(other: char)  char {}
+    operator func [[__internal__, __no_pointer_self__]] &(other: char)  char {}
+    operator func [[__internal__, __no_pointer_self__]] <<(other: char) char {}
+    operator func [[__internal__, __no_pointer_self__]] <(other: char)  bool {}
+    operator func [[__internal__, __no_pointer_self__]] >(other: char)  bool {}
+    operator func [[__internal__, __no_pointer_self__]] <=(other: char) bool {}
+    operator func [[__internal__, __no_pointer_self__]] >=(other: char) bool {}
+    operator func [[__internal__, __no_pointer_self__]] -()             char {}
+    mut operator func [[__internal__, __no_pointer_self__]] +=(other: char) char {}
+    mut operator func [[__internal__, __no_pointer_self__]] -=(other: char) char {}
+    mut operator func [[__internal__, __no_pointer_self__]] *=(other: char) char {}
+    mut operator func [[__internal__, __no_pointer_self__]] /=(other: char) char {}
+    mut operator func [[__internal__, __no_pointer_self__]] %=(other: char) char {}
+    mut operator func [[__internal__, __no_pointer_self__]] ^=(other: char) char {}
+    mut operator func [[__internal__, __no_pointer_self__]] |=(other: char) char {}
+    mut operator func [[__internal__, __no_pointer_self__]] &=(other: char) char {}
+    mut operator func [[__internal__, __no_pointer_self__]] <<=(other: char)char {}
+    mut operator func [[__internal__, __no_pointer_self__]] >>=(other: char)char {}
+    mut operator func [[__internal__, __no_pointer_self__]] =(other: char)  char {}
+    operator func [[__internal__, __no_pointer_self__]] !=(other: char) char {}
+    operator func [[__internal__, __no_pointer_self__]] !()             bool {}
+    operator func [[__internal__]]                      !()             bool {}
+    operator func [[__internal__, __no_pointer_self__]] ||(other: char) bool {}
+    operator func [[__internal__, __no_pointer_self__]] &&(other: char) bool {}
+    operator func [[__internal__, __no_pointer_self__]] ==(other: char) bool {}
 
     // override with &char
-    operator fn [[__internal__]] =(other: &char) &char {}
-    operator fn [[__internal__]] =(other: char) &char {}
+    operator func [[__internal__]] =(other: &char) &char {}
+    operator func [[__internal__]] =(other: char) &char {}
 
   /**
    * @brief It performs equality check between a string strings of characters.
@@ -46,7 +46,7 @@ class [[extends]] char {
    * @note If any of the strings is null, it returns false.
    *    If both are null, it returns true.
    */
-  operator fn [[internal_linkage, inline]] ==(other: *const char) bool
+  operator func [[internal_linkage, inline]] ==(other: *const char) bool
   {
     let this = self as *const char;
     if !self && !other 
@@ -66,74 +66,74 @@ class [[extends]] char {
 }
 
 class [[__internal__]] *const <T> {
-  pub:
-    unsafe operator fn [[inline, llvm_function]] +(self: *const T, other: i64) *const T
+  public:
+    unsafe operator func [[inline, llvm_function]] +(self: *const T, other: i64) *const T
     { 
       %0 = getelementptr {=T}, {=*const T} %self, i64 %other
       ret {=*const T} %0
     } 
 
-    unsafe fn [[inline, llvm_function]] as_ref(self: *const T) &T 
+    unsafe func [[inline, llvm_function]] as_ref(self: *const T) &T 
     {
       ret {=*const T} %self
     }
 
-    operator fn [[__internal__]] =(self: *const T, other: *const T) *const T {}
+    operator func [[__internal__]] =(self: *const T, other: *const T) *const T {}
 
-    fn [[inline, llvm_function]] is_null(self: *const T) bool
+    func [[inline, llvm_function]] is_null(self: *const T) bool
     {
       %0 = icmp eq {=*const T} %self, null
       ret i1 %0
     }
 
-    fn [[inline]] unchecked_get(self: *const T, index: i32) &T
+    func [[inline]] unchecked_get(self: *const T, index: i32) &T
     {unsafe{
       return (self + index).as_ref();
     }}
 
-    operator fn [[inline, llvm_function(sanitise_void_return)]] [](self: *const T, index: i64) T
+    operator func [[inline, llvm_function(sanitise_void_return)]] [](self: *const T, index: i64) T
     { 
       %0 = getelementptr inbounds {=T}, {=*const T} %self, i64 0
       %1 = load {=T}, {=*const T} %0, align 1
       ret {=T} %1
     }
-    operator fn !(self: *const T) bool { return self.is_null(); }
+    operator func !(self: *const T) bool { return self.is_null(); }
 }
 
 class [[__internal__]] *mut <T> {
-  pub:
-    unsafe operator fn [[inline, llvm_function]] +(mut self: *const T, other: i64) *mut T
+  public:
+    unsafe operator func [[inline, llvm_function]] +(mut self: *const T, other: i64) *mut T
     { 
       %0 = getelementptr {=T}, {=*mut T} %self, i64 %other
       ret {=*mut T} %0
     } 
 
-    unsafe fn [[inline, llvm_function]] as_ref(mut self: *const T) &T 
+    unsafe func [[inline, llvm_function]] as_ref(mut self: *const T) &T 
     {
       ret {=*mut T} %self
     }
 
-    mut operator fn [[__internal__]] =(mut self: *const T, mut other: *const T) *mut T {}
+    mut operator func [[__internal__]] =(mut self: *const T, mut other: *const T) *mut T {}
 
-    fn [[inline, llvm_function]] is_null(mut self: *mut T) bool
+    func [[inline, llvm_function]] is_null(mut self: *mut T) bool
     {
       %0 = icmp eq {=*mut T} %self, null
       ret i1 %0
     }
 
-    fn [[inline]] unchecked_get(mut self: *mut T, index: i32) &mut T
+    func [[inline]] unchecked_get(mut self: *mut T, index: i32) &mut T
     {unsafe{
       return (self + index).as_ref();
     }}
 
-    operator fn [[inline, llvm_function(sanitise_void_return)]] [](mut self: *mut T, index: i64) T
+    operator func [[inline, llvm_function(sanitise_void_return)]] [](mut self: *mut T, index: i64) T
     { 
       %0 = getelementptr inbounds {=T}, {=*mut T} %self, i64 0
       %1 = load {=T}, {=*mut T} %0, align 1
       ret {=T} %1
     }
 
-    operator fn [[inline]] !(mut self: *mut T) bool { return self.is_null(); }
+    operator func [[inline]] !(mut self: *mut T) bool { return self.is_null(); }
 }
 
 /// @brief Integer type implementation.
@@ -142,52 +142,52 @@ class [[__internal__]] *mut <T> {
 /// @note This class is not meant to be used directly.
 /// @internal
 class [[__internal__]] IntegerImpl<IntegerType> {
-  pub:
+  public:
     // Equality operators
-    operator fn [[__internal__]] ==(self: IntegerType, other: IntegerType) bool {}
-    operator fn [[__internal__]] !=(self: IntegerType, other: IntegerType) bool {}
-    operator fn [[__internal__]]  <(self: IntegerType, other: IntegerType) bool {}
-    operator fn [[__internal__]]  >(self: IntegerType, other: IntegerType) bool {}
-    operator fn [[__internal__]] <=(self: IntegerType, other: IntegerType) bool {}
-    operator fn [[__internal__]] >=(self: IntegerType, other: IntegerType) bool {} 
+    operator func [[__internal__]] ==(self: IntegerType, other: IntegerType) bool {}
+    operator func [[__internal__]] !=(self: IntegerType, other: IntegerType) bool {}
+    operator func [[__internal__]]  <(self: IntegerType, other: IntegerType) bool {}
+    operator func [[__internal__]]  >(self: IntegerType, other: IntegerType) bool {}
+    operator func [[__internal__]] <=(self: IntegerType, other: IntegerType) bool {}
+    operator func [[__internal__]] >=(self: IntegerType, other: IntegerType) bool {} 
 
     // Assignment operators
-    mut operator fn [[__internal__]] =(self: IntegerType, other: IntegerType) IntegerType {}
-    mut operator fn [[__internal__]] =(self: &IntegerType, other: IntegerType) IntegerType {}
-    mut operator fn [[__internal__]] =(self: &IntegerType, other: &IntegerType) IntegerType {}
-    mut operator fn [[__internal__]] +=(self: IntegerType, other: IntegerType) IntegerType {}
-    mut operator fn [[__internal__]] -=(self: IntegerType, other: IntegerType) IntegerType {}
-    mut operator fn [[__internal__]] *=(self: IntegerType, other: IntegerType) IntegerType {}
-    mut operator fn [[__internal__]] /=(self: IntegerType, other: IntegerType) f32 {}
-    mut operator fn [[__internal__]] %=(self: IntegerType, other: IntegerType) IntegerType {}
-    mut operator fn [[__internal__]] ^=(self: IntegerType, other: IntegerType) IntegerType {}
-    mut operator fn [[__internal__]] |=(self: IntegerType, other: IntegerType) IntegerType {}
-    mut operator fn [[__internal__]] &=(self: IntegerType, other: IntegerType) IntegerType {}
-    mut operator fn [[__internal__]] <<=(self: IntegerType, other: IntegerType) IntegerType {}
-    mut operator fn [[__internal__]] >>=(self: IntegerType, other: IntegerType) IntegerType {}
+    mut operator func [[__internal__]] =(self: IntegerType, other: IntegerType) IntegerType {}
+    mut operator func [[__internal__]] =(self: &IntegerType, other: IntegerType) IntegerType {}
+    mut operator func [[__internal__]] =(self: &IntegerType, other: &IntegerType) IntegerType {}
+    mut operator func [[__internal__]] +=(self: IntegerType, other: IntegerType) IntegerType {}
+    mut operator func [[__internal__]] -=(self: IntegerType, other: IntegerType) IntegerType {}
+    mut operator func [[__internal__]] *=(self: IntegerType, other: IntegerType) IntegerType {}
+    mut operator func [[__internal__]] /=(self: IntegerType, other: IntegerType) f32 {}
+    mut operator func [[__internal__]] %=(self: IntegerType, other: IntegerType) IntegerType {}
+    mut operator func [[__internal__]] ^=(self: IntegerType, other: IntegerType) IntegerType {}
+    mut operator func [[__internal__]] |=(self: IntegerType, other: IntegerType) IntegerType {}
+    mut operator func [[__internal__]] &=(self: IntegerType, other: IntegerType) IntegerType {}
+    mut operator func [[__internal__]] <<=(self: IntegerType, other: IntegerType) IntegerType {}
+    mut operator func [[__internal__]] >>=(self: IntegerType, other: IntegerType) IntegerType {}
 
     // Arithmetic operators
-    operator fn [[__internal__]] +(self: IntegerType, other: IntegerType) IntegerType {}
-    operator fn [[__internal__]] -(self: IntegerType, other: IntegerType) IntegerType {}
-    operator fn [[__internal__]] -(self: IntegerType) IntegerType {}
-    operator fn [[__internal__]] +(self: IntegerType) IntegerType {}
-    operator fn [[__internal__]] *(self: IntegerType, other: IntegerType) IntegerType {}
-    operator fn [[__internal__]] /(self: IntegerType, other: IntegerType) f32 {}
-    operator fn [[__internal__]] %(self: IntegerType, other: IntegerType) IntegerType {}
-    operator fn [[__internal__]] ^(self: IntegerType, other: IntegerType) IntegerType {}
-    operator fn [[__internal__]] |(self: IntegerType, other: IntegerType) IntegerType {}
-    operator fn [[__internal__]] &(self: IntegerType, other: IntegerType) IntegerType {}
-    operator fn [[__internal__]] <<(self: IntegerType, other: IntegerType) IntegerType {}
-    //operator fn [[__internal__]] >>(self: IntegerType, other: IntegerType) IntegerType {}
+    operator func [[__internal__]] +(self: IntegerType, other: IntegerType) IntegerType {}
+    operator func [[__internal__]] -(self: IntegerType, other: IntegerType) IntegerType {}
+    operator func [[__internal__]] -(self: IntegerType) IntegerType {}
+    operator func [[__internal__]] +(self: IntegerType) IntegerType {}
+    operator func [[__internal__]] *(self: IntegerType, other: IntegerType) IntegerType {}
+    operator func [[__internal__]] /(self: IntegerType, other: IntegerType) f32 {}
+    operator func [[__internal__]] %(self: IntegerType, other: IntegerType) IntegerType {}
+    operator func [[__internal__]] ^(self: IntegerType, other: IntegerType) IntegerType {}
+    operator func [[__internal__]] |(self: IntegerType, other: IntegerType) IntegerType {}
+    operator func [[__internal__]] &(self: IntegerType, other: IntegerType) IntegerType {}
+    operator func [[__internal__]] <<(self: IntegerType, other: IntegerType) IntegerType {}
+    //operator func [[__internal__]] >>(self: IntegerType, other: IntegerType) IntegerType {}
 
     // Unary operators
-    operator fn [[__internal__]] -(self: IntegerType) IntegerType {}
-    operator fn [[__internal__]] +(self: IntegerType) IntegerType {}
+    operator func [[__internal__]] -(self: IntegerType) IntegerType {}
+    operator func [[__internal__]] +(self: IntegerType) IntegerType {}
 
     // Logical operators
-    operator fn [[__internal__]] !(self: IntegerType) bool {}
-    operator fn [[__internal__]] &&(self: IntegerType, other: IntegerType) bool {}
-    operator fn [[__internal__]] ||(self: IntegerType, other: IntegerType) bool {}
+    operator func [[__internal__]] !(self: IntegerType) bool {}
+    operator func [[__internal__]] &&(self: IntegerType, other: IntegerType) bool {}
+    operator func [[__internal__]] ||(self: IntegerType, other: IntegerType) bool {}
 }
 
 

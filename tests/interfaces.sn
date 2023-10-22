@@ -1,117 +1,117 @@
 
 namespace test {
 class Test {
-  pub:
+  public:
     Test() {}
     let succ: bool = true;
 }
 
-fn [[test]] init_heap() i32 {
+func [[test]] init_heap() i32 {
   let t = new Test();
   return t.succ;
 }
 
 class ValueAccessTest {
-  pub:
+  public:
     let mut a: i32 = 0;
     ValueAccessTest() {}
 }
 
-fn [[test(expect = 0)]] value_access_heap() i32 {
+func [[test(expect = 0)]] value_access_heap() i32 {
   let t = new ValueAccessTest();
   return t.a;
 }
 
-fn [[test]] value_access_set() i32 {
+func [[test]] value_access_set() i32 {
   let t = new ValueAccessTest();
   t.a = 1;
   return t.a;
 }
 
-class VirtualTest {
-  pub:
-    VirtualTest() {}
-    virt fn test() i32 {
+class virtualualTest {
+  public:
+    virtualualTest() {}
+    virtual func test() i32 {
       return true;
     }
-  priv:
+  private:
     let a: i32 = 0;
     let b: i32 = 2;
 }
 
-fn [[test]] virtual_stack() i32 {
+func [[test]] virtualual_stack() i32 {
   // TODO: what's going on here
-  let t = new VirtualTest();
+  let t = new virtualualTest();
   return t.test();
 }
 
-fn [[test]] virtual_heap() i32 {
-  let t = &new VirtualTest();
+func [[test]] virtualual_heap() i32 {
+  let t = &new virtualualTest();
   return t.test();
 }
 
 class TypeInsideClassTest {
-  pub:
-    type x = VirtualTest;
+  public:
+    type x = virtualualTest;
     TypeInsideClassTest() {}
 }
 
-fn [[test]] type_inside_class() i32 {
-  let t: TypeInsideClassTest::x = new VirtualTest();
+func [[test]] type_inside_class() i32 {
+  let t: TypeInsideClassTest::x = new virtualualTest();
   return true;
 }
 
 class ClassGenericsTest<T> {
-  pub:
+  public:
     ClassGenericsTest(x: T) {}
 }
 
-fn [[test]] class_generics() i32 {
+func [[test]] class_generics() i32 {
   let t = new ClassGenericsTest<i32>(1);
   return true;
 }
 
 class ClassDefaultGenericsTest<T = i32> {
-  pub:
+  public:
     ClassDefaultGenericsTest(x: T) {}
 }
 
-fn [[test]] class_default_generics() i32 {
+func [[test]] class_default_generics() i32 {
   let t = new ClassDefaultGenericsTest<>(1);
   return true;
 }
 
 class GenericAccessTest<T> {
-  pub:
+  public:
     let mut a: T = 0;
     GenericAccessTest() {}
 }
 
-fn [[test(expect = 0)]] generic_access() i32 {
+func [[test(expect = 0)]] generic_access() i32 {
   let t = new GenericAccessTest<i32>();
   return t.a;
 }
 
-class InheritedOverrideVirtualTest: VirtualTest {
-  pub:
-    InheritedOverrideVirtualTest() : super() {}
-    virt fn test() i32 {
+class InheritedOverridevirtualualTest: virtualualTest {
+  public:
+    InheritedOverridevirtualualTest() : super() {}
+    virtual func test() i32 {
       return false;
     }
 }
 
-fn [[test(expect = 0)]] inherited_override_virtual() i32 {
-  let t = new InheritedOverrideVirtualTest();
+func [[test(expect = 0)]] inherited_override_virtualual() i32 {
+  let t = new InheritedOverridevirtualualTest();
   return t.test();
 }
 
-class InheritanceVirtualTest: VirtualTest {
-  pub:
-    InheritanceVirtualTest() : super() {}
+class InheritancevirtualualTest: virtualualTest {
+  public:
+    InheritancevirtualualTest() : super() {}
 }
 
-fn [[test]] inheritance_virtual() i32 {
-  let t = new InheritanceVirtualTest();
+func [[test]] inheritance_virtualual() i32 {
+  let t = new InheritancevirtualualTest();
   return t.test();
 }
 

@@ -5,25 +5,25 @@
 //  Fibonacci example for the lang                  じし(_,)ノ
 //  Docs: https://snowball-lang.gitbook.io/docs/
 //
-use pkg::option;
-use pkg::chars;
-use pkg::vector;
-use pkg::cls;
-use pkg::string;
-use pkg::tuples;
-use pkg::syntax;
-use pkg::algorithms;
-use pkg::clib;
+import pkg::option;
+import pkg::chars;
+import pkg::vector;
+import pkg::cls;
+import pkg::string;
+import pkg::tuples;
+import pkg::syntax;
+import pkg::algorithms;
+import pkg::clib;
 
-//use pkg::macros;
-//use pkg::source_location;
+//import pkg::macros;
+//import pkg::source_location;
 
-//use Core::Panic;
-////use Core::System::{{ println }};
+//import Core::Panic;
+////import Core::System::{{ println }};
 
-use Core::System;
-use Core::Optional;
+import Core::System;
+import Core::Optional;
 
-pub fn main() i32 {
+public func main() i32 {
     let a: String = "🌊🌊🌊";
 } 

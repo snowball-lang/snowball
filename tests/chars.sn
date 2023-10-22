@@ -1,10 +1,10 @@
 
-use Core::Char;
-use [[use_macro]] Core::Assert;
+import Core::Char;
+import[[use_macro]] Core::Assert;
 
 namespace tests {
 
-fn [[test]] is_space() i32 {
+func [[test]] is_space() i32 {
     @assert(Char::is_space(' '));
     @assert(Char::is_space('\t'));
     @assert(Char::is_space('\n'));
@@ -15,7 +15,7 @@ fn [[test]] is_space() i32 {
     return true;
 }
 
-fn [[test]] is_digit() i32 {
+func [[test]] is_digit() i32 {
     @assert(Char::is_digit('0'));
     @assert(Char::is_digit('1'));
     @assert(Char::is_digit('2'));
@@ -32,7 +32,7 @@ fn [[test]] is_digit() i32 {
     return true;
 }
 
-fn [[test]] is_upper() i32 {
+func [[test]] is_upper() i32 {
     @assert(Char::is_upper('A'));
     @assert(Char::is_upper('B'));
     @assert(Char::is_upper('C'));
@@ -65,7 +65,7 @@ fn [[test]] is_upper() i32 {
     return true;
 }
 
-fn [[test]] is_lower() i32 {
+func [[test]] is_lower() i32 {
     @assert(Char::is_lower('a'));
     @assert(Char::is_lower('b'));
     @assert(Char::is_lower('c'));
@@ -98,7 +98,7 @@ fn [[test]] is_lower() i32 {
     return true;
 }
 
-fn [[test]] is_hex() i32 {
+func [[test]] is_hex() i32 {
     @assert(Char::is_hex('0'));
     @assert(Char::is_hex('1'));
     @assert(Char::is_hex('2'));
@@ -125,7 +125,7 @@ fn [[test]] is_hex() i32 {
     return true;
 }
 
-fn [[test]] is_oct() i32 {
+func [[test]] is_oct() i32 {
     @assert(Char::is_oct('0'));
     @assert(Char::is_oct('1'));
     @assert(Char::is_oct('2'));
@@ -152,7 +152,7 @@ fn [[test]] is_oct() i32 {
     return true;
 }
 
-fn [[test]] is_alpha() i32 {
+func [[test]] is_alpha() i32 {
     @assert(Char::is_alpha('a'));
     @assert(Char::is_alpha('b'));
     @assert(Char::is_alpha('c'));
@@ -174,7 +174,7 @@ fn [[test]] is_alpha() i32 {
     return true;
 }
 
-fn [[test]] is_alpha_num() i32 {
+func [[test]] is_alpha_num() i32 {
     @assert(Char::is_alpha_num('a'));
     @assert(Char::is_alpha_num('b'));
     @assert(Char::is_alpha_num('c'));
@@ -188,7 +188,7 @@ fn [[test]] is_alpha_num() i32 {
     return true;
 }
 
-fn [[test]] is_control() i32 {
+func [[test]] is_control() i32 {
     @assert(Char::is_control('\0'));
     @assert(!Char::is_control(' '));
     @assert(!Char::is_control('!'));
@@ -197,7 +197,7 @@ fn [[test]] is_control() i32 {
     return true;
 }
 
-fn [[test]] is_print() i32 {
+func [[test]] is_print() i32 {
     @assert(Char::is_print(' '));
     @assert(Char::is_print('!'));
     @assert(Char::is_print('0'));
@@ -206,7 +206,7 @@ fn [[test]] is_print() i32 {
     return true;
 }
 
-fn [[test]] is_punc() i32 {
+func [[test]] is_punc() i32 {
     @assert(Char::is_punc('!'));
     @assert(Char::is_punc('?'));
     @assert(Char::is_punc('.'));
@@ -243,7 +243,7 @@ fn [[test]] is_punc() i32 {
     return true;
 }
 
-fn [[test]] is_sym() i32 {
+func [[test]] is_sym() i32 {
     @assert(Char::is_sym('+'))
     @assert(Char::is_sym('-'))
     @assert(Char::is_sym('*'))
@@ -264,7 +264,7 @@ fn [[test]] is_sym() i32 {
     return true;
 }
 
-fn [[test]] is_mark() i32 {
+func [[test]] is_mark() i32 {
     @assert(Char::is_mark('\''))
     @assert(Char::is_mark('\\'))
     @assert(Char::is_mark('`'))

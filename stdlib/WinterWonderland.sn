@@ -1,4 +1,4 @@
-use Core::System;
+import Core::System;
 
 /**
  * Prints the Snowball Poem to the console.
@@ -9,7 +9,7 @@ use Core::System;
  *
  * @return void
  */
-static fn poem() i32 {
+static func poem() i32 {
     System::println("In the land of Snowball, where the code is king,
 A language of speed and security we bring.
 Object-oriented, it makes programming fun,
@@ -28,4 +28,4 @@ In the land of Snowball, where everything's right.");
 }
 
 // Automatically call the function and exit
-const p = poem()
+const p = poem();

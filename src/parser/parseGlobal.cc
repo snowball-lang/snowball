@@ -35,10 +35,10 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
               !is<TokenType::KWORD_NAMESPACE>(pk) && !is<TokenType::KWORD_STRUCT>(pk) &&
               !is<TokenType::KWORD_STATIC>(pk) && !is<TokenType::KWORD_UNSAFE>(pk) && !is<TokenType::KWORD_CLASS>(pk) &&
               !is<TokenType::KWORD_EXTERN>(pk) && !is<TokenType::KWORD_CONST>(pk) && !is<TokenType::KWORD_INTER>(pk)) {
-            createError<SYNTAX_ERROR>("expected keyword \"fn\", \"static\", \"unsafe\" \"namespace\", \"class\", "
+            createError<SYNTAX_ERROR>("expected keyword \"func\", \"static\", \"unsafe\" \"namespace\", \"class\", "
                                       "\"let\", \"const\" "
                                       "or "
-                                      "\"extern\" after pub/priv declaration");
+                                      "\"extern\" after public/private declaration");
           }
 
           break;
@@ -47,7 +47,7 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
         case TokenType::KWORD_EXTERN: {
           auto pk = peek();
           if (!is<TokenType::KWORD_FUNC>(pk) && !is<TokenType::KWORD_UNSAFE>(pk)) {
-            createError<SYNTAX_ERROR>("expected 'fn' keyword after an "
+            createError<SYNTAX_ERROR>("expected 'func' keyword after an "
                                       "extern function declaration");
           }
 
@@ -58,7 +58,7 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
           auto pk = peek();
           if (!is<TokenType::KWORD_FUNC>(pk) && !is<TokenType::KWORD_UNSAFE>(pk)) {
             next();
-            createError<SYNTAX_ERROR>("expected 'fn' or 'unsafe' keyword after a "
+            createError<SYNTAX_ERROR>("expected 'func' or 'unsafe' keyword after a "
                                       "static function declaration");
           }
 
@@ -68,7 +68,7 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
         case TokenType::KWORD_UNSAFE: {
           auto pk = peek();
           if (!is<TokenType::KWORD_FUNC>(pk)) {
-            createError<SYNTAX_ERROR>("expected 'fn' keyword after an "
+            createError<SYNTAX_ERROR>("expected 'func' keyword after an "
                                       "unsafe function declaration");
           }
 
@@ -117,7 +117,7 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
         }
 
         default:
-          createError<SYNTAX_ERROR>(FMT("Unexpected token found: %s%s%s", BLU, m_current.to_string().c_str(), RESET));
+          createError<SYNTAX_ERROR>(FMT("Unexpected token ('%s') found", m_current.to_string().c_str()));
       }
     }
 

@@ -1,25 +1,25 @@
 
-use [[use_macros]] Core::CLib;
+import[[use_macros]] Core::CLib;
 
 namespace tests {
 
-unsafe fn [[test(expect = 5)]] strlen() i32 {
+unsafe func [[test(expect = 5)]] strlen() i32 {
     let x = CLib::c_string::strlen(@c_str("hello"));
     return x;
 }
 
-unsafe fn [[test(expect = 0)]] strlen_empty() i32 {
+unsafe func [[test(expect = 0)]] strlen_empty() i32 {
     let x = CLib::c_string::strlen(@c_str(""));
     return x;
 }
 
-unsafe fn [[test(expect = 0)]] malloc() i32 {
+unsafe func [[test(expect = 0)]] malloc() i32 {
     let x = CLib::malloc(20) as *const CLib::c_char;
     CLib::c_string::strcpy(x, @c_str("hello"));
     return CLib::c_string::strcmp(x, @c_str("hello"));
 }
 
-unsafe fn [[test(expect = 0)]] realloc() i32 {
+unsafe func [[test(expect = 0)]] realloc() i32 {
     let mut x = CLib::malloc(20) as *const CLib::c_char;
     CLib::c_string::strcpy(x, @c_str("hello"));
     x = CLib::realloc(x, 30) as *const CLib::c_char;

@@ -16,21 +16,21 @@ using namespace std::chrono;
 
 #define LIBRARY_ENTRY "src/lib.sn"
 #define LIBRARY_MAIN                                                                                                   \
-  "use [[use_macro(assert)]] Core::Assert;\n\n"                                                                        \
-  "pub fn my_export() String {\n"                                                                                      \
-  "    return \"Hello, World\".to_string();\n"                                                                         \
+  "import [[use_macro(assert)]] Core::Assert;\n\n"                                                                        \
+  "public func my_export() String {\n"                                                                                      \
+  "    return \"Hello, World\";\n"                                                                         \
   "}\n\n" /* TODO: add #[cfg(test)] */                                                                                 \
   "\nnamespace tests {\n"                                                                                              \
-  "    fn [[test]] test_my_lib() {\n"                                                                                  \
+  "    func [[test]] test_my_lib() {\n"                                                                                  \
   "        @assert(my_export() == \"Hello, World\")\n"                                                                 \
   "    }\n"                                                                                                            \
   "}"
 
 #define EXECUTABLE_ENTRY "src/main.sn"
 #define EXECUTABLE_MAIN                                                                                                \
-  "use Core::System;\n"                                                                                                \
+  "import Core::System;\n"                                                                                                \
                                                                                                                        \
-  "\npub fn main() i32 {\n"                                                                                            \
+  "\npublic func main() i32 {\n"                                                                                            \
   "   System::println(\"Hello, World\")\n"                                                                             \
   "}"
 

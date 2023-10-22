@@ -1,8 +1,8 @@
-use Core::Internal::Preloads;
-use [[use_macro(c_str)]] Core::CLib;
-use Core::Ptr;
+import Core::Internal::Preloads;
+import[[use_macro(c_str)]] Core::CLib;
+import Core::Ptr;
 
-pub type String = StringView<>;
+public type String = StringView<>;
 
 /**
  * @namespace __internal
@@ -20,12 +20,12 @@ pub type String = StringView<>;
  */
 namespace __internal {
 
-unsafe fn [[
+unsafe func [[
   export(name = "sn.test.try"), 
   cfg(test), 
   no_inline
 ]] snowball_test(
-  func: fn () => i32,
+  fn: func () => i32,
   name: *const char,
   index: i32,
   skip: bool = false,
@@ -40,7 +40,7 @@ unsafe fn [[
   // TODO: Add support for exceptions
   if !skip {
     try {
-      let result = func();
+      let result = fn();
       if result == expect {
         CLib::printf(@c_str("\e[1;32mnice!\e[0m\n"));
       } else {
@@ -63,7 +63,7 @@ unsafe fn [[
   return true;
 }
 
-//fn [[
+//func [[
 //  export(name = "sn.bench.run"),
 //  cfg(bench),
 //  no_inline
@@ -75,7 +75,7 @@ unsafe fn [[
 //  if size == 0 { return; }
 //  let mut results = new Vector<i32>{};
 //  for i in 0..size {
-//    let func = functions[i] as fn () => void;
+//    let func = functions[i] as func () => void;
 //    let start = CLib::time(Ptr::null_ptr<?i32>());
 //    func();
 //    let end = CLib::time(Ptr::null_ptr<?i32>());
@@ -152,8 +152,8 @@ unsafe fn [[
  * manipulation operations such as exception throwing, exception
  * catching, exception handling, and more.
  */
-pub class Exception {
-  pub:
+public class Exception {
+  public:
     /**
      * @brief Exception constructor.
      * @param[in] m The message of the exception.
@@ -164,9 +164,9 @@ pub class Exception {
      * @brief Returns the message of the exception.
      * @return The message of the exception.
      */
-    fn what() String
+    func what() String
       { return String::from(self.msg, self.length); }
-  priv:
+  private:
     /** The message of the exception. */
     let msg: String::StringType;
     /** The message length */
@@ -181,7 +181,7 @@ pub class Exception {
  * manipulation operations such as exception throwing, exception
  * catching, exception handling, and more.
  */
-pub class IndexError extends Exception 
+public class IndexError extends Exception 
   { }
 /**
  * @interface Iterable
@@ -191,16 +191,16 @@ pub class IndexError extends Exception
  * for working with iterables. It supports common Iterable
  * manipulation operations such as iteration, element access, and more.
  */
-pub interface Iterable<IterType: Sized> {
+public interface Iterable<IterType: Sized> {
     let mut iter_index: i32 = 0;
-  pub:
-    virt fn next() Iter<IterType>;
-    virt mut fn reset() { self.iter_index = 0; }
+  public:
+    virtual func next() Iter<IterType>;
+    virtual mut func reset() { self.iter_index = 0; }
 }
 
-pub interface ToString {
-  pub:
-    fn to_string() String;
+public interface ToString {
+  public:
+    func to_string() String;
 };
 
 /**
@@ -212,12 +212,12 @@ pub interface ToString {
  * with iterators. It supports common Iter manipulation operations
  * such as iteration, element access, and more.
  */
-pub class Iter<_IteratorType: Sized> {
+public class Iter<_IteratorType: Sized> {
     /// @brief if the iterator is valid
     let _valid: bool = false;
     /// @brief the value of the iterator
     let _value: _IteratorType = @zero_initialized(:_IteratorType);
-  pub:
+  public:
     /**
      * @brief Iter constructor.
      * @note It creates an invalid iterator.
@@ -233,11 +233,11 @@ pub class Iter<_IteratorType: Sized> {
      * @brief Returns the value of the iterator.
      * @return The value of the iterator.
      */
-    fn [[internal_linkage, inline]] value() _IteratorType 
+    func [[internal_linkage, inline]] value() _IteratorType 
     { 
       if !self._valid 
       {
-        raise new IndexError("Invalid iterator access!");
+        throw new IndexError("Invalid iterator access!");
       }
       return &self._value; 
     }
@@ -245,20 +245,20 @@ pub class Iter<_IteratorType: Sized> {
      * @brief Returns if the iterator is valid.
      * @return If the iterator is valid.
      */
-    fn [[internal_linkage, inline]] is_valid() bool 
+    func [[internal_linkage, inline]] is_valid() bool 
       { return self._valid; }
-  pub:
+  public:
     /**
      * @brief Returns an invalid iterator.
      * @return An invalid iterator.
      */
-    static fn [[inline]] invalid() Iter<_IteratorType> 
+    static func [[inline]] invalid() Iter<_IteratorType> 
       { return new Iter<_IteratorType>(); }
     /**
      * @brief Returns a valid iterator.
      * @return A valid iterator.
      */
-    static fn [[inline]] valid(val: _IteratorType) Iter<_IteratorType> 
+    static func [[inline]] valid(val: _IteratorType) Iter<_IteratorType> 
       { return new Iter<_IteratorType>(val); }
 }
 /**
@@ -269,8 +269,8 @@ pub class Iter<_IteratorType: Sized> {
  * for working with ranges of elements. It supports common Range
  * manipulation operations such as iteration, element access, and more.
  */
-pub class Range<_Number_Type: Numeric = i32> implements Iterable<_Number_Type> {
-  pub:
+public class Range<_Number_Type: Numeric = i32> implements Iterable<_Number_Type> {
+  public:
     /**
      * @brief Range constructor.
      * @param[in] start The start of the range.
@@ -290,25 +290,25 @@ pub class Range<_Number_Type: Numeric = i32> implements Iterable<_Number_Type> {
      * @brief Returns the size of the range.
      * @return The size of the range.
      */
-    fn [[internal_linkage, inline]] size() _Number_Type
+    func [[internal_linkage, inline]] size() _Number_Type
       { return self._end - self._start; }
     /**
      * @brief Returns the start of the range.
      * @return The start of the range.
      */
-    fn [[internal_linkage, inline]] begin() _Number_Type
+    func [[internal_linkage, inline]] begin() _Number_Type
       { return self._start; }
     /**
      * @brief Returns the end of the range.
      * @return The end of the range.
      */
-    fn [[internal_linkage, inline]] end() _Number_Type
+    func [[internal_linkage, inline]] end() _Number_Type
       { return self._end; }
     /**
      * @brief Returns the next element in the iteration.
      * @return The next element in the iteration.
      */
-    virt mut fn [[internal_linkage]] next() Iter<_Number_Type>
+    virtual mut func [[internal_linkage]] next() Iter<_Number_Type>
     {
       self.iter_index = self.iter_index + 1;
       if self.iter_index >= self.end() 
@@ -320,9 +320,9 @@ pub class Range<_Number_Type: Numeric = i32> implements Iterable<_Number_Type> {
     /**
      * @brief It resets the iteration.
      */
-    mut fn [[inline]] reset() 
+    mut func [[inline]] reset() 
       { self.iter_index = self._start-1; }
-  priv:
+  private:
     /** The start of the range. */
     let _start: _Number_Type = 0;
     /** The end of the range. */
@@ -341,11 +341,11 @@ pub class Range<_Number_Type: Numeric = i32> implements Iterable<_Number_Type> {
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating vectors.
  */
-pub class Vector<
+public class Vector<
   _StoreType: Sized,
   Allocator: Sized = Ptr::Allocator<_StoreType>
 > implements Iterable<_StoreType> {
-  pub:
+  public:
     /**
      * @brief Default constructor.
      * Constructs an empty vector.
@@ -355,7 +355,7 @@ pub class Vector<
      * @brief It pushes an element to the back of the vector.
      * @param[in] value The element to push to the back of the vector.
      */
-    mut fn [[internal_linkage]] push(value: _StoreType)
+    mut func [[internal_linkage]] push(value: _StoreType)
     { 
       if self.length >= self.capacity 
       {
@@ -369,12 +369,12 @@ pub class Vector<
     /**
      * @return The size of the vector.
      */
-    fn [[internal_linkage, inline]] size() i32 { return self.length; }
+    func [[internal_linkage, inline]] size() i32 { return self.length; }
     /**
      * @brief Resizes the vector.
      * @param[in] capacity The new capacity of the vector.
      */
-    mut fn [[internal_linkage]] resize()
+    mut func [[internal_linkage]] resize()
     { 
       // we make sure we dont overflow
       if self.capacity == 0 { self.reserve(1); }
@@ -385,7 +385,7 @@ pub class Vector<
      * @brief Reserves a capacity for the vector.
      * @param[in] capacity The capacity to reserve for the vector.
      */
-    mut fn [[internal_linkage]] reserve(new_capacity: i32)
+    mut func [[internal_linkage]] reserve(new_capacity: i32)
     {
       if self.buffer.ptr().is_null() 
       {
@@ -402,7 +402,7 @@ pub class Vector<
      * @return The element at the specified index.
      * @note It returns a reference to the element at the specified index.
      */
-    fn [[internal_linkage]] at(index: i32) &mut _StoreType
+    func [[internal_linkage]] at(index: i32) &mut _StoreType
     {
       if index < 0 
       {
@@ -410,9 +410,9 @@ pub class Vector<
       } 
       else if index >= self.length 
       {
-        raise new IndexError("Index out of bounds.");
+        throw new IndexError("Index out of bounds.");
         // TODO: int impl
-        //raise new IndexError("Index out of bounds. Cannot access element at index " + index.to_string());
+        //throw new IndexError("Index out of bounds. Cannot access element at index " + index.to_string());
       }
       return self.buffer.ptr().unchecked_get(index);
     }
@@ -422,14 +422,14 @@ pub class Vector<
      * @return The element at the specified index.
      * @see Vector<_StoreType>::at()
      */
-    operator fn [[internal_linkage, inline]] [](index: i32) &mut _StoreType
+    operator func [[inline]] [](index: i32) &mut _StoreType
       { return self.at(index); }
     /**
      * @brief It inserts an element at the specified index.
      * @param[in] index The index to insert the element at.
      * @param[in] value The element to insert.
      */
-    mut fn [[internal_linkage]] insert(index: i32, value: _StoreType)
+    mut func insert(index: i32, value: _StoreType)
     {
       if index >= self.length 
       {
@@ -444,7 +444,7 @@ pub class Vector<
      * @brief It returns a string representation of the vector.
      * @return A string representation of the vector.
      */
-    fn [[internal_linkage]] to_string<>() String {
+    func to_string<>() String {
       let mut result = "[".to_string();
       for i in 0..self.length {
         result = result + String::from(self[i]);
@@ -455,7 +455,7 @@ pub class Vector<
       return result + "]";
     }
 
-  priv:
+  private:
     /** The capacity of the vector. */
     let mut capacity: i64 = 0;
     /** The size of the vector. */
@@ -477,8 +477,8 @@ pub class Vector<
  *       It automatically manages the memory allocation and deallocation
  *       required for storing and manipulating strings.
  */
-pub class StringView<Char: Sized = char> {
-  pub:
+public class StringView<Char: Sized = char> {
+  public:
     type StringType = *const Char;
 
     /**
@@ -490,19 +490,19 @@ pub class StringView<Char: Sized = char> {
     /**
      * @return The size of the string.
      */
-    fn [[internal_linkage, inline]] size() i32 
+    func [[inline]] size() i32 
       { return self.length; }
     /**
      * @return The buffer containing the string.
      */
-    fn [[internal_linkage, inline]] bytes() StringType
+    func [[inline]] bytes() StringType
       { return self.buffer; }
     /**
      * @brief It compares the string with another string.
      * @param[in] other The string to compare the string with.
      * @return The result of the comparison.
      */
-    operator fn ==(other: Self) bool
+    operator func ==(other: Self) bool
     {
       if self.length != other.length 
       {
@@ -522,14 +522,14 @@ pub class StringView<Char: Sized = char> {
      * @param[in] other The string to compare the string with.
      * @return The result of the comparison.
      */
-    operator fn [[inline]] !=(other: Self) bool
+    operator func [[inline]] !=(other: Self) bool
       { return !(self == other); }
     /**
      * @brief It concatenates the string with another string.
      * @param[in] other The string to concatenate the string with.
      * @return The concatenated string.
      */
-    operator fn [[inline]] +(other: Self) Self
+    operator func [[inline]] +(other: Self) Self
     { 
       let result = Self::concat(self.bytes(), other.bytes(), self.length, other.length); 
       return new Self(result, self.length + other.length);
@@ -538,14 +538,14 @@ pub class StringView<Char: Sized = char> {
      * @brief Utility function to avoid constant checking if a type is a stirng.
      * @return It's self (aka, a string representation of the string).
      */
-    fn [[inline]] to_string() Self
+    func [[inline]] to_string() Self
       { return "\"" + *self + "\""; }
     /**
      * @brief It returns character at the specified index.
      * @param[in] index The index of the character to return.
      * @return The character at the specified index.
      */
-    operator fn [](index: i32) Char
+    operator func [](index: i32) Char
     {
       if index < 0 
       {
@@ -553,22 +553,22 @@ pub class StringView<Char: Sized = char> {
       } 
       else if index >= self.length 
       {
-        raise new IndexError("Index out of bounds.");
+        throw new IndexError("Index out of bounds.");
       }
       unsafe {
         return *(self.bytes() + index)
       }
     }
     
-  priv:
+  private:
     /** The size of the string. */
     let mut length: i32 = 0;
     /** The buffer containing the string. */
     let buffer: StringType = @zero_initialized(:StringType);
 
   // Static exports
-  pub:
-    static fn [[internal_linkage, inline]] from(other: Self)
+  public:
+    static func [[internal_linkage, inline]] from(other: Self)
       StringView<Char> 
       { return other; }
     /**
@@ -576,11 +576,11 @@ pub class StringView<Char: Sized = char> {
       * @param[in] buffer The buffer to construct the string from.
       * @return The constructed string.
       */
-    static fn [[internal_linkage, inline]] from(buffer: Self)
+    static func [[internal_linkage, inline]] from(buffer: Self)
       StringView<Char> { return buffer; }
-    static fn [[internal_linkage, inline]] from<T: ToString>(buffer: T)
+    static func [[internal_linkage, inline]] from<T: ToString>(buffer: T)
       StringView<Char> { return buffer.to_string(); }
-    static fn [[internal_linkage, inline]] from(buffer: *const char, size: i32)
+    static func [[internal_linkage, inline]] from(buffer: *const char, size: i32)
       StringView<Char> { 
       unsafe {
         return new Self(buffer, size);
@@ -588,7 +588,7 @@ pub class StringView<Char: Sized = char> {
     }
 
   // Internal exports
-  priv:
+  private:
     /**
      * @brief It concatenates 2 strings.
      * @param[in] str1 The first string to append.
@@ -597,7 +597,7 @@ pub class StringView<Char: Sized = char> {
      * @param[in] len2 The length of the second string.
      * @return The appended string.
      */
-    static fn [[internal_linkage]] concat(str1: StringType, str2: StringType,  
+    static func [[internal_linkage]] concat(str1: StringType, str2: StringType,  
       len1: i32, len2: i32) StringType
     {
       unsafe 
@@ -610,7 +610,7 @@ pub class StringView<Char: Sized = char> {
       }
     }
     
-  priv:
+  private:
     /**
       * @brief Constructs a string from a vector of characters.
       * @param[in] buffer The vector of characters to construct the string from.

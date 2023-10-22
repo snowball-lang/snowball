@@ -1,33 +1,33 @@
-use Core::Tuples;
+import Core::Tuples;
 
 namespace tests {
 
-pub fn [[test(expect = 3)]] pair() i32 {
+public func [[test(expect = 3)]] pair() i32 {
     let x = new Tuples::Pair<i32, i32>(1, 2);
     return x.first + x.second;
 }
 
-pub fn [[test(expect = 3)]] pair_from_make() i32 {
+public func [[test(expect = 3)]] pair_from_make() i32 {
     let x = Tuples::make_pair(1, 2);
     return x.first + x.second;
 }
 
-pub fn [[test(expect = 2)]] pair_with_class() i32 {
+public func [[test(expect = 2)]] pair_with_class() i32 {
     let x = new Tuples::Pair<i32, String>(1, "2");
     return x.first + x.second.size();
 }
 
-pub fn [[test(expect = 3)]] pair_with_ptr() i32 {
+public func [[test(expect = 3)]] pair_with_ptr() i32 {
     let x = new Tuples::Pair<i32, &i32>(1, &2);
     return x.first + *x.second;
 }
 
-pub fn [[test(expect = 6)]] triple() i32 {
+public func [[test(expect = 6)]] triple() i32 {
     let x = new Tuples::Triple<i32, i32, i32>(1, 2, 3);
     return x.first + x.second + x.third;
 }
 
-pub fn [[test(expect = 6)]] triple_from_make() i32 {
+public func [[test(expect = 6)]] triple_from_make() i32 {
     let x = Tuples::make_triple(1, 2, 3);
     return x.first + x.second + x.third;
 }

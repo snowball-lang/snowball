@@ -2,13 +2,13 @@
  * @file Common bindings for the C standard library
  */
 
-pub type c_obj = *const void;
-pub type c_int = i32;
-pub type c_char = char;
-pub type c_bool = bool;
-pub type c_float = f32;
-pub type c_double = f64;
-pub type c_long = i64;
+public type c_obj = *const void;
+public type c_int = i32;
+public type c_char = char;
+public type c_bool = bool;
+public type c_float = f32;
+public type c_double = f64;
+public type c_long = i64;
 // TODO: add more types
 
 /**
@@ -23,7 +23,7 @@ pub type c_long = i64;
  * @note(2) malloc is thread-safe: it behaves as though only accessing the memory
  *  locations visible through its argument, and not any static storage.
  */
-pub extern unsafe fn malloc(c_int) c_obj;
+public external unsafe func malloc(c_int) c_obj;
 /**
  * @brief Allocates memory for an array of num objects of size size and initializes all bytes in the allocated storage to zero.
  * @param num(c_int) - number of objects to allocate
@@ -37,7 +37,7 @@ pub extern unsafe fn malloc(c_int) c_obj;
  * @note(3) calloc is thread-safe: it behaves as though only accessing the memory locations visible through its argument,
  *  and not any static storage.
  */
-pub extern unsafe fn calloc(c_int, c_int) c_obj;
+public external unsafe func calloc(c_int, c_int) c_obj;
 /**
  * @brief Reallocates the given area of memory.
  * If ptr is not NULL, it must be previously allocated by malloc(),
@@ -59,7 +59,7 @@ pub extern unsafe fn calloc(c_int, c_int) c_obj;
  *  returned (in which case the old memory block may or may not be freed), or some non-null
  *  pointer may be returned that may not be used to access storage).
  */
-pub extern unsafe fn realloc(c_obj, c_int) c_obj;
+public external unsafe func realloc(c_obj, c_int) c_obj;
 /**
  * @brief Deallocates the space previously allocated by malloc(), calloc() or realloc().
  * @param ptr(c_obj) - pointer to the memory to deallocate
@@ -74,7 +74,7 @@ pub extern unsafe fn realloc(c_obj, c_int) c_obj;
  *
  * @return (none)
  */
-pub extern unsafe fn free(c_obj) void;
+public external unsafe func free(c_obj) void;
 /**
  * @brief (memcpy) Copies count bytes from the object pointed to by src to the object pointed to by dest.
  * @param dest(c_obj) - pointer to the object to copy to
@@ -86,10 +86,10 @@ pub extern unsafe fn free(c_obj) void;
  * @note(3) If the objects are not TriviallyCopyable, the behavior of memcpy is not specified and may be undefined.
  * @note(4) If the objects are potentially-overlapping or not TriviallyCopyable, use memmove or memcpy_s instead.
  */
-pub extern unsafe fn memcpy(c_obj, c_obj, c_int) void;
+public external unsafe func memcpy(c_obj, c_obj, c_int) void;
 /**
  * @brief Writes every character from the null-terminated string str and one additional newline
- *  character '\n' to the output stream stdout, as if by repeatedly executing @fn fputc.
+ *  character '\n' to the output stream stdout, as if by repeatedly executing @func fputc.
  * @param str(String) This is the string to be written.
  * @return (c_int) If successful, non-negative value is returned. On error, the function returns EOF.
  *
@@ -100,7 +100,7 @@ pub extern unsafe fn memcpy(c_obj, c_obj, c_int) void;
  * @note(3) A typical cause of failure for puts is running out of space on the file system, when stdout is
  *  redirected to a file.
  */
-pub extern unsafe fn puts(*const c_char) c_int;
+public external unsafe func puts(*const c_char) c_int;
 /**
  * @brief Writes a character to the standard output (stdout).
  * @param character(c_int) - The `c_int` promotion of the character to be written.
@@ -108,19 +108,19 @@ pub extern unsafe fn puts(*const c_char) c_int;
  * @return On success, the character written is returned.
  *  If a writing error occurs, EOF is returned.
  */
-pub extern unsafe fn putchar(c_char) c_int;
+public external unsafe func putchar(c_char) c_int;
 /**
  * @brief Reads the next character from stdin.
  * @return The obtained character on success or EOF on failure.
  */
-pub extern unsafe fn getchar() c_char;
+public external unsafe func getchar() c_char;
 /**
  * @brief Writes the string pointed by format to the standard output (stdout). If format includes format
  *  specifiers (subsequences beginning with %), the additional arguments following format are formatted and inserted
  *  in the resulting string replacing their respective specifiers.
  * @return On success, the total number of characters written is returned.
  */
-pub extern unsafe fn printf(*const c_char, ...) c_int;
+public external unsafe func printf(*const c_char, ...) c_int;
 /**
  * @brief Writes the string pointed by format to the character string pointed by str. If format includes format
  *  specifiers (subsequences beginning with %), the additional arguments following format are formatted and inserted
@@ -130,19 +130,19 @@ pub extern unsafe fn printf(*const c_char, ...) c_int;
  * @return On success, the total number of characters written is returned.
  *  If a writing error occurs, the error indicator (ferror) is set and a negative number is returned.
  */
-pub extern unsafe fn snprintf(*const c_char, c_int, *const c_char, ...) c_int;
+public external unsafe func snprintf(*const c_char, c_int, *const c_char, ...) c_int;
 /**
  * @brief Causes normal program termination to occur.
  * @param exit_code(c_int) - exit status of the program
  * @note(1) The behavior is undefined if a program calls exit more than once.
  */
-pub extern unsafe fn exit(c_int);
+public external unsafe func exit(c_int);
 /**
  * @brief It gets the current time.
  * @param seconds(&c_int) - pointer to a variable where the number of seconds elapsed since the Epoch is stored.
  * @return c_int - If the time is successfully obtained, the return value is the same as the parameter seconds.
  */
-pub extern unsafe fn time(*const c_int) c_int;
+public external unsafe func time(*const c_int) c_int;
 /**
  * @brief It transforms a string into a C string.
  * @param str(&char) - string to be converted
@@ -159,28 +159,28 @@ namespace c_string {
  * @param str(&char) - string to be measured
  * @return c_int - length of the string
  */
-pub extern unsafe fn strlen(*const c_char) c_int;
+public external unsafe func strlen(*const c_char) c_int;
 /**
  * @brief It checks if the two strings are equal.
  * @param str1(&char) - first string
  * @param str2(&char) - second string
  * @return bool - true if the strings are equal, false otherwise
  */
-pub extern unsafe fn strcmp(*const c_char, *const c_char) bool;
+public external unsafe func strcmp(*const c_char, *const c_char) bool;
 /**
  * @brief It copies the string pointed by source into the array pointed by destination, including the terminating null character (and stopping at that point).
  * @param destination(&char) - pointer to the destination array where the content is to be copied.
  * @param source(&char) - C string to be copied.
  * @return &char - pointer to the destination string destination.
  */
-pub extern unsafe fn strcpy(*const c_char, *const c_char) *const c_char;
+public external unsafe func strcpy(*const c_char, *const c_char) *const c_char;
 /**
  * @brief It concatenates the string pointed to by source to the end of the string pointed to by destination.
  * @param destination(&char) - pointer to the destination array, which should contain a C string, and be large enough to contain the concatenated resulting string.
  * @param source(&char) - C string to be appended. This should not overlap destination.
  * @return &char - pointer to the destination string destination.
  */
-pub extern unsafe fn strcat(*const c_char, *const c_char) *const c_char;
+public external unsafe func strcat(*const c_char, *const c_char) *const c_char;
 } // namespace c_string
 
 /**
@@ -193,5 +193,5 @@ namespace cmath {
 
  * @return f64 - number
 */
-pub extern unsafe fn strtod(*const c_char, c_obj) f64;
+public external unsafe func strtod(*const c_char, c_obj) f64;
 }

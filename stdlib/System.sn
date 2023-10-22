@@ -1,4 +1,4 @@
-use [[use_macro(c_str)]] Core::CLib;
+import[[use_macro(c_str)]] Core::CLib;
 
 /**
  * @brief Causes the program to terminate with the specified exit code.
@@ -6,7 +6,7 @@ use [[use_macro(c_str)]] Core::CLib;
  * @param exitCode The exit status of the program.
  * @note The behavior is undefined if a program calls exit more than once.
  */
-pub static fn exit(exitCode: i32 = 0) { 
+public static func exit(exitCode: i32 = 0) { 
     unsafe { CLib::exit(exitCode); }
 }
 /**
@@ -15,7 +15,7 @@ pub static fn exit(exitCode: i32 = 0) {
  * @param msg the 64-bit integer value to print
  * @return the number of characters printed
  */
-pub static fn [[inline]] print<T>(msg: T, end: String = "") i32 {
+public static func [[inline]] print<T>(msg: T, end: String = "") i32 {
     let m = String::from(msg);
     for i in 0..m.size() {
         unsafe {CLib::putchar(m[i]);}
@@ -30,7 +30,7 @@ pub static fn [[inline]] print<T>(msg: T, end: String = "") i32 {
  * @param msg the 64-bit integer value to print
  * @return the number of characters printed
  */
-pub static fn [[inline]] println<T>(msg: T) i32 
+public static func [[inline]] println<T>(msg: T) i32 
     { return print(msg, "\n"); }
 /**
  * @brief Prints a new line character to standard output.
@@ -41,4 +41,4 @@ pub static fn [[inline]] println<T>(msg: T) i32
  * @note This function does not print any other characters besides the new line character.
  * If you need to print additional characters or a string, use the `println(...)` function instead.
  */
-pub static fn println() { unsafe { CLib::putchar('\n'); } }
+public static func println() { unsafe { CLib::putchar('\n'); } }
