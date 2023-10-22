@@ -37,7 +37,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
         if (services::OperatorService::opEquals<services::OperatorService::EQ>(opName)) {
           if (utils::is<ir::DereferenceTo>(args.at(0).get()) && !left->getType()->isPointerTy() &&
               llvm::isa<llvm::LoadInst>(left)) {
-            left = builder->CreateLoad(left->getType()->getPointerTo(), ((llvm::LoadInst*) left)->getPointerOperand());
+            left = ((llvm::LoadInst*) left)->getPointerOperand();
           }
         }
       }
