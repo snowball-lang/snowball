@@ -69,7 +69,9 @@ pub class Allocator<T: Sized> {
      * @return NonNull{T} - a non-null pointer to the allocated memory block
      */
     static fn [[inline]] alloc(size: i32) NonNull<T> {
-      return new NonNull<T>(CLib::malloc(size) as *const T);
+      unsafe {
+        return new NonNull<T>(CLib::malloc(size) as *const T);
+      }
     }
     /**
      * Allocates a memory block for a given type and initializes it with zeros.
@@ -77,7 +79,9 @@ pub class Allocator<T: Sized> {
      * @return NonNull{T} - a non-null pointer to the allocated memory block
      */
     static fn [[inline]] alloc_zeroed(size: i32) NonNull<T> {
-      return new NonNull<T>(CLib::calloc(size, 1));
+      unsafe {
+        return new NonNull<T>(CLib::calloc(size, 1));
+      }
     }
     /**
      * Reallocates a memory block for a given type.
@@ -86,14 +90,16 @@ pub class Allocator<T: Sized> {
      * @return NonNull{T} - a non-null pointer to the reallocated memory block
      */
     static fn [[inline]] realloc(ptr: NonNull<T>, size: i32) NonNull<T> {
-      return new NonNull<T>(CLib::realloc(ptr.ptr(), size));
+      unsafe {
+        return new NonNull<T>(CLib::realloc(ptr.ptr(), size));
+      }
     }
     /**
      * It frees a memory block.
      * @param ptr - pointer to the memory block to be freed
      */
     static fn [[inline]] free(ptr: NonNull<T>) {
-      CLib::free(ptr.ptr());
+      unsafe { CLib::free(ptr.ptr()); }
     }
 }
 
@@ -104,12 +110,6 @@ pub unsafe fn [[inline]] add<T: Sized>(ptr: *const T, offset: i32) *mut T {
 pub unsafe fn [[inline]] write<T: Sized>(mut ptr: *const T, value: T) {
   *ptr = value;
 }
-
-//pub unsafe fn [[inline, llvm_function]] write<T: Sized>(mut ptr: *const T, value: T) {
-//  %0 = load {=*const T}, {=*const T} %ptr, align 8
-//  store {=T} %value, {=*const T} %0, align 8
-//  ret void
-//}
 
 pub fn [[inline]] to_pointer<T: Sized>(value: &T) *const T {
   unsafe { return value as *const T; }

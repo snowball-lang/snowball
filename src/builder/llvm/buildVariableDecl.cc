@@ -21,7 +21,7 @@ void LLVMBuilder::visit(ir::VariableDeclaration* variable) {
     auto id = variable->getId();
     store = ctx->getSymbol(id);
   }
-  if (utils::is<ir::Call>(variable->getValue().get()) && utils::is<types::DefinedType>(variable->getType())) {
+  if (utils::is<ir::Call>(variable->getValue().get()) && utils::is<types::BaseType>(variable->getType())) {
     ctx->callStoreValue = store;
     build(variable->getValue().get());
     ctx->callStoreValue = nullptr;

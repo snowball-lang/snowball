@@ -16,7 +16,9 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::string Transformer::getBuiltinTypeUUID(types::Type* ty, const std::string& name) {
+std::string Transformer::getBuiltinTypeUUID(types::Type* ty, const std::string& name, types::Type* original) {
+  if (original) // make sure pointer types are generated!
+    transformType(original->toRef());
   auto pointers = ctx->cache->getTransformedType(name).value();
   int uuid = 0;
   for (const auto& x : pointers) {

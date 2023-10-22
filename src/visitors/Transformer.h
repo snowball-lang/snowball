@@ -328,7 +328,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * @param ty The type to get the builtin type from.
    * @note It will return a nullptr if the type is not a pointer.
    */
-  std::string getBuiltinTypeUUID(types::Type* ty, const std::string& name);
+  std::string getBuiltinTypeUUID(types::Type* ty, const std::string& name, types::Type* original = nullptr);
   /**
    * @brief It generates a a new types::Type instance from a
    * Statement::Base pointer.

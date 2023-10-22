@@ -159,7 +159,7 @@ void LLVMBuilder::visit(ir::TryCatch* node) {
     auto var = catchVars[i];
 
     if (var) {
-      auto obj = builder->CreateBitCast(objPtr, type->getPointerTo());
+      auto obj = builder->CreateLoad(type, objPtr);
       auto varPtr = ctx->getSymbol(var->getId());
       builder->CreateStore(obj, varPtr);
     }

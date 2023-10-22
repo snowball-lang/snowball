@@ -10,12 +10,12 @@ use pkg::chars;
 use pkg::vector;
 use pkg::cls;
 use pkg::string;
+use pkg::tuples;
+use pkg::syntax;
+use pkg::algorithms;
+use pkg::clib;
 
 //use pkg::macros;
-//use pkg::syntax;
-//use pkg::clib;
-//use pkg::tuples;
-//use pkg::algorithms;
 //use pkg::source_location;
 
 //use Core::Panic;

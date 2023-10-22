@@ -21,7 +21,7 @@ pub extern fn "llvm.cbrt.f64" as cbrt(f64) f64;
  * @param y The second number.
  * @return The minimum of the two given numbers.
  */
-pub fn min<T: Core::IsNumeric>(x: T, y: T) T 
+pub fn min<T: Numeric>(x: T, y: T) T 
     { if x < y { x } else { y } } // TODO: use ternary operator once implemented
 
 /**

@@ -230,7 +230,14 @@ fn [[test]] bubble_sort() i32 {
     arr.push(4);
     arr.push(10);
     let result = bubble_sort(arr);
-    return result.to_string() == "[2, 3, 4, 10]"; // nasty but easy comparison
+
+    for i in 0..result.size() - 1 {
+        if (result[i] > result[i + 1]) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 }

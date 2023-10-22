@@ -28,7 +28,7 @@ std::vector<TypeRef*> Parser::parseGenericExpr() {
       if (is<TokenType::OP_GT>()) {
         next();
         break;
-      } else if (is<TokenType::SYM_COMMA>() && is<TokenType::IDENTIFIER>(peek(0, true))) {
+      } else if (is<TokenType::SYM_COMMA>()) {
         continue;
       }
 

@@ -19,6 +19,10 @@ void Transformer::executeGenericTests(Expression::WhereClause* clause, types::Ty
           (interface->is(ctx->getBuiltinTypeImpl("Sized")))) {
         found = true;
       } else {
+        if (auto x = utils::cast<types::ReferenceType>(generic)) {
+          generic = x->getPointedType();
+        }
+
         for (auto impl : implementations) {
           if (impl->is(interface)) {
             found = true;

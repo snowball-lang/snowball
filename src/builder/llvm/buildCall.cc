@@ -22,35 +22,42 @@ void LLVMBuilder::visit(ir::Call* call) {
     return;
   }
 
+  setDebugInfoLoc(call);
   auto calleeValue = call->getCallee();
-  auto callee = build(calleeValue.get());
   auto fnType = utils::cast<types::FunctionType>(calleeValue->getType());
   auto calleeType = getLLVMFunctionType(fnType, utils::cast<ir::Func>(calleeValue.get()));
-  setDebugInfoLoc(call);
 
-  auto args = utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value*>(
-          call->getArguments(), [this](std::shared_ptr<ir::Value> arg) { return expr(arg.get()); }
-  );
   llvm::Value* llvmCall = nullptr;
   llvm::Value* allocatedValue = nullptr;
   llvm::Type* allocatedValueType = nullptr;
+  //setDebugInfoLoc(nullptr);
   if (auto c = utils::cast<types::FunctionType>(calleeValue->getType());
-      c != nullptr && utils::cast<types::BaseType>(c->getRetType())) {
-    auto retType = c->getRetType();
-    allocatedValueType = getLLVMType(retType);
-    if (ctx->retValueUsedFromArg) {
-      allocatedValue = ctx->getCurrentFunction()->getArg(0);
-      ctx->retValueUsedFromArg = false;
-    } else if (ctx->callStoreValue != nullptr) {
+      (c != nullptr && utils::cast<types::BaseType>(c->getRetType())) || ctx->callStoreValue) {
+    if (ctx->callStoreValue) {
       allocatedValue = ctx->callStoreValue;
       ctx->callStoreValue = nullptr;
     } else {
-      // It's a function returning a type that's not a pointer
-      // We need to allocate the value
-      allocatedValue = createAlloca(getLLVMType(retType), ".ret-temp");
+      auto retType = c->getRetType();
+      allocatedValueType = getLLVMType(retType);
+      if (ctx->retValueUsedFromArg) {
+        allocatedValue = ctx->getCurrentFunction()->getArg(0);
+        ctx->retValueUsedFromArg = false;
+      } else {
+        // It's a function returning a type that's not a pointer
+        // We need to allocate the value
+        allocatedValue = createAlloca(getLLVMType(retType), ".ret-temp");
+      }
     }
-    args.insert(args.begin(), allocatedValue);
   }
+
+  auto callee = build(calleeValue.get());
+
+  auto args = utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value*>(
+    call->getArguments(), [this](std::shared_ptr<ir::Value> arg) { return expr(arg.get()); }
+  );
+
+  if (allocatedValue) 
+    args.insert(args.begin(), allocatedValue);
 
   setDebugInfoLoc(call);
   if (auto c = utils::dyn_cast<ir::Func>(calleeValue); c != nullptr && c->isConstructor()) {
@@ -60,22 +67,21 @@ void LLVMBuilder::visit(ir::Call* call) {
     assert(instance);
     assert(c->hasParent());
 
-    llvm::Value* object = nullptr;
+    llvm::Value* object = allocatedValue;
     if (instance->createdObject) {
       object = build(instance->createdObject.get());
-    } else {
+    } else if (!allocatedValue) {
       auto classType = utils::cast<types::DefinedType>(instance->getType());
       assert(classType && "Class type is not a defined type!");
       object = allocateObject(classType);
       ctx->doNotLoadInMemory = true;
     }
 
-    args.insert(args.begin(), load(object, instance->getType()->getReferenceTo()));
+    if (!allocatedValue)
+      args.insert(args.begin(), load(object, instance->getType()->getReferenceTo()));
+    setDebugInfoLoc(call);
     llvmCall = createCall(calleeType, callee, args);
     this->value = object;
-    if (ctx->callStoreValue != nullptr) {
-      builder->CreateStore(builder->CreateLoad(instanceType, object), ctx->callStoreValue);
-    }
   } else if (auto c = utils::dyn_cast<ir::Func>(calleeValue); c != nullptr && c->inVirtualTable()) {
     assert(c->hasParent());
 

@@ -32,7 +32,7 @@ fn [[test(skip)]] to_string() i32 {
     v.push(1);
     v.push(2);
     v.push(3);
-    // TODO: int.to_string() is not implemented
+    // TODO: i32.to_string() is not implemented
     //return v.to_string() == "[1, 2, 3]";
 }
 

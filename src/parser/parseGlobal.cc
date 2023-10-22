@@ -46,7 +46,7 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
 
         case TokenType::KWORD_EXTERN: {
           auto pk = peek();
-          if (!is<TokenType::KWORD_FUNC>(pk)) {
+          if (!is<TokenType::KWORD_FUNC>(pk) && !is<TokenType::KWORD_UNSAFE>(pk)) {
             createError<SYNTAX_ERROR>("expected 'fn' keyword after an "
                                       "extern function declaration");
           }

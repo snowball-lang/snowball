@@ -22,16 +22,12 @@ std::pair<types::Type*, int> matchedGeneric(Expression::Param* generic, types::T
   // e.g. fn foo<T>(x: &T) T { x }
   //     foo(&1)
   //     T = i32
-  int importance = 0;
 
   // Check if the generic is a reference type
   if (auto genericRefType = utils::cast<types::ReferenceType>(arg)) {
     if (generic->getType()->isReferenceType()) {
       // If both are reference types, match the pointed type
       return {genericRefType->getPointedType(), 2};
-    } else {
-      // If generic is a reference but arg is not, try matching the non-reference arg
-      return {arg, 1};
     }
   }
 
@@ -40,14 +36,11 @@ std::pair<types::Type*, int> matchedGeneric(Expression::Param* generic, types::T
     if (generic->getType()->isPointerType()) {
       // If both are pointer types, match the pointed type
       return {genericPointerType->getPointedType(), 2};
-    } else {
-      // If generic is a pointer but arg is not, try matching the non-pointer arg
-      return {arg, 1};
     }
   }
 
   // If the generic is neither a reference nor a pointer, return the argument as is
-  return {arg, 0};
+  return {arg, 1};
 }
 
 #undef HANDLE_POINTER

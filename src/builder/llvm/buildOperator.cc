@@ -69,7 +69,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
           OPERATOR_INSTANCE(BIT_AND_EQ, CreateAnd)
           OPERATOR_INSTANCE(BIT_XOR, CreateXor)
           OPERATOR_INSTANCE(BIT_XOR_EQ, CreateXor)
-          OPERATOR_INSTANCE(LT, CreateICmpULT)
+          OPERATOR_INSTANCE(LT, CreateICmpSLT) // TODO: unsigned an dsigned, not just signed
           OPERATOR_INSTANCE(GT, CreateICmpSGT)
           OPERATOR_INSTANCE(LTEQ, CreateICmpSLE)
           OPERATOR_INSTANCE(GTEQ, CreateICmpSGE)

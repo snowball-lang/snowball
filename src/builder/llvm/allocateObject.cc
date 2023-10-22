@@ -9,7 +9,7 @@ namespace codegen {
 
 llvm::Value* LLVMBuilder::allocateObject(types::DefinedType* ty) {
   auto llvmType = llvm::cast<llvm::StructType>(getLLVMType(ty));
-  llvm::Value* cast = builder->CreateAlloca(llvmType, nullptr, FMT(".alloc.%s", llvmType->getStructName()));
+  llvm::Value* cast = createAlloca(llvmType, FMT(".alloc.%s", llvmType->getStructName()));
 
   auto initializerName =
           FMT("__const.%s.%s", ctx->getCurrentFunction()->getName().str().c_str(), ty->getName().c_str());

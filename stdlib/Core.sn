@@ -20,7 +20,7 @@ pub type String = StringView<>;
  */
 namespace __internal {
 
-fn [[
+unsafe fn [[
   export(name = "sn.test.try"), 
   cfg(test), 
   no_inline
@@ -53,7 +53,7 @@ fn [[
     } catch (e: Exception) {
       CLib::printf(@c_str("\e[1;31merror \n"));
       CLib::printf(@c_str("\n UNEXPECTED EXCEPTION:\n"));
-      CLib::printf(@c_str("   --> %s\n"), e.what());
+      CLib::printf(@c_str("   --> %s\n"), e.what().bytes());
       CLib::printf(@c_str("\e[0m\n"));
       return false;
     }
@@ -168,7 +168,7 @@ pub class Exception {
       { return String::from(self.msg, self.length); }
   priv:
     /** The message of the exception. */
-    let msg: *const char;
+    let msg: String::StringType;
     /** The message length */
     let length: i32;
 }
@@ -197,6 +197,11 @@ pub interface Iterable<IterType: Sized> {
     virt fn next() Iter<IterType>;
     virt mut fn reset() { self.iter_index = 0; }
 }
+
+pub interface ToString {
+  pub:
+    fn to_string() String;
+};
 
 /**
  * @class Iter
@@ -417,7 +422,7 @@ pub class Vector<
      * @return The element at the specified index.
      * @see Vector<_StoreType>::at()
      */
-    operator [[internal_linkage, inline]] [](index: i32) &mut _StoreType
+    operator fn [[internal_linkage, inline]] [](index: i32) &mut _StoreType
       { return self.at(index); }
     /**
      * @brief It inserts an element at the specified index.
@@ -441,11 +446,10 @@ pub class Vector<
      */
     fn [[internal_linkage]] to_string<>() String {
       let mut result = "[".to_string();
-      let separator = new String(", ");
       for i in 0..self.length {
         result = result + String::from(self[i]);
         if i != self.length - 1 {
-          result = result + separator;
+          result = result + ", ";
         }
       }
       return result + "]";
@@ -498,7 +502,7 @@ pub class StringView<Char: Sized = char> {
      * @param[in] other The string to compare the string with.
      * @return The result of the comparison.
      */
-    operator [[internal_linkage, inline]] ==(other: Self) bool
+    operator fn ==(other: Self) bool
     {
       if self.length != other.length 
       {
@@ -518,14 +522,14 @@ pub class StringView<Char: Sized = char> {
      * @param[in] other The string to compare the string with.
      * @return The result of the comparison.
      */
-    operator [[internal_linkage, inline]] !=(other: Self) bool
+    operator fn [[inline]] !=(other: Self) bool
       { return !(self == other); }
     /**
      * @brief It concatenates the string with another string.
      * @param[in] other The string to concatenate the string with.
      * @return The concatenated string.
      */
-    operator [[internal_linkage, inline]] +(other: Self) Self
+    operator fn [[inline]] +(other: Self) Self
     { 
       let result = Self::concat(self.bytes(), other.bytes(), self.length, other.length); 
       return new Self(result, self.length + other.length);
@@ -534,14 +538,14 @@ pub class StringView<Char: Sized = char> {
      * @brief Utility function to avoid constant checking if a type is a stirng.
      * @return It's self (aka, a string representation of the string).
      */
-    fn [[internal_linkage, inline]] to_string() Self
+    fn [[inline]] to_string() Self
       { return "\"" + *self + "\""; }
     /**
      * @brief It returns character at the specified index.
      * @param[in] index The index of the character to return.
      * @return The character at the specified index.
      */
-    operator [](index: i32) Char
+    operator fn [](index: i32) Char
     {
       if index < 0 
       {
@@ -574,7 +578,7 @@ pub class StringView<Char: Sized = char> {
       */
     static fn [[internal_linkage, inline]] from(buffer: Self)
       StringView<Char> { return buffer; }
-    static fn [[internal_linkage, inline]] from<T>(buffer: T)
+    static fn [[internal_linkage, inline]] from<T: ToString>(buffer: T)
       StringView<Char> { return buffer.to_string(); }
     static fn [[internal_linkage, inline]] from(buffer: *const char, size: i32)
       StringView<Char> { 
@@ -582,8 +586,6 @@ pub class StringView<Char: Sized = char> {
         return new Self(buffer, size);
       } 
     }
-    static fn [[internal_linkage, inline]] from<T>(buffer: *const T)
-      StringView<Char> { unsafe {return buffer.as_ref().to_string();} }
 
   // Internal exports
   priv:

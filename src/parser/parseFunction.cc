@@ -73,6 +73,10 @@ fetch_attrs:
     }
   }
 
+  if (isOperator) {
+    consume<TokenType::KWORD_FUNC>("'fn' keyword"); 
+  }
+
   auto dbg = m_current.get_pos();
   auto width = 0;
 
@@ -528,7 +532,6 @@ fetch_attrs:
       createError<SYNTAX_ERROR>("Expected a number literal for the function body!");
     }
   } else if (is<TokenType::SYM_SEMI_COLLON>()) {
-    next();
     if (isConstructor) { createError<SYNTAX_ERROR>("Constructors can't be declared as extern!"); }
   } else {
     assert_tok<TokenType::BRACKET_LCURLY>("'{'");
@@ -570,7 +573,7 @@ fetch_attrs:
 
   if (!hasBlock && isLLVMFunction) { createError<SYNTAX_ERROR>("LLVM defined functions must have a body!"); }
 
-  if (isOperator && arguments.size() == 0) {
+  if (isOperator && ((arguments.size() == 0) || ((arguments.size() == 1) && attributes.count(Attributes::FIRST_ARG_IS_SELF)))) {
     // Transform to unary operators for +, - (TODO: some more)
     auto op = services::OperatorService::operatorID(name);
     OperatorService::OperatorType newType;

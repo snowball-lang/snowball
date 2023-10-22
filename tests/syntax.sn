@@ -119,7 +119,7 @@ fn [[test(expect = 2)]] lshift() i32 {
 
 fn [[test(expect = 1, skip)]] rshift() i32 {
     // TODO:
-    // return 2 >> 1;
+    //return 2 >> 1;
 }
 
 fn [[test(expect = 10)]] range_loop() i32 {
@@ -134,7 +134,7 @@ fn [[test(expect = 10)]] range_loop() i32 {
 fn [[test]] try_catch() i32 {
     try {
         raise new Exception("test");
-    } catch(e: &Exception) {
+    } catch(e: Exception) {
         return e.what() == "test";
     }
 
