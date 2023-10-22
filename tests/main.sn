@@ -25,5 +25,5 @@ import Core::System;
 import Core::Optional;
 
 public func main() i32 {
-    let a: String = "🌊🌊🌊";
+    Panic::panic("Hello, world!")
 } 

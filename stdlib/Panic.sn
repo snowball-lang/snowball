@@ -1,14 +1,22 @@
-import Core::CLib;
 import Core::System;
 import[[use_macro(current_location)]] Core::SourceLocation;
 
 /**
- * @brief It emits a panic message and exits the program.
- * @param message The message to emit.
- * @param 
+ * @brief Emits a panic message and exits the program.
+ *
+ * The `panic` function is used to emit an error message and terminate the program. It is often used to
+ * handle critical errors or unexpected situations in the program. The function prints an error message
+ * along with source code location information and exits the program.
+ *
+ * @param message The error message to emit.
+ * @param _location The source code location information (default is the current location).
+ *
+ * @remarks
+ * The function prints the error message, source file, line number, and column number where the panic occurred.
+ * To enable backtrace information, it suggests running the program with the `SN_BACKTRACE=1` environment variable.
  */
 public func [[inline]] panic(
-  message: *const char = "Something went wrong! 🐱", 
+  message: String = "Something went wrong! 🐱", 
   _location: SourceLocation::SourceLocation = @current_location()
 ) {
   System::println("\n\n--------------------");
@@ -16,16 +24,4 @@ public func [[inline]] panic(
   System::println(" at " + _location.file() + "\e[1;37m:" + _location.line() + ":" + _location.column() + "\e[0m");
   System::println("\e[1;37mnote:\e[0m run with \e[1;37m`SN_BACKTRACE=1`\e[0m environment variable to get a backtrace\n");
   System::exit(127);
-}
-
-/**
- * @brief It emits a panic message and exits the program.
- * @param message The message to emit.
- */
-public func [[inline]] panic<MessageType>(
-  message: MessageType, 
-  _location: SourceLocation::SourceLocation = @current_location()
-) {
-  let s: String = String::from(message);
-  panic(s.c_str());
 }

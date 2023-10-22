@@ -71,12 +71,12 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
     next();
     while (true) {
       impls.push_back(parseType());
-      if (is<TokenType::SYM_COMMA>(peek())) {
+      if (is<TokenType::SYM_COMMA>()) {
         next();
         continue;
-      } else {
-        break;
       }
+
+      break;
     }
   }
 

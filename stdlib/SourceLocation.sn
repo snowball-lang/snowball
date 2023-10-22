@@ -35,7 +35,7 @@ public class SourceLocation {
       column: i32 = @COLUMN,
       function: String = @FUNCTION
     ) SourceLocation {
-      return new SourceLocation{file, line, column, function};
+      return new SourceLocation(file, line, column, function);
     }
 
     /**

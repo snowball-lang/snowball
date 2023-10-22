@@ -1,22 +1,31 @@
-import[[use_macros]] Core::CLib;
-import Core::Ptr;
+/**
+ * @file Optional.sn
+ * @brief A module for handling optional values using the `Option` type.
+ *
+ * The `Optional.sn` module provides the `Option` type, which represents either a value or nothing at all.
+ * This module is essential for handling scenarios where a value may or may not exist, offering a safe and
+ * expressive way to work with optional values.
+ */
 
 /**
- * @brief The error thrown when an `Option` is empty.
+ * @class BadOptionAccess
+ * @brief An error class representing a failed attempt to access an empty `Option`.
+ *
+ * The `BadOptionAccess` class is an exception that is thrown when an attempt is made to access
+ * a value from an empty `Option`. It is used to signal that an operation that requires a value
+ * has failed due to the `Option` being empty.
  */
 public class BadOptionAccess extends Exception
   {}
 /**
  * A type that represents either a value or nothing at all.
  *
- * The Option type is used in many places becaimportit encodes the very common
- * scenario in which a value could be something or it could be nothing.
+ * The `Option` type is a fundamental concept used in many places, encoding the common scenario where
+ * a value can exist or be absent. For example, it is employed in functions that return values that may
+ * or may not be present, such as the `find` method on containers like `Array` and `Hash`. It is also
+ * used in the return type of functions that might not guarantee a result, like `Array::pop` or `Hash::delete`.
  *
- * For example, the `find` method on containers like `Array` and `Hash` returns
- * an `Option` becaimportthe element may or may not exist in the container.
- *
- * The `Option` type is also used in the return type of functions that are not
- * guaranteed to return a value, like `Array::pop` or `Hash::delete`.
+ * @typeparam T The type of value that the `Option` can hold.
  */
 public class Option<T: Sized> {
     /**
@@ -83,13 +92,21 @@ public class Option<T: Sized> {
 }
 /**
  * @brief Creates a new `Option` with the given value.
+ *
+ * The `Some` function is a utility that constructs an `Option` containing a value.
+ *
  * @param value The value to store in the `Option`.
+ * @return An `Option` containing the provided value.
  */
 public func [[inline]] Some<_StoreType>(value: _StoreType) Option<_StoreType>
   { return new Option<_StoreType>(value); }
+
 /**
  * @brief Creates a new empty `Option`.
+ *
+ * The `None` function is a utility that creates an empty `Option`.
+ *
+ * @return An empty `Option`.
  */
 public func [[inline]] None<_StoreType>() Option<_StoreType>
   { return new Option<_StoreType>(); }
-  

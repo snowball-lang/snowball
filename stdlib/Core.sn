@@ -2,23 +2,587 @@ import Core::Internal::Preloads;
 import[[use_macro(c_str)]] Core::CLib;
 import Core::Ptr;
 
-public type String = StringView<>;
-
 /**
- * @namespace __internal
- * @brief The namespace containing internal functions.
+ * @typedef String
+ * @brief A type alias for a generic string type.
  *
- * The __internal namespace contains internal functions. It provides
- * various operations and functionalities for working with internal
- * functions. It supports common internal function manipulation
- * operations such as exception throwing, exception catching,
- * exception handling, and more.
+ * The `String` type alias is used to define a generic string type based on the `StringView` class.
+ * This allows you to work with strings in a more flexible and abstract manner. You can use the `String`
+ * type for various string manipulation operations and seamlessly switch between different string implementations.
  *
- * @note The __internal namespace is designed to be efficient and memory-safe.
- *       It automatically manages the memory allocation and deallocation
- *       required for storing and manipulating internal functions.
+ * @see StringView
  */
-namespace __internal {
+public type String = StringView<>;
+/**
+ * @interface ToString
+ * @brief An interface for objects that can be converted to a string representation.
+ *
+ * The `ToString` interface defines a contract for objects that can be converted to a string
+ * representation. Classes implementing this interface must provide the `to_string` method,
+ * which returns a string representation of the object.
+ */
+public interface ToString {
+  public:
+    /**
+     * @brief Converts the object to a string representation.
+     * @return A string representation of the object.
+     */
+    func to_string() String;
+};
+/**
+ * @interface Debug
+ * @brief An interface for objects that provide debugging information as a string.
+ *
+ * The `Debug` interface defines a contract for objects that can provide debugging information
+ * as a string. Classes implementing this interface must provide the `debug` method, which
+ * returns a string containing debugging details about the object.
+ */
+public interface Debug {
+  public:
+    /**
+     * @brief Provides debugging information about the object.
+     * @return A string containing debugging details.
+     */
+    func debug() String;
+};
+/**
+ * @class Exception
+ * @brief A class representing an exception.
+ *
+ * The Exception class provides various operations and functionalities
+ * for working with exceptions. It supports common Exception
+ * manipulation operations such as exception throwing, exception
+ * catching, exception handling, and more.
+ */
+public class Exception implements ToString {
+  public:
+    /**
+     * @brief Exception constructor.
+     * @param[in] m The message of the exception.
+     */ 
+    Exception(m: String) : msg(m.bytes()), length(m.size())
+      { }
+    /**
+     * @brief Returns the message of the exception.
+     * @return The message of the exception.
+     */
+    func what() String
+      { return String::from(self.msg, self.length); }
+
+    /**
+     * @brief Returns a string representation of the exception.
+     * @return A string representation of the exception.
+     */
+    func to_string() String
+      { return self.what(); }
+  private:
+    /** The message of the exception. */
+    let msg: String::StringType;
+    /** The message length */
+    let length: i32;
+}
+/**
+ * @class IndexError
+ * @brief A class representing an index error.
+ *
+ * The IndexError class provides various operations and functionalities
+ * for working with index errors. It supports common IndexError
+ * manipulation operations such as exception throwing, exception
+ * catching, exception handling, and more.
+ */
+public class IndexError extends Exception 
+  { }
+/**
+ * @interface Iterable
+ * @brief An interface representing an iterable.
+ *
+ * The `Iterable` interface defines a contract for objects that can be iterated over. It provides
+ * various operations and functionalities for working with iterables, allowing you to access
+ * elements, iterate through collections, and reset the iteration state if needed.
+ *
+ * @typeparam IterType The type of elements in the iterable.
+ *
+ * @remarks
+ * This interface is designed to be implemented by classes that represent iterable data structures.
+ * Implementing classes should provide the `next` method to advance the iterator and the `reset` method
+ * to reset the iteration to the beginning if necessary.
+ */
+public interface Iterable<IterType: Sized> {
+    let mut iter_index: i32 = 0;
+  public:
+    /**
+     * @brief Advances the iterator to the next element.
+     *
+     * The `next` method is used to advance the iterator to the next element in the iterable.
+     * It should return the next element as an `Iter<IterType>`.
+     *
+     * @return The next element in the iterable.
+     */
+    virtual func next() Iter<IterType>;
+    
+    /**
+     * @brief Resets the iterator to the beginning of the iterable.
+     *
+     * The `reset` method is used to reset the iterator's position to the beginning of the iterable.
+     * This can be useful when you need to reiterate over the collection.
+     */
+    virtual mut func reset() { self.iter_index = 0; }
+}
+/**
+ * @class Iter
+ * @brief A class representing an iterator.
+ *
+ * The `Iter` class serves as a general-purpose iterator that can be used to traverse collections.
+ * It provides various operations and functionalities for working with iterators, allowing you to
+ * access elements, determine iterator validity, and retrieve the iterator's value.
+ *
+ * @typeparam _IteratorType The type of elements that the iterator iterates over.
+ *
+ * @remarks
+ * The `Iter` class can be considered as the reverse of the `Iterable` class and is typically used
+ * to traverse and manipulate data structures that implement the `Iterable` interface. It offers
+ * methods to retrieve the value of the iterator and check its validity.
+ */
+public class Iter<_IteratorType: Sized> {
+    /// @brief Indicates if the iterator is valid.
+    let _valid: bool = false;
+    /// @brief Stores the value of the iterator.
+    let _value: _IteratorType = @zero_initialized(:_IteratorType);
+  public:
+    /**
+     * @brief Default constructor for `Iter`.
+     *
+     * This constructor creates an invalid iterator. Use it when you want to create an iterator without
+     * specifying an initial value.
+     */
+    Iter() {}
+    /**
+     * @brief Constructor for `Iter` with an initial value.
+     *
+     * This constructor initializes the iterator with a specified value and marks it as valid. It is
+     * typically used to create a valid iterator.
+     *
+     * @param[in] value The initial value of the iterator.
+     */
+    Iter(value: _IteratorType) : _value(value),
+      _valid(true) {}
+    /**
+     * @brief Returns the value of the iterator.
+     * @return The value of the iterator.
+     * @throws IndexError if the iterator is invalid.
+     */
+    func [[internal_linkage, inline]] value() _IteratorType 
+    { 
+      if !self._valid 
+      {
+        throw new IndexError("Invalid iterator access!");
+      }
+      return &self._value; 
+    }
+    /**
+     * @brief Checks if the iterator is valid.
+     * @return `true` if the iterator is valid, `false` otherwise.
+     */
+    func [[internal_linkage, inline]] is_valid() bool 
+      { return self._valid; }
+  public:
+    /**
+     * @brief Returns an invalid iterator.
+     * @return An invalid iterator with no initial value.
+     */
+    static func [[inline]] invalid() Iter<_IteratorType> 
+      { return new Iter<_IteratorType>(); }
+    /**
+     * @brief Returns a valid iterator with an initial value.
+     * @param[in] val The initial value of the iterator.
+     * @return A valid iterator with the specified initial value.
+     */
+    static func [[inline]] valid(val: _IteratorType) Iter<_IteratorType> 
+      { return new Iter<_IteratorType>(val); }
+}
+/**
+ * @class Range 
+ * @brief A class representing a range of elements.
+ *
+ * The `Range` class provides a versatile mechanism for working with ranges of elements,
+ * such as numerical values. It facilitates common range manipulation operations, including
+ * iteration, element access, and range size calculation.
+ *
+ * @typeparam _Number_Type The type of elements within the range, which must be numeric.
+ *
+ * @implements Iterable<_Number_Type>
+ *
+ * @remarks
+ * The `Range` class is designed for representing and manipulating ranges of elements. It can
+ * be used for various purposes, including numerical iteration and subsetting. It implements the
+ * `Iterable` interface, making it iterable and compatible with iteration-related utilities.
+ */
+public class Range<_Number_Type: Numeric = i32> implements Iterable<_Number_Type> {
+  public:
+    /**
+     * @brief Constructor for `Range` with specified start and end values.
+     *
+     * @param[in] start The start of the range (inclusive).
+     * @param[in] end The end of the range (exclusive).
+     */
+    Range(start: _Number_Type, end: _Number_Type) : 
+      _start(start), _end(end) 
+    {
+      self.iter_index = self._start - 1;
+    }
+    /**
+     * @brief Constructor for `Range` with a default start value of 0.
+     *
+     * @param[in] end The end of the range (exclusive).
+     */
+    Range(end: _Number_Type) : _end(end) {}
+    /**
+     * @brief Returns the size of the range.
+     * @return The size of the range.
+     */
+    func [[internal_linkage, inline]] size() _Number_Type
+      { return self._end - self._start; }
+    /**
+     * @brief Returns the start of the range.
+     * @return The start of the range.
+     */
+    func [[internal_linkage, inline]] begin() _Number_Type
+      { return self._start; }
+    /**
+     * @brief Returns the end of the range.
+     * @return The end of the range.
+     */
+    func [[internal_linkage, inline]] end() _Number_Type
+      { return self._end; }
+    /**
+     * @brief Returns the next element in the iteration.
+     * @return The next element in the iteration.
+     */
+    virtual mut func [[internal_linkage]] next() Iter<_Number_Type>
+    {
+      self.iter_index = self.iter_index + 1;
+      if self.iter_index >= self.end() 
+      {
+        return Iter<?_Number_Type>::invalid();
+      }
+      return Iter<?_Number_Type>::valid(self.iter_index);
+    }
+    /**
+     * @brief Resets the iteration to the beginning of the range.
+     */
+    mut func [[inline]] reset() 
+      { self.iter_index = self._start - 1; }
+  private:
+    /** The start of the range. */
+    let _start: _Number_Type = 0;
+    /** The end of the range. */
+    let _end: _Number_Type;
+};
+/**
+ * @class Vector
+ * @brief A class representing a vector of elements.
+ *
+ * The `Vector` class serves as a versatile container for managing vectors of elements.
+ * It offers a wide range of operations and functionalities, including element insertion,
+ * removal, and efficient element access. The class is designed for efficiency and memory
+ * safety, automatically handling memory allocation and deallocation required for storing
+ * and manipulating vectors.
+ *
+ * @typeparam _StoreType The type of elements stored in the vector.
+ * @typeparam Allocator The allocator type used for memory management (default is `Ptr::Allocator<_StoreType>`).
+ *
+ * @implements Iterable<_StoreType>
+ *
+ * @note The `Vector` class is designed to be efficient and memory-safe. It provides a high-level
+ *       interface for managing collections of elements, abstracting the complexities of memory
+ *       management.
+ */
+public class Vector<
+  _StoreType: Sized,
+  Allocator: Sized = Ptr::Allocator<_StoreType>
+> implements Iterable<_StoreType>, ToString {
+  public:
+    /**
+     * @brief Default constructor.
+     * Constructs an empty vector.
+     */
+    Vector() {}
+    /**
+     * @brief It pushes an element to the back of the vector.
+     * @param[in] value The element to push to the back of the vector.
+     */
+    mut func [[internal_linkage]] push(value: _StoreType)
+    { 
+      if self.length >= self.capacity 
+      {
+        self.resize();
+      }
+      unsafe {
+        Ptr::write(Ptr::add(self.buffer.ptr(), self.length), value);
+      }
+      self.length = self.length + 1;
+    }
+    /**
+     * @return The size of the vector.
+     */
+    func [[internal_linkage, inline]] size() i32 { return self.length; }
+    /**
+     * @brief Resizes the vector.
+     * @param[in] capacity The new capacity of the vector.
+     */
+    mut func [[internal_linkage]] resize()
+    { 
+      // we make sure we dont overflow
+      if self.capacity == 0 { self.reserve(1); }
+      else if self.capacity == 1 { self.reserve(4) }
+      else self.reserve(self.capacity * 2);
+    }
+    /**
+     * @brief Reserves a capacity for the vector.
+     * @param[in] capacity The capacity to reserve for the vector.
+     */
+    mut func [[internal_linkage]] reserve(new_capacity: i32)
+    {
+      if self.buffer.ptr().is_null() 
+      {
+        self.buffer = Allocator::alloc(new_capacity);
+      } else if self.capacity < new_capacity 
+      {
+        self.buffer = Allocator::realloc(self.buffer, new_capacity);
+      }
+      self.capacity = new_capacity;
+    }
+    /**
+     * @brief Returns the element at the specified index.
+     * @param[in] index The index of the element to return.
+     * @return The element at the specified index.
+     * @note It returns a reference to the element at the specified index.
+     */
+    func [[internal_linkage]] at(index: i32) &mut _StoreType
+    {
+      if index < 0 
+      {
+        return self.at(self.length + index);
+      } 
+      else if index >= self.length 
+      {
+        throw new IndexError("Index out of bounds.");
+        // TODO: int impl
+        //throw new IndexError("Index out of bounds. Cannot access element at index " + index.to_string());
+      }
+      return self.buffer.ptr().unchecked_get(index);
+    }
+    /**
+     * @brief A wrapper over the at() method. 
+     * @param[in] index The index of the element to return.
+     * @return The element at the specified index.
+     * @see Vector<_StoreType>::at()
+     */
+    operator func [[inline]] [](index: i32) &mut _StoreType
+      { return self.at(index); }
+    /**
+     * @brief It inserts an element at the specified index.
+     * @param[in] index The index to insert the element at.
+     * @param[in] value The element to insert.
+     */
+    mut func insert(index: i32, value: _StoreType)
+    {
+      if index >= self.length 
+      {
+        self.push(value);
+        return;
+      }
+      let cur = self[index];
+      self[index] = value;
+      self.insert(index + 1, cur);
+    }
+    /**
+     * @brief It returns a string representation of the vector.
+     * @return A string representation of the vector.
+     */
+    func to_string<>() String {
+      let mut result = "[".to_string();
+      for i in 0..self.length {
+        result = result + String::from(self[i]);
+        if i != self.length - 1 {
+          result = result + ", ";
+        }
+      }
+      return result + "]";
+    }
+
+  private:
+    /** The capacity of the vector. */
+    let mut capacity: i64 = 0;
+    /** The size of the vector. */
+    let mut length: i64 = 0;
+    /** The buffer containing the vector. */
+    let mut buffer: Ptr::NonNull<_StoreType> = Allocator::alloc(0);
+}
+/**
+ * @class StringView
+ * @brief A class representing a view of a string of characters.
+ *
+ * The `StringView` class offers a versatile interface for working with strings of characters.
+ * It supports a wide range of string manipulation operations, including concatenation, substring
+ * extraction, length calculation, and comparison. This class is designed to be efficient and memory-safe,
+ * automatically handling memory allocation and deallocation required for string operations.
+ *
+ * @typeparam Char The character type of the string (default is `char`).
+ *
+ * @remarks
+ * The `StringView` class is an ideal choice for working with strings without the need for full string
+ * ownership or memory management. It provides efficient access and manipulation of string data.
+ */
+public class StringView<Char: Sized = char> {
+  public:
+    type StringType = *const Char;
+
+    /**
+     * @brief Default constructor for `StringView`.
+     * Constructs an empty string view.
+     */
+    StringView() {}
+
+    /**
+     * @brief Returns the size of the string view.
+     * @return The size of the string view.
+     */
+    func [[inline]] size() i32 { return self.length; }
+
+    /**
+     * @brief Returns a pointer to the buffer containing the string view.
+     * @return A pointer to the buffer containing the string view.
+     */
+    func [[inline]] bytes() StringType { return self.buffer; }
+
+    /**
+     * @brief Compares the string view with another string view.
+     * @param[in] other The string view to compare with.
+     * @return `true` if the string views are equal, `false` otherwise.
+     */
+    operator func ==(other: Self) bool {
+      if self.length != other.length {
+        return false;
+      }
+      for i in 0..self.length {
+        if self.buffer[i] != other.buffer[i] {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    /**
+     * @brief Checks if the string views are not equal.
+     * @param[in] other The string view to compare with.
+     * @return `true` if the string views are not equal, `false` otherwise.
+     */
+    operator func [[inline]] !=(other: Self) bool { return !(self == other); }
+
+    /**
+     * @brief Concatenates the string view with another string view.
+     * @param[in] other The string view to concatenate with.
+     * @return The concatenated string view.
+     */
+    operator func [[inline]] +(other: Self) Self { 
+      let result = Self::concat(self.bytes(), other.bytes(), self.length, other.length); 
+      return new Self(result, self.length + other.length);
+    }
+
+    /**
+     * @brief Converts the string view to a string representation.
+     * @return A string representation of the string view.
+     */
+    func [[inline]] to_string() Self { return "\"" + *self + "\""; }
+
+    /**
+     * @brief Returns the character at the specified index.
+     * @param[in] index The index of the character to retrieve.
+     * @return The character at the specified index.
+     */
+    operator func [](index: i32) Char {
+      if index < 0 {
+        return self[self.length + index];
+      } else if index >= self.length {
+        throw new IndexError("Index out of bounds.");
+      }
+      unsafe {
+        return *(self.bytes() + index);
+      }
+    }
+    
+  private:
+    /** The size of the string view. */
+    let mut length: i32 = 0;
+    /** A pointer to the buffer containing the string view. */
+    let buffer: StringType = @zero_initialized(:StringType);
+
+  // Static exports
+  public:
+    static func [[internal_linkage, inline]] from(other: Self) StringView<Char> { return other; }
+
+    /**
+     * @brief Constructs a string view from another string view.
+     * @param[in] buffer The string view to construct from.
+     * @return The constructed string view.
+     */
+    static func [[internal_linkage, inline]] from(buffer: Self) StringView<Char> { return buffer; }
+
+    /**
+     * @brief Constructs a string view from an object that implements the `ToString` interface.
+     * @param[in] buffer The object to construct the string view from.
+     * @return The constructed string view.
+     */
+    static func [[internal_linkage, inline]] from<T: ToString>(buffer: T) StringView<Char> { return buffer.to_string(); }
+
+    /**
+     * @brief Constructs a string view from a buffer and its size.
+     * @param[in] buffer A pointer to the buffer containing the string view.
+     * @param[in] size The size of the string view.
+     * @return The constructed string view.
+     */
+    static func [[internal_linkage, inline]] from(buffer: *const char, size: i32) StringView<Char> { 
+      unsafe {
+        return new Self(buffer, size);
+      } 
+    }
+
+  // Internal exports
+  private:
+    /**
+     * @brief Concatenates two string views.
+     * @param[in] str1 The first string view to append.
+     * @param[in] str2 The second string view to append.
+     * @param[in] len1 The length of the first string view.
+     * @param[in] len2 The length of the second string view.
+     * @return The appended string view.
+     */
+    static func [[internal_linkage]] concat(str1: StringType, str2: StringType,  
+      len1: i32, len2: i32) StringType {
+      unsafe {
+        let sum = len1 + len2;
+        let buffer = CLib::malloc(sum) as StringType;
+        CLib::memcpy(buffer, str1, len1);
+        CLib::memcpy(buffer + len1, str2, len2);
+        return buffer;
+      }
+    }
+    
+  private:
+    /**
+     * @brief Constructs a string view from a buffer and its size.
+     * @param[in] buffer A pointer to the buffer containing the string view.
+     * @param[in] length The size of the string view.
+     */
+    StringView(buffer: StringType, length: i32) : buffer(buffer), length(length) {}
+}
+
+// TODO (implement wchar): using WideString as StringView<wchar>
+
+/// --------- COMMANDS ---------
+
+
 
 unsafe func [[
   export(name = "sn.test.try"), 
@@ -140,484 +704,3 @@ unsafe func [[
 //  } else unit = "ms";
 //  CLib::printf(" \e[1mavg\e[0m: %d%s\n", avg, unit);
 //}
-
-} /* namespace __internal */;
-
-/**
- * @class Exception
- * @brief A class representing an exception.
- *
- * The Exception class provides various operations and functionalities
- * for working with exceptions. It supports common Exception
- * manipulation operations such as exception throwing, exception
- * catching, exception handling, and more.
- */
-public class Exception {
-  public:
-    /**
-     * @brief Exception constructor.
-     * @param[in] m The message of the exception.
-     */ 
-    Exception(m: String) : msg(m.bytes()), length(m.size())
-      { }
-    /**
-     * @brief Returns the message of the exception.
-     * @return The message of the exception.
-     */
-    func what() String
-      { return String::from(self.msg, self.length); }
-  private:
-    /** The message of the exception. */
-    let msg: String::StringType;
-    /** The message length */
-    let length: i32;
-}
-/**
- * @class IndexError
- * @brief A class representing an index error.
- *
- * The IndexError class provides various operations and functionalities
- * for working with index errors. It supports common IndexError
- * manipulation operations such as exception throwing, exception
- * catching, exception handling, and more.
- */
-public class IndexError extends Exception 
-  { }
-/**
- * @interface Iterable
- * @brief An interface representing an iterable.
- *
- * The Iterable class provides various operations and functionalities
- * for working with iterables. It supports common Iterable
- * manipulation operations such as iteration, element access, and more.
- */
-public interface Iterable<IterType: Sized> {
-    let mut iter_index: i32 = 0;
-  public:
-    virtual func next() Iter<IterType>;
-    virtual mut func reset() { self.iter_index = 0; }
-}
-
-public interface ToString {
-  public:
-    func to_string() String;
-};
-
-/**
- * @class Iter
- * @brief A class representing an iterator.
- *
- * The Iter can be considered as the reverse of the Iterable class.
- * It provides various operations and functionalities for working
- * with iterators. It supports common Iter manipulation operations
- * such as iteration, element access, and more.
- */
-public class Iter<_IteratorType: Sized> {
-    /// @brief if the iterator is valid
-    let _valid: bool = false;
-    /// @brief the value of the iterator
-    let _value: _IteratorType = @zero_initialized(:_IteratorType);
-  public:
-    /**
-     * @brief Iter constructor.
-     * @note It creates an invalid iterator.
-     */
-    Iter() {}
-    /**
-     * @brief Iter constructor.
-     * @param[in] value The value of the iterator.
-     */
-    Iter(value: _IteratorType) : _value(value),
-      _valid(true) {}
-    /**
-     * @brief Returns the value of the iterator.
-     * @return The value of the iterator.
-     */
-    func [[internal_linkage, inline]] value() _IteratorType 
-    { 
-      if !self._valid 
-      {
-        throw new IndexError("Invalid iterator access!");
-      }
-      return &self._value; 
-    }
-    /**
-     * @brief Returns if the iterator is valid.
-     * @return If the iterator is valid.
-     */
-    func [[internal_linkage, inline]] is_valid() bool 
-      { return self._valid; }
-  public:
-    /**
-     * @brief Returns an invalid iterator.
-     * @return An invalid iterator.
-     */
-    static func [[inline]] invalid() Iter<_IteratorType> 
-      { return new Iter<_IteratorType>(); }
-    /**
-     * @brief Returns a valid iterator.
-     * @return A valid iterator.
-     */
-    static func [[inline]] valid(val: _IteratorType) Iter<_IteratorType> 
-      { return new Iter<_IteratorType>(val); }
-}
-/**
- * @class Range 
- * @brief A class representing a range of elements.
- *
- * The Range class provides various operations and functionalities
- * for working with ranges of elements. It supports common Range
- * manipulation operations such as iteration, element access, and more.
- */
-public class Range<_Number_Type: Numeric = i32> implements Iterable<_Number_Type> {
-  public:
-    /**
-     * @brief Range constructor.
-     * @param[in] start The start of the range.
-     * @param[in] end The end of the range.
-     */
-    Range(start: _Number_Type, end: _Number_Type) : 
-      _start(start), _end(end) 
-    {
-      self.iter_index = self._start-1;
-    }
-    /**
-     * @brief Range constructor with default start.
-     * @param[in] end The end of the range.
-     */
-    Range(end: _Number_Type) : _end(end) {}
-    /**
-     * @brief Returns the size of the range.
-     * @return The size of the range.
-     */
-    func [[internal_linkage, inline]] size() _Number_Type
-      { return self._end - self._start; }
-    /**
-     * @brief Returns the start of the range.
-     * @return The start of the range.
-     */
-    func [[internal_linkage, inline]] begin() _Number_Type
-      { return self._start; }
-    /**
-     * @brief Returns the end of the range.
-     * @return The end of the range.
-     */
-    func [[internal_linkage, inline]] end() _Number_Type
-      { return self._end; }
-    /**
-     * @brief Returns the next element in the iteration.
-     * @return The next element in the iteration.
-     */
-    virtual mut func [[internal_linkage]] next() Iter<_Number_Type>
-    {
-      self.iter_index = self.iter_index + 1;
-      if self.iter_index >= self.end() 
-      {
-        return Iter<?_Number_Type>::invalid();
-      }
-      return Iter<?_Number_Type>::valid(self.iter_index);
-    }
-    /**
-     * @brief It resets the iteration.
-     */
-    mut func [[inline]] reset() 
-      { self.iter_index = self._start-1; }
-  private:
-    /** The start of the range. */
-    let _start: _Number_Type = 0;
-    /** The end of the range. */
-    let _end: _Number_Type;
-};
-/**
- * @class Vector
- * @brief A class representing a vector of elements.
- *
- * The Vector class provides various operations and functionalities
- * for working with vectors of elements. It supports common Vector
- * manipulation operations such as element insertion, element removal,
- * element access, and more.
- *
- * @note The Vector class is designed to be efficient and memory-safe.
- *       It automatically manages the memory allocation and deallocation
- *       required for storing and manipulating vectors.
- */
-public class Vector<
-  _StoreType: Sized,
-  Allocator: Sized = Ptr::Allocator<_StoreType>
-> implements Iterable<_StoreType> {
-  public:
-    /**
-     * @brief Default constructor.
-     * Constructs an empty vector.
-     */
-    Vector() {}
-    /**
-     * @brief It pushes an element to the back of the vector.
-     * @param[in] value The element to push to the back of the vector.
-     */
-    mut func [[internal_linkage]] push(value: _StoreType)
-    { 
-      if self.length >= self.capacity 
-      {
-        self.resize();
-      }
-      unsafe {
-        Ptr::write(Ptr::add(self.buffer.ptr(), self.length), value);
-      }
-      self.length = self.length + 1;
-    }
-    /**
-     * @return The size of the vector.
-     */
-    func [[internal_linkage, inline]] size() i32 { return self.length; }
-    /**
-     * @brief Resizes the vector.
-     * @param[in] capacity The new capacity of the vector.
-     */
-    mut func [[internal_linkage]] resize()
-    { 
-      // we make sure we dont overflow
-      if self.capacity == 0 { self.reserve(1); }
-      else if self.capacity == 1 { self.reserve(4) }
-      else self.reserve(self.capacity * 2);
-    }
-    /**
-     * @brief Reserves a capacity for the vector.
-     * @param[in] capacity The capacity to reserve for the vector.
-     */
-    mut func [[internal_linkage]] reserve(new_capacity: i32)
-    {
-      if self.buffer.ptr().is_null() 
-      {
-        self.buffer = Allocator::alloc(new_capacity);
-      } else if self.capacity < new_capacity 
-      {
-        self.buffer = Allocator::realloc(self.buffer, new_capacity);
-      }
-      self.capacity = new_capacity;
-    }
-    /**
-     * @brief Returns the element at the specified index.
-     * @param[in] index The index of the element to return.
-     * @return The element at the specified index.
-     * @note It returns a reference to the element at the specified index.
-     */
-    func [[internal_linkage]] at(index: i32) &mut _StoreType
-    {
-      if index < 0 
-      {
-        return self.at(self.length + index);
-      } 
-      else if index >= self.length 
-      {
-        throw new IndexError("Index out of bounds.");
-        // TODO: int impl
-        //throw new IndexError("Index out of bounds. Cannot access element at index " + index.to_string());
-      }
-      return self.buffer.ptr().unchecked_get(index);
-    }
-    /**
-     * @brief A wrapper over the at() method. 
-     * @param[in] index The index of the element to return.
-     * @return The element at the specified index.
-     * @see Vector<_StoreType>::at()
-     */
-    operator func [[inline]] [](index: i32) &mut _StoreType
-      { return self.at(index); }
-    /**
-     * @brief It inserts an element at the specified index.
-     * @param[in] index The index to insert the element at.
-     * @param[in] value The element to insert.
-     */
-    mut func insert(index: i32, value: _StoreType)
-    {
-      if index >= self.length 
-      {
-        self.push(value);
-        return;
-      }
-      let cur = self[index];
-      self[index] = value;
-      self.insert(index + 1, cur);
-    }
-    /**
-     * @brief It returns a string representation of the vector.
-     * @return A string representation of the vector.
-     */
-    func to_string<>() String {
-      let mut result = "[".to_string();
-      for i in 0..self.length {
-        result = result + String::from(self[i]);
-        if i != self.length - 1 {
-          result = result + ", ";
-        }
-      }
-      return result + "]";
-    }
-
-  private:
-    /** The capacity of the vector. */
-    let mut capacity: i64 = 0;
-    /** The size of the vector. */
-    let mut length: i64 = 0;
-    /** The buffer containing the vector. */
-    let mut buffer: Ptr::NonNull<_StoreType> = Allocator::alloc(0);
-}
-
-/**
- * @class StringView
- * @brief A class representing a string of characters.
- *
- * The StringView class provides various operations and functionalities
- * for working with strings of characters. It supports common StringView
- * manipulation operations such as concatenation, substring extraction,
- * length calculation, and more.
- *
- * @note The StringView class is designed to be efficient and memory-safe.
- *       It automatically manages the memory allocation and deallocation
- *       required for storing and manipulating strings.
- */
-public class StringView<Char: Sized = char> {
-  public:
-    type StringType = *const Char;
-
-    /**
-     * @brief Default constructor.
-     * Constructs an empty string.
-     */
-    StringView()
-      {}
-    /**
-     * @return The size of the string.
-     */
-    func [[inline]] size() i32 
-      { return self.length; }
-    /**
-     * @return The buffer containing the string.
-     */
-    func [[inline]] bytes() StringType
-      { return self.buffer; }
-    /**
-     * @brief It compares the string with another string.
-     * @param[in] other The string to compare the string with.
-     * @return The result of the comparison.
-     */
-    operator func ==(other: Self) bool
-    {
-      if self.length != other.length 
-      {
-        return false;
-      }
-      for i in 0..self.length 
-      {
-        if self.buffer[i] != other.buffer[i] 
-        {
-          return false;
-        }
-      }
-      return true;
-    }
-    /**
-     * @brief It checks if the 2 strings are not equal.
-     * @param[in] other The string to compare the string with.
-     * @return The result of the comparison.
-     */
-    operator func [[inline]] !=(other: Self) bool
-      { return !(self == other); }
-    /**
-     * @brief It concatenates the string with another string.
-     * @param[in] other The string to concatenate the string with.
-     * @return The concatenated string.
-     */
-    operator func [[inline]] +(other: Self) Self
-    { 
-      let result = Self::concat(self.bytes(), other.bytes(), self.length, other.length); 
-      return new Self(result, self.length + other.length);
-    }
-    /**
-     * @brief Utility function to avoid constant checking if a type is a stirng.
-     * @return It's self (aka, a string representation of the string).
-     */
-    func [[inline]] to_string() Self
-      { return "\"" + *self + "\""; }
-    /**
-     * @brief It returns character at the specified index.
-     * @param[in] index The index of the character to return.
-     * @return The character at the specified index.
-     */
-    operator func [](index: i32) Char
-    {
-      if index < 0 
-      {
-        return self[self.length + index];
-      } 
-      else if index >= self.length 
-      {
-        throw new IndexError("Index out of bounds.");
-      }
-      unsafe {
-        return *(self.bytes() + index)
-      }
-    }
-    
-  private:
-    /** The size of the string. */
-    let mut length: i32 = 0;
-    /** The buffer containing the string. */
-    let buffer: StringType = @zero_initialized(:StringType);
-
-  // Static exports
-  public:
-    static func [[internal_linkage, inline]] from(other: Self)
-      StringView<Char> 
-      { return other; }
-    /**
-      * @brief Constructs a string from an unknown type.
-      * @param[in] buffer The buffer to construct the string from.
-      * @return The constructed string.
-      */
-    static func [[internal_linkage, inline]] from(buffer: Self)
-      StringView<Char> { return buffer; }
-    static func [[internal_linkage, inline]] from<T: ToString>(buffer: T)
-      StringView<Char> { return buffer.to_string(); }
-    static func [[internal_linkage, inline]] from(buffer: *const char, size: i32)
-      StringView<Char> { 
-      unsafe {
-        return new Self(buffer, size);
-      } 
-    }
-
-  // Internal exports
-  private:
-    /**
-     * @brief It concatenates 2 strings.
-     * @param[in] str1 The first string to append.
-     * @param[in] str2 The second string to append.
-     * @param[in] len1 The length of the first string.
-     * @param[in] len2 The length of the second string.
-     * @return The appended string.
-     */
-    static func [[internal_linkage]] concat(str1: StringType, str2: StringType,  
-      len1: i32, len2: i32) StringType
-    {
-      unsafe 
-      {
-        let sum = len1 + len2;
-        let buffer = CLib::malloc(sum) as StringType;
-        CLib::memcpy(buffer, str1, len1);
-        CLib::memcpy(buffer + len1, str2, len2);
-        return buffer;
-      }
-    }
-    
-  private:
-    /**
-      * @brief Constructs a string from a vector of characters.
-      * @param[in] buffer The vector of characters to construct the string from.
-      */
-    StringView(buffer: StringType, length: i32) : 
-      buffer(buffer), length(length)
-      { }
-}
-
-// TODO (implement wchar): using WideString as StringView<wchar>

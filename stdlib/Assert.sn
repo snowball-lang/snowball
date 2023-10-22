@@ -1,19 +1,46 @@
 /**
+ * @file Assert.sn
+ * @brief Core file for assertion-related utilities.
+ *
+ * The `Assert.sn` core file provides a set of tools for implementing and handling
+ * assertions. It defines the `AssertionError` class and the `assert` macro, which
+ * are essential for verifying conditions and ensuring code correctness.
+ *
+ * @see AssertionError
+ * @see assert
+ */
+
+/**
  * @class AssertionError
  * @brief A class representing an assertion error.
  *
- * The AssertionError class provides various operations and functionalities
- * for working with assertion errors. It supports common AssertionError
- * manipulation operations such as exception throwing, exception
- * catching, exception handling, and more.
+ * The `AssertionError` class is used to represent errors that occur when an assertion fails.
+ * It provides various operations and functionalities for working with assertion errors. This class
+ * inherits from the Exception class, making it suitable for use with exception handling mechanisms.
+ * You can use this class to capture and handle assertion failures in your code.
  */
 public class AssertionError extends Exception 
   { }
 /**
  * @macro assert
  * @brief Asserts a condition.
- * @param[in] condition The condition to assert.
- * @param[in] message The message to display if the assertion fails.
+ *
+ * The `assert` macro is used to check whether a given condition is true. If the condition
+ * evaluates to false, an `AssertionError` exception is thrown, allowing you to capture
+ * and handle the assertion failure. This macro is a fundamental tool for validating
+ * assumptions and ensuring the correctness of your code.
+ *
+ * @param[in] condition The condition to assert. It should evaluate to a boolean expression.
+ * @param[in] message The message to display if the assertion fails. This message is optional
+ * and is used to provide additional context when the assertion fails.
+ *
+ * @throws AssertionError if the provided condition is false. The error message will
+ * contain the specified message or a default message if none is provided.
+ *
+ * Example Usage:
+ * ```c
+ * @assert(x > 0, "x must be greater than 0");
+ * ```
  */
 macro [[export]] assert(condition: expr, message: const[str] = "Assertion failed!") {
   if !(@condition) {
