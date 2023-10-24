@@ -22,7 +22,6 @@ void LLVMBuilder::visit(ir::Call* call) {
     return;
   }
 
-  setDebugInfoLoc(call);
   auto calleeValue = call->getCallee();
   auto fnType = utils::cast<types::FunctionType>(calleeValue->getType());
   auto calleeType = getLLVMFunctionType(fnType, utils::cast<ir::Func>(calleeValue.get()));
@@ -59,7 +58,7 @@ void LLVMBuilder::visit(ir::Call* call) {
   if (allocatedValue) 
     args.insert(args.begin(), allocatedValue);
 
-  setDebugInfoLoc(call);
+  setDebugInfoLoc(nullptr);
   if (auto c = utils::dyn_cast<ir::Func>(calleeValue); c != nullptr && c->isConstructor()) {
     auto instance = utils::cast<ir::ObjectInitialization>(call);
     auto instanceType = getLLVMType(instance->getType());
@@ -79,7 +78,7 @@ void LLVMBuilder::visit(ir::Call* call) {
 
     if (!allocatedValue)
       args.insert(args.begin(), load(object, instance->getType()->getReferenceTo()));
-    setDebugInfoLoc(call);
+    setDebugInfoLoc(call); // TODO:
     llvmCall = createCall(calleeType, callee, args);
     this->value = object;
   } else if (auto c = utils::dyn_cast<ir::Func>(calleeValue); c != nullptr && c->inVirtualTable()) {
@@ -111,6 +110,7 @@ void LLVMBuilder::visit(ir::Call* call) {
             calleeType->getPointerTo(), builder->CreateConstInBoundsGEP1_32(vtableType->getPointerTo(), vtable, index)
     );
     builder->CreateAssumption(builder->CreateIsNotNull(fn));
+    setDebugInfoLoc(call);
     llvmCall = createCall(calleeType, (llvm::Function*) fn, args);
     // builder->CreateStore(llvmCall, allocatedValue);
     // auto alloca = createAlloca(allocatedValueType);
@@ -126,6 +126,7 @@ void LLVMBuilder::visit(ir::Call* call) {
       // and then call it.
       callee = load(callee, fnType);
     }
+    setDebugInfoLoc(call);
     llvmCall = createCall(calleeType, callee, args);
     this->value = allocatedValue ? allocatedValue : llvmCall;
   }

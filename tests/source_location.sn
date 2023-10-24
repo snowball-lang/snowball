@@ -4,7 +4,7 @@ import[[use_macro(current_location)]] Core::SourceLocation;
 namespace tests {
 
 func source_location_wrapper(
-x: SourceLocation::SourceLocation = @current_location()
+    x: SourceLocation::SourceLocation = @current_location()
 ) SourceLocation::SourceLocation {
     return x;
 }

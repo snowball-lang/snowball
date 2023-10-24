@@ -37,12 +37,11 @@ Parser::parseFunctionCall(Syntax::Expression::Base* callee, TokenType terminator
 
   next(); // Consume "("
   auto call = Syntax::N<FunctionCall>(callee, arguments);
-  auto dbg = callee->getDBGInfo();
   //dbg->width += 2;
 
   // TODO: dbg info should start at the "(", maybe?
-  call->setDBGInfo(dbg);
   call->setSourceInfo(m_source_info);
+  call->setDBGInfo(callee->getDBGInfo());
 
   return call;
 }

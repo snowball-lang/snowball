@@ -91,7 +91,7 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
         );
       } else if (ty) {
         // TODO: Call smth like Type::operator ()(..args)
-        E<TYPE_ERROR>(dbgInfo, FMT("Value with name '%s' is a type that can't be called!", name.c_str()));
+        E<TYPE_ERROR>(dbgInfo, FMT("Value with name '%s' is a type that cant be called!", name.c_str()));
       } else if (mod) {
         E<TYPE_ERROR>(dbgInfo, FMT("Silly billy, you can't call modules! ('%s')", name.c_str()));
       }

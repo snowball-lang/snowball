@@ -344,7 +344,7 @@ fetch_attrs:
     if (is<TokenType::BRACKET_RPARENT>(pk)) { break; }
 
     next();
-    if (isExtern && isTypeValid() && (!is<TokenType::SYM_COLCOL>(peek()))) {
+    if (isExtern && isTypeValid() && (!is<TokenType::SYM_COLLON>(peek()))) {
       throwIfNotType();
       auto type = parseType();
 
@@ -532,7 +532,7 @@ fetch_attrs:
       createError<SYNTAX_ERROR>("Expected a number literal for the function body!");
     }
   } else if (is<TokenType::SYM_SEMI_COLLON>()) {
-    if (isConstructor) { createError<SYNTAX_ERROR>("Constructors can't be declared as extern!"); }
+    if (isConstructor) { createError<SYNTAX_ERROR>("Constructors cant be declared as extern!"); }
   } else {
     assert_tok<TokenType::BRACKET_LCURLY>("'{'");
     if (isLLVMFunction) {

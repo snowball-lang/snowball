@@ -586,21 +586,18 @@ public class StringView<Char: Sized = char> {
 
 unsafe func [[
   export(name = "sn.test.try"), 
-  cfg(test), 
+  cfg(test),
   no_inline
 ]] snowball_test(
   fn: func () => i32,
   name: *const char,
   index: i32,
-  skip: bool = false,
-  expect: i32 = 1
+  skip: bool,
+  expect: i32,
+  expectStr: *const char,
+  total: i32
 ) i32 {
-  let mut tty = "should pass";
-  if expect != 1 {
-    // TODO:
-    //tty = ("expecting \e[1m`%i`\e[0m".to_string() + expect).c_str();
-  }
-  CLib::printf(@c_str(" Testing (\e[1m#%i\e[0m) \e[1m%s\e[0m [%s] ... "), index, name, tty.bytes());
+  CLib::printf(@c_str(" Testing (\e[1m%i/%i\e[0m) \t\e[1m%-45s\e[0m [%s]\t... "), index, total, name, expectStr);
   // TODO: Add support for exceptions
   if !skip {
     try {
@@ -632,20 +629,22 @@ unsafe func [[
 //  cfg(bench),
 //  no_inline
 //]] snowball_bench(
-//  functions: *,
-//  names: &char,
+//  functions: *const func () => void,
+//  names: *const char,
 //  size: i32,
 //) {
 //  if size == 0 { return; }
-//  let mut results = new Vector<i32>{};
+//  let mut results = new Vector<i32>();
 //  for i in 0..size {
-//    let func = functions[i] as func () => void;
-//    let start = CLib::time(Ptr::null_ptr<?i32>());
-//    func();
-//    let end = CLib::time(Ptr::null_ptr<?i32>());
-//    // unix time to ms
-//    let result = (end - start) * 1000;
-//    results.push(result);
+//    unsafe {
+//      //let fn = functions[i] as *const void as func () => i32;
+//      let start = CLib::time(Ptr::null_ptr<?i32>());
+//      //fn();
+//      let end = CLib::time(Ptr::null_ptr<?i32>());
+//      // unix time to ms
+//      let result = (end - start) * 1000;
+//      results.push(result);
+//    }
 //  }
 //
 //  let mut max: i32 = 0;
@@ -664,7 +663,7 @@ unsafe func [[
 //
 //  let mut avg: f32 = sum / size;
 //  for i in 0..size {
-//    let name = names.at(i);
+//    let name = names[i];
 //    let mut result = (*results[i]) as f64;
 //    let mut color = "\e[1;32m";
 //    if result > avg {
@@ -677,30 +676,34 @@ unsafe func [[
 //      unit = "s";
 //      divider = 1000;
 //    }
-//    CLib::printf(" \e[1m%s\e[0m: %s%f%s\e[0m\n", name, color, result / divider, unit);
+//    unsafe {
+//      CLib::printf(@c_str(" \e[1m%s\e[0m: %s%f%s\e[0m\n"), name, color.bytes(), result / divider, unit.bytes());
+//    }
 //  }
 //
 //  // ms or s
 //  let mut unit = "ms";
 //  let mut divider = 1;
 //
-//  CLib::printf("\n");
-//  if min >= 1000 {
-//    unit = "s";
-//    divider = 1000;
-//    min = min / divider;
+//  unsafe {
+//    CLib::printf(@c_str("\n"));
+//    if min >= 1000 {
+//      unit = "s";
+//      divider = 1000;
+//      min = min / divider;
+//    }
+//    CLib::printf(@c_str(" \e[1;32mmin\e[0m: %d%s\n"), min, unit);
+//    if max >= 1000 {
+//      unit = "s";
+//      divider = 1000;
+//      max = max / divider;
+//    } else unit = "ms";
+//    CLib::printf(@c_str(" \e[1;31mmax\e[0m: %d%s\n"), max, unit);
+//    if avg >= 1000 {
+//      unit = "s";
+//      divider = 1000;
+//      avg = avg / divider;
+//    } else unit = "ms";
+//    CLib::printf(@c_str(" \e[1mavg\e[0m: %d%s\n"), avg, unit);
 //  }
-//  CLib::printf(" \e[1;32mmin\e[0m: %d%s\n", min, unit);
-//  if max >= 1000 {
-//    unit = "s";
-//    divider = 1000;
-//    max = max / divider;
-//  } else unit = "ms";
-//  CLib::printf(" \e[1;31mmax\e[0m: %d%s\n", max, unit);
-//  if avg >= 1000 {
-//    unit = "s";
-//    divider = 1000;
-//    avg = avg / divider;
-//  } else unit = "ms";
-//  CLib::printf(" \e[1mavg\e[0m: %d%s\n", avg, unit);
 //}

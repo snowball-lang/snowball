@@ -39,10 +39,12 @@ Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
       auto assign = Syntax::N<Syntax::Expression::BinaryOp>(OperatorType::EQ);
       assign->left = indexExpr;
       assign->right = initializedValue;
-      assign->setDBGInfo(field->getDBGInfo());
-      nameIdent->setDBGInfo(field->getDBGInfo());
-      selfRef->setDBGInfo(field->getDBGInfo());
-      indexExpr->setDBGInfo(field->getDBGInfo());
+      auto dbg = field->getDBGInfo();
+      if (!dbg) dbg = p_node->getDBGInfo(); // yep, I can't deal with it anymore
+      assign->setDBGInfo(dbg);
+      nameIdent->setDBGInfo(dbg);
+      selfRef->setDBGInfo(dbg);
+      indexExpr->setDBGInfo(dbg);
       auto val = trans(assign);
       auto assigmentAsCall = utils::dyn_cast<ir::Call>(val);
       auto assigmentValue = getBuilder().createBinaryOp(assigmentAsCall);

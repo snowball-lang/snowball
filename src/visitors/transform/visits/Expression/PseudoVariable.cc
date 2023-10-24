@@ -31,7 +31,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
               "a function!"
       );
     }
-  } else if (pseudo == "MOD") {
+  } else if (pseudo == "MODULE") {
     stringValue = ctx->module->getName();
   } else if (pseudo == "CLASS") {
     if (auto x = ctx->getCurrentClass()) {
@@ -140,6 +140,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
     auto val = new Syntax::Expression::ConstantValue(
             Expression::ConstantValue::ConstantType::Number, std::to_string(intValue)
     );
+    val->setDBGInfo(p_node->getDBGInfo());
     trans(val);
   } else {
     // We add " to both sides because the generator removes them and we
@@ -148,6 +149,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
     auto val = new Syntax::Expression::ConstantValue(
             Expression::ConstantValue::ConstantType::String, "\"" + stringValue + "\""
     );
+    val->setDBGInfo(p_node->getDBGInfo());
     trans(val);
   }
 }

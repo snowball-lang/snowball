@@ -151,7 +151,7 @@ types::BaseType* Transformer::transformClass(
                     E<SYNTAX_ERROR>(
                             v->getDBGInfo(),
                             "Cant infer type!",
-                            {.info = "The type of this variable can't be inferred!",
+                            {.info = "The type of this variable cant be inferred!",
                              .note = "This rule only applies to variables inside classes.",
                              .help = "You can't infer the type of a variable "
                                      "without specifying it's type.\n"
@@ -181,7 +181,7 @@ types::BaseType* Transformer::transformClass(
             E<SYNTAX_ERROR>(
                     v->getDBGInfo(),
                     "Cant infer type!",
-                    {.info = "The type of this variable can't be inferred!",
+                    {.info = "The type of this variable cant be inferred!",
                      .note = "This rule only applies to variables inside interfaces.",
                      .help = "You can't infer the type of a variable "
                              "without specifying it's type.\n"

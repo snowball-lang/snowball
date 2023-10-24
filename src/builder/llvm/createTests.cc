@@ -21,13 +21,15 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
   builder->CreateCall(
           printFunction,
           {builder->CreateGlobalStringPtr(
-                  FMT("\nExecuting %s%i%s test(s)...\n", BBLU, ctx->tests.size(), RESET), "test.msg"
+                  FMT("\nExecuting %s%i%s test(s)...\n\n", BBLU, ctx->tests.size(), RESET), "test.msg"
           )}
   );
 
   auto successCount = builder->CreateAlloca(builder->getInt32Ty(), nullptr, "success.count");
   auto failCount = builder->CreateAlloca(builder->getInt32Ty(), nullptr, "fail.count");
   auto skipCount = 0;
+
+  auto totalCount = builder->getInt32(ctx->tests.size());
 
   builder->CreateStore(builder->getInt32(0), successCount);
   builder->CreateStore(builder->getInt32(0), failCount);
@@ -42,9 +44,10 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
     auto doesExpect = attrArgs.find("expect") != attrArgs.end();
     auto expect = doesExpect ? std::stoi(attrArgs["expect"]) : 1;
     auto namePtr = builder->CreateGlobalStringPtr(name, "test.alloca");
+    auto expectStr = builder->CreateGlobalStringPtr(expect == 1 ? "should pass" : FMT("expect %i", expect), "test.alloca");
     auto call = builder->CreateCall(
             testFunction,
-            {llvmFunc, namePtr, builder->getInt32(testIndex), builder->getInt1(shouldSkip), builder->getInt32(expect)}
+            {llvmFunc, namePtr, builder->getInt32(testIndex), builder->getInt1(shouldSkip), builder->getInt32(expect), expectStr, totalCount}
     );
     auto shouldContinue = builder->CreateICmpEQ(call, builder->getInt32(1));
     if (shouldSkip) {

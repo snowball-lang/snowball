@@ -504,7 +504,7 @@ void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
     else if (p_node->hasAttribute(Attributes::INLINE))
       E<SYNTAX_ERROR>(
               p_node->getDBGInfo(),
-              "Test functions can't be inline!",
+              "Test functions cant be inline!",
               {.info = "This function is a test function!",
                .note = "This error is caused by the function having the 'inline' attribute.",
                .help = "Try removing the 'inline' attribute from the function."}
@@ -572,7 +572,7 @@ void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
     else if (p_node->hasAttribute(Attributes::INLINE))
       E<SYNTAX_ERROR>(
               p_node->getDBGInfo(),
-              "Benchmark functions can't be inline!",
+              "Benchmark functions cant be inline!",
               {.info = "This function is a benchmark function!",
                .note = "This error is caused by the function having the 'inline' attribute.",
                .help = "Try removing the 'inline' attribute from the function."}

@@ -49,6 +49,8 @@ public:
    * using a token as reference.
    */
   static auto fromToken(const SourceInfo* i, Token tk) { return new DBGSourceInfo(i, tk.get_pos(), tk.get_width()); }
+
+  ~DBGSourceInfo() = delete;
 };
 
 /**

@@ -119,7 +119,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         if (pk.type == TokenType::KWORD_MUTABLE) {
           next();
           createError<ARGUMENT_ERROR>(
-                  "Static members can't be mutable!",
+                  "Static members cant be mutable!",
                   {.note = "To fix this error, you can remove the 'static' or 'mut' keyword.",
                    .help = "If you want to have a static mutable member, you can use a \nstatic pointer to a "
                            "mutable member."}
@@ -168,7 +168,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         auto pk = peek();
         if (pk.type == TokenType::KWORD_STATIC) {
           next();
-          createError<ARGUMENT_ERROR>("Virtual methods can't be static!");
+          createError<ARGUMENT_ERROR>("Virtual methods cant be static!");
         } else if (extends) {
           next();
           createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* virtual methods!");

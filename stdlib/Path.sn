@@ -1,6 +1,6 @@
 
 // TODO: support all platforms
-const path_sep: &char = "/";
+const path_sep: String = "/";
 
 /**
  * A path to a file or directory.
@@ -8,7 +8,7 @@ const path_sep: &char = "/";
  * This is a wrapper around a string that provides some useful
  * operations for manipulating paths.
  */
-class Path {
+class Path implements ToString {
     /// The path as a string.
     let path: String;
   public:
@@ -62,4 +62,7 @@ class Path {
       { return self + other.to_string(); }
     operator +(other: String) Path 
       { return Path(path + other); }
+
+    func [[inline]] to_string() String 
+      { return path; }
 }

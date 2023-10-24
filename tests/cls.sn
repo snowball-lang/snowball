@@ -28,9 +28,9 @@ func [[test]] value_access_set() i32 {
   return t.a;
 }
 
-class virtualualTest {
+class virtualTest {
   public:
-    virtualualTest() {}
+    virtualTest() {}
     virtual func test() i32 {
       return true;
     }
@@ -39,25 +39,25 @@ class virtualualTest {
     let b: i32 = 2;
 }
 
-func [[test]] virtualual_stack() i32 {
+func [[test]] virtual_stack() i32 {
   // TODO: what's going on here
-  let t = new virtualualTest();
+  let t = new virtualTest();
   return t.test();
 }
 
-func [[test]] virtualual_heap() i32 {
-  let t = &new virtualualTest();
+func [[test]] virtual_heap() i32 {
+  let t = &new virtualTest();
   return t.test();
 }
 
 class TypeInsideClassTest {
   public:
-    type x = virtualualTest;
+    type x = virtualTest;
     TypeInsideClassTest() {}
 }
 
 func [[test]] type_inside_class() i32 {
-  let t: TypeInsideClassTest::x = new virtualualTest();
+  let t: TypeInsideClassTest::x = new virtualTest();
   return true;
 }
 
@@ -92,31 +92,31 @@ func [[test(expect = 0)]] generic_access() i32 {
   return t.a;
 }
 
-class InheritedOverridevirtualualTest extends virtualualTest {
+class InheritedOverridevirtualTest extends virtualTest {
   public:
-    InheritedOverridevirtualualTest() : super() {}
+    InheritedOverridevirtualTest() : super() {}
     virtual func test() i32 {
       return false;
     }
 }
 
-func [[test(expect = 0)]] inherited_override_virtualual() i32 {
-  let t = new InheritedOverridevirtualualTest();
+func [[test(expect = 0)]] inherited_override_virtual() i32 {
+  let t = new InheritedOverridevirtualTest();
   return t.test();
 }
 
 func [[test(expect = 0)]] inherited_override_casted() i32 {
-  let t = new InheritedOverridevirtualualTest() as virtualualTest;
+  let t = new InheritedOverridevirtualTest() as virtualTest;
   return t.test();
 }
 
-class InheritancevirtualualTest extends virtualualTest {
+class InheritancevirtualTest extends virtualTest {
   public:
-    InheritancevirtualualTest() : super() {}
+    InheritancevirtualTest() : super() {}
 }
 
-func [[test]] inheritance_virtualual() i32 {
-  let t = new InheritancevirtualualTest();
+func [[test]] inheritance_virtual() i32 {
+  let t = new InheritancevirtualTest();
   return t.test();
 }
 

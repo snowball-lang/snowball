@@ -82,6 +82,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
         auto ty = Syntax::Expression::ConstantValue::deduceType(m_current.type);
 
         expr = Syntax::N<Syntax::Expression::ConstantValue>(ty, m_current.to_string());
+        expr->setDBGInfo(dbg);
       } else if (TOKEN(IDENTIFIER)) {
         expr = parseIdentifier();
       } else if (TOKEN(KWORD_NEW)) {

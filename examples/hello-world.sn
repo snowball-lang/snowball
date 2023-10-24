@@ -1,4 +1,6 @@
 
-import System
+import Core::System;
 
-    fn main() Int{System.print("hello, world") }
+public func main() {
+    System::println("hello, world") 
+}

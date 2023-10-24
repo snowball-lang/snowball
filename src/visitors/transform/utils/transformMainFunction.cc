@@ -19,7 +19,7 @@ void Transformer::transformMainFunction(Statement::FunctionDef* p_node) {
   } else if (p_node->getGenerics().size() > 0) {
     E<SYNTAX_ERROR>(p_node, "Program entry point can't have generics!");
   } else if (cast<Statement::BodiedFunction>(p_node) == nullptr) {
-    E<SYNTAX_ERROR>(p_node, "Program entry can't be a declaration!");
+    E<SYNTAX_ERROR>(p_node, "Program entry cant be a declaration!");
   } // TODO: main function cant be variadic!
 
   auto rawRetTy = p_node->getRetType();

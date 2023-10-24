@@ -14,6 +14,7 @@ import pkg::tuples;
 import pkg::syntax;
 import pkg::algorithms;
 import pkg::clib;
+import pkg::interfaces;
 
 //import pkg::macros;
 //import pkg::source_location;
@@ -25,5 +26,5 @@ import Core::System;
 import Core::Optional;
 
 public func main() i32 {
-    Panic::panic("Hello, world!")
+//    Panic::panic("Hello, world!")
 } 

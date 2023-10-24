@@ -1,118 +1,29 @@
 
 namespace test {
-class Test {
+
+interface TestInterface {
   public:
-    Test() {}
-    let succ: bool = true;
+    let a: i32 = 25;
 }
 
-func [[test]] init_heap() i32 {
-  let t = new Test();
-  return t.succ;
-}
-
-class ValueAccessTest {
-  public:
-    let mut a: i32 = 0;
-    ValueAccessTest() {}
-}
-
-func [[test(expect = 0)]] value_access_heap() i32 {
-  let t = new ValueAccessTest();
-  return t.a;
-}
-
-func [[test]] value_access_set() i32 {
-  let t = new ValueAccessTest();
-  t.a = 1;
-  return t.a;
-}
-
-class virtualualTest {
-  public:
-    virtualualTest() {}
-    virtual func test() i32 {
-      return true;
-    }
-  private:
-    let a: i32 = 0;
-    let b: i32 = 2;
-}
-
-func [[test]] virtualual_stack() i32 {
-  // TODO: what's going on here
-  let t = new virtualualTest();
-  return t.test();
-}
-
-func [[test]] virtualual_heap() i32 {
-  let t = &new virtualualTest();
-  return t.test();
-}
-
-class TypeInsideClassTest {
-  public:
-    type x = virtualualTest;
-    TypeInsideClassTest() {}
-}
-
-func [[test]] type_inside_class() i32 {
-  let t: TypeInsideClassTest::x = new virtualualTest();
-  return true;
-}
-
-class ClassGenericsTest<T> {
-  public:
-    ClassGenericsTest(x: T) {}
-}
-
-func [[test]] class_generics() i32 {
-  let t = new ClassGenericsTest<i32>(1);
-  return true;
-}
-
-class ClassDefaultGenericsTest<T = i32> {
-  public:
-    ClassDefaultGenericsTest(x: T) {}
-}
-
-func [[test]] class_default_generics() i32 {
-  let t = new ClassDefaultGenericsTest<>(1);
-  return true;
-}
-
-class GenericAccessTest<T> {
-  public:
-    let mut a: T = 0;
-    GenericAccessTest() {}
-}
-
-func [[test(expect = 0)]] generic_access() i32 {
-  let t = new GenericAccessTest<i32>();
-  return t.a;
-}
-
-class InheritedOverridevirtualualTest: virtualualTest {
-  public:
-    InheritedOverridevirtualualTest() : super() {}
-    virtual func test() i32 {
-      return false;
+class X implements TestInterface {
+  public: 
+    X() {
     }
 }
 
-func [[test(expect = 0)]] inherited_override_virtualual() i32 {
-  let t = new InheritedOverridevirtualualTest();
-  return t.test();
+func where_clause<T: TestInterface>(t: T) bool {
+  return t.a == 25;
 }
 
-class InheritancevirtualualTest: virtualualTest {
-  public:
-    InheritancevirtualualTest() : super() {}
+func [[test(expect = 25)]] variable_override() i32 {
+  let x = new X();
+  return x.a;
 }
 
-func [[test]] inheritance_virtualual() i32 {
-  let t = new InheritancevirtualualTest();
-  return t.test();
+func [[test]] where_clause() i32 {
+  let x = new X();
+  return where_clause(x);
 }
 
 }
