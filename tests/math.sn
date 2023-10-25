@@ -1,0 +1,21 @@
+import Core::Math;
+
+namespace test {
+
+func [[test(expect = 2)]] sqrt() i32 {
+    return Math::sqrt(4);
+}
+
+func [[test(expect = 2)]] min() i32 {
+    return Math::min(2, 3);
+}
+
+func [[test(skip)]] is_inf() i32 {
+    //return Math::is_inf(1.0/0.0); // TODO: try with Math::inf
+}
+
+func [[test(skip)]] is_nan() i32 {
+    //return Math::is_nan(0.0/0.0); // TODO: try with Math::nan
+}
+
+}

@@ -141,4 +141,19 @@ func [[test]] try_catch() i32 {
     return false;
 }
 
+func [[test]] complex_eq() i32 {
+    let a = 1;
+    let b = 2;
+    return a == b || a == 1;
+}
+
+func [[test(expect = 7)]] complex_math() i32 {
+    let a = 1;
+    let b = 2;
+    let c = 3;
+    let d = 4;
+    let e = 5;
+    return a + b * c - d / e;
+}
+
 }

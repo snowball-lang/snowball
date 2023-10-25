@@ -15,6 +15,7 @@ import pkg::syntax;
 import pkg::algorithms;
 import pkg::clib;
 import pkg::interfaces;
+import pkg::math;
 
 //import pkg::macros;
 //import pkg::source_location;
