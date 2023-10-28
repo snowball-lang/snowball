@@ -84,9 +84,9 @@ public:
   /**
    * @brief Get a primitive number type
    */
-  template <typename T>
-  auto getPrimitiveNumberType(int bits) {
-    auto ty = new T(bits);
+  template <typename T, typename... Ts>
+  auto getPrimitiveNumberType(int bits, Ts&&... args) {
+    T* ty = new T(bits, std::forward<Ts>(args)...);
     ty->addImpl(getBuiltinTypeImpl("Sized"));
     ty->addImpl(getBuiltinTypeImpl("Numeric"));
     return ty;
@@ -94,9 +94,7 @@ public:
 
   // clang-format off
     /// @brief Get the bool primitive type
-    types::Type* getBoolType() { return new types::IntType(1); }
-    /// @brief Get the char primitive type
-    types::Type* getCharType() { return getPrimitiveType(SN_CHR_TYPE); }
+    types::Type* getBoolType() { return getPrimitiveNumberType<types::IntType>(1); }
     /// @brief Get the float 64 primitive type
     types::Type* getF64Type() { return getPrimitiveNumberType<types::FloatType>(64); }
     /// @brief Get the float 32 primitive type
@@ -111,6 +109,8 @@ public:
     types::Type* getInt8Type() { return getPrimitiveNumberType<types::IntType>(8); }
     /// @brief Get the void type representation
     types::Type* getVoidType() { return getPrimitiveType(SN_VOID_TYPE); }
+    /// @brief Get uint N primitive type
+    types::Type* getUIntType(int bits) { return getPrimitiveNumberType<types::IntType>(bits, false); }
   // clang-format on
 
   /// @return The current function being generated

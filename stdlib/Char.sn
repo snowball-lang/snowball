@@ -6,7 +6,7 @@
  * @return True if the given character is a whitespace character.
  */
 @inline
-public func is_space(c: char) bool {
+public func is_space(c: u8) bool {
     return c == ' ' || c == '\t' 
        || c == '\n' || c == '\r';
 }
@@ -19,7 +19,7 @@ public func is_space(c: char) bool {
  *  upper-case character.
  */
 @inline
-public func is_upper(c: char) bool 
+public func is_upper(c: u8) bool 
     { return c >= 'A' && c <= 'Z'; }
 /**
  * Returns true if the given character is a
@@ -30,7 +30,7 @@ public func is_upper(c: char) bool
  *  lower-case character.
  */
 @inline
-public func is_lower(c: char) bool
+public func is_lower(c: u8) bool
     { return c >= 'a' && c <= 'z'; }
 /**
  * Returns true if the given character is a
@@ -41,7 +41,7 @@ public func is_lower(c: char) bool
  *  digit.
  */
 @inline
-public func is_digit(c: char) bool
+public func is_digit(c: u8) bool
     { return c >= '0' && c <= '9'; }
 /**
  * Returns true if the given character is a
@@ -52,7 +52,7 @@ public func is_digit(c: char) bool
  *  hexadecimal digit.
  */
 @inline
-public func is_hex(c: char) bool { 
+public func is_hex(c: u8) bool { 
     return is_digit(c) || (c >= 'a' && c <= 'f') 
       || (c >= 'A' && c <= 'F'); 
 }
@@ -65,7 +65,7 @@ public func is_hex(c: char) bool {
  *  octal digit.
  */
 @inline
-public func is_oct(c: char) bool
+public func is_oct(c: u8) bool
     { return c >= '0' && c <= '7'; }
 /**
  * Returns true if the given character is a
@@ -76,7 +76,7 @@ public func is_oct(c: char) bool
  *  letter.
  */
 @inline
-public func is_alpha(c: char) bool
+public func is_alpha(c: u8) bool
     { return is_upper(c) || is_lower(c); }
 /**
  * Returns true if the given character is a
@@ -87,7 +87,7 @@ public func is_alpha(c: char) bool
  *  letter or digit.
  */
 @inline
-public func is_alpha_num(c: char) bool
+public func is_alpha_num(c: u8) bool
     { return is_alpha(c) || is_digit(c); }
 /**
  * Returns true if the given character is a
@@ -98,7 +98,7 @@ public func is_alpha_num(c: char) bool
  *  control character.
  */
 @inline
-public func is_control(c: char) bool
+public func is_control(c: u8) bool
     { return c < 32 || c == 127; }
 /**
  * Returns true if the given character is a
@@ -109,7 +109,7 @@ public func is_control(c: char) bool
  *  printable character.
  */
 @inline
-public func is_print(c: char) bool
+public func is_print(c: u8) bool
     { return !is_control(c); }
 /**
  * Returns true if the given character is a
@@ -120,7 +120,7 @@ public func is_print(c: char) bool
  *  punctuation character.
  */
 @inline
-public func is_punc(c: char) bool {
+public func is_punc(c: u8) bool {
     return c == '!' || c == '"' || c == '#' 
       || c == '$' || c == '%' || c == '&' 
       || c == '\'' || c == '(' || c == ')' 
@@ -142,7 +142,7 @@ public func is_punc(c: char) bool {
  *  symbol character.
  */
 @inline
-public func is_sym(c: char) bool {
+public func is_sym(c: u8) bool {
     return c == '+' || c == '-' || c == '*' 
       || c == '/' || c == '\\' || c == '|' 
       || c == '&' || c == '^' || c == '<' 
@@ -159,7 +159,7 @@ public func is_sym(c: char) bool {
  *  mark character.
  */
 @inline
-public func is_mark(c: char) bool {
+public func is_mark(c: u8) bool {
     return c == '`' || c == '\'' || c == '^' 
       || c == '"' || c == '~' || c == '.' 
       || c == '-' || c == '_' || c == '*' 

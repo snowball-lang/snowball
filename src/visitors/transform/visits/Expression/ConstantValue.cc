@@ -17,7 +17,7 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
       // Remove the "" from the string value
       str = str.substr(1, str.size() - 2);
       value = getBuilder().createStringValue(p_node->getDBGInfo(), str);
-      value->setType(ctx->getCharType()->getPointerTo(false));
+      value->setType(ctx->getUIntType(8)->getPointerTo(false));
       auto size = getBuilder().createNumberValue(p_node->getDBGInfo(), str.size());
       size->setType(ctx->getInt32Type());
 
@@ -31,6 +31,7 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
               true
       );
       index->setDBGInfo(p_node->getDBGInfo());
+      index->getBase()->setDBGInfo(p_node->getDBGInfo());
 
       auto [result, _] = getFromIndex(p_node->getDBGInfo(), index, true);
       auto fn = getFunction(p_node, result, "String::from", {value->getType(), size->getType()});
@@ -83,7 +84,7 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
       str = str.substr(1, str.size() - 2);
       auto ascii = (int) str[0];
       value = getBuilder().createCharValue(p_node->getDBGInfo(), ascii);
-      getBuilder().setType(value, ctx->getCharType());
+      getBuilder().setType(value, ctx->getUIntType(8));
       break;
     }
 

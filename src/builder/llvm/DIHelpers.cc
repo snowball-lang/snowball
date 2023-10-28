@@ -44,7 +44,7 @@ llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
 llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
   auto llvmType = getLLVMType(ty);
 
-  if (is<types::IntType>(ty) || cast<types::CharType>(ty)) {
+  if (is<types::IntType>(ty)) {
     return dbg.builder->createBasicType(ty->getName(), ty->sizeOf() * 8, llvm::dwarf::DW_ATE_signed);
   } else if (is<types::FloatType>(ty)) {
     return dbg.builder->createBasicType(ty->getName(), ty->sizeOf() * 8, llvm::dwarf::DW_ATE_float);

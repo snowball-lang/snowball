@@ -5,17 +5,17 @@
 //  Fibonacci example for the lang                  じし(_,)ノ
 //  Docs: https://snowball-lang.gitbook.io/docs/
 //
-import pkg::option;
-import pkg::chars;
-import pkg::vector;
-import pkg::cls;
-import pkg::string;
-import pkg::tuples;
-import pkg::syntax;
-import pkg::algorithms;
-import pkg::clib;
-import pkg::interfaces;
-import pkg::math;
+//import pkg::option;
+//import pkg::chars;
+//import pkg::vector;
+//import pkg::cls;
+//import pkg::string;
+//import pkg::tuples;
+//import pkg::syntax;
+//import pkg::algorithms;
+//import pkg::clib;
+//import pkg::interfaces;
+//import pkg::math;
 
 //import pkg::macros;
 //import pkg::source_location;
@@ -33,5 +33,6 @@ class Hello {
 
 public func main() i32 {
     let a = Hello::x;
+    System::println(a)
 //    Panic::panic("Hello, world!")
 } 

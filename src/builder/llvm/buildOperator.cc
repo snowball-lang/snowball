@@ -10,9 +10,21 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
+#define OPERATOR_CALL(f) \
+  this->value = builder->f(load(left, baseType), right);
+
+#define SIGNED_DEPENDANT(x, s, u) \
+  case services::OperatorService::x: \
+    if (utils::cast<types::IntType>(realType)->isSigned()) { \
+      OPERATOR_CALL(s) \
+    } else { \
+      OPERATOR_CALL(u) \
+    } \
+    break;
+
 #define OPERATOR_INSTANCE(x, f)                                                                                        \
   case services::OperatorService::x:                                                                                   \
-    this->value = builder->f(load(left, baseType), right);                                             \
+    OPERATOR_CALL(f)                                             \
     break;
 #define OPERATOR_UINSTANCE(x, f)                                                                                       \
   case services::OperatorService::x: this->value = builder->f(load(left, baseType)); break;
@@ -48,7 +60,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
         baseType = x->getPointedType();
         realType = x->getBaseType();
       }
-      if (utils::cast<types::IntType>(realType) || utils::cast<types::CharType>(realType)) {
+      if (utils::is<types::IntType>(realType)) {
         switch (services::OperatorService::operatorID(opName)) {
           OPERATOR_INSTANCE(EQEQ, CreateICmpEQ)
           OPERATOR_INSTANCE(PLUS, CreateAdd)
@@ -69,10 +81,11 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
           OPERATOR_INSTANCE(BIT_AND_EQ, CreateAnd)
           OPERATOR_INSTANCE(BIT_XOR, CreateXor)
           OPERATOR_INSTANCE(BIT_XOR_EQ, CreateXor)
-          OPERATOR_INSTANCE(LT, CreateICmpSLT) // TODO: unsigned an dsigned, not just signed
-          OPERATOR_INSTANCE(GT, CreateICmpSGT)
-          OPERATOR_INSTANCE(LTEQ, CreateICmpSLE)
-          OPERATOR_INSTANCE(GTEQ, CreateICmpSGE)
+
+          SIGNED_DEPENDANT(LT, CreateICmpSLT, CreateICmpULT)
+          SIGNED_DEPENDANT(GT, CreateICmpSGT, CreateICmpUGT)
+          SIGNED_DEPENDANT(LTEQ, CreateICmpSLE, CreateICmpULE)
+          SIGNED_DEPENDANT(GTEQ, CreateICmpSGE, CreateICmpUGE)
 
           OPERATOR_UINSTANCE(UMINUS, CreateNeg)
           case services::OperatorService::NOT: {
