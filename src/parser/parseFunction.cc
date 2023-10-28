@@ -40,7 +40,6 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
   bool hasSuperArgs = false;
 
   std::map<Expression::Identifier*, Expression::Base*> constructorInitArgs;
-  std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> attributes;
   bool isLLVMFunction = false;
 
   // Check if the tokens behind the function keyword
@@ -80,37 +79,35 @@ fetch_attrs:
   auto dbg = m_current.get_pos();
   auto width = 0;
 
-  if (is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek())) {
-    attributes = parseAttributes([&](std::string attr) {
-      if (attr == "llvm_function") {
-        isLLVMFunction = true;
-        return Attributes::LLVM_FUNC;
-      } else if (attr == "internal_linkage") {
-        return Attributes::INTERNAL_LINKAGE;
-      } else if (attr == "external_linkage") {
-        return Attributes::EXTERNAL_LINKAGE;
-      } else if (attr == "inline") {
-        return Attributes::INLINE;
-      } else if (attr == "no_inline") {
-        return Attributes::NO_INLINE;
-      } else if (attr == "test") {
-        return Attributes::TEST;
-      } else if (attr == "no_mangle") {
-        return Attributes::NO_MANGLE;
-      } else if (attr == "export") {
-        return Attributes::EXPORT;
-      } else if (attr == "bench") {
-        return Attributes::BENCH;
-      } else if (attr == "__internal__") {
-        return Attributes::BUILTIN;
-      } else if (attr == "__no_pointer_self__") {
-        return Attributes::NO_POINTER_SELF;
-      } else if (attr == "unsafe_fn_not_body") {
-        return Attributes::UNSAFE_FUNC_NOT_BODY;
-      }
-      return Attributes::INVALID;
-    });
-  }
+  auto attributes = verifyAttributes([&](std::string attr) {
+    if (attr == "llvm_function") {
+      isLLVMFunction = true;
+      return Attributes::LLVM_FUNC;
+    } else if (attr == "internal_linkage") {
+      return Attributes::INTERNAL_LINKAGE;
+    } else if (attr == "external_linkage") {
+      return Attributes::EXTERNAL_LINKAGE;
+    } else if (attr == "inline") {
+      return Attributes::INLINE;
+    } else if (attr == "no_inline") {
+      return Attributes::NO_INLINE;
+    } else if (attr == "test") {
+      return Attributes::TEST;
+    } else if (attr == "no_mangle") {
+      return Attributes::NO_MANGLE;
+    } else if (attr == "export") {
+      return Attributes::EXPORT;
+    } else if (attr == "bench") {
+      return Attributes::BENCH;
+    } else if (attr == "__internal__") {
+      return Attributes::BUILTIN;
+    } else if (attr == "__no_pointer_self__") {
+      return Attributes::NO_POINTER_SELF;
+    } else if (attr == "unsafe_fn_not_body") {
+      return Attributes::UNSAFE_FUNC_NOT_BODY;
+    }
+    return Attributes::INVALID;
+  });
   if (isOperator) {
     services::OperatorService::OperatorType opType;
     switch (m_current.type) {

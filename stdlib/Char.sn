@@ -5,7 +5,8 @@
  * @param c The character to check.
  * @return True if the given character is a whitespace character.
  */
-public func [[inline]] is_space(c: char) bool {
+@inline
+public func is_space(c: char) bool {
     return c == ' ' || c == '\t' 
        || c == '\n' || c == '\r';
 }
@@ -17,7 +18,8 @@ public func [[inline]] is_space(c: char) bool {
  * @return True if the given character is an
  *  upper-case character.
  */
-public func [[inline]] is_upper(c: char) bool 
+@inline
+public func is_upper(c: char) bool 
     { return c >= 'A' && c <= 'Z'; }
 /**
  * Returns true if the given character is a
@@ -27,7 +29,8 @@ public func [[inline]] is_upper(c: char) bool
  * @return True if the given character is a
  *  lower-case character.
  */
-public func [[inline]] is_lower(c: char) bool
+@inline
+public func is_lower(c: char) bool
     { return c >= 'a' && c <= 'z'; }
 /**
  * Returns true if the given character is a
@@ -37,7 +40,8 @@ public func [[inline]] is_lower(c: char) bool
  * @return True if the given character is a
  *  digit.
  */
-public func [[inline]] is_digit(c: char) bool
+@inline
+public func is_digit(c: char) bool
     { return c >= '0' && c <= '9'; }
 /**
  * Returns true if the given character is a
@@ -47,7 +51,8 @@ public func [[inline]] is_digit(c: char) bool
  * @return True if the given character is a
  *  hexadecimal digit.
  */
-public func [[inline]] is_hex(c: char) bool { 
+@inline
+public func is_hex(c: char) bool { 
     return is_digit(c) || (c >= 'a' && c <= 'f') 
       || (c >= 'A' && c <= 'F'); 
 }
@@ -59,7 +64,8 @@ public func [[inline]] is_hex(c: char) bool {
  * @return True if the given character is an
  *  octal digit.
  */
-public func [[inline]] is_oct(c: char) bool
+@inline
+public func is_oct(c: char) bool
     { return c >= '0' && c <= '7'; }
 /**
  * Returns true if the given character is a
@@ -69,7 +75,8 @@ public func [[inline]] is_oct(c: char) bool
  * @return True if the given character is a
  *  letter.
  */
-public func [[inline]] is_alpha(c: char) bool
+@inline
+public func is_alpha(c: char) bool
     { return is_upper(c) || is_lower(c); }
 /**
  * Returns true if the given character is a
@@ -79,7 +86,8 @@ public func [[inline]] is_alpha(c: char) bool
  * @return True if the given character is a
  *  letter or digit.
  */
-public func [[inline]] is_alpha_num(c: char) bool
+@inline
+public func is_alpha_num(c: char) bool
     { return is_alpha(c) || is_digit(c); }
 /**
  * Returns true if the given character is a
@@ -89,7 +97,8 @@ public func [[inline]] is_alpha_num(c: char) bool
  * @return True if the given character is a
  *  control character.
  */
-public func [[inline]] is_control(c: char) bool
+@inline
+public func is_control(c: char) bool
     { return c < 32 || c == 127; }
 /**
  * Returns true if the given character is a
@@ -99,7 +108,8 @@ public func [[inline]] is_control(c: char) bool
  * @return True if the given character is a
  *  printable character.
  */
-public func [[inline]] is_print(c: char) bool
+@inline
+public func is_print(c: char) bool
     { return !is_control(c); }
 /**
  * Returns true if the given character is a
@@ -109,7 +119,8 @@ public func [[inline]] is_print(c: char) bool
  * @return True if the given character is a
  *  punctuation character.
  */
-public func [[inline]] is_punc(c: char) bool {
+@inline
+public func is_punc(c: char) bool {
     return c == '!' || c == '"' || c == '#' 
       || c == '$' || c == '%' || c == '&' 
       || c == '\'' || c == '(' || c == ')' 
@@ -130,7 +141,8 @@ public func [[inline]] is_punc(c: char) bool {
  * @return True if the given character is a
  *  symbol character.
  */
-public func [[inline]] is_sym(c: char) bool {
+@inline
+public func is_sym(c: char) bool {
     return c == '+' || c == '-' || c == '*' 
       || c == '/' || c == '\\' || c == '|' 
       || c == '&' || c == '^' || c == '<' 
@@ -146,7 +158,8 @@ public func [[inline]] is_sym(c: char) bool {
  * @return True if the given character is a
  *  mark character.
  */
-public func [[inline]] is_mark(c: char) bool {
+@inline
+public func is_mark(c: char) bool {
     return c == '`' || c == '\'' || c == '^' 
       || c == '"' || c == '~' || c == '.' 
       || c == '-' || c == '_' || c == '*' 

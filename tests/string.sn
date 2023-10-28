@@ -1,29 +1,35 @@
 import Core::System;
-import[[use_macros]] Core::CLib;
+@use_macros
+import Core::CLib;
 
 namespace tests {
 
-func [[test]] empty() i32 {
+@test
+func empty() i32 {
     let s = new String();
     return s.size() == 0;
 }
 
-func [[test(expect = 5)]] size_char() i32 {
+@test(expect = 5)
+func size_char() i32 {
     let s = String::from(@c_str("hello"), 5);
     return s.size();
 }
 
-func [[test]] equals() i32 {
+@test
+func equals() i32 {
     let s = "hello";
     return s == "hello";
 }
 
-func [[test]] not_equals() i32 {
+@test
+func not_equals() i32 {
     let s = "hello"
     return s != "world";
 }
 
-func [[test]] concat() i32 {
+@test
+func concat() i32 {
     let mut s = "hello";
     s = s + " world";
     return s == "hello world";

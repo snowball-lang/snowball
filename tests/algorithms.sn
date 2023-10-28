@@ -1,6 +1,7 @@
 import Core::Math;
 import Core::System;
-import[[use_macro]] Core::Assert;
+@use_macro
+import Core::Assert;
 
 namespace test {
 
@@ -14,7 +15,8 @@ func linear_search(arr: Vector<i32>, x: i32) i32 {
     return -1;
 }
 
-func [[bench]] linear_search() {
+@bench
+func linear_search() {
     // let's make it huge
     let mut arr = new Vector<i32>();
     for i in 0..100000000 {
@@ -25,7 +27,8 @@ func [[bench]] linear_search() {
     @assert(result == x);
 }
 
-func [[test(expect = 3)]] linear_search() i32 {
+@test(expect = 3)
+func linear_search() i32 {
     let mut arr = new Vector<i32>();
     arr.push(2);
     arr.push(3);
@@ -57,7 +60,8 @@ func ternary_search(arr: Vector<i32>, l: i32, r: i32, x: i32) i32 {
     return -1;
 }
 
-func [[bench]] ternary_search() {
+@bench
+func ternary_search() {
     // let's make it huge
     let mut arr = new Vector<i32>();
     for i in 0..10000000 {
@@ -68,7 +72,8 @@ func [[bench]] ternary_search() {
     @assert(result == x);
 }
 
-func [[test(expect = 3)]] ternary_search() i32 {
+@test(expect = 3)
+func ternary_search() i32 {
     let mut arr = new Vector<i32>();
     arr.push(2);
     arr.push(3);
@@ -93,7 +98,8 @@ func binary_search(arr: Vector<i32>, l: i32, r: i32, x: i32) i32 {
     return -1;
 }
 
-func [[bench]] binary_search() {
+@bench
+func binary_search() {
     // let's make it huge
     let mut arr = new Vector<i32>();
     for i in 0..10000000 {
@@ -104,7 +110,8 @@ func [[bench]] binary_search() {
     @assert(result == x);
 }
 
-func [[test(expect = 3)]] binary_search() i32 {
+@test(expect = 3)
+func binary_search() i32 {
     let mut arr = new Vector<i32>();
     arr.push(2);
     arr.push(3);
@@ -138,7 +145,8 @@ func jump_search(arr: Vector<i32>, x: i32) i32 {
     return -1;
 }
 
-func [[bench]] jump_search() {
+@bench
+func jump_search() {
     // let's make it huge
     let mut arr = new Vector<i32>();
     for i in 0..10000000 {
@@ -149,7 +157,8 @@ func [[bench]] jump_search() {
     @assert(result == x);
 }
 
-func [[test(expect = 3)]] jump_search() i32 {
+@test(expect = 3)
+func jump_search() i32 {
     let mut arr = new Vector<i32>();
     arr.push(2);
     arr.push(3);
@@ -188,7 +197,8 @@ func interpolation_search(arr: Vector<i32>, lo: i32, hi: i32, x: i32) i32 {
 //    @assert(result == x);
 //}
 
-func [[test(expect = 3)]] interpolation_search() i32 {
+@test(expect = 3)
+func interpolation_search() i32 {
     let mut arr = new Vector<i32>();
     arr.push(2);
     arr.push(3);
@@ -223,7 +233,8 @@ func bubble_sort(mut arr: Vector<i32>) Vector<i32> {
 //    @assert(result[0] == 0);
 //}
 
-func [[test]] bubble_sort() i32 {
+@test
+func bubble_sort() i32 {
     let mut arr = new Vector<i32>();
     arr.push(2);
     arr.push(3);

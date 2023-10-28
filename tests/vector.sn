@@ -1,14 +1,17 @@
-import[[use_macro]] Core::Assert;
+@use_macro
+import Core::Assert;
 import Core::System;
 
 namespace tests {
 
-func [[test]] empty() i32 {
+@test
+func empty() i32 {
     let v = new Vector<i32>();
     return v.size() == 0;
 }
 
-func [[test(expect = 5)]] push() i32 {
+@test(expect = 5)
+func push() i32 {
     let mut v = new Vector<i32>();
     let mut i = 0;
     while (i < 5) {
@@ -18,7 +21,8 @@ func [[test(expect = 5)]] push() i32 {
     return v.size();
 }
 
-func [[test(expect = 20)]] insert() i32 {
+@test(expect = 20)
+func insert() i32 {
     let mut v = new Vector<i32>();
     v.insert(1, 5);
     v.insert(1, 10);
@@ -27,7 +31,8 @@ func [[test(expect = 20)]] insert() i32 {
     return v.at(1);
 }
 
-func [[test(skip)]] to_string() i32 {
+@test(skip)
+func to_string() i32 {
     let mut v = new Vector<i32>();
     v.push(1);
     v.push(2);
@@ -36,7 +41,8 @@ func [[test(skip)]] to_string() i32 {
     //return v.to_string() == "[1, 2, 3]";
 }
 
-func [[test(expect = 5)]] change_value() i32 {
+@test(expect = 5)
+func change_value() i32 {
     let mut v = new Vector<i32>();
     v.push(1);
     v[0] = 5;

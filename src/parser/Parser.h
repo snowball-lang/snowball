@@ -332,11 +332,24 @@ private:
 
   /**
    * @brief Parses a list of attributes
-   * @param parseFn function to parse the attribute
-   * @return a vector of attributes
    */
-  std::unordered_map<Attributes, std::unordered_map<std::string, std::string>>
-  parseAttributes(std::function<Attributes(std::string)> parseFn);
+  void parseAttributes();
+  /**
+   * @brief Verifies the attributes list
+   * @param attributes attributes list
+   * @param parseFn function to parse the attribute
+   */
+  std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> verifyAttributes(
+          std::function<Attributes(std::string)> parseFn
+  );
+  /**
+   * @brief Assert that attributes are not accepted in the current context
+   */
+  void assertNoAttributes(std::string context);
+
+private:
+  /// @brief Attributes list
+  std::unordered_map<std::string, std::unordered_map<std::string, std::string>> m_attributes;
 };
 
 } // namespace parser

@@ -2,11 +2,13 @@ import Core::System;
 
 namespace tests {
 
-func [[test(expect = 5)]] simple_return() i32 {
+@test(expect = 5)
+func simple_return() i32 {
     return 5;
 }
 
-func [[test]] if_statement() i32 {
+@test
+func if_statement() i32 {
     let a = 1;
     if a == 1 {
         return a;
@@ -15,7 +17,8 @@ func [[test]] if_statement() i32 {
     return 0;
 }
 
-func [[test]] if_else_statement() i32 {
+@test
+func if_else_statement() i32 {
     let a = 1;
     if a == 2 {
         return a;
@@ -24,7 +27,8 @@ func [[test]] if_else_statement() i32 {
     }
 }
 
-func [[test]] if_else_if_statement() i32 {
+@test
+func if_else_if_statement() i32 {
     let a = 1;
     if a == 2 {
         return a;
@@ -35,7 +39,8 @@ func [[test]] if_else_if_statement() i32 {
     }
 }
 
-func [[test(expect = 10)]] while_statement() i32 {
+@test(expect = 10)
+func while_statement() i32 {
     let mut a = 1;
     while a < 10 {
         a = a + 1;
@@ -44,7 +49,8 @@ func [[test(expect = 10)]] while_statement() i32 {
     return a;
 }
 
-func [[test(expect = 10)]] do_while_statement() i32 {
+@test(expect = 10)
+func do_while_statement() i32 {
     let mut a = 1;
     do {
         a = a + 1;
@@ -53,76 +59,94 @@ func [[test(expect = 10)]] do_while_statement() i32 {
     return a;
 }
 
-func [[test(expect = 10)]] add() i32 {
+@test(expect = 10)
+func add() i32 {
     return 5 + 5;
 }
 
-func [[test(expect = 0)]] sub() i32 {
+@test(expect = 0)
+func sub() i32 {
     return 5 - 5;
 }
 
-func [[test(expect = 25)]] mul() i32 {
+@test(expect = 25)
+func mul() i32 {
     return 5 * 5;
 }
 
-func [[test(expect = 1)]] div() i32 {
+@test(expect = 1)
+func div() i32 {
     return 5 / 5;
 }
 
-func [[test(expect = 0)]] mod() i32 {
+@test(expect = 0)
+func mod() i32 {
     return 5 % 5;
 }
 
-func [[test(expect = 1)]] and() i32 {
+@test(expect = 1)
+func and() i32 {
     return 1 && 1;
 }
 
-func [[test(expect = 1)]] or() i32 {
+@test(expect = 1)
+func or() i32 {
     return 1 || 1;
 }
 
-func [[test(expect = 1)]] xor() i32 {
+@test(expect = 1)
+func xor() i32 {
     return 1 ^ 0;
 }
 
-func [[test(expect = 0)]] not() i32 {
+@test(expect = 0)
+func not() i32 {
     return !1;
 }
 
-func [[test(expect = 1)]] eq() i32 {
+@test(expect = 1)
+func eq() i32 {
     return 1 == 1;
 }
 
-func [[test(expect = 0)]] neq() i32 {
+@test(expect = 0)
+func neq() i32 {
     return 1 != 1;
 }
 
-func [[test(expect = 1)]] gt() i32 {
+@test(expect = 1)
+func gt() i32 {
     return 2 > 1;
 }
 
-func [[test(expect = 1)]] lt() i32 {
+@test(expect = 1)
+func lt() i32 {
     return 1 < 2;
 }
 
-func [[test(expect = 1)]] gte() i32 {
+@test(expect = 1)
+func gte() i32 {
     return 2 >= 1;
 }
 
-func [[test(expect = 1)]] lte() i32 {
+@test(expect = 1)
+func lte() i32 {
     return 1 <= 2;
 }
 
-func [[test(expect = 2)]] lshift() i32 {
+@test(expect = 2)
+func lshift() i32 {
     return 1 << 1;
 }
 
-func [[test(expect = 1, skip)]] rshift() i32 {
+@test(expect = 1, skip)
+func rshift() i32 {
     // TODO:
     //return 2 >> 1;
 }
 
-func [[test(expect = 10)]] range_loop() i32 {
+@test(expect = 10)
+func range_loop() i32 {
     let mut a = 0;
     for i in 0..10 {
         a = a + 1;
@@ -131,7 +155,8 @@ func [[test(expect = 10)]] range_loop() i32 {
     return a;
 }
 
-func [[test]] try_catch() i32 {
+@test
+func try_catch() i32 {
     try {
         throw new Exception("test");
     } catch(e: Exception) {
@@ -141,13 +166,15 @@ func [[test]] try_catch() i32 {
     return false;
 }
 
-func [[test]] complex_eq() i32 {
+@test
+func complex_eq() i32 {
     let a = 1;
     let b = 2;
     return a == b || a == 1;
 }
 
-func [[test(expect = 7)]] complex_math() i32 {
+@test(expect = 7)
+func complex_math() i32 {
     let a = 1;
     let b = 2;
     let c = 3;

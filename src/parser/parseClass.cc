@@ -21,18 +21,15 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
     isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
   }
 
-  std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> attributes;
-  if (is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek())) {
-    attributes = parseAttributes([&](std::string attr) {
-      if (attr == "extends") {
-        extends = true;
-        return Attributes::CLASS_EXTENDS;
-      } else if (attr == "__internal__") {
-        return Attributes::BUILTIN;
-      }
-      return Attributes::INVALID;
-    });
-  }
+  auto attributes = verifyAttributes([&](std::string attr) {
+    if (attr == "extends") {
+      extends = true;
+      return Attributes::CLASS_EXTENDS;
+    } else if (attr == "__internal__") {
+      return Attributes::BUILTIN;
+    }
+    return Attributes::INVALID;
+  });
 
   std::string name;
   // TODO: check this is only for std lib builds!!!
@@ -103,15 +100,21 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
     next();
     switch (m_current.type) {
       case TokenType::KWORD_PRIVATE: {
+        assertNoAttributes("before private keyword");
         inPrivateScope = true;
         next();
         assert_tok<TokenType::SYM_COLLON>("':'");
       } break;
 
       case TokenType::KWORD_PUBLIC: {
+        assertNoAttributes("before public keyword");
         inPrivateScope = false;
         next();
         assert_tok<TokenType::SYM_COLLON>("':'");
+      } break;
+
+      case TokenType::SYM_AT: {
+        parseAttributes();
       } break;
 
       case TokenType::KWORD_STATIC: {
@@ -179,6 +182,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
       } break;
 
       case TokenType::KWORD_VAR: {
+        assertNoAttributes("a variable");
         auto var = parseVariable();
         var->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
         cls->addVariable(var);
@@ -188,12 +192,14 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
       } break;
 
       case TokenType::BRACKET_RCURLY: {
+        assertNoAttributes("before '}'");
         cls->hasConstructor = hasConstructor;
         m_current_class = classBackup;
         return cls;
       }
 
       case TokenType::KWORD_TYPEDEF: {
+        assertNoAttributes("a type alias");
         if (extends) {
           createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* type aliases!");
         } else if (isInterface) {
@@ -210,6 +216,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
 
       // note: This case should be always at the bottom!
       case TokenType::IDENTIFIER: {
+        assertNoAttributes("before identifier");
         if (IS_CONSTRUCTOR(m_current)) {
           if (isInterface) {
             createError<SYNTAX_ERROR>("Interfaces can't have constructors!");
