@@ -113,6 +113,27 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         assert_tok<TokenType::SYM_COLLON>("':'");
       } break;
 
+      case TokenType::KWORD_CONST: {
+        assertNoAttributes("before const keyword");
+        
+        if (isInterface) {
+          createError<SYNTAX_ERROR>("Interfaces can't have constants!");
+        } else if (extends) {
+          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* constants!");
+        }
+        
+        auto var = parseConstant();
+        var->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
+        
+        if (var->getValue() == nullptr) {
+          createError<SYNTAX_ERROR>("expected a value for constant declaration!");
+        }
+        
+        cls->addVariable(var);
+
+        assert_tok<TokenType::SYM_SEMI_COLLON>("a ';'");
+      } break;
+
       case TokenType::SYM_AT: {
         parseAttributes();
       } break;

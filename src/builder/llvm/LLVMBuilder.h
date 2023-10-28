@@ -378,8 +378,9 @@ private:
    * any function within the program.
    *
    * @param var A shared pointer to the variable declaration to add.
+   * @param ty The type of the variable, or nullptr if the type should
    */
-  void addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var);
+  void addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var, types::DefinedType* ty = nullptr);
   /**
    * Get the global constructor function.
    *

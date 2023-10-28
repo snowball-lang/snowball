@@ -8,9 +8,14 @@
 namespace snowball {
 namespace codegen {
 
-void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var) {
+void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var, types::DefinedType* parent) {
   auto ty = getLLVMType(var->getType());
-  std::string name = "gvar." + iModule->getUniqueName() + "::" + var->getIdentifier();
+  std::string name;
+  if (parent) {
+    name = "const." + parent->getUUID() + "::" + var->getIdentifier();
+  } else {
+    name = "gvar." + iModule->getUniqueName() + "::" + var->getIdentifier();
+  }
   if (utils::dyn_cast<ir::ConstantValue>(var->getValue())) {
     auto c = build(var->getValue().get());
     auto gvar = new llvm::GlobalVariable(

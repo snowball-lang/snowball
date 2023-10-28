@@ -301,6 +301,16 @@ void LLVMBuilder::codegen() {
   }
   ctx->typeInfo.insert(mainModule->typeInformation.begin(), mainModule->typeInformation.end());
 
+  for (const auto& ty : ctx->typeInfo) {
+    auto t = ty.second.get();
+    if (auto c = utils::cast<types::DefinedType>(t)) {
+      auto& staticFields = c->getStaticFields();
+      for (auto& f : staticFields) {
+        addGlobalVariable(f, c);
+      }
+    }
+  }
+
   INIT_MODULES(false); // Create function declarations
   INIT_MODULES(true);  // Create function bodies
 

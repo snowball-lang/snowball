@@ -61,6 +61,18 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
         } else if (auto ty = utils::cast<types::InterfaceType>(x)) {
           FIND_FIELD(types::InterfaceType::Member)
         }
+      } else {
+        if (auto ty = utils::cast<types::DefinedType>(x)) {
+          auto& fields = ty->getStaticFields();
+          auto fieldValue = std::find_if(fields.begin(), fields.end(), [&](std::shared_ptr<ir::VariableDeclaration> f) {
+            return f->getIdentifier() == name;
+          });
+          if (fieldValue != fields.end()) {
+            indexValue = (*fieldValue)->getVariable();
+          }
+        } else {
+          E<TYPE_ERROR>(dbgInfo, "Only defined types can have static members!");
+        }
       }
 
       if (indexValue == nullptr && v.has_value()) { indexValue = v.value(); }

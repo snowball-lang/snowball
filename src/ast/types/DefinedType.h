@@ -59,6 +59,8 @@ public:
 private:
   /// @brief a list of fields this class has
   std::vector<ClassField*> fields;
+  /// @brief a list of static fields this class has
+  std::vector<std::shared_ptr<ir::VariableDeclaration>> staticFields;
   /// @brief Parent class where the class in inherited from
   DefinedType* parent = nullptr;
   /// @brief The ast representation for the type
@@ -73,6 +75,7 @@ public:
           std::shared_ptr<ir::Module> module,
           Syntax::Statement::DefinedTypeDef* ast = nullptr,
           std::vector<ClassField*> fields = {},
+          std::vector<std::shared_ptr<ir::VariableDeclaration>> staticFields = {},
           DefinedType* parent = nullptr,
           std::vector<Type*> generics = {},
           bool isStruct = false
@@ -120,9 +123,7 @@ public:
   auto hasParent() const { return parent != nullptr; }
   /// @return A list containing all the fields declared for the class
   /// @note It does not include the parent fields!
-  auto getFields() const { return fields; }
-  /// @brief Set the fields for the class
-  void setFields(std::vector<ClassField*> fields) { this->fields = fields; }
+  auto& getFields() const { return fields; }
   /// @brief Append a new field (ClassField) to the list
   void addField(ClassField* f);
   /// @c Type::toRef() for information about this function.
@@ -131,6 +132,11 @@ public:
   Syntax::Expression::TypeRef* toRef() override;
   /// @return true/false depending on whether the type is a struct
   bool isStruct() const { return _struct; }
+
+  /// @brief Get the static fields for the class
+  auto& getStaticFields() const { return staticFields; }
+  /// @brief Add a new static field to the class
+  void addStaticField(std::shared_ptr<ir::VariableDeclaration> field) { staticFields.emplace_back(field); }
 
   /// @brief override function.
   virtual bool canCast(Type* ty) const override;

@@ -26,6 +26,12 @@ import pkg::math;
 import Core::System;
 import Core::Optional;
 
+class Hello {
+    Hello() {}
+    const x: i32 = 24;
+}
+
 public func main() i32 {
+    let a = Hello::x;
 //    Panic::panic("Hello, world!")
 } 
