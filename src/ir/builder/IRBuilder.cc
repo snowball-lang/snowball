@@ -118,9 +118,9 @@ SharedValue<Call> IRBuilder::createCall(DBGSourceInfo* dbgInfo, SharedValue<> ca
   return N<Call>(dbgInfo, callee, args);
 }
 SharedValue<VariableDeclaration> IRBuilder::createVariableDeclaration(
-        DBGSourceInfo* dbgInfo, const std::string identifier, SharedValue<> value, bool isMutable
+        DBGSourceInfo* dbgInfo, std::shared_ptr<ir::Variable> variable, SharedValue<> value
 ) {
-  auto decl = N<VariableDeclaration>(dbgInfo, identifier, value, isMutable);
+  auto decl = N<VariableDeclaration>(dbgInfo, variable, value);
   if (value != nullptr) setType(decl, value->getType());
   return decl;
 }

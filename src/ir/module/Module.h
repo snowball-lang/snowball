@@ -56,7 +56,7 @@ public:
   // Append a new variable to the variable list
   virtual void addVariable(std::shared_ptr<ir::VariableDeclaration> v) { variables.push_back(v); }
   // Get a list of user-declared variables for this module
-  const auto getVariables() const { return variables; }
+  const auto& getVariables() const { return variables; }
   // Get a list of exported macros
   const auto getExportedMacros() const { return exportedMacros; }
   // Add a new exported macro

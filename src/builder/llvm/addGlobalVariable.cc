@@ -16,12 +16,11 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
     auto gvar = new llvm::GlobalVariable(
             /*Module=*/*module,
             /*Type=*/ty,
-            /*isConstant=*/!var->isMutable(),
-            /*Linkage=*/llvm::GlobalValue::ExternalLinkage,
-            /*Initializer=*/0, // has initializer, specified below
+            /*isConstant=*/!var->getVariable()->isMutable(),
+            /*Linkage=*/llvm::GlobalValue::InternalLinkage,
+            /*Initializer=*/llvm::cast<llvm::Constant>(c), // has initializer, specified below
             /*Name=*/name
     );
-    gvar->setInitializer(llvm::cast<llvm::Constant>(c));
     ctx->addSymbol(var->getId(), gvar);
 
     return;
@@ -35,16 +34,15 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
   auto gvar = new llvm::GlobalVariable(
           /*Module=*/*module,
           /*Type=*/ty,
-          /*isConstant=*/0,
-          /*Linkage=*/llvm::GlobalValue::CommonLinkage,
-          /*Initializer=*/0, // has initializer, specified below
+          /*isConstant=*/0,// !var->getVariable()->isMutable(),
+          /*Linkage=*/llvm::GlobalValue::InternalLinkage,
+          /*Initializer=*/llvm::Constant::getNullValue(ty), // has initializer, specified below
           /*Name=*/name
   );
-
-  gvar->setInitializer(llvm::Constant::getNullValue(ty));
+ 
   ctx->addSymbol(var->getId(), gvar);
 
-  auto val = build(var->getValue().get());
+  auto val = expr(var->getValue().get());
 
   builder->CreateStore(val, gvar);
 

@@ -11,9 +11,9 @@ namespace codegen {
 
 void LLVMBuilder::visit(ir::StringValue* value) {
   ctx->doNotLoadInMemory = true;
-  this->value = builder->CreateGlobalStringPtr(value->getConstantValue(), ".str__" + utils::gen_random<10>());
+  auto str = builder->CreateGlobalStringPtr(value->getConstantValue(), ".str__" + utils::gen_random<30>());
   auto arr = llvm::ArrayType::get(builder->getInt8Ty(), value->getConstantValue().size() + 1);
-  this->value = builder->CreateInBoundsGEP(arr, this->value, {builder->getInt32(0), builder->getInt32(0)});
+  this->value = builder->CreateConstInBoundsGEP1_32(arr, str, 0);
 }
 
 void LLVMBuilder::visit(ir::BooleanValue* value) { this->value = builder->getInt1(value->getConstantValue()); }

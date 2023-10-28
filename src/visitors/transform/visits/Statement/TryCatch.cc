@@ -19,7 +19,7 @@ SN_TRANSFORMER_VISIT(Statement::TryCatch) {
 
     ctx->withScope([&] {
       auto var = getBuilder().createVariable(block->getDBGInfo(), name, type);
-      auto varDecl = getBuilder().createVariableDeclaration(p_node->getDBGInfo(), name, nullptr);
+      auto varDecl = getBuilder().createVariableDeclaration(p_node->getDBGInfo(), var, nullptr);
       varDecl->setId(var->getId());
       getBuilder().setType(varDecl, type);
 

@@ -116,6 +116,15 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     auto [v, ty, fns, ovs, mod] =
             getFromIdentifier(dbgInfo, index->getIdentifier()->getIdentifier(), generics, fullUUID);
 
+    if (!v.has_value()) {
+      for (auto& variable : m->getVariables()) {
+        if (variable->getIdentifier() == index->getIdentifier()->getIdentifier()) { // TODO: make this faster
+          v = variable->getVariable();
+          break;
+        }
+      } 
+    }
+
     if (!v.has_value() && !ty.has_value() && !fns.has_value() && !ovs.has_value() && !mod.has_value()) {
       E<VARIABLE_ERROR>(
               dbgInfo,

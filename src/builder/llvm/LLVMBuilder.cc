@@ -84,7 +84,7 @@ llvm::Value* LLVMBuilder::load(llvm::Value* v, types::Type* ty) {
   auto llvmType = getLLVMType(ty);
 
   // TODO: not sure about global variable
-  if (ctx->doNotLoadInMemory || llvm::isa<llvm::Constant>(v) || llvm::isa<llvm::GlobalVariable>(v)) {
+  if (ctx->doNotLoadInMemory || (llvm::isa<llvm::Constant>(v) && !llvm::isa<llvm::GlobalVariable>(v))) {
     ctx->doNotLoadInMemory = false;
     return v;
   }

@@ -12,7 +12,7 @@
 
 #define OPERATOR_INSTANCE(x, f)                                                                                        \
   case services::OperatorService::x:                                                                                   \
-    this->value = builder->f(load(left, baseType), load(right, baseType));                                             \
+    this->value = builder->f(load(left, baseType), right);                                             \
     break;
 #define OPERATOR_UINSTANCE(x, f)                                                                                       \
   case services::OperatorService::x: this->value = builder->f(load(left, baseType)); break;

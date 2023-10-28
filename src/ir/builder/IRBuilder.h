@@ -143,7 +143,7 @@ public:
   );
   /// @brief Create a new type
   SharedValue<VariableDeclaration> createVariableDeclaration(
-          DBGSourceInfo* dbgInfo, const std::string identifier, SharedValue<> value, bool isMutable = false
+          DBGSourceInfo* dbgInfo, std::shared_ptr<ir::Variable> variable, SharedValue<> value
   );
   /// @brief Create a extraction node from a value
   SharedValue<ValueExtract> createValueExtract(DBGSourceInfo* dbgInfo, SharedValue<> value);
