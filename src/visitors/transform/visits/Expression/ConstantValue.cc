@@ -13,32 +13,42 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
 #define CASE(t) case Expression::ConstantValue::ConstantType::t
     CASE(String) : {
       auto str = p_node->getValue();
+      auto prefix = p_node->getPrefix();
 
       // Remove the "" from the string value
       str = str.substr(1, str.size() - 2);
       value = getBuilder().createStringValue(p_node->getDBGInfo(), str);
       value->setType(ctx->getUIntType(8)->getPointerTo(false));
-      auto size = getBuilder().createNumberValue(p_node->getDBGInfo(), str.size());
-      size->setType(ctx->getInt32Type());
+      
+      if (prefix.empty()) {
+        auto size = getBuilder().createNumberValue(p_node->getDBGInfo(), str.size());
+        size->setType(ctx->getInt32Type());
 
-      auto index = N<Expression::Index>(
-              utils::startsWith(ctx->module->getUniqueName(), (ctx->imports->CORE_UUID + "Core")) ?
-                      (Expression::Base*) N<Expression::Identifier>("String") :
-                      (Expression::Base*) N<Expression::Index>(
-                              N<Expression::Identifier>("Core"), N<Expression::Identifier>("String"), true
-                      ),
-              N<Expression::Identifier>("from"),
-              true
-      );
-      index->setDBGInfo(p_node->getDBGInfo());
-      index->getBase()->setDBGInfo(p_node->getDBGInfo());
+        auto index = N<Expression::Index>(
+                utils::startsWith(ctx->module->getUniqueName(), (ctx->imports->CORE_UUID + "Core")) ?
+                        (Expression::Base*) N<Expression::Identifier>("String") :
+                        (Expression::Base*) N<Expression::Index>(
+                                N<Expression::Identifier>("Core"), N<Expression::Identifier>("String"), true
+                        ),
+                N<Expression::Identifier>("from"),
+                true
+        );
+        index->setDBGInfo(p_node->getDBGInfo());
+        index->getBase()->setDBGInfo(p_node->getDBGInfo());
 
-      auto [result, _] = getFromIndex(p_node->getDBGInfo(), index, true);
-      auto fn = getFunction(p_node, result, "String::from", {value->getType(), size->getType()});
+        auto [result, _] = getFromIndex(p_node->getDBGInfo(), index, true);
+        auto fn = getFunction(p_node, result, "String::from", {value->getType(), size->getType()});
 
-      assert(fn != nullptr);
-      value = getBuilder().createCall(p_node->getDBGInfo(), fn, {value, size});
-      value->setType(fn->getRetTy());
+        assert(fn != nullptr);
+        value = getBuilder().createCall(p_node->getDBGInfo(), fn, {value, size});
+        value->setType(fn->getRetTy());
+      } else if (prefix == "b") {}
+      else {
+        E<SYNTAX_ERROR>(p_node->getDBGInfo(), FMT("Invalid string prefix '%s'", prefix.c_str()), {
+          .info = "Invalid prefix",
+          .note = "Valid prefixes are: '', 'b'"
+        });
+      }
 
       break;
     }

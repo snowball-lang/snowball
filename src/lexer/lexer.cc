@@ -346,6 +346,8 @@ void Lexer::tokenize() {
       case '"': {
         EAT_CHAR(1);
         std::string str;
+        auto col = cur_col;
+        auto line = cur_line;
         while (GET_CHAR(0) != '"') {
           if (GET_CHAR(0) == '\\') {
             char c = GET_CHAR(1);
@@ -426,8 +428,8 @@ void Lexer::tokenize() {
         Token tk;
         tk.type = TokenType::VALUE_STRING;
         tk.value = str; // method name may be builtin func
-        tk.col = cur_col - ((int) str.size() + (2 /* speech marks */));
-        tk.line = cur_line;
+        tk.col = col-1;
+        tk.line = line;
         tokens.emplace_back(tk);
 
         break;

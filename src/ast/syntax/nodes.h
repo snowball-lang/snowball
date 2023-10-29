@@ -92,15 +92,22 @@ private:
   // Constant value type to know what is what.
   ConstantType type;
 
+  // @brief Constant's value prefix
+  // @example b"hello" -> prefix = "b"
+  std::string prefix = "";
+
 public:
   using AcceptorExtend::AcceptorExtend;
 
-  ConstantValue(ConstantType type, std::string value) : type(type), value(value){};
+  ConstantValue(ConstantType type, std::string value, std::string prefix = "") 
+    : type(type), value(value), prefix(prefix) {};
 
   /// @return Get constant value
-  std::string getValue() { return value; }
+  std::string getValue() const { return value; }
   /// @return Get the type that defines this constant.
-  ConstantType getType() { return type; }
+  ConstantType getType() const { return type; }
+  /// @return Get the prefix of the constant
+  std::string getPrefix() const { return prefix; }
 
   ACCEPT()
 

@@ -3,12 +3,12 @@ import Core::Internal::Preload;
 import Core::CLib;
 import Core::Ptr;
 
-const DEC_DIGITS_LUT: *const u8 = @c_str("\
+const DEC_DIGITS_LUT: *const u8 = b"\
 0001020304050607080910111213141516171819\
 2021222324252627282930313233343536373839\
 4041424344454647484950515253545556575859\
 6061626364656667686970717273747576777879\
-8081828384858687888990919293949596979899");
+8081828384858687888990919293949596979899";
 
 @extends
 @__internal__
@@ -672,7 +672,7 @@ public class StringView<Char: Sized = u8> implements ToString {
 @no_inline
 @cfg(test)
 @export(name = "sn.test.try")
-unsafe func snowball_test(
+static unsafe func snowball_test(
   fn: func () => i32,
   name: *const i8,
   index: i32,

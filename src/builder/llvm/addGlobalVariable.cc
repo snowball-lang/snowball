@@ -12,10 +12,17 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
   auto ty = getLLVMType(var->getType());
   std::string name;
   if (parent) {
-    name = "const." + parent->getUUID() + "::" + var->getIdentifier();
+    name = "const." + parent->getUUID() + ":" + utils::gen_random<32>() + ":" + var->getIdentifier();
   } else {
-    name = "gvar." + iModule->getUniqueName() + "::" + var->getIdentifier();
+    name = "gvar." + iModule->getUniqueName() + ":" + utils::gen_random<32>() + ":" + var->getIdentifier();
   }
+
+  auto srcInfo = var->getDBGInfo();
+  auto file = dbg.getFile(var->getSourceInfo()->getPath());
+  auto debugVar = dbg.builder->createGlobalVariableExpression(
+          dbg.unit, var->getIdentifier(), var->getIdentifier(), file, srcInfo->line, getDIType(var->getType()), false
+  );
+
   if (utils::dyn_cast<ir::ConstantValue>(var->getValue())) {
     auto c = build(var->getValue().get());
     auto gvar = new llvm::GlobalVariable(
@@ -27,7 +34,7 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
             /*Name=*/name
     );
     ctx->addSymbol(var->getId(), gvar);
-
+    gvar->addDebugInfo(debugVar);
     return;
   }
 
@@ -52,12 +59,6 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
 
   builder->CreateStore(val, gvar);
   ctx->clearCurrentFunction();
-
-  auto srcInfo = var->getDBGInfo();
-  auto file = dbg.getFile(var->getSourceInfo()->getPath());
-  auto debugVar = dbg.builder->createGlobalVariableExpression(
-          dbg.unit, var->getIdentifier(), var->getIdentifier(), file, srcInfo->line, getDIType(var->getType()), false
-  );
   gvar->addDebugInfo(debugVar);
 }
 

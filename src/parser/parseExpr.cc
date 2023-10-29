@@ -8,6 +8,8 @@
 #include <assert.h>
 #define TOKEN(comp) is<TokenType::comp>()
 
+#define RIGHT_NEXT_TO(atPos, iPos) (atPos.first == iPos.first) && (atPos.second == (iPos.second - 1))
+
 using Operators = snowball::services::OperatorService;
 
 namespace snowball::parser {
@@ -27,7 +29,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
       if (is<TokenType::IDENTIFIER>(peek())) {
         next();
         auto iPos = m_current.get_pos();
-        if ((atPos.first == iPos.first) && (atPos.second == (iPos.second - 1))) {
+        if (RIGHT_NEXT_TO(atPos, iPos)) {
           auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
 
           dbg->pos.first++;
@@ -82,9 +84,21 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
         auto ty = Syntax::Expression::ConstantValue::deduceType(m_current.type);
 
         expr = Syntax::N<Syntax::Expression::ConstantValue>(ty, m_current.to_string());
-        expr->setDBGInfo(dbg);
       } else if (TOKEN(IDENTIFIER)) {
-        expr = parseIdentifier();
+        if (is<TokenType::VALUE_STRING>(peek())) {
+          auto identifier = m_current.to_string();
+          auto atPos = m_current.get_pos();
+          next();
+          auto iPos = m_current.get_pos();
+          if (RIGHT_NEXT_TO(atPos, iPos)) {
+            auto ty = Syntax::Expression::ConstantValue::deduceType(m_current.type);
+            expr = Syntax::N<Syntax::Expression::ConstantValue>(ty, m_current.to_string(), identifier);
+          } else {
+            prev();
+          }
+        }
+        if (expr == nullptr)
+          expr = parseIdentifier();
       } else if (TOKEN(KWORD_NEW)) {
         next();
 
