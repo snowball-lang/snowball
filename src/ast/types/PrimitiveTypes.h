@@ -94,7 +94,7 @@ class IntType : public AcceptorExtend<IntType, NumericType> {
 
 public:
   IntType(std::int32_t bits, bool isSigned = true) : bits(bits), isItSigned(isSigned), 
-    AcceptorExtend(bits == 1 ? "bool" : (isItSigned ? "i" : "u") + std::to_string(bits)) { }
+    AcceptorExtend(bits == 1 ? "bool" : (isSigned ? "i" : "u") + std::to_string(bits)) { }
   std::int32_t getBits() const { return bits; }
   bool isSigned() const { return isItSigned; }
   SNOWBALL_TYPE_COPIABLE(IntType)

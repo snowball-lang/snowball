@@ -35,11 +35,11 @@
 #define ACCEPT(Node)               virtual void visit(Node* p_node) override;
 #define SN_TRANSFORMER_VISIT(Node) void Transformer::visit(Node* p_node)
 #define SN_TRANSFORMER_CAN_GENERATE(node)                                                                              \
-  if (utils::cast<Statement::BodiedFunction>(node) || utils::cast<Statement::ImportStmt>(node) ||                      \
-      utils::cast<Statement::LLVMFunction>(node) || utils::cast<Statement::ExternFnDef>(node) ||                       \
-      utils::cast<Statement::ConstructorDef>(node) || utils::cast<Statement::Namespace>(node) ||                       \
-      utils::cast<Statement::DefinedTypeDef>(node) || utils::cast<Statement::TypeAlias>(node) ||                       \
-      utils::cast<Macro>(node))
+  if (utils::is<Statement::BodiedFunction>(node) || utils::is<Statement::ImportStmt>(node) ||                      \
+      utils::is<Statement::LLVMFunction>(node) || utils::is<Statement::ExternFnDef>(node) ||                       \
+      utils::is<Statement::ConstructorDef>(node) || utils::is<Statement::Namespace>(node) ||                       \
+      utils::is<Statement::DefinedTypeDef>(node) || utils::is<Statement::TypeAlias>(node) ||                       \
+      utils::is<Macro>(node))
 
 namespace snowball {
 namespace Syntax {

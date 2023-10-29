@@ -6,6 +6,7 @@ namespace Syntax {
 
 void Transformer::transformTypeExtension(Statement::DefinedTypeDef* node, std::string uuid) {
   auto name = node->getName();
+  assert(node->getVariables().size() == 0);
   if (!ctx->isGlobalScope()) {
     E<SYNTAX_ERROR>(
             node,
@@ -42,6 +43,74 @@ void Transformer::transformTypeExtension(Statement::DefinedTypeDef* node, std::s
                .help = "Remove the 'extends' keyword from this class."}
       );
     }
+  }
+
+  if (auto x = ctx->cache->getType(uuid)) {
+    auto type = x.value();
+    if (auto alias = utils::cast<Statement::TypeAlias>(type.type)) {
+      E<SYNTAX_ERROR>(
+              node,
+              "Cant extend a type alias!",
+              {.info = FMT("'%s' is a type alias!", alias->getIdentifier().c_str()),
+               .note = "Only types can be extended!",
+               .help = "Remove the 'extends' keyword from this class."}
+      );
+    }
+
+    auto definedType = utils::cast<Statement::DefinedTypeDef>(type.type);
+    assert(definedType);
+
+    if (definedType->isInterface()) {
+      E<SYNTAX_ERROR>(
+              node,
+              "Cant extend an interface!",
+              {.info = FMT("'%s' is an interface!", definedType->getName().c_str()),
+               .note = "Only types can be extended!",
+               .help = "Remove the 'extends' keyword from this class."}
+      );
+    }
+
+    auto state = ctx->saveState();
+
+    for (auto fn : node->getFunctions()) {
+      fn->setContextState(state);
+      definedType->addFunction(fn);
+    }
+
+    auto backup = ctx->getCurrentClass();
+
+    // extend the already generated types
+    // TODO: I don't think we should "override" the type state here
+    auto types = ctx->cache->getTransformedType(uuid);
+    if (types.has_value()) {
+      for (auto item : types.value()) {
+        ctx->withScope([&]() {
+          assert(item->isType());
+          auto definedType = utils::cast<types::DefinedType>(item->getType());
+          ctx->setCurrentClass(definedType);
+          assert(definedType);
+
+          auto ast = definedType->getAST();
+          assert(ast->getGenerics().size() == definedType->getGenerics().size());
+          for (int i = 0; i < ast->getGenerics().size(); i++) {
+            auto generic = ast->getGenerics().at(i);
+            auto genericType = definedType->getGenerics().at(i);
+            ctx->addItem(generic->getName(), std::make_shared<transform::Item>(genericType));
+          }
+
+          // TODO: should we override `ctx->generateFunction` here too?
+          auto backupGenerateFn = ctx->generateFunction;
+          ctx->generateFunction = false;
+          for (auto fn : node->getFunctions()) { trans(fn); }
+          ctx->generateFunction = true;
+          for (auto fn : node->getFunctions()) { trans(fn); }
+          ctx->generateFunction = backupGenerateFn;
+        });
+      }
+    }
+
+    ctx->setCurrentClass(backup);
+    return;
   }
 
   E<VARIABLE_ERROR>(

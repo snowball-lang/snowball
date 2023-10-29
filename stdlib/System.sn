@@ -18,7 +18,7 @@ public static func exit(exitCode: i32 = 0) {
  * @return the number of characters printed
  */
 @inline
-public static func print<T>(msg: T, end: String = "") i32 {
+public static func print<T: ToString>(msg: T, end: String = "") i32 {
     let m = String::from(msg);
     for i in 0..m.size() {
         unsafe {CLib::putchar(m[i]);}
@@ -34,7 +34,7 @@ public static func print<T>(msg: T, end: String = "") i32 {
  * @return the number of characters printed
  */
 @inline
-public static func println<T>(msg: T) i32 { 
+public static func println<T: ToString>(msg: T) i32 { 
     return print(msg, "\n"); 
 }
 /**

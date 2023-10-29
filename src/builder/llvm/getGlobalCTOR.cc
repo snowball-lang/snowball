@@ -17,6 +17,24 @@ llvm::Function* LLVMBuilder::getGlobalCTOR(bool createIfNone) {
   if ((!fn) && createIfNone) {
     auto prototype = llvm::FunctionType::get(builder->getVoidTy(), {});
     fn = h.create<llvm::Function>(prototype, llvm::Function::ExternalLinkage, mangle, *module);
+    auto file = dbg.getFile(iModule->getSourceInfo()->getPath());
+    auto subroutineType = dbg.builder->createSubroutineType(llvm::MDTuple::get(*context, {}));
+    auto subprogram = dbg.builder->createFunction(
+      file,
+      FMT("Global constructor for module {}", iModule->getName()),
+      mangle,
+      file,
+      0,
+      llvm::cast<llvm::DISubroutineType>(subroutineType),
+      /*ScopeLine=*/0,
+      llvm::DINode::FlagPrototyped,
+      llvm::DISubprogram::toSPFlags(
+              /*IsLocalToUnit=*/true,
+              /*IsDefinition=*/true,
+              /*IsOptimized=*/!dbg.debug
+      )
+    );
+    fn->setSubprogram(subprogram);
     // TODO: set di info
   } else if (fn) {
     return fn;

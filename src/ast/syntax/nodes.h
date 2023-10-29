@@ -27,6 +27,10 @@
 namespace snowball {
 namespace Syntax {
 
+namespace transform {
+class ContextState;
+}
+
 class Visitor;
 
 // In snowball, a block is composed of
@@ -472,6 +476,9 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
   // as mutable.
   bool _mutable = false;
 
+  /// @brief Context state for the function (it shoudn't be used often)
+  std::shared_ptr<snowball::Syntax::transform::ContextState> _contextState = nullptr;
+
 public:
   FunctionDef(const std::string name, Privacy::Status prvc = PRIVATE);
 
@@ -523,6 +530,11 @@ public:
 
   /// @brief Copy the function
   virtual FunctionDef* copy() { return new FunctionDef(*this); }
+
+  /// @brief Get the context state for the function
+  std::shared_ptr<transform::ContextState> getContextState() const;
+  /// @brief Set the context state for the function
+  void setContextState(std::shared_ptr<transform::ContextState> state);
 
   // Set an acceptance call
   ACCEPT()

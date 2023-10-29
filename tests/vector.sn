@@ -31,14 +31,14 @@ func insert() i32 {
     return v.at(1);
 }
 
-@test(skip)
+@test()
 func to_string() i32 {
     let mut v = new Vector<i32>();
     v.push(1);
     v.push(2);
     v.push(3);
     // TODO: i32.to_string() is not implemented
-    //return v.to_string() == "[1, 2, 3]";
+    return v.to_string() == "[1, 2, 3]";
 }
 
 @test(expect = 5)

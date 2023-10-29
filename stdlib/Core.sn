@@ -1,167 +1,26 @@
+import Core::Internal::Preload;
+@use_macro(c_str) 
+import Core::CLib;
+import Core::Ptr;
 
+const DEC_DIGITS_LUT: *const u8 = @c_str("\
+0001020304050607080910111213141516171819\
+2021222324252627282930313233343536373839\
+4041424344454647484950515253545556575859\
+6061626364656667686970717273747576777879\
+8081828384858687888990919293949596979899");
+
+@extends
 @__internal__
-class *const <T> {
+class IntegerImpl {  
   public:
-    @inline
-    @llvm_function
-    unsafe operator func +(self: *const T, other: i64) *const T
-    { 
-      %0 = getelementptr {=T}, {=*const T} %self, i64 %other
-      ret {=*const T} %0
-    } 
-
-    @inline
-    @llvm_function
-    unsafe func as_ref(self: *const T) &T 
-    {
-      ret {=*const T} %self
-    }
-
-    @__internal__
-    operator func =(self: *const T, other: *const T) *const T {}
-
-    @inline
-    @llvm_function
-    func is_null(self: *const T) bool
-    {
-      %0 = icmp eq {=*const T} %self, null
-      ret i1 %0
-    }
-
-    @inline
-    func unchecked_get(self: *const T, index: i32) &T
-    {
-      unsafe{
-        return (self + index).as_ref();
-      }
-    }
-
-    @inline
-    @llvm_function(sanitise_void_return)
-    operator func [](self: *const T, index: i64) T
-    { 
-      %0 = getelementptr inbounds {=T}, {=*const T} %self, i64 0
-      %1 = load {=T}, {=*const T} %0, align 1
-      ret {=T} %1
-    }
-
-    @inline
-    operator func !(self: *const T) bool { return self.is_null(); }
-}
-
-@__internal__
-class *mut <T> {
-  public:
-    @inline
-    @llvm_function
-    unsafe operator func +(mut self: *const T, other: i64) *mut T
-    { 
-      %0 = getelementptr {=T}, {=*mut T} %self, i64 %other
-      ret {=*mut T} %0
-    } 
-
-    @inline
-    @llvm_function
-    unsafe func as_ref(mut self: *const T) &T 
-    {
-      ret {=*mut T} %self
-    }
-
-    @__internal__
-    mut operator func =(mut self: *const T, mut other: *const T) *mut T {}
-
-    @inline
-    @llvm_function
-    func is_null(mut self: *mut T) bool
-    {
-      %0 = icmp eq {=*mut T} %self, null
-      ret i1 %0
-    }
-
-    @inline
-    func unchecked_get(mut self: *mut T, index: i32) &T
-    {
-      unsafe{
-        return (self + index).as_ref();
-      }
-    }
-
-    @inline
-    @llvm_function(sanitise_void_return)
-    operator func [](mut self: *mut T, index: i64) T
-    { 
-      %0 = getelementptr inbounds {=T}, {=*mut T} %self, i64 0
-      %1 = load {=T}, {=*mut T} %0, align 1
-      ret {=T} %1
-    }
-
-    @inline
-    operator func !(mut self: *mut T) bool { return self.is_null(); }
-}
-
-/// @brief Integer type implementation.
-/// @tparam IntegerType The integer type to implement.
-/// @details This class implements the integer type.
-/// @note This class is not meant to be used directly.
-/// @internal
-@__internal__
-class IntegerImpl<IntegerType> {
-  public:
-    // Equality operators
-    @__internal__ operator func ==(self: IntegerType, other: IntegerType) bool {}
-    @__internal__ operator func !=(self: IntegerType, other: IntegerType) bool {}
-    @__internal__ operator func  <(self: IntegerType, other: IntegerType) bool {}
-    @__internal__ operator func  >(self: IntegerType, other: IntegerType) bool {}
-    @__internal__ operator func <=(self: IntegerType, other: IntegerType) bool {}
-    @__internal__ operator func >=(self: IntegerType, other: IntegerType) bool {} 
-
-    // Assignment operators
-    @__internal__ mut operator func =(self: IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ mut operator func =(self: &IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ mut operator func =(self: &IntegerType, other: &IntegerType) IntegerType {}
-    @__internal__ mut operator func +=(self: IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ mut operator func -=(self: IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ mut operator func *=(self: IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ mut operator func /=(self: IntegerType, other: IntegerType) f32 {}
-    @__internal__ mut operator func %=(self: IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ mut operator func ^=(self: IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ mut operator func |=(self: IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ mut operator func &=(self: IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ mut operator func <<=(self: IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ mut operator func >>=(self: IntegerType, other: IntegerType) IntegerType {}
-
-    // Arithmetic operators
-    @__internal__ operator func +(self: IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ operator func -(self: IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ operator func -(self: IntegerType) IntegerType {}
-    @__internal__ operator func +(self: IntegerType) IntegerType {}
-    @__internal__ operator func *(self: IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ operator func /(self: IntegerType, other: IntegerType) f32 {}
-    @__internal__ operator func %(self: IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ operator func ^(self: IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ operator func |(self: IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ operator func &(self: IntegerType, other: IntegerType) IntegerType {}
-    @__internal__ operator func <<(self: IntegerType, other: IntegerType) IntegerType {}
-    // @__internal__ operator func >>(self: IntegerType, other: IntegerType) IntegerType {}
-
-    // Unary operators
-    @__internal__ operator func -(self: IntegerType) IntegerType {}
-    @__internal__ operator func +(self: IntegerType) IntegerType {}
-
-    // Logical operators
-    @__internal__ operator func !(self: IntegerType) bool {}
-    @__internal__ operator func &&(self: IntegerType, other: IntegerType) bool {}
-    @__internal__ operator func ||(self: IntegerType, other: IntegerType) bool {}
-
-    func to_string<>(self: IntegerType) String {
+    func to_string(self: IntegerType) String {
       // TODO: static assert sizeof is larger than 2
       // TODO: float impl
 
       let mut n = self;
       let mut buffer = Ptr::Allocator<?u8>::alloc(39).ptr();
       let mut curr = 39; // max number of digits for the buffer
-
-      let DEC_DIGITS_LUT = dec_digits_luc();
 
       unsafe {
         while n >= 1000 {
@@ -201,19 +60,6 @@ class IntegerImpl<IntegerType> {
         return String::from(buffer + curr, 39 - curr);
       }
     }
-}
-
-@use_macro(c_str) 
-import Core::CLib;
-import Core::Ptr;
-
-func dec_digits_luc<>() *const u8 {
-  return @c_str("\
-0001020304050607080910111213141516171819\
-2021222324252627282930313233343536373839\
-4041424344454647484950515253545556575859\
-6061626364656667686970717273747576777879\
-8081828384858687888990919293949596979899");
 }
 
 type usize = u64; // TODo: make this 32 bit dependent on the target
@@ -665,7 +511,7 @@ public class Vector<
  * The `StringView` class is an ideal choice for working with strings without the need for full string
  * ownership or memory management. It provides efficient access and manipulation of string data.
  */
-public class StringView<Char: Sized = u8> {
+public class StringView<Char: Sized = u8> implements ToString {
   public:
     type StringType = *const Char;
 
@@ -773,7 +619,7 @@ public class StringView<Char: Sized = u8> {
      * @return The constructed string view.
      */
     @inline
-    static func from<T>(buffer: T) StringView<Char> { return buffer.to_string(); }
+    static func from<T: ToString>(buffer: T) StringView<Char> { return buffer.to_string(); }
 
     /**
      * @brief Constructs a string view from a buffer and its size.

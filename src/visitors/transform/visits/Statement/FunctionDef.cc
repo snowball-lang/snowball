@@ -61,6 +61,17 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     });
   }
 
+  auto state = ctx->saveState();
+  if (auto newState = p_node->getContextState()) {
+    // we just replace module, uuidStack and stack
+    // TODO: make sure it's up to date
+    auto newStack = newState->stack;
+    newStack.push_front(ctx->currentScope());
+    state->module = newState->module;
+    state->stack = newStack;
+    state->uuidStack = newState->uuidStack;
+  }
+
   if (!ctx->generateFunction && !(IS_MAIN)) {
     // assert(!services::OperatorService::isOperator(name));
     //  Check if the function requirements match the main function
@@ -88,7 +99,7 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
         ctx->exported.push_back(name);
       }
     }
-    ctx->cache->setFunction(uuid, p_node, ctx->saveState());
+    ctx->cache->setFunction(uuid, p_node, state);
     return;
   }
 
@@ -98,7 +109,7 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     return;
   }
 
-  if (ctx->generateFunction && !p_node->isGeneric()) transformFunction({p_node, ctx->saveState()}, {});
+  if (ctx->generateFunction && !p_node->isGeneric()) transformFunction({p_node, state}, {});
 }
 
 } // namespace Syntax

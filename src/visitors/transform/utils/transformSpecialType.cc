@@ -29,7 +29,7 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
   if (n == "bool") {
     return ctx->getPrimitiveNumberType<types::IntType>(1);
   } else if (utils::startsWith(n, "i") || utils::startsWith(n, "u")) {
-    bool isSnsigned = utils::startsWith(n, "i");
+    bool isSigned = utils::startsWith(n, "i");
     auto bitsString = n.substr(1);
     if (bitsString.empty() || !std::isdigit(bitsString[0])) return nullptr;
     if (!std::all_of(bitsString.begin(), bitsString.end(), ::isdigit)) {
@@ -61,7 +61,7 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
                 {.note = FMT("This is used used for consistency with other languages.")}
         );
       default: {
-        return ctx->getPrimitiveNumberType<types::IntType>(bits, isSnsigned);
+        return ctx->getPrimitiveNumberType<types::IntType>(bits, isSigned);
       }
     }
   } else if (utils::startsWith(n, "f")) {

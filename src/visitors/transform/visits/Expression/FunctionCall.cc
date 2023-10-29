@@ -114,8 +114,6 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
   assert(fn);
   // clang-format off
     auto call = getBuilder().createCall(p_node->getDBGInfo(), fn, argValues);
-    if (call->getDBGInfo() == nullptr)
-      DUMP_S("HYYY")
     if (auto t = utils::cast<types::FunctionType>(fn->getType())) {
       auto isContructor = utils::dyn_cast<ir::Func>(fn) && utils::dyn_cast<ir::Func>(fn)->isConstructor();
       if (t->getArgs().size() <= argTypes.size() || /**sorry**/
@@ -173,8 +171,6 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 for (auto arg = std::next(args.begin(), argTypes.size()); arg != args.end(); ++arg) {
                     if (arg->second->hasDefaultValue()) {
                         auto val = trans(arg->second->getDefaultValue());
-                        if (val->getDBGInfo() == nullptr) 
-                            trans(arg->second->getDefaultValue());
                         auto ty = val->getType();
                         if (!arg->second->getType()->is(ty)) {
                             if (!tryCast(val, arg->second->getType()))

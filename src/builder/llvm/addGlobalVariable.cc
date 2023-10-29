@@ -46,10 +46,12 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
   );
  
   ctx->addSymbol(var->getId(), gvar);
+  ctx->setCurrentFunction(ctor);
 
   auto val = expr(var->getValue().get());
 
   builder->CreateStore(val, gvar);
+  ctx->clearCurrentFunction();
 
   auto srcInfo = var->getDBGInfo();
   auto file = dbg.getFile(var->getSourceInfo()->getPath());

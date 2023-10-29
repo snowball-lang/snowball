@@ -168,7 +168,9 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
   llvm::AllocaInst* createAlloca(llvm::Type* ty, std::string name = "") {
     auto backupBlock = builder->GetInsertBlock();
     auto entryBlock = ctx->getCurrentFunction()->getEntryBlock().getTerminator();
-    builder->SetInsertPoint(entryBlock);
+    if (entryBlock) {
+      builder->SetInsertPoint(entryBlock);
+    }
     auto alloca = builder->CreateAlloca(ty, nullptr, name);
     builder->SetInsertPoint(backupBlock);
     return alloca;
