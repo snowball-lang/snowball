@@ -184,14 +184,14 @@ void Lexer::tokenize() {
             consume(TokenType::OP_BIT_RSHIFT_EQ, 3);
           else
           // TODO: (generics cant handle <type<hello<adios>>)
-          // consume(TokenType::OP_BIT_RSHIFT, 2);
+            consume(TokenType::OP_BIT_RSHIFT, 2);
           //                                              ^^
           // actually parse ">>" at parser when we encounter an
           // operator
-          {
-            consume(TokenType::OP_GT);
-            consume(TokenType::OP_GT);
-          }
+          //{
+          //  consume(TokenType::OP_GT);
+          //  consume(TokenType::OP_GT);
+          //}
         } else
           consume(TokenType::OP_GT);
         break;
@@ -209,8 +209,8 @@ void Lexer::tokenize() {
           consume(TokenType::OP_BIT_OR_EQ, 2);
         else if (GET_CHAR(1) == '|')
           consume(TokenType::OP_OR, 2);
-        else if (GET_CHAR(1) == '>' && GET_CHAR(2) == '>')
-          consume(TokenType::OP_BIT_RSHIFT, 3);
+        //else if (GET_CHAR(1) == '>' && GET_CHAR(2) == '>')
+        //  consume(TokenType::OP_BIT_RSHIFT, 3);
         else
           consume(TokenType::OP_BIT_OR);
         break;

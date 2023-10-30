@@ -161,6 +161,13 @@ private:
    */
   Syntax::Expression::Base* buildOperatorTree(std::vector<Syntax::Expression::Base*>& exprs);
 
+  /**
+   * @brief Replaces the type of the current token with another
+   */
+  void replaceCurrentType(TokenType new_type) {
+    m_current.type = new_type;
+  }
+
 private:
   // Parsing functions
 
