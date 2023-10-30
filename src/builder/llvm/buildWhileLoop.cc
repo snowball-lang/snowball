@@ -14,6 +14,13 @@ void LLVMBuilder::visit(ir::WhileLoop* c) {
   auto condBB = h.create<llvm::BasicBlock>(*context, "", parent);
   auto whileBB = h.create<llvm::BasicBlock>(*context, "", parent);
   auto continueBB = h.create<llvm::BasicBlock>(*context, "", parent);
+
+  auto backupLoop = ctx->loop;
+  ctx->loop = {
+    .continueBlock = condBB,
+    .breakBlock = continueBB,
+  };
+
   if (c->isDoWhile()) {
     builder->CreateBr(whileBB);
     builder->SetInsertPoint(whileBB);
@@ -33,6 +40,8 @@ void LLVMBuilder::visit(ir::WhileLoop* c) {
     if (!builder->GetInsertBlock()->getTerminator()) { builder->CreateBr(condBB); }
     builder->SetInsertPoint(continueBB);
   }
+
+  ctx->loop = backupLoop;
 }
 
 } // namespace codegen

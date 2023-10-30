@@ -19,8 +19,11 @@ Syntax::Statement::ForLoop* Parser::parseForLoop() {
   if (kword != "in") { createError<SYNTAX_ERROR>("Expected 'in' after for loop variable declaration!"); }
   auto expr = parseExpr();
   next();
+  bool backupLoop = m_inside_loop;
+  m_inside_loop = true;
   assert_tok<TokenType::BRACKET_LCURLY>("'{'");
   auto body = parseBlock();
+  m_inside_loop = backupLoop;
   auto loop = Syntax::N<Syntax::Statement::ForLoop>(var, expr, body);
   loop->setDBGInfo(dbg);
   return loop;

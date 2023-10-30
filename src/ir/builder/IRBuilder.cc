@@ -56,6 +56,10 @@ SharedValue<Argument> IRBuilder::createArgument(
 ) {
   return N<Argument>(dbgInfo, name, index, defaultValue);
 }
+SharedValue<LoopFlow> IRBuilder::createLoopFlow(
+        DBGSourceInfo* dbgInfo, LoopFlowType type) {
+  return N<LoopFlow>(dbgInfo, type);
+}
 SharedValue<ZeroInitialized> IRBuilder::createZeroInitialized(DBGSourceInfo* dbg, Type<> type) {
   auto zero = N<ZeroInitialized>(dbg);
   zero->setType(type); // already copied

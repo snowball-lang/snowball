@@ -228,6 +228,8 @@ VISIT(Conditional) {
   if (auto x = p_node->getElse()) { x->visit(this); }
 }
 
+VISIT(LoopFlow) { /* noop */ }
+
 VISIT(Cast) {
   auto v = p_node->getExpr();
   auto t = p_node->getCastType();

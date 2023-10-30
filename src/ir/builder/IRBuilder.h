@@ -23,6 +23,7 @@
 #include "../values/Value.h"
 #include "../values/ValueExtract.h"
 #include "../values/WhileLoop.h"
+#include "../values/LoopFlow.h"
 
 #include <list>
 #include <unordered_map>
@@ -132,6 +133,8 @@ public:
   SharedValue<Return> createReturn(DBGSourceInfo* dbgInfo, SharedValue<> value);
   /// @brief Create a new void return instruction
   SharedValue<Return> createVoidReturn(DBGSourceInfo* dbgInfo);
+  /// @brief Create a new loop flow instruction
+  SharedValue<LoopFlow> createLoopFlow(DBGSourceInfo* dbgInfo, LoopFlowType type);
   /// @brief Create a new call instruction
   SharedValue<Call> createCall(DBGSourceInfo* dbgInfo, SharedValue<> callee, ValueVec<> args);
   /// @brief Create a new try/catch instruction

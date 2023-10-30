@@ -32,7 +32,15 @@ void LLVMBuilder::visit(ir::Cast* c) {
 
   // Check if both types are integers
   if (IS_INTEGER(vTy) && IS_INTEGER(ty)) {                    // i[n] <-> i[n]
-    this->value = builder->CreateIntCast(v, llvmType, false); // TODO: check if it's actually signed
+    // utils::cast<types::IntType>(vTy)->isSigned()
+    if (types::isIntType(vTy, 1)) {
+      // We use ZExt for bools because i1 can be considered as a sign, so
+      // it will be extended accross all the bits, for example if you cast
+      // i1 '1' to i8, you will get 111...1110, which is -1.
+      this->value = builder->CreateZExt(v, llvmType);
+    } else {
+      this->value = builder->CreateIntCast(v, llvmType, utils::cast<types::IntType>(ty)->isSigned()); // TODO: check if it's actually signed
+    }
   } else if (IS_INTEGER(vTy) && IS_FLOAT(ty)) {               // i[n] -> float
     // cast signed integer to float
     this->value = builder->CreateSIToFP(v, llvmType);

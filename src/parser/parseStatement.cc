@@ -33,6 +33,13 @@ Syntax::Node* Parser::parseStatement(Token pk) {
       break;
     }
 
+    case TokenType::KWORD_BREAK:
+    case TokenType::KWORD_CONTINUE: {
+      next();
+      return parseLoopControl();
+      break;
+    }
+
     case TokenType::KWORD_THROW: {
       next();
       return parseThrow();

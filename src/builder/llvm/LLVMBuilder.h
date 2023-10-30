@@ -104,6 +104,13 @@ public:
   app::Options::Optimization optimizationLevel = app::Options::Optimization::OPTIMIZE_O0;
   // Type information about ALLLL the types being used
   std::map<ir::id_t, std::shared_ptr<types::BaseType>> typeInfo;
+  /// @brief Loop information
+  struct {
+    // The continue block for the current loop
+    llvm::BasicBlock* continueBlock = nullptr;
+    // The break block for the current loop
+    llvm::BasicBlock* breakBlock = nullptr;
+  } loop;
 };
 
 /**

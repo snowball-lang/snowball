@@ -18,6 +18,9 @@ WhileLoop* Parser::parseWhile() {
   Syntax::Expression::Base* expr = nullptr;
   Syntax::Block* block = nullptr;
 
+  bool backupLoop = m_inside_loop;
+  m_inside_loop = true;
+
   if (!isDoWhile) {
     expr = parseExpr(false);
     next();
@@ -34,6 +37,7 @@ WhileLoop* Parser::parseWhile() {
     assert_tok<TokenType::SYM_SEMI_COLLON>("';'");
   }
 
+  m_inside_loop = backupLoop;
   auto v = Syntax::N<Syntax::Statement::WhileLoop>(expr, block, isDoWhile);
   auto info = DBGSourceInfo::fromToken(m_source_info, token);
   v->setDBGInfo(info);

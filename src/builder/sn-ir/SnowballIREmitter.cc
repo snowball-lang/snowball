@@ -190,6 +190,17 @@ void SnowballIREmitter::visit(ir::ReferenceTo* rt) {
   addContent(")");
 }
 
+void SnowballIREmitter::visit(ir::LoopFlow* lf) {
+  switch (lf->getFlowType()) {
+    case ir::LoopFlowType::Break:
+      addContent("break;\n");
+      break;
+    case ir::LoopFlowType::Continue:
+      addContent("continue;\n");
+      break;
+  }
+}
+
 void SnowballIREmitter::visit(ir::DereferenceTo* d) {
   addContent("*(");
   d->getValue()->visit(this);

@@ -28,6 +28,8 @@ class Parser {
   const SourceInfo* m_source_info;
   Syntax::Statement::DefinedTypeDef* m_current_class = nullptr;
 
+  bool m_inside_loop = false;
+
 public:
   Parser(std::vector<Token> p_tokens, const SourceInfo* p_source_info);
   ~Parser() noexcept = default;
@@ -261,6 +263,10 @@ private:
           TokenType terminator = TokenType::BRACKET_RPARENT,
           std::string terminatorString = ")"
   );
+  /**
+   * loop_control  ::=  "break" | "continue"
+   */
+  Syntax::Statement::LoopFlow* parseLoopControl();
   /**
    * function_call ::= [expr] "(" [args] ")"
    * arguments     ::= [[expr] "," ...]

@@ -760,6 +760,29 @@ public:
 };
 
 /**
+ * Representation of a loop flow. This is used to
+ * break or continue a loop.
+ */
+struct LoopFlow : public AcceptorExtend<LoopFlow, Base> {
+public:
+  /// @brief Loop flow type (break or continue)
+  enum FlowType
+  {
+    Break,
+    Continue
+  } type;
+
+  using AcceptorExtend::AcceptorExtend;
+
+  LoopFlow(FlowType type) : type(type){};
+
+  /// @return Get the loop flow type
+  auto getFlowType() { return type; }
+
+  ACCEPT()
+};
+
+/**
  * @brief Representation of a try-catch block in the AST.
  */
 struct TryCatch : public AcceptorExtend<TryCatch, Base> {

@@ -40,7 +40,7 @@ class *const <T> {
     @llvm_function(sanitise_void_return)
     operator func [](self: *const T, index: i64) T
     { 
-      %0 = getelementptr inbounds {=T}, {=*const T} %self, i64 0
+      %0 = getelementptr inbounds {=T}, {=*const T} %self, i64 %index
       %1 = load {=T}, {=*const T} %0, align 1
       ret {=T} %1
     }
@@ -90,7 +90,7 @@ class *mut <T> {
     @llvm_function(sanitise_void_return)
     operator func [](mut self: *mut T, index: i64) T
     { 
-      %0 = getelementptr inbounds {=T}, {=*mut T} %self, i64 0
+      %0 = getelementptr inbounds {=T}, {=*mut T} %self, i64 %index
       %1 = load {=T}, {=*mut T} %0, align 1
       ret {=T} %1
     }

@@ -34,6 +34,6 @@ class Hello {
 
 public func main() i32 {
 
-    System::println((true).hex())
+    System::println((0x9250F).hex())
 //    Panic::panic("Hello, world!")
 } 
