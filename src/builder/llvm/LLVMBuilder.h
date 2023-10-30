@@ -288,6 +288,10 @@ private:
    */
   llvm::Function* createLLVMFunction(ir::Func* fn);
   /**
+   * @brief It converts a value into a boolean value
+  */
+  llvm::Value* toBool(llvm::Value* v, bool isSigned = false);
+  /**
    * @brief Transform a built in snowball type
    * to an llvm type.
    */

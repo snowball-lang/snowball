@@ -23,6 +23,7 @@ Syntax::Expression::Base* Parser::buildOperatorTree(std::vector<Syntax::Expressi
 
       int precedence = -1;
       switch (expression->op_type) {
+        // https://en.m.wikipedia.org/wiki/Order_of_operations#Programming_languages
         case Syntax::Expression::BinaryOp::OpType::NOT:
         case Syntax::Expression::BinaryOp::OpType::BIT_NOT:
         case Syntax::Expression::BinaryOp::OpType::UPLUS:

@@ -209,6 +209,8 @@ void Lexer::tokenize() {
           consume(TokenType::OP_BIT_OR_EQ, 2);
         else if (GET_CHAR(1) == '|')
           consume(TokenType::OP_OR, 2);
+        else if (GET_CHAR(1) == '>' && GET_CHAR(2) == '>')
+          consume(TokenType::OP_BIT_RSHIFT, 3);
         else
           consume(TokenType::OP_BIT_OR);
         break;

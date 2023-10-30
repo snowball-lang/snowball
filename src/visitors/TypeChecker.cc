@@ -376,7 +376,7 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
       if (!p_node->isInitialization) {
         E<VARIABLE_ERROR>(
                 p_node,
-                "You can't assign a new value to a "
+                "You cant assign a new value to a "
                 "unmutable "
                 "variable",
                 {.note = "This error is caused by the 'mut' keyword "

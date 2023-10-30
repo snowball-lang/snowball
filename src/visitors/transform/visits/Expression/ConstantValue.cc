@@ -57,11 +57,12 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
       auto str = p_node->getValue();
 
       snowball_int_t n = 0;
-      if (utils::startsWith(str, "0x") && utils::startsWith(str, "0X")) {
+      if (utils::startsWith(str, "0x") || utils::startsWith(str, "0X")) {
         n = std::stoll(str, nullptr, 16);
-      } else if (utils::startsWith(str, "0x") && utils::startsWith(str, "0X")) {
+      } else if (utils::startsWith(str, "0b") || utils::startsWith(str, "0B")) {
         n = std::stoul(str.substr(2, (size_t) (str.size() - 2)), nullptr, 2);
       } else {
+        // TODO: big numbers!
         n = std::stoll(str); // We asume the number is correct
       }
 

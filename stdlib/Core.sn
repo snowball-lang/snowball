@@ -17,36 +17,35 @@ class IntegerImpl {
     func to_string(self: IntegerType) String {
       // TODO: static assert sizeof is larger than 2
       // TODO: float impl
-
       let mut n = self;
-      let mut buffer = Ptr::Allocator<?u8>::alloc(39).ptr();
       let mut curr = 39; // max number of digits for the buffer
-
+      let mut buffer = Ptr::Allocator<?u8>::alloc(curr).ptr();
+      let mut neg = false;
+      if n < 0 {
+        neg = true;
+        n = -n;
+        curr = curr - 1;
+      }
       unsafe {
-        while n >= 1000 {
+        let mut n = n as usize;
+        while n >= 10000 {
           let rem = (n % 10000) as usize;
           n = n / 10000;
-
           let d1 = (rem / 100) as usize << 1;
           let d2 = (rem % 100) << 1;
-
           curr = curr - 4;
-
           // we know that buffer > 0 so we can safely write to it
           // TODO: assert curr >= 0
           Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
           Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d2, buffer + (curr + 2), 2);
         }
-
         {
-          let mut n = n as usize;
           if n >= 100 {
             let d1 = (n % 100) << 1; // >> get the last 2 digits
             n = n / 100 as usize;
             curr = curr - 2;
             Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
           }
-
           // decode last 1 or 2 chars
           if n < 10 {
             curr = curr - 1;
@@ -57,12 +56,47 @@ class IntegerImpl {
             Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
           }
         }
-        return String::from(buffer + curr, 39 - curr);
+        if neg {
+          curr = curr - 1;
+          *(buffer + curr) = '-';
+        }
+        return String::from(buffer + curr, 39 - (curr+neg));
+      }
+    }
+
+    // TODO: this is just a hack, we need to implement a proper
+    //    implementation for to_string for bool and floats
+    func to_string(self: bool) String {
+      if self { return "1" }
+      else { return "0" }
+    }
+
+    func hex(self: IntegerType) String {
+      let mut x = self as usize;
+      let size = 17; // max number of digits for the buffer
+      let mut buffer = Ptr::Allocator<?u8>::alloc(size).ptr();
+      unsafe {
+        let mut i = size - 1;
+        while i >= 2 {
+          let d: u8 = x & 0xF;
+          let mut c: u8;
+          if d < 10 {
+            c = d + '0';
+          } else {
+            c = d + 55;
+          }
+          *(buffer + i) = c;
+          i = i - 1;
+          x = x |>> 4;
+        }
+        *(buffer + 0) = '0';
+        *(buffer + 1) = 'x';
+        return String::from(buffer, size);
       }
     }
 }
 
-type usize = u64; // TODo: make this 32 bit dependent on the target
+type usize = u64; // TODO: make this 32 bit dependent on the target
 
 /**
  * @typedef String
@@ -442,9 +476,7 @@ public class Vector<
       } 
       else if index >= self.length 
       {
-        throw new IndexError("Index out of bounds.");
-        // TODO: int impl
-        //throw new IndexError("Index out of bounds. Cannot access element at index " + index.to_string());
+        throw new IndexError("Index out of bounds. Cannot access element at index " + index.to_string());
       }
       return self.buffer.ptr().unchecked_get(index);
     }
@@ -478,7 +510,7 @@ public class Vector<
      * @return A string representation of the vector.
      */
     func to_string<>() String {
-      let mut result = "[".to_string();
+      let mut result = "[";
       for i in 0..self.length {
         result = result + String::from(self[i]);
         if i != self.length - 1 {
@@ -495,6 +527,21 @@ public class Vector<
     let mut length: i64 = 0;
     /** The buffer containing the vector. */
     let mut buffer: Ptr::NonNull<_StoreType> = Allocator::alloc(0);
+
+  public:
+    /**
+     * @brief It creates a new Vector with the specified capacity.
+     * @param[in] capacity The capacity of the vector.
+     * @return A new Vector with the specified capacity.
+     */
+    @inline
+    static func with_capacity(capacity: i32) Self 
+    {
+      let mut vec = new Self();
+      vec.reserve(capacity);
+      return vec;
+    }
+      
 }
 /**
  * @class StringView
@@ -602,9 +649,6 @@ public class StringView<Char: Sized = u8> implements ToString {
 
   // Static exports
   public:
-    @inline
-    static func from(other: Self) StringView<Char> { return other; }
-
     /**
      * @brief Constructs a string view from another string view.
      * @param[in] buffer The string view to construct from.

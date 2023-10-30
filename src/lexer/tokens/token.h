@@ -137,7 +137,7 @@ enum class TokenType
   OP_BIT_XOR, // Symbol: ^
 
   OP_BIT_OR_EQ,     // Symbol: |=
-  OP_BIT_RSHIFT,    // Symbol: >>
+  OP_BIT_RSHIFT,    // Symbol: |>>
   OP_BIT_LSHIFT,    // Symbol: <<
   OP_BIT_AND_EQ,    // Symbol: &=
   OP_BIT_XOR_EQ,    // Symbol: ^=
@@ -268,7 +268,7 @@ struct Token {
       case TokenType::OP_BIT_XOR: return "^";
       case TokenType::OP_BIT_OR_EQ: return "|=";
       case TokenType::OP_BIT_LSHIFT: return "<<";
-      case TokenType::OP_BIT_RSHIFT: return ">>";
+      case TokenType::OP_BIT_RSHIFT: return "|>>";
       case TokenType::OP_BIT_AND_EQ: return "&=";
       case TokenType::OP_BIT_XOR_EQ: return "^=";
       case TokenType::OP_BIT_LSHIFT_EQ: return "<<=";

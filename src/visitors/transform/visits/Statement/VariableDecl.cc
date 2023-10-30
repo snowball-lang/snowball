@@ -39,7 +39,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
     getBuilder().setType(varDecl, val->getType());
     if (auto f = ctx->getCurrentFunction().get()) {
       f->addSymbol(varDecl);
-    } else {
+    } else if (!ctx->getCurrentClass()) {
       ctx->module->addVariable(varDecl);
     }
 
@@ -68,7 +68,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
     getBuilder().setType(varDecl, definedType);
     if (auto f = ctx->getCurrentFunction().get()) {
       f->addSymbol(varDecl);
-    } else {
+    } else if (!ctx->getCurrentClass()) {
       ctx->module->addVariable(varDecl);
     }
 
