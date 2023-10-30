@@ -16,6 +16,7 @@ import pkg::algorithms;
 import pkg::clib;
 import pkg::interfaces;
 import pkg::math;
+import pkg::numbers;
 
 //import pkg::macros;
 //import pkg::source_location;
@@ -26,6 +27,13 @@ import pkg::math;
 import Core::System;
 import Core::Optional;
 
+class Hello {
+    Hello() {}
+    const y: i32 = -1;
+}
+
 public func main() i32 {
+
+    System::println((true).hex())
 //    Panic::panic("Hello, world!")
 } 

@@ -4,7 +4,7 @@
 
 public type c_obj = *const void;
 public type c_int = i32;
-public type c_char = char;
+public type c_char = i8;
 public type c_bool = bool;
 public type c_float = f32;
 public type c_double = f64;
@@ -88,6 +88,21 @@ public external unsafe func free(c_obj) void;
  */
 public external unsafe func memcpy(c_obj, c_obj, c_int) void;
 /**
+ * @brief (memmove) Copies count bytes from the object pointed to by src to the object pointed to by dest.
+ * @param dest(c_obj) - pointer to the object to copy to
+ * @param src(c_obj) - pointer to the object to copy from
+ * @param count(c_int) - number of bytes to copy
+ * @return c_obj - dest
+ * @note(1) The underlying type of the objects pointed to by both the source and destination pointers are irrelevant for this function;
+ *  The result is a binary copy of the data.
+ * @note(2) The function does not check for any terminating null character in source - it always copies exactly count bytes.
+ * @note(3) If the objects overlap, the behavior is undefined.
+ * @note(4) If either dest or src is a null pointer, the behavior is undefined, even if count is zero.
+ * @note(5) If the objects are not TriviallyCopyable, the behavior of memcpy is not specified and may be undefined.
+ * @note(6) If the objects are potentially-overlapping or not TriviallyCopyable, use memmove or memcpy_s instead.
+ */
+public external unsafe func memmove(c_obj, c_obj, c_int) void;
+/**
  * @brief Writes every character from the null-terminated string str and one additional newline
  *  character '\n' to the output stream stdout, as if by repeatedly executing @func fputc.
  * @param str(String) This is the string to be written.
@@ -148,7 +163,8 @@ public external unsafe func time(*const c_int) c_int;
  * @param str(&char) - string to be converted
  * @return &char - C string
  */
-macro [[export]] c_str(x: const[str]) = (@x.bytes());   
+@export
+macro c_str(x: const[str]) = (@x.bytes());   
 /**
  * @brief a namespace that contains functions for manipulating strings.
  * @note(1) All functions in this namespace are thread-safe.

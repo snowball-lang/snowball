@@ -27,6 +27,10 @@
 namespace snowball {
 namespace Syntax {
 
+namespace transform {
+class ContextState;
+}
+
 class Visitor;
 
 // In snowball, a block is composed of
@@ -88,15 +92,22 @@ private:
   // Constant value type to know what is what.
   ConstantType type;
 
+  // @brief Constant's value prefix
+  // @example b"hello" -> prefix = "b"
+  std::string prefix = "";
+
 public:
   using AcceptorExtend::AcceptorExtend;
 
-  ConstantValue(ConstantType type, std::string value) : type(type), value(value){};
+  ConstantValue(ConstantType type, std::string value, std::string prefix = "") 
+    : type(type), value(value), prefix(prefix) {};
 
   /// @return Get constant value
-  std::string getValue() { return value; }
+  std::string getValue() const { return value; }
   /// @return Get the type that defines this constant.
-  ConstantType getType() { return type; }
+  ConstantType getType() const { return type; }
+  /// @return Get the prefix of the constant
+  std::string getPrefix() const { return prefix; }
 
   ACCEPT()
 
@@ -472,6 +483,9 @@ struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
   // as mutable.
   bool _mutable = false;
 
+  /// @brief Context state for the function (it shoudn't be used often)
+  std::shared_ptr<snowball::Syntax::transform::ContextState> _contextState = nullptr;
+
 public:
   FunctionDef(const std::string name, Privacy::Status prvc = PRIVATE);
 
@@ -523,6 +537,11 @@ public:
 
   /// @brief Copy the function
   virtual FunctionDef* copy() { return new FunctionDef(*this); }
+
+  /// @brief Get the context state for the function
+  std::shared_ptr<transform::ContextState> getContextState() const;
+  /// @brief Set the context state for the function
+  void setContextState(std::shared_ptr<transform::ContextState> state);
 
   // Set an acceptance call
   ACCEPT()

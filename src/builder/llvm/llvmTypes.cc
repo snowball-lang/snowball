@@ -25,8 +25,6 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid) {
     }
   } else if (cast<types::VoidType>(t)) {
     return translateVoid ? builder->getInt8Ty() : builder->getVoidTy();
-  } else if (cast<types::CharType>(t)) {
-    return builder->getInt8Ty();
   } else if (auto x = cast<types::ReferenceType>(t)) {
     return getLLVMType(x->getPointedType())->getPointerTo();
   } else if (auto x = cast<types::PointerType>(t)) {

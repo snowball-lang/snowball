@@ -44,10 +44,10 @@ void Backtrace::pls_free() {
 }
 
 void print_backtrace(Backtrace backtrace, std::ostringstream &oss) {
-    //if (getenv("SN_BACKTRACE") == NULL) {
-    //    oss << "\n \e[1;37m[info]\e[0m: Export the enviroment variable \e[1;37m`SN_BACKTRACE=1`\e[0m to enable backtrace logging.";
-    //    return;
-    //}
+    if (getenv("SN_BACKTRACE") == NULL) {
+        oss << "\n \e[1;37m[info]\e[0m: Export the enviroment variable \e[1;37m`SN_BACKTRACE=1`\e[0m to enable backtrace logging.";
+        return;
+    }
 
     oss << "\n";
     oss << "\n\033[1mBacktrace (most recent call first):\033[0m\n";

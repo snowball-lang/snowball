@@ -61,6 +61,18 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
         } else if (auto ty = utils::cast<types::InterfaceType>(x)) {
           FIND_FIELD(types::InterfaceType::Member)
         }
+      } else {
+        if (auto ty = utils::cast<types::DefinedType>(x)) {
+          auto& fields = ty->getStaticFields();
+          auto fieldValue = std::find_if(fields.begin(), fields.end(), [&](std::shared_ptr<ir::VariableDeclaration> f) {
+            return f->getIdentifier() == name;
+          });
+          if (fieldValue != fields.end()) {
+            indexValue = (*fieldValue)->getVariable();
+          }
+        } else {
+          E<TYPE_ERROR>(dbgInfo, "Only defined types can have static members!");
+        }
       }
 
       if (indexValue == nullptr && v.has_value()) { indexValue = v.value(); }
@@ -81,7 +93,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
 
         auto str = getBuiltinTypeUUID(x->getPointedType(), x->isMutable() ? _SNOWBALL_MUT_PTR : _SNOWBALL_CONST_PTR, x);
         if (!str.empty()) uuid = str;
-      } else if (auto x = utils::cast<types::NumericType>(type); x && !utils::is<types::CharType>(x)) {
+      } else if (auto x = utils::cast<types::NumericType>(type)) {
         auto str = getBuiltinTypeUUID(x, _SNOWBALL_INT_IMPL);
         if (!str.empty()) uuid = str;
       }
@@ -115,6 +127,15 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     auto fullUUID = m->getUniqueName();
     auto [v, ty, fns, ovs, mod] =
             getFromIdentifier(dbgInfo, index->getIdentifier()->getIdentifier(), generics, fullUUID);
+
+    if (!v.has_value()) {
+      for (auto& variable : m->getVariables()) {
+        if (variable->getIdentifier() == index->getIdentifier()->getIdentifier()) { // TODO: make this faster
+          v = variable->getVariable();
+          break;
+        }
+      } 
+    }
 
     if (!v.has_value() && !ty.has_value() && !fns.has_value() && !ovs.has_value() && !mod.has_value()) {
       E<VARIABLE_ERROR>(
@@ -168,7 +189,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     } else {
       E<VARIABLE_ERROR>(
               baseIdentifier->getDBGInfo(),
-              FMT("Cannot find identifier `%s`!", baseIdentifier->getIdentifier().c_str()),
+              FMT("Cannot find identifier '%s'!", baseIdentifier->getIdentifier().c_str()),
               {.info = "this name is not defined"}
       );
     }

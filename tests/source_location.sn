@@ -1,5 +1,7 @@
 import Core::System;
-import[[use_macro(current_location)]] Core::SourceLocation;
+
+@use_macro(current_location)
+import Core::SourceLocation;
 
 namespace tests {
 
@@ -10,7 +12,8 @@ func source_location_wrapper(
 }
 
 // TODO: test this better, I dont think line number is correct
-func [[test]] test_source_location() i32 {
+@test
+func test_source_location() i32 {
     // TODO: should this be -1 or equal for the line?
     let curr = @current_location();
     let x = source_location_wrapper();

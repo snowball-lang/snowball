@@ -49,6 +49,9 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
             deducedArgType = Macro::ArguementType::CONSTANT_CHAR;
           }
         }
+        if (argType == Macro::ArguementType::EXPRESSION) {
+          deducedArgType = Macro::ArguementType::EXPRESSION;
+        }
       } else if (utils::is<Expression::TypeRef>(arg)) {
         deducedArgType = Macro::ArguementType::TYPE;
       } else {

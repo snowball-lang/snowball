@@ -1,6 +1,102 @@
-import Core::Internal::Preloads;
-import[[use_macro(c_str)]] Core::CLib;
+import Core::Internal::Preload;
+@use_macro(c_str) 
+import Core::CLib;
 import Core::Ptr;
+
+const DEC_DIGITS_LUT: *const u8 = b"\
+0001020304050607080910111213141516171819\
+2021222324252627282930313233343536373839\
+4041424344454647484950515253545556575859\
+6061626364656667686970717273747576777879\
+8081828384858687888990919293949596979899";
+
+@extends
+@__internal__
+class IntegerImpl {  
+  public:
+    func to_string(self: IntegerType) String {
+      // TODO: static assert sizeof is larger than 2
+      // TODO: float impl
+      let mut n = self;
+      let mut curr = 39; // max number of digits for the buffer
+      let mut buffer = Ptr::Allocator<?u8>::alloc(curr).ptr();
+      let mut neg = false;
+      if n < 0 {
+        neg = true;
+        n = -n;
+        curr = curr - 1;
+      }
+      unsafe {
+        let mut n = n as usize;
+        while n >= 10000 {
+          let rem = (n % 10000) as usize;
+          n = n / 10000;
+          let d1 = (rem / 100) as usize << 1;
+          let d2 = (rem % 100) << 1;
+          curr = curr - 4;
+          // we know that buffer > 0 so we can safely write to it
+          // TODO: assert curr >= 0
+          Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
+          Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d2, buffer + (curr + 2), 2);
+        }
+        {
+          if n >= 100 {
+            let d1 = (n % 100) << 1; // >> get the last 2 digits
+            n = n / 100 as usize;
+            curr = curr - 2;
+            Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
+          }
+          // decode last 1 or 2 chars
+          if n < 10 {
+            curr = curr - 1;
+            *(buffer + curr) = (n as u8) + '0';
+          } else {
+            let d1 = n << 1; // >> get the last 2 digits
+            curr = curr - 2;
+            Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
+          }
+        }
+        if neg {
+          curr = curr - 1;
+          *(buffer + curr) = '-';
+        }
+        return String::from(buffer + curr, 39 - (curr+neg));
+      }
+    }
+
+    // TODO: this is just a hack, we need to implement a proper
+    //    implementation for to_string for bool and floats
+    func to_string(self: bool) String {
+      if self { return "1" }
+      else { return "0" }
+    }
+
+    func hex(self: IntegerType) String {
+      let mut x = self as usize;
+      let size = 17; // max number of digits for the buffer
+      let mut buffer = Ptr::Allocator<?u8>::alloc(size).ptr();
+      unsafe {
+        let mut i = size - 1;
+        while i >= 2 {
+          let d: u8 = x & 0xF;
+          let mut c: u8;
+          if d < 10 {
+            c = d + '0';
+          } else {
+            c = d + 55;
+          }
+          *(buffer + i) = c;
+          i = i - 1;
+          x = x |>> 4;
+        }
+        *(buffer + 0) = '0';
+        *(buffer + 1) = 'x';
+        return String::from(buffer, size);
+      }
+    }
+}
+
+type usize = u64; // TODO: make this 32 bit dependent on the target
 
 /**
  * @typedef String
@@ -171,7 +267,9 @@ public class Iter<_IteratorType: Sized> {
      * @return The value of the iterator.
      * @throws IndexError if the iterator is invalid.
      */
-    func [[internal_linkage, inline]] value() _IteratorType 
+    @internal_linkage
+    @inline
+    func value() _IteratorType 
     { 
       if !self._valid 
       {
@@ -183,21 +281,25 @@ public class Iter<_IteratorType: Sized> {
      * @brief Checks if the iterator is valid.
      * @return `true` if the iterator is valid, `false` otherwise.
      */
-    func [[internal_linkage, inline]] is_valid() bool 
+    @internal_linkage
+    @inline
+    func is_valid() bool 
       { return self._valid; }
   public:
     /**
      * @brief Returns an invalid iterator.
      * @return An invalid iterator with no initial value.
      */
-    static func [[inline]] invalid() Iter<_IteratorType> 
+    @inline
+    static func invalid() Iter<_IteratorType> 
       { return new Iter<_IteratorType>(); }
     /**
      * @brief Returns a valid iterator with an initial value.
      * @param[in] val The initial value of the iterator.
      * @return A valid iterator with the specified initial value.
      */
-    static func [[inline]] valid(val: _IteratorType) Iter<_IteratorType> 
+    @inline
+    static func valid(val: _IteratorType) Iter<_IteratorType> 
       { return new Iter<_IteratorType>(val); }
 }
 /**
@@ -240,25 +342,30 @@ public class Range<_Number_Type: Numeric = i32> implements Iterable<_Number_Type
      * @brief Returns the size of the range.
      * @return The size of the range.
      */
-    func [[internal_linkage, inline]] size() _Number_Type
+    @inline
+    func size() _Number_Type
       { return self._end - self._start; }
     /**
      * @brief Returns the start of the range.
      * @return The start of the range.
      */
-    func [[internal_linkage, inline]] begin() _Number_Type
+    @internal_linkage
+    @inline
+    func begin() _Number_Type
       { return self._start; }
     /**
      * @brief Returns the end of the range.
      * @return The end of the range.
      */
-    func [[internal_linkage, inline]] end() _Number_Type
+    @internal_linkage
+    @inline
+    func end() _Number_Type
       { return self._end; }
     /**
      * @brief Returns the next element in the iteration.
      * @return The next element in the iteration.
      */
-    virtual mut func [[internal_linkage]] next() Iter<_Number_Type>
+    virtual mut func next() Iter<_Number_Type>
     {
       self.iter_index = self.iter_index + 1;
       if self.iter_index >= self.end() 
@@ -270,8 +377,8 @@ public class Range<_Number_Type: Numeric = i32> implements Iterable<_Number_Type
     /**
      * @brief Resets the iteration to the beginning of the range.
      */
-    mut func [[inline]] reset() 
-      { self.iter_index = self._start - 1; }
+    @inline
+    mut func reset() { self.iter_index = self._start - 1; }
   private:
     /** The start of the range. */
     let _start: _Number_Type = 0;
@@ -311,7 +418,7 @@ public class Vector<
      * @brief It pushes an element to the back of the vector.
      * @param[in] value The element to push to the back of the vector.
      */
-    mut func [[internal_linkage]] push(value: _StoreType)
+    mut func push(value: _StoreType)
     { 
       if self.length >= self.capacity 
       {
@@ -325,12 +432,14 @@ public class Vector<
     /**
      * @return The size of the vector.
      */
-    func [[internal_linkage, inline]] size() i32 { return self.length; }
+    @internal_linkage
+    @inline
+    func size() i32 { return self.length; }
     /**
      * @brief Resizes the vector.
      * @param[in] capacity The new capacity of the vector.
      */
-    mut func [[internal_linkage]] resize()
+    mut func resize()
     { 
       // we make sure we dont overflow
       if self.capacity == 0 { self.reserve(1); }
@@ -341,7 +450,7 @@ public class Vector<
      * @brief Reserves a capacity for the vector.
      * @param[in] capacity The capacity to reserve for the vector.
      */
-    mut func [[internal_linkage]] reserve(new_capacity: i32)
+    mut func reserve(new_capacity: i32)
     {
       if self.buffer.ptr().is_null() 
       {
@@ -358,7 +467,8 @@ public class Vector<
      * @return The element at the specified index.
      * @note It returns a reference to the element at the specified index.
      */
-    func [[internal_linkage]] at(index: i32) &mut _StoreType
+    @internal_linkage
+    func at(index: i32) &mut _StoreType
     {
       if index < 0 
       {
@@ -366,9 +476,7 @@ public class Vector<
       } 
       else if index >= self.length 
       {
-        throw new IndexError("Index out of bounds.");
-        // TODO: int impl
-        //throw new IndexError("Index out of bounds. Cannot access element at index " + index.to_string());
+        throw new IndexError("Index out of bounds. Cannot access element at index " + index.to_string());
       }
       return self.buffer.ptr().unchecked_get(index);
     }
@@ -378,7 +486,8 @@ public class Vector<
      * @return The element at the specified index.
      * @see Vector<_StoreType>::at()
      */
-    operator func [[inline]] [](index: i32) &mut _StoreType
+    @inline
+    operator func [](index: i32) &mut _StoreType
       { return self.at(index); }
     /**
      * @brief It inserts an element at the specified index.
@@ -401,7 +510,7 @@ public class Vector<
      * @return A string representation of the vector.
      */
     func to_string<>() String {
-      let mut result = "[".to_string();
+      let mut result = "[";
       for i in 0..self.length {
         result = result + String::from(self[i]);
         if i != self.length - 1 {
@@ -418,6 +527,21 @@ public class Vector<
     let mut length: i64 = 0;
     /** The buffer containing the vector. */
     let mut buffer: Ptr::NonNull<_StoreType> = Allocator::alloc(0);
+
+  public:
+    /**
+     * @brief It creates a new Vector with the specified capacity.
+     * @param[in] capacity The capacity of the vector.
+     * @return A new Vector with the specified capacity.
+     */
+    @inline
+    static func with_capacity(capacity: i32) Self 
+    {
+      let mut vec = new Self();
+      vec.reserve(capacity);
+      return vec;
+    }
+      
 }
 /**
  * @class StringView
@@ -434,7 +558,7 @@ public class Vector<
  * The `StringView` class is an ideal choice for working with strings without the need for full string
  * ownership or memory management. It provides efficient access and manipulation of string data.
  */
-public class StringView<Char: Sized = char> {
+public class StringView<Char: Sized = u8> implements ToString {
   public:
     type StringType = *const Char;
 
@@ -448,13 +572,15 @@ public class StringView<Char: Sized = char> {
      * @brief Returns the size of the string view.
      * @return The size of the string view.
      */
-    func [[inline]] size() i32 { return self.length; }
+    @inline
+    func size() i32 { return self.length; }
 
     /**
      * @brief Returns a pointer to the buffer containing the string view.
      * @return A pointer to the buffer containing the string view.
      */
-    func [[inline]] bytes() StringType { return self.buffer; }
+    @inline
+    func bytes() StringType { return self.buffer; }
 
     /**
      * @brief Compares the string view with another string view.
@@ -478,14 +604,16 @@ public class StringView<Char: Sized = char> {
      * @param[in] other The string view to compare with.
      * @return `true` if the string views are not equal, `false` otherwise.
      */
-    operator func [[inline]] !=(other: Self) bool { return !(self == other); }
+    @inline
+    operator func !=(other: Self) bool { return !(self == other); }
 
     /**
      * @brief Concatenates the string view with another string view.
      * @param[in] other The string view to concatenate with.
      * @return The concatenated string view.
      */
-    operator func [[inline]] +(other: Self) Self { 
+    @inline
+    operator func +(other: Self) Self { 
       let result = Self::concat(self.bytes(), other.bytes(), self.length, other.length); 
       return new Self(result, self.length + other.length);
     }
@@ -494,7 +622,8 @@ public class StringView<Char: Sized = char> {
      * @brief Converts the string view to a string representation.
      * @return A string representation of the string view.
      */
-    func [[inline]] to_string() Self { return "\"" + *self + "\""; }
+    @inline
+    func to_string() Self { return "\"" + *self + "\""; }
 
     /**
      * @brief Returns the character at the specified index.
@@ -520,21 +649,21 @@ public class StringView<Char: Sized = char> {
 
   // Static exports
   public:
-    static func [[internal_linkage, inline]] from(other: Self) StringView<Char> { return other; }
-
     /**
      * @brief Constructs a string view from another string view.
      * @param[in] buffer The string view to construct from.
      * @return The constructed string view.
      */
-    static func [[internal_linkage, inline]] from(buffer: Self) StringView<Char> { return buffer; }
+    @inline
+    static func from(buffer: Self) StringView<Char> { return buffer; }
 
     /**
      * @brief Constructs a string view from an object that implements the `ToString` interface.
      * @param[in] buffer The object to construct the string view from.
      * @return The constructed string view.
      */
-    static func [[internal_linkage, inline]] from<T: ToString>(buffer: T) StringView<Char> { return buffer.to_string(); }
+    @inline
+    static func from<T: ToString>(buffer: T) StringView<Char> { return buffer.to_string(); }
 
     /**
      * @brief Constructs a string view from a buffer and its size.
@@ -542,7 +671,8 @@ public class StringView<Char: Sized = char> {
      * @param[in] size The size of the string view.
      * @return The constructed string view.
      */
-    static func [[internal_linkage, inline]] from(buffer: *const char, size: i32) StringView<Char> { 
+    @inline
+    static func from(buffer: *const u8, size: i32) StringView<Char> { 
       unsafe {
         return new Self(buffer, size);
       } 
@@ -558,7 +688,7 @@ public class StringView<Char: Sized = char> {
      * @param[in] len2 The length of the second string view.
      * @return The appended string view.
      */
-    static func [[internal_linkage]] concat(str1: StringType, str2: StringType,  
+    static func concat(str1: StringType, str2: StringType,  
       len1: i32, len2: i32) StringType {
       unsafe {
         let sum = len1 + len2;
@@ -583,18 +713,16 @@ public class StringView<Char: Sized = char> {
 /// --------- COMMANDS ---------
 
 
-
-unsafe func [[
-  export(name = "sn.test.try"), 
-  cfg(test),
-  no_inline
-]] snowball_test(
+@no_inline
+@cfg(test)
+@export(name = "sn.test.try")
+static unsafe func snowball_test(
   fn: func () => i32,
-  name: *const char,
+  name: *const i8,
   index: i32,
   skip: bool,
   expect: i32,
-  expectStr: *const char,
+  expectStr: *const i8,
   total: i32
 ) i32 {
   CLib::printf(@c_str(" Testing (\e[1m%i/%i\e[0m) \t\e[1m%-45s\e[0m [%s]\t... "), index, total, name, expectStr);

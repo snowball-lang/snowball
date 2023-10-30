@@ -6,7 +6,8 @@ class Test {
     let succ: bool = true;
 }
 
-func [[test]] init_heap() i32 {
+@test
+func init_heap() i32 {
   let t = new Test();
   return t.succ;
 }
@@ -17,12 +18,14 @@ class ValueAccessTest {
     ValueAccessTest() {}
 }
 
-func [[test(expect = 0)]] value_access() i32 {
+@test(expect = 0)
+func value_access() i32 {
   let t = new ValueAccessTest();
   return t.a;
 }
 
-func [[test]] value_access_set() i32 {
+@test
+func value_access_set() i32 {
   let t = new ValueAccessTest();
   t.a = 1;
   return t.a;
@@ -39,13 +42,15 @@ class virtualTest {
     let b: i32 = 2;
 }
 
-func [[test]] virtual_stack() i32 {
+@test
+func virtual_stack() i32 {
   // TODO: what's going on here
   let t = new virtualTest();
   return t.test();
 }
 
-func [[test]] virtual_heap() i32 {
+@test
+func virtual_heap() i32 {
   let t = &new virtualTest();
   return t.test();
 }
@@ -56,7 +61,8 @@ class TypeInsideClassTest {
     TypeInsideClassTest() {}
 }
 
-func [[test]] type_inside_class() i32 {
+@test
+func type_inside_class() i32 {
   let t: TypeInsideClassTest::x = new virtualTest();
   return true;
 }
@@ -66,7 +72,8 @@ class ClassGenericsTest<T> {
     ClassGenericsTest(x: T) {}
 }
 
-func [[test]] class_generics() i32 {
+@test
+func class_generics() i32 {
   let t = new ClassGenericsTest<i32>(1);
   return true;
 }
@@ -76,7 +83,8 @@ class ClassDefaultGenericsTest<T = i32> {
     ClassDefaultGenericsTest(x: T) {}
 }
 
-func [[test]] class_default_generics() i32 {
+@test
+func class_default_generics() i32 {
   let t = new ClassDefaultGenericsTest<>(1);
   return true;
 }
@@ -87,7 +95,8 @@ class GenericAccessTest<T> {
     GenericAccessTest() {}
 }
 
-func [[test(expect = 0)]] generic_access() i32 {
+@test(expect = 0)
+func generic_access() i32 {
   let t = new GenericAccessTest<i32>();
   return t.a;
 }
@@ -100,12 +109,14 @@ class InheritedOverridevirtualTest extends virtualTest {
     }
 }
 
-func [[test(expect = 0)]] inherited_override_virtual() i32 {
+@test(expect = 0)
+func inherited_override_virtual() i32 {
   let t = new InheritedOverridevirtualTest();
   return t.test();
 }
 
-func [[test(expect = 0)]] inherited_override_casted() i32 {
+@test(expect = 0)
+func inherited_override_casted() i32 {
   let t = new InheritedOverridevirtualTest() as virtualTest;
   return t.test();
 }
@@ -115,7 +126,8 @@ class InheritancevirtualTest extends virtualTest {
     InheritancevirtualTest() : super() {}
 }
 
-func [[test]] inheritance_virtual() i32 {
+@test
+func inheritance_virtual() i32 {
   let t = new InheritancevirtualTest();
   return t.test();
 }

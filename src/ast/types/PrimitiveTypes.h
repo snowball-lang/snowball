@@ -71,16 +71,6 @@ public:
   virtual std::int64_t alignmentOf() const override { return 0; }
 };
 
-/// @brief String (represents int 8 pointer)
-class CharType : public AcceptorExtend<CharType, NumericType> {
-public:
-  CharType() : AcceptorExtend(SN_CHR_TYPE) { }
-  SNOWBALL_TYPE_COPIABLE(CharType)
-
-  virtual std::int64_t sizeOf() const override { return 1; }
-  virtual std::int64_t alignmentOf() const override { return 1; }
-};
-
 /// @brief Float (N) (represents N-bit floating point)
 class FloatType : public AcceptorExtend<FloatType, NumericType> {
   std::int32_t bits;
@@ -100,10 +90,13 @@ public:
  */
 class IntType : public AcceptorExtend<IntType, NumericType> {
   std::int32_t bits;
+  bool isItSigned = true;
 
 public:
-  IntType(std::int32_t bits) : bits(bits), AcceptorExtend(bits == 1 ? "bool" : "i" + std::to_string(bits)) { }
+  IntType(std::int32_t bits, bool isSigned = true) : bits(bits), isItSigned(isSigned), 
+    AcceptorExtend(bits == 1 ? "bool" : (isSigned ? "i" : "u") + std::to_string(bits)) { }
   std::int32_t getBits() const { return bits; }
+  bool isSigned() const { return isItSigned; }
   SNOWBALL_TYPE_COPIABLE(IntType)
 
   virtual std::int64_t sizeOf() const override { return bits == 1 ? 1 : (std::int64_t)(bits / 8); }

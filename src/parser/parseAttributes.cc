@@ -6,28 +6,15 @@
 
 namespace snowball::parser {
 
-std::unordered_map<Attributes, std::unordered_map<std::string, std::string>>
-Parser::parseAttributes(std::function<Attributes(std::string)> parseFn) {
-  assert(is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek()));
-  next();
-  std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> attributes;
-  while (true) {
-    std::unordered_map<std::string, std::string> attrArgs;
+void Parser::parseAttributes() {
+  assert(is<TokenType::SYM_AT>());
+  std::unordered_map<std::string, std::unordered_map<std::string, std::string>> attributes;
+  while (is<TokenType::SYM_AT>()) {
     next();
+    std::unordered_map<std::string, std::string> attrArgs;
     auto attr = m_current.to_string();
     if (!(m_current.type > TokenType::KWORD__START__POINT && m_current.type < TokenType::KWORD__ENDING__POINT))
       assert_tok<TokenType::IDENTIFIER>("an identifier");
-    Attributes parsed;
-    if (attr == "cfg") {
-      parsed = Attributes::CFG;
-    } else {
-      parsed = parseFn(attr);
-      if (parsed == Attributes::INVALID) {
-        createError<ATTRIBUTE_ERROR>(
-                "Trying to use an undefined attribute!", {.info = FMT("Attribute '%s' is not defined!", attr.c_str())}
-        );
-      }
-    }
     if (is<TokenType::BRACKET_LPARENT>(peek())) {
       next();
       while (true) {
@@ -63,19 +50,38 @@ Parser::parseAttributes(std::function<Attributes(std::string)> parseFn) {
         }
       }
     }
-    attributes[parsed] = attrArgs;
-    next();
-    if (is<TokenType::BRACKET_RSQUARED>()) {
-      next();
-      assert_tok<TokenType::BRACKET_RSQUARED>("']]'");
-      next();
-      break;
-    } else if (is<TokenType::SYM_COMMA>()) {
-    } else {
-      assert_tok<TokenType::BRACKET_RSQUARED>("',' or ']]'");
+    if (attributes.find(attr) != attributes.end()) {
+      createError<SYNTAX_ERROR>(FMT("Attribute '%s' is already defined!", attr.c_str()));
     }
+    next();
+    attributes.insert({attr, attrArgs});
   }
+  prev();
+  m_attributes = attributes;
+}
+
+std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> Parser::verifyAttributes(
+  std::function<Attributes(std::string)> parseFn
+) {
+  std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> attributes;
+  for (auto& [attr, args] : m_attributes) {
+    auto attrType = parseFn(attr);
+    if (attr == "cfg") {
+      attrType = Attributes::CFG;
+    }
+    if (attrType == Attributes::INVALID) {
+      createError<SYNTAX_ERROR>(FMT("Invalid attribute '%s'", attr.c_str()));
+    }
+    attributes[attrType] = args;
+  }
+  m_attributes = {};
   return attributes;
+}
+
+void Parser::assertNoAttributes(std::string context) {
+  if (m_attributes.size() > 0) {
+    createError<SYNTAX_ERROR>(FMT("Attributes are not allowed inside a %s", context.c_str()));
+  }
 }
 
 } // namespace snowball::parser

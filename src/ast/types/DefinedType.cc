@@ -22,11 +22,12 @@ DefinedType::DefinedType(
         std::shared_ptr<ir::Module> module,
         Syntax::Statement::DefinedTypeDef* ast,
         std::vector<ClassField*> fields,
+        std::vector<std::shared_ptr<ir::VariableDeclaration>> staticFields,
         DefinedType* parent,
         std::vector<Type*> generics,
         bool isStruct
 )
-    : AcceptorExtend(Kind::CLASS, name), parent(parent), ast(ast), fields(fields), _struct(isStruct) {
+    : AcceptorExtend(Kind::CLASS, name), parent(parent), ast(ast), fields(fields), _struct(isStruct), staticFields(staticFields) {
   setGenerics(generics);
   setPrivacy(PRIVATE);
   unsafeSetUUID(uuid);

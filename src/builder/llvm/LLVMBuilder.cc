@@ -84,7 +84,7 @@ llvm::Value* LLVMBuilder::load(llvm::Value* v, types::Type* ty) {
   auto llvmType = getLLVMType(ty);
 
   // TODO: not sure about global variable
-  if (ctx->doNotLoadInMemory || llvm::isa<llvm::Constant>(v) || llvm::isa<llvm::GlobalVariable>(v)) {
+  if (ctx->doNotLoadInMemory || (llvm::isa<llvm::Constant>(v) && !llvm::isa<llvm::GlobalVariable>(v))) {
     ctx->doNotLoadInMemory = false;
     return v;
   }
@@ -300,6 +300,16 @@ void LLVMBuilder::codegen() {
     ctx->typeInfo.insert(m->typeInformation.begin(), m->typeInformation.end());
   }
   ctx->typeInfo.insert(mainModule->typeInformation.begin(), mainModule->typeInformation.end());
+
+  for (const auto& ty : ctx->typeInfo) {
+    auto t = ty.second.get();
+    if (auto c = utils::cast<types::DefinedType>(t)) {
+      auto& staticFields = c->getStaticFields();
+      for (auto& f : staticFields) {
+        addGlobalVariable(f, c);
+      }
+    }
+  }
 
   INIT_MODULES(false); // Create function declarations
   INIT_MODULES(true);  // Create function bodies

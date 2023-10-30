@@ -44,6 +44,11 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
           break;
         }
 
+        case TokenType::SYM_AT: {
+          parseAttributes();
+          break;
+        }
+
         case TokenType::KWORD_EXTERN: {
           auto pk = peek();
           if (!is<TokenType::KWORD_FUNC>(pk) && !is<TokenType::KWORD_UNSAFE>(pk)) {
@@ -76,6 +81,7 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
         }
 
         case TokenType::KWORD_NAMESPACE: {
+          assertNoAttributes("namespace");
           global.push_back(parseNamespace());
           break;
         }
@@ -86,11 +92,13 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
         }
 
         case TokenType::KWORD_VAR: {
+          assertNoAttributes("variable");
           global.push_back(parseVariable());
           break;
         }
 
         case TokenType::KWORD_CONST: {
+          assertNoAttributes("constant");
           global.push_back(parseConstant());
           break;
         }
@@ -112,6 +120,7 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
         }
 
         case TokenType::KWORD_TYPEDEF: {
+          assertNoAttributes("type alias");
           global.push_back(parseTypeAlias());
           break;
         }

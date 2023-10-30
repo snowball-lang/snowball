@@ -209,6 +209,8 @@ void Lexer::tokenize() {
           consume(TokenType::OP_BIT_OR_EQ, 2);
         else if (GET_CHAR(1) == '|')
           consume(TokenType::OP_OR, 2);
+        else if (GET_CHAR(1) == '>' && GET_CHAR(2) == '>')
+          consume(TokenType::OP_BIT_RSHIFT, 3);
         else
           consume(TokenType::OP_BIT_OR);
         break;
@@ -346,6 +348,8 @@ void Lexer::tokenize() {
       case '"': {
         EAT_CHAR(1);
         std::string str;
+        auto col = cur_col;
+        auto line = cur_line;
         while (GET_CHAR(0) != '"') {
           if (GET_CHAR(0) == '\\') {
             char c = GET_CHAR(1);
@@ -426,8 +430,8 @@ void Lexer::tokenize() {
         Token tk;
         tk.type = TokenType::VALUE_STRING;
         tk.value = str; // method name may be builtin func
-        tk.col = cur_col - ((int) str.size() + (2 /* speech marks */));
-        tk.line = cur_line;
+        tk.col = col-1;
+        tk.line = line;
         tokens.emplace_back(tk);
 
         break;

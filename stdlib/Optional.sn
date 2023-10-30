@@ -51,7 +51,8 @@ public class Option<T: Sized> {
     /**
      * @brief Returns the value stored in the `Option`.
      */
-    func [[inline]] val() T
+    @inline
+    func val() T
     {
       self.assert_not_empty();
       return self._value;
@@ -59,20 +60,23 @@ public class Option<T: Sized> {
     /**
      * @brief Returns whether the `Option` is empty.
      */
-    func [[inline]] empty() bool 
+    @inline
+    func empty() bool 
     {
       return !self._engage;
     }
     /**
      * @brief Whether the `Option` is engaged.
      */
-    func [[inline]] has_value() bool
+    @inline
+    func has_value() bool
       { return self._engage; }
     /**
      * @return The value stored in the `Option` or the
      *        given default value if the `Option` is empty.
      */
-    func [[inline]] value_or(default_value: T) T
+    @inline
+    func value_or(default_value: T) T
     {
       if self.empty() {
         return default_value;
@@ -83,7 +87,8 @@ public class Option<T: Sized> {
     /**
      * @brief Throws an error if the `Option` is empty.
      */
-    func [[inline]] assert_not_empty()
+    @inline
+    func assert_not_empty()
     {
       if (self.empty()) {
         throw new BadOptionAccess("Attempted to access empty Option");
@@ -98,7 +103,8 @@ public class Option<T: Sized> {
  * @param value The value to store in the `Option`.
  * @return An `Option` containing the provided value.
  */
-public func [[inline]] Some<_StoreType>(value: _StoreType) Option<_StoreType>
+@inline
+public func Some<_StoreType>(value: _StoreType) Option<_StoreType>
   { return new Option<_StoreType>(value); }
 
 /**
@@ -108,5 +114,6 @@ public func [[inline]] Some<_StoreType>(value: _StoreType) Option<_StoreType>
  *
  * @return An empty `Option`.
  */
-public func [[inline]] None<_StoreType>() Option<_StoreType>
+@inline
+public func None<_StoreType>() Option<_StoreType>
   { return new Option<_StoreType>(); }

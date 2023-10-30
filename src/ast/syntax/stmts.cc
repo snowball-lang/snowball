@@ -40,6 +40,8 @@ std::map<Expression::Identifier*, Expression::Base*> ConstructorDef::getInitArgs
 std::vector<Expression::Base*> ConstructorDef::getSuperArgs() const { return superArgs; }
 std::vector<Expression::Base*>::iterator ConstructorDef::superArgsBegin() { return superArgs.begin(); }
 std::vector<Expression::Base*>::iterator ConstructorDef::superArgsEnd() { return superArgs.end(); }
+std::shared_ptr<transform::ContextState> FunctionDef::getContextState() const { return _contextState; }
+void FunctionDef::setContextState(std::shared_ptr<transform::ContextState> state) { _contextState = state; }
 std::map<Expression::Identifier*, Expression::Base*>::iterator ConstructorDef::initArgsBegin() {
   return initArgs.begin();
 }

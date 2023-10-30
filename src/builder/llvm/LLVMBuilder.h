@@ -168,7 +168,9 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
   llvm::AllocaInst* createAlloca(llvm::Type* ty, std::string name = "") {
     auto backupBlock = builder->GetInsertBlock();
     auto entryBlock = ctx->getCurrentFunction()->getEntryBlock().getTerminator();
-    builder->SetInsertPoint(entryBlock);
+    if (entryBlock) {
+      builder->SetInsertPoint(entryBlock);
+    }
     auto alloca = builder->CreateAlloca(ty, nullptr, name);
     builder->SetInsertPoint(backupBlock);
     return alloca;
@@ -286,6 +288,10 @@ private:
    */
   llvm::Function* createLLVMFunction(ir::Func* fn);
   /**
+   * @brief It converts a value into a boolean value
+  */
+  llvm::Value* toBool(llvm::Value* v, bool isSigned = false);
+  /**
    * @brief Transform a built in snowball type
    * to an llvm type.
    */
@@ -378,8 +384,9 @@ private:
    * any function within the program.
    *
    * @param var A shared pointer to the variable declaration to add.
+   * @param ty The type of the variable, or nullptr if the type should
    */
-  void addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var);
+  void addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var, types::DefinedType* ty = nullptr);
   /**
    * Get the global constructor function.
    *

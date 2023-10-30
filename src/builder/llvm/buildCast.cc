@@ -6,7 +6,7 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
-#define IS_INTEGER(x) (utils::is<types::IntType>(x) || utils::is<types::CharType>(x))
+#define IS_INTEGER(x) (utils::is<types::IntType>(x))
 #define IS_FLOAT(x)   (utils::is<types::FloatType>(x))
 #define IS_DEFINED(x) (utils::is<types::DefinedType>(x) || utils::is<types::InterfaceType>(x))
 

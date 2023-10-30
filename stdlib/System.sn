@@ -1,4 +1,5 @@
-import[[use_macro(c_str)]] Core::CLib;
+@use_macro(c_str)
+import Core::CLib;
 
 /**
  * @brief Causes the program to terminate with the specified exit code.
@@ -6,7 +7,8 @@ import[[use_macro(c_str)]] Core::CLib;
  * @param exitCode The exit status of the program.
  * @note The behavior is undefined if a program calls exit more than once.
  */
-public static func exit(exitCode: i32 = 0) { 
+public static func exit(exitCode: i32 = 0) {
+    // TODO: make it diverge
     unsafe { CLib::exit(exitCode); }
 }
 /**
@@ -15,7 +17,8 @@ public static func exit(exitCode: i32 = 0) {
  * @param msg the 64-bit integer value to print
  * @return the number of characters printed
  */
-public static func [[inline]] print<T>(msg: T, end: String = "") i32 {
+@inline
+public static func print<T: ToString>(msg: T, end: String = "") i32 {
     let m = String::from(msg);
     for i in 0..m.size() {
         unsafe {CLib::putchar(m[i]);}
@@ -30,8 +33,10 @@ public static func [[inline]] print<T>(msg: T, end: String = "") i32 {
  * @param msg the 64-bit integer value to print
  * @return the number of characters printed
  */
-public static func [[inline]] println<T>(msg: T) i32 
-    { return print(msg, "\n"); }
+@inline
+public static func println<T: ToString>(msg: T) i32 { 
+    return print(msg, "\n"); 
+}
 /**
  * @brief Prints a new line character to standard output.
  *
@@ -41,4 +46,5 @@ public static func [[inline]] println<T>(msg: T) i32
  * @note This function does not print any other characters besides the new line character.
  * If you need to print additional characters or a string, use the `println(...)` function instead.
  */
+@inline
 public static func println() { unsafe { CLib::putchar('\n'); } }

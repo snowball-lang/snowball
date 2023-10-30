@@ -71,7 +71,8 @@ types::BaseType* Transformer::transformClass(
                                                     _uuid,
                                                     ctx->module,
                                                     ty,
-                                                    std::vector<types::DefinedType::ClassField*>{},
+                                                    {},
+                                                    {},
                                                     nullptr,
                                                     std::vector<types::Type*>{},
                                                     ty->isStruct()
@@ -143,37 +144,38 @@ types::BaseType* Transformer::transformClass(
       transformedType->setSourceInfo(ty->getSourceInfo());
       int fieldCount = 0;
       if (!ty->isInterface()) {
-        auto baseFields = vector_iterate<Statement::VariableDecl*, types::DefinedType::ClassField*>(
-                ty->getVariables(),
-                [&](auto v) {
-                  auto definedType = v->getDefinedType();
-                  if (!definedType)
-                    E<SYNTAX_ERROR>(
-                            v->getDBGInfo(),
-                            "Cant infer type!",
-                            {.info = "The type of this variable cant be inferred!",
-                             .note = "This rule only applies to variables inside classes.",
-                             .help = "You can't infer the type of a variable "
-                                     "without specifying it's type.\n"
-                                     "For example, you can't do this:\n   let a = 10\n"
-                                     "You have to do this:\n   let a: i32 = 10\n"
-                                     "Or this:\n   let a = 10: i32"}
-                    );
-                  auto varTy = transformSizedType(
-                          definedType, false, "Class fields must be sized but found '%s' (which is not sized)"
-                  );
-                  varTy->setMutable(v->isMutable());
-                  auto field = new types::DefinedType::ClassField(
-                          v->getName(), varTy, v->getPrivacy(), v->getValue(), v->isMutable()
-                  );
-                  field->setDBGInfo(v->getDBGInfo());
-                  return field;
-                }
-        );
-        auto fields = getMemberList(ty->getVariables(), baseFields, parentType);
+        for (auto& v : ty->getVariables()) {
+          if (v->isContantDecl()) {
+            auto var = trans(v);
+            assert(utils::dyn_cast<ir::VariableDeclaration>(var));
+            ((types::DefinedType*) transformedType)->addStaticField(utils::dyn_cast<ir::VariableDeclaration>(var));
+          } else {
+            auto definedType = v->getDefinedType();
+            if (!definedType)
+              E<SYNTAX_ERROR>(
+                      v->getDBGInfo(),
+                      "Cant infer type!",
+                      {.info = "The type of this variable cant be inferred!",
+                        .note = "This rule only applies to variables inside classes.",
+                        .help = "You can't infer the type of a variable "
+                                "without specifying it's type.\n"
+                                "For example, you can't do this:\n   let a = 10\n"
+                                "You have to do this:\n   let a: i32 = 10\n"
+                                "Or this:\n   let a = 10: i32"}
+              );
+            auto varTy = transformSizedType(
+                    definedType, false, "Class fields must be sized but found '%s' (which is not sized)"
+            );
+            varTy->setMutable(v->isMutable());
+            auto field = new types::DefinedType::ClassField(
+                    v->getName(), varTy, v->getPrivacy(), v->getValue(), v->isMutable()
+            );
+            field->setDBGInfo(v->getDBGInfo());
+            ((types::DefinedType*) transformedType)->addField(field);
+            fieldCount++;
+          }
+        }
         ((types::DefinedType*) transformedType)->setParent(parentType);
-        ((types::DefinedType*) transformedType)->setFields(fields);
-        fieldCount = baseFields.size();
       } else {
         for (auto v : ty->getVariables()) {
           auto definedType = v->getDefinedType();

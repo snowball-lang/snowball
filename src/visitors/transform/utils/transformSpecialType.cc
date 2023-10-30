@@ -6,7 +6,6 @@
 
 #include <llvm/IR/Attributes.h>
 
-const static auto maxPower = 4294967296;
 #define STYPE_INSTANCE(x) if (n == x)
 #define ASSERT_GENERICS(n, t)                                                                                          \
   auto generics = ty->getGenerics();                                                                                   \
@@ -29,7 +28,8 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
   // here's where we get all "i[N]" and "f[N]" types and we validate the size
   if (n == "bool") {
     return ctx->getPrimitiveNumberType<types::IntType>(1);
-  } else if (utils::startsWith(n, "i")) {
+  } else if (utils::startsWith(n, "i") || utils::startsWith(n, "u")) {
+    bool isSigned = utils::startsWith(n, "i");
     auto bitsString = n.substr(1);
     if (bitsString.empty() || !std::isdigit(bitsString[0])) return nullptr;
     if (!std::all_of(bitsString.begin(), bitsString.end(), ::isdigit)) {
@@ -44,7 +44,7 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
     auto bits = std::stoi(bitsString); // TODO: check if it's a digit
     // The number of bits must be from 1 to 2^23 (8,388,608)
     // we asume it's greater than 0 a negative number would end in a syntax error
-    if (bits < 1 || bits > maxPower) {
+    if (bits < 1 || bits > SN_INT_MAX_POWER) {
       E<TYPE_ERROR>(
               ty,
               FMT("Integer type '%s' is expected to be in the form of 'i[N]' where N is a number "
@@ -61,7 +61,7 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
                 {.note = FMT("This is used used for consistency with other languages.")}
         );
       default: {
-        return ctx->getPrimitiveNumberType<types::IntType>(bits);
+        return ctx->getPrimitiveNumberType<types::IntType>(bits, isSigned);
       }
     }
   } else if (utils::startsWith(n, "f")) {

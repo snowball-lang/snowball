@@ -43,7 +43,8 @@ public class NonNull<T: Sized> {
      * Returns a reference to the underlying non-null value.
      * @return A reference to the underlying value.
      */
-    func [[inline]] ptr() *const T { return self.value; }
+    @inline
+    func ptr() *const T { return self.value; }
 }
 
 /**
@@ -51,7 +52,8 @@ public class NonNull<T: Sized> {
  * @tparam PtrType - pointer type
  * @return PtrType - null pointer
  */
-public func [[inline]] null_ptr<PtrType: Sized>() *const PtrType {
+@inline
+public func null_ptr<PtrType: Sized>() *const PtrType {
   unsafe { return 0 as *const void as *const PtrType; }
 }
 
@@ -68,7 +70,8 @@ public class Allocator<T: Sized> {
      * @param size - size of the memory block to be allocated
      * @return NonNull{T} - a non-null pointer to the allocated memory block
      */
-    static func [[inline]] alloc(size: i32) NonNull<T> {
+    @inline
+    static func alloc(size: i32) NonNull<T> {
       unsafe {
         return new NonNull<T>(CLib::malloc(size) as *const T);
       }
@@ -78,7 +81,8 @@ public class Allocator<T: Sized> {
      * @param size - size of the memory block to be allocated
      * @return NonNull{T} - a non-null pointer to the allocated memory block
      */
-    static func [[inline]] alloc_zeroed(size: i32) NonNull<T> {
+    @inline
+    static func alloc_zeroed(size: i32) NonNull<T> {
       unsafe {
         return new NonNull<T>(CLib::calloc(size, 1));
       }
@@ -89,7 +93,8 @@ public class Allocator<T: Sized> {
      * @param size - size of the memory block to be reallocated
      * @return NonNull{T} - a non-null pointer to the reallocated memory block
      */
-    static func [[inline]] realloc(ptr: NonNull<T>, size: i32) NonNull<T> {
+    @inline
+    static func realloc(ptr: NonNull<T>, size: i32) NonNull<T> {
       unsafe {
         return new NonNull<T>(CLib::realloc(ptr.ptr(), size));
       }
@@ -98,19 +103,29 @@ public class Allocator<T: Sized> {
      * It frees a memory block.
      * @param ptr - pointer to the memory block to be freed
      */
-    static func [[inline]] free(ptr: NonNull<T>) {
+    @inline
+    static func free(ptr: NonNull<T>) {
       unsafe { CLib::free(ptr.ptr()); }
     }
 }
 
-public unsafe func [[inline]] add<T: Sized>(ptr: *const T, offset: i32) *mut T {
+@inline
+public unsafe func add<T: Sized>(ptr: *const T, offset: i32) *mut T {
   return (ptr + offset) as *mut T;
 }
 
-public unsafe func [[inline]] write<T: Sized>(mut ptr: *const T, value: T) {
+@inline
+public unsafe func write<T: Sized>(mut ptr: *const T, value: T) {
   *ptr = value;
 }
 
-public func [[inline]] to_pointer<T: Sized>(value: &T) *const T {
+@inline
+public func to_pointer<T: Sized>(value: &T) *const T {
   unsafe { return value as *const T; }
+}
+
+@inline
+public func copy_nonoverlapping<T: Sized>(src: *const T, dst: *mut T, count: i32) {
+  // TODO: Change '8' with actual pointer type size
+  unsafe { CLib::memmove(dst, src, count); }
 }

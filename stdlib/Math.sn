@@ -35,30 +35,21 @@ public const sqrtpi: f32 = 1.772453850905516027298167483341145182798;
  */
 public const inf: f64 = 1.0 as f64 / 0.0 as f64;
 /**
- * @brief NaN constant.
- * 
- * @note This needs to be defined using `strtod` as there is no built-in NaN value in C++.
- * @todo Implement `nanf` and `nanl` functions to define `nanf` and `nanl` constants respectively.
- */
-public const nan: f64 = 0 as f64 / 0 as f64;
-/**
  * @brief Check if a floating-point number is NaN (not-a-number).
  * 
  * @param x The number to check.
  * @return True if `x` is NaN, false otherwise.
  */
-// TODO:
-//public func is_nan(x: f64) bool {
-//    return x != x;
-//}
+public func is_nan(x: f64) bool {
+    return x != x;
+}
 /**
  * @brief Check if a floating-point number is infinite.
  * 
  * @param x The number to check.
  * @return True if `x` is infinite, false otherwise.
  */
-// TODO:
-//public func is_inf(x: f64) bool {
-//    return x == inf;
-//}
+public func is_inf(x: f64) bool {
+    return x == inf;
+}
 

@@ -62,7 +62,7 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     // TODO: maybe move up in the function to prevent problems with generics?
     return x->copy();
   } else if (auto x = transformSpecialType(ty)) {
-    if (utils::is<types::NumericType>(x) && !utils::is<types::CharType>(x)) {
+    if (utils::is<types::NumericType>(x)) {
       // we create a new instance of the type so we can access it's methods and operators
       // we create a new instance of "IntegerImpl<T>"
       auto typeRef = TR(_SNOWBALL_INT_IMPL, ty->getDBGInfo(), std::vector<Expression::TypeRef*>{x->toRef()});

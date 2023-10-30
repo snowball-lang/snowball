@@ -42,7 +42,8 @@ public class AssertionError extends Exception
  * @assert(x > 0, "x must be greater than 0");
  * ```
  */
-macro [[export]] assert(condition: expr, message: const[str] = "Assertion failed!") {
+@export
+macro assert(condition: expr, message: const[str] = "Assertion failed!") {
   if !(@condition) {
     throw @pkg(new AssertionError(@message));
   }

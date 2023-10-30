@@ -376,7 +376,7 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
       if (!p_node->isInitialization) {
         E<VARIABLE_ERROR>(
                 p_node,
-                "You can't assign a new value to a "
+                "You cant assign a new value to a "
                 "unmutable "
                 "variable",
                 {.note = "This error is caused by the 'mut' keyword "
@@ -435,7 +435,7 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
 bool TypeChecker::isMutable(std::shared_ptr<ir::Value> value) {
   if (auto x = utils::dyn_cast<ir::Variable>(value)) return x->isMutable();
   if (auto x = utils::dyn_cast<ir::IndexExtract>(value)) return x->getField()->isMutable;
-  if (auto x = utils::dyn_cast<ir::VariableDeclaration>(value)) return x->isMutable();
+  if (auto x = utils::dyn_cast<ir::VariableDeclaration>(value)) return x->getVariable()->isMutable();
   if (auto x = utils::dyn_cast<ir::ValueExtract>(value)) return isMutable(x->getValue());
   if (auto x = utils::dyn_cast<ir::Argument>(value)) return x->isMutable();
   if (auto x = utils::dyn_cast<ir::DereferenceTo>(value)) return isMutable(x->getValue());

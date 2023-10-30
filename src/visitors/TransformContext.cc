@@ -27,7 +27,6 @@ TransformContext::TransformContext(
   addItem(raw_##t->getName(), _##t);
 
   DEFINE_TYPE(VoidType)
-  DEFINE_TYPE(CharType)
 
 #undef DEFINE_TYPE
 
@@ -45,9 +44,6 @@ TransformContext::TransformContext(
     addItem(builtin, item);
     coreInterfaces.insert({builtin, transformedType});
   }
-
-  _CharType->getType()->addImpl(coreInterfaces["Sized"]);
-  _CharType->getType()->addImpl(coreInterfaces["Numeric"]);
 };
 
 /// @brief get a saved state of the context

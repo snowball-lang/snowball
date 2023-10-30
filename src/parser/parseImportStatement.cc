@@ -11,13 +11,10 @@ Syntax::Statement::ImportStmt* Parser::parseImportStatement() {
   auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
   next();
 
-  std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> attributes;
-  if (is<TokenType::BRACKET_LSQUARED>() && is<TokenType::BRACKET_LSQUARED>(peek())) {
-    attributes = parseAttributes([&](std::string attr) {
-      if (attr == "use_macro" || attr == "use_macros") { return Attributes::MACROS; }
-      return Attributes::INVALID;
-    });
-  }
+  auto attributes = verifyAttributes([&](std::string attr) {
+    if (attr == "use_macro" || attr == "use_macros") { return Attributes::MACROS; }
+    return Attributes::INVALID;
+  });
 
   std::string package = assert_tok<TokenType::IDENTIFIER>("an identifier for package reference").to_string();
   next();

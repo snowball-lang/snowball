@@ -14,7 +14,8 @@ SN_TRANSFORMER_VISIT(Statement::DefinedTypeDef) {
   auto x = ctx->cache->getType(uuid);
 
   if (p_node->hasAttribute(Attributes::CLASS_EXTENDS)) {
-    transformTypeExtension(p_node, uuid);
+    if (ctx->generateFunction)
+      transformTypeExtension(p_node, uuid);
     return;
   }
 

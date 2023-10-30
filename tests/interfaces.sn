@@ -16,12 +16,14 @@ func where_clause<T: TestInterface>(t: T) bool {
   return t.a == 25;
 }
 
-func [[test(expect = 25)]] variable_override() i32 {
+@test(expect = 25)
+func variable_override() i32 {
   let x = new X();
   return x.a;
 }
 
-func [[test]] where_clause() i32 {
+@test
+func where_clause() i32 {
   let x = new X();
   return where_clause(x);
 }

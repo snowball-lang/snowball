@@ -38,10 +38,10 @@ void SnowballIREmitter::visit(std::shared_ptr<ir::Module> m) {
   }
   for (auto f : m->getFunctions()) {
     if (f->isExternal(f->getMangle()))
-      addContent("  extern ");
+      addContent("  external ");
     else
       addContent("  ");
-    addContent("fn " + f->getNiceName() + "(");
+    addContent("func " + f->getNiceName() + "(");
     for (auto p : f->getArgs()) {
       p.second->visit(this);
       if (p != f->getArgs().back()) addContent(", ");

@@ -31,6 +31,11 @@ void Transformer::executeGenericTests(Expression::WhereClause* clause, types::Ty
         }
       }
       if (!found) {
+        if ((utils::is<types::IntType>(generic) || utils::is<types::FloatType>(generic)) && (interface->getUUID() == (ctx->imports->CORE_UUID + "Core.ToString:0"))) { // note: Make sure to always match the UUID
+          found = true;
+        }
+      }
+      if (!found) {
         E<TYPE_ERROR>(
                 test,
                 FMT("Type '%s' does not implement '%s'",
