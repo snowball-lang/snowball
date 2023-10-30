@@ -141,8 +141,7 @@ func lshift() i32 {
 
 @test(expect = 1, skip)
 func rshift() i32 {
-    // TODO:
-    //return 2 >> 1;
+    return 2 |>> 1;
 }
 
 @test(expect = 10)
