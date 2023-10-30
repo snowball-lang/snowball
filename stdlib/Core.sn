@@ -87,7 +87,7 @@ class IntegerImpl {
           }
           *(buffer + i) = c;
           i = i - 1;
-          x = x |>> 4;
+          x = x >> 4;
         }
         *(buffer + 0) = '0';
         *(buffer + 1) = 'x';

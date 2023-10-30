@@ -38,4 +38,18 @@ public func triple_from_make() i32 {
     return x.first + x.second + x.third;
 }
 
+@test(expect = 2) 
+public func pair_with_vector() i32 {
+    let x = new Tuples::Pair<Vector<i32>, i32>(new Vector<i32>(), 1);
+    x.first.push_back(1);
+    return x.first.size() + x.second;
+}
+
+@test(expect = 2) 
+public func pair_with_vector2() i32 {
+    let x = new Tuples::Pair<i32, Vector<i32>>(1, new Vector<?i32>());
+    x.second.push_back(1);
+    return x.first + x.second.size();
+}
+
 }

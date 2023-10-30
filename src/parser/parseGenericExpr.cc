@@ -28,11 +28,17 @@ std::vector<TypeRef*> Parser::parseGenericExpr() {
       if (is<TokenType::OP_GT>()) {
         next();
         break;
+      } else if (is<TokenType::OP_BIT_RSHIFT>()) {
+        replaceCurrentType(TokenType::OP_GT);
+        break;
       } else if (is<TokenType::SYM_COMMA>()) {
         continue;
       }
 
       assert_tok<TokenType::OP_GT>("a comma or a >");
+    } else if (is<TokenType::OP_BIT_RSHIFT>()) {
+      replaceCurrentType(TokenType::OP_GT);
+      break;
     } else if (is<TokenType::OP_GT>()) {
       next();
       break;
