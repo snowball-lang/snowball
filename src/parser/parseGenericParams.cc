@@ -46,10 +46,16 @@ std::vector<Syntax::Expression::Param*> Parser::parseGenericParams() {
         break;
       } else if (is<TokenType::SYM_COMMA>() && is<TokenType::IDENTIFIER>(peek(0, true))) {
         continue;
+      } else if (is<TokenType::OP_BIT_RSHIFT>()) {
+        replaceCurrentType(TokenType::OP_GT);
+        break;
       }
       assert_tok<TokenType::OP_GT>("a ',', ':' or a '>'");
     } else if (is<TokenType::OP_GT>()) {
       next();
+      break;
+    } else if (is<TokenType::OP_BIT_RSHIFT>()) {
+      replaceCurrentType(TokenType::OP_GT);
       break;
     } else {
       createError<SYNTAX_ERROR>(
