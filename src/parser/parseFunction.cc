@@ -21,9 +21,8 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
   assert((is<TokenType::KWORD_FUNC>() && (!isConstructor && !isOperator)) ||
          (is<TokenType::IDENTIFIER>() && (isConstructor && !isOperator)) || (isOperator));
 
-  if (!isConstructor && (!isLambda)) next();
-
   auto comment = parseDocstring(m_current.getComment());
+  if (!isConstructor && (!isLambda)) next();
 
   bool isExtern = false;
   bool isPublic = false;

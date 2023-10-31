@@ -8,13 +8,13 @@
 #include <string>
 
 namespace snowball::parser {
-using CommentType = Syntax::Statement::Comment;
+using CommentType = Syntax::Comment;
 
 static const std::regex tagRegex("@(\\w+)\\s*(.*)");
 
 CommentType* Parser::parseDocstring(std::string p_content) {
 
-  auto comment = m_current.to_string();
+  auto comment = m_current.getComment();
   bool valid = true;
   bool isMultiLine = false;
   std::map<std::string, std::string> tags;
@@ -29,21 +29,37 @@ CommentType* Parser::parseDocstring(std::string p_content) {
   } else {
     valid = false;
   }
-
+  
   if (valid) {
+    int paramCount = 0;
     auto lines = utils::split(comment, "\n");
     std::smatch matches;
     for (auto& line : lines) {
       if (std::regex_search(line, matches, tagRegex)) {
         std::string tag = matches[1];
         std::string content = matches[2];
+
+        if (tag == "param") {
+          tag = "param$" + std::to_string(paramCount);
+        }
         tags[tag] = content;     
       } else {
-        content += line + "\n";
+        auto trim = line;
+        utils::replaceAll(trim, " ", "");
+        if (utils::startsWith(trim, "*")) {
+          auto idx = line.find_first_of("*");
+          line = line.substr(idx + 1);
+        }
+        if (!line.empty()) {
+          content += line + "\n";
+        }
       }
     } 
+
+    return new CommentType(tags, content, valid);
   }
 
+  return nullptr;
 }
 
 } // namespace snowball::parser

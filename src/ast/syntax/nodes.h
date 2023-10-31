@@ -50,6 +50,27 @@ public:
 };
 
 /**
+ * AST representation of a comment. Comments are ignored
+ * by the compiler but we can still use them to document
+ */
+struct Comment {
+  std::map<std::string, std::string> values;
+  std::string body;
+  bool valid = false;
+
+public:
+  Comment(std::map<std::string, std::string> values, std::string body, bool valid = false)
+    : values(values), body(body), valid(valid){};
+
+  /// @return Get the comment's body
+  std::string getBody() const { return body; }
+  /// @return Get the comment's values
+  std::map<std::string, std::string> getValues() const { return values; }
+
+  bool isValid() const { return valid; }
+};
+
+/**
  * An expression in snowball is a value,
  * or anything that executes and ends up being a value.
  *
@@ -456,30 +477,6 @@ public:
   /// inverted)
   /// @return equivalent for Status
   static Status fromInt(bool p_status);
-};
-
-/**
- * AST representation of a comment. Comments are ignored
- * by the compiler but we can still use them to document
- */
-struct Comment : public AcceptorExtend<Comment, Base> {
-  std::map<std::string, std::string> values;
-  std::string body;
-  bool valid = false;
-
-public:
-  Comment(std::map<std::string, std::string> values, std::string body, bool valid = false)
-    : values(values), body(body), valid(valid){};
-
-  /// @return Get the comment's body
-  std::string getBody() const { return body; }
-  /// @return Get the comment's values
-  std::map<std::string, std::string> getValues() const { return values; }
-
-  bool isValid() const { return valid; }
-
-  // Set an acceptance call
-  ACCEPT()
 };
 
 /// @brief A holder for documentation comments.

@@ -661,11 +661,25 @@ void Lexer::tokenize() {
             case TokenType::KWORD_ENUM:
             case TokenType::KWORD_NAMESPACE:
             case TokenType::KWORD_INTER:
-            case TokenType::KWORD_TYPEDEF:
               tk.comment = comments;
-
-            default:
               comments = "";
+              break;
+
+            // Modifiers that should be ignored
+            // so that the commen tis passed to the
+            // next token
+            case TokenType::KWORD_PUBLIC:
+            case TokenType::KWORD_PRIVATE:
+            case TokenType::KWORD_VIRTUAL:
+            case TokenType::KWORD_STATIC:
+            case TokenType::KWORD_EXTERN:
+            case TokenType::KWORD_UNSAFE:
+            case TokenType::KWORD_MUTABLE:
+            case TokenType::KWORD_OPERATOR:
+            case TokenType::IDENTIFIER: // idk about this one
+              break;
+
+            default: comments = "";
           }
 
           tokens.emplace_back(tk);

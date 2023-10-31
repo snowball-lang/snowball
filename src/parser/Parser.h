@@ -266,7 +266,7 @@ private:
   /**
    * docstring     ::=  "/*" [string] "*\/"
    */
-  Syntax::Statement::Comment* parseDocstring(std::string content);
+  Syntax::Comment* parseDocstring(std::string content);
   /**
    * loop_control  ::=  "break" | "continue"
    */

@@ -133,6 +133,7 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
     if (keep_parsing && !is<TokenType::_EOF>(m_current)) next();
   }
 
+  assertNoAttributes("after global or namespace declaration");
   return global;
 }
 

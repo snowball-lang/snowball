@@ -97,8 +97,7 @@ SN_DOCGEN_VISIT(Statement::FunctionDef) {
     };
 
     // TODO: add html here!
-    newPage.html = "";
-
+    newPage.html = createFunctionPage(p_node, context);
     result.pages.push_back(newPage);
 }
 
