@@ -35,4 +35,16 @@ func concat() i32 {
     return s == "hello world";
 }
 
+@test(expect = 5)
+func size() i32 {
+    let s = "hello";
+    return s.size();
+}
+
+@test()
+func index() i32 {
+    let mut s = "hello";
+    return s[0] == 'h' && s[1] == 'e' && s[2] == 'l' && s[3] == 'l' && s[4] == 'o';
+}
+
 }

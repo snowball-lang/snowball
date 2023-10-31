@@ -9,9 +9,9 @@ namespace Syntax {
 namespace {
 bool genericMatch(Expression::Param* generic, Expression::TypeRef* arg) {
   if (auto x = utils::cast<Expression::ReferenceType>(arg)) {
-    return genericMatch(generic, x->getBaseType());
+    return x->getBaseType()->getName() == generic->getName();
   } else if (auto x = utils::cast<Expression::PointerType>(arg)) {
-    return genericMatch(generic, x->getBaseType());
+    return x->getBaseType()->getName() == generic->getName();
   }
 
   return arg->getName() == generic->getName();

@@ -48,4 +48,12 @@ func change_value() i32 {
     return v[0];
 }
 
+@test(expect = 5)
+func with_pointer() i32 {
+    let mut v = new Vector<&i32>();
+    let a = 5;
+    v.push(&a);
+    return *v[0];
+}
+
 }

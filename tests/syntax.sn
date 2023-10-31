@@ -200,8 +200,23 @@ func namespace_test() i32 {
 }
 
 @test(expect = 5)
-func namespace_const_test() i32 {
+func namespace_const() i32 {
     return A::B::C::a;
+}
+
+@test(expect = 5)
+func maths_precedence() i32 {
+    return 1 + 2 * 2;
+}
+
+@test(expect = 6)
+func maths_precedence2() i32 {
+    return 1 + 2 * 2 + 1;
+}
+
+@test()
+func and_or_precedence() i32 {
+    return 1 + 2 * 2 + 1 && 1 + 2 * 2 + 1;
 }
 
 }
