@@ -61,9 +61,13 @@ struct DocumentationResult {
  * analyzing.
 */
 struct DocGenContext {
-  std::string currentNamespace;
+  std::string currentNamespace = "";
   std::string currentModule;
-  std::string currentType;
+  std::string currentType = "";
+
+  std::string currentNamespacePath;
+  std::string currentModulePath = "";
+  std::string currentTypePath = "";
 };
 
 /**
@@ -86,14 +90,13 @@ struct DocGenContext {
 class DocGen : public AcceptorExtend<DocGen, Visitor> {
   /// @brief The result of the documentation analysis.
   DocumentationResult result;
-  /// @brief Import utility.
-  services::ImportService importService;
   /// @brief The current context of the documentation generator.
   DocGenContext context;
   
 #include "../../defs/accepts.def"
 public:
-  DocGen() : AcceptorExtend(nullptr){};
+  DocGen(DocGenContext ctx) : AcceptorExtend(nullptr), 
+    context(ctx) {}
 
   /**
    * A function that executes a pass manager on a vector of syntax
@@ -121,18 +124,18 @@ public:
   std::pair<std::string, std::string> getFullName(std::string name) {
     std::string fullName = "";
     std::string path = "";
-    if (!context.currentModule.empty()) {
-      fullName += context.currentModule + "::";
-      path += context.currentModule + "/";
+    if (!context.currentType.empty()) {
+      fullName += context.currentType + "::";
+      path += context.currentTypePath + "/";
     } else if (!context.currentNamespace.empty()) {
       fullName += context.currentNamespace + "::";
-      path += context.currentNamespace + "/";
-    } else if (!context.currentType.empty()) {
-      fullName += context.currentType + "::";
-      path += context.currentType + "/";
-    }
+      path += context.currentNamespacePath + "/";
+    } else if (!context.currentModule.empty()) {
+      fullName += context.currentModule + "::";
+      path += context.currentModulePath + "/";
+    } 
     fullName += name;
-    path += name + ".html";
+    path += name;
     return {fullName, path};
   }
 

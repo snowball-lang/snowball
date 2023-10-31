@@ -38,13 +38,17 @@ SN_DOCGEN_VISIT(Statement::VariableDecl) {} // TODO:
 
 SN_DOCGEN_VISIT(Statement::Namespace) {
     auto [name, path] = getFullName(p_node->getName());
+    
     auto backup = context.currentNamespace;
-    context.currentNamespace = p_node->getName();
+    auto backupPath = context.currentNamespacePath;
+    context.currentNamespace = name;
+    context.currentNamespacePath = path;
+
     for (auto& stmt : p_node->getBody()) { stmt->accept(this); }
 
     auto newPage = DocumentationPage {
         .name = name,
-        .path = path,
+        .path = path + ".html",
         .type = DocumentationPage::Type::Namespace,
     };
 
@@ -52,22 +56,25 @@ SN_DOCGEN_VISIT(Statement::Namespace) {
     newPage.html = "";
 
     result.pages.push_back(newPage);
+
     context.currentNamespace = backup;
+    context.currentNamespacePath = backupPath;
 }
 
 SN_DOCGEN_VISIT(Statement::DefinedTypeDef) {
     auto [name, path] = getFullName(p_node->getName());    
     
     auto backup = context.currentType;
-    if (context.currentType.empty())
-        context.currentType = name;
-    else context.currentType += "::" + name;
+    auto backupPath = context.currentTypePath;
+    context.currentType = name;
+    context.currentTypePath = path;
     for (auto& func : p_node->getFunctions()) { func->accept(this); }
 
     context.currentType = backup;
+    context.currentTypePath = backupPath;
     auto newPage = DocumentationPage {
         .name = name,
-        .path = path,
+        .path = path + ".html",
         .type = DocumentationPage::Type::Type,
     };
 
@@ -85,7 +92,7 @@ SN_DOCGEN_VISIT(Statement::FunctionDef) {
 
     auto newPage = DocumentationPage {
         .name = name,
-        .path = path,
+        .path = path + ".html",
         .type = DocumentationPage::Type::Function,
     };
 

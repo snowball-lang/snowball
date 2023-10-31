@@ -131,9 +131,22 @@ void Compiler::compile(bool silent) {
 using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
 
 int Compiler::emitDocs(std::string folder, bool silent) {
-  for (const auto& dirEntry : recursive_directory_iterator(folder)) {
+  auto path = cwd / folder;
+  auto outputFolder = configFolder / "docs";
+
+  fs::remove_all(outputFolder);
+
+  for (const auto& dirEntry : recursive_directory_iterator(path)) {
     if (utils::endsWith(dirEntry.path().string(), ".sn")) {
-      SHOW_STATUS(Logger::message("Generating", " " + dirEntry.path().string()))
+
+      auto relative = dirEntry.path().lexically_relative(cwd).lexically_normal();
+      size_t lastindex = relative.string().find_last_of("."); 
+      relative = relative.string().substr(0, lastindex); 
+
+      std::string moduleName = relative.string();
+      utils::replaceAll(moduleName, "/", "::");
+
+      SHOW_STATUS(Logger::message("Generating", " " + relative.string() + ".sn"))
 
       std::ifstream ifs(dirEntry.path().string());
       std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
@@ -145,17 +158,19 @@ int Compiler::emitDocs(std::string folder, bool silent) {
       if (tokens.size() != 0) {
         auto parser = new parser::Parser(tokens, srcInfo);
         auto ast = parser->parse();
-
-        auto docGen = new Syntax::DocGen();
+        Syntax::DocGenContext context {
+          .currentModule = moduleName,
+          .currentModulePath = relative.string(),
+        };
+        auto docGen = new Syntax::DocGen(context);
         docGen->run(ast);
         auto result = docGen->getResult();
 
-        auto outputFolder = configFolder / "docs";
         for (auto& page : result.pages) {
-          auto path = outputFolder / page.path;
-          if (!fs::exists(path.parent_path())) fs::create_directories(path.parent_path());
+          auto htmlPath = outputFolder / page.path;
+          if (!fs::exists(htmlPath.parent_path())) fs::create_directories(htmlPath.parent_path());
 
-          std::ofstream file(path);
+          std::ofstream file(htmlPath);
           file << page.html;
           file.close();
         }
