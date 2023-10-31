@@ -459,12 +459,48 @@ public:
 };
 
 /**
+ * AST representation of a comment. Comments are ignored
+ * by the compiler but we can still use them to document
+ */
+struct Comment : public AcceptorExtend<Comment, Base> {
+  std::map<std::string, std::string> values;
+  std::string body;
+  bool valid = false;
+
+public:
+  Comment(std::map<std::string, std::string> values, std::string body, bool valid = false)
+    : values(values), body(body), valid(valid){};
+
+  /// @return Get the comment's body
+  std::string getBody() const { return body; }
+  /// @return Get the comment's values
+  std::map<std::string, std::string> getValues() const { return values; }
+
+  bool isValid() const { return valid; }
+
+  // Set an acceptance call
+  ACCEPT()
+};
+
+/// @brief A holder for documentation comments.
+struct CommentHolder {
+  /// @brief Documentation comment
+  Comment* comment = nullptr;
+public:
+  /// @return Get the documentation comment
+  Comment* getComment() const;
+  /// @brief Set a new documentation comment
+  void setComment(Comment* comment);
+};
+
+/**
  * Function definition, check out parseFunction for
  * it's respective rules
  */
 struct FunctionDef : public AcceptorExtend<FunctionDef, Base>,
                      public AcceptorExtend<FunctionDef, Privacy>,
-                     public AcceptorExtend<FunctionDef, GenericContainer<>> {
+                     public AcceptorExtend<FunctionDef, GenericContainer<>>,
+                     public AcceptorExtend<FunctionDef, CommentHolder> {
   // Function's identifier
   std::string name;
   // Arguments available for the functions
@@ -630,7 +666,8 @@ public:
  */
 struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
                         public AcceptorExtend<DefinedTypeDef, Privacy>,
-                        public AcceptorExtend<DefinedTypeDef, GenericContainer<>> {
+                        public AcceptorExtend<DefinedTypeDef, GenericContainer<>>,
+                        public AcceptorExtend<DefinedTypeDef, CommentHolder> {
   /// @brief Class identifier
   std::string name;
   /// @brief Defined functions to the class

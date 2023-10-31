@@ -3,3 +3,6 @@
 main = "tests/main.sn"
 name = "main"
 version = "1.0.0"
+
+[documentation]
+entry = "./stdlib"

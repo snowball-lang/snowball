@@ -17,7 +17,6 @@ Token Parser::next(int p_offset) {
   try {
     m_tok_index += (p_offset + 1);
     m_current = m_tokens.at(m_tok_index);
-
     return m_current;
   } catch (std::out_of_range& _) { createError<BUG>("Index error"); }
 
@@ -28,7 +27,6 @@ Token Parser::prev(int p_offset, bool p_safe) {
   try {
     m_tok_index -= (p_offset + 1);
     m_current = m_tokens.at(m_tok_index);
-
     return m_current;
   } catch (std::out_of_range& _) {
     if (!p_safe) createError<BUG>("Index error");
@@ -45,7 +43,6 @@ Token Parser::peek(int p_offset, bool p_safe) {
     else
       createError<BUG>("Parser::peek() index out of bounds");
   }
-
   return m_tokens.at((m_tok_index + 1) + p_offset);
 }
 } // namespace parser

@@ -94,5 +94,6 @@ public class SourceLocation {
  *
  * @see SourceLocation
  */
-macro [[export]] current_location() =
+@export
+macro current_location() =
   @pkg(SourceLocation::SourceLocation::current())

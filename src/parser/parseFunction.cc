@@ -23,6 +23,8 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
 
   if (!isConstructor && (!isLambda)) next();
 
+  auto comment = parseDocstring(m_current.getComment());
+
   bool isExtern = false;
   bool isPublic = false;
   bool isStatic = false;
@@ -617,6 +619,7 @@ fetch_attrs:
   if (isNotImplemented) fn->addAttribute(Attributes::NOT_IMPLEMENTED);
   fn->setStatic(isStatic);
   fn->isMutable(isMutable);
+  fn->setComment(comment);
   return fn;
 }
 

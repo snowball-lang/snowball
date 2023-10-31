@@ -139,7 +139,7 @@ func lshift() i32 {
     return 1 << 1;
 }
 
-@test(expect = 1, skip)
+@test(expect = 1)
 func rshift() i32 {
     return 2 |>> 1;
 }
@@ -180,6 +180,28 @@ func complex_math() i32 {
     let d = 4;
     let e = 5;
     return a + b * c - d / e;
+}
+
+namespace A {
+namespace B {
+namespace C {
+    public func test() i32 {
+        return 5;
+    }
+
+    const a: i32 = 5;
+}
+}
+}
+
+@test(expect = 5)
+func namespace_test() i32 {
+    return A::B::C::test();
+}
+
+@test(expect = 5)
+func namespace_const_test() i32 {
+    return A::B::C::a;
 }
 
 }

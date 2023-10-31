@@ -1,5 +1,6 @@
+@use_macro(current_location);
+import Core::SourceLocation;
 import Core::System;
-import[[use_macro(current_location)]] Core::SourceLocation;
 
 /**
  * @brief Emits a panic message and exits the program.
@@ -15,7 +16,8 @@ import[[use_macro(current_location)]] Core::SourceLocation;
  * The function prints the error message, source file, line number, and column number where the panic occurred.
  * To enable backtrace information, it suggests running the program with the `SN_BACKTRACE=1` environment variable.
  */
-public func [[inline]] panic(
+@inline
+public func panic(
   message: String = "Something went wrong! 🐱", 
   _location: SourceLocation::SourceLocation = @current_location()
 ) {

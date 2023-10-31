@@ -13,6 +13,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
   bool isInterface = is<TokenType::KWORD_INTER>();
   assert(is<TokenType::KWORD_CLASS>() || isInterface);
 
+  auto comment = parseDocstring(m_current.getComment());
   next(); // East "class" or "interface"
 
   bool isPublic = false;
@@ -216,6 +217,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         assertNoAttributes("before '}'");
         cls->hasConstructor = hasConstructor;
         m_current_class = classBackup;
+        cls->setComment(comment);
         return cls;
       }
 

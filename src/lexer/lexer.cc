@@ -38,6 +38,8 @@ void Lexer::tokenize() {
   auto codeSize = code.size();
   if (codeSize == 0) return;
 
+  std::string comments = "";
+
   // Iterate every character of the source code
   // and tokenize that char. Tokenizing it will
   // mean that respective Token for the current
@@ -53,21 +55,25 @@ void Lexer::tokenize() {
       case '\n': EAT_LINE(); break;
 
       case '/': {
+        std::string comment = "";
         if (GET_CHAR(1) == '/') { // comment
 
           // Skip characters until we encounter _EOF or NEW_LINE
-          while (GET_CHAR(0) != '\n' && GET_CHAR(0) != 0) { EAT_CHAR(1); }
-
+          while (GET_CHAR(0) != '\n' && GET_CHAR(0) != 0) { 
+            comment += GET_CHAR(0);
+            EAT_CHAR(1); 
+          }
           if (GET_CHAR(0) == '\n') {
             EAT_LINE();
           } else if (GET_CHAR(0) == 0) {
             handle_eof();
           }
         } else if (GET_CHAR(1) == '*') { // multi line comment
-
+          comment += "/*";
           EAT_CHAR(2);
           while (true) {
             if (GET_CHAR(0) == '*' && GET_CHAR(1) == '/') {
+              comment += "*/";
               EAT_CHAR(2);
               break;
             } else if (GET_CHAR(0) == 0) {
@@ -87,8 +93,10 @@ void Lexer::tokenize() {
                                "\nproperly close it."}
               );
             } else if (GET_CHAR(0) == '\n') {
+              comment += '\n';
               EAT_LINE();
             } else {
+              comment += GET_CHAR(0);
               EAT_CHAR(1);
             }
           }
@@ -97,7 +105,10 @@ void Lexer::tokenize() {
             consume(TokenType::OP_DIVEQ, 2);
           else
             consume(TokenType::OP_DIV);
+          break;
         }
+        
+        comments = comment;
         break;
       }
 
@@ -640,6 +651,21 @@ void Lexer::tokenize() {
             tk.type = TokenType::VALUE_BOOL;
           } else {
             tk.type = TokenType::IDENTIFIER;
+          }
+
+          switch (tk.type) {
+            case TokenType::KWORD_FUNC:
+            case TokenType::KWORD_MACRO:
+            case TokenType::KWORD_CLASS:
+            case TokenType::KWORD_STRUCT:
+            case TokenType::KWORD_ENUM:
+            case TokenType::KWORD_NAMESPACE:
+            case TokenType::KWORD_INTER:
+            case TokenType::KWORD_TYPEDEF:
+              tk.comment = comments;
+
+            default:
+              comments = "";
           }
 
           tokens.emplace_back(tk);

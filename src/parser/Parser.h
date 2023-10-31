@@ -264,6 +264,10 @@ private:
           std::string terminatorString = ")"
   );
   /**
+   * docstring     ::=  "/*" [string] "*\/"
+   */
+  Syntax::Statement::Comment* parseDocstring(std::string content);
+  /**
    * loop_control  ::=  "break" | "continue"
    */
   Syntax::Statement::LoopFlow* parseLoopControl();

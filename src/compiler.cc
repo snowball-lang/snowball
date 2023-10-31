@@ -12,6 +12,7 @@
 #include "visitors/Transformer.h"
 #include "visitors/TypeChecker.h"
 #include "visitors/analyzers/DefinitveAssigment.h"
+#include "visitors/documentation/DocGen.h"
 
 #include <filesystem>
 #include <fstream>
@@ -21,7 +22,6 @@
 #include <unistd.h>
 
 namespace fs = std::filesystem;
-#define SN_MODULE_NAME "llvm_snowball_compile_mod_"
 
 namespace snowball {
 Compiler::Compiler(std::string p_code, std::string p_path) {
@@ -42,6 +42,7 @@ void Compiler::initialize() {
   configFolder = cwd / ".sn";
   if (!fs::exists(configFolder)) fs::create_directory(configFolder);
   if (!fs::exists(configFolder / "bin")) fs::create_directory(configFolder / "bin");
+  if (!fs::exists(configFolder / "docs")) fs::create_directory(configFolder / "docs");
 }
 
 void Compiler::compile(bool silent) {
@@ -125,9 +126,46 @@ void Compiler::compile(bool silent) {
 
     chdir(cwd.c_str());
   }
-
-#undef SHOW_STATUS
 }
+
+using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
+
+int Compiler::emitDocs(std::string folder, bool silent) {
+  for (const auto& dirEntry : recursive_directory_iterator(folder)) {
+    if (utils::endsWith(dirEntry.path().string(), ".sn")) {
+      SHOW_STATUS(Logger::message("Generating", " " + dirEntry.path().string()))
+
+      std::ifstream ifs(dirEntry.path().string());
+      std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
+
+      srcInfo = new SourceInfo(content, dirEntry.path().string());
+      auto lexer = new Lexer(srcInfo);
+      lexer->tokenize();
+      auto tokens = lexer->tokens;
+      if (tokens.size() != 0) {
+        auto parser = new parser::Parser(tokens, srcInfo);
+        auto ast = parser->parse();
+
+        auto docGen = new Syntax::DocGen();
+        docGen->run(ast);
+        auto result = docGen->getResult();
+
+        auto outputFolder = configFolder / "docs";
+        for (auto& page : result.pages) {
+          auto path = outputFolder / page.path;
+          if (!fs::exists(path.parent_path())) fs::create_directories(path.parent_path());
+
+          std::ofstream file(path);
+          file << page.html;
+          file.close();
+        }
+      }
+    }
+  }
+    
+  return EXIT_SUCCESS;
+}
+#undef SHOW_STATUS
 
 toml::parse_result Compiler::getConfiguration() {
   std::string name = fs::current_path() / "sn.toml";

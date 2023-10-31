@@ -155,6 +155,16 @@ Options CLI::parse() {
         Logger::log("");
         Logger::info("You can create a new folder by executing:\n   -> "
                      "`snowball new {name}`");
+      } else if (IF_ARG("docgen")) {
+        Logger::log("Snowball (C) MIT");
+        Logger::log("Usage: snowball doc [options]\n");
+        Logger::log("Help:");
+        Logger::log("  Generate documentation for your project\n");
+        Logger::log("Options:");
+        Logger::log("  --silent (-s)     - Don't print anything "
+                    "to the console");
+        Logger::log("  --no-progress     - Don't print the "
+                    "progress bar");
       } else {
         throw SNError(ARGUMENT_ERROR, FMT("Command '%s' not found.", current_arg.c_str()));
       }
@@ -306,6 +316,20 @@ Options CLI::parse() {
         opts.bench_opts.opt = Options::Optimization::OPTIMIZE_Oz;
       } else {
         throw SNError(Error::ARGUMENT_ERROR, FMT("Unexpected argument for the bench command: %s", current_arg.c_str()));
+      }
+    }
+  } else if (current_arg == "docgen") {
+    opts.command = Options::Command::DOCS;
+
+    while (current_index < args.size() - 1) {
+      NEXT_ARGUMENT();
+
+      if (IF_ANY_ARG("--silent", "-s")) {
+        opts.docs_opts.silent = true;
+      } else if (IF_ARG("--no-progress")) {
+        opts.docs_opts.no_progress = true;
+      } else {
+        throw SNError(Error::ARGUMENT_ERROR, FMT("Unexpected argument for the docgen command: %s", current_arg.c_str()));
       }
     }
   } else if (current_arg == "init") {

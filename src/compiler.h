@@ -6,6 +6,7 @@
 #include "ir/module/Module.h"
 #include "lexer/lexer.h"
 #include "vendor/toml.hpp"
+#include "./visitors/documentation/DocGen.h"
 
 #include <filesystem>
 #include <string>
@@ -82,6 +83,7 @@ public:
   int emitLLVMIr(std::string, bool = true);
   int emitASM(std::string, bool = true);
   int emitSnowballIr(std::string, bool = true);
+  int emitDocs(std::string, bool = true);
 
   GlobalContext* getGlobalContext() { return globalContext; }
 

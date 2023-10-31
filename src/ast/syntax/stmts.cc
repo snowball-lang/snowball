@@ -87,6 +87,8 @@ DefinedTypeDef::VariableIterator DefinedTypeDef::varEnd() { return variables.end
 std::string ImportStmt::getPackage() const { return package; }
 std::vector<std::string> ImportStmt::getPath() const { return path; }
 std::string ImportStmt::getExportSymbol() const { return exportSymbol; }
+Comment* CommentHolder::getComment() const { return comment; }
+void CommentHolder::setComment(Comment* comment) { this->comment = comment; }
 
 } // namespace Statement
 } // namespace Syntax

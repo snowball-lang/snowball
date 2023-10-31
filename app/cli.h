@@ -64,6 +64,11 @@ struct Options {
     bool skip_cfg = false;
   } init_opts;
 
+  struct DocsOptions {
+    bool silent = false;
+    bool no_progress = false;
+  } docs_opts;
+
   enum Command
   {
     UNKNOWN = -1,
@@ -72,6 +77,7 @@ struct Options {
     RUN,
     TEST,
     INIT,
+    DOCS,
     BENCH,
   } command = UNKNOWN;
 };
