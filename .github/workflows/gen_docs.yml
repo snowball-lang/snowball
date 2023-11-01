@@ -28,5 +28,5 @@ jobs:
         if: ${{ github.ref == 'refs/heads/dev' }}
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          branch: docs
-          folder: .sn/docs
+          branch: stdlib-docs
+          folder: .sn/docs/stdlib
