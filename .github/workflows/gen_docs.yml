@@ -8,6 +8,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
+      - name: install deps
+        run: | 
+            sudo apt-get install lsb-release wget software-properties-common libsigsegv-dev gnupg -y
+            wget https://apt.llvm.org/llvm.sh
+            chmod +x llvm.sh
+            sudo ./llvm.sh 16
+
       - name: Install snowball
         run: |
             set -x
