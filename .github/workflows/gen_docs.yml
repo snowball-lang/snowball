@@ -19,15 +19,10 @@ jobs:
         run: |
             set -x
             sh ./build_scripts/dbg.sh -j10
-            sudo make install
-            mkdir -p ~/.snowball
-            cp -r stdlib/ ~/.snowball/stdlib
-            ls ~/.snowball
-            ls ~/.snowball/stdlib/
 
       - name: Execute docs
         run: |
-          snowball docgen
+          ./bin/Debug/snowball docgen
 
       - name: Copy
         if: ${{ github.ref == 'refs/heads/master' }}
