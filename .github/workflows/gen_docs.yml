@@ -25,7 +25,7 @@ jobs:
           ./bin/Debug/snowball docgen
 
       - name: Copy
-        if: ${{ github.ref == 'refs/heads/master' }}
+        if: ${{ github.ref == 'refs/heads/dev' }}
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: docs
