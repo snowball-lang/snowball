@@ -1,10 +1,14 @@
-name: Generate docs.json file
+name: Generate documentation on push
 
 on: [push]
 
 jobs:
   generate_docs:
     runs-on: ubuntu-latest
+    env:
+        ARCH: 'x86_64'
+        DIST: 'ubuntu-20.04'
+        NAME: 'linux'
     steps:
       - uses: actions/checkout@v2
       - name: Set up QEMU integration for Docker
