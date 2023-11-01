@@ -18,7 +18,7 @@ jobs:
       - name: Install snowball
         run: |
             set -x
-            sh ./build_scripts/dbg.sh -j50
+            sh ./build_scripts/dbg.sh -j10
             sudo make install
             mkdir -p ~/.snowball
             cp -r stdlib/ ~/.snowball/stdlib

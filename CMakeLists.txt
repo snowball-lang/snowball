@@ -68,6 +68,62 @@ set(CMAKE_CXX_FLAGS "-fPIC")
 
 add_definitions(${LLVM_DEFINITIONS})
 
+set(CPM_DOWNLOAD_VERSION 0.32.3)
+set(CPM_DOWNLOAD_LOCATION "${CMAKE_BINARY_DIR}/cmake/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
+if(NOT (EXISTS ${CPM_DOWNLOAD_LOCATION}))
+    message(STATUS "Downloading CPM.cmake...")
+    file(DOWNLOAD https://github.com/TheLartians/CPM.cmake/releases/download/v${CPM_DOWNLOAD_VERSION}/CPM.cmake ${CPM_DOWNLOAD_LOCATION})
+endif()
+include(${CPM_DOWNLOAD_LOCATION})
+
+CPMAddPackage(
+    NAME backtrace
+    GITHUB_REPOSITORY "ianlancetaylor/libbacktrace"
+    GIT_TAG d0f5e95a87a4d3e0a1ed6c069b5dae7cbab3ed2a
+    DOWNLOAD_ONLY YES)
+if(backtrace_ADDED)
+  set(backtrace_SOURCES
+      "${backtrace_SOURCE_DIR}/atomic.c"
+      "${backtrace_SOURCE_DIR}/backtrace.c"
+      "${backtrace_SOURCE_DIR}/dwarf.c"
+      "${backtrace_SOURCE_DIR}/fileline.c"
+      "${backtrace_SOURCE_DIR}/mmapio.c"
+      "${backtrace_SOURCE_DIR}/mmap.c"
+      "${backtrace_SOURCE_DIR}/posix.c"
+      "${backtrace_SOURCE_DIR}/print.c"
+      "${backtrace_SOURCE_DIR}/simple.c"
+      "${backtrace_SOURCE_DIR}/sort.c"
+      "${backtrace_SOURCE_DIR}/state.c")
+
+  # https://go.googlesource.com/gollvm/+/refs/heads/master/cmake/modules/LibbacktraceUtils.cmake
+  set(BACKTRACE_SUPPORTED 1)
+  set(BACKTRACE_ELF_SIZE 64)
+  set(HAVE_GETIPINFO 1)
+  set(BACKTRACE_USES_MALLOC 1)
+  set(BACKTRACE_SUPPORTS_THREADS 1)
+  set(BACKTRACE_SUPPORTS_DATA 1)
+  set(HAVE_SYNC_FUNCTIONS 1)
+  if(APPLE)
+      set(HAVE_MACH_O_DYLD_H 1)
+      list(APPEND backtrace_SOURCES "${backtrace_SOURCE_DIR}/macho.c")
+  else()
+      set(HAVE_MACH_O_DYLD_H 0)
+      list(APPEND backtrace_SOURCES "${backtrace_SOURCE_DIR}/elf.c")
+  endif()
+  # Generate backtrace-supported.h based on the above.
+  configure_file(
+      ${CMAKE_SOURCE_DIR}/cmake/backtrace-supported.h.in
+      ${backtrace_SOURCE_DIR}/backtrace-supported.h)
+  configure_file(
+      ${CMAKE_SOURCE_DIR}/cmake/backtrace-config.h.in
+      ${backtrace_SOURCE_DIR}/config.h)
+  add_library(backtrace STATIC ${backtrace_SOURCES})
+  target_include_directories(backtrace BEFORE PRIVATE "${backtrace_SOURCE_DIR}")
+  set_target_properties(backtrace PROPERTIES
+      COMPILE_FLAGS "-funwind-tables -D_GNU_SOURCE"
+      POSITION_INDEPENDENT_CODE ON)
+endif()
+
 message(STATUS ${LLVM_DEFINITIONS})
 message(STATUS ${LLVM_CONFIG})
 message(STATUS ${LLVM_ENABLE_ZLIB})

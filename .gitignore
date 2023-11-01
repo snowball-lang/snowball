@@ -28,6 +28,13 @@ build.ninja
 
 analysis.txt
 
+# cmake deps
+cpm-package-lock.cmake
+CPM_modules/
+cmake/*
+!cmake/backtrace-supported.h.in
+!cmake/backtrace-config.h.in
+
 # Compiled Static libraries
 *.lai
 *.la
