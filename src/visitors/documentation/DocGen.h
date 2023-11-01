@@ -4,7 +4,7 @@
 #include "../../ast/types/FunctionType.h"
 #include "../../ast/visitor/Visitor.h"
 #include "../../utils/utils.h"
-#include "../../services/ImportService.h"
+#include "../../services/OperatorService.h"
 
 #include <assert.h>
 #include <memory>
@@ -19,6 +19,8 @@
 
 namespace snowball {
 namespace Syntax {
+
+using Operator = services::OperatorService;
 
 /**
  * @struct DocumentationPage

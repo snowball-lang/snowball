@@ -126,6 +126,5 @@ public func to_pointer<T: Sized>(value: &T) *const T {
 
 @inline
 public func copy_nonoverlapping<T: Sized>(src: *const T, dst: *mut T, count: i32) {
-  // TODO: Change '8' with actual pointer type size
   unsafe { CLib::memmove(dst, src, count); }
 }

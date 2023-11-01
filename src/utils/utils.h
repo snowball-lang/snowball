@@ -118,6 +118,13 @@ std::vector<R> _x_to_vec(T x) {
   return vec;
 }
 
+template <typename T>
+std::vector<T> list2vec(std::list<T> l) {
+  std::vector<T> vec;
+  for (auto i : l) { vec.push_back(i); }
+  return vec;
+}
+
 template <typename Key, typename Value>
 std::vector<Value> map_to_vector(std::map<Key, Value> m) {
   return _x_to_vec<std::map<Key, Value>, Value>(m);

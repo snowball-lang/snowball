@@ -79,8 +79,7 @@ SN_DOCGEN_VISIT(Statement::DefinedTypeDef) {
     };
 
     // TODO:
-    newPage.html = "";
-
+    docgen::createTypePage(p_node, context, newPage);
     result.pages.push_back(newPage);
 }
 
@@ -88,6 +87,7 @@ SN_DOCGEN_VISIT(Statement::FunctionDef) {
     auto rawName = p_node->getName();
     if (Operator::isOperator(rawName)) 
         rawName = "-" + Operator::operatorName(Operator::operatorID(rawName));
+    utils::replaceAll(rawName, "/", "(divide)");
     auto [name, path] = getFullName(rawName);
 
     auto newPage = DocumentationPage {
@@ -97,7 +97,7 @@ SN_DOCGEN_VISIT(Statement::FunctionDef) {
     };
 
     // TODO: add html here!
-    newPage.html = createFunctionPage(p_node, context);
+    docgen::createFunctionPage(p_node, context, newPage);
     result.pages.push_back(newPage);
 }
 

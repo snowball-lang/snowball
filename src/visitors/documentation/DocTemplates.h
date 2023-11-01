@@ -18,10 +18,41 @@
 
 namespace snowball {
 namespace Syntax {
+namespace docgen {
 
-static const std::string pageTemplate = "\
-\
-";
+static const std::string pageTemplate = R"(
+<!DOCTYPE html>
+<html>
+<head>
+    <title>%s</title>
+    <link rel="stylesheet" href="https://snowball-lang.github.io/autodoc-styles/styles.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- and it's easy to individually load additional languages -->
+    <script src="https://snowball-lang.github.io/autodoc-styles/highlight.min.js"></script>
+</head>
+<body>
+    <sidenav>
+        <h1>
+            %s 
+        </h1>
+        <hr />
+        %s
+    </sidenav>
+    <main>
+        %s
+    </main>
+
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
+)";
+
+std::string getPageTemplate(DocGenContext context, std::string title, std::string body, std::vector<std::pair<std::string, std::string>> links = {});
+
+std::string typeToHtml(Expression::TypeRef* type);
 
 /**
  * @brief Creates a documentation page for a function.
@@ -33,8 +64,17 @@ static const std::string pageTemplate = "\
  * @return std::string The documentation page.
  * @ingroup docgen
 */
-std::string createFunctionPage(Statement::FunctionDef node, DocGenContext context);
+void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, DocumentationPage& page);
+/**
+ * @brief Creates a documentation page for a type.
+ * 
+ * @param node The type definition node.
+ * @param context The documentation generator context.
+ * @return DocumentationPage The documentation page.
+*/
+void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, DocumentationPage& page);
 
+} // namespace docgen
 } // namespace Syntax
 } // namespace snowball
 
