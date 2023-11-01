@@ -8,5 +8,5 @@ cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr/local -G "Unix Makefiles" -DCMAKE_BUILD_T
 -DLLVM_ENABLE_TERMINFO=OFF \
 -DLLVM_ENABLE_ZLIB=OFF \
 -DLLVM_INCLUDE_EXAMPLES=OFF \
--DLLVM_INCLUDE_DOCS=OFF -DEXECUTABLE_OUTPUT_PATH="bin/Debug" $@ .
-cmake --build . --config Debug
+-DLLVM_INCLUDE_DOCS=OFF -DEXECUTABLE_OUTPUT_PATH="bin/Debug" .
+cmake --build . --config Debug $@
