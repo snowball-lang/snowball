@@ -12,7 +12,7 @@ RUN apt-get update && apt-get -f install && \
         git libssl-dev sudo cmake make pkg-config cmake-data libglib2.0-dev
 
 
-RUN apt-get install lsb-release wget software-properties-common gnupg -y
+RUN apt-get install lsb-release wget software-properties-common libsigsegv-dev gnupg -y
 RUN wget https://apt.llvm.org/llvm.sh
 RUN chmod +x llvm.sh
 RUN sudo ./llvm.sh 16
