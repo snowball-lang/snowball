@@ -1,0 +1,34 @@
+name: Generate docs.json file
+
+on: [push]
+
+jobs:
+  generate_docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up QEMU integration for Docker
+        run: |
+            docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+      - name: Build in Docker
+        run: bash -ex build_scripts/release_build.sh
+      - name: Install snowball
+        run: |
+            set -x
+            sudo make install
+            mkdir -p ~/.snowball
+            cp -r stdlib/ ~/.snowball/stdlib
+            ls ~/.snowball
+            ls ~/.snowball/stdlib/
+
+      - name: Execute docs
+        run: |
+          snowball docgen
+
+      - name: Copy
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: docs
+          folder: .sn/docs

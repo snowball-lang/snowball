@@ -543,7 +543,6 @@ public class Vector<
       vec.reserve(capacity);
       return vec;
     }
-      
 }
 /**
  * @class StringView

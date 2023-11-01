@@ -54,7 +54,6 @@ SN_DOCGEN_VISIT(Statement::Namespace) {
 
     // TODO:
     newPage.html = "";
-
     result.pages.push_back(newPage);
 
     context.currentNamespace = backup;

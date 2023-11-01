@@ -584,7 +584,8 @@ public:
  * AST representation for a variable declaration. Variables
  * can either be mutable or unmutable.
  */
-struct VariableDecl : public AcceptorExtend<VariableDecl, Base>, public AcceptorExtend<VariableDecl, Privacy> {
+struct VariableDecl : public AcceptorExtend<VariableDecl, Base>, 
+  public AcceptorExtend<VariableDecl, Privacy>, public AcceptorExtend<VariableDecl, CommentHolder> {
   /// @brief Variables's identifier
   std::string name;
   /// @brief Variable's default value

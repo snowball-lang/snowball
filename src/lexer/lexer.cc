@@ -661,6 +661,9 @@ void Lexer::tokenize() {
             case TokenType::KWORD_ENUM:
             case TokenType::KWORD_NAMESPACE:
             case TokenType::KWORD_INTER:
+            case TokenType::KWORD_VAR:
+            case TokenType::KWORD_CONST:
+            case TokenType::KWORD_TYPEDEF:
               tk.comment = comments;
               comments = "";
               break;

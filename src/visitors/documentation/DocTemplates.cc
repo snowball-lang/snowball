@@ -316,7 +316,18 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
         body += " { \npublic:";
     else body += " { \n";
     for (auto& field : publicMembers) {
-        body += "    " + (std::string)(field->isContantDecl() ? "const" : "let") + field->getName() + ": " + typeToHtml(field->getDefinedType()) + ",<br/>";
+        if (field->getComment()) {
+            auto values = field->getComment()->getValues();
+            for (auto& [tag, value] : values) {
+                body += "\n    // @" + tag + " " + value;
+            }
+
+            auto fnBody = sanitize(field->getComment()->getBody());
+            if (!fnBody.empty())
+                for (auto& line : utils::list2vec(utils::split(fnBody, "<br/>")))
+                    body += "\n    // " + line;
+        }
+        body += "\n    " + (std::string)(field->isContantDecl() ? "const " : "let ") + field->getName() + ": " + typeToHtml(field->getDefinedType()) + ";\n";
     }
     if (utils::endsWith(body, ",\n"))
         body = body.substr(0, body.size() - 2);
