@@ -69,10 +69,10 @@ snowball run
 
 Here is an example of a class in snowball.
 
-```rs
-use Core::System
+```kt
+import Core::System;
 
-pub fn main() i32 {
+public func main() i32 {
     System::println("Hello, world! 🐱");
 }
 ```

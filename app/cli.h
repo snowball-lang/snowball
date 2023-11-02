@@ -67,6 +67,8 @@ struct Options {
   struct DocsOptions {
     bool silent = false;
     bool no_progress = false;
+
+    std::string base = "";
   } docs_opts;
 
   enum Command

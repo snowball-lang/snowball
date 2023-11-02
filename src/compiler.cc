@@ -89,7 +89,9 @@ void Compiler::compile(bool silent) {
 #if _SNOWBALL_TIMERS_DEBUG
       DEBUG_TIMER("Simplifier: %fs", utils::_timer([&] { simplifier->visitGlobal(ast); }));
 #else
-      simplifier->visitGlobal(ast);
+      ([&] { simplifier->visitGlobal(ast); })();
+      // TODO: why does this segfault if not called from a function?
+//      simplifier->visitGlobal(ast);
 #endif
 
       SHOW_STATUS(Logger::compiling(Logger::progress(0.70)))
@@ -130,7 +132,7 @@ void Compiler::compile(bool silent) {
 
 using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
 
-int Compiler::emitDocs(std::string folder, bool silent) {
+int Compiler::emitDocs(std::string folder, std::string baseURL, bool silent) {
   auto path = cwd / folder;
   auto outputFolder = configFolder / "docs";
 
@@ -161,6 +163,8 @@ int Compiler::emitDocs(std::string folder, bool silent) {
         Syntax::DocGenContext context {
           .currentModule = moduleName,
           .currentModulePath = relative.string(),
+
+          .baseURL = baseURL,
         };
         auto docGen = new Syntax::DocGen(context);
         docGen->run(ast);

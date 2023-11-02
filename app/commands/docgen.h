@@ -27,6 +27,8 @@ int docgen(app::Options::DocsOptions p_opts) {
   package_name = (std::string)(parsed_config["package"]["name"].value_or<std::string>("<anonnimus>"));
   package_version = parsed_config["package"]["version"].value_or<std::string>("<unknown>");
   auto folder = parsed_config["documentation"]["entry"].value_or<std::string>("./src");
+  auto baseURL = p_opts.base;
+  if (baseURL.empty()) baseURL = parsed_config["documentation"]["base"].value_or<std::string>("/");
 
   if (!p_opts.silent)
     Logger::message(
@@ -40,7 +42,7 @@ int docgen(app::Options::DocsOptions p_opts) {
 
   auto start = high_resolution_clock::now();
 
-  int status = compiler->emitDocs(folder, p_opts.silent);
+  int status = compiler->emitDocs(folder, baseURL, p_opts.silent);
   auto stop = high_resolution_clock::now();
 
   // Get duration. Substart timepoints to

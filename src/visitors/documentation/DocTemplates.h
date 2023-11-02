@@ -32,6 +32,7 @@ static const std::string pageTemplate = R"(
 
     <!-- and it's easy to individually load additional languages -->
     <script src="https://snowball-lang.github.io/autodoc-styles/highlight.min.js"></script>
+    <base href="%s">
 </head>
 <body>
     <sidenav>

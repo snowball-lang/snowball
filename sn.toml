@@ -6,3 +6,4 @@ version = "1.0.0"
 
 [documentation]
 entry = "./stdlib"
+base = "/snowball/"

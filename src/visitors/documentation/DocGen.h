@@ -70,6 +70,8 @@ struct DocGenContext {
   std::string currentNamespacePath;
   std::string currentModulePath = "";
   std::string currentTypePath = "";
+
+  std::string baseURL;
 };
 
 /**

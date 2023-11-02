@@ -328,6 +328,10 @@ Options CLI::parse() {
         opts.docs_opts.silent = true;
       } else if (IF_ARG("--no-progress")) {
         opts.docs_opts.no_progress = true;
+      } else if (IF_ANY_ARG("--base-url", "-b")) {
+        CHECK_ARG("a base url")
+        NEXT_ARGUMENT()
+        opts.docs_opts.base = current_arg; 
       } else {
         throw SNError(Error::ARGUMENT_ERROR, FMT("Unexpected argument for the docgen command: %s", current_arg.c_str()));
       }

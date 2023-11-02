@@ -22,13 +22,13 @@ std::string getPageTemplate(DocGenContext context, std::string title, std::strin
         parentPath = context.currentModulePath;
     }
 
-    links.insert(links.begin(), {"< Go Back", "/" + parentPath});
+    links.insert(links.begin(), {"< Go Back", parentPath});
     std::string linksHTML = "";
     for (auto& [name, link] : links) {
         linksHTML += "<a href=\"" + link + ".html\">" + name + "</a>";
     }
 
-    return FMT(pageTemplate.c_str(), title.c_str(), parent.c_str(), linksHTML.c_str(), body.c_str());
+    return FMT(pageTemplate.c_str(), title.c_str(), context.baseURL.c_str(), parent.c_str(), linksHTML.c_str(), body.c_str());
 }
 
 namespace {
@@ -159,7 +159,7 @@ void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, Doc
     auto nameParts = utils::list2vec(utils::split(page.name, "::"));
     int i = 0;
     for (auto _:pathParts) {
-        std::string url = "/";
+        std::string url = "";
         int j = 0;
         for (auto& part : pathParts) {
             if (j == i) {
@@ -250,7 +250,7 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
     auto nameParts = utils::list2vec(utils::split(page.name, "::"));
     int i = 0;
     for (auto _:pathParts) {
-        std::string url = "/";
+        std::string url = "";
         int j = 0;
         for (auto& part : pathParts) {
             if (j == i) {
@@ -405,7 +405,7 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
             name = "-" + Operator::operatorName(Operator::operatorID(name));
         }
 
-        std::string link = "/" + page.path.string();
+        std::string link = page.path.string();
         link = link.substr(0, link.size() - 5); // remove ".html"
         link += "/" + name;
         links.push_back({isOperator ? name.substr(1) : name, link});
