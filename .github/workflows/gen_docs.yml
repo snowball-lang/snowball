@@ -29,4 +29,4 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: stdlib-docs
-          folder: .sn/docs/stdlib
+          folder: .sn/docs
