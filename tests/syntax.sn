@@ -219,4 +219,20 @@ func and_or_precedence() i32 {
     return 1 + 2 * 2 + 1 && 1 + 2 * 2 + 1;
 }
 
+func test_fn() bool {
+    return true;
+}
+
+@test()
+func store_function() i32 {
+    let a = test_fn;
+    return true;
+}
+
+@test()
+func store_and_call_function() i32 {
+    let a = test_fn;
+    return a();
+}
+
 }

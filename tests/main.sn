@@ -27,15 +27,11 @@ import pkg::numbers;
 import Core::System;
 import Core::Optional;
 
-@inline
-static func fib(n: i64) i64 {
-    if n <= 1 {
-        return n
-    }
+func x() i32 {
 
-    return fib(n-1) + fib(n-2)
 }
 
 public func main() i32 {
-    System::println(fib(47 as i64))
+    let x = x;
+    return x()
 }

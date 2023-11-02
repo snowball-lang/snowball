@@ -1,6 +1,8 @@
 name: Generate documentation on push
 
-on: [push]
+on:
+  release:
+    types: [created]
 
 jobs:
   generate_docs:
@@ -25,7 +27,6 @@ jobs:
           ./bin/Debug/snowball docgen
 
       - name: Copy
-        if: ${{ github.ref == 'refs/heads/dev' }}
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: stdlib-docs
