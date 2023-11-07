@@ -157,7 +157,7 @@ types::BaseType* Transformer::transformClass(
                       "Cant infer type!",
                       {.info = "The type of this variable cant be inferred!",
                         .note = "This rule only applies to variables inside classes.",
-                        .help = "You can't infer the type of a variable "
+                        .help = "You cant infer the type of a variable "
                                 "without specifying it's type.\n"
                                 "For example, you can't do this:\n   let a = 10\n"
                                 "You have to do this:\n   let a: i32 = 10\n"
@@ -185,7 +185,7 @@ types::BaseType* Transformer::transformClass(
                     "Cant infer type!",
                     {.info = "The type of this variable cant be inferred!",
                      .note = "This rule only applies to variables inside interfaces.",
-                     .help = "You can't infer the type of a variable "
+                     .help = "You cant infer the type of a variable "
                              "without specifying it's type.\n"
                              "For example, you can't do this:\n   let a = 10\n"
                              "You have to do this:\n   let a: i32 = 10\n"

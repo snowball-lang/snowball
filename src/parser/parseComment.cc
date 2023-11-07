@@ -13,6 +13,7 @@ using CommentType = Syntax::Comment;
 static const std::regex tagRegex("@(\\w+)\\s*(.*)");
 
 CommentType* Parser::parseDocstring(std::string p_content) {
+  if (!m_allow_comments) return nullptr;
 
   auto comment = m_current.getComment();
   bool valid = true;

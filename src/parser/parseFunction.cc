@@ -369,7 +369,7 @@ fetch_attrs:
       consume<TokenType::SYM_COLLON>("':'");
       auto type = parseType();
 
-      if (name == "self" && argumentCount == 0) {
+      if (name == "self" && argumentCount == 0 && (!isStatic) && (!isConstructor) && (m_current_class != nullptr)) {
         attributes[Attributes::FIRST_ARG_IS_SELF] = {};
       } else if (name == "self") {
         createError<SYNTAX_ERROR>("'self' can only be used as the first argument inside a class non-static function!");
@@ -593,6 +593,7 @@ fetch_attrs:
   FunctionDef* fn = nullptr;
   if (isConstructor) {
     assert(hasBlock);
+    isMutable = true;
     auto constructor = Syntax::N<ConstructorDef>(hasSuperArgs, block, name);
     constructor->setSuperArgs(superArgs);
     constructor->setInitArgs(constructorInitArgs);

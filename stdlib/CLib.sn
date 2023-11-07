@@ -157,14 +157,7 @@ public external unsafe func exit(c_int);
  * @param seconds(&c_int) - pointer to a variable where the number of seconds elapsed since the Epoch is stored.
  * @return c_int - If the time is successfully obtained, the return value is the same as the parameter seconds.
  */
-public external unsafe func time(*const c_int) c_int;
-/**
- * @brief It transforms a string into a C string.
- * @param str(&char) - string to be converted
- * @return &char - C string
- */
-@export
-macro c_str(x: const[str]) = (@x.bytes());   
+public external unsafe func time(*const c_int) c_int; 
 /**
  * @brief a namespace that contains functions for manipulating strings.
  * @note(1) All functions in this namespace are thread-safe.

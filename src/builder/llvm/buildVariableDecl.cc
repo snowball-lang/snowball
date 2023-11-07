@@ -21,6 +21,25 @@ void LLVMBuilder::visit(ir::VariableDeclaration* variable) {
     auto id = variable->getId();
     store = ctx->getSymbol(id);
   }
+
+  // debug info
+  if (auto llvmFn = ctx->getCurrentFunction()) {
+    auto dbgInfo = variable->getDBGInfo();
+    auto src = variable->getSourceInfo();
+    auto file = dbg.getFile(src->getPath());
+    auto scope = llvmFn->getSubprogram();
+    auto debugVar = dbg.builder->createAutoVariable(
+            scope, variable->getIdentifier(), file, dbgInfo->line, getDIType(variable->getType()), dbg.debug
+    );
+    dbg.builder->insertDeclare(
+            store,
+            debugVar,
+            dbg.builder->createExpression(),
+            llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
+            builder->GetInsertBlock()
+    );
+  }
+
   if (utils::is<ir::Call>(variable->getValue().get()) && utils::is<types::BaseType>(variable->getType())) {
     ctx->callStoreValue = store;
     build(variable->getValue().get());

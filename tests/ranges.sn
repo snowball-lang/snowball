@@ -1,0 +1,66 @@
+import Core::System;
+import Core::CLib;
+
+namespace tests {
+
+@test(expect = 1)
+func start() i32 {
+    let x = 1..10;
+    return x.begin();
+}
+
+@test(expect = 10)
+func end() i32 {
+    let x = 1..10;
+    return x.stop();
+}
+
+@test(expect = 45)
+func loop() i32 {
+    let x = 1..10;
+    let mut sum = 0;
+    for i in x {
+        sum = sum + i;
+    }
+    return sum;
+}
+
+@test()
+func to_string() i32 {
+    let x = 1..10;
+    return x.to_string() == "1..10";
+}
+
+@test()
+func add() i32 {
+    let x = 1..10;
+    let y = 1..10;
+    let z = x + y;
+    return z.to_string() == "2..20";
+}
+
+@test()
+func sub() i32 {
+    let x = 1..10;
+    let y = 1..10;
+    let z = x - y;
+    return z.to_string() == "0..0";
+}
+
+@test()
+func mul() i32 {
+    let x = 1..10;
+    let y = 1..10;
+    let z = x * y;
+    return z.to_string() == "1..100";
+}
+
+@test()
+func div() i32 {
+    let x = 1..10;
+    let y = 1..10;
+    let z = x / y;
+    return z.to_string() == "1..1";
+}
+
+}

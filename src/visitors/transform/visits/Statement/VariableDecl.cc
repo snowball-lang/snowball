@@ -43,17 +43,19 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
       ctx->module->addVariable(varDecl);
     }
 
-    if (!(definedType == nullptr || definedType->is(val->getType()))) {
-      if (auto v = tryCast(val, definedType); v != nullptr) {
-        this->value = v;
-      } else {
-        E<VARIABLE_ERROR>(
-                p_node,
-                FMT("Cant assign value with type '%s' to "
-                    "the variable with type '%s'!",
-                    val->getType()->getPrettyName().c_str(),
-                    definedType->getPrettyName().c_str())
-        );
+    if (definedType) {
+      if (!definedType->is(val->getType())) {
+        if (auto v = tryCast(val, definedType); v != nullptr) {
+          this->value = v;
+        } else {
+          E<VARIABLE_ERROR>(
+                  p_node,
+                  FMT("Cant assign value with type '%s' to "
+                      "the variable with type '%s'!",
+                      val->getType()->getPrettyName().c_str(),
+                      definedType->getPrettyName().c_str())
+          );
+        }
       }
     }
 

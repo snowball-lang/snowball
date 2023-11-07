@@ -1,8 +1,13 @@
 import Core::Internal::Preload;
-@use_macro(c_str) 
 import Core::CLib;
 import Core::Ptr;
 
+/**
+ * @brief Digits lookup table for decimal numbers.
+ *
+ * The `DEC_DIGITS_LUT` lookup table is used to convert decimal numbers to strings.
+ * It is used by the `to_string` method of the `IntegerImpl` class.
+ */
 const DEC_DIGITS_LUT: *const u8 = b"\
 0001020304050607080910111213141516171819\
 2021222324252627282930313233343536373839\
@@ -164,15 +169,15 @@ public class Exception implements ToString {
      * @brief Returns the message of the exception.
      * @return The message of the exception.
      */
-    func what() String
-      { return String::from(self.msg, self.length); }
-
+    @inline
+    func what() String { 
+      return String::from(self.msg, self.length); 
+    }
     /**
      * @brief Returns a string representation of the exception.
      * @return A string representation of the exception.
      */
-    func to_string() String
-      { return self.what(); }
+    func to_string() String { return self.what(); }
   private:
     /** The message of the exception. */
     let msg: String::StringType;
@@ -206,6 +211,7 @@ public class IndexError extends Exception
  * to reset the iteration to the beginning if necessary.
  */
 public interface Iterable<IterType: Sized> {
+    /// @brief The index of the iterator.
     let mut iter_index: i32 = 0;
   public:
     /**
@@ -217,12 +223,12 @@ public interface Iterable<IterType: Sized> {
      * @return The next element in the iterable.
      */
     virtual func next() Iter<IterType>;
-    
     /**
      * @brief Resets the iterator to the beginning of the iterable.
      *
-     * The `reset` method is used to reset the iterator's position to the beginning of the iterable.
-     * This can be useful when you need to reiterate over the collection.
+     * The `reset` method is used to reset the iterator's position to the 
+     * beginning of the iterable. This can be useful when you need to reiterate 
+     * over the collection.
      */
     virtual mut func reset() { self.iter_index = 0; }
 }
@@ -234,18 +240,18 @@ public interface Iterable<IterType: Sized> {
  * It provides various operations and functionalities for working with iterators, allowing you to
  * access elements, determine iterator validity, and retrieve the iterator's value.
  *
- * @typeparam _IteratorType The type of elements that the iterator iterates over.
+ * @tparam T The type of elements that the iterator iterates over.
  *
  * @remarks
  * The `Iter` class can be considered as the reverse of the `Iterable` class and is typically used
  * to traverse and manipulate data structures that implement the `Iterable` interface. It offers
  * methods to retrieve the value of the iterator and check its validity.
  */
-public class Iter<_IteratorType: Sized> {
+public class Iter<T: Sized> {
     /// @brief Indicates if the iterator is valid.
-    let _valid: bool = false;
+    let valid: bool = false;
     /// @brief Stores the value of the iterator.
-    let _value: _IteratorType = @zero_initialized(:_IteratorType);
+    let iter_value: T = @zero_initialized(:T);
   public:
     /**
      * @brief Default constructor for `Iter`.
@@ -262,47 +268,40 @@ public class Iter<_IteratorType: Sized> {
      *
      * @param[in] value The initial value of the iterator.
      */
-    Iter(value: _IteratorType) : _value(value),
-      _valid(true) {}
+    Iter(value: T) : iter_value(value), valid(true) 
+      {}
     /**
      * @brief Returns the value of the iterator.
      * @return The value of the iterator.
      * @throws IndexError if the iterator is invalid.
      */
-    @internal_linkage
     @inline
-    func value() _IteratorType 
-    { 
-      if !self._valid 
-      {
+    func value() T {
+      if !self.valid {
         throw new IndexError("Invalid iterator access!");
       }
-      return &self._value; 
+      return self.iter_value; 
     }
     /**
      * @brief Checks if the iterator is valid.
      * @return `true` if the iterator is valid, `false` otherwise.
      */
-    @internal_linkage
     @inline
-    func is_valid() bool 
-      { return self._valid; }
+    func is_valid() bool { return self.valid; }
   public:
     /**
      * @brief Returns an invalid iterator.
      * @return An invalid iterator with no initial value.
      */
     @inline
-    static func invalid() Iter<_IteratorType> 
-      { return new Iter<_IteratorType>(); }
+    static func invalid() Iter<T> { return new Iter<T>(); }
     /**
      * @brief Returns a valid iterator with an initial value.
      * @param[in] val The initial value of the iterator.
      * @return A valid iterator with the specified initial value.
      */
     @inline
-    static func valid(val: _IteratorType) Iter<_IteratorType> 
-      { return new Iter<_IteratorType>(val); }
+    static func valid(val: T) Iter<T> { return new Iter<T>(val); }
 }
 /**
  * @class Range 
@@ -321,7 +320,7 @@ public class Iter<_IteratorType: Sized> {
  * be used for various purposes, including numerical iteration and subsetting. It implements the
  * `Iterable` interface, making it iterable and compatible with iteration-related utilities.
  */
-public class Range<_Number_Type: Numeric = i32> implements Iterable<_Number_Type> {
+public class Range<N: Numeric = i32> implements Iterable<N>, ToString {
   public:
     /**
      * @brief Constructor for `Range` with specified start and end values.
@@ -329,63 +328,103 @@ public class Range<_Number_Type: Numeric = i32> implements Iterable<_Number_Type
      * @param[in] start The start of the range (inclusive).
      * @param[in] end The end of the range (exclusive).
      */
-    Range(start: _Number_Type, end: _Number_Type) : 
-      _start(start), _end(end) 
-    {
-      self.iter_index = self._start - 1;
+    Range(start: N, end: N) : start(start), end(end) {
+      self.reset();
     }
     /**
      * @brief Constructor for `Range` with a default start value of 0.
      *
      * @param[in] end The end of the range (exclusive).
      */
-    Range(end: _Number_Type) : _end(end) {}
+    Range(end: N) : end(end) {}
     /**
      * @brief Returns the size of the range.
      * @return The size of the range.
      */
     @inline
-    func size() _Number_Type
-      { return self._end - self._start; }
+    func size() N { return self.end - self.start; }
     /**
      * @brief Returns the start of the range.
      * @return The start of the range.
      */
-    @internal_linkage
     @inline
-    func begin() _Number_Type
-      { return self._start; }
+    func begin() N { return self.start; }
     /**
      * @brief Returns the end of the range.
      * @return The end of the range.
      */
-    @internal_linkage
     @inline
-    func end() _Number_Type
-      { return self._end; }
+    func stop() N { return self.end; }
     /**
      * @brief Returns the next element in the iteration.
      * @return The next element in the iteration.
      */
-    virtual mut func next() Iter<_Number_Type>
-    {
+    virtual mut func next() Iter<N> {
       self.iter_index = self.iter_index + 1;
-      if self.iter_index >= self.end() 
-      {
-        return Iter<?_Number_Type>::invalid();
+      if self.iter_index >= self.end {
+        return Iter<?N>::invalid();
       }
-      return Iter<?_Number_Type>::valid(self.iter_index);
+      return Iter<?N>::valid(self.iter_index);
     }
     /**
      * @brief Resets the iteration to the beginning of the range.
      */
     @inline
-    mut func reset() { self.iter_index = self._start - 1; }
+    virtual mut func reset() { self.iter_index = self.start - 1; }
+    /**
+     * @brief Adds a value to the range with another range.
+     * @param[in] value The value to add to the range.
+     * @return A new range with the specified value added to it.
+     */
+    @inline
+    operator func +(value: Range<N>) Range<N> {
+      return new Range<N>(self.start + value.start, self.end + value.end); 
+    }
+    /**
+     * @brief Subtracts a value from the range with another range.
+     * @param[in] value The value to subtract from the range.
+     * @return A new range with the specified value subtracted from it.
+     */
+    @inline
+    operator func -(value: Range<N>) Range<N> { 
+      return new Range<N>(self.start - value.start, self.end - value.end);
+    }
+    /**
+     * @brief Multiplies the range with another range.
+     * @param[in] value The value to multiply the range with.
+     * @return A new range with the specified value multiplied with it.
+     */
+    @inline
+    operator func *(value: Range<N>) Range<N> { 
+      return new Range<N>(self.start * value.start, self.end * value.end);
+    }
+    /**
+     * @brief Divides the range with another range.
+     * @param[in] value The value to divide the range with.
+     * @return A new range with the specified value divided with it.
+     */
+    @inline
+    operator func /(value: Range<N>) Range<N> { 
+      return new Range<N>(self.start / value.start, self.end / value.end);
+    }
+    /**
+     * @brief Returns a string representation of the range.
+     * @return A string representation of the range.
+     */
+    func to_string<>() String {
+      return self.start.to_string() + ".." + self.end.to_string();
+    }
+
+
   private:
     /** The start of the range. */
-    let _start: _Number_Type = 0;
-    /** The end of the range. */
-    let _end: _Number_Type;
+    let start: N = 0;
+    /** 
+     * The end of the range.
+     * @note Do not initialize, it's a basic checker
+     *  to make sure the constructor is called 
+     */
+    let end: N;
 };
 /**
  * @class Vector
@@ -406,10 +445,8 @@ public class Range<_Number_Type: Numeric = i32> implements Iterable<_Number_Type
  *       interface for managing collections of elements, abstracting the complexities of memory
  *       management.
  */
-public class Vector<
-  _StoreType: Sized,
-  Allocator: Sized = Ptr::Allocator<_StoreType>
-> implements Iterable<_StoreType>, ToString {
+public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>> 
+ implements Iterable<T>, ToString {
   public:
     /**
      * @brief Default constructor.
@@ -420,10 +457,8 @@ public class Vector<
      * @brief It pushes an element to the back of the vector.
      * @param[in] value The element to push to the back of the vector.
      */
-    mut func push(value: _StoreType)
-    { 
-      if self.length >= self.capacity 
-      {
+    mut func push(value: T) {
+      if self.length >= self.capacity {
         self.resize();
       }
       unsafe {
@@ -434,15 +469,13 @@ public class Vector<
     /**
      * @return The size of the vector.
      */
-    @internal_linkage
     @inline
     func size() i32 { return self.length; }
     /**
      * @brief Resizes the vector.
      * @param[in] capacity The new capacity of the vector.
      */
-    mut func resize()
-    { 
+    mut func resize() { 
       // we make sure we dont overflow
       if self.capacity == 0 { self.reserve(1); }
       else if self.capacity == 1 { self.reserve(4) }
@@ -452,15 +485,13 @@ public class Vector<
      * @brief Reserves a capacity for the vector.
      * @param[in] capacity The capacity to reserve for the vector.
      */
-    mut func reserve(new_capacity: i32)
-    {
-      if self.buffer.ptr().is_null() 
-      {
+    mut func reserve(new_capacity: i32) {
+      if self.buffer.ptr().is_null() {
         self.buffer = Allocator::alloc(new_capacity);
-      } else if self.capacity < new_capacity 
-      {
+      } else if self.capacity < new_capacity {
         self.buffer = Allocator::realloc(self.buffer, new_capacity);
       }
+
       self.capacity = new_capacity;
     }
     /**
@@ -470,16 +501,13 @@ public class Vector<
      * @note It returns a reference to the element at the specified index.
      */
     @internal_linkage
-    func at(index: i32) &mut _StoreType
-    {
-      if index < 0 
-      {
+    func at(index: i32) &mut T {
+      if index < 0 {
         return self.at(self.length + index);
-      } 
-      else if index >= self.length 
-      {
+      } else if index >= self.length {
         throw new IndexError("Index out of bounds. Cannot access element at index " + index.to_string());
       }
+
       return self.buffer.ptr().unchecked_get(index);
     }
     /**
@@ -489,20 +517,19 @@ public class Vector<
      * @see Vector<_StoreType>::at()
      */
     @inline
-    operator func [](index: i32) &mut _StoreType
+    operator func [](index: i32) &mut T 
       { return self.at(index); }
     /**
      * @brief It inserts an element at the specified index.
      * @param[in] index The index to insert the element at.
      * @param[in] value The element to insert.
      */
-    mut func insert(index: i32, value: _StoreType)
-    {
-      if index >= self.length 
-      {
+    mut func insert(index: i32, value: T) {
+      if index >= self.length {
         self.push(value);
         return;
       }
+
       let cur = self[index];
       self[index] = value;
       self.insert(index + 1, cur);
@@ -528,7 +555,7 @@ public class Vector<
     /** The size of the vector. */
     let mut length: i64 = 0;
     /** The buffer containing the vector. */
-    let mut buffer: Ptr::NonNull<_StoreType> = Allocator::alloc(0);
+    let mut buffer: Ptr::NonNull<T> = Allocator::alloc(0);
 
   public:
     /**
@@ -537,8 +564,7 @@ public class Vector<
      * @return A new Vector with the specified capacity.
      */
     @inline
-    static func with_capacity(capacity: i32) Self 
-    {
+    static func with_capacity(capacity: i32) Self {
       let mut vec = new Self();
       vec.reserve(capacity);
       return vec;
@@ -561,28 +587,25 @@ public class Vector<
  */
 public class StringView<Char: Sized = u8> implements ToString {
   public:
+    /** A type alias for the string type. */
     type StringType = *const Char;
-
     /**
      * @brief Default constructor for `StringView`.
      * Constructs an empty string view.
      */
     StringView() {}
-
     /**
      * @brief Returns the size of the string view.
      * @return The size of the string view.
      */
     @inline
     func size() i32 { return self.length; }
-
     /**
      * @brief Returns a pointer to the buffer containing the string view.
      * @return A pointer to the buffer containing the string view.
      */
     @inline
     func bytes() StringType { return self.buffer; }
-
     /**
      * @brief Compares the string view with another string view.
      * @param[in] other The string view to compare with.
@@ -599,7 +622,6 @@ public class StringView<Char: Sized = u8> implements ToString {
       }
       return true;
     }
-
     /**
      * @brief Checks if the string views are not equal.
      * @param[in] other The string view to compare with.
@@ -607,7 +629,6 @@ public class StringView<Char: Sized = u8> implements ToString {
      */
     @inline
     operator func !=(other: Self) bool { return !(self == other); }
-
     /**
      * @brief Concatenates the string view with another string view.
      * @param[in] other The string view to concatenate with.
@@ -618,14 +639,12 @@ public class StringView<Char: Sized = u8> implements ToString {
       let result = Self::concat(self.bytes(), other.bytes(), self.length, other.length); 
       return new Self(result, self.length + other.length);
     }
-
     /**
      * @brief Converts the string view to a string representation.
      * @return A string representation of the string view.
      */
     @inline
     func to_string() Self { return "\"" + *self + "\""; }
-
     /**
      * @brief Returns the character at the specified index.
      * @param[in] index The index of the character to retrieve.
@@ -641,7 +660,24 @@ public class StringView<Char: Sized = u8> implements ToString {
         return *(self.bytes() + index);
       }
     }
-    
+    /**
+     * @brief Returns a substring of the string view.
+     * @param[in] range The range of the substring to return.
+     * @return The substring of the string view.
+     * @note If the range is invalid, the method throws an IndexError.
+     */
+    func substr(range: Range<i32>) Self {
+      if range.begin() < 0 {
+        return self.substr((self.length + range.begin())..(range.stop()));
+      } else if range.stop() < 0 {
+        return self.substr((range.begin())..(self.length + range.stop()));
+      } else if (range.stop() > self.length) || (range.begin() > self.length) {
+        throw new IndexError("Index out of bounds.");
+      }
+      unsafe {
+        return new Self(self.bytes() + range.begin(), range.size());
+      }
+    }
   private:
     /** The size of the string view. */
     let mut length: i32 = 0;
@@ -726,29 +762,29 @@ static unsafe func snowball_test(
   expectStr: *const i8,
   total: i32
 ) i32 {
-  CLib::printf(@c_str(" Testing (\e[1m%i/%i\e[0m) \t\e[1m%-45s\e[0m [%s]\t... "), index, total, name, expectStr);
+  CLib::printf(b" Testing (\e[1m%i/%i\e[0m) \t\e[1m%-45s\e[0m [%s]\t... ", index, total, name, expectStr);
   // TODO: Add support for exceptions
   if !skip {
     try {
       let result = fn();
       if result == expect {
-        CLib::printf(@c_str("\e[1;32mnice!\e[0m\n"));
+        CLib::printf(b"\e[1;32mnice!\e[0m\n");
       } else {
-        CLib::printf(@c_str("\e[1;31merror \n"));
-        CLib::printf(@c_str("\n UNEXPECTED RESULT:\n"));
-        CLib::printf(@c_str("   --> Expected a success return value (%i) but got `%i`\n"), expect, result);
-        CLib::printf(@c_str("\e[0m\n"));
+        CLib::printf(b"\e[1;31merror \n");
+        CLib::printf(b"\n UNEXPECTED RESULT:\n");
+        CLib::printf(b"   --> Expected a success return value (%i) but got `%i`\n", expect, result);
+        CLib::printf(b"\e[0m\n");
         return false;
       }
     } catch (e: Exception) {
-      CLib::printf(@c_str("\e[1;31merror \n"));
-      CLib::printf(@c_str("\n UNEXPECTED EXCEPTION:\n"));
-      CLib::printf(@c_str("   --> %s\n"), e.what().bytes());
-      CLib::printf(@c_str("\e[0m\n"));
+      CLib::printf(b"\e[1;31merror \n");
+      CLib::printf(b"\n UNEXPECTED EXCEPTION:\n");
+      CLib::printf(b"   --> %s\n", e.what().bytes());
+      CLib::printf(b"\e[0m\n");
       return false;
     }
   } else {
-    CLib::printf(@c_str("\e[1;33mwip\e[0m\n"));
+    CLib::printf(b"\e[1;33mwip\e[0m\n");
   }
   return true;
 }

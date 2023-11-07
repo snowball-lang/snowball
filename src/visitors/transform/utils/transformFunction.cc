@@ -73,6 +73,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
         auto ty = ctx->getCurrentClass(true)->getReferenceTo();
         ty->setMutable(node->isMutable());
         a->setType(ty);
+        a->setMutability(node->isMutable());
         newArgs.emplace(newArgs.begin(), std::make_pair("self", a));
       }
 
@@ -88,8 +89,13 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
         a->setType(transformSizedType(
                 arg->getType(), false, "Function argument types but be sized but found '%s' (which is not sized)"
         ));
-        if (arg->getName() != "self") a->getType()->setMutable(arg->isMutable());
-        a->setMutability(a->getType()->isMutable());
+        if (arg->getName() != "self") {
+          a->getType()->setMutable(arg->isMutable());
+          a->setMutability(a->getType()->isMutable());
+        } else {
+          a->getType()->setMutable(node->isMutable());
+          a->setMutability(node->isMutable());
+        }
         newArgs.push_back({arg->getName(), a});
       }
 

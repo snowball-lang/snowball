@@ -28,6 +28,12 @@ Syntax::Node* Parser::parseStatement(Token pk) {
       break;
     }
 
+    case TokenType::KWORD_CONST: {
+      next();
+      return parseConstant();
+      break;
+    }
+
     case TokenType::SYM_SEMI_COLLON: {
       next();
       break;

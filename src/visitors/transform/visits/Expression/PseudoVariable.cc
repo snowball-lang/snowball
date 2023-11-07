@@ -73,7 +73,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
                   p_node,
                   FMT("Macro arguement '%s' is not an expression!", pseudo.c_str()),
                   {.info = "Trying to use a statement macro as an expression macro.",
-                   .note = "You can't use a statement macro as an expression macro.\n"
+                   .note = "You cant use a statement macro as an expression macro.\n"
                            "You can use the macro as a statement instead.",
                    .help = "Try using the macro as a statement instead or declare the\n"
                            "macro as an expression macro.",
@@ -90,7 +90,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
                   p_node,
                   FMT("Macro arguement '%s' is a type!", pseudo.c_str()),
                   {.info = "Trying to use a type as an expression macro.",
-                   .note = "You can't use a type as an expression macro.\n"
+                   .note = "You cant use a type as an expression macro.\n"
                            "You can use the type as a type instead.",
                    .help = "Try using the type as a type instead or declare the\n"
                            "macro as an expression macro.",
@@ -116,7 +116,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
                 p_node,
                 FMT("Macro '%s' is not an expression!", pseudo.c_str()),
                 {.info = "Trying to use a statement macro as an expression macro.",
-                 .note = "You can't use a statement macro as an expression macro.\n"
+                 .note = "You cant use a statement macro as an expression macro.\n"
                          "You can use the macro as a statement instead.",
                  .help = "Try using the macro as a statement instead or declare the\n"
                          "macro as an expression macro.",

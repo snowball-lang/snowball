@@ -44,8 +44,8 @@ llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
 llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
   auto llvmType = getLLVMType(ty);
 
-  if (is<types::IntType>(ty)) {
-    return dbg.builder->createBasicType(ty->getName(), ty->sizeOf() * 8, llvm::dwarf::DW_ATE_signed);
+  if (auto intTy = cast<types::IntType>(ty)) {
+    return dbg.builder->createBasicType(ty->getName(), ty->sizeOf() * 8, intTy->isSigned() ? llvm::dwarf::DW_ATE_signed : llvm::dwarf::DW_ATE_unsigned);
   } else if (is<types::FloatType>(ty)) {
     return dbg.builder->createBasicType(ty->getName(), ty->sizeOf() * 8, llvm::dwarf::DW_ATE_float);
   } else if (cast<types::VoidType>(ty)) {

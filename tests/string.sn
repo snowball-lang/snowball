@@ -12,7 +12,7 @@ func empty() i32 {
 
 @test(expect = 5)
 func size_char() i32 {
-    let s = String::from(@c_str("hello"), 5);
+    let s = String::from(b"hello", 5);
     return s.size();
 }
 
@@ -45,6 +45,18 @@ func size() i32 {
 func index() i32 {
     let mut s = "hello";
     return s[0] == 'h' && s[1] == 'e' && s[2] == 'l' && s[3] == 'l' && s[4] == 'o';
+}
+
+@test()
+func substring() i32 {
+    let s = "hello";
+    return s.substr(0..2) == "he";
+}
+
+@test()
+func substring_negative() i32 {
+    let s = "hello";
+    return s.substr((-2)..(-1)) == "l";
 }
 
 }

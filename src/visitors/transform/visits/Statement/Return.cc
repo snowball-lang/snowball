@@ -12,7 +12,7 @@ SN_TRANSFORMER_VISIT(Statement::Return) {
   if (auto f = ctx->getCurrentFunction(); f->isConstructor()) {
     E<SYNTAX_ERROR>(
             p_node,
-            "You can't return a value inside a constructor function!",
+            "You cant return a value inside a constructor function!",
             {.info = "Constructors can't contain return statements"}
     );
   }
@@ -37,7 +37,7 @@ SN_TRANSFORMER_VISIT(Statement::Return) {
     if (p_node->getValue() != nullptr) {
       E<SYNTAX_ERROR>(
               p_node,
-              "You can't return a value inside a void function!",
+              "You cant return a value inside a void function!",
               {.info = "Void functions can't contain return statements"}
       );
     }

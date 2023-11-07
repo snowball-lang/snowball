@@ -258,6 +258,15 @@ VISIT(Cast) {
     }
   }
 
+  if ((!v->getType()->isMutable()) && t->isMutable()) {
+    E<TYPE_ERROR>(
+      p_node,
+      FMT("Cant cast from nonmutable type ('%s') to mutable type ('%s')!",
+          v->getType()->getPrettyName().c_str(),
+          t->getPrettyName().c_str())
+    );
+  }
+
   if (!v->getType()->canCast(t)) {
     E<TYPE_ERROR>(
             p_node,
@@ -358,13 +367,13 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
     if (isAssignment && accessingSelf && !ctx->getCurrentFunction()->getType()->isMutable()) {
       E<VARIABLE_ERROR>(
               p_node,
-              "You can't call a mutating method on an immutable instance!",
+              "You cant call a mutating method on an immutable instance!",
               {.info = "This function is mutable!",
                .note = "This error is caused by the function being "
                        "mutable, but the value being nonmutable.",
                .help = "Try to make the value mutable by adding the 'mut' "
                        "keyword or make the function\nnonmutable by "
-                       "removing the 'mut' keyword from it's declaration.",
+                       "removing the 'mut' keyword from its declaration.",
                .tail =
                        EI<>(value->getDBGInfo(),
                             "",
@@ -417,13 +426,13 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
   if (!fn->isConstructor() && (fn->getType()->isMutable() && !isMutable)) {
     E<VARIABLE_ERROR>(
             p_node,
-            "You can't call a mutating method on an immutable instance!",
+            "You cant call a mutating method on an immutable instance!",
             {.info = "This function is mutable!",
              .note = "This error is caused by the function being "
                      "mutable, but the value being nonmutable.",
              .help = "Try to make the value mutable by adding the 'mut' "
                      "keyword or make the function\nnonmutable by "
-                     "removing the 'mut' keyword from it's declaration.",
+                     "removing the 'mut' keyword from its declaration.",
              .tail =
                      EI<>(value->getDBGInfo(),
                           "",

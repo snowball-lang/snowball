@@ -6,8 +6,8 @@
 namespace snowball {
 namespace parser {
 
-Parser::Parser(std::vector<Token> p_tokens, const SourceInfo* p_source_info)
-    : m_tokens(p_tokens), m_source_info(p_source_info) {
+Parser::Parser(std::vector<Token> p_tokens, const SourceInfo* p_source_info, bool p_allow_comments)
+    : m_tokens(p_tokens), m_source_info(p_source_info), m_allow_comments(p_allow_comments) {
   m_current = m_tokens.at(m_tok_index);
 }
 

@@ -148,7 +148,8 @@ int Compiler::emitDocs(std::string folder, std::string baseURL, bool silent) {
       std::string moduleName = relative.string();
       utils::replaceAll(moduleName, "/", "::");
 
-      SHOW_STATUS(Logger::message("Generating", " " + relative.string() + ".sn"))
+      if (!silent)
+        Logger::message("Generating", " " + relative.string() + ".sn");
 
       std::ifstream ifs(dirEntry.path().string());
       std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
@@ -158,7 +159,7 @@ int Compiler::emitDocs(std::string folder, std::string baseURL, bool silent) {
       lexer->tokenize();
       auto tokens = lexer->tokens;
       if (tokens.size() != 0) {
-        auto parser = new parser::Parser(tokens, srcInfo);
+        auto parser = new parser::Parser(tokens, srcInfo, true);
         auto ast = parser->parse();
         Syntax::DocGenContext context {
           .currentModule = moduleName,

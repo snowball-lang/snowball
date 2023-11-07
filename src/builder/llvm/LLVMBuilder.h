@@ -420,6 +420,11 @@ private:
    */
   void setDebugInfoLoc(ir::Value* v);
   /**
+   * Initialize a variable with a constant struct value.
+   * @param var The variable to get the initializer for.
+  */
+  void initializeVariable(llvm::Value* var, llvm::Type* ty, unsigned int size);
+  /**
    * @brief Creates (if it does not exist) or fetches a function
    * declaration used to allocate new bytes into memory.
    * @example This can be used to create a new instance of an object.

@@ -1,4 +1,3 @@
-@use_macro(c_str)
 import Core::CLib;
 
 /**

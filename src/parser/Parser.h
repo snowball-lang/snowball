@@ -29,9 +29,10 @@ class Parser {
   Syntax::Statement::DefinedTypeDef* m_current_class = nullptr;
 
   bool m_inside_loop = false;
+  bool m_allow_comments = false;
 
 public:
-  Parser(std::vector<Token> p_tokens, const SourceInfo* p_source_info);
+  Parser(std::vector<Token> p_tokens, const SourceInfo* p_source_info, bool p_allow_comments = false);
   ~Parser() noexcept = default;
 
 private:

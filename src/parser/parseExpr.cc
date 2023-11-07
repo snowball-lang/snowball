@@ -191,7 +191,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
         auto dbgInfo = new DBGSourceInfo(
                 m_source_info,
                 expr->getDBGInfo()->pos,
-                expr->getDBGInfo()->width + expr->getDBGInfo()->width + 2 + ty->getDBGInfo()->width
+                ty->getDBGInfo()->pos.second - expr->getDBGInfo()->pos.second + ty->getDBGInfo()->width
         );
 
         expr = Syntax::N<Syntax::Expression::Cast>(expr, ty);

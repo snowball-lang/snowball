@@ -12,6 +12,7 @@ Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
   auto currentClass = utils::cast<types::DefinedType>(ctx->getCurrentClass());
   std::shared_ptr<ir::Call> superCall = nullptr;
   assert(currentClass && "Current class is not a defined type!");
+  // TODO: Do not allow the use of "this" in the constructor
   if (p_node->hasSuperArgs()) {
     auto [selfArg, foundSelfArg] = ctx->getInCurrentScope("self");
     assert(foundSelfArg);

@@ -84,7 +84,7 @@ void LLVMBuilder::visit(ir::Call* call) {
   } else if (auto c = utils::dyn_cast<ir::Func>(calleeValue); c != nullptr && c->inVirtualTable()) {
     assert(c->hasParent());
 
-    auto index = c->getVirtualIndex(); // avoid class info
+    auto index = c->getVirtualIndex() + 2; // avoid class info
     auto parent = c->getParent();
 
     auto f = llvm::cast<llvm::Function>(callee);
@@ -152,7 +152,7 @@ void LLVMBuilder::visit(ir::Call* call) {
   SET_CALL_ATTRIBUTES(llvm::CallInst)
   else SET_CALL_ATTRIBUTES(llvm::InvokeInst) else { assert(false); }
 
-  if (!allocatedValue) ctx->doNotLoadInMemory = true;
+  if (!allocatedValue && !isConstructor) ctx->doNotLoadInMemory = true;
 }
 
 } // namespace codegen

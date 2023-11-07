@@ -5,10 +5,10 @@
 //  Fibonacci example for the lang                  じし(_,)ノ
 //  Docs: https://snowball-lang.gitbook.io/docs/
 //
+import pkg::cls;
 import pkg::option;
 import pkg::chars;
 import pkg::vector;
-import pkg::cls;
 import pkg::string;
 import pkg::tuples;
 import pkg::syntax;
@@ -17,6 +17,7 @@ import pkg::clib;
 import pkg::interfaces;
 import pkg::math;
 import pkg::numbers;
+import pkg::ranges;
 
 //import pkg::macros;
 //import pkg::source_location;
@@ -27,11 +28,8 @@ import pkg::numbers;
 import Core::System;
 import Core::Optional;
 
-func x() i32 {
-
-}
-
 public func main() i32 {
-    let x = x;
-    return x()
+    //const x: &i32 = 25;
+    //(x as &mut i32) = 24;
+    //return x;
 }

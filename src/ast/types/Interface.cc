@@ -103,7 +103,7 @@ std::int64_t InterfaceType::sizeOf() const {
   auto alignment = alignmentOf();
   address += (address - (address % alignment)) % alignment;
   address += (alignment - (address % alignment)) % alignment;
-  return address;
+  return address + (hasVtable * 8);
 }
 
 std::int64_t InterfaceType::alignmentOf() const {
