@@ -7,7 +7,7 @@ class Test {
 }
 
 @test
-func init_heap() i32 {
+func init() i32 {
   let t = new Test();
   return t.succ;
 }
@@ -44,12 +44,11 @@ class virtualTest {
 
 @test
 func virtual_stack() i32 {
-  // TODO: what's going on here
   let t = new virtualTest();
   return t.test();
 }
 
-@test
+@test(description = "Check if we fetch the vtable correctly from pointer")
 func virtual_heap() i32 {
   let t = &new virtualTest();
   return t.test();

@@ -20,13 +20,13 @@ public func pair_with_class() i32 {
     return x.first + x.second.size();
 }
 
-@test(expect = 3)
+@test(expect = 3, description = "Check if we store the pointer correctly")
 public func pair_with_ptr() i32 {
     let x = new Tuples::Pair<i32, &i32>(1, &2);
     return x.first + *x.second;
 }
 
-@test(expect = 6)
+@test(expect = 6, description = "This is used mostly to check that we parse generics correctly")
 public func triple() i32 {
     let x = new Tuples::Triple<i32, i32, i32>(1, 2, 3);
     return x.first + x.second + x.third;

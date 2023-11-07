@@ -149,6 +149,15 @@ public interface Debug {
     func debug() String;
 };
 /**
+ * @interface Throwable
+ * @brief An interface for objects that can be thrown as exceptions.
+ * 
+ * The `Throwable` interface defines a contract for objects that can be thrown as exceptions.
+ * Classes implementing this interface must provide the `throw` method, which throws the object
+ * as an exception.
+ */
+public interface Throwable { }
+/**
  * @class Exception
  * @brief A class representing an exception.
  *
@@ -157,7 +166,7 @@ public interface Debug {
  * manipulation operations such as exception throwing, exception
  * catching, exception handling, and more.
  */
-public class Exception implements ToString {
+public class Exception implements ToString, Throwable {
   public:
     /**
      * @brief Exception constructor.
@@ -760,7 +769,9 @@ static unsafe func snowball_test(
   skip: bool,
   expect: i32,
   expectStr: *const i8,
-  total: i32
+  total: i32,
+  description: *const i8,
+  hasDescription: bool
 ) i32 {
   CLib::printf(b" Testing (\e[1m%i/%i\e[0m) \t\e[1m%-45s\e[0m [%s]\t... ", index, total, name, expectStr);
   // TODO: Add support for exceptions
@@ -778,13 +789,16 @@ static unsafe func snowball_test(
       }
     } catch (e: Exception) {
       CLib::printf(b"\e[1;31merror \n");
-      CLib::printf(b"\n UNEXPECTED EXCEPTION:\n");
-      CLib::printf(b"   --> %s\n", e.what().bytes());
+      CLib::printf(b"\n ------- %s failure -------\n", name);
+      CLib::printf(b"  --> %s\n", e.what().bytes());
       CLib::printf(b"\e[0m\n");
       return false;
     }
   } else {
     CLib::printf(b"\e[1;33mwip\e[0m\n");
+  }
+  if hasDescription {
+    CLib::printf(b"\e[0;90m ╰───────┤ %s\e[0m\n", description);
   }
   return true;
 }

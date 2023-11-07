@@ -42,12 +42,15 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
     auto attrArgs = fn->getAttributeArgs(Attributes::TEST);
     auto shouldSkip = attrArgs.find("skip") != attrArgs.end();
     auto doesExpect = attrArgs.find("expect") != attrArgs.end();
+    auto description = attrArgs.find("description") != attrArgs.end() ? attrArgs["description"] : "";
     auto expect = doesExpect ? std::stoi(attrArgs["expect"]) : 1;
     auto namePtr = builder->CreateGlobalStringPtr(name, "test.alloca");
     auto expectStr = builder->CreateGlobalStringPtr(expect == 1 ? "should pass" : FMT("expect %i", expect), "test.alloca");
+    auto descriptionPtr = builder->CreateGlobalStringPtr(description, "test.__desc__.alloca");
     auto call = builder->CreateCall(
             testFunction,
-            {llvmFunc, namePtr, builder->getInt32(testIndex), builder->getInt1(shouldSkip), builder->getInt32(expect), expectStr, totalCount}
+            {llvmFunc, namePtr, builder->getInt32(testIndex), builder->getInt1(shouldSkip), builder->getInt32(expect), expectStr, totalCount,
+             descriptionPtr, builder->getInt1(!description.empty())}
     );
     auto shouldContinue = builder->CreateICmpEQ(call, builder->getInt32(1));
     if (shouldSkip) {
