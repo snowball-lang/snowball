@@ -7,6 +7,7 @@
 //
 import pkg::cls;
 import pkg::option;
+import pkg::ranges;
 import pkg::chars;
 import pkg::vector;
 import pkg::string;
@@ -17,7 +18,6 @@ import pkg::clib;
 import pkg::interfaces;
 import pkg::math;
 import pkg::numbers;
-import pkg::ranges;
 
 //import pkg::macros;
 //import pkg::source_location;
