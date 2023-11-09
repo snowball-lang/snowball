@@ -129,6 +129,11 @@ CPMAddPackage(
     GIT_REPOSITORY "https://git.savannah.gnu.org/git/libsigsegv.git"
     GIT_TAG "v2.14"
     DOWNLOAD_ONLY YES)
+if(sigsegv_ADDED)
+  if (APPLE)
+    message(STATUS "TODO: add sigsegv to the build")
+  endif()
+endif()
 
 message(STATUS ${LLVM_DEFINITIONS})
 message(STATUS ${LLVM_CONFIG})
