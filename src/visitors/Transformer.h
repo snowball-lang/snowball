@@ -400,7 +400,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * It returns information about an expansion.
    * @note It will return a nullptr if the expansion is not valid.
    */
-  const DBGObject*& getExpansionData();
+  const DBGSourceInfo* getExpansionData(const DBGSourceInfo* defaultDBG);
   /**
    * It executes a variaety of user-defined tests for a class/function/...
    * generics. If there are no tests, it does not do anything.

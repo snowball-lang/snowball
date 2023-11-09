@@ -8,6 +8,6 @@ void initialize_snowball() {
 
 namespace snowball {
 void error_log(std::ostringstream& oss, const char *message) {
-    oss << "\n\n\e[1;31m[error]\e[1;37m: " << message;
+    oss << "\n\n\e[1;31merror\e[1;37m: " << message;
 }
 }

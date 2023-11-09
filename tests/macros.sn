@@ -1,3 +1,7 @@
+macro outside() {
+    return 1;
+}
+
 namespace tests {
 
 macro inline_statement() {
@@ -35,6 +39,11 @@ macro macro_scope_access() {
 func macro_scope_access() i32 {
     @macro_scope_access();
     return x;
+}
+
+@test
+func outside() i32 {
+    @outside();
 }
 
 }

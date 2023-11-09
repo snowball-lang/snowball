@@ -170,7 +170,11 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 // add default arguments
                 for (auto arg = std::next(args.begin(), argTypes.size()); arg != args.end(); ++arg) {
                     if (arg->second->hasDefaultValue()) {
-                        auto val = trans(arg->second->getDefaultValue());
+                        auto defaultVal = arg->second->getDefaultValue();
+                        auto backSrcInfo = defaultVal->getDBGInfo();
+                        defaultVal->setDBGInfo(p_node->getDBGInfo());
+                        auto val = trans(defaultVal);
+                        defaultVal->setDBGInfo(backSrcInfo);
                         auto ty = val->getType();
                         if (!arg->second->getType()->is(ty)) {
                             if (!tryCast(val, arg->second->getType()))

@@ -42,16 +42,16 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
   } else if (pseudo == "FILE") {
     stringValue = getSourceInfo()->getPath();
   } else if (pseudo == "LINE_STR") {
-    stringValue = std::to_string(p_node->getDBGInfo()->pos.first + 1);
+    stringValue = std::to_string(getExpansionData(p_node->getDBGInfo())->pos.first);
   } else if (pseudo == "LINE") {
-    intValue = p_node->getDBGInfo()->pos.first + 1;
+    intValue = getExpansionData(p_node->getDBGInfo())->pos.first;
   } else if (pseudo == "FILE_LINE") {
-    stringValue = getSourceInfo()->getPath() + ":" + std::to_string(p_node->getDBGInfo()->pos.first);
+    stringValue = getSourceInfo()->getPath() + ":" + std::to_string(getExpansionData(p_node->getDBGInfo())->pos.first);
   } else if (pseudo == "COLUMN_STR") {
-    stringValue = std::to_string(p_node->getDBGInfo()->pos.second);
+    stringValue = std::to_string(getExpansionData(p_node->getDBGInfo())->pos.second);
   } else if (pseudo == "COLUMN") {
-    intValue = p_node->getDBGInfo()->pos.second;
-  } else if (pseudo == "SN_VERSION") {
+    intValue = getExpansionData(p_node->getDBGInfo())->pos.second;
+  } else if (pseudo == "SNOWBALL_VERSION") {
     stringValue = _SNOWBALL_VERSION;
   } else if (pseudo == "DATE") {
     auto date = std::chrono::system_clock::now();
@@ -59,7 +59,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
     char buffer[12]; // __DATE__ format requires 12 characters (including null terminator)
     std::strftime(buffer, sizeof(buffer), "%b %d %Y", std::localtime(&time));
     stringValue = buffer;
-  } else if (pseudo == "SN_FOLDER") {
+  } else if (pseudo == "_SNOWBALL_FOLDER_") {
     stringValue = fs::path(get_exe_folder()).remove_filename();
   } else {
     if (auto parent = ctx->getCurrentMacro()) {
@@ -132,7 +132,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
       return;
     }
 
-    E<PSEUDO_ERROR>(p_node, FMT("Pseudo variable with name '%s' hasn't been found!", pseudo.c_str()));
+    E<PSEUDO_ERROR>(p_node, FMT("Pseudo variable with name '%s' hasnt been found!", pseudo.c_str()));
   }
 
   if (stringValue.empty()) {

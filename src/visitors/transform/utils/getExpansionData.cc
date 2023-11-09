@@ -7,8 +7,12 @@
 namespace snowball {
 namespace Syntax {
 
-const DBGObject*& getExpansionData() {
-  // TODO:
+const DBGSourceInfo* Transformer::getExpansionData(const DBGSourceInfo* defaultDBG) {
+  if (auto [dbg, call] = ctx->getFirstMacro(); dbg && call) {
+    return dbg;
+  }
+
+  return defaultDBG;
 }
 
 } // namespace Syntax

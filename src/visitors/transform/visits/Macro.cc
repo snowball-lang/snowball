@@ -7,7 +7,8 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Macro) {
-  if (ctx->generateFunction) return; // noop
+  // TODO: test this better out
+  if (!ctx->generateFunction) return; // noop
 
   auto macroName = p_node->getName();
   if (ctx->getItem(macroName).second)

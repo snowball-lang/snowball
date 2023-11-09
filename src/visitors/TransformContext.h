@@ -80,7 +80,6 @@ public:
   TransformContext(
           std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder, bool testMode = false, bool benchMode = false
   );
-
   /**
    * @brief Get a primitive number type
    */
@@ -91,26 +90,25 @@ public:
     ty->addImpl(getBuiltinTypeImpl("Numeric"));
     return ty;
   }
-
   // clang-format off
-    /// @brief Get the bool primitive type
-    types::Type* getBoolType() { return getPrimitiveNumberType<types::IntType>(1); }
-    /// @brief Get the float 64 primitive type
-    types::Type* getF64Type() { return getPrimitiveNumberType<types::FloatType>(64); }
-    /// @brief Get the float 32 primitive type
-    types::Type* getF32Type() { return getPrimitiveNumberType<types::FloatType>(32); }
-    /// @brief Get the int 64 primitive type
-    types::Type* getInt64Type() { return getPrimitiveNumberType<types::IntType>(64); }
-    /// @brief Get the int 32 primitive type
-    types::Type* getInt32Type() { return getPrimitiveNumberType<types::IntType>(32); }
-    /// @brief Get the int 16 primitive type
-    types::Type* getInt16Type() { return getPrimitiveNumberType<types::IntType>(16); }
-    /// @brief Get the int 8 primitive type
-    types::Type* getInt8Type() { return getPrimitiveNumberType<types::IntType>(8); }
-    /// @brief Get the void type representation
-    types::Type* getVoidType() { return getPrimitiveType(SN_VOID_TYPE); }
-    /// @brief Get uint N primitive type
-    types::Type* getUIntType(int bits) { return getPrimitiveNumberType<types::IntType>(bits, false); }
+  /// @brief Get the bool primitive type
+  types::Type* getBoolType() { return getPrimitiveNumberType<types::IntType>(1); }
+  /// @brief Get the float 64 primitive type
+  types::Type* getF64Type() { return getPrimitiveNumberType<types::FloatType>(64); }
+  /// @brief Get the float 32 primitive type
+  types::Type* getF32Type() { return getPrimitiveNumberType<types::FloatType>(32); }
+  /// @brief Get the int 64 primitive type
+  types::Type* getInt64Type() { return getPrimitiveNumberType<types::IntType>(64); }
+  /// @brief Get the int 32 primitive type
+  types::Type* getInt32Type() { return getPrimitiveNumberType<types::IntType>(32); }
+  /// @brief Get the int 16 primitive type
+  types::Type* getInt16Type() { return getPrimitiveNumberType<types::IntType>(16); }
+  /// @brief Get the int 8 primitive type
+  types::Type* getInt8Type() { return getPrimitiveNumberType<types::IntType>(8); }
+  /// @brief Get the void type representation
+  types::Type* getVoidType() { return getPrimitiveType(SN_VOID_TYPE); }
+  /// @brief Get uint N primitive type
+  types::Type* getUIntType(int bits) { return getPrimitiveNumberType<types::IntType>(bits, false); }
   // clang-format on
 
   /// @return The current function being generated
@@ -123,12 +121,22 @@ public:
   }
   /// @brief Defined the new type being generated
   void setCurrentClass(types::Type* c) { currentClass = c; }
-
+  /**
+   * @brief Get the current macro instance in the backtrace
+   * @return A macro instance
+  */
   transform::MacroInstance* getCurrentMacro() {
     if (macroBacktrace.empty()) return nullptr;
     return macroBacktrace.back().second;
   }
-
+  /**
+   * @brief Get the first macro instance in the backtrace
+   * @return A macro instance
+   */
+  std::pair<DBGSourceInfo*, transform::MacroInstance*> getFirstMacro() {
+    if (macroBacktrace.empty()) return {nullptr, nullptr};
+    return macroBacktrace.front();
+  }
   /**
    * @brief Add function to stack.
    * We do this in it's own special function because

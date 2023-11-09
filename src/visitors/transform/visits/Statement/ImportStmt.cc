@@ -58,6 +58,8 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
                 std::string content((std::istreambuf_iterator<char>(ifs)),
                                     (std::istreambuf_iterator<char>()));
                 const SourceInfo* srcInfo = new SourceInfo(content, filePath);
+                auto backupSourceInfo = getSourceInfo();
+                setSourceInfo(srcInfo);
                 auto lexer = new Lexer(srcInfo);
 #if _SNOWBALL_TIMERS_DEBUG
                 DEBUG_TIMER("Lexer: %fs (%s)", utils::_timer([&] {
@@ -89,6 +91,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
                     addModule(ctx->module);
                     ctx->imports->cache->addModule(filePath, ctx->module);
                 }
+                setSourceInfo(backupSourceInfo);
         });
     // clang-format on
     auto item = std::make_shared<Item>(mod);

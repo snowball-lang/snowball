@@ -32,7 +32,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
         if (RIGHT_NEXT_TO(atPos, iPos)) {
           auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
 
-          dbg->pos.first++;
+          dbg->pos.second++;
           dbg->width++;
 
           auto var = Syntax::N<Syntax::Expression::PseudoVariable>(m_current.to_string());

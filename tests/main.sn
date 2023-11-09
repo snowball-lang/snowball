@@ -19,10 +19,10 @@ import pkg::interfaces;
 import pkg::math;
 import pkg::numbers;
 
-//import pkg::macros;
-//import pkg::source_location;
+import pkg::macros;
+import pkg::source_location;
 
-//import Core::Panic;
+import Core::Panic;
 ////import Core::System::{{ println }};
 
 import Core::System;
@@ -33,5 +33,5 @@ unsafe func x() i32 {
 }
 
 public func main() i32 {
-    //let a = x();
+    throw new Exception("yeh");
 }

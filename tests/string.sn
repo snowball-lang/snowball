@@ -68,7 +68,7 @@ func rjust() i32 {
 @test()
 func ljust() i32 {
     let s = "hello";
-    return s.ljust(10, '-') == "hello----------";
+    return s.ljust(10, '-') == "hello-----";
 }
 
 }

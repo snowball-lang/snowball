@@ -11,15 +11,32 @@ func source_location_wrapper(
     return x;
 }
 
-// TODO: test this better, I dont think line number is correct
 @test
-func test_source_location() i32 {
-    // TODO: should this be -1 or equal for the line?
+func file() i32 {
+    let curr = @current_location();
+    let x = source_location_wrapper();
+    return x.file() == curr.file();
+}
+
+@test
+func line() i32 {
     let curr = @current_location();
     let x = source_location_wrapper();
     // -1 because the macro is on the line above
-    return x.file() == curr.file() && x.line() == curr.line() && x.column() == curr.column()
-        && x.function() == curr.function();
+    return x.line() == curr.line() + 1;
+}
+
+@test
+func column() i32 {
+    // DO NOT CHANGE THE COLUMNS IN THIS FUNCTION!!!
+    let x = source_location_wrapper();
+    return x.column() == 13;
+}
+
+@test
+func function() i32 {
+    let curr = @current_location();
+    return curr.function() == "pkg::source_location::tests::function";
 }
 
 }
