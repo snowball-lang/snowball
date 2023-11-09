@@ -204,7 +204,11 @@ endif()
 
 #add_dependencies(snowballrt backtrace sigsegv)
 target_include_directories(snowballrt PRIVATE ${backtrace_SOURCE_DIR} ${sigsegv_SOURCE_DIR})
-target_link_libraries(snowballrt PRIVATE backtrace sigsegv)
+if(__APPLE__)
+  target_link_libraries(snowballrt PRIVATE backtrace)
+else()
+  target_link_libraries(snowballrt PRIVATE backtrace sigsegv)
+endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   message(STATUS "Changing rpath origin destination (for macos)")
