@@ -24,7 +24,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
   auto [filePath, error] = ctx->imports->getImportPath(package, path);
   if (!error.empty()) { E<IO_ERROR>(p_node, error); }
   // TODO: don't allow user import Core::Core twice!
-  auto uuid = package == "Core" ? ctx->imports->CORE_UUID + path[0] : ctx->imports->getModuleUUID(filePath);
+  auto uuid = package == "Core" ? ctx->imports->CORE_UUID + utils::join(path.begin(), path.end(), ".") : ctx->imports->getModuleUUID(filePath);
   auto exportName = ctx->imports->getExportName(filePath, p_node->getExportSymbol());
   auto isExternalModule = ctx->imports->isExternalModule(package);
   ctx->isMainModule = !isExternalModule;

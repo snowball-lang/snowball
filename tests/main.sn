@@ -33,5 +33,5 @@ unsafe func x() i32 {
 }
 
 public func main() i32 {
-    throw new Exception("yeh");
+    
 }

@@ -911,7 +911,7 @@ public:
   /// @return Name of the function for the expression
   auto getName() { return name; }
   /// @return The arguments passed to the constant expression
-  auto getArguments() { return &args; }
+  auto& getArguments() { return args; }
   /// @return Get "else" statement
   auto getElse() { return elseBlock; }
   // Set a visit handler for the generators

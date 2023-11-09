@@ -1,0 +1,103 @@
+
+import Core::Ptr;
+
+/**
+ * @brief Digits lookup table for decimal numbers.
+ *
+ * The `DEC_DIGITS_LUT` lookup table is used to convert decimal numbers to strings.
+ * It is used by the `to_string` method of the `IntegerImpl` class.
+ */
+const DEC_DIGITS_LUT: *const u8 = b"\
+0001020304050607080910111213141516171819\
+2021222324252627282930313233343536373839\
+4041424344454647484950515253545556575859\
+6061626364656667686970717273747576777879\
+8081828384858687888990919293949596979899";
+
+@extends
+@__internal__
+class IntegerImpl {  
+  public:
+    func to_string(self: IntegerType) String {
+      // TODO: float impl
+      // TODO: static assert sizeof is larger than 2
+      let mut n = self;
+      let mut curr = 39; // max number of digits for the buffer
+      let mut buffer = Ptr::Allocator<?u8>::alloc(curr).ptr();
+      let mut neg = false;
+      if n < 0 {
+        neg = true;
+        n = -n;
+        curr = curr - 1;
+      }
+      unsafe {
+        let mut n = n as usize;
+        while n >= 10000 {
+          let rem = n % 10000;
+          n = (n / 10000) as usize;
+          let d1 = (rem / 100) as usize << 1;
+          let d2 = (rem % 100) << 1;
+          curr = curr - 4;
+          // we know that buffer > 0 so we can safely write to it
+          // TODO: assert curr >= 0
+          Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
+          Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d2, buffer + (curr + 2), 2);
+        }
+        {
+          if n >= 100 {
+            let d1 = (n % 100) << 1; // >> get the last 2 digits
+            n = (n / 100) as usize;
+            curr = curr - 2;
+            Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
+          }
+          // decode last 1 or 2 chars
+          if n < 10 {
+            curr = curr - 1;
+            *(buffer + curr) = (n as u8) + '0';
+          } else {
+            let d1 = n << 1; // >> get the last 2 digits
+            curr = curr - 2;
+            Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
+          }
+        }
+        if neg {
+          curr = curr - 1;
+          *(buffer + curr) = '-';
+        }
+        return String::from(buffer + curr, 39 - (curr+neg));
+      }
+    }
+
+    // TODO: this is just a hack, we need to implement a proper
+    //    implementation for to_string for bool and floats
+    func to_string(self: bool) String {
+      if self { return "1" }
+      else { return "0" }
+    }
+
+    func hex(self: IntegerType) String {
+      let mut x = self as usize;
+      let size = 17; // max number of digits for the buffer
+      let mut buffer = Ptr::Allocator<?u8>::alloc(size).ptr();
+      let len = size - 2;
+      unsafe {
+        let mut i = len - 1;
+        while i >= 0 {
+          let d: u8 = x & 0xF;
+          let mut c: u8;
+          if d < 10 {
+            c = d + '0';
+          } else {
+            c = d + 55;
+          }
+          *(buffer + (i+1)) = c;
+          i = i - 1;
+          x = x |>> 4;
+          if x == 0 { break; }
+        }
+        *(buffer + i) = '0';
+        *(buffer + (i+1)) = 'x';
+        return String::from(buffer+i, (len-i)+1);
+      }
+    }
+}

@@ -28,7 +28,7 @@ public:
       : callee(callee), arguments(args){};
 
   /// @return function call arguments
-  auto getArguments() { return arguments; }
+  auto& getArguments() { return arguments; }
   /// @return function call arguments
   auto getCallee() const { return callee; }
   /// @brief Set a new list of arguments to the current call
