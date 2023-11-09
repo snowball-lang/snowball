@@ -48,7 +48,7 @@ func virtual_stack() i32 {
   return t.test();
 }
 
-@test(description = "Check if we fetch the vtable correctly from pointer")
+@test() // Check if we fetch the vtable correctly from pointer
 func virtual_heap() i32 {
   let t = &new virtualTest();
   return t.test();

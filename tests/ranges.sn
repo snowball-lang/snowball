@@ -39,8 +39,7 @@ func add() i32 {
     return z.to_string() == "2..20";
 }
 
-@test(expect = 58, 
-  description = "Check if the vtable interferes with the value")
+@test(expect = 58)
 func add_value() i32 {
     let x = 1..10;
     let y = 1..48

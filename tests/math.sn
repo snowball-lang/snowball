@@ -12,7 +12,7 @@ func min() i32 {
     return Math::min(2, 3);
 }
 
-@test
+@test()
 func is_inf() i32 {
     return Math::is_inf(Math::inf);
 }

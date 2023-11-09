@@ -38,19 +38,28 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
   auto testFunction = module->getFunction("sn.test.try"); // Always match this
   int testIndex = 1;
   for (auto [fn, llvmFunc] : ctx->tests) {
-    auto name = fn->getNiceName();
+    int i = 0;
+    std::string name = BLK;
+    auto parts = utils::split(fn->getNiceName(), "::");
+    for (auto part : parts) {
+      if (i != 0) {
+        name += "::";
+      }
+      if (i == parts.size() - 1) {
+        name += BWHT;
+      }
+      name += part;
+      i++;
+    }
     auto attrArgs = fn->getAttributeArgs(Attributes::TEST);
     auto shouldSkip = attrArgs.find("skip") != attrArgs.end();
     auto doesExpect = attrArgs.find("expect") != attrArgs.end();
-    auto description = attrArgs.find("description") != attrArgs.end() ? attrArgs["description"] : "";
     auto expect = doesExpect ? std::stoi(attrArgs["expect"]) : 1;
     auto namePtr = builder->CreateGlobalStringPtr(name, "test.alloca");
     auto expectStr = builder->CreateGlobalStringPtr(expect == 1 ? "should pass" : FMT("expect %i", expect), "test.alloca");
-    auto descriptionPtr = builder->CreateGlobalStringPtr(description, "test.__desc__.alloca");
     auto call = builder->CreateCall(
             testFunction,
-            {llvmFunc, namePtr, builder->getInt32(testIndex), builder->getInt1(shouldSkip), builder->getInt32(expect), expectStr, totalCount,
-             descriptionPtr, builder->getInt1(!description.empty())}
+            {llvmFunc, namePtr, builder->getInt32(testIndex), builder->getInt1(shouldSkip), builder->getInt32(expect), expectStr, totalCount}
     );
     auto shouldContinue = builder->CreateICmpEQ(call, builder->getInt32(1));
     if (shouldSkip) {

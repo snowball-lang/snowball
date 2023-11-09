@@ -506,7 +506,7 @@ void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
     else if (p_node->getArgs().size() > 0)
       E<SYNTAX_ERROR>(
               p_node->getDBGInfo(),
-              "Test functions can't have arguments!",
+              "Test functions cant have arguments!",
               {.info = "This function is a test function!",
                .note = "This error is caused by the function having arguments.",
                .help = "Try removing the arguments from the function."}
@@ -552,20 +552,10 @@ void TypeChecker::checkFunctionDeclaration(ir::Func* p_node) {
                    .help = "Try removing the 'skip' value from the function."}
           );
         }
-      } else if (name == "description") {
-        if (value == "") {
-          E<SYNTAX_ERROR>(
-                  p_node->getDBGInfo(),
-                  "Test functions must have a 'description' value!",
-                  {.info = "This function is a test function!",
-                   .note = "This error is caused by the function not having a 'description' value.",
-                   .help = "Try adding a 'description' value to the function."}
-          );
-        }
       } else {
         E<SYNTAX_ERROR>(
                 p_node->getDBGInfo(),
-                "Test functions can't have the '" + name + "' attribute!",
+                "Test functions cant have the '" + name + "' attribute!",
                 {.info = "This function is a test function!",
                  .note = "This error is caused by the function having the '" + name + "' attribute.",
                  .help = "Try removing the '" + name + "' attribute from the function."}
