@@ -40,7 +40,7 @@ void LLVMBuilder::initializeVariable(llvm::Value* var, llvm::Type* ty, unsigned 
   }
 
 
-  builder->CreateMemCpy(var, llvm::MaybeAlign(), constInitializer, llvm::MaybeAlign(), size);
+  //builder->CreateMemCpy(var, llvm::MaybeAlign(), constInitializer, llvm::MaybeAlign(), size);
 }
 
 } // namespace codegen

@@ -46,8 +46,7 @@ VISIT(Func) {
   ctx->setCurrentFunction(p_node);
   auto unsafeBk = ctx->unsafeContext;
   auto body = p_node->getBody();
-  if (p_node->hasAttribute(Attributes::UNSAFE) && !p_node->hasAttribute(Attributes::UNSAFE_FUNC_NOT_BODY))
-    ctx->unsafeContext = true;
+  ctx->unsafeContext = p_node->hasAttribute(Attributes::UNSAFE) && !p_node->hasAttribute(Attributes::UNSAFE_FUNC_NOT_BODY);
   if (body) body->visit(this);
   ctx->unsafeContext = unsafeBk;
   ctx->setCurrentFunction(backup);
@@ -142,9 +141,9 @@ VISIT(Call) {
               p_node,
               FMT("Function '%s' is unsafe!", fn->getNiceName().c_str()),
               {.info = "This function is unsafe!",
-               .note = "This error is caused by the function having the \n"
-                       "'unsafe' attribute.",
-               .help = "Try wrapping the call in an `unsafe { ... }` block\nor removing the 'unsafe' "
+               .note = "This error is caused by the function being marked\n"
+                       "as 'unsafe'.",
+               .help = "Try wrapping the call in an 'unsafe { ... }' block\nor removing the 'unsafe' "
                        "attribute from the function.\n\nsee more: "
                        "https://snowball-lang.gitbook.io/docs/language-reference/unsafe-snowball",
                .tail = EI<>(fn->getDBGInfo(), "", {.info = "This is the function declaration."})}

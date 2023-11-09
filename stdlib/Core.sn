@@ -758,11 +758,32 @@ public class StringView<Char: Sized = u8> implements ToString {
 
 /// --------- COMMANDS ---------
 
+namespace snowball_tests {
+
+static unsafe func print_name(name: *const i8, description: *const i8, hasDescription: bool, expectStr: *const i8, total: i32, index: i32, succeeded: i8) {
+  CLib::printf(b" %s\e[0m (%i/%i)", name, index, total);
+  //if time > 0 {
+  //  CLib::printf(b" in \e[1;36m(%ims)\e[0m", time);
+  //}
+
+  if hasDescription {
+    if succeeded == 0 {
+      CLib::printf(b"\n\e[0;31m  X \e[0m");
+    } else if succeeded == 1 {
+      CLib::printf(b"\n\e[0;32m  ✓ \e[0m");
+    } else if succeeded == 2 {
+      CLib::printf(b"\n\e[1;33m  WIP \e[0m");
+    }
+    CLib::printf(b" %s ", description);
+  }
+
+  CLib::printf(b"\n");
+}
 
 @no_inline
 @cfg(test)
 @export(name = "sn.test.try")
-static unsafe func snowball_test(
+static unsafe func execute(
   fn: func () => i32,
   name: *const i8,
   index: i32,
@@ -773,34 +794,37 @@ static unsafe func snowball_test(
   description: *const i8,
   hasDescription: bool
 ) i32 {
-  CLib::printf(b" Testing (\e[1m%i/%i\e[0m) \t\e[1m%-45s\e[0m [%s]\t... ", index, total, name, expectStr);
   // TODO: Add support for exceptions
   if !skip {
     try {
       let result = fn();
+      
       if result == expect {
-        CLib::printf(b"\e[1;32mnice!\e[0m\n");
+        CLib::printf(b"\e[0;30m\e[42m PASS \e[0m");
+        print_name(name, description, hasDescription, expectStr, total, index, 1);
       } else {
-        CLib::printf(b"\e[1;31merror \n");
-        CLib::printf(b"\n UNEXPECTED RESULT:\n");
-        CLib::printf(b"   --> Expected a success return value (%i) but got `%i`\n", expect, result);
+        CLib::printf(b"\e[0;30m\e[41m FAIL \e[0m");
+        print_name(name, description, hasDescription, expectStr, total, index, 0);
+        CLib::printf(b"\n  Expected result: \e[1;32m%i\e[0m\n", expect);
+        CLib::printf(b"  Actual result: \e[1;31m%i\e[0m\n", result);
         CLib::printf(b"\e[0m\n");
         return false;
       }
     } catch (e: Exception) {
-      CLib::printf(b"\e[1;31merror \n");
+      CLib::printf(b"\e[0;30m\e[41m FAIL \e[0m");
+      print_name(name, description, hasDescription, expectStr, total, index, 0);
       CLib::printf(b"\n ------- %s failure -------\n", name);
       CLib::printf(b"  --> %s\n", e.what().bytes());
       CLib::printf(b"\e[0m\n");
       return false;
     }
   } else {
-    CLib::printf(b"\e[1;33mwip\e[0m\n");
-  }
-  if hasDescription {
-    CLib::printf(b"\e[0;90m ╰───────┤ %s\e[0m\n", description);
+    CLib::printf(b"\e[0;30m\e[43m WIP \e[0m\n");
+    print_name(name, description, hasDescription, expectStr, total, index, 2);
   }
   return true;
+}
+
 }
 
 //func [[

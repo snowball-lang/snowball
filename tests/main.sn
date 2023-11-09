@@ -28,8 +28,10 @@ import pkg::numbers;
 import Core::System;
 import Core::Optional;
 
+unsafe func x() i32 {
+    return 0;
+}
+
 public func main() i32 {
-    //const x: &i32 = 25;
-    //(x as &mut i32) = 24;
-    //return x;
+    //let a = x();
 }
