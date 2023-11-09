@@ -204,7 +204,7 @@ endif()
 
 #add_dependencies(snowballrt backtrace sigsegv)
 target_include_directories(snowballrt PRIVATE ${backtrace_SOURCE_DIR} ${sigsegv_SOURCE_DIR})
-if(__APPLE__)
+if(APPLE)
   target_link_libraries(snowballrt PRIVATE backtrace)
 else()
   target_link_libraries(snowballrt PRIVATE backtrace sigsegv)
