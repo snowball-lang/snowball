@@ -1,7 +1,6 @@
 
 // TODO: This is a temporary solution.
 // TODO: Add support for macOS.
-#ifndef __APPLE__
 
 #include "runtime.h"
 #include "backtrace.h"
@@ -33,5 +32,3 @@ void initialize_segfault_handler() {
     // TODO: buffer overflow, etc...
 }   
 }
-
-#endif
