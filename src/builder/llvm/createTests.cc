@@ -39,18 +39,7 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
   int testIndex = 1;
   for (auto [fn, llvmFunc] : ctx->tests) {
     int i = 0;
-    std::string name = BLK;
-    auto parts = utils::split(fn->getNiceName(), "::");
-    for (auto part : parts) {
-      if (i != 0) {
-        name += "::";
-      }
-      if (i == parts.size() - 1) {
-        name += BWHT;
-      }
-      name += part;
-      i++;
-    }
+    std::string name = fn->getNiceName();
     auto attrArgs = fn->getAttributeArgs(Attributes::TEST);
     auto shouldSkip = attrArgs.find("skip") != attrArgs.end();
     auto doesExpect = attrArgs.find("expect") != attrArgs.end();

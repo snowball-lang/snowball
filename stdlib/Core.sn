@@ -133,6 +133,23 @@ public interface ToString {
     func to_string() String;
 };
 /**
+ * @interface Clone
+ * @brief An interface for objects that can be cloned.
+ *
+ * The `Clone` interface defines a contract for objects that can be cloned. Classes implementing
+ * this interface must provide the `clone` method, which returns a clone of the object.
+ *
+ * @tparam T The type of the object to clone.
+ */
+public interface Clone<T> {
+  public:
+    /**
+     * @brief Clones the object.
+     * @return A clone of the object.
+     */
+    func clone() T;
+};
+/**
  * @interface Debug
  * @brief An interface for objects that provide debugging information as a string.
  *
@@ -594,7 +611,7 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
  * The `StringView` class is an ideal choice for working with strings without the need for full string
  * ownership or memory management. It provides efficient access and manipulation of string data.
  */
-public class StringView<Char: Sized = u8> implements ToString {
+public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
   public:
     /** A type alias for the string type. */
     type StringType = *const Char;
@@ -649,6 +666,30 @@ public class StringView<Char: Sized = u8> implements ToString {
       return new Self(result, self.length + other.length);
     }
     /**
+     * @brief Concatenates the string view with a character.
+     * @param[in] other The string to concatenate with.
+     * @return The concatenated string view.
+     */
+    @inline
+    operator func +(other: Char) Self { 
+      let result = Self::concat(self.bytes(), (&other) as *const Char, self.length, 1); 
+      return new Self(result, self.length + 1);
+    }
+    /**
+     * @brief Concatenates the string view with a string.
+     * @param[in] other The string to concatenate with.
+     * @return The concatenated string view.
+     */
+    @inline
+    mut operator func +=(other: Self) Self { *self = *self + other; return self; }
+    /**
+     * @brief Concatenates the string view with a character.
+     * @param[in] other The character to concatenate with.
+     * @return The concatenated string view.
+     */
+    @inline
+    mut operator func +=(other: Char) Self { *self = *self + other; return self; }
+    /**
      * @brief Converts the string view to a string representation.
      * @return A string representation of the string view.
      */
@@ -687,6 +728,46 @@ public class StringView<Char: Sized = u8> implements ToString {
         return new Self(self.bytes() + range.begin(), range.size());
       }
     }
+    /**
+     * @brief Right adjusts the string view to the specified length. with the specified character.
+     * @param[in] length The length to adjust the string view to.
+     * @param[in] fill The character to use for adjusting the string view.
+     * @return The adjusted string view.
+     */
+    @inline
+    func rjust(length: i32, fill: Char = ' ') Self {
+      if length <= self.length {
+        return self.clone();
+      }
+      let mut result = "";
+      for i in 0..(length - self.length) {
+        result += fill;
+      }
+      return result + self;
+    }
+    /**
+     * @brief Left adjusts the string view to the specified length. with the specified character.
+     * @param[in] length The length to adjust the string view to.
+     * @param[in] fill The character to use for adjusting the string view.
+     * @return The adjusted string view.
+     */
+    @inline
+    func ljust(length: i32, fill: Char = ' ') Self {
+      if length <= self.length {
+        return self.clone();
+      }
+      let mut result = self.clone();
+      for i in 0..(length - self.length) {
+        result += fill;
+      }
+      return result;
+    }
+    /**
+     * @brief It clones the string view.
+     * @return A clone of the string view.
+     */
+    @inline
+    func clone() Self { return new Self(self.bytes(), self.length); }
   private:
     /** The size of the string view. */
     let mut length: i32 = 0;
@@ -760,24 +841,6 @@ public class StringView<Char: Sized = u8> implements ToString {
 
 namespace snowball_tests {
 
-static unsafe func print_name(name: *const i8, expectStr: *const i8, total: i32, index: i32, succeeded: i8) {
-  CLib::printf(b" %s\e[0m (%i/%i)", name, index, total);
-  //if time > 0 {
-  //  CLib::printf(b" in \e[1;36m(%ims)\e[0m", time);
-  //}
-
-  //if succeeded == 0 {
-  //  CLib::printf(b"\n\e[0;31m  X \e[0m");
-  //} else if succeeded == 1 {
-  //  CLib::printf(b"\n\e[0;32m  ✓ \e[0m");
-  //} else if succeeded == 2 {
-  //  CLib::printf(b"\n\e[1;33m  WIP \e[0m");
-  //}
-  //CLib::printf(b" %s ", description);
-
-  CLib::printf(b"\n");
-}
-
 @no_inline
 @cfg(test)
 @export(name = "sn.test.try")
@@ -791,32 +854,29 @@ static unsafe func execute(
   total: i32
 ) i32 {
   // TODO: Add support for exceptions
+  let indexStr = index.to_string().rjust(total.to_string().size(), '0').bytes();
+  CLib::printf(b" Testing \e[1m%-44s\e[0m [(%s\e[0;30m/%i\e[0m) %s]\t... ", name, indexStr, total, expectStr);
+  // TODO: Add support for exceptions
   if !skip {
     try {
       let result = fn();
-      
       if result == expect {
-        CLib::printf(b"\e[0;30m\e[42m PASS \e[0m");
-        print_name(name, expectStr, total, index, 1);
+        CLib::printf(b"\e[1;32mnice!\e[0m\n");
       } else {
-        CLib::printf(b"\e[0;30m\e[41m FAIL \e[0m");
-        print_name(name, expectStr, total, index, 0);
-        CLib::printf(b"\n  Expected result: \e[1;32m%i\e[0m\n", expect);
-        CLib::printf(b"  Actual result: \e[1;31m%i\e[0m\n", result);
-        CLib::printf(b"\e[0m\n");
+        CLib::printf(b"\e[1;31merror \n");
+        CLib::printf(b"\n\tExpected result\e[0m: \e[1;32m%i\e[1;31m\n", expect);
+        CLib::printf(b"\tActual result\e[0m: \e[1;31m%i\e[0m\n\n", result);
         return false;
       }
     } catch (e: Exception) {
-      CLib::printf(b"\e[0;30m\e[41m FAIL \e[0m");
-      print_name(name, expectStr, total, index, 0);
+      CLib::printf(b"\e[1;31merror \n");
       CLib::printf(b"\n ------- %s failure -------\n", name);
-      CLib::printf(b"  --> %s\n", e.what().bytes());
+      CLib::printf(b"\n  Failed with: \e[1m%s\e[0m\n", e.what().bytes());
       CLib::printf(b"\e[0m\n");
       return false;
     }
   } else {
-    CLib::printf(b"\e[0;30m\e[43m SKIP \e[0m");
-    print_name(name, expectStr, total, index, 2);
+    CLib::printf(b"\e[1;33mwip\e[0m\n");
   }
   return true;
 }

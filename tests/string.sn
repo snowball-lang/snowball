@@ -59,4 +59,16 @@ func substring_negative() i32 {
     return s.substr((-2)..(-1)) == "l";
 }
 
+@test()
+func rjust() i32 {
+    let s = "hello";
+    return s.rjust(10, ' ') == "     hello";
+}
+
+@test()
+func ljust() i32 {
+    let s = "hello";
+    return s.ljust(10, '-') == "hello----------";
+}
+
 }
