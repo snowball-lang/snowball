@@ -2,7 +2,9 @@
 #include "runtime.h"
 
 void initialize_snowball() {
+#ifndef __APPLE__ // TODO: Add support for macOS.
     snowball::initialize_segfault_handler();
+#endif
     snowball::initialize_exceptions();
 }
 
