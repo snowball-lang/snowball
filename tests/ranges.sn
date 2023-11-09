@@ -55,20 +55,4 @@ func sub() i32 {
     return z.to_string() == "0..0";
 }
 
-@test()
-func mul() i32 {
-    let x = 1..10;
-    let y = 1..10;
-    let z = x * y;
-    return z.to_string() == "1..100";
-}
-
-@test()
-func div() i32 {
-    let x = 1..10;
-    let y = 1..10;
-    let z = x / y;
-    return z.to_string() == "1..1";
-}
-
 }

@@ -50,7 +50,6 @@ void LLVMBuilder::visit(ir::Call* call) {
   }
 
   auto callee = build(calleeValue.get());
-
   auto args = utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value*>(
     call->getArguments(), [this](std::shared_ptr<ir::Value> arg) { return expr(arg.get()); }
   );

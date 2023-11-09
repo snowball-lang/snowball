@@ -235,4 +235,32 @@ func store_and_call_function() i32 {
     return a();
 }
 
+func default_arg(a: i32 = 5) i32 {
+    return a;
+}
+
+@test(expect = 5)
+func default_arg() i32 {
+    return default_arg();
+}
+
+@test(expect = 10)
+func override_default_arg() i32 {
+    return default_arg(10);
+}
+
+func default_arg_2(a: i32 = 5, b: i32 = 10) i32 {
+    return a + b;
+}
+
+@test(expect = 15)
+func t_default_arg_2() i32 {
+    return default_arg_2();
+}
+
+@test(expect = 20)
+func override_default_arg_2() i32 {
+    return default_arg_2(10);
+}
+
 }

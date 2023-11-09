@@ -20,8 +20,8 @@ const DEC_DIGITS_LUT: *const u8 = b"\
 class IntegerImpl {  
   public:
     func to_string(self: IntegerType) String {
-      // TODO: static assert sizeof is larger than 2
       // TODO: float impl
+      // TODO: static assert sizeof is larger than 2
       let mut n = self;
       let mut curr = 39; // max number of digits for the buffer
       let mut buffer = Ptr::Allocator<?u8>::alloc(curr).ptr();
@@ -34,8 +34,8 @@ class IntegerImpl {
       unsafe {
         let mut n = n as usize;
         while n >= 10000 {
-          let rem = (n % 10000) as usize;
-          n = n / 10000;
+          let rem = n % 10000;
+          n = (n / 10000) as usize;
           let d1 = (rem / 100) as usize << 1;
           let d2 = (rem % 100) << 1;
           curr = curr - 4;
@@ -47,7 +47,7 @@ class IntegerImpl {
         {
           if n >= 100 {
             let d1 = (n % 100) << 1; // >> get the last 2 digits
-            n = n / 100 as usize;
+            n = (n / 100) as usize;
             curr = curr - 2;
             Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
           }
@@ -414,24 +414,6 @@ public class Range<N: Numeric = i32> implements Iterable<N>, ToString {
     @inline
     operator func -(value: Range<N>) Range<N> { 
       return new Range<N>(self.start - value.start, self.end - value.end);
-    }
-    /**
-     * @brief Multiplies the range with another range.
-     * @param[in] value The value to multiply the range with.
-     * @return A new range with the specified value multiplied with it.
-     */
-    @inline
-    operator func *(value: Range<N>) Range<N> { 
-      return new Range<N>(self.start * value.start, self.end * value.end);
-    }
-    /**
-     * @brief Divides the range with another range.
-     * @param[in] value The value to divide the range with.
-     * @return A new range with the specified value divided with it.
-     */
-    @inline
-    operator func /(value: Range<N>) Range<N> { 
-      return new Range<N>(self.start / value.start, self.end / value.end);
     }
     /**
      * @brief Returns a string representation of the range.
@@ -853,7 +835,6 @@ static unsafe func execute(
   expectStr: *const i8,
   total: i32
 ) i32 {
-  // TODO: Add support for exceptions
   let indexStr = index.to_string().rjust(total.to_string().size(), '0').bytes();
   CLib::printf(b" Testing \e[1m%-44s\e[0m [(%s\e[0;30m/%i\e[0m) %s]\t... ", name, indexStr, total, expectStr);
   // TODO: Add support for exceptions

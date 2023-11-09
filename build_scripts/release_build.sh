@@ -29,18 +29,12 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Looking for arm64 version of (llvm): $llvmResult"
         brew install $llvmResult
 
-        brew fetch --force --bottle-tag=arm64_big_sur libsigsegv
-        libsigsegvResult=$(brew --cache --bottle-tag=arm64_big_sur libsigsegv)
-        echo "Looking for arm64 version of (libsigsegv): $libsigsegvResult"
-        brew install $libsigsegvResult
-
         brew fetch --force --bottle-tag=arm64_big_sur gcc
         gccResult=$(brew --cache --bottle-tag=arm64_big_sur gcc)
         echo "Looking for arm64 version of (gcc): $gccResult"
         brew install $gccResult
     else
         brew install llvm@16
-        brew install libsigsegv
         brew install gcc
     fi
 

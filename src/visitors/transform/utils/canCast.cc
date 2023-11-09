@@ -37,7 +37,13 @@ Transformer::CastType Transformer::canCast(types::Type* from, types::Type* to) {
     }
   }
 
-  // Check valid cast
+  // Do not allow these casts
+  if (auto i = utils::cast<types::IntType>(from)) {
+    if (auto j = utils::cast<types::IntType>(to)) {
+      if (i->getBits() <= j->getBits()) { return CastType::Valid; }
+    }
+  }
+
   if (from->canCast(to)) return CastType::Valid;
   return CastType::NoCast;
 }

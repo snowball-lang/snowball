@@ -124,6 +124,12 @@ if(backtrace_ADDED)
       POSITION_INDEPENDENT_CODE ON)
 endif()
 
+CPMAddPackage(
+    NAME sigsegv
+    GIT_REPOSITORY "https://git.savannah.gnu.org/git/libsigsegv.git"
+    GIT_TAG "v2.14"
+    DOWNLOAD_ONLY YES)
+
 message(STATUS ${LLVM_DEFINITIONS})
 message(STATUS ${LLVM_CONFIG})
 message(STATUS ${LLVM_ENABLE_ZLIB})
