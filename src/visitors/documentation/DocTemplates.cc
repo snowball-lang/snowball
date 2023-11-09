@@ -36,13 +36,13 @@ std::string generateFromBase(Expression::Base* ast) {
     if (auto x = utils::cast<Expression::Identifier>(ast)) {
         auto n = x->getIdentifier();
         if (auto generics = utils::cast<Expression::GenericIdentifier>(x)) {
-            n += "<";
+            n += "&lt;";
             for (auto& g : generics->getGenerics()) {
                 n += typeToHtml(g) + ", ";
             }
             if (generics->getGenerics().size() > 0)
                 n = n.substr(0, n.size() - 2);
-            n += ">";
+            n += "&gt;";
         }
         return n;
     } else if (auto x = utils::cast<Expression::Index>(ast)) {
@@ -60,7 +60,7 @@ std::string sanitize(std::string s) {
     utils::replaceAll(str, "\n", "<br/>");
     auto trimed = s;
     utils::replaceAll(trimed, " ", "");
-    if (str == "<br/>") return "";
+    if (trimed == "<br/>") return "";
     return "<br/>" + str;
 }
 
@@ -76,13 +76,18 @@ std::string getFunctionCode(Statement::FunctionDef* node) {
     bool isOperator = Operator::isOperator(node->getName());
     if (isOperator) {
         body += "operator func ";
-        body += Operator::operatorName(Operator::operatorID(node->getName()));
+        auto name = Operator::operatorName(Operator::operatorID(node->getName()));
+        if (utils::startsWith(name, "operator")) {
+            body += name.substr(8);
+        } else {
+            body += name;
+        }
     } else {
         body += "func " + node->getName();
     }
 
     if (node->isGeneric()) {
-        body += "<";
+        body += "&lt;";
         for (auto& generic : node->getGenerics()) {
             body += generic->getName();
             if (generic->getType()) {
@@ -93,7 +98,7 @@ std::string getFunctionCode(Statement::FunctionDef* node) {
         // remove the last ", "
         if (node->getGenerics().size() > 0)
             body = body.substr(0, body.size() - 2);
-        body += ">";
+        body += "&gt;";
     }
     body += "(\n";
     for (auto& param : node->getArgs()) {
@@ -115,7 +120,7 @@ std::string getFunctionCode(Statement::FunctionDef* node) {
 }
 
 void createSmallPictureFn(Statement::FunctionDef* node, DocGenContext context, std::string& body) {
-    body += "<pre><code style=\"background: transparent !important; padding: 5px 0 !important;\" class=\"language-snowball\">";
+    body += "<br/><pre><code style=\"background: transparent !important; padding: 5px 0 !important;\" class=\"language-snowball\">";
     body += getFunctionCode(node);
     body += "</code></pre>";
     if (auto comment = node->getComment()) {
@@ -279,7 +284,7 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
     body += node->getName();
 
     if (node->isGeneric()) {
-        body += "<";
+        body += "&lt;";
         for (auto& generic : node->getGenerics()) {
             body += generic->getName();
             if (generic->getType()) {
@@ -290,7 +295,7 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
         // remove the last ", "
         if (node->getGenerics().size() > 0)
             body = body.substr(0, body.size() - 2);
-        body += ">";
+        body += "&gt;";
     }
 
     std::vector<Statement::VariableDecl*> publicMembers;
