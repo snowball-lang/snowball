@@ -61,6 +61,8 @@ std::string sanitize(std::string s) {
     auto trimed = s;
     utils::replaceAll(trimed, " ", "");
     if (trimed == "<br/>") return "";
+    while (utils::endsWith(str, "<br/>"))
+        str = str.substr(0, str.size() - 5);
     return "<br/>" + str;
 }
 
@@ -77,8 +79,8 @@ std::string getFunctionCode(Statement::FunctionDef* node) {
     if (isOperator) {
         body += "operator func ";
         auto name = Operator::operatorName(Operator::operatorID(node->getName()));
-        if (utils::startsWith(name, "operator")) {
-            body += name.substr(8);
+        if (utils::startsWith(name, "operator ")) {
+            body += name.substr(9);
         } else {
             body += name;
         }
@@ -177,7 +179,11 @@ void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, Doc
             }
             j++;
         }
-        body += "<a style=\"color:#78d3fc;\" href=\"" + url + ".html\">" + nameParts[i] + "</a>::";
+        auto theUrl = nameParts[i];
+        if (utils::startsWith(theUrl, "-")) {
+            theUrl = theUrl.substr(1); // remove operator prefix
+        }
+        body += "<a style=\"color:#78d3fc;\" href=\"" + url + ".html\">" + theUrl + "</a>::";
         i++;
     }
     body = body.substr(0, body.size() - 2) + ";"; // remove the last "::"
@@ -205,7 +211,7 @@ void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, Doc
         }
 
         if (params.size() > 0) {
-            body += "<hr/><h1 style=\"color:#78d3fc;\">Parameters</h1><br/>";
+            body += "<hr/><h1 style=\"color:#78d3fc;\">Parameters</h1>";
             for (auto& [tag, value] : params) {
                 auto idx = tag.find_first_of("$");
                 auto paramIdx = std::stoi(tag.substr(idx + 1));
@@ -229,7 +235,7 @@ void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, Doc
                     value = value.substr(paramName.size() + 1);
                 }
 
-                body += "<h1>" + paramName + "</h1>";
+                body += "<br/><h1>" + paramName + "</h1>";
                 body += "<p>" + value + "</p>";
             }
         }
@@ -318,8 +324,8 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
     }
 
     if (publicMembers.size() > 0) 
-        body += " { \npublic:";
-    else body += " { \n";
+        body += " {\npublic:";
+    else body += " {\n";
     for (auto& field : publicMembers) {
         if (field->getComment()) {
             auto values = field->getComment()->getValues();
@@ -338,6 +344,8 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
         body = body.substr(0, body.size() - 2);
     if (publicMembers.size() < node->getVariables().size())
         body += "private:\n    // ... private fields\n";
+    if (utils::endsWith(body, "{\n"))
+        body = body.substr(0, body.size() - 1);
     body += "};</code></pre></div><br><div class=\"doc\">";
 
     if (auto docString = node->getComment()) {
@@ -396,6 +404,8 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
                 createSmallPictureFn(func, context, body);
             }
         }
+
+        body += "<br/><br/><br/>";
     }
 
     body += "</div>";

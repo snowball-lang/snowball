@@ -664,6 +664,7 @@ void Lexer::tokenize() {
             case TokenType::KWORD_VAR:
             case TokenType::KWORD_CONST:
             case TokenType::KWORD_TYPEDEF:
+            case TokenType::KWORD_OPERATOR:
               tk.comment = comments;
               comments = "";
               break;
@@ -678,7 +679,6 @@ void Lexer::tokenize() {
             case TokenType::KWORD_EXTERN:
             case TokenType::KWORD_UNSAFE:
             case TokenType::KWORD_MUTABLE:
-            case TokenType::KWORD_OPERATOR:
             case TokenType::IDENTIFIER: // idk about this one
               break;
 

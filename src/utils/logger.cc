@@ -67,15 +67,13 @@ std::string FMT(const char* p_format, ...) {
   va_list argp;
 
   va_start(argp, p_format);
+  size_t result_size = vsnprintf(NULL, 0, p_format, argp);
 
-  static const unsigned int BUFFER_SIZE = VSNPRINTF_BUFF_SIZE;
-  char buffer[BUFFER_SIZE + 1]; // +1 for the terminating character
-  int len = vsnprintf(buffer, BUFFER_SIZE, p_format, argp);
-
+  char buffer[result_size + 1]; // +1 for the terminating character
   va_end(argp);
-
-  if (len == 0) return std::string();
-
-  return std::string(buffer);
+  va_start(argp, p_format);
+  int len = vsprintf(buffer, p_format, argp);
+  va_end(argp);
+  return std::string(buffer, len);
 }
 } // namespace snowball

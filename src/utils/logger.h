@@ -6,7 +6,6 @@
 #ifndef __SNOWBALL_LOGGER_H_
 #define __SNOWBALL_LOGGER_H_
 
-#define VSNPRINTF_BUFF_SIZE 8192
 #define FMT(...)            Logger::format(__VA_ARGS__)
 
 namespace snowball {

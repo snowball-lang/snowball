@@ -16,13 +16,17 @@ using namespace std::chrono;
 
 #define LIBRARY_ENTRY "src/lib.sn"
 #define LIBRARY_MAIN                                                                                                   \
-  "import [[use_macro(assert)]] Core::Assert;\n\n"                                                                        \
+  "\n@use_macro(assert);\n"                                                                                                 \
+  "import Core::Assert;\n\n"                                                                        \
   "public func my_export() String {\n"                                                                                      \
   "    return \"Hello, World\";\n"                                                                         \
   "}\n\n" /* TODO: add #[cfg(test)] */                                                                                 \
   "\nnamespace tests {\n"                                                                                              \
-  "    func [[test]] test_my_lib() {\n"                                                                                  \
+  "\n" \
+  "    @test\n"                                                                                                        \
+  "    func test_my_lib() i32 {\n"                                                                                  \
   "        @assert(my_export() == \"Hello, World\")\n"                                                                 \
+  "        return 1;\n"                                                                                              \
   "    }\n"                                                                                                            \
   "}"
 

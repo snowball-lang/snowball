@@ -50,10 +50,12 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
 
   Syntax::Expression::TypeRef* parentClass = nullptr;
   Syntax::Statement::GenericContainer<>::GenericList generics;
+  bool hasGenerics = false;
   std::vector<Syntax::Expression::TypeRef*> impls;
 
   if (is<TokenType::OP_LT>(peek())) {
     next();
+    hasGenerics = true;
     generics = parseGenericParams();
     prev();
   }
@@ -90,7 +92,8 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
                         Syntax::Statement::DefinedTypeDef::Type::CLASS
   );
   cls->setImpls(impls);
-  cls->setGenerics(generics);
+  if (hasGenerics)
+    cls->setGenerics(generics);
   cls->setDBGInfo(dbg);
   for (auto attr : attributes) cls->addAttribute(attr.first, attr.second);
   if (cls->hasAttribute(Attributes::BUILTIN) && name == "IntegerImpl") { cls->unsafeSetName(_SNOWBALL_INT_IMPL); }

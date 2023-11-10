@@ -41,7 +41,7 @@ CommentType* Parser::parseDocstring(std::string p_content) {
         std::string content = matches[2];
 
         if (tag == "param") {
-          tag = "param$" + std::to_string(paramCount);
+          tag = "param$" + std::to_string(paramCount++);
         }
         tags[tag] = content;     
       } else {
