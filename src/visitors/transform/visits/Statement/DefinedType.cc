@@ -29,10 +29,10 @@ SN_TRANSFORMER_VISIT(Statement::DefinedTypeDef) {
                                               "Class"),
                 name.c_str())
     );
-  } else if (!ctx->generateFunction || (p_node->getGenerics().size() > 0)) {
+  } else if (!ctx->generateFunction || p_node->isGeneric()) {
     ctx->cache->setType(uuid, p_node, state);
     return;
-  } else if (ctx->generateFunction && (p_node->getGenerics().size() == 0)) {
+  } else if (ctx->generateFunction && (!p_node->isGeneric())) {
     if (ctx->cache->getTransformedType(uuid) != std::nullopt) return;
     cacheComponents::Types::TypeStore store{.type = p_node, .state = state};
     (void) transformClass(uuid, store);

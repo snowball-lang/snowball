@@ -47,6 +47,8 @@ public:
   ACCEPT()
   // Geter function to fetch the parsed statements
   auto getStmts() { return stmts; }
+  // Append a new statement to the block
+  void append(Node* stmt);
 };
 
 /**
