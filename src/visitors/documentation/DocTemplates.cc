@@ -22,7 +22,7 @@ std::string getPageTemplate(DocGenContext context, std::string title, std::strin
         parentPath = context.currentModulePath;
     }
 
-    links.insert(links.begin(), {"< Go Back", parentPath});
+    links.insert(links.begin(), {"&lt; Go Back", parentPath});
     std::string linksHTML = "";
     for (auto& [name, link] : links) {
         linksHTML += "<a href=\"" + link + ".html\">" + name + "</a>";
