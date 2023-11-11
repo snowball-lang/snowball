@@ -15,6 +15,12 @@ changelog:
       labels:
         - Semver-Patch
         - bug
+    - title: Documentation Changes 📚
+      labels:
+        - documentation
+    - title: Performance Improvements 🚀
+      labels:
+        - performance 🚀
     - title: Other Changes
       labels:
         - "*"
