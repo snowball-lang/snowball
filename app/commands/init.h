@@ -44,10 +44,9 @@ namespace snowball {
 namespace app {
 namespace commands {
 
-void init_create_cfg(bool yes, std::string entry) {
+void init_create_cfg(bool yes, std::string entry, app::Options::InitOptions p_opts) {
   std::ofstream outfile(CONFIGURATION_FILE);
 
-  std::string name = "amazing-snowball-project";
   std::string version = "1.0.0";
 
   // TODO: ask questions if p_opts.yes is false
@@ -55,7 +54,7 @@ void init_create_cfg(bool yes, std::string entry) {
   std::stringstream toml(toml_result);
 
   toml << "\n[package]";
-  toml << FMT("\nname = \"%s\"", name.c_str());
+  toml << FMT("\nname = \"%s\"", p_opts.name.c_str());
   toml << FMT("\nmain = \"%s\"", entry.c_str());
   toml << FMT("\nversion = \"%s\"", version.c_str());
 
@@ -69,8 +68,32 @@ void init_create_cfg(bool yes, std::string entry) {
 int init(app::Options::InitOptions p_opts) {
   auto start = high_resolution_clock::now();
 
+  if (p_opts.create_dir) {
+    Logger::message("Creating", FMT("creating snowball project directory (%s)", p_opts.name.c_str()));
+    if (!fs::exists(p_opts.name)) fs::create_directory(p_opts.name);
+    fs::current_path(p_opts.name);
+  }
+
+  // If the folder is not empty, ask the user if he wants to continue
+  // if the user accepts, delete all files and continue
+  if (!fs::is_empty(fs::current_path())) {
+    Logger::rlog(FMT("%s[warning]%s: The current directory is not empty, do you want to continue? [y/N] ", BYEL, RESET));
+    std::string answer;
+    std::getline(std::cin, answer);
+
+    if (answer != "y" && answer != "Y") {
+      Logger::message("Aborted", "snowball project creation");
+      return 0;
+    }
+
+    Logger::message("Deleting", "deleting all files in the current directory");
+    for (auto &p : fs::directory_iterator(fs::current_path())) {
+      fs::remove_all(p);
+    }
+  }
+
   if (p_opts.cfg) {
-    init_create_cfg(p_opts.yes, EXECUTABLE_ENTRY);
+    init_create_cfg(p_opts.yes, EXECUTABLE_ENTRY, p_opts);
     return 0;
   } else if (p_opts.lib) {
     Logger::message("Initalizing", FMT("creating snowball project [library]", CONFIGURATION_FILE));
@@ -79,7 +102,7 @@ int init(app::Options::InitOptions p_opts) {
                     "current snowball!");
     if (!fs::exists("src")) fs::create_directory("src");
 
-    if (!p_opts.skip_cfg) init_create_cfg(p_opts.yes, LIBRARY_ENTRY);
+    if (!p_opts.skip_cfg) init_create_cfg(p_opts.yes, LIBRARY_ENTRY, p_opts);
 
     std::ofstream outfile(LIBRARY_ENTRY);
     outfile << LIBRARY_MAIN << std::endl;
@@ -88,7 +111,7 @@ int init(app::Options::InitOptions p_opts) {
     Logger::message("Initalizing", FMT("creating snowball project [executable]", CONFIGURATION_FILE));
 
     if (!fs::exists("src")) fs::create_directory("src");
-    if (!p_opts.skip_cfg) init_create_cfg(p_opts.yes, EXECUTABLE_ENTRY);
+    if (!p_opts.skip_cfg) init_create_cfg(p_opts.yes, EXECUTABLE_ENTRY, p_opts);
 
     std::ofstream outfile(EXECUTABLE_ENTRY);
     outfile << EXECUTABLE_MAIN << std::endl;
@@ -105,7 +128,7 @@ int init(app::Options::InitOptions p_opts) {
   Logger::message("Finished", FMT("snowball project in %ims 🐱", duration));
 
   Logger::rlog("\n");
-  Logger::info("Execute `snowball help` to get a manual about "
+  Logger::info("Execute `snowball --help` to get a manual about "
                "the project.");
 
   return 0;

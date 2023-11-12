@@ -23,6 +23,13 @@ void parse_args(argsVector& args) {
   cl::ParseCommandLineOptions(args.size(), args.data(), "Snowball Compiler", nullptr, nullptr, true);
 }
 
+void hide_args() {
+  auto args = cl::getRegisteredOptions();
+  for (auto& arg : args) {
+    arg.getValue()->setHiddenFlag(cl::ReallyHidden);
+  }
+}
+
 void register_build_opts(Options::BuildOptions& options, std::string mode, argsVector& args) {
   cl::OptionCategory buildCategory(mode == "build" ? "Build Options" : "Run Options");
 
@@ -106,7 +113,7 @@ void test(Options& opts, argsVector& args) {
       clEnumValN(Optimization::OPTIMIZE_Os, "Os", "Optimization for size"),
       clEnumValN(Optimization::OPTIMIZE_Oz, "Oz", "Optimization for size (aggressive)")),
     cl::init(Optimization::OPTIMIZE_O1),
-    cl::cat(buildCategory));
+    cl::cat(buildCategory), cl::AlwaysPrefix);
 
   cl::opt<bool> silent("silent", cl::desc("Silent mode"), cl::cat(buildCategory));
   cl::opt<bool> no_progress("no-progress", cl::desc("Disable progress bar"), cl::cat(buildCategory));
@@ -119,14 +126,64 @@ void test(Options& opts, argsVector& args) {
 }
 
 void init(Options& opts, argsVector& args) {
+  hide_args();
 
+  cl::OptionCategory initCategory("Init Options");
+
+  cl::opt<bool> cfg("cfg", cl::desc("Create a snowball configuration file"), cl::cat(initCategory));
+  cl::opt<bool> lib("lib", cl::desc("Create a snowball library"), cl::cat(initCategory));
+  cl::opt<bool> yes("yes", cl::desc("Skip confirmation"), cl::cat(initCategory));
+  cl::opt<bool> skip_cfg("skip-cfg", cl::desc("Skip configuration"), cl::cat(initCategory));
+  cl::opt<std::string> name("name", cl::desc("Project name"), cl::cat(initCategory), cl::Required);
+
+  parse_args(args);
+
+  opts.init_opts.cfg = cfg;
+  opts.init_opts.lib = lib;
+  opts.init_opts.yes = yes;
+  opts.init_opts.skip_cfg = skip_cfg;
+  opts.init_opts.name = name;
 }
 
 void docs(Options& opts, argsVector& args) {
+  hide_args();
 
+  cl::OptionCategory docsCategory("Docs Options");
+
+  cl::opt<bool> silent("silent", cl::desc("Silent mode"), cl::cat(docsCategory));
+  cl::opt<bool> no_progress("no-progress", cl::desc("Disable progress bar"), cl::cat(docsCategory));
+  cl::opt<std::string> base("base", cl::desc("Base URL"), cl::cat(docsCategory));
+
+  parse_args(args);
+
+  opts.docs_opts.silent = silent;
+  opts.docs_opts.no_progress = no_progress;
+  opts.docs_opts.base = base;
 }
 
 void bench(Options& opts, argsVector& args) {
+  cl::OptionCategory benchCategory("Benchmark Options");
+
+  cl::opt<Optimization> opt(
+    cl::desc("optimization mode"),
+    cl::values(
+      clEnumValN(Optimization::OPTIMIZE_O0, "O0", "No optimization"),
+      clEnumValN(Optimization::OPTIMIZE_O1, "O1", "Optimization level 1"),
+      clEnumValN(Optimization::OPTIMIZE_O2, "O2", "Optimization level 2"),
+      clEnumValN(Optimization::OPTIMIZE_O3, "O3", "Optimization level 3"),
+      clEnumValN(Optimization::OPTIMIZE_Os, "Os", "Optimization for size"),
+      clEnumValN(Optimization::OPTIMIZE_Oz, "Oz", "Optimization for size (aggressive)")),
+    cl::init(Optimization::OPTIMIZE_O1),
+    cl::cat(benchCategory), cl::AlwaysPrefix);
+
+  cl::opt<bool> silent("silent", cl::desc("Silent mode"), cl::cat(benchCategory));
+  cl::opt<bool> no_progress("no-progress", cl::desc("Disable progress bar"), cl::cat(benchCategory));
+
+  parse_args(args);
+
+  opts.bench_opts.opt = opt;
+  opts.bench_opts.silent = silent;
+  opts.bench_opts.no_progress = no_progress;
 
 }
 
@@ -163,8 +220,9 @@ Options CLI::parse() {
   } else if (mode == "test") {
     opts.command = Options::TEST;
     cli::modes::test(opts, args);
-  } else if (mode == "init") {
+  } else if (mode == "init" || mode == "new") {
     opts.command = Options::INIT;
+    opts.init_opts.create_dir = mode == "new";
     cli::modes::init(opts, args);
   } else if (mode == "docs") {
     opts.command = Options::DOCS;

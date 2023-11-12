@@ -62,6 +62,9 @@ struct Options {
     bool lib = false;
     bool yes = false;
     bool skip_cfg = false;
+
+    std::string name = "";
+    bool create_dir = false;
   } init_opts;
 
   struct DocsOptions {
