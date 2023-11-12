@@ -24,7 +24,7 @@ jobs:
 
       - name: Execute docs
         run: |
-          ./bin/Debug/snowball docgen
+          ./bin/Debug/snowball docs
 
       - name: Copy
         uses: JamesIves/github-pages-deploy-action@v4
