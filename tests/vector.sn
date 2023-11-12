@@ -56,4 +56,11 @@ func with_pointer() i32 {
     return *v[0];
 }
 
+@test()
+func with_struct() i32 {
+    let mut vec = new Vector<String>();
+    vec.push("hello");
+    return vec[0] == "hello";
+}
+
 }

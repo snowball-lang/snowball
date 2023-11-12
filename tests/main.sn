@@ -33,5 +33,7 @@ unsafe func x() i32 {
 }
 
 public func main() i32 {
-    
+    let mut vec = new Vector<String>();
+    vec.push("hello");
+    System::println(vec[0]);
 }

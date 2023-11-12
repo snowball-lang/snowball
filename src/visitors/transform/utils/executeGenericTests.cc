@@ -10,7 +10,6 @@ namespace Syntax {
 void Transformer::executeGenericTests(Expression::WhereClause* clause, types::Type* generic, const std::string& name) {
   if (clause == nullptr) { return; }
   for (auto test : clause->getChecks()) {
-    auto implementations = generic->getImpls();
     auto type = transformType(test);
 
     if (auto interface = utils::cast<types::InterfaceType>(type)) {
@@ -23,7 +22,7 @@ void Transformer::executeGenericTests(Expression::WhereClause* clause, types::Ty
           generic = x->getPointedType();
         }
 
-        for (auto impl : implementations) {
+        for (auto impl : generic->getImpls()) {
           if (impl->is(interface)) {
             found = true;
             break;

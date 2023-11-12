@@ -25,6 +25,22 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
   std::string bufStr;
   llvm::raw_string_ostream buf(bufStr);
 
+  std::vector<std::string> addedTypes;
+  for (const auto& chunk : fn->getLLVMBody()) {
+    if (chunk.type == Syntax::LLVMIRChunk::TypeAccess) {
+      auto type = getLLVMType(chunk.ty);
+      if (llvm::isa<llvm::StructType>(type)) {
+        if (std::find(addedTypes.begin(), addedTypes.end(), type->getStructName().str()) != addedTypes.end()) {
+          continue;
+        }
+        
+        type->print(buf);
+        buf << "\n";
+        addedTypes.emplace_back(type->getStructName().str());
+      }
+    }
+  }
+
   buf << "define ";
   llvmFn->getReturnType()->print(buf, false, true);
   buf << " @\"" << llvmFn->getName() << "\"(";
@@ -44,7 +60,8 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
 
   for (const auto& chunk : fn->getLLVMBody()) {
     if (chunk.type == Syntax::LLVMIRChunk::TypeAccess) {
-      getLLVMType(chunk.ty, true)->print(buf, false, true);
+      auto type = getLLVMType(chunk.ty, true);
+      type->print(buf, false, true);
     } else {
       assert(chunk.type == Syntax::LLVMIRChunk::LLCode);
       buf << chunk.code;
