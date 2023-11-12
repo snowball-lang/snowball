@@ -166,13 +166,6 @@ set (APP_FILES
   ${APP_HEADERS}
   ${APP_SOURCES})
 
-FetchContent_Declare(zstd
-  GIT_REPOSITORY    "https://github.com/facebook/zstd"
-  GIT_TAG           "dev"
-)
-FetchContent_MakeAvailable(
-  zstd
-)
 find_package(zstd REQUIRED)
 
 
