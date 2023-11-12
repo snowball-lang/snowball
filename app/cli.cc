@@ -5,6 +5,7 @@
 #include "utils/logger.h"
 
 #include <llvm/Support/CommandLine.h>
+#include <iostream>
 
 namespace snowball {
 namespace app {
@@ -191,13 +192,18 @@ void bench(Options& opts, argsVector& args) {
 } // namespace modes
 } // namespace cli
 
+#define SNOWBALL_PRINT_MESSAGE << "Snowball Compiler " << _SNOWBALL_VERSION << " (" << _SNOWBALL_BUILD_TYPE << " build)" << "\n";
+
 Options CLI::parse() {
   Options opts;
   cl::SetVersionPrinter([](raw_ostream& OS) {
-    OS << "Snowball Compiler " << _SNOWBALL_VERSION << " (" << _SNOWBALL_BUILD_TYPE << " build)" << "\n";
+    OS SNOWBALL_PRINT_MESSAGE;
   });
 
   if (argc < 2) {
+    cli::modes::hide_args();
+    auto args = argsVector{argv[0], "--help"};
+    cli::modes::parse_args(args);
     cl::PrintHelpMessage(false, true);
     exit(EXIT_SUCCESS);
   }
@@ -211,7 +217,25 @@ Options CLI::parse() {
 
   args[0] = argv0.data();
 
-  if (mode == "run"){
+  if (mode == "--version" || mode == "-v") {
+    std::cout SNOWBALL_PRINT_MESSAGE;
+    exit(EXIT_SUCCESS);
+  } else if (mode == "--help" || mode == "-h") {
+    cli::modes::hide_args();
+
+    cl::OptionCategory helpCategory("Help Options");
+
+    cl::SubCommand run("run", "Run a Snowball program");
+    cl::SubCommand build("build", "Build a Snowball program");
+    cl::SubCommand test("test", "Test a Snowball program");
+    cl::SubCommand init("init", "Initialize a Snowball project");
+    cl::SubCommand docs("docs", "Generate documentation for a Snowball project");
+    cl::SubCommand bench("bench", "Benchmark a Snowball program");
+
+    cli::modes::parse_args(args);
+    cl::PrintHelpMessage();
+    exit(EXIT_SUCCESS);
+  } else if (mode == "run"){
     opts.command = Options::RUN;
     cli::modes::run(opts, args);
   } else if (mode == "build") {
