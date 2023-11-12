@@ -947,10 +947,14 @@ struct WhileLoop : public AcceptorExtend<WhileLoop, Base> {
    * ```
    */
   bool doWhile = false;
+  // For loop condition (if it's a for loop)
+  Node* forCond = nullptr;
 
 public:
   explicit WhileLoop(Expression::Base* cond, Block* insts, bool isDoWhile = false)
-      : cond(cond), insts(insts), doWhile(isDoWhile){};
+      : cond(cond), insts(insts), doWhile(isDoWhile) {};
+  explicit WhileLoop(Expression::Base* cond, Block* insts, Node* forCond)
+      : cond(cond), insts(insts), forCond(forCond) {};
 
   /// @return body block instructions to execute
   //   each iterator if the condition is truth
@@ -960,6 +964,8 @@ public:
   /// @return If the condition should be checked before or after
   ///  each iteration
   auto isDoWhile() const { return doWhile; }
+  /// @return The for loop condition
+  auto getForCond() const { return forCond; }
 
   // Set a visit handler for the generators
   ACCEPT()

@@ -45,13 +45,13 @@ Syntax::Node* Parser::parseForLoop() {
   } else next();
 
   if (!is<TokenType::SYM_SEMI_COLLON>(peek())) {
-    condExpr = parseExpr();
+    condExpr = parseExpr(false);
     next();
     assert_tok<TokenType::SYM_SEMI_COLLON>("';'");
   } else next();
   
   if (!is<TokenType::BRACKET_LCURLY>(peek())) {
-    step = parseStatement(peek());
+    step = parseExpr();
   }
 
   next();
@@ -64,9 +64,7 @@ Syntax::Node* Parser::parseForLoop() {
   // Convert it into a simple while loop with a parent block
   if (!condExpr)
     condExpr = Syntax::N<Syntax::Expression::ConstantValue>(Syntax::Expression::ConstantValue::Bool, "true");
-  if (step)
-    body->append(step);
-  auto whileLoop = Syntax::N<Syntax::Statement::WhileLoop>(condExpr, body);
+  auto whileLoop = Syntax::N<Syntax::Statement::WhileLoop>(condExpr, body, step);
   block.push_back(whileLoop);
   auto loopBlock = Syntax::N<Syntax::Block>(block);
   loopBlock->setDBGInfo(dbg);

@@ -77,7 +77,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
 
     if (parseNormal) {
       if (TOKEN(BRACKET_LPARENT)) {
-        expr = parseExpr();
+        expr = parseExpr(allowAssign);
         next();
         assert_tok<TokenType::BRACKET_RPARENT>("')'");
       } else if (TOKEN(VALUE_NUMBER) || TOKEN(VALUE_FLOAT) || TOKEN(VALUE_STRING) || TOKEN(VALUE_CHAR) || TOKEN(VALUE_BOOL)) {
