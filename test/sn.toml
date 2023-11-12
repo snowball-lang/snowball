@@ -1,0 +1,5 @@
+
+[package]
+name = "test"
+main = "src/main.sn"
+version = "1.0.0"

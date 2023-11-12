@@ -33,11 +33,6 @@ int _main(int argc, char** argv) {
   srand((unsigned) time(NULL) * getpid());
 
   try {
-    if (argc == 1) {
-      app::CLI::help();
-      return EXIT_SUCCESS;
-    }
-
     app::CLI* cli = new app::CLI(argc, argv);
     app::Options opts = cli->parse();
 
