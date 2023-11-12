@@ -29,6 +29,10 @@ void Transformer::transformMainFunction(Statement::FunctionDef* p_node) {
     E<SYNTAX_ERROR>(rawRetTy, "Program entry's return type must be of type 'i32'!");
   }
 
+  if (p_node->getAttributes() > 0) {
+    E<SYNTAX_ERROR>(p_node, "Program entry point can't have attributes!");
+  }
+
   // Create a new function value.
   // notes: The name will always be "main" and the function shall not
   // have any arguments.
