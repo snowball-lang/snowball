@@ -54,7 +54,6 @@ void LLVMBuilder::visit(ir::Cast* c) {
     this->value = builder->CreateIntToPtr(v, llvmType);
     this->ctx->doNotLoadInMemory = true;
   } else if (IS_DEFINED(vTy) && IS_DEFINED(ty)) {
-    v->dump();
     if (llvm::isa<llvm::LoadInst>(v)) {
       auto ptr = llvm::cast<llvm::LoadInst>(v)->getPointerOperand();
       this->value = builder->CreateLoad(llvmType, ptr);

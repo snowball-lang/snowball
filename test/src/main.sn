@@ -1,5 +1,0 @@
-import Core::System;
-
-public func main() i32 {
-   System::println("Hello, World")
-}
