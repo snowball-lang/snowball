@@ -26,11 +26,11 @@ void Transformer::transformMainFunction(Statement::FunctionDef* p_node) {
   auto returnType = transformType(rawRetTy); // we asume it's sized
 
   if (!types::isInt32Type(returnType)) {
-    E<SYNTAX_ERROR>(rawRetTy, "Program entry's return type must be of type 'i32'!");
+    E<SYNTAX_ERROR>(rawRetTy, "Program entry must have 'i32' as return type!");
   }
 
   if (p_node->getAttributes() > 0) {
-    E<SYNTAX_ERROR>(p_node, "Program entry point can't have attributes!");
+    E<SYNTAX_ERROR>(p_node, "Program entry point cant have attributes!");
   }
 
   // Create a new function value.
