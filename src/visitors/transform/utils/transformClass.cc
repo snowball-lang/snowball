@@ -28,7 +28,6 @@ types::BaseType* Transformer::transformClass(
 ) {
   auto ty = utils::cast<Statement::DefinedTypeDef>(classStore.type);
   assert(ty);
-
   // These are the generics generated outside of the class context.
   // for example, this "Test" type woudn't be fetched inside the class
   // context:
@@ -92,11 +91,20 @@ types::BaseType* Transformer::transformClass(
         ctx->addItem(generic->getName(), item);
         executeGenericTests(generic->getWhereClause(), generatedGeneric, generic->getName());
       }
+
+      // Append the default generic types
+      for (auto generic : ty->getGenerics()) {
+        if (generic->getType()) { // has default type
+          defaultGenerics.push_back(transformType(generic->getType()));
+          continue;
+        }
+
+        defaultGenericStart++;
+      }
+
       // Fill out the remaining non-required tempalte parameters
       if (classGenerics.size() > generics.size()) {
-        auto s = generics.size();
-        defaultGenericStart = s;
-        for (auto i = s; i < classGenerics.size(); ++i) {
+        for (auto i = generics.size(); i < classGenerics.size(); ++i) {
           auto generic = classGenerics[i];
           auto generatedGeneric = transformType(generic->type);
           auto item = std::make_shared<transform::Item>(generatedGeneric->copy());
@@ -105,9 +113,14 @@ types::BaseType* Transformer::transformClass(
           ctx->addItem(generic->getName(), item);
           executeGenericTests(generic->getWhereClause(), generatedGeneric, generic->getName());
           generics.push_back(generatedGeneric);
-          defaultGenerics.push_back(generatedGeneric);
         }
       }
+      transformedType->setGenerics(generics);
+      transformedType->setDefaultGenerics(defaultGenerics);
+      transformedType->setDefaultGenericStart(defaultGenericStart);
+      transformedType->setPrivacy(ty->getPrivacy());
+      transformedType->setDBGInfo(ty->getDBGInfo());
+      transformedType->setSourceInfo(ty->getSourceInfo());
       types::DefinedType* parentType = nullptr;
       if (auto x = ty->getParent()) {
         auto parent = transformSizedType(x, false, "Parent types must be sized but found '%s' (which is not sized)");
@@ -136,12 +149,6 @@ types::BaseType* Transformer::transformClass(
       for (auto ty : ty->getTypeAliases()) { trans(ty); }
       ctx->generateFunction = true;
       for (auto ty : ty->getTypeAliases()) { trans(ty); }
-      transformedType->setGenerics(generics);
-      transformedType->setDefaultGenerics(defaultGenerics);
-      transformedType->setDefaultGenericStart(defaultGenericStart);
-      transformedType->setPrivacy(ty->getPrivacy());
-      transformedType->setDBGInfo(ty->getDBGInfo());
-      transformedType->setSourceInfo(ty->getSourceInfo());
       int fieldCount = 0;
       if (!ty->isInterface()) {
         for (auto& v : ty->getVariables()) {

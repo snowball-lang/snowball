@@ -330,8 +330,9 @@ private:
   Syntax::Statement::TryCatch* parseTryCatch();
   /**
    * for           ::=  "for" [expr] ":" [expr] "{" [block] "}"
+   * @note It can Return Statement::ForLoop or Statement::Block (while loop for c-styled loops)
    */
-  Syntax::Statement::ForLoop* parseForLoop();
+  Syntax::Node* parseForLoop();
   /**
    * constant      ::=  "const" <identifier> ":" <type> "=" [expr] ";"
    */

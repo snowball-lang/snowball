@@ -160,6 +160,13 @@ public:
   /// @brief Create a new while loop
   SharedValue<WhileLoop>
   createWhileLoop(DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> body, bool isDoWhile = false);
+  /// @brief Creates a while loop from a for loop
+  SharedValue<WhileLoop> createFromForLoop(
+    DBGSourceInfo* dbgInfo,
+    SharedValue<> condition,
+    SharedValue<Block> body,
+    SharedValue<> forCond
+  );
   /// @brief Create a new binary operation
   /// @todo add more overloads for the binary operation
   SharedValue<BinaryOp> createBinaryOp(SharedValue<Call> call);

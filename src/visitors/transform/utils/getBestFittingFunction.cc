@@ -41,19 +41,17 @@ Transformer::getBestFittingFunction(
   for (auto foundFunction : functions) {
     auto fnArgs = foundFunction.first.function->getArgs();
     if (foundFunction.second.size() > 0) {
-      if (ir::Func::argumentSizesEqual(fnArgs, arguments, foundFunction.first.function->isVariadic())) {
-        // Automatically accept generic functions
-        matchedFunctions.push_back(foundFunction);
-        auto importance = importances.at(i);
-        if (importance > genericCount) {
-          genericIndex = i;
-          genericCount = importance;
-        }
-        i++;
+      // Automatically accept generic functions
+      matchedFunctions.push_back(foundFunction);
+      auto importance = importances.at(i);
+      if (importance > genericCount) {
+        genericIndex = i;
+        genericCount = importance;
       }
+      i++;
     } else {
       ctx->withState(foundFunction.first.state, [&] {
-        bool argsEqual = ir::Func::argumentSizesEqual(fnArgs, arguments, foundFunction.first.function->isVariadic());
+        bool argsEqual = true;
         bool argsNeedCasting = false;
         int succeededArgs = 0;
         for (auto i = 0; (i < fnArgs.size()) && argsEqual; i++) {

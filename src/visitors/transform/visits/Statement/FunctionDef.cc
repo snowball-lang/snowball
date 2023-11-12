@@ -34,7 +34,7 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     pointer->setMutable(p_node->isMutable() || p_node->isConstructor());
     if (!(args.size() > 0 && args.at(0)->getName() == "self") && !p_node->isStatic()) {
       auto self = new Expression::Param("self", pointer->toRef());
-      args.insert(args.begin(), self);
+      args.emplace(args.begin(), self);
       p_node->setArgs(args);
     } else if (!p_node->isStatic()) { /* "self" already set by another class */
       args.at(0)->setType(pointer->toRef());

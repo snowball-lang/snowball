@@ -72,6 +72,15 @@ fetchFromUUID:
         return {std::nullopt, t->getType(), std::nullopt, std::nullopt, std::nullopt};
       }
     }
+    if (uuid == "@sn.Core.Core.Range"){
+      DUMP_S("YEAH")
+          for (auto t : x.value()) {
+      assert(t->isType());
+      if (typeGenericsMatch(ty, t->getType())) {
+        return {std::nullopt, t->getType(), std::nullopt, std::nullopt, std::nullopt};
+      }
+    }
+    }
   }
   if (auto t = ctx->cache->getType(uuid)) {
     auto ty = new Expression::TypeRef(identifier, dbgInfo, generics);

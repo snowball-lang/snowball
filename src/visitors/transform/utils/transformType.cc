@@ -162,7 +162,8 @@ continueTypeFetch:
   if (auto x = ctx->cache->getType(uuid)) {
     auto cls = *x;
     auto transformed = transformTypeFromBase(uuid, cls, ty);
-    if (auto alias = utils::cast<types::TypeAlias>(transformed)) { transformed = alias->getBaseType(); }
+    if (auto alias = utils::cast<types::TypeAlias>(transformed))
+      transformed = alias->getBaseType();
     return transformed->copy();
   }
 

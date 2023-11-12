@@ -8,6 +8,7 @@
 
 namespace snowball {
 namespace Syntax {
+void Block::append(Node* stmt) { stmts.push_back(stmt); }
 namespace Statement {
 // Separated namespace in order to use
 // Privacy::Status without name conflicts

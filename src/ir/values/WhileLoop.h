@@ -35,10 +35,14 @@ class WhileLoop : public AcceptorExtend<WhileLoop, Value> {
   // Whether to execute the instruction before or after
   // each iteration
   bool doWhile = false;
+  // For loop condition (if it's a for loop)
+  std::shared_ptr<Value> forCond = nullptr;
 
 public:
   explicit WhileLoop(std::shared_ptr<Value> cond, std::shared_ptr<Block> insts, bool doWhile = false)
       : cond(cond), insts(insts), doWhile(doWhile){};
+  explicit WhileLoop(std::shared_ptr<Value> cond, std::shared_ptr<Block> insts, std::shared_ptr<Value> forCond)
+      : cond(cond), insts(insts), forCond(forCond){};
 
   /// @return body block instructions to execute
   //   if the condition is met each iteration
@@ -48,6 +52,8 @@ public:
   /// @return If the condition should be checked before or after
   ///  each iteration
   auto isDoWhile() const { return doWhile; }
+  /// @return The for loop condition (if it's a for loop)
+  auto getForCond() const { return forCond; }
 
   // Set a visit handler for the generators
   SN_GENERATOR_VISITS

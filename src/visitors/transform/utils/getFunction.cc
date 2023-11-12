@@ -121,25 +121,25 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
       // TODO: throw a note that sugest's it's correct types: only if
       // TODO: better error for operators: no operator found for `i32 + String` or something.
       E<VARIABLE_ERROR>(
-              dbgInfo,
-              FMT("No matches found for '%s(%s)'",
-                  name.c_str(),
-                  Expression::FunctionCall::getArgumentsAsString(arguments).c_str()),
-              {.info = "No function overloads found for this function!",
-               .note = "The function does exist but its arguments are "
-                       "not correctly "
-                       "defined.",
-               .help = "The provided function name and arguments do not "
-                       "match any of "
-                       "the \navailable function overloads. Please "
-                       "ensure that you "
-                       "have correctly spelled the \nfunction name and "
-                       "provided the "
-                       "appropriate arguments. Additionally, check the "
-                       "\ndocumentation or function signature to confirm "
-                       "the correct "
-                       "syntax and parameter \ntypes.",
-               .tail = tailErrors}
+        dbgInfo,
+        FMT("No matches found for '%s(%s)'",
+            name.c_str(),
+            Expression::FunctionCall::getArgumentsAsString(arguments).c_str()),
+        {.info = "No function overloads found for this function!",
+          .note = "The function does exist but its arguments are "
+                  "not correctly "
+                  "defined.",
+          .help = "The provided function name and arguments do not "
+                  "match any of "
+                  "the \navailable function overloads. Please "
+                  "ensure that you "
+                  "have correctly spelled the \nfunction name and "
+                  "provided the "
+                  "appropriate arguments. Additionally, check the "
+                  "\ndocumentation or function signature to confirm "
+                  "the correct "
+                  "syntax and parameter \ntypes.",
+          .tail = tailErrors}
       );
     }
 

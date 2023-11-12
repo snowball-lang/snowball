@@ -447,7 +447,7 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
      */
     func to_string<>() String {
       let mut result = "[";
-      for i in 0..self.length {
+      for let mut i = 0; i < self.length; i = i+1 {
         result = result + String::from(self[i]);
         if i != self.length - 1 {
           result = result + ", ";
@@ -522,7 +522,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       if self.length != other.length {
         return false;
       }
-      for i in 0..self.length {
+      for let mut i = 0; i < self.length; i = i+1 {
         if self.buffer[i] != other.buffer[i] {
           return false;
         }
@@ -621,7 +621,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
         return self.clone();
       }
       let mut result = "";
-      for i in 0..(length - self.length) {
+      for let mut i = 0; i < (length - self.length); i = i+1 {
         result += fill;
       }
       return result + self;

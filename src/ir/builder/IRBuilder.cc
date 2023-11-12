@@ -156,6 +156,14 @@ SharedValue<WhileLoop>
 IRBuilder::createWhileLoop(DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> body, bool isDoWhile) {
   return N<WhileLoop>(dbgInfo, condition, body, isDoWhile);
 }
+SharedValue<WhileLoop> IRBuilder::createFromForLoop(
+  DBGSourceInfo* dbgInfo,
+  SharedValue<> condition,
+  SharedValue<Block> body,
+  SharedValue<> forCond
+) {
+  return N<WhileLoop>(dbgInfo, condition, body, forCond);
+}
 Type<types::FunctionType>
 IRBuilder::createFunctionType(std::vector<Type<>> args, Type<> retType, bool isVarArg, bool isMutable) {
   return new types::FunctionType(args, retType, isVarArg, isMutable);
