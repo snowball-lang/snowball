@@ -84,17 +84,29 @@ struct Options {
   } command = UNKNOWN;
 };
 
+using argsVector = std::vector<const char*>;
+
+namespace cli {
+namespace modes {
+
+void run(Options& opts, argsVector& args);
+void build(Options& opts, argsVector& args);
+void test(Options& opts, argsVector& args);
+void init(Options& opts, argsVector& args);
+void docs(Options& opts, argsVector& args);
+void bench(Options& opts, argsVector& args);
+
+} // namespace modes
+} // namespace cli
+
 class CLI {
 public:
   CLI(int argc, char** argv);
-
   Options parse();
-  static void help();
 
 private:
-  int current_index = 0;
-  std::string current_arg;
-  std::vector<std::string> args;
+  int argc;
+  char** argv;
 };
 } // namespace app
 } // namespace snowball

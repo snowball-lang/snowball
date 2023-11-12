@@ -235,7 +235,7 @@ int Compiler::emitASM(std::string p_output, bool p_pmessage) {
   builder->optimizeModule();
 
   auto res = builder->emitObjectFile(p_output, false, false);
-  if (p_pmessage) Logger::success("Snowball project transpiled to llvm IR code! 🎉\n");
+  if (p_pmessage) Logger::success("Snowball project transpiled to assembly code! 🎉\n");
   return res;
 }
 

@@ -4,389 +4,179 @@
 #include "errors.h"
 #include "utils/logger.h"
 
-#define IF_ANY_ARG(arg1, arg2) current_arg == arg1 || current_arg == arg2
-#define IF_ARG(arg)            current_arg == arg
-#define CHECK_ARG(expectation)                                                                                         \
-  if (current_index == args.size() - 1) {                                                                              \
-    throw SNError(Error::ARGUMENT_ERROR, "Expected " expectation " as argument");                                      \
-  }
-#define NEXT_ARGUMENT()                                                                                                \
-  this->current_index++;                                                                                               \
-  this->current_arg = this->args[this->current_index];
+#include <llvm/Support/CommandLine.h>
 
 namespace snowball {
 namespace app {
-CLI::CLI(int argc, char** argv) {
-  // Start the index with 1 to ignore "snowball"
-  for (int i = 1; i < argc; i++) { args.push_back(argv[i]); }
+
+using namespace llvm;
+
+CLI::CLI(int argc, char** argv) : argc(argc), argv(argv) {}
+
+namespace cli {
+namespace modes {
+
+using EmitType = Options::EmitType;
+using Optimization = Options::Optimization;
+
+void parse_args(argsVector& args) {
+  cl::ParseCommandLineOptions(args.size(), args.data(), "Snowball Compiler", nullptr, nullptr, true);
 }
+
+void register_build_opts(Options::BuildOptions& options, std::string mode, argsVector& args) {
+  cl::OptionCategory buildCategory(mode == "build" ? "Build Options" : "Run Options");
+
+  cl::opt<Optimization> opt(
+    cl::desc("optimization mode"),
+    cl::values(
+      clEnumValN(Optimization::OPTIMIZE_O0, "O0", "No optimization"),
+      clEnumValN(Optimization::OPTIMIZE_O1, "O1", "Optimization level 1"),
+      clEnumValN(Optimization::OPTIMIZE_O2, "O2", "Optimization level 2"),
+      clEnumValN(Optimization::OPTIMIZE_O3, "O3", "Optimization level 3"),
+      clEnumValN(Optimization::OPTIMIZE_Os, "Os", "Optimization for size"),
+      clEnumValN(Optimization::OPTIMIZE_Oz, "Oz", "Optimization for size (aggressive)")),
+    cl::init(Optimization::OPTIMIZE_O1),
+    cl::cat(buildCategory),
+    cl::AlwaysPrefix);
+
+  cl::opt<bool> silent("silent", cl::desc("Silent mode"), cl::cat(buildCategory));
+  cl::opt<std::string> file("file", cl::desc("File to compile"), cl::cat(buildCategory));
+  cl::opt<bool> no_progress("no-progress", cl::desc("Disable progress bar"), cl::cat(buildCategory));
+  
+  
+  if (mode == "build") {
+    auto test = cl::opt<bool>("test", cl::desc("Builds the project for testing"), cl::cat(buildCategory));
+    auto bench = cl::opt<bool>("bench", cl::desc("Builds the project for benchmarking"), cl::cat(buildCategory));
+    auto output = cl::opt<std::string>("output", cl::desc("Output file"), cl::cat(buildCategory));
+    auto emit = cl::opt<EmitType>("emit", 
+      cl::desc("Output type"),
+      cl::values(
+        clEnumValN(EmitType::EXECUTABLE, "exe", "Executable"),
+        clEnumValN(EmitType::OBJECT, "obj", "Object file"),
+        clEnumValN(EmitType::LLVM_IR, "llvm-ir", "LLVM IR"),
+        clEnumValN(EmitType::ASSEMBLY, "asm", "Assembly"),
+        clEnumValN(EmitType::SNOWBALL_IR, "snowball-ir", "Snowball IR")),
+      cl::init(EmitType::EXECUTABLE), cl::cat(buildCategory));
+    parse_args(args);
+    
+    options.opt = opt;
+    options.silent = silent;
+    options.file = file;
+    options.no_progress = no_progress;
+
+    options.is_test = test;
+    options.is_bench = bench;
+    options.output = output;
+    options.emit_type = emit;
+    return;
+  }
+
+  parse_args(args);
+  options.opt = opt;
+  options.silent = silent;
+  options.file = file;
+  options.no_progress = no_progress;
+}
+
+void run(Options& opts, argsVector& args) {
+  auto& runOpts = opts.run_opts;
+
+  cl::OptionCategory runCategory("Run Options");
+  cl::opt<bool> jit("jit", cl::desc("Run the program in JIT mode"), cl::cat(runCategory));
+
+  register_build_opts(runOpts, "run", args);
+  runOpts.jit = jit;
+}
+
+void build(Options& opts, argsVector& args) {
+  auto& buildOpts = opts.build_opts;
+  register_build_opts(buildOpts, "build", args);
+}
+
+void test(Options& opts, argsVector& args) {
+  cl::OptionCategory buildCategory("Test Options");
+
+  cl::opt<Optimization> opt(
+    cl::desc("optimization mode"),
+    cl::values(
+      clEnumValN(Optimization::OPTIMIZE_O0, "O0", "No optimization"),
+      clEnumValN(Optimization::OPTIMIZE_O1, "O1", "Optimization level 1"),
+      clEnumValN(Optimization::OPTIMIZE_O2, "O2", "Optimization level 2"),
+      clEnumValN(Optimization::OPTIMIZE_O3, "O3", "Optimization level 3"),
+      clEnumValN(Optimization::OPTIMIZE_Os, "Os", "Optimization for size"),
+      clEnumValN(Optimization::OPTIMIZE_Oz, "Oz", "Optimization for size (aggressive)")),
+    cl::init(Optimization::OPTIMIZE_O1),
+    cl::cat(buildCategory));
+
+  cl::opt<bool> silent("silent", cl::desc("Silent mode"), cl::cat(buildCategory));
+  cl::opt<bool> no_progress("no-progress", cl::desc("Disable progress bar"), cl::cat(buildCategory));
+
+  parse_args(args);
+
+  opts.test_opts.opt = opt;
+  opts.test_opts.silent = silent;
+  opts.test_opts.no_progress = no_progress;
+}
+
+void init(Options& opts, argsVector& args) {
+
+}
+
+void docs(Options& opts, argsVector& args) {
+
+}
+
+void bench(Options& opts, argsVector& args) {
+
+}
+
+
+} // namespace modes
+} // namespace cli
 
 Options CLI::parse() {
   Options opts;
+  cl::SetVersionPrinter([](raw_ostream& OS) {
+    OS << "Snowball Compiler " << _SNOWBALL_VERSION << " (" << _SNOWBALL_BUILD_TYPE << " build)" << "\n";
+  });
 
-  current_arg = args[0];
+  if (argc < 2) {
+    cl::PrintHelpMessage(false, true);
+    exit(EXIT_SUCCESS);
+  }
 
-  if (current_arg == "--help" || current_arg == "-h") {
-    if (current_index < args.size() - 1) {
-      NEXT_ARGUMENT();
+  std::vector<const char *> args{argv[0]};
+  for (int i = 2; i < argc; i++)
+    args.push_back(argv[i]);
 
-      if (IF_ARG("build")) {
-        Logger::log("Snowball (C) MIT");
-        Logger::log("Usage: snowball build [options]\n");
-        Logger::log("Help:");
-        Logger::log("  Build your snowball project\n");
-        Logger::log("Options:");
-        Logger::log("  --emit {type}             - Select the "
-                    "output format");
-        Logger::log("  --test [-t]               - Build "
-                    "project as it was for "
-                    "testing");
-        Logger::log("  --bench [-b]              - Build "
-                    "project as it was for "
-                    "benchmarking");
-        Logger::log("  -{opt}                    - Optimize "
-                    "your project at a "
-                    "certain level");
-        Logger::log("");
-        Logger::log("Emit types:");
-        Logger::log("  exec                      - Build your "
-                    "project as an "
-                    "executable");
-        Logger::log("  lib                       - Build a "
-                    "shared library from "
-                    "your project");
-        Logger::log("  llvm-ir                   - Emit the "
-                    "llvm-ir code to "
-                    "file");
-        Logger::log("  asm                       - Emit the "
-                    "assembly code to "
-                    "file");
-        Logger::log("  snowball-ir               - Emit the "
-                    "snowball-ir code to "
-                    "file");
-        Logger::log("");
-        Logger::log("Optimization levels:");
-        Logger::log("  O0 [g]                    - Disable as many "
-                    "optimizations as possible");
-        Logger::log("  O1 (default)              - Optimize "
-                    "quickly without "
-                    "destroying debuggability");
-        Logger::log("  O2                        - Like O3 "
-                    "without triggering "
-                    "significant incremental compile time or "
-                    "code size growth");
-        Logger::log("  O3                        - Optimize "
-                    "for fast execution "
-                    "as much as possible");
-        Logger::log("  Os                        - Similar to "
-                    "O2 but tries to "
-                    "optimize for small code size instead of "
-                    "fast execution");
-        Logger::log("  Oz                        - A very "
-                    "specialized mode "
-                    "that will optimize for code size at any "
-                    "and all costs");
-      } else if (IF_ARG("run")) {
-        Logger::log("Snowball (C) MIT");
-        Logger::log("Usage: snowball run [options]\n");
-        Logger::log("Help:");
-        Logger::log("  Build and execute your snowball project\n");
-        Logger::log("Options:");
-        Logger::log("  -{opt} - Optimize "
-                    "your project at a "
-                    "certain level");
-        Logger::log("  --jit [-j] {opt}          - Execute the project "
-                    "using the JIT");
-        Logger::log("");
-        Logger::log("Optimization levels:");
-        Logger::log("  O0 [g]                    - Disable as many "
-                    "optimizations as possible");
-        Logger::log("  O1 (default)              - Optimize "
-                    "quickly without "
-                    "destroying debuggability");
-        Logger::log("  O2                        - Like O3 "
-                    "without triggering "
-                    "significant incremental compile time or "
-                    "code size growth");
-        Logger::log("  O3                        - Optimize "
-                    "for fast execution "
-                    "as much as possible");
-        Logger::log("  Os                        - Similar to "
-                    "O2 but tries to "
-                    "optimize for small code size instead of "
-                    "fast execution");
-        Logger::log("  Oz                        - A very "
-                    "specialized mode "
-                    "that will optimize for code size at any "
-                    "and all costs");
-      } else if (IF_ARG("test")) {
-        Logger::log("Snowball (C) MIT");
-        Logger::log("Usage: snowball test [options]\n");
-        Logger::log("Help:");
-        Logger::log("  Build and execute your unit tests\n");
-        Logger::info("You can get your tests as an executable "
-                     "by executing:\n   "
-                     "-> `snowball build test`");
-      } else if (IF_ARG("bench")) {
-        Logger::log("Snowball (C) MIT");
-        Logger::log("Usage: snowball bench [options]\n");
-        Logger::log("Help:");
-        Logger::log("  Build and execute your benchmarks\n");
-        Logger::info("You can get your benchmarks as an "
-                     "executable by executing:\n   "
-                     "-> `snowball build bench`");
-      } else if (IF_ARG("init")) {
-        Logger::log("Snowball (C) MIT");
-        Logger::log("Usage: snowball init [options]\n");
-        Logger::log("Help:");
-        Logger::log("  Create a new project in the current "
-                    "directory\n");
-        Logger::log("Options:");
-        Logger::log("  --yes (-y)        - Stop asking me you "
-                    "stupid bot!");
-        Logger::log("  --lib (-l)        - Create a project "
-                    "designed as a "
-                    "library");
-        Logger::log("  --cfg (-c)        - Create only a "
-                    "configuration file");
-        Logger::log("  --skip-cfg        - Create the project "
-                    "without a config "
-                    "file (errors if `--cfg` is passed)");
-        Logger::log("");
-        Logger::info("You can create a new folder by executing:\n   -> "
-                     "`snowball new {name}`");
-      } else if (IF_ARG("docgen")) {
-        Logger::log("Snowball (C) MIT");
-        Logger::log("Usage: snowball doc [options]\n");
-        Logger::log("Help:");
-        Logger::log("  Generate documentation for your project\n");
-        Logger::log("Options:");
-        Logger::log("  --silent (-s)     - Don't print anything "
-                    "to the console");
-        Logger::log("  --no-progress     - Don't print the "
-                    "progress bar");
-      } else {
-        throw SNError(ARGUMENT_ERROR, FMT("Command '%s' not found.", current_arg.c_str()));
-      }
-    } else {
-      help();
-    }
+  std::string mode(argv[1]);
+  std::string argv0 = std::string(args[0]) + " " + mode;
 
-    exit(0);
-  } else if (current_arg == "build") {
-    opts.command = Options::Command::BUILD;
+  args[0] = argv0.data();
 
-    while (current_index < args.size() - 1) {
-      NEXT_ARGUMENT();
-
-      if (IF_ANY_ARG("--test", "-t")) {
-        opts.build_opts.is_test = true;
-      } else if (IF_ANY_ARG("--bench", "-b")) {
-        opts.build_opts.is_bench = true;
-      } else if (IF_ANY_ARG("--silent", "-s")) {
-        opts.build_opts.silent = true;
-      } else if (IF_ARG("--no-progress")) {
-        opts.build_opts.no_progress = true;
-      } else if (IF_ANY_ARG("--file", "-f")) {
-        CHECK_ARG("an input file")
-        NEXT_ARGUMENT()
-
-        opts.build_opts.file = current_arg;
-      } else if (IF_ARG("--emit")) {
-        CHECK_ARG("an output type")
-        NEXT_ARGUMENT()
-
-        if (current_arg == "exec") {
-          opts.build_opts.emit_type = Options::EmitType::EXECUTABLE;
-        } else if (current_arg == "snowball-ir") {
-          opts.build_opts.emit_type = Options::EmitType::SNOWBALL_IR;
-        } else if (current_arg == "lib") {
-          opts.build_opts.emit_type = Options::EmitType::OBJECT;
-        } else if (current_arg == "llvm-ir") {
-          opts.build_opts.emit_type = Options::EmitType::LLVM_IR;
-        } else if (current_arg == "asm") {
-          opts.build_opts.emit_type = Options::EmitType::ASSEMBLY;
-        } else {
-          throw SNError(
-                  Error::ARGUMENT_ERROR,
-                  "Valid build output types are: exec, lib, "
-                  "llvm-ir, asm and snowball-ir"
-          );
-        }
-      } else if (IF_ANY_ARG("--output", "-o")) {
-        CHECK_ARG("an output file")
-        NEXT_ARGUMENT()
-
-        opts.build_opts.output = current_arg;
-      } else if (IF_ANY_ARG("-g", "-O0")) {
-        opts.build_opts.opt = Options::Optimization::OPTIMIZE_O0;
-      } else if (IF_ARG("-O1")) {
-        opts.build_opts.opt = Options::Optimization::OPTIMIZE_O1;
-      } else if (IF_ARG("-O2")) {
-        opts.build_opts.opt = Options::Optimization::OPTIMIZE_O2;
-      } else if (IF_ARG("-O3")) {
-        opts.build_opts.opt = Options::Optimization::OPTIMIZE_O3;
-      } else if (IF_ARG("-Os")) {
-        opts.build_opts.opt = Options::Optimization::OPTIMIZE_Os;
-      } else if (IF_ARG("-Oz")) {
-        opts.build_opts.opt = Options::Optimization::OPTIMIZE_Oz;
-      } else {
-        throw SNError(Error::ARGUMENT_ERROR, FMT("Unexpected argument for the build command: %s", current_arg.c_str()));
-      }
-    }
-  } else if (current_arg == "run") {
-    opts.command = Options::Command::RUN;
-
-    while (current_index < args.size() - 1) {
-      NEXT_ARGUMENT();
-
-      if (IF_ANY_ARG("-g", "-O0")) {
-        opts.run_opts.opt = Options::Optimization::OPTIMIZE_O0;
-      } else if (IF_ARG("-O1")) {
-        opts.run_opts.opt = Options::Optimization::OPTIMIZE_O1;
-      } else if (IF_ARG("-O2")) {
-        opts.run_opts.opt = Options::Optimization::OPTIMIZE_O2;
-      } else if (IF_ARG("-O3")) {
-        opts.run_opts.opt = Options::Optimization::OPTIMIZE_O3;
-      } else if (IF_ARG("-Os")) {
-        opts.run_opts.opt = Options::Optimization::OPTIMIZE_Os;
-      } else if (IF_ARG("-Oz")) {
-        opts.run_opts.opt = Options::Optimization::OPTIMIZE_Oz;
-      } else if (IF_ANY_ARG("--silent", "-s")) {
-        opts.run_opts.silent = true;
-      } else if (IF_ARG("--no-progress")) {
-        opts.run_opts.no_progress = true;
-      } else if (IF_ANY_ARG("--jit", "-j")) {
-        opts.run_opts.jit = true;
-      } else if (IF_ANY_ARG("--file", "-f")) {
-        CHECK_ARG("an input file")
-        NEXT_ARGUMENT()
-        opts.run_opts.file = current_arg;
-      } else {
-        throw SNError(Error::ARGUMENT_ERROR, FMT("Unexpected argument for the run command: %s", current_arg.c_str()));
-      }
-    }
-  } else if (current_arg == "test") {
-    opts.command = Options::Command::TEST;
-
-    while (current_index < args.size() - 1) {
-      NEXT_ARGUMENT();
-
-      if (IF_ANY_ARG("--silent", "-s")) {
-        opts.test_opts.silent = true;
-      } else if (IF_ARG("--no-progress")) {
-        opts.test_opts.no_progress = true;
-      } else if (IF_ANY_ARG("-g", "-O0")) {
-        opts.test_opts.opt = Options::Optimization::OPTIMIZE_O0;
-      } else if (IF_ARG("-O1")) {
-        opts.test_opts.opt = Options::Optimization::OPTIMIZE_O1;
-      } else if (IF_ARG("-O2")) {
-        opts.test_opts.opt = Options::Optimization::OPTIMIZE_O2;
-      } else if (IF_ARG("-O3")) {
-        opts.test_opts.opt = Options::Optimization::OPTIMIZE_O3;
-      } else if (IF_ARG("-Os")) {
-        opts.test_opts.opt = Options::Optimization::OPTIMIZE_Os;
-      } else if (IF_ARG("-Oz")) {
-        opts.test_opts.opt = Options::Optimization::OPTIMIZE_Oz;
-      } else {
-        throw SNError(Error::ARGUMENT_ERROR, FMT("Unexpected argument for the test command: %s", current_arg.c_str()));
-      }
-    }
-  } else if (current_arg == "bench") {
-    opts.command = Options::Command::BENCH;
-
-    while (current_index < args.size() - 1) {
-      NEXT_ARGUMENT();
-
-      if (IF_ANY_ARG("--silent", "-s")) {
-        opts.bench_opts.silent = true;
-      } else if (IF_ARG("--no-progress")) {
-        opts.bench_opts.no_progress = true;
-      } else if (IF_ANY_ARG("-g", "-O0")) {
-        opts.bench_opts.opt = Options::Optimization::OPTIMIZE_O0;
-      } else if (IF_ARG("-O1")) {
-        opts.bench_opts.opt = Options::Optimization::OPTIMIZE_O1;
-      } else if (IF_ARG("-O2")) {
-        opts.bench_opts.opt = Options::Optimization::OPTIMIZE_O2;
-      } else if (IF_ARG("-O3")) {
-        opts.bench_opts.opt = Options::Optimization::OPTIMIZE_O3;
-      } else if (IF_ARG("-Os")) {
-        opts.bench_opts.opt = Options::Optimization::OPTIMIZE_Os;
-      } else if (IF_ARG("-Oz")) {
-        opts.bench_opts.opt = Options::Optimization::OPTIMIZE_Oz;
-      } else {
-        throw SNError(Error::ARGUMENT_ERROR, FMT("Unexpected argument for the bench command: %s", current_arg.c_str()));
-      }
-    }
-  } else if (current_arg == "docgen") {
-    opts.command = Options::Command::DOCS;
-
-    while (current_index < args.size() - 1) {
-      NEXT_ARGUMENT();
-
-      if (IF_ANY_ARG("--silent", "-s")) {
-        opts.docs_opts.silent = true;
-      } else if (IF_ARG("--no-progress")) {
-        opts.docs_opts.no_progress = true;
-      } else if (IF_ANY_ARG("--base-url", "-b")) {
-        CHECK_ARG("a base url")
-        NEXT_ARGUMENT()
-        opts.docs_opts.base = current_arg; 
-      } else {
-        throw SNError(Error::ARGUMENT_ERROR, FMT("Unexpected argument for the docgen command: %s", current_arg.c_str()));
-      }
-    }
-  } else if (current_arg == "init") {
-    opts.command = Options::Command::INIT;
-
-    while (current_index < args.size() - 1) {
-      NEXT_ARGUMENT();
-
-      if (IF_ANY_ARG("--yes", "-y")) {
-        opts.init_opts.yes = true;
-      } else if (IF_ANY_ARG("--lib", "-l")) {
-        opts.init_opts.lib = true;
-      } else if (IF_ANY_ARG("--cfg", "-c")) {
-        opts.init_opts.cfg = true;
-      } else if (IF_ARG("--skip-cfg")) {
-        if (opts.init_opts.cfg == true) {
-          throw SNError(
-                  Error::ARGUMENT_ERROR,
-                  "Can't have argument `--skip-cfg` if "
-                  "argument `--cfg` has been passed"
-          );
-        }
-
-        opts.init_opts.skip_cfg = true;
-      } else {
-        throw SNError(Error::ARGUMENT_ERROR, FMT("Unexpected argument for the init command: %s", current_arg.c_str()));
-      }
-    }
-  } else if (IF_ANY_ARG("--version", "-v")) {
-    Logger::log("Snowball version " _SNOWBALL_VERSION " (" _SNOWBALL_BUILD_TYPE ")");
-    exit(0);
+  if (mode == "run"){
+    opts.command = Options::RUN;
+    cli::modes::run(opts, args);
+  } else if (mode == "build") {
+    opts.command = Options::BUILD;
+    cli::modes::build(opts, args);
+  } else if (mode == "test") {
+    opts.command = Options::TEST;
+    cli::modes::test(opts, args);
+  } else if (mode == "init") {
+    opts.command = Options::INIT;
+    cli::modes::init(opts, args);
+  } else if (mode == "docs") {
+    opts.command = Options::DOCS;
+    cli::modes::docs(opts, args);
+  } else if (mode == "bench") {
+    opts.command = Options::BENCH;
+    cli::modes::bench(opts, args);
   } else {
-    throw SNError(Error::ARGUMENT_ERROR, FMT("Unknown command found: %s", current_arg.c_str()));
+    throw SNError(Error::ARGUMENT_ERROR, FMT("Invalid command: %s", mode.c_str()));
   }
 
   return opts;
-}
-
-void CLI::help() {
-  Logger::log("Snowball (C) MIT");
-  Logger::log("Usage: snowball [command] [options]\n");
-  Logger::log("Snowball Commands:");
-  Logger::log("  --version [-v]   - builds the current snowball project");
-  Logger::log("  build            - builds the current snowball project");
-  Logger::log("  run              - build and execute the current "
-              "snowball project");
-  Logger::log("  test             - execute tests");
-  Logger::log("  init             - create a new snowball project "
-              "(in current "
-              "directory)");
-  Logger::log("  help             - prints out help");
-  Logger::log("");
-  Logger::log("Try `snowball help [command]` for more information.");
 }
 } // namespace app
 } // namespace snowball
