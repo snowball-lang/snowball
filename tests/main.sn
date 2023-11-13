@@ -28,12 +28,5 @@ import Core::Panic;
 import Core::System;
 import Core::Optional;
 
-unsafe func x() i32 {
-    return 0;
-}
-
 public func main() i32 {
-    let mut vec = new Vector<String>();
-    vec.push("hello");
-    System::println(vec[0]);
 }

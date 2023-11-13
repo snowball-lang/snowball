@@ -15,13 +15,13 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
   int intValue = -1;
   std::string pseudo = p_node->getIdentifier();
 
-  if (pseudo == "FUNCTION") {
+  if (pseudo == "function") {
     if (auto x = ctx->getCurrentFunction()) {
       stringValue = x->getNiceName();
     } else {
       E<PSEUDO_ERROR>(p_node, "Cant use @FN pseudo variable outside a function!");
     }
-  } else if (pseudo == "MANGLED_FN") {
+  } else if (pseudo == "mangled_function") {
     if (auto x = ctx->getCurrentFunction()) {
       stringValue = x->getMangle();
     } else {
@@ -31,35 +31,35 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
               "a function!"
       );
     }
-  } else if (pseudo == "MODULE") {
+  } else if (pseudo == "module") {
     stringValue = ctx->module->getName();
-  } else if (pseudo == "CLASS") {
+  } else if (pseudo == "class") {
     if (auto x = ctx->getCurrentClass()) {
       stringValue = x->getPrettyName();
     } else {
       E<PSEUDO_ERROR>(p_node, "Cant use @CLASS pseudo variable outside a class!");
     }
-  } else if (pseudo == "FILE") {
+  } else if (pseudo == "file") {
     stringValue = getSourceInfo()->getPath();
-  } else if (pseudo == "LINE_STR") {
+  } else if (pseudo == "file_str") {
     stringValue = std::to_string(getExpansionData(p_node->getDBGInfo())->pos.first);
-  } else if (pseudo == "LINE") {
+  } else if (pseudo == "line") {
     intValue = getExpansionData(p_node->getDBGInfo())->pos.first;
-  } else if (pseudo == "FILE_LINE") {
+  } else if (pseudo == "file_line") {
     stringValue = getSourceInfo()->getPath() + ":" + std::to_string(getExpansionData(p_node->getDBGInfo())->pos.first);
-  } else if (pseudo == "COLUMN_STR") {
+  } else if (pseudo == "column_str") {
     stringValue = std::to_string(getExpansionData(p_node->getDBGInfo())->pos.second);
-  } else if (pseudo == "COLUMN") {
+  } else if (pseudo == "column") {
     intValue = getExpansionData(p_node->getDBGInfo())->pos.second;
-  } else if (pseudo == "SNOWBALL_VERSION") {
+  } else if (pseudo == "snowball_version") {
     stringValue = _SNOWBALL_VERSION;
-  } else if (pseudo == "DATE") {
+  } else if (pseudo == "date") {
     auto date = std::chrono::system_clock::now();
     auto time = std::chrono::system_clock::to_time_t(date);
     char buffer[12]; // __DATE__ format requires 12 characters (including null terminator)
     std::strftime(buffer, sizeof(buffer), "%b %d %Y", std::localtime(&time));
     stringValue = buffer;
-  } else if (pseudo == "_SNOWBALL_FOLDER_") {
+  } else if (pseudo == "_snowball_folder_") {
     stringValue = fs::path(get_exe_folder()).remove_filename();
   } else {
     if (auto parent = ctx->getCurrentMacro()) {

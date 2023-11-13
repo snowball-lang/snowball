@@ -24,7 +24,7 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
     bool parseNormal = false;
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
 
-    if (TOKEN(SYM_AT)) {
+    if (TOKEN(SYM_HASH)) {
       auto atPos = m_current.get_pos();
       if (is<TokenType::IDENTIFIER>(peek())) {
         next();

@@ -24,7 +24,7 @@ func linear_search() {
     }
     let x = 999999;
     let result = linear_search(arr, x);
-    @assert(result == x);
+    #assert(result == x);
 }
 
 @test(expect = 3)
@@ -69,7 +69,7 @@ func ternary_search() {
     }
     let x = 999999;
     let result = ternary_search(arr, 0, arr.size() - 1, x);
-    @assert(result == x);
+    #assert(result == x);
 }
 
 @test(expect = 3)
@@ -107,7 +107,7 @@ func binary_search() {
     }
     let x = 999999;
     let result = binary_search(arr, 0, arr.size() - 1, x);
-    @assert(result == x);
+    #assert(result == x);
 }
 
 @test(expect = 3)
@@ -154,7 +154,7 @@ func jump_search() {
     }
     let x = 999999;
     let result = jump_search(arr, x);
-    @assert(result == x);
+    #assert(result == x);
 }
 
 @test(expect = 3)
@@ -194,7 +194,7 @@ func interpolation_search(arr: Vector<i32>, lo: i32, hi: i32, x: i32) i32 {
 //    }
 //    let x = 999999;
 //    let result = interpolation_search(arr, 0, arr.size() - 1, x);
-//    @assert(result == x);
+//    #assert(result == x);
 //}
 
 @test(expect = 3)
@@ -230,7 +230,7 @@ func bubble_sort(mut arr: Vector<i32>) Vector<i32> {
 //        arr.push(i);
 //    }
 //    let result = bubble_sort(arr);
-//    @assert(result[0] == 0);
+//    #assert(result[0] == 0);
 //}
 
 @test
