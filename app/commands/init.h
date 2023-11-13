@@ -25,7 +25,7 @@ using namespace std::chrono;
   "\n" \
   "    @test\n"                                                                                                        \
   "    func test_my_lib() i32 {\n"                                                                                  \
-  "        @assert(my_export() == \"Hello, World\")\n"                                                                 \
+  "        #assert(my_export() == \"Hello, World\")\n"                                                                 \
   "        return 1;\n"                                                                                              \
   "    }\n"                                                                                                            \
   "}"

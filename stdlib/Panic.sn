@@ -19,7 +19,7 @@ import Core::System;
 @inline
 public func panic(
   message: String = "Something went wrong! 🐱", 
-  _location: SourceLocation::SourceLocation = @current_location()
+  _location: SourceLocation::SourceLocation = #current_location()
 ) {
   System::println("\n\n--------------------");
   System::println("Program panicked with message: " + message)

@@ -30,10 +30,10 @@ public class SourceLocation {
      * @note These arguments should **NOT** be passed manually.
      */
     static func current(
-      file: String = @FILE,
-      line: i32 = @LINE,
-      column: i32 = @COLUMN,
-      function: String = @FUNCTION
+      file: String = #file,
+      line: i32 = #line,
+      column: i32 = #column,
+      function: String = #function
     ) SourceLocation {
       return new SourceLocation(file, line, column, function);
     }
@@ -85,7 +85,7 @@ public class SourceLocation {
  * an utility macro to pass around source locations.
  * 
  * @example
- * func foo(x: SourceLocation = @current_location()) {
+ * func foo(x: SourceLocation = #current_location()) {
  *   // ...
  * }
  *
@@ -96,4 +96,4 @@ public class SourceLocation {
  */
 @export
 macro current_location() =
-  @pkg(SourceLocation::SourceLocation::current())
+  #pkg(SourceLocation::SourceLocation::current())

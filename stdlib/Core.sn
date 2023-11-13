@@ -176,7 +176,7 @@ public class Iter<T: Sized> {
     /// @brief Indicates if the iterator is valid.
     let valid: bool = false;
     /// @brief Stores the value of the iterator.
-    let iter_value: T = @zero_initialized(:T);
+    let iter_value: T = #zero_initialized(:T);
   public:
     /**
      * @brief Default constructor for `Iter`.
@@ -653,7 +653,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
     /** The size of the string view. */
     let mut length: i32 = 0;
     /** A pointer to the buffer containing the string view. */
-    let buffer: StringType = @zero_initialized(:StringType);
+    let buffer: StringType = #zero_initialized(:StringType);
 
   // Static exports
   public:

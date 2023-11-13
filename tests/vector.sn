@@ -27,7 +27,7 @@ func insert() i32 {
     v.insert(1, 5);
     v.insert(1, 10);
     v.insert(1, 20);
-    @assert(v.size() == 3);
+    #assert(v.size() == 3);
     return v.at(1);
 }
 
