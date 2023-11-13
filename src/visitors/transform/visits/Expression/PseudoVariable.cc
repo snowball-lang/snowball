@@ -21,7 +21,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
     } else {
       E<PSEUDO_ERROR>(p_node, "Cant use @FN pseudo variable outside a function!");
     }
-  } else if (pseudo == "mangled_function") {
+  } else if (pseudo == "dsohandle") {
     if (auto x = ctx->getCurrentFunction()) {
       stringValue = x->getMangle();
     } else {
