@@ -1,5 +1,6 @@
 
 #include "backtrace.h"
+#include "runtime.h"
 
 namespace snowball {
 
@@ -44,6 +45,9 @@ void Backtrace::pls_free() {
 }
 
 void print_backtrace(Backtrace backtrace, std::ostringstream &oss) {
+  if (!(snowball::snowball_flags & SNOWBALL_FLAG_DEBUG)) 
+    return;
+
     if (getenv("SN_BACKTRACE") == NULL) {
         oss << "\n\e[1;37mnote:\e[0m run with \e[1;37m`SN_BACKTRACE=1`\e[0m environment variable to get a backtrace";
         return;
@@ -73,6 +77,9 @@ void print_backtrace(Backtrace backtrace, std::ostringstream &oss) {
 }
 
 void get_backtrace(Backtrace &backtrace) {
+  if (!(snowball::snowball_flags & SNOWBALL_FLAG_DEBUG))
+    return;
+
   if (!snowball::state) {
     snowball::stateLock.lock();
     if (!snowball::state)

@@ -1,5 +1,6 @@
 
 #include "../../utils/utils.h"
+#include "../../../runtime/libs/runtime.h"
 #include "LLVMBuilder.h"
 
 #include <llvm/IR/DerivedTypes.h>
@@ -16,6 +17,7 @@ void LLVMBuilder::initializeRuntime() {
   );
   f->addFnAttr(llvm::Attribute::AlwaysInline);
   f->addFnAttr(llvm::Attribute::NoUnwind);
+  const int flags = (dbg.debug ? SNOWBALL_FLAG_DEBUG : 0); 
   auto mainFunction = module->getFunction(_SNOWBALL_FUNCTION_ENTRY);
   bool buildReturn = false;
   llvm::BasicBlock* body;
