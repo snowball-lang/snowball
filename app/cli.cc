@@ -200,17 +200,14 @@ Options CLI::parse() {
     OS SNOWBALL_PRINT_MESSAGE;
   });
 
-  if (argc < 2) {
-    cli::modes::hide_args();
-    auto args = argsVector{argv[0], "--help"};
-    cli::modes::parse_args(args);
-    cl::PrintHelpMessage(false, true);
-    exit(EXIT_SUCCESS);
-  }
 
   std::vector<const char *> args{argv[0]};
-  for (int i = 2; i < argc; i++)
-    args.push_back(argv[i]);
+  if (argc < 2) {
+    args.push_back("--help");
+  } else {
+    for (int i = 2; i < argc; i++)
+      args.push_back(argv[i]);
+  }
 
   std::string mode(argv[1]);
   std::string argv0 = std::string(args[0]) + " " + mode;
