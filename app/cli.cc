@@ -51,6 +51,9 @@ void register_build_opts(Options::BuildOptions& options, std::string mode, argsV
   cl::opt<std::string> file("file", cl::desc("File to compile"), cl::cat(buildCategory));
   cl::opt<bool> no_progress("no-progress", cl::desc("Disable progress bar"), cl::cat(buildCategory));
   
+  cl::alias _silent("s", cl::aliasopt(silent), cl::desc("Alias for -silent"), cl::cat(buildCategory));
+  cl::alias _no_progress("np", cl::aliasopt(no_progress), cl::desc("Alias for -no-progress"), cl::cat(buildCategory));
+  cl::alias _file("f", cl::aliasopt(file), cl::desc("Alias for -file"), cl::cat(buildCategory));
   
   if (mode == "build") {
     auto test = cl::opt<bool>("test", cl::desc("Builds the project for testing"), cl::cat(buildCategory));
@@ -65,6 +68,12 @@ void register_build_opts(Options::BuildOptions& options, std::string mode, argsV
         clEnumValN(EmitType::ASSEMBLY, "asm", "Assembly"),
         clEnumValN(EmitType::SNOWBALL_IR, "snowball-ir", "Snowball IR")),
       cl::init(EmitType::EXECUTABLE), cl::cat(buildCategory));
+
+    cl::alias _test("t", cl::aliasopt(test), cl::desc("Alias for -test"), cl::cat(buildCategory));
+    cl::alias _bench("b", cl::aliasopt(bench), cl::desc("Alias for -bench"), cl::cat(buildCategory));
+    cl::alias _output("o", cl::aliasopt(output), cl::desc("Alias for -output"), cl::cat(buildCategory));
+    cl::alias _emit("e", cl::aliasopt(emit), cl::desc("Alias for -emit"), cl::cat(buildCategory));
+
     parse_args(args);
     
     options.opt = opt;
@@ -119,6 +128,9 @@ void test(Options& opts, argsVector& args) {
   cl::opt<bool> silent("silent", cl::desc("Silent mode"), cl::cat(buildCategory));
   cl::opt<bool> no_progress("no-progress", cl::desc("Disable progress bar"), cl::cat(buildCategory));
 
+  cl::alias _silent("s", cl::aliasopt(silent), cl::desc("Alias for -silent"), cl::cat(buildCategory));
+  cl::alias _no_progress("np", cl::aliasopt(no_progress), cl::desc("Alias for -no-progress"), cl::cat(buildCategory));
+
   parse_args(args);
 
   opts.test_opts.opt = opt;
@@ -137,6 +149,8 @@ void init(Options& opts, argsVector& args) {
   cl::opt<bool> skip_cfg("skip-cfg", cl::desc("Skip configuration"), cl::cat(initCategory));
   cl::opt<std::string> name("name", cl::desc("Project name"), cl::cat(initCategory), cl::Required);
 
+  cl::alias _yes("y", cl::aliasopt(yes), cl::desc("Alias for -yes"), cl::cat(initCategory));
+
   parse_args(args);
 
   opts.init_opts.cfg = cfg;
@@ -154,6 +168,10 @@ void docs(Options& opts, argsVector& args) {
   cl::opt<bool> silent("silent", cl::desc("Silent mode"), cl::cat(docsCategory));
   cl::opt<bool> no_progress("no-progress", cl::desc("Disable progress bar"), cl::cat(docsCategory));
   cl::opt<std::string> base("base", cl::desc("Base URL"), cl::cat(docsCategory));
+
+  cl::alias _silent("s", cl::aliasopt(silent), cl::desc("Alias for -silent"), cl::cat(docsCategory));
+  cl::alias _no_progress("np", cl::aliasopt(no_progress), cl::desc("Alias for -no-progress"), cl::cat(docsCategory));
+  cl::alias _base("b", cl::aliasopt(base), cl::desc("Alias for -base"), cl::cat(docsCategory));
 
   parse_args(args);
 
@@ -180,6 +198,9 @@ void bench(Options& opts, argsVector& args) {
   cl::opt<bool> silent("silent", cl::desc("Silent mode"), cl::cat(benchCategory));
   cl::opt<bool> no_progress("no-progress", cl::desc("Disable progress bar"), cl::cat(benchCategory));
 
+  cl::alias _silent("s", cl::aliasopt(silent), cl::desc("Alias for -silent"), cl::cat(benchCategory));
+  cl::alias _no_progress("np", cl::aliasopt(no_progress), cl::desc("Alias for -no-progress"), cl::cat(benchCategory));
+
   parse_args(args);
 
   opts.bench_opts.opt = opt;
@@ -202,14 +223,17 @@ Options CLI::parse() {
 
 
   std::vector<const char *> args{argv[0]};
+  std::string mode;
+
   if (argc < 2) {
     args.push_back("--help");
+    mode = "--help";
   } else {
     for (int i = 2; i < argc; i++)
       args.push_back(argv[i]);
+    mode = argv[1];
   }
 
-  std::string mode(argv[1]);
   std::string argv0 = std::string(args[0]) + " " + mode;
 
   args[0] = argv0.data();
