@@ -57,7 +57,7 @@ void LLVMBuilder::initializeRuntime() {
     builder->CreateCall(f, {flagsInt});
     createBenchmark(mainFunction);
   } else {
-    llvm::CallInst::Create(f, {}, "", &body->front());
+    llvm::CallInst::Create(f, {flagsInt}, "", &body->front());
   }
 }
 
