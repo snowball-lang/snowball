@@ -42,10 +42,12 @@ void applyDebugTransformations(llvm::Module* module, bool debug) {
   if (debug) {
     // remove tail calls and fix linkage for stack traces
     for (auto& f : *module) {
-#ifdef __APPLE__
+//#ifdef __APPLE__
       f.setLinkage(llvm::GlobalValue::ExternalLinkage);
-#endif
-      if (!f.hasFnAttribute(llvm::Attribute::AttrKind::AlwaysInline)) f.addFnAttr(llvm::Attribute::AttrKind::NoInline);
+//#endif
+      if (!f.hasFnAttribute(llvm::Attribute::AttrKind::AlwaysInline)) 
+        f.addFnAttr(llvm::Attribute::AttrKind::NoInline);
+      f.setUWTableKind(llvm::UWTableKind::Default);
       f.addFnAttr("no-frame-pointer-elim", "true");
       f.addFnAttr("no-frame-pointer-elim-non-leaf");
       f.addFnAttr("no-jump-tables", "false");
@@ -63,7 +65,6 @@ void applyDebugTransformations(llvm::Module* module, bool debug) {
 namespace codegen {
 
 void LLVMBuilder::optimizeModule() {
-  applyDebugTransformations(module.get(), dbg.debug);
 
   llvm::LoopAnalysisManager loop_analysis_manager;
   llvm::FunctionAnalysisManager function_analysis_manager;
@@ -127,7 +128,7 @@ void LLVMBuilder::optimizeModule() {
     functionPassManager->add(llvm::createGVNPass());
     // Simplify the control flow graph (deleting unreachable blocks etc).
     functionPassManager->add(llvm::createCFGSimplificationPass());
-    
+
     functionPassManager->doInitialization();
 
     for (auto& function : module->getFunctionList()) { functionPassManager->run(function); }
@@ -144,10 +145,7 @@ void LLVMBuilder::optimizeModule() {
 
   mpm.run(*module, module_analysis_manager);
 
-  if (llvm::verifyModule(*module, &llvm::errs())) {
-    llvm::errs() << "Module verification failed!\n";
-    abort();
-  }
+  applyDebugTransformations(module.get(), dbg.debug);
 }
 
 } // namespace codegen
