@@ -14,7 +14,11 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   const bool isIAMCU = target.isOSIAMCU();
   linkerArgs.clear();
   if (ctx->isDynamic) {
+    //linkerArgs.push_back("-pie");
     linkerArgs.push_back("--export-dynamic");
+    linkerArgs.push_back("-m");
+    linkerArgs.push_back("elf_x86_64");
+
     // linkerArgs.push_back("-Bdynamic");
   } else {
     linkerArgs.push_back("-static");

@@ -57,7 +57,7 @@ void applyDebugTransformations(llvm::Module* module, bool debug) {
 } // namespace
 
 #ifndef PERFORM_SIMPLE_OPTS
-#define PERFORM_SIMPLE_OPTS 0
+#define PERFORM_SIMPLE_OPTS 1
 #endif
 
 namespace codegen {
@@ -112,9 +112,6 @@ void LLVMBuilder::optimizeModule() {
   if (dbg.debug) {
     mpm = pass_builder.buildThinLTODefaultPipeline(level, nullptr);
   } else {
-    mpm = pass_builder.buildLTOPreLinkDefaultPipeline(level);
-  }
-
 #if PERFORM_SIMPLE_OPTS
   { // simple optimizations done for each function. It does not depend on the optimization level.
     std::unique_ptr<llvm::legacy::FunctionPassManager> functionPassManager =
@@ -130,7 +127,7 @@ void LLVMBuilder::optimizeModule() {
     functionPassManager->add(llvm::createGVNPass());
     // Simplify the control flow graph (deleting unreachable blocks etc).
     functionPassManager->add(llvm::createCFGSimplificationPass());
-
+    
     functionPassManager->doInitialization();
 
     for (auto& function : module->getFunctionList()) { functionPassManager->run(function); }
@@ -141,7 +138,16 @@ void LLVMBuilder::optimizeModule() {
 
   codegen_pm.run(*module);
 #endif
+  
+    mpm = pass_builder.buildLTOPreLinkDefaultPipeline(level);
+  }
+
   mpm.run(*module, module_analysis_manager);
+
+  if (llvm::verifyModule(*module, &llvm::errs())) {
+    llvm::errs() << "Module verification failed!\n";
+    abort();
+  }
 }
 
 } // namespace codegen

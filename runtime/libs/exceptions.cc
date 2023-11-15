@@ -713,6 +713,7 @@ _Unwind_Reason_Code ourPersonality(int version,
 }
 
 void throwOurException(void *exc) {
+  auto x = (_Unwind_Exception *)exc;
   _Unwind_Reason_Code code = _Unwind_RaiseException((_Unwind_Exception *)exc);
   switch (code) {
     case _URC_END_OF_STACK: {

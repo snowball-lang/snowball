@@ -48,13 +48,13 @@ struct Options {
   struct TestOptions {
     bool silent = false;
     bool no_progress = false;
-    Optimization opt = OPTIMIZE_O0;
+    Optimization opt = OPTIMIZE_O1;
   } test_opts;
 
   struct BenchmarkOptions {
     bool silent = false;
     bool no_progress = false;
-    Optimization opt = OPTIMIZE_O0;
+    Optimization opt = OPTIMIZE_O1;
   } bench_opts;
 
   struct InitOptions {

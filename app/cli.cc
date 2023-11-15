@@ -121,8 +121,11 @@ void test(Options& opts, argsVector& args) {
       clEnumValN(Optimization::OPTIMIZE_O2, "O2", "Optimization level 2"),
       clEnumValN(Optimization::OPTIMIZE_O3, "O3", "Optimization level 3"),
       clEnumValN(Optimization::OPTIMIZE_Os, "Os", "Optimization for size"),
-      clEnumValN(Optimization::OPTIMIZE_Oz, "Oz", "Optimization for size (aggressive)")),
-    cl::init(Optimization::OPTIMIZE_O1),
+      clEnumValN(Optimization::OPTIMIZE_Oz, "Oz", "Optimization for size (aggressive)"),
+      clEnumValN(Optimization::OPTIMIZE_O0, "Debug", "Debug mode (no optimization)"),
+      clEnumValN(Optimization::OPTIMIZE_O3, "Release", "Release mode (optimization level 3)")
+      ),
+    cl::init(Optimization::OPTIMIZE_O3),
     cl::cat(buildCategory), cl::AlwaysPrefix);
 
   cl::opt<bool> silent("silent", cl::desc("Silent mode"), cl::cat(buildCategory));
@@ -191,8 +194,11 @@ void bench(Options& opts, argsVector& args) {
       clEnumValN(Optimization::OPTIMIZE_O2, "O2", "Optimization level 2"),
       clEnumValN(Optimization::OPTIMIZE_O3, "O3", "Optimization level 3"),
       clEnumValN(Optimization::OPTIMIZE_Os, "Os", "Optimization for size"),
-      clEnumValN(Optimization::OPTIMIZE_Oz, "Oz", "Optimization for size (aggressive)")),
-    cl::init(Optimization::OPTIMIZE_O1),
+      clEnumValN(Optimization::OPTIMIZE_Oz, "Oz", "Optimization for size (aggressive)"),
+      clEnumValN(Optimization::OPTIMIZE_O0, "Debug", "Debug mode (no optimization)"),
+      clEnumValN(Optimization::OPTIMIZE_O3, "Release", "Release mode (optimization level 3)")
+      ),
+    cl::init(Optimization::OPTIMIZE_O3),
     cl::cat(benchCategory), cl::AlwaysPrefix);
 
   cl::opt<bool> silent("silent", cl::desc("Silent mode"), cl::cat(benchCategory));
