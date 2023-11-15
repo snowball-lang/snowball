@@ -11,13 +11,13 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::initializeRuntime() {
-  auto ty = llvm::FunctionType::get(builder->getVoidTy(), {}, false);
+  auto ty = llvm::FunctionType::get(builder->getVoidTy(), {builder->getInt32Ty()}, false);
   auto f = llvm::cast<llvm::Function>(
           module->getOrInsertFunction(getSharedLibraryName("sn.runtime.initialize"), ty).getCallee()
   );
   f->addFnAttr(llvm::Attribute::AlwaysInline);
   f->addFnAttr(llvm::Attribute::NoUnwind);
-  const int flags = (dbg.debug ? SNOWBALL_FLAG_DEBUG : 0); 
+  const int flags = (dbg.debug ? SNOWBALL_FLAG_DEBUG : 0) | 0; 
   auto mainFunction = module->getFunction(_SNOWBALL_FUNCTION_ENTRY);
   bool buildReturn = false;
   llvm::BasicBlock* body;
@@ -46,17 +46,18 @@ void LLVMBuilder::initializeRuntime() {
   }
 
   builder->SetInsertPoint(body);
+  auto flagsInt = builder->getInt32(flags);
   if (buildReturn) {
-    builder->CreateCall(f, {});
+    builder->CreateCall(f, {flagsInt});
     builder->CreateRet(builder->getInt32(0));
   } else if (ctx->testMode) {
-    builder->CreateCall(f, {});
+    builder->CreateCall(f, {flagsInt});
     createTests(mainFunction);
   } else if (ctx->benchmarkMode) {
-    builder->CreateCall(f, {});
+    builder->CreateCall(f, {flagsInt});
     createBenchmark(mainFunction);
   } else {
-    llvm::CallInst::Create(f, {}, "", &body->front());
+    llvm::CallInst::Create(f, {flagsInt}, "", &body->front());
   }
 }
 

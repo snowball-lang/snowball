@@ -70,5 +70,6 @@ jobs:
         run: |
           curl -fsSL https://raw.githubusercontent.com/snowball-lang/snowball/dev/scripts/install.sh | sudo -E bash -s -- -y
           
+          ~/.snowball/bin/snowball
           ~/.snowball/bin/snowball --version
-          ~/.snowball/bin/snowball test --no-progress
+          ~/.snowball/bin/snowball test --no-progress -O0

@@ -68,3 +68,5 @@ install_manifest.txt
 
 compile_commands.json
 callgrind.out.*
+
+install_deps_temp/

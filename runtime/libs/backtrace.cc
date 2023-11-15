@@ -77,8 +77,9 @@ void print_backtrace(Backtrace backtrace, std::ostringstream &oss) {
 }
 
 void get_backtrace(Backtrace &backtrace) {
-  if (!(snowball::snowball_flags & SNOWBALL_FLAG_DEBUG))
+  if (!(snowball::snowball_flags & SNOWBALL_FLAG_DEBUG)) {
     return;
+  }
 
   if (!snowball::state) {
     snowball::stateLock.lock();

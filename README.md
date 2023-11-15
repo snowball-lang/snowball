@@ -40,6 +40,10 @@ curl -fsSL https://raw.githubusercontent.com/snowball-lang/snowball/dev/scripts/
 ```shell
 git clone https://github.com/snowball-lang/snowball
 cd snowball
+
+# INSTALL REQUIRED DEPENDENCIES
+sh ./build_scripts/install_deps.sh
+
 sh ./build_scripts/release.sh
 sudo make install -j100
 ```
