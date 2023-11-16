@@ -89,13 +89,8 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
         a->setType(transformSizedType(
                 arg->getType(), false, "Function argument types but be sized but found '%s' (which is not sized)"
         ));
-        if (arg->getName() != "self") {
-          a->getType()->setMutable(arg->isMutable());
-          a->setMutability(a->getType()->isMutable());
-        } else {
-          a->getType()->setMutable(node->isMutable());
-          a->setMutability(node->isMutable());
-        }
+        
+        a->setMutability(a->getType()->isMutable());
         newArgs.push_back({arg->getName(), a});
       }
 

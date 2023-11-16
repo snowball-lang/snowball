@@ -28,6 +28,7 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
         E<DEREFERENCE_ERROR>(p_node, "Cant dereference a non-pointer type!");
       }
 
+      type->setMutable(p_node->isMutableReference);
       auto ref = getBuilder().createDereferenceTo(p_node->getDBGInfo(), value, type);
       this->value = ref;
       return;

@@ -118,8 +118,13 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
           exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(Operators::OperatorType::UMINUS));
         else if (tk.type == TokenType::OP_BIT_NOT)
           exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(Operators::OperatorType::BIT_NOT));
-        else if (tk.type == TokenType::OP_BIT_AND)
+        else if (tk.type == TokenType::OP_BIT_AND) {
           exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(Operators::OperatorType::REFERENCE));
+          if (is<TokenType::KWORD_MUTABLE>(peek())) {
+            next();
+            ((Syntax::Expression::BinaryOp*)exprs.back())->isMutableReference = true;
+          }          
+        }
         else if (tk.type == TokenType::OP_MUL)
           exprs.push_back(Syntax::N<Syntax::Expression::BinaryOp>(Operators::OperatorType::DEREFERENCE));
 

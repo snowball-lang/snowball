@@ -16,8 +16,8 @@
 namespace snowball {
 namespace types {
 
-bool InterfaceType::is(InterfaceType* other) const {
-  auto otherArgs = other->getGenerics();
+bool InterfaceType::is(InterfaceType* ty) const {
+  auto otherArgs = ty->getGenerics();
   bool genericSizeEqual = otherArgs.size() == generics.size();
   bool argumentsEqual = genericSizeEqual ? std::all_of(
                                                    otherArgs.begin(),
@@ -28,7 +28,7 @@ bool InterfaceType::is(InterfaceType* other) const {
                                                    }
                                            ) :
                                            false;
-  return (other->getUUID() == uuid) && argumentsEqual;
+  return (ty->getUUID() == uuid) && argumentsEqual;
 }
 
 Syntax::Expression::TypeRef* InterfaceType::toRef() {

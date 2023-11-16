@@ -115,7 +115,7 @@ public unsafe func add<T: Sized>(ptr: *const T, offset: i32) *mut T {
 }
 
 @inline
-public unsafe func write<T: Sized>(mut ptr: *const T, value: T) {
+public unsafe func write<T: Sized>(ptr: *mut T, value: T) {
   *ptr = value;
 }
 
@@ -125,6 +125,6 @@ public func to_pointer<T: Sized>(value: &T) *const T {
 }
 
 @inline
-public func copy_nonoverlapping<T: Sized>(src: *const T, dst: *mut T, count: i32) {
+public func copy_nonoverlapping<T: Sized>(src: *mut T, dst: *mut T, count: i32) {
   unsafe { CLib::memmove(dst, src, count); }
 }

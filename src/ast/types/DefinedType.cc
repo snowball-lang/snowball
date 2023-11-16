@@ -43,8 +43,8 @@ DefinedType::ClassField::ClassField(
     , isMutable(isMutable) { }
 Syntax::Statement::DefinedTypeDef* DefinedType::getAST() const { return ast; }
 void DefinedType::addField(ClassField* f) { fields.emplace_back(f); }
-bool DefinedType::is(DefinedType* other) const {
-  auto otherArgs = other->getGenerics();
+bool DefinedType::is(DefinedType* ty) const {
+  auto otherArgs = ty->getGenerics();
   bool genericSizeEqual = otherArgs.size() == generics.size();
   bool argumentsEqual = genericSizeEqual ? std::all_of(
                                                    otherArgs.begin(),
@@ -56,7 +56,7 @@ bool DefinedType::is(DefinedType* other) const {
                                            ) :
                                            false;
   assert(argumentsEqual);
-  return (other->getUUID() == uuid);
+  return (ty->getUUID() == uuid);
 }
 
 std::string DefinedType::getPrettyName() const {
@@ -119,13 +119,13 @@ Syntax::Expression::TypeRef* DefinedType::toRef() {
 }
 
 bool DefinedType::canCast(Type* ty) const {
-  SNOWBALL_MUTABLE_CAST_CHECK
-
   if (auto x = utils::cast<DefinedType>(ty)) return canCast(x);
   return false;
 }
 
 bool DefinedType::canCast(DefinedType* ty) const {
+  SNOWBALL_MUTABLE_CAST_CHECK
+
   // TODO: test this:
   return hasParent() && (ty->is(getParent()));
 }

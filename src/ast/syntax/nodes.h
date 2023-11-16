@@ -384,6 +384,8 @@ public:
   OpType op_type;     ///< The type of operator
   bool unary = false; ///< Whether it's a unary operator
 
+  bool isMutableReference = false; ///< If the operator is a mutable reference
+
   /**
    * @brief Determines if the operator is an assignment operator.
    * @param p_node The operator expression node.
