@@ -57,6 +57,18 @@ types::Type* Transformer::transformTypeAlias(
         }
       }
 
+      if (auto identifier = utils::cast<Syntax::Expression::Identifier>(ty->getType()->_getInternalAST())) {
+        if (identifier->getIdentifier() == ty->getIdentifier()) {
+          E<VARIABLE_ERROR>(
+            ty, FMT("Type alias '%s' cannot be recursive!", ty->getIdentifier().c_str()),
+            {
+              .info = "Same type alias name used here",
+              .note = "Recursive type aliases are not allowed, consider using a type\nalias with a different name or declare it inside a namespace"
+            }
+          );
+        }
+      }
+
       auto aliasedType = transformType(ty->getType());
       auto alias = getBuilder().createTypeAlias(ty->getDBGInfo(), ty->getIdentifier(), aliasedType);
       alias->setPrivacy(ty->getPrivacy());
