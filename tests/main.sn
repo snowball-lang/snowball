@@ -28,16 +28,6 @@ import Core::Panic;
 import Core::System;
 import Core::Optional;
 
-class A {
-    public:
-    A() {}
-}
-
-func x(mut a: A) {
-
-}
-
 public func main() i32 {
-    let a = new A();
     //x(a);
 }
