@@ -28,5 +28,8 @@ import Core::Panic;
 import Core::System;
 import Core::Optional;
 
+type String =String;
+
 public func main() i32 {
+    //x(a);
 }
