@@ -131,6 +131,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
             ref->getType()->setMutable(arg.second->isMutable());
             auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, ref);
             ref->setId(arg.second->getId());
+            ref->setDBGInfo(arg.second->getDBGInfo());
             ctx->addItem(arg.first, refItem);
             argIndex++;
           }

@@ -59,7 +59,7 @@ void LLVMBuilder::visit(ir::Call* call) {
   if (allocatedValue) 
     args.insert(args.begin(), allocatedValue);
 
-  if (asFunction->isAnon()) {
+  if (asFunction && asFunction->isAnon()) {
     auto closure = ctx->closures.at(ctx->getCurrentIRFunction()->getId());
     args.insert(args.begin(), closure.closure);
   }

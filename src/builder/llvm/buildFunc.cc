@@ -44,7 +44,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
 
   auto returnType = getLLVMType(fn->getRetTy());
   bool retIsArg = false;
-  bool anon = fn->isAnon();
+  bool anon = fn->isAnon() && fn->usesParentScope();
   if (utils::cast<types::DefinedType>(fn->getRetTy())) {
     returnType = builder->getVoidTy();
     retIsArg = true;

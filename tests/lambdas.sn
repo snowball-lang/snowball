@@ -1,0 +1,22 @@
+
+
+namespace test {
+
+@test(expect = 25)
+func lambda_call() i32 {
+  let x = func() i32 {
+    return 25;
+  };
+  return x();
+}
+
+@test(expect = 25)
+func lambda_call_with_arg() i32 {
+  let x = func(a: i32) i32 {
+    return a;
+  };
+  return x(25);
+}
+
+}
+

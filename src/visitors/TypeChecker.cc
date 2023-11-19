@@ -227,6 +227,7 @@ VISIT(ValueExtract) {
       // Ignore global variables
       if (varScope <= 2) return;
 
+      func->setUsesParentScope();
       variable->setUsedInLambda();
       variable->setParentFunc(func->getParentScope().get());
     }
