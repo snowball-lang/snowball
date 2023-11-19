@@ -55,6 +55,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
               (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)),
               node->isVariadic()
       );
+      fn->setScopeIndex(ctx->getScopeIndex());
       fn->setParent(ctx->getCurrentClass());
       fn->setRetTy(returnType);
       fn->setPrivacy(node->getPrivacy());
@@ -125,7 +126,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
         ctx->withScope([&]() {
           int argIndex = 0;
           for (auto arg : newArgs) {
-            auto ref = getBuilder().createVariable(node->getDBGInfo(), arg.first, true, arg.second->isMutable());
+            auto ref = getBuilder().createVariable(node->getDBGInfo(), arg.first, true, arg.second->isMutable(), ctx->getScopeIndex());
             getBuilder().setType(ref, arg.second->getType());
             ref->getType()->setMutable(arg.second->isMutable());
             auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, ref);

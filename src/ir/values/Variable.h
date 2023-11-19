@@ -23,11 +23,17 @@ class Variable : public IdMixin, public AcceptorExtend<Variable, Value> {
   bool _isArgument = false;
   // Whether or not the variable is mutable
   bool _isMutable = false;
+  // Scope index of the variable
+  int scopeIndex = -1;
+  // Whether or not the variable is used inside a lambda
+  bool _isUsedInLambda = false;
+  // Function where the variable is defined in
+  Func* parentFunc = nullptr;
 
 public:
   // Create a new variable declaration
-  Variable(const std::string& identifier, bool isArgument = false, bool isMutable = false)
-      : identifier(identifier), _isArgument(isArgument), _isMutable(isMutable){};
+  Variable(const std::string& identifier, bool isArgument = false, bool isMutable = false, int scopeIndex = -1)
+      : identifier(identifier), _isArgument(isArgument), _isMutable(isMutable), scopeIndex(scopeIndex) {};
 
   /// @return Variable identifier
   auto getIdentifier() const { return identifier; }
@@ -35,6 +41,16 @@ public:
   auto isArgument() { return _isArgument; }
   /// @return true if the variable is mutable
   auto isMutable() { return _isMutable; }
+  /// @return Scope index of the variable
+  auto getScopeIndex() { return scopeIndex; }
+  /// @return true if the variable is used inside a lambda
+  auto isUsedInLambda() { return _isUsedInLambda; }
+  /// @brief Set if the variable is used inside a lambda
+  void setUsedInLambda(bool used = true) { _isUsedInLambda = used; }
+  /// @return Function where the variable is defined in
+  auto getParentFunc() { assert(isUsedInLambda()); return parentFunc; }
+  /// @brief Set the function where the variable is defined in
+  void setParentFunc(Func* func) { assert(isUsedInLambda()); parentFunc = func; }
 
   // Set a visit handler for the generators
   SN_GENERATOR_VISITS

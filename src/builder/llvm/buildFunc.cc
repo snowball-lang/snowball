@@ -39,10 +39,12 @@ void LLVMBuilder::visit(ir::Func* func) {
 
 llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Func* fn) {
   ctx->setCurrentFunction(llvmFn);
+  ctx->setCurrentIRFunction(fn);
   ctx->doNotLoadInMemory = false;
 
   auto returnType = getLLVMType(fn->getRetTy());
   bool retIsArg = false;
+  bool anon = fn->isAnon();
   if (utils::cast<types::DefinedType>(fn->getRetTy())) {
     returnType = builder->getVoidTy();
     retIsArg = true;
@@ -56,7 +58,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
   setDebugInfoLoc(nullptr);
 
   auto fnArgs = fn->getArgs();
-  auto llvmArgsIter = llvmFn->arg_begin() + retIsArg;
+  auto llvmArgsIter = llvmFn->arg_begin() + retIsArg + anon;
   auto selfArg = (llvm::Value*) nullptr;
   auto selfArgVal = std::shared_ptr<ir::Value>(nullptr);
   for (auto varIter = fnArgs.begin(); varIter != fnArgs.end(); ++varIter) {
@@ -85,7 +87,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     auto debugVar = dbg.builder->createParameterVariable(
             scope,
             var->getName(),
-            var->getIndex() + 1 + retIsArg, // lua vibes... :]
+            var->getIndex() + 1 + retIsArg + anon, // lua vibes... :]
             file,
             dbgInfo->line,
             getDIType(var->getType()),
@@ -101,11 +103,47 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     ++llvmArgsIter;
   }
 
+  llvm::StructType* closureType = nullptr;
+
+  for (auto v : fn->getSymbols()) {
+    auto llvmType = getLLVMType(v->getType());
+    if (v->getVariable()->isUsedInLambda()) {
+      if (closureType == nullptr) {
+        closureType = llvm::StructType::create(*context, "_closure." + fn->getMangle());
+        ctx->closures.insert({fn->getId(), LLVMBuilderContext::ClosureContext {
+          .closure = builder->CreateAlloca(closureType, nullptr, "closure." + fn->getMangle()),
+          .closureType = closureType,
+        }});
+      }
+
+      auto& closure = ctx->closures.at(fn->getId());
+      auto body = closureType->elements().vec();
+      body.push_back(llvmType);
+      closureType->setBody(body);
+      closure.variables.push_back(v->getVariable()->getId());
+    }
+  }
+
   // Generate all the used variables
   for (auto v : fn->getSymbols()) {
     auto llvmType = getLLVMType(v->getType());
-    auto storage = builder->CreateAlloca(llvmType, nullptr, "var." + v->getIdentifier());
-    ctx->addSymbol(v->getId(), storage);
+    llvm::Value* storage = nullptr;
+    if (v->getVariable()->isUsedInLambda()) {
+      auto closure = ctx->closures.at(fn->getId());
+      auto index = std::distance(
+        closure.variables.begin(),
+        std::find_if(
+          closure.variables.begin(),
+          closure.variables.end(),
+          [v](auto v2) { return v2 == v->getVariable()->getId(); }
+        )
+      );
+      storage = builder->CreateStructGEP(closureType, closure.closure, index);
+    } else {
+      storage = builder->CreateAlloca(llvmType, nullptr, "var." + v->getIdentifier());
+      ctx->addSymbol(v->getId(), storage);
+    }
+
     if (utils::is<types::DefinedType>(v->getType())) {
       initializeVariable(storage, llvmType, v->getType()->sizeOf());
     }
@@ -201,6 +239,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
 
   // mark: clean up
   ctx->clearCurrentFunction();
+  ctx->clearCurrentIRFunction();
 
   auto DISubprogram = llvmFn->getSubprogram();
   dbg.builder->finalizeSubprogram(DISubprogram);

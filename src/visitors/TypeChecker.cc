@@ -212,7 +212,25 @@ VISIT(Argument) {
   /* noop */
 }
 
-VISIT(ValueExtract) { /* noop */
+VISIT(ValueExtract) {
+  if (auto func = ctx->getCurrentFunction()) {
+    if (!func->isAnon()) return;
+
+    auto variable = utils::dyn_cast<ir::Variable>(p_node->getValue());
+    if (!variable) return;
+
+    // mark as variable if it's a variable outside the function
+    auto varScope = variable->getScopeIndex();
+    auto funcScope = func->getScopeIndex();
+
+    if (varScope <= funcScope) {
+      // Ignore global variables
+      if (varScope <= 2) return;
+
+      variable->setUsedInLambda();
+      variable->setParentFunc(func->getParentScope().get());
+    }
+  }
 }
 
 VISIT(WhileLoop) {
@@ -269,8 +287,8 @@ VISIT(Cast) {
   if (!v->getType()->canCast(t)) {
     E<TYPE_ERROR>(
             p_node,
-            FMT("Cant create a casting operator from type `%s` "
-                "to type `%s`!",
+            FMT("Cant create a casting operator from type '%s' "
+                "to type '%s'!",
                 v->getType()->getPrettyName().c_str(),
                 t->getPrettyName().c_str()),
             {.note = "This error is caused by the types not being "

@@ -92,11 +92,25 @@ private:
   /// @example Static function for a class
   bool _static = false;
 
+  /// @brief This is used to determine if the function is an anonymous
+  ///  function or not.
+  bool anon = false;
+
+  /// @brief The scope index where the function is declared in.
+  ///  This is used for things such as; determining if a function
+  ///  is declared inside a class or not, etc...
+  int scopeIndex = -1;
+
+  /// @brief Parent scope where the anon. function is declared in.
+  ///  This is used for things such as; determining if a function
+  ///  is declared inside a class or not, etc...
+  std::shared_ptr<Func> parentScope = nullptr; 
+
   Func(const Func&) = delete;
   Func& operator=(Func const&);
 
 public:
-#define DEFAULT bool declaration = false, bool variadic = false, types::DefinedType *ty = nullptr
+#define DEFAULT bool declaration = false, bool variadic = false, bool isAnon = false, types::DefinedType *ty = nullptr
 
   explicit Func(std::string identifier, DEFAULT);
   explicit Func(std::string identifier, FunctionArgs arguments, DEFAULT);
@@ -181,6 +195,18 @@ public:
   auto isStatic() { return _static; }
   /// @return true if the function is a class contructor
   bool isConstructor() const;
+  /// @return true if the function is an anonymous function
+  bool isAnon() const { return anon; }
+
+  /// @brief Set the scope index where the function is declared in.
+  void setScopeIndex(int x) { scopeIndex = x; }
+  /// @return the scope index where the function is declared in.
+  auto getScopeIndex() const { return scopeIndex; }
+
+  /// @brief Set the parent scope where the function is declared in.
+  void setParentScope(std::shared_ptr<Func> x) { parentScope = x; }
+  /// @return the parent scope where the function is declared in.
+  auto getParentScope() const { return parentScope; }
 
   // Set a visit handler for the generators
   SN_GENERATOR_VISITS

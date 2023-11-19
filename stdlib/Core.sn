@@ -650,10 +650,10 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
     @inline
     func clone() Self { return new Self(self.bytes(), self.length); }
   private:
-    /** The size of the string view. */
-    let mut length: i32 = 0;
     /** A pointer to the buffer containing the string view. */
     let buffer: StringType = #zero_initialized(:StringType);
+    /** The size of the string view. */
+    let mut length: i32 = 0;
 
   // Static exports
   public:

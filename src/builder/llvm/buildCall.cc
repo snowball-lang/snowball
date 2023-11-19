@@ -54,16 +54,23 @@ void LLVMBuilder::visit(ir::Call* call) {
     call->getArguments(), [this](std::shared_ptr<ir::Value> arg) { return expr(arg.get()); }
   );
 
+  auto asFunction = utils::dyn_cast<ir::Func>(calleeValue);
+
   if (allocatedValue) 
     args.insert(args.begin(), allocatedValue);
 
+  if (asFunction->isAnon()) {
+    auto closure = ctx->closures.at(ctx->getCurrentIRFunction()->getId());
+    args.insert(args.begin(), closure.closure);
+  }
+
   setDebugInfoLoc(nullptr);
-  if (auto c = utils::dyn_cast<ir::Func>(calleeValue); c != nullptr && c->isConstructor()) {
+  if (asFunction != nullptr && asFunction->isConstructor()) {
     auto instance = utils::cast<ir::ObjectInitialization>(call);
     auto instanceType = getLLVMType(instance->getType());
     isConstructor = true;
     assert(instance);
-    assert(c->hasParent());
+    assert(asFunction->hasParent());
 
     llvm::Value* object = allocatedValue;
     if (instance->createdObject) {
@@ -80,11 +87,11 @@ void LLVMBuilder::visit(ir::Call* call) {
     setDebugInfoLoc(call); // TODO:
     llvmCall = createCall(calleeType, callee, args);
     this->value = object;
-  } else if (auto c = utils::dyn_cast<ir::Func>(calleeValue); c != nullptr && c->inVirtualTable()) {
-    assert(c->hasParent());
+  } else if (asFunction != nullptr && asFunction->inVirtualTable()) {
+    assert(asFunction->hasParent());
 
-    auto index = c->getVirtualIndex() + 2; // avoid class info
-    auto parent = c->getParent();
+    auto index = asFunction->getVirtualIndex() + 2; // avoid class info
+    auto parent = asFunction->getParent();
 
     auto f = llvm::cast<llvm::Function>(callee);
     // note: allocatedValue != nullptr is because there are 2 possible cases:

@@ -44,6 +44,8 @@ using namespace llvm_utils;
 class LLVMBuilderContext {
   // Current function being generated
   llvm::Function* currentFunction = nullptr;
+  // Current IR function being generated
+  ir::Func* currentIRFunction = nullptr;
 
   // All variables used around the program.
   // note: all of the llvm values are actually
@@ -74,6 +76,12 @@ public:
   void setCurrentFunction(llvm::Function* fn) { currentFunction = fn; }
   /// @brief Reset the current function to a null pointer
   void clearCurrentFunction() { currentFunction = nullptr; }
+  /// @return Current IR function being generated
+  auto getCurrentIRFunction() { return currentIRFunction; }
+  /// @return Change the current IR function to a new one
+  void setCurrentIRFunction(ir::Func* fn) { currentIRFunction = fn; }
+  /// @brief Reset the current IR function to a null pointer
+  void clearCurrentIRFunction() { currentIRFunction = nullptr; }
 
   /// @return A full list of symbols used around the program
   auto& getAllSymbols() { return symbols; }
@@ -104,6 +112,14 @@ public:
   app::Options::Optimization optimizationLevel = app::Options::Optimization::OPTIMIZE_O0;
   // Type information about ALLLL the types being used
   std::map<ir::id_t, std::shared_ptr<types::BaseType>> typeInfo;
+  /// @brief Type info for closures
+  struct ClosureContext {
+    std::vector<ir::id_t> variables;
+    llvm::Value* closure = nullptr; // Closure allocation
+    llvm::StructType* closureType = nullptr;
+  };
+  /// @brief Closure map for all the closures
+  std::map<ir::id_t, ClosureContext> closures;
   /// @brief Loop information
   struct {
     // The continue block for the current loop

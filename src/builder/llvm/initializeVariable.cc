@@ -39,8 +39,7 @@ void LLVMBuilder::initializeVariable(llvm::Value* var, llvm::Type* ty, unsigned 
     constInitializer->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
   }
 
-
-  //builder->CreateMemCpy(var, llvm::MaybeAlign(), constInitializer, llvm::MaybeAlign(), size);
+  builder->CreateMemCpy(var, llvm::MaybeAlign(), constInitializer, llvm::MaybeAlign(), size);
 }
 
 } // namespace codegen

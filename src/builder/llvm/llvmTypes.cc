@@ -99,6 +99,10 @@ llvm::FunctionType* LLVMBuilder::getLLVMFunctionType(types::FunctionType* fn, co
           vector_iterate<types::Type*, llvm::Type*>(fn->getArgs(), [&](types::Type* arg) { return getLLVMType(arg); });
 
   auto ret = getLLVMType(fn->getRetType());
+  if (func && func->isAnon()) {
+    argTypes.insert(argTypes.begin(), builder->getInt8PtrTy());
+  }
+
   if (utils::is<types::DefinedType>(fn->getRetType()) &&
       !(func && func->getAttributeArgs(Attributes::LLVM_FUNC).count("sanitise_void_return"))) {
     argTypes.insert(argTypes.begin(), ret->getPointerTo());

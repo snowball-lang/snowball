@@ -18,8 +18,23 @@ void LLVMBuilder::visit(ir::VariableDeclaration* variable) {
     auto id = a->getId();
     store = ctx->getSymbol(id);
   } else {
-    auto id = variable->getId();
-    store = ctx->getSymbol(id);
+    if (variable->getVariable()->isUsedInLambda()) {
+      auto closure = ctx->closures.at(ctx->getCurrentIRFunction()->getId());
+
+      auto index = std::distance(
+        closure.variables.begin(),
+        std::find_if(
+          closure.variables.begin(),
+          closure.variables.end(),
+          [variable](auto& v) { return v == variable->getVariable()->getId(); }
+        )
+      );
+
+      store = builder->CreateStructGEP(closure.closureType, closure.closure, index);
+    } else {
+      auto id = variable->getId();
+      store = ctx->getSymbol(id);
+    }
   }
 
   // debug info

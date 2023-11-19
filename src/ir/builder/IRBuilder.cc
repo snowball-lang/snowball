@@ -8,13 +8,13 @@ namespace snowball {
 namespace ir {
 
 IRBuilder::IRBuilder(std::shared_ptr<ir::Module> module) { setModule(module); }
-SharedValue<Func> IRBuilder::createFunction(DBGSourceInfo* dbgInfo, std::string name, bool isExtern, bool isVarArg) {
-  return N<Func>(dbgInfo, name, isExtern, isVarArg);
+SharedValue<Func> IRBuilder::createFunction(DBGSourceInfo* dbgInfo, std::string name, bool isExtern, bool isVarArg, bool isAnon) {
+  return N<Func>(dbgInfo, name, isExtern, isVarArg, isAnon);
 }
 SharedValue<Func> IRBuilder::createFunction(
-        DBGSourceInfo* dbgInfo, std::string name, Func::FunctionArgs args, bool isExtern, bool isVarArg
+        DBGSourceInfo* dbgInfo, std::string name, Func::FunctionArgs args, bool isExtern, bool isVarArg, bool isAnon
 ) {
-  return N<Func>(dbgInfo, name, args, isExtern, isVarArg);
+  return N<Func>(dbgInfo, name, args, isExtern, isVarArg, isAnon);
 }
 SharedValue<Func> IRBuilder::createFunction(
         DBGSourceInfo* dbgInfo,
@@ -22,14 +22,15 @@ SharedValue<Func> IRBuilder::createFunction(
         SharedValue<Block> block,
         Func::FunctionArgs args,
         bool isExtern,
-        bool isVarArg
+        bool isVarArg,
+        bool isAnon
 ) {
-  return N<Func>(dbgInfo, name, block, args, isExtern, isVarArg);
+  return N<Func>(dbgInfo, name, block, args, isExtern, isVarArg, isAnon);
 }
 SharedValue<Func> IRBuilder::createFunction(
-        DBGSourceInfo* dbgInfo, std::string name, SharedValue<Block> block, bool isExtern, bool isVarArg
+        DBGSourceInfo* dbgInfo, std::string name, SharedValue<Block> block, bool isExtern, bool isVarArg, bool isAnon
 ) {
-  return createFunction(dbgInfo, name, block, {}, isExtern, isVarArg);
+  return createFunction(dbgInfo, name, block, {}, isExtern, isVarArg, isAnon);
 }
 SharedValue<Throw> IRBuilder::createThrow(DBGSourceInfo* dbgInfo, SharedValue<> value) {
   return N<Throw>(dbgInfo, value);
@@ -73,13 +74,13 @@ SharedValue<Argument> IRBuilder::createArgument(
   return arg;
 }
 SharedValue<Variable>
-IRBuilder::createVariable(DBGSourceInfo* dbgInfo, const std::string& identifier, bool isArgument, bool isMutable) {
-  return N<Variable>(dbgInfo, identifier, isArgument, isMutable);
+IRBuilder::createVariable(DBGSourceInfo* dbgInfo, const std::string& identifier, bool isArgument, bool isMutable, int scopeIndex) {
+  return N<Variable>(dbgInfo, identifier, isArgument, isMutable, scopeIndex);
 }
 SharedValue<Variable> IRBuilder::createVariable(
-        DBGSourceInfo* dbgInfo, const std::string& identifier, Type<> type, bool isArgument, bool isMutable
+        DBGSourceInfo* dbgInfo, const std::string& identifier, Type<> type, bool isArgument, bool isMutable, int scopeIndex
 ) {
-  auto var = createVariable(dbgInfo, identifier, isArgument, isMutable);
+  auto var = createVariable(dbgInfo, identifier, isArgument, isMutable, scopeIndex);
   setType(var, type);
   return var;
 }

@@ -213,7 +213,7 @@ func c_loop_only_stmt() i32 {
 }
 
 @test(expect = 10)
-func c_loop_continue_increases() i32 {
+func c_loop_continue_inc() i32 {
     let mut i = 0;
     for ; i < 10; i = i + 1 {
         continue;

@@ -29,7 +29,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
     );
   }
 
-  auto var = getBuilder().createVariable(p_node->getDBGInfo(), variableName, false, isMutable);
+  auto var = getBuilder().createVariable(p_node->getDBGInfo(), variableName, false, isMutable, ctx->getScopeIndex());
   auto item = std::make_shared<transform::Item>(transform::Item::Type::VALUE, var);
   // TODO: it should always be declared
   if (p_node->isInitialized()) {

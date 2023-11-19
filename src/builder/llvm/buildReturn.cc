@@ -43,9 +43,10 @@ void LLVMBuilder::visit(ir::Return* ret) {
       if (llvm::isa<llvm::LoadInst>(e)) { e = llvm::cast<llvm::LoadInst>(e)->getPointerOperand(); }
 
       if (!doNotMove) {
-        builder->CreateMemCpy(
-                retArg, llvm::MaybeAlign(), e, llvm::MaybeAlign(), builder->getInt64(ret->getType()->sizeOf()), 0
-        );
+        // builder->CreateMemMove(
+        //   retArg, llvm::MaybeAlign(), e, llvm::MaybeAlign(), builder->getInt64(ret->getType()->sizeOf()), 0
+        // );
+        builder->CreateStore(builder->CreateLoad(getLLVMType(ret->getType()), e), retArg);
       } else {
         builder->CreateUnreachable();
       }

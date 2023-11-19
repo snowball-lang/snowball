@@ -54,13 +54,14 @@ public:
 
   /// @brief Create a new function
   SharedValue<Func>
-  createFunction(DBGSourceInfo* dbgInfo, std::string name, bool isExtern = false, bool isVarArg = false);
+  createFunction(DBGSourceInfo* dbgInfo, std::string name, bool isExtern = false, bool isVarArg = false, bool isAnon = false);
   SharedValue<Func> createFunction(
           DBGSourceInfo* dbgInfo,
           std::string name,
           Func::FunctionArgs args,
           bool isExtern = false,
-          bool isVarArg = false
+          bool isVarArg = false,
+          bool isAnon = false
   );
   SharedValue<Func> createFunction(
           DBGSourceInfo* dbgInfo,
@@ -68,14 +69,16 @@ public:
           SharedValue<Block> block,
           Func::FunctionArgs args,
           bool isExtern = false,
-          bool isVarArg = false
+          bool isVarArg = false,
+          bool isAnon = false
   );
   SharedValue<Func> createFunction(
           DBGSourceInfo* dbgInfo,
           std::string name,
           SharedValue<Block> block,
           bool isExtern = false,
-          bool isVarArg = false
+          bool isVarArg = false,
+          bool isAnon = false
   );
   /// @brief Create a new cast
   SharedValue<Cast> createCast(DBGSourceInfo* dbgInfo, SharedValue<> value, Type<> type);
@@ -99,7 +102,8 @@ public:
   );
   /// @brief Create a new variable
   SharedValue<Variable> createVariable(
-          DBGSourceInfo* dbgInfo, const std::string& identifier, bool isArgument = false, bool isMutable = false
+          DBGSourceInfo* dbgInfo, const std::string& identifier, bool isArgument = false, bool isMutable = false,
+          int scopeIndex = -1
   );
   /// @brief Create a new variable and set a type to it
   SharedValue<Variable> createVariable(
@@ -107,7 +111,8 @@ public:
           const std::string& identifier,
           Type<> type,
           bool isArgument = false,
-          bool isMutable = false
+          bool isMutable = false,
+          int scopeIndex = -1
   );
   /// @brief Create a new block
   SharedValue<Block> createBlock(DBGSourceInfo* dbgInfo, std::vector<SharedValue<>> values);

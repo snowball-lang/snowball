@@ -29,5 +29,12 @@ import Core::System;
 import Core::Optional;
 
 public func main() i32 {
-    //x(a);
+    let x = "25";
+    
+    let a = (func() i32 {
+        //System::println(x);
+        System::println(x);
+    })();
+
+    System::println(x);
 }

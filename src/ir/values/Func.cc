@@ -10,24 +10,25 @@
 namespace snowball {
 namespace ir {
 
-Func::Func(std::string identifier, bool declaration, bool variadic, types::DefinedType* parent)
-    : declaration(declaration), variadic(variadic), identifier(identifier), parent(parent) { }
+Func::Func(std::string identifier, bool declaration, bool variadic, bool isAnon, types::DefinedType* parent)
+    : declaration(declaration), variadic(variadic), identifier(identifier), parent(parent), anon(isAnon) { }
 
 Func::Func(
         std::string identifier,
         Func::FunctionArgs arguments,
         bool declaration,
         bool variadic,
+        bool isAnon,
         types::DefinedType* parent
 )
-    : declaration(declaration), variadic(variadic), identifier(identifier), parent(parent) {
+    : declaration(declaration), variadic(variadic), anon(isAnon), identifier(identifier), parent(parent) {
   setArgs(arguments);
 }
 
 Func::Func(
-        std::string identifier, std::shared_ptr<Block> body, bool declaration, bool variadic, types::DefinedType* parent
+        std::string identifier, std::shared_ptr<Block> body, bool declaration, bool variadic, bool isAnon, types::DefinedType* parent
 )
-    : declaration(declaration), variadic(variadic), identifier(identifier), parent(parent) {
+    : declaration(declaration), variadic(variadic), identifier(identifier), parent(parent), anon(isAnon) {
   setBody(body);
 }
 
@@ -37,9 +38,10 @@ Func::Func(
         Func::FunctionArgs arguments,
         bool declaration,
         bool variadic,
+        bool isAnon,
         types::DefinedType* parent
 )
-    : declaration(declaration), variadic(variadic), identifier(identifier), parent(parent) {
+    : declaration(declaration), variadic(variadic), identifier(identifier), parent(parent), anon(isAnon) {
   setBody(body);
   setArgs(arguments);
 }

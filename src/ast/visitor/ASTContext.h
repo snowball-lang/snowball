@@ -141,6 +141,8 @@ public:
   }
   /// @brief If the scope is the global scope
   bool isGlobalScope() { return stack.size() == 2; }
+  /// @brief Get the scope index 
+  int getScopeIndex() { return stack.size() - 1; }
 };
 
 } // namespace Syntax
