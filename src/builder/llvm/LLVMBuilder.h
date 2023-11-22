@@ -127,6 +127,8 @@ public:
     // The break block for the current loop
     llvm::BasicBlock* breakBlock = nullptr;
   } loop;
+  /// @brief If the callee is being used as call base
+  bool calleeIsCallBase = false;
 };
 
 /**
@@ -486,6 +488,10 @@ private:
    * function from another shared library.
    */
   std::string getSharedLibraryName(std::string name);
+  /**
+   * @brief Lambda function context struct type information
+   */
+  llvm::StructType* getLambdaContextType();
 };
 
 } // namespace codegen

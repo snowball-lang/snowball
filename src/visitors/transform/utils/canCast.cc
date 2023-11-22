@@ -44,6 +44,7 @@ Transformer::CastType Transformer::canCast(types::Type* from, types::Type* to) {
     }
   }
 
+  if (!from->isMutable() && to->isMutable()) { return CastType::NoCast; }
   if (from->canCast(to)) return CastType::Valid;
   return CastType::NoCast;
 }

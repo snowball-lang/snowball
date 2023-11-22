@@ -177,7 +177,7 @@ public:
   SharedValue<BinaryOp> createBinaryOp(SharedValue<Call> call);
   /// @brief Create a new function type
   Type<types::FunctionType>
-  createFunctionType(std::vector<Type<>> args, Type<> retType, bool isVarArg = false, bool isMutable = false);
+  createFunctionType(std::vector<Type<>> args, Type<> retType, bool isVarArg = false, bool isMutable = false, bool isRaw = false);
   /// @brief Create a new type alias
   Type<types::TypeAlias> createTypeAlias(DBGSourceInfo* dbg, std::string name, Type<> base);
   /// @brief Create a zero-initialized value

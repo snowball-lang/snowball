@@ -96,6 +96,7 @@ SharedValue<DereferenceTo> IRBuilder::createDereferenceTo(DBGSourceInfo* dbgInfo
 SharedValue<ReferenceTo> IRBuilder::createReferenceTo(DBGSourceInfo* dbgInfo, SharedValue<> value) {
   auto ref = N<ReferenceTo>(dbgInfo, value);
   ref->setType(value->getType()->getReferenceTo());
+  ref->getType()->setMutable(value->getType()->isMutable());
   return ref;
 }
 SharedValue<StringValue> IRBuilder::createStringValue(DBGSourceInfo* dbgInfo, const std::string value) {
@@ -166,8 +167,8 @@ SharedValue<WhileLoop> IRBuilder::createFromForLoop(
   return N<WhileLoop>(dbgInfo, condition, body, forCond);
 }
 Type<types::FunctionType>
-IRBuilder::createFunctionType(std::vector<Type<>> args, Type<> retType, bool isVarArg, bool isMutable) {
-  return new types::FunctionType(args, retType, isVarArg, isMutable);
+IRBuilder::createFunctionType(std::vector<Type<>> args, Type<> retType, bool isVarArg, bool isMutable, bool isRaw) {
+  return new types::FunctionType(args, retType, isVarArg, isMutable, isRaw);
 }
 Type<types::TypeAlias> IRBuilder::createTypeAlias(DBGSourceInfo* dbg, std::string name, Type<> base) {
   auto ty = new types::TypeAlias(name, base);

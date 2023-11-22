@@ -253,14 +253,18 @@ struct FuncType : public TypeRef {
   TypeRef* returnValue;
   /// @brief The arguments of the function
   std::vector<TypeRef*> args;
+  /// @brief If the function is marked as raw
+  bool isRaw = false;
 
 public:
-  FuncType(std::vector<TypeRef*> args, TypeRef* returnValue, DBGSourceInfo* srcInfo);
+  FuncType(std::vector<TypeRef*> args, TypeRef* returnValue, DBGSourceInfo* srcInfo, bool isRaw = false);
 
   /// @return the arguments of the function
   auto getArgs() { return args; }
   /// @return the return value of the function
   auto getReturnValue() { return returnValue; }
+  /// @return If the function is marked as raw
+  bool isRawFunction() { return isRaw; }
 
   bool isFunctionType() override { return true; }
 

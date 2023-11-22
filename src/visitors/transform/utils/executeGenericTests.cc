@@ -14,8 +14,12 @@ void Transformer::executeGenericTests(Expression::WhereClause* clause, types::Ty
 
     if (auto interface = utils::cast<types::InterfaceType>(type)) {
       bool found = false;
-      if ((utils::is<types::PointerType>(generic) || utils::is<types::ReferenceType>(generic)) &&
-          (interface->is(ctx->getBuiltinTypeImpl("Sized")))) {
+      bool isFunctionType = utils::is<types::FunctionType>(generic);
+      if ((utils::is<types::PointerType>(generic)  || 
+          utils::is<types::ReferenceType>(generic) || 
+          isFunctionType) && interface->is(ctx->getBuiltinTypeImpl("Sized"))) {
+        found = true;
+      } else if (isFunctionType && interface->is(ctx->getBuiltinTypeImpl("Function"))) {
         found = true;
       } else {
         if (auto x = utils::cast<types::ReferenceType>(generic)) {

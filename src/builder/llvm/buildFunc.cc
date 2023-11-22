@@ -19,7 +19,26 @@ void LLVMBuilder::visit(ir::Func* func) {
   }
 
   if (auto it = funcs.find(func->getId()); it != funcs.end()) {
-    this->value = it->second;
+    if (ctx->calleeIsCallBase) 
+      this->value = it->second;
+    else {
+      auto alloca = createAlloca(getLambdaContextType(), ".func.use");
+      
+      auto funcGep = builder->CreateStructGEP(getLambdaContextType(), alloca, 0, ".func.use.gep");
+      builder->CreateStore(it->second, funcGep);
+
+      llvm::Value* body = nullptr;
+      if (func->isAnon() && func->usesParentScope()) {
+        auto closure = ctx->closures.at(ctx->getCurrentIRFunction()->getId());
+        body = builder->CreateLoad(closure.closureType, closure.closure);
+      } else {
+        body = llvm::Constant::getNullValue(builder->getPtrTy());
+      }
+
+      auto bodyGep = builder->CreateStructGEP(getLambdaContextType(), alloca, 1, ".func.use.gep");
+      builder->CreateStore(body, bodyGep);
+      this->value = alloca;
+    }
     return;
   }
 
@@ -44,7 +63,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
 
   auto returnType = getLLVMType(fn->getRetTy());
   bool retIsArg = false;
-  bool anon = fn->isAnon() && fn->usesParentScope();
+  bool anon = fn->isAnon();
   if (utils::cast<types::DefinedType>(fn->getRetTy())) {
     returnType = builder->getVoidTy();
     retIsArg = true;

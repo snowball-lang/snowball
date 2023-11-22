@@ -15,6 +15,10 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
     if (opType == Expression::BinaryOp::OpType::REFERENCE) {
       auto value = trans(p_node->left);
       auto ref = getBuilder().createReferenceTo(p_node->getDBGInfo(), value);
+      if (p_node->isMutableReference) {
+        ref->getType()->setMutable(true);
+      }
+
       this->value = ref;
       return;
     } else if (opType == Expression::BinaryOp::OpType::DEREFERENCE) {
@@ -28,7 +32,6 @@ SN_TRANSFORMER_VISIT(Expression::BinaryOp) {
         E<DEREFERENCE_ERROR>(p_node, "Cant dereference a non-pointer type!");
       }
 
-      type->setMutable(p_node->isMutableReference);
       auto ref = getBuilder().createDereferenceTo(p_node->getDBGInfo(), value, type);
       this->value = ref;
       return;

@@ -15,6 +15,11 @@ TypeRef* Parser::parseType() {
   assert(is<TokenType::OP_BIT_AND>() || is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() ||
          is<TokenType::KWORD_FUNC>() || is<TokenType::OP_AND>() || is<TokenType::OP_MUL>());
   auto pos = m_current.get_pos();
+  bool isRawFunc = false;
+  if (is<TokenType::IDENTIFIER>() && m_current.to_string() == "raw" && is<TokenType::KWORD_FUNC>(peek())) {
+    isRawFunc = true;
+    next();
+  }
   if (is<TokenType::KWORD_DECLTYPE>()) {
     auto w = m_current.get_width();
     next();
@@ -35,8 +40,7 @@ TypeRef* Parser::parseType() {
       auto arg = parseType();
       fnArgs.push_back(arg);
       if (is<TokenType::SYM_COMMA>()) {
-        next();
-      } else if (!is<TokenType::BRACKET_RPARENT>()) {
+      } else if (is<TokenType::BRACKET_RPARENT>()) {
       } else {
         createError<SYNTAX_ERROR>("Expected ')' or ','");
       }
@@ -45,7 +49,7 @@ TypeRef* Parser::parseType() {
     consume<TokenType::OP_ARROW>("'=>'");
     auto retType = parseType();
     auto dbg = new DBGSourceInfo(m_source_info, pos, w);
-    auto ty = Syntax::N<FuncType>(fnArgs, retType, dbg);
+    auto ty = Syntax::N<FuncType>(fnArgs, retType, dbg, isRawFunc);
     ty->setDBGInfo(dbg);
     return ty;
   }
@@ -70,22 +74,22 @@ TypeRef* Parser::parseType() {
       );
     }
   }
-  int referenceDepth = 0;
+  std::vector<bool> referenceDepth; // true = mutable, false = immutable
   while (is<TokenType::OP_AND>()) { // we treat op and as 2 bit ands
-    referenceDepth += 2;
     next();
+    if (is<TokenType::KWORD_MUTABLE>()) {
+      referenceDepth.push_back(true);
+      next();
+    } else referenceDepth.push_back(false);
   }
   while (is<TokenType::OP_BIT_AND>()) {
-    referenceDepth++;
     next();
+    if (is<TokenType::KWORD_MUTABLE>()) {
+      referenceDepth.push_back(true);
+      next();
+    } else referenceDepth.push_back(false);
   }
   bool isMutable = false;
-  if (is<TokenType::KWORD_MUTABLE>()) {
-    if (pointerDepth.size() > 0) { createError<SYNTAX_ERROR>("Cannot have a mutable pointer to a mutable type!"); }
-
-    isMutable = true;
-    next();
-  }
   auto ident = parseIdentifier(true);
   Base* ast = ident;
   auto name = ident->getIdentifier();
@@ -109,9 +113,10 @@ TypeRef* Parser::parseType() {
   auto t = Syntax::TR(ast, name, dbg, id);
   t->setGenerics(generics);
   t->setMutable(isMutable);
-  for (int i = 0; i < referenceDepth; i++) {
+  for (int i = 0; i < referenceDepth.size(); i++) {
     auto base = t;
     t = Syntax::N<ReferenceType>(base, dbg);
+    t->setMutable(referenceDepth[i]);
   }
   for (int i = 0; i < pointerDepth.size(); i++) {
     auto base = t;

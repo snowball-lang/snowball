@@ -726,7 +726,7 @@ namespace snowball_tests {
 @cfg(test)
 @export(name = "sn.test.try")
 static unsafe func execute(
-  fn: func () => i32,
+  fn: raw func () => i32,
   name: *const i8,
   index: i32,
   skip: bool,

@@ -99,8 +99,8 @@ llvm::FunctionType* LLVMBuilder::getLLVMFunctionType(types::FunctionType* fn, co
           vector_iterate<types::Type*, llvm::Type*>(fn->getArgs(), [&](types::Type* arg) { return getLLVMType(arg); });
 
   auto ret = getLLVMType(fn->getRetType());
-  if (func && func->isAnon() && func->usesParentScope()) {
-    argTypes.insert(argTypes.begin(), builder->getInt8PtrTy());
+  if (func && func->isAnon()) {
+    argTypes.insert(argTypes.begin(), getLambdaContextType()->getPointerTo());
   }
 
   if (utils::is<types::DefinedType>(fn->getRetType()) &&

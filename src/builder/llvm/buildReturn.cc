@@ -57,6 +57,8 @@ void LLVMBuilder::visit(ir::Return* ret) {
     }
 
     auto e = expr(exprValue.get());
+    if (utils::is<types::FunctionType>(exprValue->getType()) && llvm::isa<llvm::LoadInst>(e))
+      e = llvm::cast<llvm::LoadInst>(e)->getPointerOperand();
     val = builder->CreateRet(e);
   } else {
     val = builder->CreateRetVoid();

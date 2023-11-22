@@ -219,6 +219,10 @@ VISIT(ValueExtract) {
     auto variable = utils::dyn_cast<ir::Variable>(p_node->getValue());
     if (!variable) return;
 
+    if (ctx->getCurrentFunction()->getIdentifier() =="_ZN$SNpkg::home::mauro::work::snowball::tests::lambdas.sn.test&40return_lambda_with_parent_scope::.$LmbdFCv14112SaFnE" && variable->getIdentifier() == "a") {
+      DUMP_S("heyh")
+    }
+
     // mark as variable if it's a variable outside the function
     auto varScope = variable->getScopeIndex();
     auto funcScope = func->getScopeIndex();
@@ -252,6 +256,8 @@ VISIT(Cast) {
   auto v = p_node->getExpr();
   auto t = p_node->getCastType();
   assert(t->is(p_node->getType()));
+
+  v->visit(this);
 
   if (utils::cast<types::VoidType>(v->getType())) {
     E<TYPE_ERROR>(p_node, FMT("Cant cast from void type ('%s')!", v->getType()->getPrettyName().c_str()));
@@ -403,6 +409,8 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
 
     if (isAssignment && !binOp->ignoreMutability && !isMutable) {
       if (!p_node->isInitialization) {
+        value->visit(this);
+        this->isMutable(value);
         E<VARIABLE_ERROR>(
                 p_node,
                 "You cant assign a new value to a "
@@ -410,8 +418,7 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
                 "variable",
                 {.note = "This error is caused by the 'mut' keyword "
                          "not being present in \nthe variable "
-                         "declaration.\n\nvalue type: " +
-                         (std::string) BOLD + fn->getRetTy()->getPrettyName() + RESET,
+                         "declaration.",
                  .help = "Try to make the variable mutable by adding "
                          "the 'mut' keyword.",
                  .tail = EI<>(value->getDBGInfo(), "", {.info = "This variable is not mutable!"})}

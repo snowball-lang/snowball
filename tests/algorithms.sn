@@ -126,7 +126,7 @@ func jump_search(arr: Vector<i32>, x: i32) i32 {
     let n = arr.size();
     let mut step = Math::sqrt(n);
     let mut prev = 0;
-    while (arr[Math::min(step, n) - 1] < x) {
+    while (arr[Math::min(step, n as f64) - 1] < x) {
         prev = step;
         step = step + Math::sqrt(n);
         if (prev >= n) {
@@ -135,7 +135,7 @@ func jump_search(arr: Vector<i32>, x: i32) i32 {
     }
     while (arr[prev] < x) {
         prev = prev + 1;
-        if (prev == Math::min(step, n)) {
+        if (prev == Math::min(step, n as f64)) {
             return -1;
         }
     }

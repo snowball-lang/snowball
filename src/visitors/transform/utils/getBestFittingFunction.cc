@@ -65,6 +65,7 @@ Transformer::getBestFittingFunction(
             continue;
           }
           argsEqual = arguments.at(i)->is(type);
+          //if (type->isMutable() && !arguments.at(i)->isMutable()) argsEqual = false;
           if (!argsEqual) {
             if (auto castType = canCast(arguments.at(i), type); castType != CastType::NoCast) {
               argsEqual = true;

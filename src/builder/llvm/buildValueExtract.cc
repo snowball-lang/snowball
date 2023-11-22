@@ -21,6 +21,9 @@ void LLVMBuilder::visit(ir::ValueExtract* extract) {
     this->value = fn;
     return;
   } else if (auto v = utils::dyn_cast<ir::Variable>(var)) {
+    if (ctx->getCurrentFunction()->getName() =="_ZN$SNpkg::home::mauro::work::snowball::tests::lambdas.sn.test&40return_lambda_with_parent_scope::.$LmbdFCv14112SaFnE" && v->getIdentifier() == "a") {
+      DUMP_S("heyh")
+    }
     GET_VAR_IMPL(v, value);
   } else {
     assert(false && "BUG: Value extract type not supported!");

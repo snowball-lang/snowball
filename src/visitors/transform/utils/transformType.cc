@@ -55,7 +55,8 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     std::vector<types::Type*> args;
     for (auto arg : fn->getArgs()) args.push_back(transformType(arg));
     auto ret = transformType(fn->getReturnValue());
-    auto ty = getBuilder().createFunctionType(args, ret);
+    // TODO: Support for variadic function types too!
+    auto ty = getBuilder().createFunctionType(args, ret, false, false, fn->isRawFunction());
     ty->addImpl(ctx->getBuiltinTypeImpl("Sized"));
     return ty;
   } else if (auto x = ty->_getInternalType()) {
