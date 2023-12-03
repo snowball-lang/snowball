@@ -146,9 +146,9 @@ types::BaseType* Transformer::transformClass(
       ctx->setCurrentClass(transformedType);
       // Transform types first thing
       ctx->generateFunction = false;
-      for (auto ty : ty->getTypeAliases()) { trans(ty); }
+      for (auto ty : ty->getChildTypes()) { trans(ty); }
       ctx->generateFunction = true;
-      for (auto ty : ty->getTypeAliases()) { trans(ty); }
+      for (auto ty : ty->getChildTypes()) { trans(ty); }
       int fieldCount = 0;
       if (!ty->isInterface()) {
         for (auto& v : ty->getVariables()) {

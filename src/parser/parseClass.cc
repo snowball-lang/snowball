@@ -234,10 +234,34 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
 
         auto typeDef = parseTypeAlias();
         typeDef->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
-        cls->addTypeAlias(typeDef);
+        cls->addChildType(typeDef);
 
         assert_tok<TokenType::SYM_SEMI_COLLON>("a ';'");
-        if (extends) { createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* type aliases!"); }
+      } break;
+
+      case TokenType::KWORD_CLASS:
+      case TokenType::KWORD_INTER: {
+        if (extends) {
+          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* classes!");
+        } else if (isInterface) {
+          createError<SYNTAX_ERROR>("Interfaces can't have classes!");
+        }
+
+        auto innerClass = parseClass();
+        innerClass->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
+        cls->addChildType(innerClass);
+      } break;
+
+      case TokenType::KWORD_STRUCT: {
+        if (extends) {
+          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* structs!");
+        } else if (isInterface) {
+          createError<SYNTAX_ERROR>("Interfaces can't have structs!");
+        }
+
+        auto innerStruct = parseStructure();
+        innerStruct->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
+        cls->addChildType(innerStruct);
       } break;
 
       // note: This case should be always at the bottom!

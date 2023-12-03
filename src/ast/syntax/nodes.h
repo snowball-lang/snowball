@@ -678,8 +678,10 @@ struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
   std::vector<FunctionDef*> functions;
   /// @brief Class defined variables
   std::vector<VariableDecl*> variables;
-  /// @brief A list containing all the type aliases
-  std::vector<TypeAlias*> typeAliases;
+  /// @brief A list containing all the child types
+  /// @note It can contain type aliases, classes, structs, etc... but 
+  ///  not any other type of statement.
+  std::vector<Base*> typeAliases;
   /// @brief Class inheritance parent
   Expression::TypeRef* extends = nullptr;
   /// @brief The defined type's type
@@ -724,9 +726,9 @@ public:
   VariableIterator varEnd();
 
   /// @return A full list of declared type aliases
-  std::vector<TypeAlias*>& getTypeAliases();
+  std::vector<Base*>& getChildTypes();
   /// @brief Add a type alias to the class
-  void addTypeAlias(TypeAlias* alias);
+  void addChildType(Base* alias);
 
   /// @return If the class is a struct or not
   virtual bool isStruct();
