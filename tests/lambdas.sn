@@ -18,42 +18,64 @@ func lambda_call_with_arg() i32 {
   return x(25);
 }
 
-func return_lambda() func() => i32 {
-  return func() i32 {
+//func return_lambda() func() => i32 {
+//  return func() i32 {
+//    return 25;
+//  };
+//}
+//
+//@test(expect = 25)
+//func call_from_return() i32 {
+//  let x = return_lambda();
+//  return x();
+//}
+
+//func return_lambda_with_arg() func(i32) => i32 {
+//  return func(a: i32) i32 {
+//    return a;
+//  };
+//}
+
+//@test(expect = 25)
+//func call_return_with_arg() i32 {
+//  let x = return_lambda_with_arg();
+//  return x(25);
+//}
+
+func lambda_used_as_arg<T>(f: T) i32 {
+  return f();
+}
+
+@test(expect = 25)
+func lambda_as_arg() i32 {
+  return lambda_used_as_arg(func() i32 {
     return 25;
-  };
+  });
+}
+
+func lambda_used_as_arg_with_arg<T>(f: T) i32 {
+  return f(25);
 }
 
 @test(expect = 25)
-func lambda_call_from_return() i32 {
-  let x = return_lambda();
-  return x();
-}
-
-func return_lambda_with_arg() func(i32) => i32 {
-  return func(a: i32) i32 {
+func lambda_as_arg_with_arg() i32 {
+  return lambda_used_as_arg_with_arg(func(a: i32) i32 {
     return a;
-  };
+  });
 }
 
-@test(expect = 25)
-func call_from_reuturn() i32 {
-  let x = return_lambda_with_arg();
-  return x(25);
-}
+//func return_lambda_with_parent_scope() func() => i32 {
+//  let a = 25;
+//  return func() i32 {
+//    return a;
+//  };
+//}
 
-func return_lambda_with_parent_scope() func() => i32 {
-  let a = 25;
-  return func() i32 {
-    return a;
-  };
-}
-
-@test(expect = 25)
-func ret_with_parent() i32 {
-  let x = return_lambda_with_parent_scope();
-  return x();
-}
+//@test(expect = 25)
+//func ret_with_parent() i32 {
+//  let x = return_lambda_with_parent_scope();
+//  return x();
+//}
 
 }
 

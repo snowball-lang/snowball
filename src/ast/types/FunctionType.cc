@@ -18,6 +18,7 @@ namespace snowball {
 namespace types {
 
 std::string FunctionType::getPrettyName() const {
+  if (name != "<fn type>") return name;
   auto stringArgs = Syntax::Expression::FunctionCall::getArgumentsAsString(args);
   auto stringRet = retTy->getPrettyName();
 
@@ -39,7 +40,7 @@ bool FunctionType::is(FunctionType* other) const {
           });
 
   auto returnEquals = retTy->is(other->getRetType());
-  return returnEquals && argumentsEqual && (variadic == other->isVariadic());
+  return returnEquals && argumentsEqual && (variadic == other->isVariadic()) && (isLambda() == other->isLambda());
 }
 
 std::string FunctionType::getMangledName() const {
@@ -61,7 +62,7 @@ FunctionType* FunctionType::from(ir::Func* fn, Syntax::Statement::FunctionDef* n
   );
   bool isMutable = node ? node->isMutable() : false;
   auto ret = fn->getRetTy();
-  return new FunctionType(args, ret, fn->isVariadic(), isMutable);
+  return new FunctionType(args, ret, fn->isVariadic(), isMutable, fn->isAnon(), fn->isAnon() ? fn->getNiceName() : "<fn type>");
 }
 
 bool FunctionType::isIgnoringSelf(FunctionType* other) {

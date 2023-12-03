@@ -71,10 +71,10 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
   }
 
   for (int i = 0; i < func->getArgs().size(); ++i) {
-    auto llvmArg = fn->arg_begin() + i + retIsArg;
+    auto llvmArg = fn->arg_begin() + i + retIsArg + func->isAnon();
     auto arg = utils::at(func->getArgs(), i);
-    if (auto x = utils::cast<types::ReferenceType>((arg).second->getType())) {
-      setDereferenceableAttribute(*llvmArg, x->sizeOf());
+    if (utils::is<types::ReferenceType>((arg).second->getType())) {
+      setDereferenceableAttribute(*llvmArg, (arg).second->getType()->sizeOf());
     }
   }
 

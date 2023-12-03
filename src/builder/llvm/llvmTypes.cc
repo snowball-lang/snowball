@@ -31,7 +31,7 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid) {
     if (is<types::VoidType>(x->getPointedType())) return builder->getInt8PtrTy();
     return getLLVMType(x->getPointedType())->getPointerTo();
   } else if (auto f = cast<types::FunctionType>(t)) {
-    return getLLVMFunctionType(f)->getPointerTo();
+    return getLLVMFunctionType(f)->getPointerTo(); // return getLambdaContextType()->getPointerTo() if lambda
   } else if (auto a = cast<types::TypeAlias>(t)) {
     assert(!"Unreachable type case found!");
     return getLLVMType(a->getBaseType());
@@ -99,7 +99,7 @@ llvm::FunctionType* LLVMBuilder::getLLVMFunctionType(types::FunctionType* fn, co
           vector_iterate<types::Type*, llvm::Type*>(fn->getArgs(), [&](types::Type* arg) { return getLLVMType(arg); });
 
   auto ret = getLLVMType(fn->getRetType());
-  if (func && func->isAnon()) {
+  if (fn->isLambda()) {
     argTypes.insert(argTypes.begin(), getLambdaContextType()->getPointerTo());
   }
 

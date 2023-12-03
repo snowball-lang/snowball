@@ -92,22 +92,22 @@ std::vector<Return> map(std::list<std::pair<Key, Val>> p_map, std::function<Retu
 }
 
 template <typename Desired, typename Current>
-Desired* cast(Current curr) {
+[[nodiscard]] inline decltype(auto) cast(Current curr) {
   return dynamic_cast<Desired*>(curr);
 }
 
 template <typename Desired, typename Current>
-bool is(Current curr) {
+[[nodiscard]] inline decltype(auto) is(Current curr) {
   return cast<Desired, Current>(curr) != nullptr;
 }
 
 template <typename T>
-std::shared_ptr<T> copy_shared(std::shared_ptr<T> x) {
+[[nodiscard]] inline decltype(auto) copy_shared(std::shared_ptr<T> x) {
   return std::make_shared<T>(*x);
 }
 
 template <typename Desired, typename Current>
-std::shared_ptr<Desired> dyn_cast(std::shared_ptr<Current> curr) {
+[[nodiscard]] inline decltype(auto) dyn_cast(std::shared_ptr<Current> curr) {
   return std::dynamic_pointer_cast<Desired>(curr);
 }
 
@@ -140,7 +140,7 @@ void assert_value_type() {
 }
 
 template <typename T>
-T* copy(T* x) {
+[[nodiscard]] inline decltype(auto) copy(T* x) {
   return new T(*x);
 }
 

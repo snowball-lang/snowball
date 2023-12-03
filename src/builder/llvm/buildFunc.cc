@@ -19,7 +19,7 @@ void LLVMBuilder::visit(ir::Func* func) {
   }
 
   if (auto it = funcs.find(func->getId()); it != funcs.end()) {
-    if (ctx->calleeIsCallBase) 
+    if (!func->isAnon()) 
       this->value = it->second;
     else {
       auto alloca = createAlloca(getLambdaContextType(), ".func.use");

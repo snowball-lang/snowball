@@ -24,7 +24,8 @@ void LLVMBuilder::visit(ir::Call* call) {
 
   auto calleeValue = call->getCallee();
   auto fnType = utils::cast<types::FunctionType>(calleeValue->getType());
-  auto calleeType = getLLVMFunctionType(fnType, utils::cast<ir::Func>(calleeValue.get()));
+  auto asFunction = utils::dyn_cast<ir::Func>(calleeValue);
+  auto calleeType = getLLVMFunctionType(fnType, asFunction.get());
 
   llvm::Value* llvmCall = nullptr;
   llvm::Value* allocatedValue = nullptr;
@@ -49,21 +50,20 @@ void LLVMBuilder::visit(ir::Call* call) {
     }
   }
 
-  ctx->calleeIsCallBase = true;
   auto callee = build(calleeValue.get());
-  ctx->calleeIsCallBase = false;
   auto args = utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value*>(
     call->getArguments(), [this](std::shared_ptr<ir::Value> arg) { return expr(arg.get()); }
   );
 
-  auto asFunction = utils::dyn_cast<ir::Func>(calleeValue);
+  bool doNotAddAnonContext = false;
 
   if (allocatedValue) 
     args.insert(args.begin(), allocatedValue);
 
-  if (asFunction && asFunction->isAnon() && asFunction->usesParentScope()) {
+  if (asFunction && fnType->isLambda() && asFunction->usesParentScope()) {
     auto closure = ctx->closures.at(ctx->getCurrentIRFunction()->getId());
     args.insert(args.begin(), closure.closure);
+    doNotAddAnonContext = true;
   }
 
   setDebugInfoLoc(nullptr);
@@ -129,20 +129,22 @@ void LLVMBuilder::visit(ir::Call* call) {
     this->value = allocatedValue ? allocatedValue : llvmCall;
   } else {
     setDebugInfoLoc(call);
-    bool isRaw = utils::is<types::FunctionType>(calleeValue->getType()) && utils::cast<types::FunctionType>(calleeValue->getType())->isRawFunction();
-    if (asFunction || isRaw) {
-      llvmCall = createCall(calleeType, (!isRaw) ? callee : builder->CreateLoad(calleeType->getPointerTo(), callee), args);
+    if (!fnType->isLambda()) {
+      if (!llvm::isa<llvm::Function>(callee)) {
+        // we are calling a value instead of a direct function.
+        // this means we need to dereference the value first
+        // and then call it.
+        callee = load(callee, fnType);
+      }
+      llvmCall = createCall(calleeType, callee, args);
     } else {
       auto loadFunction = builder->CreateStructGEP(getLambdaContextType(), callee, 0);
       auto loadFunctionValue = builder->CreateLoad(calleeType->getPointerTo(), loadFunction);
-      args.insert(args.begin(), builder->CreateLoad(calleeType->getPointerTo(), callee));
-      
-      auto argTypes = calleeType->params().vec();
+      if (!doNotAddAnonContext) {
+        args.insert(args.begin(), callee);
+      }
 
-      argTypes.insert(argTypes.begin(), getLambdaContextType()->getPointerTo());
-      auto fnType = llvm::FunctionType::get(calleeType->getReturnType(), argTypes, calleeType->isVarArg());
-
-      llvmCall = createCall(fnType, loadFunctionValue, args);
+      llvmCall = createCall(calleeType, loadFunctionValue, args);
     }
 
     this->value = allocatedValue ? allocatedValue : llvmCall;
@@ -153,7 +155,7 @@ void LLVMBuilder::visit(ir::Call* call) {
     auto call = llvm::cast<type>(llvmCall);                                                                            \
     auto calledFunction = call->getCalledFunction();                                                                   \
     bool retIsReference = false;                                                                                       \
-    if (auto f = utils::dyn_cast<ir::Func>(calleeValue)) {                                                             \
+    if (auto f = utils::dyn_cast<ir::Func>(calleeValue); f && llvm::isa<llvm::Function>(callee)) {                                                             \
       auto valBackup = this->value;                                                                                    \
       retIsReference = utils::cast<types::ReferenceType>(f->getRetTy()) != nullptr;                                    \
       calledFunction = llvm::cast<llvm::Function>(callee);                                                     \

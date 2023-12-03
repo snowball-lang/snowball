@@ -7,7 +7,7 @@ namespace snowball {
 namespace Syntax {
 
 void Transformer::assertSizedType(types::Type* ty, const std::string message, DBGObject* dbgInfo) {
-  bool isSized = utils::is<types::PointerType>(ty) || utils::is<types::ReferenceType>(ty);
+  bool isSized = utils::is<types::PointerType>(ty) || utils::is<types::ReferenceType>(ty) || utils::is<types::FunctionType>(ty);
   for (const auto& impl : ty->getImpls()) {
     if (impl->is(ctx->getBuiltinTypeImpl("Sized"))) {
       isSized = true;

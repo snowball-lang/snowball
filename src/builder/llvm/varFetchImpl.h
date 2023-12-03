@@ -27,6 +27,8 @@
         [variable](auto v2) { return v2 == variable->getId(); }\
       )\
     );\
+    arg->dump();\
+    builder->CreateStructGEP(getLambdaContextType(), arg, 1)->dump();\
     value = builder->CreateStructGEP(closure.closureType, builder->CreateStructGEP(getLambdaContextType(), arg, 1), index);\
   } else {\
     auto id = variable->getId() + variable->isArgument();\

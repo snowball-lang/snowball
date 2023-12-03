@@ -256,15 +256,15 @@ void LLVMBuilder::codegen() {
         if (!f->isDeclaration() && !f->hasAttribute(Attributes::BUILTIN)) {
           auto llvmFn = funcs.at(f->getId());
 
-          // if (utils::cast<types::ReferenceType>(f->getRetTy())) {
-          //   auto bytes = module->getDataLayout().getTypeSizeInBits(getLLVMType(f->getRetTy()));
-          //   auto dereferenceable = llvm::Attribute::get(*context, llvm::Attribute::Dereferenceable, bytes);
-          //   auto noundef = llvm::Attribute::get(*context, llvm::Attribute::NoUndef);
-          //   auto aligment = llvm::Attribute::get(*context, llvm::Attribute::Alignment, 8);
-          //   llvmFn->addRetAttr(dereferenceable);
-          //   llvmFn->addRetAttr(noundef);
-          //   llvmFn->addRetAttr(aligment);
-          // }
+          if (utils::is<types::ReferenceType>(f->getRetTy())) {
+            auto bytes = f->getRetTy()->sizeOf();
+            auto dereferenceable = llvm::Attribute::get(*context, llvm::Attribute::Dereferenceable, bytes);
+            auto noundef = llvm::Attribute::get(*context, llvm::Attribute::NoUndef);
+            auto aligment = llvm::Attribute::get(*context, llvm::Attribute::Alignment, 8);
+            llvmFn->addRetAttr(dereferenceable);
+            llvmFn->addRetAttr(noundef);
+            llvmFn->addRetAttr(aligment);
+          }
 
           if (f->hasAttribute(Attributes::LLVM_FUNC)) {
             auto old = buildLLVMFunction(llvmFn, f);

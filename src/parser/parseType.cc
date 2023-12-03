@@ -15,11 +15,6 @@ TypeRef* Parser::parseType() {
   assert(is<TokenType::OP_BIT_AND>() || is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() ||
          is<TokenType::KWORD_FUNC>() || is<TokenType::OP_AND>() || is<TokenType::OP_MUL>());
   auto pos = m_current.get_pos();
-  bool isRawFunc = false;
-  if (is<TokenType::IDENTIFIER>() && m_current.to_string() == "raw" && is<TokenType::KWORD_FUNC>(peek())) {
-    isRawFunc = true;
-    next();
-  }
   if (is<TokenType::KWORD_DECLTYPE>()) {
     auto w = m_current.get_width();
     next();
@@ -49,7 +44,7 @@ TypeRef* Parser::parseType() {
     consume<TokenType::OP_ARROW>("'=>'");
     auto retType = parseType();
     auto dbg = new DBGSourceInfo(m_source_info, pos, w);
-    auto ty = Syntax::N<FuncType>(fnArgs, retType, dbg, isRawFunc);
+    auto ty = Syntax::N<FuncType>(fnArgs, retType, dbg);
     ty->setDBGInfo(dbg);
     return ty;
   }

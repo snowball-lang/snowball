@@ -20,7 +20,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
 
   // Create a new function value and store it's return type.
   char l[] = _SNOWBALL_LAMBDA_FUNCTIONS;
-  auto name = parent->getName() + "::" + l;
+  auto name = "[" + p_node->getSourceInfo()->getPath() + "@" + std::to_string(p_node->getDBGInfo()->line) + " " + l +"]";
   auto fn = getBuilder().createFunction(node->getDBGInfo(), name, false, node->isVariadic(), true);
   fn->setParent(ctx->getCurrentClass());
   fn->setParentScope(ctx->getCurrentFunction());

@@ -167,8 +167,8 @@ SharedValue<WhileLoop> IRBuilder::createFromForLoop(
   return N<WhileLoop>(dbgInfo, condition, body, forCond);
 }
 Type<types::FunctionType>
-IRBuilder::createFunctionType(std::vector<Type<>> args, Type<> retType, bool isVarArg, bool isMutable, bool isRaw) {
-  return new types::FunctionType(args, retType, isVarArg, isMutable, isRaw);
+IRBuilder::createFunctionType(std::vector<Type<>> args, Type<> retType, bool isVarArg, bool isMutable) {
+  return new types::FunctionType(args, retType, isVarArg, isMutable);
 }
 Type<types::TypeAlias> IRBuilder::createTypeAlias(DBGSourceInfo* dbg, std::string name, Type<> base) {
   auto ty = new types::TypeAlias(name, base);

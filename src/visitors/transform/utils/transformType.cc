@@ -56,7 +56,7 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     for (auto arg : fn->getArgs()) args.push_back(transformType(arg));
     auto ret = transformType(fn->getReturnValue());
     // TODO: Support for variadic function types too!
-    auto ty = getBuilder().createFunctionType(args, ret, false, false, fn->isRawFunction());
+    auto ty = getBuilder().createFunctionType(args, ret);
     ty->addImpl(ctx->getBuiltinTypeImpl("Sized"));
     return ty;
   } else if (auto x = ty->_getInternalType()) {

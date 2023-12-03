@@ -13,8 +13,8 @@ namespace Syntax {
 namespace Expression {
 
 DeclType::DeclType(Base* value, DBGSourceInfo* srcInfo) : value(value), TypeRef("decltype(...)", srcInfo){};
-FuncType::FuncType(std::vector<TypeRef*> args, TypeRef* returnValue, DBGSourceInfo* srcInfo, bool isRaw)
-    : args(args), returnValue(returnValue), TypeRef("fn(...)", srcInfo), isRaw(isRaw){};
+FuncType::FuncType(std::vector<TypeRef*> args, TypeRef* returnValue, DBGSourceInfo* srcInfo)
+    : args(args), returnValue(returnValue), TypeRef("fn(...)", srcInfo) {};
 ReferenceType::ReferenceType(TypeRef* baseType, DBGSourceInfo* srcInfo)
     : baseType(baseType), TypeRef(baseType->getName() + "&", srcInfo){};
 PointerType::PointerType(TypeRef* baseType, bool isMutable, DBGSourceInfo* srcInfo)

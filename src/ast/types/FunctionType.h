@@ -52,8 +52,8 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
   // Whether or not a function is declared
   // as variadic.
   bool variadic = false;
-  // If the function is marked as a raw function.
-  bool isRaw = false;
+  // Whether or not a function is a lambda.
+  bool lambda = false;
 
 public:
   FunctionType(
@@ -61,10 +61,10 @@ public:
           Type* retTy,
           bool isVariadic = false,
           bool isMutable = true,
-          bool isRaw = false,
+          bool isLambda = false,
           const std::string& name = "<fn type>"
   )
-      : AcceptorExtend(Kind::TYPE, name, isMutable), args(args), retTy(retTy), variadic(isVariadic), isRaw(isRaw) {}
+      : AcceptorExtend(Kind::TYPE, name, isMutable), args(args), retTy(retTy), variadic(isVariadic), lambda(isLambda) {}
   FunctionType(const FunctionType& other) = default;
 
   /**
@@ -99,9 +99,9 @@ public:
   /// @return function return types
   Type* getRetType() const { return retTy; }
   /// @return If the function is declared as variadic
-  bool isVariadic() { return variadic; }
-  /// @return If the function is declared as raw
-  bool isRawFunction() { return isRaw; }
+  bool isVariadic() const { return variadic; }
+  /// @return If the function is a lambda
+  bool isLambda() const { return lambda; }
 
   // std::string getName() const override; // TODO:
 
