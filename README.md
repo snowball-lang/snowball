@@ -35,7 +35,7 @@ Before we get started, you'll need to have snowball installed into your compuite
 curl -fsSL https://raw.githubusercontent.com/snowball-lang/snowball/dev/scripts/install.sh | sudo -E bash -s -- -y
 ```
 
-### Instalation from source (unix)
+### Installation from source (unix)
 
 ```shell
 git clone https://github.com/snowball-lang/snowball
