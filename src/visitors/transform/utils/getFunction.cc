@@ -6,7 +6,7 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-std::shared_ptr<ir::Func> Transformer::getFunction(
+std::shared_ptr<ir::Value> Transformer::getFunction(
         DBGObject* dbgInfo,
         std::tuple<
                 std::optional<std::shared_ptr<ir::Value>>,
@@ -91,6 +91,12 @@ std::shared_ptr<ir::Func> Transformer::getFunction(
         );
       } else if (ty) {
         // TODO: Call smth like Type::operator ()(..args)
+        if (ty.value() && utils::is<types::DefinedType>(ty.value())) {
+          auto defined = utils::cast<types::DefinedType>(ty.value());
+          if (defined->isStruct()) {
+            return createObjectConstructor(dbgInfo->getDBGInfo(), defined, arguments);
+          }
+        }
         E<TYPE_ERROR>(dbgInfo, FMT("Value with name '%s' is a type that cant be called!", name.c_str()));
       } else if (mod) {
         E<TYPE_ERROR>(dbgInfo, FMT("Silly billy, you can't call modules! ('%s')", name.c_str()));

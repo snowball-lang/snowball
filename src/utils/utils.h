@@ -30,10 +30,12 @@ std::string
 getSubstringByRange(const std::string& str, const std::pair<int, int>& start, const std::pair<int, int>& end);
 template <typename Iter>
 // https://stackoverflow.com/questions/495021/why-can-templates-only-be-implemented-in-the-header-file
-std::string join(Iter begin, Iter end, std::string const& separator) {
+std::string join(Iter begin, Iter end, std::string const& separator, std::function<std::string(Iter)> cb = [](Iter i) {
+  return *i;
+}) {
   std::ostringstream result;
-  if (begin != end) result << *begin++;
-  while (begin != end) result << separator << *begin++;
+  if (begin != end) result << cb(begin++);
+  while (begin != end) result << separator << cb(begin++);
   return result.str();
 }
 

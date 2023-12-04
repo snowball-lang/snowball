@@ -64,18 +64,18 @@ func lambda_as_arg_with_arg() i32 {
   });
 }
 
-//func return_lambda_with_parent_scope() func() => i32 {
-//  let a = 25;
-//  return func() i32 {
-//    return a;
-//  };
-//}
+func return_lambda_with_parent_scope() Function<func() => i32> {
+  let a = 25;
+  return func() i32 {
+    return a;
+  }.as_func();
+}
 
-//@test(expect = 25)
-//func ret_with_parent() i32 {
-//  let x = return_lambda_with_parent_scope();
-//  return x();
-//}
+@test(expect = 25)
+func ret_with_parent() i32 {
+  let x = return_lambda_with_parent_scope();
+  return x();
+}
 
 }
 

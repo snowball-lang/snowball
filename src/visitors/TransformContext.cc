@@ -34,7 +34,7 @@ TransformContext::TransformContext(
   auto coreModItem = std::make_shared<transform::Item>(coreMod);
   addItem("Std", coreModItem);
 
-  std::vector<std::string> coreBuiltins = {"Sized", "Numeric", "Function", "Callable"};
+  std::vector<std::string> coreBuiltins = {"Sized", "Numeric", "Callable"};
 
   for (const auto& builtin : coreBuiltins) {
     const auto baseUuid = imports->CORE_UUID + builtin;

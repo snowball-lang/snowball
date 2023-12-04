@@ -22,7 +22,8 @@ void LLVMBuilder::visit(ir::Func* func) {
     if (!func->isAnon()) 
       this->value = it->second;
     else {
-      auto alloca = createAlloca(getLambdaContextType(), ".func.use");
+      auto layout = module->getDataLayout();
+      auto alloca = builder->CreateCall(getAllocaFunction(), {builder->getInt64(layout.getTypeAllocSize(getLambdaContextType()))});
       
       auto funcGep = builder->CreateStructGEP(getLambdaContextType(), alloca, 0, ".func.use.gep");
       builder->CreateStore(it->second, funcGep);

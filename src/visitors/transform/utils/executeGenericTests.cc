@@ -19,7 +19,7 @@ void Transformer::executeGenericTests(Expression::WhereClause* clause, types::Ty
           utils::is<types::ReferenceType>(generic) || 
           isFunctionType) && interface->is(ctx->getBuiltinTypeImpl("Sized"))) {
         found = true;
-      } else if (isFunctionType && interface->is(ctx->getBuiltinTypeImpl("Function"))) {
+      } else if (isFunctionType && interface->is(ctx->getBuiltinTypeImpl("Callable"))) {
         found = true;
       } else {
         if (auto x = utils::cast<types::ReferenceType>(generic)) {

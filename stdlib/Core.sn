@@ -744,7 +744,7 @@ public class Function<T: Callable> {
     }
   private:
     /** The data of the function. */
-    let data: FunctionData;
+    let data: Self::FunctionData;
   public:
     /**
      * @brief It creates a new function with the specified callable entity.
@@ -752,7 +752,9 @@ public class Function<T: Callable> {
      * @note The function does not have a context, therefore the context pointer is set to `null`.
      * @warning This constructor is supposed to be used only for function pointers, not for closures.
      */
-    Function(fn: T) : data(FunctionData(fn, Ptr::null_ptr<?void>())) 
+    Function(fn: T) : data(Self::FunctionData(
+      fn, Ptr::null_ptr<?u8>() as *const void
+    )) 
       {}
     /**
      * @brief It creates a new function with the specified callable entity and context.
@@ -761,7 +763,7 @@ public class Function<T: Callable> {
      * @note The function has a context, therefore the context pointer is set to the specified value.
      * @warning This constructor is supposed to be used only for function pointers, not for closures.
      */
-    Function(data: FunctionData) : data(data) 
+    Function(data: Self::FunctionData) : data(data) 
       {}
 }
 
