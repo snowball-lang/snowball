@@ -729,16 +729,39 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
  */
 public class Function<T: Callable> {
   public:  
+    /**
+     * @struct FunctionData
+     * @brief A struct representing the data of a function.
+     *
+     * The `FunctionData` struct is used to store the data of a function, including the
+     * callable entity and the context associated with it.
+     *
+     * @tparam T The type of the callable entity.
+     */
     struct FunctionData {
       let fn: T;
       let context: *const void;
     }
   private:
+    /** The data of the function. */
     let data: FunctionData;
   public:
+    /**
+     * @brief It creates a new function with the specified callable entity.
+     * @param[in] fn The callable entity to wrap.
+     * @note The function does not have a context, therefore the context pointer is set to `null`.
+     * @warning This constructor is supposed to be used only for function pointers, not for closures.
+     */
     Function(fn: T) : data(FunctionData(fn, Ptr::null_ptr<?void>())) 
       {}
-    Function(fn: T, context: *const void) : data(FunctionData(fn, context)) 
+    /**
+     * @brief It creates a new function with the specified callable entity and context.
+     * @param[in] fn The callable entity to wrap.
+     * @param[in] context The context to associate with the function.
+     * @note The function has a context, therefore the context pointer is set to the specified value.
+     * @warning This constructor is supposed to be used only for function pointers, not for closures.
+     */
+    Function(data: FunctionData) : data(data) 
       {}
 }
 
