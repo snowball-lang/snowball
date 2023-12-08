@@ -53,8 +53,9 @@ public class NonNull<T: Sized> {
  * @return PtrType - null pointer
  */
 @inline
+@llvm_function
 public func null_ptr<PtrType: Sized>() *const PtrType {
-  unsafe { return 0 as *const void as *const PtrType; }
+  ret {=*const PtrType} null
 }
 
 /**

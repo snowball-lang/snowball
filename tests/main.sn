@@ -21,6 +21,7 @@ import pkg::numbers;
 import pkg::macros;
 import pkg::source_location;
 import pkg::lambdas;
+import pkg::structs;
 
 ////import Core::System::{{ println }};
 

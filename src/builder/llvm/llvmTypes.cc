@@ -1,6 +1,7 @@
 
 #include "../../ast/errors/error.h"
 #include "../../utils/utils.h"
+#include "../../services/ImportService.h"
 #include "LLVMBuilder.h"
 
 #include <llvm/IR/DerivedTypes.h>
@@ -99,7 +100,7 @@ llvm::FunctionType* LLVMBuilder::getLLVMFunctionType(types::FunctionType* fn, co
           vector_iterate<types::Type*, llvm::Type*>(fn->getArgs(), [&](types::Type* arg) { return getLLVMType(arg); });
 
   auto ret = getLLVMType(fn->getRetType());
-  if (fn->isLambda()) {
+  if (func && func->isAnon()) {
     argTypes.insert(argTypes.begin(), getLambdaContextType()->getPointerTo());
   }
 

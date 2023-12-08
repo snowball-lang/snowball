@@ -44,7 +44,7 @@
 namespace snowball {
 namespace types {
 
-class FunctionType : public AcceptorExtend<FunctionType, Type> {
+class FunctionType : public AcceptorExtend<FunctionType, Type>, public Syntax::AttributeHolder {
   // Function's argument type.
   std::vector<Type*> args;
   // Function's return type.
@@ -52,8 +52,6 @@ class FunctionType : public AcceptorExtend<FunctionType, Type> {
   // Whether or not a function is declared
   // as variadic.
   bool variadic = false;
-  // Whether or not a function is a lambda.
-  bool lambda = false;
 
 public:
   FunctionType(
@@ -61,10 +59,9 @@ public:
           Type* retTy,
           bool isVariadic = false,
           bool isMutable = true,
-          bool isLambda = false,
           const std::string& name = "<fn type>"
   )
-      : AcceptorExtend(Kind::TYPE, name, isMutable), args(args), retTy(retTy), variadic(isVariadic), lambda(isLambda) {}
+      : AcceptorExtend(Kind::TYPE, name, isMutable), args(args), retTy(retTy), variadic(isVariadic) {}
   FunctionType(const FunctionType& other) = default;
 
   /**
@@ -100,8 +97,6 @@ public:
   Type* getRetType() const { return retTy; }
   /// @return If the function is declared as variadic
   bool isVariadic() const { return variadic; }
-  /// @return If the function is a lambda
-  bool isLambda() const { return lambda; }
 
   // std::string getName() const override; // TODO:
 

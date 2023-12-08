@@ -58,9 +58,16 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     // TODO: Support for variadic function types too!
     auto ty = getBuilder().createFunctionType(args, ret);
     ty->addImpl(ctx->getBuiltinTypeImpl("Sized"));
+    auto typeRef = TR(_SNOWBALL_FUNC_IMPL, fn->getDBGInfo(), std::vector<Expression::TypeRef*>{ty->toRef()});
+    transformType(typeRef);
     return ty;
   } else if (auto x = ty->_getInternalType()) {
     // TODO: maybe move up in the function to prevent problems with generics?
+    if (auto f = utils::cast<types::FunctionType>(x); f && !f->hasAttribute(Attributes::TYPECHECKED)) {
+      f->addAttribute(Attributes::TYPECHECKED);
+      auto typeRef = TR(_SNOWBALL_FUNC_IMPL, ty->getDBGInfo(), std::vector<Expression::TypeRef*>{f->toRef()});
+      transformType(typeRef);
+    }
     return x->copy();
   } else if (auto x = transformSpecialType(ty)) {
     if (utils::is<types::NumericType>(x)) {

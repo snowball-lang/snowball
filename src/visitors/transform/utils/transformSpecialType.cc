@@ -102,7 +102,7 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
     ASSERT_GENERICS(1, FUNCTION_RETURN_STYPE)
     auto generic = generics.at(0);
     auto type = transformType(generic);
-    auto fnType = utils::cast<types::FunctionType>(type);
+    auto fnType = getFunctionType(type);
     if (fnType) { return fnType->getRetType(); }
     E<TYPE_ERROR>(
             ty,

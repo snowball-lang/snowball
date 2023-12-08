@@ -727,24 +727,10 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
  * 
  * @tparam T The type of the callable entity. 
  */
-public class Function<T: Callable> {
-  public:  
-    /**
-     * @struct FunctionData
-     * @brief A struct representing the data of a function.
-     *
-     * The `FunctionData` struct is used to store the data of a function, including the
-     * callable entity and the context associated with it.
-     *
-     * @tparam T The type of the callable entity.
-     */
-    struct FunctionData {
+public class Function<T: Callable> implements Callable {
+  private:
       let fn: T;
       let context: *const void;
-    }
-  private:
-    /** The data of the function. */
-    let data: Self::FunctionData;
   public:
     /**
      * @brief It creates a new function with the specified callable entity.
@@ -752,18 +738,7 @@ public class Function<T: Callable> {
      * @note The function does not have a context, therefore the context pointer is set to `null`.
      * @warning This constructor is supposed to be used only for function pointers, not for closures.
      */
-    Function(fn: T) : data(Self::FunctionData(
-      fn, Ptr::null_ptr<?u8>() as *const void
-    )) 
-      {}
-    /**
-     * @brief It creates a new function with the specified callable entity and context.
-     * @param[in] fn The callable entity to wrap.
-     * @param[in] context The context to associate with the function.
-     * @note The function has a context, therefore the context pointer is set to the specified value.
-     * @warning This constructor is supposed to be used only for function pointers, not for closures.
-     */
-    Function(data: Self::FunctionData) : data(data) 
+    Function(fn: T) : fn(fn), context(Ptr::null_ptr<?u8>() as *const void)
       {}
 }
 

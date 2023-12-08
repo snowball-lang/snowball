@@ -381,7 +381,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
     DBGSourceInfo* dbgInfo,
     types::Type* ty,
     std::vector<types::Type*> args
-  );  
+  );
   /** 
    * Returns a nicely formatted base name for the given set of
    * components.
@@ -513,6 +513,16 @@ public:
 
   using AcceptorExtend<Transformer, Visitor>::visit;
   using AcceptorExtend<Transformer, Visitor>::visitGlobal;
+
+  /**
+   * @brief Get the value's type as a function type
+   * @param valueType The value's type to get the function type from.
+   * @return A pointer to a FunctionType object representing the
+   * function type of the given value.
+   * @note It will return a nullptr if the value is not a function.
+   * @warning This function should be used instead of `utils::cast<types::FunctionType>(...)`
+   */
+  static types::FunctionType* getFunctionType(types::Type* valueType);
 
   /// @return The resultant module.
   auto getModule() const;

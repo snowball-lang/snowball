@@ -23,6 +23,8 @@
 #include "../ir/values/VariableDeclaration.h"
 #include "../ir/values/WhileLoop.h"
 
+#include "Transformer.h"
+
 #include <assert.h>
 #include <optional>
 #include <string>
@@ -114,9 +116,10 @@ VISIT(Call) {
   auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee());
   bool validMethod = fn != nullptr && fn->hasParent() && !fn->isStatic();
   if (utils::is<ir::ZeroInitialized>(p_node)) return;
+  if (utils::is<ir::ObjectInitialization>(p_node)) return;
   if (p_node->getCallee() == nullptr) {
     E<BUG>(p_node, "Call has no callee!");
-  } else if (utils::cast<types::FunctionType>(p_node->getCallee()->getType()) == nullptr) {
+  } else if (Syntax::Transformer::getFunctionType(p_node->getCallee()->getType()) == nullptr) {
     E<TYPE_ERROR>(p_node, FMT("Value trying to be called is not callable!"));
   }
 
@@ -687,7 +690,7 @@ void TypeChecker::fixTypes(std::shared_ptr<types::BaseType> ty) {
         // we first check by name and then if the types exist
         // in the vtable
         auto it = std::find_if(finalVtable.begin(), finalVtable.end(), [&](auto& f) {
-          return f->getName() == fn->getName() && utils::cast<types::FunctionType>(f->getType())->isIgnoringSelf(utils::cast<types::FunctionType>(fn->getType()));
+          return f->getName() == fn->getName() && Syntax::Transformer::getFunctionType(f->getType())->isIgnoringSelf(Syntax::Transformer::getFunctionType(fn->getType()));
         });
 
         if (it == finalVtable.end()) {

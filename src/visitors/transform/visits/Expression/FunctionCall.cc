@@ -121,7 +121,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
 
   // clang-format off
   auto call = getBuilder().createCall(p_node->getDBGInfo(), fn, {});
-  if (auto t = utils::cast<types::FunctionType>(fn->getType())) {
+  if (auto t = getFunctionType(fn->getType())) {
     auto isContructor = utils::dyn_cast<ir::Func>(fn) && utils::dyn_cast<ir::Func>(fn)->isConstructor();
     if (t->getArgs().size() <= argTypes.size() || /**sorry**/
       ((t->getArgs().size()-1 <= argTypes.size()) && isContructor)) {

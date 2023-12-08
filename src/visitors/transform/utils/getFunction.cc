@@ -52,7 +52,7 @@ std::shared_ptr<ir::Value> Transformer::getFunction(
     case NoMatchesFound: {
       if (val) {
         auto v = *val;
-        auto fnType = utils::cast<types::FunctionType>(v->getType());
+        auto fnType = getFunctionType(v->getType());
         if (fnType == nullptr) {
           E<TYPE_ERROR>(
                   dbgInfo,

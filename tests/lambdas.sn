@@ -68,13 +68,26 @@ func return_lambda_with_parent_scope() Function<func() => i32> {
   let a = 25;
   return func() i32 {
     return a;
-  }.as_func();
+  };
 }
 
 @test(expect = 25)
 func ret_with_parent() i32 {
   let x = return_lambda_with_parent_scope();
   return x();
+}
+
+func return_lambda_with_parent_scope_with_arg() Function<func(i32) => i32> {
+  let a = 25;
+  return func(b: i32) i32 {
+    return a + b;
+  };
+}
+
+@test(expect = 50)
+func ret_with_parent_with_arg() i32 {
+  let x = return_lambda_with_parent_scope_with_arg();
+  return x(25);
 }
 
 }

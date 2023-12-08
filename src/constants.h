@@ -51,6 +51,7 @@ extern "C" {
 #define _SNOWBALL_CONST_PTR "$const-pointer"
 #define _SNOWBALL_MUT_PTR   "$mut-pointer"
 #define _SNOWBALL_INT_IMPL  "$integer-impl"
+#define _SNOWBALL_FUNC_IMPL "$function-impl"
 
 // Make sure this is always correct!
 #define _SNOWBALL_CONST_PTR_DECL "Core::Internal::Preloads::$const-pointer"

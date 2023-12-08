@@ -3,6 +3,8 @@
 #include "../../ir/values/Dereference.h"
 #include "../../ir/values/ReferenceTo.h"
 #include "../../services/OperatorService.h"
+#include "../../services/ImportService.h"
+#include "../../visitors/Transformer.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 
@@ -22,22 +24,39 @@ void LLVMBuilder::visit(ir::Call* call) {
     return;
   }
 
+  if (utils::is<ir::ObjectInitialization>(call)) {
+    auto instance = utils::cast<ir::ObjectInitialization>(call);
+    if (instance->isConstantStruct()) {
+      auto instanceType = getLLVMType(instance->getType());
+      assert(utils::cast<types::DefinedType>(instance->getType()) && "Instance type is not a defined type!");
+      auto alloca = ctx->callStoreValue ? ctx->callStoreValue : createAlloca(instanceType);
+      int i = 0;
+      for (auto& arg : instance->getArguments()) {
+        auto gep = builder->CreateStructGEP(instanceType, alloca, i++);
+        auto value = expr(arg.get());
+        builder->CreateStore(value, gep); 
+      }
+      this->value = builder->CreateLoad(instanceType, alloca);
+      return;
+    }
+  }
+
   auto calleeValue = call->getCallee();
-  auto fnType = utils::cast<types::FunctionType>(calleeValue->getType());
+  auto fnType = Syntax::Transformer::getFunctionType(calleeValue->getType());
   auto asFunction = utils::dyn_cast<ir::Func>(calleeValue);
+  auto isLambda = !utils::is<types::FunctionType>(calleeValue->getType()) ? utils::startsWith(utils::cast<types::DefinedType>(calleeValue->getType())->getUUID(), services::ImportService::CORE_UUID + "Core.Function") : false;
   auto calleeType = getLLVMFunctionType(fnType, asFunction.get());
 
   llvm::Value* llvmCall = nullptr;
   llvm::Value* allocatedValue = nullptr;
   llvm::Type* allocatedValueType = nullptr;
   //setDebugInfoLoc(nullptr);
-  if (auto c = utils::cast<types::FunctionType>(calleeValue->getType());
-      (c != nullptr && utils::cast<types::BaseType>(c->getRetType())) || ctx->callStoreValue) {
+  if ((fnType && utils::cast<types::BaseType>(fnType->getRetType())) || ctx->callStoreValue) {
     if (ctx->callStoreValue) {
       allocatedValue = ctx->callStoreValue;
       ctx->callStoreValue = nullptr;
     } else {
-      auto retType = c->getRetType();
+      auto retType = fnType->getRetType();
       allocatedValueType = getLLVMType(retType);
       if (ctx->retValueUsedFromArg) {
         allocatedValue = ctx->getCurrentFunction()->getArg(0);
@@ -57,14 +76,14 @@ void LLVMBuilder::visit(ir::Call* call) {
 
   bool doNotAddAnonContext = false;
 
-  if (allocatedValue) 
-    args.insert(args.begin(), allocatedValue);
-
-  if (asFunction && fnType->isLambda() && asFunction->usesParentScope()) {
+  if (isLambda && asFunction && asFunction->usesParentScope()) {
     auto closure = ctx->closures.at(ctx->getCurrentIRFunction()->getId());
     args.insert(args.begin(), closure.closure);
     doNotAddAnonContext = true;
   }
+
+  if (allocatedValue) 
+    args.insert(args.begin(), allocatedValue);
 
   setDebugInfoLoc(nullptr);
   if (asFunction != nullptr && asFunction->isConstructor()) {
@@ -129,7 +148,7 @@ void LLVMBuilder::visit(ir::Call* call) {
     this->value = allocatedValue ? allocatedValue : llvmCall;
   } else {
     setDebugInfoLoc(call);
-    if (!fnType->isLambda()) {
+    if (!isLambda) {
       if (!llvm::isa<llvm::Function>(callee)) {
         // we are calling a value instead of a direct function.
         // this means we need to dereference the value first
@@ -144,7 +163,15 @@ void LLVMBuilder::visit(ir::Call* call) {
         args.insert(args.begin(), callee);
       }
 
-      llvmCall = createCall(calleeType, loadFunctionValue, args);
+      auto oldArgs = calleeType->params().vec();
+      oldArgs.insert(oldArgs.begin(), getLambdaContextType()->getPointerTo());
+      auto newType = llvm::FunctionType::get(calleeType->getReturnType(), oldArgs, calleeType->isVarArg());
+
+      if (asFunction && asFunction->isAnon()) {
+        newType = calleeType; // We've already added the context in getLLVMFunctionType
+      }
+
+      llvmCall = createCall(newType, loadFunctionValue, args);
     }
 
     this->value = allocatedValue ? allocatedValue : llvmCall;

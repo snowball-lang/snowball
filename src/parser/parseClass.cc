@@ -96,7 +96,13 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
     cls->setGenerics(generics);
   cls->setDBGInfo(dbg);
   for (auto attr : attributes) cls->addAttribute(attr.first, attr.second);
-  if (cls->hasAttribute(Attributes::BUILTIN) && name == "IntegerImpl") { cls->unsafeSetName(_SNOWBALL_INT_IMPL); }
+  if (cls->hasAttribute(Attributes::BUILTIN)) { 
+    if (name == "IntegerImpl")
+      cls->unsafeSetName(_SNOWBALL_INT_IMPL); 
+    else if (name == "FunctionImpl") 
+      cls->unsafeSetName(_SNOWBALL_FUNC_IMPL);
+    else if (name != _SNOWBALL_CONST_PTR && name != _SNOWBALL_MUT_PTR) createError<ARGUMENT_ERROR>(FMT("Unknown builtin class '%s'", name.c_str()));
+  }
 
   auto classBackup = m_current_class;
   m_current_class = cls;

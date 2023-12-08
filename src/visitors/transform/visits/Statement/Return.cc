@@ -7,7 +7,7 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::Return) {
-  auto functionType = utils::cast<types::FunctionType>(ctx->getCurrentFunction()->getType());
+  auto functionType = getFunctionType(ctx->getCurrentFunction()->getType());
   assert(functionType);
   if (auto f = ctx->getCurrentFunction(); f->isConstructor()) {
     E<SYNTAX_ERROR>(
