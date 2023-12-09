@@ -353,4 +353,19 @@ func override_default_arg_2() i32 {
     return default_arg_2(10);
 }
 
+func deduce_from_generic<T>(a: Vector<T>) T {
+    return a[a.size()-1];
+}
+
+@test(expect = 5)
+func deduce_from_generic() i32 {
+    let mut a = new Vector<i32>();
+    a.push(1);
+    a.push(2);
+    a.push(3);
+    a.push(4);
+    a.push(5);
+    return deduce_from_generic(a);
+}
+
 }

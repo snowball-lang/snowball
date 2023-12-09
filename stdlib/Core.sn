@@ -398,7 +398,6 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
       } else if self.capacity < new_capacity {
         self.buffer = Allocator::realloc(self.buffer, new_capacity);
       }
-
       self.capacity = new_capacity;
     }
     /**
@@ -414,7 +413,6 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
       } else if index >= self.length {
         throw new IndexError("Index out of bounds. Cannot access element at index " + index.to_string());
       }
-
       return self.buffer.ptr().unchecked_get(index);
     }
     /**
@@ -454,6 +452,18 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
         }
       }
       return result + "]";
+    }
+    /**
+     * @brief It maps the vector to another vector.
+     * @param[in] fn The function to map the vector with.
+     * @return A new vector with the mapped elements.
+     */
+    func map<Output>(fn: Function<func (T) => Output>) Vector<Output> {
+      let mut result = new Vector<Output>();
+      for let mut i = 0; i < self.length; i = i+1 {
+        result.push(fn(self[i]));
+      }
+      return result;
     }
 
   private:
@@ -738,8 +748,11 @@ public class Function<T: Callable> implements Callable {
      * @note The function does not have a context, therefore the context pointer is set to `null`.
      * @warning This constructor is supposed to be used only for function pointers, not for closures.
      */
-    Function(fn: T) : fn(fn), context(Ptr::null_ptr<?u8>() as *const void)
-      {}
+    //Function(fn: T) : fn(fn), context(Ptr::null_ptr<?u8>() as *const void)
+    //  {}
+
+    Function() : fn(#zero_initialized(:T)), context(#zero_initialized(:*const void))
+      {} // TODO: remove this
 }
 
 // TODO (implement wchar): using WideString as StringView<wchar>

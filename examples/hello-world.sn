@@ -1,6 +1,0 @@
-
-import Core::System;
-
-public func main() {
-    System::println("hello, world") 
-}

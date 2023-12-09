@@ -22,7 +22,7 @@ auto EI(Val item, std::string msg = "", ErrorInfo info = {}) {
 
 template <Error e, class Val>
 void E(Val item, std::string msg, ErrorInfo info = {}) {
-  throw *EI<e>(item, msg, info);
+   throw *EI<e>(item, msg, info);
 }
 
 template <Error e>

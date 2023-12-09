@@ -55,8 +55,7 @@ bool DefinedType::is(DefinedType* ty) const {
                                                    }
                                            ) :
                                            false;
-  assert(argumentsEqual);
-  return (ty->getUUID() == uuid);
+  return (ty->getUUID() == uuid) && argumentsEqual;
 }
 
 std::string DefinedType::getPrettyName() const {

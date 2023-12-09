@@ -1,0 +1,5 @@
+
+[package]
+name = "AOC_2023"
+main = "src/main.sn"
+version = "1.0.0"
