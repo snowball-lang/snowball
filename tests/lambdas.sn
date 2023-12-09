@@ -80,7 +80,7 @@ func ret_with_parent() i32 {
 func return_lambda_with_parent_scope_with_arg() Function<func(i32) => i32> {
   let a = 25;
   return func(b: i32) i32 {
-    return a + b;
+    return a+b;
   };
 }
 

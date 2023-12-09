@@ -31,6 +31,20 @@
 #include <vector>
 
 #define VISIT(Val) void TypeChecker::visit(ir::Val* p_node)
+#define ADD_TO_PARENT_SCOPE(x) \
+  if (auto func = ctx->getCurrentFunction()) { \
+    if (!func->isAnon()) return;\
+    auto variable = x;\
+    if (!variable) return;\
+    auto varScope = variable->getScopeIndex();\
+    auto funcScope = func->getScopeIndex();\
+    if (varScope <= funcScope) {\
+      if (varScope <= 2) return;\
+      func->setUsesParentScope();\
+      variable->setUsedInLambda();\
+      variable->setParentFunc(func->getParentScope().get());\
+    }\
+  }
 
 namespace snowball {
 namespace codegen {
@@ -116,7 +130,10 @@ VISIT(Call) {
   auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee());
   bool validMethod = fn != nullptr && fn->hasParent() && !fn->isStatic();
   if (utils::is<ir::ZeroInitialized>(p_node)) return;
-  if (utils::is<ir::ObjectInitialization>(p_node)) return;
+  if (utils::is<ir::ObjectInitialization>(p_node)) {
+    for (auto a : p_node->getArguments()) { a->visit(this); }
+    return;
+  }
   if (p_node->getCallee() == nullptr) {
     E<BUG>(p_node, "Call has no callee!");
   } else if (Syntax::Transformer::getFunctionType(p_node->getCallee()->getType()) == nullptr) {
@@ -201,6 +218,7 @@ VISIT(IndexExtract) {
 }
 
 VISIT(Variable) {
+  ADD_TO_PARENT_SCOPE(p_node);
   cantBeVoid(
           p_node,
           p_node->getType(),
@@ -216,29 +234,7 @@ VISIT(Argument) {
 }
 
 VISIT(ValueExtract) {
-  if (auto func = ctx->getCurrentFunction()) {
-    if (!func->isAnon()) return;
-
-    auto variable = utils::dyn_cast<ir::Variable>(p_node->getValue());
-    if (!variable) return;
-
-    if (ctx->getCurrentFunction()->getIdentifier() =="_ZN$SNpkg::home::mauro::work::snowball::tests::lambdas.sn.test&40return_lambda_with_parent_scope::.$LmbdFCv14112SaFnE" && variable->getIdentifier() == "a") {
-      DUMP_S("heyh")
-    }
-
-    // mark as variable if it's a variable outside the function
-    auto varScope = variable->getScopeIndex();
-    auto funcScope = func->getScopeIndex();
-
-    if (varScope <= funcScope) {
-      // Ignore global variables
-      if (varScope <= 2) return;
-
-      func->setUsesParentScope();
-      variable->setUsedInLambda();
-      variable->setParentFunc(func->getParentScope().get());
-    }
-  }
+  ADD_TO_PARENT_SCOPE(utils::dyn_cast<ir::Variable>(p_node->getValue()));
 }
 
 VISIT(WhileLoop) {
