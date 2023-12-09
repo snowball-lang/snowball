@@ -486,6 +486,10 @@ private:
    * function from another shared library.
    */
   std::string getSharedLibraryName(std::string name);
+  /**
+   * @brief Lambda function context struct type information
+   */
+  llvm::StructType* getLambdaContextType();
 };
 
 } // namespace codegen

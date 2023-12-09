@@ -18,11 +18,11 @@ import pkg::clib;
 import pkg::interfaces;
 import pkg::math;
 import pkg::numbers;
-
 import pkg::macros;
 import pkg::source_location;
+import pkg::lambdas;
+import pkg::structs;
 
-import Core::Panic;
 ////import Core::System::{{ println }};
 
 import Core::System;

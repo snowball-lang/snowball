@@ -99,6 +99,13 @@ class *mut <T> {
     operator func !(mut self: *mut T) bool { return self.is_null(); }
 }
 
+@__internal__
+class FunctionImpl<FuncType> {
+  public:
+    @__internal__
+    operator func =(self: FuncType, other: FuncType) FuncType {}
+}
+
 /// @brief Integer type implementation.
 /// @tparam IntegerType The integer type to implement.
 /// @details This class implements the integer type.

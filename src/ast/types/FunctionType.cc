@@ -61,7 +61,7 @@ FunctionType* FunctionType::from(ir::Func* fn, Syntax::Statement::FunctionDef* n
   );
   bool isMutable = node ? node->isMutable() : false;
   auto ret = fn->getRetTy();
-  return new FunctionType(args, ret, fn->isVariadic(), isMutable);
+  return new FunctionType(args, ret, fn->isVariadic(), isMutable, "<fn type>");
 }
 
 bool FunctionType::isIgnoringSelf(FunctionType* other) {

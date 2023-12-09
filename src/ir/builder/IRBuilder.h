@@ -157,7 +157,7 @@ public:
   SharedValue<ValueExtract> createValueExtract(DBGSourceInfo* dbgInfo, SharedValue<> value);
   /// @brief Create a object initialization node
   SharedValue<Value>
-  createObjectInitialization(DBGSourceInfo* dbgInfo, types::Type* type, SharedValue<> value, ValueVec<> args);
+  createObjectInitialization(DBGSourceInfo* dbgInfo, types::Type* type, SharedValue<> value, ValueVec<> args, bool isStruct = false);
   /// @brief Create a new conditional instruction (if/else)
   SharedValue<Conditional> createConditional(
           DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> thenBlock, SharedValue<Block> elseBlock

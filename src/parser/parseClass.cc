@@ -96,7 +96,13 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
     cls->setGenerics(generics);
   cls->setDBGInfo(dbg);
   for (auto attr : attributes) cls->addAttribute(attr.first, attr.second);
-  if (cls->hasAttribute(Attributes::BUILTIN) && name == "IntegerImpl") { cls->unsafeSetName(_SNOWBALL_INT_IMPL); }
+  if (cls->hasAttribute(Attributes::BUILTIN)) { 
+    if (name == "IntegerImpl")
+      cls->unsafeSetName(_SNOWBALL_INT_IMPL); 
+    else if (name == "FunctionImpl") 
+      cls->unsafeSetName(_SNOWBALL_FUNC_IMPL);
+    else if (name != _SNOWBALL_CONST_PTR && name != _SNOWBALL_MUT_PTR) createError<ARGUMENT_ERROR>(FMT("Unknown builtin class '%s'", name.c_str()));
+  }
 
   auto classBackup = m_current_class;
   m_current_class = cls;
@@ -234,10 +240,34 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
 
         auto typeDef = parseTypeAlias();
         typeDef->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
-        cls->addTypeAlias(typeDef);
+        cls->addChildType(typeDef);
 
         assert_tok<TokenType::SYM_SEMI_COLLON>("a ';'");
-        if (extends) { createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* type aliases!"); }
+      } break;
+
+      case TokenType::KWORD_CLASS:
+      case TokenType::KWORD_INTER: {
+        if (extends) {
+          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* classes!");
+        } else if (isInterface) {
+          createError<SYNTAX_ERROR>("Interfaces can't have classes!");
+        }
+
+        auto innerClass = parseClass();
+        innerClass->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
+        cls->addChildType(innerClass);
+      } break;
+
+      case TokenType::KWORD_STRUCT: {
+        if (extends) {
+          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* structs!");
+        } else if (isInterface) {
+          createError<SYNTAX_ERROR>("Interfaces can't have structs!");
+        }
+
+        auto innerStruct = parseStructure();
+        innerStruct->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
+        cls->addChildType(innerStruct);
       } break;
 
       // note: This case should be always at the bottom!

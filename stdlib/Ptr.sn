@@ -53,8 +53,9 @@ public class NonNull<T: Sized> {
  * @return PtrType - null pointer
  */
 @inline
+@llvm_function
 public func null_ptr<PtrType: Sized>() *const PtrType {
-  unsafe { return 0 as *const void as *const PtrType; }
+  ret {=*const PtrType} null
 }
 
 /**
@@ -127,4 +128,10 @@ public func to_pointer<T: Sized>(value: &T) *const T {
 @inline
 public func copy_nonoverlapping<T: Sized>(src: *mut T, dst: *mut T, count: i32) {
   unsafe { CLib::memmove(dst, src, count); }
+}
+
+@inline 
+@export(name = "sn.gc.alloc")
+private func gc_alloc(size: u64) *const void {
+  return Allocator<?u8>::alloc(size).ptr();
 }

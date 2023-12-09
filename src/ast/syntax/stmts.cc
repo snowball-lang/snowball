@@ -73,8 +73,8 @@ void DefinedTypeDef::unsafeSetName(const std::string& name) { this->name = name;
 bool DefinedTypeDef::isStruct() { return type == DefinedTypeDef::STRUCT; }
 // bool DefinedTypeDef::isClass() { return type == DefinedTypeDef::CLASS; }
 bool DefinedTypeDef::isInterface() { return type == DefinedTypeDef::INTERFACE; }
-std::vector<TypeAlias*>& DefinedTypeDef::getTypeAliases() { return typeAliases; }
-void DefinedTypeDef::addTypeAlias(TypeAlias* alias) { typeAliases.push_back(alias); }
+std::vector<Base*>& DefinedTypeDef::getChildTypes() { return typeAliases; }
+void DefinedTypeDef::addChildType(Base* alias) { typeAliases.push_back(alias); }
 void DefinedTypeDef::setImpls(std::vector<Expression::TypeRef*> impls) { this->impls = impls; }
 std::vector<Expression::TypeRef*> DefinedTypeDef::getImpls() const { return impls; }
 Expression::TypeRef* DefinedTypeDef::getParent() const { return extends; }

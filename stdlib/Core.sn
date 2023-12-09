@@ -716,6 +716,32 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
     StringView(buffer: StringType, length: i32) : buffer(buffer), length(length) {}
 }
 
+/**
+ * A generic class representing a function, encapsulating a callable entity with 
+ * an optional context.
+ *
+ * This class is designed to wrap any callable entity, such as a function, method, 
+ * or closure, and provides an option to associate a context with the function. 
+ * The context can be any opaque pointer to additional data that might be needed when 
+ * invoking the function.
+ * 
+ * @tparam T The type of the callable entity. 
+ */
+public class Function<T: Callable> implements Callable {
+  private:
+      let fn: T;
+      let context: *const void;
+  public:
+    /**
+     * @brief It creates a new function with the specified callable entity.
+     * @param[in] fn The callable entity to wrap.
+     * @note The function does not have a context, therefore the context pointer is set to `null`.
+     * @warning This constructor is supposed to be used only for function pointers, not for closures.
+     */
+    Function(fn: T) : fn(fn), context(Ptr::null_ptr<?u8>() as *const void)
+      {}
+}
+
 // TODO (implement wchar): using WideString as StringView<wchar>
 
 /// --------- COMMANDS ---------

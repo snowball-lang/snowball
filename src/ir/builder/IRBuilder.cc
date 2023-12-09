@@ -96,6 +96,7 @@ SharedValue<DereferenceTo> IRBuilder::createDereferenceTo(DBGSourceInfo* dbgInfo
 SharedValue<ReferenceTo> IRBuilder::createReferenceTo(DBGSourceInfo* dbgInfo, SharedValue<> value) {
   auto ref = N<ReferenceTo>(dbgInfo, value);
   ref->setType(value->getType()->getReferenceTo());
+  ref->getType()->setMutable(value->getType()->isMutable());
   return ref;
 }
 SharedValue<StringValue> IRBuilder::createStringValue(DBGSourceInfo* dbgInfo, const std::string value) {
@@ -143,8 +144,8 @@ SharedValue<TryCatch> IRBuilder::createTryCatch(
   return N<TryCatch>(dbgInfo, tryBlock, catchBlocks, catchVars);
 }
 SharedValue<Value>
-IRBuilder::createObjectInitialization(DBGSourceInfo* dbgInfo, types::Type* type, SharedValue<> value, ValueVec<> args) {
-  std::shared_ptr<ir::Value> init = N<ObjectInitialization>(dbgInfo, value, args);
+IRBuilder::createObjectInitialization(DBGSourceInfo* dbgInfo, types::Type* type, SharedValue<> value, ValueVec<> args, bool isStruct) {
+  std::shared_ptr<ir::Value> init = N<ObjectInitialization>(dbgInfo, value, args, isStruct);
   setType(init, type);
   return init;
 }

@@ -3,7 +3,7 @@
 #include "../../ast/types/Interface.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
-
+#include "../../visitors/Transformer.h"
 #include <llvm/BinaryFormat/Dwarf.h>
 #include <llvm/IR/DebugInfoMetadata.h>
 #include <llvm/IR/Type.h>
@@ -58,7 +58,7 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     return dbg.builder->createPointerType(type, ty->sizeOf() * 8);
   }
 
-  else if (auto f = cast<types::FunctionType>(ty)) {
+  else if (auto f = Syntax::Transformer::getFunctionType(ty)) {
     std::vector<llvm::Metadata*> argTypes = {getDIType(f->getRetType())};
 
     for (auto argType : f->getArgs()) { argTypes.push_back(getDIType(argType)); }

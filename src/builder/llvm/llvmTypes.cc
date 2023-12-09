@@ -1,6 +1,7 @@
 
 #include "../../ast/errors/error.h"
 #include "../../utils/utils.h"
+#include "../../services/ImportService.h"
 #include "LLVMBuilder.h"
 
 #include <llvm/IR/DerivedTypes.h>
@@ -31,7 +32,7 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid) {
     if (is<types::VoidType>(x->getPointedType())) return builder->getInt8PtrTy();
     return getLLVMType(x->getPointedType())->getPointerTo();
   } else if (auto f = cast<types::FunctionType>(t)) {
-    return getLLVMFunctionType(f)->getPointerTo();
+    return getLLVMFunctionType(f)->getPointerTo(); // return getLambdaContextType()->getPointerTo() if lambda
   } else if (auto a = cast<types::TypeAlias>(t)) {
     assert(!"Unreachable type case found!");
     return getLLVMType(a->getBaseType());
@@ -100,7 +101,7 @@ llvm::FunctionType* LLVMBuilder::getLLVMFunctionType(types::FunctionType* fn, co
 
   auto ret = getLLVMType(fn->getRetType());
   if (func && func->isAnon()) {
-    argTypes.insert(argTypes.begin(), builder->getInt8PtrTy());
+    argTypes.insert(argTypes.begin(), getLambdaContextType()->getPointerTo());
   }
 
   if (utils::is<types::DefinedType>(fn->getRetType()) &&

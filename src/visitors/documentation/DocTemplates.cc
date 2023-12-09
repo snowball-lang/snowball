@@ -168,7 +168,7 @@ void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, Doc
     for (auto _:pathParts) {
         std::string url = "";
         int j = 0;
-        for (auto& part : pathParts) {
+        for (auto part : pathParts) {
             if (j == i) {
                 url += part.string();
                 if (utils::endsWith(part.string(), ".html"))
@@ -263,7 +263,7 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
     for (auto _:pathParts) {
         std::string url = "";
         int j = 0;
-        for (auto& part : pathParts) {
+        for (auto part : pathParts) {
             if (j == i) {
                 url += part.string();
                 if (utils::endsWith(part.string(), ".html"))

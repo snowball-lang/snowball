@@ -23,6 +23,8 @@
 #include "../ir/values/VariableDeclaration.h"
 #include "../ir/values/WhileLoop.h"
 
+#include "Transformer.h"
+
 #include <assert.h>
 #include <optional>
 #include <string>
@@ -114,9 +116,10 @@ VISIT(Call) {
   auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee());
   bool validMethod = fn != nullptr && fn->hasParent() && !fn->isStatic();
   if (utils::is<ir::ZeroInitialized>(p_node)) return;
+  if (utils::is<ir::ObjectInitialization>(p_node)) return;
   if (p_node->getCallee() == nullptr) {
     E<BUG>(p_node, "Call has no callee!");
-  } else if (utils::cast<types::FunctionType>(p_node->getCallee()->getType()) == nullptr) {
+  } else if (Syntax::Transformer::getFunctionType(p_node->getCallee()->getType()) == nullptr) {
     E<TYPE_ERROR>(p_node, FMT("Value trying to be called is not callable!"));
   }
 
@@ -219,6 +222,10 @@ VISIT(ValueExtract) {
     auto variable = utils::dyn_cast<ir::Variable>(p_node->getValue());
     if (!variable) return;
 
+    if (ctx->getCurrentFunction()->getIdentifier() =="_ZN$SNpkg::home::mauro::work::snowball::tests::lambdas.sn.test&40return_lambda_with_parent_scope::.$LmbdFCv14112SaFnE" && variable->getIdentifier() == "a") {
+      DUMP_S("heyh")
+    }
+
     // mark as variable if it's a variable outside the function
     auto varScope = variable->getScopeIndex();
     auto funcScope = func->getScopeIndex();
@@ -227,6 +234,7 @@ VISIT(ValueExtract) {
       // Ignore global variables
       if (varScope <= 2) return;
 
+      func->setUsesParentScope();
       variable->setUsedInLambda();
       variable->setParentFunc(func->getParentScope().get());
     }
@@ -251,6 +259,8 @@ VISIT(Cast) {
   auto v = p_node->getExpr();
   auto t = p_node->getCastType();
   assert(t->is(p_node->getType()));
+
+  v->visit(this);
 
   if (utils::cast<types::VoidType>(v->getType())) {
     E<TYPE_ERROR>(p_node, FMT("Cant cast from void type ('%s')!", v->getType()->getPrettyName().c_str()));
@@ -402,6 +412,8 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
 
     if (isAssignment && !binOp->ignoreMutability && !isMutable) {
       if (!p_node->isInitialization) {
+        value->visit(this);
+        this->isMutable(value);
         E<VARIABLE_ERROR>(
                 p_node,
                 "You cant assign a new value to a "
@@ -409,8 +421,7 @@ void TypeChecker::checkMutability(ir::Call* p_node, std::shared_ptr<ir::Func> fn
                 "variable",
                 {.note = "This error is caused by the 'mut' keyword "
                          "not being present in \nthe variable "
-                         "declaration.\n\nvalue type: " +
-                         (std::string) BOLD + fn->getRetTy()->getPrettyName() + RESET,
+                         "declaration.",
                  .help = "Try to make the variable mutable by adding "
                          "the 'mut' keyword.",
                  .tail = EI<>(value->getDBGInfo(), "", {.info = "This variable is not mutable!"})}
@@ -679,7 +690,7 @@ void TypeChecker::fixTypes(std::shared_ptr<types::BaseType> ty) {
         // we first check by name and then if the types exist
         // in the vtable
         auto it = std::find_if(finalVtable.begin(), finalVtable.end(), [&](auto& f) {
-          return f->getName() == fn->getName() && utils::cast<types::FunctionType>(f->getType())->isIgnoringSelf(utils::cast<types::FunctionType>(fn->getType()));
+          return f->getName() == fn->getName() && Syntax::Transformer::getFunctionType(f->getType())->isIgnoringSelf(Syntax::Transformer::getFunctionType(fn->getType()));
         });
 
         if (it == finalVtable.end()) {

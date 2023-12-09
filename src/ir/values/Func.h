@@ -106,6 +106,10 @@ private:
   ///  is declared inside a class or not, etc...
   std::shared_ptr<Func> parentScope = nullptr; 
 
+  /// @brief If the anon. function uses variables from the parent
+  ///  scope.
+  bool _usesParentScope = false;
+
   Func(const Func&) = delete;
   Func& operator=(Func const&);
 
@@ -207,6 +211,11 @@ public:
   void setParentScope(std::shared_ptr<Func> x) { parentScope = x; }
   /// @return the parent scope where the function is declared in.
   auto getParentScope() const { return parentScope; }
+
+  /// @brief Set that the function uses variables from the parent scope.
+  void setUsesParentScope(bool x = true) { assert(isAnon()); _usesParentScope = x; }
+  /// @return true if the function uses variables from the parent scope.
+  auto usesParentScope() const { assert(isAnon()); return _usesParentScope; }
 
   // Set a visit handler for the generators
   SN_GENERATOR_VISITS

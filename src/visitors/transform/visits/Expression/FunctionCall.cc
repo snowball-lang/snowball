@@ -61,59 +61,67 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
         argTypes.insert(argTypes.begin(), b.value()->getType()->getReferenceTo());
       }
     }
-    auto c = getFunction(p_node, r, name, argTypes, generics, false, b.has_value());
-    if (b.has_value()) argTypes.erase(argTypes.begin());
-    // TODO: actually check if base is a module with:
-    // "getFromIdentifier" of the module
-    if ((x->isStatic && (!c->isStatic())) && (!inModule)) {
-      E<TYPE_ERROR>(
-              p_node,
-              FMT("Cant access class method '%s' "
-                  "that's not static as if it was one!",
-                  c->getNiceName().c_str())
-      );
-    } else if ((!x->isStatic) && c->isStatic()) {
-      E<TYPE_ERROR>(
-              p_node,
-              FMT("Cant access static class method '%s' "
-                  "as with a non-static index expression!",
-                  c->getNiceName().c_str())
-      );
-    }
-    if (b.has_value()) {
-      // if (auto t = utils::cast<types::ReferenceType>(b.value()->getType())) {
-      //   if (utils::cast<types::ReferenceType>(t->getPointedType()) && !c->hasAttribute(Attributes::BUILTIN)) {
-      //     E<TYPE_ERROR>(p_node,
-      //                   FMT("Cant access class method '%s' "
-      //                       "from a reference to a reference!",
-      //                       c->getNiceName().c_str()),
-      //                   {
-      //                           .tail = callBackUp == nullptr ? nullptr
-      //                                                         : EI<>(callBackUp, "this is the call causing the
-      //                                                         error"),
-      //                   });
-      //   }
-      // }
+    // We asume it's a function
+    fn = getFunction(p_node, r, name, argTypes, generics, false, b.has_value());
+    if (auto c = utils::dyn_cast<ir::Func>(fn)) {
+      if (b.has_value()) argTypes.erase(argTypes.begin());
+      // TODO: actually check if base is a module with:
+      // "getFromIdentifier" of the module
+      if ((x->isStatic && (!c->isStatic())) && (!inModule)) {
+        E<TYPE_ERROR>(
+                p_node,
+                FMT("Cant access class method '%s' "
+                    "that's not static as if it was one!",
+                    c->getNiceName().c_str())
+        );
+      } else if ((!x->isStatic) && c->isStatic()) {
+        E<TYPE_ERROR>(
+                p_node,
+                FMT("Cant access static class method '%s' "
+                    "as with a non-static index expression!",
+                    c->getNiceName().c_str())
+        );
+      }
+      if (b.has_value()) {
+        // if (auto t = utils::cast<types::ReferenceType>(b.value()->getType())) {
+        //   if (utils::cast<types::ReferenceType>(t->getPointedType()) && !c->hasAttribute(Attributes::BUILTIN)) {
+        //     E<TYPE_ERROR>(p_node,
+        //                   FMT("Cant access class method '%s' "
+        //                       "from a reference to a reference!",
+        //                       c->getNiceName().c_str()),
+        //                   {
+        //                           .tail = callBackUp == nullptr ? nullptr
+        //                                                         : EI<>(callBackUp, "this is the call causing the
+        //                                                         error"),
+        //                   });
+        //   }
+        // }
 
-      auto baseType = (*b)->getType();
-      if ((utils::cast<types::PrimitiveType>(baseType)) || utils::cast<types::ReferenceType>(baseType) ||
-          utils::cast<types::PointerType>(baseType)) {
-        argValues.insert(argValues.begin(), *b);
-        argTypes.insert(argTypes.begin(), baseType);
-      } else {
-        auto reference = getBuilder().createReferenceTo(p_node->getDBGInfo(), *b);
-        argValues.insert(argValues.begin(), reference);
-        argTypes.insert(argTypes.begin(), reference->getType());
+        auto baseType = (*b)->getType();
+        if ((utils::cast<types::PrimitiveType>(baseType)) || utils::cast<types::ReferenceType>(baseType) ||
+            utils::cast<types::PointerType>(baseType)) {
+          argValues.insert(argValues.begin(), *b);
+          argTypes.insert(argTypes.begin(), baseType);
+        } else {
+          auto reference = getBuilder().createReferenceTo(p_node->getDBGInfo(), *b);
+          argValues.insert(argValues.begin(), reference);
+          argTypes.insert(argTypes.begin(), reference->getType());
+        }
       }
     }
-    fn = c;
   } else {
     fn = trans(callee);
   }
   assert(fn);
+  if (auto x = utils::dyn_cast<ir::ObjectInitialization>(fn)) {
+    x->setArguments(argValues);
+    this->value = x;
+    return;
+  }
+
   // clang-format off
   auto call = getBuilder().createCall(p_node->getDBGInfo(), fn, {});
-  if (auto t = utils::cast<types::FunctionType>(fn->getType())) {
+  if (auto t = getFunctionType(fn->getType())) {
     auto isContructor = utils::dyn_cast<ir::Func>(fn) && utils::dyn_cast<ir::Func>(fn)->isConstructor();
     if (t->getArgs().size() <= argTypes.size() || /**sorry**/
       ((t->getArgs().size()-1 <= argTypes.size()) && isContructor)) {

@@ -15,6 +15,9 @@ void backtrace_callback(void *data, const char *msg, int errnum) {
 int backtrace_full_callback(void *data, uintptr_t pc, const char *filename,
                                 int lineno, const char *function) {
   auto *bt = ((Backtrace *)data);
+  if (!function || !filename) {
+    bt->push(pc);
+  }
   bt->push(BacktraceFrame {function, filename, pc, lineno});
   return (bt->frame_count < SNOWBALL_BACKTRACE_LIMIT) ? 0 : 1;
 }
@@ -32,12 +35,21 @@ void Backtrace::push(BacktraceFrame frame) {
 }
 
 void Backtrace::push(uintptr_t address) {
-    frames[frame_count++] = (BacktraceFrame) {
+    if (frame_count >= SNOWBALL_BACKTRACE_LIMIT) {
+        return;
+    }
+
+    if (frame_count == 0) {
+        frames = (BacktraceFrame*) malloc(sizeof(BacktraceFrame) * SNOWBALL_BACKTRACE_LIMIT);
+    } 
+
+    auto frame = (BacktraceFrame) {
         .function = "????",
         .filename = "<invalid>",
         .address = address,
         .lineno = 0
     };
+    frames[frame_count++] = frame;
 }
 
 void Backtrace::pls_free() {

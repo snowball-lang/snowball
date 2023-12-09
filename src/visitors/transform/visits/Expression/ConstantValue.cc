@@ -37,8 +37,9 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
         index->getBase()->setDBGInfo(p_node->getDBGInfo());
 
         auto [result, _] = getFromIndex(p_node->getDBGInfo(), index, true);
-        auto fn = getFunction(p_node, result, "String::from", {value->getType(), size->getType()});
+        auto fn = utils::dyn_cast<ir::Func>(getFunction(p_node, result, "String::from", {value->getType(), size->getType()}));
 
+        // We assume it's always going to be an ir::Func
         assert(fn != nullptr);
         value = getBuilder().createCall(p_node->getDBGInfo(), fn, {value, size});
         value->setType(fn->getRetTy());

@@ -91,7 +91,13 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
                 arg->getType(), false, "Function argument types but be sized but found '%s' (which is not sized)"
         ));
         
-        a->setMutability(a->getType()->isMutable());
+
+        if (arg->getName() == "self") {
+          a->setMutability(node->isMutable());
+          a->getType()->setMutable(node->isMutable());
+        } else {
+          a->setMutability(a->getType()->isMutable());
+        }
         newArgs.push_back({arg->getName(), a});
       }
 
@@ -131,6 +137,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
             ref->getType()->setMutable(arg.second->isMutable());
             auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, ref);
             ref->setId(arg.second->getId());
+            ref->setDBGInfo(arg.second->getDBGInfo());
             ctx->addItem(arg.first, refItem);
             argIndex++;
           }

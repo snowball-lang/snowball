@@ -19,7 +19,31 @@ void LLVMBuilder::visit(ir::Func* func) {
   }
 
   if (auto it = funcs.find(func->getId()); it != funcs.end()) {
-    this->value = it->second;
+    if (!func->isAnon()) 
+      this->value = it->second;
+    else {
+      auto layout = module->getDataLayout();
+      auto alloca = builder->CreateCall(getAllocaFunction(), {builder->getInt64(layout.getTypeAllocSize(getLambdaContextType()))});
+      
+      auto funcGep = builder->CreateStructGEP(getLambdaContextType(), alloca, 0, ".func.use.gep");
+      builder->CreateStore(it->second, funcGep);
+
+      llvm::Value* body = nullptr;
+      bool copy = false;
+      if (func->isAnon() && func->usesParentScope()) {
+        auto closure = ctx->closures.at(ctx->getCurrentIRFunction()->getId());
+        body = closure.closure;
+        copy = true;
+      } else {
+        body = llvm::Constant::getNullValue(builder->getPtrTy());
+      }
+
+      auto bodyGep = builder->CreateStructGEP(getLambdaContextType(), alloca, 1, ".func.use.gep");
+      if (copy)
+        builder->CreateMemCpy(bodyGep, llvm::MaybeAlign(), body, llvm::MaybeAlign(), builder->getInt64(layout.getTypeAllocSize(builder->getPtrTy())));
+      else builder->CreateStore(body, bodyGep);
+      this->value = alloca;
+    }
     return;
   }
 

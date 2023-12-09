@@ -53,7 +53,8 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
 
     // There can only be 1 function overload without casting
     // TODO: maybe avoid this if the function has default generics?
-    auto function = checkIfContextEqual(getFunction(p_node, r, name, {}, {}, true));
+    // We assume it's always going to be an ir::Func
+    auto function = checkIfContextEqual(utils::dyn_cast<ir::Func>(getFunction(p_node, r, name, {}, {}, true)));
     bool inModule = false;
     if (auto b = utils::cast<Expression::Identifier>(p_node->getBase())) {
       auto r = getFromIdentifier(b);

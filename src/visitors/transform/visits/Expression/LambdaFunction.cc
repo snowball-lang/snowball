@@ -20,7 +20,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
 
   // Create a new function value and store it's return type.
   char l[] = _SNOWBALL_LAMBDA_FUNCTIONS;
-  auto name = parent->getName() + "::" + l + '\00';
+  auto name = "[" + p_node->getSourceInfo()->getPath() + "@" + std::to_string(p_node->getDBGInfo()->line) + " " + l +"]";
   auto fn = getBuilder().createFunction(node->getDBGInfo(), name, false, node->isVariadic(), true);
   fn->setParent(ctx->getCurrentClass());
   fn->setParentScope(ctx->getCurrentFunction());
@@ -44,7 +44,12 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
 
   fn->setArgs(newArgs);
 
-  auto fnType = types::FunctionType::from(fn.get());
+  auto typeIdentifier = N<Expression::GenericIdentifier>("Function", std::vector<Expression::TypeRef*>{types::FunctionType::from(fn.get())->toRef()});
+  auto coreIdentifier = N<Expression::Identifier>("Core");
+  auto typeRefNode = N<Expression::Index>(coreIdentifier, typeIdentifier, true);
+
+  auto typeRef = TR(typeRefNode, "Core::Function", p_node->getDBGInfo(), "");
+  auto fnType = transformType(typeRef);
   fn->setType(fnType);
 
   // Generate a bodied for functions that have
@@ -56,12 +61,14 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
     ctx->withScope([&]() {
       int argIndex = 0;
       for (auto arg : newArgs) {
-        auto ref = getBuilder().createVariable(node->getDBGInfo(), arg.first, true /* TODO: is mutable */, ctx->getScopeIndex());
+        auto ref = getBuilder().createVariable(node->getDBGInfo(), arg.first, true /* TODO: is mutable */, false, ctx->getScopeIndex());
 
         getBuilder().setType(ref, arg.second->getType());
         auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, ref);
 
         ref->setId(arg.second->getId());
+        ref->setDBGInfo(arg.second->getDBGInfo());
+
         ctx->addItem(arg.first, refItem);
         argIndex++;
       }

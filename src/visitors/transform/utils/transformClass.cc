@@ -6,7 +6,7 @@ using namespace snowball::Syntax::transform;
 // Set the default '=' operator for the class
 #define GENERATE_EQUALIZERS                                                                                            \
   if (ty->getName() != _SNOWBALL_CONST_PTR && ty->getName() != _SNOWBALL_MUT_PTR &&                                    \
-      ty->getName() != _SNOWBALL_INT_IMPL) {                                                                           \
+      ty->getName() != _SNOWBALL_INT_IMPL && ty->getName() != _SNOWBALL_FUNC_IMPL) {                                                                           \
     for (int allowPointer = 0; allowPointer < 2; ++allowPointer) {                                                     \
       auto fn = Syntax::N<Statement::FunctionDef>(                                                                     \
               OperatorService::getOperatorMangle(OperatorType::EQ), Statement::Privacy::Status::PUBLIC                 \
@@ -146,9 +146,9 @@ types::BaseType* Transformer::transformClass(
       ctx->setCurrentClass(transformedType);
       // Transform types first thing
       ctx->generateFunction = false;
-      for (auto ty : ty->getTypeAliases()) { trans(ty); }
+      for (auto ty : ty->getChildTypes()) { trans(ty); }
       ctx->generateFunction = true;
-      for (auto ty : ty->getTypeAliases()) { trans(ty); }
+      for (auto ty : ty->getChildTypes()) { trans(ty); }
       int fieldCount = 0;
       if (!ty->isInterface()) {
         for (auto& v : ty->getVariables()) {

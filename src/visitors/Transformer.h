@@ -230,8 +230,11 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * we will get the function overload and get the most fitting one.
    *
    *  @c deduceFunction @c getBestFittingFunction
+   * 
+   * @note It will occasionally return an ir::Func but if calling a 
+   *    struct, it will return a ir::Value.
    */
-  std::shared_ptr<ir::Func> getFunction(
+  std::shared_ptr<ir::Value> getFunction(
           DBGObject* dbgInfo,
           std::tuple<
                   std::optional<std::shared_ptr<ir::Value>>,
@@ -367,6 +370,19 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    */
   types::Type* transformSpecialType(Expression::TypeRef* ty);
   /**
+   * @brief It generates a new struct value.
+   * @param ty The type to generate the struct from.
+   * @param args The arguments to pass to the struct.
+   * @param dbgInfo The debug information to use when reporting an error.
+   * @return A shared pointer to an ir::Value object representing the
+   *   generated struct.
+   */
+  std::shared_ptr<ir::Value> createObjectConstructor(
+    DBGSourceInfo* dbgInfo,
+    types::Type* ty,
+    std::vector<types::Type*> args
+  );
+  /** 
    * Returns a nicely formatted base name for the given set of
    * components.
    *
@@ -375,12 +391,12 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * @return A string containing the constructed base name.
    */
   std::string getNiceBaseName(std::tuple<
-                              std::optional<std::shared_ptr<ir::Value>>,
-                              std::optional<types::Type*>,
-                              std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-                              std::optional<std::deque<Cache::FunctionStore>>,
-                              std::optional<std::shared_ptr<ir::Module>>,
-                              bool /* (Ignore) Accept private members */> base);
+    std::optional<std::shared_ptr<ir::Value>>,
+    std::optional<types::Type*>,
+    std::optional<std::deque<std::shared_ptr<ir::Func>>>,
+    std::optional<std::deque<Cache::FunctionStore>>,
+    std::optional<std::shared_ptr<ir::Module>>,
+    bool /* (Ignore) Accept private members */> base);
   /**
    * Check if the body of a function returns a value.
    *
@@ -497,6 +513,16 @@ public:
 
   using AcceptorExtend<Transformer, Visitor>::visit;
   using AcceptorExtend<Transformer, Visitor>::visitGlobal;
+
+  /**
+   * @brief Get the value's type as a function type
+   * @param valueType The value's type to get the function type from.
+   * @return A pointer to a FunctionType object representing the
+   * function type of the given value.
+   * @note It will return a nullptr if the value is not a function.
+   * @warning This function should be used instead of `utils::cast<types::FunctionType>(...)`
+   */
+  static types::FunctionType* getFunctionType(types::Type* valueType);
 
   /// @return The resultant module.
   auto getModule() const;

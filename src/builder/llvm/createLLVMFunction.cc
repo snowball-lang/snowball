@@ -1,5 +1,6 @@
 
 #include "../../ast/errors/error.h"
+#include "../../visitors/Transformer.h"
 #include "../../ir/values/Argument.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
@@ -26,7 +27,7 @@ void setDereferenceableAttribute(llvm::Argument& arg, unsigned bytes) {
 } // namespace
 
 llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
-  auto innerFnType = cast<types::FunctionType>(func->getType());
+  auto innerFnType = Syntax::Transformer::getFunctionType(func->getType());
   assert(innerFnType != nullptr);
 
   if (auto x = module->getFunction(func->getMangle()); x != nullptr) { return x; }
@@ -71,10 +72,10 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
   }
 
   for (int i = 0; i < func->getArgs().size(); ++i) {
-    auto llvmArg = fn->arg_begin() + i + retIsArg;
+    auto llvmArg = fn->arg_begin() + i + retIsArg + func->isAnon();
     auto arg = utils::at(func->getArgs(), i);
-    if (auto x = utils::cast<types::ReferenceType>((arg).second->getType())) {
-      setDereferenceableAttribute(*llvmArg, x->sizeOf());
+    if (utils::is<types::ReferenceType>((arg).second->getType())) {
+      setDereferenceableAttribute(*llvmArg, (arg).second->getType()->sizeOf());
     }
   }
 
