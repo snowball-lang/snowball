@@ -14,10 +14,18 @@ bool genericMatch(Expression::Param* generic, Expression::TypeRef* arg) {
     return x->getBaseType()->getName() == generic->getName();
   }
 
-  return arg->getName() == generic->getName();
+  auto exists = arg->getName() == generic->getName();
+  if (arg->getGenerics().size() > 0 && !exists) {
+    auto generics = arg->getGenerics();
+    exists = std::any_of(generics.begin(), generics.end(), [&](auto& g) {
+      return genericMatch(generic, g);
+    });
+  }
+
+  return exists;
 }
 
-std::pair<types::Type*, int> matchedGeneric(Expression::Param* generic, types::Type* arg) {
+std::pair<types::Type*, int> matchedGeneric(Expression::Param* generic, types::Type* arg, Expression::Param* genericParam) {
   // We need to match with "genericMatch"
   // e.g. fn foo<T>(x: &T) T { x }
   //     foo(&1)
@@ -27,7 +35,7 @@ std::pair<types::Type*, int> matchedGeneric(Expression::Param* generic, types::T
   if (auto genericRefType = utils::cast<types::ReferenceType>(arg)) {
     if (generic->getType()->isReferenceType()) {
       // If both are reference types, match the pointed type
-      return {genericRefType->getPointedType(), 2};
+      return {genericRefType->getPointedType(), 3};
     }
   }
 
@@ -35,7 +43,24 @@ std::pair<types::Type*, int> matchedGeneric(Expression::Param* generic, types::T
   if (auto genericPointerType = utils::cast<types::PointerType>(arg)) {
     if (generic->getType()->isPointerType()) {
       // If both are pointer types, match the pointed type
-      return {genericPointerType->getPointedType(), 2};
+      return {genericPointerType->getPointedType(), 3};
+    }
+  }
+
+  if (auto genericRefType = utils::cast<types::BaseType>(arg)) {
+    if (genericRefType->isGeneric()) {
+      int indexExists = -1;
+      auto generics = genericRefType->getGenerics();
+      auto argGenerics = generic->getType()->getGenerics();
+      if (generics.size() < argGenerics.size()) return {arg, 1};
+      for (int i = 0; i < argGenerics.size(); i++) {
+        if (genericMatch(genericParam, argGenerics[i])) {
+          indexExists = i;
+          break;
+        }
+      }
+      if (indexExists != -1)
+        return {matchedGeneric(generic, generics[indexExists], genericParam).first, 3};
     }
   }
 
@@ -63,6 +88,10 @@ std::pair<std::optional<types::Type*>, int> Transformer::deduceFunctionType(
     return {generics[index], 1};
   }
 
+  if (generic->getName() == "XD") {
+    DUMP_S("yeh")
+  }
+
   // Check if the generic is used inside the variables
   const auto it = std::find_if(fnArgs.begin(), fnArgs.end(), [&](const auto& arg) {
     return genericMatch(generic, arg->getType());
@@ -70,7 +99,7 @@ std::pair<std::optional<types::Type*>, int> Transformer::deduceFunctionType(
 
   if (it != fnArgs.end()) {
     const auto argIdx = std::distance(fnArgs.begin(), it);
-    const auto [deducedType, imp] = matchedGeneric(*it, arguments.at(argIdx));
+    const auto [deducedType, imp] = matchedGeneric(*it, arguments.at(argIdx), generic);
     return {deducedType, imp};
   }
 
@@ -97,7 +126,7 @@ std::tuple<std::vector<types::Type*>, std::string, int> Transformer::deduceFunct
       deducedTypes.push_back(deducedType.value());
       importance += imp;
     } else {
-      return {{}, FMT("Cannot deduce type '%s' in function call!", generic->getName().c_str()), -1};
+      return {{}, FMT("Coudn`t deduce type '%s' in function call!", generic->getName().c_str()), -1};
     }
   }
 

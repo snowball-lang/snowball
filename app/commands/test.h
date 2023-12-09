@@ -21,7 +21,7 @@ int test(app::Options::TestOptions p_opts) {
   toml::parse_result parsed_config = Compiler::getConfiguration();
 
   std::string filename =
-          (std::string)(parsed_config["package"]["main"].value_or<std::string>(fs::current_path() / "src" / "main.sn"));
+          (std::string)(parsed_config["test"]["entry"].value_or<std::string>(fs::current_path() / "tests" / "main.sn"));
 
   std::ifstream ifs(filename);
   if (ifs.fail()) {
