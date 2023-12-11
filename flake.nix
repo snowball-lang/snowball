@@ -39,9 +39,9 @@
             -DLLVM_ENABLE_BACKTRACES=OFF \
             -DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF \
             -DLLVM_ENABLE_TERMINFO=OFF \
+            -DCMAKE_OSX_ARCHITECTURES="${system}" \
             -DLLVM_ENABLE_ZLIB=OFF \
             -DLLVM_INCLUDE_EXAMPLES=OFF \
-            -DCMAKE_OSX_ARCHITECTURES="$ARCH" \
             -DLLVM_INCLUDE_DOCS=OFF \
             -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DEXECUTABLE_OUTPUT_PATH="bin/Release" $@ .
@@ -74,8 +74,6 @@
       packages.default = self.packages.${system}.snowball;
 
       devShells.default = pkgs.mkShell {
-        # LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (with pkgs; [libsigsegv stdenv.cc.cc.lib]);
-        # GLIBC_PATH="${pkgs.glibc}";
         packages = with pkgs; [
           zstd
           libsigsegv
