@@ -4,6 +4,7 @@
 #include "../../../constants.h"
 #include "../Linker.h"
 
+#include <dlfcn.h>
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -30,12 +31,25 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   if (ctx->withStd) {
     // TODO: check if this works for all platforms
     linkerArgs.push_back("-dynamic-linker");
-    linkerArgs.push_back("/lib64/ld-linux-x86-64.so.2");
+
+    fs::path ld_linux_path;
+
+    void* handle = dlopen("ld-linux-x86-64.so.2", RTLD_LAZY);
+    if (!handle) { DEBUG_CODEGEN("Error getting library path: %s", dlerror()); }
+
+    Dl_info info;
+    if (dladdr(handle, &info)) {
+      ld_linux_path = info.dli_fname;
+    } else {
+      DEBUG_CODEGEN("Error getting library path: %s", dlerror());
+    }
+
+    linkerArgs.push_back(ld_linux_path);
 
     auto path = std::string("/usr") + PATH_SEPARATOR + _SNOWBALL_LIBRARY_OBJ;
     auto triple = getPlatformTriple();
     assert(!triple.empty() && "Unsupported platform for linking!");
-    auto platformPath = fs::path(path) / triple;
+    auto platformPath = ld_linux_path.parent_path();
     linkerArgs.push_back(platformPath / "crt1.o");
     linkerArgs.push_back(platformPath / "crti.o");
     if (!isIAMCU) {
