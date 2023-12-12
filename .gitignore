@@ -70,7 +70,3 @@ compile_commands.json
 callgrind.out.*
 
 install_deps_temp/
-
-.direnv
-result
-.cmake
