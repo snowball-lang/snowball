@@ -84,7 +84,7 @@ std::shared_ptr<ir::Value> Transformer::getFunction(
         }
         E<TYPE_ERROR>(
                 dbgInfo,
-                FMT("Call parameters to '%s' does not match it's "
+                FMT("Call parameters to '%s' does not match its "
                     "function type ('%s')!",
                     name.c_str(),
                     v->getType()->getPrettyName().c_str())

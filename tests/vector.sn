@@ -63,20 +63,20 @@ func with_struct() i32 {
     return vec[0] == "hello";
 }
 
-@test(expect = 20, skip)
+@test(expect = 5, skip)
 func map() i32 {
-    //let mut v = new Vector<i32>();
-    //v.push(1);
-    //v.push(2);
-    //v.push(3);
-    //v.push(4);
-    //v.push(5);
-    //let mut i = 0;
-    //v.map(func(x: i32) i32 {
-    //    i = i + 1;
-    //    return x * 2;
-    //});
-    //return i;
+    let mut v = new Vector<i32>();
+    v.push(1);
+    v.push(2);
+    v.push(3);
+    v.push(4);
+    v.push(5);
+    let mut i = 0;
+    v.map<?i32>(func(x: i32) i32 {
+        i = i + 1;
+        return x * 2;
+    });
+    return i;
 }
 
 }

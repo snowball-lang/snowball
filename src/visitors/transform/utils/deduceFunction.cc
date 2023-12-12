@@ -15,12 +15,25 @@ bool genericMatch(Expression::Param* generic, Expression::TypeRef* arg) {
   }
 
   auto exists = arg->getName() == generic->getName();
-  if (arg->getGenerics().size() > 0 && !exists) {
+  if (!exists && arg->getGenerics().size() > 0) {
     auto generics = arg->getGenerics();
     exists = std::any_of(generics.begin(), generics.end(), [&](auto& g) {
       return genericMatch(generic, g);
     });
   }
+
+// ----- FOR A LONG DISTANCED FUTURE: AUTO DEDUCE FUNCTION TYPES
+//  if (!exists && utils::is<Expression::FuncType>(arg)) {
+//    auto funcType = utils::cast<Expression::FuncType>(arg);
+//    auto args = funcType->getArgs();
+//    exists = std::any_of(args.begin(), args.end(), [&](auto& a) {
+//      return genericMatch(generic, a);
+//    });
+//    if (!exists) {
+//      exists = genericMatch(generic, funcType->getReturnValue());
+//    }
+//  }
+/// -----
 
   return exists;
 }
@@ -59,10 +72,36 @@ std::pair<types::Type*, int> matchedGeneric(Expression::Param* generic, types::T
           break;
         }
       }
-      if (indexExists != -1)
+      if (indexExists != -1) {
         return {matchedGeneric(generic, generics[indexExists], genericParam).first, 3};
+      }
     }
   }
+
+// ----- FOR A LONG DISTANCED FUTURE: AUTO DEDUCE FUNCTION TYPES
+//  if (auto genericRefType = utils::cast<types::FunctionType>(arg)) {
+//    bool match = false;
+//    auto args = genericRefType->getArgs();
+//    DUMP_S(genericRefType->getPrettyName().c_str())
+//    auto fn = utils::cast<Expression::FuncType>(generic->getType());
+//    if (!fn) return {arg, 1};
+//    auto fnArgs = fn->getArgs();
+//    for (int i = 0; i < args.size(); i++) {
+//      if (genericMatch(genericParam, args[i]->toRef())) {
+//        match = true;
+//        auto [deducedType, imp] = matchedGeneric(generic, fnArgs[i], genericParam);
+//        if (deducedType != nullptr) {
+//          return {matchedGeneric(generic, fnArgs[i], genericParam).first, 3};
+//        }
+//      }
+//    }
+//    if (!match) {
+//      if (genericMatch(genericParam, fn->getReturnValue())) {
+//        return {matchedGeneric(generic, genericRefType->getRetType(), genericParam).first, 3};
+//      }
+//    }
+//  }
+/// -----
 
   // If the generic is neither a reference nor a pointer, return the argument as is
   return {arg, 1};
@@ -86,10 +125,6 @@ std::pair<std::optional<types::Type*>, int> Transformer::deduceFunctionType(
   if (genericsSize > deducedTypes.size()) {
     const auto index = deducedTypes.size();
     return {generics[index], 1};
-  }
-
-  if (generic->getName() == "XD") {
-    DUMP_S("yeh")
   }
 
   // Check if the generic is used inside the variables

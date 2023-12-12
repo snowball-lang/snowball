@@ -258,7 +258,12 @@ if (DEFINED ENV{BUILD_FOR_CE})
   add_compile_definitions(_SNOWBALL_BUILD_FOR_CE="1")
 endif()
 
-add_compile_definitions(LD_PATH="ld")
+if (${BUILD_FOR_WIN})
+  add_compile_definitions(LD_PATH="ld")
+else()
+  add_compile_definitions(LD_PATH="/usr/bin/ld")
+endif()
+
 
 add_compile_definitions(STATICLIB_DIR="${STATICLIB_DIR}")
 

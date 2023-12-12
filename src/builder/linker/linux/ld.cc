@@ -5,7 +5,6 @@
 #include "../../../constants.h"
 #include "../Linker.h"
 
-#include <dlfcn.h>
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -44,6 +43,7 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
     } else {
       Syntax::E<LINKER_ERR>(FMT("Error getting library path: %s", dlerror()));
     }
+    
     linkerArgs.push_back(ld_linux_path);
 
     auto path = std::string("/usr") + PATH_SEPARATOR + _SNOWBALL_LIBRARY_OBJ;
