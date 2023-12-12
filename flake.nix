@@ -50,16 +50,32 @@
 
           runHook postBuild
         '';
+        installPhase = let
+          snowball = ''
 
-        installPhase = ''
+          '';
+        in ''
           runHook preInstall
 
-          install --mode +x -D ./bin/Release/snowball $out/bin/snowball
+          install --mode +x -D ./bin/Release/snowball $out/bin/unwrapped/snowball
           install --mode +x -D ./libSnowball.so $out/lib/libSnowball.so
           install --mode +x -D ./libsnowballrt.so $out/lib/libsnowballrt.so
+          cp -r $src/stdlib "$out"
 
-          wrapProgram "$out/bin/snowball" --suffix LD_LIBRARY_PATH ':' "$out/lib"
+          wrapProgram "$out/bin/unwrapped/snowball" --suffix LD_LIBRARY_PATH ':' "$out/lib"
 
+          cat <<EOF > "$out/bin/snowball"
+          #!/bin/sh
+          if [ ! -d "\$HOME/.snowball/stdlib" ]; then
+            echo -e "\x1b[32mCreating \$HOME/.snowball/stdlib\x1b[0m"
+            mkdir "\$HOME/.snowball"
+            cp -r "$out/stdlib"  "\$HOME/.snowball/stdlib"
+          fi
+
+          exec "$out/bin/unwrapped/snowball" \$@
+          EOF
+
+          chmod +x "$out/bin/snowball"
           runHook postInstall
         '';
 
