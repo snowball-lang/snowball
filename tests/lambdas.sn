@@ -90,5 +90,15 @@ func ret_with_parent_with_arg() i32 {
   return x(25);
 }
 
+@test(expect = 10)
+func usage_after_lambda() i32 {
+  let x = 5;
+  let y = func() i32 {
+    return x;
+  };
+  let z = y();
+  return x + z;
+}
+
 }
 

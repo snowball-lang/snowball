@@ -17,7 +17,7 @@
       arg = ctx->getCurrentFunction()->getArg(argumentIndex);\
     } else {\
       closure = ctx->closures.at(x->getId());\
-      arg = closure.closure;        \
+      arg = builder->CreateLoad(builder->getPtrTy(), closure.closure);        \
     }\
     auto index = std::distance(\
       closure.variables.begin(),\

@@ -39,9 +39,9 @@ void LLVMBuilder::visit(ir::Func* func) {
       }
 
       auto bodyGep = builder->CreateStructGEP(getLambdaContextType(), alloca, 1, ".func.use.gep");
-      if (copy)
-        builder->CreateMemCpy(bodyGep, llvm::MaybeAlign(), body, llvm::MaybeAlign(), builder->getInt64(layout.getTypeAllocSize(builder->getPtrTy())));
-      else builder->CreateStore(body, bodyGep);
+      //if (copy)
+      //  builder->CreateMemCpy(bodyGep, llvm::MaybeAlign(), body, llvm::MaybeAlign(), builder->getInt64(layout.getTypeAllocSize(builder->getPtrTy())));
+      builder->CreateStore(body, bodyGep);
       this->value = alloca;
     }
     return;

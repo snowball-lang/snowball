@@ -461,7 +461,7 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
     func map<Output>(fn: Function<func (T) => Output>) Vector<Output> {
       let mut result = new Vector<Output>();
       for let mut i = 0; i < self.length; i = i+1 {
-        result.push(fn(self[i]));
+        result.push(fn(*self[i]));
       }
       return result;
     }
