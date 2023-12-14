@@ -16,7 +16,7 @@
     in {
       packages.snowball = pkgs.stdenv.mkDerivation {
         name = "snowball";
-        version = "0.0.8";
+        version = pkgs.lib.strings.readFile ./snowball.version.str;
 
         src = ./.;
 
