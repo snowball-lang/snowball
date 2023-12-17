@@ -89,13 +89,18 @@ public class Exception implements ToString, Throwable {
      * @param[in] m The message of the exception.
      */ 
     Exception(m: String) : msg(m.bytes()), length(m.size())
-      { }
+      { /* Nothing to do here 👋 */ }
     /**
      * @brief Returns the message of the exception.
      * @return The message of the exception.
      */
     @inline
     func what() String { 
+      // Return a string from the message and its length.
+      // We store the message as a char pointer and its length
+      // so we can easily fetch the message from the C side without
+      // having to keep track of snowball's string implementation.
+      // This is a bit hacky, but it works. 😊
       return String::from(self.msg, self.length); 
     }
     /**
@@ -119,7 +124,7 @@ public class Exception implements ToString, Throwable {
  * catching, exception handling, and more.
  */
 public class IndexError extends Exception 
-  { }
+  { /* Nothing to do here 👋 */ }
 /**
  * @interface Iterable
  * @brief An interface representing an iterable.
@@ -184,7 +189,7 @@ public class Iter<T: Sized> {
      * This constructor creates an invalid iterator. Use it when you want to create an iterator without
      * specifying an initial value.
      */
-    Iter() {}
+    Iter() { /* Nothing to do here 👋 */ }
     /**
      * @brief Constructor for `Iter` with an initial value.
      *
@@ -194,7 +199,7 @@ public class Iter<T: Sized> {
      * @param[in] value The initial value of the iterator.
      */
     Iter(value: T) : iter_value(value), valid(true) 
-      {}
+      { /* Still nothing to do here 😊 */ }
     /**
      * @brief Returns the value of the iterator.
      * @return The value of the iterator.
@@ -202,9 +207,14 @@ public class Iter<T: Sized> {
      */
     @inline
     func value() T {
+      // If the iterator is invalid, throw an IndexError.
+      // This is useful when you want to access the value of the iterator
+      // without checking its validity first.
       if !self.valid {
+        // TODO: Add a better error message
         throw new IndexError("Invalid iterator access!");
       }
+      // Otherwise, return the value of the iterator.
       return self.iter_value; 
     }
     /**
@@ -254,14 +264,15 @@ public class Range<N: Numeric = i32> implements Iterable<N>, ToString {
      * @param[in] end The end of the range (exclusive).
      */
     Range(start: N, end: N) : start(start), end(end) {
+      // Reset the iteration to the beginning of the range.
+      // In this case, just set the iterator index to the start of the range.
       self.reset();
     }
     /**
      * @brief Constructor for `Range` with a default start value of 0.
-     *
      * @param[in] end The end of the range (exclusive).
      */
-    Range(end: N) : end(end) {}
+    Range(end: N) : end(end) { /* Nothing to do here 👋 */ }
     /**
      * @brief Returns the size of the range.
      * @return The size of the range.
@@ -285,10 +296,14 @@ public class Range<N: Numeric = i32> implements Iterable<N>, ToString {
      * @return The next element in the iteration.
      */
     virtual mut func next() Iter<N> {
+      // Increment the iterator index.
       self.iter_index = self.iter_index + 1;
+      // If the iterator index is greater than or equal to the end of the range,
+      // return an invalid iterator.
       if self.iter_index >= self.end {
         return Iter<?N>::invalid();
       }
+      // Otherwise, return a valid iterator with the current iterator index.
       return Iter<?N>::valid(self.iter_index);
     }
     /**
@@ -300,18 +315,22 @@ public class Range<N: Numeric = i32> implements Iterable<N>, ToString {
      * @brief Adds a value to the range with another range.
      * @param[in] value The value to add to the range.
      * @return A new range with the specified value added to it.
+     * @note N must implement the `+` operator.
      */
     @inline
     operator func +(value: Range<N>) Range<N> {
+      // Add the start and end values of the ranges.
       return new Range<N>(self.start + value.start, self.end + value.end); 
     }
     /**
      * @brief Subtracts a value from the range with another range.
      * @param[in] value The value to subtract from the range.
      * @return A new range with the specified value subtracted from it.
+     * @note N must implement the `-` operator.
      */
     @inline
     operator func -(value: Range<N>) Range<N> { 
+      // Subtract the start and end values of the ranges.
       return new Range<N>(self.start - value.start, self.end - value.end);
     }
     /**
@@ -319,9 +338,13 @@ public class Range<N: Numeric = i32> implements Iterable<N>, ToString {
      * @return A string representation of the range.
      */
     func to_string<>() String {
+      // Return a string representation of the range.
+      // We use the `to_string` method of the start and end values
+      // to get their string representations.
+      // todo: write a `where` statement to the function to make sure
+      //  N implements the `to_string` method.
       return self.start.to_string() + ".." + self.end.to_string();
     }
-
 
   private:
     /** The start of the range. */
@@ -359,18 +382,26 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
      * @brief Default constructor.
      * Constructs an empty vector.
      */
-    Vector() {}
+    Vector() { /* Nope, nothing to do here 😁 */ }
     /**
      * @brief It pushes an element to the back of the vector.
      * @param[in] value The element to push to the back of the vector.
      */
     mut func push(value: T) {
+      // We make sure we have enough capacity to push the element.
+      // If we don't, we resize the vector.
       if self.length >= self.capacity {
+        // We resize the vector by doubling its capacity.
         self.resize();
       }
+      // We push the element to the back of the vector.
+      // safety: we make sure we have enough capacity to push the element.
+      // we also make sure the buffer is not null.
       unsafe {
+        // we write the element to the end of the buffer.
         Ptr::write(Ptr::add(self.buffer.ptr(), self.length), value);
       }
+      // we increment the length of the vector.
       self.length = self.length + 1;
     }
     /**
@@ -385,7 +416,12 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
     mut func resize() { 
       // we make sure we dont overflow
       if self.capacity == 0 { self.reserve(1); }
+      // Give it a chance before doubling the capacity
       else if self.capacity == 1 { self.reserve(4) }
+      // We increase the capacity of the vector by doubling it.
+      // Once we are past 4, we increase the capacity by 1.5x. 
+      // since we are doubling the capacity, we make sure we don't overflow.
+      // and we are kind of expecting a big vector here.
       else self.reserve(self.capacity * 2);
     }
     /**
@@ -393,11 +429,17 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
      * @param[in] capacity The capacity to reserve for the vector.
      */
     mut func reserve(new_capacity: i32) {
+      // If the buffer is null, we allocate a new buffer.
+      // If the new capacity is greater than the current capacity,
+      // we reallocate the buffer.
       if self.buffer.ptr().is_null() {
+        // safety: we make sure the buffer is not null.
         self.buffer = Allocator::alloc(new_capacity);
       } else if self.capacity < new_capacity {
+        // safety: we make sure the buffer is not null.
         self.buffer = Allocator::realloc(self.buffer, new_capacity);
       }
+      // We update the capacity of the vector.
       self.capacity = new_capacity;
     }
     /**
@@ -408,11 +450,21 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
      */
     @internal_linkage
     func at(index: i32) &mut T {
+      // If the index is negative, we return the element at the end of the vector.
+      // example: if the vector has 5 elements, and the index is -1, we return the element at index 4.
+      //       [0 | 1 | 2 | 3 | 4]
+      // ...<-  ^ (0)           ^ (-1) <-...
       if index < 0 {
+        // Recursively call the at() method with the index relative to the end of the vector.
+        // We make sure we don't overflow.
         return self.at(self.length + index);
       } else if index >= self.length {
+        // If the index is greater than or equal to the length of the vector,
+        // we throw an IndexError. We make sure we don't overflow.
         throw new IndexError("Index out of bounds. Cannot access element at index " + index.to_string());
       }
+      // safety: we make sure the buffer is not null. If the length != 0
+      //   that means that the buffer is not null, since we called reserve() before.
       return self.buffer.ptr().unchecked_get(index);
     }
     /**
@@ -429,14 +481,19 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
      * @param[in] index The index to insert the element at.
      * @param[in] value The element to insert.
      */
+    @inline
     mut func insert(index: i32, value: T) {
+      // If the value is greater than or equal to the length of the vector,
+      // we push the value to the back of the vector.
       if index >= self.length {
         self.push(value);
         return;
       }
-
+      // Copy the element at the specified index to a temporary variable.
       let cur = self[index];
+      // Set the element at the specified index to the value.
       self[index] = value;
+      // We push the temporary variable to the back of the vector.
       self.insert(index + 1, cur);
     }
     /**
@@ -444,13 +501,24 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
      * @return A string representation of the vector.
      */
     func to_string<>() String {
+      // We return a string representation of the vector.
+      // We iterate over the vector and append each element to the string.
+      // We make sure we don't overflow.
+      // todo: write a `where` statement to the function to make sure
+      //  T implements the `to_string` method.
       let mut result = "[";
+      // C-style for loop since it's faster than iterator loops.
       for let mut i = 0; i < self.length; i = i+1 {
+        // We append the string representation of the element to the result.
+        // note: We don't call to_string here, let StringView do the job.
         result = result + String::from(self[i]);
+        // If we are not at the end of the vector, we append a comma.
         if i != self.length - 1 {
+          // We append a comma.
           result = result + ", ";
         }
       }
+      // We append the closing bracket.
       return result + "]";
     }
     /**
@@ -459,10 +527,14 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
      * @return A new vector with the mapped elements.
      */
     func map<Output>(fn: Function<func (T) => Output>) Vector<Output> {
+      // We map the vector to another vector.
       let mut result = new Vector<Output>();
+      // We iterate over the vector and map each element to the result vector.
       for let mut i = 0; i < self.length; i = i+1 {
+        // We map the element to the result vector.
         result.push(fn(*self[i]));
       }
+      // We return the result vector.
       return result;
     }
 
@@ -482,7 +554,9 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
      */
     @inline
     static func with_capacity(capacity: i32) Self {
+      // We create a new vector with the specified capacity.
       let mut vec = new Self();
+      // We reserve the specified capacity for the vector.
       vec.reserve(capacity);
       return vec;
     }
@@ -529,14 +603,21 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @return `true` if the string views are equal, `false` otherwise.
      */
     operator func ==(other: Self) bool {
+      // If the lengths of the string views are not equal, they are not equal.
       if self.length != other.length {
         return false;
       }
+      // We iterate over the string views and compare each character.
+      // If the characters are not equal, the string views are not equal.
+      // todo: support and test for unicode
       for let mut i = 0; i < self.length; i = i+1 {
+        // safety: we make sure the buffer is not null.
         if self.buffer[i] != other.buffer[i] {
+          // If the characters are not equal, the string views are not equal.
           return false;
         }
       }
+      // If we reach this point, the string views are equal.
       return true;
     }
     /**
@@ -553,7 +634,11 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      */
     @inline
     operator func +(other: Self) Self { 
+      // We concatenate the string views.
+      // StringView::concat() will handle the memory allocation and deallocation, 
+      // thus we don't have to worry about it.
       let result = Self::concat(self.bytes(), other.bytes(), self.length, other.length); 
+      // We return the concatenated string view.
       return new Self(result, self.length + other.length);
     }
     /**
@@ -563,7 +648,12 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      */
     @inline
     operator func +(other: Char) Self { 
-      let result = Self::concat(self.bytes(), (&other) as *const Char, self.length, 1); 
+      // We concatenate the string view with a character.
+      // StringView::concat() will handle the memory allocation and deallocation,
+      // thus we don't have to worry about it.
+      // We pass the character as a pointer to a string of length 1. 
+      let result = Self::concat(self.bytes(), (&other) as *const Char, self.length, 1);
+      // We return the concatenated string view. 
       return new Self(result, self.length + 1);
     }
     /**
@@ -592,12 +682,24 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @return The character at the specified index.
      */
     operator func [](index: i32) Char {
+      // If the index is negative, we return the character at the end of the string view.
+      // example: if the string view has 5 characters, and the index is -1, we return the character at index 4.
+      //       [h | e | l | l | o]
+      // ...<-  ^ (0)           ^ (-1) <-...
       if index < 0 {
         return self[self.length + index];
       } else if index >= self.length {
+        // If the index is greater than or equal to the length of the string view,
+        // we throw an IndexError. We make sure we don't overflow.
+        // todo: add a better error message
         throw new IndexError("Index out of bounds.");
       }
+      // safety: we are praying to the gods that the buffer is not null.
+      //  if the buffer is null, we are in trouble. It should never be null.
+      //  unless explicitly trying to make us look bad or something whent wrong 
+      //  on the C side.
       unsafe {
+        // We return the character at the specified index.
         return *(self.bytes() + index);
       }
     }

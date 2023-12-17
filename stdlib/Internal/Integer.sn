@@ -6,6 +6,16 @@ import Core::Ptr;
  *
  * The `DEC_DIGITS_LUT` lookup table is used to convert decimal numbers to strings.
  * It is used by the `to_string` method of the `IntegerImpl` class.
+ * 
+ * The lookup table is a 400 byte array containing the digits of the decimal numbers
+ * from 0 to 99. Each digit is encoded as a 2 byte value. The first byte is the
+ * ASCII code of the first digit and the second byte is the ASCII code of the second
+ * digit.
+ * 
+ * For example, the number 42 is encoded as the 2 bytes `0x3432`. The first byte
+ * `0x34` is the ASCII code of the digit `4` and the second byte `0x32` is the
+ * ASCII code of the digit `2`.
+ * 
  */
 const DEC_DIGITS_LUT: *const u8 = b"\
 0001020304050607080910111213141516171819\
@@ -14,6 +24,27 @@ const DEC_DIGITS_LUT: *const u8 = b"\
 6061626364656667686970717273747576777879\
 8081828384858687888990919293949596979899";
 
+/**
+ * @brief Integer implementation.
+ * 
+ * The `IntegerImpl` class provides the implementation for all the integer types.
+ * 
+ * The `IntegerImpl` class is not meant to be used directly. It is used by the
+ * `IntegerType` class to provide the implementation for all the integer types.
+ * 
+ * The `IntegerImpl` class provides basic methods like addition, subtraction,
+ * multiplication, division, etc. for all the integer types.
+ * 
+ * The `IntegerImpl` class also provides the `to_string` method to convert an
+ * integer to a string.
+ * 
+ * @note IntegerType is directly injected by the compiler into the `IntegerImpl`
+ *   class. This is done to avoid the need to use a template for the `IntegerImpl`
+ * @example i32 -> IntegerImpl<i32>
+ * @example i64 -> IntegerImpl<i64>
+ * @example u32 -> IntegerImpl<u32>
+ * 
+*/
 @extends
 @__internal__
 class IntegerImpl {  
@@ -21,49 +52,93 @@ class IntegerImpl {
     func to_string(self: IntegerType) String {
       // TODO: float impl
       // TODO: static assert sizeof is larger than 2
+      
+      // Copy the number value to a local variable, so we can modify it.
       let mut n = self;
-      let mut curr = 39; // max number of digits for the buffer
+      // max number of digits for the buffer
+      let mut curr = 39;
+      // allocate the buffer on the stack
       let mut buffer = Ptr::Allocator<?u8>::alloc(curr).ptr();
+      // We check if the number is negative and we set the sign accordingly.
+      // If the number is negative, we negate it and we set the sign to negative.
+      // The sign is used later to add the minus sign to the string.
+      // We also decrement the current index of the buffer, so we can write the
+      // minus sign at the beginning of the buffer.
       let mut neg = false;
       if n < 0 {
         neg = true;
         n = -n;
         curr = curr - 1;
       }
+      // safty: we know that buffer > 0 so we can safely write to it
       unsafe {
+        // Convert the number to an unsigned integer. This is done to avoid
+        // the need to handle the sign bit and to avoid any undefined behavior
+        // when shifting the number.
+        // note: We should check if this works with numbers larger than usize
+        //       and if it works on 32 bit systems.
         let mut n = n as usize;
+        // We convert the number to a string by converting each digit to a char.
+        // We do this by taking the last 2 digits of the number and we use them
+        // as an index to the `DEC_DIGITS_LUT` lookup table.
+        // We then write the 2 bytes of the lookup table to the buffer.
+        // We repeat this process until the number is 0.
         while n >= 10000 {
+          // We take the last 4 digits of the number and we use them as an index
           let rem = n % 10000;
           n = (n / 10000) as usize;
           let d1 = (rem / 100) as usize << 1;
           let d2 = (rem % 100) << 1;
+
           curr = curr - 4;
-          // we know that buffer > 0 so we can safely write to it
           // TODO: assert curr >= 0
+          // safety: we know that buffer > 0 so we can safely write to it
+          //      and we know that curr >= 0 so we can safely write to it
           Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
           Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d2, buffer + (curr + 2), 2);
         }
-        {
-          if n >= 100 {
-            let d1 = (n % 100) << 1; // >> get the last 2 digits
-            n = (n / 100) as usize;
-            curr = curr - 2;
-            Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
-          }
-          // decode last 1 or 2 chars
-          if n < 10 {
-            curr = curr - 1;
-            *(buffer + curr) = (n as u8) + '0';
-          } else {
-            let d1 = n << 1; // >> get the last 2 digits
-            curr = curr - 2;
-            Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
-          }
+        // decode last 1 or 2 chars
+        if n >= 100 {
+          // Get the last 2 digits
+          let d1 = (n % 100) << 1;
+          n = (n / 100) as usize;
+          // Decrement the current index of the buffer, so we can write the
+          // last 2 digits at the end of the buffer.
+          curr = curr - 2;
+          // safety: we know that buffer > 0 so we can safely write to it
+          Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
         }
-        if neg {
+        // decode last 1 or 2 chars
+        if n < 10 {
+          // Get the last digit
+          // Decrement the current index of the buffer, so we can write the
+          // last digit at the end of the buffer.
           curr = curr - 1;
+          // Add '0' to the last digit to convert it to a char.
+          // safety: we know that buffer > 0 so we can safely write to it
+          *(buffer + curr) = (n as u8) + '0';
+        } else {
+          // Get the last 2 digits
+          let d1 = n << 1;
+          // Decrement the current index of the buffer, so we can write the
+          // last 2 digits at the end of the buffer.
+          curr = curr - 2;
+          // safety: we know that buffer > 0 so we can safely write to it
+          //     and we know that curr >= 0 so we can safely write to it
+          Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
+        }
+        // Add the minus sign to the buffer if the number is negative.
+        if neg {
+          // Decrement the current index of the buffer, so we can write the
+          // minus sign at the beginning of the buffer.
+          curr = curr - 1;
+          // safety: we know that buffer > 0 so we can safely write to it
           *(buffer + curr) = '-';
         }
+        // Return the string from the buffer.
+        // We return the string from the current index of the buffer to the end
+        // of the buffer.
+        // Note: Always make sure that we subtract from the correct max size.
         return String::from(buffer + curr, 39 - (curr+neg));
       }
     }
@@ -71,32 +146,89 @@ class IntegerImpl {
     // TODO: this is just a hack, we need to implement a proper
     //    implementation for to_string for bool and floats
     func to_string(self: bool) String {
+      // Safety: we know that bool is either 0 or 1
+      // TODO: See if there is a faster way to do this
       if self { return "1" }
-      else { return "0" }
+      return "0";
     }
 
+    /**
+     * @brief Converts an integer to a hexadecimal string.
+     * 
+     * The `hex` method converts an integer to a hexadecimal string. The string
+     * is prefixed with `0x`. The string is always 17 characters long.
+     * 
+     * @example 42 -> "0x2A"
+     * @example 0 -> "0x0"
+     * 
+     * @return The hexadecimal string.
+    */
     func hex(self: IntegerType) String {
+      // Copy the number value to a local variable, so we can modify it.
+      // TODO: float impl
+      // We also convert the number to an unsigned integer. This is done to avoid
+      // the need to handle the sign bit and to avoid any undefined behavior
+      // when shifting the number.
+      // note: We should check if this works with numbers larger than usize
+      //       and if it works on 32 bit systems.
       let mut x = self as usize;
-      let size = 17; // max number of digits for the buffer
+      // Max number of digits for the buffer. We add 2 to the size to account
+      // for the `0x` prefix.
+      let size = 17;
+      // Allocate the buffer on the stack.
+      // TODO: assert size > 0
       let mut buffer = Ptr::Allocator<?u8>::alloc(size).ptr();
+      // The length of the of the number in hexadecimal is the size of the buffer
+      // minus 2. We subtract 2 to account for the `0x` prefix.
       let len = size - 2;
+      // safety: we know that buffer > 0 so we can safely write to it
+      //     and we know that len >= 0 so we can safely write to it
+      // Unsafe block to be able to write to the buffer with pointer arithmetic.
       unsafe {
+        // `i` is the current index of the buffer.
         let mut i = len - 1;
         while i >= 0 {
+          // Convert the last 4 bits of the number to a hexadecimal digit.
+          // We do this by masking the number with `0xF` and we add `0` to the
+          // result to convert it to a char.
           let d: u8 = x & 0xF;
+          // Convert the digit to a char.
           let mut c: u8;
+          // If the digit is less than 10, we add `0` to the digit to convert
+          // it to a char.
           if d < 10 {
+            // Add `0` to the digit to convert it to a char.
             c = d + '0';
           } else {
+            // If the digit is greater than 10, we add `A` to the digit to convert
+            // it to a char.
+            // note: We use 'A' so that the digit is converted to an uppercase. 
+            //      We could also use 'a' to convert the digit to a lowercase.
+            // TODO: In compiler config or compiler flags, check if we should
+            //       convert the digit to uppercase or lowercase based on the
+            //       flags or config. Example: -fno-uppercase-hex
             c = d + 55;
           }
+          // Write the char to the buffer.
+          // safety: we know that buffer > 0 so we can safely write to it
           *(buffer + (i+1)) = c;
+          // Shift the number to the right by 4 bits.
+          // and decrement the current index of the buffer.
           i = i - 1;
+          // We shift the number to the right by 4 bits to get the next 4 bits
+          // of the number.
           x = x |>> 4;
+          // We break the loop if the number is 0.
           if x == 0 { break; }
         }
+        // Add the `0x` prefix to the buffer.
+        // safety: we know that buffer > 0 so we can safely write to it
+        //     and we know that i >= 0 so we can safely write to it
         *(buffer + i) = '0';
         *(buffer + (i+1)) = 'x';
+        // Return the string from the buffer.
+        // We return the string from the current index of the buffer to the end
+        // of the buffer.
         return String::from(buffer+i, (len-i)+1);
       }
     }

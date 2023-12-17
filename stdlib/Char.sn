@@ -7,8 +7,8 @@
  */
 @inline
 public func is_space(c: u8) bool {
-    return c == ' ' || c == '\t' 
-       || c == '\n' || c == '\r';
+  return c == ' ' || c == '\t' 
+     || c == '\n' || c == '\r';
 }
 /**
  * Returns true if the given character is an
@@ -31,7 +31,7 @@ public func is_upper(c: u8) bool
  */
 @inline
 public func is_lower(c: u8) bool
-    { return c >= 'a' && c <= 'z'; }
+  { return c >= 'a' && c <= 'z'; }
 /**
  * Returns true if the given character is a
  *  digit.
@@ -42,7 +42,7 @@ public func is_lower(c: u8) bool
  */
 @inline
 public func is_digit(c: u8) bool
-    { return c >= '0' && c <= '9'; }
+  { return c >= '0' && c <= '9'; }
 /**
  * Returns true if the given character is a
  *  hexadecimal digit.
@@ -53,8 +53,8 @@ public func is_digit(c: u8) bool
  */
 @inline
 public func is_hex(c: u8) bool { 
-    return is_digit(c) || (c >= 'a' && c <= 'f') 
-      || (c >= 'A' && c <= 'F'); 
+  return is_digit(c) || (c >= 'a' && c <= 'f') 
+    || (c >= 'A' && c <= 'F'); 
 }
 /**
  * Returns true if the given character is an
@@ -66,7 +66,7 @@ public func is_hex(c: u8) bool {
  */
 @inline
 public func is_oct(c: u8) bool
-    { return c >= '0' && c <= '7'; }
+  { return c >= '0' && c <= '7'; }
 /**
  * Returns true if the given character is a
  *  letter.
@@ -77,7 +77,7 @@ public func is_oct(c: u8) bool
  */
 @inline
 public func is_alpha(c: u8) bool
-    { return is_upper(c) || is_lower(c); }
+  { return is_upper(c) || is_lower(c); }
 /**
  * Returns true if the given character is a
  *  letter or digit.
@@ -88,7 +88,7 @@ public func is_alpha(c: u8) bool
  */
 @inline
 public func is_alpha_num(c: u8) bool
-    { return is_alpha(c) || is_digit(c); }
+  { return is_alpha(c) || is_digit(c); }
 /**
  * Returns true if the given character is a
  *  control character.
@@ -99,7 +99,7 @@ public func is_alpha_num(c: u8) bool
  */
 @inline
 public func is_control(c: u8) bool
-    { return c < 32 || c == 127; }
+  { return c < 32 || c == 127; }
 /**
  * Returns true if the given character is a
  *  printable character.
@@ -110,7 +110,7 @@ public func is_control(c: u8) bool
  */
 @inline
 public func is_print(c: u8) bool
-    { return !is_control(c); }
+  { return !is_control(c); }
 /**
  * Returns true if the given character is a
  *  punctuation character.
@@ -121,17 +121,18 @@ public func is_print(c: u8) bool
  */
 @inline
 public func is_punc(c: u8) bool {
-    return c == '!' || c == '"' || c == '#' 
-      || c == '$' || c == '%' || c == '&' 
-      || c == '\'' || c == '(' || c == ')' 
-      || c == '*' || c == '+' || c == ',' 
-      || c == '-' || c == '.' || c == '/' 
-      || c == ':' || c == ';' || c == '<' 
-      || c == '=' || c == '>' || c == '?' 
-      || c == '@' || c == '[' || c == '\\' 
-      || c == ']' || c == '^' || c == '_' 
-      || c == '`' || c == '{' || c == '|' 
-      || c == '}' || c == '~';
+  // TODO: faster implementation
+  return c == '!' || c == '"' || c == '#' 
+    || c == '$' || c == '%' || c == '&' 
+    || c == '\'' || c == '(' || c == ')' 
+    || c == '*' || c == '+' || c == ',' 
+    || c == '-' || c == '.' || c == '/' 
+    || c == ':' || c == ';' || c == '<' 
+    || c == '=' || c == '>' || c == '?' 
+    || c == '@' || c == '[' || c == '\\' 
+    || c == ']' || c == '^' || c == '_' 
+    || c == '`' || c == '{' || c == '|' 
+    || c == '}' || c == '~';
 }
 /**
  * Returns true if the given character is a
@@ -143,12 +144,12 @@ public func is_punc(c: u8) bool {
  */
 @inline
 public func is_sym(c: u8) bool {
-    return c == '+' || c == '-' || c == '*' 
-      || c == '/' || c == '\\' || c == '|' 
-      || c == '&' || c == '^' || c == '<' 
-      || c == '>' || c == '=' || c == '~' 
-      || c == '@' || c == '$' || c == '%' 
-      || c == '!' || c == '?';
+  return c == '+' || c == '-' || c == '*' 
+    || c == '/' || c == '\\' || c == '|' 
+    || c == '&' || c == '^' || c == '<' 
+    || c == '>' || c == '=' || c == '~' 
+    || c == '@' || c == '$' || c == '%' 
+    || c == '!' || c == '?';
 }
 /**
  * Returns true if the given character is a
@@ -160,14 +161,14 @@ public func is_sym(c: u8) bool {
  */
 @inline
 public func is_mark(c: u8) bool {
-    return c == '`' || c == '\'' || c == '^' 
-      || c == '"' || c == '~' || c == '.' 
-      || c == '-' || c == '_' || c == '*' 
-      || c == '+' || c == '=' || c == '<' 
-      || c == '>' || c == '@' || c == ':' 
-      || c == '/' || c == '\\' || c == '|' 
-      || c == '!' || c == '?' || c == '#' 
-      || c == '$' || c == '%' || c == '&' 
-      || c == '(' || c == ')' || c == '[' 
-      || c == ']' || c == '{' || c == '}';
+  return c == '`' || c == '\'' || c == '^' 
+    || c == '"' || c == '~' || c == '.' 
+    || c == '-' || c == '_' || c == '*' 
+    || c == '+' || c == '=' || c == '<' 
+    || c == '>' || c == '@' || c == ':' 
+    || c == '/' || c == '\\' || c == '|' 
+    || c == '!' || c == '?' || c == '#' 
+    || c == '$' || c == '%' || c == '&' 
+    || c == '(' || c == ')' || c == '[' 
+    || c == ']' || c == '{' || c == '}';
 }
