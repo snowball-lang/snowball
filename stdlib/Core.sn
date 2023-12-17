@@ -690,7 +690,9 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
         return self[self.length + index];
       } else if index >= self.length {
         // If the index is greater than or equal to the length of the string view,
-        throw new IndexError("Index out of bounds. Cannot access character at index " + index.to_string());
+        // we throw an IndexError. We make sure we don't overflow.
+        // todo: add a better error message
+        throw new IndexError("Index out of bounds.");
       }
       // safety: we are praying to the gods that the buffer is not null.
       //  if the buffer is null, we are in trouble. It should never be null.
