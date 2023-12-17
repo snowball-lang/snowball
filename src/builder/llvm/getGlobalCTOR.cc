@@ -21,7 +21,7 @@ llvm::Function* LLVMBuilder::getGlobalCTOR(bool createIfNone) {
     auto subroutineType = dbg.builder->createSubroutineType(llvm::MDTuple::get(*context, {}));
     auto subprogram = dbg.builder->createFunction(
       file,
-      FMT("Global constructor for module {}", iModule->getName().c_str()),
+      FMT("Global constructor for module %s", iModule->getName().c_str()),
       mangle,
       file,
       0,

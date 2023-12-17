@@ -23,25 +23,21 @@ void LLVMBuilder::visit(ir::Func* func) {
       this->value = it->second;
     else {
       auto layout = module->getDataLayout();
-      auto alloca = builder->CreateCall(getAllocaFunction(), {builder->getInt64(layout.getTypeAllocSize(getLambdaContextType()))});
+      auto alloca = builder->CreateCall(getAllocaFunction(), {builder->getInt32(layout.getTypeAllocSize(getLambdaContextType()))});
       
       auto funcGep = builder->CreateStructGEP(getLambdaContextType(), alloca, 0, ".func.use.gep");
       builder->CreateStore(it->second, funcGep);
 
       llvm::Value* body = nullptr;
-      bool copy = false;
       if (func->isAnon() && func->usesParentScope()) {
         auto closure = ctx->closures.at(ctx->getCurrentIRFunction()->getId());
         body = closure.closure;
-        copy = true;
       } else {
         body = llvm::Constant::getNullValue(builder->getPtrTy());
       }
 
       auto bodyGep = builder->CreateStructGEP(getLambdaContextType(), alloca, 1, ".func.use.gep");
-      if (copy)
-        builder->CreateMemCpy(bodyGep, llvm::MaybeAlign(), body, llvm::MaybeAlign(), builder->getInt64(layout.getTypeAllocSize(builder->getPtrTy())));
-      else builder->CreateStore(body, bodyGep);
+      builder->CreateStore(body, bodyGep);
       this->value = alloca;
     }
     return;
@@ -134,16 +130,21 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     if (v->getVariable()->isUsedInLambda()) {
       if (closureType == nullptr) {
         closureType = llvm::StructType::create(*context, "_closure." + fn->getMangle());
+        auto body = closureType->elements().vec();
+        body.push_back(llvmType);
+        closureType->setBody(body);
+        auto layout = module->getDataLayout();
+        auto alloca = builder->CreateCall(getAllocaFunction(), {builder->getInt32(layout.getTypeAllocSize(closureType))});
+        //auto structAlloca = createAlloca(closureType->getPointerTo());
+        alloca->setDebugLoc(llvm::DILocation::get(*context, 0, 0, llvmFn->getSubprogram()));
+        //builder->CreateStore(alloca, structAlloca);
         ctx->closures.insert({fn->getId(), LLVMBuilderContext::ClosureContext {
-          .closure = builder->CreateAlloca(closureType, nullptr, "closure." + fn->getMangle()),
+          .closure = alloca,
           .closureType = closureType,
         }});
       }
 
       auto& closure = ctx->closures.at(fn->getId());
-      auto body = closureType->elements().vec();
-      body.push_back(llvmType);
-      closureType->setBody(body);
       closure.variables.push_back(v->getVariable()->getId());
     }
   }

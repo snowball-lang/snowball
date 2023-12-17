@@ -159,14 +159,24 @@ void LLVMBuilder::visit(ir::Call* call) {
     } else {
       auto loadFunction = builder->CreateStructGEP(getLambdaContextType(), callee, 0);
       auto loadFunctionValue = builder->CreateLoad(calleeType->getPointerTo(), loadFunction);
+      llvm::FunctionType* newType = nullptr;
       if (!doNotAddAnonContext) {
-        args.insert(args.begin(), callee);
+        if (allocatedValue) {
+          auto oldArgs = calleeType->params().vec();
+          // second arg, first is the sret arg
+          oldArgs.insert(oldArgs.begin() + 1, getLambdaContextType()->getPointerTo());
+          newType = llvm::FunctionType::get(calleeType->getReturnType(), oldArgs, calleeType->isVarArg());
+
+          args.insert(args.begin() + 1, callee);
+        } else {
+          auto oldArgs = calleeType->params().vec();
+          oldArgs.insert(oldArgs.begin(), getLambdaContextType()->getPointerTo());
+          newType = llvm::FunctionType::get(calleeType->getReturnType(), oldArgs, calleeType->isVarArg());
+
+          args.insert(args.begin(), callee);
+        }
       }
-
-      auto oldArgs = calleeType->params().vec();
-      oldArgs.insert(oldArgs.begin(), getLambdaContextType()->getPointerTo());
-      auto newType = llvm::FunctionType::get(calleeType->getReturnType(), oldArgs, calleeType->isVarArg());
-
+      
       if (asFunction && asFunction->isAnon()) {
         newType = calleeType; // We've already added the context in getLLVMFunctionType
       }
@@ -176,6 +186,7 @@ void LLVMBuilder::visit(ir::Call* call) {
 
     this->value = allocatedValue ? allocatedValue : llvmCall;
   }
+
 
 #define SET_CALL_ATTRIBUTES(type)                                                                                      \
   if (llvm::isa<type>(llvmCall)) {                                                                                     \

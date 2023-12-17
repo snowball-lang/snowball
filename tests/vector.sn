@@ -63,7 +63,7 @@ func with_struct() i32 {
     return vec[0] == "hello";
 }
 
-@test(expect = 5, skip)
+@test(expect = 5)
 func map() i32 {
     let mut v = new Vector<i32>();
     v.push(1);

@@ -14,7 +14,7 @@
       int argumentIndex = 0;\
       if (utils::is<types::BaseType>(x->getRetTy()))\
         argumentIndex++;\
-      arg = ctx->getCurrentFunction()->getArg(argumentIndex);\
+      arg = builder->CreateLoad(closure.closureType->getPointerTo(), builder->CreateStructGEP(getLambdaContextType(), ctx->getCurrentFunction()->getArg(argumentIndex), 1));\
     } else {\
       closure = ctx->closures.at(x->getId());\
       arg = closure.closure;        \
@@ -27,7 +27,7 @@
         [variable](auto v2) { return v2 == variable->getId(); }\
       )\
     );\
-    value = builder->CreateStructGEP(closure.closureType, builder->CreateStructGEP(getLambdaContextType(), arg, 1), index);\
+    value = builder->CreateStructGEP(closure.closureType, arg, index);\
   } else {\
     auto id = variable->getId() + variable->isArgument();\
     value = ctx->getSymbol(id);\
