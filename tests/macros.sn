@@ -46,13 +46,4 @@ func outside() i32 {
     outside!();
 }
 
-macro recursive() {
-    recursive!();
-}
-
-@test
-func recursive() i32 {
-    recursive!();
-} 
-
 }

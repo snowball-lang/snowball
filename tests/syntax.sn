@@ -370,11 +370,29 @@ func deduce_from_generic() i32 {
     return deduce_from_generic(a);
 }
 
-@test
+@test(expect = 0)
 func unreachable() i32 {
     // just testing that the syntax is valid once called
     if false {
         unreachable!();
+    }
+    return 0;
+}
+
+@test(expect = 0)
+func todo() i32 {
+    // just testing that the syntax is valid once called
+    if false {
+        todo!("test");
+    }
+    return 0;
+}
+
+@test(expect = 0)
+func unimplemented() i32 {
+    // just testing that the syntax is valid once called
+    if false {
+        unimplemented!();
     }
     return 0;
 }

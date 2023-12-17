@@ -86,7 +86,7 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
   if (ctx->macroDepth > SN_MAX_MACRO_DEPTH) {
     E<PSEUDO_ERROR>(
             p_node,
-            FMT("Macro '%s' has exceeded the maximum macro depth of %d!", macroName.c_str(), SN_MAX_MACRO_DEPTH)
+            FMT("Macro '%s' has exceeded the maximum macro depth of '%i'!", macroName.c_str(), SN_MAX_MACRO_DEPTH)
     );
   }
   if (macroName == "pkg") {

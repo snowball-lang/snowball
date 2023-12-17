@@ -38,11 +38,36 @@ public func panic(
  *  - Match arms with guard conditions.
  *  - Loops that dynamically terminate.
  *  - Iterators that dynamically terminate.
- * 
- * @param message The message to display if the code is reached.
- * @remarks The `unreachable` macro is a no-op in release builds.
  */
 @export
-macro unreachable(message: const[str] = "Unexpectedly reached unreachable code.") {
+macro unreachable() {
   pkg!(panic("internal error: entered unreachable code"));
+}
+
+/**
+ * @brief It is used to mark TODO code.
+ * 
+ * The `todo` macro is used to mark code that is not yet implemented. It is often used to mark code that should
+ * be implemented in the future. If the code is reached, the program will panic with the specified message.
+ * 
+ * This is useful any time that the compiler didn't implement some code, but it is expected to be implemented in the future.
+ * 
+ * @param message The error message to emit.
+ */
+@export
+macro todo(message: const[str]) {
+  pkg!(panic("not yet implemented: " + #message));
+}
+
+/**
+ * @brief It is used to mark unimplemented code.
+ * 
+ * The `unimplemented` macro is used to mark code that is not yet implemented. It is often used to mark code that should
+ * be implemented in the future. If the code is reached, the program will panic with the specified message.
+ * 
+ * This is useful any time that the compiler didn't implement some code, but it is expected to be implemented in the future.
+ */
+@export
+macro unimplemented() {
+  pkg!(panic("not yet implemented!"));
 }
