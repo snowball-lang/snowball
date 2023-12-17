@@ -1,100 +1,234 @@
 
+/**
+ * @class *const <T>
+ * @brief A pointer to a constant value.
+ * This class represents a pointer to a constant value. It provides various
+ * operations and functionalities for working with pointers to constant values. This
+ * class is used to implement the `&T` type.
+ * @note This class is not meant to be used directly. It is used to implement the `*const T` type.
+ * @see *mut <T>
+ * 
+ * @tparam T The type of the value pointed to by the pointer. This will be automatically injected
+ * by the compiler.
+ */
 @__internal__
 class *const <T> {
   public:
+    /**
+     * @brief Adds an offset to the pointer.
+     * @param[in] self The pointer to add the offset to.
+     * @param[in] other The offset to add to the pointer.
+     * @return A pointer to the value at the specified offset from the original pointer.
+     * @note This function is unsafe because it can cause undefined behavior if the offset
+     * is out of bounds. No bounds checking is performed.
+     */
     @inline
     @llvm_function
     unsafe operator func +(self: *const T, other: i64) *const T
     { 
+      ; Get the pointer to the value at the specified offset
       %0 = getelementptr {=T}, {=*const T} %self, i64 %other
+      ; Return the pointer to the value at the specified offset
+      ; In LLVM 15 > onwars, we dont need to cast the pointer to the correct type
+      ; because the type of the pointer is unknown to the compiler
       ret {=*const T} %0
     } 
 
+    /**
+     * @brief Converts the pointer to a reference.
+     * @param[in] self The pointer to convert to a reference.
+     * @return A reference to the value pointed to by the pointer.
+     */
     @inline
     @llvm_function
     unsafe func as_ref(self: *const T) &T 
     {
-      ret {=*const T} %self
+      ; Return the reference to the value pointed to by the pointer
+      ; In LLVM 15 > onwars, we dont need to cast the pointer to the correct type
+      ; note: This is basically a no-op and its extremely unsafe
+      ret {=&T} %self
     }
 
     @__internal__
     operator func =(self: *const T, other: *const T) *const T {}
 
+    /**
+     * @brief Checks whether the pointer is null.
+     * @param[in] self The pointer to check.
+     * @return `true` if the pointer is null, `false` otherwise.
+     */
     @inline
     @llvm_function
     func is_null(self: *const T) bool
     {
+      ; Check if the pointer is null
+      ; In LLVM 15 > onwars, we dont need to cast the pointer to the correct type
       %0 = icmp eq {=*const T} %self, null
+      ; Return the result of the comparison
       ret i1 %0
     }
 
+    /**
+     * @brief Gets a reference to the value at the specified index.
+     * @param[in] self The pointer to get the value from.
+     * @param[in] index The index of the value to get.
+     * @return A reference to the value at the specified index.
+     * @note This function is unsafe because it can cause undefined behavior if the index
+     * is out of bounds. No bounds checking is performed.
+     */
     @inline
     func unchecked_get(self: *const T, index: i32) &T
     {
+      // safety: This function is unsafe because it can cause undefined behavior if the index
       unsafe{
+        // Get the pointer to the value at the specified index
+        // note: we convert the pointer to a reference
         return (self + index).as_ref();
       }
     }
 
+    /**
+     * @brief Gets the value at the specified index.
+     * @param[in] self The pointer to get the value from.
+     * @param[in] index The index of the value to get.
+     * @return The value at the specified index.
+     * @note This function is unsafe because it can cause undefined behavior if the index
+     * is out of bounds. No bounds checking is performed.
+     * @important This function loads the value from memory. If you want to get a reference
+     * to the value, use the `unchecked_get` function instead or the `+` operator.
+     */
     @inline
     @llvm_function(sanitise_void_return)
     operator func [](self: *const T, index: i64) T
     { 
+      ; Get the pointer to the value at the specified index
       %0 = getelementptr inbounds {=T}, {=*const T} %self, i64 %index
+      ; Load the value from memory
+      ; In LLVM 15 > onwars, we dont need to cast the pointer to the correct type
       %1 = load {=T}, {=*const T} %0, align 1
+      ; Return the value
       ret {=T} %1
     }
 
+    /**
+     * @brief It returns if the pointer is null.
+     * @param[in] self The pointer to check.
+     * @return `true` if the pointer is null, `false` otherwise.
+     */
     @inline
     operator func !(self: *const T) bool { return self.is_null(); }
 }
 
+/**
+ * @class *mut <T>
+ * @brief A pointer to a mutable value.
+ * This class represents a pointer to a mutable value. It provides various
+ * operations and functionalities for working with pointers to mutable values. This
+ * class is used to implement the `&mut T` type.
+ * @note This class is not meant to be used directly. It is used to implement the `*mut T` type.
+ * @see *const <T>
+ * 
+ * @tparam T The type of the value pointed to by the pointer. This will be automatically injected
+ * by the compiler.
+ */
 @__internal__
 class *mut <T> {
   public:
+    /**
+     * @brief Adds an offset to the pointer.
+     * @param[in] self The pointer to add the offset to.
+     * @param[in] other The offset to add to the pointer.
+     * @return A pointer to the value at the specified offset from the original pointer.
+     * @note This function is unsafe because it can cause undefined behavior if the offset
+     * is out of bounds. No bounds checking is performed.
+     */
     @inline
     @llvm_function
     unsafe operator func +(mut self: *const T, other: i64) *mut T
     { 
+      ; Get the pointer to the value at the specified offset
       %0 = getelementptr {=T}, {=*mut T} %self, i64 %other
+      ; Return the pointer to the value at the specified offset
       ret {=*mut T} %0
     } 
 
+    /**
+     * @brief Converts the pointer to a reference.
+     * @param[in] self The pointer to convert to a reference.
+     * @return A reference to the value pointed to by the pointer.
+     */
     @inline
     @llvm_function
-    unsafe func as_ref(mut self: *const T) &T 
+    unsafe func as_ref(mut self: *const T) &mut T 
     {
+      ; Return the reference to the value pointed to by the pointer
       ret {=*mut T} %self
     }
 
     @__internal__
     mut operator func =(mut self: *const T, mut other: *const T) *mut T {}
 
+    /**
+     * @brief Checks whether the pointer is null.
+     * @param[in] self The pointer to check.
+     * @return `true` if the pointer is null, `false` otherwise.
+     */
     @inline
     @llvm_function
     func is_null(mut self: *mut T) bool
     {
+      ; Check if the pointer is null
       %0 = icmp eq {=*mut T} %self, null
+      ; Return the result of the comparison
       ret i1 %0
     }
 
+    /**
+     * @brief Gets a reference to the value at the specified index.
+     * @param[in] self The pointer to get the value from.
+     * @param[in] index The index of the value to get.
+     * @return A reference to the value at the specified index.
+     * @note This function is unsafe because it can cause undefined behavior if the index
+     * is out of bounds. No bounds checking is performed.
+     */
     @inline
-    func unchecked_get(mut self: *mut T, index: i32) &T
+    func unchecked_get(mut self: *mut T, index: i32) &mut T
     {
+      // safety: This function is unsafe because it can cause undefined behavior if the index
       unsafe{
+        // Get the pointer to the value at the specified index
         return (self + index).as_ref();
       }
     }
 
+    /**
+     * @brief Gets the value at the specified index.
+     * @param[in] self The pointer to get the value from.
+     * @param[in] index The index of the value to get.
+     * @return The value at the specified index.
+     * @note This function is unsafe because it can cause undefined behavior if the index
+     * is out of bounds. No bounds checking is performed.
+     * @important This function loads the value from memory. If you want to get a reference
+     * to the value, use the `unchecked_get` function instead or the `+` operator.
+     */
     @inline
     @llvm_function(sanitise_void_return)
     operator func [](mut self: *mut T, index: i64) T
     { 
+      ; Get the pointer to the value at the specified index
       %0 = getelementptr inbounds {=T}, {=*mut T} %self, i64 %index
+      ; Load the value from memory
+      ; In LLVM 15 > onwars, we dont need to cast the pointer to the correct type
       %1 = load {=T}, {=*mut T} %0, align 1
+      ; Return the value
       ret {=T} %1
     }
 
+    /**
+     * @brief It returns if the pointer is null.
+     * @param[in] self The pointer to check.
+     * @return `true` if the pointer is null, `false` otherwise.
+     */
     @inline
     operator func !(mut self: *mut T) bool { return self.is_null(); }
 }

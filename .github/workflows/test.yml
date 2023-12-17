@@ -50,7 +50,6 @@ jobs:
       - name: Install snowball
         run: |
           set -x
-          sudo make install
           mkdir -p ~/.snowball
           cp -r stdlib/ ~/.snowball/stdlib
           ls ~/.snowball

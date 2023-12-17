@@ -2,14 +2,43 @@
  * @file Common bindings for the C standard library
  */
 
+/**
+ * @brief C equivalent of an unknown pointer type.
+ * @note This type is used to represent a pointer to an unknown type.
+ * It is used in situations where the type of the pointer is not known.
+ * For example, when calling a C function that returns a pointer to an unknown type.
+ */
 public type c_obj = *const void;
+/**
+ * @brief C equivalent of an i32.
+ * @note This type is used to represent a 32-bit signed integer.
+ */
 public type c_int = i32;
+/**
+ * @brief C equivalent of an i8.
+ * @note This type is used to represent an 8-bit signed integer.
+ */
 public type c_char = i8;
-public type c_bool = bool;
+/**
+ * @brief C equivalent of a float (32-bit).
+ * @note This type is used to represent a 32-bit floating point number.
+ */
 public type c_float = f32;
+/**
+ * @brief C equivalent of a double (64-bit).
+ * @note This type is used to represent a 64-bit floating point number.
+ */
 public type c_double = f64;
+/**
+ * @brief C equivalent of a long (64-bit).
+ * @note This type is used to represent a 64-bit signed integer.
+ */
 public type c_long = i64;
-// TODO: add more types
+/**
+ * @brief C equivalent of a long long (128-bit).
+ * @note This type is used to represent a 128-bit signed integer.
+ */
+public type c_long_long = i128;
 
 /**
  * @brief Allocates size bytes of uninitialized storage.
@@ -192,15 +221,3 @@ public external unsafe func strcpy(*const c_char, *const c_char) *const c_char;
 public external unsafe func strcat(*const c_char, *const c_char) *const c_char;
 } // namespace c_string
 
-/**
- * @brief a namespace that contains some utility math functions.
-*/
-namespace cmath {
-/**
- * @brief It converts a string into a double.
- * @param str(&char) - string to be converted
-
- * @return f64 - number
-*/
-public external unsafe func strtod(*const c_char, c_obj) f64;
-}
