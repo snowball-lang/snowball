@@ -397,4 +397,14 @@ func unimplemented() i32 {
     return 0;
 }
 
+@test(expect = 4)
+func sizeof() i32 {
+    return sizeof!(:i32);
+}
+
+@test(expect = 4)
+func alignof() i32 {
+    return alignof!(:i32);
+}
+
 }
