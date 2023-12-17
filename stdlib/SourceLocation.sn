@@ -85,7 +85,7 @@ public class SourceLocation {
  * an utility macro to pass around source locations.
  * 
  * @example
- * func foo(x: SourceLocation = #current_location()) {
+ * func foo(x: SourceLocation = current_location!()) {
  *   // ...
  * }
  *
@@ -96,4 +96,4 @@ public class SourceLocation {
  */
 @export
 macro current_location() =
-  #pkg(SourceLocation::SourceLocation::current())
+  pkg!(SourceLocation::SourceLocation::current())

@@ -23,9 +23,9 @@ jobs:
           # - ARCH: 'arm64'
           #   DIST: 'macos-11'
           #   NAME: 'darwin'
-          - ARCH: 'x86_64'
-            DIST: 'macos-11'
-            NAME: 'darwin'
+          #- ARCH: 'x86_64' # FIXME: 
+          #  DIST: 'macos-11'
+          #  NAME: 'darwin'
           # - ARCH: 'arm64' # TODO
           #   DIST: 'macos-11'
           #   NAME: 'darwin'
@@ -42,6 +42,7 @@ jobs:
         run: |
           if [[ "$OSTYPE" != "darwin"* ]]; then
             docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+            sudo apt install cmake
           fi
 
       - name: Build in Docker

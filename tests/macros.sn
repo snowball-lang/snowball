@@ -10,7 +10,7 @@ macro inline_statement() {
 
 @test
 func inline_statement() i32 {
-    #inline_statement();
+    inline_statement!();
 }
 
 macro argument(x: const[num]) {
@@ -19,7 +19,7 @@ macro argument(x: const[num]) {
 
 @test
 func argument() i32 {
-    #argument(1);
+    argument!(1);
 }
 
 macro default_arg(x: const[num] = 1) {
@@ -28,7 +28,7 @@ macro default_arg(x: const[num] = 1) {
 
 @test
 func default_arg() i32 {
-    #default_arg();
+    default_arg!();
 }
 
 macro macro_scope_access() {
@@ -37,13 +37,26 @@ macro macro_scope_access() {
 
 @test
 func macro_scope_access() i32 {
-    #macro_scope_access();
+    macro_scope_access!();
     return x;
 }
 
 @test
 func outside() i32 {
-    #outside();
+    outside!();
+}
+
+@test(expect = 5)
+func include_str() i32 {
+    let x = include_str!("assets/macros_test.txt");
+    return x.size();
+}
+
+@test(expect = 5, skip)
+func env() i32 {
+    // Still don't know how we could test this, use HOME maybe?
+//    let x = env!("TEST_ENV");
+//    return x.size();
 }
 
 }

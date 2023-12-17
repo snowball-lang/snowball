@@ -25,8 +25,8 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
 
     if (TOKEN(SYM_HASH)) {
-      auto atPos = m_current.get_pos();
-      if (is<TokenType::IDENTIFIER>(peek())) {
+      if (TOKEN(SYM_HASH) && is<TokenType::IDENTIFIER>(peek())) {
+        auto atPos = m_current.get_pos();
         next();
         auto iPos = m_current.get_pos();
         if (RIGHT_NEXT_TO(atPos, iPos)) {
@@ -37,34 +37,6 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
 
           auto var = Syntax::N<Syntax::Expression::PseudoVariable>(m_current.to_string());
           var->setDBGInfo(dbg);
-          if (is<TokenType::BRACKET_LPARENT>(peek())) {
-            dbg->width--;
-            std::vector<Syntax::Node*> args;
-            next();
-            if (!is<TokenType::BRACKET_RPARENT>(peek())) {
-              prev();
-              while (true) {
-                next();
-                auto pk = peek();
-                if (is<TokenType::SYM_COLLON>(pk)) {
-                  next(1);
-                  args.push_back(parseType());
-                  prev();
-                } else {
-                  args.push_back(parseStatement(pk));
-                }
-                if (is<TokenType::SYM_COMMA>(peek())) {
-                } else {
-                  next();
-                  break;
-                }
-              }
-            } else {
-              next();
-            }
-            assert_tok<TokenType::BRACKET_RPARENT>("')'");
-            var->setArgs(args);
-          }
           expr = var;
         } else {
           prev();
@@ -72,6 +44,54 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
         }
       } else
         parseNormal = true;
+    } else if (TOKEN(IDENTIFIER), is<TokenType::OP_NOT>(peek())) {
+      auto atPos = m_current.get_pos();
+      atPos.second = atPos.second + m_current.to_string().size() - 1;
+      auto name = m_current.to_string();
+      next();
+      auto iPos = m_current.get_pos();
+      if (RIGHT_NEXT_TO(atPos, iPos)) {
+        auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
+        next();
+
+        assert_tok<TokenType::BRACKET_LPARENT>("'('");
+        dbg->width--;
+        std::vector<Syntax::Node*> args;
+        next();
+        if (!is<TokenType::BRACKET_RPARENT>()) {
+          prev(1);
+          while (true) {
+            next();
+            auto pk = peek();
+            if (is<TokenType::SYM_COLLON>(pk)) {
+              next(1);
+              args.push_back(parseType());
+              prev();
+            } else {
+              args.push_back(parseStatement(pk));
+            }
+            if (is<TokenType::SYM_COMMA>(peek())) {
+            } else {
+              next();
+              break;
+            }
+          }
+
+          assert_tok<TokenType::BRACKET_RPARENT>("')'");
+          auto var = Syntax::N<Syntax::Expression::PseudoVariable>(name);
+          var->setDBGInfo(dbg);
+          var->setArgs(args);
+          expr = var;
+        } else {
+          auto var = Syntax::N<Syntax::Expression::PseudoVariable>(name);
+          var->setDBGInfo(dbg);
+          var->setArgs(args);
+          expr = var;
+        }
+      } else {
+        prev();
+        parseNormal = true;
+      }
     } else
       parseNormal = true;
 

@@ -19,7 +19,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
     if (auto x = ctx->getCurrentFunction()) {
       stringValue = x->getNiceName();
     } else {
-      E<PSEUDO_ERROR>(p_node, "Cant use @FN pseudo variable outside a function!");
+      E<PSEUDO_ERROR>(p_node, "Cant use '#function' pseudo variable outside a function!");
     }
   } else if (pseudo == "dsohandle") {
     if (auto x = ctx->getCurrentFunction()) {
@@ -27,7 +27,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
     } else {
       E<PSEUDO_ERROR>(
               p_node,
-              "Cant use @MANGLED_FN pseudo variable outside "
+              "Cant use '#dsohandle' pseudo variable outside "
               "a function!"
       );
     }
@@ -37,7 +37,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
     if (auto x = ctx->getCurrentClass()) {
       stringValue = x->getPrettyName();
     } else {
-      E<PSEUDO_ERROR>(p_node, "Cant use @CLASS pseudo variable outside a class!");
+      E<PSEUDO_ERROR>(p_node, "Cant use '#class' pseudo variable outside a class!");
     }
   } else if (pseudo == "file") {
     stringValue = getSourceInfo()->getPath();
