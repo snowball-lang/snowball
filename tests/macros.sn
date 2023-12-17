@@ -46,4 +46,17 @@ func outside() i32 {
     outside!();
 }
 
+@test(expect = 5)
+func include_str() i32 {
+    let x = include_str!("assets/macros_test.txt");
+    return x.size();
+}
+
+@test(expect = 5, skip)
+func env() i32 {
+    // Still don't know how we could test this, use HOME maybe?
+//    let x = env!("TEST_ENV");
+//    return x.size();
+}
+
 }

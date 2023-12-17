@@ -1,4 +1,5 @@
 #include "../../Transformer.h"
+#include <fstream>
 
 using namespace snowball::utils;
 using namespace snowball::Syntax::transform;
@@ -116,6 +117,38 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
     auto type = utils::cast<Expression::TypeRef>(args.at(0));
     auto tr = transformType(type);
     this->value = getBuilder().createNumberValue(p_node->getDBGInfo(), tr->alignmentOf());
+  } else if (macroName == "include_str") {
+    auto str = utils::cast<Expression::ConstantValue>(args.at(0));
+    auto filename = str->getValue();
+    // remove the quotes from the string
+    filename = filename.substr(1, filename.size() - 2);
+    std::ifstream myfile; 
+    myfile.open(filename);
+    if (!myfile.is_open()) {
+      E<PSEUDO_ERROR>(p_node, FMT("Could not find file '%s'!", filename.c_str()), {
+        .info = "This is the file that was tried to be included",
+        .note = "cwd: '" + std::filesystem::current_path().string() + "'",
+      });
+    }
+    std::string strValue((std::istreambuf_iterator<char>(myfile)), std::istreambuf_iterator<char>());
+
+    auto stringNode = N<Expression::ConstantValue>(Expression::ConstantValue::String, "\"" + strValue + "\"");
+    stringNode->setDBGInfo(p_node->getDBGInfo());
+    this->value = trans(stringNode);
+  } else if (macroName == "env") {
+    auto str = utils::cast<Expression::ConstantValue>(args.at(0));
+    auto envName = str->getValue();
+    // remove the quotes from the string
+    envName = envName.substr(1, envName.size() - 2);
+    auto envValue = std::getenv(envName.c_str());
+    if (envValue == nullptr) {
+      E<PSEUDO_ERROR>(p_node, FMT("Could not find environment variable '%s'!", envName.c_str()), {
+        .info = "This is the environment variable that was tried to be accessed",
+      });
+    }
+    auto stringNode = N<Expression::ConstantValue>(Expression::ConstantValue::String, "\"" + std::string(envValue) + "\"");
+    stringNode->setDBGInfo(p_node->getDBGInfo());
+    this->value = trans(stringNode);
   } else {
     ctx->macroBacktrace.push_back({p_node->getDBGInfo(), macroInstance});
     for (auto inst : macro->getBody()->getStmts()) { trans(inst); }

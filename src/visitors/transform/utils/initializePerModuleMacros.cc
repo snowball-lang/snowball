@@ -46,6 +46,26 @@ void Transformer::initializePerModuleMacros() {
   auto alignOfInstance = new transform::MacroInstance(alignOfMacro, ctx->module);
   auto alignOfMacroItem = std::make_shared<transform::Item>(alignOfInstance);
   ctx->addItem("alignof", alignOfMacroItem);
+
+  auto includeStringMacro = N<Macro>(
+          "include_str",
+          std::vector<std::tuple<std::string, Macro::ArguementType, Node*>>{
+                  {"path", Macro::ArguementType::CONSTANT_STRING, nullptr}},
+          nullptr
+  );
+  auto includeStringInstance = new transform::MacroInstance(includeStringMacro, ctx->module);
+  auto includeStringMacroItem = std::make_shared<transform::Item>(includeStringInstance);
+  ctx->addItem("include_str", includeStringMacroItem);
+
+  auto envMacro = N<Macro>(
+          "env",
+          std::vector<std::tuple<std::string, Macro::ArguementType, Node*>>{
+                  {"name", Macro::ArguementType::CONSTANT_STRING, nullptr}},
+          nullptr
+  );
+  auto envInstance = new transform::MacroInstance(envMacro, ctx->module);
+  auto envMacroItem = std::make_shared<transform::Item>(envInstance);
+  ctx->addItem("env", envMacroItem);
 }
 
 } // namespace Syntax
