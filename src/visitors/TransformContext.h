@@ -63,6 +63,8 @@ public:
   Expression::FunctionCall* latestCall = nullptr;
   /// @brief The current macro instance being transformed
   std::vector<std::pair<DBGSourceInfo*, transform::MacroInstance*>> macroBacktrace = {};
+  /// @brief The current macro depth
+  int macroDepth = 0;
 
 private:
   /// Utility function to get a primitive type

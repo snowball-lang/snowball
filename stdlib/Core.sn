@@ -176,7 +176,7 @@ public class Iter<T: Sized> {
     /// @brief Indicates if the iterator is valid.
     let valid: bool = false;
     /// @brief Stores the value of the iterator.
-    let iter_value: T = #zero_initialized(:T);
+    let iter_value: T = zero_initialized!(:T);
   public:
     /**
      * @brief Default constructor for `Iter`.
@@ -661,7 +661,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
     func clone() Self { return new Self(self.bytes(), self.length); }
   private:
     /** A pointer to the buffer containing the string view. */
-    let buffer: StringType = #zero_initialized(:StringType);
+    let buffer: StringType = zero_initialized!(:StringType);
     /** The size of the string view. */
     let mut length: i32 = 0;
 
@@ -751,7 +751,7 @@ public class Function<T: Callable> implements Callable {
     //Function(fn: T) : fn(fn), context(Ptr::null_ptr<?u8>() as *const void)
     //  {}
 
-    Function() : fn(#zero_initialized(:T)), context(#zero_initialized(:*const void))
+    Function() : fn(zero_initialized!(:T)), context(zero_initialized!(:*const void))
       {} // TODO: remove this
 }
 
@@ -887,3 +887,4 @@ static unsafe func execute(
 //}
 
 import Core::Internal::Integer;
+

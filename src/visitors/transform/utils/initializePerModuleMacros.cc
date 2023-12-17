@@ -26,6 +26,26 @@ void Transformer::initializePerModuleMacros() {
   auto zeroInitInstance = new transform::MacroInstance(zeroInitMacro, ctx->module);
   auto zeroInitMacroItem = std::make_shared<transform::Item>(zeroInitInstance);
   ctx->addItem("zero_initialized", zeroInitMacroItem);
+
+  auto sizeofMacro = N<Macro>(
+          "sizeof",
+          std::vector<std::tuple<std::string, Macro::ArguementType, Node*>>{
+                  {"type", Macro::ArguementType::TYPE, nullptr}},
+          nullptr
+  );
+  auto sizeofInstance = new transform::MacroInstance(sizeofMacro, ctx->module);
+  auto sizeofMacroItem = std::make_shared<transform::Item>(sizeofInstance);
+  ctx->addItem("sizeof", sizeofMacroItem);
+
+  auto alignOfMacro = N<Macro>(
+          "alignof",
+          std::vector<std::tuple<std::string, Macro::ArguementType, Node*>>{
+                  {"type", Macro::ArguementType::TYPE, nullptr}},
+          nullptr
+  );
+  auto alignOfInstance = new transform::MacroInstance(alignOfMacro, ctx->module);
+  auto alignOfMacroItem = std::make_shared<transform::Item>(alignOfInstance);
+  ctx->addItem("alignof", alignOfMacroItem);
 }
 
 } // namespace Syntax

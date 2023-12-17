@@ -1,4 +1,6 @@
 import Core::System;
+@use_macros
+import Core::Panic;
 
 namespace tests {
 
@@ -366,6 +368,15 @@ func deduce_from_generic() i32 {
     a.push(4);
     a.push(5);
     return deduce_from_generic(a);
+}
+
+@test
+func unreachable() i32 {
+    // just testing that the syntax is valid once called
+    if false {
+        unreachable!();
+    }
+    return 0;
 }
 
 }

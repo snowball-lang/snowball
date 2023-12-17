@@ -19,11 +19,30 @@ import Core::System;
 @inline
 public func panic(
   message: String = "Something went wrong! 🐱", 
-  _location: SourceLocation::SourceLocation = #current_location()
+  _location: SourceLocation::SourceLocation = current_location!()
 ) {
   System::println("\n\n--------------------");
   System::println("Program panicked with message: " + message)
   System::println(" at " + _location.file() + "\e[1;37m:" + _location.line() + ":" + _location.column() + "\e[0m");
   System::println("\e[1;37mnote:\e[0m run with \e[1;37m`SN_BACKTRACE=1`\e[0m environment variable to get a backtrace\n");
   System::exit(127);
+}
+
+/**
+ * @brief It is used to mark unreachable code.
+ * 
+ * The `unreachable` macro is used to mark code that is unreachable. It is often used to mark code that should
+ * never be reached. If the code is reached, the program will panic with the specified message.
+ * 
+ * This is useful any time that the compiler can't determine that some code is unreachable. For example:
+ *  - Match arms with guard conditions.
+ *  - Loops that dynamically terminate.
+ *  - Iterators that dynamically terminate.
+ * 
+ * @param message The message to display if the code is reached.
+ * @remarks The `unreachable` macro is a no-op in release builds.
+ */
+@export
+macro unreachable(message: const[str] = "Unexpectedly reached unreachable code.") {
+  pkg!(panic("internal error: entered unreachable code"));
 }

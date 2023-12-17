@@ -16,7 +16,7 @@ import Core::CLib;
  *
  * let value: i32 = 42;
  * let non_null_value = new NonNull{&value};
- * #assert(*non_null_value.ptr() == value);
+ * assert!(*non_null_value.ptr() == value);
  * ```
  * @endexample
  */

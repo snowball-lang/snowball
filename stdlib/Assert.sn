@@ -45,6 +45,6 @@ public class AssertionError extends Exception
 @export
 macro assert(condition: expr, message: const[str] = "Assertion failed!") {
   if !(#condition) {
-    throw #pkg(new AssertionError(#message));
+    throw pkg!(new AssertionError(#message));
   }
 }

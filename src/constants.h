@@ -79,6 +79,7 @@ typedef int32_t snowball_int_t;
 #endif
 
 #define SN_INT_MAX_POWER 8388608
+#define SN_MAX_MACRO_DEPTH 2048
 
 #define UNREACHABLE                                                                                                    \
   do { std::abort(); } while (0);

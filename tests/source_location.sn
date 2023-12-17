@@ -6,21 +6,21 @@ import Core::SourceLocation;
 namespace tests {
 
 func source_location_wrapper(
-    x: SourceLocation::SourceLocation = #current_location()
+    x: SourceLocation::SourceLocation = current_location!()
 ) SourceLocation::SourceLocation {
     return x;
 }
 
 @test
 func file() i32 {
-    let curr = #current_location();
+    let curr = current_location!();
     let x = source_location_wrapper();
     return x.file() == curr.file();
 }
 
 @test
 func line() i32 {
-    let curr = #current_location();
+    let curr = current_location!();
     let x = source_location_wrapper();
     // -1 because the macro is on the line above
     return x.line() == curr.line() + 1;
@@ -35,7 +35,7 @@ func column() i32 {
 
 @test
 func function() i32 {
-    let curr = #current_location();
+    let curr = current_location!();
     return curr.function() == #function;
 }
 

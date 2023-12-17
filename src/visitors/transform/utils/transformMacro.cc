@@ -82,11 +82,18 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
     arg->parentMacro = ctx->getCurrentMacro();
     macroInstance->stack.insert(std::make_pair(name, std::make_pair(arg, deducedArgType)));
   }
+  ctx->macroDepth++;
+  if (ctx->macroDepth > SN_MAX_MACRO_DEPTH) {
+    E<PSEUDO_ERROR>(
+            p_node,
+            FMT("Macro '%s' has exceeded the maximum macro depth of %d!", macroName.c_str(), SN_MAX_MACRO_DEPTH)
+    );
+  }
   if (macroName == "pkg") {
     if (ctx->getCurrentMacro() == nullptr) {
       E<PSEUDO_ERROR>(
               p_node,
-              "Cant use `@pkg` macro outside a parent macro!",
+              "Cant use 'pkg' macro outside a parent macro!",
               {.info = "This is the macro that was used",
                .note = "This special macro is only available inside a parent macro.",
                .help = "Try using the macro inside a parent macro."}
@@ -101,11 +108,20 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
     auto type = utils::cast<Expression::TypeRef>(args.at(0));
     auto tr = transformType(type);
     this->value = getBuilder().createZeroInitialized(p_node->getDBGInfo(), tr);
+  } else if (macroName == "sizeof") {
+    auto type = utils::cast<Expression::TypeRef>(args.at(0));
+    auto tr = transformType(type);
+    this->value = getBuilder().createNumberValue(p_node->getDBGInfo(), tr->sizeOf());
+  } else if (macroName == "alignof") {
+    auto type = utils::cast<Expression::TypeRef>(args.at(0));
+    auto tr = transformType(type);
+    this->value = getBuilder().createNumberValue(p_node->getDBGInfo(), tr->alignmentOf());
   } else {
     ctx->macroBacktrace.push_back({p_node->getDBGInfo(), macroInstance});
     for (auto inst : macro->getBody()->getStmts()) { trans(inst); }
     ctx->macroBacktrace.pop_back();
   }
+  ctx->macroDepth--;
   macroInstance->stack.clear();
 }
 
