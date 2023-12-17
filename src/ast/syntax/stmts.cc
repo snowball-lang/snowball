@@ -50,8 +50,9 @@ std::map<Expression::Identifier*, Expression::Base*>::iterator ConstructorDef::i
 Namespace::Namespace(std::string name, std::vector<Node*> body) : body(body), name(name) { }
 std::string Namespace::getName() const { return name; }
 std::vector<Node*> Namespace::getBody() const { return body; }
-ImportStmt::ImportStmt(const std::vector<std::string> path, const std::string package, ImportType ty)
-    : path(path), package(package), type(ty){};
+ImportStmt::ImportStmt(const std::vector<std::string> path, const std::string package, std::vector<std::pair<std::string, std::string>> variables, std::string exportSymbol)
+    : path(path), package(package), variables(variables), exportSymbol(exportSymbol) { }
+std::vector<std::pair<std::string, std::string>> ImportStmt::getVariables() const { return variables; }
 VariableDecl::VariableDecl(const std::string& name, Expression::Base* value, bool isMutable, bool isConstant)
     : name(name), value(value), _mutable(isMutable), isConstant(isConstant){};
 bool VariableDecl::isInitialized() { return value != nullptr; }

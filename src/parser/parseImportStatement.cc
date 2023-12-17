@@ -24,16 +24,18 @@ Syntax::Statement::ImportStmt* Parser::parseImportStatement() {
   paths.push_back(assert_tok<TokenType::IDENTIFIER>("an identifier").to_string());
   next();
 
+  std::string exportName;
+
   std::vector<std::pair<std::string, std::string>> vars;
-  while (is<TokenType::SYM_COLCOL>()) {
+  if (is<TokenType::SYM_COLCOL>()) while (is<TokenType::SYM_COLCOL>()) {
     next();
     if (is<TokenType::IDENTIFIER>()) {
       paths.push_back(m_current.to_string());
     } else if (is<TokenType::SYM_DOT>() && is<TokenType::SYM_DOT>(peek())) {
       paths.push_back("..");
-    } else if (is<TokenType::BRACKET_LCURLY>() && is<TokenType::BRACKET_LCURLY>(peek())) {
+    } else if (is<TokenType::BRACKET_LCURLY>()) {
       // var imports
-      next(1);
+      next();
       while (!is<TokenType::BRACKET_RCURLY>()) {
         if (is<TokenType::IDENTIFIER>()) {
           std::string name = m_current.to_string();
@@ -56,7 +58,6 @@ Syntax::Statement::ImportStmt* Parser::parseImportStatement() {
       }
 
       consume<TokenType::BRACKET_RCURLY>("'}'");
-      consume<TokenType::BRACKET_RCURLY>("'}'");
       createError<TODO>("variable imports");
       break;
     } else {
@@ -65,6 +66,10 @@ Syntax::Statement::ImportStmt* Parser::parseImportStatement() {
     }
 
     next();
+  } else if (is<TokenType::KWORD_AS>()) {
+    next();
+    exportName = assert_tok<TokenType::IDENTIFIER>("an identifier for export name").to_string();
+    next();
   }
 
   // TODO: handle all import types
@@ -72,7 +77,7 @@ Syntax::Statement::ImportStmt* Parser::parseImportStatement() {
   dbg->width = width;
 
   prev();
-  auto import = Syntax::N<Syntax::Statement::ImportStmt>(paths, package);
+  auto import = Syntax::N<Syntax::Statement::ImportStmt>(paths, package, vars, exportName);
   import->setDBGInfo(dbg);
   for (auto [n, a] : attributes) { import->addAttribute(n, a); }
   return import;

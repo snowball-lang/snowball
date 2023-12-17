@@ -1007,27 +1007,14 @@ struct ImportStmt : public AcceptorExtend<ImportStmt, Base> {
   std::string package;
   /// @brief How the declaration is being exported into the
   /// current file.
-  std::string exportSymbol;
+  std::string exportSymbol; 
+  /// @brief Variables to be imported from the file
+  /// first: variable name
+  /// second: variable alias
+  std::vector<std::pair<std::string, std::string>> variables;
 
 public:
-  /// @brief Representation of the kind of import statement this
-  /// is. import statements can have different functionality such
-  /// as:
-  ///  importing certain symbols from a module or importing every
-  ///  symbol into the current scope
-  /// @example
-  ///   DEFAULT: import std:Math
-  ///   EXTRACT: import myModule:pathToExtract::{ myFunction,
-  ///   awesomeClass } ALL    : import myAmazingModule:myPath::*
-  enum ImportType
-  {
-    DEFAULT,
-    EXTRACT,
-    ALL
-  } type = DEFAULT;
-
-public:
-  ImportStmt(const std::vector<std::string> path = {}, const std::string package = "pkg", ImportType ty = DEFAULT);
+  ImportStmt(const std::vector<std::string> path = {}, const std::string package = "pkg", std::vector<std::pair<std::string, std::string>> variables = {}, std::string exportSymbol = "");
 
 public:
   /// @brief get the package name where it's imported from
@@ -1037,6 +1024,8 @@ public:
   /// @brief Get the identifier the user wants it imported as
   /// @c exportSymbol
   std::string getExportSymbol() const;
+  /// @brief Get the variables to be imported from the file
+  std::vector<std::pair<std::string, std::string>> getVariables() const;
 
   // Set an acceptance call
   ACCEPT()
