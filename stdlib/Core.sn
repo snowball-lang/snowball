@@ -710,14 +710,26 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @note If the range is invalid, the method throws an IndexError.
      */
     func substr(range: Range<i32>) Self {
+      // If the range is negative, we return the substring from the end of the string view.
+      // example: if the string view has 5 characters, and the range is -1..-3, we return 
+      //          the substring from index 4 to index 2.
       if range.begin() < 0 {
+        // We make sure we don't overflow.
         return self.substr((self.length + range.begin())..(range.stop()));
       } else if range.stop() < 0 {
+        // We make sure we don't overflow. We use recursion to handle the negative range.
         return self.substr((range.begin())..(self.length + range.stop()));
       } else if (range.stop() > self.length) || (range.begin() > self.length) {
+        // If the range is invalid, we throw an IndexError.
+        // TODO: add a better error message
         throw new IndexError("Index out of bounds.");
       }
+      // safety: we make sure the buffer is not null. Unless explicitly trying to make us look bad.
+      //  or something whent wrong on the C side. But unless that happens, the buffer should never be null.
+      //  therefor, we should be safe. We also know the range is valid, so we don't have to worry about
+      //  overflowing.
       unsafe {
+        // We return the substring of the string view.
         return new Self(self.bytes() + range.begin(), range.size());
       }
     }
@@ -729,13 +741,23 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      */
     @inline
     func rjust(length: i32, fill: Char = ' ') Self {
+      // If the length is less than or equal to the length of the string view,
+      // we return the string view. We don't have to adjust it, therefore we don't
+      // have to do anything. Just clone the string view and return it.
       if length <= self.length {
+        // note: we clone the string view to make sure we don't modify the original string view.
         return self.clone();
       }
+      // Create a new string containing the fill character. 
+      // TODO: create string with pre-allocated capacity to avoid reallocation.
       let mut result = "";
+      // We iterate over the string view and append the fill character to the result.
+      // We make sure we don't overflow.
       for let mut i = 0; i < (length - self.length); i = i+1 {
+        // We append the fill character to the result.
         result += fill;
       }
+      // We append the string view to the result. 
       return result + self;
     }
     /**
