@@ -592,7 +592,6 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
       if index < 0 {
         throw new IndexError("Index out of bounds. Cannot remove element from a negative index.");
       }
-
       // We remove the element at the specified index.
       // We make sure we don't overflow.
       // We iterate over the vector and shift each element to the left.

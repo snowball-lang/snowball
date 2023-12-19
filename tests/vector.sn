@@ -127,4 +127,13 @@ func pop() i32 {
     return i + v.size();
 }
 
+@test()
+func join() i32 {
+    let mut v = new Vector<String>();
+    v.push("a");
+    v.push("b");
+    v.push("c");
+    return v.join(", ") == "a, b, c";
+}
+
 }
