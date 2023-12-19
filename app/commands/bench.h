@@ -22,7 +22,7 @@ int bench(app::Options::BenchmarkOptions p_opts) {
   toml::parse_result parsed_config = Compiler::getConfiguration();
 
   std::string filename =
-          (std::string)(parsed_config["package"]["main"].value_or<std::string>(fs::current_path() / "src" / "main.sn"));
+          (std::string)(parsed_config["benchmark"]["entry"].value_or<std::string>(fs::current_path() / "bench" / "main.sn"));
 
   std::ifstream ifs(filename);
   if (ifs.fail()) {

@@ -189,6 +189,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     else if (overloads || funcs) {
       E<TYPE_ERROR>(dbgInfo, "Cant use function pointer as index base!");
     } else {
+
       E<VARIABLE_ERROR>(
               baseIdentifier->getDBGInfo(),
               FMT("Cannot find identifier '%s'!", baseIdentifier->getIdentifier().c_str()),

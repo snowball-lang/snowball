@@ -811,13 +811,13 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @brief Constructs a string view from a buffer and its size.
      * @param[in] buffer A pointer to the buffer containing the string view.
      * @param[in] size The size of the string view.
+     * @note Even though it's not marked as unsafe, it's still unsafe to use.
      * @return The constructed string view.
      */
     @inline
-    static func from(buffer: *const u8, size: i32) StringView<Char> { 
-      unsafe {
-        return new Self(buffer, size);
-      } 
+    static func from(buffer: *const u8, size: i32) StringView<Char> {
+      // We return a string view from the buffer and its size.
+      return new Self(buffer, size);
     }
 
   // Internal exports
@@ -832,11 +832,17 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      */
     static func concat(str1: StringType, str2: StringType,  
       len1: i32, len2: i32) StringType {
+      // safety: we make sure the buffer is not null.
       unsafe {
         let sum = len1 + len2;
+        // We allocate a buffer to store the concatenated string view.
         let buffer = CLib::malloc(sum) as StringType;
+        // We copy the first string view to the buffer.
         CLib::memcpy(buffer, str1, len1);
+        // We copy the second string view to the buffer.
+        // We start from the end of the first string view.
         CLib::memcpy(buffer + len1, str2, len2);
+        // We return the concatenated string view.
         return buffer;
       }
     }
@@ -866,15 +872,6 @@ public class Function<T: Callable> implements Callable {
       let fn: T;
       let context: *const void;
   public:
-    /**
-     * @brief It creates a new function with the specified callable entity.
-     * @param[in] fn The callable entity to wrap.
-     * @note The function does not have a context, therefore the context pointer is set to `null`.
-     * @warning This constructor is supposed to be used only for function pointers, not for closures.
-     */
-    //Function(fn: T) : fn(fn), context(Ptr::null_ptr<?u8>() as *const void)
-    //  {}
-
     Function() : fn(zero_initialized!(:T)), context(zero_initialized!(:*const void))
       {} // TODO: remove this
 }
@@ -897,21 +894,43 @@ static unsafe func execute(
   expectStr: *const i8,
   total: i32
 ) i32 {
+  // Get the index as a string, filling the left with zeros, so it's easier to read.
+  // This is useful when we have a lot of tests, so we can easily see the index of the test.
+  // note: This depends on the total number of tests, so we make sure we don't overflow.
   let indexStr = index.to_string().rjust(total.to_string().size(), '0').bytes();
+  // Print the test name.
+  // safety: we use printf here, so we make sure the name is null-terminated.
   CLib::printf(b" Testing \e[1m%-44s\e[0m [(%s\e[0;30m/%i\e[0m) %s]\t... ", name, indexStr, total, expectStr);
-  // TODO: Add support for exceptions
+  // Execute the test if it's not skipped. If it's skipped, we just print "wip".
   if !skip {
+    // Execute the test and get the result. If the result is equal to the expected result,
+    // we print "nice!". Otherwise, we print "error".
     try {
+      // note: The compiler makes sure the function is not null and that it follows the correct signature.
+      //  so we don't have to worry about that.
+      // the function signature is `func () => i32`, so we make sure the result is an integer.
       let result = fn();
+      // We check if the result is equal to the expected result.
       if result == expect {
+        // If the result is equal to the expected result, we print "nice!".
         CLib::printf(b"\e[1;32mnice!\e[0m\n");
       } else {
+        // If the result is not equal to the expected result, we print "error".
+        // we also print the expected result and the actual result. Again, we use
+        // printf, so we make sure the expected result is null-terminated.
+        // There hasn't been a case where the expected result is not null-terminated,
+        // but we make sure just in case.
         CLib::printf(b"\e[1;31merror \n");
         CLib::printf(b"\n\tExpected result\e[0m: \e[1;32m%i\e[1;31m\n", expect);
         CLib::printf(b"\tActual result\e[0m: \e[1;31m%i\e[0m\n\n", result);
+        // We return 0 to indicate that the test failed. We don't return 1 because
+        // that's just not how the compiler will handle it. The compiler will return
+        // 1 if the test succeeds, and 0 if it fails. So we return 0 if the test fails.
         return false;
       }
     } catch (e: Exception) {
+      // We catch any exceptions thrown by the test and print "error".
+      // We also print the exception message. 
       CLib::printf(b"\e[1;31merror \n");
       CLib::printf(b"\n ------- %s failure -------\n", name);
       CLib::printf(b"\n  Failed with: \e[1m%s\e[0m\n", e.what().bytes());
@@ -921,94 +940,96 @@ static unsafe func execute(
   } else {
     CLib::printf(b"\e[1;33mwip\e[0m\n");
   }
+  // We return 1 to indicate that the test succeeded.
   return true;
 }
 
 }
 
-//func [[
-//  export(name = "sn.bench.run"),
-//  cfg(bench),
-//  no_inline
-//]] snowball_bench(
-//  functions: *const func () => void,
-//  names: *const char,
-//  size: i32,
-//) {
-//  if size == 0 { return; }
-//  let mut results = new Vector<i32>();
-//  for i in 0..size {
-//    unsafe {
-//      //let fn = functions[i] as *const void as func () => i32;
-//      let start = CLib::time(Ptr::null_ptr<?i32>());
-//      //fn();
-//      let end = CLib::time(Ptr::null_ptr<?i32>());
-//      // unix time to ms
-//      let result = (end - start) * 1000;
-//      results.push(result);
-//    }
-//  }
-//
-//  let mut max: i32 = 0;
-//  let mut min: i32 = 1000000000;
-//  let mut sum: i32 = 0;
-//  for i in 0..size {
-//    let result = *results[i];
-//    if result > max {
-//      max = result;
-//    }
-//    if result < min {
-//      min = result;
-//    }
-//    sum = sum + result;
-//  }
-//
-//  let mut avg: f32 = sum / size;
-//  for i in 0..size {
-//    let name = names[i];
-//    let mut result = (*results[i]) as f64;
-//    let mut color = "\e[1;32m";
-//    if result > avg {
-//      color = "\e[1;31m";
-//    }
-//    // ms or s
-//    let mut unit = "ms";
-//    let mut divider = 1;
-//    if result >= 1000.0 {
-//      unit = "s";
-//      divider = 1000;
-//    }
-//    unsafe {
-//      CLib::printf(@c_str(" \e[1m%s\e[0m: %s%f%s\e[0m\n"), name, color.bytes(), result / divider, unit.bytes());
-//    }
-//  }
-//
-//  // ms or s
-//  let mut unit = "ms";
-//  let mut divider = 1;
-//
-//  unsafe {
-//    CLib::printf(@c_str("\n"));
-//    if min >= 1000 {
-//      unit = "s";
-//      divider = 1000;
-//      min = min / divider;
-//    }
-//    CLib::printf(@c_str(" \e[1;32mmin\e[0m: %d%s\n"), min, unit);
-//    if max >= 1000 {
-//      unit = "s";
-//      divider = 1000;
-//      max = max / divider;
-//    } else unit = "ms";
-//    CLib::printf(@c_str(" \e[1;31mmax\e[0m: %d%s\n"), max, unit);
-//    if avg >= 1000 {
-//      unit = "s";
-//      divider = 1000;
-//      avg = avg / divider;
-//    } else unit = "ms";
-//    CLib::printf(@c_str(" \e[1mavg\e[0m: %d%s\n"), avg, unit);
-//  }
-//}
+
+@export(name = "sn.bench.run")
+@cfg(bench)
+@no_inline
+func snowball_bench(
+  functions: *const *const void,
+  names: *const *const u8,
+  size: i32,
+) {
+  if size == 0 { return; }
+  let mut results = new Vector<i32>();
+  for i in 0..size {
+    unsafe {
+      let fn = functions[i] as *const void as func () => i32;
+      let start = CLib::time(Ptr::null_ptr<?i32>());
+      fn();
+      let end = CLib::time(Ptr::null_ptr<?i32>());
+      // unix time to ms
+      let result = (end - start) * 1000;
+      results.push(result);
+    }
+  }
+
+  let mut max: i32 = 0;
+  let mut min: i32 = 1000000000;
+  let mut sum: i32 = 0;
+  for i in 0..size {
+    let result = *results[i];
+    if result > max {
+      max = result;
+    }
+    if result < min {
+      min = result;
+    }
+    sum = sum + result;
+  }
+
+  let mut avg: f64 = (sum / size) as f32 as f64;
+  for i in 0..size {
+    let name = names[i];
+    let mut result = (*results[i]);
+    let mut color = "\e[1;32m";
+    if result > avg {
+      color = "\e[1;33m";
+    }
+    // ms or s
+    let mut unit = "ms";
+    let mut divider = 1;
+    if result >= 1000 {
+      unit = "s";
+      divider = 1000;
+    }
+    unsafe {
+      CLib::printf(b" \e[1m%s\e[0m: %s%i%s\e[0m\n", name, color.bytes(), result / divider, unit.bytes());
+    }
+  }
+
+  // ms or s
+  let mut unit = "ms";
+  let mut divider = 1;
+
+  unsafe {
+    CLib::printf(b"\n\e[1mBenchmark results:\e[0m\n");
+    if min >= 1000 {
+      unit = "s";
+      divider = 1000;
+      min = min / divider;
+    }
+    CLib::printf(b" \e[1;32mmin\e[0m: \e[1m%d%s\e[0m\n", min, unit.bytes());
+    if max >= 1000 {
+      unit = "s";
+      divider = 1000;
+      max = max / divider;
+    } else unit = "ms";
+    CLib::printf(b" \e[1;31mmax\e[0m: \e[1m%d%s\e[0m\n", max, unit.bytes());
+    if avg >= 1000.0 {
+      unit = "s";
+      divider = 1000;
+      avg = avg;
+    } else unit = "ms";
+  // TODO:
+  //  CLib::printf(b" \e[1mavg\e[0m: \e[1m%d%s\e[0m\n", avg, unit.bytes());
+  }
+}
 
 import Core::Internal::Integer;
 

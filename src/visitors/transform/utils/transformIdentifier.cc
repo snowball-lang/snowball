@@ -88,6 +88,11 @@ fetchFromUUID:
     goto fetchFromUUID;
   }
 
+  auto ty = new Expression::TypeRef(identifier, dbgInfo, generics);
+  if (auto special = transformSpecialType(ty)) {
+    return {std::nullopt, special, std::nullopt, std::nullopt, std::nullopt};
+  }
+
   return {std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt};
 }
 

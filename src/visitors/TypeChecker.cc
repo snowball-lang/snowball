@@ -270,6 +270,23 @@ VISIT(Cast) {
         utils::cast<types::VoidType>(utils::cast<types::PointerType>(t)->getBaseType())) {
       return;
     }
+  } else if (utils::is<types::PointerType>(v->getType()) && utils::is<types::FunctionType>(t)) {
+    // we allow casting from pointers to functions
+    if (utils::cast<types::VoidType>(utils::cast<types::PointerType>(v->getType())->getBaseType())) {
+      if (!ctx->unsafeContext) {
+        E<SYNTAX_ERROR>(
+                p_node,
+                FMT("Pointer to function cast is unsafe!"),
+                {.info = "This pointer to function cast is unsafe!",
+                 .note = "This error is caused by the pointer to function cast being unsafe.",
+                 .help = "Try wrapping the pointer to function cast in an `unsafe { ... }` block\nor adding the "
+                         "'unsafe' attribute to the function.\n\nsee more: "
+                         "https://snowball-lang.gitbook.io/docs/language-reference/unsafe-snowball",
+                 .tail = EI<>(v->getDBGInfo(), "", {.info = "This is the pointer declaration."})}
+        );
+      }
+      return;
+    }
   }
 
   // we also allow "&x to *x"

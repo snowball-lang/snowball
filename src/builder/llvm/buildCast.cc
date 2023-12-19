@@ -43,10 +43,14 @@ void LLVMBuilder::visit(ir::Cast* c) {
     }
   } else if (IS_INTEGER(vTy) && IS_FLOAT(ty)) {               // i[n] -> float
     // cast signed integer to float
-    this->value = builder->CreateSIToFP(v, llvmType);
+    this->value = utils::cast<types::IntType>(vTy)->isSigned() ?
+                  builder->CreateSIToFP(v, llvmType) :
+                  builder->CreateUIToFP(v, llvmType);
   } else if (IS_FLOAT(vTy) && IS_INTEGER(ty)) { // float -> i[n]
     // cast float to signed integer
-    this->value = builder->CreateFPToSI(v, llvmType);
+    this->value = utils::cast<types::IntType>(ty)->isSigned() ?
+                  builder->CreateFPToSI(v, llvmType) :
+                  builder->CreateFPToUI(v, llvmType);
   } else if (IS_FLOAT(ty) && IS_FLOAT(vTy)) { // float <-> float
     // cast float to another float
     this->value = builder->CreateFPCast(v, llvmType);

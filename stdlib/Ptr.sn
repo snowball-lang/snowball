@@ -74,7 +74,7 @@ public class Allocator<T: Sized> {
     @inline
     static func alloc(size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(CLib::malloc(size) as *const T);
+        return new NonNull<T>(CLib::malloc(sizeof!(:T) * size) as *const T);
       }
     }
     /**
@@ -85,7 +85,7 @@ public class Allocator<T: Sized> {
     @inline
     static func alloc_zeroed(size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(CLib::calloc(size, 1));
+        return new NonNull<T>(CLib::calloc(sizeof!(:T) * size, 0));
       }
     }
     /**
@@ -97,7 +97,7 @@ public class Allocator<T: Sized> {
     @inline
     static func realloc(ptr: NonNull<T>, size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(CLib::realloc(ptr.ptr(), size));
+        return new NonNull<T>(CLib::realloc(ptr.ptr(), sizeof!(:T) * size));
       }
     }
     /**

@@ -81,7 +81,7 @@ public func main() i32 {
 }
 ```
 
-* [Try it online](https://godbolt.org/z/68j6Krs5d)
+* [Try it online](https://godbolt.org/z/6vrsWTbre)
 
 ## Roadmap
 
