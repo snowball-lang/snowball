@@ -28,21 +28,27 @@ extern "C" {
 #ifdef _WIN32
 #define OS_NAME        "Windows 32-bit"
 #define PATH_SEPARATOR "\\"
+#define _SNOWBALL_OS   "windows"
 #elif _WIN64
 #define OS_NAME        "Windows 64-bit"
 #define PATH_SEPARATOR "\\"
+#define _SNOWBALL_OS   "windows"
 #elif __APPLE__ || __MACH__
 #define OS_NAME        "Mac OS_NAMEX"
 #define PATH_SEPARATOR "/"
+#define _SNOWBALL_OS   "macos"
 #elif __linux__
 #define OS_NAME        "Linux"
 #define PATH_SEPARATOR "/"
+#define _SNOWBALL_OS   "linux"
 #elif __unix || __unix__
 #define OS_NAME        "Unix"
 #define PATH_SEPARATOR "/"
+#define _SNOWBALL_OS   "unix"
 #else
 #define OS_NAME        "Unknown OS"
 #define PATH_SEPARATOR "/"
+#define _SNOWBALL_OS   "unknown"
 #endif
 #pragma endregion
 

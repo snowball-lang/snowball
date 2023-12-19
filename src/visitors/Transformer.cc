@@ -46,6 +46,14 @@ std::shared_ptr<ir::Value> Transformer::trans(Node* node) {
           if (!ctx->benchMode) {
             return nullptr; // TODO: check if this causes problems
           }
+        } else if (type == "target_os") {
+          auto os = _;
+          bool isNot = utils::startsWith(os, "!"); 
+          if (isNot)
+            os = os.substr(1);
+          if (os != _SNOWBALL_OS && !isNot) {
+            return nullptr; // TODO: check if this causes problems
+          }
         } else {
           E<SYNTAX_ERROR>(node, "Unknown attribute!", {.info = FMT("Unknown config attribute '%s'", type.c_str())});
         }
@@ -70,11 +78,12 @@ void Transformer::visitGlobal(std::vector<Node*> p_nodes) {
     bool backup = ctx->generateFunction;
     ctx->generateFunction = false;
     for (auto node : p_nodes) {
-      SN_TRANSFORMER_CAN_GENERATE(node) { node->accept(this); }
+      SN_TRANSFORMER_CAN_GENERATE(node) { trans(node); }
     }
 
     ctx->generateFunction = true;
-    AcceptorExtend::visitGlobal(p_nodes);
+    for (auto node : p_nodes) 
+      trans(node);
     ctx->generateFunction = backup;
   });
 }

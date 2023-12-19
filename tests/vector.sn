@@ -79,4 +79,52 @@ func map() i32 {
     return i;
 }
 
+@test(expect = 3)
+func remove() i32 {
+    let mut v = new Vector<i32>();
+    v.push(1);
+    v.push(2);
+    v.push(3);
+    v.push(4);
+    v.push(5);
+    v.remove(0);
+    v.remove(0);
+    assert!(v[0] == 3);
+    assert!(v[1] == 4);
+    assert!(v[2] == 5);
+    return v.size();
+}
+
+@test(expect = 5)
+func filter() i32 {
+    let mut v = new Vector<i32>();
+    v.push(1);
+    v.push(2);
+    v.push(3);
+    v.push(4);
+    v.push(5);
+    let mut i = 0;
+    v.filter<?i32>(func(x: i32) bool {
+        i = i + 1;
+        return x % 2 == 0;
+    });
+    return i;
+}
+
+@test(expect = 5)
+func pop() i32 {
+    let mut v = new Vector<i32>();
+    v.push(1);
+    v.push(2);
+    v.push(3);
+    v.push(4);
+    v.push(5);
+    let mut i = 0;
+    while (v.size() > 0) {
+        v.pop();
+        i = i + 1;
+    }
+    return i + v.size();
+}
+
 }

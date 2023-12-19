@@ -92,13 +92,11 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
         }
 
         case TokenType::KWORD_VAR: {
-          assertNoAttributes("variable");
           global.push_back(parseVariable());
           break;
         }
 
         case TokenType::KWORD_CONST: {
-          assertNoAttributes("constant");
           global.push_back(parseConstant());
           break;
         }

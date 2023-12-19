@@ -10,6 +10,11 @@ namespace snowball::parser {
 Syntax::Statement::VariableDecl* Parser::parseConstant() {
   assert(is<TokenType::KWORD_CONST>());
   auto comment = parseDocstring(m_current.getComment());
+
+  auto attributes = verifyAttributes([&](std::string attr) {
+    return Attributes::INVALID;
+  });
+
   next();
   bool isPublic = false;
   if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-3, true))) {
@@ -33,6 +38,8 @@ Syntax::Statement::VariableDecl* Parser::parseConstant() {
   auto info = new DBGSourceInfo(m_source_info, token.get_pos(), token.get_width());
   v->setDBGInfo(info);
   v->setComment(comment);
+
+  for (auto [n, a] : attributes) { v->addAttribute(n, a); }
 
   return v; // to remove warnings
 }

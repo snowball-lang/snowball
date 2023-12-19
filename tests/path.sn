@@ -1,0 +1,110 @@
+
+import Core::Path;
+@use_macro(assert)
+import Core::Assert;
+import Core::System;
+
+type path = Path::Path;
+
+namespace tests {
+
+@test(expect = 3)
+func from_vector() i32 {
+  let mut vec = new Vector<String>();
+  vec.push("a");
+  vec.push("b");
+  vec.push("c");
+  let p = new path(vec);
+  assert!(p.to_string() == "a/b/c");
+  return p.size();
+}
+
+@test(expect = 4)
+func join_string() i32 {
+  let mut vec = new Vector<String>();
+  vec.push("a");
+  vec.push("b");
+  vec.push("c");
+  let p = new path(vec);
+  let p2 = p.join("d");
+  assert!(p2.to_string() == "a/b/c/d");
+  return p2.size();
+}
+
+@test(expect = 3)
+func iterate_reset() i32 {
+  let mut vec = new Vector<String>();
+  vec.push("a");
+  vec.push("b");
+  vec.push("c");
+  let p = new path(vec);
+  let mut i = 0;
+  for x in p {
+    assert!(x == *vec[i]);
+    i = i + 1;
+  }
+  i = 0;
+  for x in p {
+    assert!(x == *vec[i]);
+    i = i + 1;
+  }
+  return i;
+}
+
+@test(expect = 6)
+func join_path() i32 {
+  let mut vec = new Vector<String>();
+  vec.push("a");
+  vec.push("b");
+  vec.push("c");
+  let p = new path(vec);
+  let mut vec2 = new Vector<String>();
+  vec2.push("d");
+  vec2.push("e");
+  vec2.push("f");
+  let p2 = new path(vec2);
+  let p3 = p.join(p2);
+  assert!(p3.to_string() == "a/b/c/d/e/f");
+  return p3.size();
+}
+
+@test(expect = 3)
+func iterate() i32 {
+  let mut vec = new Vector<String>();
+  vec.push("a");
+  vec.push("b");
+  vec.push("c");
+  let p = new path(vec);
+  let mut i = 0;
+  for x in p {
+    assert!(x == *vec[i]);
+    i = i + 1;
+  }
+  return i;
+}
+
+@test(expect = 2)
+func remove_dots() i32 {
+  let mut vec = new Vector<String>();
+  vec.push("a");
+  vec.push(".");
+  vec.push("c");
+  let p = new path(vec);
+  let p2 = p.clean_path(false);
+  assert!(p2.to_string() == "a/c");
+  return p2.size();
+}
+
+@test(expect = 1)
+func remove_double_dots() i32 {
+  let mut vec = new Vector<String>();
+  vec.push("a");
+  vec.push("..");
+  vec.push("c");
+  let p = new path(vec);
+  let p2 = p.clean_path(true);
+  assert!(p2.to_string() == "c");
+  return p2.size();
+}
+
+}

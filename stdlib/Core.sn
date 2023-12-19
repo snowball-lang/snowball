@@ -537,6 +537,86 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
       // We return the result vector.
       return result;
     }
+    /**
+     * @brief It filters the vector.
+     * @param[in] fn The function to filter the vector with.
+     * @return A new vector with the filtered elements.
+     */
+    func filter(fn: Function<func (T) => bool>) Vector<T> {
+      // We filter the vector.
+      let mut result = new Vector<T>();
+      // We iterate over the vector and filter each element.
+      for let mut i = 0; i < self.length; i = i+1 {
+        // If the element passes the filter, we push it to the result vector.
+        if fn(*self[i]) {
+          // We push the element to the result vector.
+          result.push(*self[i]);
+        }
+      }
+      // We return the result vector.
+      return result;
+    }
+    /**
+     * @brief It joins the vector into a string.
+     * @param[in] sep The separator to use for joining the vector.
+     * @return A string containing the joined elements.
+     */
+    func join<>(sep: String) String {
+      // We join the vector into a string.
+      let mut result = "";
+      // We iterate over the vector and append each element to the result.
+      for let mut i = 0; i < self.length; i = i+1 {
+        // We append the element to the result.
+        result = result + String::from(*self[i]);
+        // If we are not at the end of the vector, we append the separator.
+        if i != self.length - 1 {
+          // We append the separator.
+          result = result + sep;
+        }
+      }
+      // We return the result.
+      return result;
+    }
+    /**
+     * @brief It returns if the vector is empty.
+     * @return `true` if the vector is empty, `false` otherwise.
+     */
+    @inline
+    func empty() bool { return self.length == 0; }
+    /**
+     * @brief It removes the element at the specified index.
+     * @param[in] index The index of the element to remove.
+     */
+    @inline
+    mut func remove(index: i32) {
+      if index < 0 {
+        throw new IndexError("Index out of bounds. Cannot remove element from a negative index.");
+      }
+
+      // We remove the element at the specified index.
+      // We make sure we don't overflow.
+      // We iterate over the vector and shift each element to the left.
+      for let mut i = index; i < self.length - 1; i = i+1 {
+        // We shift the element to the left.
+        *self[i] = *self[i + 1];
+      }
+      // We decrement the length of the vector.
+      self.length = self.length - 1;
+      // we store the last element in a temporary variable, save it from being dropped.
+    }
+    /**
+     * @brief It removes the last element from the vector.
+     */
+    @inline
+    mut func pop() {
+      // We remove the last element from the vector.
+      // We make sure the vector is not empty.
+      if self.empty() {
+        throw new IndexError("Cannot pop from an empty vector.");
+      }
+      // We decrement the length of the vector.
+      self.length = self.length - 1;
+    }
 
   private:
     /** The capacity of the vector. */
@@ -675,7 +755,13 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @return A string representation of the string view.
      */
     @inline
-    func to_string() Self { return "\"" + *self + "\""; }
+    func to_string() Self { return *self; }
+    /**
+     * @brief Returns a debug string representation of the string view.
+     * @return A debug string representation of the string view.
+     */
+    @inline
+    func debug() Self { return "\"" + *self + "\""; }
     /**
      * @brief Returns the character at the specified index.
      * @param[in] index The index of the character to retrieve.
