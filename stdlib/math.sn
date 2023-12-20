@@ -1,5 +1,5 @@
-import Core::CLib;
-import Core::Ptr;
+import std::c_bindings;
+import std::ptr;
 /**
  * It performs the square root of a given floating-point number.
  *

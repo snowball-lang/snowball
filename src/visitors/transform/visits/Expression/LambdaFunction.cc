@@ -45,10 +45,10 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
   fn->setArgs(newArgs);
 
   auto typeIdentifier = N<Expression::GenericIdentifier>("Function", std::vector<Expression::TypeRef*>{types::FunctionType::from(fn.get())->toRef()});
-  auto coreIdentifier = N<Expression::Identifier>("Core");
+  auto coreIdentifier = N<Expression::Identifier>("std");
   auto typeRefNode = N<Expression::Index>(coreIdentifier, typeIdentifier, true);
 
-  auto typeRef = TR(typeRefNode, "Core::Function", p_node->getDBGInfo(), "");
+  auto typeRef = TR(typeRefNode, "std::Function", p_node->getDBGInfo(), "");
   auto fnType = transformType(typeRef);
   fn->setType(fnType);
 

@@ -985,7 +985,7 @@ struct ImportStmt : public AcceptorExtend<ImportStmt, Base> {
   /// syntax into a vector of strings.
   /// @example of different import statements and how they are
   ///	 represented.
-  ///   | use Core::System			            | {"System"}
+  ///   | use std::io			            | {"io"}
   ///   | use hello::myPath::secondPath   | {"myPath",
   ///   "secondPath"} | use hello::myPath:..:helloAgain |
   ///   {"myPath", "..", "helloAgain"}
@@ -1000,7 +1000,7 @@ struct ImportStmt : public AcceptorExtend<ImportStmt, Base> {
   /// @brief place where searching the path from. This can be used
   ///  so we can decide from what package we need to import this.
   /// @example
-  ///  | use Core::System | package = "Core"
+  ///  | use std::io | package = "std"
   /// @note If the package name is `$` that means that it's being
   /// extracted
   ///  from the current module.

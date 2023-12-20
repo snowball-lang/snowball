@@ -1,6 +1,6 @@
-import Core::System;
+import std::io;
 @use_macros
-import Core::Panic;
+import std::panics;
 
 namespace tests {
 

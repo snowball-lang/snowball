@@ -1,6 +1,6 @@
 @use_macro(current_location);
-import Core::SourceLocation;
-import Core::System;
+import std::sl;
+import std::io;
 
 /**
  * @brief Emits a panic message and exits the program.
@@ -19,13 +19,13 @@ import Core::System;
 @inline
 public func panic(
   message: String = "Something went wrong! 🐱", 
-  _location: SourceLocation::SourceLocation = current_location!()
+  _location: sl::SourceLocation = current_location!()
 ) {
-  System::println("\n\n--------------------");
-  System::println("Program panicked with message: " + message)
-  System::println(" at " + _location.file() + "\e[1;37m:" + _location.line() + ":" + _location.column() + "\e[0m");
-  System::println("\e[1;37mnote:\e[0m run with \e[1;37m`SN_BACKTRACE=1`\e[0m environment variable to get a backtrace\n");
-  System::exit(127);
+  io::println("\n\n--------------------");
+  io::println("Program panicked with message: " + message)
+  io::println(" at " + _location.file() + "\e[1;37m:" + _location.line() + ":" + _location.column() + "\e[0m");
+  io::println("\e[1;37mnote:\e[0m run with \e[1;37m`SN_BACKTRACE=1`\e[0m environment variable to get a backtrace\n");
+  io::exit(127);
 }
 
 /**

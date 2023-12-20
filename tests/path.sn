@@ -1,8 +1,8 @@
 
-import Core::Path;
+import std::Path;
 @use_macro(assert)
-import Core::Assert;
-import Core::System;
+import std::asserts;
+import std::io;
 
 type path = Path::Path;
 

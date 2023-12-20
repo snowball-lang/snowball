@@ -1,6 +1,6 @@
-import Core::Internal::Preload;
-import Core::CLib;
-import Core::Ptr;
+import std::internal::preload;
+import std::c_bindings;
+import std::ptr;
 
 type usize = u64; // TODO: make this 32 bit dependent on the target
 
@@ -367,7 +367,7 @@ public class Range<N: Numeric = i32> implements Iterable<N>, ToString {
  * and manipulating vectors.
  *
  * @typeparam _StoreType The type of elements stored in the vector.
- * @typeparam Allocator The allocator type used for memory management (default is `Ptr::Allocator<_StoreType>`).
+ * @typeparam Allocator The allocator type used for memory management (default is `ptr::Allocator<_StoreType>`).
  *
  * @implements Iterable<_StoreType>
  *
@@ -375,7 +375,7 @@ public class Range<N: Numeric = i32> implements Iterable<N>, ToString {
  *       interface for managing collections of elements, abstracting the complexities of memory
  *       management.
  */
-public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>> 
+public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>> 
  implements Iterable<T>, ToString {
   public:
     /**
@@ -399,7 +399,7 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
       // we also make sure the buffer is not null.
       unsafe {
         // we write the element to the end of the buffer.
-        Ptr::write(Ptr::add(self.buffer.ptr(), self.length), value);
+        ptr::write(ptr::add(self.buffer.ptr(), self.length), value);
       }
       // we increment the length of the vector.
       self.length = self.length + 1;
@@ -623,7 +623,7 @@ public class Vector<T: Sized, Allocator: Sized = Ptr::Allocator<T>>
     /** The size of the vector. */
     let mut length: i64 = 0;
     /** The buffer containing the vector. */
-    let mut buffer: Ptr::NonNull<T> = Allocator::alloc(0);
+    let mut buffer: ptr::NonNull<T> = Allocator::alloc(0);
 
   public:
     /**
@@ -921,12 +921,12 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       unsafe {
         let sum = len1 + len2;
         // We allocate a buffer to store the concatenated string view.
-        let buffer = CLib::malloc(sum) as StringType;
+        let buffer = c_bindings::malloc(sum) as StringType;
         // We copy the first string view to the buffer.
-        CLib::memcpy(buffer, str1, len1);
+        c_bindings::memcpy(buffer, str1, len1);
         // We copy the second string view to the buffer.
         // We start from the end of the first string view.
-        CLib::memcpy(buffer + len1, str2, len2);
+        c_bindings::memcpy(buffer + len1, str2, len2);
         // We return the concatenated string view.
         return buffer;
       }
@@ -985,7 +985,7 @@ static unsafe func execute(
   let indexStr = index.to_string().rjust(total.to_string().size(), '0').bytes();
   // Print the test name.
   // safety: we use printf here, so we make sure the name is null-terminated.
-  CLib::printf(b" Testing \e[1m%-44s\e[0m [(%s\e[0;30m/%i\e[0m) %s]\t... ", name, indexStr, total, expectStr);
+  c_bindings::printf(b" Testing \e[1m%-44s\e[0m [(%s\e[0;30m/%i\e[0m) %s]\t... ", name, indexStr, total, expectStr);
   // Execute the test if it's not skipped. If it's skipped, we just print "wip".
   if !skip {
     // Execute the test and get the result. If the result is equal to the expected result,
@@ -998,16 +998,16 @@ static unsafe func execute(
       // We check if the result is equal to the expected result.
       if result == expect {
         // If the result is equal to the expected result, we print "nice!".
-        CLib::printf(b"\e[1;32mnice!\e[0m\n");
+        c_bindings::printf(b"\e[1;32mnice!\e[0m\n");
       } else {
         // If the result is not equal to the expected result, we print "error".
         // we also print the expected result and the actual result. Again, we use
         // printf, so we make sure the expected result is null-terminated.
         // There hasn't been a case where the expected result is not null-terminated,
         // but we make sure just in case.
-        CLib::printf(b"\e[1;31merror \n");
-        CLib::printf(b"\n\tExpected result\e[0m: \e[1;32m%i\e[1;31m\n", expect);
-        CLib::printf(b"\tActual result\e[0m: \e[1;31m%i\e[0m\n\n", result);
+        c_bindings::printf(b"\e[1;31merror \n");
+        c_bindings::printf(b"\n\tExpected result\e[0m: \e[1;32m%i\e[1;31m\n", expect);
+        c_bindings::printf(b"\tActual result\e[0m: \e[1;31m%i\e[0m\n\n", result);
         // We return 0 to indicate that the test failed. We don't return 1 because
         // that's just not how the compiler will handle it. The compiler will return
         // 1 if the test succeeds, and 0 if it fails. So we return 0 if the test fails.
@@ -1016,14 +1016,14 @@ static unsafe func execute(
     } catch (e: Exception) {
       // We catch any exceptions thrown by the test and print "error".
       // We also print the exception message. 
-      CLib::printf(b"\e[1;31merror \n");
-      CLib::printf(b"\n ------- %s failure -------\n", name);
-      CLib::printf(b"\n  Failed with: \e[1m%s\e[0m\n", e.what().bytes());
-      CLib::printf(b"\e[0m\n");
+      c_bindings::printf(b"\e[1;31merror \n");
+      c_bindings::printf(b"\n ------- %s failure -------\n", name);
+      c_bindings::printf(b"\n  Failed with: \e[1m%s\e[0m\n", e.what().bytes());
+      c_bindings::printf(b"\e[0m\n");
       return false;
     }
   } else {
-    CLib::printf(b"\e[1;33mwip\e[0m\n");
+    c_bindings::printf(b"\e[1;33mwip\e[0m\n");
   }
   // We return 1 to indicate that the test succeeded.
   return true;
@@ -1045,9 +1045,9 @@ func snowball_bench(
   for i in 0..size {
     unsafe {
       let fn = functions[i] as *const void as func () => i32;
-      let start = CLib::time(Ptr::null_ptr<?i32>());
+      let start = c_bindings::time(ptr::null_ptr<?i32>());
       fn();
-      let end = CLib::time(Ptr::null_ptr<?i32>());
+      let end = c_bindings::time(ptr::null_ptr<?i32>());
       // unix time to ms
       let result = (end - start) * 1000;
       results.push(result);
@@ -1084,7 +1084,7 @@ func snowball_bench(
       divider = 1000;
     }
     unsafe {
-      CLib::printf(b" \e[1m%s\e[0m: %s%i%s\e[0m\n", name, color.bytes(), result / divider, unit.bytes());
+      c_bindings::printf(b" \e[1m%s\e[0m: %s%i%s\e[0m\n", name, color.bytes(), result / divider, unit.bytes());
     }
   }
 
@@ -1093,28 +1093,28 @@ func snowball_bench(
   let mut divider = 1;
 
   unsafe {
-    CLib::printf(b"\n\e[1mBenchmark results:\e[0m\n");
+    c_bindings::printf(b"\n\e[1mBenchmark results:\e[0m\n");
     if min >= 1000 {
       unit = "s";
       divider = 1000;
       min = min / divider;
     }
-    CLib::printf(b" \e[1;32mmin\e[0m: \e[1m%d%s\e[0m\n", min, unit.bytes());
+    c_bindings::printf(b" \e[1;32mmin\e[0m: \e[1m%d%s\e[0m\n", min, unit.bytes());
     if max >= 1000 {
       unit = "s";
       divider = 1000;
       max = max / divider;
     } else unit = "ms";
-    CLib::printf(b" \e[1;31mmax\e[0m: \e[1m%d%s\e[0m\n", max, unit.bytes());
+    c_bindings::printf(b" \e[1;31mmax\e[0m: \e[1m%d%s\e[0m\n", max, unit.bytes());
     if avg >= 1000.0 {
       unit = "s";
       divider = 1000;
       avg = avg;
     } else unit = "ms";
   // TODO:
-  //  CLib::printf(b" \e[1mavg\e[0m: \e[1m%d%s\e[0m\n", avg, unit.bytes());
+  //  c_bindings::printf(b" \e[1mavg\e[0m: \e[1m%d%s\e[0m\n", avg, unit.bytes());
   }
 }
 
-import Core::Internal::Integer;
+import std::internal::integers;
 

@@ -1,7 +1,7 @@
-import Core::Math;
-import Core::System;
+import std::math;
+import std::io;
 @use_macro
-import Core::Assert;
+import std::asserts;
 
 func linear_search_algo(arr: Vector<i32>, x: i32) i32 {
     let n = arr.size();
@@ -15,18 +15,18 @@ func linear_search_algo(arr: Vector<i32>, x: i32) i32 {
 
 func jump_search_algo(arr: Vector<i32>, x: i32) i32 {
     let n = arr.size();
-    let mut step = Math::sqrt(n);
+    let mut step = math::sqrt(n);
     let mut prev = 0;
-    while (arr[Math::min(step, n as f64) - 1] < x) {
+    while (arr[math::min(step, n as f64) - 1] < x) {
         prev = step;
-        step = step + Math::sqrt(n);
+        step = step + math::sqrt(n);
         if (prev >= n) {
             return -1;
         }
     }
     while (arr[prev] < x) {
         prev = prev + 1;
-        if (prev == Math::min(step, n as f64)) {
+        if (prev == math::min(step, n as f64)) {
             return -1;
         }
     }

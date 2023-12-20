@@ -24,20 +24,19 @@ import pkg::lambdas;
 import pkg::structs;
 import pkg::path;
 
-////import Core::System::{{ println }};
+////import std::io::{{ println }};
 
-import Core::System;
-import Core::Optional;
+import std::io;
 
-//import Core::System::{ println };
+//import std::io::{ println };
 
 public func main() i32 {
     let x = "25";
     
     let a = (func() i32 {
-        //System::println(x);
-        System::println(x);
+        //io::println(x);
+        io::println(x);
     })();
 
-    System::println(x);
+    io::println(x);
 }

@@ -1,4 +1,4 @@
-import Core::CLib;
+import std::c_bindings;
 
 /**
  * @brief Causes the program to terminate with the specified exit code.
@@ -8,7 +8,7 @@ import Core::CLib;
  */
 public static func exit(exitCode: i32 = 0) {
     // TODO: make it diverge
-    unsafe { CLib::exit(exitCode); }
+    unsafe { c_bindings::exit(exitCode); }
 }
 /**
  * Prints @arg msg to standard output.
@@ -20,7 +20,7 @@ public static func exit(exitCode: i32 = 0) {
 public static func print<T: ToString>(msg: T, end: String = "") i32 {
     let m = String::from(msg);
     for i in 0..m.size() {
-        unsafe {CLib::putchar(m[i]);}
+        unsafe {c_bindings::putchar(m[i]);}
     }
     if end.size() > 0 { return print(end); }
     return 0;
@@ -46,4 +46,6 @@ public static func println<T: ToString>(msg: T) i32 {
  * If you need to print additional characters or a string, use the `println(...)` function instead.
  */
 @inline
-public static func println() { unsafe { CLib::putchar('\n'); } }
+public static func println() { unsafe { c_bindings::putchar('\n'); } }
+
+

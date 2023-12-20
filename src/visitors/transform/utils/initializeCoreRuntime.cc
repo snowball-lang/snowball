@@ -18,9 +18,9 @@ namespace Syntax {
 
 void Transformer::initializeCoreRuntime() {
   auto dbg = new DBGSourceInfo(ctx->module->getSourceInfo(), 0);
-  auto import = Syntax::N<Syntax::Statement::ImportStmt>(std::vector<std::string>{"Core"}, "Core");
+  auto import = Syntax::N<Syntax::Statement::ImportStmt>(std::vector<std::string>{"std"}, "std");
   import->setDBGInfo(dbg);
-  ctx->uuidStack.push_back(ctx->imports->CORE_UUID + "Core");
+  ctx->uuidStack.push_back(ctx->imports->CORE_UUID + "std");
   trans(import);
 }
 

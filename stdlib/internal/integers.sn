@@ -1,5 +1,5 @@
 
-import Core::Ptr;
+import std::ptr;
 
 /**
  * @brief Digits lookup table for decimal numbers.
@@ -58,7 +58,7 @@ class IntegerImpl {
       // max number of digits for the buffer
       let mut curr = 39;
       // allocate the buffer on the stack
-      let mut buffer = Ptr::Allocator<?u8>::alloc(curr).ptr();
+      let mut buffer = ptr::Allocator<?u8>::alloc(curr).ptr();
       // We check if the number is negative and we set the sign accordingly.
       // If the number is negative, we negate it and we set the sign to negative.
       // The sign is used later to add the minus sign to the string.
@@ -94,8 +94,8 @@ class IntegerImpl {
           // TODO: assert curr >= 0
           // safety: we know that buffer > 0 so we can safely write to it
           //      and we know that curr >= 0 so we can safely write to it
-          Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
-          Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d2, buffer + (curr + 2), 2);
+          ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
+          ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d2, buffer + (curr + 2), 2);
         }
         // decode last 1 or 2 chars
         if n >= 100 {
@@ -106,7 +106,7 @@ class IntegerImpl {
           // last 2 digits at the end of the buffer.
           curr = curr - 2;
           // safety: we know that buffer > 0 so we can safely write to it
-          Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
+          ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
         }
         // decode last 1 or 2 chars
         if n < 10 {
@@ -125,7 +125,7 @@ class IntegerImpl {
           curr = curr - 2;
           // safety: we know that buffer > 0 so we can safely write to it
           //     and we know that curr >= 0 so we can safely write to it
-          Ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
+          ptr::copy_nonoverlapping(DEC_DIGITS_LUT + d1, buffer + curr, 2);
         }
         // Add the minus sign to the buffer if the number is negative.
         if neg {
@@ -177,7 +177,7 @@ class IntegerImpl {
       let size = 17;
       // Allocate the buffer on the stack.
       // TODO: assert size > 0
-      let mut buffer = Ptr::Allocator<?u8>::alloc(size).ptr();
+      let mut buffer = ptr::Allocator<?u8>::alloc(size).ptr();
       // The length of the of the number in hexadecimal is the size of the buffer
       // minus 2. We subtract 2 to account for the `0x` prefix.
       let len = size - 2;

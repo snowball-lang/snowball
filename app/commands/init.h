@@ -17,7 +17,7 @@ using namespace std::chrono;
 #define LIBRARY_ENTRY "src/lib.sn"
 #define LIBRARY_MAIN                                                                                                   \
   "\n@use_macro(assert);\n"                                                                                                 \
-  "import Core::Assert;\n\n"                                                                        \
+  "import std::assert;\n\n"                                                                        \
   "public func my_export() String {\n"                                                                                      \
   "    return \"Hello, World\";\n"                                                                         \
   "}\n\n" /* TODO: add #[cfg(test)] */                                                                                 \
@@ -25,17 +25,17 @@ using namespace std::chrono;
   "\n" \
   "    @test\n"                                                                                                        \
   "    func test_my_lib() i32 {\n"                                                                                  \
-  "        #assert(my_export() == \"Hello, World\")\n"                                                                 \
+  "        assert!(my_export() == \"Hello, World\")\n"                                                                 \
   "        return 1;\n"                                                                                              \
   "    }\n"                                                                                                            \
   "}"
 
 #define EXECUTABLE_ENTRY "src/main.sn"
 #define EXECUTABLE_MAIN                                                                                                \
-  "import Core::System;\n"                                                                                                \
+  "import std::io;\n"                                                                                                \
                                                                                                                        \
   "\npublic func main() i32 {\n"                                                                                            \
-  "   System::println(\"Hello, World\")\n"                                                                             \
+  "   io::println(\"Hello, World\")\n"                                                                             \
   "}"
 
 #define CONFIGURATION_FILE "sn.toml"

@@ -1,72 +1,70 @@
-import Core::Optional;
-import Core::CLib;
-import Core::System;
+import std::opt;
+import std::io;
 
 namespace tests {
 
 @test(expect = 1)
 func empty_from_func() i32 {
-    let x = Optional::None<?i32>();
-    //CLib::printf("x: %i", Optional::None<?i32>().empty()) 
+    let x = opt::None<?i32>();
     return x.empty();
 }
 
 @test
 func empty_from_class() i32 {
-    let x = new Optional::Option<i32>();
+    let x = new opt::Option<i32>();
     return x.empty();
 }
 
 @test
 func with_value_from_func() i32 {
-    let x = Optional::Some(42);
+    let x = opt::Some(42);
     return !x.empty();
 }
 
 @test
 func with_value_from_class() i32 {
-    let x = new Optional::Option<i32>(42);
+    let x = new opt::Option<i32>(42);
     return !x.empty();
 }
 
 @test(expect = 42)
 func test_value_from_func() i32 {
-    let x = Optional::Some(42);
+    let x = opt::Some(42);
     let a = x.val();
     return x.val();
 }
 
 @test(expect = 24)
 func pointer_value() i32 {
-    let x = new Optional::Option<&i32>(&24);
+    let x = new opt::Option<&i32>(&24);
     return *x.val();
 }
 
 @test(expect = 42)
 func value_default() i32 {
-    let x = new Optional::Option<i32>();
+    let x = new opt::Option<i32>();
     return x.value_or(42);
 }
 
 @test
 func empty_value_class() i32 {
-    let x = new Optional::Option<String>();
+    let x = new opt::Option<String>();
     return x.empty();
 }
 
 @test(expect = 5)
 func value_class() i32 {
     let s = "hello";
-    let x = new Optional::Option<String>(s);
+    let x = new opt::Option<String>(s);
     return x.val().size();
 }
 
 @test
 func access_empty() i32 {
-    let x = new Optional::Option<i32>();
+    let x = new opt::Option<i32>();
     try {
         x.val();
-    } catch (_: Optional::BadOptionAccess) {
+    } catch (_: opt::BadOptionAccess) {
         return true;
     }
     return 0;

@@ -25,10 +25,10 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
         size->setType(ctx->getInt32Type());
 
         auto index = N<Expression::Index>(
-                (utils::startsWith(ctx->module->getUniqueName(), (ctx->imports->CORE_UUID + "Internal")) || utils::startsWith(ctx->module->getUniqueName(), (ctx->imports->CORE_UUID + "Core"))) ?
+                (utils::startsWith(ctx->module->getUniqueName(), (ctx->imports->CORE_UUID + "internal")) || utils::startsWith(ctx->module->getUniqueName(), (ctx->imports->CORE_UUID + "std"))) ?
                         (Expression::Base*) N<Expression::Identifier>("String") :
                         (Expression::Base*) N<Expression::Index>(
-                                N<Expression::Identifier>("Core"), N<Expression::Identifier>("String"), true
+                                N<Expression::Identifier>("std"), N<Expression::Identifier>("String"), true
                         ),
                 N<Expression::Identifier>("from"),
                 true

@@ -12,7 +12,7 @@ types::FunctionType* Transformer::getFunctionType(types::Type* valueType) {
     } 
 
     if (auto x = cast<types::DefinedType>(valueType)) {
-        if (utils::startsWith(x->getUUID(), services::ImportService::CORE_UUID + "Core.Function")) {
+        if (utils::startsWith(x->getUUID(), services::ImportService::CORE_UUID + "std.Function")) {
             return utils::cast<types::FunctionType>(x->getGenerics()[0]);
         }
     }

@@ -1,35 +1,35 @@
 
 @use_macros
-import Core::CLib;
+import std::c_bindings;
 
 namespace tests {
 
 @test(expect = 5)
 unsafe func strlen() i32 {
-    let x = CLib::c_string::strlen(b"hello");
+    let x = c_bindings::c_string::strlen(b"hello");
     return x;
 }
 
 @test(expect = 0)
 unsafe func strlen_empty() i32 {
-    let x = CLib::c_string::strlen(b"");
+    let x = c_bindings::c_string::strlen(b"");
     return x;
 }
 
 @test(expect = 0)
 unsafe func malloc() i32 {
-    let x = CLib::malloc(20) as *const CLib::c_char;
-    CLib::c_string::strcpy(x, b"hello");
-    return CLib::c_string::strcmp(x, b"hello");
+    let x = c_bindings::malloc(20) as *const c_bindings::c_char;
+    c_bindings::c_string::strcpy(x, b"hello");
+    return c_bindings::c_string::strcmp(x, b"hello");
 }
 
 @test(expect = 0)
 unsafe func realloc() i32 {
-    let mut x = CLib::malloc(20) as *const CLib::c_char;
-    CLib::c_string::strcpy(x, b"hello");
-    x = CLib::realloc(x, 30) as *const CLib::c_char;
-    CLib::c_string::strcat(x, b" world");
-    return CLib::c_string::strcmp(x, b"hello world");
+    let mut x = c_bindings::malloc(20) as *const c_bindings::c_char;
+    c_bindings::c_string::strcpy(x, b"hello");
+    x = c_bindings::realloc(x, 30) as *const c_bindings::c_char;
+    c_bindings::c_string::strcat(x, b" world");
+    return c_bindings::c_string::strcmp(x, b"hello world");
 }
 
 }

@@ -1,4 +1,4 @@
-import Core::System
+import std::io
 
 @inline
 static func fib(n: i64) i64 {
@@ -10,5 +10,5 @@ static func fib(n: i64) i64 {
 }
 
 public func main() i32 {
-    System::println(fib(47 as i64))
+    io::println(fib(47 as i64))
 }

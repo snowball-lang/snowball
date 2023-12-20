@@ -1,25 +1,25 @@
-import Core::Math;
+import std::math;
 
 namespace test {
 
 @test(expect = 2)
 func sqrt() i32 {
-    return Math::sqrt(4);
+    return math::sqrt(4);
 }
 
 @test(expect = 2)
 func min() i32 {
-    return Math::min(2, 3);
+    return math::min(2, 3);
 }
 
 @test()
 func is_inf() i32 {
-    return Math::is_inf(Math::inf);
+    return math::is_inf(math::inf);
 }
 
 @test
 func is_nan() i32 {
-    return Math::is_nan(0.0/0);
+    return math::is_nan(0.0/0);
 }
 
 }

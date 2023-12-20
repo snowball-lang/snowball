@@ -99,7 +99,7 @@ std::shared_ptr<ir::Value> Transformer::getFunction(
         }
         E<TYPE_ERROR>(dbgInfo, FMT("Value with name '%s' is a type that cant be called!", name.c_str()));
       } else if (mod) {
-        E<TYPE_ERROR>(dbgInfo, FMT("Silly billy, you can't call modules! ('%s')", name.c_str()));
+        E<TYPE_ERROR>(dbgInfo, FMT("Silly billy, you cant call modules! ('%s')", name.c_str()));
       }
 
       if (hasSelf) arguments.erase(arguments.begin());

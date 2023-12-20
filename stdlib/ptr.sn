@@ -1,4 +1,4 @@
-import Core::CLib;
+import std::c_bindings;
 
 /**
  * A wrapper for non-null references to types that bypass the `Sized` check.
@@ -11,11 +11,11 @@ import Core::CLib;
  * @example
  * ```
  * importPanic::panic;
- * import Core::Ptr;
- * import[[use_macros]] Core::Assert;
+ * import std::ptr;
+ * @use_macros import std::asserts;
  *
  * let value: i32 = 42;
- * let non_null_value = new NonNull{&value};
+ * let non_null_value = new ptr::NonNull(&value);
  * assert!(*non_null_value.ptr() == value);
  * ```
  * @endexample
@@ -74,7 +74,7 @@ public class Allocator<T: Sized> {
     @inline
     static func alloc(size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(CLib::malloc(sizeof!(:T) * size) as *const T);
+        return new NonNull<T>(c_bindings::malloc(sizeof!(:T) * size) as *const T);
       }
     }
     /**
@@ -85,7 +85,7 @@ public class Allocator<T: Sized> {
     @inline
     static func alloc_zeroed(size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(CLib::calloc(sizeof!(:T) * size, 0));
+        return new NonNull<T>(c_bindings::calloc(sizeof!(:T) * size, 0));
       }
     }
     /**
@@ -97,7 +97,7 @@ public class Allocator<T: Sized> {
     @inline
     static func realloc(ptr: NonNull<T>, size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(CLib::realloc(ptr.ptr(), sizeof!(:T) * size));
+        return new NonNull<T>(c_bindings::realloc(ptr.ptr(), sizeof!(:T) * size));
       }
     }
     /**
@@ -106,7 +106,7 @@ public class Allocator<T: Sized> {
      */
     @inline
     static func free(ptr: NonNull<T>) {
-      unsafe { CLib::free(ptr.ptr()); }
+      unsafe { c_bindings::free(ptr.ptr()); }
     }
 }
 
@@ -127,7 +127,7 @@ public func to_pointer<T: Sized>(value: &T) *const T {
 
 @inline
 public func copy_nonoverlapping<T: Sized>(src: *mut T, dst: *mut T, count: i32) {
-  unsafe { CLib::memmove(dst, src, count); }
+  unsafe { c_bindings::memmove(dst, src, count); }
 }
 
 @inline 

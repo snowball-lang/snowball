@@ -10,9 +10,9 @@ namespace fs = std::filesystem;
 namespace snowball {
 namespace services {
 
-inline const std::string ImportService::CORE_UUID = "@sn.Core.";
+inline const std::string ImportService::CORE_UUID = "@sn.std.";
 fs::path ImportService::getPackagePath(const std::string package) {
-  if (package == "Core") {
+  if (package == "std") {
     return (fs::path) utils::get_lib_folder();
   } else if (package == "pkg") {
     return fs::current_path();

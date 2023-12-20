@@ -1,4 +1,4 @@
-import Core::System;
+import std::io;
 
 namespace test {
 

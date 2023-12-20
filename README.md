@@ -74,10 +74,10 @@ snowball run
 Here is an example of a class in snowball.
 
 ```kt
-import Core::System;
+import std::io;
 
 public func main() i32 {
-    System::println("Hello, world! 🐱");
+    io::println("Hello, world! 🐱");
 }
 ```
 

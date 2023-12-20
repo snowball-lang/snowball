@@ -44,7 +44,7 @@ void LLVMBuilder::visit(ir::Call* call) {
   auto calleeValue = call->getCallee();
   auto fnType = Syntax::Transformer::getFunctionType(calleeValue->getType());
   auto asFunction = utils::dyn_cast<ir::Func>(calleeValue);
-  auto isLambda = !utils::is<types::FunctionType>(calleeValue->getType()) ? utils::startsWith(utils::cast<types::DefinedType>(calleeValue->getType())->getUUID(), services::ImportService::CORE_UUID + "Core.Function") : false;
+  auto isLambda = !utils::is<types::FunctionType>(calleeValue->getType()) ? utils::startsWith(utils::cast<types::DefinedType>(calleeValue->getType())->getUUID(), services::ImportService::CORE_UUID + "std.Function") : false;
   auto calleeType = getLLVMFunctionType(fnType, asFunction.get());
 
   llvm::Value* llvmCall = nullptr;

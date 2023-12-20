@@ -1,6 +1,4 @@
-import Core::System;
-@use_macros
-import Core::CLib;
+import std::io;
 
 namespace tests {
 

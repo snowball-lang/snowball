@@ -96,4 +96,4 @@ public class SourceLocation {
  */
 @export
 macro current_location() =
-  pkg!(SourceLocation::SourceLocation::current())
+  pkg!(sl::SourceLocation::current())

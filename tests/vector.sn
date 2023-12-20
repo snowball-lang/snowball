@@ -1,6 +1,6 @@
 @use_macro
-import Core::Assert;
-import Core::System;
+import std::asserts;
+import std::io;
 
 namespace tests {
 
