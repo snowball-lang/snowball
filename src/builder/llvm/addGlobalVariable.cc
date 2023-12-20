@@ -20,8 +20,22 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
   auto srcInfo = var->getDBGInfo();
   auto file = dbg.getFile(var->getSourceInfo()->getPath());
   auto debugVar = dbg.builder->createGlobalVariableExpression(
-          dbg.unit, var->getIdentifier(), var->getIdentifier(), file, srcInfo->line, getDIType(var->getType()), false
+          dbg.unit, var->getIdentifier(), var->getIdentifier(), file, srcInfo->line, getDIType(var->getType()), var->isExternDecl()
   );
+
+  if (var->isExternDecl()) {
+    auto gvar = new llvm::GlobalVariable(
+            /*Module=*/*module,
+            /*Type=*/ty,
+            /*isConstant=*/!var->getVariable()->isMutable(),
+            /*Linkage=*/llvm::GlobalValue::ExternalLinkage,
+            /*Initializer=*/nullptr, 
+            /*Name=*/var->getIdentifier()
+    );
+    ctx->addSymbol(var->getId(), gvar);
+    gvar->addDebugInfo(debugVar);
+    return;
+  }
 
   if (utils::dyn_cast<ir::ConstantValue>(var->getValue())) {
     auto c = build(var->getValue().get());

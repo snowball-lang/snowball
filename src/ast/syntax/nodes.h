@@ -607,6 +607,8 @@ struct VariableDecl : public AcceptorExtend<VariableDecl, Base>,
   Expression::TypeRef* definedType = nullptr;
   /// @brief If the variable is actually a constant expression.
   bool isConstant = false;
+  /// @brief If the variable is external
+  bool isExtern = false;
 
 public:
   VariableDecl(
@@ -628,6 +630,10 @@ public:
   bool isInitialized();
   /// @brief If the variable is actually declared as a constant
   bool isContantDecl();
+  /// @brief If the variable is declared as an extern variable
+  bool isExternDecl();
+  /// @brief Set the variable as an extern variable
+  void setExternDecl(bool e = true);
 
   // Set an acceptance call
   ACCEPT()

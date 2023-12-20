@@ -51,9 +51,9 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
 
         case TokenType::KWORD_EXTERN: {
           auto pk = peek();
-          if (!is<TokenType::KWORD_FUNC>(pk) && !is<TokenType::KWORD_UNSAFE>(pk)) {
-            createError<SYNTAX_ERROR>("expected 'func' keyword after an "
-                                      "extern function declaration");
+          if (!is<TokenType::KWORD_FUNC>(pk) && !is<TokenType::KWORD_CONST>(pk) && !is<TokenType::KWORD_UNSAFE>(pk)) {
+            createError<SYNTAX_ERROR>("expected 'func' or 'const' keyword after an "
+                                      "external symbol declaration");
           }
 
           break;

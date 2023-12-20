@@ -62,6 +62,8 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
         n = std::stoll(str, nullptr, 16);
       } else if (utils::startsWith(str, "0b") || utils::startsWith(str, "0B")) {
         n = std::stoul(str.substr(2, (size_t) (str.size() - 2)), nullptr, 2);
+      } else if (utils::startsWith(str, "0o") || utils::startsWith(str, "0O")) {
+        n = std::stoul(str.substr(2, (size_t) (str.size() - 2)), nullptr, 8);
       } else {
         // TODO: big numbers!
         n = std::stoll(str); // We asume the number is correct

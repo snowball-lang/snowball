@@ -1,9 +1,16 @@
+import std::env;
+import std::c_bindings;
 
 // TODO: support all platforms
 
 @cfg(target_os="windows")  public const PATH_SEPARATOR: String = "\\";
 @cfg(target_os="!windows") public const PATH_SEPARATOR: String = "/";
 
+/**
+ * @brief Error thrown when a file or directory does not exist.
+ * Another example of an error is when a file or directory cannot be created.
+ */
+public class PathError extends Exception {}
 /**
  * A path to a file or directory.
  * 
@@ -18,6 +25,10 @@ public class Path implements ToString, Iterable<String> {
      * Create a new path from a vector of strings.
      */
     Path(path: Vector<String>) : path(path) { self.reset(); }
+    /**
+     * Create a new path from a string.
+     */
+    Path(path: String) : path(path.split(PATH_SEPARATOR)) { self.reset(); }
     /**
      * @brief Join two paths together.
      * @param other The path to join to this one.
@@ -130,5 +141,62 @@ public class Path implements ToString, Iterable<String> {
         }
       }
       return new Path(copy);
+    }
+    /**
+     * @brief Removes the file or directory at the path.
+     * @return Whether the file or directory was removed.
+     */
+    func remove() bool {
+      let mut copy = self.path;
+      let mut i = copy.size() - 1;
+      while i >= 0 {
+        if copy[i] == "." {
+          copy.remove(i);
+        } else if copy[i] == ".." {
+          copy.remove(i);
+          if i > 0 {
+            copy.remove(i - 1);
+            i = i - 1;
+          }
+        } else {
+          break;
+        }
+        i = i - 1;
+      }
+      let path = copy.join(PATH_SEPARATOR);
+      unsafe {
+        let err = c_bindings::files::remove(path.to_string().bytes());
+        if err != 0 {
+          throw new PathError(env::posix_get_error_msg(c_bindings::errno()));
+        }
+      }
+      return true;
+    }
+    /**
+     * @brief Returns whether the file or directory exists.
+     * @return Whether the file or directory exists.
+     */
+    func exists() bool {
+      let mut copy = self.path;
+      let mut i = copy.size() - 1;
+      while i >= 0 {
+        if copy[i] == "." {
+          copy.remove(i);
+        } else if copy[i] == ".." {
+          copy.remove(i);
+          if i > 0 {
+            copy.remove(i - 1);
+            i = i - 1;
+          }
+        } else {
+          break;
+        }
+        i = i - 1;
+      }
+      let path = copy.join(PATH_SEPARATOR);
+      unsafe {
+        let err = c_bindings::files::access(path.to_string().bytes(), 0);
+        return err == 0;
+      }
     }
 }

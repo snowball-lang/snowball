@@ -90,6 +90,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
           //OPERATOR_INSTANCE(BIT_AND_EQ, CreateAnd)
           OPERATOR_INSTANCE(BIT_XOR, CreateXor)
           //OPERATOR_INSTANCE(BIT_XOR_EQ, CreateXor)
+          OPERATOR_UINSTANCE(BIT_NOT, CreateNot)
 
           SIGNED_DEPENDANT(LT, CreateICmpSLT, CreateICmpULT)
           SIGNED_DEPENDANT(GT, CreateICmpSGT, CreateICmpUGT)
@@ -158,7 +159,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             break;
           }
 
-          default: assert(false);
+          default: assert(false && "Unknown operator");
         }
 
         return true;
@@ -181,6 +182,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
           OPERATOR_INSTANCE(BIT_AND, CreateAnd)
           //OPERATOR_INSTANCE(BIT_AND_EQ, CreateAnd)
           OPERATOR_INSTANCE(BIT_XOR, CreateXor)
+          OPERATOR_UINSTANCE(BIT_NOT, CreateNot)
           //OPERATOR_INSTANCE(BIT_XOR_EQ, CreateXor)
           OPERATOR_INSTANCE(LT, CreateFCmpOLT)
           OPERATOR_INSTANCE(GT, CreateFCmpOGT)

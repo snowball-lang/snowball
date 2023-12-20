@@ -1,0 +1,24 @@
+import std::fs;
+
+type File = fs::File;
+type Path = fs::Path;
+
+namespace tests {
+
+
+@test
+func open_file() i32 {
+  const path: &Path = new Path("./test-files.txt");
+  let mut f = new File(path, "wb");
+  f.close();
+  return fs::exists(path) as i32;
+}
+
+@test
+func remove() i32 {
+  const path: &Path = new Path("./test-files.txt");
+  fs::remove(path);
+  return !fs::exists(path) as i32;
+}
+
+}

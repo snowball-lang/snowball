@@ -282,6 +282,7 @@ class IntegerImpl<IntegerType> {
     @__internal__ operator func ^(self: IntegerType, other: IntegerType) IntegerType {}
     @__internal__ operator func |(self: IntegerType, other: IntegerType) IntegerType {}
     @__internal__ operator func &(self: IntegerType, other: IntegerType) IntegerType {}
+    @__internal__ operator func ~(self: IntegerType) IntegerType {}
     @__internal__ operator func <<(self: IntegerType, other: IntegerType) IntegerType {}
     @__internal__ operator func |>>(self: IntegerType, other: IntegerType) IntegerType {}
 

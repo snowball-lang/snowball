@@ -17,5 +17,6 @@ void error_log(std::ostringstream& oss, const char *message);
 }
 
 void initialize_snowball(int flags) __asm__("sn.runtime.initialize");
+int snowball_errno() __asm__("sn.runtime.errno");
 
 #endif // _SNOWBALL_RUNTIME_H_

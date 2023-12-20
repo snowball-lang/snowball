@@ -1,5 +1,6 @@
 
 #include "runtime.h"
+#include <errno.h>
 
 void initialize_snowball(int flags) {
     snowball::initialize_segfault_handler();
@@ -14,4 +15,8 @@ int snowball_flags = 0;
 void error_log(std::ostringstream& oss, const char *message) {
     oss << "\n\n\e[1;31merror\e[1;37m: " << message;
 }
+}
+
+int snowball_errno() {
+    return errno;
 }

@@ -124,9 +124,9 @@ SharedValue<Call> IRBuilder::createCall(DBGSourceInfo* dbgInfo, SharedValue<> ca
   return N<Call>(dbgInfo, callee, args);
 }
 SharedValue<VariableDeclaration> IRBuilder::createVariableDeclaration(
-        DBGSourceInfo* dbgInfo, std::shared_ptr<ir::Variable> variable, SharedValue<> value
+        DBGSourceInfo* dbgInfo, std::shared_ptr<ir::Variable> variable, SharedValue<> value, bool isExtern
 ) {
-  auto decl = N<VariableDeclaration>(dbgInfo, variable, value);
+  auto decl = N<VariableDeclaration>(dbgInfo, variable, value, isExtern);
   if (value != nullptr) setType(decl, value->getType());
   return decl;
 }

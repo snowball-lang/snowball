@@ -151,7 +151,7 @@ public:
   );
   /// @brief Create a new type
   SharedValue<VariableDeclaration> createVariableDeclaration(
-          DBGSourceInfo* dbgInfo, std::shared_ptr<ir::Variable> variable, SharedValue<> value
+          DBGSourceInfo* dbgInfo, std::shared_ptr<ir::Variable> variable, SharedValue<> value, bool isExtern = false
   );
   /// @brief Create a extraction node from a value
   SharedValue<ValueExtract> createValueExtract(DBGSourceInfo* dbgInfo, SharedValue<> value);

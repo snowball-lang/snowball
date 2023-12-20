@@ -1,4 +1,6 @@
 import std::io;
+@use_macros
+import std::asserts;
 
 namespace tests {
 
@@ -67,6 +69,28 @@ func rjust() i32 {
 func ljust() i32 {
     let s = "hello";
     return s.ljust(10, '-') == "hello-----";
+}
+
+@test(expect = 2)
+func split() i32 {
+    let s = "hello world";
+    let x = s.split(" ");
+    io::println(x[0]);
+    io::println(x[1]);
+    assert!(x[0] == "hello");
+    assert!(x[1] == "world");
+    return x.size();
+}
+
+@test(expect = 4)
+func split_2() i32 {
+    let s = "hello world foo bar";
+    let x = s.split(" ");
+    assert!(x[0] == "hello");
+    assert!(x[1] == "world");
+    assert!(x[2] == "foo");
+    assert!(x[3] == "bar");
+    return x.size();
 }
 
 }

@@ -461,7 +461,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
       } else if index >= self.length {
         // If the index is greater than or equal to the length of the vector,
         // we throw an IndexError. We make sure we don't overflow.
-        throw new IndexError("Index out of bounds. Cannot access element at index " + index.to_string());
+        throw new IndexError("Index out of bounds.");
       }
       // safety: we make sure the buffer is not null. If the length != 0
       //   that means that the buffer is not null, since we called reserve() before.
@@ -863,11 +863,44 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       return result;
     }
     /**
+     * @brief It splits the string view into a vector of substrings.
+     * @param[in] sep The separator to use for splitting the string view.
+     * @return A vector of substrings.
+     */
+    func split(sep: Self) Vector<Self> {
+      // We split the string view into a vector of substrings.
+      let mut result = new Vector<Self>();
+      let mut start = 0;
+      // We iterate over the string view and split it into substrings.
+      // We make sure we don't overflow.
+      for let mut i = 0; i < self.length; i = i+1 {
+        // If the current character is the separator, we split the string view.
+        if self[i] == sep[0] {
+          // We append the substring to the result vector.
+          result.push(self.substr(start..i));
+          // We update the start index.
+          start = i + 1;
+        }
+      }
+      if start < self.length {
+        // We append the last substring to the result vector.
+        result.push(self.substr(start..self.length));
+      } 
+      // We return the result vector.
+      return result;
+    }
+    /**
      * @brief It clones the string view.
      * @return A clone of the string view.
      */
     @inline
     func clone() Self { return new Self(self.bytes(), self.length); }
+    /**
+     * @brief It returns if the string view is empty.
+     * @return `true` if the string view is empty, `false` otherwise.
+     */
+    @inline
+    func empty() bool { return self.length == 0; }
   private:
     /** A pointer to the buffer containing the string view. */
     let buffer: StringType = zero_initialized!(:StringType);
@@ -903,6 +936,22 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
     static func from(buffer: *const u8, size: i32) StringView<Char> {
       // We return a string view from the buffer and its size.
       return new Self(buffer, size);
+    }
+
+    /**
+     * @brief Constructs a string view from a C null-terminated string.
+     * @param[in] buffer A pointer to the buffer containing the string view.
+     * @return The constructed string view.
+     */
+    @inline
+    static unsafe func from_cstr(buffer: *const u8) StringView<Char> {
+      if buffer.is_null() {
+        // If the buffer is null, we return an empty string view.
+        return "";
+      }
+
+      // We return a string view from the buffer and its size.
+      return new Self(buffer, c_bindings::c_string::strlen(buffer));
     }
 
   // Internal exports

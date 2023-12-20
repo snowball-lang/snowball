@@ -20,6 +20,22 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
     definedType->setMutable(isMutable);
   }
 
+  if (p_node->isExternDecl()) {
+    if (std::find(ctx->exported.begin(), ctx->exported.end(), p_node->getName()) != ctx->exported.end()) {
+      E<VARIABLE_ERROR>(
+              p_node->getDBGInfo(),
+              "External symbol already exists!",
+              {.info = "This function name is already exported as unmangled.",
+                .note = "This symbols is exported on another location with the "
+                        "'external' attribute.",
+                .help = "Try renaming the variable or removing the 'external' "
+                        "attribute."}
+      );
+    } else {
+      ctx->exported.push_back(p_node->getName());
+    }
+  }
+
   if (ctx->getInScope(variableName, ctx->currentScope()).second) {
     E<VARIABLE_ERROR>(
             p_node,
@@ -34,7 +50,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
   // TODO: it should always be declared
   if (p_node->isInitialized()) {
     auto val = trans(variableValue);
-    auto varDecl = getBuilder().createVariableDeclaration(p_node->getDBGInfo(), var, val);
+    auto varDecl = getBuilder().createVariableDeclaration(p_node->getDBGInfo(), var, val, p_node->isExternDecl());
     varDecl->setId(var->getId());
     getBuilder().setType(varDecl, val->getType());
     if (auto f = ctx->getCurrentFunction().get()) {
@@ -65,7 +81,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
 
     this->value = varDecl;
   } else {
-    auto varDecl = getBuilder().createVariableDeclaration(p_node->getDBGInfo(), var, nullptr);
+    auto varDecl = getBuilder().createVariableDeclaration(p_node->getDBGInfo(), var, nullptr, p_node->isExternDecl());
     varDecl->setId(var->getId());
     getBuilder().setType(varDecl, definedType);
     if (auto f = ctx->getCurrentFunction().get()) {

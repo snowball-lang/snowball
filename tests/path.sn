@@ -1,10 +1,10 @@
 
-import std::Path;
+import std::fs;
 @use_macro(assert)
 import std::asserts;
 import std::io;
 
-type path = Path::Path;
+type path = fs::Path;
 
 namespace tests {
 

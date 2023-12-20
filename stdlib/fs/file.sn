@@ -1,0 +1,111 @@
+import std::fs::path;
+import std::c_bindings;
+import std::env;
+import std::ptr;
+import std::io;
+
+/**
+ * An error thrown when a mode is invalid.
+ * For example, if the mode is "@", this error will be thrown.
+ */
+public class InvalidFileMode extends Exception 
+  { }
+/**
+ * An error thrown when a file coudln't be opened.
+ * For example, if the file doesn't exist, this error will be thrown.
+ */
+public class FileOpenError extends Exception 
+  { }
+/**
+ * An error thrown when a file is already open.
+ * For example, if the file is already open, this error will be thrown.
+ */
+public class FileAlreadyOpenError extends Exception 
+  { }
+/**
+ * An error thrown when a file is not open.
+ * For example, if the file is not open, this error will be thrown.
+ */
+public class FileNotOpenError extends Exception 
+  { }
+/**
+ * @brief A file.
+ * This class represents a file on the filesystem.
+ * A file can be opened for reading or writing. It can also be 
+ * created or deleted. This class gives all those operations in a
+ * safe and easy to use interface. 
+ */
+public class File implements ToString, Debug {
+  /**
+   * @brief If the file is open.
+   * This is true if the file is open, false otherwise.
+   * This flag can be used to check if the file is open before
+   * attempting to read or write to it.
+   */
+  let mut open: bool;
+  /**
+   * @brief The path to the file.
+   * This is the path to the file on the filesystem.
+   */
+  let path: path::Path;
+  /**
+   * @brief A pointer to a file.
+   * This is a pointer to a file. It is used to read and write to the file.
+   */
+  let mut file: *const void; // Instead of FILE*
+ public:
+  /**
+   * @brief Create a new file.
+   * @param path The path to the file.
+   * @param mode The mode to open the file in.
+   * @return The new file.
+   */
+  File(path: path::Path, mode: String) : path(path) {
+    self.open = false;
+    self.file = zero_initialized!(:*const void);
+    self.open(mode);
+  }
+  /**
+   * @brief Open the file.
+   * @param mode The mode to open the file in.
+   * @return Whether the file was opened successfully.
+   */
+  mut func open(mode: String) bool {
+    // If the file is already open, return false.
+    // we don't want to open the file twice.
+    if self.open {
+      throw new FileAlreadyOpenError("File is already open.");
+    }
+    // safety: we are using the C bindings, so we need to be careful.
+    unsafe {
+      let cfile = c_bindings::files::fopen(self.path.to_string().bytes(), mode.to_string().bytes());
+      if cfile.is_null() {
+        throw new FileOpenError("Failed to open or create file (" + self.path.to_string() + "): " + env::posix_get_error_msg(c_bindings::errno()));
+      }
+      self.open = true;
+      self.file = cfile;
+    }
+    return true;
+  }
+  /**
+   * @brief Close the file.
+   * @return Whether the file was closed successfully.
+   */
+  mut func close() bool {
+    // If the file is already closed, return false.
+    // we don't want to close the file twice.
+    if !self.open {
+      throw new FileNotOpenError("File is not open.");
+    }
+    // safety: we are using the C bindings, so we need to be careful.
+    unsafe {
+      let result = c_bindings::files::fclose(self.file);
+      if result != 0 {
+        throw new FileOpenError("Failed to close file (" + self.path.to_string() + "): " + env::posix_get_error_msg(c_bindings::errno()));
+      }
+      self.open = false;
+      self.file = zero_initialized!(:*const void);
+    }
+    return true;
+  }
+}

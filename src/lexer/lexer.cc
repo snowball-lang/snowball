@@ -479,12 +479,14 @@ void Lexer::tokenize() {
             INT,
             FLOAT,
             BIN,
-            HEX
+            HEX,
+            OCT
           };
           _ReadMode mode = INT;
           if (GET_CHAR(0) == '0') {
             if (GET_CHAR(1) == 'b' || GET_CHAR(1) == 'B') mode = BIN;
             if (GET_CHAR(1) == 'x' || GET_CHAR(1) == 'X') mode = HEX;
+            if (GET_CHAR(1) == 'o' || GET_CHAR(1) == 'O') mode = OCT;
           }
           bool isRange = false;
           EAT_CHAR(1);
@@ -514,6 +516,14 @@ void Lexer::tokenize() {
               num += GET_CHAR(0);
               EAT_CHAR(1); // eat 'x';
               while (IS_HEX_CHAR(GET_CHAR(0))) {
+                num += GET_CHAR(0);
+                EAT_CHAR(1);
+              }
+            } break;
+            case OCT: {
+              num += GET_CHAR(0);
+              EAT_CHAR(1); // eat 'o';
+              while (GET_CHAR(0) >= '0' && GET_CHAR(0) <= '7') {
                 num += GET_CHAR(0);
                 EAT_CHAR(1);
               }

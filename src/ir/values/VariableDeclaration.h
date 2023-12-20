@@ -24,14 +24,16 @@ class VariableDeclaration : public IdMixin, public AcceptorExtend<Variable, Valu
   std::shared_ptr<ir::Variable> variable;
   // Value stored into the current variable
   std::shared_ptr<Value> value;
+  // If the variable has been externally declared
+  bool external = false;
 
 protected:
   friend Argument;
 
 public:
   // Create a new variable declaration
-  VariableDeclaration(std::shared_ptr<ir::Variable> variable, std::shared_ptr<Value> value)
-      : variable(variable), value(value) {};
+  VariableDeclaration(std::shared_ptr<ir::Variable> variable, std::shared_ptr<Value> value, bool external = false)
+      : variable(variable), value(value), external(external) {}
 
   /// @return Variable value
   auto& getVariable() const { return variable; }
@@ -39,6 +41,8 @@ public:
   std::string getIdentifier() const { return variable->getIdentifier(); }
   /// @return respective value stored into the current variable
   auto getValue() const { return value; }
+  /// @return if the variable has been externally declared
+  bool isExternDecl() const { return external; }
 
   // Set a visit handler for the generators
   SN_GENERATOR_VISITS

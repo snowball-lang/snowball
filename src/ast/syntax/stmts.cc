@@ -60,6 +60,8 @@ bool VariableDecl::isContantDecl() { return isConstant; }
 std::string VariableDecl::getName() const { return name; }
 Expression::Base* VariableDecl::getValue() { return value; }
 bool VariableDecl::isMutable() { return _mutable; }
+bool VariableDecl::isExternDecl() { return isExtern; }
+void VariableDecl::setExternDecl(bool e) { isExtern = e; }
 Expression::TypeRef* VariableDecl::getDefinedType() { return definedType; }
 void VariableDecl::setDefinedType(Expression::TypeRef* t) { definedType = t; }
 Return::Return(Expression::Base* value) : value(value){};

@@ -58,14 +58,14 @@ void Transformer::initializePerModuleMacros() {
   ctx->addItem("include_str", includeStringMacroItem);
 
   auto envMacro = N<Macro>(
-          "env",
+          "env_var",
           std::vector<std::tuple<std::string, Macro::ArguementType, Node*>>{
                   {"name", Macro::ArguementType::CONSTANT_STRING, nullptr}},
           nullptr
   );
   auto envInstance = new transform::MacroInstance(envMacro, ctx->module);
   auto envMacroItem = std::make_shared<transform::Item>(envInstance);
-  ctx->addItem("env", envMacroItem);
+  ctx->addItem("env_var", envMacroItem);
 }
 
 } // namespace Syntax

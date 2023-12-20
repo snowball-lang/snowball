@@ -17,8 +17,12 @@ Syntax::Statement::VariableDecl* Parser::parseConstant() {
 
   next();
   bool isPublic = false;
+  bool isExternal = false;
   if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-3, true))) {
     isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
+  } else if (is<TokenType::KWORD_EXTERN>(peek(-3, true))) {
+    isExternal = true;
+    isPublic = is<TokenType::KWORD_PUBLIC>(peek(-4, true));
   }
   auto token = assert_tok<TokenType::IDENTIFIER>("an identifier");
   next(); // consume identifier
@@ -28,8 +32,10 @@ Syntax::Statement::VariableDecl* Parser::parseConstant() {
   consume<TokenType::SYM_COLLON>("':' for a type declaration");
   typeDef = parseType();
   Syntax::Expression::Base* value = nullptr;
-  assert_tok<TokenType::OP_EQ>("'=' for a variable declaration");
-  value = parseExpr(false);
+  if (!isExternal) {
+    assert_tok<TokenType::OP_EQ>("'=' for a variable declaration");
+    value = parseExpr(false);
+  }
   if (is<TokenType::SYM_SEMI_COLLON>(peek(0, true))) next();
   auto v = Syntax::N<Syntax::Statement::VariableDecl>(name, value, false, true);
   v->setDefinedType(typeDef);
@@ -38,6 +44,7 @@ Syntax::Statement::VariableDecl* Parser::parseConstant() {
   auto info = new DBGSourceInfo(m_source_info, token.get_pos(), token.get_width());
   v->setDBGInfo(info);
   v->setComment(comment);
+  v->setExternDecl(isExternal);
 
   for (auto [n, a] : attributes) { v->addAttribute(n, a); }
 

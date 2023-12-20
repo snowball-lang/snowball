@@ -220,4 +220,68 @@ public external unsafe func strcpy(*const c_char, *const c_char) *const c_char;
  */
 public external unsafe func strcat(*const c_char, *const c_char) *const c_char;
 } // namespace c_string
-
+/**
+ * @brief a namespace that contains functions for manipulating files.
+ * @note(1) All functions in this namespace are thread-safe.
+ */
+public namespace files {
+/**
+ * @brief It opens the file whose name is specified in the parameter filename and associates it with a stream that can be identified in future operations by the FILE pointer returned.
+ * @param filename C string containing the name of the file to be opened.
+ * @param mode C string containing a file access mode.
+ * @return If the file is successfully opened, the function returns a pointer to a FILE object that can be used to identify the stream on future operations.
+ * Otherwise, a null pointer is returned.
+ */
+public external unsafe func fopen(*const c_char, *const c_char) *const c_obj;
+/**
+ * @brief It closes the file associated with the stream and disassociates it.
+ * @param stream - pointer to a FILE object that identifies the stream.
+ * @return If the stream is successfully closed, a zero value is returned.
+ */
+public external unsafe func fclose(*const c_obj) c_int;
+/**
+ * @brief It reads an array of count elements, each one with a size of size bytes, from the stream and stores them in the block of memory specified by ptr.
+ * @param ptr(&char) - pointer to a block of memory with a size of at least (size*count) bytes, converted to a void*.
+ * @param size(c_int) - size in bytes of each element to be read.
+ * @param count(c_int) - number of elements, each one with a size of size bytes.
+ * @param stream(&FILE) - pointer to a FILE object that specifies an input stream.
+ * @return The total number of elements successfully read is returned as a size_t object, which is an integral data type.
+*/
+public external unsafe func fread(*const c_char, c_int, c_int, *const c_obj) c_int;
+/**
+ * @brief It writes an array of count elements, each one with a size of size bytes, from the block of memory pointed by ptr to the current position in the stream.
+ * @param ptr(&char) - pointer to the array of elements to be written, converted to a const void*.
+ * @param size(c_int) - size in bytes of each element to be written.
+ * @param count(c_int) - number of elements, each one with a size of size bytes.
+ * @param stream(&FILE) - pointer to a FILE object that specifies an output stream.
+ * @return The total number of elements successfully written is returned as a size_t object, which is an integral data type.
+*/
+public external unsafe func fwrite(*const c_char, c_int, c_int, *const c_obj) c_int;
+/**
+ * @brief It removes a path from the filesystem.
+ * @param filename(&char) - C string containing the name of the file to be deleted.
+ * @return If the file is successfully deleted, a zero value is returned.
+ *  On failure, a nonzero value is returned.
+ */
+public external unsafe func remove(*const c_char) c_int;
+/**
+ * @brief It checks if a file or directory access permissions can be checked.
+ * @param filename(&char) - C string containing the name of the file to be checked.
+ * @param mode(c_int) - This is the access mode to check for.
+ * @return If the file is successfully checked, a zero value is returned.
+ * On failure, a nonzero value is returned.
+ */
+public external unsafe func access(*const c_char, c_int) c_int;
+} // namespace files
+/**
+ * @brief It returns a pointer to a null-terminated string that describes the error code passed in the argument errnum.
+ * @param errnum(i32) - error code number
+ * @return *const c_char - pointer to a null-terminated string that describes the error code passed in the argument errnum.
+*/
+public external unsafe func strerror(i32) *const c_char;
+/**
+ * @brief It returns the error number of the last error that occurred.
+ * @return i32 - error number of the last error that occurred.
+ * @note(1) The error number is stored in the global variable errno.
+ */
+public external unsafe func "sn.runtime.errno" as errno() i32; 

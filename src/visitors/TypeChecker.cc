@@ -182,15 +182,16 @@ VISIT(Call) {
 
 VISIT(VariableDeclaration) {
   auto val = p_node->getValue();
-  val->visit(this);
-
-  cantBeVoid(
-          p_node,
-          val->getType(),
-          FMT("Value used for variable '%s' has a value with 'void' "
-              "type!",
-              p_node->getIdentifier().c_str())
-  );
+  if (val) {
+    val->visit(this);
+    cantBeVoid(
+            p_node,
+            val->getType(),
+            FMT("Value used for variable '%s' has a value with 'void' "
+                "type!",
+                p_node->getIdentifier().c_str())
+    );
+  }
 }
 
 VISIT(Throw) {
