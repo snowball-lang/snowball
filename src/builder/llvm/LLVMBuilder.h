@@ -63,9 +63,9 @@ public:
   // A value used to store a value into a variable
   llvm::Value* callStoreValue = nullptr;
   // A map of test functions containing their names
-  std::map<std::shared_ptr<ir::Func>, llvm::Function*> tests;
+  std::vector<std::pair<ir::Func*, llvm::Function*>> tests;
   // A map of benchmark functions containing their names
-  std::map<std::shared_ptr<ir::Func>, llvm::Function*> benchmarks;
+  std::vector<std::pair<ir::Func*, llvm::Function*>> benchmarks;
   // If the module is compiled in test mode
   bool testMode = false;
   // If the module is compiled in benchmark mode

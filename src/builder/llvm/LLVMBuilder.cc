@@ -218,7 +218,8 @@ llvm::DIFile* LLVMBuilder::DebugInfo::getFile(const std::string& path) {
 void LLVMBuilder::dump() { this->print(llvm::errs()); }
 void LLVMBuilder::print(llvm::raw_fd_ostream& s) { module->print(s, nullptr); }
 
-#define ITERATE_FUNCTIONS for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn)
+#define ITERATE_FUNCTIONS for (auto fn = functions.begin(); fn != functions.end(); ++fn)
+#define ITERATE_RFUNCTIONS for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn)
 void LLVMBuilder::codegen() {
   auto generateModule = [&](std::shared_ptr<ir::Module> m, bool build) {
     // reset context
@@ -251,7 +252,7 @@ void LLVMBuilder::codegen() {
       // are bodied. We do 2 loops in order to prevent any weird
       // situation when a function calls an undefined function that
       // has not been generated yet.
-      ITERATE_FUNCTIONS {
+      ITERATE_RFUNCTIONS {
         auto f = fn->get();
         if (!f->isDeclaration() && !f->hasAttribute(Attributes::BUILTIN)) {
           auto llvmFn = funcs.at(f->getId());

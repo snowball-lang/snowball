@@ -13,7 +13,7 @@ func open_file() i32 {
   return fs::exists(path) as i32;
 }
 
-@test(skip) // this executes BEFORE open_file?!?!?
+@test
 func remove() i32 {
   const path: &Path = new Path("./test-files.txt");
   fs::remove(path);
