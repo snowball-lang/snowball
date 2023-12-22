@@ -19,6 +19,19 @@ bool Transformer::bodyReturns(std::vector<Node*> exprs) {
     // TODO: Break, continue: return false
     // TODO: Loop, while: if (bodyReturns(b->getStmts())) return
     // true;
+    else if (auto f = cast<Statement::WhileLoop>(expr)) {
+      if (f->isDoWhile() && bodyReturns(f->getBlock()->getStmts())) return true;
+    } else if (cast<Statement::Raise>(expr)) return true;
+    else if (auto f = cast<Statement::TryCatch>(expr)) {
+      auto allCatchReturn = true;
+      for (auto catchBlock : f->getCatchBlocks()) {
+        if (!bodyReturns(catchBlock->getBlock()->getStmts())) {
+          allCatchReturn = false;
+          break;
+        }
+      }
+      if (bodyReturns(f->getTryBlock()->getStmts()) && allCatchReturn) return true;
+    }
 
     // Ignore unhandled!
   }
