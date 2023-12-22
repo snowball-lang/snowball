@@ -16,6 +16,24 @@
 namespace snowball {
 namespace codegen {
 
+namespace {
+void addTypeToModule(std::vector<std::string>& addedTypes, llvm::Type* type, llvm::raw_string_ostream& buf) {
+  if (auto structType = llvm::dyn_cast<llvm::StructType>(type)) {
+    if (std::find(addedTypes.begin(), addedTypes.end(), structType->getStructName().str()) != addedTypes.end()) {
+      return;
+    }
+
+    for (auto& elem : structType->elements()) {
+      addTypeToModule(addedTypes, elem, buf);
+    }
+
+    structType->print(buf);
+    buf << "\n";
+    addedTypes.emplace_back(structType->getStructName().str());
+  }
+}
+} // namespace
+
 llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func* fn) {
   // auto existant = module->getFunction(fn->getMangle());
   // if (existant) return existant;
@@ -29,15 +47,7 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
   for (const auto& chunk : fn->getLLVMBody()) {
     if (chunk.type == Syntax::LLVMIRChunk::TypeAccess) {
       auto type = getLLVMType(chunk.ty);
-      if (llvm::isa<llvm::StructType>(type)) {
-        if (std::find(addedTypes.begin(), addedTypes.end(), type->getStructName().str()) != addedTypes.end()) {
-          continue;
-        }
-        
-        type->print(buf);
-        buf << "\n";
-        addedTypes.emplace_back(type->getStructName().str());
-      }
+      addTypeToModule(addedTypes, type, buf);
     }
   }
 

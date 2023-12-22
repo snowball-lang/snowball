@@ -1,0 +1,177 @@
+import std::tuples;
+
+/**
+ * Exception indicating an index error when interacting with a Map.
+ * This exception is thrown when attempting to access or remove a key that does not exist in the map.
+ * @exception
+ */
+public class MapIndexException extends Exception 
+  { /*Not much going on here -_-*/ }
+/**
+ * A generic Map data structure that associates keys with values.
+ * Implements the `ToString` trait and provides iteration over key-value pairs.
+ * This Map uses a Vector to store key-value pairs and supports basic operations such as insertion,
+ * retrieval, update, deletion, and checking for the existence of keys.
+ * @example
+ * ```sn
+ * import std::map;
+ * 
+ * let mut map = new map::Map<i32, String>();
+ * map.set(1, "one");
+ * map.set(2, "two");
+ * map.at(1); // "one"
+ * map.at(2) = "three";
+ * map.at(2); // "three"
+ * ```
+ * @endexample
+ * @class
+ * @implements {ToString}
+ * @implements {Iterable<tuples::Pair<K, V>>}
+ * @tparam K - The type of keys in the map.
+ * @tparam V - The type of values in the map.
+ */
+public class Map<K, V> implements ToString, Iterable<tuples::Pair<K, V>> {
+  /**
+   * Internal storage for key-value pairs using a Vector.
+   * The Vector ensures dynamic resizing to accommodate varying numbers of key-value pairs.
+   */
+  let mut table: Vector<tuples::Pair<K, V>>;
+public:
+  /**
+   * Constructs a new empty Map.
+   * Initializes the internal Vector to store key-value pairs.
+   */
+  Map() {
+    self.table = new Vector<tuples::Pair<K, V>>();
+  }
+  /**
+   * Retrieves the value associated with the specified key.
+   * Throws a `MapIndexException` if the key is not found in the map.
+   * @throws {MapIndexException} if the key is not found in the map.
+   * @param {K} key - The key to search for.
+   * @return {&V} A mutable reference to the associated value.
+   * @example
+   * const myMap = new Map<string, number>();
+   * myMap.set("foo", 42);
+   * const value = myMap.at("foo"); // Returns 42
+   * @endexample
+   */
+  func at(key: K) &mut V {
+    for let i = 0; i < self.size(); i = i + 1 {
+      let entry = self.table[i];
+      if (entry.first == key) {
+        return entry.second;
+      }
+    }
+    throw new MapIndexException("Map::get(): key not found inside map!");
+  }
+  /**
+   * Retrieves the value associated with the specified key or a default value if the key is not present.
+   * @param {K} key - The key to search for.
+   * @param {V} val - The default value to return if the key is not found.
+   * @return {&V} A mutable reference to the associated value if the key is present, otherwise the default value.
+   * @example
+   * const myMap = new Map<string, number>();
+   * const value = myMap.get_or("foo", 42); // Returns 42 as "foo" is not in the map
+   * @endexample
+   */
+  func get_or(key: K, val: V) &mut V {
+    for let i = 0; i < self.size(); i = i + 1 {
+      let entry = self.table[i];
+      if (entry.first == key) {
+        return entry.second;
+      }
+    }
+    return val;
+  }
+  /**
+   * Sets the value associated with the specified key. If the key already exists, the value is updated;
+   * otherwise, a new key-value pair is added to the map.
+   * @param {K} key - The key to associate the value with.
+   * @param {V} value - The value to be associated with the key.
+   * @example
+   * const myMap = new Map<string, number>();
+   * myMap.set("foo", 42);
+   * myMap.set("bar", 24);
+   * // Map contains: [("foo", 42), ("bar", 24)]
+   * @endexample
+   */
+  mut func set(key: K, value: V) {
+    for let i = 0; i < self.size(); i = i + 1 {
+      let entry = self.table[i];
+      if (entry.first == key) {
+        entry.second = value;
+        return;
+      }
+    }
+    self.table.push(tuples::make_pair(key, value));
+  }
+  /**
+   * Checks if the specified key exists in the map.
+   * @param {K} key - The key to check for existence.
+   * @return {bool} `true` if the key is found, otherwise `false`.
+   * @example
+   * const myMap = new Map<string, number>();
+   * myMap.set("foo", 42);
+   * const hasKey = myMap.has("foo"); // Returns true
+   * @endexample
+   */
+  func has(key: K) bool {
+    for let i = 0; i < self.size(); i = i + 1 {
+      let entry = self.table[i];
+      if (entry.first == key) {
+        return true;
+      }
+    }
+    return false;
+  }
+  /**
+   * Removes the key-value pair associated with the specified key.
+   * Throws a `MapIndexException` if the key is not found in the map.
+   * @throws {MapIndexException} if the key is not found in the map.
+   * @param {K} key - The key to remove.
+   * @example
+   * const myMap = new Map<string, number>();
+   * myMap.set("foo", 42);
+   * myMap.erase("foo");
+   * // Map is now empty
+   * @endexample
+   */
+  mut func erase(key: K) {
+    for let i = 0; i < self.size(); i = i + 1 {
+      let entry = self.table[i];
+      if (entry.first == key) {
+        self.table.remove(i);
+        return;
+      }
+    }
+    throw new MapIndexException("Map::remove(): key not found inside map!");
+  }
+  /**
+   * Returns the number of key-value pairs in the map.
+   * @return {i32} The size of the map.
+   * @example
+   * const myMap = new Map<string, number>();
+   * myMap.set("foo", 42);
+   * myMap.set("bar", 24);
+   * const size = myMap.size(); // Returns 2
+   * @endexample
+   */
+  func size() i32 {
+    return self.table.size();
+  }
+  /**
+   * Returns a string representation of the map.
+   * @return {String} A string representation of the map.
+   * @example
+   * const myMap = new Map<string, number>();
+   * myMap.set("foo", 42);
+   * myMap.set("bar", 24);
+   * const str = myMap.to_string(); // Returns "[("foo", 42), ("bar", 24)]"
+   * @endexample
+   */
+  func to_string<>() String {
+    // Template method in case the types are not printable
+    return self.table.to_string();
+  }
+}
