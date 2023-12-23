@@ -100,6 +100,7 @@ if(backtrace_ADDED)
       "${backtrace_SOURCE_DIR}/simple.c"
       "${backtrace_SOURCE_DIR}/sort.c"
       "${backtrace_SOURCE_DIR}/state.c")
+    set(backtrace_INCLUDE_DIRS "${backtrace_SOURCE_DIR}")
 
   # https://go.googlesource.com/gollvm/+/refs/heads/master/cmake/modules/LibbacktraceUtils.cmake
   set(BACKTRACE_SUPPORTED 1)
@@ -211,6 +212,7 @@ endif()
 #add_dependencies(snowballrt backtrace sigsegv)
 target_include_directories(snowballrt PRIVATE ${backtrace_SOURCE_DIR})
 target_link_libraries(snowballrt PRIVATE backtrace)
+target_include_directories(snowballrt PRIVATE ${backtrace_INCLUDE_DIRS})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   message(STATUS "Changing rpath origin destination (for macos)")

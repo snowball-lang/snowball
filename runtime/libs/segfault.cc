@@ -3,7 +3,7 @@
 // TODO: Add support for macOS.
 
 #include "runtime.h"
-#include "backtrace.h"
+#include "backtracing.h"
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>

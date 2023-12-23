@@ -1,5 +1,5 @@
 
-#include "backtrace.h"
+#include "backtracing.h"
 #include "runtime.h"
 
 namespace snowball {
