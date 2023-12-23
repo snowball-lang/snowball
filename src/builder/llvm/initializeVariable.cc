@@ -9,8 +9,8 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::initializeVariable(llvm::Value* var, llvm::Type* ty, unsigned int size) {
-    assert(llvm::isa<llvm::StructType>(ty));
-    auto llvmType = llvm::cast<llvm::StructType>(ty);
+  assert(llvm::isa<llvm::StructType>(ty));
+  auto llvmType = llvm::cast<llvm::StructType>(ty);
   auto initializerName =
           FMT("__const.default.%s", llvmType->getName().str().c_str());
   auto constInitializer = module->getNamedGlobal(initializerName);

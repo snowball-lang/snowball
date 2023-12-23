@@ -75,8 +75,6 @@ func ljust() i32 {
 func split() i32 {
     let s = "hello world";
     let x = s.split(" ");
-    io::println(x[0]);
-    io::println(x[1]);
     assert!(x[0] == "hello");
     assert!(x[1] == "world");
     return x.size();

@@ -139,11 +139,12 @@ std::int64_t DefinedType::sizeOf() const {
     address += (typeAlignment - (address % typeAlignment)) % typeAlignment;
     address += typeSize;
   }
-  if (address == 0) address = 1; // prevent 0-sized types
   auto alignment = alignmentOf();
   address += (address - (address % alignment)) % alignment;
   address += (alignment - (address % alignment)) % alignment;
-  return address + (hasVtable * 8);
+  address += (hasVtable * 8);
+  if (address == 0) address = 1; // prevent 0-sized types
+  return address;
 }
 
 std::int64_t DefinedType::alignmentOf() const {

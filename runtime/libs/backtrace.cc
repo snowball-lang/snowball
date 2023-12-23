@@ -60,36 +60,37 @@ void print_backtrace(Backtrace backtrace, std::ostringstream &oss) {
   if (!(snowball::snowball_flags & SNOWBALL_FLAG_DEBUG)) 
     return;
 
-    if (getenv("SN_BACKTRACE") == NULL) {
-        oss << "\n\e[1;37mnote:\e[0m run with \e[1;37m`SN_BACKTRACE=1`\e[0m environment variable to get a backtrace";
-        return;
-    }
+  if (getenv("SN_BACKTRACE") == NULL) {
+      oss << "\n\e[1;37mnote:\e[0m run with \e[1;37m`SN_BACKTRACE=1`\e[0m environment variable to get a backtrace";
+      return;
+  }
 
-    oss << "\n";
-    oss << "\n\033[1mBacktrace (most recent call first):\033[0m\n";
+  oss << "\n";
+  oss << "\n\033[1mBacktrace (most recent call first):\033[0m\n";
 
-    if (backtrace.frame_count <= 1) {
-        oss << "  (no backtrace available)\n";
-        return;
-    }
-    
-    for (int i = 1; i < backtrace.frame_count; i++) {
-        BacktraceFrame frame = backtrace.frames[i];
-        if (!frame.function || !frame.filename) {
-            oss << "  (#" << i << "): \e[1;30m[" << (void*)frame.address << "]\e[0m - ????\n";
-            continue;
-        }
-        // TODO: demangle function names
-        oss << "  (#" << i << "): \e[1;30m[" << (void*)frame.address << "]\e[0m - " << frame.function << "\n";
-        oss << "\t\tat \e[1;32m" << frame.filename << "\e[1;36m:" << frame.lineno << "\e[0m\n";
-    }
+  if (backtrace.frame_count <= 1) {
+      oss << "  (no backtrace available)\n";
+      return;
+  }
+  
+  for (int i = 1; i < backtrace.frame_count; i++) {
+      BacktraceFrame frame = backtrace.frames[i];
+      if (!frame.function || !frame.filename) {
+          oss << "  (#" << i << "): \e[1;30m[" << (void*)frame.address << "]\e[0m - ????\n";
+          continue;
+      }
+      // TODO: demangle function names
+      oss << "  (#" << i << "): \e[1;30m[" << (void*)frame.address << "]\e[0m - " << frame.function << "\n";
+      oss << "\t\tat \e[1;32m" << frame.filename << "\e[1;36m:" << frame.lineno << "\e[0m\n";
+  }
 
-    oss << "\e[0m\n";
-    //backtrace.pls_free();
+  oss << "\e[0m\n"; 
+  //backtrace.pls_free();
 }
 
 void get_backtrace(Backtrace &backtrace) {
   if (!(snowball::snowball_flags & SNOWBALL_FLAG_DEBUG)) {
+    backtrace = Backtrace();
     return;
   }
 
