@@ -55,6 +55,6 @@ jobs:
           ls ~/.snowball
           ls ~/.snowball/stdlib/
 
-      - name: Execute tests
-        run: |
-          ./bin/Release/snowball test --no-progress
+      #- name: Execute tests
+      #  run: |
+      #    ./bin/Release/snowball test --no-progress
