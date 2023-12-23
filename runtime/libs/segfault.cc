@@ -5,7 +5,11 @@
 #include "runtime.h"
 #include "backtrace.h"
 
+#ifndef __APPLE__
 #include <sigsegv.h>
+#else
+#include <signal.h>
+#endif
 
 namespace snowball {
 
