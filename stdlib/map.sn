@@ -66,25 +66,6 @@ public:
     throw new MapIndexException("Map::get(): key not found inside map!");
   }
   /**
-   * Retrieves the value associated with the specified key or a default value if the key is not present.
-   * @param {K} key - The key to search for.
-   * @param {V} val - The default value to return if the key is not found.
-   * @return {&V} A mutable reference to the associated value if the key is present, otherwise the default value.
-   * @example
-   * const myMap = new Map<string, number>();
-   * const value = myMap.get_or("foo", 42); // Returns 42 as "foo" is not in the map
-   * @endexample
-   */
-  func get_or(key: K, val: V) &mut V {
-    for let i = 0; i < self.size(); i = i + 1 {
-      let entry = self.table[i];
-      if (entry.first == key) {
-        return entry.second;
-      }
-    }
-    return val;
-  }
-  /**
    * Sets the value associated with the specified key. If the key already exists, the value is updated;
    * otherwise, a new key-value pair is added to the map.
    * @param {K} key - The key to associate the value with.
