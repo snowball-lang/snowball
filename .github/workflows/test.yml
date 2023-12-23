@@ -21,13 +21,13 @@ jobs:
             DIST: 'ce-specific'
             NAME: 'ce-specific'
           # - ARCH: 'arm64'
-          #   DIST: 'macos-11'
+          #   DIST: 'macos-13'
           #   NAME: 'darwin'
           - ARCH: 'x86_64' 
-            DIST: 'macos-11'
+            DIST: 'macos-13'
             NAME: 'darwin'
           # - ARCH: 'arm64' # TODO
-          #   DIST: 'macos-11'
+          #   DIST: 'macos-13'
           #   NAME: 'darwin'
     name: Build ${{ matrix.NAME }} (${{ matrix.ARCH }}) [${{ matrix.DIST }}]
     env:
