@@ -382,7 +382,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
      * @brief Default constructor.
      * Constructs an empty vector.
      */
-    Vector() { /* Nope, nothing to do here 😁 */ }
+    Vector() { self.reset(); }
     /**
      * @brief It pushes an element to the back of the vector.
      * @param[in] value The element to push to the back of the vector.
@@ -522,41 +522,6 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
       return result + "]";
     }
     /**
-     * @brief It maps the vector to another vector.
-     * @param[in] fn The function to map the vector with.
-     * @return A new vector with the mapped elements.
-     */
-    func map<Output>(fn: Function<func (T) => Output>) Vector<Output> {
-      // We map the vector to another vector.
-      let mut result = new Vector<Output>();
-      // We iterate over the vector and map each element to the result vector.
-      for let mut i = 0; i < self.length; i = i+1 {
-        // We map the element to the result vector.
-        result.push(fn(*self[i]));
-      }
-      // We return the result vector.
-      return result;
-    }
-    /**
-     * @brief It filters the vector.
-     * @param[in] fn The function to filter the vector with.
-     * @return A new vector with the filtered elements.
-     */
-    func filter(fn: Function<func (T) => bool>) Vector<T> {
-      // We filter the vector.
-      let mut result = new Vector<T>();
-      // We iterate over the vector and filter each element.
-      for let mut i = 0; i < self.length; i = i+1 {
-        // If the element passes the filter, we push it to the result vector.
-        if fn(*self[i]) {
-          // We push the element to the result vector.
-          result.push(*self[i]);
-        }
-      }
-      // We return the result vector.
-      return result;
-    }
-    /**
      * @brief It joins the vector into a string.
      * @param[in] sep The separator to use for joining the vector.
      * @return A string containing the joined elements.
@@ -616,6 +581,26 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
       // We decrement the length of the vector.
       self.length = self.length - 1;
     }
+    /**
+     * @brief Returns the next element in the iteration.
+     * @return The next element in the iteration.
+     */
+    virtual mut func next() Iter<T> {
+      // Increment the iterator index.
+      self.iter_index = self.iter_index + 1;
+      // If the iterator index is greater than or equal to the end of the vector,
+      // return an invalid iterator.
+      if self.iter_index >= self.size() {
+        return Iter<?T>::invalid();
+      }
+      // Otherwise, return a valid iterator with the current iterator index.
+      return Iter<?T>::valid(*self[self.iter_index]);
+    }
+    /**
+     * @brief Resets the iteration to the beginning of the range.
+     */
+    @inline
+    virtual mut func reset() { self.iter_index = -1; }
 
   private:
     /** The capacity of the vector. */

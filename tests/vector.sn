@@ -1,6 +1,7 @@
 @use_macro
 import std::asserts;
 import std::io;
+import std::iter;   
 
 namespace tests {
 
@@ -95,21 +96,21 @@ func remove() i32 {
     return v.size();
 }
 
-@test(expect = 5)
-func filter() i32 {
-    let mut v = new Vector<i32>();
-    v.push(1);
-    v.push(2);
-    v.push(3);
-    v.push(4);
-    v.push(5);
-    let mut i = 0;
-    v.filter<?i32>(func(x: i32) bool {
-        i = i + 1;
-        return x % 2 == 0;
-    });
-    return i;
-}
+//@test(expect = 5)
+//func filter() i32 {
+//    let mut v = new Vector<i32>();
+//    v.push(1);
+//    v.push(2);
+//    v.push(3);
+//    v.push(4);
+//    v.push(5);
+//    let mut i = 0;
+//    v.filter<?i32>(func(x: i32) bool {
+//        i = i + 1;
+//        return x % 2 == 0;
+//    });
+//    return i;
+//}
 
 @test(expect = 5)
 func pop() i32 {

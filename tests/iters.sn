@@ -1,0 +1,18 @@
+import std::iter;
+
+namespace tests {
+
+@test(expect = 4)
+func map() i32 {
+  let mut vec = new Vector<i32>();
+  vec.push(1);
+  vec.push(2);
+  vec.push(3);
+  vec.push(4);
+
+  let vec2 = iter::map<?i32>(vec, func (x: i32) i32 { return x * 2 });
+
+  return vec2.size();
+}
+
+}
