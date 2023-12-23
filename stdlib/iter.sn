@@ -1,0 +1,41 @@
+
+/**
+ * @brief It maps an iterator to a new iterator by applying a function to each element.
+ * @param iterator The iterator to map.
+ * @param func The function to apply to each element.
+ * @return A new iterator with the mapped elements.
+ * @example
+ * const myVector = /*{1, 2, 3, 4, 5}*\/; /// For example purposes only.
+ * const mappedVector = map(myVector, (x) => x * 2);
+ * // mappedVector is now {2, 4, 6, 8, 10}
+ * @endexample
+ * @see filter
+ */
+public func map<Y: Sized, X: Sized, I: Iterable<X>>(iterator: I<X>, fn: Function<func(X) => Y>) Vector<Y> {
+  let mut result = new Vector<Y>();
+  for i in iterator {
+    result.push(fn(i));
+  }
+  return result;
+}
+
+// MARK - STD Lib extensions
+
+@extends
+class Vector {
+ public:
+  /**
+   * @brief It maps the iterable to a new vector by applying a function to each element.
+   * @param func The function to apply to each element.
+   * @return A new vector with the mapped elements.
+   * @example
+   * const myVector = /*{1, 2, 3, 4, 5}*\/; /// For example purposes only.
+   * const mappedVector = myVector.map((x) => x * 2);
+   * // mappedVector is now {2, 4, 6, 8, 10}
+   * @endexample
+   * @see filter
+   */
+  func map<Y: Sized>(fn: Function<func(T) => Y>) Vector<Y> {
+    return map<?Y, T, Self>(self, fn);
+  }
+}

@@ -44,8 +44,10 @@ void Transformer::transformTypeExtension(Statement::DefinedTypeDef* node, std::s
       );
     }
   }
-
-  if (auto x = ctx->cache->getType(uuid)) {
+  int usedUUIDCount = -1;
+refetchUUID:
+  auto usedUUID = usedUUIDCount == -1 ? uuid : ctx->uuidStack.at(usedUUIDCount) + "." + name;
+  if (auto x = ctx->cache->getType(usedUUID)) {
     auto type = x.value();
     if (auto alias = utils::cast<Statement::TypeAlias>(type.type)) {
       E<SYNTAX_ERROR>(
@@ -81,7 +83,7 @@ void Transformer::transformTypeExtension(Statement::DefinedTypeDef* node, std::s
 
     // extend the already generated types
     // TODO: I don't think we should "override" the type state here
-    auto types = ctx->cache->getTransformedType(uuid);
+    auto types = ctx->cache->getTransformedType(usedUUID);
     if (types.has_value()) {
       for (auto item : types.value()) {
         ctx->withScope([&]() {
@@ -111,6 +113,11 @@ void Transformer::transformTypeExtension(Statement::DefinedTypeDef* node, std::s
 
     ctx->setCurrentClass(backup);
     return;
+  }
+
+  if (usedUUIDCount < (int)ctx->uuidStack.size()-1) {
+    usedUUIDCount++;
+    goto refetchUUID;
   }
 
   E<VARIABLE_ERROR>(
