@@ -131,14 +131,11 @@ if(backtrace_ADDED)
 endif()
 
 CPMAddPackage(
-    NAME sigsegv
-    GIT_REPOSITORY "https://git.savannah.gnu.org/git/libsigsegv.git"
-    GIT_TAG "v2.14"
+    NAME zstd
+    GIT_REPOSITORY "https://github.com/facebook/zstd.git"
+    GIT_TAG "v1.5.5"
     DOWNLOAD_ONLY YES)
-if(sigsegv_ADDED)
-  if (APPLE)
-    message(STATUS "TODO: add sigsegv to the build")
-  endif()
+if(zstd_ADDED)
 endif()
 
 message(STATUS ${LLVM_DEFINITIONS})
@@ -212,12 +209,8 @@ else()
 endif()
 
 #add_dependencies(snowballrt backtrace sigsegv)
-target_include_directories(snowballrt PRIVATE ${backtrace_SOURCE_DIR} ${sigsegv_SOURCE_DIR})
-if(APPLE)
-  target_link_libraries(snowballrt PRIVATE zstd backtrace)
-else()
-  target_link_libraries(snowballrt PRIVATE zstd backtrace sigsegv)
-endif()
+target_include_directories(snowballrt PRIVATE ${backtrace_SOURCE_DIR})
+target_link_libraries(snowballrt PRIVATE backtrace)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   message(STATUS "Changing rpath origin destination (for macos)")
