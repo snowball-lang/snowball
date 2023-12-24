@@ -51,12 +51,10 @@ SN_DOCGEN_VISIT(Statement::Namespace) {
         .type = DocumentationPage::Type::Namespace,
     };
 
-    // TODO:
-    newPage.html = "";
-    result.pages.push_back(newPage);
-
     context.currentNamespace = backup;
     context.currentNamespacePath = backupPath;
+    docgen::createNamespacePage(p_node, context, newPage);
+    result.pages.push_back(newPage);
 }
 
 SN_DOCGEN_VISIT(Statement::DefinedTypeDef) {

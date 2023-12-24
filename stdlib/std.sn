@@ -1003,12 +1003,12 @@ public class Function<T: Callable> implements Callable {
  * @brief Functions used by the compiler to handle commands. Such as tests and benchmarks.
  * @note These functions are not meant to be used directly.
  */
-namespace __snowball_commands__ {
+namespace _snowball_commands_ {
 
 @no_inline
 @cfg(tests)
 @export(name = "sn.test.try")
-static unsafe func execute(
+static unsafe func execute_tests(
   fn: func () => i32,
   name: *const i8,
   index: i32,

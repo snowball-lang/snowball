@@ -135,15 +135,15 @@ public:
   std::pair<std::string, std::string> getFullName(std::string name) {
     std::string fullName = "";
     std::string path = "";
-    if (!context.currentModule.empty()) {
-      fullName += context.currentModule + "::";
-      path += context.currentModulePath + "/";
+    if (!context.currentType.empty()) {
+      fullName += context.currentType + "::";
+      path += context.currentTypePath + "/";
     } else if (!context.currentNamespace.empty()) {
       fullName += context.currentNamespace + "::";
       path += context.currentNamespacePath + "/";
-    } else if (!context.currentType.empty()) {
-      fullName += context.currentType + "::";
-      path += context.currentTypePath + "/";
+    } else if (!context.currentModule.empty()) {
+      fullName += context.currentModule + "::";
+      path += context.currentModulePath + "/";
     }
     fullName += name;
     path += name;
