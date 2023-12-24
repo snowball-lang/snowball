@@ -1323,6 +1323,10 @@ public:
   /// @param type Type to convert
   /// @return String representation of the type
   static std::string arguementTypeToString(ArguementType type);
+  /// @brief Convert an arguement type to a syntax equivalent
+  /// @param type Type to convert
+  /// @return String representation of the type
+  static std::string arguementTypeToSyntax(ArguementType type);
   // Set an acceptance call
   ACCEPT()
 };

@@ -551,6 +551,69 @@ void createModulePage(std::vector<Syntax::Node*> nodes, DocGenContext context, D
     page.html = getPageTemplate(context, page.name, body);
 }
 
+void createMacroPage(Macro* node, DocGenContext context, DocumentationPage& page) {
+    std::string body = "";
+    body += "<h1>";
+
+    auto pathParts = page.path;
+    auto nameParts = utils::list2vec(utils::split(page.name, "::"));
+    int i = 0;
+    for (auto _:pathParts) {
+        std::string url = "";
+        int j = 0;
+        for (auto part : pathParts) {
+            if (j == i) {
+                url += part.string();
+                if (utils::endsWith(part.string(), ".html"))
+                    url = url.substr(0, url.size() - 5);
+                break;
+            } else {
+                url += part.string() + "/";
+            }
+            j++;
+        }
+        body += "<a style=\"color:#78d3fc;\" href=\"" + url + ".html\">" + nameParts[i] + "</a>::";
+        i++;
+    }
+    body = body.substr(0, body.size() - 2) + ";"; // remove the last "::"
+    body += "</h1><hr/><div><pre><code class=\"language-snowball\">";
+
+    body += "macro " + node->getName() + "(";
+    for (auto& param : node->getArgs()) {
+        body += std::get<0>(param);
+        auto argType = std::get<1>(param);
+        body += ": " + Macro::arguementTypeToSyntax(argType);
+        if (std::get<2>(param) != nullptr) {
+            body += " = ...";
+        }
+        body += ", ";
+    }
+    if (node->getArgs().size() > 0)
+        body = body.substr(0, body.size() - 2);
+    if (node->isMacroStatement())
+        body += ") {\n    ...\n}";
+    else body += ") = ...";
+
+    body += "</code></pre></div><br><div class=\"doc\">";
+
+    if (auto docString = node->getComment()) {
+        auto values = docString->getValues();
+        if (values.count("brief")) {
+            body += "<h1 style=\"color:#78d3fc;\">Brief Description for <quote>" + node->getName() + "</quote></h1>";
+            body += "<p>" + sanitize(values["brief"]) + "</p>";
+        }
+        body += "<p>" + sanitize(docString->getBody()) + "</p>";
+
+        for (auto& [tag, value] : values) {
+            if (tag == "brief") continue;
+        }
+    }
+
+    body += "<br/><br/></div>";
+
+    page.html = getPageTemplate(context, page.name, body);
+}
+
 } // namespace docgen
 } // namespace Syntax
 } // namespace snowball
