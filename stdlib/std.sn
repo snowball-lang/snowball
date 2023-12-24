@@ -3,6 +3,7 @@ import std::c_bindings;
 import std::ptr;
 
 type usize = u64; // TODO: make this 32 bit dependent on the target
+type isize = i64; // TODO: make this 32 bit dependent on the target
 
 /**
  * @typedef String
@@ -408,7 +409,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
      * @return The size of the vector.
      */
     @inline
-    func size() i32 { return self.length; }
+    func size() usize { return self.length; }
     /**
      * @brief Resizes the vector.
      * @param[in] capacity The new capacity of the vector.
@@ -428,7 +429,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
      * @brief Reserves a capacity for the vector.
      * @param[in] capacity The capacity to reserve for the vector.
      */
-    mut func reserve(new_capacity: i32) {
+    mut func reserve(new_capacity: usize) {
       // If the buffer is null, we allocate a new buffer.
       // If the new capacity is greater than the current capacity,
       // we reallocate the buffer.
@@ -449,7 +450,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
      * @note It returns a reference to the element at the specified index.
      */
     @internal_linkage
-    func at(index: i32) &mut T {
+    func at(index: isize) &mut T {
       // If the index is negative, we return the element at the end of the vector.
       // example: if the vector has 5 elements, and the index is -1, we return the element at index 4.
       //       [0 | 1 | 2 | 3 | 4]
@@ -474,7 +475,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
      * @see Vector<_StoreType>::at()
      */
     @inline
-    operator func [](index: i32) &mut T 
+    operator func [](index: isize) &mut T 
       { return self.at(index); }
     /**
      * @brief It inserts an element at the specified index.
@@ -482,7 +483,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
      * @param[in] value The element to insert.
      */
     @inline
-    mut func insert(index: i32, value: T) {
+    mut func insert(index: isize, value: T) {
       // If the value is greater than or equal to the length of the vector,
       // we push the value to the back of the vector.
       if index >= self.length {
@@ -553,7 +554,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
      * @param[in] index The index of the element to remove.
      */
     @inline
-    mut func remove(index: i32) {
+    mut func remove(index: isize) {
       if index < 0 {
         throw new IndexError("Index out of bounds. Cannot remove element from a negative index.");
       }
@@ -604,9 +605,9 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
 
   private:
     /** The capacity of the vector. */
-    let mut capacity: i64 = 0;
+    let mut capacity: usize = 0;
     /** The size of the vector. */
-    let mut length: i64 = 0;
+    let mut length: usize = 0;
     /** The buffer containing the vector. */
     let mut buffer: ptr::NonNull<T> = Allocator::alloc(0);
 
@@ -617,7 +618,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
      * @return A new Vector with the specified capacity.
      */
     @inline
-    static func with_capacity(capacity: i32) Self {
+    static func with_capacity(capacity: usize) Self {
       // We create a new vector with the specified capacity.
       let mut vec = new Self();
       // We reserve the specified capacity for the vector.
@@ -654,7 +655,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @return The size of the string view.
      */
     @inline
-    func size() i32 { return self.length; }
+    func size() usize { return self.length; }
     /**
      * @brief Returns a pointer to the buffer containing the string view.
      * @return A pointer to the buffer containing the string view.
@@ -751,7 +752,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @param[in] index The index of the character to retrieve.
      * @return The character at the specified index.
      */
-    operator func [](index: i32) Char {
+    operator func [](index: isize) Char {
       // If the index is negative, we return the character at the end of the string view.
       // example: if the string view has 5 characters, and the index is -1, we return the character at index 4.
       //       [h | e | l | l | o]
@@ -810,7 +811,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @return The adjusted string view.
      */
     @inline
-    func rjust(length: i32, fill: Char = ' ') Self {
+    func rjust(length: usize, fill: Char = ' ') Self {
       // If the length is less than or equal to the length of the string view,
       // we return the string view. We don't have to adjust it, therefore we don't
       // have to do anything. Just clone the string view and return it.
@@ -837,7 +838,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @return The adjusted string view.
      */
     @inline
-    func ljust(length: i32, fill: Char = ' ') Self {
+    func ljust(length: usize, fill: Char = ' ') Self {
       if length <= self.length {
         return self.clone();
       }
@@ -918,7 +919,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @return The constructed string view.
      */
     @inline
-    static func from(buffer: *const u8, size: i32) StringView<Char> {
+    static func from(buffer: *const u8, size: usize) StringView<Char> {
       // We return a string view from the buffer and its size.
       return new Self(buffer, size);
     }
@@ -972,7 +973,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @param[in] buffer A pointer to the buffer containing the string view.
      * @param[in] length The size of the string view.
      */
-    StringView(buffer: StringType, length: i32) : buffer(buffer), length(length) {}
+    StringView(buffer: StringType, length: usize) : buffer(buffer), length(length) {}
 }
 
 /**
@@ -986,13 +987,11 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
  * 
  * @tparam T The type of the callable entity. 
  */
+@no_constructor
 public class Function<T: Callable> implements Callable {
-  private:
-      let fn: T;
-      let context: *const void;
-  public:
-    Function() : fn(zero_initialized!(:T)), context(zero_initialized!(:*const void))
-      {} // TODO: remove this
+ private:
+  let fn: T;
+  let context: *const void;
 }
 
 // TODO (implement wchar): using WideString as StringView<wchar>
