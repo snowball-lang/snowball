@@ -8,7 +8,7 @@ wget https://apt.llvm.org/llvm.sh
 chmod +x llvm.sh
 sudo ./llvm.sh 16
 
-sudo apt install -y libzstd-dev libsigsegv-dev pkg-config glib-2.0
+sudo apt install -y libzstd-dev libsigsegv-dev pkg-config
 
 cd ..
 rm -rf install_deps_temp
