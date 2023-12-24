@@ -7,7 +7,8 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-void Transformer::executeGenericTests(Expression::WhereClause* clause, types::Type* generic, const std::string& name) {
+void Transformer::executeGenericTests(Expression::WhereClause* clause, types::Type* _generic, const std::string& name) {
+  auto generic = _generic;
   if (clause == nullptr) { return; }
   for (auto test : clause->getChecks()) {
     auto type = transformType(test);
@@ -42,11 +43,11 @@ void Transformer::executeGenericTests(Expression::WhereClause* clause, types::Ty
         E<TYPE_ERROR>(
                 test,
                 FMT("Type '%s' does not implement '%s'",
-                    generic->getPrettyName().c_str(),
+                    _generic->getPrettyName().c_str(),
                     interface->getPrettyName().c_str()),
                 {.info = "Failed to execute where clause",
                  .help = FMT(
-                         "Implement '%s' for '%s'", interface->getPrettyName().c_str(), generic->getPrettyName().c_str()
+                         "Implement '%s' for '%s'", interface->getPrettyName().c_str(), _generic->getPrettyName().c_str()
                  ),
                  .tail = ctx->latestCall ? EI<>(ctx->latestCall->getDBGInfo(),
                                                 "",
