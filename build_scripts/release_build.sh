@@ -36,6 +36,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     else
         brew install llvm@16
         brew install gcc
+        brew install zstd
     fi
 
     export LLVM_DIR="/usr/local/opt/llvm@16/lib/cmake"

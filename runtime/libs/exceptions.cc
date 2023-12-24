@@ -625,7 +625,6 @@ void end_stack(void* exep) {
   } else {
     buf << "\033[0m";
   }
-
   print_backtrace(base->backtrace, buf);
 
   buf << "\n\n";

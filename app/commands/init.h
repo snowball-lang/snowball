@@ -47,7 +47,7 @@ namespace commands {
 void init_create_cfg(bool yes, std::string entry, app::Options::InitOptions p_opts) {
   std::ofstream outfile(CONFIGURATION_FILE);
 
-  std::string version = "1.0.0";
+  std::string version = "0.0.1";
 
   // TODO: ask questions if p_opts.yes is false
   std::string toml_result;
@@ -61,7 +61,7 @@ void init_create_cfg(bool yes, std::string entry, app::Options::InitOptions p_op
   outfile << toml.str() << std::endl;
   outfile.close();
 
-  Logger::message("Configuration", FMT("created configuration file (%s)", CONFIGURATION_FILE));
+  Logger::message("Configuration", FMT("Configured project file (%s)", CONFIGURATION_FILE));
 }
 
 // TODO: Output messages
@@ -69,7 +69,7 @@ int init(app::Options::InitOptions p_opts) {
   auto start = high_resolution_clock::now();
 
   if (p_opts.create_dir) {
-    Logger::message("Creating", FMT("creating snowball project directory (%s)", p_opts.name.c_str()));
+    Logger::message("Creating", FMT("Snowball project at directory %s", p_opts.name.c_str()));
     if (!fs::exists(p_opts.name)) fs::create_directory(p_opts.name);
     fs::current_path(p_opts.name);
   }
@@ -82,11 +82,11 @@ int init(app::Options::InitOptions p_opts) {
     std::getline(std::cin, answer);
 
     if (answer != "y" && answer != "Y") {
-      Logger::message("Aborted", "snowball project creation");
+      Logger::message("Aborted", "Snowball project creation");
       return 0;
     }
 
-    Logger::message("Deleting", "deleting all files in the current directory");
+    Logger::message("Deleting", "All files in the current directory");
     for (auto &p : fs::directory_iterator(fs::current_path())) {
       fs::remove_all(p);
     }
@@ -96,7 +96,7 @@ int init(app::Options::InitOptions p_opts) {
     init_create_cfg(p_opts.yes, EXECUTABLE_ENTRY, p_opts);
     return 0;
   } else if (p_opts.lib) {
-    Logger::message("Initalizing", FMT("creating snowball project [library]", CONFIGURATION_FILE));
+    Logger::message("Initalizing", FMT("Current project [library]", CONFIGURATION_FILE));
 
     Logger::warning("Library example is not yet supported by "
                     "current snowball!");
@@ -108,7 +108,7 @@ int init(app::Options::InitOptions p_opts) {
     outfile << LIBRARY_MAIN << std::endl;
     outfile.close();
   } else {
-    Logger::message("Initalizing", FMT("creating snowball project [executable]", CONFIGURATION_FILE));
+    Logger::message("Initalizing", FMT("Current project [executable]", CONFIGURATION_FILE));
 
     if (!fs::exists("src")) fs::create_directory("src");
     if (!p_opts.skip_cfg) init_create_cfg(p_opts.yes, EXECUTABLE_ENTRY, p_opts);

@@ -1,4 +1,7 @@
 import std::io;
+@use_macros
+import std::asserts;
+
 
 namespace test {
 
@@ -99,6 +102,17 @@ func usage_after_lambda() i32 {
   };
   let z = y();
   return x + z;
+}
+
+@test(expect = 10)
+func usage_after_lambda2() i32 {
+  let mut x = "hello";
+  let y = func() i32 {
+    return x.size();
+  };
+  let z = y();
+  assert!(x == "hello")
+  return x.size() + z;
 }
 
 struct TestStruct {

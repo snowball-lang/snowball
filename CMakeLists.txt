@@ -100,6 +100,7 @@ if(backtrace_ADDED)
       "${backtrace_SOURCE_DIR}/simple.c"
       "${backtrace_SOURCE_DIR}/sort.c"
       "${backtrace_SOURCE_DIR}/state.c")
+    set(backtrace_INCLUDE_DIRS "${backtrace_SOURCE_DIR}")
 
   # https://go.googlesource.com/gollvm/+/refs/heads/master/cmake/modules/LibbacktraceUtils.cmake
   set(BACKTRACE_SUPPORTED 1)
@@ -131,14 +132,11 @@ if(backtrace_ADDED)
 endif()
 
 CPMAddPackage(
-    NAME sigsegv
-    GIT_REPOSITORY "https://git.savannah.gnu.org/git/libsigsegv.git"
-    GIT_TAG "v2.14"
+    NAME zstd
+    GIT_REPOSITORY "https://github.com/facebook/zstd.git"
+    GIT_TAG "v1.5.5"
     DOWNLOAD_ONLY YES)
-if(sigsegv_ADDED)
-  if (APPLE)
-    message(STATUS "TODO: add sigsegv to the build")
-  endif()
+if(zstd_ADDED)
 endif()
 
 message(STATUS ${LLVM_DEFINITIONS})
@@ -212,12 +210,9 @@ else()
 endif()
 
 #add_dependencies(snowballrt backtrace sigsegv)
-target_include_directories(snowballrt PRIVATE ${backtrace_SOURCE_DIR} ${sigsegv_SOURCE_DIR})
-if(APPLE)
-  target_link_libraries(snowballrt PRIVATE zstd backtrace)
-else()
-  target_link_libraries(snowballrt PRIVATE zstd backtrace sigsegv)
-endif()
+target_include_directories(snowballrt PRIVATE ${backtrace_SOURCE_DIR})
+target_link_libraries(snowballrt PRIVATE backtrace)
+target_include_directories(snowballrt PRIVATE ${backtrace_INCLUDE_DIRS})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   message(STATUS "Changing rpath origin destination (for macos)")
@@ -291,7 +286,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<INSTALL_INTERFACE:include> PRIVATE source)
-    target_include_directories(${PROJECT_NAME} PUBLIC ${LLVM_INCLUDE_DIRS} ${PROJECT_INCLUDE_DIRS})
+    target_include_directories(${PROJECT_NAME} PUBLIC ${LLVM_INCLUDE_DIRS} ${PROJECT_INCLUDE_DIRS} ${backtrace_INCLUDE_DIRS})
     target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES} snowballrt)
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})

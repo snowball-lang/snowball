@@ -85,6 +85,11 @@ void Functions::performInheritance(types::DefinedType* ty, types::DefinedType* p
     for (auto fn : functions) { setFunction(name, fn.function, fn.state); }
   }
 
+  for (auto f : parent->getFields()) {
+    ty->addField(f);
+  }
+  ty->hasVtable = parent->hasVtable;
+
   return;
 }
 

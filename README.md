@@ -10,7 +10,7 @@
     <a href="https://snowball-lang.gitbook.io/docs/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="">Website</a> · <a href="">Report Bug</a> · <a href="">Request Feature</a>
+    <a href="">Website</a> · <a href="https://github.com/snowball-lang/snowball/issues">Report Bug</a> · <a href="https://github.com/snowball-lang/snowball/pulls">Request Feature</a>
 </p>
 
 <hr>
@@ -54,11 +54,8 @@ sudo make install -j100
 
 First, you will need a new snowball project. For that, create a new directory and execute the following command:
 
-```
-mkdir myProject
-cd myProject
-
-snowball init
+```sh
+snowball new --name myProject
 ```
 
 ### Executing snowball code
