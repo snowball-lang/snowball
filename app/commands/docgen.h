@@ -2,7 +2,7 @@
 #include "app/cli.h"
 #include "compiler.h"
 #include "constants.h"
-#include "errors.h"
+#include "ast/errors/error.h"
 #include "utils/utils.h"
 #include "vendor/toml.hpp"
 
@@ -30,6 +30,10 @@ int docgen(app::Options::DocsOptions p_opts) {
   auto baseURL = p_opts.base;
   if (baseURL.empty()) baseURL = parsed_config["documentation"]["base"].value_or<std::string>("/");
 
+  if (package_name == "<anonnimus>") {
+    Syntax::E<CONFIGURATION_ERROR>("No package name found in configuration file!\nPlease add a package name to your configuration file.\nPackage names are required for documentation generation.");
+  }
+
   if (!p_opts.silent)
     Logger::message(
             "Project",
@@ -42,7 +46,7 @@ int docgen(app::Options::DocsOptions p_opts) {
 
   auto start = high_resolution_clock::now();
 
-  int status = compiler->emitDocs(folder, baseURL, p_opts.silent);
+  int status = compiler->emitDocs(folder, baseURL, package_name, p_opts.silent);
   auto stop = high_resolution_clock::now();
 
   // Get duration. Substart timepoints to

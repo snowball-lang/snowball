@@ -8,6 +8,7 @@ namespace parser {
 
 Syntax::Macro* Parser::parseMacro() {
   assert(is<TokenType::KWORD_MACRO>());
+  auto comment = parseDocstring(m_current.getComment());
   next();
   // TODO: expression macro: 'macro foo() = 1 + 1'
   auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
@@ -86,6 +87,7 @@ Syntax::Macro* Parser::parseMacro() {
   auto macro = Syntax::N<Syntax::Macro>(name, args, body, isStatementMacro);
   macro->setDBGInfo(dbg);
   for (auto [n, a] : attributes) { macro->addAttribute(n, a); }
+  macro->setComment(comment);
   return macro;
 }
 

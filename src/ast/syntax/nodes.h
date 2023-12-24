@@ -1056,7 +1056,7 @@ public:
  *  }
  *  MyNamespace::MySecondNamespace::myFunction()
  */
-struct Namespace : public AcceptorExtend<Namespace, Base> {
+struct Namespace : public AcceptorExtend<Namespace, Base>, public AcceptorExtend<Namespace, CommentHolder> {
   /// @brief Name of the namespace
   std::string name;
   /// @brief Body of the namespace
@@ -1283,7 +1283,7 @@ public:
  * }
  * @note Macros can be used as statements or expressions.
  */
-struct Macro : public AcceptorExtend<Macro, Node> {
+struct Macro : public AcceptorExtend<Macro, Node>, public AcceptorExtend<Macro, Statement::CommentHolder> {
 public:
   enum ArguementType
   {

@@ -1,15 +1,32 @@
 import std::io;
 
 /**
- * Prints the Snowball Poem to the console.
+ * @brief Prints the Snowball Poem to the console.
  *
  * The Snowball Poem is a short poem that describes the key features of the Snowball programming language,
  * such as speed, security, object-orientation, and simplicity. This function simply prints the poem to
  * the console using the standard output stream.
  *
- * @return void
+ * 
+ * ```
+ * In the land of Snowball, where the code is king,
+ * A language of speed and security we bring.
+ * Object-oriented, it makes programming fun,
+ * With a high-level view that's second to none.
+ * 
+ * Simplicity is key, complexity we shun,
+ * Writing code is now an easy-run.
+ * The power of Snowball, it's easy to see,
+ * A language for all, just try it and you'll agree.
+ * 
+ * Fast and secure, Snowball stands tall,
+ * With low-level speed that's the envy of all.
+ * So let your code run and your dreams take flight,
+ * In the land of Snowball, where everything's right.
+ * ```
+ * @return i32 - It just exists but we return an integer anyway in order to store it in a constant.
  */
-static func poem() i32 {
+public static func poem() i32 {
     io::println("In the land of Snowball, where the code is king,
 A language of speed and security we bring.
 Object-oriented, it makes programming fun,

@@ -35,6 +35,7 @@ CommentType* Parser::parseDocstring(std::string p_content) {
     int paramCount = 0;
     auto lines = utils::split(comment, "\n");
     std::smatch matches;
+    std::string lastTag;
     for (auto& line : lines) {
       if (std::regex_search(line, matches, tagRegex)) {
         std::string tag = matches[1];
@@ -44,6 +45,7 @@ CommentType* Parser::parseDocstring(std::string p_content) {
           tag = "param$" + std::to_string(paramCount++);
         }
         tags[tag] = content;     
+        lastTag = tag;
       } else {
         auto trim = line;
         utils::replaceAll(trim, " ", "");
@@ -51,8 +53,13 @@ CommentType* Parser::parseDocstring(std::string p_content) {
           auto idx = line.find_first_of("*");
           line = line.substr(idx + 1);
         }
-        if (!line.empty()) {
-          content += line + "\n";
+        if (trim.empty() || (trim == "*") && !lastTag.empty()) lastTag = "";
+        if (utils::startsWith(line, " ") && (!trim.empty() || !(trim != "*")) && !lastTag.empty()) {
+          tags[lastTag] += "\n" + line.substr(1);
+        } else {
+          if (!line.empty()) {
+            content += line + "\n";
+          }
         }
       }
     } 

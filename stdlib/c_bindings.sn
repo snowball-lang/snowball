@@ -224,7 +224,7 @@ public external unsafe func strcat(*const c_char, *const c_char) *const c_char;
  * @brief a namespace that contains functions for manipulating files.
  * @note(1) All functions in this namespace are thread-safe.
  */
-public namespace files {
+namespace files {
 /**
  * @brief It opens the file whose name is specified in the parameter filename and associates it with a stream that can be identified in future operations by the FILE pointer returned.
  * @param filename C string containing the name of the file to be opened.
