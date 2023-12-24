@@ -92,6 +92,16 @@ void createModulePage(std::vector<Syntax::Node*> nodes, DocGenContext context, D
  * @ingroup docgen
  */
 void createMacroPage(Macro* node, DocGenContext context, DocumentationPage& page);
+/**
+ * @brief Creates a documentation page for a namespace.
+ * 
+ * @param node The namespace node.
+ * @param context The documentation generator context.
+ * @param page The documentation page.
+ * @return DocumentationPage The documentation page.
+ * @ingroup docgen
+ */
+void createNamespacePage(Statement::Namespace* node, DocGenContext context, DocumentationPage& page);
 
 } // namespace docgen
 } // namespace Syntax

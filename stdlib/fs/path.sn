@@ -12,7 +12,7 @@ import std::c_bindings;
  */
 public class PathError extends Exception {}
 /**
- * A path to a file or directory.
+ * @brief A path to a file or directory.
  * 
  * This is a wrapper around a string that provides some useful
  * operations for manipulating paths.
