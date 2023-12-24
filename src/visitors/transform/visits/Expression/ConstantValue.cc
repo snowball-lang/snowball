@@ -22,7 +22,7 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
       
       if (prefix.empty()) {
         auto size = getBuilder().createNumberValue(p_node->getDBGInfo(), str.size());
-        size->setType(ctx->getInt32Type());
+        size->setType(ctx->getUIntType(64));
 
         auto index = N<Expression::Index>(
                 (utils::startsWith(ctx->module->getUniqueName(), (ctx->imports->CORE_UUID + "internal")) || utils::startsWith(ctx->module->getUniqueName(), (ctx->imports->CORE_UUID + "std"))) ?

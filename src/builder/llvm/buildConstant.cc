@@ -20,7 +20,7 @@ void LLVMBuilder::visit(ir::BooleanValue* value) { this->value = builder->getInt
 
 void LLVMBuilder::visit(ir::CharValue* value) { this->value = builder->getInt8(value->getConstantValue()); }
 
-void LLVMBuilder::visit(ir::NumberValue* value) { this->value = builder->getInt32(value->getConstantValue()); }
+void LLVMBuilder::visit(ir::NumberValue* value) { this->value = llvm::ConstantInt::get(getLLVMType(value->getType()), value->getConstantValue()); }
 
 void LLVMBuilder::visit(ir::FloatValue* value) {
   this->value = llvm::ConstantFP::get(builder->getDoubleTy(), value->getConstantValue());

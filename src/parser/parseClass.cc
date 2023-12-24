@@ -28,6 +28,8 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
       return Attributes::CLASS_EXTENDS;
     } else if (attr == "__internal__") {
       return Attributes::BUILTIN;
+    } else if (attr == "no_constructor") {
+      return Attributes::NO_CONSTRUCTOR;
     }
     return Attributes::INVALID;
   });

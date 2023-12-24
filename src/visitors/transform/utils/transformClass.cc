@@ -249,7 +249,7 @@ types::BaseType* Transformer::transformClass(
               allowConstructor && parentType != nullptr && !parentType->isStruct() && parentType->hasConstructor;
       auto type = utils::cast<types::DefinedType>(transformedType);
       if (!parentHasConstructor && type && !type->hasConstructor && !type->isStruct() &&
-          !ty->hasAttribute(Attributes::BUILTIN)) {
+          !ty->hasAttribute(Attributes::BUILTIN) && !ty->hasAttribute(Attributes::NO_CONSTRUCTOR)) {
         E<SYNTAX_ERROR>(
                 ty,
                 "This class does not have a constructor!",

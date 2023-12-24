@@ -52,6 +52,7 @@ enum Attributes
 
   // Class attributes
   CLASS_EXTENDS,
+  NO_CONSTRUCTOR,
 
   // Import attributes
   MACROS,
