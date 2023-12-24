@@ -83,6 +83,15 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
  * @ingroup docgen
  */
 void createModulePage(std::vector<Syntax::Node*> nodes, DocGenContext context, DocumentationPage& page);
+/**
+ * @brief Creates a documentation page for a macro.
+ * 
+ * @param node The macro node.
+ * @param context The documentation generator context.
+ * @return DocumentationPage The documentation page.
+ * @ingroup docgen
+ */
+void createMacroPage(Macro* node, DocGenContext context, DocumentationPage& page);
 
 } // namespace docgen
 } // namespace Syntax

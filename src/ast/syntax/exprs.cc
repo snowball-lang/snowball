@@ -182,5 +182,20 @@ std::string Macro::arguementTypeToString(Macro::ArguementType t) {
   UNREACHABLE
 }
 
+std::string Macro::arguementTypeToSyntax(ArguementType type) {
+  switch (type) {
+    case ArguementType::CONSTANT: return "const";
+    case ArguementType::EXPRESSION: return "expr";
+    case ArguementType::STATEMENT: return "stmt";
+    case ArguementType::CONSTANT_STRING: return "const[str]";
+    case ArguementType::CONSTANT_NUMBER: return "const[num]";
+    case ArguementType::CONSTANT_CHAR: return "const[chr]";
+    case ArguementType::TYPE: return "type";
+    default: E<BUG>(FMT("Unknown arguement type '%i'!", type));
+  }
+
+  UNREACHABLE
+}
+
 } // namespace Syntax
 } // namespace snowball

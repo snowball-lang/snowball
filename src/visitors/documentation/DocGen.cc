@@ -10,7 +10,6 @@ namespace Syntax {
 using Operator = services::OperatorService;
 
 SN_DOCGEN_VISIT(Block) {}
-SN_DOCGEN_VISIT(Macro) {}
 
 SN_DOCGEN_VISIT(Expression::ConstantValue) {}
 SN_DOCGEN_VISIT(Expression::FunctionCall) {}
@@ -97,6 +96,19 @@ SN_DOCGEN_VISIT(Statement::FunctionDef) {
 
     // TODO: add html here!
     docgen::createFunctionPage(p_node, context, newPage);
+    result.pages.push_back(newPage);
+}
+
+SN_DOCGEN_VISIT(Macro) {
+    auto rawName = p_node->getName();
+    auto [name, path] = getFullName(rawName);
+
+    auto newPage = DocumentationPage {
+        .name = name,
+        .path = path + "-macro.html",
+        .type = DocumentationPage::Type::Function,
+    };
+    docgen::createMacroPage(p_node, context, newPage);
     result.pages.push_back(newPage);
 }
 
