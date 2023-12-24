@@ -2,6 +2,7 @@ import std::io;
 @use_macros
 import std::panics;
 
+@cfg(tests)
 namespace tests {
 
 @test(expect = 5)

@@ -977,8 +977,8 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
 }
 
 /**
- * A generic class representing a function, encapsulating a callable entity with 
- * an optional context.
+ * @brief A generic class representing a function, encapsulating a callable entity with 
+ *  an optional context.
  *
  * This class is designed to wrap any callable entity, such as a function, method, 
  * or closure, and provides an option to associate a context with the function. 
@@ -998,10 +998,15 @@ public class Function<T: Callable> implements Callable {
 
 /// --------- COMMANDS ---------
 
-namespace snowball_tests {
+/**
+ * @internal
+ * @brief Functions used by the compiler to handle commands. Such as tests and benchmarks.
+ * @note These functions are not meant to be used directly.
+ */
+namespace __snowball_commands__ {
 
 @no_inline
-@cfg(test)
+@cfg(tests)
 @export(name = "sn.test.try")
 static unsafe func execute(
   fn: func () => i32,
@@ -1061,9 +1066,6 @@ static unsafe func execute(
   // We return 1 to indicate that the test succeeded.
   return true;
 }
-
-}
-
 
 @export(name = "sn.bench.run")
 @cfg(bench)
@@ -1147,6 +1149,8 @@ func snowball_bench(
   // TODO:
   //  c_bindings::printf(b" \e[1mavg\e[0m: \e[1m%d%s\e[0m\n", avg, unit.bytes());
   }
+}
+
 }
 
 import std::internal::integers;

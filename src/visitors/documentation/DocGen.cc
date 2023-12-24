@@ -100,5 +100,15 @@ SN_DOCGEN_VISIT(Statement::FunctionDef) {
     result.pages.push_back(newPage);
 }
 
+void DocGen::createModulePage(std::vector<Syntax::Node*> nodes) {
+    auto newPage = DocumentationPage {
+        .name = context.currentModule,
+        .path = context.currentModulePath + ".html",
+        .type = DocumentationPage::Type::Module,
+    };
+    docgen::createModulePage(nodes, context, newPage);
+    result.pages.push_back(newPage);
+}
+
 } // namespace Syntax
 } // namespace snowball

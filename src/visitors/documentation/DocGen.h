@@ -117,7 +117,14 @@ public:
     for (auto n : nodes) { 
       n->accept(this); 
     }
+    createModulePage(nodes);
   }
+
+  /**
+   * It creates a documentation page for the current module.
+   * @param nodes The nodes of the module.
+   */
+  void createModulePage(std::vector<Syntax::Node*> nodes);
 
   /// @brief Returns the result of the documentation analysis.
   /// @return The result of the documentation analysis.
@@ -128,16 +135,16 @@ public:
   std::pair<std::string, std::string> getFullName(std::string name) {
     std::string fullName = "";
     std::string path = "";
-    if (!context.currentType.empty()) {
-      fullName += context.currentType + "::";
-      path += context.currentTypePath + "/";
+    if (!context.currentModule.empty()) {
+      fullName += context.currentModule + "::";
+      path += context.currentModulePath + "/";
     } else if (!context.currentNamespace.empty()) {
       fullName += context.currentNamespace + "::";
       path += context.currentNamespacePath + "/";
-    } else if (!context.currentModule.empty()) {
-      fullName += context.currentModule + "::";
-      path += context.currentModulePath + "/";
-    } 
+    } else if (!context.currentType.empty()) {
+      fullName += context.currentType + "::";
+      path += context.currentTypePath + "/";
+    }
     fullName += name;
     path += name;
     return {fullName, path};

@@ -132,7 +132,7 @@ void Compiler::compile(bool silent) {
 
 using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
 
-int Compiler::emitDocs(std::string folder, std::string baseURL, bool silent) {
+int Compiler::emitDocs(std::string folder, std::string baseURL, std::string package_name, bool silent) {
   auto path = cwd / folder;
   auto outputFolder = configFolder / "docs";
 
@@ -145,11 +145,28 @@ int Compiler::emitDocs(std::string folder, std::string baseURL, bool silent) {
       size_t lastindex = relative.string().find_last_of("."); 
       relative = relative.string().substr(0, lastindex); 
 
-      std::string moduleName = relative.string();
+      if (utils::split(folder, "/").size() < 2) {
+        auto parts = utils::list2vec(utils::split(relative.string(), "/"));
+        if (parts.size() < 1 && (parts[0] == "." || parts[0] == ".." || parts[0] == "")) {
+          if (parts.size() < 2 || (parts[1] == "." || parts[1] == ".." || parts[1] == "")) {
+            Syntax::E<COMPILER_ERROR>("Invalid relative path for documentation generation");
+          }
+        }
+      }
+      fs::path relativePath = package_name;
+      int i = 0;
+      for (auto& part : relative) {
+        if (i == 0) {
+          i++;
+          continue;
+        }
+        relativePath /= part;
+      }
+      std::string moduleName = relativePath.string();
       utils::replaceAll(moduleName, "/", "::");
 
       if (!silent)
-        Logger::message("Generating", " " + relative.string() + ".sn");
+        Logger::message("Generating", " " + relative.string() + BCYN + " (" + relativePath.string() + ".html" + ")" + RESET);
 
       std::ifstream ifs(dirEntry.path().string());
       std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
@@ -163,7 +180,7 @@ int Compiler::emitDocs(std::string folder, std::string baseURL, bool silent) {
         auto ast = parser->parse();
         Syntax::DocGenContext context {
           .currentModule = moduleName,
-          .currentModulePath = relative.string(),
+          .currentModulePath = relativePath.string(),
 
           .baseURL = baseURL,
         };

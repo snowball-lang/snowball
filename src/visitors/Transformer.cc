@@ -38,7 +38,7 @@ std::shared_ptr<ir::Value> Transformer::trans(Node* node) {
     if (x->hasAttribute(Attributes::CFG)) {
       auto args = x->getAttributeArgs(Attributes::CFG);
       for (auto [type, _] : args) {
-        if (type == "test") {
+        if (type == "tests") {
           if (!ctx->testMode) {
             return nullptr; // TODO: check if this causes problems
           }

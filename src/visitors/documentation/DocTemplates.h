@@ -74,6 +74,15 @@ void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, Doc
  * @return DocumentationPage The documentation page.
 */
 void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, DocumentationPage& page);
+/**
+ * @brief Creates a documentation page for a module.
+ * 
+ * @param nodes The nodes in the module.
+ * @param context The documentation generator context.
+ * @return DocumentationPage The documentation page.
+ * @ingroup docgen
+ */
+void createModulePage(std::vector<Syntax::Node*> nodes, DocGenContext context, DocumentationPage& page);
 
 } // namespace docgen
 } // namespace Syntax
