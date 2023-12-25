@@ -33,12 +33,12 @@ import std::io;
 
 //import std::io::{ println };
 
-//public func main() i32 {
-//    let mut x: String;
-//    x = "awd";
-//    let a = (func() i32 {
-//        //io::println(x);
-//        io::println(x);
-//    })();
-//    io::println(x);
-//}
+public func main() i32 {
+    let mut x: String;
+    x = "awd";
+    let a = (func() i32 {
+        //io::println(x);
+        io::println(x);
+    })();
+    io::println(x);
+}

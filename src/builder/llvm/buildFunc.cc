@@ -130,20 +130,28 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     if (v->getVariable()->isUsedInLambda()) {
       if (closureType == nullptr) {
         closureType = llvm::StructType::create(*context, "_closure." + fn->getMangle());
-        auto body = closureType->elements().vec();
-        body.push_back(llvmType);
-        closureType->setBody(body);
-        auto layout = module->getDataLayout();
-        auto alloca = builder->CreateCall(getAllocaFunction(), {builder->getInt32(layout.getTypeAllocSize(closureType))});
-        //auto structAlloca = createAlloca(closureType->getPointerTo());
-        alloca->setDebugLoc(llvm::DILocation::get(*context, 0, 0, llvmFn->getSubprogram()));
-        //builder->CreateStore(alloca, structAlloca);
-        ctx->closures.insert({fn->getId(), LLVMBuilderContext::ClosureContext {
-          .closure = alloca,
-          .closureType = closureType,
-        }});
       }
+      auto body = closureType->elements().vec();
+      body.push_back(llvmType);
+      closureType->setBody(body);
+    }
+  }
 
+  if (closureType) {
+    auto layout = module->getDataLayout();
+    auto alloca = builder->CreateCall(getAllocaFunction(), {builder->getInt32(layout.getTypeAllocSize(closureType))});
+    //auto structAlloca = createAlloca(closureType->getPointerTo());
+    alloca->setDebugLoc(llvm::DILocation::get(*context, 0, 0, llvmFn->getSubprogram()));
+    //builder->CreateStore(alloca, structAlloca);
+    ctx->closures.insert({fn->getId(), LLVMBuilderContext::ClosureContext {
+      .closure = alloca,
+      .closureType = closureType,
+    }});
+  }
+
+  for (auto v : fn->getSymbols()) {
+    auto llvmType = getLLVMType(v->getType());
+    if (v->getVariable()->isUsedInLambda()) {
       auto& closure = ctx->closures.at(fn->getId());
       closure.variables.push_back(v->getVariable()->getId());
     }
@@ -163,6 +171,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
           [v](auto v2) { return v2 == v->getVariable()->getId(); }
         )
       );
+      closureType->dump();
       storage = builder->CreateStructGEP(closureType, closure.closure, index);
     } else {
       storage = builder->CreateAlloca(llvmType, nullptr, "var." + v->getIdentifier());

@@ -43,7 +43,7 @@ void applyDebugTransformations(llvm::Module* module, bool debug) {
     // remove tail calls and fix linkage for stack traces
     for (auto& f : *module) {
 //#ifdef __APPLE__
-      f.setLinkage(llvm::GlobalValue::ExternalLinkage);
+      //f.setLinkage(llvm::GlobalValue::ExternalLinkage);
 //#endif
       if (!f.hasFnAttribute(llvm::Attribute::AttrKind::AlwaysInline)) 
         f.addFnAttr(llvm::Attribute::AttrKind::NoInline);

@@ -78,7 +78,12 @@ void LLVMBuilder::visit(ir::Call* call) {
 
   if (isLambda && asFunction && asFunction->usesParentScope()) {
     auto closure = ctx->closures.at(ctx->getCurrentIRFunction()->getId());
-    args.insert(args.begin(), closure.closure);
+    auto alloca = createAlloca(getLambdaContextType(), ".lambda-context");
+    auto firstGep = builder->CreateStructGEP(getLambdaContextType(), alloca, 0);
+    builder->CreateStore(callee, firstGep);
+    auto gep = builder->CreateStructGEP(getLambdaContextType(), alloca, 1);
+    builder->CreateStore(closure.closure, gep);
+    args.insert(args.begin(), alloca);
     doNotAddAnonContext = true;
   }
 
