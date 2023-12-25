@@ -96,6 +96,8 @@ class DocGen : public AcceptorExtend<DocGen, Visitor> {
   DocumentationResult result;
   /// @brief The current context of the documentation generator.
   DocGenContext context;
+  /// @brief A list containing the amount of overloads for each function.
+  std::unordered_map<std::string, int> overloads;
   
 #include "../../defs/accepts.def"
 public:
@@ -147,6 +149,10 @@ public:
     }
     fullName += name;
     path += name;
+    overloads[path]++;
+    if (overloads[path] > 1) {
+      path += "-" + std::to_string(overloads[path]);
+    }
     return {fullName, path};
   }
 
