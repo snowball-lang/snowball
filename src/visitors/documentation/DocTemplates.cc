@@ -8,6 +8,9 @@ namespace snowball {
 namespace Syntax {
 namespace docgen {
 
+static std::unordered_map<std::string, int> nameCount;
+#define GO_BACK_TEXT "&lt; Go Back"
+
 std::string getPageTemplate(DocGenContext context, std::string title, std::string body, std::vector<std::pair<std::string, std::string>> links) {
     std::string parent;
     std::string parentPath;
@@ -21,13 +24,23 @@ std::string getPageTemplate(DocGenContext context, std::string title, std::strin
         parent = context.currentModule; 
         parentPath = context.currentModulePath;
     }
-
-    links.insert(links.begin(), {"&lt; Go Back", parentPath});
+    std::sort(links.begin(), links.end(), [](auto& a, auto& b) {
+        return a.first < b.first;
+    });
+    links.insert(links.begin(), {GO_BACK_TEXT, parentPath});
     std::string linksHTML = "";
     for (auto& [name, link] : links) {
-        linksHTML += "<a href=\"" + link + ".html\">" + name + "</a>";
+        nameCount[name]++;
+        auto resultLink = link;
+        if (nameCount[name] > 1) {
+            resultLink += "-" + std::to_string(nameCount[name]);
+        }
+        auto resultName = nameCount[name] > 1 ? name + "(" + std::to_string(nameCount[name]) + ")" : name;
+        if (resultName != GO_BACK_TEXT)
+            resultName = "&gt; " + resultName;
+        linksHTML += "<a href=\"" + resultLink + ".html\">" + resultName + "</a> ";
     }
-
+    nameCount.clear();
     return FMT(pageTemplate.c_str(), title.c_str(), context.baseURL.c_str(), parent.c_str(), linksHTML.c_str(), body.c_str());
 }
 
