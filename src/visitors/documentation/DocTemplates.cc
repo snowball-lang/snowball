@@ -122,13 +122,13 @@ std::string getFunctionCode(Statement::FunctionDef* node) {
 }
 
 void createSmallPictureFn(Statement::FunctionDef* node, DocGenContext context, std::string& body) {
-    body += "<br/><pre><code style=\"background: transparent !important; padding: 5px 0 !important;\" class=\"language-snowball\">";
+    body += "<pre><code style=\"background: transparent !important; padding: 5px 0 !important;\" class=\"language-snowball\">";
     body += getFunctionCode(node);
     body += "</code></pre>";
     if (auto comment = node->getComment()) {
         auto values = comment->getValues();
         if (values.count("brief")) {
-            body += "<p style=\"margin-left: 15px; transform: translateY(-50%);\">" + sanitize(values["brief"]) + "</p>";
+            body += "<p style=\"margin-left: 15px; margin-bottom: 20px; margin-top: 10px;\">" + sanitize(values["brief"]) + "</p><hr style=\"margin-bottom: 30px;\"/>";
         }
     }
 }
@@ -183,7 +183,7 @@ void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, Doc
         if (utils::startsWith(theUrl, "-")) {
             theUrl = theUrl.substr(1); // remove operator prefix
         }
-        body += "<a style=\"color:#78d3fc;\" href=\"" + url + ".html\">" + theUrl + "</a>::";
+        body += "<a style=\"color:rgb(14 116 144);\" href=\"" + url + ".html\">" + theUrl + "</a>::";
         i++;
     }
     body = body.substr(0, body.size() - 2) + ";"; // remove the last "::"
@@ -196,7 +196,7 @@ void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, Doc
     if (auto docString = node->getComment()) {
         auto values = docString->getValues();
         if (values.count("brief")) {
-            body += "<h1 style=\"color:#78d3fc;\">Brief Description for <quote>" + node->getName() + "</quote></h1>";
+            body += "<h1 style=\"color:rgb(14 116 144);\">Brief Description for <quote>" + node->getName() + "</quote></h1>";
             body += "<p>" + sanitize(values["brief"]) + "</p>";
         }
         auto fnBody = sanitize(docString->getBody());
@@ -211,7 +211,7 @@ void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, Doc
         }
 
         if (params.size() > 0) {
-            body += "<hr/><h1 style=\"color:#78d3fc;\">Parameters</h1>";
+            body += "<hr/><h1 style=\"color:rgb(14 116 144);\">Parameters</h1>";
             for (auto& [tag, value] : params) {
                 auto idx = tag.find_first_of("$");
                 auto paramIdx = std::stoi(tag.substr(idx + 1));
@@ -243,7 +243,7 @@ void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, Doc
         for (auto& [tag, value] : values) {
             if (tag == "brief") continue;
             if (utils::startsWith(tag, "param$")) continue;
-            body += "<hr/><h1 style=\"color:#78d3fc;\">@" + tag + "</h1>";
+            body += "<hr/><h1 style=\"color:rgb(14 116 144);\">@" + tag + "</h1>";
             body += "<p>" + value + "</p>";
         }
     }
@@ -274,7 +274,7 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
             }
             j++;
         }
-        body += "<a style=\"color:#78d3fc;\" href=\"" + url + ".html\">" + nameParts[i] + "</a>::";
+        body += "<a style=\"color:rgb(14 116 144);\" href=\"" + url + ".html\">" + nameParts[i] + "</a>::";
         i++;
     }
     body = body.substr(0, body.size() - 2) + ";"; // remove the last "::"
@@ -351,7 +351,7 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
     if (auto docString = node->getComment()) {
         auto values = docString->getValues();
         if (values.count("brief")) {
-            body += "<h1 style=\"color:#78d3fc;\">Brief Description for <quote>" + node->getName() + "</quote></h1>";
+            body += "<h1 style=\"color:rgb(14 116 144);\">Brief Description for <quote>" + node->getName() + "</quote></h1>";
             body += "<p>" + sanitize(values["brief"]) + "</p>";
         }
         body += "<p>" + sanitize(docString->getBody()) + "</p>";
@@ -378,28 +378,28 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
         }
 
         if (publicFunctions.size() > 0) {
-            body += "<hr/><h1 style=\"color:#78d3fc;\">Public Functions</h1>";
+            body += "<hr/><h1 style=\"color:rgb(14 116 144);\">Public Functions</h1>";
             for (auto& func : publicFunctions) {
                 createSmallPictureFn(func, context, body);
             }
         }
         
         if (publicStaticFunctions.size() > 0) {
-            body += "<hr/><h1 style=\"color:#78d3fc;\">Public Static Functions</h1>";
+            body += "<hr/><h1 style=\"color:rgb(14 116 144);\">Public Static Functions</h1>";
             for (auto& func : publicStaticFunctions) {
                 createSmallPictureFn(func, context, body);
             }
         }
 
         if (privateFunctions.size() > 0) {
-            body += "<hr/><h1 style=\"color:#78d3fc;\">Private Functions</h1>";
+            body += "<hr/><h1 style=\"color:rgb(14 116 144);\">Private Functions</h1>";
             for (auto& func : privateFunctions) {
                 createSmallPictureFn(func, context, body);
             }
         }
 
         if (privateStaticFunctions.size() > 0) {
-            body += "<hr/><h1 style=\"color:#78d3fc;\">Private Static Functions</h1>";
+            body += "<hr/><h1 style=\"color:rgb(14 116 144);\">Private Static Functions</h1>";
             for (auto& func : privateStaticFunctions) {
                 createSmallPictureFn(func, context, body);
             }
@@ -450,7 +450,7 @@ void createModulePage(std::vector<Syntax::Node*> nodes, DocGenContext context, D
             }
             j++;
         }
-        body += "<a style=\"color:#78d3fc;\" href=\"" + url + ".html\">" + nameParts[i] + "</a>::";
+        body += "<a style=\"color:rgb(14 116 144);\" href=\"" + url + ".html\">" + nameParts[i] + "</a>::";
         i++;
     }
     body = body.substr(0, body.size() - 2) + ";"; // remove the last "::"
@@ -486,7 +486,7 @@ void createModulePage(std::vector<Syntax::Node*> nodes, DocGenContext context, D
         body += "<br/><h1 style=\"font-size: 25px;\">Types exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
         for (auto& type : types) {
             auto typeUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + type->getName() + ".html";
-            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + typeUrl + "><h1 style=\"color:#78d3fc;margin-right: 10px;font-weight: normal;\">" + type->getName() + "</h1></a>";
+            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + typeUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + type->getName() + "</h1></a>";
             if (type->getComment()) {
                 auto values = type->getComment()->getValues();
                 if (values.count("brief")) {
@@ -537,7 +537,7 @@ void createModulePage(std::vector<Syntax::Node*> nodes, DocGenContext context, D
         body += "<br/><h1 style=\"font-size: 25px;\">Variables exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
         for (auto& var : variables) {
             auto varUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + var->getName() + ".html";
-            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + varUrl + "><h1 style=\"color:#78d3fc;margin-right: 10px;font-weight: normal;\">" + var->getName() + "</h1></a>";
+            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + varUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + var->getName() + "</h1></a>";
             if (var->getComment()) {
                 auto values = var->getComment()->getValues();
                 if (values.count("brief")) {
@@ -554,7 +554,7 @@ void createModulePage(std::vector<Syntax::Node*> nodes, DocGenContext context, D
         body += "<br/><h1 style=\"font-size: 25px;\">Functions exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
         for (auto& func : functions) {
             auto funcUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + func->getName() + ".html";
-            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + funcUrl + "><h1 style=\"color:#78d3fc;margin-right: 10px;font-weight: normal;\">" + func->getName() + "</h1></a>";
+            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + funcUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + func->getName() + "</h1></a>";
             if (func->getComment()) {
                 auto values = func->getComment()->getValues();
                 if (values.count("brief")) {
@@ -591,7 +591,7 @@ void createMacroPage(Macro* node, DocGenContext context, DocumentationPage& page
             }
             j++;
         }
-        body += "<a style=\"color:#78d3fc;\" href=\"" + url + ".html\">" + nameParts[i] + "</a>::";
+        body += "<a style=\"color:rgb(14 116 144);\" href=\"" + url + ".html\">" + nameParts[i] + "</a>::";
         i++;
     }
     body = body.substr(0, body.size() - 2) + ";"; // remove the last "::"
@@ -618,7 +618,7 @@ void createMacroPage(Macro* node, DocGenContext context, DocumentationPage& page
     if (auto docString = node->getComment()) {
         auto values = docString->getValues();
         if (values.count("brief")) {
-            body += "<h1 style=\"color:#78d3fc;\">Brief Description for <quote>" + node->getName() + "</quote></h1>";
+            body += "<h1 style=\"color:rgb(14 116 144);\">Brief Description for <quote>" + node->getName() + "</quote></h1>";
             body += "<p>" + sanitize(values["brief"]) + "</p>";
         }
         body += "<p>" + sanitize(docString->getBody()) + "</p>";
@@ -654,7 +654,7 @@ void createNamespacePage(Statement::Namespace* node, DocGenContext context, Docu
             }
             j++;
         }
-        body += "<a style=\"color:#78d3fc;\" href=\"" + url + ".html\">" + nameParts[i] + "</a>::";
+        body += "<a style=\"color:rgb(14 116 144);\" href=\"" + url + ".html\">" + nameParts[i] + "</a>::";
         i++;
     }
     body = body.substr(0, body.size() - 2) + ";"; // remove the last "::"
@@ -668,7 +668,7 @@ void createNamespacePage(Statement::Namespace* node, DocGenContext context, Docu
     if (auto docString = node->getComment()) {
         auto values = docString->getValues();
         if (values.count("brief")) {
-            body += "<h1 style=\"color:#78d3fc;\">Brief Description for <quote>" + node->getName() + "</quote></h1>";
+            body += "<h1 style=\"color:rgb(14 116 144);\">Brief Description for <quote>" + node->getName() + "</quote></h1>";
             body += "<p>" + sanitize(values["brief"]) + "</p>";
         }
         body += "<p>" + sanitize(docString->getBody()) + "</p>";
@@ -703,7 +703,7 @@ void createNamespacePage(Statement::Namespace* node, DocGenContext context, Docu
         body += "<br/><h1 style=\"font-size: 25px;\">Types exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
         for (auto& type : types) {
             auto typeUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + type->getName() + ".html";
-            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + typeUrl + "><h1 style=\"color:#78d3fc;margin-right: 10px;font-weight: normal;\">" + type->getName() + "</h1></a>";
+            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + typeUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + type->getName() + "</h1></a>";
             if (type->getComment()) {
                 auto values = type->getComment()->getValues();
                 if (values.count("brief")) {
@@ -754,7 +754,7 @@ void createNamespacePage(Statement::Namespace* node, DocGenContext context, Docu
         body += "<br/><h1 style=\"font-size: 25px;\">Variables exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
         for (auto& var : variables) {
             auto varUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + var->getName() + ".html";
-            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + varUrl + "><h1 style=\"color:#78d3fc;margin-right: 10px;font-weight: normal;\">" + var->getName() + "</h1></a>";
+            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + varUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + var->getName() + "</h1></a>";
             if (var->getComment()) {
                 auto values = var->getComment()->getValues();
                 if (values.count("brief")) {
@@ -771,7 +771,7 @@ void createNamespacePage(Statement::Namespace* node, DocGenContext context, Docu
         body += "<br/><h1 style=\"font-size: 25px;\">Functions exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
         for (auto& func : functions) {
             auto funcUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + func->getName() + ".html";
-            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + funcUrl + "><h1 style=\"color:#78d3fc;margin-right: 10px;font-weight: normal;\">" + func->getName() + "</h1></a>";
+            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + funcUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + func->getName() + "</h1></a>";
             if (func->getComment()) {
                 auto values = func->getComment()->getValues();
                 if (values.count("brief")) {
