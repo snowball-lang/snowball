@@ -19,6 +19,8 @@ error() {
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ "$ARCH" == "arm64" ]]; then
+        brew uninstall php
+
         brew uninstall --ignore-dependencies zstd
         brew fetch --force --bottle-tag=arm64_big_sur zstd
         zstdResult=$(brew --cache --bottle-tag=arm64_big_sur zstd)
