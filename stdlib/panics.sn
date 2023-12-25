@@ -12,9 +12,8 @@ import std::io;
  * @param message The error message to emit.
  * @param _location The source code location information (default is the current location).
  *
- * @remarks
- * The function prints the error message, source file, line number, and column number where the panic occurred.
- * To enable backtrace information, it suggests running the program with the `SN_BACKTRACE=1` environment variable.
+ * @remarks The function prints the error message, source file, line number, and column number where the panic occurred.
+ *  To enable backtrace information, it suggests running the program with the `SN_BACKTRACE=1` environment variable.
  */
 @inline
 public func panic(

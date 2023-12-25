@@ -1,6 +1,6 @@
 
 /**
- * Returns true if the given character is a whitespace character.
+ * @brief Returns true if the given character is a whitespace character.
  * 
  * @param c The character to check.
  * @return True if the given character is a whitespace character.
@@ -11,7 +11,7 @@ public func is_space(c: u8) bool {
      || c == '\n' || c == '\r';
 }
 /**
- * Returns true if the given character is an
+ * @brief Returns true if the given character is an
  *  upper-case character.
  *
  * @param c The character to check.
@@ -22,30 +22,26 @@ public func is_space(c: u8) bool {
 public func is_upper(c: u8) bool 
     { return c >= 'A' && c <= 'Z'; }
 /**
- * Returns true if the given character is a
- *  lower-case character.
+ * @brief Returns true if the given character is a lower-case character.
  *
  * @param c The character to check.
- * @return True if the given character is a
- *  lower-case character.
+ * @return True if the given character is a lower-case character.
  */
 @inline
 public func is_lower(c: u8) bool
   { return c >= 'a' && c <= 'z'; }
 /**
- * Returns true if the given character is a
+ * @brief Returns true if the given character is a
  *  digit.
  *
  * @param c The character to check.
- * @return True if the given character is a
- *  digit.
+ * @return True if the given character is a digit.
  */
 @inline
 public func is_digit(c: u8) bool
   { return c >= '0' && c <= '9'; }
 /**
- * Returns true if the given character is a
- *  hexadecimal digit.
+ * @brief Returns true if the given character is a hexadecimal digit.
  *
  * @param c The character to check.
  * @return True if the given character is a
@@ -57,8 +53,7 @@ public func is_hex(c: u8) bool {
     || (c >= 'A' && c <= 'F'); 
 }
 /**
- * Returns true if the given character is an
- *  octal digit.
+ * @brief Returns true if the given character is an octal digit.
  *
  * @param c The character to check.
  * @return True if the given character is an
@@ -68,19 +63,16 @@ public func is_hex(c: u8) bool {
 public func is_oct(c: u8) bool
   { return c >= '0' && c <= '7'; }
 /**
- * Returns true if the given character is a
- *  letter.
+ * @brief Returns true if the given character is a letter.
  *
  * @param c The character to check.
- * @return True if the given character is a
- *  letter.
+ * @return True if the given character is a letter.
  */
 @inline
 public func is_alpha(c: u8) bool
   { return is_upper(c) || is_lower(c); }
 /**
- * Returns true if the given character is a
- *  letter or digit.
+ * @brief Returns true if the given character is a letter or digit.
  *
  * @param c The character to check.
  * @return True if the given character is a
@@ -90,34 +82,28 @@ public func is_alpha(c: u8) bool
 public func is_alpha_num(c: u8) bool
   { return is_alpha(c) || is_digit(c); }
 /**
- * Returns true if the given character is a
- *  control character.
+ * @brief Returns true if the given character is a control character.
  *
  * @param c The character to check.
- * @return True if the given character is a
- *  control character.
+ * @return True if the given character is a control character.
  */
 @inline
 public func is_control(c: u8) bool
   { return c < 32 || c == 127; }
 /**
- * Returns true if the given character is a
- *  printable character.
+ * @brief Returns true if the given character is a printable character.
  *
  * @param c The character to check.
- * @return True if the given character is a
- *  printable character.
+ * @return True if the given character is a printable character.
  */
 @inline
 public func is_print(c: u8) bool
   { return !is_control(c); }
 /**
- * Returns true if the given character is a
- *  punctuation character.
+ * @brief Returns true if the given character is a punctuation character.
  *
  * @param c The character to check.
- * @return True if the given character is a
- *  punctuation character.
+ * @return True if the given character is a punctuation character.
  */
 @inline
 public func is_punc(c: u8) bool {
@@ -135,12 +121,10 @@ public func is_punc(c: u8) bool {
     || c == '}' || c == '~';
 }
 /**
- * Returns true if the given character is a
- *  symbol character.
+ * @brief Returns true if the given character is a symbol character.
  *
  * @param c The character to check.
- * @return True if the given character is a
- *  symbol character.
+ * @return True if the given character is a symbol character.
  */
 @inline
 public func is_sym(c: u8) bool {
@@ -152,12 +136,10 @@ public func is_sym(c: u8) bool {
     || c == '!' || c == '?';
 }
 /**
- * Returns true if the given character is a
- *  mark character.
+ * @brief Returns true if the given character is a mark character.
  *
  * @param c The character to check.
- * @return True if the given character is a
- *  mark character.
+ * @return True if the given character is a mark character.
  */
 @inline
 public func is_mark(c: u8) bool {

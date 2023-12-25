@@ -1,14 +1,14 @@
 import std::c_bindings;
 import std::ptr;
 /**
- * It performs the square root of a given floating-point number.
+ * @brief It performs the square root of a given floating-point number.
  *
  * @param x The floating-point number to perform the square root of.
  * @return The square root of the given number.
  */
 public external func "llvm.sqrt.f64" as sqrt(f64) f64;
 /**
- * It returns the minimum of two given unknown numbers.
+ * @brief It returns the minimum of two given unknown numbers.
  *
  * @param x The first number.
  * @param y The second number.

@@ -136,10 +136,9 @@ public class IndexError extends Exception
  *
  * @typeparam IterType The type of elements in the iterable.
  *
- * @remarks
- * This interface is designed to be implemented by classes that represent iterable data structures.
- * Implementing classes should provide the `next` method to advance the iterator and the `reset` method
- * to reset the iteration to the beginning if necessary.
+ * @remarks This interface is designed to be implemented by classes that represent iterable data structures.
+ *  Implementing classes should provide the `next` method to advance the iterator and the `reset` method
+ *  to reset the iteration to the beginning if necessary.
  */
 public interface Iterable<IterType: Sized> {
     /// @brief The index of the iterator.
@@ -173,10 +172,9 @@ public interface Iterable<IterType: Sized> {
  *
  * @tparam T The type of elements that the iterator iterates over.
  *
- * @remarks
- * The `Iter` class can be considered as the reverse of the `Iterable` class and is typically used
- * to traverse and manipulate data structures that implement the `Iterable` interface. It offers
- * methods to retrieve the value of the iterator and check its validity.
+ * @remarks The `Iter` class can be considered as the reverse of the `Iterable` class and is typically used
+ *  to traverse and manipulate data structures that implement the `Iterable` interface. It offers
+ *  methods to retrieve the value of the iterator and check its validity.
  */
 public class Iter<T: Sized> {
     /// @brief Indicates if the iterator is valid.
@@ -251,10 +249,9 @@ public class Iter<T: Sized> {
  *
  * @implements Iterable<_Number_Type>
  *
- * @remarks
- * The `Range` class is designed for representing and manipulating ranges of elements. It can
- * be used for various purposes, including numerical iteration and subsetting. It implements the
- * `Iterable` interface, making it iterable and compatible with iteration-related utilities.
+ * @remarks The `Range` class is designed for representing and manipulating ranges of elements. It can
+ *  be used for various purposes, including numerical iteration and subsetting. It implements the
+ *  `Iterable` interface, making it iterable and compatible with iteration-related utilities.
  */
 public class Range<N: Numeric = i32> implements Iterable<N>, ToString {
   public:
@@ -406,6 +403,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
       self.length = self.length + 1;
     }
     /**
+     * @brief It returns the length of the vector.
      * @return The size of the vector.
      */
     @inline
@@ -637,9 +635,8 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
  *
  * @typeparam Char The character type of the string (default is `char`).
  *
- * @remarks
- * The `StringView` class is an ideal choice for working with strings without the need for full string
- * ownership or memory management. It provides efficient access and manipulation of string data.
+ * @remarks The `StringView` class is an ideal choice for working with strings without the need for full string
+ *  ownership or memory management. It provides efficient access and manipulation of string data.
  */
 public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
   public:

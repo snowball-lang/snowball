@@ -79,6 +79,7 @@ Syntax::Macro* Parser::parseMacro() {
     );
     macro->setDBGInfo(dbg);
     for (auto [n, a] : attributes) { macro->addAttribute(n, a); }
+    macro->setComment(comment);
     return macro;
   }
 

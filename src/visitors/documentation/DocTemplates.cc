@@ -236,7 +236,11 @@ std::string getFunctionCode(Statement::FunctionDef* node) {
     }
     body += "(\n";
     for (auto& param : node->getArgs()) {
-        body += "    " + param->getName() + ": " + typeToHtml(param->getType()) + ",\n";
+        body += "    " + param->getName() + ": " + typeToHtml(param->getType());
+        if (param->hasDefaultValue()) {
+            body += " = ...";
+        }
+        body += ",\n";
     }
 
     if (node->isVariadic()) {
@@ -367,9 +371,10 @@ void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, Doc
                     value = value.substr(paramName.size() + 1);
                 }
 
-                body += "<br/><h1>" + paramName + "</h1>";
-                body += "<p>" + value + "</p>";
+                body += "<h1>" + paramName + "</h1>";
+                body += "<p>" + value + "</p><br/>";
             }
+            body = body.substr(0, body.size() - 5);
         }
 
         for (auto& [tag, value] : values) {
@@ -462,13 +467,11 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
         if (field->getComment()) {
             auto values = field->getComment()->getValues();
             for (auto& [tag, value] : values) {
-                body += "\n    // @" + tag + " " + value;
+                if (tag == "brief") {
+                    body += "\n    // " + value;
+                    break;
+                }
             }
-
-            auto fnBody = sanitize(field->getComment()->getBody());
-            if (!fnBody.empty())
-                for (auto& line : utils::list2vec(utils::split(fnBody, "<br/>")))
-                    body += "\n    // " + line;
         }
         body += "\n    " + (std::string)(field->isContantDecl() ? "const " : "let ") + field->getName() + ": " + typeToHtml(field->getDefinedType()) + ";\n";
     }
@@ -530,7 +533,7 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
         }
         
         if (publicStaticFunctions.size() > 0) {
-            body += "<hr/><h1 style=\"color:rgb(14 116 144);\">Public Static Functions</h1>";
+            body += "<h1 style=\"color:rgb(14 116 144);\">Public Static Functions</h1>";
             for (auto& func : publicStaticFunctions) {
                 createSmallPictureFn(func, context, body);
             }
@@ -699,6 +702,8 @@ void createNamespacePage(Statement::Namespace* node, DocGenContext context, Docu
 
         for (auto& [tag, value] : values) {
             if (tag == "brief") continue;
+            body += "<hr/><h1 style=\"color:rgb(14 116 144);\">@" + tag + "</h1>";
+            body += "<p>" + sanitize(value) + "</p>";
         }
     }
 

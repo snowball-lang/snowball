@@ -54,7 +54,7 @@ CommentType* Parser::parseDocstring(std::string p_content) {
           line = line.substr(idx + 1);
         }
         if (trim.empty() || (trim == "*") && !lastTag.empty()) lastTag = "";
-        if (utils::startsWith(line, " ") && (!trim.empty() || !(trim != "*")) && !lastTag.empty()) {
+        if (utils::startsWith(line, "  ") && (!trim.empty() || !(trim != "*")) && !lastTag.empty()) {
           tags[lastTag] += "\n" + line.substr(1);
         } else {
           if (!line.empty()) {
