@@ -408,4 +408,24 @@ func alignof() i32 {
     return alignof!(:i32);
 }
 
+class StoreAtGlobalTest {
+    public: let a: i32 = 4;
+    StoreAtGlobalTest() {}
+}
+
+const store_at_global_test: &StoreAtGlobalTest = new StoreAtGlobalTest();
+
+@test(expect = 4)
+func store_at_global() i32 {
+    return store_at_global_test.a;
+}
+
+// const store_refref_at_global_test: &&StoreAtGlobalTest = &store_at_global_test;
+
+@test(expect = 4, skip)
+func store_refref_at_global() i32 {
+    // TODO: fix this
+    //return (*store_refref_at_global_test).a;
+}
+
 }
