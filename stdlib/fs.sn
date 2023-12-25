@@ -17,12 +17,13 @@ public type File = file::File;
  * @brief Removes a file or directory.
  * @param path The path to remove.
  * @return Whether the file or directory was removed.
- * @see std::fs::remove
+ * @see std::fs::Path::remove
  */
 public func remove(path: &Path) bool { return path.remove(); }
 /**
  * @brief It checks whether a file or directory exists.
  * @param path The path to check.
  * @return Whether the file or directory exists.
+ * @see std::fs::Path::exists
 */
 public func exists(path: &Path) bool { return path.exists(); }

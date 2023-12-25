@@ -164,7 +164,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
   if (auto func = utils::dyn_cast<ir::Func>(fn)) {
     // Check for default arguments
     auto args = func->getArgs();
-    if (argTypes.size() < (args.size() - func->hasParent())) {
+    if (((int)argTypes.size() - func->hasParent()) < (int)(args.size() - func->hasParent())) {
       int default_arg_count = 0;
       for (auto arg : args) {
         if (arg.second->hasDefaultValue()) { ++default_arg_count; }
@@ -211,7 +211,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
                 arg->first.c_str()));
           }
         });
-      } else E<TYPE_ERROR>(p_node, "Function call missing arguments!");
+      } 
     }
     // clang-format on
   }

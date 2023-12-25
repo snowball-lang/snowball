@@ -565,7 +565,12 @@ void createModulePage(std::vector<Syntax::Node*> nodes, DocGenContext context, D
     if (functions.size() > 0) {
         body += "<br/><h1 style=\"font-size: 25px;\">Functions exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
         for (auto& func : functions) {
-            auto funcUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + func->getName() + ".html";
+            auto funcUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + func->getName();
+            nameCount[page.path.string()]++;
+            if (nameCount[page.path.string()] > 0) {
+                funcUrl += "-" + std::to_string(nameCount[page.path.string()]);
+            }
+            funcUrl += ".html";
             body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + funcUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + func->getName() + "</h1></a>";
             if (func->getComment()) {
                 auto values = func->getComment()->getValues();
@@ -577,6 +582,7 @@ void createModulePage(std::vector<Syntax::Node*> nodes, DocGenContext context, D
             }
             body += "</div>";
         }
+        nameCount.clear();
     }
 
     page.html = getPageTemplate(context, page.name, body);
@@ -782,7 +788,12 @@ void createNamespacePage(Statement::Namespace* node, DocGenContext context, Docu
     if (functions.size() > 0) {
         body += "<br/><h1 style=\"font-size: 25px;\">Functions exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
         for (auto& func : functions) {
-            auto funcUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + func->getName() + ".html";
+            auto funcUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + func->getName();
+            nameCount[page.path.string()]++;
+            if (nameCount[page.path.string()] > 0) {
+                funcUrl += "-" + std::to_string(nameCount[page.path.string()]);
+            }
+            funcUrl += ".html";
             body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + funcUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + func->getName() + "</h1></a>";
             if (func->getComment()) {
                 auto values = func->getComment()->getValues();
@@ -794,6 +805,7 @@ void createNamespacePage(Statement::Namespace* node, DocGenContext context, Docu
             }
             body += "</div>";
         }
+        nameCount.clear();
     }
 
     body += "<br/><br/></div>";

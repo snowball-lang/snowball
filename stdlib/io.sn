@@ -13,8 +13,8 @@ public static func exit(exitCode: i32 = 0) {
 /**
  * Prints @arg msg to standard output.
  *
- * @param msg the 64-bit integer value to print
- * @return the number of characters printed
+ * @param msg The message to print. It must implement the `ToString` interface
+ * @param end The string to append to the end of the message.
  */
 @inline
 public static func print<T: ToString>(msg: T, end: String = "") i32 {
@@ -29,8 +29,7 @@ public static func print<T: ToString>(msg: T, end: String = "") i32 {
  * Prints @arg msg to standard output with a new
  * line appended to the end.
  *
- * @param msg the 64-bit integer value to print
- * @return the number of characters printed
+ * @param msg The message to print. It must implement the `ToString` interface
  */
 @inline
 public static func println<T: ToString>(msg: T) i32 { 

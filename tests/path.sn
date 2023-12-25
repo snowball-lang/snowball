@@ -90,7 +90,7 @@ func remove_dots() i32 {
   vec.push(".");
   vec.push("c");
   let p = new path(vec);
-  let p2 = p.clean_path(false);
+  let p2 = p.clean_path();
   assert!(p2.to_string() == "a/c");
   return p2.size();
 }
