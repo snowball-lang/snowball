@@ -160,9 +160,6 @@ typedef int32_t snowball_int_t;
 #else
 #define _SNOWBALL_BUILD_TYPE "Default"
 
-#define DUMP(varname)
-#define DUMP_S(varname)
-
 #define DEBUG_PARSER(...)
 #define DEBUG_SYMTABLE(...)
 #define DEBUG_CODEGEN(...)
