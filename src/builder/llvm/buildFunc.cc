@@ -171,7 +171,6 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
           [v](auto v2) { return v2 == v->getVariable()->getId(); }
         )
       );
-      closureType->dump();
       storage = builder->CreateStructGEP(closureType, closure.closure, index);
     } else {
       storage = builder->CreateAlloca(llvmType, nullptr, "var." + v->getIdentifier());
