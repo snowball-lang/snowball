@@ -33,7 +33,19 @@ SN_DOCGEN_VISIT(Statement::ForLoop) {}
 SN_DOCGEN_VISIT(Statement::Conditional) {}
 SN_DOCGEN_VISIT(Statement::LoopFlow) {}  
 
-SN_DOCGEN_VISIT(Statement::VariableDecl) {} // TODO:
+SN_DOCGEN_VISIT(Statement::VariableDecl) {
+    auto rawName = p_node->getName();
+    auto [name, path] = getFullName(rawName);
+
+    auto newPage = DocumentationPage {
+        .name = name,
+        .path = path + "-var.html",
+        .type = DocumentationPage::Type::Function,
+    };
+
+    docgen::createVariablePage(p_node, context, newPage);
+    result.pages.push_back(newPage);
+}
 
 SN_DOCGEN_VISIT(Statement::Namespace) {
     auto [name, path] = getFullName(p_node->getName());
@@ -65,6 +77,7 @@ SN_DOCGEN_VISIT(Statement::DefinedTypeDef) {
     context.currentType = name;
     context.currentTypePath = path;
     for (auto& func : p_node->getFunctions()) { func->accept(this); }
+    for (auto& var : p_node->getVariables()) { var->accept(this); }
 
     context.currentType = backup;
     context.currentTypePath = backupPath;

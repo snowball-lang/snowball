@@ -132,7 +132,7 @@ void Compiler::compile(bool silent) {
 
 using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
 
-int Compiler::emitDocs(std::string folder, std::string baseURL, std::string package_name, bool silent) {
+int Compiler::emitDocs(std::string folder, std::string baseURL, BasicPackageInfo package, bool silent) {
   auto path = cwd / folder;
   auto outputFolder = configFolder / "docs";
 
@@ -153,7 +153,7 @@ int Compiler::emitDocs(std::string folder, std::string baseURL, std::string pack
           }
         }
       }
-      fs::path relativePath = package_name;
+      fs::path relativePath = package.name;
       int i = 0;
       for (auto& part : relative) {
         if (i == 0) {
@@ -183,6 +183,7 @@ int Compiler::emitDocs(std::string folder, std::string baseURL, std::string pack
           .currentModulePath = relativePath.string(),
 
           .baseURL = baseURL,
+          .packageVersion = package.version,
         };
         auto docGen = new Syntax::DocGen(context);
         docGen->run(ast);

@@ -18,12 +18,26 @@ Syntax::Statement::VariableDecl* Parser::parseConstant() {
   next();
   bool isPublic = false;
   bool isExternal = false;
+  bool isStatic = false;
   if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-3, true))) {
     isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
   } else if (is<TokenType::KWORD_EXTERN>(peek(-3, true))) {
     isExternal = true;
     isPublic = is<TokenType::KWORD_PUBLIC>(peek(-4, true));
+  } else if (is<TokenType::KWORD_STATIC>(peek(-3, true))) {
+    isStatic = true;
+    isPublic = is<TokenType::KWORD_PUBLIC>(peek(-4, true));
   }
+
+  if (!isStatic && m_current_class != nullptr) {
+    createError<SYNTAX_ERROR>("Cannot declare a non-static constant inside a class", {
+      .info = "Not static constant",
+      .note = "This is because constants are not tied to a specific instance of a class,\n"
+              "and therefore cannot be accessed from an instance of a class",
+      .help = "Make the constant static by adding the 'static' keyword\nbefore the 'const' keyword",
+    });
+  }
+
   auto token = assert_tok<TokenType::IDENTIFIER>("an identifier");
   next(); // consume identifier
   auto name = token.to_string();
