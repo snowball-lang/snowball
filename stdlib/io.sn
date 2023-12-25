@@ -11,7 +11,7 @@ public static func exit(exitCode: i32 = 0) {
     unsafe { c_bindings::exit(exitCode); }
 }
 /**
- * Prints @arg msg to standard output.
+ * @brief Prints `msg` to standard output.
  *
  * @param msg The message to print. It must implement the `ToString` interface
  * @param end The string to append to the end of the message.
@@ -26,8 +26,8 @@ public static func print<T: ToString>(msg: T, end: String = "") i32 {
     return 0;
 }
 /**
- * Prints @arg msg to standard output with a new
- * line appended to the end.
+ * @brief Prints `msg` to standard output with a new
+ *  line appended to the end.
  *
  * @param msg The message to print. It must implement the `ToString` interface
  */

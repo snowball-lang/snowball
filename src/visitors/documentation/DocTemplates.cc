@@ -566,9 +566,9 @@ void createModulePage(std::vector<Syntax::Node*> nodes, DocGenContext context, D
         body += "<br/><h1 style=\"font-size: 25px;\">Functions exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
         for (auto& func : functions) {
             auto funcUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + func->getName();
-            nameCount[page.path.string()]++;
-            if (nameCount[page.path.string()] > 0) {
-                funcUrl += "-" + std::to_string(nameCount[page.path.string()]);
+            nameCount[funcUrl]++;
+            if (nameCount[funcUrl] > 1) {
+                funcUrl += "-" + std::to_string(nameCount[funcUrl]);
             }
             funcUrl += ".html";
             body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + funcUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + func->getName() + "</h1></a>";
@@ -789,8 +789,8 @@ void createNamespacePage(Statement::Namespace* node, DocGenContext context, Docu
         body += "<br/><h1 style=\"font-size: 25px;\">Functions exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
         for (auto& func : functions) {
             auto funcUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + func->getName();
-            nameCount[page.path.string()]++;
-            if (nameCount[page.path.string()] > 0) {
+            nameCount[funcUrl]++;
+            if (nameCount[funcUrl] > 1) {
                 funcUrl += "-" + std::to_string(nameCount[page.path.string()]);
             }
             funcUrl += ".html";
