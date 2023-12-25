@@ -160,7 +160,7 @@ int Compiler::emitDocs(std::string folder, std::string baseURL, BasicPackageInfo
 
       fs::path relativePath = package.name;
       int i = 0;
-      for (auto& part : relative) {
+      for (auto part : relative) {
         if (i == 0) {
           i++;
           continue;

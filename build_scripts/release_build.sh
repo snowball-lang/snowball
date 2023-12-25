@@ -23,17 +23,17 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         brew uninstall php
 
         brew uninstall --ignore-dependencies zstd
-        brew fetch --force --bottle-tag=arm64_big_sur zstd
-        zstdResult=$(brew --cache --bottle-tag=arm64_big_sur zstd)
+        brew fetch --force --bottle-tag=arm64_ventura zstd
+        zstdResult=$(brew --cache --bottle-tag=arm64_ventura zstd)
         brew install $zstdResult
         
-        brew fetch --force --bottle-tag=arm64_big_sur llvm@16
-        llvmResult=$(brew --cache --bottle-tag=arm64_big_sur llvm@16)
+        brew fetch --force --bottle-tag=arm64_ventura llvm@16
+        llvmResult=$(brew --cache --bottle-tag=arm64_ventura llvm@16)
         echo "Looking for arm64 version of (llvm): $llvmResult"
         brew install $llvmResult
 
-        brew fetch --force --bottle-tag=arm64_big_sur gcc
-        gccResult=$(brew --cache --bottle-tag=arm64_big_sur gcc)
+        brew fetch --force --bottle-tag=arm64_ventura gcc
+        gccResult=$(brew --cache --bottle-tag=arm64_ventura gcc)
         echo "Looking for arm64 version of (gcc): $gccResult"
         brew install $gccResult
     else
