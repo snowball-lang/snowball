@@ -8,6 +8,9 @@
 #ifndef __SNOWBALL_PARSER_H_
 #define __SNOWBALL_PARSER_H_
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcomment"
+
 namespace snowball {
 namespace parser {
 
@@ -363,6 +366,8 @@ private:
   /// @brief Attributes list
   std::unordered_map<std::string, std::unordered_map<std::string, std::string>> m_attributes;
 };
+
+#pragma clang diagnostic pop
 
 } // namespace parser
 } // namespace snowball
