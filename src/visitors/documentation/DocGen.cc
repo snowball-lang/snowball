@@ -23,7 +23,6 @@ SN_DOCGEN_VISIT(Expression::BinaryOp) {}
 SN_DOCGEN_VISIT(Expression::LambdaFunction) {}
 SN_DOCGEN_VISIT(Expression::PseudoVariable) {}
 
-SN_DOCGEN_VISIT(Statement::TypeAlias) {}
 SN_DOCGEN_VISIT(Statement::Raise) {}
 SN_DOCGEN_VISIT(Statement::WhileLoop) {}
 SN_DOCGEN_VISIT(Statement::TryCatch) {}
@@ -123,6 +122,19 @@ SN_DOCGEN_VISIT(Macro) {
     result.pages.push_back(newPage);
 }
 
+SN_DOCGEN_VISIT(Statement::TypeAlias) {
+    auto rawName = p_node->getIdentifier();
+    auto [name, path] = getFullName(rawName);
+
+    auto newPage = DocumentationPage {
+        .name = name,
+        .path = path + ".html",
+        .type = DocumentationPage::Type::Type,
+    };
+    docgen::createTypeAliasPage(p_node, context, newPage);
+    result.pages.push_back(newPage);
+}
+
 void DocGen::createModulePage(std::vector<Syntax::Node*> nodes) {
     auto newPage = DocumentationPage {
         .name = context.currentModule,
@@ -132,6 +144,16 @@ void DocGen::createModulePage(std::vector<Syntax::Node*> nodes) {
     docgen::createModulePage(nodes, context, newPage);
     result.pages.push_back(newPage);
 }
+
+DocumentationPage DocGen::createRootPage(std::vector<std::string> modules) {
+    auto newPage = DocumentationPage {
+      .name = "Root",
+      .path = context.currentModulePath + ".html",
+      .type = DocumentationPage::Type::Module,
+    };
+    docgen::createRootPage(modules, context, newPage);
+    return newPage;
+  }
 
 } // namespace Syntax
 } // namespace snowball

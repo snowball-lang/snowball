@@ -11,6 +11,125 @@ namespace docgen {
 static std::unordered_map<std::string, int> nameCount;
 #define GO_BACK_TEXT "&lt; Go Back"
 
+#define GENERATE_TOP_LEVEL_NODES(nodes) \
+    auto functions = std::vector<Statement::FunctionDef*>(); \
+    auto types = std::vector<Statement::Base*>(); \
+    auto namespaces = std::vector<Statement::Namespace*>(); \
+    auto macros = std::vector<Macro*>(); \
+    auto variables = std::vector<Statement::VariableDecl*>();\
+    for (auto& node : nodes) {\
+        if (auto func = utils::cast<Statement::FunctionDef>(node)) { \
+            if (func->isPublic())\
+                functions.push_back(func); \
+        } else if (auto type = utils::cast<Statement::DefinedTypeDef>(node)) { \
+            if (type->isPublic()) \
+                types.push_back(type); \
+        } else if (auto ns = utils::cast<Statement::Namespace>(node)) { \
+            namespaces.push_back(ns); \
+        } else if (auto macro = utils::cast<Macro>(node)) { \
+            if (macro->hasAttribute(Attributes::EXPORT)) \
+                macros.push_back(macro); \
+        } else if (auto var = utils::cast<Statement::VariableDecl>(node)) { \
+            if (var->isPublic()) \
+                variables.push_back(var); \
+        } else if (auto typeAlias = utils::cast<Statement::TypeAlias>(node)) { \
+            if (typeAlias->isPublic()) \
+                types.push_back(typeAlias); \
+        } \
+    } \
+    if (types.size() > 0) { \
+        body += "<br/><h1 style=\"font-size: 25px;\">Types exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>"; \
+        for (auto& type : types) { \
+            bool isAlias = utils::is<Statement::TypeAlias>(type); \
+            auto typeUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + (isAlias ? utils::cast<Statement::TypeAlias>(type)->getIdentifier() : utils::cast<Statement::DefinedTypeDef>(type)->getName()) + ".html"; \
+            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + typeUrl + "><h1 style=\"color:rgb(45 212 191);margin-right: 10px;font-weight: normal;\">" + (isAlias ? utils::cast<Statement::TypeAlias>(type)->getIdentifier() : utils::cast<Statement::DefinedTypeDef>(type)->getName()); \
+            if (isAlias) body += "<span class=\"tag\">alias</span>"; \
+            body += "</h1></a>"; \
+            auto comment = isAlias ? utils::cast<Statement::TypeAlias>(type)->getComment() : utils::cast<Statement::DefinedTypeDef>(type)->getComment(); \
+            if (comment) { \
+                auto values = comment->getValues(); \
+                if (values.count("brief")) { \
+                    auto brief = sanitize(values["brief"]); \
+                    utils::replaceAll(brief, "<br/>", " "); \
+                    body += "<span>" + brief + "</span>"; \
+                } \
+            } \
+            body += "</div>"; \
+        } \
+    } \
+    if (namespaces.size() > 0) { \
+        body += "<br/><h1 style=\"font-size: 25px;\">Namespaces exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>"; \
+        for (auto& ns : namespaces) { \
+            auto nsUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + ns->getName() + ".html";\
+            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + nsUrl + "><h1 style=\"color:#d2991d;margin-right: 10px;font-weight: normal;\">" + ns->getName() + "</h1></a>";\
+            if (ns->getComment()) { \
+                auto values = ns->getComment()->getValues(); \
+                if (values.count("brief")) { \
+                    auto brief = sanitize(values["brief"]); \
+                    utils::replaceAll(brief, "<br/>", " "); \
+                    body += "<span>" + brief + "</span>"; \
+                } \
+            } \
+            body += "</div>"; \
+        } \
+    } \
+    if (macros.size() > 0) { \
+        body += "<br/><h1 style=\"font-size: 25px;\">Macros exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>"; \
+        for (auto& macro : macros) { \
+            auto macroUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + macro->getName() + "-macro.html"; \
+            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + macroUrl + "><h1 style=\"color:#2bab63;margin-right: 10px;font-weight: normal;\">" + macro->getName() + "</h1></a>"; \
+            if (macro->getComment()) { \
+                auto values = macro->getComment()->getValues(); \
+                if (values.count("brief")) { \
+                    auto brief = sanitize(values["brief"]); \
+                    utils::replaceAll(brief, "<br/>", " "); \
+                    body += "<span>" + brief + "</span>"; \
+                } \
+            } \
+            body += "</div>"; \
+        } \
+    } \
+    if (variables.size() > 0) { \
+        body += "<br/><h1 style=\"font-size: 25px;\">Variables exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>"; \
+        for (auto& var : variables) { \
+            auto varUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + var->getName() + "-var.html"; \
+            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + varUrl + "><h1 style=\"color:rgb(167 139 250);margin-right: 10px;font-weight: normal;\">" + var->getName(); \
+            if (var->isContantDecl()) body += "<span class=\"tag\">const</span>"; \
+            body += "</h1></a>"; \
+            if (var->getComment()) { \
+                auto values = var->getComment()->getValues(); \
+                if (values.count("brief")) { \
+                    auto brief = sanitize(values["brief"]); \
+                    utils::replaceAll(brief, "<br/>", " "); \
+                    body += "<span>" + brief + "</span>"; \
+                } \
+            } \
+            body += "</div>"; \
+        } \
+    } \
+    if (functions.size() > 0) {\
+        body += "<br/><h1 style=\"font-size: 25px;\">Functions exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>"; \
+        for (auto& func : functions) { \
+            auto funcUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + func->getName(); \
+            nameCount[funcUrl]++; \
+            if (nameCount[funcUrl] > 1) { \
+                funcUrl += "-" + std::to_string(nameCount[funcUrl]); \
+            } \
+            funcUrl += ".html"; \
+            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + funcUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + func->getName() + "</h1></a>"; \
+            if (func->getComment()) { \
+                auto values = func->getComment()->getValues(); \
+                if (values.count("brief")) { \
+                    auto brief = sanitize(values["brief"]); \
+                    utils::replaceAll(brief, "<br/>", " "); \
+                    body += "<span>" + brief + "</span>"; \
+                } \
+            } \
+            body += "</div>"; \
+        } \
+        nameCount.clear(); \
+    } 
+
 std::string getPageTemplate(DocGenContext context, std::string title, std::string body, std::vector<std::pair<std::string, std::string>> links) {
     std::string parent;
     std::string parentPath;
@@ -356,7 +475,7 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
     if (utils::endsWith(body, ",\n"))
         body = body.substr(0, body.size() - 2);
     if (publicMembers.size() < node->getVariables().size())
-        body += "private:\n    // ... private fields\n";
+        body += "  private:\n    // ... private fields\n";
     if (utils::endsWith(body, "{\n"))
         body = body.substr(0, body.size() - 1);
     body += "};</code></pre></div><br><div class=\"doc\">";
@@ -469,121 +588,8 @@ void createModulePage(std::vector<Syntax::Node*> nodes, DocGenContext context, D
 
     body += "</h1><hr/><div class=\"doc\">";
 
-    // TODO: Convert the followign into a macro or function
-    auto functions = std::vector<Statement::FunctionDef*>();
-    auto types = std::vector<Statement::DefinedTypeDef*>();
-    auto namespaces = std::vector<Statement::Namespace*>();
-    auto macros = std::vector<Macro*>();
-    auto variables = std::vector<Statement::VariableDecl*>();
-
-    for (auto& node : nodes) {
-        if (auto func = utils::cast<Statement::FunctionDef>(node)) {
-            if (func->isPublic())
-                functions.push_back(func);
-        } else if (auto type = utils::cast<Statement::DefinedTypeDef>(node)) {
-            if (type->isPublic())
-                types.push_back(type);
-        } else if (auto ns = utils::cast<Statement::Namespace>(node)) {
-            namespaces.push_back(ns);
-        } else if (auto macro = utils::cast<Macro>(node)) {
-            if (macro->hasAttribute(Attributes::EXPORT))
-                macros.push_back(macro);
-        } else if (auto var = utils::cast<Statement::VariableDecl>(node)) {
-            if (var->isPublic())
-                variables.push_back(var);
-        }
-    }
-
-    if (types.size() > 0) {
-        body += "<br/><h1 style=\"font-size: 25px;\">Types exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
-        for (auto& type : types) {
-            auto typeUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + type->getName() + ".html";
-            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + typeUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + type->getName() + "</h1></a>";
-            if (type->getComment()) {
-                auto values = type->getComment()->getValues();
-                if (values.count("brief")) {
-                    auto brief = sanitize(values["brief"]);
-                    utils::replaceAll(brief, "<br/>", " ");
-                    body += "<span>" + brief + "</span>";
-                }
-            }
-            body += "</div>";
-        }
-    }
-
-    if (namespaces.size() > 0) {
-        body += "<br/><h1 style=\"font-size: 25px;\">Namespaces exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
-        for (auto& ns : namespaces) {
-            auto nsUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + ns->getName() + ".html";
-            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + nsUrl + "><h1 style=\"color:#d2991d;margin-right: 10px;font-weight: normal;\">" + ns->getName() + "</h1></a>";
-            if (ns->getComment()) {
-                auto values = ns->getComment()->getValues();
-                if (values.count("brief")) {
-                    auto brief = sanitize(values["brief"]);
-                    utils::replaceAll(brief, "<br/>", " ");
-                    body += "<span>" + brief + "</span>";
-                }
-            }
-            body += "</div>";
-        }
-    }
-
-    if (macros.size() > 0) {
-        body += "<br/><h1 style=\"font-size: 25px;\">Macros exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
-        for (auto& macro : macros) {
-            auto macroUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + macro->getName() + "-macro.html";
-            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + macroUrl + "><h1 style=\"color:#2bab63;margin-right: 10px;font-weight: normal;\">" + macro->getName() + "</h1></a>";
-            if (macro->getComment()) {
-                auto values = macro->getComment()->getValues();
-                if (values.count("brief")) {
-                    auto brief = sanitize(values["brief"]);
-                    utils::replaceAll(brief, "<br/>", " ");
-                    body += "<span>" + brief + "</span>";
-                }
-            }
-            body += "</div>";
-        }
-    }
-
-    if (variables.size() > 0) {
-        body += "<br/><h1 style=\"font-size: 25px;\">Variables exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
-        for (auto& var : variables) {
-            auto varUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + var->getName() + "-var.html";
-            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + varUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + var->getName() + "</h1></a>";
-            if (var->getComment()) {
-                auto values = var->getComment()->getValues();
-                if (values.count("brief")) {
-                    auto brief = sanitize(values["brief"]);
-                    utils::replaceAll(brief, "<br/>", " ");
-                    body += "<span>" + brief + "</span>";
-                }
-            }
-            body += "</div>";
-        }
-    }
-
-    if (functions.size() > 0) {
-        body += "<br/><h1 style=\"font-size: 25px;\">Functions exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
-        for (auto& func : functions) {
-            auto funcUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + func->getName();
-            nameCount[funcUrl]++;
-            if (nameCount[funcUrl] > 1) {
-                funcUrl += "-" + std::to_string(nameCount[funcUrl]);
-            }
-            funcUrl += ".html";
-            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + funcUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + func->getName() + "</h1></a>";
-            if (func->getComment()) {
-                auto values = func->getComment()->getValues();
-                if (values.count("brief")) {
-                    auto brief = sanitize(values["brief"]);
-                    utils::replaceAll(brief, "<br/>", " ");
-                    body += "<span>" + brief + "</span>";
-                }
-            }
-            body += "</div>";
-        }
-        nameCount.clear();
-    }
+    GENERATE_TOP_LEVEL_NODES(nodes)
+    body += "</div>";
 
     page.html = getPageTemplate(context, page.name, body);
 }
@@ -696,117 +702,7 @@ void createNamespacePage(Statement::Namespace* node, DocGenContext context, Docu
         }
     }
 
-    // TODO: Convert the followign into a macro or function
-    auto functions = std::vector<Statement::FunctionDef*>();
-    auto types = std::vector<Statement::DefinedTypeDef*>();
-    auto namespaces = std::vector<Statement::Namespace*>();
-    auto macros = std::vector<Macro*>();
-    auto variables = std::vector<Statement::VariableDecl*>();
-
-    for (auto& node : node->getBody()) {
-        if (auto func = utils::cast<Statement::FunctionDef>(node)) {
-            functions.push_back(func);
-        } else if (auto type = utils::cast<Statement::DefinedTypeDef>(node)) {
-            types.push_back(type);
-        } else if (auto ns = utils::cast<Statement::Namespace>(node)) {
-            namespaces.push_back(ns);
-        } else if (auto macro = utils::cast<Macro>(node)) {
-            macros.push_back(macro);
-        } else if (auto var = utils::cast<Statement::VariableDecl>(node)) {
-            variables.push_back(var);
-        }
-    }
-
-    if (types.size() > 0) {
-        body += "<br/><h1 style=\"font-size: 25px;\">Types exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
-        for (auto& type : types) {
-            auto typeUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + type->getName() + "-var.html";
-            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + typeUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + type->getName() + "</h1></a>";
-            if (type->getComment()) {
-                auto values = type->getComment()->getValues();
-                if (values.count("brief")) {
-                    auto brief = sanitize(values["brief"]);
-                    utils::replaceAll(brief, "<br/>", " ");
-                    body += "<span>" + brief + "</span>";
-                }
-            }
-            body += "</div>";
-        }
-    }
-
-    if (namespaces.size() > 0) {
-        body += "<br/><h1 style=\"font-size: 25px;\">Namespaces exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
-        for (auto& ns : namespaces) {
-            auto nsUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + ns->getName() + ".html";
-            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + nsUrl + "><h1 style=\"color:#d2991d;margin-right: 10px;font-weight: normal;\">" + ns->getName() + "</h1></a>";
-            if (ns->getComment()) {
-                auto values = ns->getComment()->getValues();
-                if (values.count("brief")) {
-                    auto brief = sanitize(values["brief"]);
-                    utils::replaceAll(brief, "<br/>", " ");
-                    body += "<span>" + brief + "</span>";
-                }
-            }
-            body += "</div>";
-        }
-    }
-
-    if (macros.size() > 0) {
-        body += "<br/><h1 style=\"font-size: 25px;\">Macros exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
-        for (auto& macro : macros) {
-            auto macroUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + macro->getName() + "-macro.html";
-            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + macroUrl + "><h1 style=\"color:#2bab63;margin-right: 10px;font-weight: normal;\">" + macro->getName() + "</h1></a>";
-            if (macro->getComment()) {
-                auto values = macro->getComment()->getValues();
-                if (values.count("brief")) {
-                    auto brief = sanitize(values["brief"]);
-                    utils::replaceAll(brief, "<br/>", " ");
-                    body += "<span>" + brief + "</span>";
-                }
-            }
-            body += "</div>";
-        }
-    }
-
-    if (variables.size() > 0) {
-        body += "<br/><h1 style=\"font-size: 25px;\">Variables exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
-        for (auto& var : variables) {
-            auto varUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + var->getName() + "-var.html";
-            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + varUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + var->getName() + "</h1></a>";
-            if (var->getComment()) {
-                auto values = var->getComment()->getValues();
-                if (values.count("brief")) {
-                    auto brief = sanitize(values["brief"]);
-                    utils::replaceAll(brief, "<br/>", " ");
-                    body += "<span>" + brief + "</span>";
-                }
-            }
-            body += "</div>";
-        }
-    }
-
-    if (functions.size() > 0) {
-        body += "<br/><h1 style=\"font-size: 25px;\">Functions exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
-        for (auto& func : functions) {
-            auto funcUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + func->getName();
-            nameCount[funcUrl]++;
-            if (nameCount[funcUrl] > 1) {
-                funcUrl += "-" + std::to_string(nameCount[page.path.string()]);
-            }
-            funcUrl += ".html";
-            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + funcUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + func->getName() + "</h1></a>";
-            if (func->getComment()) {
-                auto values = func->getComment()->getValues();
-                if (values.count("brief")) {
-                    auto brief = sanitize(values["brief"]);
-                    utils::replaceAll(brief, "<br/>", " ");
-                    body += "<span>" + brief + "</span>";
-                }
-            }
-            body += "</div>";
-        }
-        nameCount.clear();
-    }
+   GENERATE_TOP_LEVEL_NODES(node->getBody())
 
     body += "<br/><br/></div>";
 
@@ -857,6 +753,84 @@ void createVariablePage(Statement::VariableDecl* node, DocGenContext context, Do
         auto values = docString->getValues();
         if (values.count("brief")) {
             body += "<h1 style=\"color:rgb(14 116 144);\">Brief Description for <quote>" + node->getName() + "</quote></h1>";
+            body += "<p>" + sanitize(values["brief"]) + "</p>";
+        }
+        body += "<p>" + sanitize(docString->getBody()) + "</p>";
+
+        for (auto& [tag, value] : values) {
+            if (tag == "brief") continue;
+        }
+    }
+
+    body += "<br/><br/></div>";
+
+    page.html = getPageTemplate(context, page.name, body);
+}
+
+void createRootPage(std::vector<std::string> modules, DocGenContext context, DocumentationPage& page) {
+    std::string body = "";
+    body += "<h1>Modules in " + context.currentModule + "</h1><hr/><div class=\"doc\">";
+    std::map<std::string, std::vector<std::string>> moduleMap;
+    for (auto& module : modules) {
+        auto parts = utils::list2vec(utils::split(module, "/"));
+        if (parts.size() > 1) {
+            moduleMap[parts[0]].push_back(parts[1]);
+        } else {
+            moduleMap[""].push_back(parts[0]);
+        }
+    }
+
+    // create a list, if the key is not empty, we create a sub-list
+    for (auto& [key, value] : moduleMap) {
+        if (!key.empty()) {
+            body += "<br/><h1 style=\"font-size: 25px;\">Modules in " + key + "</h1><br/>";
+        }
+        for (auto& module : value) {
+            auto moduleUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + (!key.empty() ? key + "/" : "") + module + ".html";
+            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + moduleUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + module + "</h1></a>";
+            body += "</div>";
+        }
+    }
+
+    page.html = getPageTemplate(context, page.name, body);
+}
+
+void createTypeAliasPage(Statement::TypeAlias* node, DocGenContext context, DocumentationPage& page) {
+    std::string body = "";
+    body += "<h1>";
+
+    auto pathParts = page.path;
+    auto nameParts = utils::list2vec(utils::split(page.name, "::"));
+    int i = 0;
+    for (auto _:pathParts) {
+        std::string url = "";
+        int j = 0;
+        for (auto part : pathParts) {
+            if (j == i) {
+                url += part.string();
+                if (utils::endsWith(part.string(), ".html"))
+                    url = url.substr(0, url.size() - 5);
+                break;
+            } else {
+                url += part.string() + "/";
+            }
+            j++;
+        }
+        body += "<a style=\"color:rgb(14 116 144);\" href=\"" + url + ".html\">" + nameParts[i] + "</a>::";
+        i++;
+    }
+    body = body.substr(0, body.size() - 2) + ";"; // remove the last "::"
+    body += "<span class=\"tag\">type alias</span> ";
+    body += "</h1><hr/><div><pre><code class=\"language-snowball\">";
+
+    body += "type " + node->getIdentifier() + " = " + typeToHtml(node->getType());
+
+    body += "</code></pre></div><br><div class=\"doc\">";
+
+    if (auto docString = node->getComment()) {
+        auto values = docString->getValues();
+        if (values.count("brief")) {
+            body += "<h1 style=\"color:rgb(14 116 144);\">Brief Description for <quote>" + node->getIdentifier() + "</quote></h1>";
             body += "<p>" + sanitize(values["brief"]) + "</p>";
         }
         body += "<p>" + sanitize(docString->getBody()) + "</p>";

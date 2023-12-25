@@ -6,13 +6,13 @@
  * This class is used to represent a location in a source file. It is
  * used as an utility class to pass around source locations.
  * 
- * @example
+ * ```
  * func foo(x: SourceLocation = SourceLocation::current()) {
  *   // ...
  * }
  *
  * foo(); // Passes the current source location. from the call site.
- * @endcode
+ * ```
  *
  * @see SourceLocation::current()
  */
@@ -84,14 +84,14 @@ public class SourceLocation {
  * This macro is used to get the current source location. It is used as
  * an utility macro to pass around source locations.
  * 
- * @example
+ * ```
  * func foo(x: SourceLocation = current_location!()) {
  *   // ...
  * }
  *
  * foo(); // Passes the current source location. from the call site.
- * @endcode
- *
+ * ```
+ * 
  * @see SourceLocation
  */
 @export

@@ -651,7 +651,8 @@ public:
  */
 struct TypeAlias : public AcceptorExtend<TypeAlias, Base>,
                    public AcceptorExtend<TypeAlias, Privacy>,
-                   public AcceptorExtend<TypeAlias, GenericContainer<>> {
+                   public AcceptorExtend<TypeAlias, GenericContainer<>>,
+                    public AcceptorExtend<TypeAlias, CommentHolder> {
   /// @brief Name of the alias to be exported as
   std::string identifier;
   /// @brief The type being refered by the alias

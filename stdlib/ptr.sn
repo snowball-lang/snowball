@@ -8,7 +8,6 @@ import std::c_bindings;
  * @note This class is a wrapper for non-null references to types that bypass the `Sized` check.
  * This ensures that the reference is not null and provides methods to access the underlying value.
  *
- * @example
  * ```
  * importPanic::panic;
  * import std::ptr;
@@ -18,7 +17,6 @@ import std::c_bindings;
  * let non_null_value = new ptr::NonNull(&value);
  * assert!(*non_null_value.ptr() == value);
  * ```
- * @endexample
  */
 public class NonNull<T: Sized> {
     /**

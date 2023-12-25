@@ -137,22 +137,27 @@ int Compiler::emitDocs(std::string folder, std::string baseURL, BasicPackageInfo
   auto outputFolder = configFolder / "docs";
 
   fs::remove_all(outputFolder);
+  std::vector<std::string> modules;
+
+  if (utils::split(folder, "/").size() < 2) {
+    auto parts = utils::list2vec(utils::split(folder, "/"));
+    if (parts.size() < 1 && (parts[0] == "." || parts[0] == ".." || parts[0] == "")) {
+      if (parts.size() < 2 || (parts[1] == "." || parts[1] == ".." || parts[1] == "")) {
+        Syntax::E<COMPILER_ERROR>("Invalid relative path for documentation generation");
+      }
+    }
+  }
 
   for (const auto& dirEntry : recursive_directory_iterator(path)) {
     if (utils::endsWith(dirEntry.path().string(), ".sn")) {
+      modules.push_back(fs::relative(dirEntry.path(), path).string());
+      size_t lastindex = modules.back().find_last_of(".");
+      modules.back() = modules.back().substr(0, lastindex);
 
       auto relative = dirEntry.path().lexically_relative(cwd).lexically_normal();
-      size_t lastindex = relative.string().find_last_of("."); 
+      lastindex = relative.string().find_last_of("."); 
       relative = relative.string().substr(0, lastindex); 
 
-      if (utils::split(folder, "/").size() < 2) {
-        auto parts = utils::list2vec(utils::split(relative.string(), "/"));
-        if (parts.size() < 1 && (parts[0] == "." || parts[0] == ".." || parts[0] == "")) {
-          if (parts.size() < 2 || (parts[1] == "." || parts[1] == ".." || parts[1] == "")) {
-            Syntax::E<COMPILER_ERROR>("Invalid relative path for documentation generation");
-          }
-        }
-      }
       fs::path relativePath = package.name;
       int i = 0;
       for (auto& part : relative) {
@@ -200,6 +205,22 @@ int Compiler::emitDocs(std::string folder, std::string baseURL, BasicPackageInfo
       }
     }
   }
+
+  if (!silent) Logger::message("Indexing", (std::string)"module's paths into index book" + BCYN + " ("+package.name+".html)" + RESET);
+  Syntax::DocGenContext context {
+    .currentModule = package.name,
+    .currentModulePath = package.name,
+
+    .baseURL = baseURL,
+    .packageVersion = package.version,
+  };
+  auto docGen = new Syntax::DocGen(context);
+  auto page = docGen->createRootPage(modules);
+  auto htmlPath = outputFolder / page.path;
+  if (!fs::exists(htmlPath.parent_path())) fs::create_directories(htmlPath.parent_path());
+  std::ofstream file(htmlPath);
+  file << page.html;
+  file.close();
     
   return EXIT_SUCCESS;
 }

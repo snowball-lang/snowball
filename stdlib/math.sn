@@ -18,8 +18,8 @@ public func min<T: Numeric>(x: T, y: T) T
     { if x < y { return x } else { return y } } // TODO: importternary operator once implemented
 
 /**
+ * @brief The number we all know, love and hate.
  * The constant value of pi, accurate to 35 decimal places.
- * @example PI // returns 3.141592653589793238462643383279502884197
  */
 public const PI: f32 = 3.141592653589793238462643383279502884197;
 /**

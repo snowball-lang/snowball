@@ -40,9 +40,11 @@ const DEC_DIGITS_LUT: *const u8 = b"\
  * 
  * @note IntegerType is directly injected by the compiler into the `IntegerImpl`
  *   class. This is done to avoid the need to use a template for the `IntegerImpl`
- * @example i32 -> IntegerImpl<i32>
- * @example i64 -> IntegerImpl<i64>
- * @example u32 -> IntegerImpl<u32>
+ * ```
+ *  i32 -> IntegerImpl<i32>
+ *  i64 -> IntegerImpl<i64>
+ *  u32 -> IntegerImpl<u32>
+ * ```
  * 
 */
 @extends
@@ -158,8 +160,11 @@ class IntegerImpl {
      * The `hex` method converts an integer to a hexadecimal string. The string
      * is prefixed with `0x`. The string is always 17 characters long.
      * 
-     * @example 42 -> "0x2A"
-     * @example 0 -> "0x0"
+     * ```
+     * 0x0000000000000000 -> "0x0"
+     * 0x0000000000000001 -> "0x1"
+     * 0x0000000000000002 -> "0x2"
+     * ```
      * 
      * @return The hexadecimal string.
     */

@@ -156,6 +156,12 @@ public:
     }
     return {fullName, path};
   }
+  /**
+   * @brief Creates a documentation page for the root module.
+   * @param modules The modules of the program.
+   * @return The documentation page for the root module.
+  */
+  DocumentationPage createRootPage(std::vector<std::string> modules);
 
   // Default destructor
   ~DocGen() noexcept = default;

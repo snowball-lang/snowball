@@ -52,8 +52,6 @@ static const std::string pageTemplate = R"(
     <main>
         %s
     </main>
-
-    <script>hljs.highlightAll();</script>
 </body>
 </html>
 )";
@@ -119,6 +117,23 @@ void createNamespacePage(Statement::Namespace* node, DocGenContext context, Docu
  * @ingroup docgen
  */
 void createVariablePage(Statement::VariableDecl* node, DocGenContext context, DocumentationPage& page);
+/**
+ * @brief Creates a documentation page for the module index.
+ * 
+ * @param modules The modules in the program.
+ * @param context The documentation generator context.
+ * @param page The documentation page.
+ * @return DocumentationPage The documentation page.
+*/
+void createRootPage(std::vector<std::string> modules, DocGenContext context, DocumentationPage& page);
+/**
+ * @brief Creates a documentation page for a type alias.
+ * 
+ * @param node The type alias node.
+ * @param context The documentation generator context.
+ * @param page The documentation page.
+*/
+void createTypeAliasPage(Statement::TypeAlias* node, DocGenContext context, DocumentationPage& page);
 
 } // namespace docgen
 } // namespace Syntax
