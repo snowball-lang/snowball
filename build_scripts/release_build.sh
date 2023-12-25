@@ -19,6 +19,7 @@ error() {
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ "$ARCH" == "arm64" ]]; then
+        brew uninstall composer
         brew uninstall php
 
         brew uninstall --ignore-dependencies zstd
