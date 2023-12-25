@@ -17,6 +17,9 @@
 
 ## About The Project
 
+> [!WARNING]  
+> This project is still in development and is not ready for production use. If you want to help us, you can join our [discord server](https://discord.gg/nnShMQzR4b)  and help us with the development of the language. Snowball's syntax and features are subject to change at any time. Be aware of that! :c
+
 👋 Greetings! Allow me to introduce you to Snowball, a statically-typed, low-weight, object-oriented programming language complete with a garbage collector and module system.
 
 🚀 With a myriad of features to offer, Snowball boasts object-oriented programming, memory safety, built-in functions for enhanced productivity, and faster execution than other languages. Plus, its garbage collector and unit testing make it a comprehensive tool for developers.
