@@ -43,8 +43,8 @@ static const std::string pageTemplate = R"(
 </head>
 <body>
     <sidenav>
-        <h1>
-            %s 
+        <h1 style="display: flex; align-items: center;">
+            %s <span class="tag">version %s</span>
         </h1>
         <hr />
         %s
@@ -109,6 +109,16 @@ void createMacroPage(Macro* node, DocGenContext context, DocumentationPage& page
  * @ingroup docgen
  */
 void createNamespacePage(Statement::Namespace* node, DocGenContext context, DocumentationPage& page);
+/**
+ * @brief Creates a documentation page for a variable.
+ * 
+ * @param node The variable node.
+ * @param context The documentation generator context.
+ * @param page The documentation page.
+ * @return DocumentationPage The documentation page.
+ * @ingroup docgen
+ */
+void createVariablePage(Statement::VariableDecl* node, DocGenContext context, DocumentationPage& page);
 
 } // namespace docgen
 } // namespace Syntax

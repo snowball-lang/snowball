@@ -78,12 +78,17 @@ public:
   std::vector<std::string> linkedLibraries;
   fs::path configFolder;
 
+  struct BasicPackageInfo {
+    std::string name;
+    std::string version;
+  };
+
   int emitBinary(std::string, bool = true);
   int emitObject(std::string, bool = true);
   int emitLLVMIr(std::string, bool = true);
   int emitASM(std::string, bool = true);
   int emitSnowballIr(std::string, bool = true);
-  int emitDocs(std::string, std::string, std::string, bool = true);
+  int emitDocs(std::string, std::string, BasicPackageInfo, bool = true);
 
   GlobalContext* getGlobalContext() { return globalContext; }
 

@@ -46,7 +46,7 @@ int docgen(app::Options::DocsOptions p_opts) {
 
   auto start = high_resolution_clock::now();
 
-  int status = compiler->emitDocs(folder, baseURL, package_name, p_opts.silent);
+  int status = compiler->emitDocs(folder, baseURL, {.name = package_name, .version = package_version}, p_opts.silent);
   auto stop = high_resolution_clock::now();
 
   // Get duration. Substart timepoints to

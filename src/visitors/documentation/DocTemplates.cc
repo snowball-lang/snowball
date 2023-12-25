@@ -41,7 +41,7 @@ std::string getPageTemplate(DocGenContext context, std::string title, std::strin
         linksHTML += "<a href=\"" + resultLink + ".html\">" + resultName + "</a> ";
     }
     nameCount.clear();
-    return FMT(pageTemplate.c_str(), title.c_str(), context.baseURL.c_str(), parent.c_str(), linksHTML.c_str(), body.c_str());
+    return FMT(pageTemplate.c_str(), title.c_str(), context.baseURL.c_str(), context.currentModule.c_str(), context.packageVersion.c_str(), linksHTML.c_str(), body.c_str());
 }
 
 namespace {
@@ -337,7 +337,7 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
     }
 
     if (publicMembers.size() > 0) 
-        body += " {\npublic:";
+        body += " {\n  public:";
     else body += " {\n";
     for (auto& field : publicMembers) {
         if (field->getComment()) {
@@ -374,19 +374,32 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
         }
     }
 
+    if (publicMembers.size() > 0) {
+        body += "<hr/><h1 style=\"color:rgb(14 116 144);\">Public Fields</h1>";
+        for (auto& field : publicMembers) {
+            body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=\"" + page.path.string().substr(0, page.path.string().size() - 5) + "/" + field->getName() + "-var.html\"><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + field->getName();
+            if (field->isContantDecl()) body += "<span class=\"tag\">static const</span>";
+            body += "</h1></a>";
+            if (field->getComment()) {
+                auto values = field->getComment()->getValues();
+                if (values.count("brief")) {
+                    auto brief = sanitize(values["brief"]);
+                    utils::replaceAll(brief, "<br/>", " ");
+                    body += "<span>" + brief + "</span>";
+                }
+            }
+            body += "</div>";
+        }
+    }
+
     if (node->getFunctions().size() > 0) {
         std::vector<Statement::FunctionDef*> publicFunctions;
         std::vector<Statement::FunctionDef*> publicStaticFunctions;
-        std::vector<Statement::FunctionDef*> privateFunctions;
-        std::vector<Statement::FunctionDef*> privateStaticFunctions;
 
         for (auto& func : node->getFunctions()) {
             if (func->isPublic()) {
                 if (func->isStatic()) publicStaticFunctions.push_back(func);
                 else publicFunctions.push_back(func);
-            } else {
-                if (func->isStatic()) privateStaticFunctions.push_back(func);
-                else privateFunctions.push_back(func);
             }
         }
 
@@ -400,20 +413,6 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
         if (publicStaticFunctions.size() > 0) {
             body += "<hr/><h1 style=\"color:rgb(14 116 144);\">Public Static Functions</h1>";
             for (auto& func : publicStaticFunctions) {
-                createSmallPictureFn(func, context, body);
-            }
-        }
-
-        if (privateFunctions.size() > 0) {
-            body += "<hr/><h1 style=\"color:rgb(14 116 144);\">Private Functions</h1>";
-            for (auto& func : privateFunctions) {
-                createSmallPictureFn(func, context, body);
-            }
-        }
-
-        if (privateStaticFunctions.size() > 0) {
-            body += "<hr/><h1 style=\"color:rgb(14 116 144);\">Private Static Functions</h1>";
-            for (auto& func : privateStaticFunctions) {
                 createSmallPictureFn(func, context, body);
             }
         }
@@ -549,7 +548,7 @@ void createModulePage(std::vector<Syntax::Node*> nodes, DocGenContext context, D
     if (variables.size() > 0) {
         body += "<br/><h1 style=\"font-size: 25px;\">Variables exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
         for (auto& var : variables) {
-            auto varUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + var->getName() + ".html";
+            auto varUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + var->getName() + "-var.html";
             body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + varUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + var->getName() + "</h1></a>";
             if (var->getComment()) {
                 auto values = var->getComment()->getValues();
@@ -715,7 +714,7 @@ void createNamespacePage(Statement::Namespace* node, DocGenContext context, Docu
     if (types.size() > 0) {
         body += "<br/><h1 style=\"font-size: 25px;\">Types exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
         for (auto& type : types) {
-            auto typeUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + type->getName() + ".html";
+            auto typeUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + type->getName() + "-var.html";
             body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + typeUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + type->getName() + "</h1></a>";
             if (type->getComment()) {
                 auto values = type->getComment()->getValues();
@@ -766,7 +765,7 @@ void createNamespacePage(Statement::Namespace* node, DocGenContext context, Docu
     if (variables.size() > 0) {
         body += "<br/><h1 style=\"font-size: 25px;\">Variables exported from " + utils::join(nameParts.begin(), nameParts.end(), "::") + "</h1><br/>";
         for (auto& var : variables) {
-            auto varUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + var->getName() + ".html";
+            auto varUrl = page.path.string().substr(0, page.path.string().size() - 5) + "/" + var->getName() + "-var.html";
             body += "<div style=\"display: grid; grid-template-columns: 1fr 1fr 1fr;\"><a href=" + varUrl + "><h1 style=\"color:rgb(14 116 144);margin-right: 10px;font-weight: normal;\">" + var->getName() + "</h1></a>";
             if (var->getComment()) {
                 auto values = var->getComment()->getValues();
@@ -794,6 +793,64 @@ void createNamespacePage(Statement::Namespace* node, DocGenContext context, Docu
                 }
             }
             body += "</div>";
+        }
+    }
+
+    body += "<br/><br/></div>";
+
+    page.html = getPageTemplate(context, page.name, body);
+}
+
+void createVariablePage(Statement::VariableDecl* node, DocGenContext context, DocumentationPage& page) {
+    std::string body = "";
+    body += "<h1>";
+
+    auto pathParts = page.path;
+    auto nameParts = utils::list2vec(utils::split(page.name, "::"));
+    int i = 0;
+    for (auto _:pathParts) {
+        std::string url = "";
+        int j = 0;
+        for (auto part : pathParts) {
+            if (j == i) {
+                url += part.string();
+                if (utils::endsWith(part.string(), ".html"))
+                    url = url.substr(0, url.size() - 5);
+                break;
+            } else {
+                url += part.string() + "/";
+            }
+            j++;
+        }
+        body += "<a style=\"color:rgb(14 116 144);\" href=\"" + url + ".html\">" + nameParts[i] + "</a>::";
+        i++;
+    }
+    body = body.substr(0, body.size() - 2) + ";"; // remove the last "::"
+    if (!context.currentType.empty()) {
+        if (node->isContantDecl())
+            body += "<span class=\"tag\">static object constant</span> ";
+        else body += "<span class=\"tag\">object field</span> ";
+    }
+    body += "</h1><hr/><div><pre><code class=\"language-snowball\">";
+
+    auto varName = node->getName();
+    if (!context.currentType.empty()) {
+        varName = "Self::" + varName;
+    }
+    body += (std::string)(node->isContantDecl() ? "const " : "let ") + varName + ": " + typeToHtml(node->getDefinedType()) + " = ...";
+
+    body += "</code></pre></div><br><div class=\"doc\">";
+
+    if (auto docString = node->getComment()) {
+        auto values = docString->getValues();
+        if (values.count("brief")) {
+            body += "<h1 style=\"color:rgb(14 116 144);\">Brief Description for <quote>" + node->getName() + "</quote></h1>";
+            body += "<p>" + sanitize(values["brief"]) + "</p>";
+        }
+        body += "<p>" + sanitize(docString->getBody()) + "</p>";
+
+        for (auto& [tag, value] : values) {
+            if (tag == "brief") continue;
         }
     }
 

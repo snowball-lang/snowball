@@ -72,6 +72,7 @@ struct DocGenContext {
   std::string currentTypePath = "";
 
   std::string baseURL;
+  std::string packageVersion;
 };
 
 /**

@@ -162,7 +162,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
           );
         }
 
-        if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_VAR &&
+        if (pk.type != TokenType::KWORD_FUNC &&
             pk.type != TokenType::KWORD_OPERATOR && pk.type != TokenType::KWORD_UNSAFE && (!IS_CONSTRUCTOR(pk))) {
           next();
           createError<SYNTAX_ERROR>("expected keyword \"fn\", \"let\", \"operator\", \"unsafe\" or a "

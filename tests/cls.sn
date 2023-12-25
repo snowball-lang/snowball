@@ -131,4 +131,15 @@ func inheritance_virtual() i32 {
   return t.test();
 }
 
+class StaticVariableAccessTest {
+  public:
+    static const A: i32 = 0;
+    StaticVariableAccessTest() {}
+}
+
+@test(expect = 0)
+func static_variable_access() i32 {
+  return StaticVariableAccessTest::A;
+}
+
 }
