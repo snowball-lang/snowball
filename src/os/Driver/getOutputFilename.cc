@@ -7,7 +7,7 @@ std::string Driver::getOutputFilename(std::string input, app::Options::EmitType 
 #ifdef __APPLE__
   std::string output = input;
   switch (type) {
-    case app::Options::EmitType::EXECUTABLE: output; break;
+    case app::Options::EmitType::EXECUTABLE: break;
     case app::Options::EmitType::OBJECT:
       if (isStatic)
         output += ".a";
@@ -21,7 +21,7 @@ std::string Driver::getOutputFilename(std::string input, app::Options::EmitType 
 #elif __linux__
   std::string output = input;
   switch (type) {
-    case app::Options::EmitType::EXECUTABLE: output; break;
+    case app::Options::EmitType::EXECUTABLE: break;
     case app::Options::EmitType::OBJECT:
       if (isStatic)
         output += ".a";

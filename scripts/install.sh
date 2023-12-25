@@ -218,6 +218,6 @@ printf "    ${green}snowball-stdlib${normal} - standard library for snowball\n\n
 
 log info "Snowball successfully installed at: $(pwd)"
 log info "Snowball is ready to use! type: \`snowball --help\` to check that it works."
-echo "\n===================== GREAT! =====================\n"
+printf "\n\t===================== GREAT! =====================\n\n"
 log info "Checkoutt the documentation at: https://snowball-lang.gitbook.io/docs/fundamentals/hello-world"
 log info "Happy coding! 🐱"
