@@ -26,19 +26,15 @@ import pkg::path;
 import pkg::files;
 import pkg::map;
 import pkg::iters;
+import pkg::env;
 
 ////import std::io::{{ println }};
 
 import std::io;
+import std::env as os_env;
 
 //import std::io::{ println };
 
 public func main() i32 {
-    let mut x: String;
-    x = "awd";
-    let a = (func() i32 {
-        //io::println(x);
-        io::println(x);
-    })();
-    io::println(x);
+    io::println(os_env::argv());
 }

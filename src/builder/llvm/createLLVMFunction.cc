@@ -33,6 +33,9 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
   if (auto x = module->getFunction(func->getMangle()); x != nullptr) { return x; }
 
   auto fnType = llvm::cast<llvm::FunctionType>(getLLVMFunctionType(innerFnType, func));
+  if (func->getMangle() == "main") {
+    fnType = llvm::FunctionType::get(builder->getInt32Ty(), {builder->getInt32Ty(), builder->getInt8PtrTy()->getPointerTo()}, false);
+  }
   auto name = func->getMangle();
   auto fn = llvm::Function::Create(
           fnType,

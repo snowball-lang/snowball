@@ -16,18 +16,15 @@ using namespace std::chrono;
 
 #define LIBRARY_ENTRY "src/lib.sn"
 #define LIBRARY_MAIN                                                                                                   \
-  "\n@use_macro(assert);\n"                                                                                                 \
-  "import std::assert;\n\n"                                                                        \
-  "public func my_export() String {\n"                                                                                      \
-  "    return \"Hello, World\";\n"                                                                         \
-  "}\n\n" /* TODO: add #[cfg(test)] */                                                                                 \
-  "\nnamespace tests {\n"                                                                                              \
+  "\npublic func my_export() String {\n"                                                                                      \
+  "   return \"Hello, World\";\n"                                                                         \
+  "}\n\n"                                                                 \
+  "\n@cfg(tests)\nnamespace tests {\n"                                                                                              \
   "\n" \
-  "    @test\n"                                                                                                        \
-  "    func test_my_lib() i32 {\n"                                                                                  \
-  "        assert!(my_export() == \"Hello, World\")\n"                                                                 \
-  "        return 1;\n"                                                                                              \
-  "    }\n"                                                                                                            \
+  "@test\n"                                                                                                        \
+  "func test_my_lib() i32 {\n"                                                                                  \
+  "   return my_export() == \"Hello, World\";\n"                                                                                              \
+  "}\n"                                                                                                            \
   "}"
 
 #define EXECUTABLE_ENTRY "src/main.sn"

@@ -8,6 +8,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <optional>
 
 #ifndef __SNOWBALL_AST_COMMON_NODES_H_
 #define __SNOWBALL_AST_COMMON_NODES_H_
@@ -25,6 +26,7 @@ enum Attributes
   // Default attributes
   INVALID,
   CFG,
+  ATTR,
 
   // FUNCTION ATTRIBUTES
   TEST,
@@ -136,6 +138,17 @@ public:
     auto it = arguments.find(attribute);
     if (it == arguments.end()) return {};
     return it->second;
+  }
+  /**
+   * Get attr value
+   */
+  std::optional<std::string> getAttrValue(std::string attrName) {
+    if (hasAttribute(Attributes::ATTR)) {
+      auto args = getAttributeArgs(Attributes::ATTR);
+      auto it = args.find(attrName);
+      if (it != args.end()) return it->second;
+    }
+    return std::nullopt;
   }
 
 private:

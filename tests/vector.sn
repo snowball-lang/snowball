@@ -134,7 +134,7 @@ func join() i32 {
     v.push("a");
     v.push("b");
     v.push("c");
-    return v.join(", ") == "a, b, c";
+    return ", ".join(v) == "a, b, c";
 }
 
 }

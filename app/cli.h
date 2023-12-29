@@ -43,6 +43,7 @@ struct Options {
 
   struct RunOptions : BuildOptions {
     bool jit = false;
+    std::vector<std::string> progArgs;
   } run_opts;
 
   struct TestOptions {

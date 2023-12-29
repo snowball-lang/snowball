@@ -107,7 +107,8 @@
         "__verbose_abort": "cpp",
         "runtime.h": "c",
         "forward_list": "cpp",
-        "*.sn": "cpp"
+        "*.sn": "cpp",
+        "complex": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "todo-tree.tree.scanMode": "workspace",

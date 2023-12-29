@@ -51,7 +51,11 @@ int run(app::Options::RunOptions p_opts) {
 
   compiler->cleanup();
 
-  char* args[] = {strdup(output.c_str()), NULL};
+  char* args[] = {strdup(output.c_str())};
+  for (auto& arg : p_opts.progArgs) {
+    args[sizeof(args) / sizeof(args[0])] = strdup(arg.c_str());
+  }
+  args[sizeof(args) / sizeof(args[0])] = NULL;
   int result = execvp(args[0], args);
 
   // This shoudnt be executed

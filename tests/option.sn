@@ -5,7 +5,7 @@ namespace tests {
 
 @test(expect = 1)
 func empty_from_func() i32 {
-    let x = opt::None<?i32>();
+    let x = opt::none<?i32>();
     return x.empty();
 }
 
@@ -17,7 +17,7 @@ func empty_from_class() i32 {
 
 @test
 func with_value_from_func() i32 {
-    let x = opt::Some(42);
+    let x = opt::some(42);
     return !x.empty();
 }
 
@@ -29,7 +29,7 @@ func with_value_from_class() i32 {
 
 @test(expect = 42)
 func test_value_from_func() i32 {
-    let x = opt::Some(42);
+    let x = opt::some(42);
     let a = x.val();
     return x.val();
 }

@@ -68,6 +68,8 @@ std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> Par
     auto attrType = parseFn(attr);
     if (attr == "cfg") {
       attrType = Attributes::CFG;
+    } else if (attr == "attr") {
+      attrType = Attributes::ATTR;
     }
     if (attrType == Attributes::INVALID) {
       createError<SYNTAX_ERROR>(FMT("Invalid attribute '%s'", attr.c_str()));

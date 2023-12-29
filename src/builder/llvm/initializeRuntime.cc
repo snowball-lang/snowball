@@ -10,6 +10,10 @@
 namespace snowball {
 namespace codegen {
 
+#define CALL_INITIALIZERS \
+  builder->CreateCall(f, {flagsInt}); \
+  builder->CreateCall(envArgv, {argc, argv});
+
 void LLVMBuilder::initializeRuntime() {
   auto ty = llvm::FunctionType::get(builder->getVoidTy(), {builder->getInt32Ty()}, false);
   auto f = llvm::cast<llvm::Function>(
@@ -18,19 +22,21 @@ void LLVMBuilder::initializeRuntime() {
   f->addFnAttr(llvm::Attribute::AlwaysInline);
   f->addFnAttr(llvm::Attribute::NoUnwind);
   const int flags = (dbg.debug ? SNOWBALL_FLAG_DEBUG : 0) | 0; 
+
+  auto envArgv = module->getFunction("sn.env.set_argv");
+
   auto mainFunction = module->getFunction(_SNOWBALL_FUNCTION_ENTRY);
   bool buildReturn = false;
   llvm::BasicBlock* body;
+  auto fnType = llvm::FunctionType::get(builder->getInt32Ty(), {builder->getInt32Ty(), builder->getInt8PtrTy()->getPointerTo()}, false);
   if (mainFunction) {
     if (ctx->testMode) {
       mainFunction->eraseFromParent();
-      auto fnType = llvm::FunctionType::get(builder->getInt32Ty(), {});
       mainFunction = (llvm::Function*) module->getOrInsertFunction(_SNOWBALL_FUNCTION_ENTRY, fnType).getCallee();
       setPersonalityFunction(mainFunction);
       body = llvm::BasicBlock::Create(builder->getContext(), "test_entry", mainFunction);
     } else if (ctx->benchmarkMode) {
       mainFunction->eraseFromParent();
-      auto fnType = llvm::FunctionType::get(builder->getInt32Ty(), {});
       mainFunction = (llvm::Function*) module->getOrInsertFunction(_SNOWBALL_FUNCTION_ENTRY, fnType).getCallee();
       setPersonalityFunction(mainFunction);
       body = llvm::BasicBlock::Create(builder->getContext(), "benchmark_entry", mainFunction);
@@ -38,7 +44,6 @@ void LLVMBuilder::initializeRuntime() {
       body = &mainFunction->front();
     }
   } else {
-    auto fnType = llvm::FunctionType::get(builder->getInt32Ty(), {});
     mainFunction = (llvm::Function*) module->getOrInsertFunction(_SNOWBALL_FUNCTION_ENTRY, fnType).getCallee();
     setPersonalityFunction(mainFunction);
     body = llvm::BasicBlock::Create(builder->getContext(), "entry", mainFunction);
@@ -47,17 +52,25 @@ void LLVMBuilder::initializeRuntime() {
 
   builder->SetInsertPoint(body);
   auto flagsInt = builder->getInt32(flags);
+
+  auto argc = mainFunction->arg_begin();
+  argc->setName("argc");
+  auto argv = std::next(mainFunction->arg_begin());
+  argv->setName("argv");
+
   if (buildReturn) {
-    builder->CreateCall(f, {flagsInt});
+    CALL_INITIALIZERS
     builder->CreateRet(builder->getInt32(0));
   } else if (ctx->testMode) {
-    builder->CreateCall(f, {flagsInt});
+    CALL_INITIALIZERS
     createTests(mainFunction);
   } else if (ctx->benchmarkMode) {
-    builder->CreateCall(f, {flagsInt});
+    CALL_INITIALIZERS
     createBenchmark(mainFunction);
   } else {
     llvm::CallInst::Create(f, {flagsInt}, "", &body->front());
+    auto debugLoc = llvm::DebugLoc(llvm::DILocation::get(*context, 0, 0, mainFunction->getSubprogram()));
+    llvm::CallInst::Create(envArgv, {argc, argv}, "", &body->front())->setDebugLoc(debugLoc);
   }
 }
 

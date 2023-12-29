@@ -11,6 +11,10 @@ void Transformer::transformMainFunction(Statement::FunctionDef* p_node) {
   assert(p_node->getName() == "main");
   assert(p_node->getPrivacy() == Statement::Privacy::PUBLIC);
 
+  if (std::find(ctx->exported.begin(), ctx->exported.end(), "main") != ctx->exported.end()) {
+    E<SYNTAX_ERROR>(p_node, "Multiple main functions have been defined!");
+  }
+
   // Checking for errors
   if (p_node->getArgs().size() > 0) {
     E<SYNTAX_ERROR>(p_node, "Program entry point can't have parameters!");
@@ -38,6 +42,7 @@ void Transformer::transformMainFunction(Statement::FunctionDef* p_node) {
   // have any arguments.
   auto fn = transformFunction({p_node, ctx->saveState()}, {}, true);
   fn->setExternalName("main");
+  ctx->exported.push_back("main");
 }
 
 } // namespace Syntax

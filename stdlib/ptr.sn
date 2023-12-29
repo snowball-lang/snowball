@@ -124,7 +124,7 @@ public func to_pointer<T: Sized>(value: &T) *const T {
 }
 
 @inline
-public func copy_nonoverlapping<T: Sized>(src: *mut T, dst: *mut T, count: i32) {
+public func copy_nonoverlapping<T: Sized>(src: *const T, dst: *mut T, count: i32) {
   unsafe { c_bindings::memmove(dst, src, count); }
 }
 

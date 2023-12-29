@@ -103,6 +103,8 @@ void run(Options& opts, argsVector& args) {
 
   register_build_opts(runOpts, "run", args);
   runOpts.jit = jit;
+  std::vector<std::string> argsVec;
+  runOpts.progArgs = argsVec;
 }
 
 void build(Options& opts, argsVector& args) {

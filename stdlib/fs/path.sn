@@ -3,8 +3,12 @@ import std::c_bindings;
 
 // TODO: support all platforms
 
-@cfg(target_os="windows")  public const PATH_SEPARATOR: String = "\\";
-@cfg(target_os="!windows") public const PATH_SEPARATOR: String = "/";
+@cfg(target_os="windows")  
+@export
+macro PATH_SEPARATOR() = "\\";
+@cfg(target_os="!windows")
+@export
+macro PATH_SEPARATOR() = "/";
 
 /**
  * @brief Error thrown when a file or directory does not exist.
@@ -28,7 +32,7 @@ public class Path implements ToString, Iterable<String> {
     /**
      * Create a new path from a string.
      */
-    Path(path: String) : path(path.split(PATH_SEPARATOR)) { self.reset(); }
+    Path(path: String) : path(path.split(#PATH_SEPARATOR)) { self.reset(); }
     /**
      * @brief Join two paths together.
      * @param other The path to join to this one.
@@ -112,7 +116,7 @@ public class Path implements ToString, Iterable<String> {
      * @brief Returns the string representation of the path.
     */
     @inline
-    func to_string() String { return self.path.join(PATH_SEPARATOR); }
+    func to_string() String { return (#PATH_SEPARATOR).join(self.path); }
     /**
      * @brief Returns the size of the path.
      * @return The size of the path.
@@ -163,7 +167,7 @@ public class Path implements ToString, Iterable<String> {
         }
         i = i - 1;
       }
-      let path = copy.join(PATH_SEPARATOR);
+      let path = (#PATH_SEPARATOR).join(copy);
       unsafe {
         let err = c_bindings::files::remove(path.to_string().bytes());
         if err != 0 {
@@ -193,7 +197,7 @@ public class Path implements ToString, Iterable<String> {
         }
         i = i - 1;
       }
-      let path = copy.join(PATH_SEPARATOR);
+      let path = (#PATH_SEPARATOR).join(copy);
       unsafe {
         let err = c_bindings::files::access(path.to_string().bytes(), 0);
         return err == 0;

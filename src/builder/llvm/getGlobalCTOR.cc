@@ -17,6 +17,7 @@ llvm::Function* LLVMBuilder::getGlobalCTOR(bool createIfNone) {
   if ((!fn) && createIfNone) {
     auto prototype = llvm::FunctionType::get(builder->getVoidTy(), {});
     fn = h.create<llvm::Function>(prototype, llvm::Function::InternalLinkage, mangle, *module);
+    fn->setSection(".text.startup");
     auto file = dbg.getFile(iModule->getSourceInfo()->getPath());
     auto subroutineType = dbg.builder->createSubroutineType(llvm::MDTuple::get(*context, {}));
     auto subprogram = dbg.builder->createFunction(
@@ -43,7 +44,7 @@ llvm::Function* LLVMBuilder::getGlobalCTOR(bool createIfNone) {
   }
 
   auto body = h.create<llvm::BasicBlock>(builder->getContext(), "body", fn);
-  llvm::appendToGlobalCtors(*module, fn, 0);
+  llvm::appendToGlobalCtors(*module, fn, 65535);
   return fn;
 }
 

@@ -74,6 +74,12 @@ public interface Debug {
  * as an exception.
  */
 public interface Throwable { }
+/** 
+ * @brief Exception thrown when a null pointer is encountered.
+ * 
+ * The `NullPointerError` class represents an exception thrown when a null pointer is encountered.
+ */
+class NullPointerError extends Exception { }
 /**
  * @class Exception
  * @brief A class representing an exception.
@@ -473,8 +479,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
      * @see Vector<_StoreType>::at()
      */
     @inline
-    operator func [](index: isize) &mut T 
-      { return self.at(index); }
+    operator func [](index: isize) &mut T { return self.at(index); }
     /**
      * @brief It inserts an element at the specified index.
      * @param[in] index The index to insert the element at.
@@ -519,27 +524,6 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
       }
       // We append the closing bracket.
       return result + "]";
-    }
-    /**
-     * @brief It joins the vector into a string.
-     * @param[in] sep The separator to use for joining the vector.
-     * @return A string containing the joined elements.
-     */
-    func join<>(sep: String) String {
-      // We join the vector into a string.
-      let mut result = "";
-      // We iterate over the vector and append each element to the result.
-      for let mut i = 0; i < self.length; i = i+1 {
-        // We append the element to the result.
-        result = result + String::from(*self[i]);
-        // If we are not at the end of the vector, we append the separator.
-        if i != self.length - 1 {
-          // We append the separator.
-          result = result + sep;
-        }
-      }
-      // We return the result.
-      return result;
     }
     /**
      * @brief It returns if the vector is empty.
@@ -802,6 +786,26 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       }
     }
     /**
+     * @brief It joins the string view with a vector of strings.
+     * @param[in] vec The vector of strings to join with.
+     * @return The joined string view.
+     */
+    @inline
+    func join(vec: Vector<Self>) Self {
+      // We join the string view with a vector of strings.
+      // We iterate over the vector and concatenate each string with the string view.
+      // We make sure we don't overflow.
+      let mut result = "";
+      // C-style for loop since it's faster than iterator loops.
+      for let mut i = 0; i < vec.size(); i = i+1 {
+        result = result + vec[i];
+        if i != vec.size() - 1 {
+          result = result + self;
+        }
+      }
+      return result;
+    }
+    /**
      * @brief Right adjusts the string view to the specified length. with the specified character.
      * @param[in] length The length to adjust the string view to.
      * @param[in] fill The character to use for adjusting the string view.
@@ -885,10 +889,10 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
     @inline
     func empty() bool { return self.length == 0; }
   private:
-    /** A pointer to the buffer containing the string view. */
-    let buffer: StringType = zero_initialized!(:StringType);
     /** The size of the string view. */
-    let mut length: i32 = 0;
+    let mut length: usize = 0;
+    /** A pointer to the buffer containing the string view. */
+    let mut buffer: StringType = zero_initialized!(:StringType);
 
   // Static exports
   public:
@@ -948,7 +952,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @return The appended string view.
      */
     static func concat(str1: StringType, str2: StringType,  
-      len1: i32, len2: i32) StringType {
+      len1: usize, len2: usize) StringType {
       // safety: we make sure the buffer is not null.
       unsafe {
         let sum = len1 + len2;
@@ -970,9 +974,18 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @param[in] buffer A pointer to the buffer containing the string view.
      * @param[in] length The size of the string view.
      */
-    StringView(buffer: StringType, length: usize) : buffer(buffer), length(length) {}
+    StringView(buffer: StringType, length: usize) : length(length), buffer(ptr::null_ptr<?Char>()) {
+      if buffer.is_null() {
+        throw new Self::NullPointerError("Cannot construct a string view from a null pointer.");
+      }
+      // safety: we make sure the buffer is not null.
+      unsafe {
+        self.buffer = c_bindings::malloc(length) as StringType;
+        // We set the buffer of the string view.
+        c_bindings::memcpy(self.buffer, buffer, length);
+      }
+    }
 }
-
 /**
  * @brief A generic class representing a function, encapsulating a callable entity with 
  *  an optional context.
