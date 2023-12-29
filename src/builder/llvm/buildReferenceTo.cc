@@ -14,7 +14,7 @@ void LLVMBuilder::visit(ir::ReferenceTo* ref) {
   auto llvmReferencedValue = build(val.get());
 
   auto tempVal = (llvm::Value*) nullptr;
-  if (llvm::isa<llvm::Constant>(llvmReferencedValue)) {
+  if (llvm::isa<llvm::Constant>(llvmReferencedValue) && !llvm::isa<llvm::GlobalVariable>(llvmReferencedValue)) {
     auto var = new llvm::GlobalVariable(
       *module,
       getLLVMType(val->getType()),
