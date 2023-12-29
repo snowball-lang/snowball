@@ -36,5 +36,5 @@ import std::env as os_env;
 //import std::io::{ println };
 
 public func main() i32 {
-    io::println(os_env::vars());
+    io::println(os_env::getvar("PATH").val());
 }
