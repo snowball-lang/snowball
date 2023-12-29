@@ -8,7 +8,8 @@
 @inline
 public func is_space(c: u8) bool {
   return c == ' ' || c == '\t' 
-     || c == '\n' || c == '\r';
+     || c == '\n' || c == '\r'
+     || c == '\x0b' || c == '\x0c';
 }
 /**
  * @brief Returns true if the given character is an

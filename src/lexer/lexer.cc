@@ -312,6 +312,19 @@ void Lexer::tokenize() {
                 EAT_CHAR(1);
                 EAT_LINE();
                 break;
+              case 'x': {
+                EAT_CHAR(2);
+                std::string hex;
+                while (IS_HEX_CHAR(GET_CHAR(0))) {
+                  hex += GET_CHAR(0);
+                  EAT_CHAR(1);
+                }
+                if (hex.size() == 0) {
+                  lexer_error(Error::SYNTAX_ERROR, "invalid hex character", 2);
+                }
+                str += (char) std::stoi(hex, nullptr, 16);
+                break;
+              }
               default: lexer_error(Error::SYNTAX_ERROR, "invalid escape character", 2);
             }
           } else if (GET_CHAR(0) == 0) {
@@ -401,6 +414,19 @@ void Lexer::tokenize() {
                 str += '\e';
                 EAT_CHAR(2);
                 break;
+              case 'x': {
+                EAT_CHAR(2);
+                std::string hex;
+                while (IS_HEX_CHAR(GET_CHAR(0))) {
+                  hex += GET_CHAR(0);
+                  EAT_CHAR(1);
+                }
+                if (hex.size() == 0) {
+                  lexer_error(Error::SYNTAX_ERROR, "invalid hex character", 2);
+                }
+                str += (char) std::stoi(hex, nullptr, 16);
+                break;
+              }
               case '\n':
                 EAT_CHAR(1);
                 EAT_LINE();
