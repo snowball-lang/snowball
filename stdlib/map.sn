@@ -38,6 +38,10 @@ public class Map<K, V> implements ToString, Iterable<tuples::Pair<K, V>> {
   let mut table: Vector<tuples::Pair<K, V>>;
 public:
   /**
+   * @brief A type representing the iterator for the Map.
+   */
+  type IterType = tuples::Pair<K, V>;
+  /**
    * Constructs a new empty Map.
    * Initializes the internal Vector to store key-value pairs.
    */
@@ -163,5 +167,28 @@ public:
   func to_string<>() String {
     // Template method in case the types are not printable
     return self.table.to_string();
+  }
+  /**
+   * Implements the `next` method of the `Iterable` trait for iterating over key-value pairs.
+   * @return {Iter<Map<K, V>::IterType>} An iterator for the key-value pairs.
+   * 
+   * ```
+   * const myMap = new Map<string, number>();
+   * myMap.set("foo", 42);
+   * myMap.set("bar", 24);
+   * for [key, value] in myMap {
+   *   // ...
+   * }
+   * ```
+   */
+  virtual mut func next() Iter<Map<K, V>::IterType> {
+    return self.table.next();
+  }
+  /**
+   * @brief Resets the iterator to the beginning of the key-value pairs. 
+   * @note This allows the iterator to be used multiple times.
+   */
+  virtual mut func reset() {
+    self.table.reset();
   }
 }

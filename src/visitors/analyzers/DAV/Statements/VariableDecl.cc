@@ -11,7 +11,9 @@ SN_DEFINITE_ASSIGMENT_VISIT(Statement::VariableDecl) {
   auto x = p_node->getName();
 
   if (p_node->isInitialized()) { p_node->getValue()->accept(this); }
-  this->scopes.front().emplace(std::make_pair(x, p_node->isInitialized() ? Initialized : NotInitialized));
+  auto initialized = p_node->isInitialized() ? Initialized : NotInitialized;
+  if (p_node->isExternDecl()) { initialized = Initialized; }
+  this->scopes.front().emplace(std::make_pair(x, initialized));
 }
 
 } // namespace Syntax
