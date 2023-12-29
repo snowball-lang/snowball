@@ -27,6 +27,7 @@ import pkg::files;
 import pkg::map;
 import pkg::iters;
 import pkg::env;
+import pkg::strings;
 
 ////import std::io::{{ println }};
 

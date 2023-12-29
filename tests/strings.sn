@@ -1,0 +1,91 @@
+
+import std::strings;
+@use_macros
+import std::asserts;
+import std::chars;
+
+namespace tests {
+@test
+func ascii_letters() i32 {
+  for let i = 0; i < 26; i = i + 1 {
+    let c = strings::ascii_letters[i];
+    assert!(chars::is_alpha(c));
+  }
+  return true;
+}
+
+@test
+func ascii_lowercase() i32 {
+  for let i = 0; i < 26; i = i + 1 {
+    let c = strings::ascii_lowercase[i];
+    assert!(chars::is_alpha(c));
+    assert!(chars::is_lower(c));
+  }
+  return true;
+}
+
+@test
+func ascii_uppercase() i32 {
+  for let i = 0; i < 26; i = i + 1 {
+    let c = strings::ascii_uppercase[i];
+    assert!(chars::is_alpha(c));
+    assert!(chars::is_upper(c));
+  }
+  return true;
+}
+
+@test
+func digits() i32 {
+  for let i = 0; i < 10; i = i + 1 {
+    let c = strings::digits[i];
+    assert!(chars::is_digit(c));
+  }
+  return true;
+}
+
+@test
+func hexdigits() i32 {
+  for let i = 0; i < 16; i = i + 1 {
+    let c = strings::hexdigits[i];
+    assert!(chars::is_hex(c));
+  }
+  return true;
+}
+
+@test
+func octdigits() i32 {
+  for let i = 0; i < 8; i = i + 1 {
+    let c = strings::octdigits[i];
+    assert!(chars::is_oct(c));
+  }
+  return true;
+}
+
+@test
+func punctuation() i32 {
+  for let i = 0; i < strings::punctuation.size(); i = i + 1 {
+    let c = strings::punctuation[i];
+    assert!(chars::is_punc(c));
+  }
+  return true;
+}
+
+@test
+func printable() i32 {
+  for let i = 0; i < strings::printable.size(); i = i + 1 {
+    let c = strings::printable[i];
+    assert!(chars::is_print(c));
+  }
+  return true;
+}
+
+@test
+func whitespace() i32 {
+  for let i = 0; i < strings::whitespace.size(); i = i + 1 {
+    let c = strings::whitespace[i];
+    assert!(chars::is_space(c));
+  }
+  return true;
+}
+
+} // namespace tests
