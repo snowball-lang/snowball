@@ -169,7 +169,7 @@ public class Path implements ToString, Iterable<String> {
       }
       let path = (#PATH_SEPARATOR).join(copy);
       unsafe {
-        let err = c_bindings::files::remove(path.to_string().bytes());
+        let err = c_bindings::files::remove(path.to_string().c_str());
         if err != 0 {
           throw new PathError(env::posix_get_error_msg(c_bindings::errno()));
         }
@@ -199,7 +199,7 @@ public class Path implements ToString, Iterable<String> {
       }
       let path = (#PATH_SEPARATOR).join(copy);
       unsafe {
-        let err = c_bindings::files::access(path.to_string().bytes(), 0);
+        let err = c_bindings::files::access(path.to_string().c_str(), 0);
         return err == 0;
       }
     }

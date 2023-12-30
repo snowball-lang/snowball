@@ -72,7 +72,7 @@ public class Allocator<T: Sized> {
     @inline
     static func alloc(size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(c_bindings::malloc(sizeof!(:T) * size) as *const T);
+        return new NonNull<T>(c_bindings::malloc(sizeof!(:T) + size) as *const T);
       }
     }
     /**

@@ -123,95 +123,88 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
   auto call = getBuilder().createCall(p_node->getDBGInfo(), fn, {});
   if (auto t = getFunctionType(fn->getType())) {
     auto isContructor = utils::dyn_cast<ir::Func>(fn) && utils::dyn_cast<ir::Func>(fn)->isConstructor();
-    if (t->getArgs().size() <= argTypes.size() || /**sorry**/
-      ((t->getArgs().size()-1 <= argTypes.size()) && isContructor)) {
-      for (int i = 0; i < t->getArgs().size()-isContructor; i++) {
-        auto arg = argTypes.at(i);
-        auto deduced = t->getArgs().at(i+isContructor);
-        if (arg->is(deduced)) { /* ok */
-        } else if (auto x = tryCast(argValues.at(i), deduced)) {
-          argValues.at(i) = x;
-          argTypes.at(i) = deduced;
-        } else {
-            E<TYPE_ERROR>(p_node,
-              FMT("Cant assign value with type '%s' "
-                "to a parameter with type '%s'!",
-                arg->getPrettyName().c_str(),
-                deduced->getPrettyName().c_str()),
-              ErrorInfo{.info = "Argument at index " + std::to_string(i+1) + " caused an error in the function call",
-                .note = utils::dyn_cast<ir::Func>(fn) == nullptr
-                ? FMT("Errored trying to cal function with type `%s`",
-                  t->getPrettyName().c_str())
-                : FMT("Errored trying to call function %s`%s`%s!\n\nWith type %s%s`%s`%s",
-                  BOLD,
-                  utils::dyn_cast<ir::Func>(fn)->getNiceName().c_str(),
-                  RESET,
-                  BOLD,
-                  UNDERLINE,
-                  t->getPrettyName().c_str(),
-                  RESET),
-                .tail = EI<>(argValues.at(i), "",
-                  {.info = "this is the value that's causing the error",
-                  .help = "Maybe try to convert a cast to the correct type?"})});
-        }
+    for (int i = isContructor; i < argTypes.size()+isContructor; i++) {
+      if (i >= t->getArgs().size()) break; // Ignore variadic arguments
+      auto arg = argTypes.at(i-isContructor);
+      auto deduced = t->getArgs().at(i);
+      if (arg->is(deduced)) { /* ok */
+      } else if (auto x = tryCast(argValues.at(i-isContructor), deduced)) {
+        argValues.at(i-isContructor) = x;
+        argTypes.at(i-isContructor) = deduced;
+      } else {
+        E<TYPE_ERROR>(p_node,
+          FMT("Cant assign value with type '%s' "
+            "to a parameter with type '%s'!",
+            arg->getPrettyName().c_str(),
+            deduced->getPrettyName().c_str()),
+          ErrorInfo{.info = "Argument at index " + std::to_string(i+1) + " caused an error in the function call",
+            .note = utils::dyn_cast<ir::Func>(fn) == nullptr
+            ? FMT("Errored trying to cal function with type `%s`",
+              t->getPrettyName().c_str())
+            : FMT("Errored trying to call function %s`%s`%s!\n\nWith type %s%s`%s`%s",
+              BOLD,
+              utils::dyn_cast<ir::Func>(fn)->getNiceName().c_str(),
+              RESET,
+              BOLD,
+              UNDERLINE,
+              t->getPrettyName().c_str(),
+              RESET),
+            .tail = EI<>(argValues.at(i), "",
+              {.info = "this is the value that's causing the error",
+              .help = "Maybe try to convert a cast to the correct type?"})});
       }
     }
-
     getBuilder().setType(call, t->getRetType());
   } else {
     assert(false && "TODO: other function values?!?!?");
   }
   if (auto func = utils::dyn_cast<ir::Func>(fn)) {
     // Check for default arguments
-    auto args = func->getArgs();
+    auto args = utils::list2vec(func->getArgs());
     if (((int)argTypes.size() - func->hasParent()) < (int)(args.size() - func->hasParent())) {
-      int default_arg_count = 0;
-      for (auto arg : args) {
-        if (arg.second->hasDefaultValue()) { ++default_arg_count; }
-      }
-      if (((args.size() - default_arg_count) - func->hasParent()) <= (argTypes.size() - func->hasParent())) {
-        ctx->withState(ctx->cache->getFunctionState(func->getId()),
-        [&argTypes = argTypes, this, call, args, &argValues = argValues, p_node]() {
-        // add default arguments
-          for (auto arg = std::next(args.begin(), argTypes.size()); arg != args.end(); ++arg) {
-            if (arg->second->hasDefaultValue()) {
-              auto defaultVal = arg->second->getDefaultValue();
-              auto backSrcInfo = defaultVal->getDBGInfo();
-              defaultVal->setDBGInfo(p_node->getDBGInfo());
-              auto val = trans(defaultVal);
-              defaultVal->setDBGInfo(backSrcInfo);
-              auto ty = val->getType();
-              argTypes.push_back(arg->second->getType());
-              if (!arg->second->getType()->is(ty)) {
-                if (auto cast = tryCast(val, arg->second->getType())) {
-                  argValues.push_back(cast);
-                  continue;
-                }
-
-                E<TYPE_ERROR>(arg->second,
-                  FMT("Function's default value does not match argument ('%s') type!",
-                    arg->first.c_str()),
-                  {.info = "This is the default value that's causing the error",
-                  .help = "Maybe try to convert a cast to the correct type?"});
-                assert(false && "TODO: cast default argument");
+      ctx->withState(ctx->cache->getFunctionState(func->getId()),
+      [&argTypes = argTypes, this, call, args, &argValues = argValues, p_node, func]() {
+      // add default arguments
+        auto shouldAdd = func->isConstructor();
+        for (int i = argTypes.size() == 0 ? 0 : (argTypes.size()+shouldAdd); i < args.size(); i++) {
+          auto arg = &args.at(i);
+          if (arg->second->hasDefaultValue()) {
+            auto defaultVal = arg->second->getDefaultValue();
+            auto backSrcInfo = defaultVal->getDBGInfo();
+            defaultVal->setDBGInfo(p_node->getDBGInfo());
+            auto val = trans(defaultVal);
+            defaultVal->setDBGInfo(backSrcInfo);
+            auto ty = val->getType();
+            argTypes.push_back(arg->second->getType());
+            if (!arg->second->getType()->is(ty)) {
+              if (auto cast = tryCast(val, arg->second->getType())) {
+                argValues.push_back(cast);
+                continue;
               }
-              argValues.push_back(val);
-              continue;
-            } 
-            if (arg->first == "self") {
-              // We skip the "self" argument
-              // inside a method (or constructor)
-              // since it's a weird situation
-              // where you pass an argument
-              // implicitly.
-              continue;
+
+              E<TYPE_ERROR>(arg->second,
+                FMT("Function's default value does not match argument ('%s') type!",
+                  arg->first.c_str()),
+                {.info = "This is the default value that's causing the error",
+                .help = "Maybe try to convert a cast to the correct type?"});
+              assert(false && "TODO: cast default argument");
             }
-            E<TYPE_ERROR>(p_node,
-              FMT("Could not get value for argument '%s'!",
-                arg->first.c_str()));
+            argValues.push_back(val);
+            continue;
+          } 
+          if (arg->first == "self") {
+            // We skip the "self" argument
+            // inside a method (or constructor)
+            // since it's a weird situation
+            // where you pass an argument
+            // implicitly.
+            continue;
           }
-        });
-      } 
+          E<TYPE_ERROR>(p_node,
+            FMT("Could not get value for argument '%s'!",
+              arg->first.c_str()));
+        }
+      });
     }
     // clang-format on
   }

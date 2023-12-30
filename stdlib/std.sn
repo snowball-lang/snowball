@@ -95,7 +95,7 @@ public class Exception implements ToString, Throwable {
      * @brief Exception constructor.
      * @param[in] m The message of the exception.
      */ 
-    Exception(m: String) : msg(m.bytes()), length(m.size())
+    Exception(m: String) : msg(m.c_str()), length(m.size())
       { /* Nothing to do here 👋 */ }
     /**
      * @brief Returns the message of the exception.
@@ -644,6 +644,20 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
     @inline
     func bytes() StringType { return self.buffer; }
     /**
+     * @brief Returns a c-style string representation of the string view.
+     * @return A c-style string representation of the string view.
+     */
+    @inline
+    func c_str() StringType {
+      let mut result = ptr::Allocator<?Char>::alloc(self.length + 1);
+      // safety: we make sure the buffer is not null.
+      unsafe {
+        ptr::copy_nonoverlapping(self.buffer, result.ptr(), self.length);
+        ptr::write(ptr::add(result.ptr(), self.length), 0 as Char);
+      }
+      return result.ptr();
+    }
+    /**
      * @brief Compares the string view with another string view.
      * @param[in] other The string view to compare with.
      * @return `true` if the string views are equal, `false` otherwise.
@@ -683,7 +697,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       // We concatenate the string views.
       // StringView::concat() will handle the memory allocation and deallocation, 
       // thus we don't have to worry about it.
-      let result = Self::concat(self.bytes(), other.bytes(), self.length, other.length); 
+      let result = Self::concat(self.c_str(), other.c_str(), self.length, other.length); 
       // We return the concatenated string view.
       return new Self(result, self.length + other.length);
     }
@@ -698,7 +712,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       // StringView::concat() will handle the memory allocation and deallocation,
       // thus we don't have to worry about it.
       // We pass the character as a pointer to a string of length 1. 
-      let result = Self::concat(self.bytes(), (&other) as *const Char, self.length, 1);
+      let result = Self::concat(self.c_str(), (&other) as *const Char, self.length, 1);
       // We return the concatenated string view. 
       return new Self(result, self.length + 1);
     }
@@ -752,7 +766,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       //  on the C side.
       unsafe {
         // We return the character at the specified index.
-        return *(self.bytes() + index);
+        return *(self.c_str() + index);
       }
     }
     /**
@@ -772,7 +786,6 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
         // We make sure we don't overflow. We use recursion to handle the negative range.
         return self.substr((range.begin())..(self.length + range.stop()));
       } else if (range.stop() > self.length) || (range.begin() > self.length) {
-        // If the range is invalid, we throw an IndexError.
         // TODO: add a better error message
         throw new IndexError("Index out of bounds.");
       }
@@ -781,7 +794,6 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       //  therefor, we should be safe. We also know the range is valid, so we don't have to worry about
       //  overflowing.
       unsafe {
-        // We return the substring of the string view.
         return new Self(self.bytes() + range.begin(), range.size());
       }
     }
@@ -820,16 +832,11 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
         // note: we clone the string view to make sure we don't modify the original string view.
         return self.clone();
       }
-      // Create a new string containing the fill character. 
       // TODO: create string with pre-allocated capacity to avoid reallocation.
       let mut result = "";
-      // We iterate over the string view and append the fill character to the result.
-      // We make sure we don't overflow.
       for let mut i = 0; i < (length - self.length); i = i+1 {
-        // We append the fill character to the result.
         result += fill;
       }
-      // We append the string view to the result. 
       return result + self;
     }
     /**
@@ -855,17 +862,11 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @return A vector of substrings.
      */
     func split(sep: Self) Vector<Self> {
-      // We split the string view into a vector of substrings.
       let mut result = new Vector<Self>();
       let mut start = 0;
-      // We iterate over the string view and split it into substrings.
-      // We make sure we don't overflow.
       for let mut i = 0; i < self.length; i = i+1 {
-        // If the current character is the separator, we split the string view.
         if self[i] == sep[0] {
-          // We append the substring to the result vector.
           result.push(self.substr(start..i));
-          // We update the start index.
           start = i + 1;
         }
       }
@@ -873,7 +874,6 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
         // We append the last substring to the result vector.
         result.push(self.substr(start..self.length));
       } 
-      // We return the result vector.
       return result;
     }
     /**
@@ -881,7 +881,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @return A clone of the string view.
      */
     @inline
-    func clone() Self { return new Self(self.bytes(), self.length); }
+    func clone() Self { return new Self(self.c_str(), self.length); }
     /**
      * @brief It returns if the string view is empty.
      * @return `true` if the string view is empty, `false` otherwise.
@@ -903,7 +903,6 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      */
     @inline
     static func from(buffer: Self) StringView<Char> { return buffer; }
-
     /**
      * @brief Constructs a string view from an object that implements the `ToString` interface.
      * @param[in] buffer The object to construct the string view from.
@@ -911,7 +910,6 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      */
     @inline
     static func from<T: ToString>(buffer: T) StringView<Char> { return buffer.to_string(); }
-
     /**
      * @brief Constructs a string view from a buffer and its size.
      * @param[in] buffer A pointer to the buffer containing the string view.
@@ -921,10 +919,8 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      */
     @inline
     static func from(buffer: *const u8, size: usize) StringView<Char> {
-      // We return a string view from the buffer and its size.
       return new Self(buffer, size);
     }
-
     /**
      * @brief Constructs a string view from a C null-terminated string.
      * @param[in] buffer A pointer to the buffer containing the string view.
@@ -933,11 +929,8 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
     @inline
     static unsafe func from_cstr(buffer: *const u8) StringView<Char> {
       if buffer.is_null() {
-        // If the buffer is null, we return an empty string view.
         return "";
       }
-
-      // We return a string view from the buffer and its size.
       return new Self(buffer, c_bindings::c_string::strlen(buffer));
     }
 
@@ -956,14 +949,9 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       // safety: we make sure the buffer is not null.
       unsafe {
         let sum = len1 + len2;
-        // We allocate a buffer to store the concatenated string view.
         let buffer = c_bindings::malloc(sum) as StringType;
-        // We copy the first string view to the buffer.
         c_bindings::memcpy(buffer, str1, len1);
-        // We copy the second string view to the buffer.
-        // We start from the end of the first string view.
         c_bindings::memcpy(buffer + len1, str2, len2);
-        // We return the concatenated string view.
         return buffer;
       }
     }
@@ -981,8 +969,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       // safety: we make sure the buffer is not null.
       unsafe {
         self.buffer = c_bindings::malloc(length) as StringType;
-        // We set the buffer of the string view.
-        c_bindings::memcpy(self.buffer, buffer, length);
+        ptr::copy_nonoverlapping(buffer, self.buffer, length);
       }
     }
 }
@@ -1030,14 +1017,10 @@ static unsafe func execute_tests(
   // Get the index as a string, filling the left with zeros, so it's easier to read.
   // This is useful when we have a lot of tests, so we can easily see the index of the test.
   // note: This depends on the total number of tests, so we make sure we don't overflow.
-  let indexStr = index.to_string().rjust(total.to_string().size(), '0').bytes();
-  // Print the test name.
+  let indexStr = index.to_string().rjust(total.to_string().size(), '0').c_str();
   // safety: we use printf here, so we make sure the name is null-terminated.
   c_bindings::printf(b" Testing \e[1m%-44s\e[0m [(%s\e[0;30m/%i\e[0m) %s]\t... ", name, indexStr, total, expectStr);
-  // Execute the test if it's not skipped. If it's skipped, we just print "wip".
   if !skip {
-    // Execute the test and get the result. If the result is equal to the expected result,
-    // we print "nice!". Otherwise, we print "error".
     try {
       // note: The compiler makes sure the function is not null and that it follows the correct signature.
       //  so we don't have to worry about that.
@@ -1066,7 +1049,7 @@ static unsafe func execute_tests(
       // We also print the exception message. 
       c_bindings::printf(b"\e[1;31merror \n");
       c_bindings::printf(b"\n ------- %s failure -------\n", name);
-      c_bindings::printf(b"\n  Failed with: \e[1m%s\e[0m\n", e.what().bytes());
+      c_bindings::printf(b"\n  Failed with: \e[1m%s\e[0m\n", e.what().c_str());
       c_bindings::printf(b"\e[0m\n");
       return false;
     }
@@ -1129,7 +1112,7 @@ func snowball_bench(
       divider = 1000;
     }
     unsafe {
-      c_bindings::printf(b" \e[1m%s\e[0m: %s%i%s\e[0m\n", name, color.bytes(), result / divider, unit.bytes());
+      c_bindings::printf(b" \e[1m%s\e[0m: %s%i%s\e[0m\n", name, color.c_str(), result / divider, unit.c_str());
     }
   }
 
@@ -1144,20 +1127,20 @@ func snowball_bench(
       divider = 1000;
       min = min / divider;
     }
-    c_bindings::printf(b" \e[1;32mmin\e[0m: \e[1m%d%s\e[0m\n", min, unit.bytes());
+    c_bindings::printf(b" \e[1;32mmin\e[0m: \e[1m%d%s\e[0m\n", min, unit.c_str());
     if max >= 1000 {
       unit = "s";
       divider = 1000;
       max = max / divider;
     } else unit = "ms";
-    c_bindings::printf(b" \e[1;31mmax\e[0m: \e[1m%d%s\e[0m\n", max, unit.bytes());
+    c_bindings::printf(b" \e[1;31mmax\e[0m: \e[1m%d%s\e[0m\n", max, unit.c_str());
     if avg >= 1000.0 {
       unit = "s";
       divider = 1000;
       avg = avg;
     } else unit = "ms";
   // TODO:
-  //  c_bindings::printf(b" \e[1mavg\e[0m: \e[1m%d%s\e[0m\n", avg, unit.bytes());
+  //  c_bindings::printf(b" \e[1mavg\e[0m: \e[1m%d%s\e[0m\n", avg, unit.c_str());
   }
 }
 
