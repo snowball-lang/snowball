@@ -1,0 +1,5 @@
+
+[package]
+name = "lifegame"
+main = "src/main.sn"
+version = "0.0.1"
