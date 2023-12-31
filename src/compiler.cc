@@ -7,6 +7,7 @@
 #include "ir/module/Module.h"
 #include "lexer/lexer.h"
 #include "parser/Parser.h"
+#include "pm/Manager.h"
 #include "utils/utils.h"
 #include "visitors/Analyzer.h"
 #include "visitors/Transformer.h"
@@ -43,6 +44,7 @@ void Compiler::initialize() {
   if (!fs::exists(configFolder)) fs::create_directory(configFolder);
   if (!fs::exists(configFolder / "bin")) fs::create_directory(configFolder / "bin");
   if (!fs::exists(configFolder / "docs")) fs::create_directory(configFolder / "docs");
+  if (!fs::exists(configFolder / "deps")) fs::create_directory(configFolder / "deps");
 }
 
 void Compiler::compile(bool silent) {
@@ -53,6 +55,8 @@ void Compiler::compile(bool silent) {
 #else
 #define SHOW_STATUS(_)
 #endif
+
+  runPackageManager(silent);
 
   chdir(((fs::path) path).parent_path().c_str());
   SHOW_STATUS(Logger::compiling(Logger::progress(0)));
@@ -131,6 +135,12 @@ void Compiler::compile(bool silent) {
 }
 
 using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
+
+void Compiler::runPackageManager(bool silent) {
+  auto package = getConfiguration();
+  auto manager = new pm::Manager(package, silent, cwd, configFolder);
+  manager->runAsMain();
+}
 
 int Compiler::emitDocs(std::string folder, std::string baseURL, BasicPackageInfo package, bool silent) {
   auto path = cwd / folder;

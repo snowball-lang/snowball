@@ -1,0 +1,12 @@
+
+import pkg::lib;
+
+@cfg(tests)
+namespace tests {
+
+@test
+func should_pass() i32 {
+    return lib::my_export();
+}
+
+}

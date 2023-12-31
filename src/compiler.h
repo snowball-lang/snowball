@@ -100,6 +100,7 @@ public:
 private:
   // methods
   void createSourceInfo();
+  void runPackageManager(bool silent);
 };
 } // namespace snowball
 

@@ -1,0 +1,6 @@
+
+import std::io;
+
+public func my_export() bool {
+    return true;
+}

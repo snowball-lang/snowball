@@ -29,6 +29,7 @@ enum Error
   PSEUDO_ERROR,
   DEREFERENCE_ERROR,
   FUNCTION_RET_ERR,
+  PM_ERROR,
   COMPILER_ERROR, // note: not the same as "compile time error"
 
   LLVM_INTERNAL,

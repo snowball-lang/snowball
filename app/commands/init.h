@@ -15,27 +15,11 @@ using namespace std::chrono;
 #define STRINGIFY(...) #__VA_ARGS__
 
 #define LIBRARY_ENTRY "src/lib.sn"
-#define LIBRARY_MAIN                                                                                                   \
-  "\npublic func my_export() String {\n"                                                                                      \
-  "   return \"Hello, World\";\n"                                                                         \
-  "}\n\n"                                                                 \
-  "\n@cfg(tests)\nnamespace tests {\n"                                                                                              \
-  "\n" \
-  "@test\n"                                                                                                        \
-  "func test_my_lib() i32 {\n"                                                                                  \
-  "   return my_export() == \"Hello, World\";\n"                                                                                              \
-  "}\n"                                                                                                            \
-  "}"
-
 #define EXECUTABLE_ENTRY "src/main.sn"
-#define EXECUTABLE_MAIN                                                                                                \
-  "import std::io;\n"                                                                                                \
-                                                                                                                       \
-  "\npublic func main() i32 {\n"                                                                                            \
-  "   io::println(\"Hello, World\")\n"                                                                             \
-  "}"
 
 #define CONFIGURATION_FILE "sn.toml"
+
+#include "files/assets.h"
 
 namespace snowball {
 namespace app {
@@ -102,8 +86,17 @@ int init(app::Options::InitOptions p_opts) {
     if (!p_opts.skip_cfg) init_create_cfg(p_opts.yes, LIBRARY_ENTRY, p_opts);
 
     std::ofstream outfile(LIBRARY_ENTRY);
-    outfile << LIBRARY_MAIN << std::endl;
+    auto libFile = std::string((const char*)LIBRARY_MAIN, LIBRARY_MAIN_len);
+    outfile << libFile << std::endl;
     outfile.close();
+
+    if (!fs::exists("tests")) fs::create_directory("tests");
+    if (!fs::exists("tests/main.sn")) {
+      std::ofstream outfile("tests/main.sn");
+      auto testFile = std::string((const char*)LIBRARY_TEST, LIBRARY_TEST_len);
+      outfile << testFile << std::endl;
+      outfile.close();
+    }
   } else {
     Logger::message("Initalizing", FMT("Current project [executable]", CONFIGURATION_FILE));
 
@@ -111,9 +104,15 @@ int init(app::Options::InitOptions p_opts) {
     if (!p_opts.skip_cfg) init_create_cfg(p_opts.yes, EXECUTABLE_ENTRY, p_opts);
 
     std::ofstream outfile(EXECUTABLE_ENTRY);
-    outfile << EXECUTABLE_MAIN << std::endl;
+    auto mainFile = std::string((const char*)EXECUTABLE_MAIN, EXECUTABLE_MAIN_len);
+    outfile << mainFile << std::endl;
     outfile.close();
   }
+
+  auto gitignore = std::string((const char*)_GITIGNORE, _GITIGNORE_len);
+  std::ofstream outfile(".gitignore");
+  outfile << gitignore << std::endl;
+  outfile.close();
 
   auto stop = high_resolution_clock::now();
 

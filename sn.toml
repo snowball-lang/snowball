@@ -10,3 +10,6 @@ base = "/snowball/"
 
 [benchmark]
 entry = "./tests/main.sn"
+
+[dependencies]
+"mauro-balades/rgb-sn" = { version = "1.0.0" }

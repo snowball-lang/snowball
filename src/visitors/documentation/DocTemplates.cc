@@ -750,8 +750,9 @@ void createVariablePage(Statement::VariableDecl* node, DocGenContext context, Do
     if (!context.currentType.empty()) {
         varName = "Self::" + varName;
     }
-    body += (std::string)(node->isContantDecl() ? "const " : "let ") + varName + ": " + typeToHtml(node->getDefinedType()) + " = ...";
-
+    body += (std::string)(node->isContantDecl() ? "const " : "let ") + varName;
+    if (node->getDefinedType()) body += ": " + typeToHtml(node->getDefinedType());
+    body += " = ...";
     body += "</code></pre></div><br><div class=\"doc\">";
 
     if (auto docString = node->getComment()) {

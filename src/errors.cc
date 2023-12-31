@@ -173,6 +173,7 @@ const char* get_error(Error code) {
   RET_ERROR_IF_CODE(Error::PSEUDO_ERROR, "Pseudo-code Error")
   RET_ERROR_IF_CODE(Error::IMPORT_ERROR, "Import Error")
   RET_ERROR_IF_CODE(Error::DEREFERENCE_ERROR, "Dereference Error")
+  RET_ERROR_IF_CODE(Error::PM_ERROR, "Package Manager")
 
   return "Error";
 }

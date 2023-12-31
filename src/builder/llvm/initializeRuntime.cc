@@ -12,7 +12,8 @@ namespace codegen {
 
 #define CALL_INITIALIZERS \
   builder->CreateCall(f, {flagsInt}); \
-  builder->CreateCall(envArgv, {argc, argv});
+  if (envArgv) \
+    builder->CreateCall(envArgv, {argc, argv});
 
 void LLVMBuilder::initializeRuntime() {
   auto ty = llvm::FunctionType::get(builder->getVoidTy(), {builder->getInt32Ty()}, false);
@@ -69,8 +70,10 @@ void LLVMBuilder::initializeRuntime() {
     createBenchmark(mainFunction);
   } else {
     llvm::CallInst::Create(f, {flagsInt}, "", &body->front());
-    auto debugLoc = llvm::DebugLoc(llvm::DILocation::get(*context, 0, 0, mainFunction->getSubprogram()));
-    llvm::CallInst::Create(envArgv, {argc, argv}, "", &body->front())->setDebugLoc(debugLoc);
+    if (envArgv) {
+      auto debugLoc = llvm::DebugLoc(llvm::DILocation::get(*context, 0, 0, mainFunction->getSubprogram()));
+      llvm::CallInst::Create(envArgv, {argc, argv}, "", &body->front())->setDebugLoc(debugLoc);
+    }
   }
 }
 
