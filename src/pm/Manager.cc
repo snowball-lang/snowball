@@ -22,7 +22,8 @@ std::string Manager::getGit() {
 }
 
 int Manager::runAsMain() {
-  (void)chdir(((fs::path)cwd/"deps").c_str());
+  if (!package["dependencies"]) return EXIT_SUCCESS;
+  (void)chdir(((fs::path)configFolder/"deps").c_str());
 
   // example: "owner/repo" = { version = "1.0.0" }
   auto packages = package["dependencies"].as_table();
@@ -53,12 +54,14 @@ int Manager::runAsMain() {
     }
   });
 
+  (void)chdir(cwd.c_str());
+
   return EXIT_SUCCESS;
 }
 
 bool Manager::isInstalled(Package p_package) {
   // check on folder structure
-  auto packageFolder = (fs::path)configFolder / p_package.owner / p_package.repo;
+  auto packageFolder = (fs::path)configFolder / "deps" / p_package.owner / p_package.repo;
   return fs::is_directory(packageFolder);
 }
 
@@ -70,7 +73,7 @@ int Manager::install(Package p_package) {
     Logger::message("Downloading", FMT("Package %s/%s%s%s from git repository", p_package.owner.c_str(), BOLD, p_package.repo.c_str(), RESET));
   }
 
-  auto packageFolder = (fs::path)configFolder / p_package.owner / p_package.repo;
+  auto packageFolder = (fs::path)configFolder / "deps" / p_package.owner / p_package.repo;
 
   if (!fs::is_directory(p_package.owner)) {
     fs::create_directory(p_package.owner);

@@ -177,15 +177,14 @@ class IntegerImpl {
       // note: We should check if this works with numbers larger than usize
       //       and if it works on 32 bit systems.
       let mut x = self as usize;
-      // Max number of digits for the buffer. We add 2 to the size to account
-      // for the `0x` prefix.
-      let size = 17;
+      // Max number of digits for the buffer.
+      let size = 15;
       // Allocate the buffer on the stack.
       // TODO: assert size > 0
       let mut buffer = ptr::Allocator<?u8>::alloc(size).ptr();
       // The length of the of the number in hexadecimal is the size of the buffer
       // minus 2. We subtract 2 to account for the `0x` prefix.
-      let len = size - 2;
+      let len = size;
       // safety: we know that buffer > 0 so we can safely write to it
       //     and we know that len >= 0 so we can safely write to it
       // Unsafe block to be able to write to the buffer with pointer arithmetic.
@@ -226,15 +225,10 @@ class IntegerImpl {
           // We break the loop if the number is 0.
           if x == 0 { break; }
         }
-        // Add the `0x` prefix to the buffer.
-        // safety: we know that buffer > 0 so we can safely write to it
-        //     and we know that i >= 0 so we can safely write to it
-        *(buffer + i) = '0';
-        *(buffer + (i+1)) = 'x';
         // Return the string from the buffer.
         // We return the string from the current index of the buffer to the end
         // of the buffer.
-        return String::from(buffer+i, (len-i)+1);
+        return String::from(buffer+i+2, len-i-1);
       }
     }
 }

@@ -72,14 +72,16 @@ func hex() i32 {
 
 @test()
 func hex_str() i32 {
-    assert!((0x10).hex() == "0x10")
-    assert!((0x1).hex() == "0x1")
-    assert!((0x0).hex() == "0x0")
-    assert!((0x100).hex() == "0x100")
-    assert!((0x1000).hex() == "0x1000")
-    assert!((0x10000).hex() == "0x10000")
-    assert!((-1 as u64).hex() == "0xFFFFFFFFFFFFFFF")
-    assert!((-1 as i8).hex() == "0xFF")
+    io::println((0x10).hex())
+    assert!((0x10).hex() == "10")
+    assert!((0x1).hex() == "1")
+    assert!((0x0).hex() == "0")
+    assert!((0x100).hex() == "100")
+    assert!((0x1000).hex() == "1000")
+    assert!((0x10000).hex() == "10000")
+    io::println((-1 as u64).hex())
+    assert!((-1 as u64).hex() == "FFFFFFFFFFFFFFF")
+    assert!((-1 as i8).hex() == "FF")
     return true;
 }
 
