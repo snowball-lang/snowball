@@ -78,9 +78,6 @@ int init(app::Options::InitOptions p_opts) {
     return 0;
   } else if (p_opts.lib) {
     Logger::message("Initalizing", FMT("Current project [library]", CONFIGURATION_FILE));
-
-    Logger::warning("Library example is not yet supported by "
-                    "current snowball!");
     if (!fs::exists("src")) fs::create_directory("src");
 
     if (!p_opts.skip_cfg) init_create_cfg(p_opts.yes, LIBRARY_ENTRY, p_opts);
