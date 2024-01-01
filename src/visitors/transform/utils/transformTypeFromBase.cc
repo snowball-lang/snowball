@@ -14,6 +14,8 @@ types::Type* Transformer::transformTypeFromBase(
     generics = c->getGenerics();
   } else if (auto c = utils::cast<Statement::TypeAlias>(base.type)) {
     generics = c->getGenerics();
+  } else if (auto c = utils::cast<Statement::EnumTypeDef>(base.type)) {
+    generics = c->getGenerics();
   } else {
     assert(false);
   }
@@ -39,7 +41,9 @@ types::Type* Transformer::transformTypeFromBase(
     return transformTypeAlias(uuid, base, typeRef);
   } else if (auto x = utils::cast<Statement::DefinedTypeDef>(base.type)) {
     return transformClass(uuid, base, typeRef);
-  }
+  } else if (auto x = utils::cast<Statement::EnumTypeDef>(base.type)) {
+    return transformEnum(uuid, base, typeRef);
+  } 
 
   assert(false);
 }

@@ -53,6 +53,9 @@ std::shared_ptr<ir::Value> Transformer::getFunction(
       if (val) {
         auto v = *val;
         auto fnType = getFunctionType(v->getType());
+        if (utils::is<ir::EnumInit>(v.get())) {
+          return v;
+        }
         if (fnType == nullptr) {
           E<TYPE_ERROR>(
                   dbgInfo,

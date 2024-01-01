@@ -36,11 +36,10 @@ public:
    * @note The number of items does not affect whether this type
    * is eqaul to another type.
    */
-  struct EnumField : public Syntax::Statement::Privacy, public DBGObject {
+  struct EnumField : public DBGObject {
     explicit EnumField(
       const std::string& name,
-      std::vector<types::Type*> types,
-      Privacy privacy = PRIVATE);
+      std::vector<types::Type*> types);
 
     const std::string name;
     std::vector<types::Type*> types;
@@ -57,8 +56,6 @@ public:
     const std::string& name,
     const std::string uuid,
     std::shared_ptr<ir::Module> module,
-    std::vector<EnumField*> fields = {},
-    std::vector<Type*> generics = {},
     Privacy::Status privacy = PRIVATE
   );
   EnumType(const EnumType&) = default;

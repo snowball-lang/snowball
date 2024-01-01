@@ -36,6 +36,11 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid) {
   } else if (auto a = cast<types::TypeAlias>(t)) {
     assert(!"Unreachable type case found!");
     return getLLVMType(a->getBaseType());
+  } else if (auto e = cast<types::EnumType>(t)) {
+    auto size = e->sizeOf();
+    auto type = llvm::StructType::create(*context, _SN_ENUM_PREFIX + e->getMangledName());
+    type->setBody({builder->getInt8Ty(), llvm::ArrayType::get(builder->getInt8Ty(), (size/8)-1)});
+    return type;
   } else if (auto c = cast<types::BaseType>(t)) {
     llvm::StructType* s;
     if (auto it = types.find(c->getId()); it != types.end()) {

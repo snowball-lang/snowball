@@ -68,6 +68,26 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     return dbg.builder->createPointerType(subroutineType, ty->sizeOf() * 8);
   } else if (auto c = cast<types::TypeAlias>(ty)) {
     return getDIType(c->getBaseType());
+  } else if (auto e = cast<types::EnumType>(ty)) {
+    auto dbgInfo = e->getDBGInfo();
+    auto file = dbg.getFile(dbgInfo->getSourceInfo()->getPath());
+    int enumIndex = 0;
+    auto debugType = dbg.builder->createEnumerationType(
+            file,
+            e->getPrettyName(),
+            file,
+            dbgInfo->line,
+            ty->sizeOf(),
+            ty->alignmentOf(),
+            dbg.builder->getOrCreateArray(vector_iterate<types::EnumType::EnumField*, llvm::Metadata*>(
+                    e->getFields(),
+                    [&](types::EnumType::EnumField* t) {
+                      return dbg.builder->createEnumerator(t->name, enumIndex++);
+                    }
+            )),
+            nullptr
+    );
+    return debugType;
   } else if (auto c = cast<types::BaseType>(ty)) {
     auto asDefinedType = utils::cast<types::DefinedType>(c);
     auto asInterfaceType = utils::cast<types::InterfaceType>(c);

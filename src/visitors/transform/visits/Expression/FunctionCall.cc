@@ -155,8 +155,10 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
       }
     }
     getBuilder().setType(call, t->getRetType());
-  } else {
+  } else if (!utils::is<ir::EnumInit>(fn.get())) {
     assert(false && "TODO: other function values?!?!?");
+  } else {
+    getBuilder().setType(call, fn->getType());
   }
   if (auto func = utils::dyn_cast<ir::Func>(fn)) {
     // Check for default arguments

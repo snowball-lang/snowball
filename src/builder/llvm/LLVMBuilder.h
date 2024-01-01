@@ -8,13 +8,13 @@
 #include "../../ast/types/PointerType.h"
 #include "../../ast/types/ReferenceType.h"
 #include "../../ast/types/TypeAlias.h"
+#include "../../ast/errors/error.h"
 #include "../../ir/id.h"
 #include "../../ir/module/MainModule.h"
 #include "../../ir/values/Func.h"
 #include "../../ir/values/ReferenceTo.h"
 #include "../../ir/values/Value.h"
 
-#include <cstdint>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/DIBuilder.h>
 #include <llvm/IR/DebugInfoMetadata.h>
@@ -23,6 +23,8 @@
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/Target/TargetMachine.h>
+
+#include <cstdint>
 #include <map>
 #include <memory>
 
@@ -334,6 +336,11 @@ private:
    * value for a virtual table for @param ty
    */
   llvm::GlobalVariable* createVirtualTable(types::BaseType* ty, llvm::StructType* vtableType);
+  /**
+   * @brief It creates a new enum type and a new constant struct
+   * value for a virtual table for @param call
+   */
+  llvm::Value* createEnumInit(ir::Call* call);
   /**
    * @brief Get llvm corresponding function type from an
    * already generate snowball type.

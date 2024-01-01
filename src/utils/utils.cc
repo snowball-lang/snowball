@@ -15,6 +15,11 @@
 
 #include <filesystem>
 #include <iostream>
+
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
+
 namespace fs = std::filesystem;
 
 namespace snowball {
@@ -25,6 +30,17 @@ std::string get_exe_folder() {
   // Windows specific
   wchar_t szPath[MAX_PATH];
   GetModuleFileNameW(NULL, szPath, MAX_PATH);
+#elif __APPLE__
+  const size_t bufSize = PATH_MAX + 1;
+  char dirNameBuffer[bufSize];
+  uint32_t size = bufSize;
+
+  if (_NSGetExecutablePath(dirNameBuffer, &size) != 0) {
+    // Buffer size is too small.
+    abort();
+  }
+
+  std::string szPath(dirNameBuffer);
 #else
   // Linux specific
   char szPath[PATH_MAX];

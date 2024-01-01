@@ -8,11 +8,11 @@
 
 namespace snowball::parser {
 
-Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
-  assert(is<TokenType::KWORD_STRUCT>());
-
+Syntax::Statement::EnumTypeDef* Parser::parseEnum() {
+  assert(is<TokenType::KWORD_ENUM>());
+  
   auto comment = parseDocstring(m_current.getComment());
-  next(); // East "struct"
+  next(); // East "enum"
 
   bool isPublic = false;
   if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-3, true))) {
@@ -23,12 +23,14 @@ Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
     return Attributes::INVALID;
   });
 
-  auto name = assert_tok<TokenType::IDENTIFIER>("structure identifier").to_string();
+  auto name = assert_tok<TokenType::IDENTIFIER>("enum identifier").to_string();
   auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
   Syntax::Statement::GenericContainer<>::GenericList generics;
 
+  bool hasGenerics = false;
   if (is<TokenType::OP_LT>(peek())) {
     next();
+    hasGenerics = true;
     generics = parseGenericParams();
     prev();
   }
@@ -36,26 +38,38 @@ Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
   next();
   assert_tok<TokenType::BRACKET_LCURLY>("'{'");
   next();
-  auto cls = Syntax::N<Syntax::Statement::DefinedTypeDef>(
-          name, nullptr, Syntax::Statement::Privacy::fromInt(isPublic), Syntax::Statement::DefinedTypeDef::Type::STRUCT
+  auto cls = Syntax::N<Syntax::Statement::EnumTypeDef>(
+          name, Syntax::Statement::Privacy::fromInt(isPublic)
   );
-  cls->setGenerics(generics);
+  if (hasGenerics)
+    cls->setGenerics(generics);
   cls->setDBGInfo(dbg);
 
   bool keepParsing = true;
   while (keepParsing) {
     switch (m_current.type) {
-      case TokenType::KWORD_PUBLIC:
-      case TokenType::KWORD_PRIVATE: {
+      case TokenType::IDENTIFIER: {
+        auto name = m_current.to_string();
+        if (is<TokenType::BRACKET_LPARENT>(peek())) {
+          next();
+          std::vector<Syntax::Expression::TypeRef*> fields;
+          while (true) {
+            next();
+            fields.push_back(parseType());
+            if (!is<TokenType::SYM_COMMA>()) {
+              break;
+            }
+          }
+          assert_tok<TokenType::BRACKET_RPARENT>("')'");
+          cls->addField({name, fields});
+        } else {
+          cls->addField({name, {}});
+        }
         next();
-        assert_tok<TokenType::KWORD_VAR>("a valid member declaration");
-        break;
-      }
-
-      case TokenType::KWORD_VAR: {
-        auto member = parseVariable();
-        consume<TokenType::SYM_SEMI_COLLON>("';'");
-        cls->addVariable(member);
+        if (!is<TokenType::BRACKET_RCURLY>()) {
+          assert_tok<TokenType::SYM_COMMA>("',' or '}'");
+          next();
+        }
         break;
       }
 

@@ -10,6 +10,7 @@
 #include "../../ir/module/Module.h"
 #include "../../ir/values/Argument.h"
 #include "../../ir/values/Call.h"
+#include "../../ir/values/EnumInit.h"
 #include "../../ir/values/Constants.h"
 #include "../../ir/values/Func.h"
 #include "../../ir/values/Return.h"

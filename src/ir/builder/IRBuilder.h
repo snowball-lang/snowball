@@ -11,6 +11,7 @@
 #include "../ModuleHolder.h"
 #include "../values/Argument.h"
 #include "../values/Call.h"
+#include "../values/EnumInit.h"
 #include "../values/Cast.h"
 #include "../values/Conditional.h"
 #include "../values/Constants.h"
@@ -143,6 +144,8 @@ public:
   SharedValue<LoopFlow> createLoopFlow(DBGSourceInfo* dbgInfo, LoopFlowType type);
   /// @brief Create a new call instruction
   SharedValue<Call> createCall(DBGSourceInfo* dbgInfo, SharedValue<> callee, ValueVec<> args);
+  /// @brief Create a new enum type expression
+  SharedValue<EnumInit> createEnumInit(DBGSourceInfo* dbgInfo, types::EnumType* type, std::string name);
   /// @brief Create a new try/catch instruction
   SharedValue<TryCatch> createTryCatch(
           DBGSourceInfo* dbgInfo,

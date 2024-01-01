@@ -20,20 +20,17 @@ EnumType::EnumType(
     const std::string& name,
     const std::string uuid,
     std::shared_ptr<ir::Module> module,
-    std::vector<EnumField*> fields,
-    std::vector<Type*> generics,
     Privacy::Status privacy
-) : AcceptorExtend(Kind::ENUM, name), fields(fields) {
+) : AcceptorExtend(Kind::ENUM, name) {
   setGenerics(generics);
   setPrivacy(privacy);
   unsafeSetUUID(uuid);
   unsafeSetModule(module);
 }
 EnumType::EnumField::EnumField(
-      const std::string& name,
-      std::vector<types::Type*> types,
-      Privacy privacy)
-    : name(name), types(types), Syntax::Statement::Privacy(privacy) { }
+    const std::string& name,
+      std::vector<types::Type*> types)
+    : types(types), name(name) { }
 bool EnumType::is(EnumType* ty) const {
   auto otherArgs = ty->getGenerics();
   bool genericSizeEqual = otherArgs.size() == generics.size();
@@ -48,7 +45,7 @@ bool EnumType::is(EnumType* ty) const {
                                            false;
   return (ty->getUUID() == uuid) && argumentsEqual;
 }
-
+void EnumType::addField(EnumField* field) { fields.push_back(field); }
 std::string EnumType::getPrettyName() const {
   auto base = module->isMain() ? "" : module->getName() + "::";
   auto n = base + getName();
@@ -114,26 +111,26 @@ bool EnumType::canCast(EnumType* ty) const {
 // - https://en.wikipedia.org/wiki/Data_structure_alignment#Computing_padding
 std::int64_t EnumType::sizeOf() const {
   auto address = (std::int64_t) 0;
-  for (const auto& f : fields) {
-    auto typeSize = 0;
-    for (const auto& t : f->types) {
+  auto typeSize = 0;
+  auto typeAlignment = 0;
+  for (const auto f : fields) {
+    for (const auto t : f->types) {
       typeSize += t->sizeOf();
     }
-    auto typeAlignment = 0;
-    for (const auto& t : f->types) {
+    for (const auto t : f->types) {
       auto alignment = t->alignmentOf();
       if (alignment > typeAlignment) typeAlignment = alignment;
     }
-    address += (address - (address % typeAlignment)) % typeAlignment;
-    address += (typeAlignment - (address % typeAlignment)) % typeAlignment;
-    address += typeSize;
   }
+  address += (address - (address % typeAlignment)) % typeAlignment;
+  address += (typeAlignment - (address % typeAlignment)) % typeAlignment;
+  address += typeSize;
   auto alignment = alignmentOf();
   address += (address - (address % alignment)) % alignment;
   address += (alignment - (address % alignment)) % alignment;
   address += (hasVtable * 8);
   if (address == 0) address = 1; // prevent 0-sized types
-  return address;
+  return 8 + address; // +8 for the tag
 }
 
 std::int64_t EnumType::alignmentOf() const {

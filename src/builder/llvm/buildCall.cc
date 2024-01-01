@@ -1,5 +1,6 @@
 
 #include "../../ir/values/Call.h"
+#include "../../ir/values/EnumInit.h"
 #include "../../ir/values/Dereference.h"
 #include "../../ir/values/ReferenceTo.h"
 #include "../../services/OperatorService.h"
@@ -39,6 +40,9 @@ void LLVMBuilder::visit(ir::Call* call) {
       this->value = builder->CreateLoad(instanceType, alloca);
       return;
     }
+  } else if (utils::is<ir::EnumInit>(call->getCallee().get())) {
+    this->value = createEnumInit(call);
+    return;
   }
 
   auto calleeValue = call->getCallee();

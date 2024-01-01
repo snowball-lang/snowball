@@ -265,6 +265,7 @@ typedef int32_t snowball_int_t;
 #define _SN_CLASS_PREFIX  "class."
 #define _SN_STRUCT_PREFIX "struct."
 #define _SN_VTABLE_PREFIX "vtable."
+#define _SN_ENUM_PREFIX   "enum."
 
 #define _SN_MANGLE_PREFIX "_ZN$SN"
 

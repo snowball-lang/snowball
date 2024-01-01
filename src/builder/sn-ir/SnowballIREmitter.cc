@@ -140,6 +140,10 @@ void SnowballIREmitter::visit(ir::TryCatch* tc) {
   }
 }
 
+void SnowballIREmitter::visit(ir::EnumInit* ei) {
+  addContent(ei->getType()->getPrettyName() + "::" + ei->getName());
+}
+
 void SnowballIREmitter::visit(ir::Throw* t) {
   addContent("throw ");
   t->getExpr()->visit(this);

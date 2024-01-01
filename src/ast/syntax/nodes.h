@@ -758,6 +758,39 @@ public:
 };
 
 /**
+ * @brief Representation of an enum type in the AST.
+ */
+struct EnumTypeDef : public AcceptorExtend<EnumTypeDef, Base>,
+                     public AcceptorExtend<EnumTypeDef, Privacy>,
+                     public AcceptorExtend<EnumTypeDef, GenericContainer<>>,
+                     public AcceptorExtend<EnumTypeDef, CommentHolder> {
+  /// @brief Enum identifier
+  std::string name;
+  /// @brief Defined enum fields
+  std::vector<std::pair<std::string, std::vector<Expression::TypeRef*>>> fields;
+public:
+  EnumTypeDef(std::string name, Privacy::Status prvc = PRIVATE);
+
+  /// @brief Get enum name
+  std::string getName() const;
+
+  /// Add a field to the field list
+  void addField(std::pair<std::string, std::vector<Expression::TypeRef*>> field);
+
+  /// Iterator utilities
+  using FieldIterator = std::vector<std::pair<std::string, std::vector<Expression::TypeRef*>>>::iterator;
+
+  /// @return A full list of declared fields
+  std::vector<std::pair<std::string, std::vector<Expression::TypeRef*>>>& getFields();
+
+  FieldIterator fieldStart();
+  FieldIterator fieldEnd();
+
+  // Set an acceptance call
+  ACCEPT()
+};
+
+/**
  * @brief Representation of a Raise statement in the AST.
  * This is used to throw an exception.
  * @example

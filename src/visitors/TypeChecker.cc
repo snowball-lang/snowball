@@ -78,6 +78,8 @@ VISIT(FloatValue) { /* noop */
 }
 VISIT(CharValue) { /* noop */
 }
+VISIT(EnumInit) { /* noop */
+}
 
 VISIT(DereferenceTo) {
   auto val = p_node->getValue();
@@ -136,7 +138,7 @@ VISIT(Call) {
   }
   if (p_node->getCallee() == nullptr) {
     E<BUG>(p_node, "Call has no callee!");
-  } else if (Syntax::Transformer::getFunctionType(p_node->getCallee()->getType()) == nullptr) {
+  } else if (Syntax::Transformer::getFunctionType(p_node->getCallee()->getType()) == nullptr && !utils::is<ir::EnumInit>(p_node->getCallee().get())) {
     E<TYPE_ERROR>(p_node, FMT("Value trying to be called is not callable!"));
   }
 

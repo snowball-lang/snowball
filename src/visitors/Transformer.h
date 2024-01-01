@@ -13,6 +13,7 @@
 #include "../ir/module/Module.h"
 #include "../ir/values/Argument.h"
 #include "../ir/values/Call.h"
+#include "../ir/values/EnumInit.h"
 #include "../ir/values/Constants.h"
 #include "../ir/values/Dereference.h"
 #include "../ir/values/Func.h"
@@ -351,6 +352,12 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * return a nullptr.
    */
   std::shared_ptr<ir::Value> tryCast(std::shared_ptr<ir::Value> value, types::Type* type);
+  /**
+   * @brief It generates an enum type.
+   * 
+   * @note It will also generate the enum fields.
+   */
+  types::EnumType* transformEnum(const std::string& uuid, cacheComponents::Types::TypeStore& enumStore, Expression::TypeRef* typeRef = nullptr);
   /**
    * Transforms a given special type reference into a shared pointer
    * to Type.

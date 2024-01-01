@@ -57,6 +57,11 @@ SharedValue<Argument> IRBuilder::createArgument(
 ) {
   return N<Argument>(dbgInfo, name, index, defaultValue);
 }
+SharedValue<EnumInit> IRBuilder::createEnumInit(DBGSourceInfo* dbgInfo, types::EnumType* type, std::string name) {
+  auto init = N<EnumInit>(dbgInfo, name);
+  setType(init, type);
+  return init;
+}
 SharedValue<LoopFlow> IRBuilder::createLoopFlow(
         DBGSourceInfo* dbgInfo, LoopFlowType type) {
   return N<LoopFlow>(dbgInfo, type);
