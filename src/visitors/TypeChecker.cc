@@ -128,6 +128,45 @@ VISIT(ReferenceTo) {
   );
 }
 
+void TypeChecker::checkEnumInit(ir::Call* p_node) {
+  auto enumType = utils::cast<types::EnumType>(p_node->getType());
+  auto enumInit = utils::dyn_cast<ir::EnumInit>(p_node->getCallee());
+  assert(enumType != nullptr);
+  assert(enumInit != nullptr);
+  auto enumField = *std::find_if(enumType->getFields().begin(), enumType->getFields().end(), [&](auto f) {
+    return f->name == enumInit->getName();
+  });
+  std::vector<types::Type*> types;
+  for (auto arg : p_node->getArguments()) { 
+    arg->visit(this);
+    types.push_back(arg->getType()); 
+  }
+
+  if (types.size() != enumField->types.size()) {
+    E<TYPE_ERROR>(
+            p_node,
+            FMT("Enum '%s' has %d fields, but %d arguments were given!",
+                enumType->getPrettyName().c_str(),
+                enumField->types.size(),
+                types.size())
+    );
+  }
+
+  for (int i = 0; i < types.size(); i++) {
+    if (!types[i]->is(enumField->types[i])) {
+      E<TYPE_ERROR>(
+              p_node,
+              FMT("Enum '%s' field '%s' has type '%s', but argument %d has type '%s'!",
+                  enumType->getPrettyName().c_str(),
+                  enumField->name.c_str(),
+                  enumField->types[i]->getPrettyName().c_str(),
+                  i + 1,
+                  types[i]->getPrettyName().c_str())
+      );
+    }
+  }
+}
+
 VISIT(Call) {
   auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee());
   bool validMethod = fn != nullptr && fn->hasParent() && !fn->isStatic();
@@ -136,6 +175,10 @@ VISIT(Call) {
     for (auto a : p_node->getArguments()) { a->visit(this); }
     return;
   }
+  if (utils::is<ir::EnumInit>(p_node->getCallee().get())) {
+    checkEnumInit(p_node);
+    return;
+  } 
   if (p_node->getCallee() == nullptr) {
     E<BUG>(p_node, "Call has no callee!");
   } else if (Syntax::Transformer::getFunctionType(p_node->getCallee()->getType()) == nullptr && !utils::is<ir::EnumInit>(p_node->getCallee().get())) {

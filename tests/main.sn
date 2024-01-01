@@ -43,6 +43,6 @@ enum Test {
 }
 
 public func main() i32 {
-    let a = Test::B(1);
+    let a = Test::B(1 as i64);
     let c = Test::C(1, true);
 }
