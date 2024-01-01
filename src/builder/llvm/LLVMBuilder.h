@@ -342,6 +342,12 @@ private:
    */
   llvm::Value* createEnumInit(ir::Call* call);
   /**
+   * @brief It creates a new enum field type
+   * @param ty The enum type
+   * @param field The enum field
+   */
+  llvm::Type* createEnumFieldType(types::EnumType* ty, std::string field);
+  /**
    * @brief Get llvm corresponding function type from an
    * already generate snowball type.
    */

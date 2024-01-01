@@ -39,9 +39,10 @@ import std::env as os_env;
 enum Test {
     A,
     B(i64),
-    C(String, bool),
+    C(i32, bool),
 }
 
 public func main() i32 {
     let a = Test::B(1);
+    let c = Test::C(1, true);
 }

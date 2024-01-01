@@ -110,27 +110,16 @@ bool EnumType::canCast(EnumType* ty) const {
 
 // - https://en.wikipedia.org/wiki/Data_structure_alignment#Computing_padding
 std::int64_t EnumType::sizeOf() const {
-  auto address = (std::int64_t) 0;
-  auto typeSize = 0;
-  auto typeAlignment = 0;
+  auto maxSizeOf = (std::int64_t) 0;
   for (const auto f : fields) {
+    auto sizeOf = (std::int64_t) 0;
     for (const auto t : f->types) {
-      typeSize += t->sizeOf();
+      auto s = t->sizeOf();
+      if (s > sizeOf) sizeOf = s;
     }
-    for (const auto t : f->types) {
-      auto alignment = t->alignmentOf();
-      if (alignment > typeAlignment) typeAlignment = alignment;
-    }
+    if (sizeOf > maxSizeOf) maxSizeOf = sizeOf;
   }
-  address += (address - (address % typeAlignment)) % typeAlignment;
-  address += (typeAlignment - (address % typeAlignment)) % typeAlignment;
-  address += typeSize;
-  auto alignment = alignmentOf();
-  address += (address - (address % alignment)) % alignment;
-  address += (alignment - (address % alignment)) % alignment;
-  address += (hasVtable * 8);
-  if (address == 0) address = 1; // prevent 0-sized types
-  return 8 + address; // +8 for the tag
+  return maxSizeOf*8 + 8; // add 8 bytes for the enum field
 }
 
 std::int64_t EnumType::alignmentOf() const {
