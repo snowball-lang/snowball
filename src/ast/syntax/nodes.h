@@ -799,14 +799,14 @@ public:
     /// @brief The expression to compare
     std::string expression;
     /// @brief Arguments passed to the expression
-    std::vector<Node*> args;
+    std::vector<std::string> args;
     /// @brief If the case is a default case
     bool isDefault = false;
     /// @brief If the argument is variadic
     bool isVariadic = false;
     /// @brief The block to execute if the case is met
     Block* block;
-  }
+  };
 private:
   /// @brief The expression to compare
   Expression::Base* expr;

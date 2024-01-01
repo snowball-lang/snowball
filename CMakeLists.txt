@@ -12,6 +12,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-limit-debug-info")
 endif()
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+add_compile_options ( -Wall -Werror )
 
 if(CMAKE_OSX_ARCHITECTURES MATCHES "arm64")
   set(CPU_TYPE ${CMAKE_OSX_ARCHITECTURES})

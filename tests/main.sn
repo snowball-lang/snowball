@@ -45,4 +45,10 @@ enum Test {
 public func main() i32 {
     let a = Test::B(1 as i64);
     let c = Test::C(1, true);
+
+    case a {
+        Test::A => io::println("A"),
+        Test::B(x) => io::println("B"),
+        Test::C(x, y) => io::println("C"),
+    }
 }

@@ -345,6 +345,10 @@ private:
    * body          ::=  [[identifier] "(" [types] ")" ","] ...
    */
   Syntax::Statement::EnumTypeDef* parseEnum();
+  /**
+   * case         ::=  "case" [expr] ":" [block]
+   */
+  Syntax::Statement::Switch* parseSwitch();
 
   /// @brief Parses a statement
   /// @return a statement

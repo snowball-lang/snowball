@@ -58,7 +58,7 @@ public:
   void codegen(std::string output);
 
   // Deleting the default codegen() function to prevent accidental usage.
-  void codegen() { assert(false); }
+  void codegen() override { assert(false); }
 
 private:
   /**

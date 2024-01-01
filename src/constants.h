@@ -217,7 +217,6 @@ typedef int32_t snowball_int_t;
 #define _SNOWBALL_KEYWORD__IF        "if"
 #define _SNOWBALL_KEYWORD__AS        "as"
 #define _SNOWBALL_KEYWORD__FOR       "for"
-#define _SNOWBALL_KEYWORD__CASE      "case"
 #define _SNOWBALL_KEYWORD__ENUM      "enum"
 #define _SNOWBALL_KEYWORD__TRUE      "true"
 #define _SNOWBALL_KEYWORD__ELSE      "else"

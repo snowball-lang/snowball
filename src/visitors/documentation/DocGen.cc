@@ -30,6 +30,7 @@ SN_DOCGEN_VISIT(Statement::Return) {}
 SN_DOCGEN_VISIT(Statement::ImportStmt) {}
 SN_DOCGEN_VISIT(Statement::ForLoop) {}
 SN_DOCGEN_VISIT(Statement::Conditional) {}
+SN_DOCGEN_VISIT(Statement::Switch) {}
 SN_DOCGEN_VISIT(Statement::LoopFlow) {}  
 SN_DOCGEN_VISIT(Statement::EnumTypeDef) {} // TODO: add html here!  
 
