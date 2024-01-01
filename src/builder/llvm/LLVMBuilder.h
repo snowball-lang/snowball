@@ -4,6 +4,7 @@
 #include "../../ast/types/DefinedType.h"
 #include "../../ast/types/FunctionType.h"
 #include "../../ast/types/Interface.h"
+#include "../../ast/types/EnumType.h"
 #include "../../ast/types/PointerType.h"
 #include "../../ast/types/ReferenceType.h"
 #include "../../ast/types/TypeAlias.h"

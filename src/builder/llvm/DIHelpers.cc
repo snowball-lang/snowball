@@ -1,6 +1,7 @@
 
 #include "../../ast/errors/error.h"
 #include "../../ast/types/Interface.h"
+#include "../../ast/types/EnumType.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 #include "../../visitors/Transformer.h"
