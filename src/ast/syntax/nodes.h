@@ -791,6 +791,40 @@ public:
 };
 
 /**
+ * @brief Representation of a switch statement in the AST.
+ */
+struct Switch : public AcceptorExtend<Switch, Base> {
+public:
+  struct CaseBlock {
+    /// @brief The expression to compare
+    std::string expression;
+    /// @brief Arguments passed to the expression
+    std::vector<Node*> args;
+    /// @brief If the case is a default case
+    bool isDefault = false;
+    /// @brief If the argument is variadic
+    bool isVariadic = false;
+    /// @brief The block to execute if the case is met
+    Block* block;
+  }
+private:
+  /// @brief The expression to compare
+  Expression::Base* expr;
+  /// @brief The cases to compare
+  std::vector<CaseBlock> cases;
+public:
+  Switch(Expression::Base* expr, std::vector<CaseBlock> cases) : expr(expr), cases(cases){};
+
+  /// @return The expression to compare
+  auto getExpr() { return expr; }
+  /// @return The cases to compare
+  auto getCases() { return cases; }
+
+  // Set a visit handler for the generators
+  ACCEPT()
+};
+
+/**
  * @brief Representation of a Raise statement in the AST.
  * This is used to throw an exception.
  * @example

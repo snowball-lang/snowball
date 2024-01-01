@@ -244,7 +244,7 @@ typedef int32_t snowball_int_t;
 #define _SNOWBALL_KEYWORD__DO        "do"
 #define _SNOWBALL_KEYWORD__RETURN    "return"
 #define _SNOWBALL_KEYWORD__DECLTYPE  "decltype"
-#define _SNOWBALL_KEYWORD__SWITCH    "switch"
+#define _SNOWBALL_KEYWORD__SWITCH    "case"
 #define _SNOWBALL_KEYWORD__DEFAULT   "default"
 #define _SNOWBALL_KEYWORD__CONTINUE  "continue"
 #define _SNOWBALL_KEYWORD__FUNCTION  "func"
