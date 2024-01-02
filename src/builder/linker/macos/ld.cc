@@ -44,8 +44,8 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   linkerArgs.push_back("-lSystem");
 
   for (auto& rpath : rpaths) {
-    linkerArgs.push_back("-rpath");
-    linkerArgs.push_back(rpath);
+    linkerArgs.push_back("-L"+rpath);
+    linkerArgs.push_back("-Wl,-rpath,"+rpath);
   }
 
   linkerArgs.push_back("-o");
