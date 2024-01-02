@@ -256,8 +256,12 @@ if (DEFINED ENV{BUILD_FOR_CE})
   add_compile_definitions(_SNOWBALL_BUILD_FOR_CE="1")
 endif()
 
-add_compile_definitions(LD_PATH="ld")
-
+# if macos
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  add_compile_definitions(LD_PATH="gcc")
+else()
+  add_compile_definitions(LD_PATH="ld")
+endif()
 
 add_compile_definitions(STATICLIB_DIR="${STATICLIB_DIR}")
 
