@@ -18,7 +18,7 @@ llvm::Value* LLVMBuilder::createEnumInit(ir::Call* call) {
 
     int idx = 0;
     for (auto field : enumType->getFields()) {
-        if (field->name == enumInit->getName()) break;
+        if (field.name == enumInit->getName()) break;
         idx++;
     }
 

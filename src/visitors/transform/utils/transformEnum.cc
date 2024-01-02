@@ -94,7 +94,7 @@ types::EnumType* Transformer::transformEnum
         auto fieldTypes = vector_iterate<Expression::TypeRef*, types::Type*>(
                 field.second, [&](auto t) { return transformType(t); }
         );
-        auto enumField = new types::EnumType::EnumField(field.first, fieldTypes);
+        auto enumField = types::EnumType::EnumField(field.first, fieldTypes);
         transformedType->addField(enumField);
       }
 

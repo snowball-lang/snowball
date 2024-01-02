@@ -19,3 +19,4 @@
 #include "VariableDeclaration.h"
 #include "WhileLoop.h"
 #include "LoopFlow.h"
+#include "Switch.h"

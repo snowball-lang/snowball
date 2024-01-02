@@ -21,6 +21,8 @@
 #include "../ir/values/Return.h"
 #include "../ir/values/Throw.h"
 #include "../ir/values/ValueExtract.h"
+#include "../ir/values/Switch.h"
+#include "../ir/values/all.h"
 #include "../utils/utils.h"
 
 #include <assert.h>

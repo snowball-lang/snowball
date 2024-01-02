@@ -101,6 +101,24 @@ void SnowballIREmitter::visit(ir::Call* c) {
   addContent(")");
 }
 
+void SnowballIREmitter::visit(ir::Switch* s) {
+  addContent("case (");
+  s->getExpr()->visit(this);
+  addContent(") {\n");
+  for (auto c : s->getCases()) {
+    addContent("    case " + c.name);
+    addContent("(");
+    for (auto a : c.args) {
+      addContent(a->getIdentifier());
+      if (a != c.args.back()) addContent(", ");
+    }
+    addContent(") => ");
+    c.block->visit(this);
+    addContent("\n");
+  }
+  addContent("  }");
+}
+
 void SnowballIREmitter::visit(ir::Conditional* c) {
   addContent("if (");
   c->getCondition()->visit(this);

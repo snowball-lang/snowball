@@ -1,5 +1,5 @@
 
-#include "app/cli.h"
+#include "cli.h"
 #include "compiler.h"
 #include "constants.h"
 #include "ast/errors/error.h"

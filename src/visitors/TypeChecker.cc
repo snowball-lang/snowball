@@ -134,7 +134,7 @@ void TypeChecker::checkEnumInit(ir::Call* p_node) {
   assert(enumType != nullptr);
   assert(enumInit != nullptr);
   auto enumField = *std::find_if(enumType->getFields().begin(), enumType->getFields().end(), [&](auto f) {
-    return f->name == enumInit->getName();
+    return f.name == enumInit->getName();
   });
   std::vector<types::Type*> types;
   for (auto arg : p_node->getArguments()) { 
@@ -142,28 +142,37 @@ void TypeChecker::checkEnumInit(ir::Call* p_node) {
     types.push_back(arg->getType()); 
   }
 
-  if (types.size() != enumField->types.size()) {
+  if (types.size() != enumField.types.size()) {
     E<TYPE_ERROR>(
             p_node,
             FMT("Enum '%s' has %d fields, but %d arguments were given!",
                 enumType->getPrettyName().c_str(),
-                enumField->types.size(),
+                enumField.types.size(),
                 types.size())
     );
   }
 
   for (int i = 0; i < (int)types.size(); i++) {
-    if (!types[i]->is(enumField->types[i])) {
+    if (!types[i]->is(enumField.types[i])) {
       E<TYPE_ERROR>(
               p_node,
               FMT("Enum '%s' field '%s' has type '%s', but argument %d has type '%s'!",
                   enumType->getPrettyName().c_str(),
-                  enumField->name.c_str(),
-                  enumField->types[i]->getPrettyName().c_str(),
+                  enumField.name.c_str(),
+                  enumField.types[i]->getPrettyName().c_str(),
                   i + 1,
                   types[i]->getPrettyName().c_str())
       );
     }
+  }
+}
+
+VISIT(Switch) {
+  auto expr = p_node->getExpr();
+  expr->visit(this);
+
+  for (auto c : p_node->getCases()) {
+    c.block->visit(this);
   }
 }
 
@@ -183,9 +192,7 @@ VISIT(Call) {
   } else if (Syntax::Transformer::getFunctionType(p_node->getCallee()->getType()) == nullptr && !utils::is<ir::EnumInit>(p_node->getCallee().get())) {
     E<TYPE_ERROR>(p_node, FMT("Value trying to be called is not callable!"));
   }
-
   // TODO: check for operator sides being equal
-
   int i = 0;
   if (fn) {
     if (fn->hasAttribute(Attributes::NOT_IMPLEMENTED)) {

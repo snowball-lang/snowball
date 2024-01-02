@@ -77,10 +77,10 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
             dbgInfo->line,
             ty->sizeOf(),
             ty->alignmentOf(),
-            dbg.builder->getOrCreateArray(vector_iterate<types::EnumType::EnumField*, llvm::Metadata*>(
+            dbg.builder->getOrCreateArray(vector_iterate<types::EnumType::EnumField, llvm::Metadata*>(
                     e->getFields(),
-                    [&](types::EnumType::EnumField* t) {
-                      return dbg.builder->createEnumerator(t->name, enumIndex++);
+                    [&](types::EnumType::EnumField t) {
+                      return dbg.builder->createEnumerator(t.name, enumIndex++);
                     }
             )),
             nullptr

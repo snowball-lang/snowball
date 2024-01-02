@@ -130,12 +130,12 @@ llvm::Type* LLVMBuilder::createEnumFieldType(types::EnumType* ty, std::string fi
   auto name = _SN_ENUM_PREFIX + ty->getMangledName() + "__" + field;
   if (enumTypes.find(name) != enumTypes.end()) return enumTypes.find(name)->second;
   auto enumField = *std::find_if(ty->getFields().begin(), ty->getFields().end(), [&](auto f) {
-    return f->name == field;
+    return f.name == field;
   });
   auto enumSize = ty->sizeOf();
   // convert this to a struct and an array of bytes at the end to fix alignment issues
   auto type = llvm::StructType::create(*context, name);
-  auto fieldTypes = enumField->types;
+  auto fieldTypes = enumField.types;
   int fieldSize = 0;
   std::vector<llvm::Type*> generatedFields;
   generatedFields.push_back(builder->getInt8Ty()); // enum field

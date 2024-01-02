@@ -45,7 +45,7 @@ bool EnumType::is(EnumType* ty) const {
                                            false;
   return (ty->getUUID() == uuid) && argumentsEqual;
 }
-void EnumType::addField(EnumField* field) { fields.push_back(field); }
+void EnumType::addField(EnumField field) { fields.push_back(field); }
 std::string EnumType::getPrettyName() const {
   auto base = module->isMain() ? "" : module->getName() + "::";
   auto n = base + getName();
@@ -111,9 +111,9 @@ bool EnumType::canCast(EnumType* ty) const {
 // - https://en.wikipedia.org/wiki/Data_structure_alignment#Computing_padding
 std::int64_t EnumType::sizeOf() const {
   auto maxSizeOf = (std::int64_t) 0;
-  for (const auto f : fields) {
+  for (const auto& f : fields) {
     auto sizeOf = (std::int64_t) 0;
-    for (const auto t : f->types) {
+    for (const auto t : f.types) {
       auto s = t->sizeOf();
       if (s > sizeOf) sizeOf = s;
     }
@@ -126,7 +126,7 @@ std::int64_t EnumType::alignmentOf() const {
   auto maximumAlignment = (std::int64_t) 0;
   for (const auto& f : fields) {
     auto alignment = 0;
-    for (const auto& t : f->types) {
+    for (const auto t : f.types) {
       auto a = t->alignmentOf();
       if (a > alignment) alignment = a;
     }

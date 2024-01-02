@@ -9,6 +9,8 @@
 #include "../../sourceInfo/DBGSourceInfo.h"
 
 #include "../ModuleHolder.h"
+#include "../values/all.h"
+#include "../values/Switch.h"
 #include "../values/Argument.h"
 #include "../values/Call.h"
 #include "../values/EnumInit.h"
@@ -165,6 +167,10 @@ public:
   /// @brief Create a new conditional instruction (if/else)
   SharedValue<Conditional> createConditional(
           DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> thenBlock, SharedValue<Block> elseBlock
+  );
+  /// @brief Create a new switch instruction
+  SharedValue<Switch> createSwitch(
+          DBGSourceInfo* dbgInfo, SharedValue<> expr, std::vector<Switch::Case> cases, SharedValue<Block> defaultBlock
   );
   /// @brief Create a new while loop
   SharedValue<WhileLoop>

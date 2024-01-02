@@ -72,11 +72,11 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
           }
         } else if (auto e = utils::cast<types::EnumType>(x)) {
           auto& fields = e->getFields();
-          auto fieldValue = std::find_if(fields.begin(), fields.end(), [&](types::EnumType::EnumField* f) {
-            return f->name == name;
+          auto fieldValue = std::find_if(fields.begin(), fields.end(), [&](types::EnumType::EnumField f) {
+            return f.name == name;
           });
           if (fieldValue != fields.end()) {
-            indexValue = getBuilder().createEnumInit(dbgInfo, e, (*fieldValue)->name);
+            indexValue = getBuilder().createEnumInit(dbgInfo, e, (*fieldValue).name);
             getBuilder().setType(indexValue, e);
           }
         } else {

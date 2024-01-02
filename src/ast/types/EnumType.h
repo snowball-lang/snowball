@@ -49,7 +49,7 @@ public:
 
 private:
   /// @brief a list of fields this class has
-  std::vector<EnumField*> fields;
+  std::vector<EnumField> fields;
 
 public:
   EnumType(
@@ -92,7 +92,7 @@ public:
   /// @return A list containing all the fields declared for the class
   auto& getFields() const { return fields; }
   /// @brief Append a new field (EnumField) to the list
-  void addField(EnumField* f);
+  void addField(EnumField f);
   /// @c Type::toRef() for information about this function.
   /// @note It essentially does the same thing except it adds
   ///  generics if needed
