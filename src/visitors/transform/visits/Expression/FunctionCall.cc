@@ -123,7 +123,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
   auto call = getBuilder().createCall(p_node->getDBGInfo(), fn, {});
   if (auto t = getFunctionType(fn->getType())) {
     auto isContructor = utils::dyn_cast<ir::Func>(fn) && utils::dyn_cast<ir::Func>(fn)->isConstructor();
-    for (int i = isContructor; i < argTypes.size()+isContructor; i++) {
+    for (size_t i = isContructor; i < argTypes.size()+isContructor; i++) {
       if (i >= t->getArgs().size()) break; // Ignore variadic arguments
       auto arg = argTypes.at(i-isContructor);
       auto deduced = t->getArgs().at(i);
@@ -168,7 +168,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
       [&argTypes = argTypes, this, call, args, &argValues = argValues, p_node, func]() {
       // add default arguments
         auto shouldAdd = func->isConstructor();
-        for (int i = argTypes.size() == 0 ? 0 : (argTypes.size()+shouldAdd); i < args.size(); i++) {
+        for (size_t i = argTypes.size() == 0 ? 0 : (argTypes.size()+shouldAdd); i < args.size(); i++) {
           auto arg = &args.at(i);
           if (arg->second->hasDefaultValue()) {
             auto defaultVal = arg->second->getDefaultValue();

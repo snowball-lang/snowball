@@ -24,7 +24,7 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
     );
   }
   // Typecheck macros:
-  for (int i = 0; i < macro->getArgs().size(); i++) {
+  for (size_t i = 0; i < macro->getArgs().size(); i++) {
     Node* arg = nullptr;
     auto macroArg = macro->getArgs()[i];
     auto name = std::get<0>(macroArg);

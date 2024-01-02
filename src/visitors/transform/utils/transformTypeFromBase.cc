@@ -20,7 +20,7 @@ types::Type* Transformer::transformTypeFromBase(
     assert(false);
   }
 
-  auto requiredArguments = 0;
+  size_t requiredArguments = 0;
   for (auto arg : generics) {
     // Check for if there's no default type
     if (arg->type == nullptr) { requiredArguments++; }
@@ -37,11 +37,11 @@ types::Type* Transformer::transformTypeFromBase(
     );
   }
 
-  if (auto x = utils::cast<Statement::TypeAlias>(base.type)) {
+  if (utils::is<Statement::TypeAlias>(base.type)) {
     return transformTypeAlias(uuid, base, typeRef);
-  } else if (auto x = utils::cast<Statement::DefinedTypeDef>(base.type)) {
+  } else if (utils::is<Statement::DefinedTypeDef>(base.type)) {
     return transformClass(uuid, base, typeRef);
-  } else if (auto x = utils::cast<Statement::EnumTypeDef>(base.type)) {
+  } else if (utils::is<Statement::EnumTypeDef>(base.type)) {
     return transformEnum(uuid, base, typeRef);
   } 
 

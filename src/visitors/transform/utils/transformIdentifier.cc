@@ -65,7 +65,6 @@ fetchFromUUID:
   }
   if (auto x = ctx->cache->getTransformedType(uuid)) {
     auto ty = new Expression::TypeRef(identifier, dbgInfo, generics);
-    types::Type* lastType = nullptr;
     for (auto t : x.value()) {
       assert(t->isType());
       if (typeGenericsMatch(ty, t->getType())) {
@@ -82,7 +81,7 @@ fetchFromUUID:
   if (auto x = ctx->cache->getFunction(uuid)) { overloads = x; }
   if (funcs || overloads) { return {std::nullopt, std::nullopt, funcs, overloads, std::nullopt}; }
   if (auto mod = ctx->cache->getModule(uuid)) { return {std::nullopt, std::nullopt, std::nullopt, std::nullopt, mod}; }
-  if (uuidStackIndex + 1 < ctx->uuidStack.size()) {
+  if ((size_t)(uuidStackIndex + 1) < ctx->uuidStack.size()) {
     uuidStackIndex++;
     uuidStackOverride = ctx->uuidStack[uuidStackIndex];
     goto fetchFromUUID;

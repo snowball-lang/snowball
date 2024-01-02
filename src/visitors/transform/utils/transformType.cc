@@ -185,7 +185,7 @@ continueTypeFetch:
   }
 
   if (returnedType == nullptr) {
-    if (uuidStackIndex + 1 < ctx->uuidStack.size()) {
+    if (uuidStackIndex + 1 < (int)ctx->uuidStack.size()) {
       uuidStackIndex++;
       uuidStackOverride = ctx->uuidStack[uuidStackIndex];
       goto continueTypeFetch;

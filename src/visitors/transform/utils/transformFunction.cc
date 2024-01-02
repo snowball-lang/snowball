@@ -30,7 +30,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
       // TODO: variadic generics?
       assert(deducedTypes.size() == node->getGenerics().size());
       std::vector<std::pair<std::string, types::Type*>> fnGenerics;
-      for (int genericCount = 0; genericCount < deducedTypes.size(); genericCount++) {
+      for (size_t genericCount = 0; genericCount < deducedTypes.size(); genericCount++) {
         auto nodeGeneric = node->getGenerics().at(genericCount);
         auto name = nodeGeneric->getName();
         auto generic = deducedTypes.at(genericCount);
@@ -78,7 +78,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
         newArgs.emplace(newArgs.begin(), std::make_pair("self", a));
       }
 
-      for (int i = 0; i < node->getArgs().size(); i++) {
+      for (size_t i = 0; i < node->getArgs().size(); i++) {
         auto arg = node->getArgs().at(i);
 
         auto a = getBuilder().createArgument(

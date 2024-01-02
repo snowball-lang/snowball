@@ -70,7 +70,7 @@ std::shared_ptr<ir::Value> Transformer::getFunction(
         if (ir::Func::argumentSizesEqual(argsVector, arguments, fnType->isVariadic())) {
           bool equal = true;
           for (auto arg = argsVector.begin(); (arg != argsVector.end()) && (equal); ++arg) {
-            auto i = std::distance(argsVector.begin(), arg);
+            size_t i = std::distance(argsVector.begin(), arg);
             if (i < numArgs) {
               equal = (*arg)->is(arguments.at(i));
             } else {

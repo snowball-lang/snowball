@@ -130,7 +130,7 @@ void SnowballIREmitter::visit(ir::Cast* c) {
 void SnowballIREmitter::visit(ir::TryCatch* tc) {
   addContent("try ");
   tc->getBlock()->visit(this);
-  for (auto i = 0; i < tc->getCatchBlocks().size(); i++) {
+  for (auto i = 0; i < (int)tc->getCatchBlocks().size(); i++) {
     addContent(" catch (");
     tc->getCatchVars()[i]->visit(this);
     addContent(": ");

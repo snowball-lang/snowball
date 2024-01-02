@@ -67,7 +67,7 @@ types::BaseType* Transformer::transformClass(
       auto classGenerics = ty->getGenerics();
       auto selfType = std::make_shared<Item>(transformedType);
       ctx->addItem("Self", selfType);
-      for (int genericCount = 0; genericCount < generics.size(); genericCount++) {
+      for (size_t genericCount = 0; genericCount < generics.size(); genericCount++) {
         auto generic = classGenerics.at(genericCount);
         auto generatedGeneric = generics.at(genericCount);
         auto item = std::make_shared<transform::Item>(generatedGeneric->copy());

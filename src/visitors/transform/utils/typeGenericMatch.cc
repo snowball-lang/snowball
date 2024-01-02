@@ -27,8 +27,8 @@ bool Transformer::typeGenericsMatch(Expression::TypeRef* ty, types::Type* comp) 
 
   bool theyEqual = true;
   bool sizeEqual = generatedGenerics.size() == compGenerics.size();
-  int gIndex = 0;
-  while (theyEqual && sizeEqual && (generatedGenerics.size() > 0) && (gIndex < generatedGenerics.size())) {
+  size_t gIndex = 0;
+  while (theyEqual && sizeEqual && ((int)generatedGenerics.size() > 0) && (gIndex < generatedGenerics.size())) {
     auto generated = generatedGenerics.at(gIndex);
     auto comp = compGenerics.at(gIndex);
     theyEqual = generated->is(comp);

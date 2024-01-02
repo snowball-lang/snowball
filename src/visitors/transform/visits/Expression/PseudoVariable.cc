@@ -65,7 +65,6 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
     if (auto parent = ctx->getCurrentMacro()) {
       auto arg = parent->stack.find(pseudo);
       if (arg != parent->stack.end()) {
-        auto backup = parent;
         auto [node, type] = (*arg).second;
         if (node->parentMacro != nullptr) ctx->macroBacktrace.push_back({p_node->getDBGInfo(), node->parentMacro});
         if (!p_node->asStatement && type == Macro::ArguementType::STATEMENT) {

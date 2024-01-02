@@ -23,7 +23,7 @@ std::vector<types::DefinedType::ClassField*> Transformer::getMemberList(
   }
 
   // add current class members
-  for (int i = 0; i < fields.size(); i++) {
+  for (size_t i = 0; i < fields.size(); i++) {
     auto field = fields.at(i);
     // check if field has the same name as any member in member_list
     bool exists = false;

@@ -66,7 +66,7 @@ std::pair<types::Type*, int> matchedGeneric(Expression::Param* generic, types::T
       auto generics = genericRefType->getGenerics();
       auto argGenerics = generic->getType()->getGenerics();
       if (generics.size() < argGenerics.size()) return {arg, 1};
-      for (int i = 0; i < argGenerics.size(); i++) {
+      for (int i = 0; i < (int)argGenerics.size(); i++) {
         if (genericMatch(genericParam, argGenerics[i])) {
           indexExists = i;
           break;

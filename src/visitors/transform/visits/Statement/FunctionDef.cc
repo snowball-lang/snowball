@@ -78,9 +78,9 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     auto uuid = ctx->createIdentifierName(name);
     // TODO: check for already existing functions (for no mangled versions)
     if (p_node->hasAttribute(Attributes::NO_MANGLE) || p_node->hasAttribute(Attributes::EXPORT) || p_node->isExtern()) {
-      auto hasExportName = p_node->hasAttribute(Attributes::EXPORT);
-      auto exportName = p_node->getAttributeArgs(Attributes::EXPORT).find("name");
-      if (exportName != p_node->getAttributeArgs(Attributes::EXPORT).end()) { name = exportName->second; }
+      const auto attrArgs = p_node->getAttributeArgs(Attributes::EXPORT);
+      auto exportName = attrArgs.find("name");
+      if (exportName != attrArgs.end()) { name = exportName->second; }
 
       if (std::find(ctx->exported.begin(), ctx->exported.end(), name) != ctx->exported.end()) {
         E<VARIABLE_ERROR>(

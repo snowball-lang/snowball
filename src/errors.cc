@@ -84,7 +84,7 @@ void NiceError::print_error(bool asTail) const {
   //        [white]hello[gray]<string>(1, 2, 3)
   std::string line_str = "";
   for (size_t i = 0; i < cb_dbg_info->line_str.size(); i++) {
-    if (i >= cb_dbg_info->pos.second - 1 && i < cb_dbg_info->pos.second + cb_dbg_info->width - 1) {
+    if (i >= (size_t)cb_dbg_info->pos.second - 1 && i < cb_dbg_info->pos.second + cb_dbg_info->width - 1) {
       line_str += BWHT;
     } else if (i >= cb_dbg_info->pos.second + cb_dbg_info->width - 1) {
       line_str += BLK;
