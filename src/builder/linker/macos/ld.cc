@@ -41,7 +41,6 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   linkerArgs.push_back("-L/usr/lib");
 
   // TODO: we might not find it and we will need to search for System.B
-  linkerArgs.push_back("-lSystem");
 
   for (auto& rpath : rpaths) {
     linkerArgs.push_back("-L"+rpath);
