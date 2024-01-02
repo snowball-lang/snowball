@@ -340,6 +340,15 @@ private:
    * constant      ::=  "const" <identifier> ":" <type> "=" [expr] ";"
    */
   Syntax::Statement::VariableDecl* parseConstant();
+  /**
+   * enum          ::=  "enum" <identifier> "{" [body] "}"
+   * body          ::=  [[identifier] "(" [types] ")" ","] ...
+   */
+  Syntax::Statement::EnumTypeDef* parseEnum();
+  /**
+   * case         ::=  "case" [expr] ":" [block]
+   */
+  Syntax::Statement::Switch* parseSwitch();
 
   /// @brief Parses a statement
   /// @return a statement

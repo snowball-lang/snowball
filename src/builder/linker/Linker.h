@@ -27,8 +27,13 @@ class Linker {
   /// @brief The target triple.
   llvm::Triple target;
   /// @brief A list of rpaths to be added to the executable.
+#ifdef __APPLE__
+  std::vector<std::string> rpaths = {
+          "@executable_path/../lib", "@executable_path/../Frameworks", "/usr/local/lib", "/usr/lib"};
+#else
   std::vector<std::string> rpaths = {
           "/usr/local/lib", "/usr/lib", "/usr/lib/x86_64-linux-gnu", "/lib/x86_64-linux-gnu", "/lib"};
+#endif
 
 public:
   /**

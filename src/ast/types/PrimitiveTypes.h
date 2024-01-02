@@ -80,8 +80,8 @@ public:
   std::int32_t getBits() const { return bits; }
   SNOWBALL_TYPE_COPIABLE(FloatType)
 
-  virtual std::int64_t sizeOf() const override { return bits / 8; }
-  virtual std::int64_t alignmentOf() const override { return bits / 8; }
+  virtual std::int64_t sizeOf() const override { return bits; }
+  virtual std::int64_t alignmentOf() const override { return bits; }
 };
 
 /**
@@ -99,8 +99,8 @@ public:
   bool isSigned() const { return isItSigned; }
   SNOWBALL_TYPE_COPIABLE(IntType)
 
-  virtual std::int64_t sizeOf() const override { return bits == 1 ? 1 : (std::int64_t)(bits / 8); }
-  virtual std::int64_t alignmentOf() const override { return bits == 1 ? 1 : (std::int64_t)(bits / 8); }
+  virtual std::int64_t sizeOf() const override { return bits == 1 ? 1 : (std::int64_t)(bits); }
+  virtual std::int64_t alignmentOf() const override { return bits == 1 ? 1 : (std::int64_t)(bits); }
 };
 
 /// @brief Utility method to check if a type is an integer type.

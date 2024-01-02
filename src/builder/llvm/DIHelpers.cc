@@ -1,6 +1,7 @@
 
 #include "../../ast/errors/error.h"
 #include "../../ast/types/Interface.h"
+#include "../../ast/types/EnumType.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 #include "../../visitors/Transformer.h"
@@ -42,8 +43,6 @@ llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
 }
 
 llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
-  auto llvmType = getLLVMType(ty);
-
   if (auto intTy = cast<types::IntType>(ty)) {
     return dbg.builder->createBasicType(ty->getName(), ty->sizeOf() * 8, intTy->isSigned() ? llvm::dwarf::DW_ATE_signed : llvm::dwarf::DW_ATE_unsigned);
   } else if (is<types::FloatType>(ty)) {
@@ -67,6 +66,26 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     return dbg.builder->createPointerType(subroutineType, ty->sizeOf() * 8);
   } else if (auto c = cast<types::TypeAlias>(ty)) {
     return getDIType(c->getBaseType());
+  } else if (auto e = cast<types::EnumType>(ty)) {
+    auto dbgInfo = e->getDBGInfo();
+    auto file = dbg.getFile(dbgInfo->getSourceInfo()->getPath());
+    int enumIndex = 0;
+    auto debugType = dbg.builder->createEnumerationType(
+            file,
+            e->getPrettyName(),
+            file,
+            dbgInfo->line,
+            ty->sizeOf(),
+            ty->alignmentOf(),
+            dbg.builder->getOrCreateArray(vector_iterate<types::EnumType::EnumField, llvm::Metadata*>(
+                    e->getFields(),
+                    [&](types::EnumType::EnumField t) {
+                      return dbg.builder->createEnumerator(t.name, enumIndex++);
+                    }
+            )),
+            nullptr
+    );
+    return debugType;
   } else if (auto c = cast<types::BaseType>(ty)) {
     auto asDefinedType = utils::cast<types::DefinedType>(c);
     auto asInterfaceType = utils::cast<types::InterfaceType>(c);
@@ -118,7 +137,7 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     }
     llvm::DIType* parentDIType = nullptr;
     if (asDefinedType)
-      if (auto p = asDefinedType->getParent()) { parentDIType = getDIType(asDefinedType->getParent()); }
+      if (auto p = asDefinedType->getParent()) { parentDIType = getDIType(p); }
     // TODO: create struct type if it's a struct
     debugType = dbg.builder->createClassType(
             file,

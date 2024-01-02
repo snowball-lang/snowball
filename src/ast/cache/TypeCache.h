@@ -13,6 +13,7 @@
 #include "../../visitors/TransformState.h"
 #include "../types/DefinedType.h"
 #include "../types/Interface.h"
+#include "../types/EnumType.h"
 #include "../types/TypeAlias.h"
 
 namespace snowball {

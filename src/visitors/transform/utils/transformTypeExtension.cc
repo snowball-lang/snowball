@@ -94,7 +94,7 @@ refetchUUID:
 
           auto ast = definedType->getAST();
           assert(ast->getGenerics().size() == definedType->getGenerics().size());
-          for (int i = 0; i < ast->getGenerics().size(); i++) {
+          for (size_t i = 0; i < ast->getGenerics().size(); i++) {
             auto generic = ast->getGenerics().at(i);
             auto genericType = definedType->getGenerics().at(i);
             ctx->addItem(generic->getName(), std::make_shared<transform::Item>(genericType));

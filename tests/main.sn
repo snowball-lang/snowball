@@ -28,6 +28,7 @@ import pkg::map;
 import pkg::iters;
 import pkg::env;
 import pkg::strings;
+import pkg::enums;
 
 ////import std::io::{{ println }};
 
@@ -36,6 +37,19 @@ import std::env as os_env;
 
 //import std::io::{ println };
 
+enum Test {
+    A,
+    B(i64),
+    C(i32, bool),
+}
+
 public func main() i32 {
-    io::println(os_env::getvar("PATH").val());
+    let a = Test::B(1 as i64);
+    let c = Test::C(1, true);
+
+    case a {
+        A => io::println("A"),
+        B(x) => io::println("B"),
+        C(x, y) => io::println("C"),
+    }
 }

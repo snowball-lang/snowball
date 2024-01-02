@@ -17,7 +17,7 @@ Transformer::getLLVMBody(std::string block, std::vector<Syntax::Expression::Type
   std::vector<LLVMIRChunk> chunks;
   int typeIndex = 0;
 
-  for (int i = 0; i < block.size();) {
+  for (size_t i = 0; i < block.size();) {
     if (block[i] == '{' && block[i + 1] == '=') {
       // we found a type
       // we need to find the end of the type

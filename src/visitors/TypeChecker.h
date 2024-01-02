@@ -84,6 +84,8 @@ class TypeChecker : public AcceptorExtend<TypeChecker, codegen::ValueVisitor> {
   /// @brief It performs fixes to the generated types
   /// @example Fixing vtables with overriden members
   void fixTypes(std::shared_ptr<types::BaseType> ty);
+  /// @brief Type check enum initializations
+  void checkEnumInit(ir::Call* p_node);
 
 public:
   TypeChecker(std::shared_ptr<ir::Module> mod);

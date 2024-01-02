@@ -46,6 +46,12 @@ void FunctionDef::setContextState(std::shared_ptr<transform::ContextState> state
 std::map<Expression::Identifier*, Expression::Base*>::iterator ConstructorDef::initArgsBegin() {
   return initArgs.begin();
 }
+EnumTypeDef::EnumTypeDef(std::string name, Privacy::Status prvc) : AcceptorExtend<EnumTypeDef, Privacy>(prvc), name(name) { }
+std::string EnumTypeDef::getName() const { return name; }
+void EnumTypeDef::addField(std::pair<std::string, std::vector<Expression::TypeRef*>> field) { fields.push_back(field); }
+std::vector<std::pair<std::string, std::vector<Expression::TypeRef*>>>& EnumTypeDef::getFields() { return fields; }
+EnumTypeDef::FieldIterator EnumTypeDef::fieldStart() { return fields.begin(); }
+EnumTypeDef::FieldIterator EnumTypeDef::fieldEnd() { return fields.end(); }
 std::map<Expression::Identifier*, Expression::Base*>::iterator ConstructorDef::initArgsEnd() { return initArgs.end(); }
 Namespace::Namespace(std::string name, std::vector<Node*> body) : body(body), name(name) { }
 std::string Namespace::getName() const { return name; }

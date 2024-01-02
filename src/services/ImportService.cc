@@ -37,7 +37,6 @@ std::string ImportService::getModuleUUID(std::filesystem::path path) {
 std::pair<fs::path, std::string>
 ImportService::getImportPath(const std::string package, std::vector<std::string> path, const std::string extension) {
   auto packagePath = getPackagePath(package);
-  bool isPackage = package == "pkg";
 
   fs::path definedPath;
   for (auto p : path) { definedPath /= p; }

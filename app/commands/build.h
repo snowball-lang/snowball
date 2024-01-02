@@ -1,5 +1,5 @@
 
-#include "app/cli.h"
+#include "cli.h"
 #include "compiler.h"
 #include "constants.h"
 #include "errors.h"
@@ -23,7 +23,7 @@ int build(app::Options::BuildOptions p_opts) {
   std::string filename = p_opts.file;
   std::string package_name = "file";
   std::string package_version = "<unknown version>";
-  bool isStaticLib = false; // TODO: implement static library support
+  //bool isStaticLib = false; // TODO: implement static library support
 
   if (p_opts.file.empty()) {
     toml::parse_result parsed_config = Compiler::getConfiguration();

@@ -113,7 +113,7 @@ std::string FunctionCall::getArgumentsAsString(const std::vector<types::Type*> a
   int i = 0;
   for (auto arg = args.begin(); arg != args.end(); ++arg) {
     result += (*arg)->getPrettyName();
-    if (i != args.size() - 1) { result += ", "; }
+    if (i != (int)args.size() - 1) { result += ", "; }
     i++;
   }
 
@@ -126,7 +126,7 @@ std::string GenericIdentifier::getNiceName() const {
   int gIndex = 0;
   for (auto t : generics) {
     gens += t->getPrettyName();
-    if (gIndex != (generics.size() - 1)) { gens += ", "; }
+    if (gIndex != (int)(generics.size() - 1)) { gens += ", "; }
 
     gIndex++;
   }
@@ -157,7 +157,7 @@ std::string TypeRef::getPrettyName() const {
   int gIndex = 0;
   for (auto t : generics) {
     gens += t->getPrettyName();
-    if (gIndex != (generics.size() - 1)) { gens += ", "; }
+    if (gIndex != (int)(generics.size() - 1)) { gens += ", "; }
 
     gIndex++;
   }

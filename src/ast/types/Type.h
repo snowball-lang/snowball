@@ -55,6 +55,7 @@ public:
     CLASS,
     REF,
     INTERFACE,
+    ENUM,
   } kind;
 
 public:

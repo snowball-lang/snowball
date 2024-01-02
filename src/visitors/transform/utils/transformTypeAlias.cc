@@ -27,11 +27,8 @@ types::Type* Transformer::transformTypeAlias(
     ctx->withScope([&] {
       std::vector<types::Type*> defaultGenerics;
       int defaultGenericStart = 0;
-
-      auto backupClass = ctx->getCurrentClass();
       auto classGenerics = ty->getGenerics();
-
-      for (int genericCount = 0; genericCount < generics.size(); genericCount++) {
+      for (size_t genericCount = 0; genericCount < generics.size(); genericCount++) {
         auto generic = classGenerics.at(genericCount);
         auto generatedGeneric = generics.at(genericCount);
         auto item = std::make_shared<transform::Item>(generatedGeneric);

@@ -12,17 +12,13 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ir::TryCatch* node) {
-  auto ourCaughtResultType = llvm::StructType::get(*context, {builder->getInt8PtrTy(), builder->getInt32Ty()});
-  const bool isRoot = tryCatchStack.empty();
   auto parentFunc = ctx->getCurrentFunction();
   auto padType = llvm::StructType::get(builder->getInt8PtrTy(), builder->getInt32Ty());
   auto unwindType = llvm::StructType::get(builder->getInt64Ty());
   auto execType = llvm::StructType::get(getTypeInfoType(), builder->getInt8PtrTy());
 
-  auto ourExceptionNotThrownState = llvm::ConstantInt::get(llvm::Type::getInt8Ty(*context), 0);
   auto ourExceptionThrownState = llvm::ConstantInt::get(llvm::Type::getInt8Ty(*context), 1);
-  auto ourExceptionCaughtState = llvm::ConstantInt::get(llvm::Type::getInt8Ty(*context), 2);
-
+  
   // Create the try block
   auto tryBlock = llvm::BasicBlock::Create(*context, "try", parentFunc);
   builder->CreateBr(tryBlock);
@@ -59,7 +55,7 @@ void LLVMBuilder::visit(ir::TryCatch* node) {
   build(node->getBlock().get());
   tryCatchStack.pop_back();
 
-  for (int i = 0; i < catchInstances.size(); i++) {
+  for (int i = 0; i < (int)catchInstances.size(); i++) {
     auto catchBlock = catchInstances[i];
     auto catchVar = catchVars[i];
     auto catchBlockBB = llvm::BasicBlock::Create(*context, "catch.block", parentFunc);
@@ -147,7 +143,7 @@ void LLVMBuilder::visit(ir::TryCatch* node) {
   auto castSwitch = builder->CreateSwitch(objType, defaultRouteBlock, (unsigned) catchInstances.size());
 
   // TODO: support for "catch all"
-  for (int i = 0; i < info.handlers.size(); i++) {
+  for (int i = 0; i < (int)info.handlers.size(); i++) {
     // set finally depth
     auto mangledType = catchVars[i]->getType()->getMangledName();
     auto type = getLLVMType(catchVars[i]->getType());

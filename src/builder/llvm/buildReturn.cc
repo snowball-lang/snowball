@@ -2,6 +2,7 @@
 #include "../../ast/types/ReferenceType.h"
 #include "../../ir/values/Call.h"
 #include "../../ir/values/IndexExtract.h"
+#include "../../ir/values/EnumInit.h"
 #include "../../ir/values/Return.h"
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
@@ -19,8 +20,6 @@ void LLVMBuilder::visit(ir::Return* ret) {
 
   llvm::Value* val = nullptr;
   if (exprValue != nullptr) {
-    auto funcRet = ctx->getCurrentFunction()->getReturnType();
-
     // case: "let a = x();" where x is a function returning a type that's not a pointer
     // We store the value into the first argument of the function.
     // This is because we can't return a struct that's not a pointer.
@@ -28,7 +27,8 @@ void LLVMBuilder::visit(ir::Return* ret) {
     if (utils::is<types::BaseType>(ret->getType())) {
       auto retArg = ctx->getCurrentFunction()->getArg(0);
       bool doNotMove = false;
-      if (is<ir::Call>(exprValue.get()) && !is<ir::ObjectInitialization>(exprValue.get())) {
+      if (is<ir::Call>(exprValue.get()) && !is<ir::ObjectInitialization>(exprValue.get()) &&
+          !is<ir::EnumInit>(exprValue.get())) {
         //ctx->retValueUsedFromArg = true;
         //doNotMove = true;
       }

@@ -84,6 +84,11 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
           break;
         }
 
+        case TokenType::KWORD_ENUM: {
+          global.push_back(parseEnum());
+          break;
+        }
+
         case TokenType::KWORD_STRUCT: {
           global.push_back(parseStructure());
           break;

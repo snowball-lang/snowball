@@ -217,7 +217,6 @@ typedef int32_t snowball_int_t;
 #define _SNOWBALL_KEYWORD__IF        "if"
 #define _SNOWBALL_KEYWORD__AS        "as"
 #define _SNOWBALL_KEYWORD__FOR       "for"
-#define _SNOWBALL_KEYWORD__CASE      "case"
 #define _SNOWBALL_KEYWORD__ENUM      "enum"
 #define _SNOWBALL_KEYWORD__TRUE      "true"
 #define _SNOWBALL_KEYWORD__ELSE      "else"
@@ -244,7 +243,7 @@ typedef int32_t snowball_int_t;
 #define _SNOWBALL_KEYWORD__DO        "do"
 #define _SNOWBALL_KEYWORD__RETURN    "return"
 #define _SNOWBALL_KEYWORD__DECLTYPE  "decltype"
-#define _SNOWBALL_KEYWORD__SWITCH    "switch"
+#define _SNOWBALL_KEYWORD__SWITCH    "case"
 #define _SNOWBALL_KEYWORD__DEFAULT   "default"
 #define _SNOWBALL_KEYWORD__CONTINUE  "continue"
 #define _SNOWBALL_KEYWORD__FUNCTION  "func"
@@ -265,6 +264,7 @@ typedef int32_t snowball_int_t;
 #define _SN_CLASS_PREFIX  "class."
 #define _SN_STRUCT_PREFIX "struct."
 #define _SN_VTABLE_PREFIX "vtable."
+#define _SN_ENUM_PREFIX   "enum."
 
 #define _SN_MANGLE_PREFIX "_ZN$SN"
 

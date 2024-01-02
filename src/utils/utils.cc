@@ -15,6 +15,11 @@
 
 #include <filesystem>
 #include <iostream>
+
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
+
 namespace fs = std::filesystem;
 
 namespace snowball {
@@ -25,6 +30,17 @@ std::string get_exe_folder() {
   // Windows specific
   wchar_t szPath[MAX_PATH];
   GetModuleFileNameW(NULL, szPath, MAX_PATH);
+#elif __APPLE__
+  const size_t bufSize = PATH_MAX + 1;
+  char dirNameBuffer[bufSize];
+  uint32_t size = bufSize;
+
+  if (_NSGetExecutablePath(dirNameBuffer, &size) != 0) {
+    // Buffer size is too small.
+    abort();
+  }
+
+  std::string szPath(dirNameBuffer);
 #else
   // Linux specific
   char szPath[PATH_MAX];
@@ -44,7 +60,7 @@ getSubstringByRange(const std::string& str, const std::pair<int, int>& start, co
 
   // Iterate over the string to find the starting and ending positions
   // of the substring
-  for (int i = 0; i < str.length(); i++) {
+  for (int i = 0; i < (int)str.length(); i++) {
     if (currentLine == start.first && currentColumn == start.second) { startPos = i; }
     if (currentLine == end.first && currentColumn == end.second) {
       endPos = i;
@@ -118,7 +134,7 @@ std::list<std::string> split(std::string str, std::string token) {
   std::list<std::string> result;
   while (str.size()) {
     int index = str.find(token);
-    if (index != std::string::npos) {
+    if (index != (int)std::string::npos) {
       result.push_back(str.substr(0, index));
       str = str.substr(index + token.size());
       if (str.size() == 0) result.push_back(str);

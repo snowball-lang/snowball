@@ -349,8 +349,6 @@ void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, Doc
         if (params.size() > 0) {
             body += "<hr/><h1 style=\"color:rgb(14 116 144);\">Parameters</h1>";
             for (auto& [tag, value] : params) {
-                auto idx = tag.find_first_of("$");
-                auto paramIdx = std::stoi(tag.substr(idx + 1));
                 std::string paramName = "";
 
                 if (utils::startsWith(value, "[in]")) {

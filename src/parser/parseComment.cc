@@ -17,7 +17,6 @@ CommentType* Parser::parseDocstring(std::string p_content) {
 
   auto comment = m_current.getComment();
   bool valid = true;
-  bool isMultiLine = false;
   std::map<std::string, std::string> tags;
   std::string content;
 
@@ -26,7 +25,6 @@ CommentType* Parser::parseDocstring(std::string p_content) {
   } else if (utils::startsWith(comment, "/**")) {
     comment = comment.substr(3);
     comment = comment.substr(0, comment.size() - 2);
-    isMultiLine = true;
   } else {
     valid = false;
   }
@@ -53,7 +51,7 @@ CommentType* Parser::parseDocstring(std::string p_content) {
           auto idx = line.find_first_of("*");
           line = line.substr(idx + 1);
         }
-        if (trim.empty() || (trim == "*") && !lastTag.empty()) lastTag = "";
+        if ((trim.empty() || (trim == "*")) && !lastTag.empty()) lastTag = "";
         if (utils::startsWith(line, "  ") && (!trim.empty() || !(trim != "*")) && !lastTag.empty()) {
           tags[lastTag] += "\n" + line.substr(1);
         } else {

@@ -12,6 +12,7 @@ SN_DEFINITE_ASSIGMENT_VISIT(Expression::PseudoVariable) { }
 SN_DEFINITE_ASSIGMENT_VISIT(Statement::LoopFlow) { }
 SN_DEFINITE_ASSIGMENT_VISIT(Statement::TypeAlias) { }
 SN_DEFINITE_ASSIGMENT_VISIT(Statement::ImportStmt) { }
+SN_DEFINITE_ASSIGMENT_VISIT(Statement::EnumTypeDef) { }
 
 } // namespace Syntax
 } // namespace snowball

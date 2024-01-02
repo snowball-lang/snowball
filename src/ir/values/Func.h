@@ -235,14 +235,14 @@ public:
   template <typename T>
   static bool
   argumentSizesEqual(std::vector<T> functionArgs, const std::vector<types::Type*> arguments, bool isVariadic = false) {
-    int numFunctionArgs = functionArgs.size();
-    int numProvidedArgs = arguments.size();
+    auto numFunctionArgs = functionArgs.size();
+    auto numProvidedArgs = arguments.size();
     int numDefaultArgs = 0;
     // DUMP((std::is_same_v<T, Argument>::value))
     //  Calculate the number of default arguments
     if (numFunctionArgs > numProvidedArgs) {
       if constexpr (std::is_same_v<T, Syntax::Expression::Param*>) {
-        for (int i = numProvidedArgs; i < numFunctionArgs; i++) {
+        for (size_t i = numProvidedArgs; i < numFunctionArgs; i++) {
           if (functionArgs.at(i)->hasDefaultValue()) {
             numDefaultArgs++;
           } else {

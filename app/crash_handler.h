@@ -363,7 +363,7 @@ int _execute(
     std::string argss;
     argss = "\"" + p_path + "\"";
 
-    for (int i = 0; i < p_arguments.size(); i++) { argss += std::string(" \"") + p_arguments[i] + "\""; }
+    for (size_t i = 0; i < p_arguments.size(); i++) { argss += std::string(" \"") + p_arguments[i] + "\""; }
 
     if (read_stderr) {
       argss += " 2>&1"; // Read stderr too
@@ -406,10 +406,10 @@ int _execute(
     std::vector<std::string> cs;
 
     cs.push_back(p_path);
-    for (int i = 0; i < p_arguments.size(); i++) cs.push_back(p_arguments[i]);
+    for (size_t i = 0; i < p_arguments.size(); i++) cs.push_back(p_arguments[i]);
 
     std::vector<char*> args;
-    for (int i = 0; i < cs.size(); i++) args.push_back((char*) cs[i].c_str());
+    for (size_t i = 0; i < cs.size(); i++) args.push_back((char*) cs[i].c_str());
     args.push_back(0);
 
     execvp(p_path.c_str(), &args[0]);
