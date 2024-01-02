@@ -20,7 +20,7 @@ SN_DEFINITE_ASSIGMENT_VISIT(Statement::Conditional) {
   if (auto e = p_node->getElse()) {
     std::vector<std::string> elseInited;
     asBlock([&] {
-      for (auto i : p_node->getBlock()->getStmts()) { i->accept(this); }
+      for (auto i : e->getStmts()) { i->accept(this); }
 
       elseInited = this->state.inited;
     });

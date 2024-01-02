@@ -95,7 +95,6 @@ TypeRef* Parser::parseType() {
   while (is<TokenType::SYM_COLCOL>()) {
     next();
     auto i = parseIdentifier(true);
-    auto base = ast;
     name += "::" + i->getIdentifier();
     id += "." + i->getIdentifier();
     ast = Syntax::N<Index>(ast, i, true);
@@ -108,12 +107,12 @@ TypeRef* Parser::parseType() {
   auto t = Syntax::TR(ast, name, dbg, id);
   t->setGenerics(generics);
   t->setMutable(isMutable);
-  for (int i = 0; i < referenceDepth.size(); i++) {
+  for (int i = 0; i < (int)referenceDepth.size(); i++) {
     auto base = t;
     t = Syntax::N<ReferenceType>(base, dbg);
     t->setMutable(referenceDepth[i]);
   }
-  for (int i = 0; i < pointerDepth.size(); i++) {
+  for (int i = 0; i < (int)pointerDepth.size(); i++) {
     auto base = t;
     if (base->isReferenceType()) { createError<SYNTAX_ERROR>("Cannot have a pointer to a reference type!"); }
     t = Syntax::N<PointerType>(base, pointerDepth[i], dbg);

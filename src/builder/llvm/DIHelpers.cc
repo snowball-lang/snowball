@@ -43,8 +43,6 @@ llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
 }
 
 llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
-  auto llvmType = getLLVMType(ty);
-
   if (auto intTy = cast<types::IntType>(ty)) {
     return dbg.builder->createBasicType(ty->getName(), ty->sizeOf() * 8, intTy->isSigned() ? llvm::dwarf::DW_ATE_signed : llvm::dwarf::DW_ATE_unsigned);
   } else if (is<types::FloatType>(ty)) {
@@ -139,7 +137,7 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     }
     llvm::DIType* parentDIType = nullptr;
     if (asDefinedType)
-      if (auto p = asDefinedType->getParent()) { parentDIType = getDIType(asDefinedType->getParent()); }
+      if (auto p = asDefinedType->getParent()) { parentDIType = getDIType(p); }
     // TODO: create struct type if it's a struct
     debugType = dbg.builder->createClassType(
             file,

@@ -43,7 +43,7 @@ llvm::Function* LLVMBuilder::getGlobalCTOR(bool createIfNone) {
     return nullptr;
   }
 
-  auto body = h.create<llvm::BasicBlock>(builder->getContext(), "body", fn);
+  h.create<llvm::BasicBlock>(builder->getContext(), "body", fn);
   llvm::appendToGlobalCtors(*module, fn, 65535);
   return fn;
 }

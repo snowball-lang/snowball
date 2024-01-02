@@ -152,7 +152,7 @@ void TypeChecker::checkEnumInit(ir::Call* p_node) {
     );
   }
 
-  for (int i = 0; i < types.size(); i++) {
+  for (int i = 0; i < (int)types.size(); i++) {
     if (!types[i]->is(enumField->types[i])) {
       E<TYPE_ERROR>(
               p_node,
@@ -169,7 +169,6 @@ void TypeChecker::checkEnumInit(ir::Call* p_node) {
 
 VISIT(Call) {
   auto fn = utils::dyn_cast<ir::Func>(p_node->getCallee());
-  bool validMethod = fn != nullptr && fn->hasParent() && !fn->isStatic();
   if (utils::is<ir::ZeroInitialized>(p_node)) return;
   if (utils::is<ir::ObjectInitialization>(p_node)) {
     for (auto a : p_node->getArguments()) { a->visit(this); }

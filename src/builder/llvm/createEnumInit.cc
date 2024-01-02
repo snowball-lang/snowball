@@ -32,6 +32,7 @@ llvm::Value* LLVMBuilder::createEnumInit(ir::Call* call) {
         builder->CreateStore(expr(arg.get()), gep);
         i++;
     }
+    return enumInitLLVM;
 }
 
 } // namespace codegen

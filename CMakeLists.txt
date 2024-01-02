@@ -12,7 +12,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-limit-debug-info")
 endif()
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-add_compile_options ( -Wall -Werror )
+add_compile_options ( -Wall -Wno-unused-function -Wno-comment -Wno-unknown-pragmas)
+# only when compiling c++
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-reorder")
 
 if(CMAKE_OSX_ARCHITECTURES MATCHES "arm64")
   set(CPU_TYPE ${CMAKE_OSX_ARCHITECTURES})
@@ -71,7 +73,7 @@ set(LLVM_ENABLE_ZLIB OFF CACHE BOOL "" FORCE)
 set(LLVM_INCLUDE_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(LLVM_INCLUDE_DOCS OFF CACHE BOOL "" FORCE)
 
-set(CMAKE_CXX_FLAGS "-fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
 add_definitions(${LLVM_DEFINITIONS})
 

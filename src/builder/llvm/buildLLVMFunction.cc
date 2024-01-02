@@ -56,14 +56,14 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
   buf << " @\"" << llvmFn->getName() << "\"(";
 
   auto args = fn->getArgs();
-  for (int i = 0; i < args.size(); i++) {
+  for (int i = 0; i < (int)args.size(); i++) {
     auto l_front = args.begin();
     std::advance(l_front, i);
 
     llvmFn->getArg(i)->getType()->print(buf, false, true);
     buf << " %" << l_front->first;
 
-    if (i < (args.size() - 1)) buf << ", ";
+    if (i < (int)(args.size() - 1)) buf << ", ";
   }
 
   buf << ") { \nentry:\n\t";

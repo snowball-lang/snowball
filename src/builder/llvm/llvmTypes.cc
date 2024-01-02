@@ -75,7 +75,7 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid) {
     }
 
     if (c->hasVtable) {
-      auto t = getVtableType(c); // generate vtable type
+      (void)getVtableType(c); // generate vtable type
       generatedFields.insert(
               generatedFields.begin(),
               llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()
@@ -86,7 +86,7 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid) {
         p = p->getParent();
         p = utils::cast<types::DefinedType>(ctx->typeInfo.find(p->getId())->second.get());
         if (!p) break;
-        auto t = getVtableType(p); // generate vtable type
+        (void)getVtableType(p); // generate vtable type
         generatedFields.insert(
                 generatedFields.begin(),
                 llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()

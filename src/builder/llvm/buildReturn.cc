@@ -20,8 +20,6 @@ void LLVMBuilder::visit(ir::Return* ret) {
 
   llvm::Value* val = nullptr;
   if (exprValue != nullptr) {
-    auto funcRet = ctx->getCurrentFunction()->getReturnType();
-
     // case: "let a = x();" where x is a function returning a type that's not a pointer
     // We store the value into the first argument of the function.
     // This is because we can't return a struct that's not a pointer.

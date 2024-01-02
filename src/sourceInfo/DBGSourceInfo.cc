@@ -50,7 +50,7 @@ std::string DBGSourceInfo::get_pos_str() const {
   bool done = false;
   for (size_t i = 0; i < line_str.size(); i++) {
     cur_col++;
-    if (cur_col == pos.second) {
+    if (cur_col == (size_t)pos.second) {
       for (uint32_t i = 0; i < width; i++) { ss_pos << '~'; }
       done = true;
       break;
