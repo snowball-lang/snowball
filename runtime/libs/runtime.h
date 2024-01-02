@@ -2,6 +2,8 @@
 #include <mutex>
 #include <sstream>
 
+#include "sym.h"
+
 #ifndef _SNOWBALL_RUNTIME_H_
 #define _SNOWBALL_RUNTIME_H_
 
