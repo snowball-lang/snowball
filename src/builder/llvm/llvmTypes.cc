@@ -132,7 +132,8 @@ llvm::Type* LLVMBuilder::createEnumFieldType(types::EnumType* ty, std::string fi
   auto enumField = *std::find_if(ty->getFields().begin(), ty->getFields().end(), [&](auto f) {
     return f.name == field;
   });
-  auto enumSize = ty->sizeOf();
+  auto dataLayout = module->getDataLayout();
+  auto enumSize = dataLayout.getStructLayout((llvm::StructType*)getLLVMType(ty))->getSizeInBits();
   // convert this to a struct and an array of bytes at the end to fix alignment issues
   auto type = llvm::StructType::create(*context, name);
   auto fieldTypes = enumField.types;
@@ -141,11 +142,11 @@ llvm::Type* LLVMBuilder::createEnumFieldType(types::EnumType* ty, std::string fi
   generatedFields.push_back(builder->getInt8Ty()); // enum field
   for (auto t : fieldTypes) {
     auto llvmType = getLLVMType(t);
-    fieldSize += t->sizeOf();
+    fieldSize += t->sizeOf()*8;
     generatedFields.push_back(llvmType);
   }
-  auto rem = ((enumSize/8)-1) - fieldSize;
-  if (rem > 1)
+  auto rem = (enumSize - (fieldSize - 8))/8/8;
+  if (rem > 0)
     generatedFields.push_back(llvm::ArrayType::get(builder->getInt8Ty(), rem));
   type->setBody(generatedFields);
   enumTypes.insert({name, type});

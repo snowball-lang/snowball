@@ -36,6 +36,11 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
       return;
     } else if (auto indexExtract = utils::dyn_cast<ir::IndexExtract>(*value)) {
       checkIfContextEqual(indexExtract->getField());
+    } else if (auto enu = utils::dyn_cast<ir::EnumInit>(*value)) {
+      auto call = getBuilder().createCall(p_node->getDBGInfo(), enu, {});
+      getBuilder().setType(call, enu->getType());
+      this->value = call;
+      return;
     } else {
       assert(false);
     }

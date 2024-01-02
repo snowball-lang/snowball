@@ -67,7 +67,7 @@ Syntax::Statement::Switch* Parser::parseSwitch() {
 
       case TokenType::KWORD_DEFAULT: {
         next();
-        assert_tok<TokenType::OP_ARROW>("'->' expected after 'default' keyword");
+        assert_tok<TokenType::OP_ARROW>("'=>' expected after 'default' keyword");
         auto body = parseBlockOrStmt();
         cases.push_back(Syntax::Statement::Switch::CaseBlock{
           .expression = "", 
@@ -77,14 +77,15 @@ Syntax::Statement::Switch* Parser::parseSwitch() {
           .block = body,
         });
         next();
-        if (!is<TokenType::BRACKET_RCURLY>()) {
+        pk = peek();
+        if (!is<TokenType::BRACKET_RCURLY>(pk)) {
+          next();
           assert_tok<TokenType::SYM_COMMA>("',' expected after case block");
         }
-        prev();
       } break;
 
       default: {
-        createError<SYNTAX_ERROR>("expected case name or 'default' keyword");
+        createError<SYNTAX_ERROR>("expected 'case name' or 'default' keyword");
       } break;
     }
   }

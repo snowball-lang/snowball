@@ -112,13 +112,13 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
   } else if (macroName == "sizeof") {
     auto type = utils::cast<Expression::TypeRef>(args.at(0));
     auto tr = transformType(type);
-    this->value = getBuilder().createNumberValue(p_node->getDBGInfo(), tr->sizeOf());
+    this->value = getBuilder().createNumberValue(p_node->getDBGInfo(), tr->sizeOf()/8);
     this->value->setDBGInfo(p_node->getDBGInfo());
     this->value->setType(ctx->getInt32Type());
   } else if (macroName == "alignof") {
     auto type = utils::cast<Expression::TypeRef>(args.at(0));
     auto tr = transformType(type);
-    this->value = getBuilder().createNumberValue(p_node->getDBGInfo(), tr->alignmentOf());
+    this->value = getBuilder().createNumberValue(p_node->getDBGInfo(), tr->alignmentOf()/8);
     this->value->setDBGInfo(p_node->getDBGInfo());
     this->value->setType(ctx->getInt32Type());
   } else if (macroName == "include_str") {

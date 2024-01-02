@@ -133,6 +133,7 @@ SharedValue<VariableDeclaration> IRBuilder::createVariableDeclaration(
 ) {
   auto decl = N<VariableDeclaration>(dbgInfo, variable, value, isExtern);
   if (value != nullptr) setType(decl, value->getType());
+  else setType(decl, variable->getType());
   return decl;
 }
 SharedValue<ValueExtract> IRBuilder::createValueExtract(DBGSourceInfo* dbgInfo, SharedValue<> value) {

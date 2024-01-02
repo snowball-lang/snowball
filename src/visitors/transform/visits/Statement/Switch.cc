@@ -59,20 +59,32 @@ SN_TRANSFORMER_VISIT(Statement::Switch) {
                   "Enum fields are:\n - " + utils::join<std::vector<types::Type*>::iterator>(field->types.begin(), field->types.end(), "\n - ", [](auto x) { return (*x)->getPrettyName(); }))
         });
       }
+    } else if (caseInstance.isVariadic) {
+      E<SYNTAX_ERROR>(p_node, "Variadic is not needed!", {
+        .info = FMT("Enum field '%s' has %d arguments, but case has %d arguments!", field->name.c_str(), field->types.size(), caseArgs.size()),
+        .help = ("Try removing the variadic operator.\n"
+                "Enum fields are:\n - " + utils::join<std::vector<types::Type*>::iterator>(field->types.begin(), field->types.end(), "\n - ", [](auto x) { return (*x)->getPrettyName(); }))
+      });
     }
-    
-    std::vector<std::shared_ptr<ir::VariableDeclaration>> irArgs;
-    for (size_t i = 0; i < caseArgs.size(); i++) {
-      auto var = getBuilder().createVariable(p_node->getDBGInfo(), caseArgs[i], false, false, ctx->getScopeIndex());
-      irArgs.push_back(getBuilder().createVariableDeclaration(p_node->getDBGInfo(), var, nullptr));
-      getBuilder().setType(irArgs.back(), field->types[i]);
-    }
-    auto irCase = ir::Switch::Case {
-      .args = irArgs,
-      .block = utils::dyn_cast<ir::Block>(trans(caseBlock)),
-      .name = field->name
-    };
-    irCases.push_back(irCase);
+    ctx->withScope([&] {
+      std::vector<std::shared_ptr<ir::VariableDeclaration>> irArgs = {};
+      for (size_t i = 0; i < caseArgs.size(); i++) {
+        auto var = getBuilder().createVariable(p_node->getDBGInfo(), caseArgs[i], false, false, ctx->getScopeIndex());
+        getBuilder().setType(var, field->types[i]);
+        auto varDecl = getBuilder().createVariableDeclaration(p_node->getDBGInfo(), var, nullptr);
+        varDecl->setId(var->getId());
+        auto item = std::make_shared<transform::Item>(transform::Item::VALUE, var);
+        ctx->addItem(caseArgs[i], item);
+        assert(ctx->getCurrentFunction());
+        ctx->getCurrentFunction()->addSymbol(varDecl);
+        irArgs.push_back(varDecl);
+      }
+      irCases.push_back(ir::Switch::Case {
+        .args = irArgs,
+        .block = utils::dyn_cast<ir::Block>(trans(caseBlock)),
+        .name = field->name
+      });
+    });
   }
 
   auto irSwitch = getBuilder().createSwitch(p_node->getDBGInfo(), expr, irCases, defaultBlock);

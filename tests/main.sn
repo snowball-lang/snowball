@@ -28,6 +28,7 @@ import pkg::map;
 import pkg::iters;
 import pkg::env;
 import pkg::strings;
+import pkg::enums;
 
 ////import std::io::{{ println }};
 

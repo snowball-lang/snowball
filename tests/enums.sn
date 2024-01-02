@@ -1,0 +1,186 @@
+
+import std::io;
+
+@use_macro(assert)
+import std::asserts;
+
+namespace tests {
+
+enum TestEnum {
+    A,
+    B,
+    C(i32),
+    D(i32, i32),
+    E(String),
+    F(bool, String),
+    G(&String)
+};
+
+@test(expect = 1)
+func basic_match() i32 {
+    let a = TestEnum::A;
+
+    case a {
+        A => return 1,
+        B => return 2,
+        C(x) => return 3,
+        D(x, y) => return 4,
+        E(x) => return 5,
+        F(x, y) => return 6,
+        G(x) => return 7,
+    }
+}
+
+@test(expect = 2)
+func basic_match2() i32 {
+    let a = TestEnum::B;
+
+    case a {
+        A => return 1,
+        B => return 2,
+        C(x) => return 3,
+        D(x, y) => return 4,
+        E(x) => return 5,
+        F(x, y) => return 6,
+        G(x) => return 7,
+    }
+}
+
+@test(expect = 25)
+func get_var() i32 {
+    let a = TestEnum::C(25);
+
+    case a {
+        A => return 1,
+        B => return 2,
+        C(x) => return x,
+        D(x, y) => return 4,
+        E(x) => return 5,
+        F(x, y) => return 6,
+        G(x) => return 7,
+    }
+}
+
+@test(expect = 92)
+func second_var() i32 {
+    let a = TestEnum::D(25, 92);
+
+    case a {
+        A => return 1,
+        B => return 2,
+        C(x) => return 3,
+        D(x, y) => return y,
+        E(x) => return 5,
+        F(x, y) => return 6,
+        G(x) => return 7,
+    }
+}
+
+@test(expect = 5)
+func store_class() i32 {
+    let a = TestEnum::E("hello");
+
+    case a {
+        A => return 1,
+        B => return 2,
+        C(x) => return 3,
+        D(x, y) => return 4,
+        E(x) => {
+            assert!(x == "hello");
+            return x.size()
+        },
+        F(x, y) => return 6,
+        G(x) => return 7,
+    }
+}
+
+@test(expect = 5)
+func store_class2() i32 {
+    let a = TestEnum::F(true, "hello");
+
+    case a {
+        A => return 1,
+        B => return 2,
+        C(x) => return 3,
+        D(x, y) => return 4,
+        E(x) => return 5,
+        F(x, y) => {
+            assert!(x);
+            assert!(y == "hello");
+            return y.size();
+        },
+        G(x) => return 7,
+    }
+}
+
+@test(expect = 5)
+func store_ref() i32 {
+    let a = TestEnum::G(&"hello");
+
+    case a {
+        A => return 1,
+        B => return 2,
+        C(x) => return 3,
+        D(x, y) => return 4,
+        E(x) => return 5,
+        F(x, y) => return 6,
+        G(x) => {
+            assert!(*x == "hello");
+            return x.size();
+        },
+    }
+}
+
+enum GenericEnum<T> {
+    A(T)
+}
+
+@test(expect = 5)
+func generic_enum() i32 {
+    let a = GenericEnum<?i32>::A(5);
+
+    case a {
+        A(x) => return x,
+    }
+}
+
+enum GenericEnum2<T = i32> {
+    A(T)
+}
+
+@test(expect = 5)
+func generic_enum2() i32 {
+    let a = GenericEnum2::A(5);
+
+    case a {
+        A(x) => return x,
+    }
+}
+
+@test(expect = 8)
+func default_match() i32 {
+    let a = TestEnum::A;
+
+    case a {
+        B => return 2,
+        C(x) => return 3,
+        D(x, y) => return 4,
+        E(x) => return 5,
+        F(x, y) => return 6,
+        G(x) => return 7,
+        default => return 8
+    }
+}
+
+@test(expect = 4)
+func variadic_match() i32 {
+    let a = TestEnum::D(1, 2);
+
+    case a {
+        D(...) => return 4,
+        F(x, ...) => return 6,
+        default => return 8
+    }
+}
+
+} // namespace tests

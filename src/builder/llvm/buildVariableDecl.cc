@@ -1,5 +1,6 @@
 
 #include "../../ir/values/Argument.h"
+#include "../../ir/values/EnumInit.h"
 #include "../../ir/values/Call.h"
 #include "../../ir/values/VariableDeclaration.h"
 #include "../../utils/utils.h"
@@ -55,7 +56,7 @@ void LLVMBuilder::visit(ir::VariableDeclaration* variable) {
     );
   }
 
-  if (utils::is<ir::Call>(variable->getValue().get()) && utils::is<types::BaseType>(variable->getType())) {
+  if (utils::is<ir::Call>(variable->getValue().get()) && !utils::is<ir::EnumInit>(utils::dyn_cast<ir::Call>(variable->getValue())->getCallee().get()) && utils::is<types::BaseType>(variable->getType())) {
     ctx->callStoreValue = store;
     build(variable->getValue().get());
     ctx->callStoreValue = nullptr;
