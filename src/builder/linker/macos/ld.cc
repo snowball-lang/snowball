@@ -37,8 +37,6 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
 
   linkerArgs.push_back("-L.");
   linkerArgs.push_back("-L/opt/homebrew/lib");
-  linkerArgs.push_back("-L/usr/local/lib");
-  linkerArgs.push_back("-L/usr/lib");
 
   // TODO: we might not find it and we will need to search for System.B
 
