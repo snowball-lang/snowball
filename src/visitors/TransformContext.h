@@ -1,6 +1,7 @@
 
 #include "../ast/syntax/nodes.h"
 #include "../ast/types/Interface.h"
+#include "../ast/types/EnumType.h"
 #include "../ast/visitor/ASTContext.h"
 #include "../ast/visitor/Visitor.h"
 #include "../ir/builder/IRBuilder.h"

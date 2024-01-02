@@ -2,6 +2,7 @@
 #include "../../ast/errors/error.h"
 #include "../../utils/utils.h"
 #include "../../services/ImportService.h"
+#include "../../ast/types/EnumType.h"
 #include "LLVMBuilder.h"
 
 #include <llvm/IR/DerivedTypes.h>
@@ -36,6 +37,13 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid) {
   } else if (auto a = cast<types::TypeAlias>(t)) {
     assert(!"Unreachable type case found!");
     return getLLVMType(a->getBaseType());
+  } else if (auto e = cast<types::EnumType>(t)) {
+    if (types.find(e->getId()) != types.end()) return types.find(e->getId())->second;
+    auto size = e->sizeOf();
+    auto type = llvm::StructType::create(*context, _SN_ENUM_PREFIX + e->getMangledName());
+    type->setBody({builder->getInt8Ty(), llvm::ArrayType::get(builder->getInt8Ty(), (size/8)-1)});
+    types.insert({e->getId(), type});
+    return type;
   } else if (auto c = cast<types::BaseType>(t)) {
     llvm::StructType* s;
     if (auto it = types.find(c->getId()); it != types.end()) {
@@ -67,7 +75,7 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid) {
     }
 
     if (c->hasVtable) {
-      auto t = getVtableType(c); // generate vtable type
+      (void)getVtableType(c); // generate vtable type
       generatedFields.insert(
               generatedFields.begin(),
               llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()
@@ -78,7 +86,7 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid) {
         p = p->getParent();
         p = utils::cast<types::DefinedType>(ctx->typeInfo.find(p->getId())->second.get());
         if (!p) break;
-        auto t = getVtableType(p); // generate vtable type
+        (void)getVtableType(p); // generate vtable type
         generatedFields.insert(
                 generatedFields.begin(),
                 llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()
@@ -115,6 +123,34 @@ llvm::FunctionType* LLVMBuilder::getLLVMFunctionType(types::FunctionType* fn, co
   }
 
   return llvm::FunctionType::get(ret, argTypes, fn->isVariadic());
+}
+
+llvm::Type* LLVMBuilder::createEnumFieldType(types::EnumType* ty, std::string field) {
+  static std::unordered_map<std::string, llvm::Type*> enumTypes;
+  auto name = _SN_ENUM_PREFIX + ty->getMangledName() + "__" + field;
+  if (enumTypes.find(name) != enumTypes.end()) return enumTypes.find(name)->second;
+  auto enumField = *std::find_if(ty->getFields().begin(), ty->getFields().end(), [&](auto f) {
+    return f.name == field;
+  });
+  auto dataLayout = module->getDataLayout();
+  auto enumSize = dataLayout.getStructLayout((llvm::StructType*)getLLVMType(ty))->getSizeInBits();
+  // convert this to a struct and an array of bytes at the end to fix alignment issues
+  auto type = llvm::StructType::create(*context, name);
+  auto fieldTypes = enumField.types;
+  int fieldSize = 0;
+  std::vector<llvm::Type*> generatedFields;
+  generatedFields.push_back(builder->getInt8Ty()); // enum field
+  for (auto t : fieldTypes) {
+    auto llvmType = getLLVMType(t);
+    fieldSize += t->sizeOf()*8;
+    generatedFields.push_back(llvmType);
+  }
+  auto rem = (enumSize - (fieldSize - 8))/8/8;
+  if (rem > 0)
+    generatedFields.push_back(llvm::ArrayType::get(builder->getInt8Ty(), rem));
+  type->setBody(generatedFields);
+  enumTypes.insert({name, type});
+  return type;
 }
 
 } // namespace codegen

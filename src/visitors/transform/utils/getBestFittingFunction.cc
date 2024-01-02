@@ -54,7 +54,7 @@ Transformer::getBestFittingFunction(
         bool argsEqual = true;
         bool argsNeedCasting = false;
         int succeededArgs = 0;
-        for (auto i = 0; (i < fnArgs.size()) && argsEqual; i++) {
+        for (size_t i = 0; (i < fnArgs.size()) && argsEqual; i++) {
           auto type = transformSizedType(
                   fnArgs.at(i)->getType(),
                   false,
@@ -102,7 +102,7 @@ Transformer::getBestFittingFunction(
     // but if they all have the same amount of succeeded arguments, we throw an ambiguity error
     int max = 0;
     int maxIndex = -1;
-    for (auto i = 0; i < matchedFunctionsPerception.size(); i++) {
+    for (size_t i = 0; i < matchedFunctionsPerception.size(); i++) {
       if (matchedFunctionsPerception.at(i) > max) {
         max = matchedFunctionsPerception.at(i);
         maxIndex = i;

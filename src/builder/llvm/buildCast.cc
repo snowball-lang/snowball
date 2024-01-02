@@ -16,7 +16,6 @@ namespace codegen {
 void LLVMBuilder::visit(ir::Cast* c) {
   auto v = build(c->getExpr().get());
   auto vTy = c->getExpr()->getType();
-  auto llvmValueType = getLLVMType(vTy);
   auto ty = c->getCastType();
   auto llvmType = getLLVMType(ty);
   setDebugInfoLoc(c);

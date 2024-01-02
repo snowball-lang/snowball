@@ -40,7 +40,7 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
   auto fn = llvm::Function::Create(
           fnType,
           ((func->isStatic() && (!func->hasParent())) ||
-           func->hasAttribute(Attributes::INTERNAL_LINKAGE) && !func->isDeclaration()) ?
+           (func->hasAttribute(Attributes::INTERNAL_LINKAGE) && !func->isDeclaration())) ?
                   llvm::Function::InternalLinkage :
                   llvm::Function::ExternalLinkage,
           name,
@@ -74,7 +74,7 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
     arg->addAttrs(attrBuilder);
   }
 
-  for (int i = 0; i < func->getArgs().size(); ++i) {
+  for (int i = 0; i < (int)func->getArgs().size(); ++i) {
     auto llvmArg = fn->arg_begin() + i + retIsArg + func->isAnon();
     auto arg = utils::at(func->getArgs(), i);
     if (utils::is<types::ReferenceType>((arg).second->getType())) {

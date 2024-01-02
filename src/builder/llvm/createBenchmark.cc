@@ -63,8 +63,7 @@ void LLVMBuilder::createBenchmark(llvm::Function* mainFunction) {
           *module, nameArray->getType(), true, llvm::GlobalValue::PrivateLinkage, nameArray, "bench.name.array"
   );
 
-  auto call = builder->CreateCall(benchFunc, {arrayGlobal, globalNameArray, builder->getInt32(llvmBenchmarks.size())});
-
+  builder->CreateCall(benchFunc, {arrayGlobal, globalNameArray, builder->getInt32(llvmBenchmarks.size())});
   // TODO: dynamic if tests fail
   builder->CreateRet(builder->getInt32(0));
 

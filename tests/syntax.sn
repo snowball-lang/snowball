@@ -420,12 +420,12 @@ func store_at_global() i32 {
     return store_at_global_test.a;
 }
 
-// const store_refref_at_global_test: &&StoreAtGlobalTest = &store_at_global_test;
+const store_refref_at_global_test: &&StoreAtGlobalTest = &store_at_global_test;
 
-@test(expect = 4, skip)
+@test(expect = 4)
 func store_refref_at_global() i32 {
     // TODO: fix this
-    //return (*store_refref_at_global_test).a;
+    return (*store_refref_at_global_test).a;
 }
 
 }

@@ -101,6 +101,24 @@ void SnowballIREmitter::visit(ir::Call* c) {
   addContent(")");
 }
 
+void SnowballIREmitter::visit(ir::Switch* s) {
+  addContent("case (");
+  s->getExpr()->visit(this);
+  addContent(") {\n");
+  for (auto c : s->getCases()) {
+    addContent("    case " + c.name);
+    addContent("(");
+    for (auto a : c.args) {
+      addContent(a->getIdentifier());
+      if (a != c.args.back()) addContent(", ");
+    }
+    addContent(") => ");
+    c.block->visit(this);
+    addContent("\n");
+  }
+  addContent("  }");
+}
+
 void SnowballIREmitter::visit(ir::Conditional* c) {
   addContent("if (");
   c->getCondition()->visit(this);
@@ -130,7 +148,7 @@ void SnowballIREmitter::visit(ir::Cast* c) {
 void SnowballIREmitter::visit(ir::TryCatch* tc) {
   addContent("try ");
   tc->getBlock()->visit(this);
-  for (auto i = 0; i < tc->getCatchBlocks().size(); i++) {
+  for (auto i = 0; i < (int)tc->getCatchBlocks().size(); i++) {
     addContent(" catch (");
     tc->getCatchVars()[i]->visit(this);
     addContent(": ");
@@ -138,6 +156,10 @@ void SnowballIREmitter::visit(ir::TryCatch* tc) {
     addContent(") ");
     tc->getCatchBlocks()[i]->visit(this);
   }
+}
+
+void SnowballIREmitter::visit(ir::EnumInit* ei) {
+  addContent(ei->getType()->getPrettyName() + "::" + ei->getName());
 }
 
 void SnowballIREmitter::visit(ir::Throw* t) {

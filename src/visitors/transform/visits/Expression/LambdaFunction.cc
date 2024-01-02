@@ -33,7 +33,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
   fn->setAttributes(node);
   ir::Func::FunctionArgs newArgs = {};
 
-  for (int i = 0; i < node->getArgs().size(); i++) {
+  for (size_t i = 0; i < node->getArgs().size(); i++) {
     auto arg = node->getArgs().at(i);
 
     auto a = getBuilder().createArgument(node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,

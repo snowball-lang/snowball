@@ -758,6 +758,73 @@ public:
 };
 
 /**
+ * @brief Representation of an enum type in the AST.
+ */
+struct EnumTypeDef : public AcceptorExtend<EnumTypeDef, Base>,
+                     public AcceptorExtend<EnumTypeDef, Privacy>,
+                     public AcceptorExtend<EnumTypeDef, GenericContainer<>>,
+                     public AcceptorExtend<EnumTypeDef, CommentHolder> {
+  /// @brief Enum identifier
+  std::string name;
+  /// @brief Defined enum fields
+  std::vector<std::pair<std::string, std::vector<Expression::TypeRef*>>> fields;
+public:
+  EnumTypeDef(std::string name, Privacy::Status prvc = PRIVATE);
+
+  /// @brief Get enum name
+  std::string getName() const;
+
+  /// Add a field to the field list
+  void addField(std::pair<std::string, std::vector<Expression::TypeRef*>> field);
+
+  /// Iterator utilities
+  using FieldIterator = std::vector<std::pair<std::string, std::vector<Expression::TypeRef*>>>::iterator;
+
+  /// @return A full list of declared fields
+  std::vector<std::pair<std::string, std::vector<Expression::TypeRef*>>>& getFields();
+
+  FieldIterator fieldStart();
+  FieldIterator fieldEnd();
+
+  // Set an acceptance call
+  ACCEPT()
+};
+
+/**
+ * @brief Representation of a switch statement in the AST.
+ */
+struct Switch : public AcceptorExtend<Switch, Base> {
+public:
+  struct CaseBlock {
+    /// @brief The expression to compare
+    std::string expression;
+    /// @brief Arguments passed to the expression
+    std::vector<std::string> args;
+    /// @brief If the case is a default case
+    bool isDefault = false;
+    /// @brief If the argument is variadic
+    bool isVariadic = false;
+    /// @brief The block to execute if the case is met
+    Block* block;
+  };
+private:
+  /// @brief The expression to compare
+  Expression::Base* expr;
+  /// @brief The cases to compare
+  std::vector<CaseBlock> cases;
+public:
+  Switch(Expression::Base* expr, std::vector<CaseBlock> cases) : expr(expr), cases(cases){};
+
+  /// @return The expression to compare
+  auto getExpr() { return expr; }
+  /// @return The cases to compare
+  auto getCases() { return cases; }
+
+  // Set a visit handler for the generators
+  ACCEPT()
+};
+
+/**
  * @brief Representation of a Raise statement in the AST.
  * This is used to throw an exception.
  * @example

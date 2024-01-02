@@ -1,5 +1,5 @@
 
-#include "app/cli.h"
+#include "cli.h"
 #include "compiler.h"
 #include "errors.h"
 #include "utils/logger.h"
@@ -51,11 +51,11 @@ int run(app::Options::RunOptions p_opts) {
 
   compiler->cleanup();
 
-  char* args[] = {strdup(output.c_str())};
-  for (auto& arg : p_opts.progArgs) {
-    args[sizeof(args) / sizeof(args[0])] = strdup(arg.c_str());
+  char* args[p_opts.progArgs.size()+2] = {strdup(output.c_str())};
+  for (size_t i = 0; i < p_opts.progArgs.size(); i++) {
+    args[i + 1] = strdup(p_opts.progArgs[i].c_str());
   }
-  args[sizeof(args) / sizeof(args[0])] = NULL;
+  args[p_opts.progArgs.size() + 1] = NULL;
   int result = execvp(args[0], args);
 
   // This shoudnt be executed

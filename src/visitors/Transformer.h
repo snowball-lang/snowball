@@ -3,6 +3,7 @@
 #include "../ast/types/DefinedType.h"
 #include "../ast/types/FunctionType.h"
 #include "../ast/types/Interface.h"
+#include "../ast/types/EnumType.h"
 #include "../ast/types/PointerType.h"
 #include "../ast/types/ReferenceType.h"
 #include "../ast/types/TypeAlias.h"
@@ -12,6 +13,7 @@
 #include "../ir/module/Module.h"
 #include "../ir/values/Argument.h"
 #include "../ir/values/Call.h"
+#include "../ir/values/EnumInit.h"
 #include "../ir/values/Constants.h"
 #include "../ir/values/Dereference.h"
 #include "../ir/values/Func.h"
@@ -19,6 +21,8 @@
 #include "../ir/values/Return.h"
 #include "../ir/values/Throw.h"
 #include "../ir/values/ValueExtract.h"
+#include "../ir/values/Switch.h"
+#include "../ir/values/all.h"
 #include "../utils/utils.h"
 
 #include <assert.h>
@@ -350,6 +354,12 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * return a nullptr.
    */
   std::shared_ptr<ir::Value> tryCast(std::shared_ptr<ir::Value> value, types::Type* type);
+  /**
+   * @brief It generates an enum type.
+   * 
+   * @note It will also generate the enum fields.
+   */
+  types::EnumType* transformEnum(const std::string& uuid, cacheComponents::Types::TypeStore& enumStore, Expression::TypeRef* typeRef = nullptr);
   /**
    * Transforms a given special type reference into a shared pointer
    * to Type.

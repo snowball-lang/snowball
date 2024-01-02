@@ -65,7 +65,6 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
         }
       }
       auto baseType = args.at(0)->getType();
-      auto unchangedBaseType = baseType;
       auto realType = baseType;
       if (auto x = utils::cast<types::ReferenceType>(baseType)) {
         baseType = x->getPointedType();

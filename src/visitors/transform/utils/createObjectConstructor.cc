@@ -32,7 +32,7 @@ std::shared_ptr<ir::Value> Transformer::createObjectConstructor(
     auto name = field->name;
     auto type = field->type;
 
-    if (args.size() <= i) {
+    if (args.size() <= (size_t)i) {
       E<TYPE_ERROR>(
         dbgInfo,
         FMT("Missing argument '%s' of type '%s' in struct initializer!", name.c_str(), type->getName().c_str()),

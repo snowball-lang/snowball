@@ -133,7 +133,7 @@ Syntax::Expression::Base* Parser::buildOperatorTree(std::vector<Syntax::Expressi
     if (unary) {
       int next_expr = next_op;
       while (exprs[next_expr]->isOperator) {
-        if (++next_expr == exprs.size()) {
+        if (++next_expr == (int)exprs.size()) {
           createError<SYNTAX_ERROR>(exprs[next_expr - 1]->getDBGInfo()->pos, "expected an expression.", {}, 1);
         }
       }

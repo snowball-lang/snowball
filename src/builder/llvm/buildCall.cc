@@ -1,5 +1,6 @@
 
 #include "../../ir/values/Call.h"
+#include "../../ir/values/EnumInit.h"
 #include "../../ir/values/Dereference.h"
 #include "../../ir/values/ReferenceTo.h"
 #include "../../services/OperatorService.h"
@@ -39,6 +40,9 @@ void LLVMBuilder::visit(ir::Call* call) {
       this->value = builder->CreateLoad(instanceType, alloca);
       return;
     }
+  } else if (utils::is<ir::EnumInit>(call->getCallee().get())) {
+    this->value = createEnumInit(call);
+    return;
   }
 
   auto calleeValue = call->getCallee();
@@ -49,7 +53,6 @@ void LLVMBuilder::visit(ir::Call* call) {
 
   llvm::Value* llvmCall = nullptr;
   llvm::Value* allocatedValue = nullptr;
-  llvm::Type* allocatedValueType = nullptr;
   //setDebugInfoLoc(nullptr);
   if ((fnType && utils::cast<types::BaseType>(fnType->getRetType())) || ctx->callStoreValue) {
     if (ctx->callStoreValue) {
@@ -57,7 +60,6 @@ void LLVMBuilder::visit(ir::Call* call) {
       ctx->callStoreValue = nullptr;
     } else {
       auto retType = fnType->getRetType();
-      allocatedValueType = getLLVMType(retType);
       if (ctx->retValueUsedFromArg) {
         allocatedValue = ctx->getCurrentFunction()->getArg(0);
         ctx->retValueUsedFromArg = false;
@@ -93,7 +95,6 @@ void LLVMBuilder::visit(ir::Call* call) {
   setDebugInfoLoc(nullptr);
   if (asFunction != nullptr && asFunction->isConstructor()) {
     auto instance = utils::cast<ir::ObjectInitialization>(call);
-    auto instanceType = getLLVMType(instance->getType());
     isConstructor = true;
     assert(instance);
     assert(asFunction->hasParent());
@@ -117,9 +118,7 @@ void LLVMBuilder::visit(ir::Call* call) {
     assert(asFunction->hasParent());
 
     auto index = asFunction->getVirtualIndex() + 2; // avoid class info
-    auto parent = asFunction->getParent();
 
-    auto f = llvm::cast<llvm::Function>(callee);
     // note: allocatedValue != nullptr is because there are 2 possible cases:
     // 1. The function returns a type that's not a pointer (meaning self is at index 1)
     // 2. The function does not return a type that's not a pointer (meaning self is at index 0)
@@ -144,12 +143,6 @@ void LLVMBuilder::visit(ir::Call* call) {
     builder->CreateAssumption(builder->CreateIsNotNull(fn));
     setDebugInfoLoc(call);
     llvmCall = createCall(calleeType, (llvm::Function*) fn, args);
-    // builder->CreateStore(llvmCall, allocatedValue);
-    // auto alloca = createAlloca(allocatedValueType);
-    // builder->CreateStore(llvmCall, alloca);
-    // builder->CreateMemCpy(alloca, llvm::MaybeAlign(), allocatedValue, llvm::MaybeAlign(),
-    //         module->getDataLayout().getTypeAllocSize(allocatedValueType), 0);
-    // this->value = allocatedValue;
     this->value = allocatedValue ? allocatedValue : llvmCall;
   } else {
     setDebugInfoLoc(call);

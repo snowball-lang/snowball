@@ -163,7 +163,6 @@ enum class TokenType
   KWORD_OPERATOR,       // Symbol: operator
   KWORD_MACRO,          // Symbol: macro
   KWORD_ELSE,           // Symbol: else
-  KWORD_CASE,           // Symbol: case
   KWORD_BREAK,          // Symbol: break
   KWORD_CONST,          // Symbol: const
   KWORD_SUPER,          // Symbol: super
@@ -305,7 +304,6 @@ struct Token {
       case TokenType::KWORD_WHILE: return _SNOWBALL_KEYWORD__WHILE;
       case TokenType::KWORD_FOR: return _SNOWBALL_KEYWORD__FOR;
       case TokenType::KWORD_SWITCH: return _SNOWBALL_KEYWORD__SWITCH;
-      case TokenType::KWORD_CASE: return _SNOWBALL_KEYWORD__CASE;
       case TokenType::KWORD_DEFAULT: return _SNOWBALL_KEYWORD__DEFAULT;
       case TokenType::KWORD_BREAK: return _SNOWBALL_KEYWORD__BREAK;
       case TokenType::KWORD_CONTINUE: return _SNOWBALL_KEYWORD__CONTINUE;

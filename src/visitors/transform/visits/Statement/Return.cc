@@ -22,7 +22,6 @@ SN_TRANSFORMER_VISIT(Statement::Return) {
     std::shared_ptr<ir::Value> returnValue = nullptr;
     if (p_node->getValue() != nullptr) {
       returnValue = trans(p_node->getValue());
-      auto type = returnValue->getType();
       if (auto cast = tryCast(returnValue, functionType->getRetType()); cast != nullptr) returnValue = cast;
     } else {
       E<SYNTAX_ERROR>(

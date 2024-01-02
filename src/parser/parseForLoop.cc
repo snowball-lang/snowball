@@ -32,7 +32,7 @@ Syntax::Node* Parser::parseForLoop() {
     prev();
   }
   prev();
-  std::vector<Syntax::Node*>(block);
+  std::vector<Syntax::Node*> block;
 
   Syntax::Expression::Base* condExpr = nullptr;
   Syntax::Node* step = nullptr;

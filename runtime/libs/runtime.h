@@ -2,6 +2,8 @@
 #include <mutex>
 #include <sstream>
 
+#include "sym.h"
+
 #ifndef _SNOWBALL_RUNTIME_H_
 #define _SNOWBALL_RUNTIME_H_
 
@@ -17,6 +19,6 @@ void error_log(std::ostringstream& oss, const char *message);
 }
 
 void initialize_snowball(int flags) __asm__("sn.runtime.initialize");
-int snowball_errno() __asm__("sn.runtime.errno");
+int snowball_errno() _SN_SYM("sn.runtime.errno");
 
 #endif // _SNOWBALL_RUNTIME_H_

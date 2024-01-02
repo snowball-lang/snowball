@@ -150,7 +150,6 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
   }
 
   for (auto v : fn->getSymbols()) {
-    auto llvmType = getLLVMType(v->getType());
     if (v->getVariable()->isUsedInLambda()) {
       auto& closure = ctx->closures.at(fn->getId());
       closure.variables.push_back(v->getVariable()->getId());
@@ -217,31 +216,6 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
         auto body = llvm::cast<llvm::StructType>(llvmType)->elements().vec();
         llvm::cast<llvm::StructType>(llvmType)->setBody(body);
       }
-
-      auto numElements =
-              llvm::cast<llvm::ArrayType>(llvm::cast<llvm::StructType>(ctx->getVtableTy(ty->getId()))->elements()[0])
-                      ->getNumElements();
-      //auto element = llvm::ConstantExpr::getGetElementPtr(
-      //        llvm::StructType::get(llvm::ArrayType::get(builder->getInt8PtrTy(), numElements)),
-      //        (llvm::Constant*) vtablePointer,
-      //        llvm::ArrayRef<llvm::Constant*>{builder->getInt32(0), builder->getInt32(0), builder->getInt32(2)},
-      //        true,
-      //        1
-      //);
-      //auto vtableLoad = llvm::ConstantExpr::getBitCast(
-      //        element, llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()
-      //);
-      //builder->CreateStore(
-      //        vtableLoad,
-      //        builder->CreateBitCast(
-      //                cast,
-      //                llvm::FunctionType::get(builder->getInt32Ty(), {}, true)
-      //                        ->getPointerTo()
-      //                        ->getPointerTo()
-      //                        ->getPointerTo(),
-      //                ".vtable-store-load"
-      //        )
-      //);
       auto vtableSpot = builder->CreateStructGEP(llvmType, cast, 0);
       builder->CreateStore(vtablePointer, vtableSpot);
     }

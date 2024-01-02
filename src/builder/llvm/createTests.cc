@@ -38,7 +38,6 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
   auto testFunction = module->getFunction("sn.test.try"); // Always match this
   int testIndex = 1;
   for (auto [fn, llvmFunc] : ctx->tests) {
-    int i = 0;
     std::string name = fn->getNiceName();
     auto attrArgs = fn->getAttributeArgs(Attributes::TEST);
     auto shouldSkip = attrArgs.find("skip") != attrArgs.end();

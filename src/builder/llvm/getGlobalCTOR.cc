@@ -17,7 +17,12 @@ llvm::Function* LLVMBuilder::getGlobalCTOR(bool createIfNone) {
   if ((!fn) && createIfNone) {
     auto prototype = llvm::FunctionType::get(builder->getVoidTy(), {});
     fn = h.create<llvm::Function>(prototype, llvm::Function::InternalLinkage, mangle, *module);
+#ifdef __linux__
     fn->setSection(".text.startup");
+#elif __APPLE__
+    fn->setSection("__TEXT,__text");
+#endif
+    fn->setCallingConv(llvm::CallingConv::C);
     auto file = dbg.getFile(iModule->getSourceInfo()->getPath());
     auto subroutineType = dbg.builder->createSubroutineType(llvm::MDTuple::get(*context, {}));
     auto subprogram = dbg.builder->createFunction(
@@ -43,7 +48,7 @@ llvm::Function* LLVMBuilder::getGlobalCTOR(bool createIfNone) {
     return nullptr;
   }
 
-  auto body = h.create<llvm::BasicBlock>(builder->getContext(), "body", fn);
+  h.create<llvm::BasicBlock>(builder->getContext(), "body", fn);
   llvm::appendToGlobalCtors(*module, fn, 65535);
   return fn;
 }

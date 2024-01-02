@@ -12,7 +12,7 @@ namespace codegen {
 
 llvm::Function* LLVMBuilder::getAllocaFunction() {
   auto ty = llvm::FunctionType::get(builder->getInt8PtrTy(), {builder->getInt32Ty()}, false);
-  auto f = llvm::cast<llvm::Function>(module->getOrInsertFunction(getSharedLibraryName("malloc"), ty).getCallee());
+  auto f = llvm::cast<llvm::Function>(module->getOrInsertFunction("malloc", ty).getCallee());
   f->addRetAttr(llvm::Attribute::NonNull);
   f->addRetAttr(llvm::Attribute::NoAlias);
   f->addRetAttr(llvm::Attribute::NoUndef);

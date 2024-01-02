@@ -10,12 +10,18 @@ namespace snowball::parser {
 
 Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
   assert(is<TokenType::KWORD_STRUCT>());
+
+  auto comment = parseDocstring(m_current.getComment());
   next(); // East "struct"
 
   bool isPublic = false;
   if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-3, true))) {
     isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
   }
+
+  auto attributes = verifyAttributes([&](std::string attr) {
+    return Attributes::INVALID;
+  });
 
   auto name = assert_tok<TokenType::IDENTIFIER>("structure identifier").to_string();
   auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
@@ -68,6 +74,8 @@ Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
   }
 
   assert_tok<TokenType::BRACKET_RCURLY>("'}'");
+  cls->setComment(comment);
+  for (auto attr : attributes) cls->addAttribute(attr.first, attr.second);
   return cls;
 }
 

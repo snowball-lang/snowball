@@ -57,6 +57,11 @@ SharedValue<Argument> IRBuilder::createArgument(
 ) {
   return N<Argument>(dbgInfo, name, index, defaultValue);
 }
+SharedValue<EnumInit> IRBuilder::createEnumInit(DBGSourceInfo* dbgInfo, types::EnumType* type, std::string name) {
+  auto init = N<EnumInit>(dbgInfo, name);
+  setType(init, type);
+  return init;
+}
 SharedValue<LoopFlow> IRBuilder::createLoopFlow(
         DBGSourceInfo* dbgInfo, LoopFlowType type) {
   return N<LoopFlow>(dbgInfo, type);
@@ -128,6 +133,7 @@ SharedValue<VariableDeclaration> IRBuilder::createVariableDeclaration(
 ) {
   auto decl = N<VariableDeclaration>(dbgInfo, variable, value, isExtern);
   if (value != nullptr) setType(decl, value->getType());
+  else setType(decl, variable->getType());
   return decl;
 }
 SharedValue<ValueExtract> IRBuilder::createValueExtract(DBGSourceInfo* dbgInfo, SharedValue<> value) {
@@ -169,6 +175,11 @@ SharedValue<WhileLoop> IRBuilder::createFromForLoop(
 Type<types::FunctionType>
 IRBuilder::createFunctionType(std::vector<Type<>> args, Type<> retType, bool isVarArg, bool isMutable) {
   return new types::FunctionType(args, retType, isVarArg, isMutable);
+}
+SharedValue<Switch> IRBuilder::createSwitch(
+  DBGSourceInfo* dbgInfo, SharedValue<> expr, std::vector<Switch::Case> cases, SharedValue<Block> defaultBlock
+) {
+  return N<Switch>(dbgInfo, expr, cases, defaultBlock);
 }
 Type<types::TypeAlias> IRBuilder::createTypeAlias(DBGSourceInfo* dbg, std::string name, Type<> base) {
   auto ty = new types::TypeAlias(name, base);
