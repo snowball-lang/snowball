@@ -12,4 +12,4 @@ base = "/snowball/"
 entry = "./tests/main.sn"
 
 [dependencies]
-"mauro-balades/rgb" = { version = "1.0.0" }
+"rgb" = { version = "1.0.0" }

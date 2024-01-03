@@ -23,6 +23,11 @@ extern "C" {
 #define DLLEXPORT
 #endif
 
+#ifndef _SNOWBALL_PACkAGE_REGISTRY
+// http to avoid needing to use an SSL library
+#define _SNOWBALL_PACKAGE_REGISTRY "http://snowball-lang.github.io/packages/pkgs/"
+#endif
+
 // OS specific
 #pragma region
 #ifdef _WIN32

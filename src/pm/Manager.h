@@ -12,6 +12,8 @@
 #include "../constants.h"
 #include "../os/Driver.h"
 
+#include "nlohmann/json.hpp"
+
 #ifndef __SNOOZE__APP__PM__MANAGER_H__
 #define __SNOOZE__APP__PM__MANAGER_H__
 
@@ -19,11 +21,8 @@ namespace snowball {
 namespace pm {
 
 struct Package {
-  std::string owner;
-  std::string repo;
-
+  std::string name;
   std::string version;
-  std::string provider;
 };
 
 /**
@@ -57,6 +56,8 @@ class Manager {
 
     bool isInstalled(Package p_package);
     int install(Package p_package);
+
+    nlohmann::json getPackageInfoFromRepo(std::string package);
 };
 
 } // namespace pm

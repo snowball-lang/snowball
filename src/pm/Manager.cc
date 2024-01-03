@@ -1,5 +1,6 @@
 
 #include "Manager.h"
+#include "curl/curl.h"
 
 namespace fs = std::filesystem;
 
@@ -29,28 +30,16 @@ int Manager::runAsMain() {
   auto packages = package["dependencies"].as_table();
   
   packages->for_each([&](auto&& key, auto&& value) {
-    auto packageStr = (std::string)key.str();
-
-    // split package into owner and repo
-    auto parts = utils::list2vec(utils::split(packageStr, "/"));
-    if (parts.size() != 2) {
-      throw SNError(Error::PM_ERROR, FMT("Invalid package name '%s'.\n\tExpected the following format: '{owner}/{package}'", packageStr.c_str()));
-    }
-
-    auto owner = parts[0];
-    auto repo = parts[1];
-
-    auto packageData = package["dependencies"][packageStr];
+    auto repo = (std::string)key.str();
+    auto packageData = package["dependencies"][repo];
 
     Package packageInfo;
-    packageInfo.owner = owner;
-    packageInfo.repo = repo;
+    packageInfo.name = repo;
     packageInfo.version = packageData["version"].value_or<std::string>("latest");
-    packageInfo.provider = packageData["provider"].value_or<std::string>("https://github.com");
   
     auto result = install(packageInfo);
     if (result != EXIT_SUCCESS) {
-      throw SNError(Error::PM_ERROR, FMT("Failed to install package %s", packageStr.c_str()));
+      throw SNError(Error::PM_ERROR, FMT("Failed to install package %s", repo.c_str()));
     }
   });
 
@@ -61,7 +50,7 @@ int Manager::runAsMain() {
 
 bool Manager::isInstalled(Package p_package) {
   // check on folder structure
-  auto packageFolder = (fs::path)configFolder / "deps" / p_package.owner / p_package.repo;
+  auto packageFolder = (fs::path)configFolder / "deps" / p_package.name;
   return fs::is_directory(packageFolder);
 }
 
@@ -69,32 +58,90 @@ int Manager::install(Package p_package) {
   if (isInstalled(p_package)) return EXIT_SUCCESS;
 
   std::string git = getGit();
+  auto pkgInfo = getPackageInfoFromRepo(p_package.name);
+
   if (!silent) {
-    Logger::message("Downloading", FMT("Package %s/%s%s%s from git repository", p_package.owner.c_str(), BOLD, p_package.repo.c_str(), RESET));
+    Logger::message("Downloading", FMT(" Package %s%s%s from git repository", BOLD, p_package.name.c_str(), RESET));
   }
 
-  auto packageFolder = (fs::path)configFolder / "deps" / p_package.owner / p_package.repo;
-
-  if (!fs::is_directory(p_package.owner)) {
-    fs::create_directory(p_package.owner);
+  auto packageFolder = (fs::path)configFolder / "deps" / p_package.name;
+  std::string downloadUrl = pkgInfo["download_url"];
+  if (downloadUrl.empty()) {
+    throw SNError(Error::PM_ERROR, FMT("Failed to install package '%s'. No download_url found in package info", p_package.name.c_str()));
   }
 
   auto gitCommand = std::vector<std::string>{};
   gitCommand.push_back(git);
   gitCommand.push_back("clone");
-  gitCommand.push_back(FMT("%s/%s/%s", p_package.provider.c_str(), p_package.owner.c_str(), p_package.repo.c_str()));
+  gitCommand.push_back(downloadUrl);
   gitCommand.push_back(packageFolder);
   gitCommand.push_back("--depth=1");
   gitCommand.push_back("--quiet");
   auto status = os::Driver::run(gitCommand);  
 
   if (status != EXIT_SUCCESS) {
-    throw SNError(Error::PM_ERROR, FMT("Failed to install package %s/%s. See the output above", p_package.owner.c_str(), p_package.repo.c_str()));
+    throw SNError(Error::PM_ERROR, FMT("Failed to install package '%s'. See the output above", p_package.name.c_str()));
   }
 
   return EXIT_SUCCESS;
 }
 
+namespace {
+std::size_t writeCallback(
+  const char* in,
+  std::size_t size,
+  std::size_t num,
+  std::string* out)
+{
+  const std::size_t totalBytes(size * num);
+  out->append(in, totalBytes);
+  return totalBytes;
+}
+}
+
+nlohmann::json Manager::getPackageInfoFromRepo(std::string p_repo) {
+  auto packageInfo = nlohmann::json{};
+  std::unique_ptr<std::string> httpData(new std::string());
+
+  auto curl = curl_easy_init();
+  if (curl) {
+    auto url = _SNOWBALL_PACKAGE_REGISTRY + p_repo + ".json";
+    long httpCode(0);
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+    curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.0; Win64; x64 Trident/6.0)");
+    curl_easy_setopt(curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+    // Don't wait forever, time out after 10 seconds.
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10);
+    // Acces https without ca verification
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+    if (!silent) {
+      Logger::message("Fetching", FMT("Package info for %s%s%s from registry", BOLD, p_repo.c_str(), RESET));
+    }
+    auto curlCode = curl_easy_perform(curl);
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+    
+    curl_easy_cleanup(curl);
+    if (curlCode != CURLE_OK) {
+      throw SNError(Error::PM_ERROR, FMT("Failed to get package info from registry. CURL code %s", curl_easy_strerror(curlCode)));
+    }
+
+    if (httpCode != 200) {
+      throw SNError(Error::PM_ERROR, FMT("Failed to get package info from registry. HTTP code %d", httpCode));
+    }
+  } else {
+    throw SNError(Error::PM_ERROR, "Failed to initialize curl");
+  }
+
+  try {
+    packageInfo = nlohmann::json::parse(*httpData);
+  } catch (const std::exception& e) {
+    throw SNError(Error::PM_ERROR, FMT("Failed to parse package info from registry. %s", e.what()));
+  }
+  return packageInfo;
+}
 
 } // namespace pm
 } // namespace snowball
