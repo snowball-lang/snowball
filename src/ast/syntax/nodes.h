@@ -28,7 +28,7 @@ namespace snowball {
 namespace Syntax {
 
 namespace transform {
-class ContextState;
+struct ContextState;
 }
 
 class Visitor;

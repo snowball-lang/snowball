@@ -17,7 +17,7 @@ namespace snowball {
 
 namespace Syntax {
 namespace Expression {
-class TypeRef;
+struct TypeRef;
 }
 }; // namespace Syntax
 

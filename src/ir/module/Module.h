@@ -12,7 +12,7 @@
 
 namespace snowball {
 namespace Syntax::transform {
-class MacroInstance;
+struct MacroInstance;
 } // namespace Syntax::transform
 namespace types {
 class BaseType;
