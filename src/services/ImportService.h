@@ -22,15 +22,19 @@ public:
   const std::vector<std::string> extensions = {".sn", /* TODO */};
   /// @brief Core library custom UUID
   static const std::string CORE_UUID;
+  /// @brief Path to the current package being generated
+  std::filesystem::path currentPackagePath;
+  /// @brief Root path to the packages folder
+  std::filesystem::path packagesPath;
 
 public:
+  ImportService(std::filesystem::path packagesPath) : packagesPath(packagesPath) {}
   /**
    * @brief Get the package path based on it's identifier
    * @note if package name is "pkg" it will return the current package
    *  being generated
    */
   std::filesystem::path getPackagePath(const std::string package);
-
   /**
    * @brief Get the corresponding import path from a set of rules.
    * @note The path will be absolute and paths will be returned if the
@@ -64,6 +68,18 @@ public:
    * @return std::string resultant UUID for the module path.
    */
   std::string getModuleUUID(std::filesystem::path path);
+  /**
+   * @brief Get the current package path
+   */
+  std::filesystem::path getCurrentPackagePath() const { return currentPackagePath; }
+  /**
+   * @brief Set the current package path
+   */
+  void setCurrentPackagePath(std::filesystem::path path) { currentPackagePath = path; }
+  /**
+   * @brief Get the packages path
+   */
+  std::filesystem::path getPackagesPath() const { return packagesPath; }
 };
 
 } // namespace services

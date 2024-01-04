@@ -2,6 +2,7 @@
 #include "ImportService.h"
 
 #include "../utils/utils.h"
+#include "../vendor/toml.hpp"
 
 #include <unistd.h>
 
@@ -18,7 +19,7 @@ fs::path ImportService::getPackagePath(const std::string package) {
     return fs::current_path();
   }
 
-  return ((fs::path) _SNOWBALL_PACKAGES_DIR) / package;
+  return getPackagesPath() / (_SNOWBALL_PACKAGES_DIR) / package;
 }
 
 std::string ImportService::getExportName(std::filesystem::path path, std::string symbol) {
@@ -45,18 +46,31 @@ ImportService::getImportPath(const std::string package, std::vector<std::string>
   bool exists = false;
   std::string foundExt;
 
-  for (auto ext : extensions) {
-    if (exists) { return {"", "Multiple paths found without an extension defined"}; }
+  // if it's a directory
+  if (fs::is_directory(fullPath)) {
+    auto configFile = fullPath / "sn.toml";
+    auto config = toml::parse_file(configFile.string());
+    auto entry = config["package"]["main"].value_or<std::string>("<invalid>");
+    if (entry == "<invalid>") {
+      return {"", "Package doesn't have a main entry defined!"};
+    }
 
-    exists = access((fullPath.string() + ext).c_str(), F_OK) != -1;
-    if (exists) { foundExt = ext; }
+    assert(access((fullPath / entry).c_str(), F_OK) != -1);
+    return {fullPath / entry, ""};
+  } else {
+    for (auto ext : extensions) {
+      if (exists) { return {"", "Multiple paths found without an extension defined"}; }
+
+      exists = access((fullPath.string() + ext).c_str(), F_OK) != -1;
+      if (exists) { foundExt = ext; }
+    }
   }
 
   if (!exists) {
     return {"",
-            FMT("Coudnt find module '%s' imported from '%s'!",
+            FMT("Coudnt find module '%s' imported from '%s' (%s)!",
                 utils::join(path.begin(), path.end(), "::").c_str(),
-                package.c_str())};
+                package.c_str(), fullPath.string().c_str())};
   }
 
   return {fullPath.string() + foundExt, ""};

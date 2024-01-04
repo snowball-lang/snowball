@@ -19,7 +19,7 @@ TransformContext::TransformContext(
     , isMainModule(true)
     , builder(builder)
     , cache(new Cache())
-    , imports(std::make_unique<services::ImportService>()) {
+    , imports(std::make_unique<services::ImportService>(std::filesystem::current_path())) {
   // Set all of the built in primitive types into the global stack
 #define DEFINE_TYPE(t)                                                                                                 \
   auto raw_##t = new types::t();                                                                                       \

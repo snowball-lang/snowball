@@ -27,10 +27,11 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-Transformer::Transformer(std::shared_ptr<ir::Module> mod, const SourceInfo* srci, bool allowTests, bool allowBenchmarks)
+Transformer::Transformer(std::shared_ptr<ir::Module> mod, const SourceInfo* srci, std::filesystem::path packagePath, bool allowTests, bool allowBenchmarks)
     : AcceptorExtend<Transformer, Visitor>(srci) {
   auto builder = ir::IRBuilder(mod);
   ctx = new TransformContext(mod, builder, allowTests, allowBenchmarks);
+  ctx->imports->setCurrentPackagePath(packagePath);
   initializeCoreRuntime();
 }
 

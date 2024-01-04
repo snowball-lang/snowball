@@ -5,6 +5,7 @@
 //  Fibonacci example for the lang                  じし(_,)ノ
 //  Docs: https://snowball-lang.gitbook.io/docs/
 //
+
 import pkg::cls;
 import pkg::option;
 import pkg::ranges;
@@ -29,6 +30,8 @@ import pkg::iters;
 import pkg::env;
 import pkg::strings;
 import pkg::enums;
+
+import rgb;
 
 ////import std::io::{{ println }};
 

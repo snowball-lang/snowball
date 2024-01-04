@@ -192,7 +192,7 @@ typedef int32_t snowball_int_t;
 #endif
 
 #ifndef _SNOWBALL_PACKAGES_DIR
-#error "_SNOWBALL_PACKAGES_DIR must be defined! (e.g. \".sn/packages\")"
+#define _SNOWBALL_PACKAGES_DIR ".sn" PATH_SEPARATOR "deps"
 #endif
 
 #ifndef _SNOWBALL_LLVM_PACKAGE_VERSION

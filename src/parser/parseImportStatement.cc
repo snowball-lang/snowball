@@ -19,54 +19,57 @@ Syntax::Statement::ImportStmt* Parser::parseImportStatement() {
   std::string package = assert_tok<TokenType::IDENTIFIER>("an identifier for package reference").to_string();
   next();
 
-  consume<TokenType::SYM_COLCOL>("'::'");
   std::vector<std::string> paths;
-  paths.push_back(assert_tok<TokenType::IDENTIFIER>("an identifier").to_string());
-  next();
-
   std::string exportName;
-
   std::vector<std::pair<std::string, std::string>> vars;
-  if (is<TokenType::SYM_COLCOL>()) while (is<TokenType::SYM_COLCOL>()) {
+  if (is<TokenType::SYM_COLCOL>()) {
     next();
-    if (is<TokenType::IDENTIFIER>()) {
-      paths.push_back(m_current.to_string());
-    } else if (is<TokenType::SYM_DOT>() && is<TokenType::SYM_DOT>(peek())) {
-      paths.push_back("..");
-    } else if (is<TokenType::BRACKET_LCURLY>()) {
-      // var imports
+    paths.push_back(assert_tok<TokenType::IDENTIFIER>("an identifier").to_string());
+    next();
+
+    if (is<TokenType::SYM_COLCOL>()) while (is<TokenType::SYM_COLCOL>()) {
       next();
-      while (!is<TokenType::BRACKET_RCURLY>()) {
-        if (is<TokenType::IDENTIFIER>()) {
-          std::string name = m_current.to_string();
-          std::string alias = name;
-          next();
-          if (is<TokenType::KWORD_AS>()) {
+      if (is<TokenType::IDENTIFIER>()) {
+        paths.push_back(m_current.to_string());
+      } else if (is<TokenType::SYM_DOT>() && is<TokenType::SYM_DOT>(peek())) {
+        paths.push_back("..");
+      } else if (is<TokenType::BRACKET_LCURLY>()) {
+        // var imports
+        next();
+        while (!is<TokenType::BRACKET_RCURLY>()) {
+          if (is<TokenType::IDENTIFIER>()) {
+            std::string name = m_current.to_string();
+            std::string alias = name;
             next();
-            alias = assert_tok<TokenType::IDENTIFIER>("an identifier for variable alias").to_string();
-            next();
-          }
-          vars.push_back({name, alias});
-          if (is<TokenType::SYM_COMMA>()) {
-            next();
+            if (is<TokenType::KWORD_AS>()) {
+              next();
+              alias = assert_tok<TokenType::IDENTIFIER>("an identifier for variable alias").to_string();
+              next();
+            }
+            vars.push_back({name, alias});
+            if (is<TokenType::SYM_COMMA>()) {
+              next();
+            } else {
+              break;
+            }
           } else {
-            break;
+            createError<SYNTAX_ERROR>("an identifier for variable import");
           }
-        } else {
-          createError<SYNTAX_ERROR>("an identifier for variable import");
         }
+
+        consume<TokenType::BRACKET_RCURLY>("'}'");
+        createError<TODO>("variable imports");
+        break;
+      } else {
+        prev();
+        break;
       }
 
-      consume<TokenType::BRACKET_RCURLY>("'}'");
-      createError<TODO>("variable imports");
-      break;
-    } else {
-      prev();
-      break;
+      next();
     }
+  }
 
-    next();
-  } else if (is<TokenType::KWORD_AS>()) {
+  if (is<TokenType::KWORD_AS>()) {
     next();
     exportName = assert_tok<TokenType::IDENTIFIER>("an identifier for export name").to_string();
     next();
