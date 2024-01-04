@@ -30,7 +30,7 @@
 #define IS_TEXT(c)     ((c == '_') || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))
 
 namespace snowball {
-Lexer::Lexer(const SourceInfo* p_source_info) : srcInfo(p_source_info) { }
+Lexer::Lexer(const SourceInfo* p_source_info) : srcInfo(p_source_info), tokens({}) { }
 
 void Lexer::tokenize() {
   tokens = {};
@@ -359,7 +359,7 @@ void Lexer::tokenize() {
 
         if (str.size() != 1) { lexer_error(Error::SYNTAX_ERROR, "Character values can only have a length of 1!"); }
 
-        Token tk;
+        Token tk = {};
         tk.type = TokenType::VALUE_CHAR;
         tk.value = str; // method name may be builtin func
         tk.col = cur_col - ((int) str.size() + (2 /* speech marks */));
@@ -464,7 +464,7 @@ void Lexer::tokenize() {
         }
         EAT_CHAR(1);
 
-        Token tk;
+        Token tk = {};
         tk.type = TokenType::VALUE_STRING;
         tk.value = str; // method name may be builtin func
         tk.col = col-1;
@@ -487,7 +487,7 @@ void Lexer::tokenize() {
           }
 
           double float_val = std::stod(float_str);
-          Token tk;
+          Token tk = {};
           tk.type = TokenType::VALUE_FLOAT;
           tk.line = cur_line;
           tk.col = cur_col - float_str.length();
@@ -565,7 +565,7 @@ void Lexer::tokenize() {
             appendDot = true;
           }
 
-          Token tk;
+          Token tk = {};
           tk.line = cur_line;
           tk.col = cur_col - num.length();
           tk.value = num;
@@ -596,10 +596,12 @@ void Lexer::tokenize() {
             EAT_CHAR(1);
           }
 
-          Token tk;
-          tk.value = identifier; // method name may be builtin func
-          tk.col = cur_col - (int) identifier.size();
-          tk.line = cur_line;
+          Token tk = {
+            .type = TokenType::UNKNOWN,
+            .line = cur_line,
+            .col = cur_col - (int) identifier.size(),
+            .value = identifier
+          };
 
           if (identifier == _SNOWBALL_KEYWORD__NEW) {
             tk.type = TokenType::KWORD_NEW;
@@ -746,7 +748,7 @@ void Lexer::tokenize() {
   // does not detect the end of the source code.
   // that is why we add a Token with _EOF type to
   // the Token array (for later use in the parser)
-  if (tokens.size() == 0 || ((*tokens.end()).type != TokenType::_EOF)) {
+  if (tokens.size() == 0 || (tokens.at(tokens.size()-1).type != TokenType::_EOF)) {
     // add "false" as a param for "p_consume"
     // so that the lexer does not "consume"
     handle_eof(false);
@@ -769,7 +771,7 @@ void Lexer::tokenize() {
 
 void Lexer::handle_eof(bool p_consume) {
   // Declare a new Token
-  Token tk;
+  Token tk = {};
 
   // Fill al fields for the token
   // as an EOF type.
@@ -784,7 +786,7 @@ void Lexer::handle_eof(bool p_consume) {
 }
 
 void Lexer::consume(TokenType p_tk, int p_eat_size) {
-  Token tk;
+  Token tk = {};
   tk.type = p_tk;
   tk.line = cur_line;
   tk.col = cur_col;

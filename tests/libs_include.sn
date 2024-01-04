@@ -1,0 +1,23 @@
+
+@use_macros
+import std::asserts;
+
+// As the creator of this library, I can say that this is the most beautiful code I've ever written.
+// I'm so proud of myself.
+// This code will always work because if there's something I learned from color web design, it's that
+// RGB's standard is known by being constantly changing. :)
+import rgb;
+
+namespace tests {
+
+@test
+func basic_usage() i32 {
+    // I mean, it's not like I'm going to test every single color, right?
+    let black = rgb::black();
+    assert_eq!(black.red(), 0);
+    assert_eq!(black.green(), 0);
+    assert_eq!(black.blue(), 0);
+    return 1;
+}
+
+}

@@ -29,8 +29,7 @@ namespace Syntax {
 
 Transformer::Transformer(std::shared_ptr<ir::Module> mod, const SourceInfo* srci, std::filesystem::path packagePath, bool allowTests, bool allowBenchmarks)
     : AcceptorExtend<Transformer, Visitor>(srci) {
-  auto builder = ir::IRBuilder(mod);
-  ctx = new TransformContext(mod, builder, allowTests, allowBenchmarks);
+  ctx = new TransformContext(mod, ir::IRBuilder(mod), allowTests, allowBenchmarks);
   ctx->imports->setCurrentPackagePath(packagePath);
   initializeCoreRuntime();
 }
@@ -74,20 +73,20 @@ void Transformer::addModule(std::shared_ptr<ir::Module> m) {
 }
 auto Transformer::getModule() const { return ctx->module; }
 void Transformer::visitGlobal(std::vector<Node*> p_nodes) {
-  ctx->withScope([&] {
-    initializePerModuleMacros();
+  ctx->addScope();
+  initializePerModuleMacros();
 
-    bool backup = ctx->generateFunction;
-    ctx->generateFunction = false;
-    for (auto node : p_nodes) {
-      SN_TRANSFORMER_CAN_GENERATE(node) { trans(node); }
-    }
+  bool backup = ctx->generateFunction;
+  ctx->generateFunction = false;
+  for (size_t i = 0; i < p_nodes.size(); i++) {
+    SN_TRANSFORMER_CAN_GENERATE(p_nodes[i]) { trans(p_nodes[i]); }
+  }
 
-    ctx->generateFunction = true;
-    for (auto node : p_nodes) 
-      trans(node);
-    ctx->generateFunction = backup;
-  });
+  ctx->generateFunction = true;
+  for (size_t i = 0; i < p_nodes.size(); i++) 
+    trans(p_nodes[i]);
+  ctx->generateFunction = backup;
+  ctx->delScope();
 }
 
 // mark: - noops

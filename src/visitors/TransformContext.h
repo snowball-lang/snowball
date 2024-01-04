@@ -81,7 +81,9 @@ private:
 public:
   // Create a new instance of a context
   TransformContext(
-          std::shared_ptr<ir::Module> mod, ir::IRBuilder& builder, bool testMode = false, bool benchMode = false
+    std::shared_ptr<ir::Module> mod, 
+    ir::IRBuilder builder, 
+    bool testMode = false, bool benchMode = false
   );
   /**
    * @brief Get a primitive number type

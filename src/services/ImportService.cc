@@ -35,7 +35,7 @@ std::string ImportService::getModuleUUID(std::filesystem::path path) {
   return "pkg" + result;
 }
 
-std::pair<fs::path, std::string>
+std::tuple</*result path*/std::filesystem::path, /*original path*/std::filesystem::path, /*errors*/std::string>
 ImportService::getImportPath(const std::string package, std::vector<std::string> path, const std::string extension) {
   auto packagePath = getPackagePath(package);
 
@@ -47,33 +47,38 @@ ImportService::getImportPath(const std::string package, std::vector<std::string>
   std::string foundExt;
 
   // if it's a directory
-  if (fs::is_directory(fullPath)) {
-    auto configFile = fullPath / "sn.toml";
-    auto config = toml::parse_file(configFile.string());
-    auto entry = config["package"]["main"].value_or<std::string>("<invalid>");
-    if (entry == "<invalid>") {
-      return {"", "Package doesn't have a main entry defined!"};
-    }
+  for (auto ext : extensions) {
+    if (exists) { return {"", "", "Multiple paths found without an extension defined"}; }
 
-    assert(access((fullPath / entry).c_str(), F_OK) != -1);
-    return {fullPath / entry, ""};
-  } else {
-    for (auto ext : extensions) {
-      if (exists) { return {"", "Multiple paths found without an extension defined"}; }
+    exists = access((fullPath.string() + ext).c_str(), F_OK) != -1;
+    if (exists) { foundExt = ext; }
+  } 
 
-      exists = access((fullPath.string() + ext).c_str(), F_OK) != -1;
-      if (exists) { foundExt = ext; }
+  if (!exists) {
+    if (fs::is_directory(fullPath)) {
+      auto configFile = fullPath / "sn.toml";
+      auto config = toml::parse_file(configFile.string());
+      auto entry = config["package"]["main"].value_or<std::string>("<invalid>");
+      if (entry == "<invalid>") {
+        return {"", "", "Package doesn't have a main entry defined!"};
+      }
+
+      auto finalPath = fullPath / entry;
+      if (fullPath.stem().empty()) fullPath = fullPath.parent_path();
+      assert(access(finalPath.c_str(), F_OK) != -1);
+      return {finalPath, fullPath, ""};
     }
   }
 
   if (!exists) {
-    return {"",
+    return {"", "",
             FMT("Coudnt find module '%s' imported from '%s' (%s)!",
                 utils::join(path.begin(), path.end(), "::").c_str(),
                 package.c_str(), fullPath.string().c_str())};
   }
 
-  return {fullPath.string() + foundExt, ""};
+  auto finalPath = fullPath.string() + foundExt;
+  return {finalPath, finalPath, ""};
 }
 
 } // namespace services

@@ -121,23 +121,18 @@ public:
     stack.insert(stack.begin(), newScope);
   }
   /// @brief Run a function inside a scope
-  virtual Scope withScope(std::function<void()> func) {
+  void withScope(std::function<void()> func) {
     addScope();
     func();
-
-    return delScope();
+    delScope();
   }
   /**
    * @brief Delete the current scope
    * @return Scope The deleted scope
    */
-  virtual Scope delScope() {
+  void delScope() {
     DEBUG_SYMTABLE(0, "Deleting scope")
-
-    auto s = stack.front();
     stack.pop_front();
-
-    return s;
   }
   /// @brief If the scope is the global scope
   bool isGlobalScope() { return stack.size() == 2; }

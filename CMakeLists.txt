@@ -17,7 +17,7 @@ add_compile_options ( -Wall -Werror -Wno-unused-function -Wno-comment -Wno-unkno
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-reorder")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-discarded-qualifiers")
 
-option(SNOWBALL_SANITIZER "Enable sanitizer" ON)
+option(SNOWBALL_SANITIZER "Enable sanitizer" OFF)
 
 if (SNOWBALL_SANITIZER)
   add_compile_options(-fsanitize=address)

@@ -21,11 +21,11 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
   auto package = p_node->getPackage();
   auto path = p_node->getPath();
   // TODO: extension
-  auto [filePath, error] = ctx->imports->getImportPath(package, path);
+  auto [filePath, originalPath, error] = ctx->imports->getImportPath(package, path);
   if (!error.empty()) { E<IMPORT_ERROR>(p_node, error); }
   // TODO: don't allow user import std::std twice!
   auto uuid = package == "std" ? ctx->imports->CORE_UUID + utils::join(path.begin(), path.end(), ".") : ctx->imports->getModuleUUID(filePath);
-  auto exportName = ctx->imports->getExportName(filePath, p_node->getExportSymbol());
+  auto exportName = ctx->imports->getExportName(originalPath, p_node->getExportSymbol());
   auto isExternalModule = ctx->imports->isExternalModule(package);
   ctx->isMainModule = !isExternalModule;
   std::shared_ptr<ir::Module> importedModule = nullptr;
@@ -49,7 +49,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     auto niceFullName = package + "::" + utils::join(path.begin(), path.end(), "::");
     if (niceFullName == "std::std") niceFullName = "std"; // TODO: remove this hack if possible
     auto mod = std::make_shared<ir::Module>(niceFullName, uuid);
-    std::vector<std::string> uuidStack = ctx->uuidStack.size() == 0 
+    auto uuidStack = ctx->uuidStack.size() == 0 
       ? std::vector<std::string>{} 
       : std::vector<std::string>{ctx->uuidStack.front()};
     auto state = std::make_shared<ContextState>(ContextState::StackType{}, mod, uuidStack, nullptr);

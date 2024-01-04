@@ -208,10 +208,7 @@ struct Token {
   int line = 0, col = 0;
 
   std::string value;
-  std::string comment;
-
-  Token() { }
-  Token(TokenType p_type) { type = p_type; }
+  std::string comment = "";
 
   std::string getComment() const { return comment; }
 

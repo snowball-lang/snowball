@@ -93,9 +93,7 @@ void Compiler::compile(bool silent) {
 #if _SNOWBALL_TIMERS_DEBUG
       DEBUG_TIMER("Simplifier: %fs", utils::_timer([&] { simplifier->visitGlobal(ast); }));
 #else
-      ([&] { simplifier->visitGlobal(ast); })();
-      // TODO: why does this segfault if not called from a function?
-//      simplifier->visitGlobal(ast);
+      simplifier->visitGlobal(ast);
 #endif
 
       SHOW_STATUS(Logger::compiling(Logger::progress(0.70)))
