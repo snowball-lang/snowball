@@ -4,6 +4,23 @@ import std::io;
 @use_macro(assert)
 import std::asserts;
 
+enum SimpleEnum {
+    A,
+    B
+}
+
+class extends SimpleEnum {
+    func test() i32 {
+        let a = SimpleEnum::A;
+
+        case a {
+            A => return 1,
+            B => return 2,
+            default => return 3
+        }
+    }
+}
+
 namespace tests {
 
 enum TestEnum {
@@ -181,6 +198,12 @@ func variadic_match() i32 {
         F(x, ...) => return 6,
         default => return 8
     }
+}
+
+@test(expect = 1)
+func enum_extension() i32 {
+    let a = SimpleEnum::A;
+    return a.test();
 }
 
 } // namespace tests

@@ -12,7 +12,7 @@ Syntax::Node* Parser::parseStatement(Token pk) {
     case TokenType::_EOF: {
       next(); // eat EOF
       createError<UNEXPECTED_EOF>("Found an unexpected EOF while parsing a block");
-    }
+    } break;
 
     case TokenType::KWORD_UNSAFE: {
       assertNoAttributes("unsafe block");

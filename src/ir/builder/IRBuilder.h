@@ -91,18 +91,20 @@ public:
           DBGSourceInfo* dbgInfo, SharedValue<> value, types::DefinedType::ClassField* field, unsigned int index
   );
   /// @brief Create a new argument value with the default parameters
-  SharedValue<Argument> createArgument(DBGSourceInfo* dbgInfo, const std::string& name, Type<> type = nullptr);
+  SharedValue<Argument> createArgument(DBGSourceInfo* dbgInfo, const std::string& name, Type<> type = nullptr, int scopeIndex = -1);
   /// @brief Create a new argument value
   SharedValue<Argument> createArgument(
-          DBGSourceInfo* dbgInfo, const std::string& name, int index, AST(Expression::Base) defaultValue = nullptr
+    DBGSourceInfo* dbgInfo, const std::string& name, int index, AST(Expression::Base) defaultValue = nullptr,
+    int scopeIndex = -1
   );
   /// @brief Create a new argument value and set a type to it
   SharedValue<Argument> createArgument(
-          DBGSourceInfo* dbgInfo,
-          const std::string& name,
-          int index,
-          Type<> type,
-          AST(Expression::Base) defaultValue = nullptr
+    DBGSourceInfo* dbgInfo,
+    const std::string& name,
+    int index,
+    Type<> type,
+    AST(Expression::Base) defaultValue = nullptr,
+    int scopeIndex = -1
   );
   /// @brief Create a new variable
   SharedValue<Variable> createVariable(

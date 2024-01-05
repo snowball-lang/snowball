@@ -23,16 +23,19 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
   }
 
   auto attributes = verifyAttributes([&](std::string attr) {
-    if (attr == "extends") {
-      extends = true;
-      return Attributes::CLASS_EXTENDS;
-    } else if (attr == "__internal__") {
+    if (attr == "__internal__") {
       return Attributes::BUILTIN;
     } else if (attr == "no_constructor") {
       return Attributes::NO_CONSTRUCTOR;
     }
     return Attributes::INVALID;
   });
+
+  if (is<TokenType::KWORD_EXTENDS>()) {
+    next();
+    attributes[Attributes::CLASS_EXTENDS] = {};
+    extends = true;
+  }
 
   std::string name;
   // TODO: check this is only for std lib builds!!!
@@ -288,7 +291,8 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
           func->setStatic();
           cls->addFunction(func);
           break;
-        }
+        }        
+        __attribute__ ((fallthrough));
       }
 
       default: {

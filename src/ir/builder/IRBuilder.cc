@@ -47,15 +47,15 @@ SharedValue<IndexExtract> IRBuilder::createIndexExtract(
   setType(indexExtract, field->type);
   return indexExtract;
 }
-SharedValue<Argument> IRBuilder::createArgument(DBGSourceInfo* dbgInfo, const std::string& name, Type<> type) {
-  auto arg = createArgument(dbgInfo, name, 0, (Syntax::Expression::Base*) nullptr);
+SharedValue<Argument> IRBuilder::createArgument(DBGSourceInfo* dbgInfo, const std::string& name, Type<> type, int scopeIndex) {
+  auto arg = createArgument(dbgInfo, name, 0, (Syntax::Expression::Base*) nullptr, scopeIndex);
   if (type) setType(arg, type);
   return arg;
 }
 SharedValue<Argument> IRBuilder::createArgument(
-        DBGSourceInfo* dbgInfo, const std::string& name, int index, Syntax::Expression::Base* defaultValue
+        DBGSourceInfo* dbgInfo, const std::string& name, int index, Syntax::Expression::Base* defaultValue, int scopeIndex
 ) {
-  return N<Argument>(dbgInfo, name, index, defaultValue);
+  return N<Argument>(dbgInfo, name, index, defaultValue, scopeIndex);
 }
 SharedValue<EnumInit> IRBuilder::createEnumInit(DBGSourceInfo* dbgInfo, types::EnumType* type, std::string name) {
   auto init = N<EnumInit>(dbgInfo, name);
@@ -72,9 +72,9 @@ SharedValue<ZeroInitialized> IRBuilder::createZeroInitialized(DBGSourceInfo* dbg
   return zero;
 }
 SharedValue<Argument> IRBuilder::createArgument(
-        DBGSourceInfo* dbgInfo, const std::string& name, int index, Type<> type, Syntax::Expression::Base* defaultValue
+        DBGSourceInfo* dbgInfo, const std::string& name, int index, Type<> type, Syntax::Expression::Base* defaultValue, int scopeIndex
 ) {
-  auto arg = createArgument(dbgInfo, name, index, defaultValue);
+  auto arg = createArgument(dbgInfo, name, index, defaultValue, scopeIndex);
   setType(arg, type);
   return arg;
 }

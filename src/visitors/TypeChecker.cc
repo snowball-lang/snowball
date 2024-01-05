@@ -31,18 +31,19 @@
 #include <vector>
 
 #define VISIT(Val) void TypeChecker::visit(ir::Val* p_node)
-#define ADD_TO_PARENT_SCOPE(x) \
+#define ADD_TO_PARENT_SCOPE(x, isArg) \
   if (auto func = ctx->getCurrentFunction()) { \
     if (!func->isAnon()) return;\
     auto variable = x;\
     if (!variable) return;\
     auto varScope = variable->getScopeIndex();\
     auto funcScope = func->getScopeIndex();\
-    if (varScope <= funcScope) {\
-      if (varScope <= 2) return;\
-      func->setUsesParentScope();\
-      variable->setUsedInLambda();\
-      variable->setParentFunc(func->getParentScope().get());\
+    if ((varScope+isArg) <= funcScope) {\
+      if ((varScope+isArg) > 2) {\
+        func->setUsesParentScope();\
+        variable->setUsedInLambda();\
+        variable->setParentFunc(func->getParentScope().get());\
+      }\
     }\
   }
 
@@ -222,7 +223,7 @@ VISIT(Call) {
     }
     fn->visit(this);
   }
-  for (auto a : p_node->getArguments()) {
+  for (auto& a : p_node->getArguments()) {
     // TODO: maybe check even if it's not a function value?
     if (i == 0 && fn) checkMutability(p_node, fn, a);
 
@@ -270,7 +271,7 @@ VISIT(IndexExtract) {
 }
 
 VISIT(Variable) {
-  ADD_TO_PARENT_SCOPE(p_node);
+  {ADD_TO_PARENT_SCOPE(p_node, 0);}
   cantBeVoid(
           p_node,
           p_node->getType(),
@@ -282,11 +283,11 @@ VISIT(Variable) {
 
 VISIT(Argument) {
   assert(ctx->getCurrentFunction() != nullptr);
-  /* noop */
+  {ADD_TO_PARENT_SCOPE(p_node, 1);}
 }
 
 VISIT(ValueExtract) {
-  ADD_TO_PARENT_SCOPE(utils::dyn_cast<ir::Variable>(p_node->getValue()));
+  p_node->getValue()->visit(this);
 }
 
 VISIT(WhileLoop) {

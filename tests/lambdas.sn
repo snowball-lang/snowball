@@ -147,5 +147,16 @@ func same_function() i32 {
     return a + x.size() + f;
 }
 
+func use_from_arg(c: u8) Function<func() => u8> {
+  return func() u8 {
+    return c == 'A';
+  };
+}
+
+@test
+func use_from_arg_test() i32 {
+  return use_from_arg('A')();
+}
+
 }
 

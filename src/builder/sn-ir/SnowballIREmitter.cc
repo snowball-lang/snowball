@@ -191,7 +191,7 @@ void SnowballIREmitter::visit(ir::ValueExtract* ve) {
 }
 
 void SnowballIREmitter::visit(ir::Argument* a) {
-  addContent(a->getName());
+  addContent(a->getIdentifier());
   addContent(": ");
   addContent(a->getType()->getPrettyName());
 }

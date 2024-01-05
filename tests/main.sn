@@ -12,7 +12,7 @@ import pkg::ranges;
 import pkg::chars;
 import pkg::vector;
 import pkg::string;
-import pkg::tuples;
+import pkg::tuples as _tuples_test;
 import pkg::syntax;
 import pkg::algorithms;
 import pkg::clib;
@@ -29,29 +29,17 @@ import pkg::map;
 import pkg::iters;
 import pkg::env;
 import pkg::strings;
-import pkg::enums;
+//import pkg::enums;
 import pkg::libs_include;
 
 ////import std::io::{{ println }};
 
 import std::io;
+import std::opt;
+import std::tuples;
 import std::env as os_env;
 
 //import std::io::{ println };
 
-enum Test {
-    A,
-    B(i64),
-    C(i32, bool),
-}
-
 public func main() i32 {
-    let a = Test::B(1 as i64);
-    let c = Test::C(1, true);
-
-    case a {
-        A => io::println("A"),
-        B(x) => io::println("B"),
-        C(x, y) => io::println("C"),
-    }
 }

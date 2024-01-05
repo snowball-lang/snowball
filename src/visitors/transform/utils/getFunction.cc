@@ -150,6 +150,7 @@ std::shared_ptr<ir::Value> Transformer::getFunction(
                   "syntax and parameter \ntypes.",
           .tail = tailErrors}
       );
+      break;
     }
 
     case AmbiguityConflict: {
@@ -170,6 +171,7 @@ std::shared_ptr<ir::Value> Transformer::getFunction(
                        "correct syntax and parameter types.",
                .tail = tailErrors}
       );
+      __attribute__((fallthrough));
     }
 
 #undef ADD_FUNCTION_ERROR

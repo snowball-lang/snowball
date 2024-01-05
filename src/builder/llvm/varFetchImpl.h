@@ -27,9 +27,10 @@
         [variable](auto v2) { return v2 == variable->getId(); }\
       )\
     );\
+    assert(index != (int)closure.variables.size());\
     value = builder->CreateStructGEP(closure.closureType, arg, index);\
   } else {\
-    auto id = variable->getId() + variable->isArgument();\
+    auto id = variable->getId();\
     value = ctx->getSymbol(id);\
   }
 

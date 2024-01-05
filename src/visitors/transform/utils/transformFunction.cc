@@ -70,7 +70,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
 
       ir::Func::FunctionArgs newArgs = {};
       if (fn->isConstructor()) {
-        auto a = getBuilder().createArgument(node->getDBGInfo(), "self", 0, (Syntax::Expression::Base*) nullptr);
+        auto a = getBuilder().createArgument(node->getDBGInfo(), "self", 0, (Syntax::Expression::Base*) nullptr, ctx->getScopeIndex());
         auto ty = ctx->getCurrentClass(true)->getReferenceTo();
         ty->setMutable(node->isMutable());
         a->setType(ty);
@@ -80,18 +80,17 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
 
       for (size_t i = 0; i < node->getArgs().size(); i++) {
         auto arg = node->getArgs().at(i);
-
         auto a = getBuilder().createArgument(
-                node->getDBGInfo(),
-                arg->getName(),
-                fn->isConstructor() + i,
-                arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr
+          node->getDBGInfo(),
+          arg->getName(),
+          fn->isConstructor() + i,
+          arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr,
+          ctx->getScopeIndex()
         );
         a->setType(transformSizedType(
-                arg->getType(), false, "Function argument types but be sized but found '%s' (which is not sized)"
+          arg->getType(), false, "Function argument types but be sized but found '%s' (which is not sized)"
         ));
         
-
         if (arg->getName() == "self") {
           a->setMutability(node->isMutable());
           a->getType()->setMutable(node->isMutable());
@@ -131,12 +130,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
 
         ctx->withScope([&]() {
           for (auto arg : newArgs) {
-            auto ref = getBuilder().createVariable(node->getDBGInfo(), arg.first, true, arg.second->isMutable(), ctx->getScopeIndex());
-            getBuilder().setType(ref, arg.second->getType());
-            ref->getType()->setMutable(arg.second->isMutable());
-            auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, ref);
-            ref->setId(arg.second->getId());
-            ref->setDBGInfo(arg.second->getDBGInfo());
+            auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, arg.second);
             ctx->addItem(arg.first, refItem);
           }
 

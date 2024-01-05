@@ -23,8 +23,7 @@ public func map<Y: Sized, X: Sized, I: Iterable<X>>(iterator: I<X>, fn: Function
 
 // MARK - STD Lib extensions
 
-@extends
-class Vector {
+class extends Vector {
  public:
   /**
    * @brief It maps the iterable to a new vector by applying a function to each element.

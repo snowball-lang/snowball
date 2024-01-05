@@ -81,61 +81,32 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
   auto llvmArgsIter = llvmFn->arg_begin() + retIsArg + anon;
   auto selfArg = (llvm::Value*) nullptr;
   auto selfArgVal = std::shared_ptr<ir::Value>(nullptr);
-  for (auto varIter = fnArgs.begin(); varIter != fnArgs.end(); ++varIter) {
-    auto var = varIter->second;
-    auto storage = builder->CreateAlloca(getLLVMType(var->getType()), nullptr, "arg." + var->getName());
-    builder->CreateStore(llvmArgsIter, storage);
-
-    if (var->getName() == "self" && var->getIndex() == 0) {
-      selfArg = storage;
-      selfArgVal = varIter->second;
-    }
-
-    // note: We sum "1" to the ID because each "Variable" has the
-    // argument stored.
-    //  variable searches for it's ID and not the argument ID (aka:
-    //  var id - 1). basically, we sum 1 because thats the ID when
-    //  we store it as a variable.
-    ctx->addSymbol(var->getId() + 1, storage);
-
-    // debug info
-    auto src = var->getSourceInfo();
-    auto dbgInfo = var->getDBGInfo();
-
-    auto file = dbg.getFile(src->getPath());
-    auto scope = llvmFn->getSubprogram();
-    auto debugVar = dbg.builder->createParameterVariable(
-            scope,
-            var->getName(),
-            var->getIndex() + 1 + retIsArg + anon, // lua vibes... :]
-            file,
-            dbgInfo->line,
-            getDIType(var->getType()),
-            dbg.debug
-    );
-    dbg.builder->insertDeclare(
-            storage,
-            debugVar,
-            dbg.builder->createExpression(),
-            llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
-            entry
-    );
-    ++llvmArgsIter;
-  }
 
   llvm::StructType* closureType = nullptr;
+#define CREATE_CLOSURE_TYPE() \
+  if (closureType == nullptr) { \
+    closureType = llvm::StructType::create(*context, "_closure." + fn->getMangle()); \
+  }
 
-  for (auto v : fn->getSymbols()) {
-    auto llvmType = getLLVMType(v->getType());
-    if (v->getVariable()->isUsedInLambda()) {
-      if (closureType == nullptr) {
-        closureType = llvm::StructType::create(*context, "_closure." + fn->getMangle());
-      }
+  for (auto arg : fn->getArgs()) {
+    if (arg.second->isUsedInLambda()) {
+      CREATE_CLOSURE_TYPE()
       auto body = closureType->elements().vec();
-      body.push_back(llvmType);
+      body.push_back(getLLVMType(arg.second->getType()));
       closureType->setBody(body);
     }
   }
+
+  for (auto v : fn->getSymbols()) {
+    if (v->getVariable()->isUsedInLambda()) {
+      CREATE_CLOSURE_TYPE()
+      auto body = closureType->elements().vec();
+      body.push_back(getLLVMType(v->getType()));
+      closureType->setBody(body);
+    }
+  }
+
+#undef CREATE_CLOSURE_TYPE
 
   if (closureType) {
     auto layout = module->getDataLayout();
@@ -150,11 +121,70 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     }});
   }
 
+  for (auto arg : fn->getArgs()) {
+    if (arg.second->isUsedInLambda()) {
+      assert(closureType != nullptr);
+      auto& closure = ctx->closures.at(fn->getId());
+      closure.variables.push_back(arg.second->getId());
+    }
+  }
+
   for (auto v : fn->getSymbols()) {
     if (v->getVariable()->isUsedInLambda()) {
+      assert(closureType != nullptr);
       auto& closure = ctx->closures.at(fn->getId());
       closure.variables.push_back(v->getVariable()->getId());
     }
+  }
+
+  for (auto varIter = fnArgs.begin(); varIter != fnArgs.end(); ++varIter) {
+    auto var = varIter->second;
+    llvm::Value* storage = nullptr;
+    if (var->isUsedInLambda()) {
+      auto closure = ctx->closures.at(fn->getId());
+      auto index = std::distance(
+        closure.variables.begin(),
+        std::find_if(
+          closure.variables.begin(),
+          closure.variables.end(),
+          [&](auto v2) { return v2 == var->getId(); }
+        )
+      );
+      storage = builder->CreateStructGEP(closureType, closure.closure, index, "arg." + var->getIdentifier());
+    } else {
+      storage = builder->CreateAlloca(getLLVMType(var->getType()), nullptr, "arg." + var->getIdentifier());
+      ctx->addSymbol(var->getId(), storage);
+    }
+    builder->CreateStore(llvmArgsIter, storage);
+
+    if (var->getIdentifier() == "self" && var->getIndex() == 0) {
+      selfArg = storage;
+      selfArgVal = varIter->second;
+    }
+
+    // debug info
+    auto src = var->getSourceInfo();
+    auto dbgInfo = var->getDBGInfo();
+
+    auto file = dbg.getFile(src->getPath());
+    auto scope = llvmFn->getSubprogram();
+    auto debugVar = dbg.builder->createParameterVariable(
+            scope,
+            var->getIdentifier(),
+            var->getIndex() + 1 + retIsArg + anon, // lua vibes... :]
+            file,
+            dbgInfo->line,
+            getDIType(var->getType()),
+            dbg.debug
+    );
+    dbg.builder->insertDeclare(
+            storage,
+            debugVar,
+            dbg.builder->createExpression(),
+            llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
+            entry
+    );
+    ++llvmArgsIter;
   }
 
   // Generate all the used variables

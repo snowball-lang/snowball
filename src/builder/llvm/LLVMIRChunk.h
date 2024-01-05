@@ -12,8 +12,8 @@ struct LLVMIRChunk {
     LLCode,
     TypeAccess
   } type;
-  std::string code;
-  types::Type* ty;
+  std::string code = "";
+  types::Type* ty = nullptr;
 };
 
 } // namespace Syntax

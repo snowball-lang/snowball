@@ -57,10 +57,10 @@ public:
 
 public:
   /// @brief Set a new type to the cache
-  void setType(const std::string& uuid, Statement::Base* p_ty, std::shared_ptr<transform::ContextState> state);
+  void setType(const std::string uuid, Statement::Base* p_ty, std::shared_ptr<transform::ContextState> state);
   /// @brief add a new generated class to the cache
   void setTransformedType(
-          const std::string& uuid, std::shared_ptr<transform::Item> p_ty, const std::string overloadedUUID = ""
+          const std::string uuid, std::shared_ptr<transform::Item> p_ty, const std::string overloadedUUID = ""
   );
   /// @brief add a new generated class to the cache
   std::optional<std::vector<std::shared_ptr<transform::Item>>> getTransformedType(const std::string& uuid);

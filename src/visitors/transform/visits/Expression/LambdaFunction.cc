@@ -37,7 +37,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
     auto arg = node->getArgs().at(i);
 
     auto a = getBuilder().createArgument(node->getDBGInfo(), arg->getName(), fn->isConstructor() + i,
-            arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr);
+            arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr, ctx->getScopeIndex());
     a->setType(transformType(arg->getType()));
     newArgs.insert(newArgs.end(), {arg->getName(), a});
   }
@@ -60,14 +60,7 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
 
     ctx->withScope([&]() {
       for (auto arg : newArgs) {
-        auto ref = getBuilder().createVariable(node->getDBGInfo(), arg.first, true /* TODO: is mutable */, false, ctx->getScopeIndex());
-
-        getBuilder().setType(ref, arg.second->getType());
-        auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, ref);
-
-        ref->setId(arg.second->getId());
-        ref->setDBGInfo(arg.second->getDBGInfo());
-
+        auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, arg.second);
         ctx->addItem(arg.first, refItem);
       }
 

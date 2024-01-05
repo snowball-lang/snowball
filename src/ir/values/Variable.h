@@ -52,6 +52,9 @@ public:
   /// @brief Set the function where the variable is defined in
   void setParentFunc(Func* func) { assert(isUsedInLambda()); parentFunc = func; }
 
+  /// @brief Set the mutable flag
+  void setMutability(bool isMutable) { _isMutable = isMutable; }
+
   // Set a visit handler for the generators
   SN_GENERATOR_VISITS
 };

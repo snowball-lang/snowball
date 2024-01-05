@@ -60,6 +60,7 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
                 FMT("If you want a boolean type, use 'bool' instead of 'i1'!"),
                 {.note = FMT("This is used used for consistency with other languages.")}
         );
+        break;
       default: {
         return ctx->getPrimitiveNumberType<types::IntType>(bits, isSigned);
       }

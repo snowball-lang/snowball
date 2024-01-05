@@ -47,9 +47,8 @@ const DEC_DIGITS_LUT: *const u8 = b"\
  * ```
  * 
 */
-@extends
 @__internal__
-class IntegerImpl {  
+class extends IntegerImpl {  
   public:
     func to_string(self: IntegerType) String {
       // TODO: float impl

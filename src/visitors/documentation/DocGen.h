@@ -33,7 +33,7 @@ struct DocumentationPage {
   std::string name;
   std::filesystem::path path;
 
-  std::string html;
+  std::string html = "";
   enum Type {
     Type,
     Function,
@@ -67,7 +67,7 @@ struct DocGenContext {
   std::string currentModule;
   std::string currentType = "";
 
-  std::string currentNamespacePath;
+  std::string currentNamespacePath = "";
   std::string currentModulePath = "";
   std::string currentTypePath = "";
 
