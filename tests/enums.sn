@@ -1,5 +1,6 @@
 
 import std::io;
+import std::tuples;
 
 @use_macro(assert)
 import std::asserts;
@@ -187,6 +188,27 @@ func default_match() i32 {
         F(x, y) => return 6,
         G(x) => return 7,
         default => return 8
+    }
+}
+
+@test(expect = 2)
+func assign_match() i32 {
+    let mut a = TestEnum::B;
+    a = TestEnum::A;
+
+    case a {
+        A => return 2,
+        default => return 1
+    }
+}
+
+@test(expect = 2)
+func store_in_tuple() i32 {
+    let a = new tuples::Pair<TestEnum, i32>(TestEnum::A, 2);
+
+    case a.first {
+        A => return a.second,
+        default => return 1
     }
 }
 
