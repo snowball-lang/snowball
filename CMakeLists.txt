@@ -15,7 +15,11 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 add_compile_options ( -Wall -Werror -Wno-unused-function -Wno-comment -Wno-unknown-pragmas -Wno-misleading-indentation -Wno-deprecated-declarations)
 # only when compiling c++
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-reorder")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-discarded-qualifiers")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-ignored-qualifiers")
+else()
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-discarded-qualifiers")
+endif()
 
 option(SNOWBALL_SANITIZER "Enable sanitizer" OFF)
 
