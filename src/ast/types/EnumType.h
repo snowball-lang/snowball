@@ -27,7 +27,7 @@ namespace types {
  * primitive types, in order to use these type and it's member,
  * a new initialization of the object is required.
  */
-class EnumType : public AcceptorExtend<EnumType, BaseType> {
+class EnumType final : public AcceptorExtend<EnumType, BaseType> {
 public:
   /**
    * @brief An enum field represents all of the "elements" a
@@ -36,13 +36,15 @@ public:
    * @note The number of items does not affect whether this type
    * is eqaul to another type.
    */
-  struct EnumField : public DBGObject {
+  struct EnumField final : public DBGObject {
     explicit EnumField(
       const std::string& name,
       std::vector<types::Type*> types);
 
     const std::string name;
     std::vector<types::Type*> types;
+
+    virtual ~EnumField() = default;
   };
 
   friend AcceptorExtend;
@@ -58,8 +60,6 @@ public:
     std::shared_ptr<ir::Module> module,
     Privacy::Status privacy = PRIVATE
   );
-  EnumType(const EnumType&) = default;
-  EnumType& operator=(EnumType const&) = delete;
   /**
    * @param other another type to check.
    *

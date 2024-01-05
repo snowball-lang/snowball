@@ -31,7 +31,7 @@ class TransformContext : public AcceptorExtend<TransformContext, ASTContext<tran
   // Current class being transformed
   types::Type* currentClass = nullptr;
   // The IRBuilder instance that's being used to generate the IR
-  ir::IRBuilder& builder;
+  ir::IRBuilder builder;
   /// @brief A map containing all core interfaces
   std::unordered_map<std::string, types::InterfaceType*> coreInterfaces = {};
 

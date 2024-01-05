@@ -108,7 +108,13 @@
         "runtime.h": "c",
         "forward_list": "cpp",
         "*.sn": "cpp",
-        "complex": "cpp"
+        "complex": "cpp",
+        "csignal": "cpp",
+        "coroutine": "cpp",
+        "future": "cpp",
+        "ranges": "cpp",
+        "span": "cpp",
+        "valarray": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "todo-tree.tree.scanMode": "workspace",

@@ -43,7 +43,7 @@ void Backtrace::push(uintptr_t address) {
         frames = (BacktraceFrame*) malloc(sizeof(BacktraceFrame) * SNOWBALL_BACKTRACE_LIMIT);
     } 
 
-    auto frame = (BacktraceFrame) {
+    auto frame = BacktraceFrame {
         .function = "????",
         .filename = "<invalid>",
         .address = address,

@@ -130,7 +130,6 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
         ctx->setCurrentFunction(fn);
 
         ctx->withScope([&]() {
-          int argIndex = 0;
           for (auto arg : newArgs) {
             auto ref = getBuilder().createVariable(node->getDBGInfo(), arg.first, true, arg.second->isMutable(), ctx->getScopeIndex());
             getBuilder().setType(ref, arg.second->getType());
@@ -139,7 +138,6 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
             ref->setId(arg.second->getId());
             ref->setDBGInfo(arg.second->getDBGInfo());
             ctx->addItem(arg.first, refItem);
-            argIndex++;
           }
 
           auto body = bodiedFn->getBody();

@@ -8,24 +8,26 @@ file(READ "snowball.version.id" versionID)
 project(snowball VERSION ${version})
 
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-limit-debug-info")
 endif()
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-add_compile_options ( -Wall -Werror -Wno-unused-function -Wno-comment -Wno-unknown-pragmas -Wno-misleading-indentation -Wno-deprecated-declarations)
+add_compile_options ( -Wextra -pedantic -Wall -Wno-pedantic -Wno-ignored-qualifiers -Wno-reorder-ctor -Wno-unused-function -Wno-unused-parameter -Wno-comment -Wno-unknown-pragmas -Wno-misleading-indentation -Wno-deprecated-declarations -Wunused-but-set-variable)
+
 # only when compiling c++
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-reorder")
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-ignored-qualifiers")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-reorder-ctor -Wno-delete-non-abstract-non-virtual-dtor -Wno-unused-private-field -Wno-sometimes-uninitialized -Wno-c++20-extensions")
 else()
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-discarded-qualifiers")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-discarded-qualifiers -Wshift-negative-value")
 endif()
 
 option(SNOWBALL_SANITIZER "Enable sanitizer" OFF)
 
 if (SNOWBALL_SANITIZER)
-  add_compile_options(-fsanitize=address)
-  add_link_options(-fsanitize=address)
+  add_compile_options(-fsanitize=address,undefined)
+  add_link_options(-fsanitize=address,undefined)
 endif()
 
 if(CMAKE_OSX_ARCHITECTURES MATCHES "arm64")

@@ -21,12 +21,12 @@ auto EI(Val item, std::string msg = "", ErrorInfo info = {}) {
 }
 
 template <Error e, class Val>
-void E(Val item, std::string msg, ErrorInfo info = {}) {
+void E(Val item, std::string msg, ErrorInfo info = {}) noexcept(false) {
    throw *EI<e>(item, msg, info);
 }
 
 template <Error e>
-void E(std::string msg) {
+void E(std::string msg) noexcept(false) {
   throw SNError(e, msg);
 }
 

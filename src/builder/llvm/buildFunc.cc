@@ -144,6 +144,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     alloca->setDebugLoc(llvm::DILocation::get(*context, 0, 0, llvmFn->getSubprogram()));
     //builder->CreateStore(alloca, structAlloca);
     ctx->closures.insert({fn->getId(), LLVMBuilderContext::ClosureContext {
+      .variables = {},
       .closure = alloca,
       .closureType = closureType,
     }});

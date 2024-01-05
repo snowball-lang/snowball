@@ -78,6 +78,8 @@ public:
   bool hasVtable = false;
 
   SNOWBALL_TYPE_COPIABLE(BaseType)
+
+  virtual ~BaseType() noexcept = default;
 };
 
 }; // namespace types

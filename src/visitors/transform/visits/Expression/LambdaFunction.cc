@@ -59,7 +59,6 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
     ctx->setCurrentFunction(fn);
 
     ctx->withScope([&]() {
-      int argIndex = 0;
       for (auto arg : newArgs) {
         auto ref = getBuilder().createVariable(node->getDBGInfo(), arg.first, true /* TODO: is mutable */, false, ctx->getScopeIndex());
 
@@ -70,7 +69,6 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
         ref->setDBGInfo(arg.second->getDBGInfo());
 
         ctx->addItem(arg.first, refItem);
-        argIndex++;
       }
 
       auto body = bodiedFn->getBody();

@@ -18,8 +18,8 @@ Syntax::Expression::Base* Parser::buildOperatorTree(std::vector<Syntax::Expressi
     bool unary = false;
 
     for (int i = 0; i < (int) exprs.size(); i++) {
-      auto expression = static_cast<Syntax::Expression::BinaryOp*>(exprs[i]);
-      if (!expression->isOperator) { continue; }
+      auto expression = utils::cast<Syntax::Expression::BinaryOp>(exprs[i]);
+      if (!expression || !expression->isOperator) { continue; }
 
       int precedence = -1;
       switch (expression->op_type) {

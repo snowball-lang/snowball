@@ -75,6 +75,8 @@ public:
 
   /// @brief A list containing the definitive type information
   std::map<id_t, std::shared_ptr<types::BaseType>> typeInformation;
+
+  virtual ~Module() = default;
 };
 } // namespace ir
 } // namespace snowball

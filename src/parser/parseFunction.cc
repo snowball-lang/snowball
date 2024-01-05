@@ -110,7 +110,7 @@ fetch_attrs:
     return Attributes::INVALID;
   });
   if (isOperator) {
-    services::OperatorService::OperatorType opType;
+    services::OperatorService::OperatorType opType = services::OperatorService::OperatorType::INVALID;
     switch (m_current.type) {
       case TokenType::OP_EQ: {
         opType = services::OperatorService::OperatorType::EQ;

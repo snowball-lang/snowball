@@ -36,7 +36,7 @@ Transformer::getLLVMBody(std::string block, std::vector<Syntax::Expression::Type
       int start = i;
       while (!((block[i] == '{') && (block[i + 1] == '=')) && (i < block.size())) i++;
       auto code = block.substr(start, i - start);
-      chunks.push_back(LLVMIRChunk{.type = LLVMIRChunk::LLCode, code});
+      chunks.push_back(LLVMIRChunk{.type = LLVMIRChunk::LLCode, .code = code});
     }
   }
 

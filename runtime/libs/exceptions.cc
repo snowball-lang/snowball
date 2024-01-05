@@ -716,6 +716,7 @@ void throwOurException(void *exc) {
   switch (code) {
     case _URC_END_OF_STACK: {
       snowball::end_stack(exc);
+      break;
     };
 
     case _URC_FATAL_PHASE1_ERROR:

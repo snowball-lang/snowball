@@ -36,7 +36,7 @@ Token Parser::prev(int p_offset, bool p_safe) {
 }
 
 Token Parser::peek(int p_offset, bool p_safe) {
-  Token tmp = {TokenType::_EOF};
+  Token tmp = {.type=TokenType::_EOF,. value=""};
   if ((m_tok_index + 1) + p_offset < 0 || (m_tok_index + 1) + p_offset >= (int) m_tokens.size()) {
     if (p_safe)
       return tmp;

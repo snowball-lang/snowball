@@ -51,7 +51,7 @@ int run(app::Options::RunOptions p_opts) {
 
   compiler->cleanup();
 
-  char* args[p_opts.progArgs.size()+2] = {strdup(output.c_str())};
+  char* args[1024] = {strdup(output.c_str())};
   for (size_t i = 0; i < p_opts.progArgs.size(); i++) {
     args[i + 1] = strdup(p_opts.progArgs[i].c_str());
   }

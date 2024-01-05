@@ -21,8 +21,6 @@ namespace ir {
 
 /// @brief The main module compiled from a snowball project
 class MainModule : public Module {
-  /// @brief Main function called to start the program.
-  Func* entryPoint;
   /// @brief a list of generated modules through the whole project
   std::vector<std::shared_ptr<ir::Module>> modules;
 
@@ -48,6 +46,8 @@ public:
   std::vector<std::shared_ptr<ir::Module>> getModules() const { return modules; }
   /// @brief add all the modules to the global generated modules list
   void setModules(std::vector<std::shared_ptr<ir::Module>> m) { modules = m; }
+
+  virtual ~MainModule() = default;
 };
 } // namespace ir
 } // namespace snowball

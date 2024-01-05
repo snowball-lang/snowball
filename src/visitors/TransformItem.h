@@ -90,7 +90,7 @@ public:
 
   // Constructors and destructors for the
   // item.
-  ~Item() noexcept = default;
+  virtual ~Item() noexcept = default;
 
   Item(Type type, ValuePtr val) : type(type), value(val){};
   Item(FunctionPtr fn) : type(FUNC), functions({fn}){};

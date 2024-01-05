@@ -203,8 +203,7 @@ types::BaseType* Transformer::transformClass(
       // if (!ty->isInterface()) {
       //  Create function definitions
       ctx->generateFunction = false;
-      ctx->module->typeInformation.insert({transformedType->getId(), std::shared_ptr<types::BaseType>(transformedType)}
-      );
+      ctx->module->typeInformation.emplace(transformedType->getId(), std::shared_ptr<types::BaseType>(transformedType));
       GENERATE_EQUALIZERS
       for (auto fn : tyFunctions) {
         if (services::OperatorService::opEquals<OperatorType::CONSTRUCTOR>(fn->getName()))
