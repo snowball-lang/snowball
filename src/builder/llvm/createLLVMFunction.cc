@@ -64,7 +64,7 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
     callee->setSubprogram(DISubprogram);
   }
 
-  bool retIsArg = utils::is<types::DefinedType>(func->getRetTy());
+  bool retIsArg = utils::is<types::BaseType>(func->getRetTy());
   if (retIsArg) {
     auto arg = fn->arg_begin();
     auto attrBuilder = llvm::AttrBuilder(*context);

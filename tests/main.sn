@@ -41,5 +41,40 @@ import std::env as os_env;
 
 //import std::io::{ println };
 
+enum JSON {
+  JSONNull,
+  JSONBool(bool),
+  JSONString(String),
+  JSONNum(f64),
+  // JSONArray(Vector<JSON>),
+  // JSONTable(Map<String, JSON>),
+}
+
+type ParserResult<T> = opt::Option<tuples::Pair<T,String>>;
+type Parser<T> = Function<func(String) => ParserResult<T>>;
+
+func mapPR<T,U>(f: Function<func(T) => U>, p: ParserResult<T>) ParserResult<U> {
+    return new opt::Option<tuples::Pair<U,String>>();
+}
+
+func stringP(s_: String) Parser<String> {
+    let s_temp = s_;
+    return func(s: String) ParserResult<String> {
+        if s_temp == s.substr(0..s_temp.size()) {
+            return new opt::Option<tuples::Pair<String,String>>(
+                new tuples::Pair<String,String>(s_temp, s.substr(s_temp.size()..s.size()))
+            );
+
+        } else {
+            return new opt::Option<tuples::Pair<String,String>>();
+        }
+    }
+}
+
+func nullParser(s: String) ParserResult<JSON> {
+    return mapPR<?String,JSON>(func(_: String) JSON {return JSON::JSONNull }
+                              ,stringP("null")(s));
+}
+
 public func main() i32 {
 }
