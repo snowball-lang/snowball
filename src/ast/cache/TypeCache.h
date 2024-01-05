@@ -46,14 +46,14 @@ public:
 
 protected:
   /// @brief A global map containing each class.
-  std::map<std::string, TypeStore> types;
+  std::unordered_map<std::string, TypeStore> types;
   /// @brief a list of already transformed types
-  std::map<std::string, std::shared_ptr<transform::Item>> createdTypes;
+  std::unordered_map<std::string, std::shared_ptr<transform::Item>> createdTypes;
 
 public:
   /// @brief A map containing what UUIDs are associated with it's original identifiers
   /// @example Foo -> [Foo:1, Foo:2, ...]
-  std::map<std::string, std::vector<std::string>> identifierLookup;
+  std::unordered_map<std::string, std::vector<std::string>> identifierLookup;
 
 public:
   /// @brief Set a new type to the cache

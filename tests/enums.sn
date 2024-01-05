@@ -10,6 +10,7 @@ enum SimpleEnum {
 }
 
 class extends SimpleEnum {
+  public:
     func test() i32 {
         let a = SimpleEnum::A;
 

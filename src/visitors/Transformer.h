@@ -43,7 +43,7 @@
       utils::is<Statement::LLVMFunction>(node) || utils::is<Statement::ExternFnDef>(node) ||                       \
       utils::is<Statement::ConstructorDef>(node) || utils::is<Statement::Namespace>(node) ||                       \
       utils::is<Statement::DefinedTypeDef>(node) || utils::is<Statement::TypeAlias>(node) ||                       \
-      utils::is<Macro>(node))
+      utils::is<Macro>(node) || utils::is<Statement::EnumTypeDef>(node))
 
 namespace snowball {
 namespace Syntax {

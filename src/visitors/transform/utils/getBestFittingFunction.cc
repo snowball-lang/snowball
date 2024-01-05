@@ -8,10 +8,10 @@ namespace Syntax {
 
 std::tuple<Cache::FunctionStore, std::vector<types::Type*>, Transformer::FunctionFetchResponse>
 Transformer::getBestFittingFunction(
-        const std::deque<Cache::FunctionStore>& overloads,
-        const std::vector<types::Type*>& arguments,
-        const std::vector<Expression::TypeRef*>& generics,
-        bool isIdentifier
+  const std::deque<Cache::FunctionStore>& overloads,
+  const std::vector<types::Type*>& arguments,
+  const std::vector<Expression::TypeRef*>& generics,
+  bool isIdentifier
 ) {
   std::vector<std::pair<Cache::FunctionStore, std::vector<types::Type*>>> functions;
   std::vector<int> importances;
