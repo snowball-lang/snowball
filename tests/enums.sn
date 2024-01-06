@@ -223,6 +223,19 @@ func variadic_match() i32 {
     }
 }
 
+func return_enum() TestEnum {
+    return TestEnum::B;
+}
+
+@test(expect = 2)
+func return_match() i32 {
+    case return_enum() {
+        A => return 1,
+        B => return 2,
+        default => return 3
+    }
+}
+
 @test(expect = 1)
 func enum_extension() i32 {
     let a = SimpleEnum::A;

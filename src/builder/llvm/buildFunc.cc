@@ -78,7 +78,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
   setDebugInfoLoc(nullptr);
 
   auto fnArgs = fn->getArgs();
-  auto llvmArgsIter = llvmFn->arg_begin() + retIsArg + (anon && fn->usesParentScope());
+  auto llvmArgsIter = llvmFn->arg_begin() + retIsArg + anon;
   auto selfArg = (llvm::Value*) nullptr;
   auto selfArgVal = std::shared_ptr<ir::Value>(nullptr);
 
