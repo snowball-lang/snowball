@@ -112,7 +112,7 @@ llvm::FunctionType* LLVMBuilder::getLLVMFunctionType(types::FunctionType* fn, co
     argTypes.insert(argTypes.begin(), getLambdaContextType()->getPointerTo());
   }
 
-  if (utils::is<types::DefinedType>(fn->getRetType()) &&
+  if (utils::is<types::BaseType>(fn->getRetType()) &&
       !(func && func->getAttributeArgs(Attributes::LLVM_FUNC).count("sanitise_void_return"))) {
     argTypes.insert(argTypes.begin(), ret->getPointerTo());
     ret = builder->getVoidTy();

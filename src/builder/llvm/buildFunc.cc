@@ -65,7 +65,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
   auto returnType = getLLVMType(fn->getRetTy());
   bool retIsArg = false;
   bool anon = fn->isAnon();
-  if (utils::cast<types::DefinedType>(fn->getRetTy())) {
+  if (utils::is<types::BaseType>(fn->getRetTy())) {
     returnType = builder->getVoidTy();
     retIsArg = true;
   }
@@ -78,7 +78,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
   setDebugInfoLoc(nullptr);
 
   auto fnArgs = fn->getArgs();
-  auto llvmArgsIter = llvmFn->arg_begin() + retIsArg + anon;
+  auto llvmArgsIter = llvmFn->arg_begin() + retIsArg + (anon && fn->usesParentScope());
   auto selfArg = (llvm::Value*) nullptr;
   auto selfArgVal = std::shared_ptr<ir::Value>(nullptr);
 
