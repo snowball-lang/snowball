@@ -18,6 +18,8 @@ error() {
 }
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
+    brew install llvm@16
+
     if [[ "$ARCH" == "arm64" ]]; then
         brew uninstall composer
         brew uninstall php

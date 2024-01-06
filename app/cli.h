@@ -85,6 +85,7 @@ struct Options {
     INIT,
     DOCS,
     BENCH,
+    CLEAN,
   } command = UNKNOWN;
 };
 

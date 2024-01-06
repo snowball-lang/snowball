@@ -28,20 +28,35 @@ int Manager::runAsMain() {
 
   // example: "owner/repo" = { version = "1.0.0" }
   auto packages = package["dependencies"].as_table();
-  
-  packages->for_each([&](auto&& key, auto&& value) {
-    auto repo = (std::string)key.str();
-    auto packageData = package["dependencies"][repo];
+  if (package["dependencies"].is_table()) {
+    std::vector<Package> packagesInfo;
+    packages->for_each([&](auto&& key, auto&& value) {
+      auto repo = (std::string)key.str();
+      auto packageData = package["dependencies"][repo];
 
-    Package packageInfo;
-    packageInfo.name = repo;
-    packageInfo.version = packageData["version"].value_or<std::string>("latest");
-  
-    auto result = install(packageInfo);
-    if (result != EXIT_SUCCESS) {
-      throw SNError(Error::PM_ERROR, FMT("Failed to install package %s", repo.c_str()));
+      Package packageInfo;
+      packageInfo.name = repo;
+      packageInfo.version = packageData["version"].value_or<std::string>("latest");
+      packageInfo.dependencies = {};
+      if (packageData["dependencies"].is_table()) {
+        packageData["dependencies"].as_table()->for_each([&](auto&& key, auto&& value) {
+          Package dependency;
+          dependency.name = (std::string)key.str();
+          dependency.version = value.as_table()->get("version")->as_string()->get();
+          packageInfo.dependencies.push_back(dependency);
+        });
+      }
+    
+      packagesInfo.push_back(packageInfo);
+    });
+
+    for (auto& p : packagesInfo) {
+      auto result = install(p);
+      if (result != EXIT_SUCCESS) {
+        throw SNError(Error::PM_ERROR, FMT("Failed to install package %s", p.name.c_str()));
+      }  
     }
-  });
+  }
 
   (void)chdir(cwd.c_str());
 
@@ -61,7 +76,7 @@ int Manager::install(Package p_package) {
   auto pkgInfo = getPackageInfoFromRepo(p_package.name);
 
   if (!silent) {
-    Logger::message("Downloading", FMT(" Package %s%s%s from git repository", BOLD, p_package.name.c_str(), RESET));
+    Logger::message("Downloading", FMT(": Package %s%s%s from git repository", BOLD, p_package.name.c_str(), RESET));
   }
 
   auto packageFolder = (fs::path)configFolder / "deps" / p_package.name;
@@ -70,16 +85,57 @@ int Manager::install(Package p_package) {
     throw SNError(Error::PM_ERROR, FMT("Failed to install package '%s'. No download_url found in package info", p_package.name.c_str()));
   }
 
+  auto versions = pkgInfo["versions"];
+  std::string commitId;
+  if (versions.is_array()) {
+    auto version = p_package.version;
+    if (version == "latest") {
+      version = versions[0];
+    }
+
+    auto found = false;
+    for (auto& v : versions) {
+      if (v == version) {
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      throw SNError(Error::PM_ERROR, FMT("Failed to install package '%s'. Version '%s' not found in package info", p_package.name.c_str(), version.c_str()));
+    }
+
+    commitId = version;
+  }
+
   auto gitCommand = std::vector<std::string>{};
   gitCommand.push_back(git);
+  gitCommand.push_back("-c");
+  gitCommand.push_back("advice.detachedHead=false"); // Disable warning about detached head
   gitCommand.push_back("clone");
   gitCommand.push_back(downloadUrl);
   gitCommand.push_back(packageFolder);
   gitCommand.push_back("--depth=1");
   gitCommand.push_back("--quiet");
+  if (!commitId.empty()) {
+    gitCommand.push_back("--branch");
+    gitCommand.push_back(commitId);
+  }
   auto status = os::Driver::run(gitCommand);  
-
   if (status != EXIT_SUCCESS) {
+    throw SNError(Error::PM_ERROR, FMT("Failed to install package '%s'. See the output above", p_package.name.c_str()));
+  }
+
+  auto packageConfig = packageFolder / "sn.toml";
+  if (!fs::exists(packageConfig)) {
+    throw SNError(Error::PM_ERROR, FMT("Failed to install package '%s'. No sn.toml found in package", p_package.name.c_str()));
+  }
+
+  auto packageConfigData = toml::parse_file(packageConfig.string());
+  
+  this->package = packageConfigData;
+  auto result = runAsMain();
+  if (result != EXIT_SUCCESS) {
     throw SNError(Error::PM_ERROR, FMT("Failed to install package '%s'. See the output above", p_package.name.c_str()));
   }
 

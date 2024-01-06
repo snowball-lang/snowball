@@ -12,4 +12,5 @@ base = "/snowball/"
 entry = "./tests/main.sn"
 
 [dependencies]
-"rgb" = { version = "1.0.0" }
+"rgb" = { version = "0.0.1" }
+"is_even" = { version = "0.0.1" }

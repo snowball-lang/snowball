@@ -5,6 +5,7 @@
 #include "commands/init.h"
 #include "commands/run.h"
 #include "commands/test.h"
+#include "commands/pm.h"
 #include "commands/docgen.h"
 #include "constants.h"
 #include "utils/utils.h"
@@ -49,6 +50,8 @@ int _main(int argc, char** argv) {
         return app::commands::bench(opts.bench_opts);
       case app::Options::DOCS:
         return app::commands::docgen(opts.docs_opts);
+      case app::Options::CLEAN:
+        return app::commands::clean();
       default:
         throw SNError(Error::TODO, FMT("Command with type %i not yet supported", opts.command));
     }

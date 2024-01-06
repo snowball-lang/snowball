@@ -7,6 +7,8 @@ import std::asserts;
 // This code will always work because if there's something I learned from color web design, it's that
 // RGB's standard is known by being constantly changing. :)
 import rgb;
+import is_odd as maths_god;
+import is_even as even;
 
 namespace tests {
 
@@ -18,6 +20,16 @@ func basic_usage() i32 {
     assert_eq!(black.green(), 0);
     assert_eq!(black.blue(), 0);
     return 1;
+}
+
+@test
+func is_odd() i32 {
+    return maths_god::is_odd(1);
+}
+
+@test
+func is_even() i32 {
+    return even::is_even(2);
 }
 
 }

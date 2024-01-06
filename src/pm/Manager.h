@@ -23,6 +23,8 @@ namespace pm {
 struct Package {
   std::string name;
   std::string version;
+
+  std::vector<Package> dependencies;
 };
 
 /**

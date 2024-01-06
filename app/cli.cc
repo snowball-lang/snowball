@@ -6,6 +6,7 @@
 
 #include <llvm/Support/CommandLine.h>
 #include <iostream>
+#include <map>
 
 namespace snowball {
 namespace app {
@@ -214,9 +215,14 @@ void bench(Options& opts, argsVector& args) {
   opts.bench_opts.opt = opt;
   opts.bench_opts.silent = silent;
   opts.bench_opts.no_progress = no_progress;
-
 }
 
+void clean(Options& opts, argsVector& args) {
+  hide_args();
+
+  cl::OptionCategory cleanCategory("Clean Options");
+  parse_args(args);
+}
 
 } // namespace modes
 } // namespace cli
@@ -246,6 +252,17 @@ Options CLI::parse() {
 
   args[0] = argv0.data();
 
+  static std::unordered_map<std::string, std::pair<Options::Command, std::function<void(Options&, argsVector&)>>> modes = {
+    {"run", {Options::RUN, cli::modes::run}},
+    {"build", {Options::BUILD, cli::modes::build}},
+    {"test", {Options::TEST, cli::modes::test}},
+    {"init", {Options::INIT, cli::modes::init}},
+    {"new", {Options::INIT, cli::modes::init}},
+    {"docs", {Options::DOCS, cli::modes::docs}},
+    {"bench", {Options::BENCH, cli::modes::bench}},
+    {"clean", {Options::CLEAN, cli::modes::clean}},
+  };
+
   if (mode == "--version" || mode == "-v") {
     std::cout SNOWBALL_PRINT_MESSAGE;
     exit(EXIT_SUCCESS);
@@ -260,31 +277,22 @@ Options CLI::parse() {
     cl::SubCommand init("init", "Initialize a Snowball project");
     cl::SubCommand docs("docs", "Generate documentation for a Snowball project");
     cl::SubCommand bench("bench", "Benchmark a Snowball program");
+    cl::SubCommand clean("clean", "Clean a Snowball project");
 
     cli::modes::parse_args(args);
     cl::PrintHelpMessage();
     exit(EXIT_SUCCESS);
-  } else if (mode == "run"){
-    opts.command = Options::RUN;
-    cli::modes::run(opts, args);
-  } else if (mode == "build") {
-    opts.command = Options::BUILD;
-    cli::modes::build(opts, args);
-  } else if (mode == "test") {
-    opts.command = Options::TEST;
-    cli::modes::test(opts, args);
-  } else if (mode == "init" || mode == "new") {
-    opts.command = Options::INIT;
-    opts.init_opts.create_dir = mode == "new";
-    cli::modes::init(opts, args);
-  } else if (mode == "docs") {
-    opts.command = Options::DOCS;
-    cli::modes::docs(opts, args);
-  } else if (mode == "bench") {
-    opts.command = Options::BENCH;
-    cli::modes::bench(opts, args);
   } else {
-    throw SNError(Error::ARGUMENT_ERROR, FMT("Invalid command: %s", mode.c_str()));
+    if (modes.find(mode) == modes.end()) {
+      std::cout << "Unknown command '" << mode << "'\n";
+      exit(EXIT_FAILURE);
+    }
+
+    auto& modePair = modes[mode];
+    opts.command = modePair.first;
+    modePair.second(opts, args);
+
+    opts.init_opts.create_dir = mode == "new";
   }
 
   return opts;
