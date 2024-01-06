@@ -16,7 +16,7 @@ if [[ "$NAME" == "ce-specific" ]]; then
     export BUILD_FOR_CE=1
 fi
 
-if [[ "$NAME" == "linux" ]]; then
+if [[ "$NAME" == "linux" || "$NAME" == "ce-specific" ]]; then
     apt update
     apt install build-essential
     apt-get install g++
