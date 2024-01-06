@@ -82,6 +82,7 @@ jobs:
 
       - name: Execute docs
         run: |
+          curl -fsSL https://raw.githubusercontent.com/snowball-lang/snowball/dev/scripts/install.sh | sudo -E bash -s -- -y
           ~/.snowball/bin/snowball docs
 
       - name: Copy
