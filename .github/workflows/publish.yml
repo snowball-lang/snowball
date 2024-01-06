@@ -73,3 +73,19 @@ jobs:
           ~/.snowball/bin/snowball
           ~/.snowball/bin/snowball --version
           ~/.snowball/bin/snowball test --no-progress
+
+  generate_docs:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Execute docs
+        run: |
+          ~/.snowball/bin/snowball docs
+
+      - name: Copy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: stdlib-docs
+          folder: .sn/docs

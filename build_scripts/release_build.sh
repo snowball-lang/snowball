@@ -45,9 +45,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     export LLVM_DIR="/usr/local/opt/llvm@16/lib/cmake"
     bash build_scripts/build-snowball.sh
 else
-    sudo apt update
-    sudo apt install build-essential
-    sudo apt-get install g++
 
     # needed to keep user ID in and outside Docker in sync to be able to write to workspace directory
     uid="$(id -u)"
