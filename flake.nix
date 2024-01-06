@@ -21,10 +21,26 @@
         src = ./.;
 
         nativeBuildInputs = with pkgs; [cmake pkg-config makeWrapper];
-        buildInputs = with pkgs; [zstd libxml2 libsigsegv glib pcre2 libllvm libbacktrace];
+        buildInputs = with pkgs; [
+          zstd
+          libxml2
+          libsigsegv
+          glib
+          pcre2
+          libllvm
+          libbacktrace
+          curl.dev
+          openssl
+          nlohmann_json
+        ];
 
         patchPhase = ''
+          sed -i '191i find_package(nlohmann_json REQUIRED)' CMakeLists.txt
           sed -i -e '/CPMAddPackage(/,/)/d' CMakeLists.txt
+          sed -i -e '/include(FetchContent)/d' CMakeLists.txt
+          sed -i -e '/FetchContent_Declare(/,/)/d' CMakeLists.txt
+          sed -i -e '/FetchContent_MakeAvailable(json)/d' CMakeLists.txt
+          sed -i -e 's/libcurl/curl/' CMakeLists.txt
           sed -i -e 's/app\///' app/*.cc
           sed -i -e 's/app\///' app/commands/*.h
         '';
@@ -34,7 +50,6 @@
 
           mkdir -p bin/Release
 
-          #HACK: uses RelWithDebInfo since normal realease causes a segfault
           cmake \
             -DLLVM_ENABLE_BACKTRACES=OFF \
             -DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=OFF \
@@ -43,10 +58,10 @@
             -DLLVM_ENABLE_ZLIB=OFF \
             -DLLVM_INCLUDE_EXAMPLES=OFF \
             -DLLVM_INCLUDE_DOCS=OFF \
-            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DCMAKE_BUILD_TYPE=Release \
             -DEXECUTABLE_OUTPUT_PATH="bin/Release" $@ .
 
-          cmake --build . --config RelWithDebInfo -- -j $NIX_BUILD_CORES
+          cmake --build . --config Release -- -j $NIX_BUILD_CORES
 
           runHook postBuild
         '';
@@ -99,6 +114,9 @@
           clang-tools
           cmake-language-server
           cppcheck
+          openssl
+          lldb
+          nlohmann_json
         ];
       };
     });
