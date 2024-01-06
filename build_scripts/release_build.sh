@@ -47,6 +47,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 else
     sudo apt update
     sudo apt install build-essential
+    sudo apt-get install g++
 
     # needed to keep user ID in and outside Docker in sync to be able to write to workspace directory
     uid="$(id -u)"
