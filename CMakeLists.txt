@@ -202,7 +202,6 @@ set (APP_FILES
 
 find_package(zstd REQUIRED)
 
-
 # Map llvm components
 llvm_map_components_to_libnames(llvm_libs
   AllTargetsAsmParsers
@@ -237,6 +236,11 @@ if (${BUILD_FOR_WIN})
 else()
   add_library(snowball SHARED ${PROJECT_FILES})
   add_library(snowballrt SHARED ${RUNTIME_FILES})
+endif()
+
+if (curl_ADDED)
+  target_include_directories(${PROJECT_NAME} PUBLIC ${curl_SOURCE_DIR}/include)
+  target_link_libraries(snowball PUBLIC ${CURL_LIBRARIES})
 endif()
 
 #add_dependencies(snowballrt backtrace sigsegv)
