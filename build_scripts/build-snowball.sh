@@ -17,9 +17,9 @@ if [[ "$NAME" == "ce-specific" ]]; then
 fi
 
 if [[ "$NAME" == "linux" || "$NAME" == "ce-specific" ]]; then
-    apt update
-    apt install build-essential
-    apt-get install g++
+    sudo apt update
+    sudo apt install build-essential
+    sudo apt-get install g++
 fi
 
 bash build_scripts/release.sh
