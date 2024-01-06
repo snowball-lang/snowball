@@ -24,6 +24,7 @@ public:
   static void success(std::string message);
 
   static void message(std::string topic, std::string message);
+  static void raw_message(std::string topic, std::string message);
 
   // status messages
   static void reset_status();

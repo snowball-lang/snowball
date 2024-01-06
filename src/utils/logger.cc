@@ -34,6 +34,11 @@ void Logger::message(std::string topic, std::string message) {
   std::cout << BGRN << std::setw(15) << std::fixed << topic << RESET << ' ' << message << std::endl;
 }
 
+void Logger::raw_message(std::string topic, std::string message) {
+  std::cout << BGRN << std::setw(15) << std::fixed << topic << RESET << ' ' << message;
+  fflush(stdout);
+}
+
 // status
 void Logger::reset_status() {
   printf("\33[2K\r");

@@ -76,7 +76,8 @@ int Manager::install(Package p_package) {
   auto pkgInfo = getPackageInfoFromRepo(p_package.name);
 
   if (!silent) {
-    Logger::message("Downloading", FMT(": Package %s%s%s from git repository", BOLD, p_package.name.c_str(), RESET));
+    Logger::reset_status();
+    Logger::raw_message("Downloading", FMT(": Package %s%s%s from git repository", BOLD, p_package.name.c_str(), RESET));
   }
 
   auto packageFolder = (fs::path)configFolder / "deps" / p_package.name;
@@ -132,7 +133,9 @@ int Manager::install(Package p_package) {
   }
 
   auto packageConfigData = toml::parse_file(packageConfig.string());
-  
+  Logger::reset_status();
+  Logger::message("Installed", FMT("Package %s%s%s", BOLD, p_package.name.c_str(), RESET));
+
   this->package = packageConfigData;
   auto result = runAsMain();
   if (result != EXIT_SUCCESS) {
@@ -174,7 +177,7 @@ nlohmann::json Manager::getPackageInfoFromRepo(std::string p_repo) {
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     if (!silent) {
-      Logger::message("Fetching", FMT("Package info for %s%s%s from registry", BOLD, p_repo.c_str(), RESET));
+      Logger::raw_message("Fetching", FMT("Package info for %s%s%s from registry", BOLD, p_repo.c_str(), RESET));
     }
     auto curlCode = curl_easy_perform(curl);
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
