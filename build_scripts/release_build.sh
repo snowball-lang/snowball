@@ -27,22 +27,24 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         zstdResult=$(brew --cache --bottle-tag=arm64_ventura zstd)
         brew install $zstdResult
         
+        brew uninstall --ignore-dependencies llvm@16
         brew fetch --force --bottle-tag=arm64_ventura llvm@16
         llvmResult=$(brew --cache --bottle-tag=arm64_ventura llvm@16)
         echo "Looking for arm64 version of (llvm): $llvmResult"
         brew install $llvmResult
 
+        brew uninstall --ignore-dependencies gcc
         brew fetch --force --bottle-tag=arm64_ventura gcc
         gccResult=$(brew --cache --bottle-tag=arm64_ventura gcc)
         echo "Looking for arm64 version of (gcc): $gccResult"
         brew install $gccResult
 
+        brew uninstall --ignore-dependencies curl
         brew fetch --force --bottle-tag=arm64_ventura curl
         curlResult=$(brew --cache --bottle-tag=arm64_ventura curl)
         echo "Looking for arm64 version of (curl): $curlResult"
         brew install $curlResult
 
-        # openssl
         brew uninstall --ignore-dependencies openssl
         brew fetch --force --bottle-tag=arm64_ventura openssl
         opensslResult=$(brew --cache --bottle-tag=arm64_ventura openssl)
