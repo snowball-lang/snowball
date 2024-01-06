@@ -47,6 +47,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         brew fetch --force --bottle-tag=arm64_ventura openssl
         opensslResult=$(brew --cache --bottle-tag=arm64_ventura openssl)
         echo "Looking for arm64 version of (openssl): $opensslResult"
+        brew install $opensslResult
     else
         brew install llvm@16
         brew install gcc
