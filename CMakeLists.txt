@@ -240,7 +240,7 @@ endif()
 
 if (curl_ADDED)
   target_include_directories(${PROJECT_NAME} PUBLIC ${curl_SOURCE_DIR}/include)
-  target_link_libraries(snowball PUBLIC ${CURL_LIBRARIES})
+  target_link_libraries(snowball PUBLIC ${curl_LIBRARIES})
 endif()
 
 #add_dependencies(snowballrt backtrace sigsegv)
@@ -327,7 +327,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<INSTALL_INTERFACE:include> PRIVATE source)
     target_include_directories(${PROJECT_NAME} PUBLIC ${LLVM_INCLUDE_DIRS} ${PROJECT_INCLUDE_DIRS} ${backtrace_INCLUDE_DIRS})
-    target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES} snowballrt curl nlohmann_json::nlohmann_json)
+    target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES} snowballrt nlohmann_json::nlohmann_json)
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
 add_compile_definitions("_SN_DEBUG=$<CONFIG:Debug>")
