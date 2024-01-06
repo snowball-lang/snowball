@@ -16,12 +16,6 @@ if [[ "$NAME" == "ce-specific" ]]; then
     export BUILD_FOR_CE=1
 fi
 
-if [[ "$NAME" == "linux" || "$NAME" == "ce-specific" ]]; then
-    sudo apt update
-    sudo apt install build-essential
-    sudo apt-get install g++
-fi
-
 bash build_scripts/release.sh
 mkdir -p ./bin/Release/lib
 
