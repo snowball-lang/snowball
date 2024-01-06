@@ -3,7 +3,7 @@ if [[ "$OSTYPE" != "darwin"* ]]; then
     sudo -n add-apt-repository ppa:ubuntu-toolchain-r/test
     sudo -n apt update
     sudo -n apt install gcc-9 g++-9 -y
-    sudo -n apt install cmake -y
+    sudo -n apt install cmake curl -y
 
     export CC="/usr/bin/gcc-9"
     export CXX="/usr/bin/g++-9"

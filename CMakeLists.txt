@@ -240,7 +240,8 @@ endif()
 
 if (curl_ADDED)
   target_include_directories(${PROJECT_NAME} PUBLIC ${curl_SOURCE_DIR}/include)
-  target_link_libraries(snowball PUBLIC ${curl_LIBRARIES})
+  message(STATUS "curl libs: " ${curl_LIBRARIES})
+  target_link_libraries(snowball PUBLIC libcurl)
 endif()
 
 #add_dependencies(snowballrt backtrace sigsegv)

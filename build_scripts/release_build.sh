@@ -36,10 +36,16 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         gccResult=$(brew --cache --bottle-tag=arm64_ventura gcc)
         echo "Looking for arm64 version of (gcc): $gccResult"
         brew install $gccResult
+
+        brew fetch --force --bottle-tag=arm64_ventura curl
+        curlResult=$(brew --cache --bottle-tag=arm64_ventura curl)
+        echo "Looking for arm64 version of (curl): $curlResult"
+        brew install $curlResult
     else
         brew install llvm@16
         brew install gcc
         brew install zstd
+        brew install curl
     fi
 
     export LLVM_DIR="/usr/local/opt/llvm@16/lib/cmake"
