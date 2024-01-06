@@ -30,9 +30,17 @@ bool ImportService::isExternalModule(std::string package) { return package != "p
 
 std::string ImportService::getModuleUUID(std::filesystem::path path) {
   std::string result = path.string();
-  utils::replaceAll(result, PATH_SEPARATOR, "::");
+  
+  // Remove getPackagesPath() from the path
+  result = result.substr(getPackagesPath().string().length() + 1);
 
-  return "pkg" + result;
+  // Remove the extension
+  result = ((fs::path)result).replace_extension("");
+
+  // Replace all slashes with dots
+  utils::replaceAll(result, "/", "::");
+
+  return "pkg::" + result;
 }
 
 std::tuple</*result path*/std::filesystem::path, /*original path*/std::filesystem::path, /*errors*/std::string>

@@ -111,6 +111,20 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
   if (closureType) {
     auto layout = module->getDataLayout();
     auto alloca = builder->CreateCall(getAllocaFunction(), {builder->getInt32(layout.getTypeAllocSize(closureType))});
+
+    auto defaultBody = module->getGlobalVariable("closure.__default_body");
+    if (!defaultBody) {
+      auto bodyTy = llvm::StructType::create(*context, "_closure.__default_body");
+      bodyTy->setBody({builder->getInt8PtrTy(), builder->getInt8PtrTy()});
+      defaultBody = new llvm::GlobalVariable(*module, bodyTy, false, llvm::GlobalValue::ExternalLinkage, nullptr, "closure.__default_body");
+      defaultBody->setInitializer(llvm::ConstantStruct::get(bodyTy, {
+        llvm::ConstantPointerNull::get(builder->getInt8PtrTy()),
+        llvm::ConstantPointerNull::get(builder->getInt8PtrTy()),
+      }));
+    }
+
+    builder->CreateMemCpy(alloca, llvm::MaybeAlign(1), defaultBody, llvm::MaybeAlign(1), layout.getTypeAllocSize(closureType));
+
     //auto structAlloca = createAlloca(closureType->getPointerTo());
     alloca->setDebugLoc(llvm::DILocation::get(*context, 0, 0, llvmFn->getSubprogram()));
     //builder->CreateStore(alloca, structAlloca);

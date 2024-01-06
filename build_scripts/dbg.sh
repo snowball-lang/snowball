@@ -10,6 +10,3 @@ cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr/local -G "Unix Makefiles" -DCMAKE_BUILD_T
 -DLLVM_INCLUDE_EXAMPLES=OFF \
 -DLLVM_INCLUDE_DOCS=OFF -DEXECUTABLE_OUTPUT_PATH="bin/Debug" .
 cmake --build . --config Debug $@
-mkdir -p bin/lib
-cp libSnowball.dylib bin/lib
-cp libsnowballrt.dylib bin/lib

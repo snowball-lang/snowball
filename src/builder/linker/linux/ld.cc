@@ -96,6 +96,16 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
       // TODO: add crtbegin.o and crtend.o
     }
   }
+  linkerArgs.push_back(input);
+  if (ctx->isThreaded) linkerArgs.push_back("-lpthread");
+  for (auto& arg : args) linkerArgs.push_back(arg);
+  // TODO: should this be with ctc->withStd?
+  linkerArgs.push_back("--eh-frame-hdr");
+  if (ctx->withStd) {
+    for (auto llvmArg : utils::split(LLVM_LDFLAGS, " ")) { linkerArgs.push_back(llvmArg); }
+  }
+  if (!ctx->isDynamic) linkerArgs.push_back("-static");
+  for (auto& rpath : rpaths) linkerArgs.push_back("--rpath=" + rpath);
   for (auto& lib : linkedLibraries) {
     linkerArgs.push_back("-l:" + lib);
     DEBUG_CODEGEN("Linking library: %s", lib.c_str());
@@ -114,16 +124,6 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
     linkerArgs.push_back("-lc");
     linkerArgs.push_back("-L" + libs.string());
   }
-  linkerArgs.push_back(input);
-  if (ctx->isThreaded) linkerArgs.push_back("-lpthread");
-  for (auto& arg : args) linkerArgs.push_back(arg);
-  // TODO: should this be with ctc->withStd?
-  linkerArgs.push_back("--eh-frame-hdr");
-  if (ctx->withStd) {
-    for (auto llvmArg : utils::split(LLVM_LDFLAGS, " ")) { linkerArgs.push_back(llvmArg); }
-  }
-  if (!ctx->isDynamic) linkerArgs.push_back("-static");
-  for (auto& rpath : rpaths) linkerArgs.push_back("--rpath=" + rpath);
   linkerArgs.push_back("-o");
   linkerArgs.push_back(output);
 #if _SNOWBALL_CODEGEN_DEBUG
