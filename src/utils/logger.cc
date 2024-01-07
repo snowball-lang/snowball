@@ -49,8 +49,9 @@ void Logger::compiling(std::string message, std::string status) {
   fflush(stdout);
 };
 
-std::string Logger::progress(float progress) {
+std::string Logger::progress(float progress, std::string message) {
   std::stringstream output;
+  reset_status();
 
   output << "[";
   int pos = _SN_LOGGER_BAR_WIDTH * progress;
@@ -62,7 +63,10 @@ std::string Logger::progress(float progress) {
     else
       output << " ";
   }
-  output << "] " << int(progress * 100.0) << " %\r";
+  output << "] " << int(progress * 100.0);
+  output << "%";
+  if (!message.empty()) output << " " << message;
+  output << "\r";
   output.flush();
 
   return output.str();

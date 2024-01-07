@@ -10,10 +10,10 @@
 namespace snowball::Syntax {
 
 TransformContext::TransformContext(
-  std::shared_ptr<ir::Module> mod, ir::IRBuilder builder, bool testMode, bool benchMode
+  std::shared_ptr<ir::Module> mod, ir::IRBuilder builder, bool testMode, bool benchMode, bool silentOutput
 )
     : AcceptorExtend(), module(mod), testMode(testMode), benchMode(benchMode)
-    , isMainModule(true), builder(builder), cache(new Cache())
+    , isMainModule(true), builder(builder), cache(new Cache()), silentOutput(silentOutput)
     , imports(std::make_unique<services::ImportService>(std::filesystem::current_path())) {
   // Set all of the built in primitive types into the global stack
 #define DEFINE_TYPE(t)                                                                                                 \

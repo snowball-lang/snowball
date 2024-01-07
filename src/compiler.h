@@ -15,6 +15,12 @@ namespace fs = std::filesystem;
 #ifndef __SNOWBALL_COMPILER_H_
 #define __SNOWBALL_COMPILER_H_
 
+#define SNOWBALL_PASS_EXECUTION_LIST \
+  std::vector<Syntax::Analyzer> passes = { \
+    Syntax::DefiniteAssigment(srcInfo)}; \
+  for (auto pass : passes) \
+    pass.run(ast); \
+
 namespace snowball {
 
 /**

@@ -71,23 +71,23 @@ void Compiler::compile(bool silent) {
 #endif
     auto tokens = lexer->tokens;
     if (tokens.size() != 0) {
-      SHOW_STATUS(Logger::compiling(Logger::progress(0.50)))
+      SHOW_STATUS(Logger::compiling(Logger::progress(0.40)))
 
-      auto parser = new parser::Parser(tokens, srcInfo);
+      parser::Parser parser(tokens, srcInfo);
 #if _SNOWBALL_TIMERS_DEBUG
       parser::Parser::NodeVec ast;
-      DEBUG_TIMER("Parser: %fs", utils::_timer([&] { ast = parser->parse(); }));
+      DEBUG_TIMER("Parser: %fs", utils::_timer([&] { ast = parser.parse(); }));
 #else
-      auto ast = parser->parse();
+      auto ast = parser.parse();
 #endif
 
-      SHOW_STATUS(Logger::compiling(Logger::progress(0.55)))
+      SHOW_STATUS(Logger::compiling(Logger::progress(0.50)))
       auto mainModule = std::make_shared<ir::MainModule>();
 
       mainModule->setSourceInfo(srcInfo);
 
       auto simplifier = new Syntax::Transformer(
-              mainModule->downcasted_shared_from_this<ir::Module>(), srcInfo, ((fs::path) path).parent_path(), testsEnabled, benchmarkEnabled
+              mainModule->downcasted_shared_from_this<ir::Module>(), srcInfo, ((fs::path) path).parent_path(), testsEnabled, benchmarkEnabled, silent
       );
       chdir(((fs::path) path).parent_path().c_str());
 #if _SNOWBALL_TIMERS_DEBUG
@@ -97,17 +97,16 @@ void Compiler::compile(bool silent) {
 #endif
 
       SHOW_STATUS(Logger::compiling(Logger::progress(0.70)))
-      std::vector<Syntax::Analyzer*> passes = {new Syntax::DefiniteAssigment(srcInfo)};
 
       mainModule->setModules(simplifier->getModules());
       module = mainModule;
 
 #if _SNOWBALL_TIMERS_DEBUG
       DEBUG_TIMER("Passes: %fs", utils::_timer([&] {
-                    for (auto pass : passes) pass->run(ast);
+                    SNOWBALL_PASS_EXECUTION_LIST
                   }));
 #else
-      for (auto pass : passes) { pass->run(ast); }
+      SNOWBALL_PASS_EXECUTION_LIST
 #endif
 
       SHOW_STATUS(Logger::compiling(Logger::progress(0.90)))
@@ -115,11 +114,11 @@ void Compiler::compile(bool silent) {
       auto typeCheckModules = mainModule->getModules();
       typeCheckModules.push_back(mainModule);
       for (auto module : typeCheckModules) {
-        auto typeChecker = new codegen::TypeChecker(module);
+        codegen::TypeChecker typeChecker(module);
 #if _SNOWBALL_TIMERS_DEBUG
-        DEBUG_TIMER("TypeChecker: %fs (%s)", utils::_timer([&] { typeChecker->codegen(); }), module->getName().c_str());
+        DEBUG_TIMER("TypeChecker: %fs (%s)", utils::_timer([&] { typeChecker.codegen(); }), module->getName().c_str());
 #else
-        typeChecker->codegen();
+        typeChecker.codegen();
 #endif
       }
 
@@ -200,6 +199,8 @@ int Compiler::emitDocs(std::string folder, std::string baseURL, BasicPackageInfo
         };
         auto docGen = new Syntax::DocGen(context);
         docGen->run(ast);
+        delete parser;
+        delete lexer;
         auto result = docGen->getResult();
 
         for (auto& page : result.pages) {
