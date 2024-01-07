@@ -109,11 +109,6 @@ public class Allocator<T: Sized> {
 }
 
 @inline
-public unsafe func add<T: Sized>(ptr: *const T, offset: i32) *mut T {
-  return (ptr + offset) as *mut T;
-}
-
-@inline
 public unsafe func write<T: Sized>(ptr: *mut T, value: T) {
   *ptr = value;
 }

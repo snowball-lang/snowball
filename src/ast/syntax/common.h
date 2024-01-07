@@ -282,6 +282,26 @@ public:
 };
 
 /**
+ * @class TupleType
+ * @brief A struct representing a tuple type that derives from
+ * TypeRef.
+ *
+ * This struct holds a pointer to a TypeRef object and provides methods
+ * to access the type value and determine if it is a tuple type.
+ */
+struct TupleType : public TypeRef {
+  std::vector<TypeRef*> types;
+
+public:
+  TupleType(std::vector<TypeRef*> types, DBGSourceInfo* srcInfo);
+
+  /// @return the arguments of the function
+  auto getTypes() { return types; }
+
+  ~TupleType() noexcept = default;
+};
+
+/**
  * @class ReferenceType
  * @brief A struct representing a pointer type that derives from
  * TypeRef.
