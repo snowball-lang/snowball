@@ -77,6 +77,9 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
       transformType(typeRef);
     }
     return x;
+  } else if (auto tuple = utils::cast<Expression::TupleType>(ty)) {
+    assert(tuple);
+    E<TODO>(ty, "Tuple types are not yet supported!");
   }
 
   auto name = ty->getPrettyName();

@@ -13,7 +13,8 @@ namespace snowball::parser {
 TypeRef* Parser::parseType() {
   throwIfNotType();
   assert(is<TokenType::OP_BIT_AND>() || is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() ||
-         is<TokenType::KWORD_FUNC>() || is<TokenType::OP_AND>() || is<TokenType::OP_MUL>());
+         is<TokenType::KWORD_FUNC>() || is<TokenType::OP_AND>() || is<TokenType::OP_MUL>() ||
+         is<TokenType::BRACKET_LPARENT>());
   auto pos = m_current.get_pos();
   if (is<TokenType::KWORD_DECLTYPE>()) {
     auto w = m_current.get_width();
@@ -44,8 +45,24 @@ TypeRef* Parser::parseType() {
     consume<TokenType::OP_ARROW>("'=>'");
     auto retType = parseType();
     auto dbg = new DBGSourceInfo(m_source_info, pos, w);
-    auto ty = Syntax::N<FuncType>(fnArgs, retType, dbg);
-    ty->setDBGInfo(dbg);
+    return Syntax::N<FuncType>(fnArgs, retType, dbg);
+  } else if (is<TokenType::BRACKET_LPARENT>()) {
+    std::vector<TypeRef*> generics;
+    while (true) {
+      next();
+      if (is<TokenType::BRACKET_RPARENT>()) break;
+      auto arg = parseType();
+      generics.push_back(arg);
+      if (is<TokenType::SYM_COMMA>()) {
+      } else if (is<TokenType::BRACKET_RPARENT>()) {
+        break;
+      } else {
+        createError<SYNTAX_ERROR>("Expected ')' or ','");
+      }
+    }
+    next();
+    auto dbg = new DBGSourceInfo(m_source_info, pos, m_current.get_pos().second - pos.second);
+    auto ty = Syntax::N<TupleType>(generics, dbg);
     return ty;
   }
   std::vector<bool> pointerDepth; // true = mutable, false = immutable

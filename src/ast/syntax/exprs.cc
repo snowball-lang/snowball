@@ -14,13 +14,13 @@ namespace Expression {
 
 DeclType::DeclType(Base* value, DBGSourceInfo* srcInfo) : value(value), TypeRef("decltype(...)", srcInfo){};
 FuncType::FuncType(std::vector<TypeRef*> args, TypeRef* returnValue, DBGSourceInfo* srcInfo)
-    : args(args), returnValue(returnValue), TypeRef("fn(...)", srcInfo) {};
+  : args(args), returnValue(returnValue), TypeRef("fn(...)", srcInfo) {};
 ReferenceType::ReferenceType(TypeRef* baseType, DBGSourceInfo* srcInfo)
-    : baseType(baseType), TypeRef(baseType->getName() + "&", srcInfo){};
+  : baseType(baseType), TypeRef(baseType->getName() + "&", srcInfo){};
 PointerType::PointerType(TypeRef* baseType, bool isMutable, DBGSourceInfo* srcInfo)
-    : baseType(baseType), TypeRef(baseType->getName() + "*", srcInfo) {
-  setMutable(isMutable);
-};
+  : baseType(baseType), TypeRef(baseType->getName() + "*", srcInfo) { setMutable(isMutable);};
+TupleType::TupleType(std::vector<Expression::TypeRef*> types, DBGSourceInfo* srcInfo) 
+  : TypeRef("<tuple type>", srcInfo), types(types) { }
 PseudoVariable::PseudoVariable(std::string identifier) : identifier(identifier){};
 void PseudoVariable::setArgs(std::vector<Node*> args) {
   this->args = args;
