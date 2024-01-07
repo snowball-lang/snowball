@@ -42,6 +42,6 @@ import std::env as os_env;
 //import std::io::{ println };
 
 public func main() i32 {
-    let a: () = 25;
-    let b = a.fifth;
+//    let a: () = 25;
+//    let b = a.fifth;
 }
