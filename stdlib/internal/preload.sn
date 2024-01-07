@@ -109,7 +109,6 @@ class *const <T> {
       ; Return the value
       ret {=T} %1
     }
-
     /**
      * @brief It returns if the pointer is null.
      * @param[in] self The pointer to check.

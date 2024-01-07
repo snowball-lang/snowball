@@ -30,7 +30,7 @@ public:
   static void reset_status();
   static void compiling(std::string message, std::string status = "Compiling");
 
-  static std::string progress(float progress = 0);
+  static std::string progress(float progress = 0, std::string message = "");
   static std::string format(const char* p_format, ...);
 };
 } // namespace snowball

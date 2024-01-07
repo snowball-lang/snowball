@@ -66,6 +66,8 @@ public:
   std::vector<std::pair<DBGSourceInfo*, transform::MacroInstance*>> macroBacktrace = {};
   /// @brief The current macro depth
   int macroDepth = 0;
+  /// @brief If the output should be verbose
+  bool silentOutput = false;
 
 private:
   /// Utility function to get a primitive type
@@ -83,7 +85,8 @@ public:
   TransformContext(
     std::shared_ptr<ir::Module> mod, 
     ir::IRBuilder builder, 
-    bool testMode = false, bool benchMode = false
+    bool testMode = false, bool benchMode = false,
+    bool silentOutput = false
   );
   /**
    * @brief Get a primitive number type

@@ -403,7 +403,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
       // we also make sure the buffer is not null.
       unsafe {
         // we write the element to the end of the buffer.
-        ptr::write(ptr::add(self.buffer.ptr(), self.length), value);
+        ptr::write(self.buffer.ptr() + self.length, value);
       }
       // we increment the length of the vector.
       self.length = self.length + 1;
@@ -653,7 +653,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       // safety: we make sure the buffer is not null.
       unsafe {
         ptr::copy_nonoverlapping(self.buffer, result.ptr(), self.length);
-        ptr::write(ptr::add(result.ptr(), self.length), 0 as Char);
+        ptr::write(result.ptr() + self.length, 0 as Char);
       }
       return result.ptr();
     }

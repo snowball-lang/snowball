@@ -52,7 +52,7 @@ int test(app::Options::TestOptions p_opts) {
   if (!p_opts.silent)
     Logger::message(
             "Project",
-            FMT("%s v%s [%s%s%s]", package_name.c_str(), package_version.c_str(), BOLD, build_type.c_str(), RESET)
+            FMT("%s v%s [%stest + %s%s]", package_name.c_str(), package_version.c_str(), BOLD, build_type.c_str(), RESET)
     );
 
   Compiler* compiler = new Compiler(content, filename);

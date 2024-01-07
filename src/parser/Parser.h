@@ -103,7 +103,8 @@ private:
    */
   bool isTypeValid() const {
     return is<TokenType::OP_BIT_AND>() || is<TokenType::OP_AND>() || is<TokenType::OP_MUL>() ||
-            is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() || is<TokenType::KWORD_FUNC>();
+            is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() || is<TokenType::KWORD_FUNC>() 
+            || is<TokenType::BRACKET_LPARENT>();
   }
 
   /**

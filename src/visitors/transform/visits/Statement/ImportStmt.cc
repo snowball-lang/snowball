@@ -4,6 +4,7 @@
 #include "../../../TransformState.h"
 #include "../../../Transformer.h"
 #include "../../../TypeChecker.h"
+#include "../../../../compiler.h"
 #include "../../../analyzers/DefinitveAssigment.h"
 
 #include <fstream>
@@ -14,6 +15,13 @@ using namespace snowball::Syntax::transform;
 
 namespace snowball {
 namespace Syntax {
+
+#if _SNOWBALL_TIMERS_DEBUG == 0
+#define SHOW_STATUS(status)                                                                                            \
+  if (!ctx->silentOutput) status;
+#else
+#define SHOW_STATUS(_)
+#endif
 
 SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
   if (ctx->generateFunction) return;
@@ -55,7 +63,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     auto state = std::make_shared<ContextState>(ContextState::StackType{}, mod, uuidStack, nullptr);
     // clang-format off
     ctx->withState(state,
-      [filePath = filePath, mod, this]() mutable {
+      [filePath = filePath, mod, this, niceFullName]() mutable {
       std::ifstream ifs(filePath.string());
       assert(!ifs.fail());
       std::string content((std::istreambuf_iterator<char>(ifs)),
@@ -63,36 +71,39 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
       const SourceInfo* srcInfo = new SourceInfo(content, filePath);
       auto backupSourceInfo = getSourceInfo();
       setSourceInfo(srcInfo);
-      auto lexer = new Lexer(srcInfo);
+      SHOW_STATUS(Logger::compiling(Logger::progress(0.20, niceFullName)))
+
+      Lexer lexer(srcInfo);
 #if _SNOWBALL_TIMERS_DEBUG
       DEBUG_TIMER("Lexer: %fs (%s)", utils::_timer([&] {
-          lexer->tokenize();
+          lexer.tokenize();
       }), filePath.c_str());
 #else
-      lexer->tokenize();
+      lexer.tokenize();
 #endif
-      auto tokens = lexer->tokens;
+      auto tokens = lexer.tokens;
       if (tokens.size() != 0) {
         auto backupModule = ctx->module;
         ctx->module = mod;
-        auto parser = new parser::Parser(tokens, srcInfo);
+        SHOW_STATUS(Logger::compiling(Logger::progress(0.40, niceFullName)))
+        parser::Parser parser(tokens, srcInfo);
 #if _SNOWBALL_TIMERS_DEBUG
         parser::Parser::NodeVec ast;
-        DEBUG_TIMER("Parser: %fs (%s)", utils::_timer([&] { ast = parser->parse(); }), filePath.c_str());
+        DEBUG_TIMER("Parser: %fs (%s)", utils::_timer([&] { ast = parser.parse(); }), filePath.c_str());
 #else
-        auto ast = parser->parse();
+        auto ast = parser.parse();
 #endif
+        SHOW_STATUS(Logger::compiling(Logger::progress(0.55, niceFullName)))
         ctx->module->setSourceInfo(srcInfo);
         visitGlobal(ast);
+        SHOW_STATUS(Logger::compiling(Logger::progress(0.70, niceFullName)))
         // TODO: make this a separate function to avoid any sort of "conflict" with the compiler's version of this algorithm
-        std::vector<Syntax::Analyzer *> passes = {
-          new Syntax::DefiniteAssigment(srcInfo)};
-        for (auto pass : passes)
-          pass->run(ast);
+        SNOWBALL_PASS_EXECUTION_LIST
         // TODO: set a new module to the import cache
         ctx->module = backupModule;
         addModule(ctx->module);
         ctx->imports->cache->addModule(filePath, ctx->module);
+        SHOW_STATUS(Logger::compiling(Logger::progress(1.00, "(finished) " + niceFullName)))
       }
       setSourceInfo(backupSourceInfo);
     });

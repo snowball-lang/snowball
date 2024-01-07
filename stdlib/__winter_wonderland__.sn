@@ -45,4 +45,4 @@ In the land of Snowball, where everything's right.");
 }
 
 // Automatically call the function and exit
-const p: i32 = poem();
+const _: i32 = poem();
