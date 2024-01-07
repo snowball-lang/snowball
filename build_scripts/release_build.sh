@@ -18,8 +18,6 @@ error() {
 }
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    brew install llvm@16
-
     if [[ "$ARCH" == "arm64" ]]; then
         brew uninstall composer
         brew uninstall php
@@ -29,7 +27,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         zstdResult=$(brew --cache --bottle-tag=arm64_ventura zstd)
         brew install $zstdResult
         
-        brew uninstall --ignore-dependencies llvm@16
         brew fetch --force --bottle-tag=arm64_ventura llvm@16
         llvmResult=$(brew --cache --bottle-tag=arm64_ventura llvm@16)
         echo "Looking for arm64 version of (llvm): $llvmResult"
