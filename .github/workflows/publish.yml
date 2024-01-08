@@ -68,7 +68,7 @@ jobs:
       - name: Install and test snowball
         if: success() && (matrix.DIST != 'ce-specific') && !(matrix.NAME == 'darwin')
         run: |
-          sudo apt-get install -y curl
+          sudo apt-get install -y libcurl4
           curl -fsSL https://raw.githubusercontent.com/snowball-lang/snowball/dev/scripts/install.sh | sudo -E bash -s -- -y
           
           ~/.snowball/bin/snowball

@@ -67,7 +67,7 @@ public:
   }
 
   // Default destructor
-  ~Analyzer() noexcept = default;
+  virtual ~Analyzer() noexcept = default;
 };
 
 } // namespace Syntax
