@@ -149,6 +149,18 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         assert_tok<TokenType::SYM_SEMI_COLLON>("a ';'");
       } break;
 
+      case TokenType::KWORD_ENUM: {
+        if (extends) {
+          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* enums!");
+        } else if (isInterface) {
+          createError<SYNTAX_ERROR>("Interfaces can't have enums!");
+        }
+
+        auto enumDecl = parseEnum();
+        enumDecl->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
+        cls->addChildType(enumDecl);
+      } break;
+
       case TokenType::SYM_AT: {
         parseAttributes();
       } break;

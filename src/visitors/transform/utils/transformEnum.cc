@@ -89,6 +89,12 @@ types::EnumType* Transformer::transformEnum
       transformedType->setPrivacy(ty->getPrivacy());
       transformedType->setDBGInfo(ty->getDBGInfo());
       transformedType->setSourceInfo(ty->getSourceInfo());
+      auto backupGenerateFunction = ctx->generateFunction;
+      ctx->setCurrentClass(transformedType);
+      ctx->generateFunction = false;
+      GENERATE_EQUALIZERS
+      ctx->generateFunction = backupGenerateFunction;
+      ctx->setCurrentClass(backupClass);
 
       for (auto field : ty->getFields()) {
         auto fieldTypes = vector_iterate<Expression::TypeRef*, types::Type*>(
@@ -98,12 +104,9 @@ types::EnumType* Transformer::transformEnum
         transformedType->addField(enumField);
       }
 
-      auto backupGenerateFunction = ctx->generateFunction;
-      ctx->setCurrentClass(transformedType);
       //  Create function definitions
-      ctx->generateFunction = false;
+      ctx->setCurrentClass(transformedType);
       ctx->module->typeInformation.insert({transformedType->getId(), std::shared_ptr<types::BaseType>(transformedType)});
-      GENERATE_EQUALIZERS
       // Generate the function bodies
       ctx->generateFunction = true;
       GENERATE_EQUALIZERS

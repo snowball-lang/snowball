@@ -1,0 +1,58 @@
+
+import std::map;
+
+public enum Number {
+    Int(i64),
+    Float(f64),
+}
+
+public enum Value {
+    Null,
+    Bool(bool),
+    Number(Number),
+    String(String),
+    Array(Vector<Value>),
+    Object(map::Map<String, Value>),
+}
+
+public class Json {
+    let value: Value;
+  public:
+    Json(value: Value) : value(value) {}
+    Json() : value(Value::Null) {}
+
+    @inline
+    func get() Value { return self.value; }
+}
+
+class Lexer {
+    let string: String;
+  public:
+    enum Token {
+        LBrace,
+        RBrace,
+        LBracket,
+        RBracket,
+        Colon,
+        Comma,
+        Null,
+        Bool(bool),
+        Number(Number),
+        String(String),
+    }
+  private:
+    let mut tokens: Vector<Token> = new Vector<Token>();
+  public:
+    Lexer(string: String) : string(string) {
+        
+    }
+
+  private:
+}
+
+public func parse(string: String) {
+    let mut lexer = new Lexer(string);
+    //let mut parser = Parser(lexer);
+    //let mut json = parser.parse();
+    //return json;
+}
