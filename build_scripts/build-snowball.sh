@@ -44,8 +44,8 @@ else
     patchelf --set-rpath '$ORIGIN/../lib' release/lib/libSnowball.so
 
     # copy curl shared library
-    cp /usr/lib/x86_64-linux-gnu/libcurl.so.4 release/lib
-    cp /usr/lib/x86_64-linux-gnu/libssl.so.1.1 release/lib
+    cp /usr/lib/x86_64-linux-gnu/libcurl.so.4 release/lib/libcurl.so
+    cp /usr/lib/x86_64-linux-gnu/libssl.so.1.1 release/lib/libssl.so
 fi
 
 cp -R ./stdlib release/stdlib
