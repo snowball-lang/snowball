@@ -1,0 +1,104 @@
+
+@use_macro(unreachable)
+import std::panics;
+import std::map;
+import std::chars;
+
+public enum Number {
+    Int(i64),
+    Float(f64),
+}
+
+public enum Value {
+    Null,
+    Bool(bool),
+    Number(Number),
+    String(String),
+    Array(Vector<Value>),
+    Object(map::Map<String, Value>),
+}
+
+public class Json {
+    let value: Value;
+  public:
+    Json(value: Value) : value(value) {}
+    Json() : value(Value::Null) {}
+
+    @inline
+    func get() Value { return self.value; }
+}
+
+public class SyntaxError extends Exception {}
+
+class Lexer {
+    let string: String;
+  public:
+    enum Token {
+        LBrace,
+        RBrace,
+        LBracket,
+        RBracket,
+        Colon,
+        Comma,
+        Null,
+        Bool(bool),
+        Number(Number),
+        String(String),
+    }
+  private:
+    let mut tokens: Vector<Token> = new Vector<Token>();
+  public:
+    Lexer(string: String) : string(string) {
+      let mut i = 0;
+      while i < string.size() {
+        let c = string[i];
+        switch c {
+          '{' => self.tokens.push(Token::LBrace),
+          '}' => self.tokens.push(Token::RBrace),
+          '[' => self.tokens.push(Token::LBracket),
+          ']' => self.tokens.push(Token::RBracket),
+          ':' => self.tokens.push(Token::Colon),
+          ',' => self.tokens.push(Token::Comma),
+          default => {
+            // parse identifier
+            if chars::is_alpha(c) {
+              let fullIdentifier = String::from(c, 1);
+              let mut j = i + 1;
+              while j < string.size() {
+                let c = string[j];
+                if chars::is_alpha(c) {
+                  fullIdentifier += c;
+                  j = j + 1;
+                } else {
+                  break;
+                }
+              }
+              i = j - 1;
+              self.tokens.push(self.getIdentifier(fullIdentifier));
+            }
+          }
+        }
+        i = i + 1;
+      }
+    }
+
+  private:
+    func getIdentifier(identifier: String) Token {
+      if identifier == "null" {
+        return Token::Null;
+      } else if identifier == "true" {
+        return Token::Bool(true);
+      } else if identifier == "false" {
+        return Token::Bool(false);
+      } else {
+        throw new SyntaxError("Unknown identifier: " + identifier);
+      }
+    }
+}
+
+public func parse(string: String) {
+    let mut lexer = new Lexer(string);
+    //let mut parser = Parser(lexer);
+    //let mut json = parser.parse();
+    //return json;
+}

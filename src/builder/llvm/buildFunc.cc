@@ -277,7 +277,7 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
 
   // Create return type
   if (!builder->GetInsertBlock()->getTerminator()) {
-    if (utils::cast<types::VoidType>(fn->getRetTy()) || utils::cast<types::DefinedType>(fn->getRetTy())) {
+    if (utils::cast<types::VoidType>(fn->getRetTy()) || utils::cast<types::BaseType>(fn->getRetTy())) {
       builder->CreateRetVoid();
     } else if (fn->isConstructor()) {
       // note: 0 should be always the "self" parameter
