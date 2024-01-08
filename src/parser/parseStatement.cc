@@ -49,7 +49,8 @@ Syntax::Node* Parser::parseStatement(Token pk) {
       break;
     }
 
-    case TokenType::KWORD_SWITCH: {
+    case TokenType::KWORD_SWITCH:
+    case TokenType::KWORD_CASE: {
       assertNoAttributes("case statement");
       next();
       return parseSwitch();

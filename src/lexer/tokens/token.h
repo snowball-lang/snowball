@@ -180,6 +180,7 @@ enum class TokenType
   KWORD_NAMESPACE,      // Symbol: namespace
   KWORD_STRUCT,         // Symbol: struct
   KWORD_PUBLIC,         // Symbol: pub
+  KWORD_CASE,           // Symbol: case
   KWORD_SWITCH,         // Symbol: switch
   KWORD_STATIC,         // Symbol: static
   KWORD_RETURN,         // Symbol: return
@@ -300,6 +301,7 @@ struct Token {
       case TokenType::KWORD_ELSE: return _SNOWBALL_KEYWORD__ELSE;
       case TokenType::KWORD_WHILE: return _SNOWBALL_KEYWORD__WHILE;
       case TokenType::KWORD_FOR: return _SNOWBALL_KEYWORD__FOR;
+      case TokenType::KWORD_CASE: return _SNOWBALL_KEYWORD__CASE;
       case TokenType::KWORD_SWITCH: return _SNOWBALL_KEYWORD__SWITCH;
       case TokenType::KWORD_DEFAULT: return _SNOWBALL_KEYWORD__DEFAULT;
       case TokenType::KWORD_BREAK: return _SNOWBALL_KEYWORD__BREAK;

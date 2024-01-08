@@ -797,7 +797,7 @@ struct Switch : public AcceptorExtend<Switch, Base> {
 public:
   struct CaseBlock {
     /// @brief The expression to compare
-    std::string expression;
+    std::pair<Expression::Base*, std::string> expression = {nullptr, ""};
     /// @brief Arguments passed to the expression
     std::vector<std::string> args;
     /// @brief If the case is a default case
@@ -806,19 +806,36 @@ public:
     bool isVariadic = false;
     /// @brief The block to execute if the case is met
     Block* block;
+
+    std::string expressionAsString() const {
+      if (expression.first == nullptr) {
+        return expression.second;
+      }
+      assert(expression.first != nullptr);
+      throw std::runtime_error("Not implemented");
+    }
+    Expression::Base* getExpression() const {
+      assert(expression.first != nullptr);
+      return expression.first;
+    }
   };
 private:
   /// @brief The expression to compare
   Expression::Base* expr;
   /// @brief The cases to compare
   std::vector<CaseBlock> cases;
+  /// @brief If it's a c-like switch
+  bool isCStyle = false;
 public:
-  Switch(Expression::Base* expr, std::vector<CaseBlock> cases) : expr(expr), cases(cases){};
+  Switch(Expression::Base* expr, std::vector<CaseBlock> cases, bool isCStyle = false)
+      : expr(expr), cases(cases), isCStyle(isCStyle){};
 
   /// @return The expression to compare
   auto getExpr() { return expr; }
   /// @return The cases to compare
   auto getCases() { return cases; }
+  /// @return If it's a c-like switch
+  auto isCStyleSwitch() { return isCStyle; }
 
   // Set a visit handler for the generators
   ACCEPT()

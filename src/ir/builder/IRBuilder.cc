@@ -181,6 +181,9 @@ SharedValue<Switch> IRBuilder::createSwitch(
 ) {
   return N<Switch>(dbgInfo, expr, cases, defaultBlock);
 }
+SharedValue<Switch> IRBuilder::createSwitch(DBGSourceInfo* dbgInfo, SharedValue<> expr, std::vector<Switch::CStyleCase> cases, SharedValue<Block> defaultBlock) {
+  return N<Switch>(dbgInfo, expr, cases, defaultBlock);
+}
 Type<types::TypeAlias> IRBuilder::createTypeAlias(DBGSourceInfo* dbg, std::string name, Type<> base) {
   auto ty = new types::TypeAlias(name, base);
   ty->unsafeSetModule(module);

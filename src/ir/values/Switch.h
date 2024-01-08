@@ -29,17 +29,28 @@ public:
     /// @brief Name of the case
     std::string name;
   };
+  /// @brief C-style switch case
+  struct CStyleCase {
+    /// @brief Value to compare
+    std::shared_ptr<Value> value;
+    /// @brief Block to jump to
+    std::shared_ptr<Block> block;
+  };
 private:
   /// @brief Expression used as value for the switch
   std::shared_ptr<Value> expr = nullptr;
   /// @brief Cases for the switch
-  std::vector<Case> cases;
+  std::pair<std::vector<Case>, std::vector<CStyleCase>> cases;
   /// @brief Default case for the switch
   std::shared_ptr<Block> defaultCase = nullptr;
+  /// @brief If the switch is a C-style switch
+  bool cStyleSwitch = false;
 
 public:
   explicit Switch(std::shared_ptr<Value> expr, std::vector<Case> cases, std::shared_ptr<Block> defaultCase = nullptr)
-      : expr(expr), cases(cases), defaultCase(defaultCase) {}
+    : expr(std::move(expr)), cases(std::move(cases), {}), defaultCase(std::move(defaultCase)) {}
+  explicit Switch(std::shared_ptr<Value> expr, std::vector<CStyleCase> cases, std::shared_ptr<Block> defaultCase = nullptr)
+    : expr(std::move(expr)), cases({}, std::move(cases)), defaultCase(std::move(defaultCase)), cStyleSwitch(true) {}
 
   /// @return expression used as value for the switch
   auto getExpr() const { return expr; }
@@ -47,6 +58,8 @@ public:
   auto getCases() const { return cases; }
   /// @return default case for the switch
   auto getDefaultCase() const { return defaultCase; }
+  /// @return if the switch is a C-style switch
+  auto isCStyleSwitch() const { return cStyleSwitch; }
 
   // Set a visit handler for the generators
   SN_GENERATOR_VISITS

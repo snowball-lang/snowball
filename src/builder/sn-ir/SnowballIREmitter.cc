@@ -102,10 +102,10 @@ void SnowballIREmitter::visit(ir::Call* c) {
 }
 
 void SnowballIREmitter::visit(ir::Switch* s) {
-  addContent("case (");
+  addContent(s->isCStyleSwitch() ? "switch (" : "case (");
   s->getExpr()->visit(this);
   addContent(") {\n");
-  for (auto c : s->getCases()) {
+  for (auto c : s->getCases().first) {
     addContent("    case " + c.name);
     addContent("(");
     for (auto a : c.args) {
@@ -116,6 +116,15 @@ void SnowballIREmitter::visit(ir::Switch* s) {
     c.block->visit(this);
     addContent("\n");
   }
+
+  for (auto c : s->getCases().second) {
+    addContent("    case ");
+    c.value->visit(this);
+    addContent(" => ");
+    c.block->visit(this);
+    addContent("\n");
+  }
+
   addContent("  }");
 }
 

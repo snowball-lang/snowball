@@ -1,4 +1,6 @@
 
+@use_macro(unreachable)
+import std::panics;
 import std::map;
 
 public enum Number {
@@ -44,7 +46,20 @@ class Lexer {
     let mut tokens: Vector<Token> = new Vector<Token>();
   public:
     Lexer(string: String) : string(string) {
-        
+        let mut i = 0;
+        while i < string.size() {
+            let c = string[i];
+            switch c {
+                '{' => self.tokens.push(Token::LBrace),
+                '}' => self.tokens.push(Token::RBrace),
+                '[' => self.tokens.push(Token::LBracket),
+                ']' => self.tokens.push(Token::RBracket),
+                ':' => self.tokens.push(Token::Colon),
+                ',' => self.tokens.push(Token::Comma),
+                default => unreachable!()
+            }
+            i = i + 1;
+        }
     }
 
   private:

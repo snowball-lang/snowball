@@ -172,8 +172,21 @@ VISIT(Switch) {
   auto expr = p_node->getExpr();
   expr->visit(this);
 
-  for (auto c : p_node->getCases()) {
+  for (auto c : p_node->getCases().first) {
     c.block->visit(this);
+  }
+
+  for (auto c : p_node->getCases().second) {
+    c.block->visit(this);
+    if (!c.value->getType()->is(expr->getType())) {
+      E<TYPE_ERROR>(
+              p_node,
+              FMT("Case value ('%s') does not match switch "
+                  "expression type ('%s')!",
+                  c.value->getType()->getPrettyName().c_str(),
+                  expr->getType()->getPrettyName().c_str())
+      );
+    }
   }
 }
 

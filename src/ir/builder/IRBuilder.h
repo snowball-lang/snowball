@@ -168,11 +168,15 @@ public:
   createObjectInitialization(DBGSourceInfo* dbgInfo, types::Type* type, SharedValue<> value, ValueVec<> args, bool isStruct = false);
   /// @brief Create a new conditional instruction (if/else)
   SharedValue<Conditional> createConditional(
-          DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> thenBlock, SharedValue<Block> elseBlock
+    DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> thenBlock, SharedValue<Block> elseBlock
   );
   /// @brief Create a new switch instruction
   SharedValue<Switch> createSwitch(
-          DBGSourceInfo* dbgInfo, SharedValue<> expr, std::vector<Switch::Case> cases, SharedValue<Block> defaultBlock
+    DBGSourceInfo* dbgInfo, SharedValue<> expr, std::vector<Switch::Case> cases, SharedValue<Block> defaultBlock
+  );
+  /// @brief Create a new c-style switch instruction
+  SharedValue<Switch> createSwitch(
+    DBGSourceInfo* dbgInfo, SharedValue<> expr, std::vector<Switch::CStyleCase> cases, SharedValue<Block> defaultBlock
   );
   /// @brief Create a new while loop
   SharedValue<WhileLoop>

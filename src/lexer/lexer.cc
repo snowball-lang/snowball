@@ -639,6 +639,8 @@ void Lexer::tokenize() {
             tk.type = TokenType::KWORD_EXTERN;
           } else if (identifier == _SNOWBALL_KEYWORD__SUPER) {
             tk.type = TokenType::KWORD_SUPER;
+          } else if (identifier == _SNOWBALL_KEYWORD__CASE) {
+            tk.type = TokenType::KWORD_CASE;
           } else if (identifier == _SNOWBALL_KEYWORD__SWITCH) {
             tk.type = TokenType::KWORD_SWITCH;
           } else if (identifier == _SNOWBALL_KEYWORD__STATIC) {

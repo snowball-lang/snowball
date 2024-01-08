@@ -428,4 +428,23 @@ func store_refref_at_global() i32 {
     return (*store_refref_at_global_test).a;
 }
 
+@test(expect = 3)
+func c_style_switch() i32 {
+    let a = 1;
+    switch a {
+        1 => return 3,
+        2 => return 2,
+        default => return 0
+    }
+}
+
+@test(expect = 2)
+func c_style_switch_default() i32 {
+    let a = 2;
+    switch a {
+        1 => return 3,
+        default => return 2
+    }
+}
+
 }
