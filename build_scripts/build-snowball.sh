@@ -29,6 +29,7 @@ fi
 
 mkdir release
 mkdir -p release/bin
+mkdir -p release/lib
 cp -a ./bin/Release/. release/
 mv release/snowball release/bin/snowball
 
@@ -41,6 +42,10 @@ if [[ "$NAME" == "darwin" ]]; then
 else
     patchelf --set-rpath '$ORIGIN/../lib' release/bin/snowball
     patchelf --set-rpath '$ORIGIN/../lib' release/lib/libSnowball.so
+
+    # copy curl shared library
+    cp /usr/lib/x86_64-linux-gnu/libcurl.so.4 release/lib
+    cp /usr/lib/x86_64-linux-gnu/libssl.so.1.1 release/lib
 fi
 
 cp -R ./stdlib release/stdlib
