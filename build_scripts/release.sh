@@ -19,4 +19,4 @@ cmake  -DCMAKE_INSTALL_PREFIX:PATH=/usr/local -G "Unix Makefiles" -DCMAKE_BUILD_
 -DLLVM_INCLUDE_EXAMPLES=OFF \
 -DCMAKE_OSX_ARCHITECTURES="$ARCH" \
 -DLLVM_INCLUDE_DOCS=OFF -DEXECUTABLE_OUTPUT_PATH="bin/Release" .
-cmake --build . --config Release -- $@
+cmake --build . --config Release -- $@ -j10
