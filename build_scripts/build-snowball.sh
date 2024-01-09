@@ -41,6 +41,9 @@ if [[ "$NAME" == "darwin" ]]; then
     #patchelf --set-rpath '@loader_path/../lib' release/lib/libSnowball.dylib
 else
     patchelf --set-rpath '$ORIGIN/../lib' release/bin/snowball
+    patchelf --set-rpath '$ORIGIN/../lib' release/lib/libSnowball.so
+
+    cp /usr/lib/x86_64-linux-gnu/libcurl.so release/lib/libcurl.so
 fi
 
 cp -R ./stdlib release/stdlib
