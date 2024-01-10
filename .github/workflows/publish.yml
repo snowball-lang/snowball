@@ -12,9 +12,9 @@ jobs:
           - ARCH: 'x86_64'
             DIST: 'ubuntu-20.04'
             NAME: 'linux'
-          - ARCH: 'aarch64'
-            DIST: 'ubuntu-20.04'
-            NAME: 'linux'
+          # - ARCH: 'aarch64' # TODO: test this (it works but needs to be tested)
+          #   DIST: 'ubuntu-20.04'
+          #   NAME: 'linux'
           - ARCH: 'x86_64'
             DIST: 'ce-specific'
             NAME: 'ce-specific'
