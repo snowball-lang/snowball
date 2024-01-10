@@ -87,9 +87,9 @@ set(LLVM_ENABLE_ZLIB OFF CACHE BOOL "" FORCE)
 set(LLVM_INCLUDE_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(LLVM_INCLUDE_DOCS OFF CACHE BOOL "" FORCE)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-
 add_definitions(${LLVM_DEFINITIONS})
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(CPM_DOWNLOAD_VERSION 0.32.3)
 set(CPM_DOWNLOAD_LOCATION "${CMAKE_BINARY_DIR}/cmake/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
@@ -101,15 +101,16 @@ include(${CPM_DOWNLOAD_LOCATION})
 
 CPMAddPackage(
   NAME curl
-  VERSION 7.67.0
-  URL https://github.com/curl/curl/releases/download/curl-7_67_0/curl-7.67.0.tar.gz
+  VERSION 8.5.0
+  URL https://github.com/curl/curl/releases/download/curl-8_5_0/curl-8.5.0.tar.gz
   OPTIONS
   "CMAKE_USE_LIBSSH2 OFF"
   "BUILD_CURL_EXE OFF"
-  "BUILD_SHARED_LIBS ON"
   "HTTP_ONLY ON"
   "BUILD_TESTING OFF"
   "CMAKE_USE_ZLIB OFF"
+  "BUILD_STATIC_LIBS ON"
+  "BUILD_SHARED_LIBS OFF"
 )
 
 CPMAddPackage(
@@ -159,14 +160,6 @@ if(backtrace_ADDED)
   set_target_properties(backtrace PROPERTIES
       COMPILE_FLAGS "-funwind-tables -D_GNU_SOURCE"
       POSITION_INDEPENDENT_CODE ON)
-endif()
-
-CPMAddPackage(
-    NAME zstd
-    GIT_REPOSITORY "https://github.com/facebook/zstd.git"
-    GIT_TAG "v1.5.5"
-    DOWNLOAD_ONLY YES)
-if(zstd_ADDED)
 endif()
 
 message(STATUS ${LLVM_DEFINITIONS})
@@ -240,8 +233,8 @@ endif()
 
 if (curl_ADDED)
   target_include_directories(${PROJECT_NAME} PUBLIC ${curl_SOURCE_DIR}/include)
-  message(STATUS "curl libs: " ${curl_LIBRARIES})
-  target_link_libraries(snowball PUBLIC libcurl)
+  message(STATUS "curl libs: " curl_static)
+  target_link_libraries(snowball PUBLIC libcurl_static)
 endif()
 
 #add_dependencies(snowballrt backtrace sigsegv)

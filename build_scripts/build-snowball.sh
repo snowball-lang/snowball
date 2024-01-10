@@ -42,8 +42,6 @@ if [[ "$NAME" == "darwin" ]]; then
 else
     patchelf --set-rpath '$ORIGIN/../lib' release/bin/snowball
     patchelf --set-rpath '$ORIGIN/../lib' release/lib/libSnowball.so
-
-    cp /usr/lib/x86_64-linux-gnu/libcurl.so.4 release/lib/libcurl.so
 fi
 
 cp -R ./stdlib release/stdlib
