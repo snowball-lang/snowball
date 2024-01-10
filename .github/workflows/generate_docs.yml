@@ -1,0 +1,28 @@
+name: Generate docs
+
+on:
+  release:
+    types: [created]
+  push:
+
+# Generate docs only when push commit starts with [docs] 
+jobs:
+    generate_docs:
+        runs-on: ubuntu-latest
+        if: startsWith(github.event.head_commit.message, '[docs]')
+        steps:
+          - uses: actions/checkout@v2
+        
+          - name: Install dependencies
+            run: bash ./build_scripts/install_deps.sh
+            
+          - name: Execute docs
+            run: |
+              curl -fsSL https://raw.githubusercontent.com/snowball-lang/snowball/dev/scripts/install.sh | sudo -E bash -s -- -y
+              ~/.snowball/bin/snowball docs
+    
+          - name: Copy
+            uses: JamesIves/github-pages-deploy-action@v4
+            with:
+              branch: stdlib-docs
+              folder: .sn/docs
