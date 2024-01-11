@@ -18,48 +18,10 @@ error() {
 }
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    if [[ "$ARCH" == "arm64" ]]; then
-        brew uninstall composer
-        brew uninstall php
-
-        brew uninstall --ignore-dependencies zstd
-        brew fetch --force --bottle-tag=arm64_ventura zstd
-        zstdResult=$(brew --cache --bottle-tag=arm64_ventura zstd)
-        brew install $zstdResult
-        
-        rm -rf /usr/local/opt/llvm@16
-
-        brew fetch --force --bottle-tag=arm64_ventura llvm@16
-        llvmResult=$(brew --cache --bottle-tag=arm64_ventura llvm@16)
-        echo "Looking for arm64 version of (llvm): $llvmResult"
-        brew install $llvmResult
-
-        brew uninstall --ignore-dependencies gcc
-        brew fetch --force --bottle-tag=arm64_ventura gcc
-        gccResult=$(brew --cache --bottle-tag=arm64_ventura gcc)
-        echo "Looking for arm64 version of (gcc): $gccResult"
-        brew install $gccResult
-
-        
-        # Get a list of all dependencies for curl
-        brew deps curl > formulas
-
-        # include curl itself
-        echo "curl" >> formulas
-        echo "Installing arm64 versions of formulas"
-
-        for formula in $(cat formulas); do
-            brew fetch --force --bottle-tag=arm64_ventura $formula
-            formulaResult=$(brew --cache --bottle-tag=arm64_ventura $formula)
-            echo "Looking for arm64 version of ($formula): $formulaResult"
-            brew install --overwrite $formulaResult
-        done
-    else
-        brew install llvm@16
-        brew install gcc
-        brew install zstd
-        brew install curl
-    fi
+    brew install llvm@16
+    brew install gcc
+    brew install zstd
+    brew install curl
 
     export LLVM_DIR="/usr/local/opt/llvm@16/lib/cmake"
     bash build_scripts/build-snowball.sh

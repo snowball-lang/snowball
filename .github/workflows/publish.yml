@@ -22,7 +22,7 @@ jobs:
           #   DIST: 'macos-11'
           #   NAME: 'darwin'
           - ARCH: 'x86_64'
-            DIST: 'macos-13'
+            DIST: 'macos-13-xlarge'
             NAME: 'darwin'
           - ARCH: 'arm64'
             DIST: 'macos-13'
