@@ -44,13 +44,13 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
         brew tap beeftornado/rmtree
 
-        brew rmtree --force openssl
+        brew rmtree openssl --force
         brew fetch --force --bottle-tag=arm64_ventura openssl
         opensslResult=$(brew --cache --bottle-tag=arm64_ventura openssl)
         echo "Looking for arm64 version of (openssl): $opensslResult"
         brew install $opensslResult
 
-        brew rmtree --force curl
+        brew rmtree curl --force
         brew fetch --force --bottle-tag=arm64_ventura curl
         curlResult=$(brew --cache --bottle-tag=arm64_ventura curl)
         echo "Looking for arm64 version of (curl): $curlResult"
