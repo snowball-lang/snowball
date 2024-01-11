@@ -40,15 +40,17 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Looking for arm64 version of (gcc): $gccResult"
         brew install $gccResult
 
-        list=$(brew list)
-        echo "List of installed packages: $list"
+        brew list --formula > formulas
+        brew uninstall --force $(cat formulas)
 
-        $list | xargs brew uninstall --force
-        $list | xargs brew fetch --force --bottle-tag=arm64_ventura
+        echo "Installing arm64 versions of formulas"
         
-        fetchList=$($list | xargs brew --cache --bottle-tag=arm64_ventura)
-        echo "Looking for arm64 version of (all): $fetchList"
-        $fetchList | xargs brew install
+        for formula in $(cat formulas); do
+            brew fetch --force --bottle-tag=arm64_ventura $formula
+            formulaResult=$(brew --cache --bottle-tag=arm64_ventura $formula)
+            echo "Looking for arm64 version of ($formula): $formulaResult"
+            brew install $formulaResult
+        done
     else
         brew install llvm@16
         brew install gcc
