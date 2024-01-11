@@ -42,7 +42,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
         
         # Get a list of all dependencies for curl
-        brew deps --include-build curl > formulas
+        brew deps curl > formulas
 
         # include curl itself
         echo "curl" >> formulas
