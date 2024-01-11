@@ -40,13 +40,13 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Looking for arm64 version of (gcc): $gccResult"
         brew install $gccResult
 
-        brew uninstall --ignore-dependencies curl
+        brew uninstall curl
         brew fetch --force --bottle-tag=arm64_ventura curl
         curlResult=$(brew --cache --bottle-tag=arm64_ventura curl)
         echo "Looking for arm64 version of (curl): $curlResult"
         brew install $curlResult
 
-        brew uninstall --ignore-dependencies openssl
+        brew uninstall openssl
         brew fetch --force --bottle-tag=arm64_ventura openssl
         opensslResult=$(brew --cache --bottle-tag=arm64_ventura openssl)
         echo "Looking for arm64 version of (openssl): $opensslResult"
