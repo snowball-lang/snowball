@@ -40,7 +40,15 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Looking for arm64 version of (gcc): $gccResult"
         brew install $gccResult
 
-        brew list | xargs arm-brew reinstall --force 
+        list=$(brew list)
+        echo "List of installed packages: $list"
+
+        $list | xargs brew uninstall --force
+        $list | xargs brew fetch --force --bottle-tag=arm64_ventura
+        
+        fetchList=$($list | xargs brew --cache --bottle-tag=arm64_ventura)
+        echo "Looking for arm64 version of (all): $fetchList"
+        $fetchList | xargs brew install
     else
         brew install llvm@16
         brew install gcc
