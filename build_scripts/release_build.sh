@@ -46,8 +46,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
         # include curl itself
         echo "curl" >> formulas
-        
-        brew uninstall --force $(cat formulas)
+
+        brew uninstall --ignore-dependencies --force $(cat formulas)
 
         echo "Installing arm64 versions of formulas"
 
