@@ -42,17 +42,19 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
         export HOMEBREW_AUTOREMOVE=1
 
-        brew uninstall curl
-        brew fetch --force --bottle-tag=arm64_ventura curl
-        curlResult=$(brew --cache --bottle-tag=arm64_ventura curl)
-        echo "Looking for arm64 version of (curl): $curlResult"
-        brew install $curlResult
+        brew tap beeftornado/rmtree
 
-        brew uninstall openssl
+        brew rmtree openssl
         brew fetch --force --bottle-tag=arm64_ventura openssl
         opensslResult=$(brew --cache --bottle-tag=arm64_ventura openssl)
         echo "Looking for arm64 version of (openssl): $opensslResult"
         brew install $opensslResult
+
+        brew rmtree curl
+        brew fetch --force --bottle-tag=arm64_ventura curl
+        curlResult=$(brew --cache --bottle-tag=arm64_ventura curl)
+        echo "Looking for arm64 version of (curl): $curlResult"
+        brew install $curlResult
     else
         brew install llvm@16
         brew install gcc
