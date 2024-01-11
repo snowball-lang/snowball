@@ -40,7 +40,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Looking for arm64 version of (gcc): $gccResult"
         brew install $gccResult
 
-        brew list | xargs arch -arm64 brew reinstall
+        brew list | xargs arm-brew reinstall --force 
     else
         brew install llvm@16
         brew install gcc
