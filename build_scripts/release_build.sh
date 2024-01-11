@@ -44,7 +44,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         brew uninstall --force $(cat formulas)
 
         echo "Installing arm64 versions of formulas"
-        
+        rm '/usr/local/bin/2to3-3.12'
+
         for formula in $(cat formulas); do
             brew fetch --force --bottle-tag=arm64_ventura $formula
             formulaResult=$(brew --cache --bottle-tag=arm64_ventura $formula)
