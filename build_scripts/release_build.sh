@@ -40,7 +40,13 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Looking for arm64 version of (gcc): $gccResult"
         brew install $gccResult
 
-        brew list --formula > formulas
+        
+        # Get a list of all dependencies for curl
+        brew deps --include-build curl > formulas
+
+        # include curl itself
+        echo "curl" >> formulas
+        
         brew uninstall --force $(cat formulas)
 
         echo "Installing arm64 versions of formulas"
