@@ -37,6 +37,15 @@ if(CMAKE_OSX_ARCHITECTURES MATCHES "arm64")
   set(HAVE_FLAG_SEARCH_PATHS_FIRST 0)
 endif()
 
+option(SNOWBALL_CPPCHECK "Enable cppcheck" OFF)
+
+if (SNOWBALL_CPPCHECK)
+  set(CMAKE_CXX_CPPCHECK "cppcheck"
+  "--enable=information"
+  "--check-config"
+  "--suppress=missingIncludeSystem")
+endif()
+
 if ("$ENV{ARCH}" STREQUAL "arm64")
   if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(CMAKE_C_LINK_FLAGS "")

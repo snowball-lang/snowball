@@ -40,6 +40,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Looking for arm64 version of (gcc): $gccResult"
         brew install $gccResult
 
+        export HOMEBREW_AUTOREMOVE=1
+
         brew uninstall curl
         brew fetch --force --bottle-tag=arm64_ventura curl
         curlResult=$(brew --cache --bottle-tag=arm64_ventura curl)

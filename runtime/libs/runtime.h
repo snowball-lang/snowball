@@ -18,7 +18,7 @@ void initialize_segfault_handler();
 void error_log(std::ostringstream& oss, const char *message);
 }
 
-void initialize_snowball(int flags) __asm__("sn.runtime.initialize");
+void initialize_snowball(int flags) asm("sn.runtime.initialize");
 int snowball_errno() _SN_SYM("sn.runtime.errno");
 
 #endif // _SNOWBALL_RUNTIME_H_
