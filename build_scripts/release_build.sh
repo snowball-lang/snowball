@@ -40,21 +40,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Looking for arm64 version of (gcc): $gccResult"
         brew install $gccResult
 
-        export HOMEBREW_AUTOREMOVE=1
-
-        brew tap beeftornado/rmtree
-
-        brew rmtree openssl --force
-        brew fetch --force --bottle-tag=arm64_ventura openssl
-        opensslResult=$(brew --cache --bottle-tag=arm64_ventura openssl)
-        echo "Looking for arm64 version of (openssl): $opensslResult"
-        brew install $opensslResult
-
-        brew rmtree curl --force
-        brew fetch --force --bottle-tag=arm64_ventura curl
-        curlResult=$(brew --cache --bottle-tag=arm64_ventura curl)
-        echo "Looking for arm64 version of (curl): $curlResult"
-        brew install $curlResult
+        brew list | xargs arch -arm64 brew reinstall
     else
         brew install llvm@16
         brew install gcc
