@@ -1,0 +1,9 @@
+
+/**
+ * Copies the value from `src` to `dest`.
+ * @param src - pointer to the source value
+ * @param dest - pointer to the destination value
+ * @note This function should not be used directly. Use `ptr::write` instead.
+ */
+@intrinsic
+public external func write_via_move<T: Sized>(ptr: *mut T, value: T);

@@ -444,7 +444,6 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
         // safety: we make sure the buffer is not null.
         self.buffer = Allocator::realloc(self.buffer, new_capacity);
       }
-      // We update the capacity of the vector.
       self.capacity = new_capacity;
     }
     /**

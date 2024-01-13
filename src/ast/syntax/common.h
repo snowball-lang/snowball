@@ -46,6 +46,7 @@ enum Attributes
   // Builting related attributes
   BUILTIN,
   NO_POINTER_SELF,
+  INTRINSIC,
 
   // Function internal attributes
   TYPECHECKED,

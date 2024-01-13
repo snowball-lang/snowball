@@ -13,7 +13,7 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::visit(ir::Func* func) {
-  if (func->hasAttribute(Attributes::BUILTIN)) {
+  if (func->hasAttribute(Attributes::BUILTIN) || func->hasAttribute(Attributes::INTRINSIC)) {
     this->value = nullptr;
     return;
   }
