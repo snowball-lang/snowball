@@ -337,6 +337,12 @@ private:
    */
   llvm::GlobalVariable* createVirtualTable(types::BaseType* ty, llvm::StructType* vtableType);
   /**
+   * @brief It generates intrinsic functions for a given function call.
+   * @param call The function call to generate the intrinsic function for.
+   * @return true if the intrinsic function was generated successfully,
+   */
+  bool buildIntrinsic(ir::Call* call);
+  /**
    * @brief It creates a new enum type and a new constant struct
    * value for a virtual table for @param call
    */

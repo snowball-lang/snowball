@@ -106,6 +106,8 @@ fetch_attrs:
       return Attributes::NO_POINTER_SELF;
     } else if (attr == "unsafe_fn_not_body") {
       return Attributes::UNSAFE_FUNC_NOT_BODY;
+    } else if (attr == "intrinsic") {
+      return Attributes::INTRINSIC;
     }
     return Attributes::INVALID;
   });

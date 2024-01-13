@@ -1,4 +1,5 @@
 import std::c_bindings;
+import std::intrinsics;
 
 /**
  * A wrapper for non-null references to types that bypass the `Sized` check.
@@ -72,7 +73,7 @@ public class Allocator<T: Sized> {
     @inline
     static func alloc(size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(c_bindings::malloc(sizeof!(:T) * size) as *const T);
+        return new NonNull<T>(c_bindings::malloc(sizeof!(:T) * size));
       }
     }
     /**
@@ -110,7 +111,7 @@ public class Allocator<T: Sized> {
 
 @inline
 public unsafe func write<T: Sized>(ptr: *mut T, value: T) {
-  *ptr = value;
+  intrinsics::write_via_move(ptr, value);
 }
 
 @inline

@@ -43,6 +43,8 @@ void LLVMBuilder::visit(ir::Call* call) {
   } else if (utils::is<ir::EnumInit>(call->getCallee().get())) {
     this->value = createEnumInit(call);
     return;
+  } else if (buildIntrinsic(call)) {
+    return;
   }
 
   auto calleeValue = call->getCallee();
