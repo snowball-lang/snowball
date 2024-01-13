@@ -1,0 +1,6 @@
+
+public interface Stream<T> {
+ public:
+  func read() T;
+  func write(value: T);
+};

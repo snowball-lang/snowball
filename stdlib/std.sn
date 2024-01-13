@@ -734,7 +734,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @return A string representation of the string view.
      */
     @inline
-    func to_string() Self { return *self; }
+    func to_string() Self { return "\"" + *self + "\""; }
     /**
      * @brief Returns a debug string representation of the string view.
      * @return A debug string representation of the string view.

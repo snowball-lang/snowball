@@ -1,0 +1,30 @@
+import std::stream;
+
+public class StringStream implements stream::Stream<String>, ToString {
+  let mut string: String;
+ public:
+  StringStream(string: String) : string(string) {}
+  func read() String {
+    return self.string;
+  }
+  @inline
+  mut func write(value: String) {
+    self.string += value;
+  }
+  @inline
+  func empty() bool {
+    return self.string.empty();
+  }
+  @inline
+  func to_string() String {
+    return self.string;
+  }
+  @inline
+  func str() String {
+    return self.to_string();
+  }
+  @inline
+  func size() i32 {
+    return self.string.size();
+  }
+};

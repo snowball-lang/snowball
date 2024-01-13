@@ -77,7 +77,7 @@ public class File implements ToString, Debug {
     }
     // safety: we are using the C bindings, so we need to be careful.
     unsafe {
-      let cfile = c_bindings::files::fopen(self.path.to_string().c_str(), mode.to_string().c_str());
+      let cfile = c_bindings::files::fopen(self.path.to_string().c_str(), mode.c_str());
       if cfile.is_null() {
         throw new FileOpenError("Failed to open or create file (" + self.path.to_string() + "): " + env::posix_get_error_msg(c_bindings::errno()));
       }

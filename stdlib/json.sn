@@ -1,0 +1,34 @@
+
+@use_macro(unreachable)
+import std::panics;
+import std::map;
+import std::chars;
+import std::ss;
+
+public enum Number {
+    Int(i64),
+    Float(f64),
+}
+
+public enum Value {
+    Null,
+    Bool(bool),
+    Number(Number),
+    String(String),
+    Array(Vector<Value>),
+    Object(map::Map<String, Value>),
+}
+
+public interface Serializer {
+  func json_serialize() Value;
+}
+
+public class JsonObject implements ToString {
+  let value: Value;
+ public:
+  JsonObject(value: Value) : value(value) {}
+}
+
+public func serialize<T: Serializer>(serializer: T) {
+  return serializer.json_serialize();
+}
