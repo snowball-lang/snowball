@@ -42,7 +42,12 @@ import std::env as os_env;
 
 //import std::io::{ println };
 
+import std::json as std_json;
+
 public func main() i32 {
-//    let a: () = 25;
-//    let b = a.fifth;
+    let mut vec = new Vector<bool>();
+    vec.push(true);
+    vec.push(true);
+    vec.push(false);
+    io::println(std_json::serialize(vec));
 }

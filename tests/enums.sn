@@ -23,6 +23,19 @@ class extends SimpleEnum {
     }
 }
 
+enum UsedAsString {
+    A,
+    B,
+    C
+}
+
+class extends UsedAsString implements ToString {
+  public:
+    func to_string() String {
+        return "hello";
+    }
+}
+
 namespace tests {
 
 enum TestEnum {
@@ -240,6 +253,17 @@ func return_match() i32 {
 func enum_extension() i32 {
     let a = SimpleEnum::A;
     return a.test();
+}
+
+// Use this function to check if the implementation of ToString has been injected.
+func as_string<T: ToString>(value: T) String {
+    return value.to_string();
+}
+
+@test(expect = 1)
+func used_as_string() i32 {
+    let a = UsedAsString::A;
+    return as_string(a) == "hello";
 }
 
 } // namespace tests

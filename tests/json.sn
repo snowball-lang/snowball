@@ -1,2 +1,6 @@
 
 import std::json;
+
+namespace tests {
+
+}

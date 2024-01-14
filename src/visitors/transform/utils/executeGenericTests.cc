@@ -40,12 +40,14 @@ void Transformer::executeGenericTests(Expression::WhereClause* clause, types::Ty
         }
       }
       if (!found) {
+        auto impls = generic->getImpls();
         E<TYPE_ERROR>(
                 test,
                 FMT("Type '%s' does not implement '%s'",
                     _generic->getPrettyName().c_str(),
                     interface->getPrettyName().c_str()),
                 {.info = "Failed to execute where clause",
+                  .note = impls.empty() ? "" : FMT("Type '%s' implements the following interfaces:\n  %s", _generic->getPrettyName().c_str(), utils::join<std::vector<types::InterfaceType *>::iterator>(impls.begin(), impls.end(), ",\n  ", [](auto x) { return (*x)->getPrettyName(); }).c_str()),
                  .help = FMT(
                          "Implement '%s' for '%s'", interface->getPrettyName().c_str(), _generic->getPrettyName().c_str()
                  ),

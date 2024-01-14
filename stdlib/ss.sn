@@ -3,7 +3,7 @@ import std::stream;
 public class StringStream implements stream::Stream<String>, ToString {
   let mut string: String;
  public:
-  StringStream(string: String) : string(string) {}
+  StringStream(string: String = "") : string(string.clone()) {}
   func read() String {
     return self.string;
   }

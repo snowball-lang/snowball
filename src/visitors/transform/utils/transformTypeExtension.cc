@@ -30,6 +30,20 @@ void Transformer::transformTypeExtension(Statement::DefinedTypeDef* node, std::s
         );
       }
       auto backup = ctx->getCurrentClass();
+      for (auto impl : node->getImpls()) {
+        auto ty = transformType(impl);
+        auto inter = utils::cast<types::InterfaceType>(ty);
+        if (!inter) {
+          E<SYNTAX_ERROR>(
+                  node,
+                  "Cant extend a non-interface!",
+                  {.info = FMT("'%s' is not an interface!", ty->getPrettyName().c_str()),
+                   .note = "Only interfaces can be extended!",
+                   .help = "Remove the 'extends' keyword from this class."}
+          );
+        }
+        item->getType()->addImpl(inter);
+      }
       ctx->setCurrentClass(item->getType());
       for (auto fn : node->getFunctions()) trans(fn);
       ctx->setCurrentClass(backup);
@@ -71,11 +85,26 @@ refetchUUID:
       }
 
       auto state = ctx->saveState();
-
       for (auto fn : node->getFunctions()) {
         fn->setContextState(state);
         definedType->addFunction(fn);
       }
+      auto lastImpls = definedType->getImpls();
+      for (auto impl : node->getImpls()) {
+        auto ty = transformType(impl);
+        auto inter = utils::cast<types::InterfaceType>(ty);
+        if (!inter) {
+          E<SYNTAX_ERROR>(
+                  node,
+                  "Cant extend a non-interface!",
+                  {.info = FMT("'%s' is not an interface!", ty->getPrettyName().c_str()),
+                   .note = "Only interfaces can be extended!",
+                   .help = "Remove the 'extends' keyword from this class."}
+          );
+        }
+        lastImpls.push_back(inter->toRef());
+      }
+      definedType->setImpls(lastImpls);
     }
     auto backup = ctx->getCurrentClass();
     // extend the already generated types
@@ -83,8 +112,22 @@ refetchUUID:
     auto types = ctx->cache->getTransformedType(usedUUID);
     if (types.has_value()) {
       for (auto item : types.value()) {
+        assert(item->isType());
+        for (auto impl : node->getImpls()) {
+          auto ty = transformType(impl);
+          auto inter = utils::cast<types::InterfaceType>(ty);
+          if (!inter) {
+            E<SYNTAX_ERROR>(
+                    node,
+                    "Cant extend a non-interface!",
+                    {.info = FMT("'%s' is not an interface!", ty->getPrettyName().c_str()),
+                     .note = "Only interfaces can be extended!",
+                     .help = "Remove the 'extends' keyword from this class."}
+            );
+          }
+          item->getType()->addImpl(inter);
+        }        
         ctx->withScope([&]() {
-          assert(item->isType());
           auto definedType = utils::cast<types::BaseType>(item->getType());
           ctx->setCurrentClass(definedType);
           assert(definedType);

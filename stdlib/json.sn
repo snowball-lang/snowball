@@ -27,8 +27,95 @@ public class JsonObject implements ToString {
   let value: Value;
  public:
   JsonObject(value: Value) : value(value) {}
+  func to_string() String {
+    let mut stream = new ss::StringStream();
+    self.serialize(stream, self.value);
+    return stream.str();
+  }
+
+ private:
+  func serialize(mut stream: &mut ss::StringStream, value: Value) {
+    case value {
+      Null => stream.write("null"),
+      Bool(x) => if x { stream.write("true") } else { stream.write("false") },
+      Number(x) => {
+        case x {
+          Int(x) => stream.write(x.to_string()),
+          Float(x) => stream.write(x.to_string()),
+        }
+      },
+      String(x) => stream.write("\"" + x + "\""), // TODO: escape
+      Array(x) => {
+        stream.write("[");
+        let mut i = 0;
+        while (i < x.size()) {
+          self.serialize(stream, x[i]);
+          if i < x.size() - 1 {
+            stream.write(", ");
+          }
+          i = i + 1;
+        }
+        stream.write("]");
+      },
+      Object(x) => {
+        stream.write("{");
+        let mut i = 0;
+        for key in x.keys() {
+          stream.write("\"" + key + "\": ");
+          self.serialize(stream, x[key]);
+          if i < x.size() - 1 {
+            stream.write(", ");
+          }
+          i = i + 1;
+        }
+        stream.write("}");
+      }
+    }
+  }
 }
 
-public func serialize<T: Serializer>(serializer: T) {
-  return serializer.json_serialize();
+public func serialize<T: Serializer>(serializer: T) JsonObject {
+  return new JsonObject(serializer.json_serialize());
 }
+
+class extends Vector implements Serializer {
+  public:
+    func json_serialize<>() Value {
+        let mut array = new Vector<Value>();
+        let mut i = 0;
+        while (i < self.size()) {
+            array.push((*self[i]).json_serialize());
+            i = i + 1;
+        }
+        return Value::Array(array);
+    }
+}
+
+@__internal__
+class extends IntegerImpl implements Serializer {
+  public:
+    func json_serialize(self: IntegerType) Value {
+      // Default to integer handling.
+      return Value::Number(Number::Int(self as i64));
+    }
+
+    func json_serialize(self: bool) Value {
+      return Value::Bool(self);
+    }
+
+    func json_serialize(self: f32) Value {
+      return Value::Number(Number::Float(self as f64));
+    }
+
+    func json_serialize(self: f64) Value {
+      return Value::Number(Number::Float(self));
+    }
+}
+
+class extends StringView implements Serializer {
+  public:
+    func json_serialize() Value {
+      return Value::String(self.clone());
+    }
+}
+

@@ -64,7 +64,6 @@ class *const <T> {
       ; Check if the pointer is null
       ; In LLVM 15 > onwars, we dont need to cast the pointer to the correct type
       %0 = icmp eq {=*const T} %self, null
-      ; Return the result of the comparison
       ret i1 %0
     }
 

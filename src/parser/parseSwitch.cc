@@ -65,7 +65,7 @@ Syntax::Statement::Switch* Parser::parseSwitch() {
           if (!is<TokenType::BRACKET_RCURLY>(pk)) {
             next();
             consume<TokenType::SYM_COMMA>("',' expected after case block");
-          }
+          } else next();
           break;
         }
         __attribute__ ((fallthrough));
@@ -108,8 +108,8 @@ Syntax::Statement::Switch* Parser::parseSwitch() {
             next();
           } else if (!is<TokenType::BRACKET_RCURLY>()) {
             createError<SYNTAX_ERROR>("expected ',' or '}' after case block");
-          }
-          break;
+          } else next();
+          break; 
         }
         createError<SYNTAX_ERROR>("expected 'case name' or 'default' keyword");
       } break;

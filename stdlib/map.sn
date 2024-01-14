@@ -191,4 +191,32 @@ public:
   virtual mut func reset() {
     self.table.reset();
   }
+  /**
+   * @brief Returns a list of all keys in the map.
+   * @return {Vector<K>} A list of all keys in the map.
+   * 
+   * ```
+   * const myMap = new Map<string, number>();
+   * myMap.set("foo", 42);
+   * myMap.set("bar", 24);
+   * const keys = myMap.keys(); // Returns ["foo", "bar"]
+   * ```
+   */
+  func keys() Vector<K> {
+    let mut keys = Vector<?K>::with_capacity(self.size());
+    for let i = 0; i < self.size(); i = i + 1 {
+      let entry = self.table[i];
+      keys.push(entry.first);
+    }
+    return keys;
+  }
+  /**
+   * @brief Operator overload for indexing into the map.
+   * @param {K} key - The key to index into the map.
+   * @return {&V} A mutable reference to the associated value. 
+   */
+  @inline
+  operator func [](key: K) &mut V {
+    return self.at(key);
+  }
 }

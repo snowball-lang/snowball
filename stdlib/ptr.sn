@@ -73,7 +73,7 @@ public class Allocator<T: Sized> {
     @inline
     static func alloc(size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(c_bindings::malloc(sizeof!(:T) * size));
+        return new NonNull<T>(c_bindings::malloc(Self::size_of<?T>(size)));
       }
     }
     /**
@@ -84,7 +84,7 @@ public class Allocator<T: Sized> {
     @inline
     static func alloc_zeroed(size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(c_bindings::calloc(sizeof!(:T) * size, 0));
+        return new NonNull<T>(c_bindings::calloc(Self::size_of<?T>(size), 0));
       }
     }
     /**
@@ -96,7 +96,7 @@ public class Allocator<T: Sized> {
     @inline
     static func realloc(ptr: NonNull<T>, size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(c_bindings::realloc(ptr.ptr(), sizeof!(:T) * size));
+        return new NonNull<T>(c_bindings::realloc(ptr.ptr(), Self::size_of<?T>(size)));
       }
     }
     /**
@@ -106,6 +106,18 @@ public class Allocator<T: Sized> {
     @inline
     static func free(ptr: NonNull<T>) {
       unsafe { c_bindings::free(ptr.ptr()); }
+    }
+    /**
+     * @brief It calculates the size of a memory block.
+     * @param ptr - pointer to the memory block
+    */
+    @inline
+    static func size_of<T>(size: i32) i32 {
+      let type_size = sizeof!(:T);
+      if type_size < 8 {
+        return 8 * size;
+      }
+      return type_size * size;
     }
 }
 
