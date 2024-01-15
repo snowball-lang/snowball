@@ -6,17 +6,17 @@ import std::chars;
 import std::ss;
 
 public enum Number {
-    Int(i64),
-    Float(f64),
+  Int(i64),
+  Float(f64),
 }
 
 public enum Value {
-    Null,
-    Bool(bool),
-    Number(Number),
-    String(String),
-    Array(Vector<Value>),
-    Object(map::Map<String, Value>),
+  Null,
+  Bool(bool),
+  Number(Number),
+  String(String),
+  Array(Vector<Value>),
+  Object(map::Map<String, Value>),
 }
 
 public interface Serializer {
@@ -81,13 +81,13 @@ public func serialize<T: Serializer>(serializer: T) JsonObject {
 class extends Vector implements Serializer {
   public:
     func json_serialize<>() Value {
-        let mut array = new Vector<Value>();
-        let mut i = 0;
-        while (i < self.size()) {
-            array.push((*self[i]).json_serialize());
-            i = i + 1;
-        }
-        return Value::Array(array);
+      let mut array = new Vector<Value>();
+      let mut i = 0;
+      while (i < self.size()) {
+        array.push((*self[i]).json_serialize());
+        i = i + 1;
+      }
+      return Value::Array(array);
     }
 }
 

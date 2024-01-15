@@ -1,4 +1,8 @@
 
+/**
+ * @brief A stream is a sequence of data elements made available over time.
+ * @tparam T The type of data elements in the stream.
+ */
 public interface Stream<T> {
  public:
   func read() T;
