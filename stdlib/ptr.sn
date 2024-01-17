@@ -120,17 +120,34 @@ public class Allocator<T: Sized> {
       return type_size * size;
     }
 }
-
+/**
+ * @brief An utility function to write a value to a given pointer.
+ * @tparam T - type of the value
+ * @param ptr - pointer to write the value to
+ * @param value - value to be written
+ * @note This function is an utility function to write a value to a given pointer.
+ */
 @inline
 public unsafe func write<T: Sized>(ptr: *mut T, value: T) {
   intrinsics::write_via_move(ptr, value);
 }
-
+/**
+ * @brief An utility function to convert a reference to a pointer.
+ * @tparam T - type of the value
+ * @param value - reference to be converted
+ * @return *const T - pointer to the value
+*/
 @inline
 public func to_pointer<T: Sized>(value: &T) *const T {
   unsafe { return value as *const T; }
 }
-
+/**
+ * @brief An utility function to copy a value from a given pointer to another pointer.
+ * @tparam T - type of the value
+ * @param src - pointer to copy the value from
+ * @param dst - pointer to copy the value to
+ * @note This function is an utility function to copy a value from a given pointer to another pointer.
+ */
 @inline
 public func copy_nonoverlapping<T: Sized>(src: *const T, dst: *mut T, count: i32) {
   unsafe { c_bindings::memmove(dst, src, count); }

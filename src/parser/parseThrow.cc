@@ -12,7 +12,6 @@ Syntax::Statement::Raise* Parser::parseThrow() {
   assert(is<TokenType::KWORD_THROW>());
   auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
   auto expr = parseExpr(false);
-  next();
   auto raise = Syntax::N<Syntax::Statement::Raise>(expr);
   raise->setDBGInfo(dbg);
   return raise;

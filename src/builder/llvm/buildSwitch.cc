@@ -21,6 +21,9 @@ void LLVMBuilder::visit(ir::Switch* switchStmt) {
     if (!switchStmt->isCStyleSwitch()) {
         assert(enumType != nullptr);
         initExpr = build(switchStmt->getExpr().get());
+        if (!initExpr->getType()->isPointerTy() && llvm::isa<llvm::LoadInst>(initExpr)) {
+            initExpr = llvm::cast<llvm::LoadInst>(initExpr)->getPointerOperand();
+        }
         auto exprIndex = builder->CreateStructGEP(getLLVMType(enumType), initExpr, 0);
         exprValue = builder->CreateLoad(builder->getInt8Ty(), exprIndex, ".switch-index");
     } else exprValue = expr(switchStmt->getExpr().get());

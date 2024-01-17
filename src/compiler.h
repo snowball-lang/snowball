@@ -36,6 +36,7 @@ struct GlobalContext {
   bool withStd = true;
   bool withCXXStd = true;
   bool isThreaded = false;
+  bool packageManagerEnabled = false;
 
   bool isDynamic = true;
   app::Options::Optimization opt = app::Options::Optimization::OPTIMIZE_O0;
@@ -57,7 +58,7 @@ class Compiler {
   fs::path cwd;
   app::Options::Optimization opt_level;
 
-  GlobalContext* globalContext;
+  GlobalContext globalContext;
 
   const SourceInfo* srcInfo = (snowball::SourceInfo*) nullptr;
   bool initialized = false;
@@ -96,10 +97,12 @@ public:
   int emitSnowballIr(std::string, bool = true);
   int emitDocs(std::string, std::string, BasicPackageInfo, bool = true);
 
-  GlobalContext* getGlobalContext() { return globalContext; }
+  void enamblePackageManager(bool);
+
+  GlobalContext& getGlobalContext() { return globalContext; }
 
   void setOptimization(app::Options::Optimization o) {
-    globalContext->opt = o;
+    globalContext.opt = o;
     opt_level = o;
   }
 

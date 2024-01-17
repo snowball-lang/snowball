@@ -46,6 +46,7 @@ int run(app::Options::RunOptions p_opts) {
   compiler->setOptimization(p_opts.opt);
 
   // TODO: false if --no-output is passed
+  compiler->enamblePackageManager(p_opts.file.empty());
   compiler->compile(p_opts.no_progress || p_opts.silent);
   compiler->emitBinary(output, false);
 

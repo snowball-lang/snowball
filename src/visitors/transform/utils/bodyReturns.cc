@@ -31,6 +31,15 @@ bool Transformer::bodyReturns(std::vector<Node*> exprs) {
         }
       }
       if (bodyReturns(f->getTryBlock()->getStmts()) && allCatchReturn) return true;
+    } else if (auto f = cast<Statement::Switch>(expr)) {
+      auto allCaseReturn = true;
+      for (auto caseBlock : f->getCases()) {
+        if (!bodyReturns(caseBlock.block->getStmts())) {
+          allCaseReturn = false;
+          break;
+        }
+      }
+      return allCaseReturn;
     }
 
     // Ignore unhandled!

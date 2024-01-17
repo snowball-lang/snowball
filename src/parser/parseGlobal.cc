@@ -38,7 +38,7 @@ Parser::NodeVec Parser::parseGlobal(TokenType terminator) {
             createError<SYNTAX_ERROR>("expected keyword \"func\", \"static\", \"unsafe\", \"class\", "
                                       "\"let\", \"const\", \"enum\" "
                                       "or "
-                                      "\"extern\" after public/private declaration");
+                                      "\"external\" after public/private declaration");
           }
 
           break;

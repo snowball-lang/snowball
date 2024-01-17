@@ -16,7 +16,6 @@ public external func "llvm.sqrt.f64" as sqrt(f64) f64;
  */
 public func min<T: Numeric>(x: T, y: T) T 
     { if x < y { return x } else { return y } } // TODO: importternary operator once implemented
-
 /**
  * @brief The number we all know, love and hate.
  * The constant value of pi, accurate to 35 decimal places.

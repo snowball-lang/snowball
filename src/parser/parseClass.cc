@@ -134,7 +134,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         if (isInterface) {
           createError<SYNTAX_ERROR>("Interfaces can't have constants!");
         } else if (extends) {
-          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* constants!");
+          createError<SYNTAX_ERROR>("Classes that extend other types cant have *new* constants!");
         }
         
         auto var = parseConstant();
@@ -151,7 +151,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
 
       case TokenType::KWORD_ENUM: {
         if (extends) {
-          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* enums!");
+          createError<SYNTAX_ERROR>("Classes that extend other types cant have *new* enums!");
         } else if (isInterface) {
           createError<SYNTAX_ERROR>("Interfaces can't have enums!");
         }
@@ -222,7 +222,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
           createError<ARGUMENT_ERROR>("Virtual methods cant be static!");
         } else if (extends) {
           next();
-          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* virtual methods!");
+          createError<SYNTAX_ERROR>("Classes that extend other types cant have *new* virtual methods!");
         } else if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_MUTABLE) {
           next();
           createError<SYNTAX_ERROR>("Expected keyword \"fn\" or \"mut\" after virtual declaration!");
@@ -236,7 +236,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         cls->addVariable(var);
 
         assert_tok<TokenType::SYM_SEMI_COLLON>("a ';'");
-        if (extends) { createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* variables!"); }
+        if (extends) { createError<SYNTAX_ERROR>("Classes that extend other types cant have *new* variables!"); }
       } break;
 
       case TokenType::BRACKET_RCURLY: {
@@ -250,7 +250,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
       case TokenType::KWORD_TYPEDEF: {
         assertNoAttributes("a type alias");
         if (extends) {
-          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* type aliases!");
+          createError<SYNTAX_ERROR>("Classes that extend other types cant have *new* type aliases!");
         } else if (isInterface) {
           createError<SYNTAX_ERROR>("Interfaces can't have type aliases!");
         }
@@ -265,7 +265,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
       case TokenType::KWORD_CLASS:
       case TokenType::KWORD_INTER: {
         if (extends) {
-          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* classes!");
+          createError<SYNTAX_ERROR>("Classes that extend other types cant have *new* classes!");
         } else if (isInterface) {
           createError<SYNTAX_ERROR>("Interfaces can't have classes!");
         }
@@ -277,7 +277,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
 
       case TokenType::KWORD_STRUCT: {
         if (extends) {
-          createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* structs!");
+          createError<SYNTAX_ERROR>("Classes that extend other types cant have *new* structs!");
         } else if (isInterface) {
           createError<SYNTAX_ERROR>("Interfaces can't have structs!");
         }
@@ -294,7 +294,8 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
           if (isInterface) {
             createError<SYNTAX_ERROR>("Interfaces can't have constructors!");
           } else if (extends) {
-            createError<SYNTAX_ERROR>("Classes that extend other types can't have *new* constructors!");
+            // NOTE: If we end up allowing this, we need to make sure enums can't have constructors!
+            createError<SYNTAX_ERROR>("Classes that extend other types cant have *new* constructors!");
           }
           hasConstructor = true;
           auto func = parseFunction(true);

@@ -44,17 +44,17 @@ llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
 
 llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
   if (auto intTy = cast<types::IntType>(ty)) {
-    return dbg.builder->createBasicType(ty->getName(), ty->sizeOf() * 8, intTy->isSigned() ? llvm::dwarf::DW_ATE_signed : llvm::dwarf::DW_ATE_unsigned);
+    return dbg.builder->createBasicType(ty->getName(), ty->sizeOf(), intTy->isSigned() ? llvm::dwarf::DW_ATE_signed : llvm::dwarf::DW_ATE_unsigned);
   } else if (is<types::FloatType>(ty)) {
-    return dbg.builder->createBasicType(ty->getName(), ty->sizeOf() * 8, llvm::dwarf::DW_ATE_float);
+    return dbg.builder->createBasicType(ty->getName(), ty->sizeOf(), llvm::dwarf::DW_ATE_float);
   } else if (cast<types::VoidType>(ty)) {
     return nullptr;
   } else if (auto x = cast<types::ReferenceType>(ty)) {
     auto type = getDIType(x->getPointedType());
-    return dbg.builder->createPointerType(type, ty->sizeOf() * 8);
+    return dbg.builder->createReferenceType(llvm::dwarf::DW_TAG_reference_type, type, ty->sizeOf());
   } else if (auto x = cast<types::PointerType>(ty)) {
     auto type = getDIType(x->getPointedType());
-    return dbg.builder->createPointerType(type, ty->sizeOf() * 8);
+    return dbg.builder->createPointerType(type, ty->sizeOf());
   }
 
   else if (auto f = Syntax::Transformer::getFunctionType(ty)) {
@@ -63,7 +63,7 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     for (auto argType : f->getArgs()) { argTypes.push_back(getDIType(argType)); }
 
     auto subroutineType = dbg.builder->createSubroutineType(llvm::MDTuple::get(*context, argTypes));
-    return dbg.builder->createPointerType(subroutineType, ty->sizeOf() * 8);
+    return dbg.builder->createPointerType(subroutineType, ty->sizeOf());
   } else if (auto c = cast<types::TypeAlias>(ty)) {
     return getDIType(c->getBaseType());
   } else if (auto e = cast<types::EnumType>(ty)) {
@@ -75,7 +75,7 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
             e->getPrettyName(),
             file,
             dbgInfo->line,
-            ty->sizeOf(),
+            8,
             ty->alignmentOf(),
             dbg.builder->getOrCreateArray(vector_iterate<types::EnumType::EnumField, llvm::Metadata*>(
                     e->getFields(),
@@ -124,7 +124,7 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
                         t->name,
                         file,
                         dbgInfo->line,
-                        t->type->sizeOf() * 8,
+                        t->type->sizeOf(),
                         /*AlignInBits=*/0,
                         0,
                         llvm::DINode::FlagZero,

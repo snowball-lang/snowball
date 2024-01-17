@@ -768,6 +768,10 @@ struct EnumTypeDef : public AcceptorExtend<EnumTypeDef, Base>,
   std::string name;
   /// @brief Defined enum fields
   std::vector<std::pair<std::string, std::vector<Expression::TypeRef*>>> fields;
+  /// @brief Enum's extended type method's
+  std::vector<FunctionDef*> methods;
+  /// @brief Enum's extended implementations
+  std::vector<Expression::TypeRef*> impls;
 public:
   EnumTypeDef(std::string name, Privacy::Status prvc = PRIVATE);
 
@@ -785,6 +789,18 @@ public:
 
   FieldIterator fieldStart();
   FieldIterator fieldEnd();
+
+  /// @return A full list of declared methods
+  std::vector<FunctionDef*>& getMethods();
+  /// @brief Add a method to the enum
+  /// Yes, enums can have methods!
+  /// Methods can be defined by using `class extends` to
+  /// extend the enum.
+  void addMethod(FunctionDef* method);
+  /// @brief Add an implementation to the enum
+  void addImpl(Expression::TypeRef* impl);
+  /// @return Get enum's implementations
+  std::vector<Expression::TypeRef*> getImpls() const;
 
   // Set an acceptance call
   ACCEPT()

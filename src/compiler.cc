@@ -36,9 +36,9 @@ void Compiler::initialize() {
   initialized = true;
   createSourceInfo();
 
-  globalContext = new GlobalContext();
-  globalContext->isTest = testsEnabled;
-  globalContext->isBench = benchmarkEnabled;
+  globalContext = GlobalContext();
+  globalContext.isTest = testsEnabled;
+  globalContext.isBench = benchmarkEnabled;
 
   configFolder = cwd / ".sn";
   if (!fs::exists(configFolder)) fs::create_directory(configFolder);
@@ -134,6 +134,7 @@ void Compiler::compile(bool silent) {
 using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
 
 void Compiler::runPackageManager(bool silent) {
+  if (!globalContext.packageManagerEnabled) return;
   auto package = getConfiguration();
   auto manager = new pm::Manager(package, silent, cwd, configFolder);
   manager->runAsMain();
@@ -248,6 +249,10 @@ toml::parse_result Compiler::getConfiguration() {
               BGRN,
               RESET)
   );
+}
+
+void Compiler::enamblePackageManager(bool enable) { 
+  globalContext.packageManagerEnabled = enable; 
 }
 
 void Compiler::cleanup() { }

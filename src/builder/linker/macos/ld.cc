@@ -18,17 +18,17 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
     linkerArgs.push_back("-l:" + lib);
     DEBUG_CODEGEN("Linking library: %s", lib.c_str());
   }
-  if (ctx->withCXXStd) {
+  if (ctx.withCXXStd) {
     auto libs = utils::get_lib_folder() / ".." / _SNOWBALL_LIBRARY_OBJ;
     linkerArgs.push_back("-L" + libs.string());
     linkerArgs.push_back("-lsnowballrt");
   }
   linkerArgs.push_back(input);
   for (auto& arg : args) linkerArgs.push_back(arg);
-  if (ctx->withStd) {
+  if (ctx.withStd) {
     for (auto llvmArg : utils::split(LLVM_LDFLAGS, " ")) { linkerArgs.push_back(llvmArg); }
   }
-  if (!ctx->isDynamic)
+  if (!ctx.isDynamic)
     linkerArgs.push_back("-static");
     
   linkerArgs.push_back("-arch");

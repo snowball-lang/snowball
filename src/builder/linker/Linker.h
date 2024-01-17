@@ -23,7 +23,7 @@ class Linker {
   /// @brief Vector to store the names of linked libraries.
   std::vector<std::string> linkedLibraries;
   /// @brief Pointer to the global context.
-  GlobalContext* ctx;
+  GlobalContext ctx;
   /// @brief The target triple.
   llvm::Triple target;
   /// @brief A list of rpaths to be added to the executable.
@@ -41,7 +41,7 @@ public:
    *
    * This constructor initializes the Linker object with default settings.
    */
-  Linker(GlobalContext* ctx, std::string ldPath = LD_PATH);
+  Linker(GlobalContext ctx, std::string ldPath = LD_PATH);
   /**
    * @brief Default destructor for the Linker class.
    *

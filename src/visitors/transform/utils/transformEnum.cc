@@ -90,19 +90,21 @@ types::EnumType* Transformer::transformEnum
       transformedType->setDBGInfo(ty->getDBGInfo());
       transformedType->setSourceInfo(ty->getSourceInfo());
       auto backupGenerateFunction = ctx->generateFunction;
-      ctx->setCurrentClass(transformedType);
       ctx->generateFunction = false;
+      ctx->setCurrentClass(transformedType);
       GENERATE_EQUALIZERS
-      ctx->generateFunction = backupGenerateFunction;
-      ctx->setCurrentClass(backupClass);
-
       for (auto field : ty->getFields()) {
         auto fieldTypes = vector_iterate<Expression::TypeRef*, types::Type*>(
-                field.second, [&](auto t) { return transformType(t); }
+          field.second, [&](auto t) { return transformType(t); }
         );
         auto enumField = types::EnumType::EnumField(field.first, fieldTypes);
         transformedType->addField(enumField);
       }
+
+      for (auto fn : ty->getMethods())
+        trans(fn);
+      ctx->generateFunction = backupGenerateFunction;
+      ctx->setCurrentClass(backupClass);
 
       //  Create function definitions
       ctx->setCurrentClass(transformedType);
@@ -110,6 +112,8 @@ types::EnumType* Transformer::transformEnum
       // Generate the function bodies
       ctx->generateFunction = true;
       GENERATE_EQUALIZERS
+      for (auto fn : ty->getMethods())
+        trans(fn);
       ctx->generateFunction = backupGenerateFunction;
       ctx->setCurrentClass(backupClass);
     });

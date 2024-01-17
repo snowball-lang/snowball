@@ -14,9 +14,15 @@ SN_TRANSFORMER_VISIT(Statement::Switch) {
 
   if (!cStyleSwitch) {
     auto switchType = expr->getType();
+    if (utils::is<types::ReferenceType>(switchType)) {
+      switchType = utils::cast<types::ReferenceType>(switchType)->getBaseType();
+      expr = getBuilder().createDereferenceTo(p_node->getDBGInfo(), expr, switchType);
+    }
+
     if (!utils::is<types::EnumType>(switchType)) {
       E<SYNTAX_ERROR>(p_node, "Switch expression must be of enum type!", {
         .info = "Not an enum type!",
+        .note = "Expression has type '" + switchType->getPrettyName() + "'",
         .help = "Try changing the expression to an enum type."
       });
     }

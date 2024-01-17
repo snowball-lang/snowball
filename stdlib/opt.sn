@@ -1,11 +1,5 @@
-/**
- * @file Optional.sn
- * @brief A module for handling optional values using the `Option` type.
- *
- * The `Optional.sn` module provides the `Option` type, which represents either a value or nothing at all.
- * This module is essential for handling scenarios where a value may or may not exist, offering a safe and
- * expressive way to work with optional values.
- */
+@use_macro(unreachable)
+import std::panics;
 
 /**
  * @class BadOptionAccess
@@ -27,74 +21,99 @@ public class BadOptionAccess extends Exception
  *
  * @typeparam T The type of value that the `Option` can hold.
  */
-public class Option<T: Sized> {
-    /**
-     * The value stored in the `Option`.
-     */
-    let _value: T = zero_initialized!(:T);
-    /**
-     * Whether the `Option` is engaged.
-     */
-    let _engage: bool = false;
-  public:
-    /**
-     * Creates a new empty `Option`.
-     */
-    Option() {}
-    /**
-     * Creates a new `Option` with the given value.
-     *
-     * @param value The value to store in the `Option`.
-     */
-    Option(value: T) : _value(value), 
-      _engage(true) {}
-    /**
-     * @brief Returns the value stored in the `Option`.
-     */
-    @inline
-    func val() T
-    {
-      self.assert_not_empty();
-      return self._value;
-    }
-    /**
-     * @brief Returns whether the `Option` is empty.
-     */
-    @inline
-    func empty() bool 
-    {
-      return !self._engage;
-    }
-    /**
-     * @brief Whether the `Option` is engaged.
-     */
-    @inline
-    func engaged() bool
-      { return self._engage; }
-    /**
-     * @return The value stored in the `Option` or the
-     *        given default value if the `Option` is empty.
-     */
-    @inline
-    func value_or(default_value: T) T
-    {
-      if self.empty() {
-        return default_value;
-      }
-      return self.val();
-    }
-  private:
-    /**
-     * @brief Throws an error if the `Option` is empty.
-     */
-    @inline
-    func assert_not_empty()
-    {
-      if (self.empty()) {
-        throw new BadOptionAccess("Attempted to access empty Option");
-      }
-    }
+public enum Option<T> {
+  /**
+   * @brief A variant representing a value.
+   *
+   * The `Some` variant represents an `Option` that contains a value. It is used to indicate that
+   * the `Option` is not empty and contains a value of the specified type.
+   */
+  Some(T),
+  /**
+   * @brief A variant representing an empty `Option`.
+   *
+   * The `None` variant represents an empty `Option`. It is used to indicate that the `Option` does
+   * not contain a value and is empty.
+   */
+  None,
 }
+/**
+ * @brief A class extending the `Option` type, representing an optional value.
+ *        An `Option` can either contain a value (`Some`) or be empty (`None`).
+ * @tparam T The type of the optional value.
+ */
+public class extends Option {
+ public:
+  /**
+   * @brief Checks if the option contains a value (`Some`).
+   * @return `true` if the option is `Some`, `false` if it is `None`.
+   * @remark The `is_some` method provides a convenient way to determine if the option holds a value.
+   */
+  @inline
+  func is_some() bool {
+    case self {
+      Some(...) => return true,
+      None => return false,
+    }
+  }
+  /**
+   * @brief Checks if the option is empty (`None`).
+   * @return `true` if the option is `None`, `false` if it is `Some`.
+   * @remark The `is_none` method is the inverse of the `is_some` method, indicating whether the option is empty.
+   */
+  @inline
+  func is_none() bool {
+    return !self.is_some();
+  }
+  /**
+   * @brief Unwraps the value contained in the option, panicking if the option is empty.
+   * @return The unwrapped value.
+   * @remark The `unwrap` method retrieves the value if the option is `Some`, otherwise, it panics with a default message.
+   */
+  @inline
+  func unwrap() T {
+    return self.expect("called `Option::unwrap` on an empty `Option`");
+  }
+  /**
+   * @brief Unwraps the value contained in the option, providing a default value if empty.
+   * @param[in] v The default value to return if the option is empty.
+   * @return The unwrapped value or the provided default value.
+   * @remark The `unwrap_or` method returns the contained value if `Some`, otherwise, it returns the provided default value.
+   */
+  @inline
+  func unwrap_or(v: T) T {
+    case self {
+      Some(value) => return value,
+      None => return v,
+    }
+  }
+  /**
+   * @brief Unwraps the value contained in the option or computes a default value through a provided function.
+   * @param[in] f The function to compute the default value if the option is empty.
+   * @return The unwrapped value or the computed default value.
+   * @remark The `unwrap_or_else` method returns the contained value if `Some`, otherwise, it computes the default value using the provided function.
+   */
+  @inline
+  func unwrap_or_else(f: Function<func () => T>) T {
+    case self {
+      Some(value) => return value,
+      None => return f(),
+    }
+  }
+  /**
+   * @brief Unwraps the value contained in the option or panics with a custom error message if empty.
+   * @param[in] msg The custom error message to include in the panic if the option is empty.
+   * @return The unwrapped value.
+   * @remark The `expect` method is similar to `unwrap` but allows specifying a custom error message in case of an empty option.
+   */
+  @inline
+  func expect(msg: String) T {
+    case self {
+      Some(value) => return value,
+      None => throw new BadOptionAccess(msg),
+    }
+  }
+};
 /**
  * @brief Creates a new `Option` with the given value.
  *
@@ -104,8 +123,8 @@ public class Option<T: Sized> {
  * @return An `Option` containing the provided value.
  */
 @inline
-public func some<_StoreType>(value: _StoreType) Option<_StoreType>
-  { return new Option<_StoreType>(value); }
+public func some<T>(value: T) Option<T>
+  { return Option<?T>::Some(value); }
 
 /**
  * @brief Creates a new empty `Option`.
@@ -115,5 +134,5 @@ public func some<_StoreType>(value: _StoreType) Option<_StoreType>
  * @return An empty `Option`.
  */
 @inline
-public func none<_StoreType>() Option<_StoreType>
-  { return new Option<_StoreType>(); }
+public func none<T>() Option<T>
+  { return Option<?T>::None; }

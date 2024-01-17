@@ -76,13 +76,13 @@ int build(app::Options::BuildOptions p_opts) {
   // TODO: check for output
   Compiler* compiler = new Compiler(content, filename);
   compiler->initialize();
-  std::string output = _SNOWBALL_OUT_DEFAULT(package_name, p_opts.emit_type, !compiler->getGlobalContext()->isDynamic);
+  std::string output = _SNOWBALL_OUT_DEFAULT(package_name, p_opts.emit_type, !compiler->getGlobalContext().isDynamic);
   if (!p_opts.output.empty()) { output = p_opts.output; }
   compiler->setOptimization(p_opts.opt);
   if (p_opts.is_test) { compiler->enable_tests(); }
 
   auto start = high_resolution_clock::now();
-
+  compiler->enamblePackageManager(p_opts.file.empty());
   compiler->compile(p_opts.no_progress || p_opts.silent);
   auto stop = high_resolution_clock::now();
 

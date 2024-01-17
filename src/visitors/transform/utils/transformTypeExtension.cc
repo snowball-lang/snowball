@@ -105,6 +105,26 @@ refetchUUID:
         lastImpls.push_back(inter->toRef());
       }
       definedType->setImpls(lastImpls);
+    } else if (auto enumType = utils::cast<Statement::EnumTypeDef>(type.type)) {
+      auto state = ctx->saveState();
+      for (auto fn : node->getFunctions()) {
+        fn->setContextState(state);
+        enumType->addMethod(fn);
+      }
+      for (auto impl : node->getImpls()) {
+        auto ty = transformType(impl);
+        auto inter = utils::cast<types::InterfaceType>(ty);
+        if (!inter) {
+          E<SYNTAX_ERROR>(
+                  node,
+                  "Cant extend a non-interface!",
+                  {.info = FMT("'%s' is not an interface!", ty->getPrettyName().c_str()),
+                   .note = "Only interfaces can be extended!",
+                   .help = "Remove the 'extends' keyword from this class."}
+          );
+        }
+        enumType->addImpl(inter->toRef());
+      }
     }
     auto backup = ctx->getCurrentClass();
     // extend the already generated types

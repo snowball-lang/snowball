@@ -62,7 +62,7 @@ int test(app::Options::TestOptions p_opts) {
 
   auto start = high_resolution_clock::now();
 
-  // TODO: false if --no-output is passed
+  compiler->enamblePackageManager(true);
   compiler->compile(p_opts.no_progress || p_opts.silent);
 
   auto stop = high_resolution_clock::now();

@@ -99,6 +99,10 @@ std::vector<std::string> ImportStmt::getPath() const { return path; }
 std::string ImportStmt::getExportSymbol() const { return exportSymbol; }
 Comment* CommentHolder::getComment() const { return comment; }
 void CommentHolder::setComment(Comment* comment) { this->comment = comment; }
+std::vector<FunctionDef*>& EnumTypeDef::getMethods() { return methods; }
+void EnumTypeDef::addMethod(FunctionDef* method) { methods.push_back(method); }
+void EnumTypeDef::addImpl(Expression::TypeRef* impl) { impls.push_back(impl); }
+std::vector<Expression::TypeRef*> EnumTypeDef::getImpls() const { return impls; }
 
 } // namespace Statement
 } // namespace Syntax

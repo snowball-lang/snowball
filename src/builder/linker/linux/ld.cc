@@ -15,7 +15,7 @@ namespace linker {
 void Linker::constructLinkerArgs(std::string& input, std::string& output, std::vector<std::string>& args) {
   const bool isIAMCU = target.isOSIAMCU();
   linkerArgs.clear();
-  if (ctx->isDynamic) {
+  if (ctx.isDynamic) {
     // linkerArgs.push_back("-pic");
     linkerArgs.push_back("--export-dynamic");
     linkerArgs.push_back("-m");
@@ -29,7 +29,7 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
     linkerArgs.push_back("-z");
     linkerArgs.push_back("text");
   }
-  if (ctx->withStd) {
+  if (ctx.withStd) {
     // TODO: check if this works for all platforms
     linkerArgs.push_back("-dynamic-linker");
 
@@ -97,20 +97,20 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
     }
   }
   linkerArgs.push_back(input);
-  if (ctx->isThreaded) linkerArgs.push_back("-lpthread");
+  if (ctx.isThreaded) linkerArgs.push_back("-lpthread");
   for (auto& arg : args) linkerArgs.push_back(arg);
   // TODO: should this be with ctc->withStd?
   linkerArgs.push_back("--eh-frame-hdr");
-  if (ctx->withStd) {
+  if (ctx.withStd) {
     for (auto llvmArg : utils::split(LLVM_LDFLAGS, " ")) { linkerArgs.push_back(llvmArg); }
   }
-  if (!ctx->isDynamic) linkerArgs.push_back("-static");
+  if (!ctx.isDynamic) linkerArgs.push_back("-static");
   for (auto& rpath : rpaths) linkerArgs.push_back("--rpath=" + rpath);
   for (auto& lib : linkedLibraries) {
     linkerArgs.push_back("-l:" + lib);
     DEBUG_CODEGEN("Linking library: %s", lib.c_str());
   }
-  if (ctx->withCXXStd) {
+  if (ctx.withCXXStd) {
     auto libs = utils::get_lib_folder() / ".." / _SNOWBALL_LIBRARY_OBJ;
     linkerArgs.push_back("-L/usr/lib/../lib64");
     linkerArgs.push_back("-L/lib/../lib64");

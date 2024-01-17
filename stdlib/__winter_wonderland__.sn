@@ -6,7 +6,6 @@ import std::io;
  * The Snowball Poem is a short poem that describes the key features of the Snowball programming language,
  * such as speed, security, object-orientation, and simplicity. This function simply prints the poem to
  * the console using the standard output stream.
- *
  * 
  * ```
  * In the land of Snowball, where the code is king,
