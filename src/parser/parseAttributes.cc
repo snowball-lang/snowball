@@ -6,11 +6,11 @@
 
 namespace snowball::parser {
 
-void Parser::parseAttributes() {
-  assert(is<TokenType::SYM_AT>());
+std::unordered_map<std::string, std::unordered_map<std::string, std::string>> Parser::parseAttributes(bool forConstexpr) {
+  assert(is<TokenType::SYM_AT>() || forConstexpr);
   std::unordered_map<std::string, std::unordered_map<std::string, std::string>> attributes;
-  while (is<TokenType::SYM_AT>()) {
-    next();
+  while (is<TokenType::SYM_AT>() || forConstexpr) {
+    if (!forConstexpr) next();
     std::unordered_map<std::string, std::string> attrArgs;
     auto attr = m_current.to_string();
     if (!(m_current.type > TokenType::KWORD__START__POINT && m_current.type < TokenType::KWORD__ENDING__POINT))
@@ -53,18 +53,29 @@ void Parser::parseAttributes() {
     if (attributes.find(attr) != attributes.end()) {
       createError<SYNTAX_ERROR>(FMT("Attribute '%s' is already defined!", attr.c_str()));
     }
-    next();
     attributes.insert({attr, attrArgs});
+    if (forConstexpr) break;
+    next();
   }
-  prev();
-  m_attributes = attributes;
+  if (!forConstexpr) {
+    prev();
+    m_attributes = attributes;
+  }
+  return attributes;
 }
 
 std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> Parser::verifyAttributes(
   std::function<Attributes(std::string)> parseFn
 ) {
+  return verifyAttributes(parseFn, m_attributes);
+}
+
+std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> Parser::verifyAttributes(
+  std::function<Attributes(std::string)> parseFn,
+  std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& attrs
+) {
   std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> attributes;
-  for (auto& [attr, args] : m_attributes) {
+  for (auto& [attr, args] : attrs) {
     auto attrType = parseFn(attr);
     if (attr == "cfg") {
       attrType = Attributes::CFG;
@@ -76,7 +87,7 @@ std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> Par
     }
     attributes[attrType] = args;
   }
-  m_attributes = {};
+  attrs.clear();
   return attributes;
 }
 

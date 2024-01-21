@@ -18,17 +18,15 @@ Statement::Base* Parser::parseConditional() {
   if (is<TokenType::KWORD_CONSTEXPR>(peek())) {
     createError<TODO>("Compile-time conditionals are not yet supported");
     next();
-    consume<TokenType::SYM_HASH>("'#'");
 
-    auto identifierInfo = DBGSourceInfo::fromToken(m_source_info, m_current);
-    auto identifier = Syntax::N<Expression::Identifier>(assert_tok<TokenType::IDENTIFIER>("an identifier").to_string());
-    identifier->setDBGInfo(identifierInfo);
+    auto attrs = parseAttributes(true);
 
-    // next();
-    // auto block = parseBlock();
-    // auto node = Syntax::N<ConditionalConstExpr>(expr, block);
-    // node->setDBGInfo(info);
-    // return node;
+    next();
+    auto block = parseBlock();
+    //auto node = Syntax::N<ConditionalConstExpr>(block);
+    //for (auto [n, a] : verifyAttributes([](auto _) { return Attributes::INVALID; }, attrs)) { node->addAttribute(n, a); }
+    //node->setDBGInfo(info);
+    //return node;
   }
 
   // Otherwise, parse a runtime conditional.

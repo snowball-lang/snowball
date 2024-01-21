@@ -2,6 +2,8 @@
 #include "../ValueVisitor/Visitor.h"
 #include "../ir/values/Value.h"
 #include "../sourceInfo/DBGSourceInfo.h"
+#include "../errors.h"
+#include "../ast/errors/error.h"
 
 #include <assert.h>
 #include <optional>
@@ -33,6 +35,8 @@ public:
   bool unsafeContext = false;
 
   Context() = default;
+
+  std::vector<errors::SNError*> errors;
 };
 }; // namespace typecheck
 
@@ -106,6 +110,12 @@ private:
 #define VISIT(n) void visit(ir::n*) override;
 #include "../defs/visits.def"
 #undef VISIT
+
+  /// @brief Create and append a new error
+  template <Error err, typename Obj>
+  void E(Obj dbg, const std::string& message = "", ErrorInfo info = {}) {
+    ctx->errors.push_back(Syntax::EI<err>(dbg, message, info));
+  }
 };
 
 } // namespace codegen

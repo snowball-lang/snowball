@@ -178,19 +178,32 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         }
 
         if (pk.type != TokenType::KWORD_FUNC &&
-            pk.type != TokenType::KWORD_OPERATOR && pk.type != TokenType::KWORD_UNSAFE && (!IS_CONSTRUCTOR(pk))) {
+            pk.type != TokenType::KWORD_OPERATOR && pk.type != TokenType::KWORD_UNSAFE && (!IS_CONSTRUCTOR(pk))
+            && pk.type != TokenType::KWORD_OVERRIDE) {
           next();
-          createError<SYNTAX_ERROR>("expected keyword \"fn\", \"let\", \"operator\", \"unsafe\" or a "
+          createError<SYNTAX_ERROR>("expected keyword \"func\", \"override\", \"let\", \"operator\", \"unsafe\" or a "
                                     "constructor "
                                     "declaration after static member");
         }
       } break;
 
+      case TokenType::KWORD_OVERRIDE: {
+        auto pk = peek();
+        if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_OPERATOR && pk.type != TokenType::KWORD_UNSAFE
+            && pk.type != TokenType::KWORD_MUTABLE, pk.type != TokenType::KWORD_VIRTUAL) {
+          next();
+          createError<SYNTAX_ERROR>("expected keyword \"func\" or \"operator\", \"unsafe\" or \"mut\", \"virtual\" "
+                                    "after override declaration!");
+        }
+      } break;
+
       case TokenType::KWORD_UNSAFE: {
         auto pk = peek();
-        if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_OPERATOR) {
+        if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_OPERATOR && pk.type != TokenType::KWORD_STATIC
+            && pk.type != TokenType::KWORD_MUTABLE) {
           next();
-          createError<SYNTAX_ERROR>("expected keyword \"fn\" or \"operator\" after unsafe declaration!");
+          createError<SYNTAX_ERROR>("expected keyword \"func\" or \"operator\", \"static\" or \"mut\" after unsafe "
+                                    "declaration!");
         }
       } break;
 
@@ -209,9 +222,9 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
       case TokenType::KWORD_MUTABLE: {
         auto pk = peek();
         if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_OPERATOR &&
-            pk.type != TokenType::KWORD_UNSAFE) {
+            pk.type != TokenType::KWORD_UNSAFE && pk.type != TokenType::KWORD_OVERRIDE) {
           next();
-          createError<SYNTAX_ERROR>("expected keyword \"fn\", \"unsafe\" or \"operator\" after mutable declaration!");
+          createError<SYNTAX_ERROR>("expected keyword \"func\", \"unsafe\" or \"operator\" after mutable declaration!");
         }
       } break;
 
@@ -225,7 +238,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
           createError<SYNTAX_ERROR>("Classes that extend other types cant have *new* virtual methods!");
         } else if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_MUTABLE) {
           next();
-          createError<SYNTAX_ERROR>("Expected keyword \"fn\" or \"mut\" after virtual declaration!");
+          createError<SYNTAX_ERROR>("Expected keyword \"func\" or \"mut\" after virtual declaration!");
         }
       } break;
 

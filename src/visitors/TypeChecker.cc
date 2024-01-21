@@ -455,6 +455,9 @@ void TypeChecker::codegen() {
 
   // Iterate every function with a reversed iterator.
   for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn) visit(fn->get());
+
+  if (ctx->errors.size() > 0) 
+    throw ctx->errors;
 }
 
 void TypeChecker::cantBeVoid(DBGObject* dbg, types::Type* ty, const std::string& message) {
@@ -779,6 +782,19 @@ void TypeChecker::fixTypes(std::shared_ptr<types::BaseType> ty) {
         } else {
           // if it's already in the vtable, we need to replace it
           // with the new function
+
+          if (!fn->hasAttribute(Attributes::OVERRIDE)) {
+            E<SYNTAX_ERROR>(
+                    fn->getDBGInfo(),
+                    FMT("Function '%s' is not marked as 'override'!", fn->getNiceName().c_str()),
+                    {.info = "This function is not marked as 'override'!",
+                     .note = "This error is caused by the function not being marked as 'override'.",
+                     .help = "Try adding the 'override' attribute to the function."}
+            );
+            // Do not error for this function again
+            fn->addAttribute(Attributes::OVERRIDE);
+          }
+
           fn->setVirtualIndex(it - finalVtable.begin());
           finalVtable.at(it - finalVtable.begin()) = fn;
           vtableIndex = it - finalVtable.begin() + 1;
@@ -787,6 +803,7 @@ void TypeChecker::fixTypes(std::shared_ptr<types::BaseType> ty) {
     }
 
     type->unsafeOverrideVtable(finalVtable);
+    // TODO: warning out if the function is marked as override but it's not
   }
 }
 

@@ -169,6 +169,7 @@ enum class TokenType
   KWORD_WHILE,          // Symbol: while
   KWORD_EXTERN,         // Synbol: extern
   KWORD_VIRTUAL,        // Synbol: virtual
+  KWORD_OVERRIDE,       // Synbol: override
   KWORD_CLASS,          // Symbol: class
   KWORD_AS,             // Symbol: as
   KWORD_IMPORT,         // Symbol: use
@@ -280,6 +281,7 @@ struct Token {
       // Keywods
       case TokenType::KWORD_PUBLIC: return _SNOWBALL_KEYWORD__PUBLIC;
       case TokenType::KWORD_VIRTUAL: return _SNOWBALL_KEYWORD__VIRTUAL;
+      case TokenType::KWORD_OVERRIDE: return _SNOWBALL_KEYWORD__OVERRIDE;
       case TokenType::KWORD_PRIVATE: return _SNOWBALL_KEYWORD__PRIVATE;
       case TokenType::KWORD_IMPORT: return _SNOWBALL_KEYWORD__IMPORT;
       case TokenType::KWORD_UNSAFE: return _SNOWBALL_KEYWORD__UNSAFE;

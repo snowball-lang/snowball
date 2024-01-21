@@ -31,6 +31,7 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
   bool isMutable = false;
   bool isGeneric = false;
   bool isUnsafe = false;
+  bool isOverride = false;
   bool isNotImplemented = false;
 
   std::string name;
@@ -61,20 +62,27 @@ fetch_attrs:
   } else if (is<TokenType::KWORD_STATIC>(pk)) {
     CHECK_PRIVACY(isStatic)
   } else if (is<TokenType::KWORD_VIRTUAL>(pk)) {
-    CHECK_PRIVACY(isVirtual)
+    isVirtual = true;
+    peekCount--;
+    goto fetch_attrs;
   } else if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(pk)) {
     isPublic = pk.type == TokenType::KWORD_PUBLIC;
   } else if (is<TokenType::KWORD_MUTABLE>(pk)) {
-    if (is<TokenType::KWORD_VIRTUAL>(peek(peekCount - 1, true))) {
-      isMutable = true;
-      CHECK_PRIVACY(isVirtual)
-    } else {
-      CHECK_PRIVACY(isMutable)
-    }
+    isMutable = true;
+    peekCount--;
+    goto fetch_attrs;
+  } else if (is<TokenType::KWORD_OVERRIDE>(pk)) {
+    isOverride = true;
+    peekCount--;
+    goto fetch_attrs;
   }
 
   if (isOperator) {
     consume<TokenType::KWORD_FUNC>("'func' keyword"); 
+  }
+
+  if (isOverride && isStatic) {
+    createError<SYNTAX_ERROR>("Static functions can't be overriden!");
   }
 
   auto dbg = m_current.get_pos();
@@ -111,6 +119,9 @@ fetch_attrs:
     }
     return Attributes::INVALID;
   });
+  if (isOverride) {
+    attributes[Attributes::OVERRIDE] = {};  
+  }
   if (isOperator) {
     services::OperatorService::OperatorType opType = services::OperatorService::OperatorType::INVALID;
     switch (m_current.type) {

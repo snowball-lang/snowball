@@ -34,7 +34,7 @@ func value_access_set() i32 {
 class virtualTest {
   public:
     virtualTest() {}
-    virtual func test() i32 {
+    override virtual func test() i32 {
       return true;
     }
   private:
@@ -103,7 +103,7 @@ func generic_access() i32 {
 class InheritedOverridevirtualTest extends virtualTest {
   public:
     InheritedOverridevirtualTest() : super() {}
-    virtual func test() i32 {
+    override virtual func test() i32 {
       return false;
     }
 }

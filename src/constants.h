@@ -233,6 +233,7 @@ typedef int32_t snowball_int_t;
 #define _SNOWBALL_KEYWORD__PUBLIC    "public"
 #define _SNOWBALL_KEYWORD__VIRTUAL   "virtual"
 #define _SNOWBALL_KEYWORD__FALSE     "false"
+#define _SNOWBALL_KEYWORD__OVERRIDE  "override"
 #define _SNOWBALL_KEYWORD__WHILE     "while"
 #define _SNOWBALL_KEYWORD__BREAK     "break"
 #define _SNOWBALL_KEYWORD__EXTERN    "external"

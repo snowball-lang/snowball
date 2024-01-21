@@ -39,6 +39,7 @@ enum Attributes
   NO_MANGLE,
   NOT_IMPLEMENTED,
   EXPORT,
+  OVERRIDE,
   FIRST_ARG_IS_SELF,
   UNSAFE_FUNC_NOT_BODY,
   UNSAFE, // also used for blocks

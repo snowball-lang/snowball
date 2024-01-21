@@ -350,22 +350,24 @@ private:
    * case         ::=  "case" [expr] ":" [block]
    */
   Syntax::Statement::Switch* parseSwitch();
-
   /// @brief Parses a statement
   /// @return a statement
   Syntax::Node* parseStatement(Token pk);
-
   /**
    * @brief Parses a list of attributes
    */
-  void parseAttributes();
+  std::unordered_map<std::string, std::unordered_map<std::string, std::string>> parseAttributes(bool forConstexpr = false);
   /**
    * @brief Verifies the attributes list
    * @param attributes attributes list
    * @param parseFn function to parse the attribute
    */
   std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> verifyAttributes(
-          std::function<Attributes(std::string)> parseFn
+    std::function<Attributes(std::string)> parseFn,
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& attrs
+  );
+  std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> verifyAttributes(
+    std::function<Attributes(std::string)> parseFn
   );
   /**
    * @brief Assert that attributes are not accepted in the current context

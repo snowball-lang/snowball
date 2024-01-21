@@ -80,7 +80,7 @@ public class Path implements ToString, Iterable<String> {
      * @brief Resets the iteration to the beginning of the path.
      */
     @inline
-    virtual mut func reset() { self.iter_index = -1; }
+    override virtual mut func reset() { self.iter_index = -1; }
     /**
      * @brief Returns whether the path is empty.
      * @return Whether the path is empty.

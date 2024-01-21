@@ -1,0 +1,57 @@
+@use_macro(assert)
+import std::asserts;
+import std::stream;
+import std::fs::file;
+
+public class InputFileStream implements stream::ReadStream<String> {
+  let mut file: file::File;
+  let mut buffer: String;
+  let mut pos: i32;
+  let mut eof: bool;
+
+ public:
+  InputFileStream(mut file: file::File) : file(file), buffer(file.read()), pos(0), eof(false) {}
+
+  mut func read() String {
+    if self.eof {
+      return "";
+    }
+
+    let mut result = "";
+    while (true) {
+      if self.pos >= self.buffer.size() {
+        self.buffer = self.file.read();
+        self.pos = 0;
+        if self.buffer.size() == 0 {
+          self.eof = true;
+          break;
+        }
+      }
+
+      let c = self.buffer[self.pos];
+      self.pos = self.pos + 1;
+      if c == '\n' {
+        break;
+      }
+      result = result + c;
+    }
+    return result;
+  }
+
+  @inline
+  func eof() bool {
+    return self.eof;
+  }
+}
+
+public class OutputFileStream implements stream::WriteStream<String> {
+  let mut file: file::File;
+
+ public: 
+  OutputFileStream(mut file: file::File) : file(file) {}
+
+  @inline
+  func write(data: String) {
+    self.file.write(data);
+  }
+}

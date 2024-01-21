@@ -95,7 +95,7 @@ std::shared_ptr<ir::Func> Transformer::transformFunction(
           a->setMutability(node->isMutable());
           a->getType()->setMutable(node->isMutable());
         } else {
-          a->setMutability(a->getType()->isMutable());
+          a->setMutability(node->getArgs().at(i)->isMutable());
         }
         newArgs.push_back({arg->getName(), a});
       }

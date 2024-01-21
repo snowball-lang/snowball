@@ -314,7 +314,7 @@ public class Range<N: Numeric = i32> implements Iterable<N>, ToString {
      * @brief Resets the iteration to the beginning of the range.
      */
     @inline
-    virtual mut func reset() { self.iter_index = self.start - 1; }
+    override virtual mut func reset() { self.iter_index = self.start - 1; }
     /**
      * @brief Adds a value to the range with another range.
      * @param[in] value The value to add to the range.
@@ -582,7 +582,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
      * @brief Resets the iteration to the beginning of the range.
      */
     @inline
-    virtual mut func reset() { self.iter_index = -1; }
+    override virtual mut func reset() { self.iter_index = -1; }
 
   private:
     /** The capacity of the vector. */

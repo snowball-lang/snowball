@@ -58,6 +58,14 @@ int _main(int argc, char** argv) {
   } catch (const SNError& error) {
     error.print_error();
     return EXIT_FAILURE;
+  } catch (const std::vector<SNError*>& errors) {
+    for (auto& error : errors) {
+      error->print_error();
+    }
+    return EXIT_FAILURE;
+  } catch (const std::exception& e) {
+    Logger::error(FMT("An unexpected error occurred: %s", e.what()));
+    return EXIT_FAILURE;
   }
 
   return EXIT_SUCCESS;

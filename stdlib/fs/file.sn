@@ -145,6 +145,15 @@ public class File implements ToString, Debug {
     }
     return true;
   }
+  /**
+   * @brief Create a new file from a C file pointer.
+   * @param path The path to the file.
+   * @return The new file.
+   */
+  @inline 
+  unsafe static func from_c_file(path: path::Path, file: *const void) File {
+    return new File(path, file);
+  }
  private:
   /**
    * @brief Assert that the file is open.
@@ -153,5 +162,17 @@ public class File implements ToString, Debug {
     if !self.open {
       throw new FileNotOpenError("File is not open.");
     }
+  }
+  /**
+   * @brief Create a new file based on the C file pointer.
+   * @param path The path to the file.
+   * @param file The C file pointer.
+   * @note This is a private constructor. It is used to create a new file
+   *  from a C file pointer, meaning that it's unsafe. This constructor is
+   *  used internally by the standard library to create a file from a C file
+   *  pointer.
+   */
+  File(path: path::Path, file: *const void) : path(path), file(file) {
+    self.open = true;
   }
 }
