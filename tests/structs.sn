@@ -1,8 +1,8 @@
 namespace tests {
 
 struct MyStruct {    
-    public let mut a: i32;
-    public let mut b: i32;
+    let mut a: i32;
+    let mut b: i32;
 };
 
 @test(expect = 3)
@@ -20,8 +20,8 @@ func mutation() i32 {
 }
 
 struct MyStruct2 {
-    public let a: String;
-    public let b: String;
+    let a: String;
+    let b: String;
 };
 
 @test(expect = 3)

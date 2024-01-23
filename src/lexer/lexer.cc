@@ -575,6 +575,20 @@ void Lexer::tokenize() {
             tk.type = TokenType::VALUE_NUMBER;
           }
 
+          std::string prefix;
+          if (GET_CHAR(0) == 'u' || GET_CHAR(0) == 'U') {
+            prefix += "u";
+            EAT_CHAR(1);
+          } else if (GET_CHAR(0) == 'i' || GET_CHAR(0) == 'I') {
+            prefix += "i";
+            EAT_CHAR(1);
+          }
+
+          if (GET_CHAR(0) == 'l' || GET_CHAR(0) == 'L') {
+            prefix += "l";
+            EAT_CHAR(1);
+          }
+          tk.value = prefix + tk.value;
           tokens.emplace_back(tk);
           if (isRange) { // we add '..' if it's a range expr (1..5)
             consume(TokenType::SYM_DOT);

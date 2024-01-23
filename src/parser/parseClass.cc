@@ -190,9 +190,9 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
       case TokenType::KWORD_OVERRIDE: {
         auto pk = peek();
         if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_OPERATOR && pk.type != TokenType::KWORD_UNSAFE
-            && pk.type != TokenType::KWORD_MUTABLE, pk.type != TokenType::KWORD_VIRTUAL) {
+            && pk.type != TokenType::KWORD_MUTABLE && pk.type != TokenType::KWORD_VIRTUAL) {
           next();
-          createError<SYNTAX_ERROR>("expected keyword \"func\" or \"operator\", \"unsafe\" or \"mut\", \"virtual\" "
+          createError<SYNTAX_ERROR>("expected keyword \"func\" or \"operator\", \"unsafe\", \"mut\" or \"virtual\" "
                                     "after override declaration!");
         }
       } break;

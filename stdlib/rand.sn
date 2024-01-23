@@ -1,0 +1,56 @@
+
+import std::ptr;
+import std::c_bindings;
+import std::io;
+
+public class RandomGenerator {
+  public:
+    RandomGenerator() {}
+    virtual func rand_int() u64 {}
+}
+
+public class DefaultRNG extends RandomGenerator {
+  private:
+    let mut seed: u64 = 0;
+  public: 
+    DefaultRNG() : super() {}
+    
+    @inline
+    override virtual mut func rand_int() u64 {
+      // We use the linear congruential generator (LCG) algorithm.
+      if self.seed == 0 {
+        unsafe {
+          self.seed = c_bindings::time(ptr::null_ptr<?i32>()) as u64;
+        }
+      }
+      self.seed = (self.seed * 1103515245U + 12345U) & 0x7fffffffU;
+      return self.seed;
+    }
+}
+
+let mut _global_rng: RandomGenerator = new DefaultRNG() as RandomGenerator;
+
+/**
+ * @brief It generates a random number between 0 and RAND_MAX.
+ * @return A random number between 0 and RAND_MAX.
+ */
+@inline
+public func rand_int() u64 {
+  return _global_rng.rand_int();
+}
+/**
+ * @brief It generates a random number between 0 and 1.
+ * @return A random number between 0 and 1.
+ */
+@inline
+public func rand() f64 {
+  return _global_rng.rand_int() as f64 / 0x7fffffff as f64;
+}
+/**
+ * @brief Set a new random number generator handler.
+ * @param rng - new random number generator handler
+ */
+@inline
+public func set_rng(rng: RandomGenerator) {
+  _global_rng = rng;
+}

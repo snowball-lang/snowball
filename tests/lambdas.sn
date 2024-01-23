@@ -92,7 +92,7 @@ func usage_after_lambda2() i32 {
 }
 
 struct TestStruct {
-  public let x: i32;
+  let x: i32;
 }
 
 func lambda_return_struct() Function<func() => TestStruct> {

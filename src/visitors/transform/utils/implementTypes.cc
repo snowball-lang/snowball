@@ -63,11 +63,11 @@ void Transformer::implementTypes(
           if (!(*classField)->type->is(type)) {
             E<TYPE_ERROR>(
                     ast,
-                    FMT("Field's (%s) type does not match the interface's type!", name.c_str()),
+                    FMT("Field %s type does not match the interface type!", name.c_str()),
                     {.info = "Type mismatch!",
                      .note = FMT("Field '%s' declared here with a different type!", name.c_str()),
                      .help =
-                             FMT("Here it's declared as '%s' but the interface declares it as '%s'!",
+                             FMT("Here its declared as '%s' but the interface declares it as '%s'!",
                                  (*classField)->type->getPrettyName().c_str(),
                                  type->getPrettyName().c_str()),
                      .tail =
@@ -81,11 +81,11 @@ void Transformer::implementTypes(
           } else if ((*classField)->isMutable != ast->isMutable()) {
             E<TYPE_ERROR>(
                     ast,
-                    FMT("Field's (%s) mutability does not match the interface's mutability!", name.c_str()),
+                    FMT("Field %s mutability does not match the interface mutability!", name.c_str()),
                     {.info = "Mutability mismatch!",
                      .note = FMT("Field '%s' declared here with a different mutability!", name.c_str()),
                      .help =
-                             FMT("Here it's declared as '%s' but the interface declares it as '%s'!",
+                             FMT("Here its declared as '%s' but the interface declares it as '%s'!",
                                  (*classField)->isMutable ? "mutable" : "immutable",
                                  ast->isMutable() ? "mutable" : "immutable"),
                      .tail = EI<>(
@@ -100,11 +100,11 @@ void Transformer::implementTypes(
           } else if ((*classField)->getPrivacy() != ast->getPrivacy()) {
             E<TYPE_ERROR>(
                     ast,
-                    FMT("Field's (%s) privacy does not match the interface's privacy!", name.c_str()),
+                    FMT("Field (%s) privacy does not match the interface privacy!", name.c_str()),
                     {.info = "Privacy mismatch!",
                      .note = FMT("Field '%s' declared here with a different privacy!", name.c_str()),
                      .help =
-                             FMT("Here it's declared as '%s' but the interface declares it as '%s'!",
+                             FMT("Here its declared as '%s' but the interface declares it as '%s'!",
                                  (*classField)->getPrivacy() == Statement::Privacy::PUBLIC ? "public" : "private",
                                  ast->getPrivacy() == Statement::Privacy::PUBLIC ? "public" : "private"),
                      .tail = EI<>(

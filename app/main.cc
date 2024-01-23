@@ -64,7 +64,7 @@ int _main(int argc, char** argv) {
     }
     return EXIT_FAILURE;
   } catch (const std::exception& e) {
-    Logger::error(FMT("An unexpected error occurred: %s", e.what()));
+    Logger::error(FMT("\r\nAn unexpected error occurred: %s", e.what()));
     return EXIT_FAILURE;
   }
 

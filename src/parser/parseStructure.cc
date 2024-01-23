@@ -47,14 +47,16 @@ Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
     switch (m_current.type) {
       case TokenType::KWORD_PUBLIC:
       case TokenType::KWORD_PRIVATE: {
-        next();
-        assert_tok<TokenType::KWORD_VAR>("a valid member declaration");
+        createError<SYNTAX_ERROR>("Cannot declare a member as public or private inside a structure", {
+          .note = "Structure members are always public"
+        });
         break;
       }
 
       case TokenType::KWORD_VAR: {
         auto member = parseVariable();
         consume<TokenType::SYM_SEMI_COLLON>("';'");
+        member->setPrivacy(Syntax::Statement::Privacy::PUBLIC);
         cls->addVariable(member);
         break;
       }

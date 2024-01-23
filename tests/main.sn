@@ -32,6 +32,7 @@ import pkg::strings;
 import pkg::enums;
 import pkg::json;
 import pkg::libs_include;
+import pkg::rand;
 
 ////import std::io::{{ println }};
 
@@ -39,6 +40,8 @@ import std::io;
 import std::opt;
 import std::tuples;
 import std::env as os_env;
+
+import std::rand as random;
 
 //import std::io::{ println };
 
@@ -50,4 +53,6 @@ public func main() i32 {
     //vec.push(true);
     //vec.push(false);
     //io::println(std_json::serialize(vec));
+    let a = (-10.0);
+    io::println(a as f64);
 }

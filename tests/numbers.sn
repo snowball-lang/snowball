@@ -37,6 +37,13 @@ func to_string() i32 {
     return true;
 }
 
+@test
+func bool_string_fix() i32 {
+    assert!(true.to_string() == "1")
+    assert!(false.to_string() == "0")
+    return true;
+}
+
 @test()
 func binary() i32 {
 	assert!(0b10 == 2)
@@ -54,6 +61,20 @@ func binary() i32 {
     assert!(0B00000000 == 0)
     assert!(0B00000001 == 1)
     assert!(0B00000010 == 2)
+    return true;
+}
+
+@test
+func float_to_str() i32 {
+    assert!((1.0 as f64).to_string() == "1.0")
+    assert!((-1.0 as f64).to_string() == "-1.0")
+    assert!((1.123 as f64).to_string() == "1.12300")
+    assert!((-1.123 as f64).to_string() == "-1.12300")
+    assert!((1.123456789).to_string() == "1.12345")
+    assert!((-1.123456789).to_string() == "-1.12345")
+    assert!((0.0 as f64).to_string() == "0.0")
+    assert!((-0.0 as f64).to_string() == "0.0")
+    assert!((0.1 as f64).to_string() == "0.10000")
     return true;
 }
 

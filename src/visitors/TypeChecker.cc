@@ -754,19 +754,20 @@ void TypeChecker::fixTypes(std::shared_ptr<types::BaseType> ty) {
   if (type && type->hasVtable) {
     std::vector<types::DefinedType*> parents;
     std::vector<std::shared_ptr<ir::Func>> finalVtable;
-    parents.push_back(type.get());
-
+    
     // add parents from lowest to highest
-    auto parent = type->getParent();
-    while (parent) {
-      parents.push_back(parent);
-      parent = parent->getParent();
+    auto tyParent = type->getParent();
+    while (tyParent) {
+      parents.insert(parents.begin(), tyParent);
+      tyParent = tyParent->getParent();
     }
 
+    parents.push_back(type.get());
+
     // reverse iterate over the parents
-    for (auto parent = parents.rbegin(); parent != parents.rend(); ++parent) {
+    for (auto parent : parents) {
       int vtableIndex = 0;
-      auto parentVtable = (*parent)->getVTable();
+      auto parentVtable = parent->getVTable();
       for (auto fn : parentVtable) {
         // add it if it's not already in the vtable
         // we first check by name and then if the types exist
@@ -776,14 +777,13 @@ void TypeChecker::fixTypes(std::shared_ptr<types::BaseType> ty) {
         });
 
         if (it == finalVtable.end()) {
-          // TODO: only when "overriding"!!!
           fn->setVirtualIndex(vtableIndex++);
           finalVtable.push_back(fn);
         } else {
           // if it's already in the vtable, we need to replace it
           // with the new function
 
-          if (!fn->hasAttribute(Attributes::OVERRIDE)) {
+          if (!fn->hasAttribute(Attributes::OVERRIDE) && fn->getParent()->is(type.get())) {
             E<SYNTAX_ERROR>(
                     fn->getDBGInfo(),
                     FMT("Function '%s' is not marked as 'override'!", fn->getNiceName().c_str()),

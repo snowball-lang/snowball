@@ -98,8 +98,8 @@ func store_and_change_ptr() i32 {
 }
 
 struct S {
-  public let mut a: i32;
-  public let mut b: &i32;
+  let mut a: i32;
+  let mut b: &i32;
 }
 
 @test

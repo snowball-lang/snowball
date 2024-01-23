@@ -15,11 +15,14 @@ namespace fs = std::filesystem;
 #ifndef __SNOWBALL_COMPILER_H_
 #define __SNOWBALL_COMPILER_H_
 
+// It is important that the passes are pointers initialized with "new" and not
+// just objects. This is because c++ messes up virtual functions when using
+// objects. This is a known bug in c++.
 #define SNOWBALL_PASS_EXECUTION_LIST \
-  std::vector<Syntax::Analyzer> passes = { \
-    Syntax::DefiniteAssigment(srcInfo)}; \
+  std::vector<Syntax::Analyzer*> passes = { \
+    new Syntax::DefiniteAssigment(srcInfo)}; \
   for (auto pass : passes) \
-    pass.run(ast); \
+    pass->run(ast); 
 
 namespace snowball {
 

@@ -57,6 +57,19 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
     CASE(Number) : {
       auto str = p_node->getValue();
 
+      bool unsigned_ = false;
+      bool long_ = false;
+
+      if (str[0] == 'u') {
+        unsigned_ = true;
+        str = str.substr(1, str.size() - 1);
+      }
+
+      if (str[0] == 'l') {
+        long_ = true;
+        str = str.substr(1, str.size() - 1);
+      }
+
       snowball_int_t n = 0;
       if (utils::startsWith(str, "0x") || utils::startsWith(str, "0X")) {
         n = std::stoll(str, nullptr, 16);
@@ -66,11 +79,23 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
         n = std::stoul(str.substr(2, (size_t) (str.size() - 2)), nullptr, 8);
       } else {
         // TODO: big numbers!
-        n = std::stoll(str); // We asume the number is correct
+        n = std::stoull(str);
       }
 
       value = getBuilder().createNumberValue(p_node->getDBGInfo(), n);
-      getBuilder().setType(value, ctx->getInt32Type());
+      if (unsigned_) {
+        if (long_) {
+          value->setType(ctx->getUIntType(64));
+        } else {
+          value->setType(ctx->getUIntType(32));
+        }
+      } else {
+        if (long_) {
+          value->setType(ctx->getInt64Type());
+        } else {
+          value->setType(ctx->getInt32Type());
+        }
+      }
       break;
     }
 

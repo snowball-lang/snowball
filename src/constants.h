@@ -74,17 +74,15 @@ extern "C" {
   (".sn" PATH_SEPARATOR "bin" PATH_SEPARATOR + (os::Driver::getOutputFilename(x, t, s)))
 
 #ifndef _SNOWBALL_ENABLE_INT64
-#define _SNOWBALL_ENABLE_INT64                                                                                         \
-  0 // if 1 enable snowball_int_t to be a 64bit int (instead of a                        \
-				// 32bit int)
+#define _SNOWBALL_ENABLE_INT64 1
 #endif
 
 #if _SNOWBALL_ENABLE_INT64
-typedef int64_t snowball_int_t;
+typedef uint64_t snowball_int_t;
 #define _SNOWBALL_INT_MAX 9223372036854775807
 #define _SNOWBALL_INT_MIN (-_SNOWBALL_INT_MAX - 1LL)
 #else
-typedef int32_t snowball_int_t;
+typedef uint32_t snowball_int_t;
 #define _SNOWBALL_INT_MAX 2147483647
 #define _SNOWBALL_INT_MIN -2147483648
 #endif
