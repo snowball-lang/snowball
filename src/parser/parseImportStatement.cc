@@ -58,7 +58,6 @@ Syntax::Statement::ImportStmt* Parser::parseImportStatement() {
         }
 
         consume<TokenType::BRACKET_RCURLY>("'}'");
-        createError<TODO>("variable imports");
         break;
       } else {
         prev();

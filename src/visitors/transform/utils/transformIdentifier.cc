@@ -46,6 +46,21 @@ Transformer::StoreType Transformer::getFromIdentifier(
                .help = "If you want to use a macro as a value, you can use the '@' symbol before \nand "
                        "identifier to use a function-like macro."}
       );
+    } else if (item->isAlias()) {
+      if (auto x = utils::cast<Expression::Index>(item->getASTAlias())) {
+        if (generics.size() > 0) {
+          auto clone = N<Expression::Index>(*x);
+          clone->unsafeSetidentifier(N<Expression::GenericIdentifier>(clone->getIdentifier()->getIdentifier(), generics));
+          x = clone;
+        }
+        auto [r, _] = getFromIndex(x->getDBGInfo(), x, x->isStatic);
+        auto [val, ty, funcs, overloads, mod, _canPrivate] = r;
+        return {val, ty, funcs, overloads, mod};
+      } else if (auto x = utils::cast<Expression::Identifier>(item->getASTAlias())) {
+        return getFromIdentifier(dbgInfo, x->getIdentifier(), generics, p_uuid);
+      } else {
+        assert(false && "BUG: Unhandled alias type!");
+      }
     } else {
       assert(false && "BUG: Unhandled value type!");
     }

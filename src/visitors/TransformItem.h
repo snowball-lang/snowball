@@ -18,13 +18,11 @@ namespace transform {
 // from the stack. It can either represent a
 // value, a function or a type.
 class Item : public DBGObject {
-  // Using a type definition incase we need to
-  // change it.
   using ValuePtr = std::shared_ptr<ir::Value>;
   using FunctionPtr = std::shared_ptr<ir::Func>;
   using TypePtr = types::Type*;
-
   using MacroPtr = MacroInstance*;
+  using ASTAlias = Node*;
 
   // This value is the actual value gotten from
   // the stack.
@@ -75,6 +73,10 @@ class Item : public DBGObject {
   // be either user-defined or it can be imported from
   // another file.
   MacroPtr macro = nullptr;
+  // AST Alias stored inside this item. The alias can
+  // be either user-defined or it can be imported from
+  // another file.
+  ASTAlias astAlias = nullptr;
 
 public:
   // The type used to represent what this
@@ -85,7 +87,8 @@ public:
     FUNC,
     VALUE,
     MODULE,
-    MACRO
+    MACRO,
+    AST_ALIAS,
   } type;
 
   // Constructors and destructors for the
@@ -97,6 +100,7 @@ public:
   Item(std::shared_ptr<ir::Module> m) : module(m), type(MODULE){};
   Item(TypePtr val) : type(TYPE), tyVal(val){};
   Item(MacroPtr m) : macro(m), type(MACRO){};
+  Item(ASTAlias a) : astAlias(a), type(AST_ALIAS){};
 
   // Utility functions to identify the item
   bool isType() { return type == TYPE; }
@@ -104,6 +108,7 @@ public:
   bool isVal() { return type == VALUE; }
   bool isModule() { return type == MODULE; }
   bool isMacro() { return type == MACRO; }
+  bool isAlias() { return type == AST_ALIAS; }
 
   /// @return The module stored inside this item
   auto getModule() const {
@@ -135,11 +140,11 @@ public:
     assert(type == FUNC);
     functions.push_front(fn);
   }
-
-  std::string toString() { /*TODO:*/
-    assert(false);
-    return "<TODO: transform item name>";
-  };
+  /// @return The AST alias stored inside this item
+  auto getASTAlias() const {
+    assert(type == AST_ALIAS);
+    return astAlias;
+  }
 };
 
 } // namespace transform

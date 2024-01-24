@@ -37,14 +37,13 @@ import pkg::time;
 
 ////import std::io::{{ println }};
 
-import std::io;
 import std::opt;
 import std::tuples;
 import std::env as os_env;
 
 import std::rand as random;
 
-//import std::io::{ println };
+import std::io::{ println };
 
 //import std::json as std_json;
 
@@ -55,5 +54,5 @@ public func main() i32 {
     //vec.push(false);
     //io::println(std_json::serialize(vec));
     let a = (-10.0);
-    io::println(a as f64);
+    println(a as f64);
 }

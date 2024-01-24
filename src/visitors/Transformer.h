@@ -337,6 +337,13 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    */
   std::string getBuiltinTypeUUID(types::Type* ty, const std::string& name, types::Type* original = nullptr);
   /**
+   * @brief It creates AST aliases for imported modules.
+   * @param mod The module to create the aliases from.
+   * @param import The import statement to create the aliases from.
+   * @param exportName The name to export the module as.
+   */
+  void createModuleAliases(std::shared_ptr<ir::Module> mod, Statement::ImportStmt* import, const std::string& exportName);
+  /**
    * @brief It generates a a new types::Type instance from a
    * Statement::Base pointer.
    *

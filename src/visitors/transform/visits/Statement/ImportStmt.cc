@@ -113,6 +113,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     ctx->addItem(exportName, item);
     importedModule = mod;
   }
+  createModuleAliases(importedModule, p_node, exportName);
 
   if (p_node->hasAttribute(Attributes::MACROS)) {
     auto args = p_node->getAttributeArgs(Attributes::MACROS);

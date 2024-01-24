@@ -346,6 +346,9 @@ public:
   auto getBase() { return base; }
   /// @return Get respective base value
   auto getIdentifier() { return identifier; }
+  /// @brief Set a new identifier to the index
+  /// @note This shoudn't be used unless you know what you're doing
+  void unsafeSetidentifier(Identifier* id) { identifier = id; }
 
   ACCEPT()
 };
