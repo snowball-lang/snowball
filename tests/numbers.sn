@@ -26,10 +26,6 @@ func to_string() i32 {
     assert!((1 as i32).to_string() == "1")
     assert!((1 as i16).to_string() == "1")
     assert!((1 as i8).to_string() == "1")
-    // TODO: floats
-    //assert!((1 as f64).to_string() == "1.000000")
-    //assert!((1 as f32).to_string() == "1.000000")
-    
     assert!((-1 as i64).to_string() == "-1")
     assert!((-1 as i32).to_string() == "-1")
     assert!((-1 as i16).to_string() == "-1")

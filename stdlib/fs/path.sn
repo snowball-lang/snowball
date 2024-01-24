@@ -1,8 +1,6 @@
 import std::env;
 import std::c_bindings;
 
-// TODO: support all platforms
-
 @cfg(target_os="windows")  
 @export
 macro PATH_SEPARATOR() = "\\";

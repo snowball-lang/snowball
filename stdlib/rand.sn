@@ -2,33 +2,59 @@
 import std::ptr;
 import std::c_bindings;
 
+/**
+ * @brief A class representing a generic random number generator.
+ *        Provides a virtual method `rand_int` for generating random unsigned 64-bit integers.
+ * TODO: make it abstract once abstract classes are implemented
+ */
 public class RandomGenerator {
-  public:
-    RandomGenerator() {}
-    virtual func rand_int() u64 {}
+  /**
+   * @brief Default constructor for the `RandomGenerator` class.
+   */
+  public: RandomGenerator() {}
+  /**
+   * @brief Generates a random unsigned 64-bit integer.
+   * @return A random unsigned 64-bit integer.
+   */
+  virtual func rand_int() u64 {}
 }
-
+/**
+ * @brief A class extending `RandomGenerator` and implementing the linear congruential generator (LCG) algorithm.
+ *        The LCG algorithm is used to generate random unsigned 64-bit integers.
+ * TODO: make it final once final classes are implemented
+ */
 public class DefaultRNG extends RandomGenerator {
-  private:
-    let mut seed: u64 = 0;
-  public: 
-    DefaultRNG() : super() {}
-    
-    @inline
-    override virtual mut func rand_int() u64 {
-      // We use the linear congruential generator (LCG) algorithm.
-      if self.seed == 0 {
-        unsafe {
-          self.seed = c_bindings::time(ptr::null_ptr<?i32>()) as u64;
-        }
+  /**
+   * The seed value used in the LCG algorithm.
+   */
+  let mut seed: u64 = 0;
+  /**
+   * @brief Default constructor for the `DefaultRNG` class.
+   * @remark The constructor initializes the seed to 0.
+   */
+public: DefaultRNG() : super() {}
+  /**
+   * @brief Generates a random unsigned 64-bit integer using the linear congruential generator (LCG) algorithm.
+   * @return A random unsigned 64-bit integer.
+   * @remark If the seed is 0, it initializes the seed using the current time.
+   */
+  @inline
+  override virtual mut func rand_int() u64 {
+    // We use the linear congruential generator (LCG) algorithm.
+    if self.seed == 0 {
+      unsafe {
+        self.seed = c_bindings::time(ptr::null_ptr<?i32>()) as u64;
       }
-      self.seed = (self.seed * 1103515245U + 12345U) & 0x7fffffffU;
-      return self.seed;
     }
+    // LCG algorithm for generating random unsigned 64-bit integers.
+    self.seed = (self.seed * 1103515245U + 12345U) & 0x7fffffffU;
+    return self.seed;
+  }
 }
-
+/**
+ * Global variable representing the default random number generator.
+ */
 let mut _global_rng: RandomGenerator = new DefaultRNG() as RandomGenerator;
-
 /**
  * @brief It generates a random number between 0 and RAND_MAX.
  * @return A random number between 0 and RAND_MAX.

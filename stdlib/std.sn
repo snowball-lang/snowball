@@ -758,7 +758,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
         // If the index is greater than or equal to the length of the string view,
         // we throw an IndexError. We make sure we don't overflow.
         // todo: add a better error message
-        throw new IndexError("Index out of bounds.");
+        throw new IndexError("Index out of bounds!");
       }
       // safety: we are praying to the gods that the buffer is not null.
       //  if the buffer is null, we are in trouble. It should never be null.
@@ -787,7 +787,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
         return self.substr((range.begin())..(self.length + range.stop()));
       } else if (range.stop() > self.length) || (range.begin() > self.length) {
         // TODO: add a better error message
-        throw new IndexError("Index out of bounds.");
+        throw new IndexError("Index out of bounds!");
       }
       // safety: we make sure the buffer is not null. Unless explicitly trying to make us look bad.
       //  or something whent wrong on the C side. But unless that happens, the buffer should never be null.

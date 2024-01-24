@@ -51,7 +51,6 @@ const DEC_DIGITS_LUT: *const u8 = b"\
 class extends IntegerImpl {  
   public:
     func to_string(self: IntegerType) String {
-      // TODO: float impl
       // TODO: static assert sizeof is larger than 2
       
       // Copy the number value to a local variable, so we can modify it.
