@@ -2,7 +2,6 @@ import std::fs::path;
 import std::c_bindings;
 import std::env;
 import std::ptr;
-import std::io;
 
 /**
  * An error thrown when a mode is invalid.

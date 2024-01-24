@@ -1,6 +1,7 @@
 import std::internal::preload;
 import std::c_bindings;
 import std::ptr;
+import std::intrinsics;
 
 type usize = u64; // TODO: make this 32 bit dependent on the target
 type isize = i64; // TODO: make this 32 bit dependent on the target
@@ -949,8 +950,8 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       unsafe {
         let sum = len1 + len2;
         let buffer = c_bindings::malloc(sum) as StringType;
-        c_bindings::memcpy(buffer, str1, len1);
-        c_bindings::memcpy(buffer + len1, str2, len2);
+        intrinsics::memcpy(buffer, str1, len1);
+        intrinsics::memcpy(buffer + len1, str2, len2);
         return buffer;
       }
     }

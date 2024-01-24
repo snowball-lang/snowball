@@ -1,4 +1,6 @@
 
+// NOTE: Most of these functions are exported with "sn." prefix to avoid name conflicts with C's standard library.
+
 /**
  * Copies the value from `src` to `dest`.
  * @param src - pointer to the source value
@@ -7,3 +9,33 @@
  */
 @intrinsic
 public external func write_via_move<T: Sized>(ptr: *mut T, value: T);
+/**
+ * @brief An utility function to copy a value from a given pointer to another pointer.
+ * @tparam T - type of the value
+ * @param src - pointer to copy the value from
+ * @param dest - pointer to the destination value
+ * @param count - number of elements to copy
+ * @note This function could be used instead of C's `memcpy` function.
+ */
+@intrinsic
+public external func "sn.memcpy" as memcpy<T: Sized>(dest: *mut T, src: *const T, count: i32);
+/**
+ * @brief An utility function to move a value from a given pointer to another pointer.
+ * @tparam T - type of the value
+ * @param src - pointer to move the value from
+ * @param dest - pointer to the destination value
+ * @param count - number of elements to move
+ * @note This function could be used instead of C's `memmove` function.
+ */
+@intrinsic
+public external func "sn.memmove" as memmove<T: Sized>(dest: *mut T, src: *const T, count: i32);
+/**
+ * @brief An utility function to set a value to a given pointer.
+ * @tparam T - type of the value
+ * @param dest - pointer to set the value to
+ * @param value - value to be set
+ * @param count - number of elements to set
+ * @note This function could be used instead of C's `memset` function.
+ */
+@intrinsic 
+public external func "sn.memset" as memset<T: Sized>(dest: *mut T, value: T, count: i32);

@@ -299,3 +299,9 @@ public external unsafe func strerror(i32) *const c_char;
  * @note(1) The error number is stored in the global variable errno.
  */
 public external unsafe func "sn.runtime.errno" as errno() i32; 
+
+// MARK: External constants
+
+external const stdin: *const void;
+external const stdout: *const void;
+external const stderr: *const void;

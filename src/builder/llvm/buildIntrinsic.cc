@@ -28,7 +28,31 @@ bool LLVMBuilder::buildIntrinsic(ir::Call* call) {
         
         //auto load = builder->CreateLoad(value->getType()->getPointerTo(), ptr);
         builder->CreateStore(value, ptr);
-    } else assert(false);
+    } else if (name == "sn.memcpy") {
+        assert(args.size() == 3);
+        
+        auto dest = expr(args[0].get());
+        auto src = expr(args[1].get());
+        auto count = expr(args[2].get());
+        
+        builder->CreateMemCpy(dest, llvm::MaybeAlign(1), src, llvm::MaybeAlign(1), count);
+    } else if (name == "sn.memmove") {
+        assert(args.size() == 3);
+        
+        auto dest = expr(args[0].get());
+        auto src = expr(args[1].get());
+        auto count = expr(args[2].get());
+        
+        builder->CreateMemMove(dest, llvm::MaybeAlign(1), src, llvm::MaybeAlign(1), count);
+    } else if (name == "sn.memset") {
+        assert(args.size() == 3);
+
+        auto dest = expr(args[0].get());
+        auto value = expr(args[1].get());
+        auto count = expr(args[2].get());
+
+        builder->CreateMemSet(dest, value, count, llvm::MaybeAlign(1));
+    } else Syntax::E<BUG>(call, FMT("unknown intrinsic: %s", name.c_str()));
 
     return true;
 }

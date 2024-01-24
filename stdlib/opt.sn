@@ -35,7 +35,7 @@ public enum Option<T> {
    * The `None` variant represents an empty `Option`. It is used to indicate that the `Option` does
    * not contain a value and is empty.
    */
-  None,
+  None
 }
 /**
  * @brief A class extending the `Option` type, representing an optional value.

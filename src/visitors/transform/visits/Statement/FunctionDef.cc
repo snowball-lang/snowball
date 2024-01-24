@@ -77,15 +77,33 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
     //  Check if the function requirements match the main function
     auto uuid = ctx->createIdentifierName(name);
     // TODO: check for already existing functions (for no mangled versions)
-    if (p_node->hasAttribute(Attributes::NO_MANGLE) || p_node->hasAttribute(Attributes::EXPORT) || p_node->isExtern()) {
+    if ((p_node->hasAttribute(Attributes::NO_MANGLE) || p_node->hasAttribute(Attributes::EXPORT) || p_node->isExtern()) && !p_node->hasAttribute(Attributes::INTRINSIC)) {
+      if (p_node->isGeneric()) {
+        E<SYNTAX_ERROR>(p_node, "Generic functions cannot be exported!", {
+          .info = "Generic functions cannot be exported!",
+          .note = "Generic functions are not allowed to be exported because they\nare "
+                  "not allowed to be "
+                  "overloaded. This is because the virtual\nfunction table is "
+                  "generated at compile time "
+                  "and\ncannot be changed at runtime.\n\n"
+                  "read more:\n - 'https://stackoverflow.com/questions/2354210/can-a-class-member-function-template-be-virtual'",
+          .help = "Try removing the 'export' or the 'generic' attribute."
+        });
+      }
+
       const auto attrArgs = p_node->getAttributeArgs(Attributes::EXPORT);
+      auto exportedName = name;
       auto exportName = attrArgs.find("name");
-      if (exportName != attrArgs.end()) { name = exportName->second; }
+      if (exportName != attrArgs.end()) { exportedName = exportName->second; }
+
+      if (auto e = utils::cast<Statement::ExternFnDef>(p_node); e != nullptr) {
+        exportedName = e->getExternalName();
+      }
 
       if (std::find(ctx->exported.begin(), ctx->exported.end(), name) != ctx->exported.end()) {
         E<VARIABLE_ERROR>(
                 p_node->getDBGInfo(),
-                "Unmangled export already exists!",
+                FMT("Function '%s' is already exported as unmangled!", exportedName.c_str()),
                 {.info = "This function name is already exported as unmangled.",
                  .note = "This symbols is exported on another location with the "
                          "'no_mangle' or 'export' attribute.",

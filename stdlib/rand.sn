@@ -1,7 +1,6 @@
 
 import std::ptr;
 import std::c_bindings;
-import std::io;
 
 public class RandomGenerator {
   public:
