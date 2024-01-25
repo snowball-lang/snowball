@@ -1,5 +1,5 @@
 import std::fs::path;
-import std::c_bindings;
+import std::clib;
 import std::env;
 import std::ptr;
 
@@ -76,9 +76,9 @@ public class File implements ToString, Debug {
     }
     // safety: we are using the C bindings, so we need to be careful.
     unsafe {
-      let cfile = c_bindings::files::fopen(self.path.to_string().c_str(), mode.c_str());
+      let cfile = clib::files::fopen(self.path.to_string().c_str(), mode.c_str());
       if cfile.is_null() {
-        throw new FileOpenError("Failed to open or create file (" + self.path.to_string() + "): " + env::posix_get_error_msg(c_bindings::errno()));
+        throw new FileOpenError("Failed to open or create file (" + self.path.to_string() + "): " + env::posix_get_error_msg(clib::errno()));
       }
       self.open = true;
       self.file = cfile;
@@ -96,9 +96,9 @@ public class File implements ToString, Debug {
     }
     // safety: we are using the C bindings, so we need to be careful.
     unsafe {
-      let result = c_bindings::files::fclose(self.file);
+      let result = clib::files::fclose(self.file);
       if result != 0 {
-        throw new FileOpenError("Failed to close file (" + self.path.to_string() + "): " + env::posix_get_error_msg(c_bindings::errno()));
+        throw new FileOpenError("Failed to close file (" + self.path.to_string() + "): " + env::posix_get_error_msg(clib::errno()));
       }
       self.open = false;
       self.file = zero_initialized!(:*const void);
@@ -113,14 +113,14 @@ public class File implements ToString, Debug {
     self.assert_open();
     // safety: we are using the C bindings, so we need to be careful.
     unsafe {
-      c_bindings::files::fseek(self.file, 0, /*SEEK_END*/2);
-      let size = c_bindings::files::ftell(self.file);
-      c_bindings::files::fseek(self.file, 0, /*SEEK_SET*/0);
+      clib::files::fseek(self.file, 0, /*SEEK_END*/2);
+      let size = clib::files::ftell(self.file);
+      clib::files::fseek(self.file, 0, /*SEEK_SET*/0);
       unsafe {
-        let data = c_bindings::malloc(16*size);
-        let result = c_bindings::files::fread(data, 1, size, self.file);
+        let data = clib::malloc(16*size);
+        let result = clib::files::fread(data, 1, size, self.file);
         if result != size {
-          throw new FileOpenError("Failed to read from file (" + self.path.to_string() + "): " + env::posix_get_error_msg(c_bindings::errno()));
+          throw new FileOpenError("Failed to read from file (" + self.path.to_string() + "): " + env::posix_get_error_msg(clib::errno()));
         }
         let str = String::from(data, result);
         //ptr::Allocator<?u8>::free(data);
@@ -137,9 +137,9 @@ public class File implements ToString, Debug {
     self.assert_open();
     // safety: we are using the C bindings, so we need to be careful.
     unsafe {
-      let result = c_bindings::files::fwrite(data.c_str(), 1, data.size(), self.file);
+      let result = clib::files::fwrite(data.c_str(), 1, data.size(), self.file);
       if result != data.size() {
-        throw new FileOpenError("Failed to write to file (" + self.path.to_string() + "): " + env::posix_get_error_msg(c_bindings::errno()));
+        throw new FileOpenError("Failed to write to file (" + self.path.to_string() + "): " + env::posix_get_error_msg(clib::errno()));
       }
     }
     return true;

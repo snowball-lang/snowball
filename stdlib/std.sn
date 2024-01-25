@@ -1,5 +1,5 @@
 import std::internal::preload;
-import std::c_bindings;
+import std::clib;
 import std::ptr;
 import std::intrinsics;
 
@@ -931,7 +931,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       if buffer.is_null() {
         return "";
       }
-      return new Self(buffer, c_bindings::c_string::strlen(buffer));
+      return new Self(buffer, clib::c_string::strlen(buffer));
     }
 
   // Internal exports
@@ -949,7 +949,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       // safety: we make sure the buffer is not null.
       unsafe {
         let sum = len1 + len2;
-        let buffer = c_bindings::malloc(sum) as StringType;
+        let buffer = clib::malloc(sum) as StringType;
         intrinsics::memcpy(buffer, str1, len1);
         intrinsics::memcpy(buffer + len1, str2, len2);
         return buffer;
@@ -968,7 +968,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       }
       // safety: we make sure the buffer is not null.
       unsafe {
-        self.buffer = c_bindings::malloc(length) as StringType;
+        self.buffer = clib::malloc(length) as StringType;
         ptr::copy_nonoverlapping(buffer, self.buffer, length);
       }
     }
@@ -1019,7 +1019,7 @@ static unsafe func execute_tests(
   // note: This depends on the total number of tests, so we make sure we don't overflow.
   let indexStr = index.to_string().rjust(total.to_string().size(), '0').c_str();
   // safety: we use printf here, so we make sure the name is null-terminated.
-  c_bindings::printf(b" Testing \e[1m%-44s\e[0m [(%s\e[0;30m/%i\e[0m) %s]\t... ", name, indexStr, total, expectStr);
+  clib::printf(b" Testing \e[1m%-44s\e[0m [(%s\e[0;30m/%i\e[0m) %s]\t... ", name, indexStr, total, expectStr);
   if !skip {
     try {
       // note: The compiler makes sure the function is not null and that it follows the correct signature.
@@ -1029,16 +1029,16 @@ static unsafe func execute_tests(
       // We check if the result is equal to the expected result.
       if result == expect {
         // If the result is equal to the expected result, we print "nice!".
-        c_bindings::printf(b"\e[1;32mnice!\e[0m\n");
+        clib::printf(b"\e[1;32mnice!\e[0m\n");
       } else {
         // If the result is not equal to the expected result, we print "error".
         // we also print the expected result and the actual result. Again, we use
         // printf, so we make sure the expected result is null-terminated.
         // There hasn't been a case where the expected result is not null-terminated,
         // but we make sure just in case.
-        c_bindings::printf(b"\e[1;31merror \n");
-        c_bindings::printf(b"\n\tExpected result\e[0m: \e[1;32m%i\e[1;31m\n", expect);
-        c_bindings::printf(b"\tActual result\e[0m: \e[1;31m%i\e[0m\n\n", result);
+        clib::printf(b"\e[1;31merror \n");
+        clib::printf(b"\n\tExpected result\e[0m: \e[1;32m%i\e[1;31m\n", expect);
+        clib::printf(b"\tActual result\e[0m: \e[1;31m%i\e[0m\n\n", result);
         // We return 0 to indicate that the test failed. We don't return 1 because
         // that's just not how the compiler will handle it. The compiler will return
         // 1 if the test succeeds, and 0 if it fails. So we return 0 if the test fails.
@@ -1047,14 +1047,14 @@ static unsafe func execute_tests(
     } catch (e: Exception) {
       // We catch any exceptions thrown by the test and print "error".
       // We also print the exception message. 
-      c_bindings::printf(b"\e[1;31merror \n");
-      c_bindings::printf(b"\n ------- %s failure -------\n", name);
-      c_bindings::printf(b"\n  Failed with: \e[1m%s\e[0m\n", e.what().c_str());
-      c_bindings::printf(b"\e[0m\n");
+      clib::printf(b"\e[1;31merror \n");
+      clib::printf(b"\n ------- %s failure -------\n", name);
+      clib::printf(b"\n  Failed with: \e[1m%s\e[0m\n", e.what().c_str());
+      clib::printf(b"\e[0m\n");
       return false;
     }
   } else {
-    c_bindings::printf(b"\e[1;33mwip\e[0m\n");
+    clib::printf(b"\e[1;33mwip\e[0m\n");
   }
   // We return 1 to indicate that the test succeeded.
   return true;
@@ -1073,9 +1073,9 @@ func snowball_bench(
   for i in 0..size {
     unsafe {
       let fn = functions[i] as *const void as func () => i32;
-      let start = c_bindings::time(ptr::null_ptr<?i32>());
+      let start = clib::time(ptr::null_ptr<?i32>());
       fn();
-      let end = c_bindings::time(ptr::null_ptr<?i32>());
+      let end = clib::time(ptr::null_ptr<?i32>());
       // unix time to ms
       let result = (end - start) * 1000;
       results.push(result);
@@ -1112,7 +1112,7 @@ func snowball_bench(
       divider = 1000;
     }
     unsafe {
-      c_bindings::printf(b" \e[1m%s\e[0m: %s%i%s\e[0m\n", name, color.c_str(), result / divider, unit.c_str());
+      clib::printf(b" \e[1m%s\e[0m: %s%i%s\e[0m\n", name, color.c_str(), result / divider, unit.c_str());
     }
   }
 
@@ -1121,26 +1121,26 @@ func snowball_bench(
   let mut divider = 1;
 
   unsafe {
-    c_bindings::printf(b"\n\e[1mBenchmark results:\e[0m\n");
+    clib::printf(b"\n\e[1mBenchmark results:\e[0m\n");
     if min >= 1000 {
       unit = "s";
       divider = 1000;
       min = min / divider;
     }
-    c_bindings::printf(b" \e[1;32mmin\e[0m: \e[1m%d%s\e[0m\n", min, unit.c_str());
+    clib::printf(b" \e[1;32mmin\e[0m: \e[1m%d%s\e[0m\n", min, unit.c_str());
     if max >= 1000 {
       unit = "s";
       divider = 1000;
       max = max / divider;
     } else unit = "ms";
-    c_bindings::printf(b" \e[1;31mmax\e[0m: \e[1m%d%s\e[0m\n", max, unit.c_str());
+    clib::printf(b" \e[1;31mmax\e[0m: \e[1m%d%s\e[0m\n", max, unit.c_str());
     if avg >= 1000.0 {
       unit = "s";
       divider = 1000;
       avg = avg;
     } else unit = "ms";
   // TODO:
-  //  c_bindings::printf(b" \e[1mavg\e[0m: \e[1m%d%s\e[0m\n", avg, unit.c_str());
+  //  clib::printf(b" \e[1mavg\e[0m: \e[1m%d%s\e[0m\n", avg, unit.c_str());
   }
 }
 

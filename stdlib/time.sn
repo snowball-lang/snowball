@@ -1,6 +1,6 @@
 
 import std::ptr;
-import std::c_bindings;
+import std::clib;
 
 /**
  * @brief It returns the current time of the system as the number of seconds
@@ -8,8 +8,8 @@ import std::c_bindings;
  * @return The current time of the system as the number of seconds since the
 */
 @inline
-public func time() i64 {
+public func clock() u64 {
   unsafe {
-    return c_bindings::time(ptr::null_ptr<?i32>()) as i64;
+    return clib::time(ptr::null_ptr<?i32>()) as u64;
   }
 }

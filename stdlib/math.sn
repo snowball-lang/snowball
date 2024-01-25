@@ -1,4 +1,4 @@
-import std::c_bindings;
+import std::clib;
 import std::ptr;
 /**
  * @brief It performs the square root of a given floating-point number.

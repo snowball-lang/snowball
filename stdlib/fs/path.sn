@@ -1,5 +1,5 @@
 import std::env;
-import std::c_bindings;
+import std::clib;
 
 @cfg(target_os="windows")  
 @export
@@ -167,9 +167,9 @@ public class Path implements ToString, Iterable<String> {
       }
       let path = (#PATH_SEPARATOR).join(copy);
       unsafe {
-        let err = c_bindings::files::remove(path.c_str());
+        let err = clib::files::remove(path.c_str());
         if err != 0 {
-          throw new PathError("Coudn't remove path (" + path + "): " + env::posix_get_error_msg(c_bindings::errno()));
+          throw new PathError("Coudn't remove path (" + path + "): " + env::posix_get_error_msg(clib::errno()));
         }
       }
       return true;
@@ -197,7 +197,7 @@ public class Path implements ToString, Iterable<String> {
       }
       let path = (#PATH_SEPARATOR).join(copy);
       unsafe {
-        let err = c_bindings::files::access(path.c_str(), 0);
+        let err = clib::files::access(path.c_str(), 0);
         return err == 0;
       }
     }

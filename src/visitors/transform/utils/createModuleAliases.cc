@@ -18,6 +18,9 @@ void Transformer::createModuleAliases(std::shared_ptr<ir::Module> mod, Statement
     auto moduleIndex = N<Expression::Index>(baseIdentifier, aliasIdentifier, true);
     moduleIndex->setDBGInfo(import->getDBGInfo());
     auto item = std::make_shared<transform::Item>(moduleIndex);
+    if (ctx->getItem(identifier).second) {
+      E<VARIABLE_ERROR>(import, "Variable with name '" + identifier + "' already exists");
+    }
     ctx->addItem(identifier, item);
   }
 }

@@ -1,4 +1,4 @@
-import std::c_bindings;
+import std::clib;
 import std::intrinsics;
 
 /**
@@ -73,7 +73,7 @@ public class Allocator<T: Sized> {
     @inline
     static func alloc(size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(c_bindings::malloc(Self::size_of<?T>(size)));
+        return new NonNull<T>(clib::malloc(Self::size_of<?T>(size)));
       }
     }
     /**
@@ -84,7 +84,7 @@ public class Allocator<T: Sized> {
     @inline
     static func alloc_zeroed(size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(c_bindings::calloc(Self::size_of<?T>(size), 0));
+        return new NonNull<T>(clib::calloc(Self::size_of<?T>(size), 0));
       }
     }
     /**
@@ -96,7 +96,7 @@ public class Allocator<T: Sized> {
     @inline
     static func realloc(ptr: NonNull<T>, size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(c_bindings::realloc(ptr.ptr(), Self::size_of<?T>(size)));
+        return new NonNull<T>(clib::realloc(ptr.ptr(), Self::size_of<?T>(size)));
       }
     }
     /**
@@ -105,7 +105,7 @@ public class Allocator<T: Sized> {
      */
     @inline
     static func free(ptr: NonNull<T>) {
-      unsafe { c_bindings::free(ptr.ptr()); }
+      unsafe { clib::free(ptr.ptr()); }
     }
     /**
      * @brief It calculates the size of a memory block.

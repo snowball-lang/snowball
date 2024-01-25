@@ -1,5 +1,5 @@
 import std::io;
-import std::c_bindings;
+import std::clib;
 
 namespace tests {
 

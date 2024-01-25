@@ -1,6 +1,6 @@
 
 import std::ptr;
-import std::c_bindings;
+import std::time::{clock};
 
 /**
  * @brief A class representing a generic random number generator.
@@ -43,7 +43,7 @@ public: DefaultRNG() : super() {}
     // We use the linear congruential generator (LCG) algorithm.
     if self.seed == 0 {
       unsafe {
-        self.seed = c_bindings::time(ptr::null_ptr<?i32>()) as u64;
+        self.seed = clock();
       }
     }
     // LCG algorithm for generating random unsigned 64-bit integers.
