@@ -56,7 +56,7 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
       auto successBlock = llvm::BasicBlock::Create(builder->getContext(), "success", mainFunction);
       auto failBlock = llvm::BasicBlock::Create(builder->getContext(), "fail", mainFunction);
       auto continueBlock = llvm::BasicBlock::Create(builder->getContext(), "continue", mainFunction);
-      builder->CreateCondBr(shouldContinue, successBlock, failBlock);
+      createCondBr(shouldContinue, successBlock, failBlock);
 
       builder->SetInsertPoint(successBlock);
       builder->CreateStore(

@@ -420,9 +420,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
      * @param[in] capacity The new capacity of the vector.
      */
     mut func resize() { 
-      // we make sure we dont overflow
       if self.capacity == 0 { self.reserve(1); }
-      // Give it a chance before doubling the capacity
       else if self.capacity == 1 { self.reserve(4) }
       // We increase the capacity of the vector by doubling it.
       // Once we are past 4, we increase the capacity by 1.5x. 
@@ -464,8 +462,6 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
         // We make sure we don't overflow.
         return self.at(self.length + index);
       } else if index >= self.length {
-        // If the index is greater than or equal to the length of the vector,
-        // we throw an IndexError. We make sure we don't overflow.
         throw new IndexError("Index out of bounds.");
       }
       // safety: we make sure the buffer is not null. If the length != 0
@@ -487,17 +483,12 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
      */
     @inline
     mut func insert(index: isize, value: T) {
-      // If the value is greater than or equal to the length of the vector,
-      // we push the value to the back of the vector.
       if index >= self.length {
         self.push(value);
         return;
       }
-      // Copy the element at the specified index to a temporary variable.
       let cur = self[index];
-      // Set the element at the specified index to the value.
       self[index] = value;
-      // We push the temporary variable to the back of the vector.
       self.insert(index + 1, cur);
     }
     /**
@@ -511,14 +502,9 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
       // todo: write a `where` statement to the function to make sure
       //  T implements the `to_string` method.
       let mut result = "[";
-      // C-style for loop since it's faster than iterator loops.
       for let mut i = 0; i < self.length; i = i+1 {
-        // We append the string representation of the element to the result.
-        // note: We don't call to_string here, let StringView do the job.
         result = result + String::from(self[i]);
-        // If we are not at the end of the vector, we append a comma.
         if i != self.length - 1 {
-          // We append a comma.
           result = result + ", ";
         }
       }
@@ -569,10 +555,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
      * @return The next element in the iteration.
      */
     virtual mut func next() Iter<T> {
-      // Increment the iterator index.
       self.iter_index = self.iter_index + 1;
-      // If the iterator index is greater than or equal to the end of the vector,
-      // return an invalid iterator.
       if self.iter_index >= self.size() {
         return Iter<?T>::invalid();
       }
@@ -584,6 +567,20 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
      */
     @inline
     override virtual mut func reset() { self.iter_index = -1; }
+    /**
+     * @brief It finds the first occurrence of an element in the vector.
+     * @param[in] value The element to find.
+     * @return The index of the first occurrence of the element, or -1 if not found.
+     */
+    @inline
+    func find<>(value: T) isize {
+      for let mut i = 0; i < self.length; i = i+1 {
+        if self[i] == value {
+          return i;
+        }
+      }
+      return -1;
+    }
 
   private:
     /** The capacity of the vector. */

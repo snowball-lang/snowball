@@ -104,7 +104,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             auto trueBlock = h.create<llvm::BasicBlock>(*context, "and.true", ctx->getCurrentFunction());
             auto continueBlock = h.create<llvm::BasicBlock>(*context, "and.cont", ctx->getCurrentFunction());
 
-            builder->CreateCondBr(left, trueBlock, continueBlock);
+            createCondBr(left, trueBlock, continueBlock);
             builder->SetInsertPoint(trueBlock);
             right = toBool(expr(args.at(1).get()), utils::cast<types::IntType>(realType)->isSigned());
             auto trueNode = builder->GetInsertBlock();
@@ -124,7 +124,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             auto trueBlock = h.create<llvm::BasicBlock>(*context, "or.true", ctx->getCurrentFunction());
             auto continueBlock = h.create<llvm::BasicBlock>(*context, "or.cont", ctx->getCurrentFunction());
 
-            builder->CreateCondBr(left, continueBlock, trueBlock);
+            createCondBr(left, continueBlock, trueBlock);
             builder->SetInsertPoint(trueBlock);
             right = toBool(expr(args.at(1).get()), utils::cast<types::IntType>(realType)->isSigned());
             auto trueNode = builder->GetInsertBlock();
@@ -194,7 +194,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             auto trueBlock = h.create<llvm::BasicBlock>(*context, "and.true", ctx->getCurrentFunction());
             auto continueBlock = h.create<llvm::BasicBlock>(*context, "and.cont", ctx->getCurrentFunction());
 
-            builder->CreateCondBr(left, trueBlock, continueBlock);
+            createCondBr(left, trueBlock, continueBlock);
             builder->SetInsertPoint(trueBlock);
             right = toBool(expr(args.at(1).get()));
             auto trueNode = builder->GetInsertBlock();
@@ -214,7 +214,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             auto trueBlock = h.create<llvm::BasicBlock>(*context, "or.true", ctx->getCurrentFunction());
             auto continueBlock = h.create<llvm::BasicBlock>(*context, "or.cont", ctx->getCurrentFunction());
 
-            builder->CreateCondBr(left, continueBlock, trueBlock);
+            createCondBr(left, continueBlock, trueBlock);
             builder->SetInsertPoint(trueBlock);
             right = toBool(expr(args.at(1).get()));
             auto trueNode = builder->GetInsertBlock();

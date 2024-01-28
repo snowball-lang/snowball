@@ -16,7 +16,7 @@ void LLVMBuilder::visit(ir::StringValue* value) {
   this->value = builder->CreateConstInBoundsGEP1_32(arr, str, 0);
 }
 
-void LLVMBuilder::visit(ir::BooleanValue* value) { this->value = builder->getInt1(value->getConstantValue()); }
+void LLVMBuilder::visit(ir::BooleanValue* value) { this->value = builder->getInt8(value->getConstantValue()); }
 
 void LLVMBuilder::visit(ir::CharValue* value) { this->value = builder->getInt8(value->getConstantValue()); }
 

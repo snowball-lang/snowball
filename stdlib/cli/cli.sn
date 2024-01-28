@@ -1,0 +1,279 @@
+
+import std::opt::{Option, none, some}
+import std::io;
+
+public class ArgumentError extends Exception {}
+
+public class Opt {
+  let mut name: String;
+  let mut description: Option<String>;
+  let mut required: bool;
+  let mut default_val: Option<String>;
+  let mut aliases: Vector<String>;
+
+  public:
+    Opt(name: String, description: String = "", required: bool = false, default_val: Option<String> = none<?String>(), aliases: Vector<String> = new Vector<String>()) {
+      self.name = name;
+      if description.empty() {
+        self.description = none<?String>();
+      } else {
+        self.description = some(description);
+      }
+      self.required = required;
+      self.default_val = default_val;
+      self.aliases = aliases;
+    }
+
+    mut func name(n: String) Self {
+      self.name = n;
+      return self;
+    }
+
+    mut func description(d: String) Self {
+      self.description = some(d);
+      return self;
+    }
+
+    mut func required(r: bool) Self {
+      self.required = r;
+      return self;
+    }
+
+    mut func default_val(d: String) Self {
+      self.default_val = some(d);
+      return self;
+    }
+
+    mut func add_alias(a: String) Self {
+      self.aliases.push(a);
+      return self;
+    }
+
+    func name() String {
+      return self.name;
+    }
+
+    func description() Option<String> {
+      return self.description;
+    }
+
+    func required() bool {
+      return self.required;
+    }
+
+    func default_val() Option<String> {
+      return self.default_val;
+    }
+
+    func aliases() Vector<String> {
+      return self.aliases;
+    }
+
+    operator func ==(other: Opt) bool {
+      return self.name == other.name;
+    }
+}
+
+public class Arg { 
+  let mut name: String;
+  let mut description: Option<String>;
+  let mut required: bool;
+  let mut default_val: Option<String>;
+
+  public:
+    Arg(name: String, description: String = "", required: bool = false) {
+      self.name = name;
+      if description.empty() {
+        self.description = none<?String>();
+      } else {
+        self.description = some(description);
+      }
+      self.required = required;
+      self.default_val = none<?String>();
+    }
+
+    mut func name(n: String) Self {
+      self.name = n;
+      return self;
+    }
+
+    mut func description(d: String) Self {
+      self.description = some(d);
+      return self;
+    }
+
+    mut func required(r: bool) Self {
+      self.required = r;
+      return self;
+    } 
+
+    mut func default_val(d: String) Self {
+      self.default_val = some(d);
+      return self;
+    }
+
+    func name() String {
+      return self.name;
+    }
+
+    func description() Option<String> {
+      return self.description;
+    }
+
+    func required() bool {
+      return self.required;
+    }
+
+    func default_val() Option<String> {
+      return self.default_val;
+    }
+
+    operator func ==(other: Arg) bool {
+      return self.name == other.name;
+    } 
+}
+
+public class Cli {
+  let name: String;
+  let mut version: Option<String>;
+  let mut description: Option<String>;
+  let mut author: Option<String>;
+  let mut license: Option<String>;
+  let mut repository: Option<String>;
+  let mut options: Vector<Opt>;
+  let mut args: Vector<Arg>;
+
+ public:
+  Cli(name: String, version: String = "") : name(name) {
+    self.version = none<?String>();
+    if version.empty() {
+      self.version = none<?String>();
+    } else {
+      self.version = some(version);
+    }
+    self.author = none<?String>();
+    self.license = none<?String>();
+    self.repository = none<?String>();
+    self.options = new Vector<Opt>();
+    self.args = new Vector<Arg>();
+    self.description = none<?String>();
+    self.add_opt(new Opt("help", "Print this help message").add_alias("h"));
+  }
+
+  func version(version: String) {
+    self.version = some(version);
+  }
+
+  func description(description: String) {
+    self.description = some(description);
+  }
+
+  func author(author: String) {
+    self.author = some(author);
+  }
+
+  func license(license: String) {
+    self.license = some(license);
+  }
+
+  func repository(repository: String) {
+    self.repository = some(repository);
+  }
+
+  func version() Option<String> {
+    return self.version;
+  }
+
+  func description() Option<String> {
+    return self.description;
+  }
+
+  func author() Option<String> {
+    return self.author;
+  }
+
+  func license() Option<String> {
+    return self.license;
+  }
+
+  func repository() Option<String> {
+    return self.repository;
+  }
+
+  func add_opt(arg: Opt) {
+    if self.options.find(arg) != -1 {
+      throw new ArgumentError("Option " + arg.name() + " already exists");
+      return;
+    }
+    self.options.push(arg);
+  }
+
+  func add_opt(name: String, description: String = "", required: bool = false, default_val: Option<String> = none<?String>(), aliases: Vector<String> = new Vector<String>()) {
+    self.add_opt(new Opt(name, description, required, default_val, aliases));
+  }
+
+  func add_arg(arg: Arg) {
+    if self.args.find(arg) != -1 {
+      throw new ArgumentError("Argument " + arg.name() + " already exists");
+      return;
+    }
+    self.args.push(arg);
+  }
+
+  func add_arg(name: String, description: String = "", required: bool = false) {
+    self.add_arg(new Arg(name, description, required));
+  }
+
+  func print_help() {
+    io::print(self.name);
+    if self.version.is_some() {
+      io::print(" version " + self.version.unwrap_or(""));
+    }
+    if self.description.is_some() {
+      io::print("\n - " + self.description.unwrap_or(""));
+    }
+    io::println("\n");
+    io::print("USAGE: " + self.name);
+    for arg in self.args {
+      if arg.required() {
+        io::print(" <" + arg.name() + ">");
+        continue;
+      }
+      io::print(" [" + arg.name() + "]");
+    }
+    if self.options.size() > 0 {
+      io::print(" [...OPTIONS]");
+    }
+    io::println("\n");
+    if self.options.size() > 0 {
+      io::println("OPTIONS:");
+      for arg in self.options {
+        let mut arg_str = "  --" + arg.name();
+        for alias in arg.aliases() {
+          arg_str = arg_str + ", -" + alias;
+        }
+        io::print(arg_str.ljust(20));
+        if arg.description().is_some() {
+          io::print(arg.description().unwrap_or(""));
+        }
+        if arg.default_val().is_some() {
+          io::print(" (default: " + arg.default_val().unwrap_or("") + ")");
+        }
+        io::println("");
+      }
+    }
+    if self.author.is_some() {
+      io::println("AUTHOR:");
+      io::println("  " + self.author.unwrap_or(""));
+    }
+    if self.license.is_some() {
+      io::println("LICENSE:");
+      io::println("  " + self.license.unwrap_or(""));
+    }
+    if self.repository.is_some() {
+      io::println("REPOSITORY:");
+      io::println("  " + self.repository.unwrap_or(""));
+    }
+    io::println("");
+  }
+}

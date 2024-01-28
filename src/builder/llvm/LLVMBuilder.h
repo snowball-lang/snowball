@@ -321,7 +321,7 @@ private:
    * @brief Transform a built in snowball type
    * to an llvm type.
    */
-  llvm::Type* getLLVMType(types::Type* t, bool translateVoid = false);
+  llvm::Type* getLLVMType(types::Type* t, bool translateVoid = false, bool ignoreMemorySize = false);
   /**
    * @brief Fetch the C stdlib printf function
    */
@@ -329,7 +329,7 @@ private:
   /**
    * @brief A allocates a new object inside the LLVM IR code and cast
    * it into the desired type.
-   */
+   */ 
   llvm::Value* allocateObject(types::DefinedType* ty);
   /**
    * @brief It creates a new struct type and a new constant struct
@@ -347,6 +347,13 @@ private:
    * value for a virtual table for @param call
    */
   llvm::Value* createEnumInit(ir::Call* call);
+  /**
+   * @brief Create a cond branch instruction that supports memory-sized types (i8 -> i1)
+   * @param cond Condition to branch
+   * @param thenBlock Block to branch if condition is true
+   * @param elseBlock Block to branch if condition is false
+   */
+  void createCondBr(llvm::Value* cond, llvm::BasicBlock* thenBlock, llvm::BasicBlock* elseBlock);
   /**
    * @brief It creates a new enum field type
    * @param ty The enum type

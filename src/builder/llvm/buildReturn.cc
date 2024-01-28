@@ -45,11 +45,12 @@ void LLVMBuilder::visit(ir::Return* ret) {
       if (!doNotMove) {
         auto layout = module->getDataLayout().getStructLayout(
                 llvm::cast<llvm::StructType>(getLLVMType(ret->getType())));
-        builder->CreateMemMove(
-          retArg, llvm::MaybeAlign(), e, llvm::MaybeAlign(), builder->getInt64(layout->getSizeInBytes())
+        builder->CreateMemCpy(
+          retArg, llvm::MaybeAlign(1), e, llvm::MaybeAlign(1), builder->getInt64(layout->getSizeInBytes())
         );
         //builder->CreateStore(builder->CreateLoad(getLLVMType(ret->getType()), e), retArg);
       } else {
+        assert(false);
         builder->CreateUnreachable();
       }
       // auto store = builder->CreateStore(load(e, ret->getType()), retArg);

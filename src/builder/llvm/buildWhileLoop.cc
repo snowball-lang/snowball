@@ -28,7 +28,7 @@ void LLVMBuilder::visit(ir::WhileLoop* c) {
     if (!builder->GetInsertBlock()->getTerminator()) { builder->CreateBr(condBB); }
     builder->SetInsertPoint(condBB);
     auto cond = expr(c->getCondition().get());
-    builder->CreateCondBr(cond, whileBB, continueBB);
+    createCondBr(cond, whileBB, continueBB);
     builder->SetInsertPoint(continueBB);
   } else {
     if (auto x = c->getForCond()) {
@@ -43,7 +43,7 @@ void LLVMBuilder::visit(ir::WhileLoop* c) {
       auto cond = expr(c->getCondition().get());
       ctx->loop.continueBlock = forCondBB;
       
-      builder->CreateCondBr(cond, whileBB, continueBB);
+      createCondBr(cond, whileBB, continueBB);
       builder->SetInsertPoint(whileBB);
       (void) build(c->getBlock().get());
 
@@ -57,7 +57,7 @@ void LLVMBuilder::visit(ir::WhileLoop* c) {
       builder->CreateBr(condBB);
       builder->SetInsertPoint(condBB);
       auto cond = expr(c->getCondition().get());
-      builder->CreateCondBr(cond, whileBB, continueBB);
+      createCondBr(cond, whileBB, continueBB);
       builder->SetInsertPoint(whileBB);
       (void) build(c->getBlock().get());
       if (!builder->GetInsertBlock()->getTerminator()) { builder->CreateBr(condBB); }

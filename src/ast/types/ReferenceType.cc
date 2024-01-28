@@ -47,7 +47,6 @@ bool ReferenceType::canCast(Type* ty) const {
 }
 
 void ReferenceType::setMutable(bool m) {
-  base->setMutable(m);
   _mutable = m;
 }
 

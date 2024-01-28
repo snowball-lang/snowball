@@ -150,17 +150,17 @@ types::BaseType* Transformer::transformClass(
                       {.info = "The type of this variable cant be inferred!",
                         .note = "This rule only applies to variables inside classes.",
                         .help = "You cant infer the type of a variable "
-                                "without specifying it's type.\n"
+                                "without specifying its type.\n"
                                 "For example, you can't do this:\n   let a = 10\n"
                                 "You have to do this:\n   let a: i32 = 10\n"
                                 "Or this:\n   let a = 10: i32"}
               );
             auto varTy = transformSizedType(
-                    definedType, false, "Class fields must be sized but found '%s' (which is not sized)"
+              definedType, false, "Class fields must be sized but found '%s' (which is not sized)"
             );
             varTy->setMutable(v->isMutable());
             auto field = new types::DefinedType::ClassField(
-                    v->getName(), varTy, v->getPrivacy(), v->getValue(), v->isMutable()
+              v->getName(), varTy, v->getPrivacy(), v->getValue(), v->isMutable()
             );
             field->setDBGInfo(v->getDBGInfo());
             ((types::DefinedType*) transformedType)->addField(field);
@@ -178,7 +178,7 @@ types::BaseType* Transformer::transformClass(
                     {.info = "The type of this variable cant be inferred!",
                      .note = "This rule only applies to variables inside interfaces.",
                      .help = "You cant infer the type of a variable "
-                             "without specifying it's type.\n"
+                             "without specifying its type.\n"
                              "For example, you can't do this:\n   let a = 10\n"
                              "You have to do this:\n   let a: i32 = 10\n"
                              "Or this:\n   let a = 10: i32"}

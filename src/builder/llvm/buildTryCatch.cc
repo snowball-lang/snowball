@@ -112,7 +112,7 @@ void LLVMBuilder::visit(ir::TryCatch* node) {
                   unwindType, builder->CreatePointerCast(unwindException, unwindType->getPointerTo()), 0
           )
   );
-  builder->CreateCondBr(
+  createCondBr(
           builder->CreateICmpEQ(unwindExceptionClass, builder->getInt64(exception_class())),
           info.catchRouteBlock,
           externalExcBlock

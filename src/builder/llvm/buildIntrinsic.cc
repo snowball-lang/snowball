@@ -52,6 +52,10 @@ bool LLVMBuilder::buildIntrinsic(ir::Call* call) {
         auto count = expr(args[2].get());
 
         builder->CreateMemSet(dest, value, count, llvm::MaybeAlign(1));
+    } else if (name =="sn.debugbreak") {
+        assert(args.size() == 0);
+
+        builder->CreateIntrinsic(llvm::Intrinsic::debugtrap, {}, {});
     } else Syntax::E<BUG>(call, FMT("unknown intrinsic: %s", name.c_str()));
 
     return true;

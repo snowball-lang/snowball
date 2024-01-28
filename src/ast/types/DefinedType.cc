@@ -32,6 +32,7 @@ DefinedType::DefinedType(
   setPrivacy(PRIVATE);
   unsafeSetUUID(uuid);
   unsafeSetModule(module);
+  setMutable(true);
 }
 DefinedType::ClassField::ClassField(
         const std::string& name, Type* type, Privacy privacy, Syntax::Expression::Base* initializedValue, bool isMutable
@@ -74,8 +75,7 @@ std::string DefinedType::getPrettyName() const {
     genericString += ">";
   }
 
-  std::string mut = isMutable() ? "mut " : "";
-  auto res = mut + n + genericString;
+  auto res = n + genericString;
   if (getName() == _SNOWBALL_CONST_PTR) {
     res = "(*const " + generics.at(0)->getName() + ")";
   } else if (getName() == _SNOWBALL_MUT_PTR) {

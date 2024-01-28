@@ -39,11 +39,13 @@ import pkg::time;
 
 import std::opt;
 import std::tuples;
+import std::debug;
 import std::env as os_env;
 
 import std::rand as random;
 
 import std::io::{ println };
+import std::cli::{Cli, Arg};
 
 //import std::json as std_json;
 
@@ -53,6 +55,8 @@ public func main() i32 {
     //vec.push(true);
     //vec.push(false);
     //io::println(std_json::serialize(vec));
-    let a = (-10.0);
-    println(a as f64);
+
+    let app = new Cli("snowball", "1.0.0");
+    app.add_arg(new Arg("test", "Run tests").required(true));
+    app.print_help();
 }

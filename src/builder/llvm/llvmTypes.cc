@@ -15,8 +15,9 @@ using namespace snowball::utils;
 namespace snowball {
 namespace codegen {
 
-llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid) {
+llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid, bool ignoreMemorySize) {
   if (auto x = cast<types::IntType>(t)) {
+    if (x->getBits() == 1 && !ignoreMemorySize) return builder->getInt8Ty(); 
     return builder->getIntNTy(x->getBits());
   } else if (auto x = cast<types::FloatType>(t)) {
     switch (x->getBits()) {

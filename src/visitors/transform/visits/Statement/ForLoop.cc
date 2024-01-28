@@ -68,8 +68,7 @@ SN_TRANSFORMER_VISIT(Statement::ForLoop) {
   auto iterValue = Syntax::N<Syntax::Statement::VariableDecl>(var, iterValueCall);
   auto stmts = block->getStmts();
   stmts.insert(stmts.begin(), iterValue);
-  stmts.push_back(eq);
-  auto whileLoop = Syntax::N<Syntax::Statement::WhileLoop>(validCall, Syntax::N<Syntax::Block>(stmts));
+  auto whileLoop = Syntax::N<Syntax::Statement::WhileLoop>(validCall, Syntax::N<Syntax::Block>(stmts), eq);
   auto resetIdent = Syntax::N<Syntax::Expression::Identifier>("reset");
   auto resetIndex =
           Syntax::N<Syntax::Expression::Index>(Syntax::N<Syntax::Expression::Identifier>(iterName), resetIdent);

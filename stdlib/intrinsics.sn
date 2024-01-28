@@ -39,3 +39,9 @@ public external func "sn.memmove" as memmove<T: Sized>(dest: *mut T, src: *const
  */
 @intrinsic 
 public external func "sn.memset" as memset<T: Sized>(dest: *mut T, value: T, count: i32);
+/**
+ * @brief An utility function to raise a debug breakpoint.
+ * @note This function could be used instead of C's `__debugbreak` function.
+ */
+@intrinsic
+public external func "sn.debugbreak" as debugbreak();

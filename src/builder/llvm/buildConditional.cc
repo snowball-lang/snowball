@@ -18,7 +18,7 @@ void LLVMBuilder::visit(ir::Conditional* c) {
   auto falseBB = h.create<llvm::BasicBlock>(*context, "cond.else", parent);
   auto continueBB = h.create<llvm::BasicBlock>(*context, "cond.cont", parent);
   auto cond = expr(c->getCondition().get());
-  builder->CreateCondBr(cond, trueBB, falseBB);
+  createCondBr(cond, trueBB, falseBB);
   builder->SetInsertPoint(trueBB);
   build(c->getBlock().get());
   CREATE_CONTINUE(false)

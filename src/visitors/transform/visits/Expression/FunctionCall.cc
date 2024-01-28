@@ -149,7 +149,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
               UNDERLINE,
               t->getPrettyName().c_str(),
               RESET),
-            .tail = EI<>(argValues.at(i), "",
+            .tail = EI<>(argValues.at(i-isContructor), "",
               {.info = "this is the value that's causing the error",
               .help = "Maybe try to convert a cast to the correct type?"})});
       }

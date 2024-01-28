@@ -1,0 +1,7 @@
+import std::intrinsics;
+
+/**
+ * @brief An utility function to raise a debug breakpoint.
+ */
+@inline
+public func trap() { intrinsics::debugbreak(); }
