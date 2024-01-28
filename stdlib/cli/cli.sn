@@ -2,155 +2,295 @@
 import std::opt::{Option, none, some}
 import std::io;
 
+/**
+ * @brief Custom exception class for handling argument-related errors.
+ *        Inherits from the base Exception class.
+ */
 public class ArgumentError extends Exception {}
 
+/**
+ * @brief A class representing a command-line option.
+ *        An option can have a name, description, required flag, default value, and aliases.
+ */
 public class Opt {
+  /**
+   * The name of the option.
+   */
   let mut name: String;
+  /**
+   * The description of the option.
+   */
   let mut description: Option<String>;
+  /**
+   * Flag indicating whether the option is required.
+   */
   let mut required: bool;
+  /**
+   * The default value of the option.
+   */
   let mut default_val: Option<String>;
+  /**
+   * The aliases associated with the option.
+   */
   let mut aliases: Vector<String>;
-
-  public:
-    Opt(name: String, description: String = "", required: bool = false, default_val: Option<String> = none<?String>(), aliases: Vector<String> = new Vector<String>()) {
-      self.name = name;
-      if description.empty() {
-        self.description = none<?String>();
-      } else {
-        self.description = some(description);
-      }
-      self.required = required;
-      self.default_val = default_val;
-      self.aliases = aliases;
-    }
-
-    mut func name(n: String) Self {
-      self.name = n;
-      return self;
-    }
-
-    mut func description(d: String) Self {
-      self.description = some(d);
-      return self;
-    }
-
-    mut func required(r: bool) Self {
-      self.required = r;
-      return self;
-    }
-
-    mut func default_val(d: String) Self {
-      self.default_val = some(d);
-      return self;
-    }
-
-    mut func add_alias(a: String) Self {
-      self.aliases.push(a);
-      return self;
-    }
-
-    func name() String {
-      return self.name;
-    }
-
-    func description() Option<String> {
-      return self.description;
-    }
-
-    func required() bool {
-      return self.required;
-    }
-
-    func default_val() Option<String> {
-      return self.default_val;
-    }
-
-    func aliases() Vector<String> {
-      return self.aliases;
-    }
-
-    operator func ==(other: Opt) bool {
-      return self.name == other.name;
-    }
+  /**
+   * @brief Constructs an Opt object with the specified parameters.
+   * @param[in] name The name of the option.
+   * @param[in] description The description of the option.
+   * @param[in] required Flag indicating whether the option is required.
+   * @param[in] default_val The default value of the option.
+   * @param[in] aliases The aliases associated with the option.
+   */
+  public: Opt(name: String, description: String = "", 
+              required: bool = false, 
+              default_val: Option<String> = none<?String>(), 
+              aliases: Vector<String> = new Vector<String>()) {
+    self.name = name;
+    if description.empty() { self.description = none<?String>(); } 
+    else { self.description = some(description); }
+    self.required = required;
+    self.default_val = default_val;
+    self.aliases = aliases;
+  }
+  /**
+   * @brief Sets the name of the option.
+   * @param[in] n The name of the option.
+   * @return Reference to the current Opt object.
+   */
+  @inline
+  mut func name(n: String) Self {
+    self.name = n;
+    return self;
+  }
+  /**
+   * @brief Sets the description of the option.
+   * @param[in] d The description of the option.
+   * @return Reference to the current Opt object.
+   */
+  @inline
+  mut func description(d: String) Self {
+    self.description = some(d);
+    return self;
+  }
+  /**
+   * @brief Sets the required flag of the option.
+   * @param[in] r Flag indicating whether the option is required.
+   * @return Reference to the current Opt object.
+   */
+  @inline
+  mut func required(r: bool) Self {
+    self.required = r;
+    return self;
+  }
+  /**
+   * @brief Sets the default value of the option.
+   * @param[in] d The default value of the option.
+   * @return Reference to the current Opt object.
+   */
+  @inline
+  mut func default_val(d: String) Self {
+    self.default_val = some(d);
+    return self;
+  }
+  /**
+   * @brief Adds an alias to the option.
+   * @param[in] a The alias to be added.
+   * @return Reference to the current Opt object.
+   */
+  @inline
+  mut func add_alias(a: String) Self {
+    self.aliases.push(a);
+    return self;
+  }
+  /**
+   * @brief Returns the name of the option.
+   * @return The name of the option.
+   */
+  @inline
+  func name() String {
+    return self.name;
+  }
+  /**
+   * @brief Returns the description of the option.
+   * @return The description of the option.
+   */
+  @inline
+  func description() Option<String> {
+    return self.description;
+  }
+  /**
+   * @brief Returns the required flag of the option.
+   * @return The required flag of the option.
+   */
+  @inline
+  func required() bool {
+    return self.required;
+  }
+  /**
+   * @brief Returns the default value of the option.
+   * @return The default value of the option.
+   */
+  @inline
+  func default_val() Option<String> {
+    return self.default_val;
+  }
+  /**
+   * @brief Returns the aliases associated with the option.
+   * @return The aliases associated with the option.
+   */
+  @inline
+  func aliases() Vector<String> {
+    return self.aliases;
+  }
+  /**
+   * @brief Overloads the equality operator for the Opt class.
+   * @param[in] other The other Opt object to be compared.
+   * @return True if the two Opt objects are equal, false otherwise.
+   */
+  @inline
+  operator func ==(other: Opt) bool {
+    return self.name == other.name;
+  }
 }
-
+/**
+ * @brief A class representing a command-line argument.
+ *        An argument can have a name, description, required flag, and default value.
+ */
 public class Arg { 
+  /// @brief The name of the argument.
   let mut name: String;
+  /// @brief The description of the argument.
   let mut description: Option<String>;
-  let mut required: bool;
+  /// @brief Flag indicating whether the argument is required.
+  let mut required: bool; 
+  /// @brief The default value of the argument.
   let mut default_val: Option<String>;
-
-  public:
-    Arg(name: String, description: String = "", required: bool = false) {
-      self.name = name;
-      if description.empty() {
-        self.description = none<?String>();
-      } else {
-        self.description = some(description);
-      }
-      self.required = required;
-      self.default_val = none<?String>();
-    }
-
-    mut func name(n: String) Self {
-      self.name = n;
-      return self;
-    }
-
-    mut func description(d: String) Self {
-      self.description = some(d);
-      return self;
-    }
-
-    mut func required(r: bool) Self {
-      self.required = r;
-      return self;
-    } 
-
-    mut func default_val(d: String) Self {
-      self.default_val = some(d);
-      return self;
-    }
-
-    func name() String {
-      return self.name;
-    }
-
-    func description() Option<String> {
-      return self.description;
-    }
-
-    func required() bool {
-      return self.required;
-    }
-
-    func default_val() Option<String> {
-      return self.default_val;
-    }
-
-    operator func ==(other: Arg) bool {
-      return self.name == other.name;
-    } 
+  /**
+   * @brief Constructs an Arg object with the specified parameters.
+   * @param[in] name The name of the argument.
+   * @param[in] description The description of the argument.
+   * @param[in] required Flag indicating whether the argument is required.
+   * @param[in] default_val The default value of the argument.
+   */
+  public: Arg(name: String, description: String = "", required: bool = false) {
+    self.name = name;
+    if description.empty() { self.description = none<?String>(); }
+    else { self.description = some(description); }
+    self.required = required;
+    self.default_val = none<?String>();
+  }
+  /**
+   * @brief Sets the name of the argument.
+   * @param[in] n The name of the argument.
+   * @return Reference to the current Arg object.
+   */
+  @inline
+  mut func name(n: String) Self {
+    self.name = n;
+    return self;
+  }
+  /**
+   * @brief Sets the description of the argument.
+   * @param[in] d The description of the argument.
+   * @return Reference to the current Arg object.
+   */
+  @inline
+  mut func description(d: String) Self {
+    self.description = some(d);
+    return self;
+  }
+  /**
+   * @brief Sets the required flag of the argument.
+   * @param[in] r Flag indicating whether the argument is required.
+   * @return Reference to the current Arg object.
+   */
+  @inline
+  mut func required(r: bool) Self {
+    self.required = r;
+    return self;
+  } 
+  /**
+   * @brief Sets the default value of the argument.
+   * @param[in] d The default value of the argument.
+   * @return Reference to the current Arg object.
+   */
+  @inline
+  mut func default_val(d: String) Self {
+    self.default_val = some(d);
+    return self;
+  }
+  /**
+   * @brief Returns the name of the argument.
+   * @return The name of the argument.
+   */
+  @inline
+  func name() String {
+    return self.name;
+  }
+  /**
+   * @brief Returns the description of the argument.
+   * @return The description of the argument.
+   */
+  @inline
+  func description() Option<String> {
+    return self.description;
+  }
+  /**
+   * @brief Returns the required flag of the argument.
+   * @return The required flag of the argument.
+   */
+  @inline
+  func required() bool {
+    return self.required;
+  }
+  /**
+   * @brief Returns the default value of the argument.
+   * @return The default value of the argument.
+   */
+  @inline
+  func default_val() Option<String> {
+    return self.default_val;
+  }
+  /**
+   * @brief Overloads the equality operator for the Arg class.
+   * @param[in] other The other Arg object to be compared.
+   * @return True if the two Arg objects are equal, false otherwise.
+   */
+  operator func ==(other: Arg) bool {
+    return self.name == other.name;
+  } 
 }
-
+/**
+ * @brief A class representing a command-line interface (CLI).
+ *        The CLI can have a name, version, description, author, license, repository,
+ *        options, and arguments.
+ */
 public class Cli {
+  /// @brief The name of the CLI.
   let name: String;
+  /// @brief The version of the CLI.
   let mut version: Option<String>;
+  /// @brief The description of the CLI.
   let mut description: Option<String>;
+  /// @brief The author of the CLI.
   let mut author: Option<String>;
+  /// @brief The license of the CLI.
   let mut license: Option<String>;
+  /// @brief The repository of the CLI.
   let mut repository: Option<String>;
+  /// @brief The options of the CLI.
   let mut options: Vector<Opt>;
+  /// @brief The arguments of the CLI.
   let mut args: Vector<Arg>;
-
- public:
-  Cli(name: String, version: String = "") : name(name) {
+  /**
+   * @brief Constructs a Cli object with the specified parameters.
+   * @param[in] name The name of the CLI.
+   * @param[in] version The version of the CLI.
+  */
+  public: Cli(name: String, version: String = "") : name(name) {
     self.version = none<?String>();
-    if version.empty() {
-      self.version = none<?String>();
-    } else {
-      self.version = some(version);
-    }
+    if version.empty() { self.version = none<?String>(); } 
+    else { self.version = some(version); }
     self.author = none<?String>();
     self.license = none<?String>();
     self.repository = none<?String>();
@@ -159,59 +299,127 @@ public class Cli {
     self.description = none<?String>();
     self.add_opt(new Opt("help", "Print this help message").add_alias("h"));
   }
-
+  /**
+   * @brief Sets the version of the CLI.
+   * @param[in] version The version of the CLI.
+   */
+  @inline
   func version(version: String) {
     self.version = some(version);
   }
-
-  func description(description: String) {
+  /**
+   * @brief Sets the description of the CLI.
+   * @param[in] description The description of the CLI.
+   */
+  @inline
+  func description(description: String) Self {
     self.description = some(description);
+    return self;
   }
-
-  func author(author: String) {
+  /**
+   * @brief Sets the author of the CLI.
+   * @param[in] author The author of the CLI.
+   */
+  @inline
+  func author(author: String) Self {
     self.author = some(author);
+    return self;
   }
-
-  func license(license: String) {
+  /**
+   * @brief Sets the license of the CLI.
+   * @param[in] license The license of the CLI.
+   */
+  @inline
+  func license(license: String) Self {
     self.license = some(license);
+    return self;
   }
-
-  func repository(repository: String) {
+  /**
+   * @brief Sets the repository of the CLI.
+   * @param[in] repository The repository of the CLI.
+   */
+  @inline
+  func repository(repository: String) Self {
     self.repository = some(repository);
+    return self;
   }
-
+  /**
+   * @brief Returns the name of the CLI.
+   * @return The name of the CLI.
+   */
+  @inline
+  func name() String {
+    return self.name;
+  }
+  /**
+   * @brief Returns the version of the CLI.
+   * @return The version of the CLI.
+   */
+  @inline
   func version() Option<String> {
     return self.version;
   }
-
+  /**
+   * @brief Returns the description of the CLI.
+   * @return The description of the CLI.
+   */
+  @inline
   func description() Option<String> {
     return self.description;
   }
-
+  /**
+   * @brief Returns the author of the CLI.
+   * @return The author of the CLI.
+   */
+  @inline
   func author() Option<String> {
     return self.author;
   }
-
+  /**
+   * @brief Returns the license of the CLI.
+   * @return The license of the CLI.
+   */
+  @inline
   func license() Option<String> {
     return self.license;
   }
-
+  /**
+   * @brief Returns the repository of the CLI.
+   * @return The repository of the CLI.
+   */
+  @inline
   func repository() Option<String> {
     return self.repository;
   }
-
-  func add_opt(arg: Opt) {
+  /**
+   * @brief Returns the options of the CLI.
+   * @param[in] opt The option to be added.
+   * @return The options of the CLI.
+   */
+  func add_opt(opt: Opt) {
     if self.options.find(arg) != -1 {
-      throw new ArgumentError("Option " + arg.name() + " already exists");
+      throw new ArgumentError("Option " + opt.name() + " already exists");
       return;
     }
-    self.options.push(arg);
+    self.options.push(opt);
   }
-
+  /**
+   * @brief Adds an option to the CLI.
+   * @param[in] name The name of the option.
+   * @param[in] description The description of the option.
+   * @param[in] required Flag indicating whether the option is required.
+   * @param[in] default_val The default value of the option.
+   * @param[in] aliases The aliases associated with the option.
+   */
+  @inline
   func add_opt(name: String, description: String = "", required: bool = false, default_val: Option<String> = none<?String>(), aliases: Vector<String> = new Vector<String>()) {
     self.add_opt(new Opt(name, description, required, default_val, aliases));
   }
-
+  /**
+   * @brief Returns the arguments of the CLI.
+   * @param[in] arg The argument to be added.
+   * @return The arguments of the CLI.
+   */
   func add_arg(arg: Arg) {
     if self.args.find(arg) != -1 {
       throw new ArgumentError("Argument " + arg.name() + " already exists");
@@ -219,19 +427,26 @@ public class Cli {
     }
     self.args.push(arg);
   }
-
+  /**
+   * @brief Adds an argument to the CLI.
+   * @param[in] name The name of the argument.
+   * @param[in] description The description of the argument.
+   * @param[in] required Flag indicating whether the argument is required.
+   * @param[in] default_val The default value of the argument.
+   */
+  @inline
   func add_arg(name: String, description: String = "", required: bool = false) {
     self.add_arg(new Arg(name, description, required));
   }
-
+  /**
+   * @brief Parses the command-line arguments.
+   * @param[in] args The command-line arguments.
+   * @return A dictionary containing the parsed arguments.
+   */
   func print_help() {
     io::print(self.name);
-    if self.version.is_some() {
-      io::print(" version " + self.version.unwrap_or(""));
-    }
-    if self.description.is_some() {
-      io::print("\n - " + self.description.unwrap_or(""));
-    }
+    if self.version.is_some() { io::print(" version " + self.version.unwrap_or("")); }
+    if self.description.is_some() { io::print("\n - " + self.description.unwrap_or("")); }
     io::println("\n");
     io::print("USAGE: " + self.name);
     for arg in self.args {
@@ -241,21 +456,15 @@ public class Cli {
       }
       io::print(" [" + arg.name() + "]");
     }
-    if self.options.size() > 0 {
-      io::print(" [...OPTIONS]");
-    }
+    if self.options.size() > 0 { io::print(" [...OPTIONS]"); }
     io::println("\n");
     if self.options.size() > 0 {
       io::println("OPTIONS:");
       for arg in self.options {
         let mut arg_str = "  --" + arg.name();
-        for alias in arg.aliases() {
-          arg_str = arg_str + ", -" + alias;
-        }
+        for alias in arg.aliases() { arg_str = arg_str + ", -" + alias; }
         io::print(arg_str.ljust(20));
-        if arg.description().is_some() {
-          io::print(arg.description().unwrap_or(""));
-        }
+        if arg.description().is_some() { io::print(arg.description().unwrap_or("")); }
         if arg.default_val().is_some() {
           io::print(" (default: " + arg.default_val().unwrap_or("") + ")");
         }
