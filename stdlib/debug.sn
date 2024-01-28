@@ -2,6 +2,18 @@ import std::intrinsics;
 
 /**
  * @brief An utility function to raise a debug breakpoint.
+ * @note If a debugger is not attached, this function will cause the program to crash.
+ * 
+ * ```
+ * import std::debug;
+ * 
+ * public func main() i32 {
+ *  debug::trap();
+ *  return 0;
+ * }
+ * ```
+ * 
+ * @see https://learn.microsoft.com/en-us/cpp/intrinsics/debugbreak?view=msvc-170 (It works across all platforms)
  */
 @inline
 public func trap() { intrinsics::debugbreak(); }
