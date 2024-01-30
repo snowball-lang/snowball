@@ -157,7 +157,7 @@ public class File implements ToString, Debug {
   /**
    * @brief Assert that the file is open.
    */
-  func assert_open() {
+  @inline func assert_open() {
     if !self.open {
       throw new FileNotOpenError("File is not open.");
     }
