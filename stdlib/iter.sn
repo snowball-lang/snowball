@@ -13,8 +13,12 @@
  * 
  * @see filter
  */
-public func map<Y: Sized, X: Sized, I: Iterable<X>>(iterator: I<X>, fn: Function<func(X) => Y>) Vector<Y> {
-  let mut result = new Vector<Y>();
+public func map<Y: Sized, X: Sized, I: Iterable<X>>(
+  iterator: I<X>, 
+  fn: Function<func(X) => Y>, 
+  size_hint: usize = 0UL) 
+Vector<Y> {
+  let mut result = Vector<?Y>::with_capacity(size_hint);
   for i in iterator {
     result.push(fn(i));
   }
@@ -39,6 +43,6 @@ class extends Vector {
    * @see filter
    */
   func map<Y: Sized>(fn: Function<func(T) => Y>) Vector<Y> {
-    return map<?Y, T, Self>(self, fn);
+    return map<?Y, T, Self>(self, fn, self.len());
   }
 }
