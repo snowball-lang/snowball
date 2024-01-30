@@ -1,13 +1,12 @@
 ---
 
-BasedOnStyle:  WebKit
+BasedOnStyle:  LLVM
 TabWidth:        2
 IndentWidth:     2
 UseTab:          Never
-ColumnLimit: 120
+ColumnLimit: 88
 
 DisableFormat:   false
-Standard: Cpp11
 
 ReferenceAlignment: Left
 AlignConsecutiveMacros: true
@@ -28,8 +27,8 @@ AllowShortLoopsOnASingleLine: true
 AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: true
-BinPackArguments: false
-BinPackParameters: false
+BinPackArguments: true
+BinPackParameters: true
 BreakBeforeBraces: Custom
 BraceWrapping: {
     AfterClass: 'false'
@@ -78,8 +77,7 @@ NamespaceIndentation: None
 ObjCBlockIndentWidth: 4
 ObjCSpaceAfterProperty: true
 ObjCSpaceBeforeProtocolList: true
-PenaltyBreakBeforeFirstCallParameter: 19
-PenaltyBreakComment: 300
+PenaltyBreakBeforeFirstCallParameter: 200
 PenaltyBreakFirstLessLess: 120
 PenaltyBreakString: 1000
 
@@ -101,7 +99,5 @@ SpaceBeforeInheritanceColon: true
 
 SortUsingDeclarations: true
 SortIncludes: true
-
-ReflowComments: true
 
 IncludeBlocks: Preserve
