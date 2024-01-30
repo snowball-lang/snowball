@@ -16,11 +16,11 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
   for (auto arg : macro->getArgs()) numRequiredArgs -= std::get<2>(arg) == nullptr ? 0 : 1;
   if (args.size() < numRequiredArgs) {
     E<PSEUDO_ERROR>(
-            p_node,
-            FMT("Macro '%s' expects at least %d arguments, but %d were given!",
-                macroName.c_str(),
-                numRequiredArgs,
-                args.size())
+    p_node,
+    FMT("Macro '%s' expects at least %d arguments, but %d were given!",
+        macroName.c_str(),
+        numRequiredArgs,
+        args.size())
     );
   }
   // Typecheck macros:
@@ -44,7 +44,8 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
         if (argType != Macro::ArguementType::CONSTANT) { // A more specific version of it
           if (ty == Expression::ConstantValue::ConstantType::String) {
             deducedArgType = Macro::ArguementType::CONSTANT_STRING;
-          } else if (ty == Expression::ConstantValue::ConstantType::Number || ty == Expression::ConstantValue::ConstantType::Float || ty == Expression::ConstantValue::ConstantType::Bool) {
+          } else if (ty == Expression::ConstantValue::ConstantType::Number
+                     || ty == Expression::ConstantValue::ConstantType::Float || ty == Expression::ConstantValue::ConstantType::Bool) {
             deducedArgType = Macro::ArguementType::CONSTANT_NUMBER;
           } else if (ty == Expression::ConstantValue::ConstantType::Char) {
             deducedArgType = Macro::ArguementType::CONSTANT_CHAR;
@@ -67,17 +68,17 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
     }
     if (argType != deducedArgType) {
       E<PSEUDO_ERROR>(
-              p_node,
-              FMT("Macro '%s' expects arguement '%s' to be of type '%s', but '%s' was given!",
-                  macroName.c_str(),
-                  name.c_str(),
-                  Macro::arguementTypeToString(argType).c_str(),
-                  Macro::arguementTypeToString(deducedArgType).c_str())
+      p_node,
+      FMT("Macro '%s' expects arguement '%s' to be of type '%s', but '%s' was given!",
+          macroName.c_str(),
+          name.c_str(),
+          Macro::arguementTypeToString(argType).c_str(),
+          Macro::arguementTypeToString(deducedArgType).c_str())
       );
     }
     if (macroInstance->stack.find(name) != macroInstance->stack.end()) {
       E<PSEUDO_ERROR>(
-              p_node, FMT("Macro '%s' already has an arguement with name '%s'!", macroName.c_str(), name.c_str())
+      p_node, FMT("Macro '%s' already has an arguement with name '%s'!", macroName.c_str(), name.c_str())
       );
     }
     arg->parentMacro = ctx->getCurrentMacro();
@@ -86,18 +87,19 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
   ctx->macroDepth++;
   if (ctx->macroDepth > SN_MAX_MACRO_DEPTH) {
     E<PSEUDO_ERROR>(
-            p_node,
-            FMT("Macro '%s' has exceeded the maximum macro depth of '%i'!", macroName.c_str(), SN_MAX_MACRO_DEPTH)
+    p_node,
+    FMT("Macro '%s' has exceeded the maximum macro depth of '%i'!", macroName.c_str(), SN_MAX_MACRO_DEPTH)
     );
   }
   if (macroName == "pkg") {
     if (ctx->getCurrentMacro() == nullptr) {
       E<PSEUDO_ERROR>(
-              p_node,
-              "Cant use 'pkg' macro outside a parent macro!",
-              {.info = "This is the macro that was used",
-               .note = "This special macro is only available inside a parent macro.",
-               .help = "Try using the macro inside a parent macro."}
+      p_node,
+      "Cant use 'pkg' macro outside a parent macro!", {
+        .info = "This is the macro that was used",
+        .note = "This special macro is only available inside a parent macro.",
+        .help = "Try using the macro inside a parent macro."
+      }
       );
     }
     auto expr = args.at(0);
@@ -112,13 +114,13 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
   } else if (macroName == "sizeof") {
     auto type = utils::cast<Expression::TypeRef>(args.at(0));
     auto tr = transformType(type);
-    this->value = getBuilder().createNumberValue(p_node->getDBGInfo(), tr->sizeOf()/8);
+    this->value = getBuilder().createNumberValue(p_node->getDBGInfo(), tr->sizeOf() / 8);
     this->value->setDBGInfo(p_node->getDBGInfo());
     this->value->setType(ctx->getInt32Type());
   } else if (macroName == "alignof") {
     auto type = utils::cast<Expression::TypeRef>(args.at(0));
     auto tr = transformType(type);
-    this->value = getBuilder().createNumberValue(p_node->getDBGInfo(), tr->alignmentOf()/8);
+    this->value = getBuilder().createNumberValue(p_node->getDBGInfo(), tr->alignmentOf() / 8);
     this->value->setDBGInfo(p_node->getDBGInfo());
     this->value->setType(ctx->getInt32Type());
   } else if (macroName == "include_str") {
@@ -126,7 +128,7 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
     auto filename = str->getValue();
     // remove the quotes from the string
     filename = filename.substr(1, filename.size() - 2);
-    std::ifstream myfile; 
+    std::ifstream myfile;
     myfile.open(filename);
     if (!myfile.is_open()) {
       E<PSEUDO_ERROR>(p_node, FMT("Could not find file '%s'!", filename.c_str()), {
@@ -135,7 +137,6 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
       });
     }
     std::string strValue((std::istreambuf_iterator<char>(myfile)), std::istreambuf_iterator<char>());
-
     auto stringNode = N<Expression::ConstantValue>(Expression::ConstantValue::String, "\"" + strValue + "\"");
     stringNode->setDBGInfo(p_node->getDBGInfo());
     this->value = trans(stringNode);

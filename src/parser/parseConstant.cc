@@ -10,11 +10,9 @@ namespace snowball::parser {
 Syntax::Statement::VariableDecl* Parser::parseConstant() {
   assert(is<TokenType::KWORD_CONST>());
   auto comment = parseDocstring(m_current.getComment());
-
   auto attributes = verifyAttributes([&](std::string attr) {
-    return Attributes::INVALID;
-  });
-
+                                     return Attributes::INVALID;
+                                     });
   next();
   bool isPublic = false;
   bool isExternal = false;
@@ -28,16 +26,14 @@ Syntax::Statement::VariableDecl* Parser::parseConstant() {
     isStatic = true;
     isPublic = is<TokenType::KWORD_PUBLIC>(peek(-4, true));
   }
-
   if (!isStatic && m_current_class != nullptr) {
     createError<SYNTAX_ERROR>("Cannot declare a non-static constant inside a class", {
       .info = "Not static constant",
       .note = "This is because constants are not tied to a specific instance of a class,\n"
-              "and therefore cannot be accessed from an instance of a class",
+      "and therefore cannot be accessed from an instance of a class",
       .help = "Make the constant static by adding the 'static' keyword\nbefore the 'const' keyword",
     });
   }
-
   auto token = assert_tok<TokenType::IDENTIFIER>("an identifier");
   next(); // consume identifier
   auto name = token.to_string();
@@ -54,14 +50,11 @@ Syntax::Statement::VariableDecl* Parser::parseConstant() {
   auto v = Syntax::N<Syntax::Statement::VariableDecl>(name, value, false, true);
   v->setDefinedType(typeDef);
   v->setPrivacy(Syntax::Statement::Privacy::fromInt(isPublic));
-
   auto info = new DBGSourceInfo(m_source_info, token.get_pos(), token.get_width());
   v->setDBGInfo(info);
   v->setComment(comment);
   v->setExternDecl(isExternal);
-
-  for (auto [n, a] : attributes) { v->addAttribute(n, a); }
-
+  for (auto[n, a] : attributes) { v->addAttribute(n, a); }
   return v; // to remove warnings
 }
 

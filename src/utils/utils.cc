@@ -34,12 +34,10 @@ std::string get_exe_folder() {
   const size_t bufSize = PATH_MAX + 1;
   char dirNameBuffer[bufSize];
   uint32_t size = bufSize;
-
   if (_NSGetExecutablePath(dirNameBuffer, &size) != 0) {
     // Buffer size is too small.
     abort();
   }
-
   std::string szPath(dirNameBuffer);
 #else
   // Linux specific
@@ -48,7 +46,7 @@ std::string get_exe_folder() {
   if (count < 0 || count >= PATH_MAX) return {}; // some error
   szPath[count] = '\0';
 #endif
-  return std::filesystem::path{szPath}.parent_path() / ""; // to finish the folder path with (back)slash
+  return std::filesystem::path {szPath}.parent_path() / ""; // to finish the folder path with (back)slash
 }
 
 std::string
@@ -57,7 +55,6 @@ getSubstringByRange(const std::string& str, const std::pair<int, int>& start, co
   int endPos = 0;
   int currentLine = 1;
   int currentColumn = 1;
-
   // Iterate over the string to find the starting and ending positions
   // of the substring
   for (int i = 0; i < (int)str.length(); i++) {
@@ -73,7 +70,6 @@ getSubstringByRange(const std::string& str, const std::pair<int, int>& start, co
       currentColumn++;
     }
   }
-
   // Return the substring
   return str.substr(startPos, endPos - startPos);
 }
@@ -81,8 +77,7 @@ getSubstringByRange(const std::string& str, const std::pair<int, int>& start, co
 std::string getUTF8FromIndex(const std::string& s, const int index) {
   std::string result;
   unsigned char c = s[index];
-
-  if (c & 0x80) {             // check if it's a multi-byte sequence
+  if (c & 0x80) { // check if it's a multi-byte sequence
     if ((c & 0xE0) == 0xC0) { // 2-byte sequence
       result = s.substr(index, 2);
     } else if ((c & 0xF0) == 0xE0) { // 3-byte sequence
@@ -93,7 +88,6 @@ std::string getUTF8FromIndex(const std::string& s, const int index) {
   } else { // single byte character
     result = c;
   }
-
   return result;
 }
 
@@ -109,14 +103,12 @@ fs::path get_lib_folder() {
   fs::path exe_folder = home / (std::string) STATICLIB_DIR;
   fs::path full_path = exe_folder / _SNOWBALL_LIBRARY_DIR;
 #endif
-
   bool filepathExists = fs::is_directory(full_path);
   if (!filepathExists) {
     throw snowball::SNError(
-            snowball::Error::IO_ERROR, FMT("Could not find system libraries! (%s)", full_path.string().c_str())
+    snowball::Error::IO_ERROR, FMT("Could not find system libraries! (%s)", full_path.string().c_str())
     );
   }
-
   return full_path;
 }
 
@@ -126,7 +118,7 @@ void replaceAll(std::string& str, const std::string& from, const std::string& to
   while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
     str.replace(start_pos, from.length(), to);
     start_pos += to.length(); // In case 'to' contains 'from', like
-                              // replacing 'x' with 'yx'
+    // replacing 'x' with 'yx'
   }
 }
 
@@ -157,11 +149,9 @@ bool endsWith(const std::string& mainStr, const std::string& toMatch) {
 
 bool startsWith(const std::string& str, const std::string& comp) { return str.rfind(comp, 0) == 0; }
 
-std::string itos(int i) // convert int to string
-{
+std::string itos(int i) { // convert int to string
   std::stringstream s;
   s << i;
-
   return s.str();
 }
 

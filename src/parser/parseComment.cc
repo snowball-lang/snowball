@@ -14,12 +14,10 @@ static const std::regex tagRegex("@(\\w+)\\s*(.*)");
 
 CommentType* Parser::parseDocstring(std::string p_content) {
   if (!m_allow_comments) return nullptr;
-
   auto comment = m_current.getComment();
   bool valid = true;
   std::map<std::string, std::string> tags;
   std::string content;
-
   if (utils::startsWith(comment, "///")) {
     comment = comment.substr(3);
   } else if (utils::startsWith(comment, "/**")) {
@@ -28,7 +26,6 @@ CommentType* Parser::parseDocstring(std::string p_content) {
   } else {
     valid = false;
   }
-  
   if (valid) {
     int paramCount = 0;
     auto lines = utils::split(comment, "\n");
@@ -38,11 +35,10 @@ CommentType* Parser::parseDocstring(std::string p_content) {
       if (std::regex_search(line, matches, tagRegex)) {
         std::string tag = matches[1];
         std::string content = matches[2];
-
         if (tag == "param") {
           tag = "param$" + std::to_string(paramCount++);
         }
-        tags[tag] = content;     
+        tags[tag] = content;
         lastTag = tag;
       } else {
         auto trim = line;
@@ -60,11 +56,9 @@ CommentType* Parser::parseDocstring(std::string p_content) {
           }
         }
       }
-    } 
-
+    }
     return new CommentType(tags, content, valid);
   }
-
   return nullptr;
 }
 

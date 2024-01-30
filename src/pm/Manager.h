@@ -29,7 +29,7 @@ struct Package {
 
 /**
  * @brief Snowball's package manager.
- * 
+ *
  * This class is responsible for managing packages on the system.
  * It is responsible for installing, removing, and updating packages.
  *  - Installing packages
@@ -39,27 +39,27 @@ struct Package {
  *  - Searching for packages
  *  - Querying packages
  *  ...
- * 
+ *
  * Packages are installed from a git repository. The git repository
  * contains a package manifest file, which is a toml file that
  * describes the package.
 */
 class Manager {
-    toml::parse_result package;
-    bool silent;
-    std::string cwd;
-    std::string configFolder;
+  toml::parse_result package;
+  bool silent;
+  std::string cwd;
+  std::string configFolder;
 
-  public:
-    Manager(toml::parse_result p_package, bool p_silent, std::string p_cwd, std::string p_configFolder);
+ public:
+  Manager(toml::parse_result p_package, bool p_silent, std::string p_cwd, std::string p_configFolder);
 
-    int runAsMain();
-    std::string getGit();
+  int runAsMain();
+  std::string getGit();
 
-    bool isInstalled(Package p_package);
-    int install(Package p_package);
+  bool isInstalled(Package p_package);
+  int install(Package p_package);
 
-    nlohmann::json getPackageInfoFromRepo(std::string package);
+  nlohmann::json getPackageInfoFromRepo(std::string package);
 };
 
 } // namespace pm

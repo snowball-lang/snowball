@@ -13,7 +13,6 @@ std::vector<Expression::Param*> Transformer::getActualFunctionArgs(cacheComponen
       (args.at(0)->getName() == "self")) {
     args.erase(args.begin());
   }
-
   return args;
 }
 

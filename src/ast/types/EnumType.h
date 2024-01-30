@@ -21,25 +21,25 @@ namespace types {
 
 /**
  * @brief Enum types.
- * 
+ *
  * These types are defined by the programmer. They can contain some extra
  * stuff such as generics and it's own defined members. Unlike
  * primitive types, in order to use these type and it's member,
  * a new initialization of the object is required.
  */
 class EnumType final : public AcceptorExtend<EnumType, BaseType> {
-public:
+ public:
   /**
    * @brief An enum field represents all of the "elements" a
    * type has stored into it.
-   * 
+   *
    * @note The number of items does not affect whether this type
    * is eqaul to another type.
    */
   struct EnumField final : public DBGObject {
     explicit EnumField(
-      const std::string& name,
-      std::vector<types::Type*> types);
+    const std::string& name,
+    std::vector<types::Type*> types);
 
     const std::string name;
     std::vector<types::Type*> types;
@@ -49,16 +49,16 @@ public:
 
   friend AcceptorExtend;
 
-private:
+ private:
   /// @brief a list of fields this class has
   std::vector<EnumField> fields;
 
-public:
+ public:
   EnumType(
-    const std::string& name,
-    const std::string uuid,
-    std::shared_ptr<ir::Module> module,
-    Privacy::Status privacy = PRIVATE
+  const std::string& name,
+  const std::string uuid,
+  std::shared_ptr<ir::Module> module,
+  Privacy::Status privacy = PRIVATE
   );
   /**
    * @param other another type to check.
@@ -72,7 +72,6 @@ public:
    */
   virtual bool is(Type* other) const override {
     if (auto c = utils::cast<EnumType>(other)) { return is(c); }
-
     return false;
   }
 
@@ -102,7 +101,7 @@ public:
   virtual bool canCast(Type* ty) const override;
   virtual bool canCast(EnumType* ty) const;
 
-public:
+ public:
 
   virtual std::int64_t sizeOf() const override;
   virtual std::int64_t alignmentOf() const override;

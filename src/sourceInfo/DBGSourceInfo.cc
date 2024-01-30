@@ -8,10 +8,10 @@
 
 namespace snowball {
 DBGSourceInfo::DBGSourceInfo(const SourceInfo* p_source_info, uint32_t p_line)
-    : SrcObject(p_source_info), line(p_line) { }
+  : SrcObject(p_source_info), line(p_line) { }
 
 DBGSourceInfo::DBGSourceInfo(const SourceInfo* p_source_info, std::pair<int, int> p_pos, uint32_t p_width)
-    : pos(p_pos), line((uint32_t) p_pos.first), width(p_width), SrcObject(p_source_info) { }
+  : pos(p_pos), line((uint32_t) p_pos.first), width(p_width), SrcObject(p_source_info) { }
 
 void DBGSourceInfo::prepare_for_error() {
   uint64_t cur_line = 1;
@@ -20,9 +20,7 @@ void DBGSourceInfo::prepare_for_error() {
   line_str.clear();
   line_after.clear();
   line_after_after.clear();
-
   const auto& source = m_srci->getSource();
-
   for (auto c : source) {
     if (c == '\n') {
       if (cur_line >= line + 2) break;
@@ -43,8 +41,7 @@ void DBGSourceInfo::prepare_for_error() {
 
 std::string DBGSourceInfo::get_pos_str() const {
   // var x = blabla;
-  //         ^^^^^^
-
+  // ^^^^^^
   std::stringstream ss_pos;
   size_t cur_col = 0;
   bool done = false;
@@ -61,7 +58,6 @@ std::string DBGSourceInfo::get_pos_str() const {
     }
   }
   if (!done) ss_pos << '^';
-
   auto ret = ss_pos.str();
   return ret;
 }

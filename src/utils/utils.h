@@ -31,8 +31,8 @@ getSubstringByRange(const std::string& str, const std::pair<int, int>& start, co
 template <typename Iter>
 // https://stackoverflow.com/questions/495021/why-can-templates-only-be-implemented-in-the-header-file
 std::string join(Iter begin, Iter end, std::string const& separator, std::function<std::string(Iter)> cb = [](Iter i) {
-  return *i;
-}) {
+                 return *i;
+                 }) {
   std::ostringstream result;
   if (begin != end) result << cb(begin++);
   while (begin != end) result << separator << cb(begin++);
@@ -43,12 +43,10 @@ template <typename StTy, typename Vec1>
 std::vector<Vec1> vector_iterate(std::vector<StTy> p_vec, std::function<Vec1(StTy)> p_function) {
   // Why did the programmer quit his job? He didn't get arrays.
   std::vector<Vec1> vec;
-
   for (auto item : p_vec) {
     auto v1 = p_function(item);
     vec.push_back(v1);
   }
-
   return vec;
 }
 
@@ -57,23 +55,18 @@ std::pair<std::vector<Vec1>, std::vector<Vec2>>
 vectors_iterate(std::vector<StTy> p_vec, std::function<std::pair<Vec1, Vec2>(StTy)> p_function) {
   std::vector<Vec1> vec1;
   std::vector<Vec2> vec2;
-
   for (auto item : p_vec) {
-    auto [v1, v2] = p_function(item);
-
+    auto[v1, v2] = p_function(item);
     vec1.push_back(v1);
     vec2.push_back(v2);
   }
-
   return {vec1, vec2};
 }
 
 template <typename Key, typename Val, typename Return = Val>
 std::vector<Return> map(std::map<Key, Val> p_map, std::function<Return(std::pair<Key, Val>)> cb) {
   std::vector<Return> vec;
-
   for (auto item : p_map) { vec.push_back(cb(item)); }
-
   return vec;
 }
 
@@ -87,30 +80,28 @@ IteratorType at(std::list<IteratorType> _list, int _i) {
 template <typename Key, typename Val, typename Return = Val>
 std::vector<Return> map(std::list<std::pair<Key, Val>> p_map, std::function<Return(std::pair<Key, Val>)> cb) {
   std::vector<Return> vec;
-
   for (auto item : p_map) { vec.push_back(cb(item)); }
-
   return vec;
 }
 
 template <typename Desired, typename Current>
 [[nodiscard]] inline decltype(auto) cast(Current curr) {
-  return dynamic_cast<Desired*>(curr);
+return dynamic_cast<Desired*>(curr);
 }
 
 template <typename Desired, typename Current>
 [[nodiscard]] inline decltype(auto) is(Current curr) {
-  return cast<Desired, Current>(curr) != nullptr;
+return cast<Desired, Current>(curr) != nullptr;
 }
 
 template <typename T>
 [[nodiscard]] inline decltype(auto) copy_shared(std::shared_ptr<T> x) {
-  return std::make_shared<T>(*x);
+return std::make_shared<T>(*x);
 }
 
 template <typename Desired, typename Current>
 [[nodiscard]] inline decltype(auto) dyn_cast(std::shared_ptr<Current> curr) {
-  return std::dynamic_pointer_cast<Desired>(curr);
+return std::dynamic_pointer_cast<Desired>(curr);
 }
 
 template <typename T, typename R>
@@ -143,7 +134,7 @@ void assert_value_type() {
 
 template <typename T>
 [[nodiscard]] inline decltype(auto) copy(T* x) {
-  return new T(*x);
+return new T(*x);
 }
 
 #if _SNOWBALL_TIMERS_DEBUG
@@ -162,9 +153,7 @@ std::string gen_random() {
                                  "abcdefghijklmnopqrstuvwxyz";
   std::string tmp_s;
   tmp_s.reserve(len);
-
   for (int i = 0; i < len; ++i) { tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)]; }
-
   return tmp_s;
 }
 

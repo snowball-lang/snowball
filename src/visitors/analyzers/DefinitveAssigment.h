@@ -72,8 +72,7 @@ class DefiniteAssigment : public Analyzer {
    * class, which performs definite assignment analysis on a given
    * program.
    */
-  enum ReferenceStatus
-  {
+  enum ReferenceStatus {
     NotInitialized = 0x00,
     Initialized = 0x01
   };
@@ -195,9 +194,9 @@ class DefiniteAssigment : public Analyzer {
   void visitConstructor(Statement::FunctionDef* p_node);
 
 #include "../../defs/accepts.def"
-public:
+ public:
   using Analyzer::Analyzer;
-  DefiniteAssigment(const SourceInfo* srci) : Analyzer(srci){};
+  DefiniteAssigment(const SourceInfo* srci) : Analyzer(srci) {};
 
   // Default destructor
   ~DefiniteAssigment() noexcept = default;

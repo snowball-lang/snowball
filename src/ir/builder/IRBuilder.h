@@ -52,73 +52,75 @@ using ValueVec = std::vector<SharedValue<ValueType>>;
 class IRBuilder : public AcceptorExtend<IRBuilder, ModuleHolder> {
   friend ModuleHolder;
 
-public:
+ public:
   IRBuilder() = default;
   IRBuilder(std::shared_ptr<ir::Module> module);
 
   /// @brief Create a new function
   SharedValue<Func>
-  createFunction(DBGSourceInfo* dbgInfo, std::string name, bool isExtern = false, bool isVarArg = false, bool isAnon = false);
+  createFunction(DBGSourceInfo* dbgInfo, std::string name, bool isExtern = false, bool isVarArg = false,
+                 bool isAnon = false);
   SharedValue<Func> createFunction(
-          DBGSourceInfo* dbgInfo,
-          std::string name,
-          Func::FunctionArgs args,
-          bool isExtern = false,
-          bool isVarArg = false,
-          bool isAnon = false
+  DBGSourceInfo* dbgInfo,
+  std::string name,
+  Func::FunctionArgs args,
+  bool isExtern = false,
+  bool isVarArg = false,
+  bool isAnon = false
   );
   SharedValue<Func> createFunction(
-          DBGSourceInfo* dbgInfo,
-          std::string name,
-          SharedValue<Block> block,
-          Func::FunctionArgs args,
-          bool isExtern = false,
-          bool isVarArg = false,
-          bool isAnon = false
+  DBGSourceInfo* dbgInfo,
+  std::string name,
+  SharedValue<Block> block,
+  Func::FunctionArgs args,
+  bool isExtern = false,
+  bool isVarArg = false,
+  bool isAnon = false
   );
   SharedValue<Func> createFunction(
-          DBGSourceInfo* dbgInfo,
-          std::string name,
-          SharedValue<Block> block,
-          bool isExtern = false,
-          bool isVarArg = false,
-          bool isAnon = false
+  DBGSourceInfo* dbgInfo,
+  std::string name,
+  SharedValue<Block> block,
+  bool isExtern = false,
+  bool isVarArg = false,
+  bool isAnon = false
   );
   /// @brief Create a new cast
   SharedValue<Cast> createCast(DBGSourceInfo* dbgInfo, SharedValue<> value, Type<> type);
   /// @brief Create a new index extract
   SharedValue<IndexExtract> createIndexExtract(
-          DBGSourceInfo* dbgInfo, SharedValue<> value, types::DefinedType::ClassField* field, unsigned int index
+  DBGSourceInfo* dbgInfo, SharedValue<> value, types::DefinedType::ClassField* field, unsigned int index
   );
   /// @brief Create a new argument value with the default parameters
-  SharedValue<Argument> createArgument(DBGSourceInfo* dbgInfo, const std::string& name, Type<> type = nullptr, int scopeIndex = -1);
+  SharedValue<Argument> createArgument(DBGSourceInfo* dbgInfo, const std::string& name, Type<> type = nullptr,
+                                       int scopeIndex = -1);
   /// @brief Create a new argument value
   SharedValue<Argument> createArgument(
-    DBGSourceInfo* dbgInfo, const std::string& name, int index, AST(Expression::Base) defaultValue = nullptr,
-    int scopeIndex = -1
+  DBGSourceInfo* dbgInfo, const std::string& name, int index, AST(Expression::Base) defaultValue = nullptr,
+  int scopeIndex = -1
   );
   /// @brief Create a new argument value and set a type to it
   SharedValue<Argument> createArgument(
-    DBGSourceInfo* dbgInfo,
-    const std::string& name,
-    int index,
-    Type<> type,
-    AST(Expression::Base) defaultValue = nullptr,
-    int scopeIndex = -1
+  DBGSourceInfo* dbgInfo,
+  const std::string& name,
+  int index,
+  Type<> type,
+  AST(Expression::Base) defaultValue = nullptr,
+  int scopeIndex = -1
   );
   /// @brief Create a new variable
   SharedValue<Variable> createVariable(
-          DBGSourceInfo* dbgInfo, const std::string& identifier, bool isArgument = false, bool isMutable = false,
-          int scopeIndex = -1
+  DBGSourceInfo* dbgInfo, const std::string& identifier, bool isArgument = false, bool isMutable = false,
+  int scopeIndex = -1
   );
   /// @brief Create a new variable and set a type to it
   SharedValue<Variable> createVariable(
-          DBGSourceInfo* dbgInfo,
-          const std::string& identifier,
-          Type<> type,
-          bool isArgument = false,
-          bool isMutable = false,
-          int scopeIndex = -1
+  DBGSourceInfo* dbgInfo,
+  const std::string& identifier,
+  Type<> type,
+  bool isArgument = false,
+  bool isMutable = false,
+  int scopeIndex = -1
   );
   /// @brief Create a new block
   SharedValue<Block> createBlock(DBGSourceInfo* dbgInfo, std::vector<SharedValue<>> values);
@@ -152,41 +154,42 @@ public:
   SharedValue<EnumInit> createEnumInit(DBGSourceInfo* dbgInfo, types::EnumType* type, std::string name);
   /// @brief Create a new try/catch instruction
   SharedValue<TryCatch> createTryCatch(
-          DBGSourceInfo* dbgInfo,
-          SharedValue<Block> tryBlock,
-          std::vector<SharedValue<Block>> catchBlocks,
-          std::vector<SharedValue<VariableDeclaration>> catchVars
+  DBGSourceInfo* dbgInfo,
+  SharedValue<Block> tryBlock,
+  std::vector<SharedValue<Block>> catchBlocks,
+  std::vector<SharedValue<VariableDeclaration>> catchVars
   );
   /// @brief Create a new type
   SharedValue<VariableDeclaration> createVariableDeclaration(
-          DBGSourceInfo* dbgInfo, std::shared_ptr<ir::Variable> variable, SharedValue<> value, bool isExtern = false
+  DBGSourceInfo* dbgInfo, std::shared_ptr<ir::Variable> variable, SharedValue<> value, bool isExtern = false
   );
   /// @brief Create a extraction node from a value
   SharedValue<ValueExtract> createValueExtract(DBGSourceInfo* dbgInfo, SharedValue<> value);
   /// @brief Create a object initialization node
   SharedValue<Value>
-  createObjectInitialization(DBGSourceInfo* dbgInfo, types::Type* type, SharedValue<> value, ValueVec<> args, bool isStruct = false);
+  createObjectInitialization(DBGSourceInfo* dbgInfo, types::Type* type, SharedValue<> value, ValueVec<> args,
+                             bool isStruct = false);
   /// @brief Create a new conditional instruction (if/else)
   SharedValue<Conditional> createConditional(
-    DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> thenBlock, SharedValue<Block> elseBlock
+  DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> thenBlock, SharedValue<Block> elseBlock
   );
   /// @brief Create a new switch instruction
   SharedValue<Switch> createSwitch(
-    DBGSourceInfo* dbgInfo, SharedValue<> expr, std::vector<Switch::Case> cases, SharedValue<Block> defaultBlock
+  DBGSourceInfo* dbgInfo, SharedValue<> expr, std::vector<Switch::Case> cases, SharedValue<Block> defaultBlock
   );
   /// @brief Create a new c-style switch instruction
   SharedValue<Switch> createSwitch(
-    DBGSourceInfo* dbgInfo, SharedValue<> expr, std::vector<Switch::CStyleCase> cases, SharedValue<Block> defaultBlock
+  DBGSourceInfo* dbgInfo, SharedValue<> expr, std::vector<Switch::CStyleCase> cases, SharedValue<Block> defaultBlock
   );
   /// @brief Create a new while loop
   SharedValue<WhileLoop>
   createWhileLoop(DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> body, bool isDoWhile = false);
   /// @brief Creates a while loop from a for loop
   SharedValue<WhileLoop> createFromForLoop(
-    DBGSourceInfo* dbgInfo,
-    SharedValue<> condition,
-    SharedValue<Block> body,
-    SharedValue<> forCond
+  DBGSourceInfo* dbgInfo,
+  SharedValue<> condition,
+  SharedValue<Block> body,
+  SharedValue<> forCond
   );
   /// @brief Create a new binary operation
   /// @todo add more overloads for the binary operation

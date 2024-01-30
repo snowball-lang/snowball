@@ -38,39 +38,38 @@ namespace types {
  * @see DefinedType
  */
 class InterfaceType : public BaseType {
-public:
+ public:
   struct Member : public DefinedType::ClassField {
-    enum Kind
-    {
+    enum Kind {
       FIELD,
       METHOD
     } kind;
 
     explicit Member(
-            const std::string& name,
-            Type* type,
-            Kind kind,
-            Syntax::Statement::Base* ast,
-            Privacy privacy = PRIVATE,
-            bool isMutable = false
+    const std::string& name,
+    Type* type,
+    Kind kind,
+    Syntax::Statement::Base* ast,
+    Privacy privacy = PRIVATE,
+    bool isMutable = false
     )
-        : ClassField(name, type, privacy, nullptr, isMutable), kind(kind), ast(ast){};
+      : ClassField(name, type, privacy, nullptr, isMutable), kind(kind), ast(ast) {};
     Syntax::Statement::Base* ast;
   };
 
-private:
+ private:
   /// @brief a list of fields this class has
   std::vector<Member*> fields;
 
-public:
+ public:
   InterfaceType(
-          const std::string& name,
-          const std::string uuid,
-          std::shared_ptr<ir::Module> module,
-          std::vector<Member*> fields = {},
-          std::vector<Type*> generics = {}
+  const std::string& name,
+  const std::string uuid,
+  std::shared_ptr<ir::Module> module,
+  std::vector<Member*> fields = {},
+  std::vector<Type*> generics = {}
   )
-      : BaseType(INTERFACE, name), fields(fields) {
+    : BaseType(INTERFACE, name), fields(fields) {
     setGenerics(generics);
     unsafeSetUUID(uuid);
     unsafeSetModule(module);
@@ -89,7 +88,6 @@ public:
    */
   virtual bool is(Type* other) const override {
     if (auto c = utils::cast<InterfaceType>(other)) { return is(c); }
-
     return false;
   }
 
@@ -120,7 +118,7 @@ public:
   virtual bool canCast(Type* ty) const override { return false; }
   virtual bool canCast(InterfaceType* ty) const { return false; }
 
-public:
+ public:
   virtual std::int64_t sizeOf() const override;
   virtual std::int64_t alignmentOf() const override;
 

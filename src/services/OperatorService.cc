@@ -17,10 +17,8 @@ const std::string& OperatorService::operatorName(OperatorType id) { return opera
 OperatorService::OperatorType OperatorService::operatorID(const std::string& n) {
   std::string name = n;
   if (isOperator(name)) { name = name.substr(1, name.size() - 1); }
-
   auto it = std::find(operators.begin(), operators.end(), name);
   assert(it != operators.end());
-
   return (OperatorService::OperatorType) std::distance(operators.begin(), it);
 }
 
@@ -28,7 +26,7 @@ std::string OperatorService::getOperatorMangle(OperatorService::OperatorType id)
 
 bool OperatorService::isUnary(OperatorService::OperatorType op_type) {
   return op_type == OpType::NOT || op_type == OpType::BIT_NOT || op_type == OpType::UPLUS ||
-          op_type == OpType::UMINUS || op_type == OpType::REFERENCE || op_type == OpType::DEREFERENCE;
+         op_type == OpType::UMINUS || op_type == OpType::REFERENCE || op_type == OpType::DEREFERENCE;
 }
 
 } // namespace services

@@ -7,7 +7,7 @@ namespace snowball {
 namespace parser {
 
 Parser::Parser(std::vector<Token> p_tokens, const SourceInfo* p_source_info, bool p_allow_comments)
-    : m_tokens(p_tokens), m_source_info(p_source_info), m_allow_comments(p_allow_comments) {
+  : m_tokens(p_tokens), m_source_info(p_source_info), m_allow_comments(p_allow_comments) {
   m_current = m_tokens.at(m_tok_index);
 }
 
@@ -19,7 +19,6 @@ Token Parser::next(int p_offset) {
     m_current = m_tokens.at(m_tok_index);
     return m_current;
   } catch (std::out_of_range& _) { createError<BUG>("Index error"); }
-
   return {};
 }
 
@@ -31,12 +30,11 @@ Token Parser::prev(int p_offset, bool p_safe) {
   } catch (std::out_of_range& _) {
     if (!p_safe) createError<BUG>("Index error");
   }
-
   return {};
 }
 
 Token Parser::peek(int p_offset, bool p_safe) {
-  Token tmp = {.type=TokenType::_EOF,. value=""};
+  Token tmp = {.type = TokenType::_EOF, . value = ""};
   if ((m_tok_index + 1) + p_offset < 0 || (m_tok_index + 1) + p_offset >= (int) m_tokens.size()) {
     if (p_safe)
       return tmp;

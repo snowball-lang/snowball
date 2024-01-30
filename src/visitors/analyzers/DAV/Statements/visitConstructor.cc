@@ -8,7 +8,6 @@ namespace Syntax {
 void DefiniteAssigment::visitConstructor(Statement::FunctionDef* p_node) {
   auto constructor = utils::cast<Statement::ConstructorDef>(p_node);
   if (!p_node->isConstructor()) return;
-
   for (auto superArg : constructor->getSuperArgs()) superArg->accept(this);
   for (auto init : constructor->getInitArgs()) {
     init.second->accept(this);

@@ -34,11 +34,11 @@ class Parser {
   bool m_inside_loop = false;
   bool m_allow_comments = false;
 
-public:
+ public:
   Parser(std::vector<Token> p_tokens, const SourceInfo* p_source_info, bool p_allow_comments = false);
   ~Parser() noexcept = default;
 
-private:
+ private:
   /// @brief Utility function to throw errors
   template <Error E, class... Args>
   [[nodiscard]] auto
@@ -53,13 +53,13 @@ private:
     createError<E>(pos, msg, info, m_current.to_string().size());
   }
 
-public:
+ public:
   using NodeVec = std::vector<Syntax::Node*>;
   /// @brief Parse from the lexer tree
   /// @return AST containing parsed node
   NodeVec parse();
 
-private:
+ private:
   // Utility functions for parsing
 
   /// Check if the current token is a certain token type
@@ -103,8 +103,8 @@ private:
    */
   bool isTypeValid() const {
     return is<TokenType::OP_BIT_AND>() || is<TokenType::OP_AND>() || is<TokenType::OP_MUL>() ||
-            is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() || is<TokenType::KWORD_FUNC>() 
-            || is<TokenType::BRACKET_LPARENT>();
+           is<TokenType::IDENTIFIER>() || is<TokenType::KWORD_DECLTYPE>() || is<TokenType::KWORD_FUNC>()
+           || is<TokenType::BRACKET_LPARENT>();
   }
 
   /**
@@ -114,10 +114,10 @@ private:
   void throwIfNotType() const {
     if (!isTypeValid()) {
       createError<SYNTAX_ERROR>(
-              FMT("Expected a valid type declaration but found '%s' "
-                  "instead",
-                  m_current.to_string().c_str()),
-              {.info = "Types cant start like this"}
+      FMT("Expected a valid type declaration but found '%s' "
+          "instead",
+          m_current.to_string().c_str()),
+      {.info = "Types cant start like this"}
       );
     }
   }
@@ -134,12 +134,11 @@ private:
   Token assert_tok(std::string expectation) {
     if (!is<Ty>()) {
       createError<SYNTAX_ERROR>(
-              FMT("Expected %s but got '%s'",
-                  expectation.c_str(),
-                  (is<TokenType::_EOF>(m_current) ? "an unexpected EOF" : m_current.to_string()).c_str())
+      FMT("Expected %s but got '%s'",
+          expectation.c_str(),
+          (is<TokenType::_EOF>(m_current) ? "an unexpected EOF" : m_current.to_string()).c_str())
       );
     }
-
     return m_current;
   }
 
@@ -168,7 +167,7 @@ private:
    */
   Syntax::Expression::Base* buildOperatorTree(std::vector<Syntax::Expression::Base*>& exprs);
 
-private:
+ private:
   // Parsing functions
 
   /**
@@ -264,9 +263,9 @@ private:
    * @param callee expression being called
    */
   Syntax::Expression::FunctionCall* parseFunctionCall(
-          Syntax::Expression::Base* callee,
-          TokenType terminator = TokenType::BRACKET_RPARENT,
-          std::string terminatorString = ")"
+  Syntax::Expression::Base* callee,
+  TokenType terminator = TokenType::BRACKET_RPARENT,
+  std::string terminatorString = ")"
   );
   /**
    * docstring     ::=  "/*" [string] "*\/"
@@ -356,25 +355,26 @@ private:
   /**
    * @brief Parses a list of attributes
    */
-  std::unordered_map<std::string, std::unordered_map<std::string, std::string>> parseAttributes(bool forConstexpr = false);
+  std::unordered_map<std::string, std::unordered_map<std::string, std::string>> parseAttributes(
+  bool forConstexpr = false);
   /**
    * @brief Verifies the attributes list
    * @param attributes attributes list
    * @param parseFn function to parse the attribute
    */
   std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> verifyAttributes(
-    std::function<Attributes(std::string)> parseFn,
-    std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& attrs
+  std::function<Attributes(std::string)> parseFn,
+  std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& attrs
   );
   std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> verifyAttributes(
-    std::function<Attributes(std::string)> parseFn
+  std::function<Attributes(std::string)> parseFn
   );
   /**
    * @brief Assert that attributes are not accepted in the current context
    */
   void assertNoAttributes(std::string context);
 
-private:
+ private:
   /// @brief Attributes list
   std::unordered_map<std::string, std::unordered_map<std::string, std::string>> m_attributes;
 };

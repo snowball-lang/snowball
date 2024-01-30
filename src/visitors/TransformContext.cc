@@ -10,31 +10,25 @@
 namespace snowball::Syntax {
 
 TransformContext::TransformContext(
-  std::shared_ptr<ir::Module> mod, ir::IRBuilder builder, bool testMode, bool benchMode, bool silentOutput
+std::shared_ptr<ir::Module> mod, ir::IRBuilder builder, bool testMode, bool benchMode, bool silentOutput
 )
-    : AcceptorExtend(), module(mod), testMode(testMode), benchMode(benchMode)
-    , isMainModule(true), builder(builder), cache(new Cache()), silentOutput(silentOutput)
-    , imports(std::make_unique<services::ImportService>(std::filesystem::current_path())) {
+  : AcceptorExtend(), module(mod), testMode(testMode), benchMode(benchMode)
+  , isMainModule(true), builder(builder), cache(new Cache()), silentOutput(silentOutput)
+  , imports(std::make_unique<services::ImportService>(std::filesystem::current_path())) {
   // Set all of the built in primitive types into the global stack
-#define DEFINE_TYPE(t)                                                                                                 \
-  auto raw_##t = new types::t();                                                                                       \
-  auto _##t = std::make_shared<transform::Item>(raw_##t);                                                              \
+#define DEFINE_TYPE(t) \
+  auto raw_##t = new types::t(); \
+  auto _##t = std::make_shared<transform::Item>(raw_##t); \
   addItem(raw_##t->getName(), _##t);
-
   DEFINE_TYPE(VoidType)
-
 #undef DEFINE_TYPE
-
   auto coreMod = std::make_shared<ir::Module>("Std", imports->CORE_UUID);
   auto coreModItem = std::make_shared<transform::Item>(coreMod);
   addItem("Std", coreModItem);
-
   std::vector<std::string> coreBuiltins = {"Sized", "Numeric", "Callable"};
-
   for (const auto& builtin : coreBuiltins) {
     const auto baseUuid = imports->CORE_UUID + builtin;
     auto transformedType = new types::InterfaceType(builtin, baseUuid, coreMod, {});
-
     auto item = std::make_shared<transform::Item>(transformedType);
     addItem(builtin, item);
     coreInterfaces.insert({builtin, transformedType});
@@ -45,7 +39,6 @@ TransformContext::TransformContext(
 std::shared_ptr<transform::ContextState> TransformContext::saveState() {
   auto s = this->stack;
   s.pop_back();
-
   return std::make_shared<transform::ContextState>(s, this->module, this->uuidStack, this->currentClass);
 }
 
@@ -54,7 +47,6 @@ void TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
   auto glob = this->stack.back();
   auto st = s->stack;
   st.emplace_back(glob);
-
   this->stack = st;
   this->module = s->module;
   this->uuidStack = s->uuidStack;
@@ -65,7 +57,6 @@ void TransformContext::setState(std::shared_ptr<transform::ContextState> s) {
 /// @brief Execute function with saved state
 void TransformContext::withState(std::shared_ptr<transform::ContextState> s, std::function<void()> cb) {
   auto saved = this->saveState();
-
   this->setState(s);
   cb();
   this->setState(saved);
@@ -73,17 +64,15 @@ void TransformContext::withState(std::shared_ptr<transform::ContextState> s, std
 
 #if 0
 std::pair<std::shared_ptr<transform::Item>, bool> TransformContext::getItem(const std::string name) const {
-    auto [i, found] = AcceptorExtend::getItem(name);
-    if (found) {
-        return {i, found};
-    }
-
-    auto fn = cache->getTransformedFunction(name);
-    if (fn) {
-        return {*fn, true};
-    }
-
-    return {nullptr, false};
+  auto[i, found] = AcceptorExtend::getItem(name);
+  if (found) {
+    return {i, found};
+  }
+  auto fn = cache->getTransformedFunction(name);
+  if (fn) {
+    return {*fn, true};
+  }
+  return {nullptr, false};
 }
 #endif
 

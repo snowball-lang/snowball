@@ -52,7 +52,6 @@ void Logger::compiling(std::string message, std::string status) {
 std::string Logger::progress(float progress, std::string message) {
   std::stringstream output;
   reset_status();
-
   output << "[";
   int pos = _SN_LOGGER_BAR_WIDTH * progress;
   for (int i = 0; i < _SN_LOGGER_BAR_WIDTH; ++i) {
@@ -68,16 +67,13 @@ std::string Logger::progress(float progress, std::string message) {
   if (!message.empty()) output << " " << message;
   output << "\r";
   output.flush();
-
   return output.str();
 }
 
 std::string FMT(const char* p_format, ...) {
   va_list argp;
-
   va_start(argp, p_format);
   size_t result_size = vsnprintf(NULL, 0, p_format, argp);
-
   char buffer[result_size + 1]; // +1 for the terminating character
   va_end(argp);
   va_start(argp, p_format);

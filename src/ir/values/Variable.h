@@ -30,10 +30,10 @@ class Variable : public IdMixin, public AcceptorExtend<Variable, Value> {
   // Function where the variable is defined in
   Func* parentFunc = nullptr;
 
-public:
+ public:
   // Create a new variable declaration
   Variable(const std::string& identifier, bool isArgument = false, bool isMutable = false, int scopeIndex = -1)
-      : identifier(identifier), _isArgument(isArgument), _isMutable(isMutable), scopeIndex(scopeIndex) {};
+    : identifier(identifier), _isArgument(isArgument), _isMutable(isMutable), scopeIndex(scopeIndex) {};
 
   /// @return Variable identifier
   auto getIdentifier() const { return identifier; }

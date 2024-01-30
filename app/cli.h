@@ -10,8 +10,7 @@
 namespace snowball {
 namespace app {
 struct Options {
-  enum EmitType
-  {
+  enum EmitType {
     EXECUTABLE,
     OBJECT,
     LLVM_IR,
@@ -19,8 +18,7 @@ struct Options {
     SNOWBALL_IR,
   };
 
-  enum Optimization
-  {
+  enum Optimization {
     OPTIMIZE_O0 = 0x00,
     OPTIMIZE_O1 = 0x01,
     OPTIMIZE_O2 = 0x02,
@@ -75,8 +73,7 @@ struct Options {
     std::string base = "";
   } docs_opts;
 
-  enum Command
-  {
+  enum Command {
     UNKNOWN = -1,
 
     BUILD,
@@ -105,11 +102,11 @@ void bench(Options& opts, argsVector& args);
 } // namespace cli
 
 class CLI {
-public:
+ public:
   CLI(int argc, char** argv);
   Options parse();
 
-private:
+ private:
   int argc;
   char** argv;
 };

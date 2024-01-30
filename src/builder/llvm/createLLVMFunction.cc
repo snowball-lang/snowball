@@ -29,27 +29,24 @@ void setDereferenceableAttribute(llvm::Argument& arg, unsigned bytes) {
 llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
   auto innerFnType = Syntax::Transformer::getFunctionType(func->getType());
   assert(innerFnType != nullptr);
-
   if (auto x = module->getFunction(func->getMangle()); x != nullptr) { return x; }
-
   auto fnType = llvm::cast<llvm::FunctionType>(getLLVMFunctionType(innerFnType, func));
   if (func->getMangle() == "main") {
-    fnType = llvm::FunctionType::get(builder->getInt32Ty(), {builder->getInt32Ty(), builder->getInt8PtrTy()->getPointerTo()}, false);
+    fnType = llvm::FunctionType::get(builder->getInt32Ty(), {builder->getInt32Ty(), builder->getInt8PtrTy()->getPointerTo()},
+                                     false);
   }
   auto name = func->getMangle();
   auto fn = llvm::Function::Create(
-          fnType,
-          ((func->isStatic() && (!func->hasParent())) ||
-           (func->hasAttribute(Attributes::INTERNAL_LINKAGE) && !func->isDeclaration())) ?
-                  llvm::Function::InternalLinkage :
-                  llvm::Function::ExternalLinkage,
-          name,
-          module.get()
-  );
-
+            fnType,
+            ((func->isStatic() && (!func->hasParent())) ||
+             (func->hasAttribute(Attributes::INTERNAL_LINKAGE) && !func->isDeclaration())) ?
+            llvm::Function::InternalLinkage :
+            llvm::Function::ExternalLinkage,
+            name,
+            module.get()
+            );
   auto callee = (llvm::Function*) fn;
   auto attrSet = callee->getAttributes();
-
   if (func->hasAttribute(Attributes::INLINE)) {
     auto newAttrSet = attrSet.addFnAttribute(callee->getContext(), llvm::Attribute::AlwaysInline);
     callee->setAttributes(newAttrSet);
@@ -58,12 +55,10 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
     auto newAttrSet = attrSet.addFnAttribute(callee->getContext(), llvm::Attribute::NoInline);
     callee->setAttributes(newAttrSet);
   }
-
   if (!func->isDeclaration()) {
     auto DISubprogram = getDISubprogramForFunc(func);
     callee->setSubprogram(DISubprogram);
   }
-
   bool retIsArg = utils::is<types::BaseType>(func->getRetTy());
   if (retIsArg) {
     auto arg = fn->arg_begin();
@@ -73,15 +68,13 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
     attrBuilder.addAttribute(llvm::Attribute::NonNull);
     arg->addAttrs(attrBuilder);
   }
-
   for (int i = 0; i < (int)func->getArgs().size(); ++i) {
     auto llvmArg = fn->arg_begin() + i + retIsArg + func->isAnon();
     auto arg = utils::at(func->getArgs(), i);
     if (auto ref = utils::cast<types::ReferenceType>(arg.second->getType())) {
-      setDereferenceableAttribute(*llvmArg, ref->getPointedType()->sizeOf()/8);
+      setDereferenceableAttribute(*llvmArg, ref->getPointedType()->sizeOf() / 8);
     }
   }
-
   return callee;
 }
 

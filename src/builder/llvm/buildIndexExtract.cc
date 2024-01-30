@@ -17,13 +17,11 @@ void LLVMBuilder::visit(ir::IndexExtract* index) {
   if (auto x = utils::cast<types::PointerType>(basedType)) basedType = x->getPointedType();
   auto defiendType = utils::cast<types::BaseType>(basedType);
   assert(defiendType);
-
   // We add "1" becasue index #0 is a pointer to the virtual
   // table.
   // TODO: support for structs without vtable.
   // we do ctx->getVtableTy instead of x->hasVtable to avoid any issues when cloning
   auto i = index->getIndex() + (ctx->typeInfo.find(defiendType->getId())->second->hasVtable);
-
   auto leftArray = expr(indexValue.get());
   // if (utils::is<types::ReferenceType>(index->getType()) || utils::is<types::PointerType>(index->getType()))
   // leftArray = builder->CreateLoad(getLLVMType(basedType), leftArray);

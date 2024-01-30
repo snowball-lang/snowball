@@ -35,17 +35,17 @@ void hide_args() {
 void register_build_opts(Options::BuildOptions& options, std::string mode, argsVector& args) {
   cl::OptionCategory buildCategory(mode == "build" ? "Build Options" : "Run Options");
   cl::opt<Optimization> opt(
-    cl::desc("optimization mode"),
-    cl::values(
-      clEnumValN(Optimization::OPTIMIZE_O0, "O0", "No optimization"),
-      clEnumValN(Optimization::OPTIMIZE_O1, "O1", "Optimization level 1"),
-      clEnumValN(Optimization::OPTIMIZE_O2, "O2", "Optimization level 2"),
-      clEnumValN(Optimization::OPTIMIZE_O3, "O3", "Optimization level 3"),
-      clEnumValN(Optimization::OPTIMIZE_Os, "Os", "Optimization for size"),
-      clEnumValN(Optimization::OPTIMIZE_Oz, "Oz", "Optimization for size (aggressive)")),
-    cl::init(Optimization::OPTIMIZE_O1),
-    cl::cat(buildCategory),
-    cl::AlwaysPrefix);
+  cl::desc("optimization mode"),
+  cl::values(
+  clEnumValN(Optimization::OPTIMIZE_O0, "O0", "No optimization"),
+  clEnumValN(Optimization::OPTIMIZE_O1, "O1", "Optimization level 1"),
+  clEnumValN(Optimization::OPTIMIZE_O2, "O2", "Optimization level 2"),
+  clEnumValN(Optimization::OPTIMIZE_O3, "O3", "Optimization level 3"),
+  clEnumValN(Optimization::OPTIMIZE_Os, "Os", "Optimization for size"),
+  clEnumValN(Optimization::OPTIMIZE_Oz, "Oz", "Optimization for size (aggressive)")),
+  cl::init(Optimization::OPTIMIZE_O1),
+  cl::cat(buildCategory),
+  cl::AlwaysPrefix);
   cl::opt<bool> silent("silent", cl::desc("Silent mode"), cl::cat(buildCategory));
   cl::opt<std::string> file("file", cl::desc("File to compile"), cl::cat(buildCategory));
   cl::opt<bool> no_progress("no-progress", cl::desc("Disable progress bar"), cl::cat(buildCategory));
@@ -56,15 +56,15 @@ void register_build_opts(Options::BuildOptions& options, std::string mode, argsV
     auto test = cl::opt<bool>("test", cl::desc("Builds the project for testing"), cl::cat(buildCategory));
     auto bench = cl::opt<bool>("bench", cl::desc("Builds the project for benchmarking"), cl::cat(buildCategory));
     auto output = cl::opt<std::string>("output", cl::desc("Output file"), cl::cat(buildCategory));
-    auto emit = cl::opt<EmitType>("emit", 
-      cl::desc("Output type"),
-      cl::values(
-        clEnumValN(EmitType::EXECUTABLE, "exe", "Executable"),
-        clEnumValN(EmitType::OBJECT, "obj", "Object file"),
-        clEnumValN(EmitType::LLVM_IR, "llvm-ir", "LLVM IR"),
-        clEnumValN(EmitType::ASSEMBLY, "asm", "Assembly"),
-        clEnumValN(EmitType::SNOWBALL_IR, "snowball-ir", "Snowball IR")),
-      cl::init(EmitType::EXECUTABLE), cl::cat(buildCategory));
+    auto emit = cl::opt<EmitType>("emit",
+                                  cl::desc("Output type"),
+                                  cl::values(
+                                  clEnumValN(EmitType::EXECUTABLE, "exe", "Executable"),
+                                  clEnumValN(EmitType::OBJECT, "obj", "Object file"),
+                                  clEnumValN(EmitType::LLVM_IR, "llvm-ir", "LLVM IR"),
+                                  clEnumValN(EmitType::ASSEMBLY, "asm", "Assembly"),
+                                  clEnumValN(EmitType::SNOWBALL_IR, "snowball-ir", "Snowball IR")),
+                                  cl::init(EmitType::EXECUTABLE), cl::cat(buildCategory));
     cl::alias _test("t", cl::aliasopt(test), cl::desc("Alias for -test"), cl::cat(buildCategory));
     cl::alias _bench("b", cl::aliasopt(bench), cl::desc("Alias for -bench"), cl::cat(buildCategory));
     cl::alias _output("o", cl::aliasopt(output), cl::desc("Alias for -output"), cl::cat(buildCategory));
@@ -91,7 +91,6 @@ void run(Options& opts, argsVector& args) {
   auto& runOpts = opts.run_opts;
   cl::OptionCategory runCategory("Extra run Options");
   cl::opt<bool> jit("jit", cl::desc("Run the program in JIT mode"), cl::cat(runCategory));
-  
   std::vector<std::string> progArgs;
   bool addToArgs = false;
   size_t argIndex = 0;
@@ -107,7 +106,6 @@ void run(Options& opts, argsVector& args) {
     }
     argIndex++;
   }
-
   register_build_opts(runOpts, "run", usedArgs);
   runOpts.jit = jit;
   runOpts.progArgs = progArgs;
@@ -121,19 +119,19 @@ void build(Options& opts, argsVector& args) {
 void test(Options& opts, argsVector& args) {
   cl::OptionCategory buildCategory("Test Options");
   cl::opt<Optimization> opt(
-    cl::desc("optimization mode"),
-    cl::values(
-      clEnumValN(Optimization::OPTIMIZE_O0, "O0", "No optimization"),
-      clEnumValN(Optimization::OPTIMIZE_O1, "O1", "Optimization level 1"),
-      clEnumValN(Optimization::OPTIMIZE_O2, "O2", "Optimization level 2"),
-      clEnumValN(Optimization::OPTIMIZE_O3, "O3", "Optimization level 3"),
-      clEnumValN(Optimization::OPTIMIZE_Os, "Os", "Optimization for size"),
-      clEnumValN(Optimization::OPTIMIZE_Oz, "Oz", "Optimization for size (aggressive)"),
-      clEnumValN(Optimization::OPTIMIZE_O0, "Debug", "Debug mode (no optimization)"),
-      clEnumValN(Optimization::OPTIMIZE_O3, "Release", "Release mode (optimization level 3)")
-      ),
-    cl::init(Optimization::OPTIMIZE_O3),
-    cl::cat(buildCategory), cl::AlwaysPrefix);
+  cl::desc("optimization mode"),
+  cl::values(
+  clEnumValN(Optimization::OPTIMIZE_O0, "O0", "No optimization"),
+  clEnumValN(Optimization::OPTIMIZE_O1, "O1", "Optimization level 1"),
+  clEnumValN(Optimization::OPTIMIZE_O2, "O2", "Optimization level 2"),
+  clEnumValN(Optimization::OPTIMIZE_O3, "O3", "Optimization level 3"),
+  clEnumValN(Optimization::OPTIMIZE_Os, "Os", "Optimization for size"),
+  clEnumValN(Optimization::OPTIMIZE_Oz, "Oz", "Optimization for size (aggressive)"),
+  clEnumValN(Optimization::OPTIMIZE_O0, "Debug", "Debug mode (no optimization)"),
+  clEnumValN(Optimization::OPTIMIZE_O3, "Release", "Release mode (optimization level 3)")
+  ),
+  cl::init(Optimization::OPTIMIZE_O3),
+  cl::cat(buildCategory), cl::AlwaysPrefix);
   cl::opt<bool> silent("silent", cl::desc("Silent mode"), cl::cat(buildCategory));
   cl::opt<bool> no_progress("no-progress", cl::desc("Disable progress bar"), cl::cat(buildCategory));
   cl::alias _silent("s", cl::aliasopt(silent), cl::desc("Alias for -silent"), cl::cat(buildCategory));
@@ -179,19 +177,19 @@ void docs(Options& opts, argsVector& args) {
 void bench(Options& opts, argsVector& args) {
   cl::OptionCategory benchCategory("Benchmark Options");
   cl::opt<Optimization> opt(
-    cl::desc("optimization mode"),
-    cl::values(
-      clEnumValN(Optimization::OPTIMIZE_O0, "O0", "No optimization"),
-      clEnumValN(Optimization::OPTIMIZE_O1, "O1", "Optimization level 1"),
-      clEnumValN(Optimization::OPTIMIZE_O2, "O2", "Optimization level 2"),
-      clEnumValN(Optimization::OPTIMIZE_O3, "O3", "Optimization level 3"),
-      clEnumValN(Optimization::OPTIMIZE_Os, "Os", "Optimization for size"),
-      clEnumValN(Optimization::OPTIMIZE_Oz, "Oz", "Optimization for size (aggressive)"),
-      clEnumValN(Optimization::OPTIMIZE_O0, "Debug", "Debug mode (no optimization)"),
-      clEnumValN(Optimization::OPTIMIZE_O3, "Release", "Release mode (optimization level 3)")
-      ),
-    cl::init(Optimization::OPTIMIZE_O3),
-    cl::cat(benchCategory), cl::AlwaysPrefix);
+  cl::desc("optimization mode"),
+  cl::values(
+  clEnumValN(Optimization::OPTIMIZE_O0, "O0", "No optimization"),
+  clEnumValN(Optimization::OPTIMIZE_O1, "O1", "Optimization level 1"),
+  clEnumValN(Optimization::OPTIMIZE_O2, "O2", "Optimization level 2"),
+  clEnumValN(Optimization::OPTIMIZE_O3, "O3", "Optimization level 3"),
+  clEnumValN(Optimization::OPTIMIZE_Os, "Os", "Optimization for size"),
+  clEnumValN(Optimization::OPTIMIZE_Oz, "Oz", "Optimization for size (aggressive)"),
+  clEnumValN(Optimization::OPTIMIZE_O0, "Debug", "Debug mode (no optimization)"),
+  clEnumValN(Optimization::OPTIMIZE_O3, "Release", "Release mode (optimization level 3)")
+  ),
+  cl::init(Optimization::OPTIMIZE_O3),
+  cl::cat(benchCategory), cl::AlwaysPrefix);
   cl::opt<bool> silent("silent", cl::desc("Silent mode"), cl::cat(benchCategory));
   cl::opt<bool> no_progress("no-progress", cl::desc("Disable progress bar"), cl::cat(benchCategory));
   cl::alias _silent("s", cl::aliasopt(silent), cl::desc("Alias for -silent"), cl::cat(benchCategory));
@@ -215,10 +213,10 @@ void clean(Options& opts, argsVector& args) {
 
 Options CLI::parse() {
   Options opts;
-  cl::SetVersionPrinter([](raw_ostream& OS) {
-    OS SNOWBALL_PRINT_MESSAGE;
-  });
-  std::vector<const char *> args{argv[0]};
+  cl::SetVersionPrinter([](raw_ostream & OS) {
+                        OS SNOWBALL_PRINT_MESSAGE;
+                        });
+  std::vector<const char*> args{argv[0]};
   std::string mode;
   if (argc < 2) {
     args.push_back("--help");
@@ -230,7 +228,8 @@ Options CLI::parse() {
   }
   std::string argv0 = std::string(args[0]) + " " + mode;
   args[0] = argv0.data();
-  static std::unordered_map<std::string, std::pair<Options::Command, std::function<void(Options&, argsVector&)>>> modes = {
+  static std::unordered_map<std::string, std::pair<Options::Command, std::function<void(Options&, argsVector&)>>> modes
+  = {
     {"run", {Options::RUN, cli::modes::run}},
     {"build", {Options::BUILD, cli::modes::build}},
     {"test", {Options::TEST, cli::modes::test}},

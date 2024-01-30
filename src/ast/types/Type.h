@@ -7,13 +7,13 @@
 #include <string>
 #include <vector>
 
-#define SNOWBALL_TYPE_COPIABLE(X)                                                                                      \
+#define SNOWBALL_TYPE_COPIABLE(X) \
   Type* copy() const override { return new X(*this); }
 
 #ifndef __SNOWBALL_AST_TYPE_H_
 #define __SNOWBALL_AST_TYPE_H_
 
-#define SNOWBALL_MUTABLE_CAST_CHECK                                                                                    \
+#define SNOWBALL_MUTABLE_CAST_CHECK \
   if (!_mutable && ty->isMutable()) return false;
 
 /**
@@ -40,7 +40,7 @@ class ReferenceType;
 class InterfaceType;
 
 class Type {
-protected:
+ protected:
   // Type's name
   std::string name;
   // Whether or not a type is mutable
@@ -48,9 +48,8 @@ protected:
   // A type implementation
   std::vector<InterfaceType*> impls;
 
-public:
-  enum Kind
-  {
+ public:
+  enum Kind {
     TYPE,
     CLASS,
     REF,
@@ -58,7 +57,7 @@ public:
     ENUM,
   } kind;
 
-public:
+ public:
   explicit Type(Kind p_kind, bool isMutable = false);
   explicit Type(Kind p_kind, std::string p_name, bool isMutable = false);
 
@@ -92,7 +91,7 @@ public:
   virtual Type* copy() const;
 
   /// @brief Transform the type into a syntax type reference node.
-  ///	This is useful for cases such as class methods where the first
+  /// This is useful for cases such as class methods where the first
   /// argument needs to be "self" (aka. A type reference to it's
   /// parent class)
   virtual Syntax::Expression::TypeRef* toRef();

@@ -9,15 +9,15 @@
 #ifndef __SNOWBALL_AST_VISITOR_H_
 #define __SNOWBALL_AST_VISITOR_H_
 
-#define ACCEPT(Node)                                                                                                   \
+#define ACCEPT(Node) \
   virtual void visit(Node* p_node) { assert(false && "BUG: Visitor::visit called"); }
 
 namespace snowball {
 namespace Syntax {
 
 class Visitor : public SrcObject {
-public:
-  Visitor(const SourceInfo* srci) : SrcObject(srci){};
+ public:
+  Visitor(const SourceInfo* srci) : SrcObject(srci) {};
   virtual void visitGlobal(std::vector<Node*>);
 
 #include "../../defs/accepts.def"

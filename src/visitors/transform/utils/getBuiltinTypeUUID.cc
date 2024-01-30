@@ -26,7 +26,6 @@ std::string Transformer::getBuiltinTypeUUID(types::Type* ty, const std::string& 
     assert(ptr);
     assert(ptr->getName() == name);
     assert(ptr->getGenerics().size() == 1);
-
     auto pointedType = ptr->getGenerics().at(0);
     if (ty->is(pointedType)) return name + ":" + std::to_string(uuid);
     uuid++;

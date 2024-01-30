@@ -8,10 +8,9 @@ namespace snowball {
 namespace Syntax {
 
 const DBGSourceInfo* Transformer::getExpansionData(const DBGSourceInfo* defaultDBG) {
-  if (auto [dbg, call] = ctx->getFirstMacro(); dbg && call) {
+  if (auto[dbg, call] = ctx->getFirstMacro(); dbg && call) {
     return dbg;
   }
-
   return defaultDBG;
 }
 

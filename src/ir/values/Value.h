@@ -8,7 +8,7 @@
 #ifndef __SNOWBALL_VALUE_H_
 #define __SNOWBALL_VALUE_H_
 
-#define SN_GENERATOR_VISITS                                                                                            \
+#define SN_GENERATOR_VISITS \
   void visit(codegen::ValueVisitor* v) override { v->visit(this); };
 
 /**
@@ -26,7 +26,7 @@ class Value : public ModuleHolder, public DBGObject {
   Value(const Value&&) = delete;
   Value& operator=(const Value&) = delete;
 
-public:
+ public:
   virtual ~Value() noexcept = default;
   Value() = default;
   Value(types::Type* p_type) { type = p_type; };

@@ -17,16 +17,16 @@
       arg = builder->CreateLoad(closure.closureType->getPointerTo(), builder->CreateStructGEP(getLambdaContextType(), ctx->getCurrentFunction()->getArg(argumentIndex), 1));\
     } else {\
       closure = ctx->closures.at(x->getId());\
-      arg = closure.closure;        \
+      arg = closure.closure; \
     }\
     auto index = std::distance(\
-      closure.variables.begin(),\
-      std::find_if(\
-        closure.variables.begin(),\
-        closure.variables.end(),\
-        [variable](auto v2) { return v2 == variable->getId(); }\
-      )\
-    );\
+                               closure.variables.begin(),\
+                               std::find_if(\
+                                            closure.variables.begin(),\
+                                            closure.variables.end(),\
+                                            [variable](auto v2) { return v2 == variable->getId(); }\
+                                           )\
+                              );\
     assert(index != (int)closure.variables.size());\
     value = builder->CreateStructGEP(closure.closureType, arg, index);\
   } else {\

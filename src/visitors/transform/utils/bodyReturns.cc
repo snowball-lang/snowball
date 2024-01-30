@@ -41,10 +41,8 @@ bool Transformer::bodyReturns(std::vector<Node*> exprs) {
       }
       return allCaseReturn;
     }
-
     // Ignore unhandled!
   }
-
   return false;
 }
 

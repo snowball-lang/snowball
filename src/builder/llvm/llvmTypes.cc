@@ -17,7 +17,7 @@ namespace codegen {
 
 llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid, bool ignoreMemorySize) {
   if (auto x = cast<types::IntType>(t)) {
-    if (x->getBits() == 1 && !ignoreMemorySize) return builder->getInt8Ty(); 
+    if (x->getBits() == 1 && !ignoreMemorySize) return builder->getInt8Ty();
     return builder->getIntNTy(x->getBits());
   } else if (auto x = cast<types::FloatType>(t)) {
     switch (x->getBits()) {
@@ -42,7 +42,7 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid, bool ig
     if (types.find(e->getId()) != types.end()) return types.find(e->getId())->second;
     auto size = e->sizeOf();
     auto type = llvm::StructType::create(*context, _SN_ENUM_PREFIX + e->getMangledName());
-    type->setBody({builder->getInt8Ty(), llvm::ArrayType::get(builder->getInt8Ty(), (size/8)-1)});
+    type->setBody({builder->getInt8Ty(), llvm::ArrayType::get(builder->getInt8Ty(), (size / 8) - 1)});
     types.insert({e->getId(), type});
     return type;
   } else if (auto c = cast<types::BaseType>(t)) {
@@ -52,9 +52,9 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid, bool ig
     } else {
       auto isStruct = utils::cast<types::DefinedType>(c);
       s = llvm::StructType::create(
-              *context,
-              ((isStruct && isStruct->isStruct()) ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) + c->getMangledName()
-      );
+          *context,
+          ((isStruct && isStruct->isStruct()) ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) + c->getMangledName()
+          );
       types.insert({c->getId(), s});
       assert(ctx->typeInfo.find(c->getId()) != ctx->typeInfo.end());
       c = ctx->typeInfo.find(c->getId())->second.get();
@@ -63,24 +63,23 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid, bool ig
     if (auto c = utils::cast<types::DefinedType>(t)) {
       auto fields = c->getFields();
       generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Type*>(
-              fields, [&](types::DefinedType::ClassField* t) { return getLLVMType(t->type); }
-      );
+                        fields, [&](types::DefinedType::ClassField * t) { return getLLVMType(t->type); }
+                        );
     } else if (auto c = utils::cast<types::InterfaceType>(t)) {
       auto fields = c->getFields();
       generatedFields =
-              vector_iterate<types::InterfaceType::Member*, llvm::Type*>(fields, [&](types::InterfaceType::Member* t) {
-                return getLLVMType(t->type);
-              });
+      vector_iterate<types::InterfaceType::Member*, llvm::Type*>(fields, [&](types::InterfaceType::Member * t) {
+        return getLLVMType(t->type);
+        });
     } else {
       Syntax::E<BUG>(FMT("Undefined type! ('%s')", t->getName().c_str()));
     }
-
     if (c->hasVtable) {
       (void)getVtableType(c); // generate vtable type
       generatedFields.insert(
-              generatedFields.begin(),
-              llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()
-      );
+                     generatedFields.begin(),
+                     llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()
+                     );
     } else if (auto x = utils::cast<types::DefinedType>(c); x && x->hasParent()) {
       auto p = x;
       while (p->hasParent()) {
@@ -89,9 +88,9 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid, bool ig
         if (!p) break;
         (void)getVtableType(p); // generate vtable type
         generatedFields.insert(
-                generatedFields.begin(),
-                llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()
-        );
+                       generatedFields.begin(),
+                       llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()
+                       );
       }
     }
     s->setBody(generatedFields);
@@ -99,30 +98,25 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid, bool ig
   } else {
     Syntax::E<BUG>(FMT("Undefined type! ('%s')", t->getName().c_str()));
   }
-
   assert(false);
   return nullptr; // to avoid warnings
 }
 
 llvm::FunctionType* LLVMBuilder::getLLVMFunctionType(types::FunctionType* fn, const ir::Func* func) {
   auto argTypes =
-          vector_iterate<types::Type*, llvm::Type*>(fn->getArgs(), [&](types::Type* arg) { return getLLVMType(arg); });
-
+  vector_iterate<types::Type*, llvm::Type*>(fn->getArgs(), [&](types::Type * arg) { return getLLVMType(arg); });
   auto ret = getLLVMType(fn->getRetType());
   if (func && func->isAnon()) {
     argTypes.insert(argTypes.begin(), getLambdaContextType()->getPointerTo());
   }
-
   if (utils::is<types::BaseType>(fn->getRetType()) &&
       !(func && func->getAttributeArgs(Attributes::LLVM_FUNC).count("sanitise_void_return"))) {
     argTypes.insert(argTypes.begin(), ret->getPointerTo());
     ret = builder->getVoidTy();
   }
-
   if (func && func->getAttributeArgs(Attributes::LLVM_FUNC).count("sanitise_void_return")) {
     if (ret->isVoidTy()) { ret = builder->getInt8Ty(); }
   }
-
   return llvm::FunctionType::get(ret, argTypes, fn->isVariadic());
 }
 
@@ -131,8 +125,8 @@ llvm::Type* LLVMBuilder::createEnumFieldType(types::EnumType* ty, std::string fi
   auto name = _SN_ENUM_PREFIX + ty->getMangledName() + "__" + field;
   if (enumTypes.find(name) != enumTypes.end()) return enumTypes.find(name)->second;
   auto enumField = *std::find_if(ty->getFields().begin(), ty->getFields().end(), [&](auto f) {
-    return f.name == field;
-  });
+                                 return f.name == field;
+                                 });
   auto dataLayout = module->getDataLayout();
   auto enumSize = dataLayout.getStructLayout((llvm::StructType*)getLLVMType(ty))->getSizeInBits();
   // convert this to a struct and an array of bytes at the end to fix alignment issues
@@ -143,10 +137,10 @@ llvm::Type* LLVMBuilder::createEnumFieldType(types::EnumType* ty, std::string fi
   generatedFields.push_back(builder->getInt8Ty()); // enum field
   for (auto t : fieldTypes) {
     auto llvmType = getLLVMType(t);
-    fieldSize += t->sizeOf()*8;
+    fieldSize += t->sizeOf() * 8;
     generatedFields.push_back(llvmType);
   }
-  auto rem = (enumSize - (fieldSize - 8))/8/8;
+  auto rem = (enumSize - (fieldSize - 8)) / 8 / 8;
   if (rem > 0)
     generatedFields.push_back(llvm::ArrayType::get(builder->getInt8Ty(), rem));
   type->setBody(generatedFields);

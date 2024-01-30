@@ -11,7 +11,7 @@
 namespace snowball {
 
 class Logger {
-public:
+ public:
   static void log(std::string message);
   static void rlog(std::string message);
   static void elog(std::string message);

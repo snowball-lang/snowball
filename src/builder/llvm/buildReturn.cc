@@ -17,7 +17,6 @@ using namespace utils;
 
 void LLVMBuilder::visit(ir::Return* ret) {
   auto exprValue = ret->getExpr();
-
   llvm::Value* val = nullptr;
   if (exprValue != nullptr) {
     // case: "let a = x();" where x is a function returning a type that's not a pointer
@@ -32,21 +31,17 @@ void LLVMBuilder::visit(ir::Return* ret) {
         //ctx->retValueUsedFromArg = true;
         //doNotMove = true;
       }
-
       auto e = build(exprValue.get());
       ctx->retValueUsedFromArg = false;
-
       auto sretBB = llvm::BasicBlock::Create(*context, "sret", ctx->getCurrentFunction());
       builder->CreateBr(sretBB);
       builder->SetInsertPoint(sretBB);
-
       if (llvm::isa<llvm::LoadInst>(e)) { e = llvm::cast<llvm::LoadInst>(e)->getPointerOperand(); }
-
       if (!doNotMove) {
         auto layout = module->getDataLayout().getStructLayout(
-                llvm::cast<llvm::StructType>(getLLVMType(ret->getType())));
+                      llvm::cast<llvm::StructType>(getLLVMType(ret->getType())));
         builder->CreateMemCpy(
-          retArg, llvm::MaybeAlign(), e, llvm::MaybeAlign(), builder->getInt64(layout->getSizeInBytes())
+        retArg, llvm::MaybeAlign(), e, llvm::MaybeAlign(), builder->getInt64(layout->getSizeInBytes())
         );
         //builder->CreateStore(builder->CreateLoad(getLLVMType(ret->getType()), e), retArg);
       } else {
@@ -54,17 +49,14 @@ void LLVMBuilder::visit(ir::Return* ret) {
         builder->CreateUnreachable();
       }
       // auto store = builder->CreateStore(load(e, ret->getType()), retArg);
-
       builder->CreateRetVoid();
       return;
     }
-
     auto e = expr(exprValue.get());
     val = builder->CreateRet(e);
   } else {
     val = builder->CreateRetVoid();
   }
-
   this->value = val;
 }
 

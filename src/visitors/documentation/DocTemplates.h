@@ -62,9 +62,9 @@ std::string typeToHtml(Expression::TypeRef* type);
 
 /**
  * @brief Creates a documentation page for a function.
- * 
+ *
  * This function creates a documentation page for a function.
- * 
+ *
  * @param node The function definition node.
  * @param context The documentation generator context.
  * @return std::string The documentation page.
@@ -73,7 +73,7 @@ std::string typeToHtml(Expression::TypeRef* type);
 void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, DocumentationPage& page);
 /**
  * @brief Creates a documentation page for a type.
- * 
+ *
  * @param node The type definition node.
  * @param context The documentation generator context.
  * @return DocumentationPage The documentation page.
@@ -81,7 +81,7 @@ void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, Doc
 void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, DocumentationPage& page);
 /**
  * @brief Creates a documentation page for a module.
- * 
+ *
  * @param nodes The nodes in the module.
  * @param context The documentation generator context.
  * @return DocumentationPage The documentation page.
@@ -90,7 +90,7 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
 void createModulePage(std::vector<Syntax::Node*> nodes, DocGenContext context, DocumentationPage& page);
 /**
  * @brief Creates a documentation page for a macro.
- * 
+ *
  * @param node The macro node.
  * @param context The documentation generator context.
  * @return DocumentationPage The documentation page.
@@ -99,7 +99,7 @@ void createModulePage(std::vector<Syntax::Node*> nodes, DocGenContext context, D
 void createMacroPage(Macro* node, DocGenContext context, DocumentationPage& page);
 /**
  * @brief Creates a documentation page for a namespace.
- * 
+ *
  * @param node The namespace node.
  * @param context The documentation generator context.
  * @param page The documentation page.
@@ -109,7 +109,7 @@ void createMacroPage(Macro* node, DocGenContext context, DocumentationPage& page
 void createNamespacePage(Statement::Namespace* node, DocGenContext context, DocumentationPage& page);
 /**
  * @brief Creates a documentation page for a variable.
- * 
+ *
  * @param node The variable node.
  * @param context The documentation generator context.
  * @param page The documentation page.
@@ -119,7 +119,7 @@ void createNamespacePage(Statement::Namespace* node, DocGenContext context, Docu
 void createVariablePage(Statement::VariableDecl* node, DocGenContext context, DocumentationPage& page);
 /**
  * @brief Creates a documentation page for the module index.
- * 
+ *
  * @param modules The modules in the program.
  * @param context The documentation generator context.
  * @param page The documentation page.
@@ -128,7 +128,7 @@ void createVariablePage(Statement::VariableDecl* node, DocGenContext context, Do
 void createRootPage(std::vector<std::string> modules, DocGenContext context, DocumentationPage& page);
 /**
  * @brief Creates a documentation page for a type alias.
- * 
+ *
  * @param node The type alias node.
  * @param context The documentation generator context.
  * @param page The documentation page.

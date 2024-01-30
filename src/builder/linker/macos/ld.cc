@@ -30,21 +30,16 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   }
   if (!ctx.isDynamic)
     linkerArgs.push_back("-static");
-    
   linkerArgs.push_back("-arch");
   // TODO: check this out: https://codebrowser.dev/llvm/clang/lib/Driver/ToolChain.cpp.html
   linkerArgs.push_back(target.getArchName().str());
-
   linkerArgs.push_back("-L.");
   linkerArgs.push_back("-L/opt/homebrew/lib");
-
   // TODO: we might not find it and we will need to search for System.B
-
   for (auto& rpath : rpaths) {
-    linkerArgs.push_back("-L"+rpath);
-    linkerArgs.push_back("-Wl,-rpath,"+rpath);
+    linkerArgs.push_back("-L" + rpath);
+    linkerArgs.push_back("-Wl,-rpath," + rpath);
   }
-
   linkerArgs.push_back("-o");
   linkerArgs.push_back(output);
 #if _SNOWBALL_CODEGEN_DEBUG

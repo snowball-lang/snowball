@@ -18,7 +18,6 @@ namespace commands {
 int clean() {
   Logger::message("Cleaning", "Removing up build files");
   if (fs::exists(".sn")) fs::remove_all(".sn");
-
   return 0;
 }
 

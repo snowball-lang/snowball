@@ -21,16 +21,12 @@ std::string TypeAlias::getPrettyName() const {
   auto baseName = base->getPrettyName();
   auto base = module->isMain() ? "" : module->getName() + "::";
   auto n = base + getName();
-
   std::string genericString; // Start args tag
   if (generics.size() > 0) {
     genericString = "<";
-
     for (auto g : generics) { genericString += g->getPrettyName(); }
-
     genericString += ">";
   }
-
   return n + genericString + " { aka " + baseName + " }";
 }
 

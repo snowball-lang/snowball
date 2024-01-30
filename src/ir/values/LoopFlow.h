@@ -17,12 +17,12 @@ namespace ir {
  * @brief Representation of a loop flow statement in the IR.
  */
 class LoopFlow : public AcceptorExtend<LoopFlow, Value> {
-public:
+ public:
   using Type = Syntax::Statement::LoopFlow::FlowType;
-private:
+ private:
   Type flowType;
-public:
-  explicit LoopFlow(Type type) : flowType(type){};
+ public:
+  explicit LoopFlow(Type type) : flowType(type) {};
 
   /**
    * @return The type of the loop flow statement.

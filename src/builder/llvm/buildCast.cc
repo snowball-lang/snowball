@@ -19,18 +19,15 @@ void LLVMBuilder::visit(ir::Cast* c) {
   auto ty = c->getCastType();
   auto llvmType = getLLVMType(ty);
   setDebugInfoLoc(c);
-
   v = load(v, vTy);
-
   if (v->getType() == llvmType) {
     // note: this will always be true for pointer casting since llvm 15 (using opaque pointers)
     this->ctx->doNotLoadInMemory = true;
     this->value = v;
     return;
   }
-
   // Check if both types are integers
-  if (IS_INTEGER(vTy) && IS_INTEGER(ty)) {                    // i[n] <-> i[n]
+  if (IS_INTEGER(vTy) && IS_INTEGER(ty)) { // i[n] <-> i[n]
     // utils::cast<types::IntType>(vTy)->isSigned()
     if (types::isIntType(vTy, 1)) {
       // We use ZExt for bools because i1 can be considered as a sign, so
@@ -38,9 +35,10 @@ void LLVMBuilder::visit(ir::Cast* c) {
       // i1 '1' to i8, you will get 111...1110, which is -1.
       this->value = builder->CreateZExt(v, llvmType);
     } else {
-      this->value = builder->CreateIntCast(v, llvmType, utils::cast<types::IntType>(ty)->isSigned()); // TODO: check if it's actually signed
+      this->value = builder->CreateIntCast(v, llvmType,
+                                           utils::cast<types::IntType>(ty)->isSigned()); // TODO: check if it's actually signed
     }
-  } else if (IS_INTEGER(vTy) && IS_FLOAT(ty)) {               // i[n] -> float
+  } else if (IS_INTEGER(vTy) && IS_FLOAT(ty)) { // i[n] -> float
     // cast signed integer to float
     this->value = utils::cast<types::IntType>(vTy)->isSigned() ?
                   builder->CreateSIToFP(v, llvmType) :

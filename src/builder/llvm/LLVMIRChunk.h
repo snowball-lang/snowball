@@ -7,8 +7,7 @@ namespace Syntax {
 
 /// @brief A node representing a chunk of the LLVM IR block.
 struct LLVMIRChunk {
-  enum
-  {
+  enum {
     LLCode,
     TypeAccess
   } type;

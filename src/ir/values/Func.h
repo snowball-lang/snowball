@@ -24,15 +24,15 @@ namespace ir {
 
 /// @brief Representation of a function in the IR
 class Func : public AcceptorExtend<Func, Value>,
-             public IdMixin,
-             public AcceptorExtend<Func, Syntax::Statement::Privacy>,
-             public AcceptorExtend<Func, Syntax::Statement::GenericContainer<std::pair<std::string, types::Type*>>>,
-             public AcceptorExtend<Func, Syntax::AttributeHolder> {
-public:
+  public IdMixin,
+  public AcceptorExtend<Func, Syntax::Statement::Privacy>,
+  public AcceptorExtend<Func, Syntax::Statement::GenericContainer<std::pair<std::string, types::Type*>>>,
+  public AcceptorExtend<Func, Syntax::AttributeHolder> {
+ public:
   // Utility types
   using FunctionArgs = std::list<std::pair<std::string, std::shared_ptr<Argument>>>;
 
-private:
+ private:
   /// When a function is variadic, it means that
   /// it can take a variable number of arguments.
   bool variadic = false;
@@ -104,7 +104,7 @@ private:
   /// @brief Parent scope where the anon. function is declared in.
   ///  This is used for things such as; determining if a function
   ///  is declared inside a class or not, etc...
-  std::shared_ptr<Func> parentScope = nullptr; 
+  std::shared_ptr<Func> parentScope = nullptr;
 
   /// @brief If the anon. function uses variables from the parent
   ///  scope.
@@ -113,7 +113,7 @@ private:
   Func(const Func&) = delete;
   Func& operator=(Func const&);
 
-public:
+ public:
 #define DEFAULT bool declaration = false, bool variadic = false, bool isAnon = false, types::DefinedType *ty = nullptr
 
   explicit Func(std::string identifier, DEFAULT);
@@ -219,7 +219,7 @@ public:
 
   // Set a visit handler for the generators
   SN_GENERATOR_VISITS
-public:
+ public:
   /**
    * @brief Static function to detect if it's external or not
    * @c setExternalName @c externalName
@@ -239,9 +239,9 @@ public:
     auto numProvidedArgs = arguments.size();
     int numDefaultArgs = 0;
     // DUMP((std::is_same_v<T, Argument>::value))
-    //  Calculate the number of default arguments
+    // Calculate the number of default arguments
     if (numFunctionArgs > numProvidedArgs) {
-      if constexpr (std::is_same_v<T, Syntax::Expression::Param*>) {
+      if constexpr(std::is_same_v<T, Syntax::Expression::Param*>) {
         for (size_t i = numProvidedArgs; i < numFunctionArgs; i++) {
           if (functionArgs.at(i)->hasDefaultValue()) {
             numDefaultArgs++;
@@ -253,7 +253,6 @@ public:
         }
       }
     }
-
     return (numFunctionArgs - numDefaultArgs == numProvidedArgs) || (numFunctionArgs <= arguments.size() && isVariadic);
   }
 

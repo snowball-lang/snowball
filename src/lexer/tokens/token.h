@@ -10,8 +10,7 @@
 #define __SNOWBALL_TOKEN_H_
 
 namespace snowball {
-enum class TokenType
-{
+enum class TokenType {
   /*
   | Indentifiers
   |---------------
@@ -47,21 +46,21 @@ enum class TokenType
   | This are the single
   | characters tokens
   */
-  SYM_AT,          // Symbol: @
-  SYM_DOT,         // Symbol: .
-  SYM_HASH,        // Symbol: #
-  SYM_COMMA,       // Symbol: ,
-  SYM_COLLON,      // Symbol: :
-  SYM_COLCOL,      // Symbol: ::
-  SYM_DOLLAR,      // Symbol: $
-  SYM_QUESTION,    // Symbol: ?
+  SYM_AT, // Symbol: @
+  SYM_DOT, // Symbol: .
+  SYM_HASH, // Symbol: #
+  SYM_COMMA, // Symbol: ,
+  SYM_COLLON, // Symbol: :
+  SYM_COLCOL, // Symbol: ::
+  SYM_DOLLAR, // Symbol: $
+  SYM_QUESTION, // Symbol: ?
   SYM_SEMI_COLLON, // Symbol: ;
 
   // |- BRACKETS -|
-  BRACKET_LCURLY,   // Symbol: {
-  BRACKET_RCURLY,   // Symbol: }
-  BRACKET_LPARENT,  // Symbol: (
-  BRACKET_RPARENT,  // Symbol: )
+  BRACKET_LCURLY, // Symbol: {
+  BRACKET_RCURLY, // Symbol: }
+  BRACKET_LPARENT, // Symbol: (
+  BRACKET_RPARENT, // Symbol: )
   BRACKET_RSQUARED, // Symbol: [
   BRACKET_LSQUARED, // Symbol: ]
 
@@ -81,17 +80,17 @@ enum class TokenType
   // TODO: Exponential
 
   // Single characters
-  OP_MUL,   // Symbol: *
-  OP_MOD,   // Symbol: %
-  OP_DIV,   // Symbol: /
-  OP_PLUS,  // Symbol: +
+  OP_MUL, // Symbol: *
+  OP_MOD, // Symbol: %
+  OP_DIV, // Symbol: /
+  OP_PLUS, // Symbol: +
   OP_MINUS, // Symbol: -
 
   // Double characters
-  OP_MULEQ,   // Symbol: *=
-  OP_DIVEQ,   // Symbol: /=
-  OP_MOD_EQ,  // Symbol: %=
-  OP_PLUSEQ,  // Symbol: +=
+  OP_MULEQ, // Symbol: *=
+  OP_DIVEQ, // Symbol: /=
+  OP_MOD_EQ, // Symbol: %=
+  OP_PLUSEQ, // Symbol: +=
   OP_MINUSEQ, // Symbol: -=
 
   /*
@@ -109,9 +108,9 @@ enum class TokenType
 
   // Double character tokens
   OP_ARROW, // Symbol: =>
-  OP_EQEQ,  // Symbol: ==
-  OP_GTEQ,  // Symbol: >=
-  OP_LTEQ,  // Symbol: <=
+  OP_EQEQ, // Symbol: ==
+  OP_GTEQ, // Symbol: >=
+  OP_LTEQ, // Symbol: <=
   OP_NOTEQ, // Symbol: !=
 
   /*
@@ -123,24 +122,24 @@ enum class TokenType
   */
 
   // Single character tokens
-  OP_EQ,  // Symbol: =
+  OP_EQ, // Symbol: =
   OP_NOT, // Symbol: !
 
   // Double character tokens
   OP_AND, // Symbol: &&
-  OP_OR,  // Symbol: ||
+  OP_OR, // Symbol: ||
 
   // Bitwise operations
   OP_BIT_NOT, // Symbol: ~
-  OP_BIT_OR,  // Symbol: |
+  OP_BIT_OR, // Symbol: |
   OP_BIT_AND, // Symbol: &
   OP_BIT_XOR, // Symbol: ^
 
-  OP_BIT_OR_EQ,     // Symbol: |=
-  OP_BIT_RSHIFT,    // Symbol: |>>
-  OP_BIT_LSHIFT,    // Symbol: <<
-  OP_BIT_AND_EQ,    // Symbol: &=
-  OP_BIT_XOR_EQ,    // Symbol: ^=
+  OP_BIT_OR_EQ, // Symbol: |=
+  OP_BIT_RSHIFT, // Symbol: |>>
+  OP_BIT_LSHIFT, // Symbol: <<
+  OP_BIT_AND_EQ, // Symbol: &=
+  OP_BIT_XOR_EQ, // Symbol: ^=
   OP_BIT_RSHIFT_EQ, // Symbol: >>=
   OP_BIT_LSHIFT_EQ, // Symbol: <<=
 
@@ -152,48 +151,48 @@ enum class TokenType
   | special meanings to the
   | interpreter.
   */
-  KWORD__START__POINT,  // All keywords must be grater than this
-  KWORD_IF,             // Symbol: if
-  KWORD_VAR,            // Symbol: let
-  KWORD_NEW,            // Symbol: new
-  KWORD_THROW,          // Symbol: raise
-  KWORD_FOR,            // Symbol: for
-  KWORD_ENUM,           // Symbol: enum
-  KWORD_FUNC,           // Symbol: fn
-  KWORD_OPERATOR,       // Symbol: operator
-  KWORD_MACRO,          // Symbol: macro
-  KWORD_ELSE,           // Symbol: else
-  KWORD_BREAK,          // Symbol: break
-  KWORD_CONST,          // Symbol: const
-  KWORD_SUPER,          // Symbol: super
-  KWORD_WHILE,          // Symbol: while
-  KWORD_EXTERN,         // Synbol: extern
-  KWORD_VIRTUAL,        // Synbol: virtual
-  KWORD_OVERRIDE,       // Synbol: override
-  KWORD_CLASS,          // Symbol: class
-  KWORD_AS,             // Symbol: as
-  KWORD_IMPORT,         // Symbol: use
-  KWORD_UNSAFE,         // Symbol: unsafe
-  KWORD_CONSTEXPR,      // Symbol: constexpr
-  KWORD_TYPEDEF,        // Symbol: type
-  KWORD_MUTABLE,        // Symbol: mut
-  KWORD_DO,             // Symbol: do
-  KWORD_NAMESPACE,      // Symbol: namespace
-  KWORD_STRUCT,         // Symbol: struct
-  KWORD_PUBLIC,         // Symbol: pub
-  KWORD_CASE,           // Symbol: case
-  KWORD_SWITCH,         // Symbol: switch
-  KWORD_STATIC,         // Symbol: static
-  KWORD_RETURN,         // Symbol: return
-  KWORD_PRIVATE,        // Symbol: priv
-  KWORD_DECLTYPE,       // Symbol: decltype
-  KWORD_DEFAULT,        // Symbol: default
-  KWORD_TRY,            // Symbol: try
-  KWORD_CATCH,          // Symbol: catch
-  KWORD_CONTINUE,       // Symbol: continue
-  KWORD_INTER,          // Symbol: interface
-  KWORD_EXTENDS,        // Symbol: extends
-  KWORD_IMPLEMENTS,     // Symbol: implements
+  KWORD__START__POINT, // All keywords must be grater than this
+  KWORD_IF, // Symbol: if
+  KWORD_VAR, // Symbol: let
+  KWORD_NEW, // Symbol: new
+  KWORD_THROW, // Symbol: raise
+  KWORD_FOR, // Symbol: for
+  KWORD_ENUM, // Symbol: enum
+  KWORD_FUNC, // Symbol: fn
+  KWORD_OPERATOR, // Symbol: operator
+  KWORD_MACRO, // Symbol: macro
+  KWORD_ELSE, // Symbol: else
+  KWORD_BREAK, // Symbol: break
+  KWORD_CONST, // Symbol: const
+  KWORD_SUPER, // Symbol: super
+  KWORD_WHILE, // Symbol: while
+  KWORD_EXTERN, // Synbol: extern
+  KWORD_VIRTUAL, // Synbol: virtual
+  KWORD_OVERRIDE, // Synbol: override
+  KWORD_CLASS, // Symbol: class
+  KWORD_AS, // Symbol: as
+  KWORD_IMPORT, // Symbol: use
+  KWORD_UNSAFE, // Symbol: unsafe
+  KWORD_CONSTEXPR, // Symbol: constexpr
+  KWORD_TYPEDEF, // Symbol: type
+  KWORD_MUTABLE, // Symbol: mut
+  KWORD_DO, // Symbol: do
+  KWORD_NAMESPACE, // Symbol: namespace
+  KWORD_STRUCT, // Symbol: struct
+  KWORD_PUBLIC, // Symbol: pub
+  KWORD_CASE, // Symbol: case
+  KWORD_SWITCH, // Symbol: switch
+  KWORD_STATIC, // Symbol: static
+  KWORD_RETURN, // Symbol: return
+  KWORD_PRIVATE, // Symbol: priv
+  KWORD_DECLTYPE, // Symbol: decltype
+  KWORD_DEFAULT, // Symbol: default
+  KWORD_TRY, // Symbol: try
+  KWORD_CATCH, // Symbol: catch
+  KWORD_CONTINUE, // Symbol: continue
+  KWORD_INTER, // Symbol: interface
+  KWORD_EXTENDS, // Symbol: extends
+  KWORD_IMPLEMENTS, // Symbol: implements
   KWORD__ENDING__POINT, // All keywords must be less than this
 
   /*
@@ -201,7 +200,7 @@ enum class TokenType
   |-----------
   | This are not specially tokens.
   */
-  _EOF,    // End of file. This already exists in <stdio.h>
+  _EOF, // End of file. This already exists in <stdio.h>
   UNKNOWN, // Other
 };
 
@@ -226,7 +225,6 @@ struct Token {
       case TokenType::SYM_QUESTION: return "?";
       case TokenType::SYM_SEMI_COLLON: return ";";
       case TokenType::SYM_COLCOL: return "::";
-
       // Brackets
       case TokenType::BRACKET_LCURLY: return "{";
       case TokenType::BRACKET_RCURLY: return "}";
@@ -234,7 +232,6 @@ struct Token {
       case TokenType::BRACKET_RPARENT: return ")";
       case TokenType::BRACKET_LSQUARED: return "[";
       case TokenType::BRACKET_RSQUARED: return "]";
-
       // Equiality
       case TokenType::OP_GT: return ">";
       case TokenType::OP_LT: return "<";
@@ -243,7 +240,6 @@ struct Token {
       case TokenType::OP_LTEQ: return "<=";
       case TokenType::OP_NOTEQ: return "!=";
       case TokenType::OP_ARROW: return "=>";
-
       // Mathematical symbols
       case TokenType::OP_MOD: return "%";
       case TokenType::OP_DIV: return "/";
@@ -255,13 +251,11 @@ struct Token {
       case TokenType::OP_PLUSEQ: return "+=";
       case TokenType::OP_MOD_EQ: return "%=";
       case TokenType::OP_MINUSEQ: return "-=";
-
       // Asignment
       case TokenType::OP_EQ: return "=";
       case TokenType::OP_OR: return "||";
       case TokenType::OP_AND: return "&&";
       case TokenType::OP_NOT: return "!";
-
       // Bitwise operations
       case TokenType::OP_BIT_OR: return "|";
       case TokenType::OP_BIT_NOT: return "~";
@@ -274,10 +268,8 @@ struct Token {
       case TokenType::OP_BIT_XOR_EQ: return "^=";
       case TokenType::OP_BIT_LSHIFT_EQ: return "<<=";
       case TokenType::OP_BIT_RSHIFT_EQ: return ">>=";
-
       // Identifiers
       case TokenType::IDENTIFIER: return value;
-
       // Keywods
       case TokenType::KWORD_PUBLIC: return _SNOWBALL_KEYWORD__PUBLIC;
       case TokenType::KWORD_VIRTUAL: return _SNOWBALL_KEYWORD__VIRTUAL;
@@ -321,23 +313,17 @@ struct Token {
       case TokenType::KWORD_IMPLEMENTS: return _SNOWBALL_KEYWORD__IMPLS;
       case TokenType::KWORD_CATCH:
         return _SNOWBALL_KEYWORD__CATCH;
-
-        // Literal values
-
+      // Literal values
       case TokenType::VALUE_NUMBER:
       case TokenType::VALUE_FLOAT:
       case TokenType::VALUE_BOOL: return value;
-
       case TokenType::VALUE_STRING: return std::string("\"") + value + "\"";
       case TokenType::VALUE_CHAR: return FMT("'%s'", value.c_str());
-
       // Other
       case TokenType::UNKNOWN: return "<unknown>";
       case TokenType::_EOF: return "<EOF>";
-
       default: return "<BUG>";
     }
-
     // TODO: throw error: missed enum in switch case
   }
 

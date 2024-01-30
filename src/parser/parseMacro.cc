@@ -14,10 +14,9 @@ Syntax::Macro* Parser::parseMacro() {
   auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
   bool isStatementMacro = true;
   auto attributes = verifyAttributes([&](std::string attr) {
-    if (attr == "export") { return Attributes::EXPORT; }
-    return Attributes::INVALID;
-  });
-
+                                     if (attr == "export") { return Attributes::EXPORT; }
+                                     return Attributes::INVALID;
+                                     });
   auto name = assert_tok<TokenType::IDENTIFIER>("an identifier for macro name").to_string();
   next();
   consume<TokenType::BRACKET_LPARENT>("'('");
@@ -60,7 +59,6 @@ Syntax::Macro* Parser::parseMacro() {
       next();
       defaultArg = parseStatement(peek());
     }
-
     // TODO: check for existant args
     args.push_back(std::make_tuple(name, argType, defaultArg));
     next();
@@ -75,19 +73,18 @@ Syntax::Macro* Parser::parseMacro() {
     isStatementMacro = false;
     auto expr = parseExpr(false);
     auto macro = Syntax::N<Syntax::Macro>(
-            name, args, Syntax::N<Syntax::Block>(std::vector<Syntax::Node*>{expr}), isStatementMacro
-    );
+                 name, args, Syntax::N<Syntax::Block>(std::vector<Syntax::Node*> {expr}), isStatementMacro
+                 );
     macro->setDBGInfo(dbg);
-    for (auto [n, a] : attributes) { macro->addAttribute(n, a); }
+    for (auto[n, a] : attributes) { macro->addAttribute(n, a); }
     macro->setComment(comment);
     return macro;
   }
-
   assert_tok<TokenType::BRACKET_LCURLY>("'{'");
   auto body = parseBlock();
   auto macro = Syntax::N<Syntax::Macro>(name, args, body, isStatementMacro);
   macro->setDBGInfo(dbg);
-  for (auto [n, a] : attributes) { macro->addAttribute(n, a); }
+  for (auto[n, a] : attributes) { macro->addAttribute(n, a); }
   macro->setComment(comment);
   return macro;
 }

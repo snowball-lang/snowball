@@ -17,9 +17,8 @@ namespace ir {
 
 /// @brief Representation of a constant value in the IR
 class ConstantValue : public AcceptorExtend<ConstantValue, Value> {
-public:
-  enum ConstantType
-  {
+ public:
+  enum ConstantType {
 #include "../../defs/ct.def"
   };
 
@@ -27,7 +26,7 @@ public:
   // Get constant value's type
   auto getConstantType() { return type; }
 
-private:
+ private:
   // Type value to differentiate between constantss
   ConstantType type;
 };
@@ -37,7 +36,7 @@ class StringValue : public AcceptorExtend<StringValue, ConstantValue> {
   // Value stored from the AST
   std::string value;
 
-public:
+ public:
   // Create a new string value for the IR
   StringValue(std::string value) : AcceptorExtend(String), value(value) { }
 
@@ -52,7 +51,7 @@ class NumberValue : public AcceptorExtend<NumberValue, ConstantValue> {
   // Value stored from the AST
   snowball_int_t value;
 
-public:
+ public:
   // Create a new number constant for the IR
   NumberValue(snowball_int_t value) : AcceptorExtend(Number), value(value) { }
 
@@ -67,7 +66,7 @@ class FloatValue : public AcceptorExtend<FloatValue, ConstantValue> {
   // Value stored from the AST
   double value;
 
-public:
+ public:
   // Create a new floating number for the IR
   FloatValue(double value) : AcceptorExtend(Float), value(value) { }
 
@@ -82,7 +81,7 @@ class BooleanValue : public AcceptorExtend<BooleanValue, ConstantValue> {
   // Value stored from the AST
   bool value;
 
-public:
+ public:
   // Create a new boolean value for the IR
   BooleanValue(bool value) : AcceptorExtend(String), value(value) { }
 
@@ -97,7 +96,7 @@ class CharValue : public AcceptorExtend<BooleanValue, ConstantValue> {
   // Value stored from the AST
   char value;
 
-public:
+ public:
   // Create a new boolean value for the IR
   CharValue(char value) : AcceptorExtend(Char), value(value) { }
 

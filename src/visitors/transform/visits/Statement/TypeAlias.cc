@@ -9,16 +9,14 @@ namespace Syntax {
 SN_TRANSFORMER_VISIT(Statement::TypeAlias) {
   auto name = p_node->getIdentifier();
   auto uuid = ctx->createIdentifierName(name);
-
   auto state = ctx->saveState();
   auto x = ctx->cache->getType(uuid);
-
   if (x.has_value() && (!ctx->generateFunction)) {
     E<VARIABLE_ERROR>(
-            p_node,
-            FMT("Type alias with name '%s' is already "
-                "defined in the current scope!",
-                name.c_str())
+    p_node,
+    FMT("Type alias with name '%s' is already "
+        "defined in the current scope!",
+        name.c_str())
     );
   } else if (ctx->generateFunction && (!p_node->isGeneric())) {
     if (ctx->cache->getTransformedType(uuid) != std::nullopt) return;
@@ -34,7 +32,6 @@ SN_TRANSFORMER_VISIT(Statement::TypeAlias) {
     ctx->cache->setType(uuid, p_node, state);
     return;
   }
-
   assert(false);
 }
 

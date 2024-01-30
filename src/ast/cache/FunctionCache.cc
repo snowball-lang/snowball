@@ -14,7 +14,7 @@ namespace cacheComponents {
 std::shared_ptr<transform::ContextState>& Functions::getFunctionState(id_t id) { return functionStates.at(id); }
 void Functions::setFunctionState(id_t id, std::shared_ptr<transform::ContextState>& s) { functionStates[id] = s; }
 void Functions::setFunction(
-        const std::string& name, Statement::FunctionDef* p_fn, std::shared_ptr<transform::ContextState> state
+const std::string& name, Statement::FunctionDef* p_fn, std::shared_ptr<transform::ContextState> state
 ) {
   functions[name].push_front({p_fn, state});
 }
@@ -22,7 +22,6 @@ void Functions::setFunction(
 std::optional<std::deque<Functions::FunctionStore>> Functions::getFunction(const std::string name) {
   auto f = functions.find(name);
   if (f != functions.end()) return f->second;
-
   return std::nullopt;
 }
 
@@ -38,7 +37,6 @@ void Functions::setTransformedFunction(const std::string& uuid, std::shared_ptr<
 std::optional<std::shared_ptr<transform::Item>> Functions::getTransformedFunction(const std::string uuid) {
   auto f = createdFunctions.find(uuid);
   if (f != createdFunctions.end()) return f->second;
-
   return std::nullopt;
 }
 
@@ -60,7 +58,6 @@ void Functions::performInheritance(types::DefinedType* ty, types::DefinedType* p
   auto childUUID = ty->getUUID();
   auto createdFuncs = getAllFunctionsByUUID(parentUUID, createdFunctions);
   auto nonGeneratedFunctions = getAllFunctionsByUUID(parentUUID, functions);
-
   for (auto f : createdFuncs) {
     auto name = f.first;
     auto item = f.second;
@@ -73,7 +70,6 @@ void Functions::performInheritance(types::DefinedType* ty, types::DefinedType* p
       if (x->inVirtualTable()) { ty->addVtableItem(x); }
     }
   }
-
   for (auto f : nonGeneratedFunctions) {
     auto name = f.first;
     auto item = f.second;
@@ -84,12 +80,10 @@ void Functions::performInheritance(types::DefinedType* ty, types::DefinedType* p
     name = childUUID + "." + name;
     for (auto fn : functions) { setFunction(name, fn.function, fn.state); }
   }
-
   for (auto f : parent->getFields()) {
     ty->addField(f);
   }
   ty->hasVtable = parent->hasVtable;
-
   return;
 }
 

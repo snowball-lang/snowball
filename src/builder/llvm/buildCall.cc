@@ -24,7 +24,6 @@ void LLVMBuilder::visit(ir::Call* call) {
     this->value = llvm::Constant::getNullValue(getLLVMType(call->getType()));
     return;
   }
-
   if (utils::is<ir::ObjectInitialization>(call)) {
     auto instance = utils::cast<ir::ObjectInitialization>(call);
     if (instance->isConstantStruct()) {
@@ -35,7 +34,7 @@ void LLVMBuilder::visit(ir::Call* call) {
       for (auto& arg : instance->getArguments()) {
         auto gep = builder->CreateStructGEP(instanceType, alloca, i++);
         auto value = expr(arg.get());
-        builder->CreateStore(value, gep); 
+        builder->CreateStore(value, gep);
       }
       this->value = builder->CreateLoad(instanceType, alloca);
       return;
@@ -46,13 +45,13 @@ void LLVMBuilder::visit(ir::Call* call) {
   } else if (buildIntrinsic(call)) {
     return;
   }
-
   auto calleeValue = call->getCallee();
   auto fnType = Syntax::Transformer::getFunctionType(calleeValue->getType());
   auto asFunction = utils::dyn_cast<ir::Func>(calleeValue);
-  auto isLambda = !utils::is<types::FunctionType>(calleeValue->getType()) ? utils::startsWith(utils::cast<types::DefinedType>(calleeValue->getType())->getUUID(), services::ImportService::CORE_UUID + "std.Function") : false;
+  auto isLambda = !utils::is<types::FunctionType>(calleeValue->getType()) ? utils::startsWith(
+                  utils::cast<types::DefinedType>(calleeValue->getType())->getUUID(),
+                  services::ImportService::CORE_UUID + "std.Function") : false;
   auto calleeType = getLLVMFunctionType(fnType, asFunction.get());
-
   llvm::Value* llvmCall = nullptr;
   llvm::Value* allocatedValue = nullptr;
   //setDebugInfoLoc(nullptr);
@@ -72,14 +71,11 @@ void LLVMBuilder::visit(ir::Call* call) {
       }
     }
   }
-
   auto callee = build(calleeValue.get());
   auto args = utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value*>(
-    call->getArguments(), [this](std::shared_ptr<ir::Value> arg) { return expr(arg.get()); }
-  );
-
+              call->getArguments(), [this](std::shared_ptr<ir::Value> arg) { return expr(arg.get()); }
+              );
   bool doNotAddAnonContext = false;
-
   if (isLambda && asFunction && asFunction->usesParentScope()) {
     auto closure = ctx->closures.at(ctx->getCurrentIRFunction()->getId());
     auto alloca = createAlloca(getLambdaContextType(), ".lambda-context");
@@ -90,17 +86,14 @@ void LLVMBuilder::visit(ir::Call* call) {
     args.insert(args.begin(), alloca);
     doNotAddAnonContext = true;
   }
-
-  if (allocatedValue) 
+  if (allocatedValue)
     args.insert(args.begin(), allocatedValue);
-
   setDebugInfoLoc(nullptr);
   if (asFunction != nullptr && asFunction->isConstructor()) {
     auto instance = utils::cast<ir::ObjectInitialization>(call);
     isConstructor = true;
     assert(instance);
     assert(asFunction->hasParent());
-
     llvm::Value* object = allocatedValue;
     if (instance->createdObject) {
       object = build(instance->createdObject.get());
@@ -110,7 +103,6 @@ void LLVMBuilder::visit(ir::Call* call) {
       object = allocateObject(classType);
       ctx->doNotLoadInMemory = true;
     }
-
     if (!allocatedValue)
       args.insert(args.begin(), load(object, instance->getType()->getReferenceTo()));
     setDebugInfoLoc(call); // TODO:
@@ -118,9 +110,7 @@ void LLVMBuilder::visit(ir::Call* call) {
     this->value = object;
   } else if (asFunction != nullptr && asFunction->inVirtualTable()) {
     assert(asFunction->hasParent());
-
     auto index = asFunction->getVirtualIndex() + 2; // avoid class info
-
     // note: allocatedValue != nullptr is because there are 2 possible cases:
     // 1. The function returns a type that's not a pointer (meaning self is at index 1)
     // 2. The function does not return a type that's not a pointer (meaning self is at index 0)
@@ -140,8 +130,8 @@ void LLVMBuilder::visit(ir::Call* call) {
     // vtable = { [size x ptr] } { [0] = fn1, [1] = fn2, ... } }
     auto vtable = builder->CreateLoad(vtableType->getPointerTo(), parentValue);
     auto fn = builder->CreateLoad(
-            calleeType->getPointerTo(), builder->CreateConstInBoundsGEP1_32(vtableType->getPointerTo(), vtable, index)
-    );
+              calleeType->getPointerTo(), builder->CreateConstInBoundsGEP1_32(vtableType->getPointerTo(), vtable, index)
+              );
     builder->CreateAssumption(builder->CreateIsNotNull(fn));
     setDebugInfoLoc(call);
     llvmCall = createCall(calleeType, (llvm::Function*) fn, args);
@@ -166,49 +156,40 @@ void LLVMBuilder::visit(ir::Call* call) {
           // second arg, first is the sret arg
           oldArgs.insert(oldArgs.begin() + 1, getLambdaContextType()->getPointerTo());
           newType = llvm::FunctionType::get(calleeType->getReturnType(), oldArgs, calleeType->isVarArg());
-
           args.insert(args.begin() + 1, callee);
         } else {
           auto oldArgs = calleeType->params().vec();
           oldArgs.insert(oldArgs.begin(), getLambdaContextType()->getPointerTo());
           newType = llvm::FunctionType::get(calleeType->getReturnType(), oldArgs, calleeType->isVarArg());
-
           args.insert(args.begin(), callee);
         }
       }
-      
       if (asFunction && asFunction->isAnon()) {
         newType = calleeType; // We've already added the context in getLLVMFunctionType
       }
-
       llvmCall = createCall(newType, loadFunctionValue, args);
     }
-
     this->value = allocatedValue ? allocatedValue : llvmCall;
   }
-
-
-#define SET_CALL_ATTRIBUTES(type)                                                                                      \
-  if (llvm::isa<type>(llvmCall)) {                                                                                     \
-    auto call = llvm::cast<type>(llvmCall);                                                                            \
-    auto calledFunction = call->getCalledFunction();                                                                   \
-    bool retIsReference = false;                                                                                       \
-    if (auto f = utils::dyn_cast<ir::Func>(calleeValue); f && llvm::isa<llvm::Function>(callee)) {                                                             \
-      auto valBackup = this->value;                                                                                    \
-      retIsReference = utils::cast<types::ReferenceType>(f->getRetTy()) != nullptr;                                    \
-      calledFunction = llvm::cast<llvm::Function>(callee);                                                     \
-      this->value = valBackup;                                                                                         \
-    }                                                                                                                  \
-    if (calledFunction) {                                                                                              \
-      auto attrSet = calledFunction->getAttributes();                                                                  \
-      if (retIsReference) { attrSet = attrSet.addRetAttribute(*context, llvm::Attribute::NonNull); }                   \
-      call->setAttributes(attrSet);                                                                                    \
-    }                                                                                                                  \
+#define SET_CALL_ATTRIBUTES(type) \
+  if (llvm::isa<type>(llvmCall)) { \
+    auto call = llvm::cast<type>(llvmCall); \
+    auto calledFunction = call->getCalledFunction(); \
+    bool retIsReference = false; \
+    if (auto f = utils::dyn_cast<ir::Func>(calleeValue); f && llvm::isa<llvm::Function>(callee)) { \
+      auto valBackup = this->value; \
+      retIsReference = utils::cast<types::ReferenceType>(f->getRetTy()) != nullptr; \
+      calledFunction = llvm::cast<llvm::Function>(callee); \
+      this->value = valBackup; \
+    } \
+    if (calledFunction) { \
+      auto attrSet = calledFunction->getAttributes(); \
+      if (retIsReference) { attrSet = attrSet.addRetAttribute(*context, llvm::Attribute::NonNull); } \
+      call->setAttributes(attrSet); \
+    } \
   }
-
   SET_CALL_ATTRIBUTES(llvm::CallInst)
   else SET_CALL_ATTRIBUTES(llvm::InvokeInst) else { assert(false); }
-
   if (!allocatedValue && !isConstructor) ctx->doNotLoadInMemory = true;
 }
 

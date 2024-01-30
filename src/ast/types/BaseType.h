@@ -24,11 +24,11 @@ struct TypeRef;
 namespace types {
 
 class BaseType : public Type,
-                 public DBGObject,
-                 public Syntax::Statement::Privacy,
-                 public Syntax::Statement::GenericContainer<Type*>,
-                 public ir::IdMixin {
-protected:
+  public DBGObject,
+  public Syntax::Statement::Privacy,
+  public Syntax::Statement::GenericContainer<Type*>,
+  public ir::IdMixin {
+ protected:
   /// @brief Definition of where in the stack this class is stored
   /// @example [module name].MyClass:2
   std::string uuid;
@@ -42,7 +42,7 @@ protected:
   /// @brief VTable holding all it's functions
   std::vector<std::shared_ptr<ir::Func>> classVtable;
 
-public:
+ public:
   BaseType(Kind kind, const std::string name);
   BaseType(const BaseType& other) = default;
 

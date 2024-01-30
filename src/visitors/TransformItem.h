@@ -78,11 +78,10 @@ class Item : public DBGObject {
   // another file.
   ASTAlias astAlias = nullptr;
 
-public:
+ public:
   // The type used to represent what this
   // item holds as value.
-  enum Type
-  {
+  enum Type {
     TYPE,
     FUNC,
     VALUE,
@@ -95,12 +94,12 @@ public:
   // item.
   virtual ~Item() noexcept = default;
 
-  Item(Type type, ValuePtr val) : type(type), value(val){};
-  Item(FunctionPtr fn) : type(FUNC), functions({fn}){};
-  Item(std::shared_ptr<ir::Module> m) : module(m), type(MODULE){};
-  Item(TypePtr val) : type(TYPE), tyVal(val){};
-  Item(MacroPtr m) : macro(m), type(MACRO){};
-  Item(ASTAlias a) : astAlias(a), type(AST_ALIAS){};
+  Item(Type type, ValuePtr val) : type(type), value(val) {};
+  Item(FunctionPtr fn) : type(FUNC), functions({fn}) {};
+  Item(std::shared_ptr<ir::Module> m) : module(m), type(MODULE) {};
+  Item(TypePtr val) : type(TYPE), tyVal(val) {};
+  Item(MacroPtr m) : macro(m), type(MACRO) {};
+  Item(ASTAlias a) : astAlias(a), type(AST_ALIAS) {};
 
   // Utility functions to identify the item
   bool isType() { return type == TYPE; }

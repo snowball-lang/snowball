@@ -11,11 +11,9 @@ Syntax::Statement::VariableDecl* Parser::parseVariable() {
   assert(is<TokenType::KWORD_VAR>());
   auto comment = parseDocstring(m_current.getComment());
   next();
-
   auto attributes = verifyAttributes([&](std::string attr) {
-    return Attributes::INVALID;
-  });
-
+                                     return Attributes::INVALID;
+                                     });
   bool isPublic = false;
   if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-3, true))) {
     isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
@@ -40,27 +38,24 @@ Syntax::Statement::VariableDecl* Parser::parseVariable() {
     if (is<TokenType::SYM_SEMI_COLLON>(peek(0, true))) next();
   } else if (!is<TokenType::SYM_SEMI_COLLON>()) {
     createError<SYNTAX_ERROR>(
-            "Invalid variable declaration syntax!", {.info = "Expected '=' for a variable declaration"}
+    "Invalid variable declaration syntax!", {.info = "Expected '=' for a variable declaration"}
     );
   } else if (typeDef == nullptr) {
     createError<SYNTAX_ERROR>(
-            "Undeclared type for uninitialized variable declaration!",
-            {.info = "Variable declarations must have type definition if "
-                     "it's not "
-                     "initialized"}
+    "Undeclared type for uninitialized variable declaration!", {
+      .info = "Variable declarations must have type definition if "
+      "it's not "
+      "initialized"
+    }
     );
   }
-
   auto v = Syntax::N<Syntax::Statement::VariableDecl>(name, value, isMutable);
   v->setDefinedType(typeDef);
   v->setPrivacy(Syntax::Statement::Privacy::fromInt(isPublic));
   v->setComment(comment);
-
   auto info = new DBGSourceInfo(m_source_info, token.get_pos(), token.get_width());
   v->setDBGInfo(info);
-
-  for (auto [n, a] : attributes) { v->addAttribute(n, a); }
-
+  for (auto[n, a] : attributes) { v->addAttribute(n, a); }
   return v; // to remove warnings
 }
 

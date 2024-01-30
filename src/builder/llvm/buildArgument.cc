@@ -11,8 +11,8 @@
 namespace snowball {
 namespace codegen {
 
-void LLVMBuilder::visit(ir::Argument* variable) { 
-    GET_VAR_IMPL(variable, value)
+void LLVMBuilder::visit(ir::Argument* variable) {
+  GET_VAR_IMPL(variable, value)
 }
 
 } // namespace codegen

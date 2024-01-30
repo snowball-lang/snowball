@@ -13,10 +13,8 @@ std::vector<LLVMIRChunk>
 Transformer::getLLVMBody(std::string block, std::vector<Syntax::Expression::TypeRef*> getTypesUsed) {
   // we iterate each character of the block.
   // if we find "{=[type]}" we replace it with the type
-
   std::vector<LLVMIRChunk> chunks;
   int typeIndex = 0;
-
   for (size_t i = 0; i < block.size();) {
     if (block[i] == '{' && block[i + 1] == '=') {
       // we found a type
@@ -39,7 +37,6 @@ Transformer::getLLVMBody(std::string block, std::vector<Syntax::Expression::Type
       chunks.push_back(LLVMIRChunk{.type = LLVMIRChunk::LLCode, .code = code});
     }
   }
-
   return chunks;
 }
 

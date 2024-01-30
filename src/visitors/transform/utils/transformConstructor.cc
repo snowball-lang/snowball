@@ -14,7 +14,7 @@ Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
   assert(currentClass && "Current class is not a defined type!");
   // TODO: Do not allow the use of "this" in the constructor
   if (p_node->hasSuperArgs()) {
-    auto [selfArg, foundSelfArg] = ctx->getInCurrentScope("self");
+    auto[selfArg, foundSelfArg] = ctx->getInCurrentScope("self");
     assert(foundSelfArg);
     auto superArgs = p_node->getSuperArgs();
     auto parentClass = currentClass->getParent();
@@ -53,7 +53,7 @@ Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
       instrList.emplace_back(assigmentValue);
     }
   }
-  for (auto [name, arg] : p_node->getInitArgs()) {
+  for (auto[name, arg] : p_node->getInitArgs()) {
     auto selfRef = Syntax::N<Expression::Identifier>("self");
     auto indexExpr = Syntax::N<Expression::Index>(selfRef, name);
     auto assign = Syntax::N<Syntax::Expression::BinaryOp>(OperatorType::EQ);
@@ -68,7 +68,6 @@ Transformer::transformConstructor(Statement::ConstructorDef* p_node) {
     assigmentValue->ignoreMutability = true;
     instrList.emplace_back(assigmentValue);
   }
-
   return {instrList, superCall};
 }
 

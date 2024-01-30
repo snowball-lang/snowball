@@ -27,8 +27,9 @@ using namespace snowball::Syntax::transform;
 namespace snowball {
 namespace Syntax {
 
-Transformer::Transformer(std::shared_ptr<ir::Module> mod, const SourceInfo* srci, std::filesystem::path packagePath, bool allowTests, bool allowBenchmarks, bool silentOutput)
-    : AcceptorExtend<Transformer, Visitor>(srci) {
+Transformer::Transformer(std::shared_ptr<ir::Module> mod, const SourceInfo* srci, std::filesystem::path packagePath,
+                         bool allowTests, bool allowBenchmarks, bool silentOutput)
+  : AcceptorExtend<Transformer, Visitor>(srci) {
   ctx = new TransformContext(mod, ir::IRBuilder(mod), allowTests, allowBenchmarks, silentOutput);
   ctx->imports->setCurrentPackagePath(packagePath);
   initializeCoreRuntime();
@@ -38,7 +39,7 @@ std::shared_ptr<ir::Value> Transformer::trans(Node* node) {
   if (auto x = utils::cast<AttributeHolder>(node)) {
     if (x->hasAttribute(Attributes::CFG)) {
       auto args = x->getAttributeArgs(Attributes::CFG);
-      for (auto [type, _] : args) {
+      for (auto[type, _] : args) {
         if (type == "tests") {
           if (!ctx->testMode) {
             return nullptr; // TODO: check if this causes problems
@@ -49,7 +50,7 @@ std::shared_ptr<ir::Value> Transformer::trans(Node* node) {
           }
         } else if (type == "target_os") {
           auto os = _;
-          bool isNot = utils::startsWith(os, "!"); 
+          bool isNot = utils::startsWith(os, "!");
           if (isNot)
             os = os.substr(1);
           if (os != _SNOWBALL_OS && !isNot) {
@@ -61,7 +62,6 @@ std::shared_ptr<ir::Value> Transformer::trans(Node* node) {
       }
     }
   }
-
   node->accept(this);
   return this->value;
 }
@@ -75,15 +75,13 @@ auto Transformer::getModule() const { return ctx->module; }
 void Transformer::visitGlobal(std::vector<Node*> p_nodes) {
   ctx->addScope();
   initializePerModuleMacros();
-
   bool backup = ctx->generateFunction;
   ctx->generateFunction = false;
   for (size_t i = 0; i < p_nodes.size(); i++) {
     SN_TRANSFORMER_CAN_GENERATE(p_nodes[i]) { trans(p_nodes[i]); }
   }
-
   ctx->generateFunction = true;
-  for (size_t i = 0; i < p_nodes.size(); i++) 
+  for (size_t i = 0; i < p_nodes.size(); i++)
     trans(p_nodes[i]);
   ctx->generateFunction = backup;
   ctx->delScope();

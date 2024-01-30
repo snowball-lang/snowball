@@ -9,7 +9,6 @@ namespace Syntax {
 
 SN_DEFINITE_ASSIGMENT_VISIT(Statement::VariableDecl) {
   auto x = p_node->getName();
-
   if (p_node->isInitialized()) { p_node->getValue()->accept(this); }
   auto initialized = p_node->isInitialized() ? Initialized : NotInitialized;
   if (p_node->isExternDecl()) { initialized = Initialized; }

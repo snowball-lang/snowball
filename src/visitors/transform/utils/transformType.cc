@@ -23,10 +23,8 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     x->setMutable(true);
     return x;
   }
-
   int uuidStackIndex = -1;
   std::string uuidStackOverride = "";
-
   if (ty->isReferenceType()) {
     auto pointer = utils::cast<Expression::ReferenceType>(ty);
     assert(pointer);
@@ -38,15 +36,14 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     auto baseType = transformType(pointer->getBaseType());
     auto x = baseType->getPointerTo(pointer->isMutable());
     auto typeRef =
-            TR(pointer->isMutable() ? _SNOWBALL_MUT_PTR : _SNOWBALL_CONST_PTR,
-               nullptr,
-               std::vector<Expression::TypeRef*>{baseType->toRef()});
+    TR(pointer->isMutable() ? _SNOWBALL_MUT_PTR : _SNOWBALL_CONST_PTR,
+       nullptr,
+       std::vector<Expression::TypeRef*> {baseType->toRef()});
     transformType(typeRef);
     return x;
   } else if (ty->isTypeDecl()) {
     auto decl = utils::cast<Expression::DeclType>(ty);
     assert(decl);
-
     auto val = trans(decl->getExpr());
     return val->getType()->copy();
   } else if (ty->isFunctionType()) {
@@ -58,14 +55,14 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     // TODO: Support for variadic function types too!
     auto ty = getBuilder().createFunctionType(args, ret);
     ty->addImpl(ctx->getBuiltinTypeImpl("Sized"));
-    auto typeRef = TR(_SNOWBALL_FUNC_IMPL, fn->getDBGInfo(), std::vector<Expression::TypeRef*>{ty->toRef()});
+    auto typeRef = TR(_SNOWBALL_FUNC_IMPL, fn->getDBGInfo(), std::vector<Expression::TypeRef*> {ty->toRef()});
     transformType(typeRef);
     return ty;
   } else if (auto x = ty->_getInternalType()) {
     // TODO: maybe move up in the function to prevent problems with generics?
     if (auto f = utils::cast<types::FunctionType>(x); f && !f->hasAttribute(Attributes::TYPECHECKED)) {
       f->addAttribute(Attributes::TYPECHECKED);
-      auto typeRef = TR(_SNOWBALL_FUNC_IMPL, ty->getDBGInfo(), std::vector<Expression::TypeRef*>{f->toRef()});
+      auto typeRef = TR(_SNOWBALL_FUNC_IMPL, ty->getDBGInfo(), std::vector<Expression::TypeRef*> {f->toRef()});
       transformType(typeRef);
     }
     return x->copy();
@@ -73,7 +70,7 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     if (utils::is<types::NumericType>(x)) {
       // we create a new instance of the type so we can access it's methods and operators
       // we create a new instance of "IntegerImpl<T>"
-      auto typeRef = TR(_SNOWBALL_INT_IMPL, ty->getDBGInfo(), std::vector<Expression::TypeRef*>{x->toRef()});
+      auto typeRef = TR(_SNOWBALL_INT_IMPL, ty->getDBGInfo(), std::vector<Expression::TypeRef*> {x->toRef()});
       transformType(typeRef);
     }
     return x;
@@ -81,7 +78,6 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     assert(tuple);
     E<TODO>(ty, "Tuple types are not yet supported!");
   }
-
   auto name = ty->getPrettyName();
   auto id = ty->getId();
   if (id.empty()) { id = ty->getName(); }
@@ -93,13 +89,10 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     } else {
       ast = Syntax::N<Expression::Identifier>(ty->getName());
     }
-
     ast->setDBGInfo(ty->getDBGInfo());
   }
-
   if (auto x = utils::cast<Expression::Identifier>(ast)) {
-    auto [_v, type, _o, _f, _m] = getFromIdentifier(x);
-
+    auto[_v, type, _o, _f, _m] = getFromIdentifier(x);
     std::string errorReason;
     if (_v.has_value()) {
       errorReason = "This is a value, not a type!";
@@ -113,11 +106,9 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     } else {
       goto continueTypeFetch;
     }
-
     E<TYPE_ERROR>(ty, FMT("Cant use '%s' as a type!", name.c_str()), {.info = errorReason});
   } else if (auto x = utils::cast<Expression::Index>(ast)) {
-    auto [_v, type, _o, _f, _m, canPrivate] = getFromIndex(ty->getDBGInfo(), x, true).first;
-
+    auto[_v, type, _o, _f, _m, canPrivate] = getFromIndex(ty->getDBGInfo(), x, true).first;
     std::string errorReason;
     if (_v.has_value()) {
       errorReason = "This is a value, not a type!";
@@ -128,34 +119,31 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     } else if (type.has_value()) {
       if (auto x = utils::cast<types::BaseType>(type.value()); x && x->isPrivate() && !canPrivate) {
         E<TYPE_ERROR>(
-                ty,
-                FMT("Cant use '%s' as a type!", name.c_str()),
-                {.info = "This is a private type and you can't access it from here!",
-                 .note = "Private types can only be accessed from inside the "
-                         "module they are defined in.",
-                 .help = "If you are trying to access a private type from "
-                         "outside the module, you can't\ndo that. "
-                         "If you are trying to access a private type from "
-                         "inside the module, \nyou can't do that either. "
-                         "You can only access private types from inside "
-                         "the\nmodule they are defined in."}
+        ty,
+        FMT("Cant use '%s' as a type!", name.c_str()), {
+          .info = "This is a private type and you can't access it from here!",
+          .note = "Private types can only be accessed from inside the "
+          "module they are defined in.",
+          .help = "If you are trying to access a private type from "
+          "outside the module, you can't\ndo that. "
+          "If you are trying to access a private type from "
+          "inside the module, \nyou can't do that either. "
+          "You can only access private types from inside "
+          "the\nmodule they are defined in."
+        }
         );
       }
-
       returnedType = *type;
       goto continueTypeFetch;
     } else {
       goto continueTypeFetch;
     }
-
     E<TYPE_ERROR>(ty, FMT("Cant use '%s' as a type!", name.c_str()), {.info = errorReason});
   }
-
 continueTypeFetch:
   // If we can't find it in the stack, we need to fetch it from the cache
   auto uuid = uuidStackOverride.empty() ? ctx->createIdentifierName(id, false) : (uuidStackOverride + "." + id);
   bool existsWithGenerics = false;
-
   if (auto x = ctx->cache->getTransformedType(uuid)) {
     existsWithGenerics = true;
     for (auto t : x.value()) {
@@ -164,12 +152,10 @@ continueTypeFetch:
       assert(t != nullptr);
       if (typeGenericsMatch(ty, transformed)) {
         if (auto alias = utils::cast<types::TypeAlias>(transformed)) { transformed = alias->getBaseType(); }
-
         return transformed->copy();
       }
     }
   }
-
   if (auto x = ctx->cache->getType(uuid)) {
     auto cls = *x;
     auto transformed = transformTypeFromBase(uuid, cls, ty);
@@ -177,41 +163,35 @@ continueTypeFetch:
       transformed = alias->getBaseType();
     return transformed->copy();
   }
-
   if (existsWithGenerics) {
     E<TYPE_ERROR>(
-            ty,
-            FMT("Type '%s' requires to have no template "
-                "parameters but at least one has been given?",
-                name.c_str())
+    ty,
+    FMT("Type '%s' requires to have no template "
+        "parameters but at least one has been given?",
+        name.c_str())
     );
   }
-
   if (returnedType == nullptr) {
     if (uuidStackIndex + 1 < (int)ctx->uuidStack.size()) {
       uuidStackIndex++;
       uuidStackOverride = ctx->uuidStack[uuidStackIndex];
       goto continueTypeFetch;
     }
-
     E<VARIABLE_ERROR>(ty, FMT("Type '%s' not found from the current context!", name.c_str()));
   }
-
   // TODO: did we ever needed this?!?!?
   // if (!typeGenericsMatch(ty, returnedType)) {
-  //  auto compAsDefinedType = utils::cast<GenericContainer<types::Type*>>(returnedType);
-  //  auto compGenerics = compAsDefinedType == nullptr ? std::vector<types::Type*>{} : compAsDefinedType->getGenerics();
-  //  typeGenericsMatch(ty, returnedType);
-  //  E<TYPE_ERROR>(
-  //          ty,
-  //          FMT("Type generics for '%s' dont match with '%s's generics!",
-  //              returnedType->getPrettyName().c_str(),
-  //              ty->getPrettyName().c_str())
-  //  );
+  // auto compAsDefinedType = utils::cast<GenericContainer<types::Type*>>(returnedType);
+  // auto compGenerics = compAsDefinedType == nullptr ? std::vector<types::Type*>{} : compAsDefinedType->getGenerics();
+  // typeGenericsMatch(ty, returnedType);
+  // E<TYPE_ERROR>(
+  // ty,
+  // FMT("Type generics for '%s' dont match with '%s's generics!",
+  // returnedType->getPrettyName().c_str(),
+  // ty->getPrettyName().c_str())
+  // );
   //}
-
   if (auto alias = utils::cast<types::TypeAlias>(returnedType)) { returnedType = alias->getBaseType(); }
-
   return returnedType->copy();
 }
 

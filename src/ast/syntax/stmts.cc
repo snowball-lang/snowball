@@ -20,7 +20,7 @@ Status Privacy::fromInt(bool p_status) { return static_cast<Status>(!p_status); 
 } // namespace Statement
 namespace Statement {
 FunctionDef::FunctionDef(std::string name, Privacy::Status prvc)
-    : AcceptorExtend<FunctionDef, Privacy>(prvc), name(name) { }
+  : AcceptorExtend<FunctionDef, Privacy>(prvc), name(name) { }
 std::vector<Expression::Param*> FunctionDef::getArgs() const { return args; }
 void FunctionDef::setArgs(std::vector<Expression::Param*> p_args) { args = p_args; }
 Expression::TypeRef* FunctionDef::getRetType() const { return retType; };
@@ -46,7 +46,8 @@ void FunctionDef::setContextState(std::shared_ptr<transform::ContextState> state
 std::map<Expression::Identifier*, Expression::Base*>::iterator ConstructorDef::initArgsBegin() {
   return initArgs.begin();
 }
-EnumTypeDef::EnumTypeDef(std::string name, Privacy::Status prvc) : AcceptorExtend<EnumTypeDef, Privacy>(prvc), name(name) { }
+EnumTypeDef::EnumTypeDef(std::string name, Privacy::Status prvc) : AcceptorExtend<EnumTypeDef, Privacy>(prvc),
+  name(name) { }
 std::string EnumTypeDef::getName() const { return name; }
 void EnumTypeDef::addField(std::pair<std::string, std::vector<Expression::TypeRef*>> field) { fields.push_back(field); }
 std::vector<std::pair<std::string, std::vector<Expression::TypeRef*>>>& EnumTypeDef::getFields() { return fields; }
@@ -56,11 +57,12 @@ std::map<Expression::Identifier*, Expression::Base*>::iterator ConstructorDef::i
 Namespace::Namespace(std::string name, std::vector<Node*> body) : body(body), name(name) { }
 std::string Namespace::getName() const { return name; }
 std::vector<Node*> Namespace::getBody() const { return body; }
-ImportStmt::ImportStmt(const std::vector<std::string> path, const std::string package, std::vector<std::pair<std::string, std::string>> variables, std::string exportSymbol)
-    : path(path), package(package), variables(variables), exportSymbol(exportSymbol) { }
+ImportStmt::ImportStmt(const std::vector<std::string> path, const std::string package,
+                       std::vector<std::pair<std::string, std::string>> variables, std::string exportSymbol)
+  : path(path), package(package), variables(variables), exportSymbol(exportSymbol) { }
 std::vector<std::pair<std::string, std::string>> ImportStmt::getVariables() const { return variables; }
 VariableDecl::VariableDecl(const std::string& name, Expression::Base* value, bool isMutable, bool isConstant)
-    : name(name), value(value), _mutable(isMutable), isConstant(isConstant){};
+  : name(name), value(value), _mutable(isMutable), isConstant(isConstant) {};
 bool VariableDecl::isInitialized() { return value != nullptr; }
 bool VariableDecl::isContantDecl() { return isConstant; }
 std::string VariableDecl::getName() const { return name; }
@@ -70,12 +72,12 @@ bool VariableDecl::isExternDecl() { return isExtern; }
 void VariableDecl::setExternDecl(bool e) { isExtern = e; }
 Expression::TypeRef* VariableDecl::getDefinedType() { return definedType; }
 void VariableDecl::setDefinedType(Expression::TypeRef* t) { definedType = t; }
-Return::Return(Expression::Base* value) : value(value){};
+Return::Return(Expression::Base* value) : value(value) {};
 Expression::Base* Return::getValue() const { return value; }
 DefinedTypeDef::DefinedTypeDef(
-        std::string name, Expression::TypeRef* extends, Privacy::Status prvc, DefinedTypeDef::Type type
+std::string name, Expression::TypeRef* extends, Privacy::Status prvc, DefinedTypeDef::Type type
 )
-    : name(name), extends(extends), AcceptorExtend<DefinedTypeDef, Privacy>(prvc), type(type) { }
+  : name(name), extends(extends), AcceptorExtend<DefinedTypeDef, Privacy>(prvc), type(type) { }
 void DefinedTypeDef::addFunction(FunctionDef* fnDef) { functions.push_back(fnDef); }
 void DefinedTypeDef::addVariable(VariableDecl* var) { variables.push_back(var); }
 void DefinedTypeDef::unsafeSetName(const std::string& name) { this->name = name; }

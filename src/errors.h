@@ -12,8 +12,7 @@
 #define __SNOWBALL_ERRORS_H_
 
 namespace snowball {
-enum Error
-{
+enum Error {
   IO_ERROR,
   TYPE_ERROR,
   SYNTAX_ERROR,
@@ -43,7 +42,7 @@ namespace errors {
 const char* get_error(Error code);
 
 class SNError {
-public:
+ public:
   SNError(Error code, std::string err) {
     error = code;
     message = err;
@@ -53,7 +52,7 @@ public:
     Logger::error(FMT("(%s%s%s) %s%s%s", BRED, get_error(error), RESET, BOLD, message.c_str(), RESET));
   };
 
-  virtual ~SNError(){};
+  virtual ~SNError() {};
 
   Error error;
   std::string message;
@@ -73,13 +72,13 @@ struct ErrorInfo {
  * @brief A nice error is an error that is printed in a nice way.
  */
 class NiceError : public SNError {
-protected:
+ protected:
   DBGSourceInfo* cb_dbg_info;
 
-public:
+ public:
   ErrorInfo info;
   NiceError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})
-      : SNError(code, err), cb_dbg_info(p_cb_dbg_info), info(info){};
+    : SNError(code, err), cb_dbg_info(p_cb_dbg_info), info(info) {};
   virtual void print_error(bool asTail = false) const override;
 };
 
@@ -87,33 +86,33 @@ public:
  * @brief A lexer error is an error that occurs during lexing.
  */
 class LexerError : public NiceError {
-public:
+ public:
   LexerError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})
-      : NiceError(code, err, p_cb_dbg_info, info){};
+    : NiceError(code, err, p_cb_dbg_info, info) {};
 
-  virtual ~LexerError(){};
+  virtual ~LexerError() {};
 };
 
 /**
  * @brief A parser error is an error that occurs during parsing.
  */
 class ParserError : public NiceError {
-public:
+ public:
   ParserError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})
-      : NiceError(code, err, p_cb_dbg_info, info){};
+    : NiceError(code, err, p_cb_dbg_info, info) {};
 
-  virtual ~ParserError(){};
+  virtual ~ParserError() {};
 };
 
 /**
  * @brief A compiler error is an error that occurs during compilation.
  */
 class CompilerError : public NiceError {
-public:
+ public:
   CompilerError(Error code, std::string err, DBGSourceInfo* p_cb_dbg_info, ErrorInfo info = {})
-      : NiceError(code, err, p_cb_dbg_info, info){};
+    : NiceError(code, err, p_cb_dbg_info, info) {};
 
-  virtual ~CompilerError(){};
+  virtual ~CompilerError() {};
 };
 
 } // namespace errors

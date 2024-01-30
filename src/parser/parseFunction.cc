@@ -6,10 +6,10 @@
 
 #include <assert.h>
 
-#define CHECK_PRIVACY(var)                                                                                             \
-  var = true;                                                                                                          \
-  if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(peekCount - 1, true))) {                              \
-    isPublic = is<TokenType::KWORD_PUBLIC>(peek(peekCount - 1, true));                                                 \
+#define CHECK_PRIVACY(var) \
+  var = true; \
+  if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(peekCount - 1, true))) { \
+    isPublic = is<TokenType::KWORD_PUBLIC>(peek(peekCount - 1, true)); \
   }
 
 using namespace snowball::Syntax;
@@ -20,10 +20,8 @@ namespace snowball::parser {
 FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isLambda, bool allowDecl) {
   assert((is<TokenType::KWORD_FUNC>() && (!isConstructor && !isOperator)) ||
          (is<TokenType::IDENTIFIER>() && (isConstructor && !isOperator)) || (isOperator));
-
   auto comment = parseDocstring(m_current.getComment());
   if (!isConstructor && (!isLambda)) next();
-
   bool isExtern = false;
   bool isPublic = false;
   bool isStatic = false;
@@ -33,22 +31,18 @@ FunctionDef* Parser::parseFunction(bool isConstructor, bool isOperator, bool isL
   bool isUnsafe = false;
   bool isOverride = false;
   bool isNotImplemented = false;
-
   std::string name;
   std::string externName;
-
   // Constructor specific only
   std::vector<Syntax::Expression::Base*> superArgs;
   bool hasSuperArgs = false;
-
   std::map<Expression::Identifier*, Expression::Base*> constructorInitArgs;
   bool isLLVMFunction = false;
-
   // Check if the tokens behind the function keyword
   // have some meaning to this statement. For example,
   // you can have:
-  //     pub fn ...
-  //     ^^^
+  // pub fn ...
+  // ^^^
   // to indicate that the function is public.
   int peekCount = -3;
 fetch_attrs:
@@ -76,51 +70,47 @@ fetch_attrs:
     peekCount--;
     goto fetch_attrs;
   }
-
   if (isOperator) {
-    consume<TokenType::KWORD_FUNC>("'func' keyword"); 
+    consume<TokenType::KWORD_FUNC>("'func' keyword");
   }
-
   if (isOverride && isStatic) {
     createError<SYNTAX_ERROR>("Static functions can't be overriden!");
   }
-
   auto dbg = m_current.get_pos();
   auto width = 0;
-
   auto attributes = verifyAttributes([&](std::string attr) {
-    if (attr == "llvm_function") {
-      isLLVMFunction = true;
-      return Attributes::LLVM_FUNC;
-    } else if (attr == "internal_linkage") {
-      return Attributes::INTERNAL_LINKAGE;
-    } else if (attr == "external_linkage") {
-      return Attributes::EXTERNAL_LINKAGE;
-    } else if (attr == "inline") {
-      return Attributes::INLINE;
-    } else if (attr == "no_inline") {
-      return Attributes::NO_INLINE;
-    } else if (attr == "test") {
-      return Attributes::TEST;
-    } else if (attr == "no_mangle") {
-      return Attributes::NO_MANGLE;
-    } else if (attr == "export") {
-      return Attributes::EXPORT;
-    } else if (attr == "bench") {
-      return Attributes::BENCH;
-    } else if (attr == "__internal__") {
-      return Attributes::BUILTIN;
-    } else if (attr == "__no_pointer_self__") {
-      return Attributes::NO_POINTER_SELF;
-    } else if (attr == "unsafe_fn_not_body") {
-      return Attributes::UNSAFE_FUNC_NOT_BODY;
-    } else if (attr == "intrinsic") {
-      return Attributes::INTRINSIC;
-    }
-    return Attributes::INVALID;
-  });
+                                     if (attr == "llvm_function") {
+                                     isLLVMFunction = true;
+                                     return Attributes::LLVM_FUNC;
+  } else if (attr == "internal_linkage") {
+    return Attributes::INTERNAL_LINKAGE;
+  } else if (attr == "external_linkage") {
+    return Attributes::EXTERNAL_LINKAGE;
+  } else if (attr == "inline") {
+    return Attributes::INLINE;
+  } else if (attr == "no_inline") {
+    return Attributes::NO_INLINE;
+  } else if (attr == "test") {
+    return Attributes::TEST;
+  } else if (attr == "no_mangle") {
+    return Attributes::NO_MANGLE;
+  } else if (attr == "export") {
+    return Attributes::EXPORT;
+  } else if (attr == "bench") {
+    return Attributes::BENCH;
+  } else if (attr == "__internal__") {
+    return Attributes::BUILTIN;
+  } else if (attr == "__no_pointer_self__") {
+    return Attributes::NO_POINTER_SELF;
+  } else if (attr == "unsafe_fn_not_body") {
+    return Attributes::UNSAFE_FUNC_NOT_BODY;
+  } else if (attr == "intrinsic") {
+    return Attributes::INTRINSIC;
+  }
+return Attributes::INVALID;
+                                   });
   if (isOverride) {
-    attributes[Attributes::OVERRIDE] = {};  
+    attributes[Attributes::OVERRIDE] = {};
   }
   if (isOperator) {
     services::OperatorService::OperatorType opType = services::OperatorService::OperatorType::INVALID;
@@ -249,43 +239,35 @@ fetch_attrs:
         opType = services::OperatorService::OperatorType::BIT_XOR_EQ;
         break;
       }
-
       case TokenType::BRACKET_LSQUARED: {
         if (is<TokenType::BRACKET_RSQUARED>(peek())) {
           opType = services::OperatorService::OperatorType::INDEX;
           next();
           break;
         }
-
         goto snowballInvalidDefaultOperatorCase;
       }
-
       case TokenType::IDENTIFIER: {
         if (m_current.to_string() == "bool") {
           opType = services::OperatorService::OperatorType::BOOL;
           break;
         }
-
         goto snowballInvalidDefaultOperatorCase;
       }
-
       case TokenType::BRACKET_LPARENT: {
         if (is<TokenType::BRACKET_RPARENT>(peek())) {
           opType = services::OperatorService::OperatorType::CALL;
           break;
         }
-
         goto snowballInvalidDefaultOperatorCase;
       }
-
-      snowballInvalidDefaultOperatorCase:
+snowballInvalidDefaultOperatorCase:
       default: {
         createError<SYNTAX_ERROR>(
-                FMT("Expected a valid operator type but instead got '%s'", m_current.to_string().c_str())
+        FMT("Expected a valid operator type but instead got '%s'", m_current.to_string().c_str())
         );
       }
     }
-
     name = services::OperatorService::getOperatorMangle(opType);
     externName = name;
   } else if (isLambda) {
@@ -294,7 +276,6 @@ fetch_attrs:
     if (is<TokenType::IDENTIFIER>()) {
       name = m_current.to_string();
       width = name.size();
-
       externName = name;
     } else if (is<TokenType::VALUE_STRING>() && isExtern) {
       // External functions can have the capacity of having 2 separate
@@ -302,7 +283,7 @@ fetch_attrs:
       // external functions that contians special characters.
       //
       // example:
-      //     extern fn "hello.world$woah" as my_fn() ...
+      // extern fn "hello.world$woah" as my_fn() ...
       //
       // =========================================
       //
@@ -311,61 +292,47 @@ fetch_attrs:
       // contains '"' inside them.
       auto s = m_current.to_string();
       externName = s.substr(1, s.size() - 2);
-
       next();
       consume<TokenType::KWORD_AS>("'as' keyword");
-
       dbg = m_current.get_pos();
       name = assert_tok<TokenType::IDENTIFIER>("an identifier").to_string();
-
       width = name.size();
     } else {
       std::string e = isExtern ? "Expected an identifier or a string constant but got "
-                                 "'%s' while parsing an extern function declaration" :
-                                 "Expected an identifier but got '%s' while parsing a "
-                                 "function declaration";
+                      "'%s' while parsing an extern function declaration" :
+                      "Expected an identifier but got '%s' while parsing a "
+                      "function declaration";
       createError<SYNTAX_ERROR>(FMT(e.c_str(), m_current.to_string().c_str()));
     }
   }
-
   next();
-
   // Create a new instance of a node
   auto privacy = Syntax::Statement::Privacy::fromInt(isPublic);
-
   // Check for generic expressions
   std::vector<Syntax::Expression::Param*> generics;
   if (is<TokenType::OP_LT>()) {
     isGeneric = true;
     if (isLambda) { createError<SYNTAX_ERROR>("Cant define a lambda with generics"); }
-
     generics = parseGenericParams();
     width = (m_current.get_pos().second - dbg.second);
   }
-
   assert_tok<TokenType::BRACKET_LPARENT>("'('");
-
   int argumentCount = 0;
   bool isVarArg = false;
-
   std::vector<Syntax::Expression::Param*> arguments;
   while (true) {
     auto pk = peek();
-
     if (is<TokenType::BRACKET_RPARENT>(pk)) { break; }
-
     next();
     if (isExtern && isTypeValid() && (!is<TokenType::SYM_COLLON>(peek()))) {
       throwIfNotType();
       auto type = parseType();
-
       auto arg = new Syntax::Expression::Param(FMT("$extern-arg-%i", argumentCount), type);
       if (is<TokenType::OP_EQ>()) {
         auto expr = parseExpr(false);
         arg->setDefaultValue(expr);
         next();
       }
-
       arguments.push_back(arg);
     } else if (is<TokenType::SYM_DOT>() && is<TokenType::SYM_DOT>(peek()) && is<TokenType::SYM_DOT>(peek(1, true))) {
       next(2);
@@ -376,18 +343,15 @@ fetch_attrs:
         isMutable = true;
         next();
       }
-
       auto name = m_current.to_string();
       consume<TokenType::IDENTIFIER>("an identifier");
       consume<TokenType::SYM_COLLON>("':'");
       auto type = parseType();
-
       if (name == "self" && argumentCount == 0 && (!isStatic) && (!isConstructor) && (m_current_class != nullptr)) {
         attributes[Attributes::FIRST_ARG_IS_SELF] = {};
       } else if (name == "self") {
         createError<SYNTAX_ERROR>("'self' can only be used as the first argument inside a class non-static function!");
       }
-
       auto arg = new Syntax::Expression::Param(name, type);
       arg->setMutable(isMutable);
       if (is<TokenType::OP_EQ>()) {
@@ -395,10 +359,8 @@ fetch_attrs:
         arg->setDefaultValue(expr);
         next();
       }
-
       arguments.push_back(arg);
     }
-
     argumentCount++;
     if (is<TokenType::SYM_COMMA>()) {
       if (isVarArg) createError<SYNTAX_ERROR>("Variadic arguments should be the last argument!");
@@ -409,26 +371,23 @@ fetch_attrs:
       createError<SYNTAX_ERROR>(FMT("Expected a ',' or a ')' but found '%s' instead", m_current.to_string().c_str()));
     }
   }
-
   next();
   consume<TokenType::BRACKET_RPARENT>("')'");
-
   Syntax::Expression::TypeRef* returnType = nullptr;
   if (isTypeValid()) {
     if (isConstructor) {
       createError<SYNTAX_ERROR>(
-              "Contructor can't have return types.",
-              {.info = "Constructors return type default to the parent's "
-                       "class type!"}
+      "Contructor can't have return types.", {
+        .info = "Constructors return type default to the parent's "
+        "class type!"
+      }
       );
     }
-
     returnType = parseType();
   } else {
     auto info = new DBGSourceInfo(m_source_info, m_current.get_pos(), m_current.get_width());
     returnType = new Syntax::Expression::TypeRef(SN_VOID_TYPE, info);
   }
-
   if (isConstructor) { // We assume m_current_class is not nullptr
     if (is<TokenType::SYM_COLLON>()) {
       next();
@@ -438,10 +397,8 @@ fetch_attrs:
           createError<SYNTAX_ERROR>("Cant call super on a class that doesn't extend "
                                     "from another class!");
         }
-
         next();
         assert_tok<TokenType::BRACKET_LPARENT>("'('");
-
         while (true) {
           auto pk = peek();
           if (is<TokenType::BRACKET_RPARENT>(pk)) { break; }
@@ -454,11 +411,10 @@ fetch_attrs:
             break;
           } else {
             createError<SYNTAX_ERROR>(
-                    FMT("Expected a ',' or a ')' but found '%s' instead", m_current.to_string().c_str())
+            FMT("Expected a ',' or a ')' but found '%s' instead", m_current.to_string().c_str())
             );
           }
         }
-
         next();
         consume<TokenType::BRACKET_RPARENT>("')'");
         if (is<TokenType::SYM_COMMA>()) {
@@ -466,13 +422,11 @@ fetch_attrs:
           assert_tok<TokenType::IDENTIFIER>("an identifier");
         }
       }
-
       while (is<TokenType::IDENTIFIER>()) {
         auto name = parseIdentifier(false, false);
         if (constructorInitArgs.find(name) != constructorInitArgs.end()) {
           createError<SYNTAX_ERROR>(FMT("Duplicate constructor init argument '%s'", name->getIdentifier().c_str()));
         }
-
         next();
         assert_tok<TokenType::BRACKET_LPARENT>("'('");
         auto expr = parseExpr(false);
@@ -486,24 +440,20 @@ fetch_attrs:
           break;
         } else {
           createError<SYNTAX_ERROR>(FMT("Expected a ',' or a '{' but found '%s' instead", m_current.to_string().c_str())
-          );
+                                   );
         }
       }
     }
-
     if (m_current_class->getParent() && !hasSuperArgs) {
       createError<SYNTAX_ERROR>("Expected a 'super' call for constructors inside a class "
                                 "that extends form a type!");
     }
   }
-
   auto info = new DBGSourceInfo(m_source_info, dbg, width);
-
   Syntax::Block* block = nullptr;
   std::string llvmCode;
   std::vector<Syntax::Expression::TypeRef*> llvmTypesUsed;
   bool hasBlock = false;
-
   if (isExtern) {
     // TODO: external functions can have bodies!
     assert_tok<TokenType::SYM_SEMI_COLLON>("';'");
@@ -513,28 +463,28 @@ fetch_attrs:
       auto number = m_current.to_string();
       if (number != "0") {
         createError<SYNTAX_ERROR>(
-                "Expected a '0' for the function body!",
-                {.info = "Expected a '0' for the function body!",
-                 .note = "The function body must be a '0' for now.",
-                 .help = "You have to set the function body to '0'.\n"
-                         "For example:\n"
-                         "1 |  virt fn my_fn() = 0\n"
-                         "2 |"}
+        "Expected a '0' for the function body!", {
+          .info = "Expected a '0' for the function body!",
+          .note = "The function body must be a '0' for now.",
+          .help = "You have to set the function body to '0'.\n"
+          "For example:\n"
+          "1 |  virt fn my_fn() = 0\n"
+          "2 |"
+        }
         );
       }
-
       if (!isVirtual) {
         createError<SYNTAX_ERROR>(
-                "Function body can only be '0' for virtual functions!",
-                {.info = "Function body can only be '0' for virtual functions!",
-                 .note = "The function body must be a '0' for now.",
-                 .help = "You have to set the function body to '0'.\n"
-                         "For example:\n"
-                         "1 |  virt fn my_fn() = 0\n"
-                         "2 |"}
+        "Function body can only be '0' for virtual functions!", {
+          .info = "Function body can only be '0' for virtual functions!",
+          .note = "The function body must be a '0' for now.",
+          .help = "You have to set the function body to '0'.\n"
+          "For example:\n"
+          "1 |  virt fn my_fn() = 0\n"
+          "2 |"
+        }
         );
       }
-
       isNotImplemented = true;
       hasBlock = true;
       block = new Syntax::Block();
@@ -548,11 +498,9 @@ fetch_attrs:
     assert_tok<TokenType::BRACKET_LCURLY>("'{'");
     if (isLLVMFunction) {
       auto startPos = m_current.get_pos();
-
       auto depth = 1;
       while (depth != 0) {
         next();
-
         if (is<TokenType::BRACKET_LCURLY>()) {
           depth++;
           if (is<TokenType::OP_EQ>(peek())) {
@@ -568,23 +516,18 @@ fetch_attrs:
           createError<SYNTAX_ERROR>("Unterminated LLVM function block code!");
         }
       }
-
       auto endPos = m_current.get_pos();
-
       llvmCode = utils::getSubstringByRange(m_source_info->getSource(), startPos, endPos);
       llvmCode = llvmCode.substr(1, llvmCode.size() - 1); // Ignore speech marks
     } else {
       block = parseBlock();
     }
-
     hasBlock = true;
-
     assert_tok<TokenType::BRACKET_RCURLY>("'}'");
   }
-
   if (!hasBlock && isLLVMFunction) { createError<SYNTAX_ERROR>("LLVM defined functions must have a body!"); }
-
-  if (isOperator && ((arguments.size() == 0) || ((arguments.size() == 1) && attributes.count(Attributes::FIRST_ARG_IS_SELF)))) {
+  if (isOperator && ((arguments.size() == 0) || ((arguments.size() == 1)
+                     && attributes.count(Attributes::FIRST_ARG_IS_SELF)))) {
     // Transform to unary operators for +, - (TODO: some more)
     auto op = services::OperatorService::operatorID(name);
     OperatorService::OperatorType newType;
@@ -602,7 +545,6 @@ fetch_attrs:
     }
     if (valid) { name = OperatorService::getOperatorMangle(newType); }
   }
-
   FunctionDef* fn = nullptr;
   if (isConstructor) {
     assert(hasBlock);
@@ -620,7 +562,7 @@ fetch_attrs:
   } else {
     fn = Syntax::N<FunctionDef>(name);
   }
-  for (auto [n, a] : attributes) { fn->addAttribute(n, a); }
+  for (auto[n, a] : attributes) { fn->addAttribute(n, a); }
   if (isUnsafe) fn->addAttribute(Attributes::UNSAFE);
   fn->setVirtual(isVirtual);
   fn->setVariadic(isVarArg);

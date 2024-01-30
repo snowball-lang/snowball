@@ -38,14 +38,14 @@ class WhileLoop : public AcceptorExtend<WhileLoop, Value> {
   // For loop condition (if it's a for loop)
   std::shared_ptr<Value> forCond = nullptr;
 
-public:
+ public:
   explicit WhileLoop(std::shared_ptr<Value> cond, std::shared_ptr<Block> insts, bool doWhile = false)
-      : cond(cond), insts(insts), doWhile(doWhile){};
+    : cond(cond), insts(insts), doWhile(doWhile) {};
   explicit WhileLoop(std::shared_ptr<Value> cond, std::shared_ptr<Block> insts, std::shared_ptr<Value> forCond)
-      : cond(cond), insts(insts), forCond(forCond){};
+    : cond(cond), insts(insts), forCond(forCond) {};
 
   /// @return body block instructions to execute
-  //   if the condition is met each iteration
+  // if the condition is met each iteration
   auto getBlock() const { return insts; }
   /// @return the expression to be evaluated each iteration
   auto getCondition() const { return cond; }

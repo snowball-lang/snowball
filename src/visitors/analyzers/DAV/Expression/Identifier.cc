@@ -8,27 +8,25 @@ namespace Syntax {
 
 SN_DEFINITE_ASSIGMENT_VISIT(Expression::Identifier) {
   auto x = p_node->getIdentifier();
-
   if (auto variable = getIdentifier(x)) {
     if (variable->second == NotInitialized) {
       E<VARIABLE_ERROR>(
-              p_node->getDBGInfo(),
-              FMT("Variable '%s' is used before being assigned.", x.c_str()),
-              {.info =
-                       FMT("Variable '%s' has been declared but not "
-                           "assigned!",
-                           x.c_str())}
+      p_node->getDBGInfo(),
+      FMT("Variable '%s' is used before being assigned.", x.c_str()), {
+        .info =
+        FMT("Variable '%s' has been declared but not "
+            "assigned!",
+            x.c_str())
+      }
       );
     }
-
     return;
   }
-
   // Remove this because it causes errors when storing
   // a function in a variable:
   // E<VARIABLE_ERROR>(p_node->getDBGInfo(),
-  //                  FMT("Cannot find identifier `%s`!", x.c_str()),
-  //                  {.info = "this name is not defined"});
+  // FMT("Cannot find identifier `%s`!", x.c_str()),
+  // {.info = "this name is not defined"});
 }
 
 } // namespace Syntax

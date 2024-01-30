@@ -18,11 +18,9 @@ Transformer::shouldReturnOverload(std::shared_ptr<ir::Func> fn, std::deque<std::
         auto overloadGeneric = overload->getGenerics().at(i);
         equals = fnGeneric.second->is(overloadGeneric.second);
       }
-
       if (equals) return overload;
     }
   }
-
   return nullptr;
 }
 

@@ -13,7 +13,6 @@ void Modules::addModule(const std::string& uuid, std::shared_ptr<ir::Module> mod
 std::optional<std::shared_ptr<ir::Module>> Modules::getModule(const std::string& uuid) {
   auto f = modules.find(uuid);
   if (f != modules.end()) return f->second;
-
   return std::nullopt;
 }
 

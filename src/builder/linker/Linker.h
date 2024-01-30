@@ -29,13 +29,15 @@ class Linker {
   /// @brief A list of rpaths to be added to the executable.
 #ifdef __APPLE__
   std::vector<std::string> rpaths = {
-          "@executable_path/../lib", "@executable_path/../Frameworks", "/usr/local/lib", "/usr/lib"};
+    "@executable_path/../lib", "@executable_path/../Frameworks", "/usr/local/lib", "/usr/lib"
+  };
 #else
   std::vector<std::string> rpaths = {
-          "/usr/local/lib", "/usr/lib", "/usr/lib/x86_64-linux-gnu", "/lib/x86_64-linux-gnu", "/lib"};
+    "/usr/local/lib", "/usr/lib", "/usr/lib/x86_64-linux-gnu", "/lib/x86_64-linux-gnu", "/lib"
+  };
 #endif
 
-public:
+ public:
   /**
    * @brief Default constructor for the Linker class.
    *
@@ -76,7 +78,7 @@ public:
    */
   static std::string getSharedLibraryName(std::string& library);
 
-private:
+ private:
   /**
    * @brief Constructs the linker arguments based on input, output, and additional arguments.
    *

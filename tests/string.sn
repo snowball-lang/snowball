@@ -97,7 +97,7 @@ func starts_with() i32 {
     return s.starts_with("hello");
 }
 
-@test
+@test(expect = 0)
 func starts_with_big() i32 {
     let s = "hello world";
     return s.starts_with("hello world hello");
@@ -109,7 +109,7 @@ func ends_with() i32 {
     return s.ends_with("world");
 }
 
-@test
+@test(expect = 0)
 func ends_with_big() i32 {
     let s = "hello world";
     return s.ends_with("hello world hello");

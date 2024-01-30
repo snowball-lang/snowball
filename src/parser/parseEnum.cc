@@ -10,23 +10,18 @@ namespace snowball::parser {
 
 Syntax::Statement::EnumTypeDef* Parser::parseEnum() {
   assert(is<TokenType::KWORD_ENUM>());
-  
   auto comment = parseDocstring(m_current.getComment());
   next(); // East "enum"
-
   bool isPublic = false;
   if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-3, true))) {
     isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
   }
-
   auto attributes = verifyAttributes([&](std::string attr) {
-    return Attributes::INVALID;
-  });
-
+                                     return Attributes::INVALID;
+                                     });
   auto name = assert_tok<TokenType::IDENTIFIER>("enum identifier").to_string();
   auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
   Syntax::Statement::GenericContainer<>::GenericList generics;
-
   bool hasGenerics = false;
   if (is<TokenType::OP_LT>(peek())) {
     next();
@@ -34,17 +29,15 @@ Syntax::Statement::EnumTypeDef* Parser::parseEnum() {
     generics = parseGenericParams();
     prev();
   }
-
   next();
   assert_tok<TokenType::BRACKET_LCURLY>("'{'");
   next();
   auto cls = Syntax::N<Syntax::Statement::EnumTypeDef>(
-          name, Syntax::Statement::Privacy::fromInt(isPublic)
-  );
+             name, Syntax::Statement::Privacy::fromInt(isPublic)
+             );
   if (hasGenerics)
     cls->setGenerics(generics);
   cls->setDBGInfo(dbg);
-
   bool keepParsing = true;
   while (keepParsing) {
     switch (m_current.type) {
@@ -72,21 +65,18 @@ Syntax::Statement::EnumTypeDef* Parser::parseEnum() {
         }
         break;
       }
-
       case TokenType::BRACKET_RCURLY: {
         keepParsing = false;
         break;
       }
-
       default: {
         createError<SYNTAX_ERROR>(
-                FMT("Expected a valid member declaration but found '%s'", m_current.to_string().c_str())
+        FMT("Expected a valid member declaration but found '%s'", m_current.to_string().c_str())
         );
         break;
       }
     }
   }
-
   assert_tok<TokenType::BRACKET_RCURLY>("'}'");
   cls->setComment(comment);
   for (auto attr : attributes) cls->addAttribute(attr.first, attr.second);

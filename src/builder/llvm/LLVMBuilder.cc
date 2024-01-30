@@ -82,28 +82,25 @@ llvm::Value* LLVMBuilder::build(ir::Value* v) {
 
 llvm::Value* LLVMBuilder::load(llvm::Value* v, types::Type* ty) {
   auto llvmType = getLLVMType(ty);
-
   // TODO: not sure about global variable
   if (ctx->doNotLoadInMemory || (llvm::isa<llvm::Constant>(v) && !llvm::isa<llvm::GlobalVariable>(v))) {
     ctx->doNotLoadInMemory = false;
     return v;
   }
-
   // TODO: not sure about alloca
   // We don't need to load a value if it's not an alloca instruction.
   // because this reference could from a function call.
   // example: malloc(10); // do not load
   // if (llvmType->isPointerTy() && llvm::isa<llvm::CallInst>(v))
   // return v;
-
   if (v->getType()->isPointerTy()) return builder->CreateLoad(llvmType, v, ".ptr-load");
   return v;
 }
 
 LLVMBuilder::LLVMBuilder(
-        std::shared_ptr<ir::MainModule> mod, app::Options::Optimization optimizationLevel, bool testMode, bool benchMode
+std::shared_ptr<ir::MainModule> mod, app::Options::Optimization optimizationLevel, bool testMode, bool benchMode
 )
-    : iModule(mod) {
+  : iModule(mod) {
   ctx->testMode = testMode;
   ctx->benchmarkMode = benchMode;
   ctx->optimizationLevel = optimizationLevel;
@@ -116,7 +113,6 @@ LLVMBuilder::LLVMBuilder(
   llvm::InitializeNativeTarget();
   llvm::InitializeNativeTargetAsmPrinter();
   llvm::InitializeNativeTargetAsmParser();
-
   // Initialize passes
   auto& registry = *llvm::PassRegistry::getPassRegistry();
   llvm::initializeCore(registry);
@@ -128,7 +124,6 @@ LLVMBuilder::LLVMBuilder(
   llvm::initializeInstCombine(registry);
   llvm::initializeXRayInstrumentationPass(registry);
   llvm::initializeTarget(registry);
-
   llvm::initializeExpandMemCmpPassPass(registry);
   llvm::initializeScalarizeMaskedMemIntrinLegacyPassPass(registry);
   llvm::initializeSelectOptimizePass(registry);
@@ -152,47 +147,39 @@ LLVMBuilder::LLVMBuilder(
   llvm::initializeHardwareLoopsPass(registry);
   llvm::initializeReplaceWithVeclibLegacyPass(registry);
   llvm::initializeTypePromotionLegacyPass(registry);
-
   newContext();
   module = newModule();
 }
 
 std::unique_ptr<llvm::Module> LLVMBuilder::newModule() {
   auto m = std::make_unique<llvm::Module>("snowball compiled project", *context);
-
   auto engine = llvm::EngineBuilder();
   target = engine.selectTarget();
-
   m->setDataLayout(target->createDataLayout());
   m->setTargetTriple(target->getTargetTriple().str());
-
   builder = std::make_unique<llvm::IRBuilder<>>(*context);
-
   auto srcInfo = iModule->getSourceInfo();
   m->setSourceFileName(srcInfo->getPath());
-
   // debug info setup
   dbg.builder = std::make_unique<llvm::DIBuilder>(*m);
   llvm::DIFile* file = dbg.getFile(srcInfo->getPath());
   dbg.unit = dbg.builder->createCompileUnit(
-          llvm::dwarf::DW_LANG_C_plus_plus,
-          file,
-          ("Snowball version " _SNOWBALL_VERSION),
-          !dbg.debug,
-          {},
-          /*RV=*/0
-  );
-
+             llvm::dwarf::DW_LANG_C_plus_plus,
+             file,
+             ("Snowball version " _SNOWBALL_VERSION),
+             !dbg.debug,
+             {},
+             /*RV=*/0
+             );
   m->addModuleFlag(llvm::Module::Warning, "Debug Info Version", llvm::DEBUG_METADATA_VERSION);
   m->addModuleFlag(llvm::Module::Warning, "Snowball Compiler ID", _SNOWBALL_VERSION_NUMBER);
   m->addModuleFlag(
-          llvm::Module::Warning,
-          "Snowball Compiler Version",
-          llvm::ConstantDataArray::getString(*context, _SNOWBALL_VERSION, true)
+  llvm::Module::Warning,
+  "Snowball Compiler Version",
+  llvm::ConstantDataArray::getString(*context, _SNOWBALL_VERSION, true)
   );
   // darwin only supports dwarf2
   if (llvm::Triple(m->getTargetTriple()).isOSDarwin()) { m->addModuleFlag(llvm::Module::Warning, "Dwarf Version", 2); }
-
   return m;
 }
 
@@ -222,32 +209,26 @@ void LLVMBuilder::print(llvm::raw_fd_ostream& s) { module->print(s, nullptr); }
 #define ITERATE_RFUNCTIONS for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn)
 void LLVMBuilder::codegen() {
   auto generateModule = [&](std::shared_ptr<ir::Module> m, bool build) {
-    // reset context
-    ctx->doNotLoadInMemory = false;
-
-    this->iModule = m;
-
-    // Generate the functions from the end to the front.
-    auto functions = m->getFunctions();
-
-    if (!build) {
-      // Iterate every function with a reversed iterator.
-      // This first loop will declare all of the functions
-      // to the module, it does not matter whether they are
-      // bodied or not.
-      ITERATE_FUNCTIONS { visit(fn->get()); }
-    } else {
-      // Generate all the variables defined in this module.
-      for (auto v : m->getVariables()) { addGlobalVariable(v); }
-
+                        // reset context
+                        ctx->doNotLoadInMemory = false;
+                        this->iModule = m;
+                        // Generate the functions from the end to the front.
+                        auto functions = m->getFunctions();
+                        if (!build) {
+                        // Iterate every function with a reversed iterator.
+                        // This first loop will declare all of the functions
+                        // to the module, it does not matter whether they are
+                        // bodied or not.
+                        ITERATE_FUNCTIONS { visit(fn->get()); }
+  } else {
+    // Generate all the variables defined in this module.
+    for (auto v : m->getVariables()) { addGlobalVariable(v); }
       // Terminate the global ctor if exists
       if (auto x = getGlobalCTOR(false)) {
         auto& ctorBody = x->getEntryBlock();
         builder->SetInsertPoint(&ctorBody);
-
         builder->CreateRetVoid();
       }
-
       // This second loop will generate all the functions that
       // are bodied. We do 2 loops in order to prevent any weird
       // situation when a function calls an undefined function that
@@ -256,7 +237,6 @@ void LLVMBuilder::codegen() {
         auto f = fn->get();
         if (!f->isDeclaration() && !f->hasAttribute(Attributes::BUILTIN)) {
           auto llvmFn = funcs.at(f->getId());
-
           if (utils::is<types::ReferenceType>(f->getRetTy())) {
             auto bytes = f->getRetTy()->sizeOf();
             auto dereferenceable = llvm::Attribute::get(*context, llvm::Attribute::Dereferenceable, bytes);
@@ -266,18 +246,15 @@ void LLVMBuilder::codegen() {
             llvmFn->addRetAttr(noundef);
             llvmFn->addRetAttr(aligment);
           }
-
           if (f->hasAttribute(Attributes::LLVM_FUNC)) {
             auto old = buildLLVMFunction(llvmFn, f);
             funcs.at(f->getId()) = old;
           } else {
             buildBodiedFunction(llvmFn, f);
-
             setPersonalityFunction(llvmFn);
             std::string module_error_string;
             llvm::raw_string_ostream module_error_stream(module_error_string);
             llvm::verifyFunction(*llvmFn, &module_error_stream);
-
             if (!module_error_string.empty()) {
 #ifdef _SNOWBALL_BYTECODE_DEBUG
               dump();
@@ -288,20 +265,16 @@ void LLVMBuilder::codegen() {
         }
       }
     }
-  };
-
+                        };
   auto mainModule = utils::dyn_cast<ir::MainModule>(iModule);
   assert(mainModule);
-
-#define INIT_MODULES(build)                                                                                            \
-  for (auto m : mainModule->getModules()) generateModule(m, build);                                                    \
+#define INIT_MODULES(build) \
+  for (auto m : mainModule->getModules()) generateModule(m, build); \
   generateModule(mainModule, build);
-
   for (const auto& m : mainModule->getModules()) {
     ctx->typeInfo.insert(m->typeInformation.begin(), m->typeInformation.end());
   }
   ctx->typeInfo.insert(mainModule->typeInformation.begin(), mainModule->typeInformation.end());
-
   for (const auto& ty : ctx->typeInfo) {
     auto t = ty.second.get();
     if (auto c = utils::cast<types::DefinedType>(t)) {
@@ -311,25 +284,20 @@ void LLVMBuilder::codegen() {
       }
     }
   }
-
   INIT_MODULES(false); // Create function declarations
-  INIT_MODULES(true);  // Create function bodies
-
+  INIT_MODULES(true); // Create function bodies
   initializeRuntime();
   dbg.builder->finalize();
-
   DEBUG_CODEGEN("Finished codegen, proceeding to verify module");
   std::string module_error_string;
   llvm::raw_string_ostream module_error_stream(module_error_string);
   llvm::verifyModule(*module.get(), &module_error_stream);
-
   if (!module_error_string.empty()) {
 #ifdef _SNOWBALL_BYTECODE_DEBUG
     dump();
 #endif
     throw SNError(Error::LLVM_INTERNAL, module_error_string);
   }
-
   DEBUG_CODEGEN("Finished verifying module, proceeding to optimize module (if requested)");
 }
 #undef LOOP_FUNCTIONS

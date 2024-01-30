@@ -71,13 +71,12 @@ TypeRef* Parser::parseType() {
       return Syntax::N<PointerType>(parseType(), true, dbg);
     } else {
       createError<SYNTAX_ERROR>(
-              "Expected 'const' or 'mut' after '*' (pointer type specifier)",
-              {
-                      .note = "If you want to use '*' as a multiplication operator, use parentheses around the "
-                              "expression",
-                      .help = "check the documentation for more information "
-                              "(https://snowball-lang.gitbook.io/docs/language-reference/types/pointer-types)",
-              }
+      "Expected 'const' or 'mut' after '*' (pointer type specifier)", {
+        .note = "If you want to use '*' as a multiplication operator, use parentheses around the "
+        "expression",
+        .help = "check the documentation for more information "
+        "(https://snowball-lang.gitbook.io/docs/language-reference/types/pointer-types)",
+      }
       );
     }
   } else if (is<TokenType::OP_AND>()) { // we treat op and as 2 bit ands
@@ -86,7 +85,7 @@ TypeRef* Parser::parseType() {
     if (isMutable) next();
     auto ref = Syntax::N<ReferenceType>(parseType(), dbg);
     ref->setMutable(isMutable);
-    return ref; 
+    return ref;
   } else if (is<TokenType::OP_BIT_AND>()) {
     next();
     auto isMutable = is<TokenType::KWORD_MUTABLE>();
@@ -95,14 +94,13 @@ TypeRef* Parser::parseType() {
     ref->setMutable(isMutable);
     return ref;
   }
-
   bool isMutable = false;
   auto ident = parseIdentifier(true);
   Base* ast = ident;
   auto name = ident->getIdentifier();
   auto id = ident->getIdentifier();
   auto g = utils::cast<GenericIdentifier>(ast);
-  auto generics = (g != nullptr) ? g->getGenerics() : std::vector<TypeRef*>{};
+  auto generics = (g != nullptr) ? g->getGenerics() : std::vector<TypeRef*> {};
   next();
   while (is<TokenType::SYM_COLCOL>()) {
     next();
@@ -112,7 +110,7 @@ TypeRef* Parser::parseType() {
     ast = Syntax::N<Index>(ast, i, true);
     ast->setDBGInfo(i->getDBGInfo());
     auto g = utils::cast<GenericIdentifier>(i);
-    generics = (g != nullptr) ? g->getGenerics() : std::vector<TypeRef*>{};
+    generics = (g != nullptr) ? g->getGenerics() : std::vector<TypeRef*> {};
     next();
   }
   auto t = Syntax::TR(ast, name, dbg, id);

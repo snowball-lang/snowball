@@ -70,7 +70,7 @@ extern "C" {
 
 #define _SNOWBALL_STR_FACTOR 16
 #define _SNOWBALL_MAX_LENGTH 2147483647
-#define _SNOWBALL_OUT_DEFAULT(x, t, s)                                                                                 \
+#define _SNOWBALL_OUT_DEFAULT(x, t, s) \
   (".sn" PATH_SEPARATOR "bin" PATH_SEPARATOR + (os::Driver::getOutputFilename(x, t, s)))
 
 #ifndef _SNOWBALL_ENABLE_INT64
@@ -88,9 +88,9 @@ typedef uint32_t snowball_int_t;
 #endif
 
 #define SN_INT_MAX_POWER 8388608
-#define SN_MAX_MACRO_DEPTH 2048 
+#define SN_MAX_MACRO_DEPTH 2048
 
-#define UNREACHABLE                                                                                                    \
+#define UNREACHABLE \
   do { std::abort(); } while (0);
 
 // Debug
@@ -112,9 +112,9 @@ typedef uint32_t snowball_int_t;
 #define _SNOWBALL_TIMERS_DEBUG   0
 #define _SNOWBALL_FREE_DEBUG     0 // todo
 
-#define PRINT_LINE(...)                                                                                                \
-  printf(__VA_ARGS__);                                                                                                 \
-  printf("\n");                                                                                                        \
+#define PRINT_LINE(...) \
+  printf(__VA_ARGS__); \
+  printf("\n"); \
   fflush(stdout);
 
 #if _SNOWBALL_LEXER_DEBUG
@@ -136,8 +136,8 @@ typedef uint32_t snowball_int_t;
 #endif
 
 #if _SNOWBALL_SYMTABLE_DEBUG
-#define DEBUG_SYMTABLE(depth, ...)                                                                                     \
-  printf("%*s", depth * 4, " ");                                                                                       \
+#define DEBUG_SYMTABLE(depth, ...) \
+  printf("%*s", depth * 4, " "); \
   PRINT_LINE(__VA_ARGS__)
 #else
 #define DEBUG_SYMTABLE(...)
@@ -261,7 +261,7 @@ typedef uint32_t snowball_int_t;
 #define _SNOWBALL_KEYWORD__TRY       "try"
 #define _SNOWBALL_KEYWORD__CATCH     "catch"
 
-#define _SNOWBALL_LAMBDA_FUNCTIONS                                                                                     \
+#define _SNOWBALL_LAMBDA_FUNCTIONS \
   { 'l', 'a', 'm', 'b', 'd', 'a', ' ', 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', 0 }
 #define _SNOWBALL_LAMBDA_SIZE 17
 
@@ -275,9 +275,9 @@ typedef uint32_t snowball_int_t;
 
 // Compiler lines
 #if 0
-#define _SNOWBALL_COMPILER_ENTRY                                                                                       \
+#define _SNOWBALL_COMPILER_ENTRY \
   "Snowball " _SNOWBALL_VERSION " (" _SNOWBALL_BUILD_TYPE ": " _SNOWBALL_BUILD_DATE ", " _SNOWBALL_BUILD_TIME ")"
-#define _SNOWBALL_COMPILER_ENTRY_BK                                                                                    \
+#define _SNOWBALL_COMPILER_ENTRY_BK \
   "\
 Snowball " _SNOWBALL_VERSION " (" _SNOWBALL_BUILD_TYPE ": " _SNOWBALL_BUILD_DATE ", " _SNOWBALL_BUILD_TIME ")\n\
 Type \"help\", \"copyright\", \"credits\" or \"license\" for more information.\
@@ -286,7 +286,7 @@ Type \"help\", \"copyright\", \"credits\" or \"license\" for more information.\
 
 // Licenses
 #define _SNOWBALL_LICENSE_NAME "MIT"
-#define _SNOWBALL_LICENSE_TEXT                                                                                         \
+#define _SNOWBALL_LICENSE_TEXT \
   "\
 The MIT License (MIT)\n\
 \n\

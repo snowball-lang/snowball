@@ -22,11 +22,9 @@ void addTypeToModule(std::vector<std::string>& addedTypes, llvm::Type* type, llv
     if (std::find(addedTypes.begin(), addedTypes.end(), structType->getStructName().str()) != addedTypes.end()) {
       return;
     }
-
     for (auto& elem : structType->elements()) {
       addTypeToModule(addedTypes, elem, buf);
     }
-
     structType->print(buf);
     buf << "\n";
     addedTypes.emplace_back(structType->getStructName().str());
@@ -38,11 +36,9 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
   // auto existant = module->getFunction(fn->getMangle());
   // if (existant) return existant;
   ctx->setCurrentFunction(nullptr);
-
   // llvmFn->getDe
   std::string bufStr;
   llvm::raw_string_ostream buf(bufStr);
-
   std::vector<std::string> addedTypes;
   for (const auto& chunk : fn->getLLVMBody()) {
     if (chunk.type == Syntax::LLVMIRChunk::TypeAccess) {
@@ -50,24 +46,18 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
       addTypeToModule(addedTypes, type, buf);
     }
   }
-
   buf << "define ";
   llvmFn->getReturnType()->print(buf, false, true);
   buf << " @\"" << llvmFn->getName() << "\"(";
-
   auto args = fn->getArgs();
   for (int i = 0; i < (int)args.size(); i++) {
     auto l_front = args.begin();
     std::advance(l_front, i);
-
     llvmFn->getArg(i)->getType()->print(buf, false, true);
     buf << " %" << l_front->first;
-
     if (i < (int)(args.size() - 1)) buf << ", ";
   }
-
   buf << ") { \nentry:\n\t";
-
   for (const auto& chunk : fn->getLLVMBody()) {
     if (chunk.type == Syntax::LLVMIRChunk::TypeAccess) {
       auto type = getLLVMType(chunk.ty, true);
@@ -77,14 +67,10 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
       buf << chunk.code;
     }
   }
-
   buf << "\n}";
-
   auto code = buf.str();
   bufStr.clear();
-
   auto llvmBuffer = llvm::MemoryBuffer::getMemBuffer(code);
-
   llvm::SMDiagnostic err;
   std::unique_ptr<llvm::Module> sub = llvm::parseIR(llvmBuffer->getMemBufferRef(), err, *context);
   if (!sub) {
@@ -93,23 +79,18 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
     err.print("LLVM", buf);
     Logger::error("Error generating user-defined llvm function");
     for (auto line : utils::split(code, "\n")) { Logger::error(line); }
-
     throw SNError(Error::LLVM_INTERNAL, buf.str());
   }
-
   sub->setDataLayout(module->getDataLayout());
-
   llvm::Linker linker(*module);
   const bool fail = linker.linkInModule(std::move(sub));
   assert(!fail);
-
   auto func = module->getFunction(fn->getMangle());
   assert(func && "function not linked in");
   func->setLinkage(llvm::GlobalValue::PrivateLinkage);
   func->addFnAttr(llvm::Attribute::AttrKind::NoInline); // TODO: user decides,
-                                                        // this is default
+  // this is default
   func->setSubprogram(getDISubprogramForFunc(fn));
-
   if (utils::cast<types::ReferenceType>(fn->getRetTy())) {
     auto bytes = fn->getRetTy()->sizeOf();
     auto dereferenceable = llvm::Attribute::get(*context, llvm::Attribute::Dereferenceable, bytes);
@@ -121,7 +102,6 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
     llvmFn->addRetAttr(aligment);
     llvmFn->addRetAttr(nonnull);
   }
-
   llvmFn->replaceAllUsesWith(func);
   llvmFn->eraseFromParent();
   setDebugInfoLoc(nullptr);

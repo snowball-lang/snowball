@@ -18,14 +18,13 @@ namespace services {
  *  utility-related things
  */
 class OperatorService {
-public:
+ public:
 #define OPERATOR(o, n, s, p) o = n,
   /**
    * @brief A list containing all of the possible overload-able
    *  operators that a class can define.
    */
-  enum OperatorType
-  {
+  enum OperatorType {
 #include "../defs/operators.def"
   };
 #undef OPERATOR
@@ -40,7 +39,7 @@ public:
    */
   static const std::vector<std::string> operatorNames;
 
-public:
+ public:
   /// @brief Get the respective operator identifier
   static std::string getOperatorId(OperatorType id);
   /// @brief Get operator identifier but with an "#"

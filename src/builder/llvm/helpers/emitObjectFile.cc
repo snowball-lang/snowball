@@ -38,9 +38,7 @@ namespace codegen {
 int LLVMBuilder::emitObjectFile(std::string out, bool log, bool object) {
   std::error_code EC;
   llvm::raw_fd_ostream dest(out, EC, llvm::sys::fs::OF_None);
-
   if (EC) { throw SNError(Error::IO_ERROR, FMT("Could not open file: %s", EC.message().c_str())); }
-
   llvm::legacy::PassManager pass;
   auto FileType = object ? llvm::CGFT_ObjectFile : llvm::CGFT_AssemblyFile;
   DEBUG_CODEGEN("Emitting object file... (%s)", out.c_str());
@@ -48,13 +46,10 @@ int LLVMBuilder::emitObjectFile(std::string out, bool log, bool object) {
     remove(out.c_str());
     throw SNError(Error::LLVM_INTERNAL, "TargetMachine can't emit a file of this type");
   }
-
   if (log) Logger::success("Snowball project compiled to an object file! ✨\n");
-
   DEBUG_CODEGEN("Running object pass manager...");
   pass.run(*module.get());
   dest.flush();
-
   return EXIT_SUCCESS;
 }
 

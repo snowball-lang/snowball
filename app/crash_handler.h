@@ -54,9 +54,9 @@
 // This file is heavily modified version of the Godot's crahs_handler
 // It's also heavily modified modified from:
 // Usage:
-//   #define SNOWBALL_INCLUDE_CRASH_HANDLER_MAIN
-//   #define SNOWBALL_CRASH_HANDLER_IMPLEMENTATION
-//   #include "crash_handler.h"
+// #define SNOWBALL_INCLUDE_CRASH_HANDLER_MAIN
+// #define SNOWBALL_CRASH_HANDLER_IMPLEMENTATION
+// #include "crash_handler.h"
 
 #if defined(_WIN32)
 
@@ -80,7 +80,7 @@ extern DWORD CrashHandlerException(EXCEPTION_POINTERS* ep);
 class CrashHandler {
   bool disabled;
 
-public:
+ public:
   void initialize();
 
   void disable();
@@ -168,13 +168,12 @@ class symbol {
   sym_type* sym;
   static const int max_name_len = 1024;
 
-public:
-  symbol(HANDLE process, DWORD64 address) : sym((sym_type*) ::operator new(sizeof(*sym) + max_name_len)) {
+ public:
+  symbol(HANDLE process, DWORD64 address) : sym((sym_type*) ::operator new (sizeof(*sym) + max_name_len)) {
     memset(sym, '\0', sizeof(*sym) + max_name_len);
     sym->SizeOfStruct = sizeof(*sym);
     sym->MaxNameLength = max_name_len;
     DWORD64 displacement;
-
     SymGetSymFromAddr64(process, address, &displacement, sym);
   }
 
@@ -190,18 +189,16 @@ public:
 class get_mod_info {
   HANDLE process;
 
-public:
+ public:
   get_mod_info(HANDLE h) : process(h) { }
 
   module_data operator()(HMODULE module) {
     module_data ret;
     char temp[4096];
     MODULEINFO mi;
-
     GetModuleInformation(process, module, &mi, sizeof(mi));
     ret.base_address = mi.lpBaseOfDll;
     ret.load_size = mi.SizeOfImage;
-
     GetModuleFileNameEx(process, module, temp, sizeof(temp));
     ret.image_name = temp;
     GetModuleBaseName(process, module, temp, sizeof(temp));
@@ -222,30 +219,23 @@ CrashHandlerException(EXCEPTION_POINTERS* ep) {
   std::vector<module_data> modules;
   DWORD cbNeeded;
   std::vector<HMODULE> module_handles(1);
-
   if (IsDebuggerPresent()) { return EXCEPTION_CONTINUE_SEARCH; }
-
   fprintf(stderr, "%s: Program crashed\n", __FUNCTION__);
-
   // Load the symbols:
   if (!SymInitialize(process, nullptr, false)) return EXCEPTION_CONTINUE_SEARCH;
-
   SymSetOptions(SymGetOptions() | SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
   EnumProcessModules(process, &module_handles[0], (DWORD) module_handles.size() * sizeof(HMODULE), &cbNeeded);
   module_handles.resize(cbNeeded / sizeof(HMODULE));
   EnumProcessModules(process, &module_handles[0], (DWORD) module_handles.size() * sizeof(HMODULE), &cbNeeded);
   std::transform(module_handles.begin(), module_handles.end(), std::back_inserter(modules), get_mod_info(process));
   void* base = modules[0].base_address;
-
   // Setup stuff:
   CONTEXT* context = ep->ContextRecord;
   STACKFRAME64 frame;
   bool skip_first = false;
-
   frame.AddrPC.Mode = AddrModeFlat;
   frame.AddrStack.Mode = AddrModeFlat;
   frame.AddrFrame.Mode = AddrModeFlat;
-
 #ifdef _M_X64
   frame.AddrPC.Offset = context->Rip;
   frame.AddrStack.Offset = context->Rsp;
@@ -254,17 +244,13 @@ CrashHandlerException(EXCEPTION_POINTERS* ep) {
   frame.AddrPC.Offset = context->Eip;
   frame.AddrStack.Offset = context->Esp;
   frame.AddrFrame.Offset = context->Ebp;
-
   // Skip the first one to avoid a duplicate on 32-bit mode
   skip_first = true;
 #endif
-
   line.SizeOfStruct = sizeof(line);
   IMAGE_NT_HEADERS* h = ImageNtHeader(base);
   DWORD image_type = h->FileHeader.Machine;
-
   fprintf(stderr, "Dumping the backtrace.\n");
-
   int n = 0;
   do {
     if (skip_first) {
@@ -272,35 +258,29 @@ CrashHandlerException(EXCEPTION_POINTERS* ep) {
     } else {
       if (frame.AddrPC.Offset != 0) {
         std::string fnName = symbol(process, frame.AddrPC.Offset).undecorated_name();
-
         if (SymGetLineFromAddr64(process, frame.AddrPC.Offset, &offset_from_symbol, &line))
           fprintf(stderr, "[%d] %s (%s:%d)\n", n, fnName.c_str(), line.FileName, line.LineNumber);
         else
           fprintf(stderr, "[%d] %s\n", n, fnName.c_str());
       } else
         fprintf(stderr, "[%d] ???\n", n);
-
       n++;
     }
-
     if (!StackWalk64(
-                image_type,
-                process,
-                hThread,
-                &frame,
-                context,
-                nullptr,
-                SymFunctionTableAccess64,
-                SymGetModuleBase64,
-                nullptr
+        image_type,
+        process,
+        hThread,
+        &frame,
+        context,
+        nullptr,
+        SymFunctionTableAccess64,
+        SymGetModuleBase64,
+        nullptr
         ))
       break;
   } while (frame.AddrReturn.Offset != 0 && n < 256);
-
   fprintf(stderr, "-- END OF BACKTRACE --\n");
-
   SymCleanup(process);
-
   // Pass the exception to the OS
   return EXCEPTION_CONTINUE_SEARCH;
 }
@@ -334,26 +314,23 @@ std::string _get_exec_path() {
 #elif __linux__
   char szTmp[32];
   sprintf(szTmp, "/proc/%d/exe", getpid());
-
   // int bytes = min(readlink(szTmp, pBuf, len), len - 1);
   int bytes = readlink(szTmp, pBuf, len);
   if (bytes > len - 1) bytes = len - 1;
-
   if (bytes >= 0) pBuf[bytes] = '\0';
 #endif
   return pBuf;
 }
 
 int _execute(
-        const std::string& p_path,
-        const std::vector<std::string>& p_arguments,
-        bool p_blocking,
-        int* r_child_id,
-        std::string* r_pipe,
-        int* r_exitcode,
-        bool read_stderr = true /*,Mutex *p_pipe_mutex*/
+const std::string& p_path,
+const std::vector<std::string>& p_arguments,
+bool p_blocking,
+int* r_child_id,
+std::string* r_pipe,
+int* r_exitcode,
+bool read_stderr = true /*,Mutex *p_pipe_mutex*/
 ) {
-
 #ifdef __EMSCRIPTEN__
   // Don't compile this code at all to avoid undefined references.
   // Actual virtual call goes to OS_JavaScript.
@@ -362,56 +339,43 @@ int _execute(
   if (p_blocking && r_pipe) {
     std::string argss;
     argss = "\"" + p_path + "\"";
-
     for (size_t i = 0; i < p_arguments.size(); i++) { argss += std::string(" \"") + p_arguments[i] + "\""; }
-
     if (read_stderr) {
       argss += " 2>&1"; // Read stderr too
     } else {
       argss += " 2>/dev/null"; // silence stderr
     }
     FILE* f = popen(argss.c_str(), "r");
-
     if (!f) {
       printf("ERR_CANT_OPEN, Cannot pipe stream from process running "
              "with following arguments\n\t%s.\n",
              argss.c_str());
       return -1;
     }
-
     char buf[65535];
-
     while (fgets(buf, 65535, f)) { (*r_pipe) += std::string(buf); }
     int rv = pclose(f);
     if (r_exitcode) *r_exitcode = rv;
-
     return 0;
   }
-
   pid_t pid = fork();
   if (pid < 0) {
     printf("ERR_CANT_FORK\n");
     return -1;
   }
-
   if (pid == 0) {
     // is child
-
     if (!p_blocking) {
       // For non blocking calls, create a new session-ID so parent won't
       // wait for it. This ensures the process won't go zombie at end.
       setsid();
     }
-
     std::vector<std::string> cs;
-
     cs.push_back(p_path);
     for (size_t i = 0; i < p_arguments.size(); i++) cs.push_back(p_arguments[i]);
-
     std::vector<char*> args;
     for (size_t i = 0; i < cs.size(); i++) args.push_back((char*) cs[i].c_str());
     args.push_back(0);
-
     execvp(p_path.c_str(), &args[0]);
     // still alive? something failed..
     fprintf(stderr,
@@ -420,7 +384,6 @@ int _execute(
             p_path.c_str());
     abort();
   }
-
   if (p_blocking) {
     int status;
     waitpid(pid, &status, 0);
@@ -428,7 +391,6 @@ int _execute(
   } else {
     if (r_child_id) *r_child_id = pid;
   }
-
   return 0;
 #endif
 }
@@ -439,7 +401,6 @@ std::string _func_offset(const char* string_symbol) {
   // /home/thakeenathees/dev/SNOWBALL/bin/SNOWBALL.x11.debug.64(+0x2801)
   // [0x55c5aa0a2801] from that it'll extract the offset (0x2801) and feed to
   // addr2line
-
   size_t i = 0;
   bool copy = false;
   std::string offset;
@@ -457,7 +418,6 @@ static void handle_crash(int sig) {
   void* bt_buffer[256];
   size_t size = backtrace(bt_buffer, 256);
   std::string _execpath = _get_exec_path();
-
   // Dump the backtrace to stderr with a message to the user
   fprintf(stderr,
           "\n\n---------------- [ CRASH REPORT ] ----------------\n\n%s: "
@@ -469,7 +429,6 @@ static void handle_crash(int sig) {
           "\\∫\n",
           __FUNCTION__);
   fprintf(stderr, "%s: Program crashed with signal %d\n", __FUNCTION__, sig);
-
   fprintf(stderr, "%s: Dumping the backtrace.\n", __FUNCTION__);
   char** strings = backtrace_symbols(bt_buffer, size);
   if (strings) {
@@ -492,27 +451,22 @@ static void handle_crash(int sig) {
                   }
       */
       std::vector<std::string> args;
-
       // char str[1024];
       // snprintf(str, 1024, "%p", bt_buffer[i]);
-      //  godot using this but It's not working for some reason
-      //  but the offset from the backtrace_symbols working, why?
-      //  using args.push_back(_func_offset(strings[i])); instead
-
+      // godot using this but It's not working for some reason
+      // but the offset from the backtrace_symbols working, why?
+      // using args.push_back(_func_offset(strings[i])); instead
       args.push_back(_func_offset(strings[i]));
       args.push_back("-e");
       args.push_back(_execpath);
       args.push_back("-f");
       args.push_back("--demangle");
       args.push_back("-p");
-
       std::string output = "";
-
       // Try to get the file/line number using addr2line
       int ret;
       int err = _execute("addr2line", args, true, nullptr, &output, &ret);
       if (err == 0) { output.erase(output.length() - 1, 1); }
-
       if (output.find(" ??:") != std::string::npos) { // _start at ??:0 no symbol found
         fprintf(stderr,
                 "[%ld] <<unresolved symbols>> at %s\n",
@@ -525,11 +479,9 @@ static void handle_crash(int sig) {
                 /*fname,*/ output.c_str());
       }
     }
-
     free(strings);
   }
   fprintf(stderr, "\n-------------- [ END OF BACKTRACE ] ---------------\n\n");
-
   // Abort to pass the error to the OS
   abort();
 }
@@ -541,13 +493,11 @@ CrashHandler::~CrashHandler() { disable(); }
 
 void CrashHandler::disable() {
   if (disabled) return;
-
 #if _SN_DEBUG
   signal(SIGSEGV, nullptr);
   signal(SIGFPE, nullptr);
   signal(SIGILL, nullptr);
 #endif
-
   disabled = true;
 }
 

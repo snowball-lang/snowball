@@ -24,11 +24,12 @@ class Argument : public AcceptorExtend<Argument, Variable> {
   /// @brief default value used for the function
   Syntax::Expression::Base* defaultValue = nullptr;
 
-public:
+ public:
   auto operator=(Argument*&) = delete;
   Argument(const Argument&) = delete;
-  explicit Argument(const std::string& name, int index = 0, Syntax::Expression::Base* defaultValue = nullptr, int scopeIndex = -1)
-      : AcceptorExtend(name, true, false, scopeIndex), index(index), defaultValue(defaultValue) {};
+  explicit Argument(const std::string& name, int index = 0, Syntax::Expression::Base* defaultValue = nullptr,
+                    int scopeIndex = -1)
+    : AcceptorExtend(name, true, false, scopeIndex), index(index), defaultValue(defaultValue) {};
 
   /// @return Argument index on the list
   auto getIndex() { return index; }

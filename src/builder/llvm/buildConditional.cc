@@ -5,7 +5,7 @@
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 
-#define CREATE_CONTINUE(x)                                                                                             \
+#define CREATE_CONTINUE(x) \
   if (x || !builder->GetInsertBlock()->getTerminator()) { builder->CreateBr(continueBB); }
 
 namespace snowball {

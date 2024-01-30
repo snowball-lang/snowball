@@ -19,7 +19,7 @@ namespace ir {
  * in the IR.
  */
 class Switch : public AcceptorExtend<Switch, Value> {
-public:
+ public:
   /// @brief Case for the switch
   struct Case {
     /// @brief Value to compare
@@ -36,7 +36,7 @@ public:
     /// @brief Block to jump to
     std::shared_ptr<Block> block;
   };
-private:
+ private:
   /// @brief Expression used as value for the switch
   std::shared_ptr<Value> expr = nullptr;
   /// @brief Cases for the switch
@@ -46,10 +46,11 @@ private:
   /// @brief If the switch is a C-style switch
   bool cStyleSwitch = false;
 
-public:
+ public:
   explicit Switch(std::shared_ptr<Value> expr, std::vector<Case> cases, std::shared_ptr<Block> defaultCase = nullptr)
     : expr(std::move(expr)), cases(std::move(cases), {}), defaultCase(std::move(defaultCase)) {}
-  explicit Switch(std::shared_ptr<Value> expr, std::vector<CStyleCase> cases, std::shared_ptr<Block> defaultCase = nullptr)
+  explicit Switch(std::shared_ptr<Value> expr, std::vector<CStyleCase> cases,
+                  std::shared_ptr<Block> defaultCase = nullptr)
     : expr(std::move(expr)), cases({}, std::move(cases)), defaultCase(std::move(defaultCase)), cStyleSwitch(true) {}
 
   /// @return expression used as value for the switch

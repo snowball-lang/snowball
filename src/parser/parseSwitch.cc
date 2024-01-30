@@ -15,7 +15,6 @@ Syntax::Statement::Switch* Parser::parseSwitch() {
   assert(is<TokenType::KWORD_CASE>() || is<TokenType::KWORD_SWITCH>());
   auto cStyleSwitch = is<TokenType::KWORD_SWITCH>();
   auto info = DBGSourceInfo::fromToken(m_source_info, m_current);
-  
   Syntax::Expression::Base* expr = parseExpr();
   assert(expr);
   next();
@@ -42,7 +41,6 @@ Syntax::Statement::Switch* Parser::parseSwitch() {
                 args.push_back(m_current.to_string());
                 next();
               }
-
               if (is<TokenType::SYM_COMMA>()) {
                 next();
               } else if (!is<TokenType::BRACKET_RPARENT>()) {
@@ -55,8 +53,8 @@ Syntax::Statement::Switch* Parser::parseSwitch() {
           assert_tok<TokenType::OP_ARROW>("'=>' expected after case name");
           auto body = parseBlockOrStmt();
           cases.push_back(Syntax::Statement::Switch::CaseBlock{
-            .expression = {nullptr, id}, 
-            .args = args, 
+            .expression = {nullptr, id},
+            .args = args,
             .isDefault = false,
             .isVariadic = variadic,
             .block = body,
@@ -68,16 +66,15 @@ Syntax::Statement::Switch* Parser::parseSwitch() {
           } else next();
           break;
         }
-        __attribute__ ((fallthrough));
+        __attribute__((fallthrough));
       }
-
       case TokenType::KWORD_DEFAULT: {
         next();
         assert_tok<TokenType::OP_ARROW>("'=>' expected after 'default' keyword");
         auto body = parseBlockOrStmt();
         cases.push_back(Syntax::Statement::Switch::CaseBlock{
-          .expression = {nullptr, ""}, 
-          .args = {}, 
+          .expression = {nullptr, ""},
+          .args = {},
           .isDefault = true,
           .isVariadic = false,
           .block = body,
@@ -89,7 +86,6 @@ Syntax::Statement::Switch* Parser::parseSwitch() {
           createError<SYNTAX_ERROR>("expected ',' or '}' after case block");
         }
       } break;
-
       default: {
         if (cStyleSwitch) {
           prev();
@@ -98,7 +94,7 @@ Syntax::Statement::Switch* Parser::parseSwitch() {
           auto body = parseBlockOrStmt();
           cases.push_back(Syntax::Statement::Switch::CaseBlock{
             .expression = {stmt, ""},
-            .args = {}, 
+            .args = {},
             .isDefault = false,
             .isVariadic = false,
             .block = body,
@@ -109,7 +105,7 @@ Syntax::Statement::Switch* Parser::parseSwitch() {
           } else if (!is<TokenType::BRACKET_RCURLY>()) {
             createError<SYNTAX_ERROR>("expected ',' or '}' after case block");
           } else next();
-          break; 
+          break;
         }
         createError<SYNTAX_ERROR>("expected 'case name' or 'default' keyword");
       } break;
@@ -117,7 +113,6 @@ Syntax::Statement::Switch* Parser::parseSwitch() {
   }
   auto node = Syntax::N<Switch>(expr, cases, cStyleSwitch);
   node->setDBGInfo(info);
-
   return node;
 }
 } // namespace snowball::parser

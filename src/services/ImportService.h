@@ -12,7 +12,7 @@ namespace services {
  * @brief It manages imports and module caches
  */
 class ImportService {
-public:
+ public:
   /// @brief A cache containing all of the alread-generated modules
   ///  used at compile time.
   ImportCache* cache = new ImportCache();
@@ -27,7 +27,7 @@ public:
   /// @brief Root path to the packages folder
   std::filesystem::path packagesPath;
 
-public:
+ public:
   ImportService(std::filesystem::path packagesPath) : packagesPath(packagesPath) {}
   /**
    * @brief Get the package path based on it's identifier
@@ -50,7 +50,7 @@ public:
    * std::string an error message if any
    */
   std::tuple</*result path*/std::filesystem::path, /*original path*/std::filesystem::path, /*errors*/std::string>
-  getImportPath(const std::string package, std::vector<std::string> path, const std::string extension = "");
+      getImportPath(const std::string package, std::vector<std::string> path, const std::string extension = "");
   /**
    * @brief Check if a module is external or not
    */

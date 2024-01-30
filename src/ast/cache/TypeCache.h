@@ -32,7 +32,7 @@ namespace cacheComponents {
  * based on their generics also making my life misserable.
  */
 class Types {
-public:
+ public:
   /**
    * @brief Representation of how functions are stored
    *  inside the cache. "State" refers to the transformer
@@ -44,23 +44,23 @@ public:
     std::shared_ptr<transform::ContextState> state;
   };
 
-protected:
+ protected:
   /// @brief A global map containing each class.
   std::unordered_map<std::string, TypeStore> types;
   /// @brief a list of already transformed types
   std::unordered_map<std::string, std::shared_ptr<transform::Item>> createdTypes;
 
-public:
+ public:
   /// @brief A map containing what UUIDs are associated with it's original identifiers
   /// @example Foo -> [Foo:1, Foo:2, ...]
   std::unordered_map<std::string, std::vector<std::string>> identifierLookup;
 
-public:
+ public:
   /// @brief Set a new type to the cache
   void setType(const std::string uuid, Statement::Base* p_ty, std::shared_ptr<transform::ContextState> state);
   /// @brief add a new generated class to the cache
   void setTransformedType(
-          const std::string uuid, std::shared_ptr<transform::Item> p_ty, const std::string overloadedUUID = ""
+  const std::string uuid, std::shared_ptr<transform::Item> p_ty, const std::string overloadedUUID = ""
   );
   /// @brief add a new generated class to the cache
   std::optional<std::vector<std::shared_ptr<transform::Item>>> getTransformedType(const std::string& uuid);

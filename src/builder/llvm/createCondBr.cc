@@ -12,10 +12,10 @@ namespace snowball {
 namespace codegen {
 
 void LLVMBuilder::createCondBr(llvm::Value* cond, llvm::BasicBlock* thenBlock, llvm::BasicBlock* elseBlock) {
-    if (cond->getType()->isIntegerTy(8)) {
-        cond = builder->CreateTrunc(cond, builder->getInt1Ty());
-    }
-    builder->CreateCondBr(cond, thenBlock, elseBlock);
+  if (cond->getType()->isIntegerTy(8)) {
+    cond = builder->CreateTrunc(cond, builder->getInt1Ty());
+  }
+  builder->CreateCondBr(cond, thenBlock, elseBlock);
 }
 
 } // namespace codegen

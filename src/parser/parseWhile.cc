@@ -13,14 +13,11 @@ namespace snowball::parser {
 WhileLoop* Parser::parseWhile() {
   assert(is<TokenType::KWORD_WHILE>() || is<TokenType::KWORD_DO>());
   auto token = m_current;
-
   bool isDoWhile = is<TokenType::KWORD_DO>(token);
   Syntax::Expression::Base* expr = nullptr;
   Syntax::Block* block = nullptr;
-
   bool backupLoop = m_inside_loop;
   m_inside_loop = true;
-
   if (!isDoWhile) {
     expr = parseExpr(false);
     next();
@@ -29,14 +26,11 @@ WhileLoop* Parser::parseWhile() {
     next();
     block = parseBlock();
     next();
-
     assert_tok<TokenType::KWORD_WHILE>("'while'");
     expr = parseExpr(false);
     next();
-
     assert_tok<TokenType::SYM_SEMI_COLLON>("';'");
   }
-
   m_inside_loop = backupLoop;
   auto v = Syntax::N<Syntax::Statement::WhileLoop>(expr, block, isDoWhile);
   auto info = DBGSourceInfo::fromToken(m_source_info, token);

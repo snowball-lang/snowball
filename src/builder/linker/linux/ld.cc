@@ -20,7 +20,6 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
     linkerArgs.push_back("--export-dynamic");
     linkerArgs.push_back("-m");
     linkerArgs.push_back("elf_x86_64");
-
     // linkerArgs.push_back("-Bdynamic");
   } else {
     linkerArgs.push_back("-static");
@@ -32,12 +31,9 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
   if (ctx.withStd) {
     // TODO: check if this works for all platforms
     linkerArgs.push_back("-dynamic-linker");
-
     fs::path ld_linux_path;
-
     void* ld_linux_handle = dlopen("ld-linux-x86-64.so.2", RTLD_LAZY);
     if (!ld_linux_handle) { Syntax::E<LINKER_ERR>(FMT("Error getting library path: %s", dlerror())); }
-
     Dl_info ld_linux_info;
     if (dladdr(ld_linux_handle, &ld_linux_info)) {
       ld_linux_path = ld_linux_info.dli_fname;
@@ -45,11 +41,9 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
       Syntax::E<LINKER_ERR>(FMT("Error getting library path: %s", dlerror()));
     }
     linkerArgs.push_back(ld_linux_path);
-
     auto path = std::string("/usr") + PATH_SEPARATOR + _SNOWBALL_LIBRARY_OBJ;
     auto triple = getPlatformTriple();
     assert(!triple.empty() && "Unsupported platform for linking!");
-
     if (!dlopen("crt1.o", RTLD_LAZY)) {
       // dlopen returns `<absolute path>/crt1.o: only ET_DYN and ET_EXEC can be loaded`
       // this is abusing that fact to get the absolute path
@@ -63,7 +57,6 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
     } else {
       Syntax::E<LINKER_ERR>("crt1.o was loaded as a shared library");
     }
-
     if (!dlopen("crti.o", RTLD_LAZY)) {
       // dlopen returns `<absolute path>/crt1.o: only ET_DYN and ET_EXEC can be loaded`
       // this is abusing that fact to get the absolute path
@@ -77,7 +70,6 @@ void Linker::constructLinkerArgs(std::string& input, std::string& output, std::v
     } else {
       Syntax::E<LINKER_ERR>("crti.o was loaded as a shared library");
     }
-
     if (!isIAMCU) {
       if (!dlopen("crtn.o", RTLD_LAZY)) {
         // dlopen returns `<absolute path>/crt1.o: only ET_DYN and ET_EXEC can be loaded`

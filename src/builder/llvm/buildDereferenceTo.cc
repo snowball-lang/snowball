@@ -12,7 +12,6 @@ namespace codegen {
 void LLVMBuilder::visit(ir::DereferenceTo* ref) {
   auto val = ref->getValue();
   auto type = ref->getType();
-
   auto llvmVal = expr(val.get());
   this->value = builder->CreateLoad(getLLVMType(type), llvmVal, ".deref");
   ctx->doNotLoadInMemory = true;

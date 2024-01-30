@@ -32,11 +32,9 @@ using namespace snowball::utils;
 
 int _main(int argc, char** argv) {
   srand((unsigned) time(NULL) * getpid());
-
   try {
     app::CLI* cli = new app::CLI(argc, argv);
     app::Options opts = cli->parse();
-
     switch (opts.command) {
       case app::Options::BUILD:
         return app::commands::build(opts.build_opts);
@@ -67,6 +65,5 @@ int _main(int argc, char** argv) {
     Logger::error(FMT("\r\nAn unexpected error occurred: %s", e.what()));
     return EXIT_FAILURE;
   }
-
   return EXIT_SUCCESS;
 }

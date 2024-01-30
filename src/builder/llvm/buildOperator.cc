@@ -17,27 +17,27 @@
 
 #define SIGNED_DEPENDANT(x, s, u) \
   case services::OperatorService::x: \
-    if (utils::cast<types::IntType>(realType)->isSigned()) { \
-      OPERATOR_CALL(s) \
-    } else { \
-      OPERATOR_CALL(u) \
-    } \
-    break;
+  if (utils::cast<types::IntType>(realType)->isSigned()) { \
+    OPERATOR_CALL(s) \
+  } else { \
+    OPERATOR_CALL(u) \
+  } \
+  break;
 
 #define U_SIGNED_DEPENDANT(x, s, u) \
   case services::OperatorService::x: \
-    if (utils::cast<types::IntType>(realType)->isSigned()) { \
-      U_OPERATOR_CALL(s) \
-    } else { \
-      U_OPERATOR_CALL(u) \
-    } \
-    break;
+  if (utils::cast<types::IntType>(realType)->isSigned()) { \
+    U_OPERATOR_CALL(s) \
+  } else { \
+    U_OPERATOR_CALL(u) \
+  } \
+  break;
 
-#define OPERATOR_INSTANCE(x, f)                                                                                        \
-  case services::OperatorService::x:                                                                                   \
-    OPERATOR_CALL(f)                                             \
-    break;
-#define OPERATOR_UINSTANCE(x, f)                                                                                       \
+#define OPERATOR_INSTANCE(x, f) \
+  case services::OperatorService::x: \
+  OPERATOR_CALL(f) \
+  break;
+#define OPERATOR_UINSTANCE(x, f) \
   case services::OperatorService::x: U_OPERATOR_CALL(f); break;
 
 namespace snowball {
@@ -53,7 +53,8 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
       auto left = build(args.at(0).get());
       llvm::Value* right = nullptr;
       {
-        if (args.size() > 1 && !services::OperatorService::opEquals<services::OperatorService::OR>(opName) && !services::OperatorService::opEquals<services::OperatorService::AND>(opName)) {
+        if (args.size() > 1 && !services::OperatorService::opEquals<services::OperatorService::OR>(opName)
+            && !services::OperatorService::opEquals<services::OperatorService::AND>(opName)) {
           ctx->doNotLoadInMemory = false;
           right = expr(args.at(1).get());
         }
@@ -72,43 +73,40 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
       }
       if (utils::is<types::IntType>(realType)) {
         switch (services::OperatorService::operatorID(opName)) {
-          OPERATOR_INSTANCE(EQEQ, CreateICmpEQ)
-          OPERATOR_INSTANCE(PLUS, CreateAdd)
-          OPERATOR_INSTANCE(MINUS, CreateSub)
-          OPERATOR_INSTANCE(MUL, CreateMul)
-          OPERATOR_INSTANCE(DIV, CreateSDiv)
-          OPERATOR_INSTANCE(MOD, CreateSRem)
-          OPERATOR_INSTANCE(NOTEQ, CreateICmpNE)
-          OPERATOR_INSTANCE(BIT_LSHIFT, CreateShl)
-          //OPERATOR_INSTANCE(BIT_LSHIFT_EQ, CreateShl)
-          OPERATOR_INSTANCE(BIT_RSHIFT, CreateLShr)
-          //OPERATOR_INSTANCE(BIT_RSHIFT_EQ, CreateAShr)
-          OPERATOR_INSTANCE(BIT_OR, CreateOr)
-          //OPERATOR_INSTANCE(BIT_OR_EQ, CreateOr)
-          OPERATOR_INSTANCE(BIT_AND, CreateAnd)
-          //OPERATOR_INSTANCE(BIT_AND_EQ, CreateAnd)
-          OPERATOR_INSTANCE(BIT_XOR, CreateXor)
-          //OPERATOR_INSTANCE(BIT_XOR_EQ, CreateXor)
-          OPERATOR_UINSTANCE(BIT_NOT, CreateNot)
-
-          SIGNED_DEPENDANT(LT, CreateICmpSLT, CreateICmpULT)
-          SIGNED_DEPENDANT(GT, CreateICmpSGT, CreateICmpUGT)
-          SIGNED_DEPENDANT(LTEQ, CreateICmpSLE, CreateICmpULE)
-          SIGNED_DEPENDANT(GTEQ, CreateICmpSGE, CreateICmpUGE)
-
-          U_SIGNED_DEPENDANT(UMINUS, CreateNSWNeg, CreateNUWNeg)
-
+            OPERATOR_INSTANCE(EQEQ, CreateICmpEQ)
+            OPERATOR_INSTANCE(PLUS, CreateAdd)
+            OPERATOR_INSTANCE(MINUS, CreateSub)
+            OPERATOR_INSTANCE(MUL, CreateMul)
+            OPERATOR_INSTANCE(DIV, CreateSDiv)
+            OPERATOR_INSTANCE(MOD, CreateSRem)
+            OPERATOR_INSTANCE(NOTEQ, CreateICmpNE)
+            OPERATOR_INSTANCE(BIT_LSHIFT, CreateShl)
+            //OPERATOR_INSTANCE(BIT_LSHIFT_EQ, CreateShl)
+            OPERATOR_INSTANCE(BIT_RSHIFT, CreateLShr)
+            //OPERATOR_INSTANCE(BIT_RSHIFT_EQ, CreateAShr)
+            OPERATOR_INSTANCE(BIT_OR, CreateOr)
+            //OPERATOR_INSTANCE(BIT_OR_EQ, CreateOr)
+            OPERATOR_INSTANCE(BIT_AND, CreateAnd)
+            //OPERATOR_INSTANCE(BIT_AND_EQ, CreateAnd)
+            OPERATOR_INSTANCE(BIT_XOR, CreateXor)
+            //OPERATOR_INSTANCE(BIT_XOR_EQ, CreateXor)
+            OPERATOR_UINSTANCE(BIT_NOT, CreateNot)
+            SIGNED_DEPENDANT(LT, CreateICmpSLT, CreateICmpULT)
+            SIGNED_DEPENDANT(GT, CreateICmpSGT, CreateICmpUGT)
+            SIGNED_DEPENDANT(LTEQ, CreateICmpSLE, CreateICmpULE)
+            SIGNED_DEPENDANT(GTEQ, CreateICmpSGE, CreateICmpUGE)
+            U_SIGNED_DEPENDANT(UMINUS, CreateNSWNeg, CreateNUWNeg)
           case services::OperatorService::AND: {
             left = toBool(load(left, baseType), utils::cast<types::IntType>(realType)->isSigned());
             auto currentBlock = builder->GetInsertBlock();
             auto trueBlock = h.create<llvm::BasicBlock>(*context, "and.true", ctx->getCurrentFunction());
             auto continueBlock = h.create<llvm::BasicBlock>(*context, "and.cont", ctx->getCurrentFunction());
-
             createCondBr(left, trueBlock, continueBlock);
             builder->SetInsertPoint(trueBlock);
             right = toBool(expr(args.at(1).get()), utils::cast<types::IntType>(realType)->isSigned());
             auto trueNode = builder->GetInsertBlock();
-            auto cmp = builder->CreateICmpNE(right, llvm::ConstantInt::get(right->getType(), 0, utils::cast<types::IntType>(realType)->isSigned()));
+            auto cmp = builder->CreateICmpNE(right, llvm::ConstantInt::get(right->getType(), 0,
+                                             utils::cast<types::IntType>(realType)->isSigned()));
             builder->CreateBr(continueBlock);
             builder->SetInsertPoint(continueBlock);
             auto phi = builder->CreatePHI(builder->getInt1Ty(), 2);
@@ -117,18 +115,17 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             this->value = phi;
             break;
           }
-
           case services::OperatorService::OR: {
             left = toBool(load(left, baseType), utils::cast<types::IntType>(realType)->isSigned());
             auto currentBlock = builder->GetInsertBlock();
             auto trueBlock = h.create<llvm::BasicBlock>(*context, "or.true", ctx->getCurrentFunction());
             auto continueBlock = h.create<llvm::BasicBlock>(*context, "or.cont", ctx->getCurrentFunction());
-
             createCondBr(left, continueBlock, trueBlock);
             builder->SetInsertPoint(trueBlock);
             right = toBool(expr(args.at(1).get()), utils::cast<types::IntType>(realType)->isSigned());
             auto trueNode = builder->GetInsertBlock();
-            auto cmp = builder->CreateICmpNE(right, llvm::ConstantInt::get(right->getType(), 0, utils::cast<types::IntType>(realType)->isSigned()));
+            auto cmp = builder->CreateICmpNE(right, llvm::ConstantInt::get(right->getType(), 0,
+                                             utils::cast<types::IntType>(realType)->isSigned()));
             builder->CreateBr(continueBlock);
             builder->SetInsertPoint(continueBlock);
             auto phi = builder->CreatePHI(builder->getInt1Ty(), 2);
@@ -137,63 +134,57 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             this->value = phi;
             break;
           }
-
           case services::OperatorService::NOT: {
             left = toBool(load(left, baseType));
             auto size_in_bits = ((llvm::IntegerType*) left->getType())->getBitWidth();
             if (left->getType()->isPointerTy())
               this->value = builder->CreateICmpEQ(
-                      left, llvm::ConstantPointerNull::get(builder->getIntNTy((unsigned) size_in_bits)->getPointerTo())
-              );
+                            left, llvm::ConstantPointerNull::get(builder->getIntNTy((unsigned) size_in_bits)->getPointerTo())
+                            );
             else
               this->value = builder->CreateICmpEQ(
-                      left, llvm::ConstantInt::get(builder->getIntNTy((unsigned) size_in_bits), 0, false)
-              );
+                            left, llvm::ConstantInt::get(builder->getIntNTy((unsigned) size_in_bits), 0, false)
+                            );
             break;
           }
-
           // TODO: remainder oeprators (!, +=, etc...)
           case services::OperatorService::EQ: {
             builder->CreateStore(right, left);
             break;
           }
-
           default: assert(false && "Unknown operator");
         }
-
         return true;
       } else if (utils::is<types::FloatType>(realType)) {
         // this->value = builder->Create
         switch (services::OperatorService::operatorID(opName)) {
-          OPERATOR_INSTANCE(EQEQ, CreateFCmpUEQ)
-          OPERATOR_INSTANCE(PLUS, CreateFAdd)
-          OPERATOR_INSTANCE(MINUS, CreateFSub)
-          OPERATOR_INSTANCE(MUL, CreateFMul)
-          OPERATOR_INSTANCE(DIV, CreateFDiv)
-          OPERATOR_INSTANCE(MOD, CreateFRem)
-          OPERATOR_INSTANCE(NOTEQ, CreateFCmpUNE)
-          OPERATOR_INSTANCE(BIT_LSHIFT, CreateShl)
-          //OPERATOR_INSTANCE(BIT_LSHIFT_EQ, CreateShl)
-          OPERATOR_INSTANCE(BIT_RSHIFT, CreateLShr)
-          //OPERATOR_INSTANCE(BIT_RSHIFT_EQ, CreateAShr)
-          OPERATOR_INSTANCE(BIT_OR, CreateOr)
-          //OPERATOR_INSTANCE(BIT_OR_EQ, CreateOr)
-          OPERATOR_INSTANCE(BIT_AND, CreateAnd)
-          //OPERATOR_INSTANCE(BIT_AND_EQ, CreateAnd)
-          OPERATOR_INSTANCE(BIT_XOR, CreateXor)
-          OPERATOR_UINSTANCE(BIT_NOT, CreateNot)
-          //OPERATOR_INSTANCE(BIT_XOR_EQ, CreateXor)
-          OPERATOR_INSTANCE(LT, CreateFCmpOLT)
-          OPERATOR_INSTANCE(GT, CreateFCmpOGT)
-          OPERATOR_INSTANCE(LTEQ, CreateFCmpOLE)
-          OPERATOR_INSTANCE(GTEQ, CreateFCmpOGE)
-
+            OPERATOR_INSTANCE(EQEQ, CreateFCmpUEQ)
+            OPERATOR_INSTANCE(PLUS, CreateFAdd)
+            OPERATOR_INSTANCE(MINUS, CreateFSub)
+            OPERATOR_INSTANCE(MUL, CreateFMul)
+            OPERATOR_INSTANCE(DIV, CreateFDiv)
+            OPERATOR_INSTANCE(MOD, CreateFRem)
+            OPERATOR_INSTANCE(NOTEQ, CreateFCmpUNE)
+            OPERATOR_INSTANCE(BIT_LSHIFT, CreateShl)
+            //OPERATOR_INSTANCE(BIT_LSHIFT_EQ, CreateShl)
+            OPERATOR_INSTANCE(BIT_RSHIFT, CreateLShr)
+            //OPERATOR_INSTANCE(BIT_RSHIFT_EQ, CreateAShr)
+            OPERATOR_INSTANCE(BIT_OR, CreateOr)
+            //OPERATOR_INSTANCE(BIT_OR_EQ, CreateOr)
+            OPERATOR_INSTANCE(BIT_AND, CreateAnd)
+            //OPERATOR_INSTANCE(BIT_AND_EQ, CreateAnd)
+            OPERATOR_INSTANCE(BIT_XOR, CreateXor)
+            OPERATOR_UINSTANCE(BIT_NOT, CreateNot)
+            //OPERATOR_INSTANCE(BIT_XOR_EQ, CreateXor)
+            OPERATOR_INSTANCE(LT, CreateFCmpOLT)
+            OPERATOR_INSTANCE(GT, CreateFCmpOGT)
+            OPERATOR_INSTANCE(LTEQ, CreateFCmpOLE)
+            OPERATOR_INSTANCE(GTEQ, CreateFCmpOGE)
           case services::OperatorService::AND: {
             left = toBool(load(left, baseType));
             auto currentBlock = builder->GetInsertBlock();
             auto trueBlock = h.create<llvm::BasicBlock>(*context, "and.true", ctx->getCurrentFunction());
             auto continueBlock = h.create<llvm::BasicBlock>(*context, "and.cont", ctx->getCurrentFunction());
-
             createCondBr(left, trueBlock, continueBlock);
             builder->SetInsertPoint(trueBlock);
             right = toBool(expr(args.at(1).get()));
@@ -207,13 +198,11 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             this->value = phi;
             break;
           }
-
           case services::OperatorService::OR: {
             left = toBool(load(left, baseType));
             auto currentBlock = builder->GetInsertBlock();
             auto trueBlock = h.create<llvm::BasicBlock>(*context, "or.true", ctx->getCurrentFunction());
             auto continueBlock = h.create<llvm::BasicBlock>(*context, "or.cont", ctx->getCurrentFunction());
-
             createCondBr(left, continueBlock, trueBlock);
             builder->SetInsertPoint(trueBlock);
             right = toBool(expr(args.at(1).get()));
@@ -227,23 +216,19 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             this->value = phi;
             break;
           }
-
           OPERATOR_UINSTANCE(UMINUS, CreateFNeg)
           case services::OperatorService::NOT: {
             this->value =
-                    builder->CreateFCmpOEQ(load(left, baseType), llvm::ConstantFP::get(builder->getFloatTy(), 0.0f));
+            builder->CreateFCmpOEQ(load(left, baseType), llvm::ConstantFP::get(builder->getFloatTy(), 0.0f));
             break;
           }
-
           // TODO: remainder oeprators (!, +=, etc...)
           case services::OperatorService::EQ: {
             builder->CreateStore(right, left);
             break;
           }
-
           default: assert(false);
         }
-
         return true;
       } else {
         switch (services::OperatorService::operatorID(opName)) {
@@ -253,21 +238,18 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                 right = ((llvm::LoadInst*) right)->getPointerOperand();
               }
               builder->CreateMemCpy(
-                      left, llvm::MaybeAlign(), right, llvm::MaybeAlign(),
-                      module->getDataLayout().getTypeSizeInBits(getLLVMType(realType)) / 8
+              left, llvm::MaybeAlign(), right, llvm::MaybeAlign(),
+              module->getDataLayout().getTypeSizeInBits(getLLVMType(realType)) / 8
               );
             } else builder->CreateStore(right, left);
             break;
           }
-
           default: return false;
         }
-
         return true;
       }
     }
   }
-
   return false;
 }
 

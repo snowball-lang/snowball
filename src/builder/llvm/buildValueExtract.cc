@@ -13,7 +13,6 @@ namespace codegen {
 
 void LLVMBuilder::visit(ir::ValueExtract* extract) {
   auto var = extract->getValue();
-
   llvm::Value* value = nullptr;
   if (auto f = utils::dyn_cast<ir::Func>(var)) {
     ctx->doNotLoadInMemory = true;
@@ -25,7 +24,6 @@ void LLVMBuilder::visit(ir::ValueExtract* extract) {
   } else {
     assert(false && "BUG: Value extract type not supported!");
   }
-
   this->value = value;
 }
 

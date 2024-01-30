@@ -13,14 +13,11 @@ namespace snowball::parser {
 Statement::Base* Parser::parseConditional() {
   assert(is<TokenType::KWORD_IF>());
   auto info = DBGSourceInfo::fromToken(m_source_info, m_current);
-
   // If the next token is a constexpr, then this is a compile-time conditional.
   if (is<TokenType::KWORD_CONSTEXPR>(peek())) {
     createError<TODO>("Compile-time conditionals are not yet supported");
     next();
-
     auto attrs = parseAttributes(true);
-
     next();
     auto block = parseBlock();
     //auto node = Syntax::N<ConditionalConstExpr>(block);
@@ -28,7 +25,6 @@ Statement::Base* Parser::parseConditional() {
     //node->setDBGInfo(info);
     //return node;
   }
-
   // Otherwise, parse a runtime conditional.
   auto expr = parseExpr(false);
   next();
@@ -38,10 +34,8 @@ Statement::Base* Parser::parseConditional() {
     next();
     elseBlock = parseBlockOrStmt();
   }
-
   auto node = Syntax::N<Conditional>(expr, block, elseBlock);
   node->setDBGInfo(info);
-
   return node;
 }
 } // namespace snowball::parser

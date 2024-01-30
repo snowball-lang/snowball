@@ -14,7 +14,7 @@ Syntax::Block* Parser::parseBlockOrStmt() {
     auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
     auto tk = peek();
     auto expr = parseStatement(tk);
-    auto block = Syntax::N<Syntax::Block>(std::vector<Syntax::Node*>{expr});
+    auto block = Syntax::N<Syntax::Block>(std::vector<Syntax::Node*> {expr});
     block->setDBGInfo(dbg);
     return block;
   }

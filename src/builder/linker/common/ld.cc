@@ -15,18 +15,15 @@ void Linker::addLibrary(std::string& library) { linkedLibraries.push_back(librar
 int Linker::link(std::string& input, std::string& output, std::vector<std::string>& args) {
   auto current = utils::get_lib_folder();
   rpaths.insert(rpaths.begin(), (current / ".." / "lib").string());
-
   constructLinkerArgs(input, output, args);
   linkerArgs.insert(linkerArgs.begin(), ldPath);
   DEBUG_CODEGEN("Invoking linker (" LD_PATH " with stdlib at " STATICLIB_DIR ")");
   DEBUG_CODEGEN("Linker command: %s", utils::join(linkerArgs.begin(), linkerArgs.end(), " ").c_str());
   int ldstatus = os::Driver::run(linkerArgs);
   if (ldstatus) { throw SNError(LINKER_ERR, Logger::format("Linking with " LD_PATH " failed with code %d", ldstatus)); }
-
 #if __APPLE__
   if (ctx.opt == app::Options::Optimization::OPTIMIZE_O0) os::Driver::run({"dsymutil", output});
 #endif
-
   return EXIT_SUCCESS;
 }
 
@@ -42,7 +39,6 @@ std::string Linker::getPlatformTriple() {
     case llvm::Triple::aarch64_be: return "aarch64_be-linux-gnu";
     default: return "";
   };
-
   return "";
 }
 

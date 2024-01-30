@@ -10,8 +10,8 @@ SN_DEFINITE_ASSIGMENT_VISIT(Statement::Switch) {
   p_node->getExpr()->accept(this);
   for (auto& caseInstance : p_node->getCases()) {
     asBlock([&] {
-      for (auto i : caseInstance.block->getStmts()) { i->accept(this); }
-    });
+            for (auto i : caseInstance.block->getStmts()) { i->accept(this); }
+            });
   }
 }
 

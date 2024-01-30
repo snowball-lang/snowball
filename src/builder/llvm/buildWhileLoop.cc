@@ -14,13 +14,11 @@ void LLVMBuilder::visit(ir::WhileLoop* c) {
   auto condBB = h.create<llvm::BasicBlock>(*context, "", parent);
   auto whileBB = h.create<llvm::BasicBlock>(*context, "", parent);
   auto continueBB = h.create<llvm::BasicBlock>(*context, "", parent);
-
   auto backupLoop = ctx->loop;
   ctx->loop = {
     .continueBlock = condBB,
     .breakBlock = continueBB,
   };
-
   if (c->isDoWhile()) {
     builder->CreateBr(whileBB);
     builder->SetInsertPoint(whileBB);
@@ -35,21 +33,17 @@ void LLVMBuilder::visit(ir::WhileLoop* c) {
       // Using "continue" must execute the for condition
       // before jumping to the next iteration
       // "x" is `for i; i < 10; i++ {}`
-      //                        ^^^ <- this
+      // ^^^ <- this
       auto forCondBB = h.create<llvm::BasicBlock>(*context, "for.cond", parent);
-      
       builder->CreateBr(condBB);
       builder->SetInsertPoint(condBB);
       auto cond = expr(c->getCondition().get());
       ctx->loop.continueBlock = forCondBB;
-      
       createCondBr(cond, whileBB, continueBB);
       builder->SetInsertPoint(whileBB);
       (void) build(c->getBlock().get());
-
       if (!builder->GetInsertBlock()->getTerminator()) { builder->CreateBr(forCondBB); }
       builder->SetInsertPoint(forCondBB);
-
       (void)build(x.get());
       builder->CreateBr(condBB);
       builder->SetInsertPoint(continueBB);
@@ -64,7 +58,6 @@ void LLVMBuilder::visit(ir::WhileLoop* c) {
       builder->SetInsertPoint(continueBB);
     }
   }
-
   ctx->loop = backupLoop;
 }
 

@@ -12,7 +12,6 @@ namespace snowball::parser {
 WhereClause* Parser::parseWhereClause() {
   assert(is<TokenType::SYM_COLLON>());
   WhereClause::ChecksVectorType tests;
-
   do {
     next();
     tests.push_back(parseType());

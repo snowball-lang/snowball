@@ -10,7 +10,6 @@ namespace Syntax {
 SN_TRANSFORMER_VISIT(Statement::Namespace) {
   auto name = p_node->getName();
   auto body = p_node->getBody();
-
   auto uuid = ctx->createIdentifierName(name);
   if (!ctx->generateFunction) {
     if (ctx->getInScope(name, ctx->currentScope()).second)
@@ -22,8 +21,8 @@ SN_TRANSFORMER_VISIT(Statement::Namespace) {
     auto backup = ctx->module;
     ctx->module = mod;
     ctx->withScope([&]() { // ERROR: defined macros inside namespaces get's deleted since the scope also gets deleted
-      for (auto x : body) { SN_TRANSFORMER_CAN_GENERATE(x) trans(x); }
-    });
+                   for (auto x : body) { SN_TRANSFORMER_CAN_GENERATE(x) trans(x); }
+                   });
     ctx->module = backup;
     addModule(mod);
     ctx->addItem(name, sharedModule);
@@ -36,8 +35,8 @@ SN_TRANSFORMER_VISIT(Statement::Namespace) {
     auto backup = ctx->module;
     ctx->module = mod;
     ctx->withScope([&]() {
-      for (auto x : body) { trans(x); }
-    });
+                   for (auto x : body) { trans(x); }
+                   });
     ctx->module = backup;
     ctx->uuidStack.pop_back();
   }

@@ -9,7 +9,6 @@ namespace Syntax {
 SN_TRANSFORMER_VISIT(Macro) {
   // TODO: test this better out
   if (!ctx->generateFunction) return; // noop
-
   auto macroName = p_node->getName();
   if (ctx->getItem(macroName).second)
     Syntax::E<VARIABLE_ERROR>(p_node, FMT("Macro with name '%s' is already defined!", macroName.c_str()));
@@ -26,7 +25,6 @@ SN_TRANSFORMER_VISIT(Macro) {
     auto args = p_node->getAttributeArgs(Attributes::EXPORT);
     std::string exportName = macroName;
     if (args.find("as") != args.end()) { exportName = args["as"]; }
-
     auto& moduleExports = ctx->module->getExportedMacros();
     if (moduleExports.find(macroName) != moduleExports.end())
       Syntax::E<VARIABLE_ERROR>(p_node, FMT("Macro with name '%s' is already exported!", macroName.c_str()));

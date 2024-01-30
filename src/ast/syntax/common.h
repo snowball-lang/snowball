@@ -21,8 +21,7 @@ namespace snowball {
 
 /// @brief An enum representing the attributes that can be stored
 ///  for a node.
-enum Attributes
-{
+enum Attributes {
   // Default attributes
   INVALID,
   CFG,
@@ -78,7 +77,7 @@ class AttributeHolder {
   using StoreType = std::unordered_map<std::string, std::string>;
   std::unordered_map<Attributes, StoreType> arguments;
 
-public:
+ public:
   /**
    * Checks if a specific attribute is set for the node.
    *
@@ -153,7 +152,7 @@ public:
     return std::nullopt;
   }
 
-private:
+ private:
   /** The bit field storing the attributes for the node. */
   unsigned int m_attributes = 0;
 };
@@ -161,7 +160,7 @@ private:
 struct Macro;
 
 struct Node : public DBGObject, public AttributeHolder {
-public:
+ public:
   Node() = default;
   ~Node() noexcept = default;
 
@@ -197,7 +196,7 @@ struct TypeRef : public types::Type, public Base {
   /// @brief The id of the type
   std::string id;
 
-public:
+ public:
   TypeRef(std::string p_name, DBGSourceInfo* p_dbg, std::vector<TypeRef*> p_generics = {}, std::string id = "");
   TypeRef(std::string p_name, DBGSourceInfo* p_dbg, types::Type* internalType, std::string id);
   TypeRef(Expression::Base* p_ast, std::string p_name, DBGSourceInfo* p_dbg, std::string id);
@@ -246,7 +245,7 @@ public:
 struct DeclType : public TypeRef {
   Base* value;
 
-public:
+ public:
   DeclType(Base* value, DBGSourceInfo* srcInfo);
 
   /// @return the expr value to get the type from
@@ -270,7 +269,7 @@ struct FuncType : public TypeRef {
   /// @brief The arguments of the function
   std::vector<TypeRef*> args;
 
-public:
+ public:
   FuncType(std::vector<TypeRef*> args, TypeRef* returnValue, DBGSourceInfo* srcInfo);
 
   /// @return the arguments of the function
@@ -294,7 +293,7 @@ public:
 struct TupleType : public TypeRef {
   std::vector<TypeRef*> types;
 
-public:
+ public:
   TupleType(std::vector<TypeRef*> types, DBGSourceInfo* srcInfo);
 
   /// @return the arguments of the function
@@ -314,7 +313,7 @@ public:
 struct ReferenceType : public TypeRef {
   TypeRef* baseType;
 
-public:
+ public:
   ReferenceType(TypeRef* baseType, DBGSourceInfo* srcInfo);
 
   /// @return the expr value to get the type from
@@ -335,7 +334,7 @@ public:
 struct PointerType : public TypeRef {
   TypeRef* baseType;
 
-public:
+ public:
   PointerType(TypeRef* baseType, bool isMutable, DBGSourceInfo* srcInfo);
 
   /// @return the expr value to get the type from
@@ -358,17 +357,17 @@ public:
  * @endcode
  */
 struct WhereClause {
-public:
+ public:
   using ChecksVectorType = std::vector<TypeRef*>;
 
-private:
+ private:
   /**
    * @brief A vector containing the checks that should be executed
    *  for each generic argument.
    */
   ChecksVectorType checks;
 
-public:
+ public:
   WhereClause(ChecksVectorType checks) : checks(checks) { }
   explicit WhereClause(TypeRef* check) : checks(ChecksVectorType{check}) { }
 
@@ -393,15 +392,14 @@ struct Param {
   /// @note This only should be for generic parameters!
   WhereClause* whereClause = nullptr;
   /// @brief Parameter status (aka: parameter type)
-  enum Status
-  {
+  enum Status {
     Normal,
     Generic
   } status;
   /// @brief If the argument is mutable or not
   bool mutableArg = false;
 
-public:
+ public:
   /// @brief Create a new param instance
   explicit Param(std::string name = "", TypeRef* type = nullptr, Status generic = Normal);
 
@@ -457,9 +455,9 @@ struct GenericContainer {
 
   bool _generic = false;
 
-public:
+ public:
   GenericContainer() = default;
-  GenericContainer(GenericList generics) : _generic(true), generics(generics){};
+  GenericContainer(GenericList generics) : _generic(true), generics(generics) {};
 
   GenericList getGenerics() const { return generics; }
   void setGenerics(GenericList list) {

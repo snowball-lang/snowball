@@ -9,25 +9,22 @@ namespace Syntax {
 SN_TRANSFORMER_VISIT(Statement::DefinedTypeDef) {
   auto name = p_node->getName();
   auto uuid = ctx->createIdentifierName(name);
-
   auto state = ctx->saveState();
   auto x = ctx->cache->getType(uuid);
-
   if (p_node->hasAttribute(Attributes::CLASS_EXTENDS)) {
     if (ctx->generateFunction)
       transformTypeExtension(p_node, uuid);
     return;
   }
-
   if (x.has_value() && (!ctx->generateFunction)) {
     E<VARIABLE_ERROR>(
-            p_node,
-            FMT("%s with name '%s' is already defined in "
-                "the current scope!",
-                (p_node->isInterface()      ? "Interface" :
-                         p_node->isStruct() ? "Struct" :
-                                              "Class"),
-                name.c_str())
+    p_node,
+    FMT("%s with name '%s' is already defined in "
+        "the current scope!",
+        (p_node->isInterface() ? "Interface" :
+         p_node->isStruct() ? "Struct" :
+         "Class"),
+        name.c_str())
     );
   } else if (!ctx->generateFunction || p_node->isGeneric()) {
     ctx->cache->setType(uuid, p_node, state);
@@ -38,7 +35,6 @@ SN_TRANSFORMER_VISIT(Statement::DefinedTypeDef) {
     (void) transformClass(uuid, store);
     return;
   }
-
   assert(false);
 }
 

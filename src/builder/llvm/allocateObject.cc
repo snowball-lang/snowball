@@ -10,7 +10,6 @@ namespace codegen {
 llvm::Value* LLVMBuilder::allocateObject(types::DefinedType* ty) {
   auto llvmType = llvm::cast<llvm::StructType>(getLLVMType(ty));
   llvm::Value* cast = createAlloca(llvmType, FMT(".alloc.%s", llvmType->getStructName()));
-
   initializeVariable(cast, llvmType, ty->sizeOf());
   return cast;
 }

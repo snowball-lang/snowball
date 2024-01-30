@@ -12,16 +12,15 @@ namespace codegen {
 void LLVMBuilder::visit(ir::ReferenceTo* ref) {
   auto val = ref->getValue();
   auto llvmReferencedValue = build(val.get());
-
   auto tempVal = (llvm::Value*) nullptr;
   if (llvm::isa<llvm::Constant>(llvmReferencedValue) && !llvm::isa<llvm::GlobalVariable>(llvmReferencedValue)) {
     auto var = new llvm::GlobalVariable(
-      *module,
-      getLLVMType(val->getType()),
-      false,
-      llvm::GlobalValue::LinkageTypes::InternalLinkage,
-      llvm::cast<llvm::Constant>(llvmReferencedValue),
-      "alloca_" + utils::gen_random<32>()
+    *module,
+    getLLVMType(val->getType()),
+    false,
+    llvm::GlobalValue::LinkageTypes::InternalLinkage,
+    llvm::cast<llvm::Constant>(llvmReferencedValue),
+    "alloca_" + utils::gen_random<32>()
     );
     var->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
     tempVal = var;
@@ -31,7 +30,6 @@ void LLVMBuilder::visit(ir::ReferenceTo* ref) {
     }
     tempVal = llvmReferencedValue;
   }
-
   ctx->doNotLoadInMemory = true;
   this->value = tempVal;
 }

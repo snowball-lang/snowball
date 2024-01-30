@@ -10,11 +10,10 @@ namespace Syntax {
 std::string TransformContext::createIdentifierName(const std::string name, bool includeBase) {
   std::string result;
   // bool alreadyGenerated = name.find('.') != std::string::npos;
-
-  if (name == _SNOWBALL_CONST_PTR || name == _SNOWBALL_MUT_PTR || name == _SNOWBALL_INT_IMPL || name == _SNOWBALL_FUNC_IMPL) {
+  if (name == _SNOWBALL_CONST_PTR || name == _SNOWBALL_MUT_PTR || name == _SNOWBALL_INT_IMPL
+      || name == _SNOWBALL_FUNC_IMPL) {
     return name;
   }
-
   if (includeBase) {
     // alreadyGenerated = true;
     if (currentClass != nullptr) {
@@ -29,17 +28,14 @@ std::string TransformContext::createIdentifierName(const std::string name, bool 
       }
     } else {
       auto currentModule = module->getUniqueName();
-
       // TODO: include class name if exists.
       result = currentModule + "." + name;
     }
   }
-
   if (!includeBase) {
     auto currentModule = module->getUniqueName();
     result = currentModule + "." + name;
   }
-
   return result;
 }
 

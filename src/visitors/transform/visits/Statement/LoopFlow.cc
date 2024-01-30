@@ -8,10 +8,10 @@ namespace snowball {
 namespace Syntax {
 
 SN_TRANSFORMER_VISIT(Statement::LoopFlow) {
-    this->value = getBuilder().createLoopFlow(
-        p_node->getDBGInfo(),
-        p_node->getFlowType()
-    );
+  this->value = getBuilder().createLoopFlow(
+                p_node->getDBGInfo(),
+                p_node->getFlowType()
+                );
 }
 
 } // namespace Syntax

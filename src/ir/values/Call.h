@@ -23,9 +23,9 @@ class Call : public AcceptorExtend<Call, Value> {
   // Arguments passed to the function
   std::vector<std::shared_ptr<Value>> arguments;
 
-public:
+ public:
   explicit Call(std::shared_ptr<Value> callee, std::vector<std::shared_ptr<Value>> args = {})
-      : callee(callee), arguments(args){};
+    : callee(callee), arguments(args) {};
 
   /// @return function call arguments
   auto& getArguments() { return arguments; }
@@ -39,7 +39,7 @@ public:
   // Set a visit handler for the generators
   SN_GENERATOR_VISITS
 
-public:
+ public:
   /**
    * @brief A variable used to fix a special occation for
    *  variable mutability. Uninitialized variables should
@@ -65,9 +65,10 @@ class ObjectInitialization : public AcceptorExtend<ObjectInitialization, Call> {
   /// @brief If the created object is a constant struct
   bool isStruct = false;
 
-public:
-  explicit ObjectInitialization(std::shared_ptr<Value> callee, std::vector<std::shared_ptr<Value>> args = {}, bool isStruct = false)
-      : AcceptorExtend(callee, args), isStruct(isStruct) { }
+ public:
+  explicit ObjectInitialization(std::shared_ptr<Value> callee, std::vector<std::shared_ptr<Value>> args = {}, bool
+                                isStruct = false)
+    : AcceptorExtend(callee, args), isStruct(isStruct) { }
 
   /// @brief Wether or not the created object is a constant struct
   bool isConstantStruct() const { return isStruct; }
@@ -81,9 +82,9 @@ public:
 class BinaryOp : public AcceptorExtend<BinaryOp, Call> {
   friend Call;
 
-public:
+ public:
   explicit BinaryOp(std::shared_ptr<Value> callee, std::vector<std::shared_ptr<Value>> args = {})
-      : AcceptorExtend(callee, args) { }
+    : AcceptorExtend(callee, args) { }
 
   virtual bool isOperator() const { return true; };
 
@@ -95,7 +96,7 @@ public:
 class ZeroInitialized : public AcceptorExtend<ZeroInitialized, Call> {
   friend Call;
 
-public:
+ public:
   explicit ZeroInitialized() : AcceptorExtend(nullptr, {}) { }
 
   virtual bool isOperator() const { return false; };

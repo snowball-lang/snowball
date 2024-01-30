@@ -32,7 +32,7 @@
 namespace snowball {
 namespace types {
 class PrimitiveType : public AcceptorExtend<PrimitiveType, Type> {
-public:
+ public:
   PrimitiveType(std::string p_name) : AcceptorExtend(Kind::TYPE, p_name) { }
   SNOWBALL_TYPE_COPIABLE(PrimitiveType)
 };
@@ -42,14 +42,14 @@ public:
  *  a numeric type. (e.g. i32, f64, bool, etc...)
  */
 class NumericType : public AcceptorExtend<NumericType, PrimitiveType> {
-public:
-  NumericType(std::string p_name) : AcceptorExtend(p_name){};
+ public:
+  NumericType(std::string p_name) : AcceptorExtend(p_name) {};
 
   /// @brief override function. All numeric types
   ///  can cast to any other numeric types.
   virtual bool canCast(Type* ty) const override { return NumericType::isNumericType(ty); }
 
-public:
+ public:
   /**
    * @brief Check if a type is numeric.
    * @note These are the numberic types:
@@ -63,7 +63,7 @@ public:
 
 /// @brief Representation of a void type.
 class VoidType : public AcceptorExtend<VoidType, PrimitiveType> {
-public:
+ public:
   VoidType() : AcceptorExtend(SN_VOID_TYPE) { }
   SNOWBALL_TYPE_COPIABLE(VoidType)
 
@@ -75,7 +75,7 @@ public:
 class FloatType : public AcceptorExtend<FloatType, NumericType> {
   std::int32_t bits;
 
-public:
+ public:
   FloatType(std::int32_t bits) : bits(bits), AcceptorExtend("f" + std::to_string(bits)) { }
   std::int32_t getBits() const { return bits; }
   SNOWBALL_TYPE_COPIABLE(FloatType)
@@ -92,8 +92,8 @@ class IntType : public AcceptorExtend<IntType, NumericType> {
   std::int32_t bits;
   bool isItSigned = true;
 
-public:
-  IntType(std::int32_t bits, bool isSigned = true) : bits(bits), isItSigned(isSigned), 
+ public:
+  IntType(std::int32_t bits, bool isSigned = true) : bits(bits), isItSigned(isSigned),
     AcceptorExtend(bits == 1 ? "bool" : (isSigned ? "i" : "u") + std::to_string(bits)) { }
   std::int32_t getBits() const { return bits; }
   bool isSigned() const { return isItSigned; }

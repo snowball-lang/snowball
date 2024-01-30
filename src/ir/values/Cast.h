@@ -24,8 +24,8 @@ class Cast : public AcceptorExtend<Cast, Value> {
   /// @brief Type to cast to
   types::Type* castType;
 
-public:
-  explicit Cast(std::shared_ptr<Value> expr, types::Type* castType) : expr(expr), castType(castType){};
+ public:
+  explicit Cast(std::shared_ptr<Value> expr, types::Type* castType) : expr(expr), castType(castType) {};
 
   /// @return value to cast
   auto getExpr() { return expr; }

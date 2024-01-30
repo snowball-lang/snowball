@@ -43,6 +43,6 @@ class extends Vector {
    * @see filter
    */
   func map<Y: Sized>(fn: Function<func(T) => Y>) Vector<Y> {
-    return map<?Y, T, Self>(self, fn, self.len());
+    return map<?Y, T, Self>(self, fn, self.size());
   }
 }

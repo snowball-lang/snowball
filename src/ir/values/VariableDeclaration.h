@@ -27,13 +27,13 @@ class VariableDeclaration : public IdMixin, public AcceptorExtend<Variable, Valu
   // If the variable has been externally declared
   bool external = false;
 
-protected:
+ protected:
   friend Argument;
 
-public:
+ public:
   // Create a new variable declaration
   VariableDeclaration(std::shared_ptr<ir::Variable> variable, std::shared_ptr<Value> value, bool external = false)
-      : variable(variable), value(value), external(external) {}
+    : variable(variable), value(value), external(external) {}
 
   /// @return Variable value
   auto& getVariable() const { return variable; }

@@ -28,14 +28,14 @@ class Conditional : public AcceptorExtend<Func, Value> {
   // The "else" statement block if the condition is false
   std::shared_ptr<Block> elseBlock;
 
-public:
+ public:
   explicit Conditional(
-          std::shared_ptr<Value> cond, std::shared_ptr<Block> insts, std::shared_ptr<Block> elseBlock = nullptr
+  std::shared_ptr<Value> cond, std::shared_ptr<Block> insts, std::shared_ptr<Block> elseBlock = nullptr
   )
-      : cond(cond), insts(insts), elseBlock(elseBlock){};
+    : cond(cond), insts(insts), elseBlock(elseBlock) {};
 
   /// @return body block instructions to execute
-  //   if the condition is met
+  // if the condition is met
   auto getBlock() { return insts; }
   /// @return the expression to be evaluated
   auto getCondition() { return cond; }

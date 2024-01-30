@@ -21,12 +21,12 @@ struct ContextState : std::enable_shared_from_this<ContextState> {
   std::vector<std::string> uuidStack = {};
 
   explicit ContextState(
-          StackType s,
-          std::shared_ptr<ir::Module> module,
-          std::vector<std::string> uuidStack,
-          types::Type* currentClass = nullptr
+  StackType s,
+  std::shared_ptr<ir::Module> module,
+  std::vector<std::string> uuidStack,
+  types::Type* currentClass = nullptr
   )
-      : stack(s), module(module), currentClass(currentClass), uuidStack(uuidStack) { }
+    : stack(s), module(module), currentClass(currentClass), uuidStack(uuidStack) { }
 };
 } // namespace transform
 } // namespace Syntax

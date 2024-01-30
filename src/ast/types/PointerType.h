@@ -21,11 +21,11 @@ namespace types {
 class PointerType : public AcceptorExtend<PointerType, Type>, public DBGObject {
   friend AcceptorExtend;
 
-private:
+ private:
   /// @brief Base class that this type is pointing to
   Type* base = nullptr;
 
-public:
+ public:
   PointerType(Type* base, bool isMutable);
   PointerType(const PointerType& other) = default;
 
@@ -34,7 +34,6 @@ public:
    */
   virtual bool is(Type* other) const override {
     if (auto c = utils::cast<PointerType>(other)) { return base->is(c->getPointedType()); }
-
     return false;
   }
 

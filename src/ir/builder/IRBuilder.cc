@@ -8,27 +8,28 @@ namespace snowball {
 namespace ir {
 
 IRBuilder::IRBuilder(std::shared_ptr<ir::Module> module) { setModule(module); }
-SharedValue<Func> IRBuilder::createFunction(DBGSourceInfo* dbgInfo, std::string name, bool isExtern, bool isVarArg, bool isAnon) {
+SharedValue<Func> IRBuilder::createFunction(DBGSourceInfo* dbgInfo, std::string name, bool isExtern, bool isVarArg,
+    bool isAnon) {
   return N<Func>(dbgInfo, name, isExtern, isVarArg, isAnon);
 }
 SharedValue<Func> IRBuilder::createFunction(
-        DBGSourceInfo* dbgInfo, std::string name, Func::FunctionArgs args, bool isExtern, bool isVarArg, bool isAnon
+DBGSourceInfo* dbgInfo, std::string name, Func::FunctionArgs args, bool isExtern, bool isVarArg, bool isAnon
 ) {
   return N<Func>(dbgInfo, name, args, isExtern, isVarArg, isAnon);
 }
 SharedValue<Func> IRBuilder::createFunction(
-        DBGSourceInfo* dbgInfo,
-        std::string name,
-        SharedValue<Block> block,
-        Func::FunctionArgs args,
-        bool isExtern,
-        bool isVarArg,
-        bool isAnon
+DBGSourceInfo* dbgInfo,
+std::string name,
+SharedValue<Block> block,
+Func::FunctionArgs args,
+bool isExtern,
+bool isVarArg,
+bool isAnon
 ) {
   return N<Func>(dbgInfo, name, block, args, isExtern, isVarArg, isAnon);
 }
 SharedValue<Func> IRBuilder::createFunction(
-        DBGSourceInfo* dbgInfo, std::string name, SharedValue<Block> block, bool isExtern, bool isVarArg, bool isAnon
+DBGSourceInfo* dbgInfo, std::string name, SharedValue<Block> block, bool isExtern, bool isVarArg, bool isAnon
 ) {
   return createFunction(dbgInfo, name, block, {}, isExtern, isVarArg, isAnon);
 }
@@ -41,19 +42,20 @@ SharedValue<Cast> IRBuilder::createCast(DBGSourceInfo* dbgInfo, SharedValue<> va
   return cast;
 }
 SharedValue<IndexExtract> IRBuilder::createIndexExtract(
-        DBGSourceInfo* dbgInfo, SharedValue<> value, types::DefinedType::ClassField* field, unsigned int index
+DBGSourceInfo* dbgInfo, SharedValue<> value, types::DefinedType::ClassField* field, unsigned int index
 ) {
   auto indexExtract = N<IndexExtract>(dbgInfo, value, field, index);
   setType(indexExtract, field->type);
   return indexExtract;
 }
-SharedValue<Argument> IRBuilder::createArgument(DBGSourceInfo* dbgInfo, const std::string& name, Type<> type, int scopeIndex) {
+SharedValue<Argument> IRBuilder::createArgument(DBGSourceInfo* dbgInfo, const std::string& name, Type<> type,
+    int scopeIndex) {
   auto arg = createArgument(dbgInfo, name, 0, (Syntax::Expression::Base*) nullptr, scopeIndex);
   if (type) setType(arg, type);
   return arg;
 }
 SharedValue<Argument> IRBuilder::createArgument(
-        DBGSourceInfo* dbgInfo, const std::string& name, int index, Syntax::Expression::Base* defaultValue, int scopeIndex
+DBGSourceInfo* dbgInfo, const std::string& name, int index, Syntax::Expression::Base* defaultValue, int scopeIndex
 ) {
   return N<Argument>(dbgInfo, name, index, defaultValue, scopeIndex);
 }
@@ -63,7 +65,7 @@ SharedValue<EnumInit> IRBuilder::createEnumInit(DBGSourceInfo* dbgInfo, types::E
   return init;
 }
 SharedValue<LoopFlow> IRBuilder::createLoopFlow(
-        DBGSourceInfo* dbgInfo, LoopFlowType type) {
+DBGSourceInfo* dbgInfo, LoopFlowType type) {
   return N<LoopFlow>(dbgInfo, type);
 }
 SharedValue<ZeroInitialized> IRBuilder::createZeroInitialized(DBGSourceInfo* dbg, Type<> type) {
@@ -72,18 +74,20 @@ SharedValue<ZeroInitialized> IRBuilder::createZeroInitialized(DBGSourceInfo* dbg
   return zero;
 }
 SharedValue<Argument> IRBuilder::createArgument(
-        DBGSourceInfo* dbgInfo, const std::string& name, int index, Type<> type, Syntax::Expression::Base* defaultValue, int scopeIndex
+DBGSourceInfo* dbgInfo, const std::string& name, int index, Type<> type, Syntax::Expression::Base* defaultValue,
+int scopeIndex
 ) {
   auto arg = createArgument(dbgInfo, name, index, defaultValue, scopeIndex);
   setType(arg, type);
   return arg;
 }
 SharedValue<Variable>
-IRBuilder::createVariable(DBGSourceInfo* dbgInfo, const std::string& identifier, bool isArgument, bool isMutable, int scopeIndex) {
+IRBuilder::createVariable(DBGSourceInfo* dbgInfo, const std::string& identifier, bool isArgument, bool isMutable,
+                          int scopeIndex) {
   return N<Variable>(dbgInfo, identifier, isArgument, isMutable, scopeIndex);
 }
 SharedValue<Variable> IRBuilder::createVariable(
-        DBGSourceInfo* dbgInfo, const std::string& identifier, Type<> type, bool isArgument, bool isMutable, int scopeIndex
+DBGSourceInfo* dbgInfo, const std::string& identifier, Type<> type, bool isArgument, bool isMutable, int scopeIndex
 ) {
   auto var = createVariable(dbgInfo, identifier, isArgument, isMutable, scopeIndex);
   setType(var, type);
@@ -129,7 +133,7 @@ SharedValue<Call> IRBuilder::createCall(DBGSourceInfo* dbgInfo, SharedValue<> ca
   return N<Call>(dbgInfo, callee, args);
 }
 SharedValue<VariableDeclaration> IRBuilder::createVariableDeclaration(
-        DBGSourceInfo* dbgInfo, std::shared_ptr<ir::Variable> variable, SharedValue<> value, bool isExtern
+DBGSourceInfo* dbgInfo, std::shared_ptr<ir::Variable> variable, SharedValue<> value, bool isExtern
 ) {
   auto decl = N<VariableDeclaration>(dbgInfo, variable, value, isExtern);
   if (value != nullptr) setType(decl, value->getType());
@@ -142,21 +146,22 @@ SharedValue<ValueExtract> IRBuilder::createValueExtract(DBGSourceInfo* dbgInfo, 
   return extract;
 }
 SharedValue<TryCatch> IRBuilder::createTryCatch(
-        DBGSourceInfo* dbgInfo,
-        SharedValue<Block> tryBlock,
-        std::vector<SharedValue<Block>> catchBlocks,
-        std::vector<SharedValue<VariableDeclaration>> catchVars
+DBGSourceInfo* dbgInfo,
+SharedValue<Block> tryBlock,
+std::vector<SharedValue<Block>> catchBlocks,
+std::vector<SharedValue<VariableDeclaration>> catchVars
 ) {
   return N<TryCatch>(dbgInfo, tryBlock, catchBlocks, catchVars);
 }
 SharedValue<Value>
-IRBuilder::createObjectInitialization(DBGSourceInfo* dbgInfo, types::Type* type, SharedValue<> value, ValueVec<> args, bool isStruct) {
+IRBuilder::createObjectInitialization(DBGSourceInfo* dbgInfo, types::Type* type, SharedValue<> value, ValueVec<> args,
+                                      bool isStruct) {
   std::shared_ptr<ir::Value> init = N<ObjectInitialization>(dbgInfo, value, args, isStruct);
   setType(init, type);
   return init;
 }
 SharedValue<Conditional> IRBuilder::createConditional(
-        DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> thenBlock, SharedValue<Block> elseBlock
+DBGSourceInfo* dbgInfo, SharedValue<> condition, SharedValue<Block> thenBlock, SharedValue<Block> elseBlock
 ) {
   return N<Conditional>(dbgInfo, condition, thenBlock, elseBlock);
 }
@@ -165,10 +170,10 @@ IRBuilder::createWhileLoop(DBGSourceInfo* dbgInfo, SharedValue<> condition, Shar
   return N<WhileLoop>(dbgInfo, condition, body, isDoWhile);
 }
 SharedValue<WhileLoop> IRBuilder::createFromForLoop(
-  DBGSourceInfo* dbgInfo,
-  SharedValue<> condition,
-  SharedValue<Block> body,
-  SharedValue<> forCond
+DBGSourceInfo* dbgInfo,
+SharedValue<> condition,
+SharedValue<Block> body,
+SharedValue<> forCond
 ) {
   return N<WhileLoop>(dbgInfo, condition, body, forCond);
 }
@@ -177,11 +182,12 @@ IRBuilder::createFunctionType(std::vector<Type<>> args, Type<> retType, bool isV
   return new types::FunctionType(args, retType, isVarArg, isMutable);
 }
 SharedValue<Switch> IRBuilder::createSwitch(
-  DBGSourceInfo* dbgInfo, SharedValue<> expr, std::vector<Switch::Case> cases, SharedValue<Block> defaultBlock
+DBGSourceInfo* dbgInfo, SharedValue<> expr, std::vector<Switch::Case> cases, SharedValue<Block> defaultBlock
 ) {
   return N<Switch>(dbgInfo, expr, cases, defaultBlock);
 }
-SharedValue<Switch> IRBuilder::createSwitch(DBGSourceInfo* dbgInfo, SharedValue<> expr, std::vector<Switch::CStyleCase> cases, SharedValue<Block> defaultBlock) {
+SharedValue<Switch> IRBuilder::createSwitch(DBGSourceInfo* dbgInfo, SharedValue<> expr,
+    std::vector<Switch::CStyleCase> cases, SharedValue<Block> defaultBlock) {
   return N<Switch>(dbgInfo, expr, cases, defaultBlock);
 }
 Type<types::TypeAlias> IRBuilder::createTypeAlias(DBGSourceInfo* dbg, std::string name, Type<> base) {

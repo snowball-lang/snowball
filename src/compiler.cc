@@ -35,11 +35,9 @@ Compiler::Compiler(std::string p_code, std::string p_path) {
 void Compiler::initialize() {
   initialized = true;
   createSourceInfo();
-
   globalContext = GlobalContext();
   globalContext.isTest = testsEnabled;
   globalContext.isBench = benchmarkEnabled;
-
   configFolder = cwd / ".sn";
   if (!fs::exists(configFolder)) fs::create_directory(configFolder);
   if (!fs::exists(configFolder / "bin")) fs::create_directory(configFolder / "bin");
@@ -50,20 +48,16 @@ void Compiler::initialize() {
 void Compiler::compile(bool silent) {
   if (!initialized) { throw SNError(Error::COMPILER_ERROR, "Compiler has not been initialized!"); }
 #if _SNOWBALL_TIMERS_DEBUG == 0
-#define SHOW_STATUS(status)                                                                                            \
+#define SHOW_STATUS(status) \
   if (!silent) status;
 #else
 #define SHOW_STATUS(_)
 #endif
-
   runPackageManager(silent);
-
   SHOW_STATUS(Logger::compiling(Logger::progress(0)));
-
   /* ignore_goto_errors() */ {
     SHOW_STATUS(Logger::compiling(Logger::progress(0.30)))
     auto lexer = new Lexer(srcInfo);
-
 #if _SNOWBALL_TIMERS_DEBUG
     DEBUG_TIMER("Lexer: %fs", utils::_timer([&] { lexer->tokenize(); }));
 #else
@@ -72,7 +66,6 @@ void Compiler::compile(bool silent) {
     auto tokens = lexer->tokens;
     if (tokens.size() != 0) {
       SHOW_STATUS(Logger::compiling(Logger::progress(0.40)))
-
       parser::Parser parser(tokens, srcInfo);
 #if _SNOWBALL_TIMERS_DEBUG
       parser::Parser::NodeVec ast;
@@ -80,14 +73,12 @@ void Compiler::compile(bool silent) {
 #else
       auto ast = parser.parse();
 #endif
-
       SHOW_STATUS(Logger::compiling(Logger::progress(0.50)))
       auto mainModule = std::make_shared<ir::MainModule>();
-
       mainModule->setSourceInfo(srcInfo);
-
       auto simplifier = new Syntax::Transformer(
-              mainModule->downcasted_shared_from_this<ir::Module>(), srcInfo, ((fs::path) path).parent_path(), testsEnabled, benchmarkEnabled, silent
+      mainModule->downcasted_shared_from_this<ir::Module>(), srcInfo, ((fs::path) path).parent_path(), testsEnabled,
+      benchmarkEnabled, silent
       );
       chdir(((fs::path) path).parent_path().c_str());
 #if _SNOWBALL_TIMERS_DEBUG
@@ -95,22 +86,17 @@ void Compiler::compile(bool silent) {
 #else
       simplifier->visitGlobal(ast);
 #endif
-
       SHOW_STATUS(Logger::compiling(Logger::progress(0.70)))
-
       mainModule->setModules(simplifier->getModules());
       module = mainModule;
-
 #if _SNOWBALL_TIMERS_DEBUG
       DEBUG_TIMER("Passes: %fs", utils::_timer([&] {
-                    SNOWBALL_PASS_EXECUTION_LIST
+                  SNOWBALL_PASS_EXECUTION_LIST
                   }));
 #else
       SNOWBALL_PASS_EXECUTION_LIST
 #endif
-
       SHOW_STATUS(Logger::compiling(Logger::progress(0.90)))
-
       auto typeCheckModules = mainModule->getModules();
       typeCheckModules.push_back(mainModule);
       for (auto module : typeCheckModules) {
@@ -121,12 +107,9 @@ void Compiler::compile(bool silent) {
         typeChecker.codegen();
 #endif
       }
-
       SHOW_STATUS(Logger::compiling(Logger::progress(1)))
-
       SHOW_STATUS(Logger::reset_status())
     }
-
     chdir(cwd.c_str());
   }
 }
@@ -143,10 +126,8 @@ void Compiler::runPackageManager(bool silent) {
 int Compiler::emitDocs(std::string folder, std::string baseURL, BasicPackageInfo package, bool silent) {
   auto path = cwd / folder;
   auto outputFolder = configFolder / "docs";
-
   fs::remove_all(outputFolder);
   std::vector<std::string> modules;
-
   if (utils::split(folder, "/").size() < 2) {
     auto parts = utils::list2vec(utils::split(folder, "/"));
     if (parts.size() < 1 && (parts[0] == "." || parts[0] == ".." || parts[0] == "")) {
@@ -155,17 +136,14 @@ int Compiler::emitDocs(std::string folder, std::string baseURL, BasicPackageInfo
       }
     }
   }
-
   for (const auto& dirEntry : recursive_directory_iterator(path)) {
     if (utils::endsWith(dirEntry.path().string(), ".sn")) {
       modules.push_back(fs::relative(dirEntry.path(), path).string());
       size_t lastindex = modules.back().find_last_of(".");
       modules.back() = modules.back().substr(0, lastindex);
-
       auto relative = dirEntry.path().lexically_relative(cwd).lexically_normal();
-      lastindex = relative.string().find_last_of("."); 
-      relative = relative.string().substr(0, lastindex); 
-
+      lastindex = relative.string().find_last_of(".");
+      relative = relative.string().substr(0, lastindex);
       fs::path relativePath = package.name;
       int i = 0;
       for (auto part : relative) {
@@ -177,13 +155,10 @@ int Compiler::emitDocs(std::string folder, std::string baseURL, BasicPackageInfo
       }
       std::string moduleName = relativePath.string();
       utils::replaceAll(moduleName, "/", "::");
-
       if (!silent)
         Logger::message("Generating", " " + relative.string() + BCYN + " (" + relativePath.string() + ".html" + ")" + RESET);
-
       std::ifstream ifs(dirEntry.path().string());
       std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
-
       srcInfo = new SourceInfo(content, dirEntry.path().string());
       auto lexer = new Lexer(srcInfo);
       lexer->tokenize();
@@ -203,11 +178,9 @@ int Compiler::emitDocs(std::string folder, std::string baseURL, BasicPackageInfo
         delete parser;
         delete lexer;
         auto result = docGen->getResult();
-
         for (auto& page : result.pages) {
           auto htmlPath = outputFolder / page.path;
           if (!fs::exists(htmlPath.parent_path())) fs::create_directories(htmlPath.parent_path());
-
           std::ofstream file(htmlPath);
           file << page.html;
           file.close();
@@ -215,8 +188,8 @@ int Compiler::emitDocs(std::string folder, std::string baseURL, BasicPackageInfo
       }
     }
   }
-
-  if (!silent) Logger::message("Indexing", (std::string)"module's paths into index book" + BCYN + " ("+package.name+".html)" + RESET);
+  if (!silent) Logger::message("Indexing",
+                                 (std::string)"module's paths into index book" + BCYN + " (" + package.name + ".html)" + RESET);
   Syntax::DocGenContext context {
     .currentModule = package.name,
     .currentModulePath = package.name,
@@ -231,7 +204,6 @@ int Compiler::emitDocs(std::string folder, std::string baseURL, BasicPackageInfo
   std::ofstream file(htmlPath);
   file << page.html;
   file.close();
-    
   return EXIT_SUCCESS;
 }
 #undef SHOW_STATUS
@@ -240,19 +212,18 @@ toml::parse_result Compiler::getConfiguration() {
   std::string name = fs::current_path() / "sn.toml";
   std::ifstream f(name.c_str());
   if (f.good()) { return toml::parse_file(name); }
-
   throw SNError(
-          Error::IO_ERROR,
-          FMT("Project configuration not found (%s)\n%shelp%s: try "
-              "runing 'snowball init --cfg'",
-              name.c_str(),
-              BGRN,
-              RESET)
+  Error::IO_ERROR,
+  FMT("Project configuration not found (%s)\n%shelp%s: try "
+      "runing 'snowball init --cfg'",
+      name.c_str(),
+      BGRN,
+      RESET)
   );
 }
 
-void Compiler::enamblePackageManager(bool enable) { 
-  globalContext.packageManagerEnabled = enable; 
+void Compiler::enamblePackageManager(bool enable) {
+  globalContext.packageManagerEnabled = enable;
 }
 
 void Compiler::cleanup() { }
@@ -261,11 +232,9 @@ int Compiler::emitObject(std::string out, bool log) {
   auto builder = new codegen::LLVMBuilder(module, opt_level, testsEnabled, benchmarkEnabled);
   builder->codegen();
   builder->optimizeModule();
-
 #if _SNOWBALL_BYTECODE_DEBUG
   builder->dump();
 #endif
-
   return builder->emitObjectFile(out, log);
 }
 
@@ -273,7 +242,6 @@ int Compiler::emitLLVMIr(std::string p_output, bool p_pmessage) {
   auto builder = new codegen::LLVMBuilder(module, opt_level, testsEnabled, benchmarkEnabled);
   builder->codegen();
   builder->optimizeModule();
-
   std::error_code EC;
   llvm::raw_fd_ostream dest(p_output, EC);
   if (EC) throw SNError(Error::IO_ERROR, Logger::format("Could not open file: %s", EC.message().c_str()));
@@ -286,7 +254,6 @@ int Compiler::emitASM(std::string p_output, bool p_pmessage) {
   auto builder = new codegen::LLVMBuilder(module, opt_level, testsEnabled, benchmarkEnabled);
   builder->codegen();
   builder->optimizeModule();
-
   auto res = builder->emitObjectFile(p_output, false, false);
   if (p_pmessage) Logger::success("Snowball project transpiled to assembly code! 🎉\n");
   return res;
@@ -303,7 +270,6 @@ int Compiler::emitBinary(std::string out, bool log) {
   // TODO: add user-defined extra ld args
   linker.link(objfile, out, extraLinkerArgs);
   if (log) Logger::success(Logger::format("Snowball project successfully compiled! 🥳", BGRN, RESET, out.c_str()));
-
   // clean up
   DEBUG_CODEGEN("Cleaning up object file... (%s)", objfile.c_str());
   remove(objfile.c_str());

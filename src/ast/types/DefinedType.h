@@ -29,7 +29,7 @@ namespace types {
  * a new initialization of the object is required.
  */
 class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
-public:
+ public:
   /**
    * @brief A class field represents all of the "elements" a
    *  type has stored into it.
@@ -39,11 +39,11 @@ public:
    */
   struct ClassField : public Syntax::Statement::Privacy, public DBGObject {
     explicit ClassField(
-            const std::string& name,
-            Type* type,
-            Privacy privacy = PRIVATE,
-            Syntax::Expression::Base* initializedValue = nullptr,
-            bool isMutable = false
+    const std::string& name,
+    Type* type,
+    Privacy privacy = PRIVATE,
+    Syntax::Expression::Base* initializedValue = nullptr,
+    bool isMutable = false
     );
     const std::string name;
     Type* type;
@@ -56,7 +56,7 @@ public:
 
   friend AcceptorExtend;
 
-private:
+ private:
   /// @brief a list of fields this class has
   std::vector<ClassField*> fields;
   /// @brief a list of static fields this class has
@@ -68,17 +68,17 @@ private:
   /// @brief Whether or not the type is a struct
   bool _struct = false;
 
-public:
+ public:
   DefinedType(
-          const std::string& name,
-          const std::string uuid,
-          std::shared_ptr<ir::Module> module,
-          Syntax::Statement::DefinedTypeDef* ast = nullptr,
-          std::vector<ClassField*> fields = {},
-          std::vector<std::shared_ptr<ir::VariableDeclaration>> staticFields = {},
-          DefinedType* parent = nullptr,
-          std::vector<Type*> generics = {},
-          bool isStruct = false
+  const std::string& name,
+  const std::string uuid,
+  std::shared_ptr<ir::Module> module,
+  Syntax::Statement::DefinedTypeDef* ast = nullptr,
+  std::vector<ClassField*> fields = {},
+  std::vector<std::shared_ptr<ir::VariableDeclaration>> staticFields = {},
+  DefinedType* parent = nullptr,
+  std::vector<Type*> generics = {},
+  bool isStruct = false
   );
   DefinedType(const DefinedType&) = default;
   DefinedType& operator=(DefinedType const&) = delete;
@@ -94,7 +94,6 @@ public:
    */
   virtual bool is(Type* other) const override {
     if (auto c = utils::cast<DefinedType>(other)) { return is(c); }
-
     return false;
   }
 
@@ -144,7 +143,7 @@ public:
   virtual bool canCast(Type* ty) const override;
   virtual bool canCast(DefinedType* ty) const;
 
-public:
+ public:
   /// @brief If the class has a constructor
   bool hasConstructor = false;
 

@@ -12,31 +12,26 @@ namespace snowball::parser {
 Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
   bool isInterface = is<TokenType::KWORD_INTER>();
   assert(is<TokenType::KWORD_CLASS>() || isInterface);
-
   auto comment = parseDocstring(m_current.getComment());
   next(); // East "class" or "interface"
-
   bool isPublic = false;
   bool extends = false;
   if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-3, true))) {
     isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
   }
-
   auto attributes = verifyAttributes([&](std::string attr) {
-    if (attr == "__internal__") {
-      return Attributes::BUILTIN;
-    } else if (attr == "no_constructor") {
-      return Attributes::NO_CONSTRUCTOR;
-    }
-    return Attributes::INVALID;
-  });
-
+                                     if (attr == "__internal__") {
+                                     return Attributes::BUILTIN;
+  } else if (attr == "no_constructor") {
+    return Attributes::NO_CONSTRUCTOR;
+  }
+return Attributes::INVALID;
+                                   });
   if (is<TokenType::KWORD_EXTENDS>()) {
     next();
     attributes[Attributes::CLASS_EXTENDS] = {};
     extends = true;
   }
-
   std::string name;
   // TODO: check this is only for std lib builds!!!
   if (is<TokenType::OP_MUL>()) {
@@ -50,28 +45,23 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
   } else {
     name = assert_tok<TokenType::IDENTIFIER>("class identifier").to_string();
   }
-
   auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
-
   Syntax::Expression::TypeRef* parentClass = nullptr;
   Syntax::Statement::GenericContainer<>::GenericList generics;
   bool hasGenerics = false;
   std::vector<Syntax::Expression::TypeRef*> impls;
-
   if (is<TokenType::OP_LT>(peek())) {
     next();
     hasGenerics = true;
     generics = parseGenericParams();
     prev();
   }
-
   next();
   if (is<TokenType::KWORD_EXTENDS>()) {
     next();
     throwIfNotType();
     parentClass = parseType();
   }
-
   if (is<TokenType::KWORD_IMPLEMENTS>()) {
     next();
     while (true) {
@@ -80,35 +70,32 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         next();
         continue;
       }
-
       break;
     }
   }
-
   assert_tok<TokenType::BRACKET_LCURLY>("'{'");
   bool inPrivateScope = true;
   bool hasConstructor = false;
-
   auto cls = Syntax::N<Syntax::Statement::DefinedTypeDef>(
-          name,
-          parentClass,
-          Syntax::Statement::Privacy::fromInt(isPublic),
-          isInterface ? Syntax::Statement::DefinedTypeDef::Type::INTERFACE :
-                        Syntax::Statement::DefinedTypeDef::Type::CLASS
-  );
+             name,
+             parentClass,
+             Syntax::Statement::Privacy::fromInt(isPublic),
+             isInterface ? Syntax::Statement::DefinedTypeDef::Type::INTERFACE :
+             Syntax::Statement::DefinedTypeDef::Type::CLASS
+             );
   cls->setImpls(impls);
   if (hasGenerics)
     cls->setGenerics(generics);
   cls->setDBGInfo(dbg);
   for (auto attr : attributes) cls->addAttribute(attr.first, attr.second);
-  if (cls->hasAttribute(Attributes::BUILTIN)) { 
+  if (cls->hasAttribute(Attributes::BUILTIN)) {
     if (name == "IntegerImpl")
-      cls->unsafeSetName(_SNOWBALL_INT_IMPL); 
-    else if (name == "FunctionImpl") 
+      cls->unsafeSetName(_SNOWBALL_INT_IMPL);
+    else if (name == "FunctionImpl")
       cls->unsafeSetName(_SNOWBALL_FUNC_IMPL);
-    else if (name != _SNOWBALL_CONST_PTR && name != _SNOWBALL_MUT_PTR) createError<ARGUMENT_ERROR>(FMT("Unknown builtin class '%s'", name.c_str()));
+    else if (name != _SNOWBALL_CONST_PTR
+             && name != _SNOWBALL_MUT_PTR) createError<ARGUMENT_ERROR>(FMT("Unknown builtin class '%s'", name.c_str()));
   }
-
   auto classBackup = m_current_class;
   m_current_class = cls;
   while (true) {
@@ -120,63 +107,52 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         next();
         assert_tok<TokenType::SYM_COLLON>("':'");
       } break;
-
       case TokenType::KWORD_PUBLIC: {
         assertNoAttributes("before public keyword");
         inPrivateScope = false;
         next();
         assert_tok<TokenType::SYM_COLLON>("':'");
       } break;
-
       case TokenType::KWORD_CONST: {
         assertNoAttributes("before const keyword");
-        
         if (isInterface) {
           createError<SYNTAX_ERROR>("Interfaces can't have constants!");
         } else if (extends) {
           createError<SYNTAX_ERROR>("Classes that extend other types cant have *new* constants!");
         }
-        
         auto var = parseConstant();
         var->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
-        
         if (var->getValue() == nullptr) {
           createError<SYNTAX_ERROR>("expected a value for constant declaration!");
         }
-        
         cls->addVariable(var);
-
         assert_tok<TokenType::SYM_SEMI_COLLON>("a ';'");
       } break;
-
       case TokenType::KWORD_ENUM: {
         if (extends) {
           createError<SYNTAX_ERROR>("Classes that extend other types cant have *new* enums!");
         } else if (isInterface) {
           createError<SYNTAX_ERROR>("Interfaces can't have enums!");
         }
-
         auto enumDecl = parseEnum();
         enumDecl->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
         cls->addChildType(enumDecl);
       } break;
-
       case TokenType::SYM_AT: {
         parseAttributes();
       } break;
-
       case TokenType::KWORD_STATIC: {
         auto pk = peek();
         if (pk.type == TokenType::KWORD_MUTABLE) {
           next();
           createError<ARGUMENT_ERROR>(
-                  "Static members cant be mutable!",
-                  {.note = "To fix this error, you can remove the 'static' or 'mut' keyword.",
-                   .help = "If you want to have a static mutable member, you can use a \nstatic pointer to a "
-                           "mutable member."}
+          "Static members cant be mutable!", {
+            .note = "To fix this error, you can remove the 'static' or 'mut' keyword.",
+            .help = "If you want to have a static mutable member, you can use a \nstatic pointer to a "
+            "mutable member."
+          }
           );
         }
-
         if (pk.type != TokenType::KWORD_FUNC &&
             pk.type != TokenType::KWORD_OPERATOR && pk.type != TokenType::KWORD_UNSAFE && (!IS_CONSTRUCTOR(pk))
             && pk.type != TokenType::KWORD_OVERRIDE) {
@@ -186,7 +162,6 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
                                     "declaration after static member");
         }
       } break;
-
       case TokenType::KWORD_OVERRIDE: {
         auto pk = peek();
         if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_OPERATOR && pk.type != TokenType::KWORD_UNSAFE
@@ -196,7 +171,6 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
                                     "after override declaration!");
         }
       } break;
-
       case TokenType::KWORD_UNSAFE: {
         auto pk = peek();
         if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_OPERATOR && pk.type != TokenType::KWORD_STATIC
@@ -206,19 +180,16 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
                                     "declaration!");
         }
       } break;
-
       case TokenType::KWORD_FUNC: {
         auto func = parseFunction(false, false, false, isInterface);
         func->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
         cls->addFunction(func);
       } break;
-
       case TokenType::KWORD_OPERATOR: {
         auto func = parseFunction(false, true);
         func->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
         cls->addFunction(func);
       } break;
-
       case TokenType::KWORD_MUTABLE: {
         auto pk = peek();
         if (pk.type != TokenType::KWORD_FUNC && pk.type != TokenType::KWORD_OPERATOR &&
@@ -227,7 +198,6 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
           createError<SYNTAX_ERROR>("expected keyword \"func\", \"unsafe\" or \"operator\" after mutable declaration!");
         }
       } break;
-
       case TokenType::KWORD_VIRTUAL: {
         auto pk = peek();
         if (pk.type == TokenType::KWORD_STATIC) {
@@ -241,17 +211,14 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
           createError<SYNTAX_ERROR>("Expected keyword \"func\" or \"mut\" after virtual declaration!");
         }
       } break;
-
       case TokenType::KWORD_VAR: {
         assertNoAttributes("a variable");
         auto var = parseVariable();
         var->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
         cls->addVariable(var);
-
         assert_tok<TokenType::SYM_SEMI_COLLON>("a ';'");
         if (extends) { createError<SYNTAX_ERROR>("Classes that extend other types cant have *new* variables!"); }
       } break;
-
       case TokenType::BRACKET_RCURLY: {
         assertNoAttributes("before '}'");
         cls->hasConstructor = hasConstructor;
@@ -259,7 +226,6 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         cls->setComment(comment);
         return cls;
       }
-
       case TokenType::KWORD_TYPEDEF: {
         assertNoAttributes("a type alias");
         if (extends) {
@@ -267,14 +233,11 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         } else if (isInterface) {
           createError<SYNTAX_ERROR>("Interfaces can't have type aliases!");
         }
-
         auto typeDef = parseTypeAlias();
         typeDef->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
         cls->addChildType(typeDef);
-
         assert_tok<TokenType::SYM_SEMI_COLLON>("a ';'");
       } break;
-
       case TokenType::KWORD_CLASS:
       case TokenType::KWORD_INTER: {
         if (extends) {
@@ -282,24 +245,20 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
         } else if (isInterface) {
           createError<SYNTAX_ERROR>("Interfaces can't have classes!");
         }
-
         auto innerClass = parseClass();
         innerClass->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
         cls->addChildType(innerClass);
       } break;
-
       case TokenType::KWORD_STRUCT: {
         if (extends) {
           createError<SYNTAX_ERROR>("Classes that extend other types cant have *new* structs!");
         } else if (isInterface) {
           createError<SYNTAX_ERROR>("Interfaces can't have structs!");
         }
-
         auto innerStruct = parseStructure();
         innerStruct->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
         cls->addChildType(innerStruct);
       } break;
-
       // note: This case should be always at the bottom!
       case TokenType::IDENTIFIER: {
         assertNoAttributes("before identifier");
@@ -317,13 +276,12 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
           func->setStatic();
           cls->addFunction(func);
           break;
-        }        
-        __attribute__ ((fallthrough));
+        }
+        __attribute__((fallthrough));
       }
-
       default: {
         createError<SYNTAX_ERROR>(
-                FMT("Unexpected token ('%s') found while parsing class body", m_current.to_string().c_str())
+        FMT("Unexpected token ('%s') found while parsing class body", m_current.to_string().c_str())
         );
       }
     }

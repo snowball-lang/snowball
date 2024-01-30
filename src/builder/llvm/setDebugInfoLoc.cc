@@ -22,7 +22,6 @@ void LLVMBuilder::setDebugInfoLoc(ir::Value* v) {
       return;
     }
   }
-
   builder->SetCurrentDebugLocation(llvm::DebugLoc());
 }
 

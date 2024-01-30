@@ -11,13 +11,10 @@ namespace codegen {
 SnowballIREmitter::SnowballIREmitter(std::shared_ptr<ir::Module> p_module) : module(p_module) { }
 
 void SnowballIREmitter::codegen(std::string p_output) {
-
   auto mainModule = utils::dyn_cast<ir::MainModule>(module);
   assert(mainModule);
-
   for (auto m : mainModule->getModules()) visit(m);
   visit(mainModule);
-
   // write content to file
   std::ofstream file(p_output);
   file << output.str();
@@ -116,7 +113,6 @@ void SnowballIREmitter::visit(ir::Switch* s) {
     c.block->visit(this);
     addContent("\n");
   }
-
   for (auto c : s->getCases().second) {
     addContent("    case ");
     c.value->visit(this);
@@ -124,7 +120,6 @@ void SnowballIREmitter::visit(ir::Switch* s) {
     c.block->visit(this);
     addContent("\n");
   }
-
   addContent("  }");
 }
 

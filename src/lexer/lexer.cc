@@ -13,16 +13,16 @@
 #include <vector>
 
 #define GET_CHAR(m_off) (((size_t) char_ptr + m_off >= codeSize) ? '\0' : code.at((size_t) char_ptr + m_off))
-#define EAT_CHAR(m_num)                                                                                                \
-  {                                                                                                                    \
-    char_ptr += m_num;                                                                                                 \
-    cur_col += m_num;                                                                                                  \
+#define EAT_CHAR(m_num) \
+  { \
+    char_ptr += m_num; \
+    cur_col += m_num; \
   }
-#define EAT_LINE()                                                                                                     \
-  {                                                                                                                    \
-    char_ptr++;                                                                                                        \
-    cur_col = 1;                                                                                                       \
-    cur_line++;                                                                                                        \
+#define EAT_LINE() \
+  { \
+    char_ptr++; \
+    cur_col = 1; \
+    cur_line++; \
   }
 
 #define IS_NUM(c)      (('0' <= c && c <= '9'))
@@ -37,9 +37,7 @@ void Lexer::tokenize() {
   const auto& code = srcInfo->getSource();
   auto codeSize = code.size();
   if (codeSize == 0) return;
-
   std::string comments = "";
-
   // Iterate every character of the source code
   // and tokenize that char. Tokenizing it will
   // mean that respective Token for the current
@@ -47,21 +45,17 @@ void Lexer::tokenize() {
   while (char_ptr < (int) codeSize) {
     switch (GET_CHAR(0)) {
       case 0: handle_eof(); break;
-
       // Space, new lines and tabs
       case ' ':
       case '\t': EAT_CHAR(1); break;
-
       case '\n': EAT_LINE(); break;
-
       case '/': {
         std::string comment = "";
         if (GET_CHAR(1) == '/') { // comment
-
           // Skip characters until we encounter _EOF or NEW_LINE
-          while (GET_CHAR(0) != '\n' && GET_CHAR(0) != 0) { 
+          while (GET_CHAR(0) != '\n' && GET_CHAR(0) != 0) {
             comment += GET_CHAR(0);
-            EAT_CHAR(1); 
+            EAT_CHAR(1);
           }
           if (GET_CHAR(0) == '\n') {
             EAT_LINE();
@@ -78,19 +72,20 @@ void Lexer::tokenize() {
               break;
             } else if (GET_CHAR(0) == 0) {
               lexer_error(
-                      Error::UNEXPECTED_EOF,
-                      "Found an unexpected EOF while parsing "
-                      "a comment",
-                      1,
-                      {.help = "It seems that a multiline "
-                               "comment in "
-                               "your code is not properly "
-                               "closed. \n"
-                               "Make sure to add the closing "
-                               "symbol "
-                               "\"*/\" at the end of the "
-                               "comment to "
-                               "\nproperly close it."}
+              Error::UNEXPECTED_EOF,
+              "Found an unexpected EOF while parsing "
+              "a comment",
+              1, {
+                .help = "It seems that a multiline "
+                "comment in "
+                "your code is not properly "
+                "closed. \n"
+                "Make sure to add the closing "
+                "symbol "
+                "\"*/\" at the end of the "
+                "comment to "
+                "\nproperly close it."
+              }
               );
             } else if (GET_CHAR(0) == '\n') {
               comment += '\n';
@@ -107,11 +102,9 @@ void Lexer::tokenize() {
             consume(TokenType::OP_DIV);
           break;
         }
-        
         comments = comment;
         break;
       }
-
       // symbols
       case ':': {
         if (GET_CHAR(1) == ':')
@@ -133,7 +126,6 @@ void Lexer::tokenize() {
       case '}': consume(TokenType::BRACKET_RCURLY); break;
       case '[': consume(TokenType::BRACKET_LSQUARED); break;
       case ']': consume(TokenType::BRACKET_RSQUARED); break;
-
       // op
       case '=': {
         if (GET_CHAR(1) == '=')
@@ -194,11 +186,11 @@ void Lexer::tokenize() {
           if (GET_CHAR(2) == '=')
             consume(TokenType::OP_BIT_RSHIFT_EQ, 3);
           else
-          // TODO: (generics cant handle <type<hello<adios>>)
-          // consume(TokenType::OP_BIT_RSHIFT, 2);
-          //                                              ^^
-          // actually parse ">>" at parser when we encounter an
-          // operator
+            // TODO: (generics cant handle <type<hello<adios>>)
+            // consume(TokenType::OP_BIT_RSHIFT, 2);
+            // ^^
+            // actually parse ">>" at parser when we encounter an
+            // operator
           {
             consume(TokenType::OP_GT);
             consume(TokenType::OP_GT);
@@ -242,7 +234,6 @@ void Lexer::tokenize() {
           consume(TokenType::OP_BIT_XOR);
         break;
       }
-
       case '\'': {
         EAT_CHAR(1);
         std::string str;
@@ -251,33 +242,34 @@ void Lexer::tokenize() {
             char c = GET_CHAR(1);
             switch (c) {
               case 0: // TODO: show the start of string
-                      // location
+                // location
                 lexer_error(
-                        Error::UNEXPECTED_EOF,
-                        "Unexpected EOF while lexing a "
-                        "string scape!",
-                        1,
-                        {.info = "Coudnt find scape here!",
-                         .help = "The string in your code "
-                                 "contains "
-                                 "an "
-                                 "incomplete escape "
-                                 "sequence. Make "
-                                 "sure to provide the "
-                                 "\nnecessary "
-                                 "escape character or "
-                                 "complete the "
-                                 "escape sequence before "
-                                 "the end\n "
-                                 "of "
-                                 "the string. For example, "
-                                 "you can "
-                                 "add "
-                                 "a backslash (\"\") "
-                                 "\nbefore the "
-                                 "closing quotation mark "
-                                 "(\") to\n "
-                                 "properly escape it."}
+                Error::UNEXPECTED_EOF,
+                "Unexpected EOF while lexing a "
+                "string scape!",
+                1, {
+                  .info = "Coudnt find scape here!",
+                  .help = "The string in your code "
+                  "contains "
+                  "an "
+                  "incomplete escape "
+                  "sequence. Make "
+                  "sure to provide the "
+                  "\nnecessary "
+                  "escape character or "
+                  "complete the "
+                  "escape sequence before "
+                  "the end\n "
+                  "of "
+                  "the string. For example, "
+                  "you can "
+                  "add "
+                  "a backslash (\"\") "
+                  "\nbefore the "
+                  "closing quotation mark "
+                  "(\") to\n "
+                  "properly escape it."
+                }
                 );
                 break;
               case '\\':
@@ -329,21 +321,22 @@ void Lexer::tokenize() {
             }
           } else if (GET_CHAR(0) == 0) {
             lexer_error(
-                    Error::UNEXPECTED_EOF,
-                    "Unexpected EOF while lexing character!",
-                    1,
-                    {.info = "No ending of the string found!",
-                     .help = "It appears that the character "
-                             "declaration in "
-                             "your code is incomplete. \nMake sure "
-                             "to "
-                             "provide a valid character between "
-                             "the single "
-                             "quotes (\'\'). Choose a\n valid "
-                             "character "
-                             "and close the declaration with a "
-                             "single "
-                             "quote (') to resolve this issue."}
+            Error::UNEXPECTED_EOF,
+            "Unexpected EOF while lexing character!",
+            1, {
+              .info = "No ending of the string found!",
+              .help = "It appears that the character "
+              "declaration in "
+              "your code is incomplete. \nMake sure "
+              "to "
+              "provide a valid character between "
+              "the single "
+              "quotes (\'\'). Choose a\n valid "
+              "character "
+              "and close the declaration with a "
+              "single "
+              "quote (') to resolve this issue."
+            }
             );
             break;
           } else {
@@ -356,19 +349,15 @@ void Lexer::tokenize() {
           }
         }
         EAT_CHAR(1);
-
         if (str.size() != 1) { lexer_error(Error::SYNTAX_ERROR, "Character values can only have a length of 1!"); }
-
         Token tk = {};
         tk.type = TokenType::VALUE_CHAR;
         tk.value = str; // method name may be builtin func
         tk.col = cur_col - ((int) str.size() + (2 /* speech marks */));
         tk.line = cur_line;
         tokens.emplace_back(tk);
-
         break;
       }
-
       case '"': {
         EAT_CHAR(1);
         std::string str;
@@ -377,13 +366,12 @@ void Lexer::tokenize() {
         while (GET_CHAR(0) != '"') {
           if (GET_CHAR(0) == '\\') {
             char c = GET_CHAR(1);
-
             switch (c) {
               case 0:
                 lexer_error(
-                        Error::UNEXPECTED_EOF,
-                        "unexpected EOF while lexing a "
-                        "string scape."
+                Error::UNEXPECTED_EOF,
+                "unexpected EOF while lexing a "
+                "string scape."
                 );
                 break;
               case '\\':
@@ -435,22 +423,23 @@ void Lexer::tokenize() {
             }
           } else if (GET_CHAR(0) == 0) {
             lexer_error(
-                    Error::UNEXPECTED_EOF,
-                    "Unexpected EOF while lexing character!",
-                    1,
-                    {.info = "No ending of the string found!",
-                     .help = "It appears that the character "
-                             "declaration in "
-                             "your code is incomplete. \nMake "
-                             "sure to "
-                             "provide a valid character "
-                             "between the double "
-                             "quotes (\"\"). \nChoose a valid "
-                             "character "
-                             "and close the declaration with a "
-                             "double "
-                             "quote \n(\") to resolve this "
-                             "issue."}
+            Error::UNEXPECTED_EOF,
+            "Unexpected EOF while lexing character!",
+            1, {
+              .info = "No ending of the string found!",
+              .help = "It appears that the character "
+              "declaration in "
+              "your code is incomplete. \nMake "
+              "sure to "
+              "provide a valid character "
+              "between the double "
+              "quotes (\"\"). \nChoose a valid "
+              "character "
+              "and close the declaration with a "
+              "double "
+              "quote \n(\") to resolve this "
+              "issue."
+            }
             );
             break;
           } else {
@@ -463,20 +452,16 @@ void Lexer::tokenize() {
           }
         }
         EAT_CHAR(1);
-
         Token tk = {};
         tk.type = TokenType::VALUE_STRING;
         tk.value = str; // method name may be builtin func
-        tk.col = col-1;
+        tk.col = col - 1;
         tk.line = line;
         tokens.emplace_back(tk);
-
         break;
       }
-
       default:
         // TODO: 1.2e3 => is a valid float number
-
         // float value begins with '.'
         if (GET_CHAR(0) == '.' && IS_NUM(GET_CHAR(1))) {
           std::string float_str(1, '.');
@@ -485,7 +470,6 @@ void Lexer::tokenize() {
             float_str += GET_CHAR(0);
             EAT_CHAR(1);
           }
-
           double float_val = std::stod(float_str);
           Token tk = {};
           tk.type = TokenType::VALUE_FLOAT;
@@ -495,13 +479,10 @@ void Lexer::tokenize() {
           tokens.emplace_back(tk);
           break;
         }
-
         // integer/float value
         if (IS_NUM(GET_CHAR(0))) {
           std::string num(1, GET_CHAR(0));
-
-          enum _ReadMode
-          {
+          enum _ReadMode {
             INT,
             FLOAT,
             BIN,
@@ -554,17 +535,14 @@ void Lexer::tokenize() {
                 EAT_CHAR(1);
               }
             } break;
-
             default: lexer_error(Error::BUG, FMT("Unreachable number mode \"%i\"", mode), num.size());
           }
-
           bool appendDot = false;
           if (num[num.size() - 1] == '.') {
             num.erase(num.size() - 1);
             mode = INT;
             appendDot = true;
           }
-
           Token tk = {};
           tk.line = cur_line;
           tk.col = cur_col - num.length();
@@ -574,7 +552,6 @@ void Lexer::tokenize() {
           } else {
             tk.type = TokenType::VALUE_NUMBER;
           }
-
           std::string prefix;
           if (GET_CHAR(0) == 'u' || GET_CHAR(0) == 'U') {
             prefix += "u";
@@ -583,7 +560,6 @@ void Lexer::tokenize() {
             prefix += "i";
             EAT_CHAR(1);
           }
-
           if (GET_CHAR(0) == 'l' || GET_CHAR(0) == 'L') {
             prefix += "l";
             EAT_CHAR(1);
@@ -609,14 +585,12 @@ void Lexer::tokenize() {
             identifier += GET_CHAR(0);
             EAT_CHAR(1);
           }
-
           Token tk = {
             .type = TokenType::UNKNOWN,
             .line = cur_line,
             .col = cur_col - (int) identifier.size(),
             .value = identifier
           };
-
           if (identifier == _SNOWBALL_KEYWORD__NEW) {
             tk.type = TokenType::KWORD_NEW;
           } else if (identifier == _SNOWBALL_KEYWORD__THROW) {
@@ -699,14 +673,11 @@ void Lexer::tokenize() {
             tk.type = TokenType::KWORD_EXTENDS;
           } else if (identifier == _SNOWBALL_KEYWORD__IMPLS) {
             tk.type = TokenType::KWORD_IMPLEMENTS;
-          }
-
-          else if (identifier == _SNOWBALL_KEYWORD__TRUE || identifier == _SNOWBALL_KEYWORD__FALSE) {
+          } else if (identifier == _SNOWBALL_KEYWORD__TRUE || identifier == _SNOWBALL_KEYWORD__FALSE) {
             tk.type = TokenType::VALUE_BOOL;
           } else {
             tk.type = TokenType::IDENTIFIER;
           }
-
           switch (tk.type) {
             case TokenType::KWORD_FUNC:
             case TokenType::KWORD_MACRO:
@@ -722,7 +693,6 @@ void Lexer::tokenize() {
               tk.comment = comments;
               comments = "";
               break;
-
             // Modifiers that should be ignored
             // so that the commen tis passed to the
             // next token
@@ -735,54 +705,45 @@ void Lexer::tokenize() {
             case TokenType::KWORD_MUTABLE:
             case TokenType::IDENTIFIER: // idk about this one
               break;
-
             default: comments = "";
           }
-
           tokens.emplace_back(tk);
           break;
         }
-
         if (GET_CHAR(0) == '.') {
           consume(TokenType::SYM_DOT);
           break;
         }
-
         auto c = utils::getUTF8FromIndex(code, char_ptr);
         if (c == "🐒") {
           lexer_error(
-                  Error::SYNTAX_ERROR,
-                  "Unexpected MONKE found!",
-                  1,
-                  {.info = "🐒🐒🐒🐒🐒🐒", .note = "This is just an easter egg!"}
+          Error::SYNTAX_ERROR,
+          "Unexpected MONKE found!",
+          1,
+          {.info = "🐒🐒🐒🐒🐒🐒", .note = "This is just an easter egg!"}
           );
         } else {
           lexer_error(Error::SYNTAX_ERROR, FMT("Unexpected character found '%s' while lexing.", c.c_str()), 1);
         }
     }
   }
-
   // For some reason, sometimes the tokenizer
   // does not detect the end of the source code.
   // that is why we add a Token with _EOF type to
   // the Token array (for later use in the parser)
-  if (tokens.size() == 0 || (tokens.at(tokens.size()-1).type != TokenType::_EOF)) {
+  if (tokens.size() == 0 || (tokens.at(tokens.size() - 1).type != TokenType::_EOF)) {
     // add "false" as a param for "p_consume"
     // so that the lexer does not "consume"
     handle_eof(false);
   }
-
 #if _SNOWBALL_LEXER_DEBUG
-
   PRINT_LINE("Lexer's Tokens:")
   PRINT_LINE(LINE_SEPARATOR)
-
   int index = 0;
   for (Token tk : tokens) {
     DEBUG_LEXER("[%i]: %s (type %i)", index, tk.to_string().c_str(), tk.type)
     index++;
   }
-
   PRINT_LINE(LINE_SEPARATOR)
 #endif
 }
@@ -790,16 +751,13 @@ void Lexer::tokenize() {
 void Lexer::handle_eof(bool p_consume) {
   // Declare a new Token
   Token tk = {};
-
   // Fill al fields for the token
   // as an EOF type.
   tk.type = TokenType::_EOF;
   tk.line = cur_line;
   tk.col = cur_col;
-
   // Add token to the list of tokens
   tokens.push_back(tk);
-
   if (p_consume) { EAT_CHAR(1); }
 }
 

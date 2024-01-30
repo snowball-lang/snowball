@@ -42,7 +42,6 @@ Type* PointerType::getBaseType() const {
 
 bool PointerType::canCast(Type* ty) const {
   SNOWBALL_MUTABLE_CAST_CHECK
-
   if (auto c = utils::cast<PointerType>(ty)) return base->canCast(c->getPointedType());
   return false;
 }

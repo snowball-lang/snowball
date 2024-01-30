@@ -25,7 +25,7 @@ class ASTContext {
   using Item = std::shared_ptr<T>;
   using Scope = std::map<std::string, Item>;
 
-protected:
+ protected:
   /** A scope is a representation of a "block" where all
    * the variables are stored into it. Variables can be
    * accessed from parent scopes and the order of finding
@@ -45,7 +45,7 @@ protected:
    */
   std::list<Scope> stack = {};
 
-public:
+ public:
   ASTContext() {
     // Create a global scope for primitive types
     addScope();
@@ -61,7 +61,7 @@ public:
     DEBUG_SYMTABLE(1, FMT("    Adding to scope: %s", name.c_str()).c_str())
     auto f = stack.front();
     auto val = f.find(name);
-    if (val != f.end()) 
+    if (val != f.end())
       E<BUG>(item, FMT("Item '%s' is already defined!", name.c_str()));
     stack.front().insert(std::make_pair(name, item));
   }
@@ -73,7 +73,7 @@ public:
    */
   std::pair<Item, bool> getItem(const std::string name) const {
     for (auto s : stack) {
-      auto [val, found] = getInScope(name, s);
+      auto[val, found] = getInScope(name, s);
       if (found) {
         DEBUG_SYMTABLE(1, FMT("[symtable]: Successfully fetched %s", name.c_str()).c_str())
         return {val, true};
@@ -92,7 +92,6 @@ public:
   std::pair<Item, bool> getInScope(const std::string name, Scope s) const {
     auto val = s.find(name);
     if (val != s.end()) { return {val->second, true}; }
-
     return {std::shared_ptr<T>(nullptr), false};
   }
   /**
@@ -109,7 +108,6 @@ public:
   /// @brief Create a new scope and append it.
   void addScope() {
     DEBUG_SYMTABLE(0, "Creating new scope")
-
     Scope newScope{};
     stack.insert(stack.begin(), newScope);
   }
@@ -129,7 +127,7 @@ public:
   }
   /// @brief If the scope is the global scope
   bool isGlobalScope() { return stack.size() == 2; }
-  /// @brief Get the scope index 
+  /// @brief Get the scope index
   int getScopeIndex() { return stack.size() - 1; }
 };
 

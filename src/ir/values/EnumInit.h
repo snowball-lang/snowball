@@ -23,8 +23,8 @@ class EnumInit : public AcceptorExtend<EnumInit, Value> {
   // Enum field name
   std::string name;
 
-public:
-  explicit EnumInit(std::string name) : name(name){};
+ public:
+  explicit EnumInit(std::string name) : name(name) {};
 
   /**
    * @return The name of the enum field.

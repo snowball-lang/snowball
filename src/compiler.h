@@ -20,9 +20,9 @@ namespace fs = std::filesystem;
 // objects. This is a known bug in c++.
 #define SNOWBALL_PASS_EXECUTION_LIST \
   std::vector<Syntax::Analyzer*> passes = { \
-    new Syntax::DefiniteAssigment(srcInfo)}; \
+                                            new Syntax::DefiniteAssigment(srcInfo)}; \
   for (auto pass : passes) \
-    pass->run(ast); 
+    pass->run(ast);
 
 namespace snowball {
 
@@ -70,7 +70,7 @@ class Compiler {
 
   std::shared_ptr<ir::MainModule> module;
 
-public:
+ public:
   Compiler(std::string p_code, std::string p_path);
 
   void initialize();
@@ -83,7 +83,7 @@ public:
   void enable_benchmark() { benchmarkEnabled = true; }
 
   // Get
-  ~Compiler(){};
+  ~Compiler() {};
 
   std::vector<std::string> linkedLibraries;
   fs::path configFolder;
@@ -109,7 +109,7 @@ public:
     opt_level = o;
   }
 
-private:
+ private:
   // methods
   void createSourceInfo();
   void runPackageManager(bool silent);

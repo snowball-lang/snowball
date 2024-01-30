@@ -21,11 +21,11 @@ namespace types {
 class ReferenceType : public AcceptorExtend<ReferenceType, Type>, public DBGObject {
   friend AcceptorExtend;
 
-private:
+ private:
   /// @brief Base class that this type is pointing to
   Type* base = nullptr;
 
-public:
+ public:
   ReferenceType(Type* base);
   ReferenceType(const ReferenceType& other) = default;
 
@@ -34,7 +34,6 @@ public:
    */
   virtual bool is(Type* other) const override {
     if (auto c = utils::cast<ReferenceType>(other)) { return base->is(c->getPointedType()); }
-
     return false;
   }
 
