@@ -154,6 +154,7 @@ public func copy_nonoverlapping<T: Sized>(src: *const T, dst: *mut T, count: u64
 }
 
 @inline 
+@internal_linkage
 @export(name = "sn.gc.alloc")
 private func gc_alloc(size: u64) *const void {
   return Allocator<?u8>::alloc(size).ptr();

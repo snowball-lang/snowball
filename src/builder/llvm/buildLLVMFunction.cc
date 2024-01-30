@@ -87,7 +87,7 @@ llvm::Function* LLVMBuilder::buildLLVMFunction(llvm::Function* llvmFn, ir::Func*
   assert(!fail);
   auto func = module->getFunction(fn->getMangle());
   assert(func && "function not linked in");
-  func->setLinkage(llvm::GlobalValue::PrivateLinkage);
+  func->setLinkage(llvm::GlobalValue::InternalLinkage);
   func->addFnAttr(llvm::Attribute::AttrKind::NoInline); // TODO: user decides,
   // this is default
   func->setSubprogram(getDISubprogramForFunc(fn));
