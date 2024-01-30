@@ -40,8 +40,9 @@ void LLVMBuilder::initializeVariable(llvm::Value* var, llvm::Type* ty, unsigned 
   }
 
   auto dataLayout = module->getDataLayout();
-  auto layout = dataLayout.getTypeAllocSizeInBits(llvmType);
-  //builder->CreateMemCpy(var, llvm::MaybeAlign(), constInitializer, llvm::MaybeAlign(), layout);
+  auto layout = dataLayout.getTypeSizeInBits(llvmType);
+  //builder->CreateMemCpy(var, llvm::MaybeAlign(), constInitializer, llvm::MaybeAlign(), layout/8);
+  builder->CreateStore(llvm::Constant::getNullValue(llvmType), var);
 }
 
 } // namespace codegen

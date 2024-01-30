@@ -752,8 +752,6 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       if index < 0 {
         return self[self.length + index];
       } else if index >= self.length {
-        // If the index is greater than or equal to the length of the string view,
-        // we throw an IndexError. We make sure we don't overflow.
         // todo: add a better error message
         throw new IndexError("Index out of bounds!");
       }
@@ -773,14 +771,9 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @note If the range is invalid, the method throws an IndexError.
      */
     func substr(range: Range<i32>) Self {
-      // If the range is negative, we return the substring from the end of the string view.
-      // example: if the string view has 5 characters, and the range is -1..-3, we return 
-      //          the substring from index 4 to index 2.
       if range.begin() < 0 {
-        // We make sure we don't overflow.
         return self.substr((self.length + range.begin())..(range.stop()));
       } else if range.stop() < 0 {
-        // We make sure we don't overflow. We use recursion to handle the negative range.
         return self.substr((range.begin())..(self.length + range.stop()));
       } else if (range.stop() > self.length) || (range.begin() > self.length) {
         // TODO: add a better error message
@@ -795,15 +788,29 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       }
     }
     /**
+     * @brief Returns a substring of the string view.
+     * @param[in] index The index of the first character of the substring.
+     * @param[in] length The length of the substring.
+     * @return The substring of the string view.
+     * @note If the range is invalid, the method throws an IndexError.
+     */
+    @inline
+    func substr(index: isize, length: usize) Self { return self.substr(index..(index + length)); }
+    /**
+     * @brief Returns a substring of the string view.
+     * @param[in] index The index of the first character of the substring.
+     * @return The substring of the string view.
+     * @note If the range is invalid, the method throws an IndexError.
+     */
+    @inline
+    func substr(index: isize) Self { return self.substr(index..self.length); }
+    /**
      * @brief It joins the string view with a vector of strings.
      * @param[in] vec The vector of strings to join with.
      * @return The joined string view.
      */
     @inline
     func join(vec: Vector<Self>) Self {
-      // We join the string view with a vector of strings.
-      // We iterate over the vector and concatenate each string with the string view.
-      // We make sure we don't overflow.
       let mut result = "";
       // C-style for loop since it's faster than iterator loops.
       for let mut i = 0; i < vec.size(); i = i+1 {
@@ -885,6 +892,32 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      */
     @inline
     func empty() bool { return self.length == 0; }
+    /**
+     * @brief It returns true if the string view starts with the specified string.
+     * @param[in] other The string to check if the string view starts with.
+     * @return `true` if the string view starts with the specified string, `false` otherwise.
+     */
+    @inline
+    func starts_with(other: Self) bool {
+      if self.length < other.length { return false; }
+      for let mut i = 0; i < other.length; i = i+1 {
+        if self[i] != other[i] { return false; }
+      }
+      return true;
+    }
+    /**
+     * @brief It returns true if the string view ends with the specified string.
+     * @param[in] other The string to check if the string view ends with.
+     * @return `true` if the string view ends with the specified string, `false` otherwise.
+     */
+    @inline
+    func ends_with(other: Self) bool {
+      if self.length < other.length { return false; }
+      for let mut i = 0; i < other.length; i = i+1 {
+        if self[self.length - other.length + i] != other[i] { return false; }
+      }
+      return true;
+    }
   private:
     /** The size of the string view. */
     let mut length: usize = 0;

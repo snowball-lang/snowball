@@ -5,6 +5,7 @@
 #include "../../utils/utils.h"
 #include "LLVMBuilder.h"
 #include "../../visitors/Transformer.h"
+#include "../../../runtime/libs/exceptions.h"
 #include <llvm/BinaryFormat/Dwarf.h>
 #include <llvm/IR/DebugInfoMetadata.h>
 #include <llvm/IR/Type.h>
@@ -43,18 +44,20 @@ llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
 }
 
 llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
+  auto llvmType = getLLVMType(ty);
+  auto layout = module->getDataLayout();
   if (auto intTy = cast<types::IntType>(ty)) {
-    return dbg.builder->createBasicType(ty->getName(), ty->sizeOf(), intTy->isSigned() ? llvm::dwarf::DW_ATE_signed : llvm::dwarf::DW_ATE_unsigned);
+    return dbg.builder->createBasicType(ty->getName(), llvmType->getPrimitiveSizeInBits(), intTy->isSigned() ? llvm::dwarf::DW_ATE_signed : llvm::dwarf::DW_ATE_unsigned);
   } else if (is<types::FloatType>(ty)) {
-    return dbg.builder->createBasicType(ty->getName(), ty->sizeOf(), llvm::dwarf::DW_ATE_float);
+    return dbg.builder->createBasicType(ty->getName(), llvmType->getPrimitiveSizeInBits(), llvm::dwarf::DW_ATE_float);
   } else if (cast<types::VoidType>(ty)) {
     return nullptr;
   } else if (auto x = cast<types::ReferenceType>(ty)) {
     auto type = getDIType(x->getPointedType());
-    return dbg.builder->createReferenceType(llvm::dwarf::DW_TAG_reference_type, type, ty->sizeOf());
+    return dbg.builder->createReferenceType(llvm::dwarf::DW_TAG_reference_type, type, x->sizeOf()*8);
   } else if (auto x = cast<types::PointerType>(ty)) {
     auto type = getDIType(x->getPointedType());
-    return dbg.builder->createPointerType(type, ty->sizeOf());
+    return dbg.builder->createPointerType(type, ty->sizeOf()*8, ty->alignmentOf(), std::nullopt, ty->getPrettyName());
   }
 
   else if (auto f = Syntax::Transformer::getFunctionType(ty)) {
@@ -96,19 +99,21 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
 
     std::vector<llvm::Metadata*> generatedFields;
     llvm::DICompositeType* debugType;
+    auto structLayout = layout.getStructLayout(llvm::cast<llvm::StructType>(llvmType));
+    int fieldIndex = (-1) + c->hasVtable;
     if (asDefinedType) {
       generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Metadata*>(
               asDefinedType->getFields(),
               [&](types::DefinedType::ClassField* t) {
-                // TODO: custom line for fields?
+                fieldIndex++;
                 return dbg.builder->createMemberType(
                         nullptr,
                         t->name,
                         file,
                         dbgInfo->line,
-                        t->type->sizeOf() * 8,
-                        /*AlignInBits=*/0,
+                        layout.getTypeAllocSizeInBits(getLLVMType(t->type)),
                         0,
+                        structLayout->getElementOffsetInBits(fieldIndex),
                         llvm::DINode::FlagZero,
                         getDIType(t->type)
                 );
@@ -118,15 +123,15 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
       generatedFields = vector_iterate<types::InterfaceType::Member*, llvm::Metadata*>(
               asInterfaceType->getFields(),
               [&](types::InterfaceType::Member* t) {
-                // TODO: custom line for fields?
+                fieldIndex++;
                 return dbg.builder->createMemberType(
                         nullptr,
                         t->name,
                         file,
                         dbgInfo->line,
-                        t->type->sizeOf(),
-                        /*AlignInBits=*/0,
+                        layout.getTypeAllocSizeInBits(getLLVMType(t->type)),
                         0,
+                        structLayout->getElementOffsetInBits(fieldIndex),
                         llvm::DINode::FlagZero,
                         getDIType(t->type)
                 );
@@ -139,19 +144,25 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     if (asDefinedType)
       if (auto p = asDefinedType->getParent()) { parentDIType = getDIType(p); }
     // TODO: create struct type if it's a struct
-    debugType = dbg.builder->createClassType(
+    debugType = dbg.builder->createStructType(
             file,
             c->getPrettyName(),
             file,
             dbgInfo->line,
-            /* TODO: */ 0,
-            0,
+            c->sizeOf()*8,
             0,
             llvm::DINode::FlagZero,
             parentDIType,
-            dbg.builder->getOrCreateArray(generatedFields)
+            dbg.builder->getOrCreateArray(generatedFields),
+            0,
+            c->hasVtable ? 
+              dbg.builder->createPointerType(
+                      dbg.builder->createBasicType("void", 8, llvm::dwarf::DW_ATE_signed),
+                      8,
+                      0
+              ): nullptr, 
+              c->getUUID()
     );
-
     return debugType;
   } else {
     Syntax::E<BUG>(FMT("Undefined type! (dbg) ('%s')", ty->getName().c_str()));

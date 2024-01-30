@@ -138,6 +138,8 @@ public:
   /// @brief Add a new static field to the class
   void addStaticField(std::shared_ptr<ir::VariableDeclaration> field) { staticFields.emplace_back(field); }
 
+  void setMutable(bool m) override;
+
   /// @brief override function.
   virtual bool canCast(Type* ty) const override;
   virtual bool canCast(DefinedType* ty) const;

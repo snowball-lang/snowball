@@ -103,6 +103,7 @@ std::int64_t InterfaceType::sizeOf() const {
   auto alignment = alignmentOf();
   address += (address - (address % alignment)) % alignment;
   address += (alignment - (address % alignment)) % alignment;
+  if (address == 0) address = 1;
   return address + (hasVtable * 8);
 }
 
@@ -112,6 +113,7 @@ std::int64_t InterfaceType::alignmentOf() const {
     auto alignment = f->type->alignmentOf();
     if (alignment > maximumAlignment) maximumAlignment = alignment;
   }
+  if (maximumAlignment == 0) maximumAlignment = 1;
   return maximumAlignment;
 }
 

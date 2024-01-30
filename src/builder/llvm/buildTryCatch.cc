@@ -64,7 +64,8 @@ void LLVMBuilder::visit(ir::TryCatch* node) {
     info.catchVars.push_back(catchVar);
   }
 
-  builder->CreateBr(endBlock);
+  if (builder->GetInsertBlock()->getTerminator() == nullptr)
+    builder->CreateBr(endBlock);
 
   // MARK: unwind resume block
   builder->SetInsertPoint(unwindResumeBlock);

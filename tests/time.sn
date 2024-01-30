@@ -7,7 +7,7 @@ namespace tests {
 
 @test
 func time() i32 {
-    let t = time::time();
+    let t = time::clock();
     assert!(t > 0);
     return true;
 }

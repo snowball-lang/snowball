@@ -189,7 +189,8 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
             file,
             dbgInfo->line,
             getDIType(var->getType()),
-            dbg.debug
+            dbg.debug,
+            llvm::DINode::FlagArtificial | llvm::DINode::FlagObjectPointer
     );
     dbg.builder->insertDeclare(
             storage,

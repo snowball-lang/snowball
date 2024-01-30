@@ -91,4 +91,28 @@ func split_2() i32 {
     return x.size();
 }
 
+@test
+func starts_with() i32 {
+    let s = "hello world";
+    return s.starts_with("hello");
+}
+
+@test
+func starts_with_big() i32 {
+    let s = "hello world";
+    return s.starts_with("hello world hello");
+}
+
+@test
+func ends_with() i32 {
+    let s = "hello world";
+    return s.ends_with("world");
+}
+
+@test
+func ends_with_big() i32 {
+    let s = "hello world";
+    return s.ends_with("hello world hello");
+}
+
 }

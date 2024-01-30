@@ -77,8 +77,8 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
   for (int i = 0; i < (int)func->getArgs().size(); ++i) {
     auto llvmArg = fn->arg_begin() + i + retIsArg + func->isAnon();
     auto arg = utils::at(func->getArgs(), i);
-    if (utils::is<types::ReferenceType>((arg).second->getType())) {
-      setDereferenceableAttribute(*llvmArg, (arg).second->getType()->sizeOf());
+    if (auto ref = utils::cast<types::ReferenceType>(arg.second->getType())) {
+      setDereferenceableAttribute(*llvmArg, ref->getPointedType()->sizeOf()/8);
     }
   }
 

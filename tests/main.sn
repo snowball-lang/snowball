@@ -55,8 +55,9 @@ public func main() i32 {
     //vec.push(true);
     //vec.push(false);
     //io::println(std_json::serialize(vec));
-
     let app = new Cli("snowball", "1.0.0");
     app.add_arg(new Arg("test", "Run tests").required(true));
-    app.print_help();
+    app.add_opt("my-opt", "Example Option")
+    let opts = app.parse(os_env::argv().to_vector());
+    io::println(opts);
 }

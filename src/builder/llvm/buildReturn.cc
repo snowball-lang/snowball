@@ -46,7 +46,7 @@ void LLVMBuilder::visit(ir::Return* ret) {
         auto layout = module->getDataLayout().getStructLayout(
                 llvm::cast<llvm::StructType>(getLLVMType(ret->getType())));
         builder->CreateMemCpy(
-          retArg, llvm::MaybeAlign(1), e, llvm::MaybeAlign(1), builder->getInt64(layout->getSizeInBytes())
+          retArg, llvm::MaybeAlign(), e, llvm::MaybeAlign(), builder->getInt64(layout->getSizeInBytes())
         );
         //builder->CreateStore(builder->CreateLoad(getLLVMType(ret->getType()), e), retArg);
       } else {

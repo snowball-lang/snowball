@@ -32,7 +32,7 @@ DefinedType::DefinedType(
   setPrivacy(PRIVATE);
   unsafeSetUUID(uuid);
   unsafeSetModule(module);
-  setMutable(true);
+  this->_mutable = true; // Structs are always mutable
 }
 DefinedType::ClassField::ClassField(
         const std::string& name, Type* type, Privacy privacy, Syntax::Expression::Base* initializedValue, bool isMutable
@@ -58,6 +58,11 @@ bool DefinedType::is(DefinedType* ty) const {
                                            false;
   return (ty->getUUID() == uuid) && argumentsEqual;
 }
+
+void DefinedType::setMutable(bool m) {
+  /*noop*/
+}
+
 
 std::string DefinedType::getPrettyName() const {
   auto base = module->isMain() ? "" : module->getName() + "::";

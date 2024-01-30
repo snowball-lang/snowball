@@ -47,6 +47,7 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
             /*Initializer=*/llvm::cast<llvm::Constant>(c), // has initializer, specified below
             /*Name=*/name
     );
+    gvar->setDSOLocal(true);
     ctx->addSymbol(var->getId(), gvar);
     gvar->addDebugInfo(debugVar);
     return;
@@ -60,12 +61,12 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
   auto gvar = new llvm::GlobalVariable(
           /*Module=*/*module,
           /*Type=*/ty,
-          /*isConstant=*/0,// !var->getVariable()->isMutable(),
+          /*isConstant=*/0,// !var->getVariable()->isMutable(), note: this doesn't work because we are not fully detecting constant values (2 + 2 is not a constant)
           /*Linkage=*/llvm::GlobalValue::InternalLinkage,
           /*Initializer=*/llvm::Constant::getNullValue(ty), // has initializer, specified below
           /*Name=*/name
   );
- 
+  gvar->setDSOLocal(true);
   ctx->addSymbol(var->getId(), gvar);
   ctx->setCurrentFunction(ctor);
 

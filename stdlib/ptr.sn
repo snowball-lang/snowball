@@ -73,7 +73,7 @@ public class Allocator<T: Sized> {
     @inline
     static func alloc(size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(clib::malloc(Self::size_of<?T>(size)));
+        return new NonNull<T>(clib::malloc(Self::size_of(size)));
       }
     }
     /**
@@ -84,7 +84,7 @@ public class Allocator<T: Sized> {
     @inline
     static func alloc_zeroed(size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(clib::calloc(Self::size_of<?T>(size), 0));
+        return new NonNull<T>(clib::calloc(Self::size_of(size), 0));
       }
     }
     /**
@@ -96,7 +96,7 @@ public class Allocator<T: Sized> {
     @inline
     static func realloc(ptr: NonNull<T>, size: i32) NonNull<T> {
       unsafe {
-        return new NonNull<T>(clib::realloc(ptr.ptr(), Self::size_of<?T>(size)));
+        return new NonNull<T>(clib::realloc(ptr.ptr(), Self::size_of(size)));
       }
     }
     /**
@@ -112,8 +112,8 @@ public class Allocator<T: Sized> {
      * @param ptr - pointer to the memory block
     */
     @inline
-    static func size_of<T>(size: i32) i32 {
-      let type_size = sizeof!(:T);
+    static func size_of(size: i32) i32 {
+      let type_size = sizeof!(:T) * 8;
       if type_size < 8 {
         return 8 * size;
       }
@@ -149,8 +149,8 @@ public func to_pointer<T: Sized>(value: &T) *const T {
  * @note This function is an utility function to copy a value from a given pointer to another pointer.
  */
 @inline
-public func copy_nonoverlapping<T: Sized>(src: *const T, dst: *mut T, count: i32) {
-  unsafe { intrinsics::memmove(dst, src, count); }
+public func copy_nonoverlapping<T: Sized>(src: *const T, dst: *mut T, count: u64) {
+  unsafe { intrinsics::memcpy(dst, src, count); }
 }
 
 @inline 

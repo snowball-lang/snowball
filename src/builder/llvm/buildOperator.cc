@@ -248,19 +248,15 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
       } else {
         switch (services::OperatorService::operatorID(opName)) {
           case services::OperatorService::EQ: {
-            // TODO: check carefully specific places where we NEED to copy instead of moving
-            // if (utils::is<types::PointerType>(args.at(0)->getType())) {
-            //  auto a = createAlloca(left->getType(), ".move-temp");
-            //  auto align = args.at(0)->getType()->alignmentOf();
-            //  builder->CreateLifetimeStart(a, builder->getInt64(args.at(0)->getType()->sizeOf()));
-            //  builder->CreateStore(right, a);
-            //
-            //  builder->CreateMemCpy(left, llvm::MaybeAlign(align), a, llvm::MaybeAlign(align),
-            //  builder->getInt64(args.at(0)->getType()->sizeOf()), 0); builder->CreateLifetimeEnd(a,
-            //  builder->getInt64(args.at(0)->getType()->sizeOf()));
-            //} else {
-            builder->CreateStore(right, left);
-            //}
+            if (llvm::isa<llvm::GlobalVariable>(left)) {
+              if (llvm::isa<llvm::LoadInst>(right)) {
+                right = ((llvm::LoadInst*) right)->getPointerOperand();
+              }
+              builder->CreateMemCpy(
+                      left, llvm::MaybeAlign(), right, llvm::MaybeAlign(),
+                      module->getDataLayout().getTypeSizeInBits(getLLVMType(realType)) / 8
+              );
+            } else builder->CreateStore(right, left);
             break;
           }
 
