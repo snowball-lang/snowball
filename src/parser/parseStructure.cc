@@ -57,6 +57,11 @@ Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
         auto member = parseVariable();
         consume<TokenType::SYM_SEMI_COLLON>("';'");
         member->setPrivacy(Syntax::Statement::Privacy::PUBLIC);
+        if (member->getValue()) {
+          createError<SYNTAX_ERROR>("Cannot declare a member with a value inside a structure", {
+            .note = "Structure members are always public\nAlso, this may be available in the future!",
+          });
+        }
         cls->addVariable(member);
         break;
       }

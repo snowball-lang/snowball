@@ -40,7 +40,7 @@ public const inf: f64 = 1.0 as f64 / 0.0 as f64;
  * @return True if `x` is NaN, false otherwise.
  */
 public func is_nan(x: f64) bool {
-    return x != x;
+  return x != x;
 }
 /**
  * @brief Check if a floating-point number is infinite.
@@ -49,6 +49,6 @@ public func is_nan(x: f64) bool {
  * @return True if `x` is infinite, false otherwise.
  */
 public func is_inf(x: f64) bool {
-    return x == inf;
+  return x == inf;
 }
 
