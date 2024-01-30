@@ -13,10 +13,10 @@ SN_TRANSFORMER_VISIT(Statement::EnumTypeDef) {
   auto x = ctx->cache->getType(uuid);
   if (x.has_value() && (!ctx->generateFunction)) {
     E<VARIABLE_ERROR>(
-    p_node,
-    FMT("enum with name '%s' is already defined in "
-        "the current scope!",
-        name.c_str())
+      p_node,
+      FMT("enum with name '%s' is already defined in "
+          "the current scope!",
+          name.c_str())
     );
   } else if (!ctx->generateFunction || p_node->isGeneric()) {
     ctx->cache->setType(uuid, p_node, state);

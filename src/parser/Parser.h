@@ -114,9 +114,9 @@ class Parser {
   void throwIfNotType() const {
     if (!isTypeValid()) {
       createError<SYNTAX_ERROR>(
-      FMT("Expected a valid type declaration but found '%s' "
-          "instead",
-          m_current.to_string().c_str()),
+        FMT("Expected a valid type declaration but found '%s' "
+            "instead",
+            m_current.to_string().c_str()),
       {.info = "Types cant start like this"}
       );
     }
@@ -134,9 +134,9 @@ class Parser {
   Token assert_tok(std::string expectation) {
     if (!is<Ty>()) {
       createError<SYNTAX_ERROR>(
-      FMT("Expected %s but got '%s'",
-          expectation.c_str(),
-          (is<TokenType::_EOF>(m_current) ? "an unexpected EOF" : m_current.to_string()).c_str())
+        FMT("Expected %s but got '%s'",
+            expectation.c_str(),
+            (is<TokenType::_EOF>(m_current) ? "an unexpected EOF" : m_current.to_string()).c_str())
       );
     }
     return m_current;
@@ -263,9 +263,9 @@ class Parser {
    * @param callee expression being called
    */
   Syntax::Expression::FunctionCall* parseFunctionCall(
-  Syntax::Expression::Base* callee,
-  TokenType terminator = TokenType::BRACKET_RPARENT,
-  std::string terminatorString = ")"
+    Syntax::Expression::Base* callee,
+    TokenType terminator = TokenType::BRACKET_RPARENT,
+    std::string terminatorString = ")"
   );
   /**
    * docstring     ::=  "/*" [string] "*\/"
@@ -356,18 +356,18 @@ class Parser {
    * @brief Parses a list of attributes
    */
   std::unordered_map<std::string, std::unordered_map<std::string, std::string>> parseAttributes(
-  bool forConstexpr = false);
+    bool forConstexpr = false);
   /**
    * @brief Verifies the attributes list
    * @param attributes attributes list
    * @param parseFn function to parse the attribute
    */
   std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> verifyAttributes(
-  std::function<Attributes(std::string)> parseFn,
-  std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& attrs
+    std::function<Attributes(std::string)> parseFn,
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& attrs
   );
   std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> verifyAttributes(
-  std::function<Attributes(std::string)> parseFn
+    std::function<Attributes(std::string)> parseFn
   );
   /**
    * @brief Assert that attributes are not accepted in the current context

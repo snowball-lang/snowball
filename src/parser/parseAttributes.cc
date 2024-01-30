@@ -7,7 +7,7 @@
 namespace snowball::parser {
 
 std::unordered_map<std::string, std::unordered_map<std::string, std::string>> Parser::parseAttributes(
-bool forConstexpr) {
+  bool forConstexpr) {
   assert(is<TokenType::SYM_AT>() || forConstexpr);
   std::unordered_map<std::string, std::unordered_map<std::string, std::string>> attributes;
   while (is<TokenType::SYM_AT>() || forConstexpr) {
@@ -34,7 +34,7 @@ bool forConstexpr) {
             attrArgs[name] = m_current.to_string();
           } else {
             createError<SYNTAX_ERROR>(
-            FMT("Expected a string or a number value but found '%s' instead", peek().to_string().c_str())
+              FMT("Expected a string or a number value but found '%s' instead", peek().to_string().c_str())
             );
           }
         } else {
@@ -66,20 +66,20 @@ bool forConstexpr) {
 }
 
 std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> Parser::verifyAttributes(
-std::function<Attributes(std::string)> parseFn
+  std::function<Attributes(std::string)> parseFn
 ) {
   return verifyAttributes(parseFn, m_attributes);
 }
 
 std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> Parser::verifyAttributes(
-std::function<Attributes(std::string)> parseFn,
-std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& attrs
+  std::function<Attributes(std::string)> parseFn,
+  std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& attrs
 ) {
   std::unordered_map<Attributes, std::unordered_map<std::string, std::string>> attributes;
   for (auto& [attr, args] : attrs) {
-    auto attrType = parseFn(attr);
-    if (attr == "cfg") {
-    attrType = Attributes::CFG;
+      auto attrType = parseFn(attr);
+      if (attr == "cfg") {
+        attrType = Attributes::CFG;
     } else if (attr == "attr") {
       attrType = Attributes::ATTR;
     }

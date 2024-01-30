@@ -72,9 +72,9 @@ void Lexer::tokenize() {
               break;
             } else if (GET_CHAR(0) == 0) {
               lexer_error(
-              Error::UNEXPECTED_EOF,
-              "Found an unexpected EOF while parsing "
-              "a comment",
+                Error::UNEXPECTED_EOF,
+                "Found an unexpected EOF while parsing "
+                "a comment",
               1, {
                 .help = "It seems that a multiline "
                 "comment in "
@@ -244,9 +244,9 @@ void Lexer::tokenize() {
               case 0: // TODO: show the start of string
                 // location
                 lexer_error(
-                Error::UNEXPECTED_EOF,
-                "Unexpected EOF while lexing a "
-                "string scape!",
+                  Error::UNEXPECTED_EOF,
+                  "Unexpected EOF while lexing a "
+                  "string scape!",
                 1, {
                   .info = "Coudnt find scape here!",
                   .help = "The string in your code "
@@ -321,8 +321,8 @@ void Lexer::tokenize() {
             }
           } else if (GET_CHAR(0) == 0) {
             lexer_error(
-            Error::UNEXPECTED_EOF,
-            "Unexpected EOF while lexing character!",
+              Error::UNEXPECTED_EOF,
+              "Unexpected EOF while lexing character!",
             1, {
               .info = "No ending of the string found!",
               .help = "It appears that the character "
@@ -369,9 +369,9 @@ void Lexer::tokenize() {
             switch (c) {
               case 0:
                 lexer_error(
-                Error::UNEXPECTED_EOF,
-                "unexpected EOF while lexing a "
-                "string scape."
+                  Error::UNEXPECTED_EOF,
+                  "unexpected EOF while lexing a "
+                  "string scape."
                 );
                 break;
               case '\\':
@@ -423,8 +423,8 @@ void Lexer::tokenize() {
             }
           } else if (GET_CHAR(0) == 0) {
             lexer_error(
-            Error::UNEXPECTED_EOF,
-            "Unexpected EOF while lexing character!",
+              Error::UNEXPECTED_EOF,
+              "Unexpected EOF while lexing character!",
             1, {
               .info = "No ending of the string found!",
               .help = "It appears that the character "
@@ -717,9 +717,9 @@ void Lexer::tokenize() {
         auto c = utils::getUTF8FromIndex(code, char_ptr);
         if (c == "🐒") {
           lexer_error(
-          Error::SYNTAX_ERROR,
-          "Unexpected MONKE found!",
-          1,
+            Error::SYNTAX_ERROR,
+            "Unexpected MONKE found!",
+            1,
           {.info = "🐒🐒🐒🐒🐒🐒", .note = "This is just an easter egg!"}
           );
         } else {

@@ -21,7 +21,7 @@ SN_TRANSFORMER_VISIT(Statement::Namespace) {
     auto backup = ctx->module;
     ctx->module = mod;
     ctx->withScope([&]() { // ERROR: defined macros inside namespaces get's deleted since the scope also gets deleted
-                   for (auto x : body) { SN_TRANSFORMER_CAN_GENERATE(x) trans(x); }
+                     for (auto x : body) { SN_TRANSFORMER_CAN_GENERATE(x) trans(x); }
                    });
     ctx->module = backup;
     addModule(mod);
@@ -35,7 +35,7 @@ SN_TRANSFORMER_VISIT(Statement::Namespace) {
     auto backup = ctx->module;
     ctx->module = mod;
     ctx->withScope([&]() {
-                   for (auto x : body) { trans(x); }
+                     for (auto x : body) { trans(x); }
                    });
     ctx->module = backup;
     ctx->uuidStack.pop_back();

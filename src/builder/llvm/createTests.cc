@@ -19,7 +19,7 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
   builder->CreateCall(
   printFunction, {
     builder->CreateGlobalStringPtr(
-    FMT("\nExecuting %s%i%s test(s)...\n\n", BBLU, ctx->tests.size(), RESET), "test.msg"
+      FMT("\nExecuting %s%i%s test(s)...\n\n", BBLU, ctx->tests.size(), RESET), "test.msg"
     )
   }
   );
@@ -41,7 +41,7 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
     auto namePtr = builder->CreateGlobalStringPtr(name, "test.alloca");
     auto expectStr = builder->CreateGlobalStringPtr(expect == 1 ? "should pass" : FMT("expect %i", expect), "test.alloca");
     auto call = builder->CreateCall(
-                testFunction,
+                  testFunction,
     {llvmFunc, namePtr, builder->getInt32(testIndex), builder->getInt8(shouldSkip), builder->getInt32(expect), expectStr, totalCount}
                 );
     auto shouldContinue = builder->CreateICmpEQ(call, builder->getInt32(1));
@@ -54,13 +54,13 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
       createCondBr(shouldContinue, successBlock, failBlock);
       builder->SetInsertPoint(successBlock);
       builder->CreateStore(
-      builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), successCount), builder->getInt32(1)),
-      successCount
+        builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), successCount), builder->getInt32(1)),
+        successCount
       );
       builder->CreateBr(continueBlock);
       builder->SetInsertPoint(failBlock);
       builder->CreateStore(
-      builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), failCount), builder->getInt32(1)), failCount
+        builder->CreateAdd(builder->CreateLoad(builder->getInt32Ty(), failCount), builder->getInt32(1)), failCount
       );
       builder->CreateBr(continueBlock);
       builder->SetInsertPoint(continueBlock);
@@ -71,18 +71,18 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
     builder->CreateCall(
     printFunction, {
       builder->CreateGlobalStringPtr(
-      FMT("\n%s"
-          "  Oops! It seems like our tests have gone on vacation!\n\n"
-          "  They must be off sunbathing on a tropical beach or enjoying some\n"
-          "  well-deserved rest.\n\n"
-          "  While they're out having fun, why don't you \n"
-          "  take this opportunity to show off your code's confidence by giving\n"
-          "  it a high-five?\n\n"
-          "  Remember, real programmers write self-assured code that\n"
-          "  doesn't need tests to prove its awesomeness! 😉%s\n",
-          BYEL,
-          RESET),
-      "test.msg"
+        FMT("\n%s"
+            "  Oops! It seems like our tests have gone on vacation!\n\n"
+            "  They must be off sunbathing on a tropical beach or enjoying some\n"
+            "  well-deserved rest.\n\n"
+            "  While they're out having fun, why don't you \n"
+            "  take this opportunity to show off your code's confidence by giving\n"
+            "  it a high-five?\n\n"
+            "  Remember, real programmers write self-assured code that\n"
+            "  doesn't need tests to prove its awesomeness! 😉%s\n",
+            BYEL,
+            RESET),
+        "test.msg"
       )
     }
     );
@@ -109,29 +109,29 @@ void LLVMBuilder::createTests(llvm::Function* mainFunction) {
   builder->CreateCall(
   printFunction, {
     builder->CreateGlobalStringPtr(
-    FMT("\n  %s= %%i%s executed test(s) total\n"
-        "  %s=> %%i%%%s of the tests passed. 🧪\n\n",
-        BOLD,
-        RESET,
-        BOLD,
-        RESET),
-    "test.msg"
+      FMT("\n  %s= %%i%s executed test(s) total\n"
+          "  %s=> %%i%%%s of the tests passed. 🧪\n\n",
+          BOLD,
+          RESET,
+          BOLD,
+          RESET),
+      "test.msg"
     ),
     builder->CreateAdd(
-    builder->CreateLoad(builder->getInt32Ty(), successCount),
-    builder->CreateLoad(builder->getInt32Ty(), failCount)
+      builder->CreateLoad(builder->getInt32Ty(), successCount),
+      builder->CreateLoad(builder->getInt32Ty(), failCount)
     ),
     testIndex == 1 ? builder->getInt32(0) // Prevent division by zero
     :
     builder->CreateMul(
-    builder->CreateSDiv(
-    builder->CreateLoad(builder->getInt32Ty(), successCount),
-    builder->CreateAdd(
-    builder->CreateLoad(builder->getInt32Ty(), successCount),
-    builder->CreateLoad(builder->getInt32Ty(), failCount)
-    )
-    ),
-    builder->getInt32(100)
+      builder->CreateSDiv(
+        builder->CreateLoad(builder->getInt32Ty(), successCount),
+        builder->CreateAdd(
+          builder->CreateLoad(builder->getInt32Ty(), successCount),
+          builder->CreateLoad(builder->getInt32Ty(), failCount)
+        )
+      ),
+      builder->getInt32(100)
     )
   }
   );

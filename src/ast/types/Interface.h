@@ -46,12 +46,12 @@ class InterfaceType : public BaseType {
     } kind;
 
     explicit Member(
-    const std::string& name,
-    Type* type,
-    Kind kind,
-    Syntax::Statement::Base* ast,
-    Privacy privacy = PRIVATE,
-    bool isMutable = false
+      const std::string& name,
+      Type* type,
+      Kind kind,
+      Syntax::Statement::Base* ast,
+      Privacy privacy = PRIVATE,
+      bool isMutable = false
     )
       : ClassField(name, type, privacy, nullptr, isMutable), kind(kind), ast(ast) {};
     Syntax::Statement::Base* ast;
@@ -63,11 +63,11 @@ class InterfaceType : public BaseType {
 
  public:
   InterfaceType(
-  const std::string& name,
-  const std::string uuid,
-  std::shared_ptr<ir::Module> module,
-  std::vector<Member*> fields = {},
-  std::vector<Type*> generics = {}
+    const std::string& name,
+    const std::string uuid,
+    std::shared_ptr<ir::Module> module,
+    std::vector<Member*> fields = {},
+    std::vector<Type*> generics = {}
   )
     : BaseType(INTERFACE, name), fields(fields) {
     setGenerics(generics);

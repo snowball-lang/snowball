@@ -75,7 +75,7 @@ void VariableDecl::setDefinedType(Expression::TypeRef* t) { definedType = t; }
 Return::Return(Expression::Base* value) : value(value) {};
 Expression::Base* Return::getValue() const { return value; }
 DefinedTypeDef::DefinedTypeDef(
-std::string name, Expression::TypeRef* extends, Privacy::Status prvc, DefinedTypeDef::Type type
+  std::string name, Expression::TypeRef* extends, Privacy::Status prvc, DefinedTypeDef::Type type
 )
   : name(name), extends(extends), AcceptorExtend<DefinedTypeDef, Privacy>(prvc), type(type) { }
 void DefinedTypeDef::addFunction(FunctionDef* fnDef) { functions.push_back(fnDef); }

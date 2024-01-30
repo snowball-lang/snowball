@@ -5,7 +5,7 @@ namespace snowball {
 namespace Syntax {
 
 void Transformer::implementTypes(
-types::DefinedType* ty, std::vector<Expression::TypeRef*> types, std::vector<Statement::FunctionDef*>& functions
+  types::DefinedType* ty, std::vector<Expression::TypeRef*> types, std::vector<Statement::FunctionDef*>& functions
 ) {
   std::vector<types::InterfaceType*> interfaces;
   for (auto type : types) {
@@ -14,7 +14,7 @@ types::DefinedType* ty, std::vector<Expression::TypeRef*> types, std::vector<Sta
       interfaces.emplace_back(interface);
     } else {
       E<TYPE_ERROR>(
-      type,
+        type,
       FMT("Type '%s' is not an interface!", type->getPrettyName().c_str()), {
         .info = "Not an interface!",
         .note = "Only interfaces can be implemented!",
@@ -35,14 +35,14 @@ types::DefinedType* ty, std::vector<Expression::TypeRef*> types, std::vector<Sta
         if (classField == typeFields.end()) {
           if (ast->getValue() == nullptr) {
             E<TYPE_ERROR>(
-            ty,
+              ty,
             FMT("Field '%s' is not implemented!", name.c_str()), {
               .info = "Lacks of implementation!",
               .note = "All fields of an interface must be implemented!",
               .help = "Maybe you meant to use 'extends' instead of 'implements'?",
               .tail = EI<>(
-              ast,
-              "",
+                ast,
+                "",
               {
                 .info = "Field declared here!",
                 .note =
@@ -54,12 +54,12 @@ types::DefinedType* ty, std::vector<Expression::TypeRef*> types, std::vector<Sta
             );
           }
           ty->addField(
-          new types::DefinedType::ClassField(name, type, ast->getPrivacy(), ast->getValue(), ast->isMutable())
+            new types::DefinedType::ClassField(name, type, ast->getPrivacy(), ast->getValue(), ast->isMutable())
           );
         } else {
           if (!(*classField)->type->is(type)) {
             E<TYPE_ERROR>(
-            ast,
+              ast,
             FMT("Field %s type does not match the interface type!", name.c_str()), {
               .info = "Type mismatch!",
               .note = FMT("Field '%s' declared here with a different type!", name.c_str()),
@@ -78,7 +78,7 @@ types::DefinedType* ty, std::vector<Expression::TypeRef*> types, std::vector<Sta
             );
           } else if ((*classField)->isMutable != ast->isMutable()) {
             E<TYPE_ERROR>(
-            ast,
+              ast,
             FMT("Field %s mutability does not match the interface mutability!", name.c_str()), {
               .info = "Mutability mismatch!",
               .note = FMT("Field '%s' declared here with a different mutability!", name.c_str()),
@@ -87,8 +87,8 @@ types::DefinedType* ty, std::vector<Expression::TypeRef*> types, std::vector<Sta
                   (*classField)->isMutable ? "mutable" : "immutable",
                   ast->isMutable() ? "mutable" : "immutable"),
               .tail = EI<>(
-              ast,
-              "",
+                ast,
+                "",
               {
                 .info = "Field declared here!",
                 .note = FMT("Field '%s' declared here with a different mutability!", name.c_str()),
@@ -98,7 +98,7 @@ types::DefinedType* ty, std::vector<Expression::TypeRef*> types, std::vector<Sta
             );
           } else if ((*classField)->getPrivacy() != ast->getPrivacy()) {
             E<TYPE_ERROR>(
-            ast,
+              ast,
             FMT("Field (%s) privacy does not match the interface privacy!", name.c_str()), {
               .info = "Privacy mismatch!",
               .note = FMT("Field '%s' declared here with a different privacy!", name.c_str()),
@@ -107,8 +107,8 @@ types::DefinedType* ty, std::vector<Expression::TypeRef*> types, std::vector<Sta
                   (*classField)->getPrivacy() == Statement::Privacy::PUBLIC ? "public" : "private",
                   ast->getPrivacy() == Statement::Privacy::PUBLIC ? "public" : "private"),
               .tail = EI<>(
-              ast,
-              "",
+                ast,
+                "",
               {
                 .info = "Field declared here!",
                 .note = FMT("Field '%s' declared here with a different privacy!", name.c_str()),

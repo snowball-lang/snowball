@@ -139,11 +139,11 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
             auto size_in_bits = ((llvm::IntegerType*) left->getType())->getBitWidth();
             if (left->getType()->isPointerTy())
               this->value = builder->CreateICmpEQ(
-                            left, llvm::ConstantPointerNull::get(builder->getIntNTy((unsigned) size_in_bits)->getPointerTo())
+                              left, llvm::ConstantPointerNull::get(builder->getIntNTy((unsigned) size_in_bits)->getPointerTo())
                             );
             else
               this->value = builder->CreateICmpEQ(
-                            left, llvm::ConstantInt::get(builder->getIntNTy((unsigned) size_in_bits), 0, false)
+                              left, llvm::ConstantInt::get(builder->getIntNTy((unsigned) size_in_bits), 0, false)
                             );
             break;
           }
@@ -219,7 +219,7 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
           OPERATOR_UINSTANCE(UMINUS, CreateFNeg)
           case services::OperatorService::NOT: {
             this->value =
-            builder->CreateFCmpOEQ(load(left, baseType), llvm::ConstantFP::get(builder->getFloatTy(), 0.0f));
+              builder->CreateFCmpOEQ(load(left, baseType), llvm::ConstantFP::get(builder->getFloatTy(), 0.0f));
             break;
           }
           // TODO: remainder oeprators (!, +=, etc...)
@@ -238,8 +238,8 @@ bool LLVMBuilder::buildOperator(ir::Call* call) {
                 right = ((llvm::LoadInst*) right)->getPointerOperand();
               }
               builder->CreateMemCpy(
-              left, llvm::MaybeAlign(), right, llvm::MaybeAlign(),
-              module->getDataLayout().getTypeSizeInBits(getLLVMType(realType)) / 8
+                left, llvm::MaybeAlign(), right, llvm::MaybeAlign(),
+                module->getDataLayout().getTypeSizeInBits(getLLVMType(realType)) / 8
               );
             } else builder->CreateStore(right, left);
             break;

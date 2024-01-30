@@ -30,7 +30,7 @@ class Conditional : public AcceptorExtend<Func, Value> {
 
  public:
   explicit Conditional(
-  std::shared_ptr<Value> cond, std::shared_ptr<Block> insts, std::shared_ptr<Block> elseBlock = nullptr
+    std::shared_ptr<Value> cond, std::shared_ptr<Block> insts, std::shared_ptr<Block> elseBlock = nullptr
   )
     : cond(cond), insts(insts), elseBlock(elseBlock) {};
 

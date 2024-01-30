@@ -77,8 +77,8 @@ void Compiler::compile(bool silent) {
       auto mainModule = std::make_shared<ir::MainModule>();
       mainModule->setSourceInfo(srcInfo);
       auto simplifier = new Syntax::Transformer(
-      mainModule->downcasted_shared_from_this<ir::Module>(), srcInfo, ((fs::path) path).parent_path(), testsEnabled,
-      benchmarkEnabled, silent
+        mainModule->downcasted_shared_from_this<ir::Module>(), srcInfo, ((fs::path) path).parent_path(), testsEnabled,
+        benchmarkEnabled, silent
       );
       chdir(((fs::path) path).parent_path().c_str());
 #if _SNOWBALL_TIMERS_DEBUG
@@ -91,7 +91,7 @@ void Compiler::compile(bool silent) {
       module = mainModule;
 #if _SNOWBALL_TIMERS_DEBUG
       DEBUG_TIMER("Passes: %fs", utils::_timer([&] {
-                  SNOWBALL_PASS_EXECUTION_LIST
+                    SNOWBALL_PASS_EXECUTION_LIST
                   }));
 #else
       SNOWBALL_PASS_EXECUTION_LIST
@@ -213,12 +213,12 @@ toml::parse_result Compiler::getConfiguration() {
   std::ifstream f(name.c_str());
   if (f.good()) { return toml::parse_file(name); }
   throw SNError(
-  Error::IO_ERROR,
-  FMT("Project configuration not found (%s)\n%shelp%s: try "
-      "runing 'snowball init --cfg'",
-      name.c_str(),
-      BGRN,
-      RESET)
+    Error::IO_ERROR,
+    FMT("Project configuration not found (%s)\n%shelp%s: try "
+        "runing 'snowball init --cfg'",
+        name.c_str(),
+        BGRN,
+        RESET)
   );
 }
 

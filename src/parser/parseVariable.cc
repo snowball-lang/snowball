@@ -12,7 +12,7 @@ Syntax::Statement::VariableDecl* Parser::parseVariable() {
   auto comment = parseDocstring(m_current.getComment());
   next();
   auto attributes = verifyAttributes([&](std::string attr) {
-                                     return Attributes::INVALID;
+                                       return Attributes::INVALID;
                                      });
   bool isPublic = false;
   if (is<TokenType::KWORD_PUBLIC, TokenType::KWORD_PRIVATE>(peek(-3, true))) {
@@ -38,7 +38,7 @@ Syntax::Statement::VariableDecl* Parser::parseVariable() {
     if (is<TokenType::SYM_SEMI_COLLON>(peek(0, true))) next();
   } else if (!is<TokenType::SYM_SEMI_COLLON>()) {
     createError<SYNTAX_ERROR>(
-    "Invalid variable declaration syntax!", {.info = "Expected '=' for a variable declaration"}
+      "Invalid variable declaration syntax!", {.info = "Expected '=' for a variable declaration"}
     );
   } else if (typeDef == nullptr) {
     createError<SYNTAX_ERROR>(

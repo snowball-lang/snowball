@@ -22,7 +22,7 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
   if (p_node->isExternDecl()) {
     if (std::find(ctx->exported.begin(), ctx->exported.end(), p_node->getName()) != ctx->exported.end()) {
       E<VARIABLE_ERROR>(
-      p_node->getDBGInfo(),
+        p_node->getDBGInfo(),
       "External symbol already exists!", {
         .info = "This function name is already exported as unmangled.",
         .note = "This symbols is exported on another location with the "
@@ -37,10 +37,10 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
   }
   if (ctx->getInScope(variableName, ctx->currentScope()).second) {
     E<VARIABLE_ERROR>(
-    p_node,
-    FMT("Variable with name '%s' is already "
-        "defined in the current scope!",
-        variableName.c_str())
+      p_node,
+      FMT("Variable with name '%s' is already "
+          "defined in the current scope!",
+          variableName.c_str())
     );
   }
   auto var = getBuilder().createVariable(p_node->getDBGInfo(), variableName, false, isMutable, ctx->getScopeIndex());
@@ -62,11 +62,11 @@ SN_TRANSFORMER_VISIT(Statement::VariableDecl) {
           this->value = v;
         } else {
           E<VARIABLE_ERROR>(
-          p_node,
-          FMT("Cant assign value with type '%s' to "
-              "the variable with type '%s'!",
-              val->getType()->getPrettyName().c_str(),
-              definedType->getPrettyName().c_str())
+            p_node,
+            FMT("Cant assign value with type '%s' to "
+                "the variable with type '%s'!",
+                val->getType()->getPrettyName().c_str(),
+                definedType->getPrettyName().c_str())
           );
         }
       }

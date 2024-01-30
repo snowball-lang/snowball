@@ -17,7 +17,7 @@ void Transformer::assertSizedType(types::Type* ty, const std::string message, DB
   }
   if (!isSized) {
     E<TYPE_ERROR>(
-    dbgInfo,
+      dbgInfo,
     FMT(message.c_str(), ty->getPrettyName().c_str()), {
       .info = FMT("Type '%s' is not sized.", ty->getPrettyName().c_str()),
       .help = FMT("You can use the 'Sized' interface to make sure a type is sized or\nwrap in a "

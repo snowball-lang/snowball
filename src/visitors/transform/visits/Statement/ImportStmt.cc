@@ -40,7 +40,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
   std::shared_ptr<ir::Module> importedModule = nullptr;
   if (ctx->getItem(exportName).second)
     Syntax::E<IMPORT_ERROR>(
-    p_node,
+      p_node,
     FMT("Import with name '%s' is already defined!", exportName.c_str()), {
     .info = "This is the import that was used",
     .note = "It may be possible that you have imported the same module twice\n"
@@ -66,11 +66,11 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     // clang-format off
     ctx->withState(state,
                    [filePath = filePath, mod, this, niceFullName]() mutable {
-                   std::ifstream ifs(filePath.string());
-                   assert(!ifs.fail());
-                   std::string content((std::istreambuf_iterator<char>(ifs)),
-                                       (std::istreambuf_iterator<char>()));
-                   const SourceInfo* srcInfo = new SourceInfo(content, filePath);
+                     std::ifstream ifs(filePath.string());
+                     assert(!ifs.fail());
+                     std::string content((std::istreambuf_iterator<char>(ifs)),
+                                         (std::istreambuf_iterator<char>()));
+                     const SourceInfo* srcInfo = new SourceInfo(content, filePath);
     auto backupSourceInfo = getSourceInfo();
     setSourceInfo(srcInfo);
     SHOW_STATUS(Logger::compiling(Logger::progress(0.20, niceFullName)))
@@ -78,7 +78,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
     Lexer lexer(srcInfo);
 #if _SNOWBALL_TIMERS_DEBUG
     DEBUG_TIMER("Lexer: %fs (%s)", utils::_timer([&] {
-                lexer.tokenize();
+                  lexer.tokenize();
                 }), filePath.c_str());
 #else
     lexer.tokenize();
@@ -126,7 +126,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
       auto macro = macros.find(name);
       if (macro == macros.end()) {
         E<ATTRIBUTE_ERROR>(
-        p_node,
+          p_node,
         FMT("Macro '%s' does not exist or hasn't been exported!", name.c_str()), {
           .info = "This is the macro that was used",
           .note = "It may be possible that you forgot to use the 'export' keyword\n"
@@ -139,7 +139,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
       auto item = std::make_shared<Item>(macro->second);
       if (ctx->getInCurrentScope(name).second)
         Syntax::E<IMPORT_ERROR>(
-        p_node,
+          p_node,
         FMT("Import with name '%s' is already defined!", name.c_str()), {
         .info = "This is the import that was used",
         .note = "It may be possible that you have imported the same module twice\n"
@@ -155,7 +155,7 @@ SN_TRANSFORMER_VISIT(Statement::ImportStmt) {
         auto item = std::make_shared<Item>(macro);
         if (ctx->getInCurrentScope(name).second)
           Syntax::E<IMPORT_ERROR>(
-          p_node,
+            p_node,
           FMT("Import with name '%s' is already defined!", name.c_str()), {
           .info = "This is the import that was used",
           .note = "It may be possible that you have imported the same module twice\n"

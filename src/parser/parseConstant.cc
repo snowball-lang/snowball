@@ -11,7 +11,7 @@ Syntax::Statement::VariableDecl* Parser::parseConstant() {
   assert(is<TokenType::KWORD_CONST>());
   auto comment = parseDocstring(m_current.getComment());
   auto attributes = verifyAttributes([&](std::string attr) {
-                                     return Attributes::INVALID;
+                                       return Attributes::INVALID;
                                      });
   next();
   bool isPublic = false;

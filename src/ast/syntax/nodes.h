@@ -409,8 +409,8 @@ struct BinaryOp : public AcceptorExtend<BinaryOp, Base> {
 
   BinaryOp(OpType t) : op_type(t) {
     unary =
-    (op_type == OpType::NOT || op_type == OpType::BIT_NOT || op_type == OpType::UPLUS ||
-     op_type == OpType::UMINUS || op_type == OpType::REFERENCE || op_type == OpType::DEREFERENCE);
+      (op_type == OpType::NOT || op_type == OpType::BIT_NOT || op_type == OpType::UPLUS ||
+       op_type == OpType::UMINUS || op_type == OpType::REFERENCE || op_type == OpType::DEREFERENCE);
   };
   ~BinaryOp() noexcept = default;
 
@@ -612,7 +612,7 @@ struct VariableDecl : public AcceptorExtend<VariableDecl, Base>,
 
  public:
   VariableDecl(
-  const std::string& name, Expression::Base* value = nullptr, bool isMutable = false, bool isConstant = false
+    const std::string& name, Expression::Base* value = nullptr, bool isMutable = false, bool isConstant = false
   );
 
   /// @brief Get the identifier assign to the variable
@@ -702,7 +702,7 @@ struct DefinedTypeDef : public AcceptorExtend<DefinedTypeDef, Base>,
 
  public:
   DefinedTypeDef(
-  std::string name, Expression::TypeRef* extends = nullptr, Privacy::Status prvc = PRIVATE, Type type = CLASS
+    std::string name, Expression::TypeRef* extends = nullptr, Privacy::Status prvc = PRIVATE, Type type = CLASS
   );
 
   /// @brief Get class name

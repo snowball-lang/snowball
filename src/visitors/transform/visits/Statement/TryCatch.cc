@@ -16,17 +16,17 @@ SN_TRANSFORMER_VISIT(Statement::TryCatch) {
     auto type = transformSizedType(catchBlock->getExceptionType(), false, "Cannot catch unsized type '%s'");
     auto block = catchBlock->getBlock();
     ctx->withScope([&] {
-                   auto var = getBuilder().createVariable(block->getDBGInfo(), name, type, false, false, ctx->getScopeIndex());
-                   auto varDecl = getBuilder().createVariableDeclaration(p_node->getDBGInfo(), var, nullptr);
-                   varDecl->setId(var->getId());
-                   getBuilder().setType(varDecl, type);
+                     auto var = getBuilder().createVariable(block->getDBGInfo(), name, type, false, false, ctx->getScopeIndex());
+                     auto varDecl = getBuilder().createVariableDeclaration(p_node->getDBGInfo(), var, nullptr);
+                     varDecl->setId(var->getId());
+                     getBuilder().setType(varDecl, type);
 
-                   auto item = std::make_shared<transform::Item>(transform::Item::VALUE, var);
-                   ctx->addItem(name, item);
+                     auto item = std::make_shared<transform::Item>(transform::Item::VALUE, var);
+                     ctx->addItem(name, item);
 
-                   catchBlocks.push_back(utils::dyn_cast<ir::Block>(trans(block)));
-                   catchVars.push_back(varDecl);
-                   ctx->getCurrentFunction()->addSymbol(varDecl);
+                     catchBlocks.push_back(utils::dyn_cast<ir::Block>(trans(block)));
+                     catchVars.push_back(varDecl);
+                     ctx->getCurrentFunction()->addSymbol(varDecl);
                    });
   }
   auto tryCatch = getBuilder().createTryCatch(p_node->getDBGInfo(), tryBlock, catchBlocks, catchVars);

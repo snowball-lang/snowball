@@ -39,9 +39,9 @@ void LLVMBuilder::visit(ir::Return* ret) {
       if (llvm::isa<llvm::LoadInst>(e)) { e = llvm::cast<llvm::LoadInst>(e)->getPointerOperand(); }
       if (!doNotMove) {
         auto layout = module->getDataLayout().getStructLayout(
-                      llvm::cast<llvm::StructType>(getLLVMType(ret->getType())));
+                        llvm::cast<llvm::StructType>(getLLVMType(ret->getType())));
         builder->CreateMemCpy(
-        retArg, llvm::MaybeAlign(), e, llvm::MaybeAlign(), builder->getInt64(layout->getSizeInBytes())
+          retArg, llvm::MaybeAlign(), e, llvm::MaybeAlign(), builder->getInt64(layout->getSizeInBytes())
         );
         //builder->CreateStore(builder->CreateLoad(getLLVMType(ret->getType()), e), retArg);
       } else {

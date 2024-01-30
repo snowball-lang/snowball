@@ -9,7 +9,7 @@ void Transformer::transformTypeExtension(Statement::DefinedTypeDef* node, std::s
   assert(node->getVariables().size() == 0);
   if (!ctx->isGlobalScope()) {
     E<SYNTAX_ERROR>(
-    node,
+      node,
     "Class extensions can only be defined in the global scope!", {
       .info = FMT("Class '%s' is not defined in the global scope!", name.c_str()),
       .note = "Class extensions can only be defined in the global scope!",
@@ -22,7 +22,7 @@ void Transformer::transformTypeExtension(Statement::DefinedTypeDef* node, std::s
     if (item->isType()) {
       if (utils::cast<types::TypeAlias>(item->getType())) {
         E<SYNTAX_ERROR>(
-        node,
+          node,
         "Cant extend a type alias!", {
           .info = FMT("'%s' is a type alias!", name.c_str()),
           .note = "Only types can be extended!",
@@ -36,7 +36,7 @@ void Transformer::transformTypeExtension(Statement::DefinedTypeDef* node, std::s
         auto inter = utils::cast<types::InterfaceType>(ty);
         if (!inter) {
           E<SYNTAX_ERROR>(
-          node,
+            node,
           "Cant extend a non-interface!", {
             .info = FMT("'%s' is not an interface!", ty->getPrettyName().c_str()),
             .note = "Only interfaces can be extended!",
@@ -52,7 +52,7 @@ void Transformer::transformTypeExtension(Statement::DefinedTypeDef* node, std::s
       return; // :D
     } else {
       E<SYNTAX_ERROR>(
-      node,
+        node,
       "Cant extend a non-type!", {
         .info = FMT("'%s' is not a type!", name.c_str()),
         .note = "Only types can be extended!",
@@ -68,7 +68,7 @@ refetchUUID:
     auto type = x.value();
     if (auto alias = utils::cast<Statement::TypeAlias>(type.type)) {
       E<SYNTAX_ERROR>(
-      node,
+        node,
       "Cant extend a type alias!", {
         .info = FMT("'%s' is a type alias!", alias->getIdentifier().c_str()),
         .note = "Only types can be extended!",
@@ -80,7 +80,7 @@ refetchUUID:
       assert(definedType);
       if (definedType->isInterface()) {
         E<SYNTAX_ERROR>(
-        node,
+          node,
         "Cant extend an interface!", {
           .info = FMT("'%s' is an interface!", definedType->getName().c_str()),
           .note = "Only types can be extended!",
@@ -99,7 +99,7 @@ refetchUUID:
         auto inter = utils::cast<types::InterfaceType>(ty);
         if (!inter) {
           E<SYNTAX_ERROR>(
-          node,
+            node,
           "Cant extend a non-interface!", {
             .info = FMT("'%s' is not an interface!", ty->getPrettyName().c_str()),
             .note = "Only interfaces can be extended!",
@@ -121,7 +121,7 @@ refetchUUID:
         auto inter = utils::cast<types::InterfaceType>(ty);
         if (!inter) {
           E<SYNTAX_ERROR>(
-          node,
+            node,
           "Cant extend a non-interface!", {
             .info = FMT("'%s' is not an interface!", ty->getPrettyName().c_str()),
             .note = "Only interfaces can be extended!",
@@ -144,7 +144,7 @@ refetchUUID:
           auto inter = utils::cast<types::InterfaceType>(ty);
           if (!inter) {
             E<SYNTAX_ERROR>(
-            node,
+              node,
             "Cant extend a non-interface!", {
               .info = FMT("'%s' is not an interface!", ty->getPrettyName().c_str()),
               .note = "Only interfaces can be extended!",
@@ -155,21 +155,21 @@ refetchUUID:
           item->getType()->addImpl(inter);
         }
         ctx->withScope([&]() {
-                       auto definedType = utils::cast<types::BaseType>(item->getType());
-                       ctx->setCurrentClass(definedType);
-                       assert(definedType);
-                       if (auto x = utils::cast<types::DefinedType>(definedType)) {
-                       auto ast = x->getAST();
-                       assert(ast->getGenerics().size() == x->getGenerics().size());
-                       for (size_t i = 0; i < ast->getGenerics().size(); i++) {
-                         auto generic = ast->getGenerics().at(i);
-                         auto genericType = definedType->getGenerics().at(i);
-                         ctx->addItem(generic->getName(), std::make_shared<transform::Item>(genericType));
-                         }
-                         }
-                         // TODO: should we override `ctx->generateFunction` here too?
-                         auto backupGenerateFn = ctx->generateFunction;
-                         ctx->generateFunction = false;
+                         auto definedType = utils::cast<types::BaseType>(item->getType());
+                         ctx->setCurrentClass(definedType);
+                         assert(definedType);
+                         if (auto x = utils::cast<types::DefinedType>(definedType)) {
+                           auto ast = x->getAST();
+                           assert(ast->getGenerics().size() == x->getGenerics().size());
+                           for (size_t i = 0; i < ast->getGenerics().size(); i++) {
+                               auto generic = ast->getGenerics().at(i);
+                               auto genericType = definedType->getGenerics().at(i);
+                               ctx->addItem(generic->getName(), std::make_shared<transform::Item>(genericType));
+                             }
+                           }
+                           // TODO: should we override `ctx->generateFunction` here too?
+                           auto backupGenerateFn = ctx->generateFunction;
+                           ctx->generateFunction = false;
           for (auto fn : node->getFunctions()) { trans(fn); }
         ctx->generateFunction = true;
         for (auto fn : node->getFunctions()) { trans(fn); }
@@ -185,7 +185,7 @@ refetchUUID:
     goto refetchUUID;
   }
   E<VARIABLE_ERROR>(
-  node,
+    node,
   "Cant extend an undefined type!", {
     .info = FMT("'%s' is not defined in the currect context!", name.c_str()),
     .note = "Only types can be extended!",

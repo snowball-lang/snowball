@@ -12,7 +12,7 @@ void LLVMBuilder::initializeVariable(llvm::Value* var, llvm::Type* ty, unsigned 
   assert(llvm::isa<llvm::StructType>(ty));
   auto llvmType = llvm::cast<llvm::StructType>(ty);
   auto initializerName =
-  FMT("__const.default.%s", llvmType->getName().str().c_str());
+    FMT("__const.default.%s", llvmType->getName().str().c_str());
   auto constInitializer = module->getNamedGlobal(initializerName);
   if (!constInitializer) {
     std::vector<llvm::Constant*> elements;
@@ -27,14 +27,14 @@ void LLVMBuilder::initializeVariable(llvm::Value* var, llvm::Type* ty, unsigned 
     }
     auto structInitializer = llvm::ConstantStruct::get(llvmType, elements);
     constInitializer = new llvm::GlobalVariable(
-    *module,
-    llvmType,
-    true,
-    llvm::GlobalValue::PrivateLinkage,
-    structInitializer,
-    initializerName,
-    nullptr,
-    llvm::GlobalVariable::NotThreadLocal
+      *module,
+      llvmType,
+      true,
+      llvm::GlobalValue::PrivateLinkage,
+      structInitializer,
+      initializerName,
+      nullptr,
+      llvm::GlobalVariable::NotThreadLocal
     );
     constInitializer->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
   }

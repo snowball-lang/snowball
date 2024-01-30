@@ -231,10 +231,10 @@ class LLVMBuilder : AcceptorExtend<LLVMBuilder, ValueVisitor> {
  public:
   // Create a new instance of a llvm builder
   LLVMBuilder(
-  std::shared_ptr<ir::MainModule> mod,
-  app::Options::Optimization optimizationLevel = app::Options::Optimization::OPTIMIZE_O0,
-  bool testMode = false,
-  bool benchmarkMode = false
+    std::shared_ptr<ir::MainModule> mod,
+    app::Options::Optimization optimizationLevel = app::Options::Optimization::OPTIMIZE_O0,
+    bool testMode = false,
+    bool benchmarkMode = false
   );
   /**
    * @brief Dump the LLVM IR code to stdout.

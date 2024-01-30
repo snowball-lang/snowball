@@ -37,7 +37,7 @@ SN_TRANSFORMER_VISIT(Statement::ForLoop) {
     auto nextIdent = Syntax::N<Syntax::Expression::Identifier>("next"); // next
     auto index = Syntax::N<Syntax::Expression::Index>(ident, nextIdent); // base.next
     auto call =
-    Syntax::N<Syntax::Expression::FunctionCall>(index, std::vector<Syntax::Expression::Base*>()); // base.next()
+      Syntax::N<Syntax::Expression::FunctionCall>(index, std::vector<Syntax::Expression::Base*>()); // base.next()
     ident->setDBGInfo(expr->getDBGInfo());
     index->setDBGInfo(expr->getDBGInfo());
     nextIdent->setDBGInfo(expr->getDBGInfo());
@@ -60,14 +60,14 @@ SN_TRANSFORMER_VISIT(Statement::ForLoop) {
   auto valIdent = Syntax::N<Syntax::Expression::Identifier>("value");
   auto iterValueIdx = Syntax::N<Syntax::Expression::Index>(iterIdent, valIdent);
   auto iterValueCall =
-  Syntax::N<Syntax::Expression::FunctionCall>(iterValueIdx, std::vector<Syntax::Expression::Base*>());
+    Syntax::N<Syntax::Expression::FunctionCall>(iterValueIdx, std::vector<Syntax::Expression::Base*>());
   auto iterValue = Syntax::N<Syntax::Statement::VariableDecl>(var, iterValueCall);
   auto stmts = block->getStmts();
   stmts.insert(stmts.begin(), iterValue);
   auto whileLoop = Syntax::N<Syntax::Statement::WhileLoop>(validCall, Syntax::N<Syntax::Block>(stmts), eq);
   auto resetIdent = Syntax::N<Syntax::Expression::Identifier>("reset");
   auto resetIndex =
-  Syntax::N<Syntax::Expression::Index>(Syntax::N<Syntax::Expression::Identifier>(iterName), resetIdent);
+    Syntax::N<Syntax::Expression::Index>(Syntax::N<Syntax::Expression::Identifier>(iterName), resetIdent);
   auto resetCall = Syntax::N<Syntax::Expression::FunctionCall>(resetIndex, std::vector<Syntax::Expression::Base*>());
   // wrap everything in a block
   auto blockStmt = Syntax::N<Syntax::Block>(std::vector<Node*> {iteratorValue, iterVar, whileLoop, resetCall});

@@ -11,8 +11,8 @@ SN_TRANSFORMER_VISIT(Statement::Return) {
   assert(functionType);
   if (auto f = ctx->getCurrentFunction(); f->isConstructor()) {
     E<SYNTAX_ERROR>(
-    p_node,
-    "You cant return a value inside a constructor function!",
+      p_node,
+      "You cant return a value inside a constructor function!",
     {.info = "Constructors can't contain return statements"}
     );
   }
@@ -24,8 +24,8 @@ SN_TRANSFORMER_VISIT(Statement::Return) {
       if (auto cast = tryCast(returnValue, functionType->getRetType()); cast != nullptr) returnValue = cast;
     } else {
       E<SYNTAX_ERROR>(
-      p_node,
-      "You must return a value inside a non-void function!",
+        p_node,
+        "You must return a value inside a non-void function!",
       {.info = "Non-void functions must contain return statements"}
       );
     }
@@ -33,8 +33,8 @@ SN_TRANSFORMER_VISIT(Statement::Return) {
   } else {
     if (p_node->getValue() != nullptr) {
       E<SYNTAX_ERROR>(
-      p_node,
-      "You cant return a value inside a void function!",
+        p_node,
+        "You cant return a value inside a void function!",
       {.info = "Void functions can't contain return statements"}
       );
     }

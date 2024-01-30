@@ -31,7 +31,7 @@ getSubstringByRange(const std::string& str, const std::pair<int, int>& start, co
 template <typename Iter>
 // https://stackoverflow.com/questions/495021/why-can-templates-only-be-implemented-in-the-header-file
 std::string join(Iter begin, Iter end, std::string const& separator, std::function<std::string(Iter)> cb = [](Iter i) {
-                 return *i;
+                   return *i;
                  }) {
   std::ostringstream result;
   if (begin != end) result << cb(begin++);
@@ -86,22 +86,22 @@ std::vector<Return> map(std::list<std::pair<Key, Val>> p_map, std::function<Retu
 
 template <typename Desired, typename Current>
 [[nodiscard]] inline decltype(auto) cast(Current curr) {
-return dynamic_cast<Desired*>(curr);
+  return dynamic_cast<Desired*>(curr);
 }
 
 template <typename Desired, typename Current>
 [[nodiscard]] inline decltype(auto) is(Current curr) {
-return cast<Desired, Current>(curr) != nullptr;
+  return cast<Desired, Current>(curr) != nullptr;
 }
 
 template <typename T>
 [[nodiscard]] inline decltype(auto) copy_shared(std::shared_ptr<T> x) {
-return std::make_shared<T>(*x);
+  return std::make_shared<T>(*x);
 }
 
 template <typename Desired, typename Current>
 [[nodiscard]] inline decltype(auto) dyn_cast(std::shared_ptr<Current> curr) {
-return std::dynamic_pointer_cast<Desired>(curr);
+  return std::dynamic_pointer_cast<Desired>(curr);
 }
 
 template <typename T, typename R>
@@ -134,7 +134,7 @@ void assert_value_type() {
 
 template <typename T>
 [[nodiscard]] inline decltype(auto) copy(T* x) {
-return new T(*x);
+  return new T(*x);
 }
 
 #if _SNOWBALL_TIMERS_DEBUG

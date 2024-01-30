@@ -18,13 +18,13 @@ SN_TRANSFORMER_VISIT(Statement::DefinedTypeDef) {
   }
   if (x.has_value() && (!ctx->generateFunction)) {
     E<VARIABLE_ERROR>(
-    p_node,
-    FMT("%s with name '%s' is already defined in "
-        "the current scope!",
-        (p_node->isInterface() ? "Interface" :
-         p_node->isStruct() ? "Struct" :
-         "Class"),
-        name.c_str())
+      p_node,
+      FMT("%s with name '%s' is already defined in "
+          "the current scope!",
+          (p_node->isInterface() ? "Interface" :
+           p_node->isStruct() ? "Struct" :
+           "Class"),
+          name.c_str())
     );
   } else if (!ctx->generateFunction || p_node->isGeneric()) {
     ctx->cache->setType(uuid, p_node, state);

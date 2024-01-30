@@ -98,7 +98,7 @@ llvm::Value* LLVMBuilder::load(llvm::Value* v, types::Type* ty) {
 }
 
 LLVMBuilder::LLVMBuilder(
-std::shared_ptr<ir::MainModule> mod, app::Options::Optimization optimizationLevel, bool testMode, bool benchMode
+  std::shared_ptr<ir::MainModule> mod, app::Options::Optimization optimizationLevel, bool testMode, bool benchMode
 )
   : iModule(mod) {
   ctx->testMode = testMode;
@@ -164,19 +164,19 @@ std::unique_ptr<llvm::Module> LLVMBuilder::newModule() {
   dbg.builder = std::make_unique<llvm::DIBuilder>(*m);
   llvm::DIFile* file = dbg.getFile(srcInfo->getPath());
   dbg.unit = dbg.builder->createCompileUnit(
-             llvm::dwarf::DW_LANG_C_plus_plus,
-             file,
-             ("Snowball version " _SNOWBALL_VERSION),
-             !dbg.debug,
-             {},
-             /*RV=*/0
+               llvm::dwarf::DW_LANG_C_plus_plus,
+               file,
+               ("Snowball version " _SNOWBALL_VERSION),
+               !dbg.debug,
+               {},
+               /*RV=*/0
              );
   m->addModuleFlag(llvm::Module::Warning, "Debug Info Version", llvm::DEBUG_METADATA_VERSION);
   m->addModuleFlag(llvm::Module::Warning, "Snowball Compiler ID", _SNOWBALL_VERSION_NUMBER);
   m->addModuleFlag(
-  llvm::Module::Warning,
-  "Snowball Compiler Version",
-  llvm::ConstantDataArray::getString(*context, _SNOWBALL_VERSION, true)
+    llvm::Module::Warning,
+    "Snowball Compiler Version",
+    llvm::ConstantDataArray::getString(*context, _SNOWBALL_VERSION, true)
   );
   // darwin only supports dwarf2
   if (llvm::Triple(m->getTargetTriple()).isOSDarwin()) { m->addModuleFlag(llvm::Module::Warning, "Dwarf Version", 2); }
@@ -209,17 +209,17 @@ void LLVMBuilder::print(llvm::raw_fd_ostream& s) { module->print(s, nullptr); }
 #define ITERATE_RFUNCTIONS for (auto fn = functions.rbegin(); fn != functions.rend(); ++fn)
 void LLVMBuilder::codegen() {
   auto generateModule = [&](std::shared_ptr<ir::Module> m, bool build) {
-                        // reset context
-                        ctx->doNotLoadInMemory = false;
-                        this->iModule = m;
-                        // Generate the functions from the end to the front.
-                        auto functions = m->getFunctions();
-                        if (!build) {
-                        // Iterate every function with a reversed iterator.
-                        // This first loop will declare all of the functions
-                        // to the module, it does not matter whether they are
-                        // bodied or not.
-                        ITERATE_FUNCTIONS { visit(fn->get()); }
+                          // reset context
+                          ctx->doNotLoadInMemory = false;
+                          this->iModule = m;
+                          // Generate the functions from the end to the front.
+                          auto functions = m->getFunctions();
+                          if (!build) {
+                            // Iterate every function with a reversed iterator.
+                            // This first loop will declare all of the functions
+                            // to the module, it does not matter whether they are
+                            // bodied or not.
+                            ITERATE_FUNCTIONS { visit(fn->get()); }
   } else {
     // Generate all the variables defined in this module.
     for (auto v : m->getVariables()) { addGlobalVariable(v); }

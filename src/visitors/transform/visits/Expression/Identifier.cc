@@ -22,10 +22,10 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
     // TODO: check if parent node is a cast
     if (functions->size() > 1) {
       E<VARIABLE_ERROR>(
-      p_node,
-      FMT("Identifier '%s' points to a "
-          "function with multiple overloads!",
-          name.c_str())
+        p_node,
+        FMT("Identifier '%s' points to a "
+            "function with multiple overloads!",
+            name.c_str())
       );
     }
     // There can only be 1 function overload without casting
@@ -39,10 +39,10 @@ SN_TRANSFORMER_VISIT(Expression::Identifier) {
   } else if (overloads) {
     if (overloads->size() > 1) {
       E<VARIABLE_ERROR>(
-      p_node,
-      FMT("Identifier points to a function with "
-          "multiple overloads!",
-          p_node->getIdentifier().c_str())
+        p_node,
+        FMT("Identifier points to a function with "
+            "multiple overloads!",
+            p_node->getIdentifier().c_str())
       );
     }
     // There can only be 1 function overload without casting

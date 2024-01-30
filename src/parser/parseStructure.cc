@@ -17,7 +17,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
     isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
   }
   auto attributes = verifyAttributes([&](std::string attr) {
-                                     return Attributes::INVALID;
+                                       return Attributes::INVALID;
                                      });
   auto name = assert_tok<TokenType::IDENTIFIER>("structure identifier").to_string();
   auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
@@ -31,7 +31,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
   assert_tok<TokenType::BRACKET_LCURLY>("'{'");
   next();
   auto cls = Syntax::N<Syntax::Statement::DefinedTypeDef>(
-             name, nullptr, Syntax::Statement::Privacy::fromInt(isPublic), Syntax::Statement::DefinedTypeDef::Type::STRUCT
+               name, nullptr, Syntax::Statement::Privacy::fromInt(isPublic), Syntax::Statement::DefinedTypeDef::Type::STRUCT
              );
   cls->setGenerics(generics);
   cls->setDBGInfo(dbg);
@@ -63,7 +63,7 @@ Syntax::Statement::DefinedTypeDef* Parser::parseStructure() {
       }
       default: {
         createError<SYNTAX_ERROR>(
-        FMT("Expected a valid member declaration but found '%s'", m_current.to_string().c_str())
+          FMT("Expected a valid member declaration but found '%s'", m_current.to_string().c_str())
         );
         break;
       }

@@ -53,7 +53,7 @@ void LLVMBuilder::visit(ir::Switch* switchStmt) {
     auto vars = c.args;
     auto block = blocks[i];
     auto enumField = std::find_if(enumType->getFields().begin(), enumType->getFields().end(), [&](auto f) {
-                                  return f.name == field;
+                                    return f.name == field;
                                   });
     assert(enumField != enumType->getFields().end());
     builder->SetInsertPoint(block);

@@ -33,8 +33,8 @@ int docgen(app::Options::DocsOptions p_opts) {
   }
   if (!p_opts.silent)
     Logger::message(
-    "Project",
-    FMT("%s v%s [%sdocumentation%s]", package_name.c_str(), package_version.c_str(), BOLD, RESET)
+      "Project",
+      FMT("%s v%s [%sdocumentation%s]", package_name.c_str(), package_version.c_str(), BOLD, RESET)
     );
   // TODO: check for output
   auto compiler = new Compiler("<invalid>", "<invalid>");

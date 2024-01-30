@@ -22,12 +22,12 @@ void LLVMBuilder::visit(ir::VariableDeclaration* variable) {
     if (variable->getVariable()->isUsedInLambda()) {
       auto closure = ctx->closures.at(ctx->getCurrentIRFunction()->getId());
       auto index = std::distance(
-                   closure.variables.begin(),
-                   std::find_if(
-                   closure.variables.begin(),
-                   closure.variables.end(),
-                   [variable](auto & v) { return v == variable->getVariable()->getId(); }
-                   )
+                     closure.variables.begin(),
+                     std::find_if(
+                       closure.variables.begin(),
+                       closure.variables.end(),
+                       [variable](auto & v) { return v == variable->getVariable()->getId(); }
+                     )
                    );
       store = builder->CreateStructGEP(closure.closureType, closure.closure, index);
     } else {
@@ -42,14 +42,14 @@ void LLVMBuilder::visit(ir::VariableDeclaration* variable) {
     auto file = dbg.getFile(src->getPath());
     auto scope = llvmFn->getSubprogram();
     auto debugVar = dbg.builder->createAutoVariable(
-                    scope, variable->getIdentifier(), file, dbgInfo->line, getDIType(variable->getType()), dbg.debug
+                      scope, variable->getIdentifier(), file, dbgInfo->line, getDIType(variable->getType()), dbg.debug
                     );
     dbg.builder->insertDeclare(
-    store,
-    debugVar,
-    dbg.builder->createExpression(),
-    llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
-    builder->GetInsertBlock()
+      store,
+      debugVar,
+      dbg.builder->createExpression(),
+      llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
+      builder->GetInsertBlock()
     );
   }
   if (utils::is<ir::Call>(variable->getValue().get())

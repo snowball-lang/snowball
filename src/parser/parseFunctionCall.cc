@@ -26,7 +26,7 @@ Parser::parseFunctionCall(Syntax::Expression::Base* callee, TokenType terminator
     } else {
       next();
       createError<SYNTAX_ERROR>(
-      FMT("Expected a ',' or a '%s' but found '%s' instead", terminatorString.c_str(), pk.to_string().c_str())
+        FMT("Expected a ',' or a '%s' but found '%s' instead", terminatorString.c_str(), pk.to_string().c_str())
       );
     }
   }

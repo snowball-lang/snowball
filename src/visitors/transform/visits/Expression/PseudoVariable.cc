@@ -25,9 +25,9 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
       stringValue = x->getMangle();
     } else {
       E<PSEUDO_ERROR>(
-      p_node,
-      "Cant use '#dsohandle' pseudo variable outside "
-      "a function!"
+        p_node,
+        "Cant use '#dsohandle' pseudo variable outside "
+        "a function!"
       );
     }
   } else if (pseudo == "module") {
@@ -68,7 +68,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
         if (node->parentMacro != nullptr) ctx->macroBacktrace.push_back({p_node->getDBGInfo(), node->parentMacro});
         if (!p_node->asStatement && type == Macro::ArguementType::STATEMENT) {
           E<PSEUDO_ERROR>(
-          p_node,
+            p_node,
           FMT("Macro arguement '%s' is not an expression!", pseudo.c_str()), {
             .info = "Trying to use a statement macro as an expression macro.",
             .note = "You cant use a statement macro as an expression macro.\n"
@@ -86,7 +86,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
         }
         if (utils::is<Expression::TypeRef>(node)) {
           E<SYNTAX_ERROR>(
-          p_node,
+            p_node,
           FMT("Macro arguement '%s' is a type!", pseudo.c_str()), {
             .info = "Trying to use a type as an expression macro.",
             .note = "You cant use a type as an expression macro.\n"
@@ -112,7 +112,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
       auto macro = macroInstance->macro;
       if (!p_node->asStatement && macro->isMacroStatement()) {
         E<PSEUDO_ERROR>(
-        p_node,
+          p_node,
         FMT("Macro '%s' is not an expression!", pseudo.c_str()), {
           .info = "Trying to use a statement macro as an expression macro.",
           .note = "You cant use a statement macro as an expression macro.\n"
@@ -136,7 +136,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
   if (stringValue.empty()) {
     assert(intValue != -1);
     auto val = new Syntax::Expression::ConstantValue(
-    Expression::ConstantValue::ConstantType::Number, std::to_string(intValue)
+      Expression::ConstantValue::ConstantType::Number, std::to_string(intValue)
     );
     val->setDBGInfo(p_node->getDBGInfo());
     trans(val);
@@ -145,7 +145,7 @@ SN_TRANSFORMER_VISIT(Expression::PseudoVariable) {
     // prevent the values
     // from being lost.
     auto val = new Syntax::Expression::ConstantValue(
-    Expression::ConstantValue::ConstantType::String, "\"" + stringValue + "\""
+      Expression::ConstantValue::ConstantType::String, "\"" + stringValue + "\""
     );
     val->setDBGInfo(p_node->getDBGInfo());
     trans(val);

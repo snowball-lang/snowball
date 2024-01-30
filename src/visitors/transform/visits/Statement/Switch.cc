@@ -45,7 +45,7 @@ SN_TRANSFORMER_VISIT(Statement::Switch) {
       auto caseArgs = caseInstance.args;
       auto caseBlock = caseInstance.block;
       auto field = std::find_if(enumFields.begin(), enumFields.end(), [&](auto field) {
-                                return field.name == caseInstance.expressionAsString();
+                                  return field.name == caseInstance.expressionAsString();
                                 });
       if (field == enumFields.end()) {
         E<SYNTAX_ERROR>(p_node, "Case arguments must match enum fields!", {
@@ -70,7 +70,7 @@ SN_TRANSFORMER_VISIT(Statement::Switch) {
         });
       }
       ctx->withScope([&] {
-                     std::vector<std::shared_ptr<ir::VariableDeclaration>> irArgs = {};
+                       std::vector<std::shared_ptr<ir::VariableDeclaration>> irArgs = {};
       for (size_t i = 0; i < caseArgs.size(); i++) {
       auto var = getBuilder().createVariable(p_node->getDBGInfo(), caseArgs[i], false, false, ctx->getScopeIndex());
         getBuilder().setType(var, field->types[i]);

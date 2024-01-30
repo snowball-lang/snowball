@@ -41,31 +41,31 @@ void NiceError::print_error(bool asTail) const {
     Logger::elog(FMT("%s╚══╤══╝", BLK));
     Logger::elog(FMT("   ╰───╮%s", RESET));
     Logger::elog(
-    FMT("%s       ├─[%s%s%s%s:%i:%i%s%s]%s",
-        BLK,
-        RESET,
-        BBLU,
-        cb_dbg_info->getSourceInfo()->getPath().c_str(),
-        BBLK,
-        cb_dbg_info->line,
-        cb_dbg_info->pos.second,
-        RESET,
-        BLK,
-        RESET)
+      FMT("%s       ├─[%s%s%s%s:%i:%i%s%s]%s",
+          BLK,
+          RESET,
+          BBLU,
+          cb_dbg_info->getSourceInfo()->getPath().c_str(),
+          BBLK,
+          cb_dbg_info->line,
+          cb_dbg_info->pos.second,
+          RESET,
+          BLK,
+          RESET)
     );
   } else {
     Logger::elog(
-    FMT("%s       ├─[%s%s%s%s:%i:%i%s%s]%s",
-        BLK,
-        RESET,
-        BBLU,
-        cb_dbg_info->getSourceInfo()->getPath().c_str(),
-        BBLK,
-        cb_dbg_info->line,
-        cb_dbg_info->pos.second,
-        RESET,
-        BLK,
-        RESET)
+      FMT("%s       ├─[%s%s%s%s:%i:%i%s%s]%s",
+          BLK,
+          RESET,
+          BBLU,
+          cb_dbg_info->getSourceInfo()->getPath().c_str(),
+          BBLK,
+          cb_dbg_info->line,
+          cb_dbg_info->pos.second,
+          RESET,
+          BLK,
+          RESET)
     );
   }
   // Logger::elog(FMT("%s       │%s", BLK, RESET));
@@ -89,18 +89,18 @@ void NiceError::print_error(bool asTail) const {
     line_str += cb_dbg_info->line_str[i];
   }
   Logger::elog(
-  FMT(" %s %4i%s >%s  %s\n       %s│%s  %s%s %s%s",
-      BWHT,
-      cb_dbg_info->line,
-      BLK,
-      BLK,
-      line_str.c_str(),
-      BLK,
-      RESET,
-      BRED,
-      cb_dbg_info->get_pos_str().c_str(),
-      info.info.c_str(),
-      RESET)
+    FMT(" %s %4i%s >%s  %s\n       %s│%s  %s%s %s%s",
+        BWHT,
+        cb_dbg_info->line,
+        BLK,
+        BLK,
+        line_str.c_str(),
+        BLK,
+        RESET,
+        BRED,
+        cb_dbg_info->get_pos_str().c_str(),
+        info.info.c_str(),
+        RESET)
   );
   if (!cb_dbg_info->line_after_after.empty() || !cb_dbg_info->line_after.empty())
     Logger::elog(FMT("  %s%4i%s │  %s", BBLK, cb_dbg_info->line + 1, BLK, cb_dbg_info->line_after.c_str()));

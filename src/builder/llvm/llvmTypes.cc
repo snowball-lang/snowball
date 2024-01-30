@@ -52,8 +52,8 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid, bool ig
     } else {
       auto isStruct = utils::cast<types::DefinedType>(c);
       s = llvm::StructType::create(
-          *context,
-          ((isStruct && isStruct->isStruct()) ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) + c->getMangledName()
+            *context,
+            ((isStruct && isStruct->isStruct()) ? _SN_STRUCT_PREFIX : _SN_CLASS_PREFIX) + c->getMangledName()
           );
       types.insert({c->getId(), s});
       assert(ctx->typeInfo.find(c->getId()) != ctx->typeInfo.end());
@@ -63,22 +63,22 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid, bool ig
     if (auto c = utils::cast<types::DefinedType>(t)) {
       auto fields = c->getFields();
       generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Type*>(
-                        fields, [&](types::DefinedType::ClassField * t) { return getLLVMType(t->type); }
+                          fields, [&](types::DefinedType::ClassField * t) { return getLLVMType(t->type); }
                         );
     } else if (auto c = utils::cast<types::InterfaceType>(t)) {
       auto fields = c->getFields();
       generatedFields =
-      vector_iterate<types::InterfaceType::Member*, llvm::Type*>(fields, [&](types::InterfaceType::Member * t) {
-        return getLLVMType(t->type);
-        });
+        vector_iterate<types::InterfaceType::Member*, llvm::Type*>(fields, [&](types::InterfaceType::Member * t) {
+            return getLLVMType(t->type);
+          });
     } else {
       Syntax::E<BUG>(FMT("Undefined type! ('%s')", t->getName().c_str()));
     }
     if (c->hasVtable) {
       (void)getVtableType(c); // generate vtable type
       generatedFields.insert(
-                     generatedFields.begin(),
-                     llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()
+                       generatedFields.begin(),
+                       llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()
                      );
     } else if (auto x = utils::cast<types::DefinedType>(c); x && x->hasParent()) {
       auto p = x;
@@ -88,8 +88,8 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid, bool ig
         if (!p) break;
         (void)getVtableType(p); // generate vtable type
         generatedFields.insert(
-                       generatedFields.begin(),
-                       llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()
+                         generatedFields.begin(),
+                         llvm::FunctionType::get(builder->getInt32Ty(), {}, true)->getPointerTo()->getPointerTo()
                        );
       }
     }
@@ -104,7 +104,7 @@ llvm::Type* LLVMBuilder::getLLVMType(types::Type* t, bool translateVoid, bool ig
 
 llvm::FunctionType* LLVMBuilder::getLLVMFunctionType(types::FunctionType* fn, const ir::Func* func) {
   auto argTypes =
-  vector_iterate<types::Type*, llvm::Type*>(fn->getArgs(), [&](types::Type * arg) { return getLLVMType(arg); });
+    vector_iterate<types::Type*, llvm::Type*>(fn->getArgs(), [&](types::Type * arg) { return getLLVMType(arg); });
   auto ret = getLLVMType(fn->getRetType());
   if (func && func->isAnon()) {
     argTypes.insert(argTypes.begin(), getLambdaContextType()->getPointerTo());
@@ -125,7 +125,7 @@ llvm::Type* LLVMBuilder::createEnumFieldType(types::EnumType* ty, std::string fi
   auto name = _SN_ENUM_PREFIX + ty->getMangledName() + "__" + field;
   if (enumTypes.find(name) != enumTypes.end()) return enumTypes.find(name)->second;
   auto enumField = *std::find_if(ty->getFields().begin(), ty->getFields().end(), [&](auto f) {
-                                 return f.name == field;
+                                   return f.name == field;
                                  });
   auto dataLayout = module->getDataLayout();
   auto enumSize = dataLayout.getStructLayout((llvm::StructType*)getLLVMType(ty))->getSizeInBits();

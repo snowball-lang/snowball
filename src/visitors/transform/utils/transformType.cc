@@ -36,9 +36,9 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     auto baseType = transformType(pointer->getBaseType());
     auto x = baseType->getPointerTo(pointer->isMutable());
     auto typeRef =
-    TR(pointer->isMutable() ? _SNOWBALL_MUT_PTR : _SNOWBALL_CONST_PTR,
-       nullptr,
-       std::vector<Expression::TypeRef*> {baseType->toRef()});
+      TR(pointer->isMutable() ? _SNOWBALL_MUT_PTR : _SNOWBALL_CONST_PTR,
+         nullptr,
+         std::vector<Expression::TypeRef*> {baseType->toRef()});
     transformType(typeRef);
     return x;
   } else if (ty->isTypeDecl()) {
@@ -119,7 +119,7 @@ types::Type* Transformer::transformType(Expression::TypeRef* ty) {
     } else if (type.has_value()) {
       if (auto x = utils::cast<types::BaseType>(type.value()); x && x->isPrivate() && !canPrivate) {
         E<TYPE_ERROR>(
-        ty,
+          ty,
         FMT("Cant use '%s' as a type!", name.c_str()), {
           .info = "This is a private type and you can't access it from here!",
           .note = "Private types can only be accessed from inside the "
@@ -165,10 +165,10 @@ continueTypeFetch:
   }
   if (existsWithGenerics) {
     E<TYPE_ERROR>(
-    ty,
-    FMT("Type '%s' requires to have no template "
-        "parameters but at least one has been given?",
-        name.c_str())
+      ty,
+      FMT("Type '%s' requires to have no template "
+          "parameters but at least one has been given?",
+          name.c_str())
     );
   }
   if (returnedType == nullptr) {

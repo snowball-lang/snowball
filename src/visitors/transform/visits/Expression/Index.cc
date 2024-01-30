@@ -12,20 +12,20 @@ SN_TRANSFORMER_VISIT(Expression::Index) {
   auto[value, type, functions, overloads, mod, canBePrivate] = r;
   auto name = p_node->getIdentifier()->getNiceName();
   auto checkIfContextEqual = [&p_node = p_node, name = name, canBePrivate = canBePrivate]<typename T>(T item) -> T {
-  if ((!canBePrivate) && item->isPrivate()) {
-  E<TYPE_ERROR>(
-  p_node->getDBGInfo(),
-  FMT("Variable '%s' is a private member and "
-      "it cant be accessed from this context!",
-      name.c_str()), {
-  .info = "did you mean to use a public member?",
-  .note = "private members can only be accessed from the same class or struct",
-  .help = "try making the member public",
-  .tail = EI<>(item->getDBGInfo(), "", {.info = "this is the private member declaration"})
-  }
-  );
-  }
-  return item;
+    if ((!canBePrivate) && item->isPrivate()) {
+      E<TYPE_ERROR>(
+        p_node->getDBGInfo(),
+        FMT("Variable '%s' is a private member and "
+            "it cant be accessed from this context!",
+            name.c_str()), {
+          .info = "did you mean to use a public member?",
+          .note = "private members can only be accessed from the same class or struct",
+          .help = "try making the member public",
+          .tail = EI<>(item->getDBGInfo(), "", {.info = "this is the private member declaration"})
+        }
+      );
+    }
+    return item;
   };
 if (value) {
     // TODO: it should not be getValue, it should have it's own
@@ -74,24 +74,24 @@ if (value) {
     // "getFromIdentifier" of the module
     if ((p_node->isStatic && (!function->isStatic())) && (!inModule)) {
       E<TYPE_ERROR>(
-      p_node,
-      FMT("Cant access class method '%s' "
-          "that's not static as if it was one!",
-          function->getNiceName().c_str())
+        p_node,
+        FMT("Cant access class method '%s' "
+            "that's not static as if it was one!",
+            function->getNiceName().c_str())
       );
     } else if ((!function->isStatic()) && (!inModule)) {
       E<TYPE_ERROR>(
-      p_node,
-      "Reference to non-static member function must be "
-      "called.",
+        p_node,
+        "Reference to non-static member function must be "
+        "called.",
       {.info = "did you mean to call it with no arguments?"}
       );
     } else if ((!p_node->isStatic) && function->isStatic()) {
       E<TYPE_ERROR>(
-      p_node,
-      FMT("Cant access static class method '%s' "
-          "as with a non-static index expression!",
-          function->getNiceName().c_str())
+        p_node,
+        FMT("Cant access static class method '%s' "
+            "as with a non-static index expression!",
+            function->getNiceName().c_str())
       );
     }
     this->value = getBuilder().createValueExtract(p_node->getDBGInfo(), function);

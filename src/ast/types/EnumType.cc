@@ -17,10 +17,10 @@ namespace snowball {
 namespace types {
 
 EnumType::EnumType(
-const std::string& name,
-const std::string uuid,
-std::shared_ptr<ir::Module> module,
-Privacy::Status privacy
+  const std::string& name,
+  const std::string uuid,
+  std::shared_ptr<ir::Module> module,
+  Privacy::Status privacy
 ) : AcceptorExtend(Kind::ENUM, name) {
   setGenerics(generics);
   setPrivacy(privacy);
@@ -28,19 +28,19 @@ Privacy::Status privacy
   unsafeSetModule(module);
 }
 EnumType::EnumField::EnumField(
-const std::string& name,
-std::vector<types::Type*> types)
+  const std::string& name,
+  std::vector<types::Type*> types)
   : types(types), name(name) { }
 bool EnumType::is(EnumType* ty) const {
   auto otherArgs = ty->getGenerics();
   bool genericSizeEqual = otherArgs.size() == generics.size();
   bool argumentsEqual = genericSizeEqual ? std::all_of(
-                        otherArgs.begin(),
-                        otherArgs.end(),
-                        [&, idx = 0](Type * i) mutable {
-                        idx++;
-                        return generics.at(idx - 1)->is(i);
-                        }
+                          otherArgs.begin(),
+                          otherArgs.end(),
+                          [&, idx = 0](Type * i) mutable {
+                            idx++;
+                            return generics.at(idx - 1)->is(i);
+                          }
                         ) :
                         false;
   return (ty->getUUID() == uuid) && argumentsEqual;

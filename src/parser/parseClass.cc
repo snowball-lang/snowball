@@ -20,8 +20,8 @@ Syntax::Statement::DefinedTypeDef* Parser::parseClass() {
     isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
   }
   auto attributes = verifyAttributes([&](std::string attr) {
-                                     if (attr == "__internal__") {
-                                     return Attributes::BUILTIN;
+                                       if (attr == "__internal__") {
+                                         return Attributes::BUILTIN;
   } else if (attr == "no_constructor") {
     return Attributes::NO_CONSTRUCTOR;
   }
@@ -77,11 +77,11 @@ return Attributes::INVALID;
   bool inPrivateScope = true;
   bool hasConstructor = false;
   auto cls = Syntax::N<Syntax::Statement::DefinedTypeDef>(
-             name,
-             parentClass,
-             Syntax::Statement::Privacy::fromInt(isPublic),
-             isInterface ? Syntax::Statement::DefinedTypeDef::Type::INTERFACE :
-             Syntax::Statement::DefinedTypeDef::Type::CLASS
+               name,
+               parentClass,
+               Syntax::Statement::Privacy::fromInt(isPublic),
+               isInterface ? Syntax::Statement::DefinedTypeDef::Type::INTERFACE :
+               Syntax::Statement::DefinedTypeDef::Type::CLASS
              );
   cls->setImpls(impls);
   if (hasGenerics)
@@ -281,7 +281,7 @@ return Attributes::INVALID;
       }
       default: {
         createError<SYNTAX_ERROR>(
-        FMT("Unexpected token ('%s') found while parsing class body", m_current.to_string().c_str())
+          FMT("Unexpected token ('%s') found while parsing class body", m_current.to_string().c_str())
         );
       }
     }

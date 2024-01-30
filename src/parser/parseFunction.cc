@@ -79,9 +79,9 @@ fetch_attrs:
   auto dbg = m_current.get_pos();
   auto width = 0;
   auto attributes = verifyAttributes([&](std::string attr) {
-                                     if (attr == "llvm_function") {
-                                     isLLVMFunction = true;
-                                     return Attributes::LLVM_FUNC;
+                                       if (attr == "llvm_function") {
+                                         isLLVMFunction = true;
+                                         return Attributes::LLVM_FUNC;
   } else if (attr == "internal_linkage") {
     return Attributes::INTERNAL_LINKAGE;
   } else if (attr == "external_linkage") {
@@ -264,7 +264,7 @@ return Attributes::INVALID;
 snowballInvalidDefaultOperatorCase:
       default: {
         createError<SYNTAX_ERROR>(
-        FMT("Expected a valid operator type but instead got '%s'", m_current.to_string().c_str())
+          FMT("Expected a valid operator type but instead got '%s'", m_current.to_string().c_str())
         );
       }
     }
@@ -411,7 +411,7 @@ snowballInvalidDefaultOperatorCase:
             break;
           } else {
             createError<SYNTAX_ERROR>(
-            FMT("Expected a ',' or a ')' but found '%s' instead", m_current.to_string().c_str())
+              FMT("Expected a ',' or a ')' but found '%s' instead", m_current.to_string().c_str())
             );
           }
         }

@@ -182,9 +182,9 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
           assert_tok<TokenType::IDENTIFIER>("an identifier");
           auto index = parseIdentifier();
           auto dbgInfo = new DBGSourceInfo(
-          m_source_info,
-          expr->getDBGInfo()->pos,
-          expr->getDBGInfo()->width + index->getDBGInfo()->width + 2
+            m_source_info,
+            expr->getDBGInfo()->pos,
+            expr->getDBGInfo()->width + index->getDBGInfo()->width + 2
           );
           expr = Syntax::N<Syntax::Expression::Index>(expr, index, isStatic);
           expr->setDBGInfo(dbgInfo);
@@ -195,9 +195,9 @@ Syntax::Expression::Base* Parser::parseExpr(bool allowAssign) {
         auto ty = parseType();
         prev();
         auto dbgInfo = new DBGSourceInfo(
-        m_source_info,
-        expr->getDBGInfo()->pos,
-        ty->getDBGInfo()->pos.second - expr->getDBGInfo()->pos.second + ty->getDBGInfo()->width
+          m_source_info,
+          expr->getDBGInfo()->pos,
+          ty->getDBGInfo()->pos.second - expr->getDBGInfo()->pos.second + ty->getDBGInfo()->width
         );
         expr = Syntax::N<Syntax::Expression::Cast>(expr, ty);
         expr->setDBGInfo(dbgInfo);
@@ -264,7 +264,7 @@ case TokenType::m_tk: { \
   if (auto x = utils::cast<Syntax::Expression::BinaryOp>(expr)) {
     if (!allowAssign && Syntax::Expression::BinaryOp::is_assignment(x)) {
       createError<SYNTAX_ERROR>(
-      expr->getDBGInfo()->pos, "assignment is not allowed inside expression.", {}, x->to_string().size()
+        expr->getDBGInfo()->pos, "assignment is not allowed inside expression.", {}, x->to_string().size()
       );
     }
   }

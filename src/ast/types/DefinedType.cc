@@ -17,15 +17,15 @@ namespace snowball {
 namespace types {
 
 DefinedType::DefinedType(
-const std::string& name,
-const std::string uuid,
-std::shared_ptr<ir::Module> module,
-Syntax::Statement::DefinedTypeDef* ast,
-std::vector<ClassField*> fields,
-std::vector<std::shared_ptr<ir::VariableDeclaration>> staticFields,
-DefinedType* parent,
-std::vector<Type*> generics,
-bool isStruct
+  const std::string& name,
+  const std::string uuid,
+  std::shared_ptr<ir::Module> module,
+  Syntax::Statement::DefinedTypeDef* ast,
+  std::vector<ClassField*> fields,
+  std::vector<std::shared_ptr<ir::VariableDeclaration>> staticFields,
+  DefinedType* parent,
+  std::vector<Type*> generics,
+  bool isStruct
 )
   : AcceptorExtend(Kind::CLASS, name), parent(parent), ast(ast), fields(fields), _struct(isStruct),
     staticFields(staticFields) {
@@ -36,7 +36,7 @@ bool isStruct
   this->_mutable = true; // Structs are always mutable
 }
 DefinedType::ClassField::ClassField(
-const std::string& name, Type* type, Privacy privacy, Syntax::Expression::Base* initializedValue, bool isMutable
+  const std::string& name, Type* type, Privacy privacy, Syntax::Expression::Base* initializedValue, bool isMutable
 )
   : name(name)
   , type(type)
@@ -49,12 +49,12 @@ bool DefinedType::is(DefinedType* ty) const {
   auto otherArgs = ty->getGenerics();
   bool genericSizeEqual = otherArgs.size() == generics.size();
   bool argumentsEqual = genericSizeEqual ? std::all_of(
-                        otherArgs.begin(),
-                        otherArgs.end(),
-                        [&, idx = 0](Type * i) mutable {
-                        idx++;
-                        return generics.at(idx - 1)->is(i);
-                        }
+                          otherArgs.begin(),
+                          otherArgs.end(),
+                          [&, idx = 0](Type * i) mutable {
+                            idx++;
+                            return generics.at(idx - 1)->is(i);
+                          }
                         ) :
                         false;
   return (ty->getUUID() == uuid) && argumentsEqual;

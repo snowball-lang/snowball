@@ -8,7 +8,7 @@ using namespace utils;
 namespace Syntax {
 
 types::Type* Transformer::transformTypeAlias(
-const std::string& uuid, cacheComponents::Types::TypeStore& base, Expression::TypeRef* typeRef
+  const std::string& uuid, cacheComponents::Types::TypeStore& base, Expression::TypeRef* typeRef
 ) {
   auto ty = utils::cast<Statement::TypeAlias>(base.type);
   assert(ty);
@@ -16,25 +16,25 @@ const std::string& uuid, cacheComponents::Types::TypeStore& base, Expression::Ty
   // context. Note that the default class generics WILL be generated
   // inside the class context.
   auto generics = typeRef != nullptr ? vector_iterate<Expression::TypeRef*, types::Type*>(
-                  typeRef->getGenerics(), [&](auto t) { return transformType(t); }
+                    typeRef->getGenerics(), [&](auto t) { return transformType(t); }
                   ) :
                   std::vector<types::Type*> {};
   // TODO: check if typeRef generics match class generics
   types::Type* transformedType;
   ctx->withState(base.state, [&]() {
-                 ctx->withScope([&] {
-                                std::vector<types::Type*> defaultGenerics;
-                                int defaultGenericStart = 0;
-                                auto classGenerics = ty->getGenerics();
-                                for (size_t genericCount = 0; genericCount < generics.size(); genericCount++) {
-                                auto generic = classGenerics.at(genericCount);
-                                auto generatedGeneric = generics.at(genericCount);
-                                auto item = std::make_shared<transform::Item>(generatedGeneric);
-                                // TODO:
-                                // item->setDBGInfo(generic->getDBGInfo());
-                                ctx->addItem(generic->getName(), item);
-                                executeGenericTests(generic->getWhereClause(), generatedGeneric, generic->getName());
-                                }
+                   ctx->withScope([&] {
+                                    std::vector<types::Type*> defaultGenerics;
+                                    int defaultGenericStart = 0;
+                                    auto classGenerics = ty->getGenerics();
+                                    for (size_t genericCount = 0; genericCount < generics.size(); genericCount++) {
+                                      auto generic = classGenerics.at(genericCount);
+                                      auto generatedGeneric = generics.at(genericCount);
+                                      auto item = std::make_shared<transform::Item>(generatedGeneric);
+                                      // TODO:
+                                      // item->setDBGInfo(generic->getDBGInfo());
+                                      ctx->addItem(generic->getName(), item);
+                                      executeGenericTests(generic->getWhereClause(), generatedGeneric, generic->getName());
+                                    }
 
   if (classGenerics.size() > generics.size()) {
     auto s = generics.size();
@@ -74,7 +74,7 @@ const std::string& uuid, cacheComponents::Types::TypeStore& base, Expression::Ty
                      transformedType = alias;
                      // auto item = std::make_shared<transform::Item>(alias);
                      // ctx->cache->setTransformedType(uuid, item);
-                                });
+                                  });
                  });
   return transformedType;
 }

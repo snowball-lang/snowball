@@ -39,11 +39,11 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
    */
   struct ClassField : public Syntax::Statement::Privacy, public DBGObject {
     explicit ClassField(
-    const std::string& name,
-    Type* type,
-    Privacy privacy = PRIVATE,
-    Syntax::Expression::Base* initializedValue = nullptr,
-    bool isMutable = false
+      const std::string& name,
+      Type* type,
+      Privacy privacy = PRIVATE,
+      Syntax::Expression::Base* initializedValue = nullptr,
+      bool isMutable = false
     );
     const std::string name;
     Type* type;
@@ -70,15 +70,15 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
 
  public:
   DefinedType(
-  const std::string& name,
-  const std::string uuid,
-  std::shared_ptr<ir::Module> module,
-  Syntax::Statement::DefinedTypeDef* ast = nullptr,
-  std::vector<ClassField*> fields = {},
-  std::vector<std::shared_ptr<ir::VariableDeclaration>> staticFields = {},
-  DefinedType* parent = nullptr,
-  std::vector<Type*> generics = {},
-  bool isStruct = false
+    const std::string& name,
+    const std::string uuid,
+    std::shared_ptr<ir::Module> module,
+    Syntax::Statement::DefinedTypeDef* ast = nullptr,
+    std::vector<ClassField*> fields = {},
+    std::vector<std::shared_ptr<ir::VariableDeclaration>> staticFields = {},
+    DefinedType* parent = nullptr,
+    std::vector<Type*> generics = {},
+    bool isStruct = false
   );
   DefinedType(const DefinedType&) = default;
   DefinedType& operator=(DefinedType const&) = delete;

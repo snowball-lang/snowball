@@ -17,7 +17,7 @@ Syntax::Statement::EnumTypeDef* Parser::parseEnum() {
     isPublic = is<TokenType::KWORD_PUBLIC>(peek(-3, true));
   }
   auto attributes = verifyAttributes([&](std::string attr) {
-                                     return Attributes::INVALID;
+                                       return Attributes::INVALID;
                                      });
   auto name = assert_tok<TokenType::IDENTIFIER>("enum identifier").to_string();
   auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
@@ -33,7 +33,7 @@ Syntax::Statement::EnumTypeDef* Parser::parseEnum() {
   assert_tok<TokenType::BRACKET_LCURLY>("'{'");
   next();
   auto cls = Syntax::N<Syntax::Statement::EnumTypeDef>(
-             name, Syntax::Statement::Privacy::fromInt(isPublic)
+               name, Syntax::Statement::Privacy::fromInt(isPublic)
              );
   if (hasGenerics)
     cls->setGenerics(generics);
@@ -71,7 +71,7 @@ Syntax::Statement::EnumTypeDef* Parser::parseEnum() {
       }
       default: {
         createError<SYNTAX_ERROR>(
-        FMT("Expected a valid member declaration but found '%s'", m_current.to_string().c_str())
+          FMT("Expected a valid member declaration but found '%s'", m_current.to_string().c_str())
         );
         break;
       }

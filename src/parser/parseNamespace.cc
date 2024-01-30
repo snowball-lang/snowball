@@ -10,7 +10,7 @@ Syntax::Statement::Namespace* Parser::parseNamespace() {
   auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
   auto comment = parseDocstring(m_current.getComment());
   auto attributes = verifyAttributes([&](std::string attr) {
-                                     return Attributes::INVALID;
+                                       return Attributes::INVALID;
                                      });
   next();
   auto name = assert_tok<TokenType::IDENTIFIER>("an identifier for namespace").to_string();

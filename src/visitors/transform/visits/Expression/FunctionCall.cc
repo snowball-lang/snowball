@@ -11,13 +11,13 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
   auto callBackUp = ctx->latestCall;
   ctx->latestCall = p_node;
   auto[argValues, argTypes] =
-  utils::vectors_iterate<Syntax::Expression::Base*, std::shared_ptr<ir::Value>, types::Type*>(
-  p_node->getArguments(),
-  [&](Syntax::Expression::Base * a) -> std::pair<std::shared_ptr<ir::Value>, types::Type*> {
-  auto val = trans(a);
-  return {val, val->getType()};
-  }
-  );
+    utils::vectors_iterate<Syntax::Expression::Base*, std::shared_ptr<ir::Value>, types::Type*>(
+      p_node->getArguments(),
+      [&](Syntax::Expression::Base * a) -> std::pair<std::shared_ptr<ir::Value>, types::Type*> {
+        auto val = trans(a);
+        return {val, val->getType()};
+      }
+    );
   auto callee = p_node->getCallee();
   std::shared_ptr<ir::Value> fn = nullptr;
   if (auto x = utils::cast<Expression::Identifier>(callee)) {
@@ -66,17 +66,17 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
       // "getFromIdentifier" of the module
       if ((x->isStatic && (!c->isStatic())) && (!inModule)) {
         E<TYPE_ERROR>(
-        p_node,
-        FMT("Cant access class method '%s' "
-            "that's not static as if it was one!",
-            c->getNiceName().c_str())
+          p_node,
+          FMT("Cant access class method '%s' "
+              "that's not static as if it was one!",
+              c->getNiceName().c_str())
         );
       } else if ((!x->isStatic) && c->isStatic()) {
         E<TYPE_ERROR>(
-        p_node,
-        FMT("Cant access static class method '%s' "
-            "as with a non-static index expression!",
-            c->getNiceName().c_str())
+          p_node,
+          FMT("Cant access static class method '%s' "
+              "as with a non-static index expression!",
+              c->getNiceName().c_str())
         );
       }
       if (b.has_value()) {
@@ -163,34 +163,34 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     if (((int)argTypes.size() - func->hasParent()) < (int)(args.size() - func->hasParent())) {
       ctx->withState(ctx->cache->getFunctionState(func->getId()),
                      [&argTypes = argTypes, this, call, args, &argValues = argValues, p_node, func]() {
-                     // add default arguments
-                     auto shouldAdd = func->isConstructor();
-                     for (size_t i = argTypes.size() == 0 ? 0 : (argTypes.size() + shouldAdd); i < args.size(); i++) {
-                     auto arg = &args.at(i);
-                     if (arg->second->hasDefaultValue()) {
-                       auto defaultVal = arg->second->getDefaultValue();
-                       auto backSrcInfo = defaultVal->getDBGInfo();
-                       defaultVal->setDBGInfo(p_node->getDBGInfo());
-                       auto val = trans(defaultVal);
-                       defaultVal->setDBGInfo(backSrcInfo);
-                       auto ty = val->getType();
-                       argTypes.push_back(arg->second->getType());
-                       if (!arg->second->getType()->is(ty)) {
-                         if (auto cast = tryCast(val, arg->second->getType())) {
-                           argValues.push_back(cast);
-                           continue;
-                           }
-                           E<TYPE_ERROR>(arg->second,
-                                         FMT("Function's default value does not match argument ('%s') type!",
+                       // add default arguments
+                       auto shouldAdd = func->isConstructor();
+                       for (size_t i = argTypes.size() == 0 ? 0 : (argTypes.size() + shouldAdd); i < args.size(); i++) {
+                         auto arg = &args.at(i);
+                         if (arg->second->hasDefaultValue()) {
+                             auto defaultVal = arg->second->getDefaultValue();
+                             auto backSrcInfo = defaultVal->getDBGInfo();
+                             defaultVal->setDBGInfo(p_node->getDBGInfo());
+                             auto val = trans(defaultVal);
+                             defaultVal->setDBGInfo(backSrcInfo);
+                             auto ty = val->getType();
+                             argTypes.push_back(arg->second->getType());
+                             if (!arg->second->getType()->is(ty)) {
+                                 if (auto cast = tryCast(val, arg->second->getType())) {
+                                     argValues.push_back(cast);
+                                     continue;
+                                   }
+                                   E<TYPE_ERROR>(arg->second,
+                                                 FMT("Function's default value does not match argument ('%s') type!",
             arg->first.c_str()), {
             .info = "This is the default value that's causing the error",
             .help = "Maybe try to convert a cast to the correct type?"
           });
     assert(false && "TODO: cast default argument");
-                   }
+                         }
     argValues.push_back(val);
              continue;
-                   }
+                       }
     if (arg->first == "self") {
       // We skip the "self" argument
       // inside a method (or constructor)
@@ -202,7 +202,7 @@ SN_TRANSFORMER_VISIT(Expression::FunctionCall) {
     E<TYPE_ERROR>(p_node,
                   FMT("Could not get value for argument '%s'!",
                       arg->first.c_str()));
-                   }
+                     }
                    });
     }
     // clang-format on

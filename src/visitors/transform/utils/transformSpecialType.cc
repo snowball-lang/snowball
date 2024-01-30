@@ -33,11 +33,11 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
     if (bitsString.empty() || !std::isdigit(bitsString[0])) return nullptr;
     if (!std::all_of(bitsString.begin(), bitsString.end(), ::isdigit)) {
       E<TYPE_ERROR>(
-      ty,
-      FMT("Integer type '%s' is expected to be in the form of 'i[N]' where N is a number but "
-          "found '%s' instead.",
-          n.c_str(),
-          bitsString.c_str())
+        ty,
+        FMT("Integer type '%s' is expected to be in the form of 'i[N]' where N is a number but "
+            "found '%s' instead.",
+            n.c_str(),
+            bitsString.c_str())
       );
     }
     auto bits = std::stoi(bitsString); // TODO: check if it's a digit
@@ -45,18 +45,18 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
     // we asume it's greater than 0 a negative number would end in a syntax error
     if (bits < 1 || bits > SN_INT_MAX_POWER) {
       E<TYPE_ERROR>(
-      ty,
-      FMT("Integer type '%s' is expected to be in the form of 'i[N]' where N is a number "
-          "between 1 and 2^23 (8,388,608) but found '%s' instead.",
-          n.c_str(),
-          bitsString.c_str())
+        ty,
+        FMT("Integer type '%s' is expected to be in the form of 'i[N]' where N is a number "
+            "between 1 and 2^23 (8,388,608) but found '%s' instead.",
+            n.c_str(),
+            bitsString.c_str())
       );
     }
     switch (bits) {
       case 1:
         E<TYPE_ERROR>(
-        ty,
-        FMT("If you want a boolean type, use 'bool' instead of 'i1'!"),
+          ty,
+          FMT("If you want a boolean type, use 'bool' instead of 'i1'!"),
         {.note = FMT("This is used used for consistency with other languages.")}
         );
         break;
@@ -69,22 +69,22 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
     if (bitsString.empty() || !std::isdigit(bitsString[0])) return nullptr;
     if (!std::all_of(bitsString.begin(), bitsString.end(), ::isdigit)) {
       E<TYPE_ERROR>(
-      ty,
-      FMT("Float type '%s' is expected to be in the form of 'f[N]' where N is a number but "
-          "found '%s' instead.",
-          n.c_str(),
-          bitsString.c_str())
+        ty,
+        FMT("Float type '%s' is expected to be in the form of 'f[N]' where N is a number but "
+            "found '%s' instead.",
+            n.c_str(),
+            bitsString.c_str())
       );
     }
     auto bits = std::stoi(bitsString); // TODO: check if it's a digit
     // The number of bits must be 16, 32 or 64
     if (bits != 16 && bits != 32 && bits != 64) {
       E<TYPE_ERROR>(
-      ty,
-      FMT("Float type '%s' is expected to be in the form of 'f[N]' where N is 16, 32 or 64 "
-          "but found '%s' instead.",
-          n.c_str(),
-          bitsString.c_str())
+        ty,
+        FMT("Float type '%s' is expected to be in the form of 'f[N]' where N is 16, 32 or 64 "
+            "but found '%s' instead.",
+            n.c_str(),
+            bitsString.c_str())
       );
     }
     return ctx->getPrimitiveNumberType<types::FloatType>(bits);
@@ -103,11 +103,11 @@ types::Type* Transformer::transformSpecialType(Expression::TypeRef* ty) {
     auto fnType = getFunctionType(type);
     if (fnType) { return fnType->getRetType(); }
     E<TYPE_ERROR>(
-    ty,
-    FMT("Type '%i' expected first generic parameter to "
-        "be a function but it found type '%s'.",
-        FUNCTION_RETURN_STYPE.c_str(),
-        type->getPrettyName().c_str())
+      ty,
+      FMT("Type '%i' expected first generic parameter to "
+          "be a function but it found type '%s'.",
+          FUNCTION_RETURN_STYPE.c_str(),
+          type->getPrettyName().c_str())
     );
   }
   return nullptr;

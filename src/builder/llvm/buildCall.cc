@@ -49,8 +49,8 @@ void LLVMBuilder::visit(ir::Call* call) {
   auto fnType = Syntax::Transformer::getFunctionType(calleeValue->getType());
   auto asFunction = utils::dyn_cast<ir::Func>(calleeValue);
   auto isLambda = !utils::is<types::FunctionType>(calleeValue->getType()) ? utils::startsWith(
-                  utils::cast<types::DefinedType>(calleeValue->getType())->getUUID(),
-                  services::ImportService::CORE_UUID + "std.Function") : false;
+                    utils::cast<types::DefinedType>(calleeValue->getType())->getUUID(),
+                    services::ImportService::CORE_UUID + "std.Function") : false;
   auto calleeType = getLLVMFunctionType(fnType, asFunction.get());
   llvm::Value* llvmCall = nullptr;
   llvm::Value* allocatedValue = nullptr;
@@ -73,7 +73,7 @@ void LLVMBuilder::visit(ir::Call* call) {
   }
   auto callee = build(calleeValue.get());
   auto args = utils::vector_iterate<std::shared_ptr<ir::Value>, llvm::Value*>(
-              call->getArguments(), [this](std::shared_ptr<ir::Value> arg) { return expr(arg.get()); }
+                call->getArguments(), [this](std::shared_ptr<ir::Value> arg) { return expr(arg.get()); }
               );
   bool doNotAddAnonContext = false;
   if (isLambda && asFunction && asFunction->usesParentScope()) {
@@ -130,7 +130,7 @@ void LLVMBuilder::visit(ir::Call* call) {
     // vtable = { [size x ptr] } { [0] = fn1, [1] = fn2, ... } }
     auto vtable = builder->CreateLoad(vtableType->getPointerTo(), parentValue);
     auto fn = builder->CreateLoad(
-              calleeType->getPointerTo(), builder->CreateConstInBoundsGEP1_32(vtableType->getPointerTo(), vtable, index)
+                calleeType->getPointerTo(), builder->CreateConstInBoundsGEP1_32(vtableType->getPointerTo(), vtable, index)
               );
     builder->CreateAssumption(builder->CreateIsNotNull(fn));
     setDebugInfoLoc(call);

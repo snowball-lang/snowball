@@ -21,14 +21,14 @@ SN_TRANSFORMER_VISIT(Expression::ConstantValue) {
           auto size = getBuilder().createNumberValue(p_node->getDBGInfo(), str.size());
           size->setType(ctx->getUIntType(64));
           auto index = N<Expression::Index>(
-                       (utils::startsWith(ctx->module->getUniqueName(), (ctx->imports->CORE_UUID + "internal"))
-                        || utils::startsWith(ctx->module->getUniqueName(), (ctx->imports->CORE_UUID + "std"))) ?
-                       (Expression::Base*) N<Expression::Identifier>("String") :
-                       (Expression::Base*) N<Expression::Index>(
-                       N<Expression::Identifier>("std"), N<Expression::Identifier>("String"), true
-                       ),
-                       N<Expression::Identifier>("from"),
-                       true
+                         (utils::startsWith(ctx->module->getUniqueName(), (ctx->imports->CORE_UUID + "internal"))
+                          || utils::startsWith(ctx->module->getUniqueName(), (ctx->imports->CORE_UUID + "std"))) ?
+                         (Expression::Base*) N<Expression::Identifier>("String") :
+                         (Expression::Base*) N<Expression::Index>(
+                           N<Expression::Identifier>("std"), N<Expression::Identifier>("String"), true
+                         ),
+                         N<Expression::Identifier>("from"),
+                         true
                        );
           index->setDBGInfo(p_node->getDBGInfo());
           index->getBase()->setDBGInfo(p_node->getDBGInfo());

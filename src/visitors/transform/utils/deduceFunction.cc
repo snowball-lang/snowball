@@ -17,7 +17,7 @@ bool genericMatch(Expression::Param* generic, Expression::TypeRef* arg) {
   if (!exists && arg->getGenerics().size() > 0) {
     auto generics = arg->getGenerics();
     exists = std::any_of(generics.begin(), generics.end(), [&](auto & g) {
-                         return genericMatch(generic, g);
+                           return genericMatch(generic, g);
                          });
   }
   // ----- FOR A LONG DISTANCED FUTURE: AUTO DEDUCE FUNCTION TYPES
@@ -104,11 +104,11 @@ std::pair<types::Type*, int> matchedGeneric(Expression::Param* generic, types::T
 } // namespace
 
 std::pair<std::optional<types::Type*>, int> Transformer::deduceFunctionType(
-Expression::Param* generic,
-const std::vector<Expression::Param*>& fnArgs,
-const std::vector<types::Type*>& arguments,
-const std::vector<types::Type*>& generics,
-const std::vector<types::Type*>& deducedTypes
+  Expression::Param* generic,
+  const std::vector<Expression::Param*>& fnArgs,
+  const std::vector<types::Type*>& arguments,
+  const std::vector<types::Type*>& generics,
+  const std::vector<types::Type*>& deducedTypes
 ) {
   // I'm pretty sure this function works, but I'm a programmer, not a
   // magician.
@@ -120,7 +120,7 @@ const std::vector<types::Type*>& deducedTypes
   }
   // Check if the generic is used inside the variables
   const auto it = std::find_if(fnArgs.begin(), fnArgs.end(), [&](const auto & arg) {
-                               return genericMatch(generic, arg->getType());
+                                 return genericMatch(generic, arg->getType());
                                });
   if (it != fnArgs.end()) {
     const auto argIdx = std::distance(fnArgs.begin(), it);
@@ -133,9 +133,9 @@ const std::vector<types::Type*>& deducedTypes
 }
 
 std::tuple<std::vector<types::Type*>, std::string, int> Transformer::deduceFunction(
-cacheComponents::Functions::FunctionStore s,
-const std::vector<types::Type*>& arguments,
-const std::vector<types::Type*>& generics
+  cacheComponents::Functions::FunctionStore s,
+  const std::vector<types::Type*>& arguments,
+  const std::vector<types::Type*>& generics
 ) {
   auto function = s.function;
   auto fnArgs = function->getArgs();

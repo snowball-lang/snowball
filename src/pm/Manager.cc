@@ -30,18 +30,18 @@ int Manager::runAsMain() {
   if (package["dependencies"].is_table()) {
     std::vector<Package> packagesInfo;
     packages->for_each([&](auto&& key, auto&& value) {
-                       auto repo = (std::string)key.str();
-                       auto packageData = package["dependencies"][repo];
-                       Package packageInfo;
-                       packageInfo.name = repo;
-                       packageInfo.version = packageData["version"].value_or<std::string>("latest");
-                       packageInfo.dependencies = {};
+                         auto repo = (std::string)key.str();
+                         auto packageData = package["dependencies"][repo];
+                         Package packageInfo;
+                         packageInfo.name = repo;
+                         packageInfo.version = packageData["version"].value_or<std::string>("latest");
+                         packageInfo.dependencies = {};
     if (packageData["dependencies"].is_table()) {
     packageData["dependencies"].as_table()->for_each([&](auto&& key, auto&& value) {
-          Package dependency;
-          dependency.name = (std::string)key.str();
-          dependency.version = value.as_table()->get("version")->as_string()->get();
-          packageInfo.dependencies.push_back(dependency);
+            Package dependency;
+            dependency.name = (std::string)key.str();
+            dependency.version = value.as_table()->get("version")->as_string()->get();
+            packageInfo.dependencies.push_back(dependency);
           });
     }
     packagesInfo.push_back(packageInfo);
@@ -132,10 +132,10 @@ int Manager::install(Package p_package) {
 
 namespace {
 std::size_t writeCallback(
-const char* in,
-std::size_t size,
-std::size_t num,
-std::string* out) {
+  const char* in,
+  std::size_t size,
+  std::size_t num,
+  std::string* out) {
   const std::size_t totalBytes(size * num);
   out->append(in, totalBytes);
   return totalBytes;

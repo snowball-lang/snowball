@@ -95,7 +95,7 @@ SN_TRANSFORMER_VISIT(Statement::FunctionDef) {
       }
       if (std::find(ctx->exported.begin(), ctx->exported.end(), name) != ctx->exported.end()) {
         E<VARIABLE_ERROR>(
-        p_node->getDBGInfo(),
+          p_node->getDBGInfo(),
         FMT("Function '%s' is already exported as unmangled!", exportedName.c_str()), {
           .info = "This function name is already exported as unmangled.",
           .note = "This symbols is exported on another location with the "

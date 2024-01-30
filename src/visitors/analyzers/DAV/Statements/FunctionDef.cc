@@ -11,7 +11,7 @@ SN_DEFINITE_ASSIGMENT_VISIT(Statement::FunctionDef) {
     // Scope between parent and body scope for things like "self",
     // arguments, etc...
     withScope([&] {
-              for (auto a : p_node->getArgs()) { this->scopes.front().insert({a->getName(), Initialized}); }
+                for (auto a : p_node->getArgs()) { this->scopes.front().insert({a->getName(), Initialized}); }
 
     if (this->insideClass) {
       this->scopes.front().insert({"self", Initialized});
@@ -35,9 +35,9 @@ SN_DEFINITE_ASSIGMENT_VISIT(Statement::FunctionDef) {
           // TODO: add highlight of variable from
           // "insideClass"
           E<VARIABLE_ERROR>(
-          p_node->getDBGInfo(),
-          FMT("Class variable '%s' has not "
-              "been definitivly assigned!",
+            p_node->getDBGInfo(),
+            FMT("Class variable '%s' has not "
+                "been definitivly assigned!",
           name.c_str()), {
             .info =
             FMT("The constructor does not define "

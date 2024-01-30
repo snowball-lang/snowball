@@ -106,7 +106,7 @@ fs::path get_lib_folder() {
   bool filepathExists = fs::is_directory(full_path);
   if (!filepathExists) {
     throw snowball::SNError(
-    snowball::Error::IO_ERROR, FMT("Could not find system libraries! (%s)", full_path.string().c_str())
+      snowball::Error::IO_ERROR, FMT("Could not find system libraries! (%s)", full_path.string().c_str())
     );
   }
   return full_path;

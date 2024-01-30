@@ -267,15 +267,15 @@ CrashHandlerException(EXCEPTION_POINTERS* ep) {
       n++;
     }
     if (!StackWalk64(
-        image_type,
-        process,
-        hThread,
-        &frame,
-        context,
-        nullptr,
-        SymFunctionTableAccess64,
-        SymGetModuleBase64,
-        nullptr
+          image_type,
+          process,
+          hThread,
+          &frame,
+          context,
+          nullptr,
+          SymFunctionTableAccess64,
+          SymGetModuleBase64,
+          nullptr
         ))
       break;
   } while (frame.AddrReturn.Offset != 0 && n < 256);
@@ -323,13 +323,13 @@ std::string _get_exec_path() {
 }
 
 int _execute(
-const std::string& p_path,
-const std::vector<std::string>& p_arguments,
-bool p_blocking,
-int* r_child_id,
-std::string* r_pipe,
-int* r_exitcode,
-bool read_stderr = true /*,Mutex *p_pipe_mutex*/
+  const std::string& p_path,
+  const std::vector<std::string>& p_arguments,
+  bool p_blocking,
+  int* r_child_id,
+  std::string* r_pipe,
+  int* r_exitcode,
+  bool read_stderr = true /*,Mutex *p_pipe_mutex*/
 ) {
 #ifdef __EMSCRIPTEN__
   // Don't compile this code at all to avoid undefined references.

@@ -7,10 +7,10 @@ namespace snowball {
 namespace Syntax {
 
 std::shared_ptr<ir::Func> Transformer::transformFunction(
-Cache::FunctionStore fnStore,
-const std::vector<types::Type*>& deducedTypes,
-bool isEntryPoint,
-std::deque<std::shared_ptr<ir::Func>> overloads
+  Cache::FunctionStore fnStore,
+  const std::vector<types::Type*>& deducedTypes,
+  bool isEntryPoint,
+  std::deque<std::shared_ptr<ir::Func>> overloads
 ) {
   auto node = fnStore.function;
   bool dontAddToModule = false;
@@ -21,47 +21,47 @@ std::deque<std::shared_ptr<ir::Func>> overloads
   auto bodiedFn = cast<Statement::BodiedFunction>(node);
   std::shared_ptr<ir::Func> fn = nullptr;
   ctx->withState(fnStore.state, [&]() {
-                 // Parent scope for things such as: generics
-                 ctx->withScope([&]() {
-                                // Transform generics
-                                // TODO: variadic generics?
-                                assert(deducedTypes.size() == node->getGenerics().size());
-                                std::vector<std::pair<std::string, types::Type*>> fnGenerics;
-                                for (size_t genericCount = 0; genericCount < deducedTypes.size(); genericCount++) {
-                                auto nodeGeneric = node->getGenerics().at(genericCount);
-                                auto name = nodeGeneric->getName();
-                                auto generic = deducedTypes.at(genericCount);
-                                auto item = std::make_shared<transform::Item>(generic);
-                                // TODO:
-                                // item->setDBGInfo(generic->getDBGInfo());
-                                ctx->addItem(name, item);
-                                executeGenericTests(nodeGeneric->getWhereClause(), generic, name);
-                                fnGenerics.push_back({name, generic});
-                                }
-                                // Get the respective return type for this function
-                                auto returnType = transformSizedType(
-                                  node->getRetType(), true, "Function return type must be sized but found '%s' (which is not sized)"
-                                  );
-                                // Create a new function value and store it's return type.
-                                fn = getBuilder().createFunction(
-                                     node->getDBGInfo(),
-                                     name,
-                                     (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)),
-                                     node->isVariadic()
-                                     );
-                                fn->setScopeIndex(ctx->getScopeIndex());
-                                fn->setParent(ctx->getCurrentClass());
-                                fn->setRetTy(returnType);
-                                fn->setPrivacy(node->getPrivacy());
-                                fn->setStatic(node->isStatic());
-                                if (node->isGeneric()) fn->setGenerics(fnGenerics);
-                                  fn->setModule(ctx->module);
-                                  fn->setAttributes(node);
-                                  auto isExtern = node->isExtern();
-                                  if (((fn->hasParent() || !fn->isStatic()) || fn->isPrivate()) && !isEntryPoint && !isExtern &&
-                                        !fn->hasAttribute(Attributes::EXTERNAL_LINKAGE) && !fn->hasAttribute(Attributes::EXPORT))
-                                    fn->addAttribute(Attributes::INTERNAL_LINKAGE);
-                                    ir::Func::FunctionArgs newArgs = {};
+                   // Parent scope for things such as: generics
+                   ctx->withScope([&]() {
+                                    // Transform generics
+                                    // TODO: variadic generics?
+                                    assert(deducedTypes.size() == node->getGenerics().size());
+                                    std::vector<std::pair<std::string, types::Type*>> fnGenerics;
+                                    for (size_t genericCount = 0; genericCount < deducedTypes.size(); genericCount++) {
+                                      auto nodeGeneric = node->getGenerics().at(genericCount);
+                                      auto name = nodeGeneric->getName();
+                                      auto generic = deducedTypes.at(genericCount);
+                                      auto item = std::make_shared<transform::Item>(generic);
+                                      // TODO:
+                                      // item->setDBGInfo(generic->getDBGInfo());
+                                      ctx->addItem(name, item);
+                                      executeGenericTests(nodeGeneric->getWhereClause(), generic, name);
+                                      fnGenerics.push_back({name, generic});
+                                    }
+                                    // Get the respective return type for this function
+                                    auto returnType = transformSizedType(
+                                        node->getRetType(), true, "Function return type must be sized but found '%s' (which is not sized)"
+                                      );
+                                    // Create a new function value and store it's return type.
+                                    fn = getBuilder().createFunction(
+                                        node->getDBGInfo(),
+                                        name,
+                                        (bodiedFn == nullptr && !node->hasAttribute(Attributes::LLVM_FUNC)),
+                                        node->isVariadic()
+                                         );
+                                    fn->setScopeIndex(ctx->getScopeIndex());
+                                    fn->setParent(ctx->getCurrentClass());
+                                    fn->setRetTy(returnType);
+                                    fn->setPrivacy(node->getPrivacy());
+                                    fn->setStatic(node->isStatic());
+                                    if (node->isGeneric()) fn->setGenerics(fnGenerics);
+                                      fn->setModule(ctx->module);
+                                      fn->setAttributes(node);
+                                      auto isExtern = node->isExtern();
+                                      if (((fn->hasParent() || !fn->isStatic()) || fn->isPrivate()) && !isEntryPoint && !isExtern &&
+                                            !fn->hasAttribute(Attributes::EXTERNAL_LINKAGE) && !fn->hasAttribute(Attributes::EXPORT))
+                                        fn->addAttribute(Attributes::INTERNAL_LINKAGE);
+                                        ir::Func::FunctionArgs newArgs = {};
       if (fn->isConstructor()) {
         auto a = getBuilder().createArgument(node->getDBGInfo(), "self", 0, (Syntax::Expression::Base*) nullptr,
                                                ctx->getScopeIndex());
@@ -74,14 +74,14 @@ std::deque<std::shared_ptr<ir::Func>> overloads
   for (size_t i = 0; i < node->getArgs().size(); i++) {
   auto arg = node->getArgs().at(i);
     auto a = getBuilder().createArgument(
-             node->getDBGInfo(),
-             arg->getName(),
-             fn->isConstructor() + i,
-             arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr,
-             ctx->getScopeIndex()
+               node->getDBGInfo(),
+               arg->getName(),
+               fn->isConstructor() + i,
+               arg->hasDefaultValue() ? arg->getDefaultValue() : nullptr,
+               ctx->getScopeIndex()
              );
     a->setType(transformSizedType(
-               arg->getType(), false, "Function argument types but be sized but found '%s' (which is not sized)"
+                 arg->getType(), false, "Function argument types but be sized but found '%s' (which is not sized)"
                ));
     if (arg->getName() == "self") {
       a->setMutability(node->isMutable());
@@ -116,17 +116,17 @@ if (auto c = ctx->getCurrentClass(true)) {
     auto backupFunction = ctx->getCurrentFunction();
       ctx->setCurrentFunction(fn);
       ctx->withScope([&]() {
-                     for (auto arg : newArgs) {
-                     auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, arg.second);
-                     ctx->addItem(arg.first, refItem);
-                     }
-                     auto body = bodiedFn->getBody();
-                     if (!bodyReturns(body->getStmts()) &&
-                           !((utils::cast<types::NumericType>(returnType)) || (utils::cast<types::VoidType>(returnType))) &&
-                           !fn->isConstructor() && !node->hasAttribute(Attributes::NOT_IMPLEMENTED) &&
+                       for (auto arg : newArgs) {
+                         auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, arg.second);
+                         ctx->addItem(arg.first, refItem);
+                       }
+                       auto body = bodiedFn->getBody();
+                       if (!bodyReturns(body->getStmts()) &&
+                             !((utils::cast<types::NumericType>(returnType)) || (utils::cast<types::VoidType>(returnType))) &&
+                             !fn->isConstructor() && !node->hasAttribute(Attributes::NOT_IMPLEMENTED) &&
         !node->hasAttribute(Attributes::BUILTIN)) {
         E<TYPE_ERROR>(
-        node,
+          node,
         "Function lacks ending return statement!", {
           .info = "Function does not return on all "
           "paths!"
@@ -154,7 +154,7 @@ if (auto c = ctx->getCurrentClass(true)) {
     } else if (auto e = utils::cast<Statement::LLVMFunction>(node)) {
     fn->setLLVMBody(getLLVMBody(e->getBody(), e->getTypesUsed()));
     }
-                                });
+                                  });
   if (dontAddToModule) return;
                              ctx->module->addFunction(fn);
                  });

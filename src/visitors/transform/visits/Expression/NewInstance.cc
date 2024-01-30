@@ -13,7 +13,7 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
   auto expr = p_node->getType();
   assert(utils::cast<Expression::TypeRef>(expr));
   auto ident = Syntax::N<Expression::Identifier>(
-               services::OperatorService::getOperatorMangle(services::OperatorService::CONSTRUCTOR)
+                 services::OperatorService::getOperatorMangle(services::OperatorService::CONSTRUCTOR)
                );
   ident->setDBGInfo(expr->getDBGInfo());
   auto index = Syntax::N<Expression::Index>(expr, ident, true);
@@ -25,7 +25,7 @@ SN_TRANSFORMER_VISIT(Expression::NewInstance) {
   auto type = transformSizedType(typeRef, false, "Cant create instance of unsized type '%s'!");
   if (utils::is<types::InterfaceType>(type)) {
     E<SYNTAX_ERROR>(
-    typeRef,
+      typeRef,
     "Cant create instance of interface type!", {
       .info = "This type is an interface type",
       .note = "Interface types can only be used as references to objects that\nimplement the interface"

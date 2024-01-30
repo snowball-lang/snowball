@@ -138,12 +138,12 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     if (var->isUsedInLambda()) {
       auto closure = ctx->closures.at(fn->getId());
       auto index = std::distance(
-                   closure.variables.begin(),
-                   std::find_if(
-                   closure.variables.begin(),
-                   closure.variables.end(),
-                   [&](auto v2) { return v2 == var->getId(); }
-                   )
+                     closure.variables.begin(),
+                     std::find_if(
+                       closure.variables.begin(),
+                       closure.variables.end(),
+                       [&](auto v2) { return v2 == var->getId(); }
+                     )
                    );
       storage = builder->CreateStructGEP(closureType, closure.closure, index, "arg." + var->getIdentifier());
     } else {
@@ -161,21 +161,21 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     auto file = dbg.getFile(src->getPath());
     auto scope = llvmFn->getSubprogram();
     auto debugVar = dbg.builder->createParameterVariable(
-                    scope,
-                    var->getIdentifier(),
-                    var->getIndex() + 1 + retIsArg + anon, // lua vibes... :]
-                    file,
-                    dbgInfo->line,
-                    getDIType(var->getType()),
-                    dbg.debug,
-                    llvm::DINode::FlagArtificial | llvm::DINode::FlagObjectPointer
+                      scope,
+                      var->getIdentifier(),
+                      var->getIndex() + 1 + retIsArg + anon, // lua vibes... :]
+                      file,
+                      dbgInfo->line,
+                      getDIType(var->getType()),
+                      dbg.debug,
+                      llvm::DINode::FlagArtificial | llvm::DINode::FlagObjectPointer
                     );
     dbg.builder->insertDeclare(
-    storage,
-    debugVar,
-    dbg.builder->createExpression(),
-    llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
-    entry
+      storage,
+      debugVar,
+      dbg.builder->createExpression(),
+      llvm::DILocation::get(*context, dbgInfo->line, dbgInfo->pos.second, scope),
+      entry
     );
     ++llvmArgsIter;
   }
@@ -186,12 +186,12 @@ llvm::Function* LLVMBuilder::buildBodiedFunction(llvm::Function* llvmFn, ir::Fun
     if (v->getVariable()->isUsedInLambda()) {
       auto closure = ctx->closures.at(fn->getId());
       auto index = std::distance(
-                   closure.variables.begin(),
-                   std::find_if(
-                   closure.variables.begin(),
-                   closure.variables.end(),
-                   [v](auto v2) { return v2 == v->getVariable()->getId(); }
-                   )
+                     closure.variables.begin(),
+                     std::find_if(
+                       closure.variables.begin(),
+                       closure.variables.end(),
+                       [v](auto v2) { return v2 == v->getVariable()->getId(); }
+                     )
                    );
       storage = builder->CreateStructGEP(closureType, closure.closure, index);
     } else {

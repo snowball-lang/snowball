@@ -55,11 +55,11 @@ class FunctionType : public AcceptorExtend<FunctionType, Type>, public Syntax::A
 
  public:
   FunctionType(
-  std::vector<Type*> args,
-  Type* retTy,
-  bool isVariadic = false,
-  bool isMutable = true,
-  const std::string& name = "<fn type>"
+    std::vector<Type*> args,
+    Type* retTy,
+    bool isVariadic = false,
+    bool isMutable = true,
+    const std::string& name = "<fn type>"
   )
     : AcceptorExtend(Kind::TYPE, name, isMutable), args(args), retTy(retTy), variadic(isVariadic) {}
   FunctionType(const FunctionType& other) = default;

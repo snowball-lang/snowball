@@ -37,13 +37,13 @@ llvm::Function* LLVMBuilder::createLLVMFunction(ir::Func* func) {
   }
   auto name = func->getMangle();
   auto fn = llvm::Function::Create(
-            fnType,
-            ((func->isStatic() && (!func->hasParent())) ||
-             (func->hasAttribute(Attributes::INTERNAL_LINKAGE) && !func->isDeclaration())) ?
-            llvm::Function::InternalLinkage :
-            llvm::Function::ExternalLinkage,
-            name,
-            module.get()
+              fnType,
+              ((func->isStatic() && (!func->hasParent())) ||
+               (func->hasAttribute(Attributes::INTERNAL_LINKAGE) && !func->isDeclaration())) ?
+              llvm::Function::InternalLinkage :
+              llvm::Function::ExternalLinkage,
+              name,
+              module.get()
             );
   auto callee = (llvm::Function*) fn;
   auto attrSet = callee->getAttributes();

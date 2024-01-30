@@ -19,17 +19,17 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
   auto srcInfo = var->getDBGInfo();
   auto file = dbg.getFile(var->getSourceInfo()->getPath());
   auto debugVar = dbg.builder->createGlobalVariableExpression(
-                  dbg.unit, var->getIdentifier(), var->getIdentifier(), file, srcInfo->line, getDIType(var->getType()),
-                  var->isExternDecl()
+                    dbg.unit, var->getIdentifier(), var->getIdentifier(), file, srcInfo->line, getDIType(var->getType()),
+                    var->isExternDecl()
                   );
   if (var->isExternDecl()) {
     auto gvar = new llvm::GlobalVariable(
-    /*Module=*/*module,
-    /*Type=*/ty,
-    /*isConstant=*/!var->getVariable()->isMutable(),
-    /*Linkage=*/llvm::GlobalValue::ExternalLinkage,
-    /*Initializer=*/nullptr,
-    /*Name=*/var->getIdentifier()
+      /*Module=*/*module,
+      /*Type=*/ty,
+      /*isConstant=*/!var->getVariable()->isMutable(),
+      /*Linkage=*/llvm::GlobalValue::ExternalLinkage,
+      /*Initializer=*/nullptr,
+      /*Name=*/var->getIdentifier()
     );
     ctx->addSymbol(var->getId(), gvar);
     gvar->addDebugInfo(debugVar);
@@ -38,12 +38,12 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
   if (utils::dyn_cast<ir::ConstantValue>(var->getValue())) {
     auto c = build(var->getValue().get());
     auto gvar = new llvm::GlobalVariable(
-    /*Module=*/*module,
-    /*Type=*/ty,
-    /*isConstant=*/!var->getVariable()->isMutable(),
-    /*Linkage=*/llvm::GlobalValue::InternalLinkage,
-    /*Initializer=*/llvm::cast<llvm::Constant>(c), // has initializer, specified below
-    /*Name=*/name
+      /*Module=*/*module,
+      /*Type=*/ty,
+      /*isConstant=*/!var->getVariable()->isMutable(),
+      /*Linkage=*/llvm::GlobalValue::InternalLinkage,
+      /*Initializer=*/llvm::cast<llvm::Constant>(c), // has initializer, specified below
+      /*Name=*/name
     );
     gvar->setDSOLocal(true);
     ctx->addSymbol(var->getId(), gvar);
@@ -54,12 +54,12 @@ void LLVMBuilder::addGlobalVariable(std::shared_ptr<ir::VariableDeclaration> var
   auto& ctorBody = ctor->getEntryBlock();
   builder->SetInsertPoint(&ctorBody);
   auto gvar = new llvm::GlobalVariable(
-  /*Module=*/*module,
-  /*Type=*/ty,
-  /*isConstant=*/0,// !var->getVariable()->isMutable(), note: this doesn't work because we are not fully detecting constant values (2 + 2 is not a constant)
-  /*Linkage=*/llvm::GlobalValue::InternalLinkage,
-  /*Initializer=*/llvm::Constant::getNullValue(ty), // has initializer, specified below
-  /*Name=*/name
+    /*Module=*/*module,
+    /*Type=*/ty,
+    /*isConstant=*/0,// !var->getVariable()->isMutable(), note: this doesn't work because we are not fully detecting constant values (2 + 2 is not a constant)
+    /*Linkage=*/llvm::GlobalValue::InternalLinkage,
+    /*Initializer=*/llvm::Constant::getNullValue(ty), // has initializer, specified below
+    /*Name=*/name
   );
   gvar->setDSOLocal(true);
   ctx->addSymbol(var->getId(), gvar);

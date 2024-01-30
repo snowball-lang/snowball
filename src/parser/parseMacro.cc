@@ -14,8 +14,8 @@ Syntax::Macro* Parser::parseMacro() {
   auto dbg = DBGSourceInfo::fromToken(m_source_info, m_current);
   bool isStatementMacro = true;
   auto attributes = verifyAttributes([&](std::string attr) {
-                                     if (attr == "export") { return Attributes::EXPORT; }
-                                     return Attributes::INVALID;
+                                       if (attr == "export") { return Attributes::EXPORT; }
+                                       return Attributes::INVALID;
                                      });
   auto name = assert_tok<TokenType::IDENTIFIER>("an identifier for macro name").to_string();
   next();
@@ -73,7 +73,7 @@ Syntax::Macro* Parser::parseMacro() {
     isStatementMacro = false;
     auto expr = parseExpr(false);
     auto macro = Syntax::N<Syntax::Macro>(
-                 name, args, Syntax::N<Syntax::Block>(std::vector<Syntax::Node*> {expr}), isStatementMacro
+                   name, args, Syntax::N<Syntax::Block>(std::vector<Syntax::Node*> {expr}), isStatementMacro
                  );
     macro->setDBGInfo(dbg);
     for (auto[n, a] : attributes) { macro->addAttribute(n, a); }

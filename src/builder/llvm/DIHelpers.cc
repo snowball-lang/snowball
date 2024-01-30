@@ -23,19 +23,19 @@ llvm::DISubprogram* LLVMBuilder::getDISubprogramForFunc(ir::Func* x) {
   auto subroutineType = llvm::cast<llvm::DISubroutineType>(derivedType->getRawBaseType());
   std::string baseName = x->getNiceName();
   llvm::DISubprogram* subprogram = dbg.builder->createFunction(
-                                   file,
-                                   baseName,
-                                   x->getMangle(),
-                                   file,
-                                   srcInfo->line,
-                                   llvm::cast<llvm::DISubroutineType>(subroutineType),
-                                   /*ScopeLine=*/0,
-                                   llvm::DINode::FlagPrototyped,
-                                   llvm::DISubprogram::toSPFlags(
-                                   /*IsLocalToUnit=*/true,
-                                   /*IsDefinition=*/true,
-                                   /*IsOptimized=*/!dbg.debug
-                                   )
+                                     file,
+                                     baseName,
+                                     x->getMangle(),
+                                     file,
+                                     srcInfo->line,
+                                     llvm::cast<llvm::DISubroutineType>(subroutineType),
+                                     /*ScopeLine=*/0,
+                                     llvm::DINode::FlagPrototyped,
+                                     llvm::DISubprogram::toSPFlags(
+                                       /*IsLocalToUnit=*/true,
+                                       /*IsDefinition=*/true,
+                                       /*IsOptimized=*/!dbg.debug
+                                     )
                                    );
   return subprogram;
 }
@@ -68,19 +68,19 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     auto file = dbg.getFile(dbgInfo->getSourceInfo()->getPath());
     int enumIndex = 0;
     auto debugType = dbg.builder->createEnumerationType(
-                     file,
-                     e->getPrettyName(),
-                     file,
-                     dbgInfo->line,
-                     8,
-                     ty->alignmentOf(),
-                     dbg.builder->getOrCreateArray(vector_iterate<types::EnumType::EnumField, llvm::Metadata*>(
-                       e->getFields(),
-                       [&](types::EnumType::EnumField t) {
-                       return dbg.builder->createEnumerator(t.name, enumIndex++);
-                       }
-                       )),
-                     nullptr
+                       file,
+                       e->getPrettyName(),
+                       file,
+                       dbgInfo->line,
+                       8,
+                       ty->alignmentOf(),
+                       dbg.builder->getOrCreateArray(vector_iterate<types::EnumType::EnumField, llvm::Metadata*>(
+                           e->getFields(),
+                           [&](types::EnumType::EnumField t) {
+                             return dbg.builder->createEnumerator(t.name, enumIndex++);
+                           }
+                         )),
+                       nullptr
                      );
     return debugType;
   } else if (auto c = cast<types::BaseType>(ty)) {
@@ -95,39 +95,39 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
     int fieldIndex = (-1) + c->hasVtable;
     if (asDefinedType) {
       generatedFields = vector_iterate<types::DefinedType::ClassField*, llvm::Metadata*>(
-                        asDefinedType->getFields(),
-                        [&](types::DefinedType::ClassField * t) {
-                        fieldIndex++;
-                        return dbg.builder->createMemberType(
-                               nullptr,
-                               t->name,
-                               file,
-                               dbgInfo->line,
-                               layout.getTypeAllocSizeInBits(getLLVMType(t->type)),
-                               0,
-                               structLayout->getElementOffsetInBits(fieldIndex),
-                               llvm::DINode::FlagZero,
-                               getDIType(t->type)
-                               );
-                        }
+                          asDefinedType->getFields(),
+                          [&](types::DefinedType::ClassField * t) {
+                            fieldIndex++;
+                            return dbg.builder->createMemberType(
+                                     nullptr,
+                                     t->name,
+                                     file,
+                                     dbgInfo->line,
+                                     layout.getTypeAllocSizeInBits(getLLVMType(t->type)),
+                                     0,
+                                     structLayout->getElementOffsetInBits(fieldIndex),
+                                     llvm::DINode::FlagZero,
+                                     getDIType(t->type)
+                                   );
+                          }
                         );
     } else if (asInterfaceType) {
       generatedFields = vector_iterate<types::InterfaceType::Member*, llvm::Metadata*>(
-                        asInterfaceType->getFields(),
-                        [&](types::InterfaceType::Member * t) {
-                        fieldIndex++;
-                        return dbg.builder->createMemberType(
-                               nullptr,
-                               t->name,
-                               file,
-                               dbgInfo->line,
-                               layout.getTypeAllocSizeInBits(getLLVMType(t->type)),
-                               0,
-                               structLayout->getElementOffsetInBits(fieldIndex),
-                               llvm::DINode::FlagZero,
-                               getDIType(t->type)
-                               );
-                        }
+                          asInterfaceType->getFields(),
+                          [&](types::InterfaceType::Member * t) {
+                            fieldIndex++;
+                            return dbg.builder->createMemberType(
+                                     nullptr,
+                                     t->name,
+                                     file,
+                                     dbgInfo->line,
+                                     layout.getTypeAllocSizeInBits(getLLVMType(t->type)),
+                                     0,
+                                     structLayout->getElementOffsetInBits(fieldIndex),
+                                     llvm::DINode::FlagZero,
+                                     getDIType(t->type)
+                                   );
+                          }
                         );
     } else {
       Syntax::E<BUG>(FMT("Undefined fields type! (dbg) ('%s')", ty->getName().c_str()));
@@ -137,23 +137,23 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
       if (auto p = asDefinedType->getParent()) { parentDIType = getDIType(p); }
     // TODO: create struct type if it's a struct
     debugType = dbg.builder->createStructType(
-                file,
-                c->getPrettyName(),
-                file,
-                dbgInfo->line,
-                c->sizeOf() * 8,
-                0,
-                llvm::DINode::FlagZero,
-                parentDIType,
-                dbg.builder->getOrCreateArray(generatedFields),
-                0,
-                c->hasVtable ?
-                dbg.builder->createPointerType(
-                dbg.builder->createBasicType("void", 8, llvm::dwarf::DW_ATE_signed),
-                8,
-                0
-                ) : nullptr,
-                c->getUUID()
+                  file,
+                  c->getPrettyName(),
+                  file,
+                  dbgInfo->line,
+                  c->sizeOf() * 8,
+                  0,
+                  llvm::DINode::FlagZero,
+                  parentDIType,
+                  dbg.builder->getOrCreateArray(generatedFields),
+                  0,
+                  c->hasVtable ?
+                  dbg.builder->createPointerType(
+                    dbg.builder->createBasicType("void", 8, llvm::dwarf::DW_ATE_signed),
+                    8,
+                    0
+                  ) : nullptr,
+                  c->getUUID()
                 );
     return debugType;
   } else {

@@ -16,11 +16,11 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
   for (auto arg : macro->getArgs()) numRequiredArgs -= std::get<2>(arg) == nullptr ? 0 : 1;
   if (args.size() < numRequiredArgs) {
     E<PSEUDO_ERROR>(
-    p_node,
-    FMT("Macro '%s' expects at least %d arguments, but %d were given!",
-        macroName.c_str(),
-        numRequiredArgs,
-        args.size())
+      p_node,
+      FMT("Macro '%s' expects at least %d arguments, but %d were given!",
+          macroName.c_str(),
+          numRequiredArgs,
+          args.size())
     );
   }
   // Typecheck macros:
@@ -68,17 +68,17 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
     }
     if (argType != deducedArgType) {
       E<PSEUDO_ERROR>(
-      p_node,
-      FMT("Macro '%s' expects arguement '%s' to be of type '%s', but '%s' was given!",
-          macroName.c_str(),
-          name.c_str(),
-          Macro::arguementTypeToString(argType).c_str(),
-          Macro::arguementTypeToString(deducedArgType).c_str())
+        p_node,
+        FMT("Macro '%s' expects arguement '%s' to be of type '%s', but '%s' was given!",
+            macroName.c_str(),
+            name.c_str(),
+            Macro::arguementTypeToString(argType).c_str(),
+            Macro::arguementTypeToString(deducedArgType).c_str())
       );
     }
     if (macroInstance->stack.find(name) != macroInstance->stack.end()) {
       E<PSEUDO_ERROR>(
-      p_node, FMT("Macro '%s' already has an arguement with name '%s'!", macroName.c_str(), name.c_str())
+        p_node, FMT("Macro '%s' already has an arguement with name '%s'!", macroName.c_str(), name.c_str())
       );
     }
     arg->parentMacro = ctx->getCurrentMacro();
@@ -87,14 +87,14 @@ void Transformer::transformMacro(Expression::PseudoVariable* p_node, MacroInstan
   ctx->macroDepth++;
   if (ctx->macroDepth > SN_MAX_MACRO_DEPTH) {
     E<PSEUDO_ERROR>(
-    p_node,
-    FMT("Macro '%s' has exceeded the maximum macro depth of '%i'!", macroName.c_str(), SN_MAX_MACRO_DEPTH)
+      p_node,
+      FMT("Macro '%s' has exceeded the maximum macro depth of '%i'!", macroName.c_str(), SN_MAX_MACRO_DEPTH)
     );
   }
   if (macroName == "pkg") {
     if (ctx->getCurrentMacro() == nullptr) {
       E<PSEUDO_ERROR>(
-      p_node,
+        p_node,
       "Cant use 'pkg' macro outside a parent macro!", {
         .info = "This is the macro that was used",
         .note = "This special macro is only available inside a parent macro.",

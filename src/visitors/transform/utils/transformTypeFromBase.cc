@@ -5,7 +5,7 @@ namespace snowball {
 namespace Syntax {
 
 types::Type* Transformer::transformTypeFromBase(
-const std::string& uuid, cacheComponents::Types::TypeStore& base, Expression::TypeRef* typeRef
+  const std::string& uuid, cacheComponents::Types::TypeStore& base, Expression::TypeRef* typeRef
 ) {
   Statement::GenericContainer<>::GenericList generics;
   // TODO: check if there's another way to avoid repetition of code
@@ -25,12 +25,12 @@ const std::string& uuid, cacheComponents::Types::TypeStore& base, Expression::Ty
   }
   if (typeRef->getGenerics().size() < requiredArguments || typeRef->getGenerics().size() > generics.size()) {
     E<TYPE_ERROR>(
-    typeRef,
-    FMT("Type '%s' requires to have %i generic "
-        "argument(s) but %i where given!",
-        typeRef->getPrettyName().c_str(),
-        requiredArguments,
-        typeRef->getGenerics().size())
+      typeRef,
+      FMT("Type '%s' requires to have %i generic "
+          "argument(s) but %i where given!",
+          typeRef->getPrettyName().c_str(),
+          requiredArguments,
+          typeRef->getGenerics().size())
     );
   }
   if (utils::is<Statement::TypeAlias>(base.type)) {

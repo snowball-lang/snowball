@@ -83,7 +83,7 @@ void LLVMBuilder::optimizeModule() {
   llvm::TargetLibraryInfoImpl tlii(moduleTriple);
   // cross register them too?
   pass_builder.crossRegisterProxies(
-              loop_analysis_manager, function_analysis_manager, c_gscc_analysis_manager, module_analysis_manager
+                loop_analysis_manager, function_analysis_manager, c_gscc_analysis_manager, module_analysis_manager
               );
   function_analysis_manager.registerPass([&] { return llvm::TargetLibraryAnalysis(tlii); });
   llvm::OptimizationLevel level;
@@ -99,7 +99,7 @@ void LLVMBuilder::optimizeModule() {
   std::vector<std::function<void(llvm::ModulePassManager&, llvm::OptimizationLevel)>> PipelineStartEPCallbacks;
   std::vector<std::function<void(llvm::ModulePassManager&, llvm::OptimizationLevel)>> OptimizerLastEPCallbacks;
   PipelineStartEPCallbacks.push_back([](llvm::ModulePassManager & MPM, llvm::OptimizationLevel Level) {
-                                     MPM.addPass(llvm::VerifierPass());
+                                       MPM.addPass(llvm::VerifierPass());
                                      });
   for (const auto& C : PipelineStartEPCallbacks) pass_builder.registerPipelineStartEPCallback(C);
   for (const auto& C : OptimizerLastEPCallbacks) pass_builder.registerOptimizerLastEPCallback(C);

@@ -61,8 +61,8 @@ int build(app::Options::BuildOptions p_opts) {
   }
   if (!p_opts.silent)
     Logger::message(
-    "Project",
-    FMT("%s v%s [%s%s%s]", package_name.c_str(), package_version.c_str(), BOLD, build_type.c_str(), RESET)
+      "Project",
+      FMT("%s v%s [%s%s%s]", package_name.c_str(), package_version.c_str(), BOLD, build_type.c_str(), RESET)
     );
   std::string content((std::istreambuf_iterator<char>(ifs)), (std::istreambuf_iterator<char>()));
   // TODO: check for output

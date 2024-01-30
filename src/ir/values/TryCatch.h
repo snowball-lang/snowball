@@ -30,9 +30,9 @@ class TryCatch : public AcceptorExtend<TryCatch, Value> {
 
  public:
   explicit TryCatch(
-  std::shared_ptr<Block> block,
-  std::vector<std::shared_ptr<Block>> catchBlocks,
-  std::vector<std::shared_ptr<VariableDeclaration>> catchVars
+    std::shared_ptr<Block> block,
+    std::vector<std::shared_ptr<Block>> catchBlocks,
+    std::vector<std::shared_ptr<VariableDeclaration>> catchVars
   )
     : block(block), catchBlocks(catchBlocks), catchVars(catchVars) {};
 

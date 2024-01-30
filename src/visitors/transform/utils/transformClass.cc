@@ -9,7 +9,7 @@ namespace snowball {
 namespace Syntax {
 
 types::BaseType* Transformer::transformClass(
-const std::string& uuid, cacheComponents::Types::TypeStore& classStore, Expression::TypeRef* typeRef
+  const std::string& uuid, cacheComponents::Types::TypeStore& classStore, Expression::TypeRef* typeRef
 ) {
   auto ty = utils::cast<Statement::DefinedTypeDef>(classStore.type);
   assert(ty);
@@ -24,36 +24,36 @@ const std::string& uuid, cacheComponents::Types::TypeStore& classStore, Expressi
   // Note that the default class generics WILL be generated inside the
   // class context.
   auto generics = typeRef != nullptr ? vector_iterate<Expression::TypeRef*, types::Type*>(
-                  typeRef->getGenerics(), [&](auto t) { return transformType(t); }
+                    typeRef->getGenerics(), [&](auto t) { return transformType(t); }
                   ) :
                   std::vector<types::Type*> {};
   // TODO: check if typeRef generics match class generics
   types::BaseType* transformedType;
   ctx->withState(classStore.state, [&]() {
-                 ctx->withScope([&] {
-                                std::vector<types::Type*> defaultGenerics;
-                                int defaultGenericStart = 0;
-                                auto tyFunctions = ty->getFunctions();
-                                auto backupClass = ctx->getCurrentClass();
-                                // TODO: maybe not reset completly, add nested classes in
-                                // the future
-                                ctx->setCurrentClass(nullptr);
-                                auto baseUuid = ctx->createIdentifierName(ty->getName());
-                                auto existantTypes = ctx->cache->getTransformedType(uuid);
-                                auto _uuid = baseUuid + ":" + utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
-                                auto basedName = ty->getName();
-                                transformedType = ty->isInterface() ? (types::BaseType*) new types::InterfaceType(
-                                basedName,
-                                _uuid,
-                                ctx->module,
-                                std::vector<types::InterfaceType::Member*>{},
+                   ctx->withScope([&] {
+                                    std::vector<types::Type*> defaultGenerics;
+                                    int defaultGenericStart = 0;
+                                    auto tyFunctions = ty->getFunctions();
+                                    auto backupClass = ctx->getCurrentClass();
+                                    // TODO: maybe not reset completly, add nested classes in
+                                    // the future
+                                    ctx->setCurrentClass(nullptr);
+                                    auto baseUuid = ctx->createIdentifierName(ty->getName());
+                                    auto existantTypes = ctx->cache->getTransformedType(uuid);
+                                    auto _uuid = baseUuid + ":" + utils::itos(existantTypes.has_value() ? existantTypes->size() : 0);
+                                    auto basedName = ty->getName();
+                                    transformedType = ty->isInterface() ? (types::BaseType*) new types::InterfaceType(
+                                      basedName,
+                                      _uuid,
+                                      ctx->module,
+                                      std::vector<types::InterfaceType::Member*>{},
   std::vector<types::Type*>{}
-                                ) :
+                                    ) :
   (types::BaseType*) new types::DefinedType(
-  basedName,
-  _uuid,
-  ctx->module,
-  ty,
+    basedName,
+    _uuid,
+    ctx->module,
+    ty,
   {},
   {},
   nullptr,
@@ -110,7 +110,7 @@ const std::string& uuid, cacheComponents::Types::TypeStore& classStore, Expressi
     parentType = utils::cast<types::DefinedType>(parent);
     if (!parentType) {
       E<TYPE_ERROR>(
-      x,
+        x,
       FMT("Cant inherit from '%s'", parent->getPrettyName().c_str()), {
         .info = "This is not a class nor a struct type!",
         .note = "Classes can only inherit from other "
@@ -144,7 +144,7 @@ const std::string& uuid, cacheComponents::Types::TypeStore& classStore, Expressi
         auto definedType = v->getDefinedType();
         if (!definedType)
           E<SYNTAX_ERROR>(
-          v->getDBGInfo(),
+            v->getDBGInfo(),
           "Cant infer type!", {
           .info = "The type of this variable cant be inferred!",
           .note = "This rule only applies to variables inside classes.",
@@ -156,11 +156,11 @@ const std::string& uuid, cacheComponents::Types::TypeStore& classStore, Expressi
         }
         );
         auto varTy = transformSizedType(
-                     definedType, false, "Class fields must be sized but found '%s' (which is not sized)"
+                       definedType, false, "Class fields must be sized but found '%s' (which is not sized)"
                      );
         varTy->setMutable(v->isMutable());
         auto field = new types::DefinedType::ClassField(
-        v->getName(), varTy, v->getPrivacy(), v->getValue(), v->isMutable()
+          v->getName(), varTy, v->getPrivacy(), v->getValue(), v->isMutable()
         );
         field->setDBGInfo(v->getDBGInfo());
         ((types::DefinedType*) transformedType)->addField(field);
@@ -173,7 +173,7 @@ const std::string& uuid, cacheComponents::Types::TypeStore& classStore, Expressi
       auto definedType = v->getDefinedType();
       if (!definedType)
         E<SYNTAX_ERROR>(
-        v->getDBGInfo(),
+          v->getDBGInfo(),
         "Cant infer type!", {
         .info = "The type of this variable cant be inferred!",
         .note = "This rule only applies to variables inside interfaces.",
@@ -185,11 +185,11 @@ const std::string& uuid, cacheComponents::Types::TypeStore& classStore, Expressi
       }
       );
       auto varTy = transformSizedType(
-                   definedType, false, "Interface fields must be sized but found '%s' (which is not sized)"
+                     definedType, false, "Interface fields must be sized but found '%s' (which is not sized)"
                    );
       varTy->setMutable(v->isMutable());
       auto field = new types::InterfaceType::Member(
-      v->getName(), varTy, types::InterfaceType::Member::Kind::FIELD, v, v->getPrivacy(), v->isMutable()
+        v->getName(), varTy, types::InterfaceType::Member::Kind::FIELD, v, v->getPrivacy(), v->isMutable()
       );
       field->setDBGInfo(v->getDBGInfo());
       ((types::InterfaceType*) transformedType)->addField(field);
@@ -230,12 +230,12 @@ const std::string& uuid, cacheComponents::Types::TypeStore& classStore, Expressi
   for (auto fn : tyFunctions) { trans(fn); }
   ctx->generateFunction = backupGenerateFunction;
                           auto parentHasConstructor =
-                          allowConstructor && parentType != nullptr && !parentType->isStruct() && parentType->hasConstructor;
+                            allowConstructor && parentType != nullptr && !parentType->isStruct() && parentType->hasConstructor;
                           auto type = utils::cast<types::DefinedType>(transformedType);
                           if (!parentHasConstructor && type && !type->hasConstructor && !type->isStruct() &&
   !ty->hasAttribute(Attributes::BUILTIN) && !ty->hasAttribute(Attributes::NO_CONSTRUCTOR)) {
   E<SYNTAX_ERROR>(
-  ty,
+    ty,
   "This class does not have a constructor!", {
     .info = "This class does not have a constructor!",
     .note = "No constructor has been defined or can be inherited.",
@@ -255,7 +255,7 @@ const std::string& uuid, cacheComponents::Types::TypeStore& classStore, Expressi
   }
   //}
   ctx->setCurrentClass(backupClass);
-                                });
+                                  });
                  });
   return transformedType;
 }

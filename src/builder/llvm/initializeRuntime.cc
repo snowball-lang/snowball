@@ -18,7 +18,7 @@ namespace codegen {
 void LLVMBuilder::initializeRuntime() {
   auto ty = llvm::FunctionType::get(builder->getVoidTy(), {builder->getInt32Ty()}, false);
   auto f = llvm::cast<llvm::Function>(
-           module->getOrInsertFunction(getSharedLibraryName("sn.runtime.initialize"), ty).getCallee()
+             module->getOrInsertFunction(getSharedLibraryName("sn.runtime.initialize"), ty).getCallee()
            );
   f->addFnAttr(llvm::Attribute::AlwaysInline);
   f->addFnAttr(llvm::Attribute::NoUnwind);

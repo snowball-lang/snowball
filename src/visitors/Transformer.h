@@ -125,9 +125,9 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * indicating any errors (empty string if there was success).
    */
   std::tuple<std::vector<types::Type*>, std::string, int> deduceFunction(
-  cacheComponents::Functions::FunctionStore s,
-  const std::vector<types::Type*>& arguments,
-  const std::vector<types::Type*>& generics = {}
+    cacheComponents::Functions::FunctionStore s,
+    const std::vector<types::Type*>& arguments,
+    const std::vector<types::Type*>& generics = {}
   );
   /**
    * @brief Deduces a type for a generic function.
@@ -139,11 +139,11 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    *  @c deduceFunction
    */
   std::pair<std::optional<types::Type*>, int> deduceFunctionType(
-  snowball::Syntax::Expression::Param* generic,
-  const std::vector<Expression::Param*>& fnArgs,
-  const std::vector<types::Type*>& arguments,
-  const std::vector<types::Type*>& generics,
-  const std::vector<types::Type*>& deducedTypes
+    snowball::Syntax::Expression::Param* generic,
+    const std::vector<Expression::Param*>& fnArgs,
+    const std::vector<types::Type*>& arguments,
+    const std::vector<types::Type*>& generics,
+    const std::vector<types::Type*>& deducedTypes
   );
   /**
    * Generates a list of members that a `DefinedType` can have in C++.
@@ -160,9 +160,9 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * inherited ones.
    */
   std::vector<types::DefinedType::ClassField*> getMemberList(
-  std::vector<Syntax::Statement::VariableDecl*> fieldNodes,
-  std::vector<types::DefinedType::ClassField*> fields,
-  types::DefinedType* parent
+    std::vector<Syntax::Statement::VariableDecl*> fieldNodes,
+    std::vector<types::DefinedType::ClassField*> fields,
+    types::DefinedType* parent
   );
   /**
    * Generate a function if it exists on the function cache,
@@ -171,10 +171,10 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    *  @c deduceFunction
    */
   std::tuple<Cache::FunctionStore, std::vector<types::Type*>, FunctionFetchResponse> getBestFittingFunction(
-  const std::deque<Cache::FunctionStore>& overloads,
-  const std::vector<types::Type*>& arguments,
-  const std::vector<Expression::TypeRef*>& generics = {},
-  bool isIdentifier = false
+    const std::deque<Cache::FunctionStore>& overloads,
+    const std::vector<types::Type*>& arguments,
+    const std::vector<Expression::TypeRef*>& generics = {},
+    bool isIdentifier = false
   );
   /**
    * It tries to check if a type can be "casted" into another type.
@@ -237,19 +237,19 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    *    struct, it will return a ir::Value.
    */
   std::shared_ptr<ir::Value> getFunction(
-  DBGObject* dbgInfo,
-  std::tuple <
-  std::optional<std::shared_ptr<ir::Value>>,
-  std::optional<types::Type*>,
-  std::optional<std::deque<std::shared_ptr<ir::Func>>>,
-  std::optional<std::deque<Cache::FunctionStore>>,
-  std::optional<std::shared_ptr<ir::Module>>,
-  bool /* Accept private members */ > stores,
-  const std::string& name,
-  std::vector<types::Type*> arguments,
-  const std::vector<Expression::TypeRef*>& generics = {},
-  bool isIdentifier = false,
-  bool hasSelf = false
+    DBGObject* dbgInfo,
+    std::tuple <
+    std::optional<std::shared_ptr<ir::Value>>,
+    std::optional<types::Type*>,
+    std::optional<std::deque<std::shared_ptr<ir::Func>>>,
+    std::optional<std::deque<Cache::FunctionStore>>,
+    std::optional<std::shared_ptr<ir::Module>>,
+    bool /* Accept private members */ > stores,
+    const std::string& name,
+    std::vector<types::Type*> arguments,
+    const std::vector<Expression::TypeRef*>& generics = {},
+    bool isIdentifier = false,
+    bool hasSelf = false
   );
   /**
    * @brief It asserts that a type is `Sized`.
@@ -271,10 +271,10 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * @arg arguments - deduced arguments to unify
    */
   std::shared_ptr<ir::Func> transformFunction(
-  cacheComponents::Functions::FunctionStore node,
-  const std::vector<types::Type*>& deducedTypes,
-  bool isEntryPoint = false,
-  std::deque<std::shared_ptr<ir::Func>> overloads = {}
+    cacheComponents::Functions::FunctionStore node,
+    const std::vector<types::Type*>& deducedTypes,
+    bool isEntryPoint = false,
+    std::deque<std::shared_ptr<ir::Func>> overloads = {}
   );
   /**
    * @brief Gets the `real` user defined list for the arguments.
@@ -394,9 +394,9 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    *   generated struct.
    */
   std::shared_ptr<ir::Value> createObjectConstructor(
-  DBGSourceInfo* dbgInfo,
-  types::Type* ty,
-  std::vector<types::Type*> args
+    DBGSourceInfo* dbgInfo,
+    types::Type* ty,
+    std::vector<types::Type*> args
   );
   /**
    * Returns a nicely formatted base name for the given set of
@@ -445,9 +445,9 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * @brief It "implements" the types into a class.
    */
   void implementTypes(
-  types::DefinedType* ty,
-  std::vector<Expression::TypeRef*> types,
-  std::vector<Statement::FunctionDef*>& functions
+    types::DefinedType* ty,
+    std::vector<Expression::TypeRef*> types,
+    std::vector<Statement::FunctionDef*>& functions
   );
   /**
    * @brief Creates a type.
@@ -468,7 +468,7 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    *      -> [module uuid].class:[# overload of class].function
    */
   types::BaseType* transformClass(
-  const std::string& uuid, cacheComponents::Types::TypeStore& classStore, Expression::TypeRef* typeRef = nullptr
+    const std::string& uuid, cacheComponents::Types::TypeStore& classStore, Expression::TypeRef* typeRef = nullptr
   );
   /**
    * Fetch the builder from the current context.
@@ -495,10 +495,10 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
    * containing function overloads
    */
   StoreType getFromIdentifier(
-  DBGSourceInfo* dbgInfo,
-  const std::string identifier,
-  std::vector<Expression::TypeRef*> generics = {},
-  const std::string uuid = ""
+    DBGSourceInfo* dbgInfo,
+    const std::string identifier,
+    std::vector<Expression::TypeRef*> generics = {},
+    const std::string uuid = ""
   );
   /**
    * @brief Utility method to transform identifier nodes into a valid
@@ -524,8 +524,8 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
 
  public:
   Transformer(
-  std::shared_ptr<ir::Module> mod, const SourceInfo* srci, std::filesystem::path packagePath, bool allowTests = false,
-  bool allowBenchmark = false, bool silentOutput = false
+    std::shared_ptr<ir::Module> mod, const SourceInfo* srci, std::filesystem::path packagePath, bool allowTests = false,
+    bool allowBenchmark = false, bool silentOutput = false
   );
 
   using AcceptorExtend<Transformer, Visitor>::visit;
@@ -551,9 +551,9 @@ class Transformer : public AcceptorExtend<Transformer, Visitor> {
   /// @brief Transform a "parsed type" into a "real type" and it checks if
   ///        the type is sized.
   types::Type* transformSizedType(
-  Expression::TypeRef* ty,
-  bool ignoreVoid = false,
-  const std::string message = "Expected type '%s' to be sized!"
+    Expression::TypeRef* ty,
+    bool ignoreVoid = false,
+    const std::string message = "Expected type '%s' to be sized!"
   );
   /// @return a list of generated modules through the whole project
   std::vector<std::shared_ptr<ir::Module>> getModules() const;

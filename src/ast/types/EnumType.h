@@ -38,8 +38,8 @@ class EnumType final : public AcceptorExtend<EnumType, BaseType> {
    */
   struct EnumField final : public DBGObject {
     explicit EnumField(
-    const std::string& name,
-    std::vector<types::Type*> types);
+      const std::string& name,
+      std::vector<types::Type*> types);
 
     const std::string name;
     std::vector<types::Type*> types;
@@ -55,10 +55,10 @@ class EnumType final : public AcceptorExtend<EnumType, BaseType> {
 
  public:
   EnumType(
-  const std::string& name,
-  const std::string uuid,
-  std::shared_ptr<ir::Module> module,
-  Privacy::Status privacy = PRIVATE
+    const std::string& name,
+    const std::string uuid,
+    std::shared_ptr<ir::Module> module,
+    Privacy::Status privacy = PRIVATE
   );
   /**
    * @param other another type to check.

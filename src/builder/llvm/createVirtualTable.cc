@@ -43,7 +43,7 @@ llvm::GlobalVariable* LLVMBuilder::createVirtualTable(types::BaseType* ty, llvm:
   vTable->setComdat(module->getOrInsertComdat(structName));
 #endif
   auto arr = llvm::ConstantArray::get(
-             llvm::ArrayType::get(llvm::Type::getInt8PtrTy(*context), functions.size()), functions
+               llvm::ArrayType::get(llvm::Type::getInt8PtrTy(*context), functions.size()), functions
              );
   auto s = llvm::ConstantStruct::get(vtableType, arr);
   vTable->setInitializer(s);

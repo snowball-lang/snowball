@@ -145,20 +145,20 @@ std::string getPageTemplate(DocGenContext context, std::string title, std::strin
     parentPath = context.currentModulePath;
   }
   std::sort(links.begin(), links.end(), [](auto & a, auto & b) {
-            return a.first < b.first;
+              return a.first < b.first;
             });
   links.insert(links.begin(), {GO_BACK_TEXT, parentPath});
   std::string linksHTML = "";
   for (auto& [name, link] : links) {
-    nameCount[name]++;
-    auto resultLink = link;
-    if (nameCount[name] > 1) {
-    resultLink += "-" + std::to_string(nameCount[name]);
-    }
-    auto resultName = nameCount[name] > 1 ? name + "(" + std::to_string(nameCount[name]) + ")" : name;
-    if (resultName != GO_BACK_TEXT)
-      resultName = "&gt; " + resultName;
-      linksHTML += "<a href=\"" + resultLink + ".html\">" + resultName + "</a> ";
+      nameCount[name]++;
+      auto resultLink = link;
+      if (nameCount[name] > 1) {
+        resultLink += "-" + std::to_string(nameCount[name]);
+      }
+      auto resultName = nameCount[name] > 1 ? name + "(" + std::to_string(nameCount[name]) + ")" : name;
+      if (resultName != GO_BACK_TEXT)
+        resultName = "&gt; " + resultName;
+        linksHTML += "<a href=\"" + resultLink + ".html\">" + resultName + "</a> ";
       }
       nameCount.clear();
   return FMT(pageTemplate.c_str(), title.c_str(), context.baseURL.c_str(), context.currentModule.c_str(),
@@ -264,7 +264,7 @@ void createSmallPictureFn(Statement::FunctionDef* node, DocGenContext context, s
     auto values = comment->getValues();
     if (values.count("brief")) {
       body += "<p style=\"margin-left: 15px; margin-bottom: 20px; margin-top: 10px;\">" + sanitize(
-              values["brief"]) + "</p><hr style=\"margin-bottom: 30px;\"/>";
+                values["brief"]) + "</p><hr style=\"margin-bottom: 30px;\"/>";
     }
   }
 }
@@ -335,16 +335,16 @@ void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, Doc
       body += "<p>" + fnBody + "</p>";
     std::vector<std::pair<std::string, std::string>> params;
     for (auto& [tag, value] : values) {
-      if (utils::startsWith(tag, "param$")) {
-      params.push_back({tag, value});
-      }
+        if (utils::startsWith(tag, "param$")) {
+          params.push_back({tag, value});
+        }
       }
       if (params.size() > 0) {
           body += "<hr/><h1 style=\"color:rgb(14 116 144);\">Parameters</h1>";
           for (auto& [tag, value] : params) {
-            std::string paramName = "";
-            if (utils::startsWith(value, "[in]")) {
-            value = value.substr(4);
+              std::string paramName = "";
+              if (utils::startsWith(value, "[in]")) {
+                value = value.substr(4);
             } else if (utils::startsWith(value, "[out]")) {
               value = value.substr(5);
               } else if (utils::startsWith(value, "[in,out]")) {
@@ -365,10 +365,10 @@ void createFunctionPage(Statement::FunctionDef* node, DocGenContext context, Doc
           body = body.substr(0, body.size() - 5);
         }
     for (auto& [tag, value] : values) {
-      if (tag == "brief") continue;
-      if (utils::startsWith(tag, "param$")) continue;
-        body += "<hr/><h1 style=\"color:rgb(14 116 144);\">@" + tag + "</h1>";
-        body += "<p>" + value + "</p>";
+        if (tag == "brief") continue;
+        if (utils::startsWith(tag, "param$")) continue;
+          body += "<hr/><h1 style=\"color:rgb(14 116 144);\">@" + tag + "</h1>";
+          body += "<p>" + value + "</p>";
         }
       }
 body += "<br/><br/></div>";
@@ -443,14 +443,14 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
     if (field->getComment()) {
       auto values = field->getComment()->getValues();
       for (auto& [tag, value] : values) {
-        if (tag == "brief") {
-        body += "\n    // " + value;
-        break;
-        }
+          if (tag == "brief") {
+            body += "\n    // " + value;
+            break;
+          }
         }
       }
   body += "\n    " + (std::string)(field->isContantDecl() ? "const " : "let ") + field->getName() + ": " + typeToHtml(
-            field->getDefinedType()) + ";\n";
+              field->getDefinedType()) + ";\n";
   }
   if (utils::endsWith(body, ",\n"))
     body = body.substr(0, body.size() - 2);
@@ -467,7 +467,7 @@ void createTypePage(Statement::DefinedTypeDef* node, DocGenContext context, Docu
     }
     body += "<p>" + sanitize(docString->getBody()) + "</p>";
     for (auto& [tag, value] : values) {
-      if (tag == "brief") continue;
+        if (tag == "brief") continue;
       }
     }
 if (publicMembers.size() > 0) {
@@ -608,7 +608,7 @@ void createMacroPage(Macro* node, DocGenContext context, DocumentationPage& page
     }
     body += "<p>" + sanitize(docString->getBody()) + "</p>";
     for (auto& [tag, value] : values) {
-      if (tag == "brief") continue;
+        if (tag == "brief") continue;
       }
     }
 body += "<br/><br/></div>";
@@ -652,9 +652,9 @@ void createNamespacePage(Statement::Namespace* node, DocGenContext context, Docu
     }
     body += "<p>" + sanitize(docString->getBody()) + "</p>";
     for (auto& [tag, value] : values) {
-      if (tag == "brief") continue;
-      body += "<hr/><h1 style=\"color:rgb(14 116 144);\">@" + tag + "</h1>";
-      body += "<p>" + sanitize(value) + "</p>";
+        if (tag == "brief") continue;
+        body += "<hr/><h1 style=\"color:rgb(14 116 144);\">@" + tag + "</h1>";
+        body += "<p>" + sanitize(value) + "</p>";
       }
     }
 GENERATE_TOP_LEVEL_NODES(node->getBody())
@@ -708,7 +708,7 @@ void createVariablePage(Statement::VariableDecl* node, DocGenContext context, Do
     }
     body += "<p>" + sanitize(docString->getBody()) + "</p>";
     for (auto& [tag, value] : values) {
-      if (tag == "brief") continue;
+        if (tag == "brief") continue;
       }
     }
 body += "<br/><br/></div>";
@@ -729,9 +729,9 @@ void createRootPage(std::vector<std::string> modules, DocGenContext context, Doc
   }
   // create a list, if the key is not empty, we create a sub-list
   for (auto& [key, value] : moduleMap) {
-    if (!key.empty()) {
-    body += "<br/><h1 style=\"font-size: 25px;\">Modules in " + key + "</h1><br/>";
-    }
+      if (!key.empty()) {
+        body += "<br/><h1 style=\"font-size: 25px;\">Modules in " + key + "</h1><br/>";
+      }
     for (auto& module : value) {
       auto moduleUrl = page.path.string().substr(0,
                          page.path.string().size() - 5) + "/" + (!key.empty() ? key + "/" : "") + module + ".html";
@@ -779,7 +779,7 @@ void createTypeAliasPage(Statement::TypeAlias* node, DocGenContext context, Docu
     }
     body += "<p>" + sanitize(docString->getBody()) + "</p>";
     for (auto& [tag, value] : values) {
-      if (tag == "brief") continue;
+        if (tag == "brief") continue;
       }
     }
 body += "<br/><br/></div>";

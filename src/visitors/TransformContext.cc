@@ -10,7 +10,7 @@
 namespace snowball::Syntax {
 
 TransformContext::TransformContext(
-std::shared_ptr<ir::Module> mod, ir::IRBuilder builder, bool testMode, bool benchMode, bool silentOutput
+  std::shared_ptr<ir::Module> mod, ir::IRBuilder builder, bool testMode, bool benchMode, bool silentOutput
 )
   : AcceptorExtend(), module(mod), testMode(testMode), benchMode(benchMode)
   , isMainModule(true), builder(builder), cache(new Cache()), silentOutput(silentOutput)

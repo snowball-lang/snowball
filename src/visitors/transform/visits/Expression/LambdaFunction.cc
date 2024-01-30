@@ -48,15 +48,15 @@ SN_TRANSFORMER_VISIT(Expression::LambdaFunction) {
     auto backupFunction = ctx->getCurrentFunction();
     ctx->setCurrentFunction(fn);
     ctx->withScope([&]() {
-                   for (auto arg : newArgs) {
-                   auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, arg.second);
-                   ctx->addItem(arg.first, refItem);
-                   }
-                   auto body = bodiedFn->getBody();
-                   if (!fn->isConstructor() && !bodyReturns(body->getStmts()) &&
+                     for (auto arg : newArgs) {
+                       auto refItem = std::make_shared<transform::Item>(transform::Item::Type::VALUE, arg.second);
+                       ctx->addItem(arg.first, refItem);
+                     }
+                     auto body = bodiedFn->getBody();
+                     if (!fn->isConstructor() && !bodyReturns(body->getStmts()) &&
       !((utils::cast<types::NumericType>(returnType)) || (utils::cast<types::VoidType>(returnType)))) {
       E<TYPE_ERROR>(
-      node, "Function lacks ending return statement!", {.info = "Function does not return on all paths!"});
+        node, "Function lacks ending return statement!", {.info = "Function does not return on all paths!"});
       }
     auto functionBody = utils::dyn_cast<ir::Block>(trans(body));
                         fn->setBody(functionBody);

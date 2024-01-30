@@ -20,12 +20,12 @@ bool InterfaceType::is(InterfaceType* ty) const {
   auto otherArgs = ty->getGenerics();
   bool genericSizeEqual = otherArgs.size() == generics.size();
   bool argumentsEqual = genericSizeEqual ? std::all_of(
-                        otherArgs.begin(),
-                        otherArgs.end(),
-                        [&, idx = 0](Type * i) mutable {
-                        idx++;
-                        return generics.at(idx - 1)->is(i);
-                        }
+                          otherArgs.begin(),
+                          otherArgs.end(),
+                          [&, idx = 0](Type * i) mutable {
+                            idx++;
+                            return generics.at(idx - 1)->is(i);
+                          }
                         ) :
                         false;
   return (ty->getUUID() == uuid) && argumentsEqual;

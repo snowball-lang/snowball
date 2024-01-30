@@ -11,16 +11,16 @@ SN_DEFINITE_ASSIGMENT_VISIT(Statement::Conditional) {
   p_node->getCondition()->accept(this);
   std::vector<std::string> blockInited;
   asBlock([&] {
-          for (auto i : p_node->getBlock()->getStmts()) { i->accept(this); }
+            for (auto i : p_node->getBlock()->getStmts()) { i->accept(this); }
 
-          blockInited = this->state.inited;
+            blockInited = this->state.inited;
           });
   if (auto e = p_node->getElse()) {
     std::vector<std::string> elseInited;
     asBlock([&] {
-            for (auto i : e->getStmts()) { i->accept(this); }
+              for (auto i : e->getStmts()) { i->accept(this); }
 
-            elseInited = this->state.inited;
+              elseInited = this->state.inited;
             });
     for (auto id : blockInited) {
       auto var = getIdentifier(id);

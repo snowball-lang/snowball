@@ -21,7 +21,7 @@ namespace commands {
 int bench(app::Options::BenchmarkOptions p_opts) {
   toml::parse_result parsed_config = Compiler::getConfiguration();
   std::string filename =
-  (std::string)(parsed_config["benchmark"]["entry"].value_or<std::string>(fs::current_path() / "bench" / "main.sn"));
+    (std::string)(parsed_config["benchmark"]["entry"].value_or<std::string>(fs::current_path() / "bench" / "main.sn"));
   std::ifstream ifs(filename);
   if (ifs.fail()) {
     SNError(Error::IO_ERROR,
@@ -45,8 +45,8 @@ int bench(app::Options::BenchmarkOptions p_opts) {
   }
   if (!p_opts.silent)
     Logger::message(
-    "Project",
-    FMT("%s v%s [%s%s%s]", package_name.c_str(), package_version.c_str(), BOLD, build_type.c_str(), RESET)
+      "Project",
+      FMT("%s v%s [%s%s%s]", package_name.c_str(), package_version.c_str(), BOLD, build_type.c_str(), RESET)
     );
   Compiler* compiler = new Compiler(content, filename);
   compiler->initialize();

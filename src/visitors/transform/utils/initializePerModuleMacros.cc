@@ -8,7 +8,7 @@ namespace Syntax {
 
 void Transformer::initializePerModuleMacros() {
   auto pkgMacro = N<Macro>(
-                  "pkg",
+                    "pkg",
   std::vector<std::tuple<std::string, Macro::ArguementType, Node*>> {
     {"e", Macro::ArguementType::EXPRESSION, nullptr}
   },
@@ -18,7 +18,7 @@ void Transformer::initializePerModuleMacros() {
   auto pkgMacroItem = std::make_shared<transform::Item>(pkgInstance);
   ctx->addItem("pkg", pkgMacroItem);
   auto zeroInitMacro = N<Macro>(
-                       "zero_initialized",
+                         "zero_initialized",
   std::vector<std::tuple<std::string, Macro::ArguementType, Node*>> {
     {"type", Macro::ArguementType::TYPE, nullptr}
   },
@@ -28,7 +28,7 @@ void Transformer::initializePerModuleMacros() {
   auto zeroInitMacroItem = std::make_shared<transform::Item>(zeroInitInstance);
   ctx->addItem("zero_initialized", zeroInitMacroItem);
   auto sizeofMacro = N<Macro>(
-                     "sizeof",
+                       "sizeof",
   std::vector<std::tuple<std::string, Macro::ArguementType, Node*>> {
     {"type", Macro::ArguementType::TYPE, nullptr}
   },
@@ -38,7 +38,7 @@ void Transformer::initializePerModuleMacros() {
   auto sizeofMacroItem = std::make_shared<transform::Item>(sizeofInstance);
   ctx->addItem("sizeof", sizeofMacroItem);
   auto alignOfMacro = N<Macro>(
-                      "alignof",
+                        "alignof",
   std::vector<std::tuple<std::string, Macro::ArguementType, Node*>> {
     {"type", Macro::ArguementType::TYPE, nullptr}
   },
@@ -48,7 +48,7 @@ void Transformer::initializePerModuleMacros() {
   auto alignOfMacroItem = std::make_shared<transform::Item>(alignOfInstance);
   ctx->addItem("alignof", alignOfMacroItem);
   auto includeStringMacro = N<Macro>(
-                            "include_str",
+                              "include_str",
   std::vector<std::tuple<std::string, Macro::ArguementType, Node*>> {
     {"path", Macro::ArguementType::CONSTANT_STRING, nullptr}
   },
@@ -58,7 +58,7 @@ void Transformer::initializePerModuleMacros() {
   auto includeStringMacroItem = std::make_shared<transform::Item>(includeStringInstance);
   ctx->addItem("include_str", includeStringMacroItem);
   auto envMacro = N<Macro>(
-                  "env_var",
+                    "env_var",
   std::vector<std::tuple<std::string, Macro::ArguementType, Node*>> {
     {"name", Macro::ArguementType::CONSTANT_STRING, nullptr}
   },
