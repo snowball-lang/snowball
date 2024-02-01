@@ -4,14 +4,15 @@ import pkg::utils::path_holder;
 
 import pkg::lexer as lexicon;
 import std::io;
+import pkg::compiler::global_ctx::{glb_ctx, CachedPath};
 
 public class Compiler extends path_holder::PathHolder {
-  public: Compiler(path: Path) : super(path) {}
+  public: Compiler(path: Path) : super(glb_ctx.register_path(path)) {}
 
   func run() i32 {
     // TODO: once implemented file walker, self.path should point to a directory
     // and we should walk through all files in that directory and compile them
-    let lexer = new lexicon::Lexer(self.path.clone());
+    let mut lexer = new lexicon::Lexer(self.path);
     lexer.lex();
 
     io::println(lexer.get_tokens());

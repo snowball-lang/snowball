@@ -1,10 +1,11 @@
 
 import std::fs::{Path};
+import pkg::compiler::global_ctx::{CachedPath};
 
 public class PathHolder {
-    let path: Path;
+    let path: CachedPath;
     
-    public: PathHolder(path: Path) : path(path) {}
+    public: PathHolder(path: CachedPath) : path(path) {}
     
-    @inline func get_path() Path { return self.path; }
+    @inline func get_path() CachedPath { return self.path; }
 }

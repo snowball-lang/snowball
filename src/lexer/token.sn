@@ -71,7 +71,9 @@ public enum TokenType {
   DoubleLessThan,
   DoubleGreaterThan,
   Question,
-  Exclamation
+  Exclamation,
+  
+  EOF
 }
 
 class Token extends LocationHolder implements ToString {
@@ -154,7 +156,8 @@ class Token extends LocationHolder implements ToString {
         DoubleLessThan => return "<<",
         DoubleGreaterThan => return ">>",
         Question => return "?",
-        Exclamation => return "!"
+        Exclamation => return "!",
+        EOF => return "EOF"
       }
     }
 }

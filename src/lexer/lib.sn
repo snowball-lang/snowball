@@ -2,16 +2,62 @@
 import pkg::utils::path_holder;
 import std::fs::{Path};
 import pkg::utils::files_load::{file_loader};
-import pkg::lexer::token::{Token};
+import pkg::lexer::token::{Token, TokenType};
+import pkg::ast::location::{SourceLocation};
+import pkg::compiler::global_ctx::{glb_ctx, CachedPath};
 
 public class Lexer extends path_holder::PathHolder {
   let mut tokens: Vector<Token> = new Vector<Token>();
+  let mut tok_pos: usize = 0;
+  let mut src: String = "";
 
-  public: Lexer(path: Path) : super(path) {}
+  let mut col: usize = 0;
+  let mut line: usize = 0;
 
-  func lex() {
-    let file = file_loader(self.path);
+  public: Lexer(path: CachedPath) : super(path) {}
+
+  mut func lex() {
+    let mut file = file_loader(glb_ctx.get_path(self.get_path()));
+    self.src = file.read();
+    self.lex_tokens();
   }
 
   @inline func get_tokens() Vector<Token> { return self.tokens; }
+
+ private:
+  mut func lex_tokens() {
+    while self.tok_pos < self.src.size() {
+      self.handle_char();
+    }
+  }
+
+  @inline mut func handle_char() {
+    switch self.get_char() {
+      ' ' => self.next_char(),
+      '\t' => self.next_char(),
+      '\n' => {
+        self.next_char();
+        self.line = self.line + 1;
+        self.col = 0;
+      },
+      '\r' => self.next_char(),
+      '\0' => self.next_char(),
+      default => {
+
+      }
+    }
+  }
+
+  @inline mut func get_char(offset: usize = 0) u8 {
+    return self.src[self.tok_pos + offset];
+  }
+
+  @inline mut func consume(token_type: TokenType, width: usize = 1) {
+    self.tokens.push(new Token(token_type, new SourceLocation(self.line, self.col, width, self.get_path())));
+  }
+
+  @inline mut func next_char() {
+    self.tok_pos = self.tok_pos + 1;
+    self.col = self.col + 1;
+  }
 }

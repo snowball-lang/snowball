@@ -1,4 +1,5 @@
 import std::tuples;
+import std::opt::{Option};
 
 /**
  * Exception indicating an index error when interacting with a Map.
@@ -218,5 +219,19 @@ public:
   @inline
   operator func [](key: K) &mut V {
     return self.at(key);
+  }
+  /**
+   * @brief Key for the specified value.
+   * @param {V} value - The value to search for.
+   * @return {K} The key associated with the value.
+   */
+  func key_for(value: V) Option<K> {
+    for let i = 0; i < self.size(); i = i + 1 {
+      let entry = self.table[i];
+      if (entry.second == value) {
+        return Option<?K>::Some(entry.first);
+      }
+    }
+    return Option<?K>::None();
   }
 }

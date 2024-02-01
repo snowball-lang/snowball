@@ -1,6 +1,7 @@
 
 import pkg::utils::path_holder;
 import std::fs::{Path};
+import pkg::compiler::global_ctx::{glb_ctx, CachedPath};
 
 public class SourceLocation extends path_holder::PathHolder {
   let mut line: u32;
@@ -8,14 +9,14 @@ public class SourceLocation extends path_holder::PathHolder {
   let mut width: u32;
 
   public: SourceLocation() :
-    super(new Path("<unknown>")),
+    super(glb_ctx.register_path(new Path("<unknown>"))),
     line(0),
     column(0),
     width(0)
   {}
 
-  SourceLocation(line: u32, column: u32, width: u32, filename: Path) :
-    super(filename),
+  SourceLocation(line: u32, column: u32, width: u32, path: CachedPath) :
+    super(path),
     line(line),
     column(column),
     width(width)

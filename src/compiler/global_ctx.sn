@@ -1,0 +1,27 @@
+
+import std::map::{Map};
+import std::fs::{Path};
+
+public type CachedPath = usize;
+
+public class GlobalContext {
+  let mut registered_paths: Map<CachedPath, Path> = new Map<CachedPath, Path>();
+
+  public: GlobalContext() {}
+
+  @inline func register_path(path: Path) CachedPath {
+    let existant = self.registered_paths.key_for(path);
+    if existant.is_some() {
+      return existant.unwrap();
+    }
+    let id = self.registered_paths.size();
+    self.registered_paths.set(id, path);
+    return id;
+  }
+
+  @inline func get_path(id: CachedPath) Path {
+    return self.registered_paths[id];
+  }
+}
+
+public let mut glb_ctx: GlobalContext = new GlobalContext();
