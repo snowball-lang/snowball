@@ -1,0 +1,10 @@
+
+import std::fs::{Path};
+
+public class PathHolder {
+    let path: Path;
+    
+    public: PathHolder(path: Path) : path(path) {}
+    
+    @inline func get_path() Path { return self.path; }
+}

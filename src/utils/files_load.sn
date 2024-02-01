@@ -1,0 +1,10 @@
+
+import std::fs::{Path, File};
+
+public let mut file_loader: Function<func (Path) => File> = default_loader();
+
+func default_loader() Function<func (Path) => File>{
+  return func (path: Path) File {
+    return new File(path, "r");
+  }
+}

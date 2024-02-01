@@ -1,0 +1,17 @@
+
+import pkg::utils::path_holder;
+import std::fs::{Path};
+import pkg::utils::files_load::{file_loader};
+import pkg::lexer::token::{Token};
+
+public class Lexer extends path_holder::PathHolder {
+  let mut tokens: Vector<Token> = new Vector<Token>();
+
+  public: Lexer(path: Path) : super(path) {}
+
+  func lex() {
+    let file = file_loader(self.path);
+  }
+
+  @inline func get_tokens() Vector<Token> { return self.tokens; }
+}

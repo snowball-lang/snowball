@@ -381,7 +381,7 @@ public class Range<N: Numeric = i32> implements Iterable<N>, ToString {
  *       management.
  */
 public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>> 
- implements Iterable<T>, ToString {
+ implements Iterable<T>, ToString, Clone<Self> {
   public:
     /**
      * @brief Default constructor.
@@ -580,6 +580,17 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
         }
       }
       return -1;
+    }
+    /**
+     * @brief It clones the vector.
+     * @return A clone of the vector.
+     */
+    @inline
+    func clone() Self {
+      let mut vec = Self::with_capacity(self.capacity);
+      vec.length = self.length;
+      ptr::copy_nonoverlapping(self.buffer.ptr(), vec.buffer.ptr(), self.length);
+      return vec;
     }
 
   private:

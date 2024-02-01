@@ -78,7 +78,7 @@ public class File implements ToString, Debug {
     unsafe {
       let cfile = clib::files::fopen(self.path.to_string().c_str(), mode.c_str());
       if cfile.is_null() {
-        throw new FileOpenError("Failed to open or create file (" + self.path.to_string() + "): " + env::posix_get_error_msg(clib::errno()));
+        throw new FileOpenError("Failed to open or create file: " + env::posix_get_error_msg(clib::errno()));
       }
       self.open = true;
       self.file = cfile;

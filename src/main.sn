@@ -1,4 +1,8 @@
 
+import pkg::compiler::{Compiler};
+import std::fs::{Path};
+
 public func main() i32 {
-  return 0;
+  let main_path = new Path("tests/_rewrite_test.sn");
+  return new Compiler(main_path).run();
 }

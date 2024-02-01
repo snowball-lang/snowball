@@ -78,6 +78,7 @@ public enum AST {
   Block(Vector<Node>),
   Assign(Node, Node),
   Call(Node, Vector<Node>),
+  Cast(Node, AstType),
   BinaryOp(BinaryOp, Node, Node, /* is_unary */ bool),
   FuncDef(Option<Node>, Vector<Node>, Vector<Node>, Vector<GenericDecl>),
   VarDef(Option<Node>, Node),

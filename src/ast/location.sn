@@ -1,26 +1,37 @@
 
-public class SourceLocation {
+import pkg::utils::path_holder;
+import std::fs::{Path};
+
+public class SourceLocation extends path_holder::PathHolder {
   let mut line: u32;
   let mut column: u32;
   let mut width: u32;
-  let mut filename: String;
 
   public: SourceLocation() :
+    super(new Path("<unknown>")),
     line(0),
     column(0),
-    width(0),
-    filename("")
+    width(0)
   {}
 
-  SourceLocation(line: u32, column: u32, width: u32, filename: String) :
+  SourceLocation(line: u32, column: u32, width: u32, filename: Path) :
+    super(filename),
     line(line),
     column(column),
-    width(width),
-    filename(filename)
+    width(width)
   {}
 
   @inline func get_line() u32 { return self.line; }
   @inline func get_column() u32 { return self.column; }
   @inline func get_width() u32 { return self.width; }
-  @inline func get_filename() String { return self.filename; }
+}
+
+public class LocationHolder {
+  let mut location: SourceLocation;
+
+  public: LocationHolder() : location(new SourceLocation()) {}
+  public: LocationHolder(location: SourceLocation) : location(location) {}
+
+  @inline func get_location() SourceLocation { return self.location; }
+  @inline func set_location(location: SourceLocation) { self.location = location; }
 }

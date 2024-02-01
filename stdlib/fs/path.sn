@@ -19,7 +19,7 @@ public class PathError extends Exception {}
  * This is a wrapper around a string that provides some useful
  * operations for manipulating paths.
  */
-public class Path implements ToString, Iterable<String> {
+public class Path implements ToString, Iterable<String>, Clone<Self> {
     /// The path as a string.
     let path: Vector<String>;
   public:
@@ -201,4 +201,10 @@ public class Path implements ToString, Iterable<String> {
         return err == 0;
       }
     }
+    /**
+     * @brief Clone the path.
+     * @return The cloned path.
+     */
+    @inline
+    func clone() Path { return new Path(self.path.clone()); }
 }
