@@ -1,8 +1,11 @@
 
 [package]
-main = "tests/main.sn"
-name = "std"
-version = "1.0.0"
+main = "src/main.sn"
+name = "snowball compiler"
+version = "0.0.1"
+
+[tests]
+entry = "tests/main.sn"
 
 [documentation]
 entry = "./stdlib"

@@ -1,0 +1,110 @@
+
+import std::opt::{Option};
+import pkg::ast::location::{Location};
+
+public enum BinaryOp {
+  Add,
+  Sub,
+  Mul,
+  Div,
+  Mod,
+  Eq,
+  Ne,
+  Lt,
+  Le,
+  Gt,
+  Ge,
+  And,
+  Or,
+  New,
+  Del,
+};
+
+public class AstType {
+  let ast: Node;
+
+  public: AstType(Node ast) {
+    self.ast = ast;
+  }
+
+  func get_ast() Node {
+    return self.ast;
+  }
+}
+
+public class GenericDecl {
+  let name: String;
+  let impls: Vector<AstType>;
+
+  public: GenericDecl(String name, Vector<AstType> impls) {
+    self.name = name;
+    self.impls = impls;
+  }
+
+  func get_name() String {
+    return self.name;
+  }
+
+  func get_impls() Vector<AstType> {
+    return self.impls;
+  }
+}
+
+public class ClassMember {
+  let name: String;
+  let ty: AstType;
+
+  public: ClassMember(String name, AstType ty) {
+    self.name = name;
+    self.ty = ty;
+  }
+
+  func get_name() String {
+    return self.name;
+  }
+
+  func get_ty() AstType {
+    return self.ty;
+  }
+}
+
+public enum AST {
+  Return(Option<Node>),
+  Break,
+  Continue,
+  If(Node, Node, Vector<Node>),
+  While(Node, Vector<Node>, /* is_do_while */ bool),
+  For(Node, Node, Node, Vector<Node>),
+  Block(Vector<Node>),
+  Assign(Node, Node),
+  Call(Node, Vector<Node>),
+  BinaryOp(BinaryOp, Node, Node, /* is_unary */ bool),
+  FuncDef(Option<Node>, Vector<Node>, Vector<Node>, Vector<GenericDecl>),
+  VarDef(Option<Node>, Node),
+  Ident(String, Vector<AstType>),
+  Int(i64),
+  Float(f64),
+  String(String),
+  Bool(bool),
+  ClassDef(Option<Node>, Vector<ClassMember>, Vector<GenericDecl>),
+  ClassInit(AstType, Vector<Node>),
+  ClassAccess(Node, String),
+  NamespaceDef(Option<Node>, Vector<Node>),
+  NamespaceAccess(Node, String),
+  Import(Node),
+  InterfaceDef(Option<Node>, Vector<Node>, Vector<GenericDecl>),
+  EnumDef(Option<Node>, Vector<Node>),
+};
+
+public class Node {
+  let kind: AST;
+  let location
+
+  public: Node(AST kind) {
+    self.kind = kind;
+  }
+
+  @inline func get_kind() AST {
+    return self.kind;
+  }
+}

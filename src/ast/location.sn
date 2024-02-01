@@ -1,0 +1,26 @@
+
+public class SourceLocation {
+  let mut line: u32;
+  let mut column: u32;
+  let mut width: u32;
+  let mut filename: String;
+
+  public: SourceLocation() :
+    line(0),
+    column(0),
+    width(0),
+    filename("")
+  {}
+
+  SourceLocation(line: u32, column: u32, width: u32, filename: String) :
+    line(line),
+    column(column),
+    width(width),
+    filename(filename)
+  {}
+
+  @inline func get_line() u32 { return self.line; }
+  @inline func get_column() u32 { return self.column; }
+  @inline func get_width() u32 { return self.width; }
+  @inline func get_filename() String { return self.filename; }
+}
