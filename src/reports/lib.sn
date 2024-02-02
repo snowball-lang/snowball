@@ -1,0 +1,214 @@
+
+import pkg::ast::location::{SourceLocation};
+import std::opt::{Option, none, some};
+import std::ss::{StringStream};
+import pkg::utils::colors;
+import pkg::utils::string::{highlight};
+import pkg::compiler::global_ctx::{glb_ctx};
+import pkg::utils::files_load::{file_loader};
+
+public enum ErrorType {
+  UnexpectedChar(u8),
+  UnexpectedEOF,
+}
+
+class extends ErrorType implements ToString {
+  public:
+    func to_string() String {
+      case self {
+        UnexpectedChar(c) => return "Unknown character '" + String::from(c, 1) + "'",
+        UnexpectedEOF => return "Unexpected end of file!",
+      }
+    }
+}
+
+public class DBGInfo {
+  let mut line_after_after: String;
+  let mut line_after: String;
+  let mut line: String;
+  let mut line_before: String;
+  let mut line_before_before: String;
+
+  public:
+    DBGInfo() :
+      line_after_after(""),
+      line_after(""),
+      line(""),
+      line_before(""),
+      line_before_before("")
+    {}
+
+    @inline mut func add_line_after_after(line: u8) {
+      self.line_after_after += line;
+    }
+
+    @inline mut func add_line_after(line: u8) {
+      self.line_after += line;
+    }
+
+    @inline mut func add_line(line: u8) {
+      self.line += line;
+    }
+
+    @inline mut func add_line_before(line: u8) {
+      self.line_before += line;
+    }
+
+    @inline mut func add_line_before_before(line: u8) {
+      self.line_before_before += line;
+    }
+
+    @inline func line_after_after() String {
+      return self.line_after_after;
+    }
+
+    @inline func line_after() String {
+      return self.line_after;
+    }
+
+    @inline func line() String {
+      return self.line;
+    }
+
+    @inline func line_before() String {
+      return self.line_before;
+    }
+
+    @inline func line_before_before() String {
+      return self.line_before_before;
+    }
+}
+
+public class CompilerError extends Exception implements ToString {
+  let error_type: ErrorType;
+  let location: SourceLocation;
+  let info: ErrorInfo;
+  
+  public:
+    CompilerError(error_type: ErrorType, location: SourceLocation) :
+      super(""),
+      error_type(error_type),
+      location(location),
+      info(new ErrorInfo())
+    {}
+
+    override virtual func to_string() String {
+      let dbg = self.get_dbg_info();
+      let mut stream = new StringStream();
+      stream.write(colors::BRED + "error" + colors::RESET + ": ");
+      stream.write(highlight(self.error_type.to_string()));
+      stream.write(colors::BOLD + "\n at [" + colors::BLK + 
+        glb_ctx.get_path(self.location.path).to_string() + 
+        colors::RESET + ":" + colors::BBLU + self.location.get_line().to_string() + 
+        ":" + self.location.get_column().to_string() + colors::RESET + "]\n");
+      stream.write(colors::BBLK + "    |\n" );
+      if !dbg.line_before_before().is_empty() {
+        stream.write(colors::BBLK + (self.location.get_line() - 2).to_string().rjust(3) + " | " + dbg.line_before_before() + "\n");
+      }
+      if !dbg.line_before().is_empty() {
+        stream.write(colors::BBLK + (self.location.get_line() - 1).to_string().rjust(3) + " | " + dbg.line_before() + "\n");
+      }
+      if !dbg.line().is_empty() {
+        let line_copy = dbg.line();
+        let mut line = "";
+        for let i = 0; i < line_copy.size(); i = i + 1 {
+          if i == self.location.get_column() {
+            line += colors::BOLD;
+          } 
+          line += line_copy[i];
+          if i == self.location.get_column() + self.location.get_width() - 1 {
+            line += colors::RESET;
+          }
+        }
+        stream.write(colors::RESET + colors::BOLD + self.location.get_line().to_string().rjust(3) + " | " + line + "\n");
+      }
+      if !dbg.line_after().is_empty() {
+        stream.write(colors::BBLK + (self.location.get_line() + 1).to_string().rjust(3) + " | " + dbg.line_after() + "\n");
+      }
+      if !dbg.line_after_after().is_empty() {
+        stream.write(colors::BBLK + (self.location.get_line() + 2).to_string().rjust(3) + " | " + dbg.line_after_after() + "\n");
+      }
+      stream.write(colors::RESET + colors::BBLK + "    |\n");
+      stream.write(colors::RESET);
+      return stream.to_string();
+    }
+
+    func get_dbg_info() DBGInfo {
+      let mut current_line = 0UL;
+      let source = file_loader(glb_ctx.get_path(self.location.path)).read();
+      let mut dbg_info = new DBGInfo();
+      for let i = 0UL; i < source.size(); i = i + 1 {
+        let chr = source[i];
+        if chr == '\n' {
+          if current_line >= (self.location.get_line() + 2) {
+            break;
+          }
+          current_line = current_line + 1;
+        } else if current_line == (self.location.get_line() - 2) {
+          dbg_info.add_line_before_before(chr);
+        } else if current_line == (self.location.get_line() - 1) {
+          dbg_info.add_line_before(chr);
+        } else if current_line == self.location.get_line() {
+          dbg_info.add_line(chr);
+        } else if current_line == (self.location.get_line() + 1) {
+          dbg_info.add_line_after(chr);
+        } else if current_line == (self.location.get_line() + 2) {
+          dbg_info.add_line_after_after(chr);
+        }
+      }
+      return dbg_info;
+    }
+
+    func get_position_string() String {
+      let mut stream = new StringStream();
+      let mut done = false;
+      let mut i = 0;
+      while true {
+        if i == self.location.get_column() {
+          for let j = 0; j < self.location.get_width(); j = j + 1 {
+            stream.write("^");
+          }
+          break;
+        } else {
+          stream.write(" ");
+        }
+      }
+      return stream.to_string();
+    }
+
+    func info() &ErrorInfo {
+      return self.info;
+    }
+}
+
+public class ErrorInfo {
+  let mut info: String;
+  let mut note: String;
+  let mut help: String;
+
+  public:
+    ErrorInfo() :
+      info(""),
+      note(""),
+      help("")
+    {}
+
+    mut func with_info(info: String) ErrorInfo {
+      self.info = info;
+      return self;
+    }
+
+    mut func with_note(note: String) ErrorInfo {
+      self.note = note;
+      return self;
+    }
+
+    mut func with_help(help: String) ErrorInfo {
+      self.help = help;
+      return self;
+    }
+}
+
+public func E(error_type: ErrorType, location: SourceLocation = new SourceLocation()) CompilerError {
+  return new CompilerError(error_type, location);
+}

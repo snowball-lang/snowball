@@ -1,0 +1,29 @@
+
+import pkg::utils::colors;
+
+/// @brief replace 'hello' with [white]'hello'[reset]
+/// @param str input string
+/// @return string with 'hello' replaced with [white]'hello'[reset]
+public func highlight(str: String) String {
+  let mut result = "";
+  let mut i = 0UL;
+  let mut in_highlight = false;
+  while i < str.size() {
+    let mut add = false;
+    if str[i] == '\'' {
+      if in_highlight {
+        add = true;
+      } else {
+        result += colors::BWHT;
+        in_highlight = true;
+      }
+    }
+    result += str[i];  
+    if add {
+      result += colors::RESET;
+      in_highlight = false;
+    } 
+    i = i + 1;
+  }
+  return result;
+}

@@ -38,7 +38,7 @@ public class Opt {
               default_val: Option<String> = none<?String>(), 
               aliases: Vector<String> = new Vector<String>()) {
     self.name = name;
-    if description.empty() { self.description = none<?String>(); } 
+    if description.is_empty() { self.description = none<?String>(); } 
     else { self.description = some(description); }
     self.default_val = default_val;
     self.aliases = aliases;
@@ -92,7 +92,7 @@ public class Arg {
    */
   public: Arg(name: String, description: String = "", required: bool = false) {
     self.name = name;
-    if description.empty() { self.description = none<?String>(); }
+    if description.is_empty() { self.description = none<?String>(); }
     else { self.description = some(description); }
     self.required = required;
     self.default_val = none<?String>();
@@ -149,7 +149,7 @@ public class Cli {
   */
   public: Cli(name: String, version: String = "") : name(name) {
     self.version = none<?String>();
-    if version.empty() { self.version = none<?String>(); } 
+    if version.is_empty() { self.version = none<?String>(); } 
     else { self.version = some(version); }
     self.author = none<?String>();
     self.license = none<?String>();

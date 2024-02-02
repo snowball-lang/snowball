@@ -35,7 +35,7 @@ public class StringStream implements stream::Stream<String>, ToString {
    * @remark The `empty` method provides a quick check for determining whether the stream has any content.
    */
   @inline
-  func empty() bool { return self.string.empty(); }
+  func empty() bool { return self.string.is_empty(); }
   /**
    * @brief Converts the string stream to its string representation.
    * @return The string representation of the string stream.

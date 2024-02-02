@@ -70,6 +70,8 @@ public enum TokenType {
   DoublePipe,
   DoubleLessThan,
   DoubleGreaterThan,
+  DoubleLessThanEqual,
+  DoubleGreaterThanEqual,
   Question,
   Exclamation,
   
@@ -85,7 +87,7 @@ class Token extends LocationHolder implements ToString {
       token_type(token_type)
     {}
 
-    func to_string() String {
+    func value() String {
       case self.token_type {
         Identifier(value) => return value,
         Integer(value) => return value.to_string(),
@@ -155,9 +157,16 @@ class Token extends LocationHolder implements ToString {
         DoublePipe => return "||",
         DoubleLessThan => return "<<",
         DoubleGreaterThan => return ">>",
+        DoubleLessThanEqual => return "<<=",
+        DoubleGreaterThanEqual => return ">>=",
         Question => return "?",
         Exclamation => return "!",
         EOF => return "EOF"
       }
+    }
+
+    func to_string() String {
+      let repr = "Token(" + self.value() + ")";
+      return repr;
     }
 }

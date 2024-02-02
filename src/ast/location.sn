@@ -4,27 +4,27 @@ import std::fs::{Path};
 import pkg::compiler::global_ctx::{glb_ctx, CachedPath};
 
 public class SourceLocation extends path_holder::PathHolder {
-  let mut line: u32;
-  let mut column: u32;
-  let mut width: u32;
+  let mut line: usize;
+  let mut column: usize;
+  let mut width: usize;
 
   public: SourceLocation() :
     super(glb_ctx.register_path(new Path("<unknown>"))),
-    line(0),
-    column(0),
-    width(0)
+    line(0UL),
+    column(0UL),
+    width(0UL)
   {}
 
-  SourceLocation(line: u32, column: u32, width: u32, path: CachedPath) :
+  SourceLocation(line: usize, column: usize, width: usize, path: CachedPath) :
     super(path),
     line(line),
     column(column),
     width(width)
   {}
 
-  @inline func get_line() u32 { return self.line; }
-  @inline func get_column() u32 { return self.column; }
-  @inline func get_width() u32 { return self.width; }
+  @inline func get_line() usize { return self.line; }
+  @inline func get_column() usize { return self.column; }
+  @inline func get_width() usize { return self.width; }
 }
 
 public class LocationHolder {

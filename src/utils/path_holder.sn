@@ -7,5 +7,5 @@ public class PathHolder {
     
     public: PathHolder(path: CachedPath) : path(path) {}
     
-    @inline func get_path() CachedPath { return self.path; }
+    @inline virtual func get_path() CachedPath { return self.path; }
 }

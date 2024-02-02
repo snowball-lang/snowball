@@ -1,0 +1,79 @@
+
+public const BLK: String = "\e[0;90m";
+public const RED: String = "\e[0;31m";
+public const GRN: String = "\e[0;32m";
+public const YEL: String = "\e[0;33m";
+public const BLU: String = "\e[0;34m";
+public const MAG: String = "\e[0;35m";
+public const CYN: String = "\e[0;36m";
+public const WHT: String = "\e[0;37m";
+
+// Regular bold text
+public const BBLK: String = "\e[1;30m";
+public const BRED: String = "\e[1;31m";
+public const BGRN: String = "\e[1;32m";
+public const BYEL: String = "\e[1;33m";
+public const BBLU: String = "\e[1;34m";
+public const BMAG: String = "\e[1;35m";
+public const BCYN: String = "\e[1;36m";
+public const BWHT: String = "\e[1;37m";
+
+// Regular underline text
+public const UBLK: String = "\e[4;30m";
+public const URED: String = "\e[4;31m";
+public const UGRN: String = "\e[4;32m";
+public const UYEL: String = "\e[4;33m";
+public const UBLU: String = "\e[4;34m";
+public const UMAG: String = "\e[4;35m";
+public const UCYN: String = "\e[4;36m";
+public const UWHT: String = "\e[4;37m";
+
+// Regular background
+public const BLKB: String = "\e[40m";
+public const REDB: String = "\e[41m";
+public const GRNB: String = "\e[42m";
+public const YELB: String = "\e[43m";
+public const BLUB: String = "\e[44m";
+public const MAGB: String = "\e[45m";
+public const CYNB: String = "\e[46m";
+public const WHTB: String = "\e[47m";
+
+// High intensty background
+public const BLKHB: String = "\e[0;100m";
+public const REDHB: String = "\e[0;101m";
+public const GRNHB: String = "\e[0;102m";
+public const YELHB: String = "\e[0;103m";
+public const BLUHB: String = "\e[0;104m";
+public const MAGHB: String = "\e[0;105m";
+public const CYNHB: String = "\e[0;106m";
+public const WHTHB: String = "\e[0;107m";
+
+// High intensty text
+public const HBLK: String = "\e[0;90m";
+public const HRED: String = "\e[0;91m";
+public const HGRN: String = "\e[0;92m";
+public const HYEL: String = "\e[0;93m";
+public const HBLU: String = "\e[0;94m";
+public const HMAG: String = "\e[0;95m";
+public const HCYN: String = "\e[0;96m";
+public const HWHT: String = "\e[0;97m";
+
+// Bold high intensity text
+public const BHBLK: String = "\e[1;90m";
+public const BHRED: String = "\e[1;91m";
+public const BHGRN: String = "\e[1;92m";
+public const BHYEL: String = "\e[1;93m";
+public const BHBLU: String = "\e[1;94m";
+public const BHMAG: String = "\e[1;95m";
+public const BHCYN: String = "\e[1;96m";
+public const BHWHT: String = "\e[1;97m";
+
+// MORE CODES
+public const RESET: String = "\e[0m";
+public const DIM: String = "\e[22m";
+public const BLINK: String = "\e[5m";
+public const HIDDEN: String = "\e[8m";
+public const REVERSE: String = "\e[7m";
+public const BOLD: String = "\e[1m";
+public const UNDERLINE: String = "\e[4m";
+public const STRIKE: String = "\e[9m";

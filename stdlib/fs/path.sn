@@ -49,7 +49,7 @@ public class Path implements ToString, Iterable<String> {
      */
     @inline
     func join(other: Path) Path { 
-      if other.empty() {
+      if other.is_empty() {
         return self;
       }
       let mut copy = self.path;
@@ -84,7 +84,7 @@ public class Path implements ToString, Iterable<String> {
      * @return Whether the path is empty.
     */
     @inline
-    func empty() bool { return self.path.empty(); }
+    func is_empty() bool { return self.path.is_empty(); }
 
     // Operators
 

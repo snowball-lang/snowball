@@ -5,14 +5,15 @@ import pkg::utils::files_load::{file_loader};
 import pkg::lexer::token::{Token, TokenType};
 import pkg::ast::location::{SourceLocation};
 import pkg::compiler::global_ctx::{glb_ctx, CachedPath};
+import pkg::reports::{ErrorType, CompilerError, E};
 
 public class Lexer extends path_holder::PathHolder {
   let mut tokens: Vector<Token> = new Vector<Token>();
   let mut tok_pos: usize = 0;
   let mut src: String = "";
 
-  let mut col: usize = 0;
-  let mut line: usize = 0;
+  let mut col: usize = 0UL;
+  let mut line: usize = 0UL;
 
   public: Lexer(path: CachedPath) : super(path) {}
 
@@ -37,27 +38,153 @@ public class Lexer extends path_holder::PathHolder {
       '\t' => self.next_char(),
       '\n' => {
         self.next_char();
-        self.line = self.line + 1;
-        self.col = 0;
+        self.next_line();
       },
       '\r' => self.next_char(),
       '\0' => self.next_char(),
+      '/' => {
+        switch self.get_char(1) {
+          '/' => {
+            while self.get_char() != '\n' && self.get_char() != '\0' {
+              self.next_char();
+            }
+          },
+          '*' => {
+            self.next_char();
+            self.next_char();
+            while self.get_char() != '*' && self.get_char(1) != '/' {
+              self.next_char();
+              if self.get_char() == '\n' {
+                self.next_line();
+              } else if self.get_char() == '\0' {
+                self.report_error(ErrorType::UnexpectedEOF);
+              }
+            }
+            self.next_char();
+            self.next_char();
+          },
+          '=' => self.consume(TokenType::SlashEqual, 2),
+          default => self.consume(TokenType::Slash)
+        }
+      },
+      '+' => {
+        switch self.get_char(1) {
+          '+' => self.consume(TokenType::DoublePlus, 2),
+          '=' => self.consume(TokenType::PlusEqual, 2),
+          default => self.consume(TokenType::Plus),
+        }
+      },
+      '-' => {
+        switch self.get_char(1) {
+          '-' => self.consume(TokenType::DoubleMinus, 2),
+          '=' => self.consume(TokenType::MinusEqual, 2),
+          default => self.consume(TokenType::Minus),
+        }
+      },
+      '*' => {
+        switch self.get_char(1) {
+          '=' => self.consume(TokenType::StarEqual, 2),
+          default => self.consume(TokenType::Star),
+        }
+      },
+      '%' => {
+        switch self.get_char(1) {
+          '=' => self.consume(TokenType::PercentEqual, 2),
+          default => self.consume(TokenType::Percent),
+        }
+      },
+      '&' => {
+        switch self.get_char(1) {
+          '&' => self.consume(TokenType::DoubleAmpersand, 2),
+          '=' => self.consume(TokenType::AmpersandEqual, 2),
+          default => self.consume(TokenType::Ampersand),
+        }
+      },
+      '|' => {
+        switch self.get_char(1) {
+          '|' => self.consume(TokenType::DoublePipe, 2),
+          '=' => self.consume(TokenType::PipeEqual, 2),
+          default => self.consume(TokenType::Pipe),
+        }
+      },
+      '=' => {
+        switch self.get_char(1) {
+          '=' => self.consume(TokenType::DoubleEqual, 2),
+          default => self.consume(TokenType::Equal),
+        }
+      },
+      '!' => {
+        switch self.get_char(1) {
+          '=' => self.consume(TokenType::NotEqual, 2),
+          default => self.consume(TokenType::Exclamation),
+        }
+      },
+      '<' => {
+        switch self.get_char(1) {
+          '<' => {
+            switch self.get_char(2) {
+              '=' => self.consume(TokenType::DoubleLessThanEqual, 3),
+              default => self.consume(TokenType::DoubleLessThan, 2),
+            }
+          },
+          '=' => self.consume(TokenType::LessThanEqual, 2),
+          default => self.consume(TokenType::LessThan),
+        }
+      },
+      '>' => {
+        switch self.get_char(1) {
+          '>' => {
+            switch self.get_char(2) {
+              '=' => self.consume(TokenType::DoubleGreaterThanEqual, 3),
+              default => self.consume(TokenType::DoubleGreaterThan, 2),
+            }
+          },
+          '=' => self.consume(TokenType::GreaterThanEqual, 2),
+          default => self.consume(TokenType::GreaterThan),
+        }
+      },
+      '(' => self.consume(TokenType::OpenParen),
+      ')' => self.consume(TokenType::CloseParen),
+      '{' => self.consume(TokenType::OpenBrace),
+      '}' => self.consume(TokenType::CloseBrace),
+      '[' => self.consume(TokenType::OpenBracket),
+      ']' => self.consume(TokenType::CloseBracket),
+      ';' => self.consume(TokenType::Semicolon),
+      ':' => self.consume(TokenType::Colon),
+      ',' => self.consume(TokenType::Comma),
+      '.' => self.consume(TokenType::Dot),
+      '@' => self.consume(TokenType::At),
+      '?' => self.consume(TokenType::Question),
       default => {
-
+        // TODO: identifiers, strings, numbers, etc.
+        self.report_error(ErrorType::UnexpectedChar(self.get_char()));
       }
     }
   }
 
+  @inline mut func next_line() {
+    self.line = self.line + 1;
+    self.col = 0;
+  }
+
   @inline mut func get_char(offset: usize = 0) u8 {
+    if (self.tok_pos + offset) >= self.src.size() {
+      return '\0';
+    }
     return self.src[self.tok_pos + offset];
   }
 
   @inline mut func consume(token_type: TokenType, width: usize = 1) {
     self.tokens.push(new Token(token_type, new SourceLocation(self.line, self.col, width, self.get_path())));
+    self.next_char(width);
   }
 
-  @inline mut func next_char() {
-    self.tok_pos = self.tok_pos + 1;
-    self.col = self.col + 1;
+  @inline mut func next_char(width: usize = 1) {
+    self.tok_pos = self.tok_pos + width;
+    self.col = self.col + width;
+  }
+
+  @inline func report_error(error: ErrorType) {
+    throw E(error, new SourceLocation(self.line, self.col, 1, self.get_path()));
   }
 }

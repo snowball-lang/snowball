@@ -115,7 +115,7 @@ public class Exception implements ToString, Throwable {
      * @brief Returns a string representation of the exception.
      * @return A string representation of the exception.
      */
-    func to_string() String { return self.what(); }
+    virtual func to_string() String { return self.what(); }
   private:
     /** The message of the exception. */
     let msg: String::StringType;
@@ -503,7 +503,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
       //  T implements the `to_string` method.
       let mut result = "[";
       for let mut i = 0; i < self.length; i = i+1 {
-        result = result + String::from(self[i]);
+        result = result + self[i].to_string();
         if i != self.length - 1 {
           result = result + ", ";
         }
@@ -516,7 +516,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
      * @return `true` if the vector is empty, `false` otherwise.
      */
     @inline
-    func empty() bool { return self.length == 0; }
+    func is_empty() bool { return self.length == 0; }
     /**
      * @brief It removes the element at the specified index.
      * @param[in] index The index of the element to remove.
@@ -544,7 +544,7 @@ public class Vector<T: Sized, Allocator: Sized = ptr::Allocator<T>>
     mut func pop() {
       // We remove the last element from the vector.
       // We make sure the vector is not empty.
-      if self.empty() {
+      if self.is_empty() {
         throw new IndexError("Cannot pop from an empty vector.");
       }
       // We decrement the length of the vector.
@@ -891,7 +891,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @return `true` if the string view is empty, `false` otherwise.
      */
     @inline
-    func empty() bool { return self.length == 0; }
+    func is_empty() bool { return self.length == 0; }
     /**
      * @brief It returns true if the string view starts with the specified string.
      * @param[in] other The string to check if the string view starts with.
