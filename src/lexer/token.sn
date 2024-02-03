@@ -3,8 +3,8 @@ import pkg::ast::location::{LocationHolder, SourceLocation};
 
 public enum TokenType {
   Identifier(String),
-  Integer(i64),
-  Float(f64),
+  Integer(String),
+  Float(String),
   String(String),
   Char(u8),
   Continue,
@@ -74,6 +74,8 @@ public enum TokenType {
   DoubleGreaterThanEqual,
   Question,
   Exclamation,
+  Tilde,
+  Hash,
   
   EOF
 }
@@ -90,8 +92,8 @@ class Token extends LocationHolder implements ToString {
     func value() String {
       case self.token_type {
         Identifier(value) => return value,
-        Integer(value) => return value.to_string(),
-        Float(value) => return value.to_string(),
+        Integer(value) => return value, 
+        Float(value) => return value,
         String(value) => return "\"" + value + "\"",
         Char(value) => return "'" + value + "'",
         Continue => return "continue",
@@ -161,7 +163,9 @@ class Token extends LocationHolder implements ToString {
         DoubleGreaterThanEqual => return ">>=",
         Question => return "?",
         Exclamation => return "!",
-        EOF => return "EOF"
+        Tilde => return "~",
+        Hash => return "#",
+        EOF => return "<EOF>"
       }
     }
 

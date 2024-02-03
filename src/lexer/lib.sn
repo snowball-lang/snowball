@@ -1,11 +1,30 @@
 
 import pkg::utils::path_holder;
-import std::fs::{Path};
 import pkg::utils::files_load::{file_loader};
 import pkg::lexer::token::{Token, TokenType};
 import pkg::ast::location::{SourceLocation};
 import pkg::compiler::global_ctx::{glb_ctx, CachedPath};
 import pkg::reports::{ErrorType, CompilerError, E};
+
+import std::chars;
+import std::fs::{Path};
+
+@use_macro(unreachable)
+import std::panics;
+
+enum _ReadMode {
+  Integer,
+  Float,
+  Binary,
+  Octal,
+  Hex
+};
+
+macro append_token(ty: expr, size: expr)
+  = self.tokens.push(new Token(#ty, new SourceLocation(self.line, self.col, #size, self.get_path())))
+
+macro is_identifier(c: expr) 
+  = chars::is_alpha(self.get_char()) || self.get_char() == '_'
 
 public class Lexer extends path_holder::PathHolder {
   let mut tokens: Vector<Token> = new Vector<Token>();
@@ -110,6 +129,7 @@ public class Lexer extends path_holder::PathHolder {
       '=' => {
         switch self.get_char(1) {
           '=' => self.consume(TokenType::DoubleEqual, 2),
+          '>' => self.consume(TokenType::Arrow, 2),
           default => self.consume(TokenType::Equal),
         }
       },
@@ -155,10 +175,228 @@ public class Lexer extends path_holder::PathHolder {
       '.' => self.consume(TokenType::Dot),
       '@' => self.consume(TokenType::At),
       '?' => self.consume(TokenType::Question),
+      '~' => self.consume(TokenType::Tilde),
+      '#' => self.consume(TokenType::Hash),
+      '"' => self.lex_string(),
+      '\'' => self.lex_char(),
       default => {
-        // TODO: identifiers, strings, numbers, etc.
+        if chars::is_digit(self.get_char()) {
+          self.lex_number();
+          return;
+        } else if is_identifier!(self.get_char()) {
+          self.lex_identifier();
+          return;
+        }
         self.report_error(ErrorType::UnexpectedChar(self.get_char()));
       }
+    }
+  }
+
+  mut func lex_char() {
+    self.next_char();
+    let mut chr = self.get_char();
+    if chr == '\\' {
+      self.next_char();
+      switch self.get_char() {
+        'n' => chr = '\n',
+        'r' => chr = '\r',
+        't' => chr = '\t',
+        '0' => chr = '\0',
+        '\\' => chr = '\\',
+        '\'' => chr = '\'',
+        default => self.report_error(ErrorType::InvalidEscape(self.get_char())),
+      }
+    }
+    self.next_char();
+    if self.get_char() != '\'' {
+      self.report_error(ErrorType::UnexpectedChar(self.get_char()));
+    }
+    append_token!(TokenType::Char(chr), 3);
+    self.next_char();
+  }
+
+  mut func lex_string() {
+    self.next_char();
+    let mut str = "";
+    let col = self.col;
+    let line = self.line;
+    while self.get_char() != '"' {
+      if self.get_char() == '\n' || self.get_char() == '\0' {
+        self.report_error(ErrorType::UnexpectedEOF); // TODO: add starter location to the error
+      }
+      if self.get_char() == '\\' {
+        self.next_char();
+        switch self.get_char() {
+          'n' => str += '\n',
+          'r' => str += '\r',
+          't' => str += '\t',
+          '0' => str += '\0',
+          '\\' => str += '\\',
+          '"' => str += '"',
+          '\'' => str += '\'',
+          '\n' => {
+            self.next_line();
+          },
+          default => self.report_error(ErrorType::InvalidEscape(self.get_char())),
+        }
+      } else {
+        str += self.get_char();
+      }
+      self.next_char();
+    }
+    append_token!(TokenType::String(str), self.col - col + 1);
+    self.next_char();
+  }
+
+  mut func lex_identifier() {
+    let chr = self.get_char();
+    let mut id = String::from(chr, 1);
+    self.next_char();
+    while is_identifier!(self.get_char()) || chars::is_digit(self.get_char()) {
+      id += self.get_char();
+      self.next_char();
+    }
+    if id == "true" {
+      append_token!(TokenType::True, 4);
+    } else if id == "false" {
+      append_token!(TokenType::False, 5);
+    } else if id == "if" {
+      append_token!(TokenType::If, 2);
+    } else if id == "else" {
+      append_token!(TokenType::Else, 4);
+    } else if id == "while" {
+      append_token!(TokenType::While, 5);
+    } else if id == "for" {
+      append_token!(TokenType::For, 3);
+    } else if id == "return" {
+      append_token!(TokenType::Return, 6);
+    } else if id == "break" {
+      append_token!(TokenType::Break, 5);
+    } else if id == "continue" {
+      append_token!(TokenType::Continue, 8);
+    } else if id == "fn" {
+      append_token!(TokenType::Fn, 2);
+    } else if id == "new" {
+      append_token!(TokenType::New, 3);
+    } else if id == "super" {
+      append_token!(TokenType::Super, 5);
+    } else if id == "import" {
+      append_token!(TokenType::Import, 6);
+    } else if id == "let" {
+      append_token!(TokenType::Let, 3);
+    } else if id == "mut" {
+      append_token!(TokenType::Mut, 3);
+    } else if id == "struct" {
+      append_token!(TokenType::Struct, 6);
+    } else if id == "enum" {
+      append_token!(TokenType::Enum, 4);
+    } else if id == "class" {
+      append_token!(TokenType::Class, 5);
+    } else if id == "interface" {
+      append_token!(TokenType::Interface, 9);
+    } else if id == "public" {
+      append_token!(TokenType::Public, 6);
+    } else if id == "private" {
+      append_token!(TokenType::Private, 7);
+    } else if id == "const" {
+      append_token!(TokenType::Const, 5);
+    } else if id == "static" {
+      append_token!(TokenType::Static, 6);
+    } else {
+      append_token!(TokenType::Identifier(id), id.size());
+    }
+  }
+
+  @inline mut func lex_number() {
+    // TODO: 1.2e3 is a valid float
+    let mut read_mode = _ReadMode::Integer;
+    if self.get_char() == '0' {
+      switch self.get_char(1) {
+        'b' => read_mode = _ReadMode::Binary,
+        'o' => read_mode = _ReadMode::Octal,
+        'x' => read_mode = _ReadMode::Hex,
+        default => {}
+      }
+    }
+    let mut is_range = false;
+    let chr = self.get_char();
+    let mut num = String::from(chr, 1);
+    self.next_char();
+    case read_mode {
+      Integer => {
+        while chars::is_digit(self.get_char()) || self.get_char() == '.' {
+          if self.get_char() == '.' {
+            case read_mode {
+              Float => {
+                read_mode = _ReadMode::Integer;
+                num.erase(num.size() - 1, 1);
+                is_range = true;
+                break;
+              }, default => {}
+            }
+            read_mode = _ReadMode::Float;
+          }
+          num += self.get_char();
+          self.next_char();
+        }
+      },
+      Binary => {
+        num += self.get_char();
+        self.next_char(); // skip 'b'
+        while chars::is_bin(self.get_char()) {
+          num += self.get_char();
+          self.next_char();
+        }
+      },
+      Octal => {
+        num += self.get_char();
+        self.next_char(); // skip 'o'
+        while chars::is_oct(self.get_char()) {
+          num += self.get_char();
+          self.next_char();
+        }
+      },
+      Hex => {
+        num += self.get_char();
+        self.next_char(); // skip 'x'
+        while chars::is_hex(self.get_char()) {
+          num += self.get_char();
+          self.next_char();
+        }
+      },
+      default => {unreachable!();}
+    }
+    let mut append_dot = false;
+    if num.size() > 1 && num[num.size() - 1] == '.' {
+      num.erase(num.size() - 1, 1);
+      append_dot = true;
+      read_mode = _ReadMode::Float;
+    }
+    if self.get_char() == 'U' || self.get_char() == 'u' {
+      num += self.get_char();
+      self.next_char();
+    } else if self.get_char() == 'L' || self.get_char() == 'l' {
+      num += self.get_char();
+      self.next_char();
+    } else if self.get_char() == 'F' || self.get_char() == 'f' {
+      num += self.get_char();
+      self.next_char();
+    } else if self.get_char() == 'D' || self.get_char() == 'd' {
+      num += self.get_char();
+      self.next_char();
+    }
+    case read_mode {
+      Float => append_token!(TokenType::Float(num), num.size()),
+      default => append_token!(TokenType::Integer(num), num.size()),
+    }
+    if is_range {
+      self.consume(TokenType::Dot);
+      self.consume(TokenType::Dot);
+      self.tok_pos = self.tok_pos - 1;
+    }
+    if append_dot {
+      self.consume(TokenType::Dot);
+      self.tok_pos = self.tok_pos - 1;
     }
   }
 
@@ -175,7 +413,7 @@ public class Lexer extends path_holder::PathHolder {
   }
 
   @inline mut func consume(token_type: TokenType, width: usize = 1) {
-    self.tokens.push(new Token(token_type, new SourceLocation(self.line, self.col, width, self.get_path())));
+    append_token!(token_type, width);
     self.next_char(width);
   }
 

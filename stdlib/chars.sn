@@ -54,6 +54,16 @@ public func is_hex(c: u8) bool {
     || (c >= 'A' && c <= 'F'); 
 }
 /**
+ * @brief Returns true if the given character is a binary digit.
+ *
+ * @param c The character to check.
+ * @return True if the given character is a
+ *  binary digit.
+ */
+@inline
+public func is_bin(c: u8) bool
+  { return c == '0' || c == '1'; }
+/**
  * @brief Returns true if the given character is an octal digit.
  *
  * @param c The character to check.

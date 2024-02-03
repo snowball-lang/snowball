@@ -918,6 +918,24 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       }
       return true;
     }
+    /**
+     * @brief It erases the specified range of the string view.
+     * @param[in] range The range to erase.
+     */
+    @inline
+    mut func erase(index: usize, length: usize = 1) {
+      if index + length > self.length {
+        throw new IndexError("Index out of bounds.");
+      }
+      // safety: we make sure the buffer is not null.
+      unsafe {
+        // We iterate over the string view and shift each character to the left.
+        for let mut i = index; i < self.length - length; i = i+1 {
+          self.buffer.unchecked_get(i) = self.buffer[i + length];
+        }
+      }
+      self.length = self.length - length;
+    }
   private:
     /** The size of the string view. */
     let mut length: usize = 0;

@@ -9,6 +9,7 @@ import pkg::utils::files_load::{file_loader};
 
 public enum ErrorType {
   UnexpectedChar(u8),
+  InvalidEscape(u8),
   UnexpectedEOF,
 }
 
@@ -17,6 +18,7 @@ class extends ErrorType implements ToString {
     func to_string() String {
       case self {
         UnexpectedChar(c) => return "Unknown character '" + String::from(c, 1) + "'",
+        InvalidEscape(c) => return "Invalid escape character '\\" + String::from(c, 1) + "'",
         UnexpectedEOF => return "Unexpected end of file!",
       }
     }
@@ -110,17 +112,18 @@ public class CompilerError extends Exception implements ToString {
       }
       if !dbg.line().is_empty() {
         let line_copy = dbg.line();
-        let mut line = "";
+        let mut line = colors::BLK;
         for let i = 0; i < line_copy.size(); i = i + 1 {
           if i == self.location.get_column() {
-            line += colors::BOLD;
+            line += colors::BWHT;
           } 
           line += line_copy[i];
           if i == self.location.get_column() + self.location.get_width() - 1 {
-            line += colors::RESET;
+            line += colors::RESET + colors::BLK;
           }
         }
-        stream.write(colors::RESET + colors::BOLD + self.location.get_line().to_string().rjust(3) + " | " + line + "\n");
+        stream.write(colors::RESET + colors::BOLD + self.location.get_line().to_string().rjust(3) + colors::RESET + colors::BBLK + " | " + line + "\n");
+        stream.write(colors::BBLK + "    | " + self.get_position_string() + "\n");
       }
       if !dbg.line_after().is_empty() {
         stream.write(colors::BBLK + (self.location.get_line() + 1).to_string().rjust(3) + " | " + dbg.line_after() + "\n");
@@ -165,13 +168,17 @@ public class CompilerError extends Exception implements ToString {
       let mut i = 0;
       while true {
         if i == self.location.get_column() {
+          stream.write(colors::BRED);
           for let j = 0; j < self.location.get_width(); j = j + 1 {
             stream.write("^");
           }
+          stream.write(colors::RESET);
+          
           break;
         } else {
           stream.write(" ");
         }
+        i = i + 1;
       }
       return stream.to_string();
     }

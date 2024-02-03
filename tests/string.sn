@@ -115,4 +115,11 @@ func ends_with_big() i32 {
     return s.ends_with("hello world hello");
 }
 
+@test
+func erase() i32 {
+    let mut s = "hello world";
+    s.erase(5, 5);
+    return s == "hello";
+}
+
 }
