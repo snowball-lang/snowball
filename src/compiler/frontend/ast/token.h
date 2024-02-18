@@ -46,8 +46,8 @@ struct Token {
   Type type = Type::Unknown;
   std::pair<unsigned int, unsigned int> location;
 // ---------------------
-  std::string to_string();
-  unsigned int get_width(); // Returns the width of the token
+  std::string to_string() const;
+  unsigned int get_width() const; // Returns the width of the token
 };
 
 }

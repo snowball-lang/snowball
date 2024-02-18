@@ -1,6 +1,6 @@
 
 #include "compiler/frontend/ast/token.h"
-#include "compiler/frontend/ast/kwords.h"
+#include "compiler/frontend/ast/kwords.def"
 
 namespace snowball {
 namespace frontend {
@@ -9,111 +9,111 @@ unsigned int Token::get_width() const { return this->to_string().size(); }
 std::string Token::to_string() const {
   switch (type) {
     // Symbols
-    case TokenType::SymAt: return "@";
-    case TokenType::SymDot: return ".";
-    case TokenType::SymHash: return "#";
-    case TokenType::SymComma: return ",";
-    case TokenType::SymCollon: return ":";
-    case TokenType::SymDollar: return "$";
-    case TokenType::SymQuestion: return "?";
-    case TokenType::SymSemiCollon: return ";";
-    case TokenType::SymColcol: return "::";
+    case Type::SymAt: return "@";
+    case Type::SymDot: return ".";
+    case Type::SymHash: return "#";
+    case Type::SymComma: return ",";
+    case Type::SymCollon: return ":";
+    case Type::SymDollar: return "$";
+    case Type::SymQuestion: return "?";
+    case Type::SymSemiCollon: return ";";
+    case Type::SymColcol: return "::";
     // Brackets
-    case TokenType::BracketLcurly: return "{";
-    case TokenType::BracketRcurly: return "}";
-    case TokenType::BracketLparent: return "(";
-    case TokenType::BracketRparent: return ")";
-    case TokenType::BracketLsquared: return "[";
-    case TokenType::BracketRsquared: return "]";
+    case Type::BracketLcurly: return "{";
+    case Type::BracketRcurly: return "}";
+    case Type::BracketLparent: return "(";
+    case Type::BracketRparent: return ")";
+    case Type::BracketLsquared: return "[";
+    case Type::BracketRsquared: return "]";
     // Equiality
-    case TokenType::OpGt: return ">";
-    case TokenType::OpLt: return "<";
-    case TokenType::OpGteq: return ">=";
-    case TokenType::OpEqeq: return "==";
-    case TokenType::OpLteq: return "<=";
-    case TokenType::OpNoteq: return "!=";
-    case TokenType::OpArrow: return "=>";
+    case Type::OpGt: return ">";
+    case Type::OpLt: return "<";
+    case Type::OpGteq: return ">=";
+    case Type::OpEqeq: return "==";
+    case Type::OpLteq: return "<=";
+    case Type::OpNoteq: return "!=";
+    case Type::OpArrow: return "=>";
     // Mathematical symbols
-    case TokenType::OpMod: return "%";
-    case TokenType::OpDiv: return "/";
-    case TokenType::OpMul: return "*";
-    case TokenType::OpPlus: return "+";
-    case TokenType::OpMinus: return "-";
-    case TokenType::OpMuleq: return "*=";
-    case TokenType::OpDiveq: return "/=";
-    case TokenType::OpPluseq: return "+=";
-    case TokenType::OpModEq: return "%=";
-    case TokenType::OpMinuseq: return "-=";
+    case Type::OpMod: return "%";
+    case Type::OpDiv: return "/";
+    case Type::OpMul: return "*";
+    case Type::OpPlus: return "+";
+    case Type::OpMinus: return "-";
+    case Type::OpMuleq: return "*=";
+    case Type::OpDiveq: return "/=";
+    case Type::OpPluseq: return "+=";
+    case Type::OpModEq: return "%=";
+    case Type::OpMinuseq: return "-=";
     // Asignment
-    case TokenType::OpEq: return "=";
-    case TokenType::OpOr: return "||";
-    case TokenType::OpAnd: return "&&";
-    case TokenType::OpNot: return "!";
+    case Type::OpEq: return "=";
+    case Type::OpOr: return "||";
+    case Type::OpAnd: return "&&";
+    case Type::OpNot: return "!";
     // Bitwise operations
-    case TokenType::OpBitOr: return "|";
-    case TokenType::OpBitNot: return "~";
-    case TokenType::OpBitAnd: return "&";
-    case TokenType::OpBitXor: return "^";
-    case TokenType::OpBitOrEq: return "|=";
-    case TokenType::OpBitLshift: return "<<";
-    case TokenType::OpBitRshift: return "|>>";
-    case TokenType::OpBitAndEq: return "&=";
-    case TokenType::OpBitXorEq: return "^=";
-    case TokenType::OpBitLshiftEq: return "<<=";
-    case TokenType::OpBitRshiftEq: return ">>=";
+    case Type::OpBitOr: return "|";
+    case Type::OpBitNot: return "~";
+    case Type::OpBitAnd: return "&";
+    case Type::OpBitXor: return "^";
+    case Type::OpBitOrEq: return "|=";
+    case Type::OpBitLshift: return "<<";
+    case Type::OpBitRshift: return "|>>";
+    case Type::OpBitAndEq: return "&=";
+    case Type::OpBitXorEq: return "^=";
+    case Type::OpBitLshiftEq: return "<<=";
+    case Type::OpBitRshiftEq: return ">>=";
     // Identifiers
-    case TokenType::Identifier: return value;
+    case Type::Identifier: return value;
     // Keywods
-    case TokenType::KwordPublic: return SN_KEYWORD_PUBLIC;
-    case TokenType::KwordVirtual: return SN_KEYWORD_VIRTUAL;
-    case TokenType::KwordOverride: return SN_KEYWORD_OVERRIDE;
-    case TokenType::KwordPrivate: return SN_KEYWORD_PRIVATE;
-    case TokenType::KwordImport: return SN_KEYWORD_IMPORT;
-    case TokenType::KwordUnsafe: return SN_KEYWORD_UNSAFE;
-    case TokenType::KwordConstexpr: return SN_KEYWORD_CONSTEXPR;
-    case TokenType::KwordNamespace: return SN_KEYWORD_NAMESPACE;
-    case TokenType::KwordStruct: return SN_KEYWORD_STRUCT;
-    case TokenType::KwordTypedef: return SN_KEYWORD_TYPEDEF;
-    case TokenType::KwordMutable: return SN_KEYWORD_MUTABLE;
-    case TokenType::KwordDo: return SN_KEYWORD_DO;
-    case TokenType::KwordClass: return SN_KEYWORD_CLASS;
-    case TokenType::KwordAs: return SN_KEYWORD_AS;
-    case TokenType::KwordEnum: return SN_KEYWORD_ENUM;
-    case TokenType::KwordFunc: return SN_KEYWORD_FUNCTION;
-    case TokenType::KwordMacro: return SN_KEYWORD_MACRO;
-    case TokenType::KwordOperator: return SN_KEYWORD_OPERATOR;
-    case TokenType::KwordVar: return SN_KEYWORD_VARIABLE;
-    case TokenType::KwordConst: return SN_KEYWORD_CONSTANT;
-    case TokenType::KwordIf: return SN_KEYWORD_IF;
-    case TokenType::KwordElse: return SN_KEYWORD_ELSE;
-    case TokenType::KwordWhile: return SN_KEYWORD_WHILE;
-    case TokenType::KwordFor: return SN_KEYWORD_FOR;
-    case TokenType::KwordCase: return SN_KEYWORD_CASE;
-    case TokenType::KwordSwitch: return SN_KEYWORD_SWITCH;
-    case TokenType::KwordDefault: return SN_KEYWORD_DEFAULT;
-    case TokenType::KwordBreak: return SN_KEYWORD_BREAK;
-    case TokenType::KwordContinue: return SN_KEYWORD_CONTINUE;
-    case TokenType::KwordStatic: return SN_KEYWORD_STATIC;
-    case TokenType::KwordSuper: return SN_KEYWORD_SUPER;
-    case TokenType::KwordReturn: return SN_KEYWORD_RETURN;
-    case TokenType::KwordDecltype: return SN_KEYWORD_DECLTYPE;
-    case TokenType::KwordExtern: return SN_KEYWORD_EXTERN;
-    case TokenType::KwordNew: return SN_KEYWORD_NEW;
-    case TokenType::KwordThrow: return SN_KEYWORD_THROW;
-    case TokenType::KwordTry: return SN_KEYWORD_TRY;
-    case TokenType::KwordInter: return SN_KEYWORD_INTER;
-    case TokenType::KwordExtends: return SN_KEYWORD_EXTENDS;
-    case TokenType::KwordImplements: return SN_KEYWORD_IMPLS;
-    case TokenType::KwordCatch: return SN_KEYWORD_CATCH;
+    case Type::KwordPublic: return SN_KEYWORD_PUBLIC;
+    case Type::KwordVirtual: return SN_KEYWORD_VIRTUAL;
+    case Type::KwordOverride: return SN_KEYWORD_OVERRIDE;
+    case Type::KwordPrivate: return SN_KEYWORD_PRIVATE;
+    case Type::KwordImport: return SN_KEYWORD_IMPORT;
+    case Type::KwordUnsafe: return SN_KEYWORD_UNSAFE;
+    case Type::KwordConstexpr: return SN_KEYWORD_CONSTEXPR;
+    case Type::KwordNamespace: return SN_KEYWORD_NAMESPACE;
+    case Type::KwordStruct: return SN_KEYWORD_STRUCT;
+    case Type::KwordTypedef: return SN_KEYWORD_TYPEDEF;
+    case Type::KwordMutable: return SN_KEYWORD_MUTABLE;
+    case Type::KwordDo: return SN_KEYWORD_DO;
+    case Type::KwordClass: return SN_KEYWORD_CLASS;
+    case Type::KwordAs: return SN_KEYWORD_AS;
+    case Type::KwordEnum: return SN_KEYWORD_ENUM;
+    case Type::KwordFunc: return SN_KEYWORD_FUNCTION;
+    case Type::KwordMacro: return SN_KEYWORD_MACRO;
+    case Type::KwordOperator: return SN_KEYWORD_OPERATOR;
+    case Type::KwordVar: return SN_KEYWORD_VARIABLE;
+    case Type::KwordConst: return SN_KEYWORD_CONSTANT;
+    case Type::KwordIf: return SN_KEYWORD_IF;
+    case Type::KwordElse: return SN_KEYWORD_ELSE;
+    case Type::KwordWhile: return SN_KEYWORD_WHILE;
+    case Type::KwordFor: return SN_KEYWORD_FOR;
+    case Type::KwordCase: return SN_KEYWORD_CASE;
+    case Type::KwordSwitch: return SN_KEYWORD_SWITCH;
+    case Type::KwordDefault: return SN_KEYWORD_DEFAULT;
+    case Type::KwordBreak: return SN_KEYWORD_BREAK;
+    case Type::KwordContinue: return SN_KEYWORD_CONTINUE;
+    case Type::KwordStatic: return SN_KEYWORD_STATIC;
+    case Type::KwordSuper: return SN_KEYWORD_SUPER;
+    case Type::KwordReturn: return SN_KEYWORD_RETURN;
+    case Type::KwordDecltype: return SN_KEYWORD_DECLTYPE;
+    case Type::KwordExtern: return SN_KEYWORD_EXTERN;
+    case Type::KwordNew: return SN_KEYWORD_NEW;
+    case Type::KwordThrow: return SN_KEYWORD_THROW;
+    case Type::KwordTry: return SN_KEYWORD_TRY;
+    case Type::KwordInter: return SN_KEYWORD_INTER;
+    case Type::KwordExtends: return SN_KEYWORD_EXTENDS;
+    case Type::KwordImplements: return SN_KEYWORD_IMPLS;
+    case Type::KwordCatch: return SN_KEYWORD_CATCH;
     // Literal values
-    case TokenType::ValueNumber:
-    case TokenType::ValueFloat:
-    case TokenType::ValueBool: return value;
-    case TokenType::ValueString: return std::string("\"") + value + "\"";
-    case TokenType::ValueChar: return FMT("'%s'", value.c_str());
+    case Type::ValueNumber:
+    case Type::ValueFloat:
+    case Type::ValueBool: return value;
+    case Type::ValueString: return std::string("\"") + value + "\"";
+    case Type::ValueChar: return std::string("'") + value + "'";
     // Other
-    case TokenType::Unknown: return "<unknown>";
-    case TokenType::Eof: return "<EOF>";
+    case Type::Unknown: return "<unknown>";
+    case Type::Eof: return "<EOF>";
     default: return "<BUG>";
   }
 }

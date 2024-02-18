@@ -8,6 +8,7 @@ namespace frontend {
 struct SourceLocation {
   unsigned int line;
   unsigned int column;
+  unsigned int length;
   std::string file;                       
 };
 
