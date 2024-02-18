@@ -41,6 +41,7 @@ std::vector<Token> Lexer::lex() {
         column = 1;
         tok_index++;
         break;
+      case '\0': break;
       case '/':
         switch (GET_CHAR(1)) {
           case '/':
@@ -71,8 +72,8 @@ std::vector<Token> Lexer::lex() {
             break;
         }
         break;
-// symbols
-case ':': {
+      // symbols
+      case ':': {
         if (GET_CHAR(1) == ':')
           consume(Token::Type::SymColcol, 2);
         else
@@ -520,6 +521,12 @@ case ':': {
         tok_index++;
       }
     }
+  }
+  if (tokens.size() == 0 || tokens[tokens.size() - 1].type != Token::Type::Eof) {
+    add_token(Token {
+      .type = Token::Type::Eof,
+      .location = std::make_pair(line, column),
+    });
   }
   return tokens;
 }
