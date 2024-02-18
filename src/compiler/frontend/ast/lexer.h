@@ -32,9 +32,9 @@ public:
   std::vector<Token> lex();
 private:
   void add_token(const Token& token);
-  void consume(Token::Type type);
+  void consume(Token::Type type, unsigned int length = 1U);
 
-  void shoot_error(const std::string& message, const Error::Info& info = Error::Info());
+  void shoot_error(const std::string& message, const Error::Info& info = Error::Info(), Error::Type type = Error::Type::Err);
 };
 
 }

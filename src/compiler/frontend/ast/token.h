@@ -42,9 +42,9 @@ struct Token {
     Eof, Unknown
   };
 // ---------------------
-  std::string value;
+  std::string value = "";
   Type type = Type::Unknown;
-  std::pair<unsigned int, unsigned int> location;
+  std::pair<unsigned int, unsigned int> location; // 1: line, 2: column
 // ---------------------
   std::string to_string() const;
   unsigned int get_width() const; // Returns the width of the token

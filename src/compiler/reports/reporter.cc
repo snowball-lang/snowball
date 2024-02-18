@@ -26,8 +26,9 @@ bool Reporter::handle_errors() {
         break;
     }
   }
-  Logger::error("Snowball encountered {} error(s) and {} warning(s).", error_count, warning_count);
-  return has_errors();
+  if (has_errors())
+    Logger::info("Snowball encountered {} error(s) and {} warning(s).", error_count, warning_count);
+  return error_count > 0;
 }
 
 bool Reporter::has_errors() const {
