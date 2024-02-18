@@ -1,5 +1,0 @@
-
-[package]
-name = "Hello world"
-main = "src/main.sn"
-version = "1.0.0"

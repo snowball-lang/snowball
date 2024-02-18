@@ -109,20 +109,6 @@ endif()
 include(${CPM_DOWNLOAD_LOCATION})
 
 CPMAddPackage(
-  NAME curl
-  VERSION 8.5.0
-  URL https://github.com/curl/curl/releases/download/curl-8_5_0/curl-8.5.0.tar.gz
-  OPTIONS
-  "CMAKE_USE_LIBSSH2 OFF"
-  "BUILD_CURL_EXE OFF"
-  "HTTP_ONLY ON"
-  "BUILD_TESTING OFF"
-  "CMAKE_USE_ZLIB OFF"
-  "BUILD_STATIC_LIBS ON"
-  "BUILD_SHARED_LIBS OFF"
-)
-
-CPMAddPackage(
     NAME backtrace
     GITHUB_REPOSITORY "ianlancetaylor/libbacktrace"
     GIT_TAG d0f5e95a87a4d3e0a1ed6c069b5dae7cbab3ed2a
@@ -178,7 +164,7 @@ message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 message(STATUS "Build a static binary (aka, for windows): ${BUILD_FOR_WIN}")
 set(CMAKE_CXX_STANDARD 17)
-file(GLOB_RECURSE PROJECT_SOURCES src/*.cc src/**/*cc src/*.c)
+file(GLOB_RECURSE PROJECT_SOURCES src/compiler/*.cc src/compiler/**/*cc src/compiler/*.c)
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
 file(GLOB_RECURSE PROJECT_MISC *.md *.txt)
 set (PROJECT_EXPORT_HPP include/${PROJECT_NAME}/export.hpp)
@@ -195,9 +181,9 @@ file(GLOB_RECURSE RUNTIME_SOURCES runtime/**/*.cc runtime/**/*.c runtime/gc/*.c)
 set (RUNTIME_FILES
   ${RUNTIME_SOURCES})
 
-set(APP_HEADERS_DIR app/)
+set(APP_HEADERS_DIR src/app/)
 file(GLOB_RECURSE APP_HEADERS ${APP_HEADERS_DIR}/*.h ${APP_HEADERS_DIR}/*.hpp)
-file(GLOB_RECURSE APP_SOURCES app/*.cc app/*.cc app/*.c)
+file(GLOB_RECURSE APP_SOURCES src/app/*.cc src/app/*.cc src/app/*.c)
 set (APP_FILES
   ${APP_HEADERS}
   ${APP_SOURCES})
@@ -234,22 +220,9 @@ llvm_map_components_to_libnames(llvm_libs
 ##################################################    Targets     ##################################################
 if (${BUILD_FOR_WIN})
   add_library(snowball STATIC ${PROJECT_FILES})
-  add_library(snowballrt STATIC ${RUNTIME_FILES})
 else()
   add_library(snowball SHARED ${PROJECT_FILES})
-  add_library(snowballrt SHARED ${RUNTIME_FILES})
 endif()
-
-if (curl_ADDED)
-  target_include_directories(${PROJECT_NAME} PUBLIC ${curl_SOURCE_DIR}/include)
-  message(STATUS "curl libs: " curl_static)
-  target_link_libraries(snowball PUBLIC libcurl_static)
-endif()
-
-#add_dependencies(snowballrt backtrace sigsegv)
-target_include_directories(snowballrt PRIVATE ${backtrace_SOURCE_DIR})
-target_link_libraries(snowballrt PRIVATE backtrace)
-target_include_directories(snowballrt PRIVATE ${backtrace_INCLUDE_DIRS})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   message(STATUS "Changing rpath origin destination (for macos)")
@@ -330,7 +303,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<INSTALL_INTERFACE:include> PRIVATE source)
     target_include_directories(${PROJECT_NAME} PUBLIC ${LLVM_INCLUDE_DIRS} ${PROJECT_INCLUDE_DIRS} ${backtrace_INCLUDE_DIRS})
-    target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES} snowballrt nlohmann_json::nlohmann_json)
+    target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES} nlohmann_json::nlohmann_json)
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
 add_compile_definitions("_SN_DEBUG=$<CONFIG:Debug>")
@@ -374,10 +347,6 @@ generate_export_header(${PROJECT_NAME}
 install(TARGETS ${PROJECT_NAME} EXPORT MyLibConfig
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(TARGETS snowballrt EXPORT MyLibConfig
-    ARCHIVE  DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY  DESTINATION ${CMAKE_INSTALL_BINDIR}
     RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(TARGETS snowballexe EXPORT MyLibConfig
     ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}

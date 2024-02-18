@@ -29,7 +29,6 @@
           pcre2
           libllvm
           libbacktrace
-          curl.dev
           openssl
           nlohmann_json
         ];
@@ -40,7 +39,6 @@
           sed -i -e '/include(FetchContent)/d' CMakeLists.txt
           sed -i -e '/FetchContent_Declare(/,/)/d' CMakeLists.txt
           sed -i -e '/FetchContent_MakeAvailable(json)/d' CMakeLists.txt
-          sed -i -e 's/libcurl/curl/' CMakeLists.txt
           sed -i -e 's/app\///' app/*.cc
           sed -i -e 's/app\///' app/commands/*.h
         '';
