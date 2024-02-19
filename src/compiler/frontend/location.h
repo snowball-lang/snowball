@@ -2,14 +2,25 @@
 #ifndef __SNOWBALL_FRONTEND_LOCATION_H__
 #define __SNOWBALL_FRONTEND_LOCATION_H__
 
+#include <filesystem>
+#include <vector>
+
 namespace snowball {
 namespace frontend {
+
+struct SourceFile {
+  std::filesystem::path path;
+public:
+  SourceFile(const std::filesystem::path& path) : path(path) {}
+  std::string get_path() const { return path.string(); }
+  ~SourceFile() = default;
+};
 
 struct SourceLocation {
   unsigned int line;
   unsigned int column;
   unsigned int length;
-  std::string file;                       
+  std::shared_ptr<SourceFile> file;
 };
 
 class LocationHolder {
@@ -17,6 +28,15 @@ class LocationHolder {
 public:
   LocationHolder(const SourceLocation& location) : location(location) {}
   SourceLocation get_location() const { return location; }
+};
+
+class NamespacePath {
+  std::vector<std::string> path;
+public:
+  NamespacePath(const std::vector<std::string>& path) : path(path) {}
+  std::vector<std::string> get_path() const { return path; }
+  std::string get_path_string() const;
+  ~NamespacePath() = default;
 };
 
 }

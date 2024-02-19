@@ -7,6 +7,7 @@
 #include "compiler/ctx.h"
 #include "compiler/frontend/ast/token.h"
 #include "compiler/reports/reporter.h"
+#include "compiler/frontend/location.h"
 
 namespace snowball {
 namespace frontend {
@@ -25,8 +26,10 @@ class Lexer : public Reporter {
 
   std::string buffer;
   unsigned int tok_index = 0;
+
+  std::shared_ptr<SourceFile> file;
 public:
-  Lexer(const Ctx& ctx);
+  Lexer(const Ctx& ctx, std::shared_ptr<SourceFile> file);
   ~Lexer() = default;
 
   std::vector<Token> lex();

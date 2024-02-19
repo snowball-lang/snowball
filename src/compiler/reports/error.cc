@@ -12,7 +12,7 @@ namespace snowball {
 using namespace utils;
 
 void Error::print() {
-  auto contents = globals::read_file(get_location().file);
+  auto contents = globals::read_file(get_location().file->get_path());
   auto dbg_info = reports::DebugSourceLocation::from_file(contents, get_location().line);
   auto message_formatter = [](const std::string& message) {
     unsigned int line = 0;
@@ -41,7 +41,7 @@ void Error::print() {
     term_color = fmt::terminal_color::bright_red;
   }
   fmt::print(fmt::text_style(fmt::emphasis::bold), "  at : [{}:{}:{}{}\n", 
-    fmt::styled(get_location().file, fmt::fg(fmt::terminal_color::bright_blue)), 
+    fmt::styled(get_location().file->get_path(), fmt::fg(fmt::terminal_color::bright_blue)), 
     fmt::styled(get_location().line, fmt::fg(fmt::terminal_color::white) | fmt::emphasis::bold), 
     fmt::styled(get_location().column, fmt::fg(fmt::terminal_color::white) | fmt::emphasis::bold),
     fmt::styled("]", fmt::emphasis::bold));

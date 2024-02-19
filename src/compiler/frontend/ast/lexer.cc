@@ -25,10 +25,10 @@
 namespace snowball {
 namespace frontend {
 
-Lexer::Lexer(const Ctx& ctx) : ctx(ctx) {}
+Lexer::Lexer(const Ctx& ctx, std::shared_ptr<SourceFile> file) : ctx(ctx), file(file) {}
 
 std::vector<Token> Lexer::lex() {
-  buffer = globals::read_file(ctx.input_file);
+  buffer = globals::read_file(file->get_path());
   while (tok_index < buffer.size()) {
     switch (buffer[tok_index]) {
       case ' ':
@@ -548,7 +548,7 @@ void Lexer::shoot_error(const std::string& message, const Error::Info& info, Err
     .line = line,
     .column = column,
     .length = 1,
-    .file = ctx.input_file,
+    .file = this->file,
   }, info, type));
 }
 
