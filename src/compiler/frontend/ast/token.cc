@@ -5,7 +5,15 @@
 namespace snowball {
 namespace frontend {
 
-unsigned int Token::get_width() const { return this->to_string().size(); }
+unsigned int Token::get_width() const { 
+  switch (type) {
+    case Type::Eof: 
+    case Type::Unknown:
+      return 1;
+    default: 
+      return this->to_string().size(); 
+  }
+}
 std::string Token::to_string() const {
   switch (type) {
     // Symbols

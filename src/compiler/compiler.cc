@@ -17,6 +17,11 @@ bool Compiler::compile() {
   if (lexer.handle_errors()) {
     return EXIT_FAILURE;
   }
+  frontend::Parser parser(ctx, source_file, tokens);
+  auto module = parser.parse();
+  if (parser.handle_errors()) {
+    return EXIT_FAILURE;
+  }
   return EXIT_SUCCESS;
 }
 

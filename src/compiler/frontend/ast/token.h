@@ -50,6 +50,11 @@ struct Token {
   unsigned int get_width() const; // Returns the width of the token
 };
 
+// for "fmt::format"
+static auto format_as(const Token& tok) -> std::string {
+  return tok.to_string();
+}
+
 }
 }
 

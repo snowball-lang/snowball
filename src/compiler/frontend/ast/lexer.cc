@@ -544,12 +544,7 @@ void Lexer::consume(Token::Type type, unsigned int length) {
 }
 
 void Lexer::shoot_error(const std::string& message, const Error::Info& info, Error::Type type) {
-  add_error(E(message, SourceLocation {
-    .line = line,
-    .column = column,
-    .length = 1,
-    .file = this->file,
-  }, info, type));
+  add_error(E(message, SourceLocation {line, column, 1, this->file}, info, type));
 }
 
 } // namespace frontend
