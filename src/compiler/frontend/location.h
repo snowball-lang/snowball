@@ -44,6 +44,9 @@ public:
   std::vector<std::string> get_path() const { return path; }
   std::string get_path_string() const;
   ~NamespacePath() = default;
+
+  void push(const std::string& part) { path.push_back(part); }
+  static NamespacePath from_file(const std::filesystem::path& file);
 };
 
 }

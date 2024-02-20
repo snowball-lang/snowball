@@ -16,10 +16,11 @@ Parser::Parser(const Ctx& ctx, const std::shared_ptr<SourceFile>& file, const st
 }
 
 Module Parser::parse() {
+  auto path = NamespacePath::from_file(file->get_path());
   try {
-    return Module(parse_top_level());
+    return Module(parse_top_level(), path);
   } catch (const StopParsing&) {
-    return Module(ast::TopLevelAst()); // we are gonna error out anyway
+    return Module(ast::TopLevelAst(), path); // we are gonna error out anyway
   }
 }
 

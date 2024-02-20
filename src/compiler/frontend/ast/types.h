@@ -7,9 +7,19 @@ namespace frontend {
 namespace ast {
 namespace types {
 
+class IntType;
+class FloatType;
+class FunctionType;
+class GenericType;
+
 class Type {
 public:
   virtual ~Type() = default;
+
+  virtual IntType* as_int() { return nullptr; }
+  virtual FloatType* as_float() { return nullptr; }
+  virtual FunctionType* as_function() { return nullptr; }
+  virtual GenericType* as_generic() { return nullptr; } 
 };
 
 class IntType final : public Type {
@@ -35,6 +45,8 @@ public:
   static auto create_u16() { return create(16, false); }
   static auto create_u32() { return create(32, false); }
   static auto create_u64() { return create(64, false); }
+
+  IntType* as_int() override { return this; }
 };
 
 class FloatType final : public Type {
@@ -51,6 +63,8 @@ public:
 
   static auto create_f32() { return create(32); }
   static auto create_f64() { return create(64); }
+
+  FloatType* as_float() override { return this; }
 };
 
 class FunctionType final : public Type {
@@ -67,6 +81,8 @@ public:
   static auto create(const std::vector<Type*>& param_types, Type* return_type) {
     return new FunctionType(param_types, return_type);
   }
+
+  FunctionType* as_function() override { return this; }
 };
 
 class GenericType final : public Type {
@@ -80,6 +96,8 @@ public:
   static auto create(const std::string& name) {
     return new GenericType(name);
   }
+
+  virtual GenericType* as_generic() override { return this; }
 };
 
 }

@@ -24,6 +24,11 @@ public:
 
   auto get_type() const { return type; }
   void set_type(types::Type* type) { this->type = type; }
+
+  template <typename T>
+  [[nodiscard]] auto as() { return dynamic_cast<T*>(this); }
+  template <typename T>
+  bool is() { return as<T>() != nullptr; }
 };
 
 class Stmt : public Node {

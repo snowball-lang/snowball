@@ -54,6 +54,8 @@ public:
 class TypeChecker : public ast::AstVisitor, public Reporter {
   Universe<TypeCheckItem> universe;
   std::vector<Module>& modules;
+
+  const Module* current_module = nullptr;
 public:
   TypeChecker(const Ctx& ctx, std::vector<Module>& modules);
   ~TypeChecker() = default;
@@ -68,6 +70,11 @@ private:
   void err(const LocationHolder* holder, const std::string& message, 
     const Error::Info& info = Error::Info(), Error::Type type = Error::Type::Err, 
     bool fatal = true);
+
+  // --- internal helpers ---
+
+  void generate_global_scope(ast::TopLevelAst& ast);
+  NamespacePath get_namespace_path(const std::string& name);
 };
 
 }

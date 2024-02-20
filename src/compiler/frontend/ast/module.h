@@ -10,11 +10,14 @@ namespace frontend {
 
 class Module {
   ast::TopLevelAst ast;
+  NamespacePath path;
 public:
-  Module(const ast::TopLevelAst& ast) : ast(ast) {}
+  Module(ast::TopLevelAst ast, NamespacePath path) 
+    : ast(ast), path(path) {}
   ~Module() = default;
 
-  auto get_ast() const { return ast; }
+  auto& get_ast() { return ast; }
+  auto get_path() const { return path; }
 };
 
 }

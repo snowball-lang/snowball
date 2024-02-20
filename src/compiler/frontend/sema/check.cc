@@ -16,9 +16,13 @@ TypeChecker::TypeChecker(const Ctx& ctx, std::vector<Module>& modules)
   : AstVisitor(ctx), Reporter(), modules(modules) {}
 
 void TypeChecker::check() {
+  register_builtins();
   for (auto& module : modules) {
     try {
+      current_module = &module;
       universe.add_scope();
+      generate_global_scope(module.get_ast());
+
       for (auto& stmt : module.get_ast()) {
         stmt->accept(this);
       }
@@ -47,6 +51,13 @@ void TypeChecker::register_builtins() {
   universe.add_item("u64", TypeCheckItem::create(ast::types::IntType::create_u64()));
   universe.add_item("f32", TypeCheckItem::create(ast::types::FloatType::create_f32()));
   universe.add_item("f64", TypeCheckItem::create(ast::types::FloatType::create_f64()));
+}
+
+NamespacePath TypeChecker::get_namespace_path(const std::string& name) {
+  auto path = current_module->get_path();
+  path.push(name);
+  // TODO: Classes, etc.
+  return path;
 }
 
 }
