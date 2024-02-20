@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <optional>
 
 #include "compiler/ctx.h"
 #include "compiler/frontend/ast/token.h"
@@ -46,15 +47,17 @@ private:
   
   bool is(Token::Type type);
   bool is(Token::Type type, const Token& tok);
-
+  SourceLocation loc() const;
   void err(const std::string& message, const Error::Info& info = Error::Info(), 
     Error::Type type = Error::Type::Err, bool fatal = true);
-  void _recover(Token::Type ty);
+  void _recover(std::vector<Token::Type> tys);
   const Token& expect(Token::Type type, const std::string& expectation);
   const Token& expect(Token::Type type, const std::string& expectation, Token::Type recover);
+  const Token& expect(Token::Type type, const std::string& expectation, 
+    std::vector<Token::Type> recover);
 
-  template <typename... Args>
-  void recover(Token::Type ty, Args&&... args) {
+  template <typename T, typename... Args>
+  void recover(T ty, Args&&... args) {
     add_error(E(std::forward<Args>(args)...), false);
     _recover(ty);
   }
@@ -65,10 +68,23 @@ private:
     next();
   }
 
+  template <typename T, typename... Args>
+  [[nodiscard]] auto node(Args&&... args) {
+    return T::create(loc(), std::forward<Args>(args)...);
+  }
+
   // --- Parsing functions ---
 
   ast::TopLevelAst parse_top_level(Token::Type terminator = Token::Type::Eof);
-  ast::FnDecl* parse_fn_decl();
+  std::optional<ast::GenericNode<>> parse_generics(); // only if present
+  ast::GenericNode<ast::TypeRef> parse_generics_expr();
+  ast::FnDecl* parse_fn_decl(const ast::AttributedNode& attrs);
+  ast::TypeRef parse_type_ref();
+  ast::Node* parse_stmt(const Token& peek);
+  ast::Expr* parse_expr();
+  ast::Block* parse_block(Token::Type terminator = Token::Type::BracketRcurly);
+
+  void parse_extern_decl(ast::AttributedNode& node);
 };
 
 }

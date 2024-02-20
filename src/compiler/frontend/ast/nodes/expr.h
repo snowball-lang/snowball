@@ -2,23 +2,43 @@
 #ifndef __SNOWBALL_FRONTEND_AST_NODES_EXPR_H__
 #define __SNOWBALL_FRONTEND_AST_NODES_EXPR_H__
 
+#include "compiler/frontend/ast/nodes/other.h"
+
 namespace snowball {
 namespace frontend {
 namespace ast {
 
-class TypeRef final : public Expr {
-  Expr* name;
-  std::vector<TypeRef*> generics;
+class Ident final : public Expr, public GenericNode<> {
+  std::string name;
 public:
-  TypeRef(const SourceLocation& location, Expr* name, const std::vector<TypeRef*>& generics) 
-    : Expr(location), name(name), generics(generics) {}
+  Ident(const SourceLocation& location, const std::string& name, 
+    std::optional<GenericNode> generics = std::nullopt)
+    : Expr(location), GenericNode(generics), name(name) {}
+  ~Ident() = default;
+
+  auto get_name() const { return name; }
+
+  static auto create(const SourceLocation& location, const std::string& name, 
+    std::optional<GenericNode> generics = std::nullopt) {
+    return new Ident(location, name, generics);
+  }
+
+  SN_VISIT()
+};
+
+class TypeRef final : public Expr, public GenericNode<TypeRef> {
+  Expr* name;
+public:
+  TypeRef(const SourceLocation& location, Expr* name, 
+    std::optional<GenericNode<TypeRef>> generics = std::nullopt)
+    : Expr(location), GenericNode(generics), name(name) {}
   ~TypeRef() = default;
 
   auto get_name() const { return name; }
-  auto get_generics() const { return generics; }
 
-  static auto create(const SourceLocation& location, Expr* name, const std::vector<TypeRef*>& generics) {
-    return new TypeRef(location, name, generics);
+  static auto create(const SourceLocation& location, Expr* name, 
+    std::optional<GenericNode<TypeRef>> generics = std::nullopt) {
+    return TypeRef(location, name, generics);
   }
 
   SN_VISIT()

@@ -21,10 +21,10 @@ std::string Token::to_string() const {
     case Type::SymDot: return ".";
     case Type::SymHash: return "#";
     case Type::SymComma: return ",";
-    case Type::SymCollon: return ":";
+    case Type::SymColon: return ":";
     case Type::SymDollar: return "$";
     case Type::SymQuestion: return "?";
-    case Type::SymSemiCollon: return ";";
+    case Type::SymSemiColon: return ";";
     case Type::SymColcol: return "::";
     // Brackets
     case Type::BracketLcurly: return "{";
@@ -104,7 +104,9 @@ std::string Token::to_string() const {
     case Type::KwordStatic: return SN_KEYWORD_STATIC;
     case Type::KwordSuper: return SN_KEYWORD_SUPER;
     case Type::KwordReturn: return SN_KEYWORD_RETURN;
-    case Type::KwordDecltype: return SN_KEYWORD_DECLTYPE;
+    case Type::KwordAbstract: return SN_KEYWORD_ABSTRACT;
+    case Type::KwordFinal: return SN_KEYWORD_FINAL;
+    case Type::KwordInline: return SN_KEYWORD_INLINE;
     case Type::KwordExtern: return SN_KEYWORD_EXTERN;
     case Type::KwordNew: return SN_KEYWORD_NEW;
     case Type::KwordThrow: return SN_KEYWORD_THROW;

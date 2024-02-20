@@ -57,8 +57,9 @@ void Error::print() {
   for (unsigned int i = 0; i < get_location().column-1; i++) {
     fmt::print(" ");
   }
-  for (unsigned int i = 0; i < get_location().length; i++) {
-    fmt::print("{}", fmt::styled("^", fmt::fg(term_color) | fmt::emphasis::bold));
+  fmt::print("{}", fmt::styled("^", fmt::fg(term_color) | fmt::emphasis::bold));
+  for (unsigned int i = 0; i < get_location().length-1; i++) {
+    fmt::print("{}", fmt::styled("~", fmt::fg(term_color) | fmt::emphasis::bold));
   } 
   if (!info.highlight.empty()) {
     fmt::print(" {}", fmt::styled(info.highlight, fmt::fg(term_color) | fmt::emphasis::bold));

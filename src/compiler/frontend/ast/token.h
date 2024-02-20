@@ -13,8 +13,8 @@ struct Token {
 
     ValueNumber, ValueFloat, ValueBool, ValueString, ValueChar,
 
-    SymAt, SymDot, SymHash, SymComma, SymCollon, SymColcol, SymDollar, 
-    SymQuestion, SymSemiCollon,
+    SymAt, SymDot, SymHash, SymComma, SymColon, SymColcol, SymDollar, 
+    SymQuestion, SymSemiColon,
     
     BracketLcurly, BracketRcurly, BracketLparent, BracketRparent, 
     BracketRsquared, BracketLsquared,
@@ -34,8 +34,9 @@ struct Token {
     KwordWhile, KwordExtern, KwordVirtual, KwordOverride, KwordClass, KwordAs, 
     KwordImport, KwordUnsafe, KwordConstexpr, KwordTypedef, KwordMutable, KwordDo, 
     KwordNamespace, KwordStruct, KwordPublic, KwordCase, KwordSwitch, KwordStatic, 
-    KwordReturn, KwordPrivate, KwordDecltype, KwordDefault, KwordTry, KwordCatch, 
-    KwordContinue, KwordInter, KwordExtends, KwordImplements, 
+    KwordReturn, KwordPrivate, KwordDefault, KwordTry, KwordCatch, 
+    KwordContinue, KwordInter, KwordExtends, KwordImplements, KwordAbstract,
+    KwordFinal, KwordInline,
     
     KwordEndingPoint, // This is a marker for the end of the keywords
     

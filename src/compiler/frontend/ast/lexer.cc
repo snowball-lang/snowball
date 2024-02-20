@@ -77,11 +77,11 @@ std::vector<Token> Lexer::lex() {
         if (GET_CHAR(1) == ':')
           consume(Token::Type::SymColcol, 2);
         else
-          consume(Token::Type::SymCollon);
+          consume(Token::Type::SymColon);
         break;
       }
       case ',': consume(Token::Type::SymComma); break;
-      case ';': consume(Token::Type::SymSemiCollon); break;
+      case ';': consume(Token::Type::SymSemiColon); break;
       case '#': consume(Token::Type::SymHash); break;
       case '$': consume(Token::Type::SymDollar); break;
       case '?': consume(Token::Type::SymQuestion); break;
@@ -199,7 +199,7 @@ std::vector<Token> Lexer::lex() {
         break;
       }
       case '"': {
-        std::string value = "\"";
+        std::string value;
         auto pos = std::make_pair(line, column);
         EAT_CHAR(1);
         while (GET_CHAR(0) != '"') {
@@ -249,7 +249,7 @@ std::vector<Token> Lexer::lex() {
         }
         tok_index++;
         add_token(Token {
-          .value = value + "\"",
+          .value = value,
           .type = Token::Type::ValueString,
           .location = pos,
         });
@@ -431,8 +431,6 @@ std::vector<Token> Lexer::lex() {
             tk.type = Token::KwordFor;
           } else if (identifier == SN_KEYWORD_ENUM) {
             tk.type = Token::KwordEnum;
-          } else if (identifier == SN_KEYWORD_DECLTYPE) {
-            tk.type = Token::KwordDecltype;
           } else if (identifier == SN_KEYWORD_FUNCTION) {
             tk.type = Token::KwordFunc;
           } else if (identifier == SN_KEYWORD_MACRO) {
@@ -502,7 +500,13 @@ std::vector<Token> Lexer::lex() {
           } else if (identifier == SN_KEYWORD_IMPLS) {
             tk.type = Token::KwordImplements;
           } else if (identifier == SN_KEYWORD_TRUE || identifier == SN_KEYWORD_FALSE) {
-            tk.type = Token::ValueBool;
+            tk.type = Token::ValueBool; 
+          } else if (identifier == SN_KEYWORD_INLINE) {
+            tk.type = Token::KwordInline;
+          } else if (identifier == SN_KEYWORD_ABSTRACT) {
+            tk.type = Token::KwordAbstract;
+          } else if (identifier == SN_KEYWORD_FINAL) {
+            tk.type = Token::KwordFinal;
           } else {
             tk.type = Token::Identifier;
           }

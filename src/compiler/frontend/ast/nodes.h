@@ -41,6 +41,7 @@ using TopLevelAst = std::vector<Stmt*>;
 
 #include "compiler/frontend/ast/nodes/stmt.h"
 #include "compiler/frontend/ast/nodes/expr.h"
+#include "compiler/frontend/ast/nodes/other.h"
 
 #undef SN_VISIT
 #endif // __SNOWBALL_FRONTEND_AST_NODES_H_

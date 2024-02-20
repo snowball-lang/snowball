@@ -24,7 +24,7 @@ Module Parser::parse() {
 }
 
 Token Parser::peek(int offset, bool safe) {
-  if (tok_index + offset >= tokens.size()) {
+  if (tok_index + offset + 1 >= tokens.size()) {
     if (safe) {
       return Token { 
         .type = Token::Type::Eof, 
@@ -33,10 +33,14 @@ Token Parser::peek(int offset, bool safe) {
     }
     sn_assert(false, "Unexpected end of file");
   }
-  return tokens[tok_index + offset];
+  return tokens[tok_index + 1 + offset];
 }
 
 void Parser::next(int offset) {
+  if (tok_index + offset >= tokens.size()) {
+    tok_index = tokens.size() - 1;
+    return;  
+  }
   tok_index += offset;
   current = tokens[tok_index];
 }
@@ -52,9 +56,8 @@ bool Parser::is(Token::Type type, const Token& tok) {
 void Parser::err(const std::string& message, const Error::Info& info, Error::Type type, bool fatal) {
   SourceLocation loc(current.location.first, current.location.second, current.get_width(), file);
   add_error(E(message, loc, info, type));
-  if (fatal) {
+  if (fatal && type != Error::Type::Warn)
     throw StopParsing();
-  }
 }
 
 const Token& Parser::expect(Token::Type type, const std::string& expectation) {
@@ -62,32 +65,42 @@ const Token& Parser::expect(Token::Type type, const std::string& expectation) {
 }
 
 const Token& Parser::expect(Token::Type type, const std::string& expectation, Token::Type recover) {
+  return expect(type, expectation, std::vector<Token::Type> { recover });
+}
+
+const Token& Parser::expect(Token::Type type, const std::string& expectation, std::vector<Token::Type> recover) {
   if (is(type)) {
-    auto& tok = current;
-    return tok;
+    return current;
   }
   err(fmt::format("Unexpected token '{}' found!", current), Error::Info {
     .highlight = fmt::format("Token '{}' is not expected here", current),
     .help = fmt::format("Expected a token to satisfy '{}'", expectation),
     .note = has_errors() ? "This error might be caused by error recovery activated by another\nerror before this one" : ""
-  }, Error::Type::Err, recover == Token::Type::Eof);
+  }, Error::Type::Err, recover.empty());
   _recover(recover); // It already skips Eof if it is Eof
   return current;
 }
 
-void Parser::_recover(Token::Type ty) {
-  while (!is(ty) && !is(Token::Type::Eof)) {
+void Parser::_recover(std::vector<Token::Type> tys) {
+  while (!is(Token::Type::Eof)) {
+    for (unsigned int i = 0; i < tys.size(); i++) {
+      if (is(tys[i])) {
+        return;
+      }
+    }
     next();
   }
-  if (is(ty)) {
-    next();
-  } else {
+  if (is(Token::Type::Eof)) {
     err("Unexpected end of file while trying to recover from a previous error", Error::Info {
       .highlight = "Unexpected end of file",
       .help = "Found an unexpected end of file while trying to recover from a previous error",
       .note = "This error might be caused by error recovery activated by another\nerror before this one"
     }, Error::Type::Err, true);
   }
+}
+
+SourceLocation Parser::loc() const {
+  return SourceLocation(current.location.first, current.location.second, current.get_width(), file);
 }
 
 }
