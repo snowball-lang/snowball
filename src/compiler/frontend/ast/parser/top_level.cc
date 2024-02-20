@@ -141,6 +141,5 @@ void Parser::parse_extern_decl(ast::AttributedNode& node) {
   }
 }
 
-
 }
 }

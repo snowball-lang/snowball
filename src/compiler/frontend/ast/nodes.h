@@ -6,17 +6,24 @@
 #include <memory>
 
 #include "compiler/frontend/location.h"
+#include "compiler/frontend/ast/types.h"
 
 namespace snowball {
 namespace frontend {
 namespace ast {
 
+class AstVisitor;
+
 class Node : public LocationHolder {
+  types::Type* type = nullptr;
 public:
   Node(const SourceLocation& location) : LocationHolder(location) {}
   virtual ~Node() = default;
 
-  virtual void accept() = 0;
+  virtual void accept(ast::AstVisitor* v) = 0;
+
+  auto get_type() const { return type; }
+  void set_type(types::Type* type) { this->type = type; }
 };
 
 class Stmt : public Node {
@@ -37,7 +44,7 @@ using TopLevelAst = std::vector<Stmt*>;
 }
 }
 
-#define SN_VISIT() virtual void accept() override {} // TODO
+#define SN_VISIT() virtual void accept(ast::AstVisitor* v) override;
 
 #include "compiler/frontend/ast/nodes/stmt.h"
 #include "compiler/frontend/ast/nodes/expr.h"
