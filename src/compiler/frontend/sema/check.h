@@ -51,6 +51,20 @@ public:
   }
 };
 
+class NameAccumulator {
+  NamespacePath path;
+  std::string name = "";
+public:
+  NameAccumulator() : path({}) {}
+  ~NameAccumulator() = default;
+
+  void add(const std::string& part, const std::string& name = "");
+  bool is_empty() const { return path.is_empty(); }
+  bool is_name() const { return path.size() == 1; } // Just a name, no namespace
+  NamespacePath get_path(const std::string& name) const;
+  std::string get_name() const { return name; }
+};
+
 class TypeChecker : public ast::AstVisitor, public Reporter {
   Universe<TypeCheckItem> universe;
   std::vector<Module>& modules;
@@ -67,14 +81,27 @@ public:
 private:
   void register_builtins();
 
-  void err(const LocationHolder* holder, const std::string& message, 
+  void err(const LocationHolder& holder, const std::string& message, 
     const Error::Info& info = Error::Info(), Error::Type type = Error::Type::Err, 
     bool fatal = true);
 
   // --- internal helpers ---
 
+  using GetResult = std::pair<std::optional<TypeCheckItem>, std::string>;
+
   void generate_global_scope(ast::TopLevelAst& ast);
   NamespacePath get_namespace_path(const std::string& name);
+  
+  GetResult get_item(ast::Expr* expr, NameAccumulator acc = NameAccumulator());
+  GetResult get_item(const NamespacePath& path);
+  GetResult get_item(const std::string& name);
+
+  ast::types::Type* get_type(const NamespacePath& path);
+  ast::types::Type* get_type(ast::Expr* expr);
+  ast::types::Type* get_type(const std::string& name);
+  ast::types::Type* get_type(ast::TypeRef& tr);
+
+  bool unify(ast::types::Type*& a, const ast::types::Type* b);
 };
 
 }

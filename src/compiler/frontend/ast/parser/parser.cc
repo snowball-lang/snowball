@@ -77,14 +77,24 @@ const Token& Parser::expect(Token::Type type, const std::string& expectation, st
     .highlight = fmt::format("Token '{}' is not expected here", current),
     .help = fmt::format("Expected a token to satisfy '{}'", expectation),
     .note = has_errors() ? "This error might be caused by error recovery activated by another\nerror before this one" : ""
-  }, Error::Type::Err, recover.empty());
+  }, Error::Type::Err, recover.empty() || recover[0] == Token::Type::Eof);
   _recover(recover); // It already skips Eof if it is Eof
   return current;
 }
 
 void Parser::_recover(std::vector<Token::Type> tys) {
+  if (tys.empty()) {
+    return;
+  } else if (tys[0] == Token::Type::Eof) {
+    sn_assert(tys.size() == 1, "Eof should be the only token in the recovery set");
+    return;
+  }
+
   while (!is(Token::Type::Eof)) {
     for (unsigned int i = 0; i < tys.size(); i++) {
+      if (tys[i] == Token::Type::Eof) {
+        sn_assert(false, "Eof should be the only token in the recovery set")
+      }
       if (is(tys[i])) {
         return;
       }

@@ -51,8 +51,9 @@ public:
     None,
   };
   enum Privacy {
-    Public,
-    Private,
+    // It has to be in this order to avoid conflicts with set_privacy(int)
+    Private = 0,
+    Public = 1,
   };
 private:
   bool is_static = false;

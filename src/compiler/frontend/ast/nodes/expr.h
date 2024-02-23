@@ -26,22 +26,20 @@ public:
   SN_VISIT()
 };
 
-class TypeRef final : public Expr, public GenericNode<TypeRef> {
+class TypeRef final : public LocationHolder, public GenericNode<TypeRef> {
   Expr* name;
 public:
   TypeRef(const SourceLocation& location, Expr* name, 
     std::optional<GenericNode<TypeRef>> generics = std::nullopt)
-    : Expr(location), GenericNode(generics), name(name) {}
+    : LocationHolder(location), GenericNode(generics), name(name) {}
   ~TypeRef() = default;
 
-  auto get_name() const { return name; }
+  auto get_name() { return name; }
 
   static auto create(const SourceLocation& location, Expr* name, 
     std::optional<GenericNode<TypeRef>> generics = std::nullopt) {
     return TypeRef(location, name, generics);
   }
-
-  SN_VISIT()
 };
 
 }

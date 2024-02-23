@@ -37,7 +37,7 @@ ast::FnDecl* Parser::parse_fn_decl(const ast::AttributedNode& attrs) {
   if (!is(Token::Type::BracketLcurly)) {
     return_type = parse_type_ref();
   }
-  expect(Token::Type::BracketLcurly, "an opening curly brace after the parameters");
+  expect(Token::Type::BracketLcurly, "an opening curly brace after the return type");
   auto block = parse_block();
   next(); // skip the closing curly brace
   return node<ast::FnDecl>(name, params, return_type, block, generics, attrs);

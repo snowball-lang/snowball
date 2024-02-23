@@ -33,9 +33,9 @@ void TypeChecker::check() {
   }
 }
 
-void TypeChecker::err(const LocationHolder* holder, const std::string& message, 
+void TypeChecker::err(const LocationHolder& holder, const std::string& message, 
     const Error::Info& info, Error::Type type, bool fatal) {
-  add_error(E(message, holder->get_location(), info, type));
+  add_error(E(message, holder.get_location(), info, type));
   if (fatal && type != Error::Type::Warn)
     throw StopTypeChecking();
 }
@@ -51,6 +51,8 @@ void TypeChecker::register_builtins() {
   universe.add_item("u64", TypeCheckItem::create(ast::types::IntType::create_u64()));
   universe.add_item("f32", TypeCheckItem::create(ast::types::FloatType::create_f32()));
   universe.add_item("f64", TypeCheckItem::create(ast::types::FloatType::create_f64()));
+  universe.add_item("bool", TypeCheckItem::create(ast::types::IntType::create(1, false)));
+  universe.add_item("void", TypeCheckItem::create(ast::types::VoidType::create()));
 }
 
 NamespacePath TypeChecker::get_namespace_path(const std::string& name) {

@@ -2,6 +2,10 @@
 #ifndef __SNOWBALL_FRONTEND_AST_TYPES_H__
 #define __SNOWBALL_FRONTEND_AST_TYPES_H__
 
+#include <vector>
+#include <string>
+#include <cstddef>
+
 namespace snowball {
 namespace frontend {
 namespace ast {
@@ -9,8 +13,11 @@ namespace types {
 
 class IntType;
 class FloatType;
-class FunctionType;
+class FuncType;
 class GenericType;
+class ErrorType;
+class UnknownType;
+class VoidType;
 
 class Type {
 public:
@@ -18,8 +25,19 @@ public:
 
   virtual IntType* as_int() { return nullptr; }
   virtual FloatType* as_float() { return nullptr; }
-  virtual FunctionType* as_function() { return nullptr; }
+  virtual FuncType* as_func() { return nullptr; }
   virtual GenericType* as_generic() { return nullptr; } 
+  virtual ErrorType* as_error() { return nullptr; }
+  virtual UnknownType* as_unknown() { return nullptr; }
+  virtual VoidType* as_void() { return nullptr; }
+
+  virtual bool is_int() const { return false; }
+  virtual bool is_float() const { return false; }
+  virtual bool is_func() const { return false; }
+  virtual bool is_generic() const { return false; }
+  virtual bool is_error() const { return false; }
+  virtual bool is_unknown() const { return false; }
+  virtual bool is_void() const { return false; }
 };
 
 class IntType final : public Type {
@@ -47,6 +65,7 @@ public:
   static auto create_u64() { return create(64, false); }
 
   IntType* as_int() override { return this; }
+  virtual bool is_int() const override { return true; }
 };
 
 class FloatType final : public Type {
@@ -65,24 +84,26 @@ public:
   static auto create_f64() { return create(64); }
 
   FloatType* as_float() override { return this; }
+  virtual bool is_float() const override { return true; }
 };
 
-class FunctionType final : public Type {
+class FuncType final : public Type {
   std::vector<Type*> param_types;
   Type* return_type;
 public:
-  FunctionType(const std::vector<Type*>& param_types, Type* return_type) 
+  FuncType(const std::vector<Type*>& param_types, Type* return_type) 
     : param_types(param_types), return_type(return_type) {}
-  ~FunctionType() = default;
+  ~FuncType() = default;
 
   auto get_param_types() const { return param_types; }
   auto get_return_type() const { return return_type; }
 
   static auto create(const std::vector<Type*>& param_types, Type* return_type) {
-    return new FunctionType(param_types, return_type);
+    return new FuncType(param_types, return_type);
   }
 
-  FunctionType* as_function() override { return this; }
+  FuncType* as_func() override { return this; }
+  virtual bool is_func() const override { return true; }
 };
 
 class GenericType final : public Type {
@@ -98,6 +119,43 @@ public:
   }
 
   virtual GenericType* as_generic() override { return this; }
+  virtual bool is_generic() const override { return true; }
+};
+
+class ErrorType final : public Type {
+public:
+  ErrorType() = default;
+  ~ErrorType() = default;
+
+  static auto create() { return new ErrorType(); }
+
+  virtual ErrorType* as_error() override { return this; }
+  virtual bool is_error() const override { return true; }
+};
+
+class UnknownType final : public Type {
+  size_t id;
+public:
+  UnknownType(size_t id) : id(id) {}
+  ~UnknownType() = default;
+
+  auto get_id() const { return id; }
+
+  static auto create(size_t id) { return new UnknownType(id); }
+
+  virtual UnknownType* as_unknown() { return this; }
+  virtual bool is_unknown() const { return true; }
+};
+
+class VoidType final : public Type {
+public:
+  VoidType() = default;
+  ~VoidType() = default;
+
+  static auto create() { return new VoidType(); }
+
+  virtual VoidType* as_void() { return this; }
+  virtual bool is_void() const { return true; }
 };
 
 }

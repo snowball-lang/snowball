@@ -54,7 +54,7 @@ void Error::print() {
   }
   fmt::print(fmt::text_style(fmt::emphasis::bold), "{:>4} | {}\n", get_location().line, fmt::styled(dbg_info.line, fmt::fg(fmt::terminal_color::black)));
   fmt::print(fmt::text_style(fmt::emphasis::bold), "     | ");
-  for (unsigned int i = 0; i < get_location().column-1; i++) {
+  for (unsigned int i = 0; i < get_location().column; i++) {
     fmt::print(" ");
   }
   fmt::print("{}", fmt::styled("^", fmt::fg(term_color) | fmt::emphasis::bold));

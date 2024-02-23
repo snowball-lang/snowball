@@ -43,10 +43,16 @@ public:
   NamespacePath(const std::vector<std::string>& path) : path(path) {}
   std::vector<std::string> get_path() const { return path; }
   std::string get_path_string() const;
+  bool is_empty() const { return path.empty(); }
+  auto size() const { return path.size(); }
   ~NamespacePath() = default;
 
   void push(const std::string& part) { path.push_back(part); }
   static NamespacePath from_file(const std::filesystem::path& file);
+
+  auto operator[](size_t i) const { return path[i]; }
+  auto operator==(const NamespacePath& other) const { return path == other.path; }
+  auto operator<(const NamespacePath& other) const { return path < other.path; }
 };
 
 }

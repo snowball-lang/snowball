@@ -53,9 +53,9 @@ public:
       return_type(return_type), body(body) {}
   ~FnDecl() = default;
 
-  auto get_name() const { return name; }
-  auto get_params() const { return params; }
-  auto get_return_type() const { return return_type; }
+  auto& get_name() const { return name; }
+  auto& get_params() { return params; }
+  auto& get_return_type() { return return_type; }
   auto get_body() const { return body; }
 
   static auto create(const SourceLocation& location, const std::string& name, 
