@@ -65,7 +65,7 @@ public:
   static auto create_u64() { return create(64, false); }
 
   IntType* as_int() override { return this; }
-  virtual bool is_int() const override { return true; }
+  bool is_int() const override { return true; }
 };
 
 class FloatType final : public Type {
@@ -84,7 +84,7 @@ public:
   static auto create_f64() { return create(64); }
 
   FloatType* as_float() override { return this; }
-  virtual bool is_float() const override { return true; }
+  bool is_float() const override { return true; }
 };
 
 class FuncType final : public Type {
@@ -103,7 +103,7 @@ public:
   }
 
   FuncType* as_func() override { return this; }
-  virtual bool is_func() const override { return true; }
+  bool is_func() const override { return true; }
 };
 
 class GenericType final : public Type {
@@ -118,8 +118,8 @@ public:
     return new GenericType(name);
   }
 
-  virtual GenericType* as_generic() override { return this; }
-  virtual bool is_generic() const override { return true; }
+  GenericType* as_generic() override { return this; }
+  bool is_generic() const override { return true; }
 };
 
 class ErrorType final : public Type {
@@ -129,8 +129,8 @@ public:
 
   static auto create() { return new ErrorType(); }
 
-  virtual ErrorType* as_error() override { return this; }
-  virtual bool is_error() const override { return true; }
+  ErrorType* as_error() override { return this; }
+  bool is_error() const override { return true; }
 };
 
 class UnknownType final : public Type {
@@ -143,8 +143,8 @@ public:
 
   static auto create(size_t id) { return new UnknownType(id); }
 
-  virtual UnknownType* as_unknown() { return this; }
-  virtual bool is_unknown() const { return true; }
+  UnknownType* as_unknown() { return this; }
+  bool is_unknown() const { return true; }
 };
 
 class VoidType final : public Type {

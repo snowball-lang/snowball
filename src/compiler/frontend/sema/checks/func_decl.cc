@@ -1,4 +1,6 @@
 
+#include <cassert>
+
 #include "compiler/frontend/ast/nodes.h"
 #include "compiler/frontend/sema/check.h"
 
@@ -7,7 +9,18 @@ namespace frontend {
 namespace sema {
 
 void TypeChecker::visit(ast::FnDecl* node) {
-  sn_assert(false, "Not implemented func implementation");
+  assert(node->get_type());
+  assert(node->get_type()->is_func());
+  auto fn_type = node->get_type()->as_func();
+  auto path = get_namespace_path(node->get_name());
+  universe.add_scope();
+  assert(fn_type->get_param_types().size() == node->get_params().size());
+  auto typed_args = fn_type->get_param_types();
+  for (size_t i = 0; i < node->get_params().size(); ++i) {
+    define_variable(node->get_params()[i].name, typed_args[i]);
+  }
+  node->get_body()->accept(this);
+  universe.remove_scope();
 }
 
 }

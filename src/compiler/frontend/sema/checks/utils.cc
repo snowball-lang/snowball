@@ -18,7 +18,7 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
       item.has_value() && acc.is_name()) {
       return {item, acc.get_name()};
     } else if (auto type = universe.get_type(path)) {
-      return {TypeCheckItem::create(type.value()), acc.get_name()};
+      return {TypeCheckItem::create_type(type.value()), acc.get_name()};
     } else {
       return {std::nullopt, acc.get_name()};
     }

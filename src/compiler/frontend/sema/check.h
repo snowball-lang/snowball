@@ -38,6 +38,7 @@ private:
 public:
   ~TypeCheckItem() = default;
   TypeCheckItem(ast::types::Type* type) : kind(Kind::Type), type(type) {}
+  TypeCheckItem(Kind kind, ast::types::Type* type) : kind(kind), type(type) {}
 
   Kind get_kind() const { return kind; }
   ast::types::Type* get_type() const { sn_assert(is_type(), "not a type"); return type; }
@@ -46,8 +47,12 @@ public:
   bool is_func() const { return kind == Kind::Func; }
   bool is_var() const { return kind == Kind::Var; }
 
-  static auto create(ast::types::Type* type) { 
+  static auto create_type(ast::types::Type* type) { 
     return TypeCheckItem(type); 
+  }
+
+  static auto create_var(ast::types::Type* type) {
+    return TypeCheckItem(Kind::Var, type);
   }
 };
 
@@ -101,7 +106,8 @@ private:
   ast::types::Type* get_type(const std::string& name);
   ast::types::Type* get_type(ast::TypeRef& tr);
 
-  bool unify(ast::types::Type*& a, const ast::types::Type* b);
+  bool unify(ast::types::Type*& a, ast::types::Type* b);
+  void define_variable(const std::string& name, ast::types::Type* type);
 };
 
 }

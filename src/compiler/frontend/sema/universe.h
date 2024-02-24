@@ -5,6 +5,7 @@
 #include <map>
 #include <unordered_map>
 
+#include "compiler/utils/utils.h"
 #include "compiler/frontend/ast/nodes.h"
 #include "compiler/frontend/ast/types.h"
 #include "compiler/frontend/location.h"
@@ -48,6 +49,7 @@ public:
   bool is_global() const { return scopes.size() == 1; }
   void add_item(const std::string& name, const ScopeItem& item) 
     { scopes.back().add_item(name, item); }
+
   std::optional<ScopeItem> get_item(const std::string& name) {
     for (auto it = scopes.rbegin(); it != scopes.rend(); ++it) {
       auto item = it->get_item(name);
@@ -59,6 +61,7 @@ public:
   }
 
   void add_type(const NamespacePath& path, ast::types::Type* type) { types[path] = type; }
+
   std::optional<ast::types::Type*> get_type(const NamespacePath& path) {
     auto it = types.find(path);
     if (it != types.end()) {
@@ -71,6 +74,7 @@ public:
     constraints.push_back(type);
     return constraints.size() - 1;
   }
+
   std::optional<ast::types::Type*> get_constraint(size_t index) {
     if (index < constraints.size()) {
       return constraints[index];
@@ -81,7 +85,8 @@ public:
   void add_fn_decl(const NamespacePath& path, ast::FnDecl* fn_decl) {
     fn_decls.push_back({path, fn_decl});
   }
-  std::vector<std::pair<NamespacePath, ast::FnDecl*>> get_fn_decl(const NamespacePath& path) {
+
+  auto get_fn_decl(const NamespacePath& path) {
     std::vector<std::pair<NamespacePath, ast::FnDecl*>> result;
     for (auto& [p, fn_decl] : fn_decls) {
       if (p == path) {

@@ -8,8 +8,10 @@ namespace snowball {
 namespace frontend {
 namespace sema {
 
-bool TypeChecker::unify(ast::types::Type*& a, const ast::types::Type* b) {
-  assert(false && "PLs GOD HELP ME");
+bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b) {
+  if (!a) return (a = b);
+  assert(false && "unimplemented");
+  return false;
 }
 
 }
