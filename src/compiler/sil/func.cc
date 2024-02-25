@@ -8,7 +8,7 @@ namespace snowball {
 namespace sil {
 
 void Binder::visit(ast::FnDecl* node) {
-  auto type = node->get_type();
+  auto type = get_type(node);
   auto name = node->get_name();
   auto params = node->get_params();
   auto body = accept(node->get_body());

@@ -15,6 +15,12 @@ namespace sil {
 
 using namespace frontend;
 
+class StopBindingIR : public std::exception {
+public:
+  StopBindingIR() = default;
+  ~StopBindingIR() = default;
+};
+
 /**
  * @brief A class to bind SIL instructions together
  *
@@ -39,6 +45,11 @@ public:
   Inst* accept(ast::Node* node);
 
   auto& get_modules() { return sil_modules; }
+  ast::types::Type* get_type(ast::Node* node);
+
+  void err(const LocationHolder& holder, const std::string& message, 
+    const Error::Info& info = Error::Info(), Error::Type type = Error::Type::Err, 
+    bool fatal = true);
 
 private:
 #define SN_REGISTER_ACCEPT(n) virtual void visit(ast::n* node) override;

@@ -39,6 +39,9 @@ public:
   virtual bool is_error() const { return false; }
   virtual bool is_unknown() const { return false; }
   virtual bool is_void() const { return false; }
+
+  virtual std::string get_printable_name() const = 0;
+  virtual std::string get_mangled_name() const = 0;
 };
 
 class IntType final : public Type {
@@ -67,6 +70,9 @@ public:
 
   IntType* as_int() override { return this; }
   bool is_int() const override { return true; }
+
+  std::string get_printable_name() const override;
+  std::string get_mangled_name() const override;
 };
 
 class FloatType final : public Type {
@@ -86,6 +92,9 @@ public:
 
   FloatType* as_float() override { return this; }
   bool is_float() const override { return true; }
+
+  std::string get_printable_name() const override;
+  std::string get_mangled_name() const override;
 };
 
 class FuncType final : public Type {
@@ -105,6 +114,9 @@ public:
 
   FuncType* as_func() override { return this; }
   bool is_func() const override { return true; }
+
+  std::string get_printable_name() const override;
+  std::string get_mangled_name() const override;
 };
 
 class GenericType final : public Type {
@@ -121,6 +133,9 @@ public:
 
   GenericType* as_generic() override { return this; }
   bool is_generic() const override { return true; }
+
+  std::string get_printable_name() const override;
+  std::string get_mangled_name() const override;
 };
 
 class ErrorType final : public Type {
@@ -132,6 +147,9 @@ public:
 
   ErrorType* as_error() override { return this; }
   bool is_error() const override { return true; }
+
+  std::string get_printable_name() const override;
+  std::string get_mangled_name() const override;
 };
 
 class UnknownType final : public Type {
@@ -146,6 +164,9 @@ public:
 
   UnknownType* as_unknown() { return this; }
   bool is_unknown() const { return true; }
+
+  std::string get_printable_name() const override;
+  std::string get_mangled_name() const override;
 };
 
 class VoidType final : public Type {
@@ -157,6 +178,9 @@ public:
 
   virtual VoidType* as_void() { return this; }
   virtual bool is_void() const { return true; }
+
+  std::string get_printable_name() const override;
+  std::string get_mangled_name() const override;
 };
 
 class ConstType final : public Type {
@@ -182,6 +206,9 @@ public:
 
   static auto create(size_t val) { return new ConstType(val); }
   static auto create(const std::string& val) { return new ConstType(val); }
+
+  std::string get_printable_name() const override;
+  std::string get_mangled_name() const override;
 };
 
 }
