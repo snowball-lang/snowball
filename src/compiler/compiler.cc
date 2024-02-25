@@ -6,6 +6,7 @@
 #include "compiler/frontend/ast/module.h"
 #include "compiler/frontend/sema/check.h"
 #include "compiler/sil/binder.h"
+#include "compiler/backend/llvm/builder.h"
 
 namespace snowball {
 
@@ -35,6 +36,17 @@ bool Compiler::compile() {
   binder.bind();
   if (binder.handle_errors()) {
     return EXIT_FAILURE;
+  }
+  switch (ctx.emit_type) {
+    case EmitType::Llvm:
+    case EmitType::Object:
+    case EmitType::Executable:
+    case EmitType::Asm: {
+      backend::LLVMBuilder llvm_builder(ctx);
+      llvm_builder.build(binder.get_modules());
+      llvm_builder.dump();
+    } break;
+    default: sn_assert(false, "Unknown emit type");
   }
   return EXIT_SUCCESS;
 }

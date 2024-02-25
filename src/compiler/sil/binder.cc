@@ -15,6 +15,7 @@ void Binder::bind() {
     for (auto& item : module.get_ast()) {
       item->accept(this);
     }
+    sil_modules.push_back(current_module);
   }
 }
 

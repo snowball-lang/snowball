@@ -17,6 +17,28 @@ enum class BuildMode {
   Test
 };
 /**
+ * @brief Emit type as target.
+ */
+enum class EmitType {
+  Llvm, 
+  Asm,
+  Object,
+  Executable,
+  Ast,
+  Sil
+};
+/**
+ * @brief Optimisation level.
+ */
+enum class OptLevel {
+  None,
+  O1,
+  O2,
+  O3,
+  Os,
+  Oz  
+};
+/**
  * @brief The Ctx class is responsible for managing the context of the compiler.
  * 
  * The context is a set of variables that are used to store information about the
@@ -27,6 +49,8 @@ enum class BuildMode {
 struct Ctx {
   std::filesystem::path input_file;
   BuildMode build_mode;
+  EmitType emit_type;
+  OptLevel opt_level = OptLevel::None;
 };
 
 }

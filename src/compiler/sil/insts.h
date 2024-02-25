@@ -18,7 +18,7 @@ public:
   virtual ~Inst() = default;
   
   auto get_type() const { return type; }
-  virtual void emit(SilVisitor&) = 0;
+  virtual void emit(SilVisitor*) = 0;
 
   template <typename T>
   [[nodiscard]] auto as() { return dynamic_cast<T*>(this); }
@@ -26,7 +26,7 @@ public:
   bool is() { return as<T>() != nullptr; }
 };
 
-#define EMITABLE() void emit(SilVisitor& visitor) override;
+#define EMITABLE() void emit(SilVisitor* visitor) override;
 
 class Block : public Inst {
   std::vector<Inst*> insts;

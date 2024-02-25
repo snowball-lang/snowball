@@ -23,6 +23,7 @@ using namespace frontend;
 */
 class Binder : public ast::AstVisitor, public Reporter {
   std::vector<frontend::Module>& ast_modules;
+  std::vector<Module> sil_modules;
   sil::Module current_module;
 
   std::map<NamespacePath, ast::types::Type*> types;
@@ -36,6 +37,8 @@ public:
 
   void bind();
   Inst* accept(ast::Node* node);
+
+  auto& get_modules() { return sil_modules; }
 
 private:
 #define SN_REGISTER_ACCEPT(n) virtual void visit(ast::n* node) override;

@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <cstddef>
+#include <cassert>
 
 namespace snowball {
 namespace frontend {
@@ -156,6 +157,31 @@ public:
 
   virtual VoidType* as_void() { return this; }
   virtual bool is_void() const { return true; }
+};
+
+class ConstType final : public Type {
+public:
+  enum ValType {
+    Int,
+    Str,
+  };
+private:
+  union {
+    size_t int_val;
+    std::string str_val;
+  };
+  ValType type;
+public:
+  ConstType(size_t val) : type(ValType::Int) { int_val = val; }
+  ConstType(const std::string& val) : type(ValType::Str) { str_val = val; }
+  ~ConstType() = default;
+
+  auto get_type() const { return type; }
+  auto get_str_val() const { assert(type == ValType::Str); return str_val; }
+  auto get_int_val() const { assert(type == ValType::Int); return int_val; }
+
+  static auto create(size_t val) { return new ConstType(val); }
+  static auto create(const std::string& val) { return new ConstType(val); }
 };
 
 }
