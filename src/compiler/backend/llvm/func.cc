@@ -17,22 +17,20 @@ void LLVMBuilder::emit(const sil::FuncDecl* node) {
     if (node->get_inline())
       fn->addFnAttr(llvm::Attribute::AlwaysInline);
     builder_ctx.set_func(node->get_id(), fn);
-  } else {
+  } else if (node->get_external() == frontend::ast::AttributedNode::None) {
     auto func = builder_ctx.get_func(node->get_id());
-    if (node->get_external() == frontend::ast::AttributedNode::None) {
-      auto entry = llvm::BasicBlock::Create(*llvm_ctx, "entry", func);
-      builder->SetInsertPoint(entry);
-      for (auto& param : func->args()) {
-        auto alloca = builder->CreateAlloca(param.getType(), nullptr, param.getName());
-        builder->CreateStore(&param, alloca);
-        //builder_ctx.set_value(node->get_id(param.getName()), alloca);
-      }
-      if (builder->GetInsertBlock()->empty() || !builder->GetInsertBlock()->back().isTerminator()) {
-        if (fn_type->getReturnType()->isVoidTy()) {
-          builder->CreateRetVoid();
-        } else {
-          builder->CreateRet(llvm::Constant::getNullValue(fn_type->getReturnType()));
-        }
+    auto entry = llvm::BasicBlock::Create(*llvm_ctx, "entry", func);
+    builder->SetInsertPoint(entry);
+    for (auto& param : func->args()) {
+      auto alloca = builder->CreateAlloca(param.getType(), nullptr, param.getName());
+      builder->CreateStore(&param, alloca);
+      //builder_ctx.set_value(node->get_id(param.getName()), alloca);
+    }
+    if (builder->GetInsertBlock()->empty() || !builder->GetInsertBlock()->back().isTerminator()) {
+      if (fn_type->getReturnType()->isVoidTy()) {
+        builder->CreateRetVoid();
+      } else {
+        builder->CreateRet(llvm::Constant::getNullValue(fn_type->getReturnType()));
       }
     }
   }
