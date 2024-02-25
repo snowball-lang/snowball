@@ -1,10 +1,13 @@
 
 #include "compiler/utils/utils.h"
+#include "compiler/utils/id.h"
 
 #include <vector>
 #include <string>
 
 namespace snowball {
+uint64_t Identified::next_id = 0;
+
 namespace utils {
 
 std::vector<std::string> split(std::string str, const std::string& delimiter) {

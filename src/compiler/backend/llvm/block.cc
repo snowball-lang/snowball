@@ -4,7 +4,7 @@
 namespace snowball {
 namespace backend {
 
-void LLVMBuilder::emit(sil::Block* node) {
+void LLVMBuilder::emit(const sil::Block* node) {
   sn_assert(false, "Not implemented")
 }
 

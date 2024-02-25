@@ -19,7 +19,7 @@ protected:
 public:
   SilVisitor(const Ctx& ctx) : ctx(ctx) {}
   
-#define SN_REGISTER_ACCEPT(n) virtual void emit(n* node) = 0;
+#define SN_REGISTER_ACCEPT(n) virtual void emit(const n* node) = 0;
 #include "compiler/sil/insts.def"
 #undef SN_REGISTER_ACCEPT
 

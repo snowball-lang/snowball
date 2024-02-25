@@ -4,6 +4,7 @@
 
 #include "compiler/frontend/ast/types.h"
 #include "compiler/frontend/ast/nodes.h"
+#include "compiler/utils/id.h"
 
 namespace snowball {
 namespace sil {
@@ -43,7 +44,7 @@ public:
   }
 };
 
-class FuncDecl : public Inst, ast::AttributedNode {
+class FuncDecl : public Inst, public ast::AttributedNode, public Identified {
   std::string name;
   std::vector<std::string> params;
   std::optional<Block*> body;
