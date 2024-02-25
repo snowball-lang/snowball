@@ -1,0 +1,7 @@
+
+#ifndef SN_REGISTER_ACCEPT
+#error SN_REGISTER_ACCEPT(n) is not defined
+#endif
+
+SN_REGISTER_ACCEPT(Block)
+SN_REGISTER_ACCEPT(FuncDecl)

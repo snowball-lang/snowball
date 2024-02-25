@@ -38,7 +38,7 @@ public:
 
   auto get_generics() const { return generics; }
   static auto create(const std::vector<T>& generics) {
-    return new GenericNode(generics);
+    return GenericNode(generics);
   }
 };
 

@@ -95,6 +95,10 @@ public:
     }
     return result;
   }
+
+  auto get_types() const { return types; }
+  auto get_constraints() const { return constraints; }
+  auto get_fn_decls() const { return fn_decls; }
 };
 
 }

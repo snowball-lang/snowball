@@ -83,6 +83,8 @@ public:
 #define SN_REGISTER_ACCEPT(n) virtual void visit(ast::n* node) override;
 #include "compiler/frontend/ast/nodes.def"
 #undef SN_REGISTER_ACCEPT
+
+  auto& get_universe() { return universe; }
 private:
   void register_builtins();
 

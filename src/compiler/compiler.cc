@@ -5,6 +5,7 @@
 #include "compiler/frontend/location.h"
 #include "compiler/frontend/ast/module.h"
 #include "compiler/frontend/sema/check.h"
+#include "compiler/sil/binder.h"
 
 namespace snowball {
 
@@ -28,6 +29,11 @@ bool Compiler::compile() {
   frontend::sema::TypeChecker type_checker(ctx, modules);
   type_checker.check();
   if (type_checker.handle_errors()) {
+    return EXIT_FAILURE;
+  }
+  sil::Binder binder(ctx, modules, type_checker.get_universe());
+  binder.bind();
+  if (binder.handle_errors()) {
     return EXIT_FAILURE;
   }
   return EXIT_SUCCESS;

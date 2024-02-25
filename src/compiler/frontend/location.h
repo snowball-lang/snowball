@@ -53,6 +53,8 @@ public:
   auto operator[](size_t i) const { return path[i]; }
   auto operator==(const NamespacePath& other) const { return path == other.path; }
   auto operator<(const NamespacePath& other) const { return path < other.path; }
+
+  static NamespacePath dummy() { return NamespacePath({}); }
 };
 
 }
