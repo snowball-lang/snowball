@@ -13,7 +13,7 @@
 namespace snowball {
 namespace frontend {
 
-ast::Expr* Parser::parse_expr() {
+ast::Expr* Parser::parse_expr(bool allow_assign) {
   while (true) {
     next();
     switch (current.type) {

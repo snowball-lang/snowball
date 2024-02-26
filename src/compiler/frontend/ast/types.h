@@ -160,7 +160,11 @@ public:
 
   auto get_id() const { return id; }
 
-  static auto create(size_t id) { return new UnknownType(id); }
+  static auto create(std::vector<ast::types::Type*>& constrs) { 
+    auto ty = new UnknownType(constrs.size());
+    constrs.push_back(ty);
+    return ty;
+  }
 
   UnknownType* as_unknown() { return this; }
   bool is_unknown() const { return true; }

@@ -417,7 +417,7 @@ std::vector<Token> Lexer::lex() {
           }
           Token tk {
             .value = identifier,
-            .location = std::make_pair(line, column - identifier.size()),
+            .location = std::make_pair(line, column - identifier.size() - 1),
           };
           if (identifier == SN_KEYWORD_NEW) {
             tk.type = Token::KwordNew;
@@ -509,6 +509,12 @@ std::vector<Token> Lexer::lex() {
             tk.type = Token::KwordFinal;
           } else {
             tk.type = Token::Identifier;
+          }
+          if (identifier == "_") {
+            shoot_error("Invalid identifier!", Error::Info {
+              .highlight = "Invalid identifier here.",
+              .note = "The identifier '_' is not a valid identifier. Its reserved for special use.\ne.g. an unknown type or a placeholder.",
+            });
           }
           add_token(tk);
           break;

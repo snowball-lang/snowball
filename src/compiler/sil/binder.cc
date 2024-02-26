@@ -31,10 +31,15 @@ Inst* Binder::accept(ast::Node* node) {
 ast::types::Type* Binder::get_type(ast::Node* node) {
   auto type = node->get_type();
   if (type->is_unknown()) {
-    err(node->get_location(), "Type should be known at this point", Error::Info {
-      .highlight = fmt::format("Type '{}' should be known at this point", type->get_printable_name()),
-      .help = "Maybe you forgot to set a type to a variable or forgot a generic parameter?"
-    });
+    auto knwon = constraints.at(type->as_unknown()->get_id());
+    if (knwon->is_unknown()) {
+      err(node->get_location(), "Type should be known at this point", Error::Info {
+        .highlight = fmt::format("Type '{}' should be known at this point", type->get_printable_name()),
+        .help = "Maybe you forgot to set a type to a variable or forgot a generic parameter?",
+        .note = "The type '_' is used to represent an unknown type"
+      });
+    }
+    type = knwon;
   }
   assert(!type->is_error());
   return type;

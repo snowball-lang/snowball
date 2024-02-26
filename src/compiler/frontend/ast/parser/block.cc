@@ -20,13 +20,15 @@ ast::Block* Parser::parse_block(Token::Type terminator) {
     }
     if (is(Token::Type::SymSemiColon)) {
       err("Excesive semicolons found!", Error::Info {
-        .highlight = "Semicolons are used to separate statements.\nThis semicolon is not needed here",
-        .help = "Remove the semicolon(s)"
+        .highlight = "Extra ';' found here",
+        .help = "Remove the semicolon(s)",
+        .note = "Semicolons are used to separate statements.\nThis semicolon is not needed here"
       }, Error::Type::Warn);
-      while (is(Token::Type::SymSemiColon)) next();
+      while (is(Token::Type::SymSemiColon, peek())) next();
       continue;
     }
     stmts.push_back(parse_stmt(pk));
+    expect(Token::Type::SymSemiColon, "a semicolon to end the statement", terminator);
   }
   assert(false);
 }

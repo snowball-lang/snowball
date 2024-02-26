@@ -70,6 +70,10 @@ void TypeChecker::define_variable(const std::string& name, ast::types::Type* typ
   universe.add_item(name, TypeCheckItem::create_var(type));
 }
 
+ast::types::UnknownType* TypeChecker::get_unknown_type() {
+  return ast::types::UnknownType::create(universe.get_constraints());
+}
+
 }
 }
 }

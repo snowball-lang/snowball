@@ -68,6 +68,30 @@ public:
   SN_VISIT()
 };
 
+class VarDecl final : public Stmt, public AttributedNode {
+  std::string name;
+  std::optional<TypeRef> type;
+  std::optional<Expr*> value;
+public:
+  VarDecl(const SourceLocation& location, const std::string& name, 
+      std::optional<TypeRef> type, std::optional<Expr*> value, 
+      const AttributedNode& attributes = AttributedNode())
+    : Stmt(location), AttributedNode(attributes), name(name), type(type), value(value) {}
+  ~VarDecl() = default;
+
+  auto& get_name() const { return name; }
+  auto& get_decl_type() { return type; }
+  auto& get_value() { return value; }
+
+  static auto create(const SourceLocation& location, const std::string& name, 
+      std::optional<TypeRef> type, std::optional<Expr*> value, 
+      const AttributedNode& attributes = AttributedNode()) {
+    return new VarDecl(location, name, type, value, attributes);
+  }
+
+  SN_VISIT()
+};
+
 }
 }
 }

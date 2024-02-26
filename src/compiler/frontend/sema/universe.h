@@ -70,11 +70,6 @@ public:
     return std::nullopt;
   }
 
-  size_t add_constraint(ast::types::Type* type) {
-    constraints.push_back(type);
-    return constraints.size() - 1;
-  }
-
   std::optional<ast::types::Type*> get_constraint(size_t index) {
     if (index < constraints.size()) {
       return constraints[index];
@@ -97,7 +92,7 @@ public:
   }
 
   auto get_types() const { return types; }
-  auto get_constraints() const { return constraints; }
+  auto& get_constraints() { return constraints; }
   auto get_fn_decls() const { return fn_decls; }
 };
 

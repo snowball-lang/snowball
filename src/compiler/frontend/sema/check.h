@@ -109,6 +109,7 @@ private:
   ast::types::Type* get_type(ast::TypeRef& tr);
 
   bool unify(ast::types::Type*& a, ast::types::Type* b);
+  ast::types::UnknownType* get_unknown_type();
   void define_variable(const std::string& name, ast::types::Type* type);
 };
 

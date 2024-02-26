@@ -70,7 +70,13 @@ private:
 
   template <typename T, typename... Args>
   [[nodiscard]] auto node(Args&&... args) {
-    return T::create(loc(), std::forward<Args>(args)...);
+    return pnode<T>(loc(), std::forward<Args>(args)...);
+  }
+
+  template <typename T, typename... Args>
+  [[nodiscard]] auto pnode(const SourceLocation& loc, Args&&... args) {
+    // Create a new node with the given location and arguments
+    return T::create(loc, std::forward<Args>(args)...);
   }
 
   // --- Parsing functions ---
@@ -81,7 +87,8 @@ private:
   ast::FnDecl* parse_fn_decl(const ast::AttributedNode& attrs);
   ast::TypeRef parse_type_ref();
   ast::Node* parse_stmt(const Token& peek);
-  ast::Expr* parse_expr();
+  ast::Expr* parse_expr(bool allow_assign = true);
+  ast::VarDecl* parse_var_decl();
   ast::Block* parse_block(Token::Type terminator = Token::Type::BracketRcurly);
 
   void parse_extern_decl(ast::AttributedNode& node);

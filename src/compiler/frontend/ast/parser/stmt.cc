@@ -20,6 +20,9 @@ ast::Node* Parser::parse_stmt(const Token& peek) {
         .help = "Check if all the blocks are closed properly"
       });
       assert(false);
+    case Token::Type::KwordVar:
+      next();
+      return parse_var_decl();
     default:
       return parse_expr();
   }
