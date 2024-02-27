@@ -17,7 +17,8 @@ ast::Node* Parser::parse_stmt(const Token& peek) {
     case Token::Type::Eof:
       err("Unexpected end of file", Error::Info {
         .highlight = "The file has ended unexpectedly",
-        .help = "Check if all the blocks are closed properly"
+        .help = "Check if all the blocks are closed properly",
+        .note = has_errors() ? "The previous error might have caused this" : ""
       });
       assert(false);
     case Token::Type::KwordVar:

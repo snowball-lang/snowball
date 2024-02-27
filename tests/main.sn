@@ -1,3 +1,4 @@
 public func main(d: i32) {
   let mut a: i32;
+  a;
 }

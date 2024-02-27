@@ -31,6 +31,8 @@ public:
     }
     return std::nullopt;
   }
+
+  auto& get_items() { return items; }
 };
 
 template <class ScopeItem>
@@ -94,6 +96,7 @@ public:
   auto get_types() const { return types; }
   auto& get_constraints() { return constraints; }
   auto get_fn_decls() const { return fn_decls; }
+  auto& get_scopes() { return scopes; }
 };
 
 }

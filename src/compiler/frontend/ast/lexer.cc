@@ -417,7 +417,7 @@ std::vector<Token> Lexer::lex() {
           }
           Token tk {
             .value = identifier,
-            .location = std::make_pair(line, column - identifier.size() - 1),
+            .location = std::make_pair(line, column - identifier.size()),
           };
           if (identifier == SN_KEYWORD_NEW) {
             tk.type = Token::KwordNew;

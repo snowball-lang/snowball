@@ -16,7 +16,7 @@ DebugSourceLocation DebugSourceLocation::from_file(const std::string& file, unsi
     }
     if (line_number+2 == line) {
       dsl.line_before_before += file[char_index];
-    } else if (line_number+2 == line) {
+    } else if (line_number+1 == line) {
       dsl.line_before += file[char_index];
     } else if (line_number == line) {
       dsl.line += file[char_index];

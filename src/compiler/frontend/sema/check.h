@@ -41,7 +41,7 @@ public:
   TypeCheckItem(Kind kind, ast::types::Type* type) : kind(kind), type(type) {}
 
   Kind get_kind() const { return kind; }
-  ast::types::Type* get_type() const { sn_assert(is_type(), "not a type"); return type; }
+  ast::types::Type* get_type() const { return type; }
 
   bool is_type() const { return kind == Kind::Type; }
   bool is_func() const { return kind == Kind::Func; }
@@ -111,6 +111,8 @@ private:
   bool unify(ast::types::Type*& a, ast::types::Type* b);
   ast::types::UnknownType* get_unknown_type();
   void define_variable(const std::string& name, ast::types::Type* type);
+
+  std::optional<std::string> get_did_you_mean(const std::string& name);
 };
 
 }

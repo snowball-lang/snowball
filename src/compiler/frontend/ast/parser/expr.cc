@@ -14,9 +14,13 @@ namespace snowball {
 namespace frontend {
 
 ast::Expr* Parser::parse_expr(bool allow_assign) {
+  ast::Expr* expr = nullptr;
   while (true) {
     next();
     switch (current.type) {
+      case Token::Type::Identifier:
+        expr = node<ast::Ident>(current.to_string());
+        break;
       default:
         err("Unexpected token found while parsing expression", Error::Info {
           .highlight = fmt::format("Token '{}' is not expected here", current),
@@ -25,7 +29,11 @@ ast::Expr* Parser::parse_expr(bool allow_assign) {
         });
         assert(false);
     }
+    break; // TODO: Remove this break statement, support binary expressions, etc.
   }
+  next();
+  assert(expr);
+  return expr;
 }
 
 }

@@ -18,7 +18,7 @@ ast::Block* Parser::parse_block(Token::Type terminator) {
       next();
       return node<ast::Block>(stmts);
     }
-    if (is(Token::Type::SymSemiColon)) {
+    if (is(Token::Type::SymSemiColon, pk)) {
       err("Excesive semicolons found!", Error::Info {
         .highlight = "Extra ';' found here",
         .help = "Remove the semicolon(s)",
