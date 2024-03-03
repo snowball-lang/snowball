@@ -10,7 +10,7 @@ void Binder::visit(ast::Block* node) {
   for (auto& item : node->get_stmts()) {
     insts.push_back(accept(item));
   }
-  value = sil::Block::create(ast::types::VoidType::create(), insts);
+  value = sil::Block::create(node->get_location(), ast::types::VoidType::create(), insts);
 }
 
 }

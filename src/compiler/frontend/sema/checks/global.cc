@@ -16,7 +16,9 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast) {
       unsigned int i = 0;
       for (auto& param : fn_decl->get_params()) {
         param_types.push_back(nullptr);
-        unify(param_types[i], get_type(param.type));
+        assert(param->get_decl_type());
+        unify(param_types[i], get_type(param->get_decl_type().value()));
+        param->get_type() = param_types[i];
         i++;
       }
       sn_assert(param_types.size() == fn_decl->get_params().size(), "param_types.size() != fn_decl->get_params().size()");

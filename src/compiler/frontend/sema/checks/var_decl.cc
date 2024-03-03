@@ -20,7 +20,7 @@ void TypeChecker::visit(ast::VarDecl* node) {
   if (!node->get_decl_type() && !node->get_value()) {
     unify(node->get_type(), get_unknown_type());
   }
-  define_variable(node->get_name(), node->get_type());
+  define_variable(node);
 }
 
 }

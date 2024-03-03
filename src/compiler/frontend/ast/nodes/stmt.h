@@ -6,6 +6,7 @@
 #include <optional>
 #include <string>
 
+#include "compiler/utils/id.h"
 #include "compiler/frontend/ast/nodes/other.h"
 #include "compiler/frontend/ast/nodes/expr.h" 
 
@@ -16,6 +17,7 @@ namespace ast {
 // --- Forward declarations ---
 
 class TypeRef;
+class VarDecl;
 
 // --- Stmt ---
 
@@ -33,20 +35,16 @@ public:
   SN_VISIT()
 };
 
-class FnDecl final : public Stmt, public GenericNode<>, public AttributedNode {
+class FnDecl final : public Stmt, public GenericNode<>, public AttributedNode, public Identified {
 public:
-  struct Param {
-    std::string name;
-    TypeRef type;
-  };
 private:
   std::string name;
-  std::vector<Param> params;
+  std::vector<VarDecl*> params;
   TypeRef return_type;
   Block* body;
 public:
   FnDecl(const SourceLocation& location, const std::string& name,   
-        const std::vector<Param>& params, TypeRef return_type, Block* body,
+        const std::vector<VarDecl*>& params, TypeRef return_type, Block* body,
         std::optional<GenericNode> generics = std::nullopt, 
         const AttributedNode& attributes = AttributedNode())
     : Stmt(location), GenericNode(generics), AttributedNode(attributes), name(name), params(params), 
@@ -59,7 +57,7 @@ public:
   auto get_body() const { return body; }
 
   static auto create(const SourceLocation& location, const std::string& name, 
-      const std::vector<Param>& params, TypeRef return_type, Block* body,
+      const std::vector<VarDecl*>& params, TypeRef return_type, Block* body,
       std::optional<GenericNode> generics = std::nullopt, 
       const AttributedNode& attributes = AttributedNode()) {
     return new FnDecl(location, name, params, return_type, body, generics, attributes);
@@ -68,7 +66,7 @@ public:
   SN_VISIT()
 };
 
-class VarDecl final : public Stmt, public AttributedNode {
+class VarDecl final : public Stmt, public AttributedNode, public Identified {
   std::string name;
   std::optional<TypeRef> type;
   std::optional<Expr*> value;

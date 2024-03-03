@@ -12,10 +12,11 @@ namespace sil {
 using namespace frontend;
 class SilVisitor;
 
-class Inst {
+class Inst : public LocationHolder {
   ast::types::Type* type;
 public:
-  Inst(ast::types::Type* type) : type(type) {}
+  Inst(LocationHolder& loc, ast::types::Type* type) 
+    : LocationHolder(loc), type(type) {}
   virtual ~Inst() = default;
   
   auto get_type() const { return type; }
@@ -29,55 +30,75 @@ public:
 
 #define EMITABLE() void emit(SilVisitor* visitor) override;
 
-class Block : public Inst {
+class Block final : public Inst {
   std::vector<Inst*> insts;
 public:
-  Block(ast::types::Type* type, const std::vector<Inst*>& insts) 
-    : Inst(type), insts(insts) {}
+  Block(LocationHolder& loc, ast::types::Type* type, const std::vector<Inst*>& insts) 
+    : Inst(loc, type), insts(insts) {}
   ~Block() = default;
 
   auto get_insts() const { return insts; }
   EMITABLE()
 
-  static auto create(ast::types::Type* type, const std::vector<Inst*>& insts) {
-    return new Block(type, insts);
+  static auto create(LocationHolder loc, ast::types::Type* type, const std::vector<Inst*>& insts) {
+    return new Block(loc, type, insts);
   }
 };
 
-class FuncDecl : public Inst, public ast::AttributedNode, public Identified {
+class FuncDecl final : public Inst, public ast::AttributedNode, public Identified {
+  using ParamType = std::pair<uint64_t, std::string>;
   std::string name;
-  std::vector<std::string> params;
+  std::vector<ParamType> params;
   std::optional<Block*> body;
 public:
-  FuncDecl(ast::types::Type* type, const std::string& name, const std::vector<std::string>& params,
-    const ast::AttributedNode& attrs, std::optional<Block*> body = std::nullopt)
-    : Inst(type), AttributedNode(attrs), name(name), params(params), body(body) {}
+  FuncDecl(LocationHolder& loc, ast::types::Type* type, const std::string& name, const std::vector<ParamType>& params,
+    const ast::AttributedNode& attrs, std::optional<Block*> body = std::nullopt, uint64_t id = 0)
+    : Identified(id), Inst(loc, type), AttributedNode(attrs), name(name), params(params), body(body) {}
   ~FuncDecl() = default;
 
   auto get_name() const { return name; }
   auto get_params() const { return params; }
+  auto get_body() const { return body; }
   EMITABLE()
 
-  static auto create(ast::types::Type* type, const std::string& name, const std::vector<std::string>& params,
-    const ast::AttributedNode& attrs, std::optional<Block*> body = std::nullopt) {
-    return new FuncDecl(type, name, params, attrs, body);
+  static auto create(LocationHolder loc, ast::types::Type* type, const std::string& name, const std::vector<ParamType>& params,
+    const ast::AttributedNode& attrs, std::optional<Block*> body = std::nullopt, uint64_t id = 0) {
+    assert(id > 0);
+    return new FuncDecl(loc, type, name, params, attrs, body, id);
   }
 };
 
-class VarDecl : public Inst, public ast::AttributedNode, public Identified {
+class VarDecl final : public Inst, public ast::AttributedNode, public Identified {
   std::string name;
   std::optional<Inst*> value;
 public:
-  VarDecl(ast::types::Type* type, const std::string& name, const ast::AttributedNode& attrs, std::optional<Inst*> value = std::nullopt)
-    : Inst(type), AttributedNode(attrs), name(name), value(value) {}
+  VarDecl(LocationHolder& loc, ast::types::Type* type, const std::string& name, const ast::AttributedNode& attrs, 
+    std::optional<Inst*> value = std::nullopt, uint64_t id = 0)
+    : Identified(id), Inst(loc, type), AttributedNode(attrs), name(name), value(value) {}
   ~VarDecl() = default;
 
   auto get_name() const { return name; }
   auto get_value() const { return value; }
   EMITABLE()
 
-  static auto create(ast::types::Type* type, const std::string& name, const ast::AttributedNode& attrs, std::optional<Inst*> value = std::nullopt) {
-    return new VarDecl(type, name, attrs, value);
+  static auto create(LocationHolder loc, ast::types::Type* type, const std::string& name, const ast::AttributedNode& attrs, 
+    std::optional<Inst*> value = std::nullopt, uint64_t id = 0) {
+    assert(id > 0);
+    return new VarDecl(loc, type, name, attrs, value, id);
+  }
+};
+
+class ValueUse final : public Inst {
+  Inst* value;
+public:
+  ValueUse(LocationHolder& loc, ast::types::Type* type, Inst* value) : Inst(loc, type), value(value) {}
+  ~ValueUse() = default;
+
+  auto get_value() const { return value; }
+  EMITABLE()
+
+  static auto create(LocationHolder loc, Inst* value) {
+    return new ValueUse(loc, value->get_type(), value);
   }
 };
 

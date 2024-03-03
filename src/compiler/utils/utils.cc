@@ -6,7 +6,7 @@
 #include <string>
 
 namespace snowball {
-uint64_t Identified::next_id = 0;
+uint64_t Identified::next_id = 1;
 
 namespace utils {
 

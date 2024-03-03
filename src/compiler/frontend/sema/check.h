@@ -33,15 +33,16 @@ private:
     // TODO:
     ast::types::Type* type;
     //ast::Func* func;
-    //ast::Var* var;
+    ast::VarDecl* var;
   };
 public:
   ~TypeCheckItem() = default;
   TypeCheckItem(ast::types::Type* type) : kind(Kind::Type), type(type) {}
-  TypeCheckItem(Kind kind, ast::types::Type* type) : kind(kind), type(type) {}
+  TypeCheckItem(ast::VarDecl* var) : kind(Kind::Var), var(var) {}
 
-  Kind get_kind() const { return kind; }
-  ast::types::Type* get_type() const { return type; }
+  auto get_kind() const { return kind; }
+  auto get_type() const { assert(is_type()); return type; }
+  auto get_var() const { assert(is_var()); return var; }
 
   bool is_type() const { return kind == Kind::Type; }
   bool is_func() const { return kind == Kind::Func; }
@@ -51,8 +52,8 @@ public:
     return TypeCheckItem(type); 
   }
 
-  static auto create_var(ast::types::Type* type) {
-    return TypeCheckItem(Kind::Var, type);
+  static auto create_var(ast::VarDecl* var) {
+    return TypeCheckItem(var);
   }
 };
 
@@ -110,7 +111,7 @@ private:
 
   bool unify(ast::types::Type*& a, ast::types::Type* b);
   ast::types::UnknownType* get_unknown_type();
-  void define_variable(const std::string& name, ast::types::Type* type);
+  void define_variable(ast::VarDecl* node);
 
   std::optional<std::string> get_did_you_mean(const std::string& name);
 };

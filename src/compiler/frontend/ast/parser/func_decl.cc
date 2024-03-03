@@ -21,14 +21,15 @@ ast::FnDecl* Parser::parse_fn_decl(const ast::AttributedNode& attrs) {
   auto generics = parse_generics();
   consume(Token::Type::BracketLparent, "an open parenthesis after the function name", Token::Type::BracketLcurly);
 
-  std::vector<ast::FnDecl::Param> params;
+  std::vector<ast::VarDecl*> params;
   while (!is(Token::Type::BracketRparent)) {
+    auto pos = loc();
     auto param_name = expect(Token::Type::Identifier, "an identifier for the parameter name", {Token::Type::SymColon, Token::Type::BracketRparent})
       .to_string();
     if (is(Token::Type::BracketRparent)) break;
     next(1 + !is(Token::Type::SymColon)); // skip the identifier and the colon
     auto param_type = parse_type_ref();
-    params.push_back(ast::FnDecl::Param { param_name, param_type });
+    params.push_back(ast::VarDecl::create(pos, param_name, param_type, std::nullopt));
     if (is(Token::Type::BracketRparent)) break;
     consume(Token::Type::SymComma, "a comma after the parameter", Token::Type::BracketRparent);
   }

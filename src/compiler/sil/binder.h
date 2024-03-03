@@ -35,6 +35,7 @@ class Binder : public ast::AstVisitor, public Reporter {
   std::map<NamespacePath, ast::types::Type*> types;
   std::vector<ast::types::Type*> constraints;
   std::vector<std::pair<NamespacePath, ast::FnDecl*>> fn_decls;
+  std::map<uint64_t, sil::Inst*> var_ids;
 
   Inst* value = nullptr; // The current value of the binder
 public:
@@ -46,6 +47,7 @@ public:
 
   auto& get_modules() { return sil_modules; }
   ast::types::Type* get_type(ast::Node* node);
+  auto& get_insts() { return var_ids; }
 
   void err(const LocationHolder& holder, const std::string& message, 
     const Error::Info& info = Error::Info(), Error::Type type = Error::Type::Err, 

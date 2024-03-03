@@ -28,8 +28,10 @@ void TypeChecker::visit(ast::Ident* node) {
     unify(node->get_type(), ast::types::ErrorType::create());
     return;
   }
+  auto var = item.value().get_var();
+  node->set_var_id(var->get_id());
   // TODO: check for generics if it's a function?
-  unify(node->get_type(), item.value().get_type());
+  unify(node->get_type(), var->get_type());
 }
 
 }

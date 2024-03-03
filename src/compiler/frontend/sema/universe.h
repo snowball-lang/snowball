@@ -41,6 +41,7 @@ class Universe {
   std::map<NamespacePath, ast::types::Type*> types;
   std::vector<ast::types::Type*> constraints;
   std::vector<std::pair<NamespacePath, ast::FnDecl*>> fn_decls;
+  std::map<uint64_t, ast::Stmt*> var_ids;
 public:
   Universe() { add_scope(); }
   ~Universe() = default;
@@ -91,6 +92,15 @@ public:
       }
     }
     return result;
+  }
+
+  void add_var_id(uint64_t id, ast::Stmt* stmt) { var_ids[id] = stmt; }
+  auto get_var_id(uint64_t id) {
+    auto it = var_ids.find(id);
+    if (it != var_ids.end()) {
+      return std::optional(it->second);
+    }
+    return std::nullopt;
   }
 
   auto get_types() const { return types; }

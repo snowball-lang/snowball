@@ -5,8 +5,8 @@
 namespace snowball {
 namespace backend {
 
-LLVMBuilder::LLVMBuilder(const Ctx& ctx) : SilVisitor(ctx),
-  llvm_ctx(std::make_unique<llvm::LLVMContext>()), builder_ctx(llvm_ctx) {
+LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::map<uint64_t, sil::Inst*>& inst_map) : SilVisitor(ctx),
+  llvm_ctx(std::make_unique<llvm::LLVMContext>()), builder_ctx(llvm_ctx, inst_map) {
   llvm::InitializeAllTargetInfos();
   llvm::InitializeAllTargets();
   llvm::InitializeAllTargetMCs();
@@ -53,7 +53,7 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx) : SilVisitor(ctx),
   builder_ctx.module = std::make_unique<llvm::Module>("main", *llvm_ctx);
   dbg.debug = ctx.opt_level == OptLevel::None;
   dbg.builder = std::make_unique<llvm::DIBuilder>(*builder_ctx.module);
-  llvm::DIFile* file = dbg.getFile(ctx.input_file);
+  llvm::DIFile* file = dbg.get_file(ctx.input_file);
   dbg.unit = dbg.builder->createCompileUnit(
     llvm::dwarf::DW_LANG_C_plus_plus,
     file,
@@ -95,7 +95,7 @@ void LLVMBuilder::dump(llvm::raw_ostream& os) {
   builder_ctx.module->print(os, nullptr);
 }
 
-llvm::DIFile* LLVMBuilder::DebugUtils::getFile(const std::string& path) {
+llvm::DIFile* LLVMBuilder::DebugUtils::get_file(const std::string& path) {
   std::string filename;
   std::string directory;
   auto pos = path.find_last_of("/");
@@ -137,6 +137,21 @@ llvm::AllocaInst* LLVMBuilder::alloc(types::Type* type, const std::string& name)
   auto alloca = builder->CreateAlloca(ll, nullptr, name);
   builder->SetInsertPoint(bb);
   return alloca;
+}
+
+llvm::DISubprogram* LLVMBuilder::get_disubprogram(const sil::FuncDecl* node) {
+  auto loc = node->get_location();
+  auto file = dbg.get_file(loc.file->get_path());
+  auto derive = llvm::cast<llvm::DIDerivedType>(get_ditype(node->get_type()->as_func()));
+  auto type = llvm::cast<llvm::DISubroutineType>(derive->getRawBaseType());
+  return dbg.builder->createFunction(
+    dbg.unit, node->get_name(), node->get_name(), file, loc.line, type, loc.line, llvm::DINode::FlagPrototyped, 
+    llvm::DISubprogram::toSPFlags(
+      /*IsLocalToUnit=*/true,
+      /*IsDefinition=*/true,
+      /*IsOptimized=*/!dbg.debug
+    )
+  );
 }
 
 }

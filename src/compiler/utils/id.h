@@ -12,6 +12,7 @@ class Identified {
   uint64_t id;
 public:
   Identified() : id(next_id++) {}
+  Identified(uint64_t id) : id(id) {}
   auto get_id() const { return id; }
 };
 

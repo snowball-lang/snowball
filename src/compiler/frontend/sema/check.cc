@@ -66,8 +66,9 @@ NamespacePath TypeChecker::get_namespace_path(const std::string& name) {
   return path;
 }
 
-void TypeChecker::define_variable(const std::string& name, ast::types::Type* type) {
-  universe.add_item(name, TypeCheckItem::create_var(type));
+void TypeChecker::define_variable(ast::VarDecl* node) {
+  universe.add_item(node->get_name(), TypeCheckItem::create_var(node));
+  universe.add_var_id(node->get_id(), node);
 }
 
 ast::types::UnknownType* TypeChecker::get_unknown_type() {

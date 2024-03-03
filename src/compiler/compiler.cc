@@ -42,7 +42,7 @@ bool Compiler::compile() {
     case EmitType::Object:
     case EmitType::Executable:
     case EmitType::Asm: {
-      backend::LLVMBuilder llvm_builder(ctx);
+      backend::LLVMBuilder llvm_builder(ctx, binder.get_insts());
       llvm_builder.build(binder.get_modules());
       llvm_builder.dump();
     } break;

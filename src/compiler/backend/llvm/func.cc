@@ -21,11 +21,21 @@ void LLVMBuilder::emit(const sil::FuncDecl* node) {
     auto func = builder_ctx.get_func(node->get_id());
     auto entry = llvm::BasicBlock::Create(*llvm_ctx, "entry", func);
     builder->SetInsertPoint(entry);
-    for (auto& param : func->args()) {
-      auto alloca = builder->CreateAlloca(param.getType(), nullptr, param.getName());
-      builder->CreateStore(&param, alloca);
-      //builder_ctx.set_value(node->get_id(param.getName()), alloca);
+    func->setSubprogram(get_disubprogram(node));
+    dbg.scope = func->getSubprogram();
+    assert(node->get_params().size() == fn_type->getNumParams());
+    builder_ctx.set_current_func(func);
+    size_t arg_idx = 0;
+    for (auto& [id, name] : node->get_params()) {
+      auto arg = func->arg_begin();
+      std::advance(arg, arg_idx);
+      arg->setName(name);
+      arg_idx++;
+      auto alloc = build(builder_ctx.get_inst(id));
+      builder->CreateStore(arg, alloc);
     }
+    assert(node->get_body().has_value());
+    build(node->get_body().value());
     if (builder->GetInsertBlock()->empty() || !builder->GetInsertBlock()->back().isTerminator()) {
       if (fn_type->getReturnType()->isVoidTy()) {
         builder->CreateRetVoid();
