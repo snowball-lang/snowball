@@ -29,6 +29,10 @@ ast::Block* Parser::parse_block(Token::Type terminator) {
     }
     stmts.push_back(parse_stmt(pk));
     expect(Token::Type::SymSemiColon, "a semicolon to end the statement", terminator);
+    if (is(terminator)) {
+      prev();
+      continue;
+    }
   }
   assert(false);
 }

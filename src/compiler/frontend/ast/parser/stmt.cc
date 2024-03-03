@@ -15,7 +15,7 @@ namespace frontend {
 ast::Node* Parser::parse_stmt(const Token& peek) {
   switch (peek.type) {
     case Token::Type::Eof:
-      err("Unexpected end of file", Error::Info {
+      err("Unexpected end of file while parsing statement!", Error::Info {
         .highlight = "The file has ended unexpectedly",
         .help = "Check if all the blocks are closed properly",
         .note = has_errors() ? "The previous error might have caused this" : ""

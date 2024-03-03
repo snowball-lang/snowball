@@ -44,6 +44,7 @@ public:
 private:
   Token peek(int offset = 0, bool safe = false);
   void next(int offset = 1);
+  void prev();
   
   bool is(Token::Type type);
   bool is(Token::Type type, const Token& tok);

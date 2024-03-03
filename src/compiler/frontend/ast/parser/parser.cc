@@ -46,6 +46,14 @@ void Parser::next(int offset) {
   current = tokens[tok_index];
 }
 
+void Parser::prev() {
+  if (tok_index == 0) {
+    return;
+  }
+  tok_index--;
+  current = tokens[tok_index];
+}
+
 bool Parser::is(Token::Type type) {
   return current.type == type;
 }
