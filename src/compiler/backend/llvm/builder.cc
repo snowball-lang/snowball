@@ -114,5 +114,30 @@ llvm::Value* LLVMBuilder::build(sil::Inst* inst) {
   return value;
 }
 
+llvm::Value* LLVMBuilder::expr(sil::Inst* inst) {
+  builder_ctx.dont_load = false;
+  return load(build(inst), inst->get_type());
+}
+
+llvm::Value* LLVMBuilder::load(llvm::Value* ptr, types::Type* type) {
+  auto ll = get_type(type);
+  if (builder_ctx.dont_load) {
+    return ptr;
+  }
+  return builder->CreateLoad(ll, ptr, ll->isPointerTy() ? "" : "loadtmp");
+}
+
+llvm::AllocaInst* LLVMBuilder::alloc(types::Type* type, const std::string& name) {
+  auto bb = builder->GetInsertBlock();
+  auto ll = get_type(type);
+  auto entry = bb->getParent()->getEntryBlock().getTerminator();
+  if (entry) {
+    builder->SetInsertPoint(entry);
+  }
+  auto alloca = builder->CreateAlloca(ll, nullptr, name);
+  builder->SetInsertPoint(bb);
+  return alloca;
+}
+
 }
 }

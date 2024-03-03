@@ -24,6 +24,7 @@ class LLVMBuilderContext {
 
 public:
   std::unique_ptr<llvm::Module> module;
+  bool dont_load = false;
 
   LLVMBuilderContext(std::unique_ptr<llvm::LLVMContext>& ctx) 
     : module(std::make_unique<llvm::Module>("main", *ctx)) {}
@@ -52,7 +53,8 @@ class LLVMBuilder : public sil::SilVisitor {
 
   llvm::Value* build(sil::Inst* inst);
   llvm::Value* expr(sil::Inst* inst);
-  llvm::AllocaInst* alloc(sil::Inst* inst);
+  llvm::Value* load(llvm::Value* ptr, types::Type* type);
+  llvm::AllocaInst* alloc(types::Type* type, const std::string& name = "");
 
   llvm::Type* get_type(types::Type* type);
   llvm::FunctionType* get_func_type(types::FuncType* type);

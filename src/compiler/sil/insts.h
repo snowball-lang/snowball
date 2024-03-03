@@ -64,6 +64,23 @@ public:
   }
 };
 
+class VarDecl : public Inst, public ast::AttributedNode, public Identified {
+  std::string name;
+  std::optional<Inst*> value;
+public:
+  VarDecl(ast::types::Type* type, const std::string& name, const ast::AttributedNode& attrs, std::optional<Inst*> value = std::nullopt)
+    : Inst(type), AttributedNode(attrs), name(name), value(value) {}
+  ~VarDecl() = default;
+
+  auto get_name() const { return name; }
+  auto get_value() const { return value; }
+  EMITABLE()
+
+  static auto create(ast::types::Type* type, const std::string& name, const ast::AttributedNode& attrs, std::optional<Inst*> value = std::nullopt) {
+    return new VarDecl(type, name, attrs, value);
+  }
+};
+
 }
 }
 
