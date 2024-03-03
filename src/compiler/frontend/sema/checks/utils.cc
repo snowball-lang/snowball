@@ -69,7 +69,13 @@ ast::types::Type* TypeChecker::get_type(const NamespacePath& path) {
 ast::types::Type* TypeChecker::get_type(ast::Expr* expr) {
   auto [item, name] = get_item(expr);
   if (!item.has_value()) {
-    err(expr->get_location(), "Coudnt find type named '" + name + "' in the current scope!");
+    auto dym = get_did_you_mean(name);
+    err(expr->get_location(), "Coudnt find type named '" + name + "' in the current scope!", Error::Info {
+      .highlight = fmt::format("Type '{}' not found!", name),
+      .help = dym.has_value() 
+        ? fmt::format("Theres a symbol with a close name called '{}'.\nDid you mean to use that instead?", dym.value()) 
+        : "Maybe you forgot to import a module?"
+    });
     return ast::types::ErrorType::create();
   }
   if (item->is_type()) {
