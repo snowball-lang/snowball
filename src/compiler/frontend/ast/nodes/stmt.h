@@ -70,6 +70,7 @@ class VarDecl final : public Stmt, public AttributedNode, public Identified {
   std::string name;
   std::optional<TypeRef> type;
   std::optional<Expr*> value;
+  unsigned int used = 0;
 public:
   VarDecl(const SourceLocation& location, const std::string& name, 
       std::optional<TypeRef> type, std::optional<Expr*> value, 
@@ -80,6 +81,9 @@ public:
   auto& get_name() const { return name; }
   auto& get_decl_type() { return type; }
   auto& get_value() { return value; }
+
+  void set_used() { used++; }
+  auto get_used() const { return used; }
 
   static auto create(const SourceLocation& location, const std::string& name, 
       std::optional<TypeRef> type, std::optional<Expr*> value, 

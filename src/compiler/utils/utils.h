@@ -26,6 +26,7 @@ namespace snowball {
 namespace utils {
 
 std::vector<std::string> split(std::string str, const std::string& delimiter);
+bool sw(const std::string& str, const std::string& prefix);
 
 }
 }

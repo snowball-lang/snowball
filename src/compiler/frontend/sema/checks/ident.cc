@@ -29,6 +29,7 @@ void TypeChecker::visit(ast::Ident* node) {
     return;
   }
   auto var = item.value().get_var();
+  var->set_used();
   node->set_var_id(var->get_id());
   // TODO: check for generics if it's a function?
   unify(node->get_type(), var->get_type());

@@ -26,5 +26,9 @@ std::vector<std::string> split(std::string str, const std::string& delimiter) {
   return result;
 }
 
+bool sw(const std::string& str, const std::string& prefix) {
+  return str.substr(0, prefix.size()) == prefix;
+}
+
 }
 }
