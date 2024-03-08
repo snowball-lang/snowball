@@ -85,10 +85,10 @@ public:
   }
 
   auto get_fn_decl(const NamespacePath& path) {
-    std::vector<std::pair<NamespacePath, ast::FnDecl*>> result;
+    std::vector<ast::FnDecl*> result;
     for (auto& [p, fn_decl] : fn_decls) {
       if (p == path) {
-        result.push_back({p, fn_decl});
+        result.push_back(fn_decl);
       }
     }
     return result;
@@ -107,6 +107,7 @@ public:
   auto& get_constraints() { return constraints; }
   auto get_fn_decls() const { return fn_decls; }
   auto& get_scopes() { return scopes; }
+  auto& current_scope() { return scopes.back(); }
 };
 
 }

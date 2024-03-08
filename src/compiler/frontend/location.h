@@ -41,7 +41,8 @@ public:
 class NamespacePath {
   std::vector<std::string> path;
 public:
-  NamespacePath(const std::vector<std::string>& path) : path(path) {}
+  explicit NamespacePath(const std::vector<std::string>& path) : path(path) {}
+  explicit NamespacePath(const std::string& path) : path({path}) {}
   std::vector<std::string> get_path() const { return path; }
   std::string get_path_string() const;
   bool is_empty() const { return path.empty(); }
@@ -54,8 +55,13 @@ public:
   auto operator[](size_t i) const { return path[i]; }
   auto operator==(const NamespacePath& other) const { return path == other.path; }
   auto operator<(const NamespacePath& other) const { return path < other.path; }
+  auto operator+(const NamespacePath& other) const { 
+    auto new_path = path;
+    new_path.insert(new_path.end(), other.path.begin(), other.path.end());
+    return NamespacePath(new_path);
+  }
 
-  static NamespacePath dummy() { return NamespacePath({}); }
+  static NamespacePath dummy() { return NamespacePath(std::vector<std::string>{}); }
 };
 
 }

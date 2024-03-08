@@ -20,6 +20,11 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
     } else if (auto type = universe.get_type(path)) {
       return {TypeCheckItem::create_type(type.value()), acc.get_name()};
     } else {
+      for (auto& uuid : allowed_uuids) {
+        if (auto fns = universe.get_fn_decl(uuid + path); fns.size() > 0) {
+          return {TypeCheckItem::create_fn_decl({fns}), acc.get_name()};
+        }
+      }
       return {std::nullopt, acc.get_name()};
     }
   } /*else if (auto member = expr->as<ast::MemberExpr>()) {

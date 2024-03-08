@@ -23,23 +23,16 @@ class VoidType;
 class Type {
 public:
   virtual ~Type() = default;
-
-  virtual IntType* as_int() { return nullptr; }
-  virtual FloatType* as_float() { return nullptr; }
-  virtual FuncType* as_func() { return nullptr; }
-  virtual GenericType* as_generic() { return nullptr; } 
-  virtual ErrorType* as_error() { return nullptr; }
-  virtual UnknownType* as_unknown() { return nullptr; }
-  virtual VoidType* as_void() { return nullptr; }
-
-  virtual bool is_int() const { return false; }
-  virtual bool is_float() const { return false; }
-  virtual bool is_func() const { return false; }
-  virtual bool is_generic() const { return false; }
-  virtual bool is_error() const { return false; }
-  virtual bool is_unknown() const { return false; }
-  virtual bool is_void() const { return false; }
-
+#define CHILD(x, y) virtual y* as_##x() { return nullptr; } \
+                    virtual bool is_##x() const { return false; }
+  CHILD(int, IntType)
+  CHILD(float, FloatType)
+  CHILD(func, FuncType)
+  CHILD(generic, GenericType)
+  CHILD(error, ErrorType)
+  CHILD(unknown, UnknownType)
+  CHILD(void, VoidType)
+#undef CHILD
   virtual std::string get_printable_name() const = 0;
   virtual std::string get_mangled_name() const = 0;
 };
@@ -105,8 +98,8 @@ public:
     : param_types(param_types), return_type(return_type) {}
   ~FuncType() = default;
 
-  auto get_param_types() const { return param_types; }
-  auto get_return_type() const { return return_type; }
+  auto& get_param_types() { return param_types; }
+  auto& get_return_type() { return return_type; }
 
   static auto create(const std::vector<Type*>& param_types, Type* return_type) {
     return new FuncType(param_types, return_type);
@@ -182,34 +175,6 @@ public:
 
   virtual VoidType* as_void() { return this; }
   virtual bool is_void() const { return true; }
-
-  std::string get_printable_name() const override;
-  std::string get_mangled_name() const override;
-};
-
-class ConstType final : public Type {
-public:
-  enum ValType {
-    Int,
-    Str,
-  };
-private:
-  union {
-    size_t int_val;
-    std::string str_val;
-  };
-  ValType type;
-public:
-  ConstType(size_t val) : type(ValType::Int) { int_val = val; }
-  ConstType(const std::string& val) : type(ValType::Str) { str_val = val; }
-  ~ConstType() = default;
-
-  auto get_type() const { return type; }
-  auto get_str_val() const { assert(type == ValType::Str); return str_val; }
-  auto get_int_val() const { assert(type == ValType::Int); return int_val; }
-
-  static auto create(size_t val) { return new ConstType(val); }
-  static auto create(const std::string& val) { return new ConstType(val); }
 
   std::string get_printable_name() const override;
   std::string get_mangled_name() const override;

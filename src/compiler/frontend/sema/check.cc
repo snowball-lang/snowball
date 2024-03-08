@@ -21,15 +21,19 @@ void TypeChecker::check() {
     for (auto& module : modules) {
       current_module = &module;
       universe.add_scope();
+      allowed_uuids.push_back(module.get_path());
       generate_global_scope(module.get_ast());
+      allowed_uuids.pop_back();
       universe.remove_scope();
     }
     for (auto& module : modules) {
       current_module = &module;
       universe.add_scope();
+      allowed_uuids.push_back(module.get_path());
       for (auto& stmt : module.get_ast()) {
         stmt->accept(this);
       }
+      allowed_uuids.pop_back();
       universe.remove_scope();
     }
   } catch (const StopTypeChecking&) {
@@ -66,13 +70,25 @@ NamespacePath TypeChecker::get_namespace_path(const std::string& name) {
   return path;
 }
 
-void TypeChecker::define_variable(ast::VarDecl* node) {
+void TypeChecker::define_variable(ast::VarDecl* node, const SourceLocation& loc) {
+  if (universe.current_scope().get_item(node->get_name()).has_value()) {
+    err(node->get_location(), fmt::format("Variable '{}' already defined in this scope", node->get_name()),
+    Error::Info {
+      .highlight = fmt::format("Variable '{}' already defined", node->get_name()),
+      .help = fmt::format("Did you mean to use the variable '{}' instead of defining it?", node->get_name()),
+      .note = "You can create a new lexical scope to define a new variable with the same name."
+    }, Error::Type::Err, false);
+  }
   universe.add_item(node->get_name(), TypeCheckItem::create_var(node));
   universe.add_var_id(node->get_id(), node);
 }
 
 ast::types::UnknownType* TypeChecker::get_unknown_type() {
   return ast::types::UnknownType::create(universe.get_constraints());
+}
+
+ast::types::ErrorType* TypeChecker::get_error_type() {
+  return ast::types::ErrorType::create();
 }
 
 }

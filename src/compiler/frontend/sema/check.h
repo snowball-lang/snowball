@@ -32,17 +32,19 @@ private:
   union {
     // TODO:
     ast::types::Type* type;
-    //ast::Func* func;
     ast::VarDecl* var;
   };
+  std::vector<ast::FnDecl*> funcs;
 public:
   ~TypeCheckItem() = default;
   TypeCheckItem(ast::types::Type* type) : kind(Kind::Type), type(type) {}
   TypeCheckItem(ast::VarDecl* var) : kind(Kind::Var), var(var) {}
+  TypeCheckItem(std::vector<ast::FnDecl*>& funcs) : kind(Kind::Func), funcs(funcs) {}
 
   auto get_kind() const { return kind; }
   auto get_type() const { assert(is_type()); return type; }
   auto get_var() const { assert(is_var()); return var; }
+  auto get_funcs() const { assert(is_func()); return funcs; }
 
   bool is_type() const { return kind == Kind::Type; }
   bool is_func() const { return kind == Kind::Func; }
@@ -55,13 +57,17 @@ public:
   static auto create_var(ast::VarDecl* var) {
     return TypeCheckItem(var);
   }
+
+  static auto create_fn_decl(std::vector<ast::FnDecl*> funcs) {
+    return TypeCheckItem(funcs);
+  }
 };
 
 class NameAccumulator {
   NamespacePath path;
   std::string name = "";
 public:
-  NameAccumulator() : path({}) {}
+  NameAccumulator() : path(NamespacePath::dummy()) {}
   ~NameAccumulator() = default;
 
   void add(const std::string& part, const std::string& name = "");
@@ -74,6 +80,7 @@ public:
 class TypeChecker : public ast::AstVisitor, public Reporter {
   Universe<TypeCheckItem> universe;
   std::vector<Module>& modules;
+  std::vector<NamespacePath> allowed_uuids;
 
   const Module* current_module = nullptr;
 public:
@@ -109,9 +116,14 @@ private:
   ast::types::Type* get_type(const std::string& name);
   ast::types::Type* get_type(ast::TypeRef& tr);
 
-  bool unify(ast::types::Type*& a, ast::types::Type* b);
+  bool unify(ast::types::Type*& a, ast::types::Type* b,
+    const SourceLocation& holder = SourceLocation::dummy(), bool just_check = false);
   ast::types::UnknownType* get_unknown_type();
-  void define_variable(ast::VarDecl* node);
+  ast::types::ErrorType* get_error_type();
+  void define_variable(ast::VarDecl* node, const SourceLocation& loc);
+  ast::FnDecl* get_best_match(const std::vector<ast::FnDecl*>& decls, const std::vector<ast::types::Type*>& args, 
+    const SourceLocation& loc, bool identified = false);
+  bool type_match(ast::types::Type* a, ast::types::Type* b);
 
   std::optional<std::string> get_did_you_mean(const std::string& name);
 };

@@ -16,9 +16,11 @@ void Binder::visit(ast::FnDecl* node) {
     sil_params.push_back({param->get_id(), param->get_name()});
     accept(param);
   }
+  auto func = FuncDecl::create(node->get_location(), type, name, sil_params, *node, std::nullopt, node->get_id());
+  var_ids.insert({node->get_id(), func});  
   auto body = accept(node->get_body());
   assert(body->is<Block>());
-  auto func = FuncDecl::create(node->get_location(), type, name, sil_params, *node, body->as<Block>(), node->get_id());
+  func->set_body(body->as<Block>());
   current_module.add_fn_decl(func);
   value = func;
 }

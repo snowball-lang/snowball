@@ -18,7 +18,7 @@ void TypeChecker::visit(ast::FnDecl* node) {
   auto typed_args = fn_type->get_param_types();
   for (size_t i = 0; i < node->get_params().size(); ++i) {
     assert(node->get_params().at(i)->get_type() != nullptr);
-    define_variable(node->get_params()[i]);
+    define_variable(node->get_params()[i], node->get_params()[i]->get_location());
   }
   node->get_body()->accept(this);
   universe.remove_scope();

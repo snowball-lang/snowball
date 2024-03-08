@@ -17,14 +17,14 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast) {
       for (auto& param : fn_decl->get_params()) {
         param_types.push_back(nullptr);
         assert(param->get_decl_type());
-        unify(param_types[i], get_type(param->get_decl_type().value()));
+        unify(param_types[i], get_type(param->get_decl_type().value()), param->get_location());
         param->get_type() = param_types[i];
         i++;
       }
       sn_assert(param_types.size() == fn_decl->get_params().size(), "param_types.size() != fn_decl->get_params().size()");
       auto ret_type = get_type(fn_decl->get_return_type());
       auto func_type = ast::types::FuncType::create(param_types, ret_type);
-      unify(decl->get_type(), func_type);
+      unify(decl->get_type(), func_type, fn_decl->get_return_type().get_location());
       universe.add_fn_decl(path, fn_decl);
     }
   }

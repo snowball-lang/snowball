@@ -8,19 +8,17 @@ namespace sema {
 
 void TypeChecker::visit(ast::VarDecl* node) {
   if (auto type = node->get_decl_type()) {
-    unify(node->get_type(), get_type(type.value()));
+    unify(node->get_type(), get_type(type.value()), type.value().get_location());
     // TODO: add type to the infer context
   }
   if (auto expr = node->get_value()) {
     expr.value()->accept(this);
-    if (!node->get_decl_type()) {
-      unify(node->get_type(), expr.value()->get_type());
-    }
+    unify(node->get_type(), expr.value()->get_type(), expr.value()->get_location());
   }
   if (!node->get_decl_type() && !node->get_value()) {
     unify(node->get_type(), get_unknown_type());
   }
-  define_variable(node);
+  define_variable(node, node->get_location());
 }
 
 }

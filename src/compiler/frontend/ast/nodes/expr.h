@@ -46,6 +46,40 @@ public:
   }
 };
 
+class Number final : public Expr {
+  std::string value;
+public:
+  Number(const SourceLocation& location, const std::string& value)
+    : Expr(location), value(value) {}
+  ~Number() = default;
+
+  auto get_value() const { return value; }
+
+  static auto create(const SourceLocation& location, const std::string& value) {
+    return new Number(location, value);
+  }
+
+  SN_VISIT()
+};
+
+class Call final : public Expr {
+  Expr* callee;
+  std::vector<Expr*> args;
+public:
+  Call(const SourceLocation& location, Expr* callee, std::vector<Expr*> args)
+    : Expr(location), callee(callee), args(args) {}
+  ~Call() = default;
+
+  auto get_callee() const { return callee; }
+  auto get_args() const { return args; }
+
+  static auto create(const SourceLocation& location, Expr* callee, std::vector<Expr*> args) {
+    return new Call(location, callee, args);
+  }
+
+  SN_VISIT()
+};
+
 }
 }
 }

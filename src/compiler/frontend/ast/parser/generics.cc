@@ -18,6 +18,7 @@ std::optional<ast::GenericNode<>> Parser::parse_generics() {
     std::vector<ast::GenericDecl> generics;
     while (!is(Token::Type::OpGt)) {
       auto name = expect(Token::Type::Identifier, "an identifier for the generic name", {Token::Type::OpGt, Token::Type::SymComma}).to_string();
+      generics.push_back(ast::GenericDecl::create(name));
       if (is(Token::Type::OpGt)) break; // we recover from this error
       else if (is(Token::Type::SymComma)) continue;
       next();
@@ -25,7 +26,6 @@ std::optional<ast::GenericNode<>> Parser::parse_generics() {
       if (is(Token::Type::SymComma)) {
         next();
       } else break;
-      generics.push_back(ast::GenericDecl::create(name));
     }
     if (generics.empty()) {
       err("Empty generic expression", Error::Info { 
@@ -34,6 +34,7 @@ std::optional<ast::GenericNode<>> Parser::parse_generics() {
         .see = "https://snowball-lang.gitbook.io/docs/language-reference/generics"
       }, Error::Type::Warn);
     }
+    assert(false && "Generics not implemented yet");
     next();
     return generics;
   }

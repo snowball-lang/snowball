@@ -21,6 +21,9 @@ ast::Expr* Parser::parse_expr(bool allow_assign) {
       case Token::Type::Identifier:
         expr = node<ast::Ident>(current.to_string());
         break;
+      case Token::Type::ValueNumber:
+        expr = node<ast::Number>(current.to_string());
+        break;
       default:
         err("Unexpected token found while parsing expression", Error::Info {
           .highlight = fmt::format("Token '{}' is not expected here", current),

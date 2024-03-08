@@ -30,5 +30,16 @@ bool sw(const std::string& str, const std::string& prefix) {
   return str.substr(0, prefix.size()) == prefix;
 }
 
+std::string join(const std::vector<std::string>& vec, const std::string& delimiter) {
+  std::string result;
+  for (size_t i = 0; i < vec.size(); ++i) {
+    result += vec[i];
+    if (i != vec.size() - 1) {
+      result += delimiter;
+    }
+  }
+  return result;
 }
-}
+
+} // namespace utils
+} // namespace snowball

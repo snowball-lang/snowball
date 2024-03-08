@@ -65,5 +65,5 @@
 #include <llvm/Transforms/Utils/Cloning.h>
 #include <llvm/Transforms/Utils/Debugify.h>
 
-#undef __SNOWBALL_COMPILER_UTILS_UTILS_H__
+#define SNOWBALL_UTILS_REDEFINE_F__
 #include "compiler/utils/utils.h"

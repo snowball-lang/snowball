@@ -28,11 +28,19 @@ void TypeChecker::visit(ast::Ident* node) {
     unify(node->get_type(), ast::types::ErrorType::create());
     return;
   }
-  auto var = item.value().get_var();
-  var->set_used();
-  node->set_var_id(var->get_id());
-  // TODO: check for generics if it's a function?
-  unify(node->get_type(), var->get_type());
+  if (item.value().is_var()) {
+    auto var = item.value().get_var();
+    var->set_used();
+    node->set_var_id(var->get_id());
+    unify(node->get_type(), var->get_type(), node->get_location());
+    return;
+  }
+  
+  auto fn_decls = item.value().get_funcs();
+  auto fn = get_best_match(fn_decls, {}, node->get_location(), true);
+  // todo: set function as used
+  node->set_var_id(fn->get_id());
+  unify(node->get_type(), fn->get_type(), node->get_location());
 }
 
 }
