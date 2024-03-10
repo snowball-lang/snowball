@@ -14,6 +14,7 @@ public:
   Identified() : id(next_id++) {}
   Identified(uint64_t id) : id(id) {}
   auto get_id() const { return id; }
+  void increment_id() { id = next_id++; } // Use this only if you know what you're doing
 };
 
 }

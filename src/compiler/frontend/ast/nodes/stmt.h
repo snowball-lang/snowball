@@ -7,6 +7,7 @@
 #include <string>
 
 #include "compiler/utils/id.h"
+#include "compiler/utils/clone.h"
 #include "compiler/frontend/ast/nodes/other.h"
 #include "compiler/frontend/ast/nodes/expr.h" 
 
@@ -35,8 +36,8 @@ public:
   SN_VISIT()
 };
 
-class FnDecl final : public Stmt, public GenericNode<>, public AttributedNode, public Identified {
-public:
+class FnDecl final : public Stmt, public GenericNode<>, 
+  public AttributedNode, public Identified, public Cloneable<FnDecl> {
 private:
   std::string name;
   std::vector<VarDecl*> params;

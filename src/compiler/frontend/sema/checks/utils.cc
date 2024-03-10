@@ -32,9 +32,8 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
     acc.add(member->get_name());
     return get_item(member->get_expr(), acc);
   }*/ else {
-    err(expr->get_location(), "expected identifier or member expression");
+    sn_assert(false, "not implemented");
   }
-  assert(false);
 }
 
 TypeChecker::GetResult TypeChecker::get_item(const NamespacePath& path) {

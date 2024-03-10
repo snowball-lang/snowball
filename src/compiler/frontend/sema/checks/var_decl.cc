@@ -13,6 +13,8 @@ void TypeChecker::visit(ast::VarDecl* node) {
   }
   if (auto expr = node->get_value()) {
     expr.value()->accept(this);
+    if (expr.value()->get_type()->is_error())
+      return;
     unify(node->get_type(), expr.value()->get_type(), expr.value()->get_location());
   }
   if (!node->get_decl_type() && !node->get_value()) {

@@ -77,10 +77,16 @@ public:
   std::string get_name() const { return name; }
 };
 
+struct MonorphosizedFn {
+  ast::FnDecl* decl;
+  std::map<std::string, ast::types::Type*> generics;
+};
+
 class TypeChecker : public ast::AstVisitor, public Reporter {
   Universe<TypeCheckItem> universe;
   std::vector<Module>& modules;
   std::vector<NamespacePath> allowed_uuids;
+  std::map<uint64_t, MonorphosizedFn> generic_registry;
 
   const Module* current_module = nullptr;
 public:
@@ -123,6 +129,8 @@ private:
   void define_variable(ast::VarDecl* node, const SourceLocation& loc);
   ast::FnDecl* get_best_match(const std::vector<ast::FnDecl*>& decls, const std::vector<ast::types::Type*>& args, 
     const SourceLocation& loc, bool identified = false);
+  ast::FnDecl* deduce_func(ast::FnDecl* node, const std::vector<ast::types::Type*>& args, const SourceLocation& loc);
+  ast::FnDecl* propagate_generic(ast::FnDecl* node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
   bool type_match(ast::types::Type* a, ast::types::Type* b);
 
   std::optional<std::string> get_did_you_mean(const std::string& name);

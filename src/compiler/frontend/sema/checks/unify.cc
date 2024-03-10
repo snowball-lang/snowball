@@ -32,8 +32,10 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b, const SourceL
           break;
         }
       }
-      unify(a_func->get_return_type(), b_func->get_return_type(), loc, true);
-      return SUCCESS;
+      if (match) {
+        match = unify(a_func->get_return_type(), b_func->get_return_type(), loc, true);
+        if (match) return SUCCESS;
+      }
     }
   } else if (a->is_generic() && b->is_generic()) {
     if (a->get_printable_name() == b->get_printable_name()) {

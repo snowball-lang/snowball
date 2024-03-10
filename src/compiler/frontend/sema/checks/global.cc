@@ -11,7 +11,10 @@ namespace sema {
 void TypeChecker::generate_global_scope(ast::TopLevelAst& ast) {
   for (auto& decl : ast) {
     if (auto fn_decl = decl->as<ast::FnDecl>()) {
+      universe.add_scope();
       auto path = get_namespace_path(fn_decl->get_name());
+      for (auto& generic : fn_decl->get_generics())
+        universe.add_item(generic.get_name(), ast::types::GenericType::create(generic.get_name()));
       std::vector<ast::types::Type*> param_types;
       unsigned int i = 0;
       for (auto& param : fn_decl->get_params()) {
@@ -26,6 +29,7 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast) {
       auto func_type = ast::types::FuncType::create(param_types, ret_type);
       unify(decl->get_type(), func_type, fn_decl->get_return_type().get_location());
       universe.add_fn_decl(path, fn_decl);
+      universe.remove_scope();
     }
   }
 }

@@ -15,6 +15,10 @@ void TypeChecker::visit(ast::FnDecl* node) {
   auto path = get_namespace_path(node->get_name());
   universe.add_scope();
   assert(fn_type->get_param_types().size() == node->get_params().size());
+  for (size_t i = 0; i < node->get_generics().size(); ++i) {
+    auto generic = node->get_generics()[i];
+    universe.add_item(generic.get_name(), ast::types::GenericType::create(generic.get_name()));
+  }
   auto typed_args = fn_type->get_param_types();
   for (size_t i = 0; i < node->get_params().size(); ++i) {
     assert(node->get_params().at(i)->get_type() != nullptr);

@@ -34,7 +34,6 @@ std::optional<ast::GenericNode<>> Parser::parse_generics() {
         .see = "https://snowball-lang.gitbook.io/docs/language-reference/generics"
       }, Error::Type::Warn);
     }
-    assert(false && "Generics not implemented yet");
     next();
     return generics;
   }

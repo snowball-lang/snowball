@@ -11,7 +11,7 @@
 namespace snowball {
 using namespace utils;
 
-void Error::print() {
+void Error::print(bool as_tail) {
   auto contents = globals::read_file(get_location().file->get_path());
   auto dbg_info = reports::DebugSourceLocation::from_file(contents, get_location().line);
   auto message_formatter = [](const std::string& message) {
@@ -27,18 +27,24 @@ void Error::print() {
     }
     return result;
   };
-  if (type == Type::Err) {
-    Logger::error(highlight_quotes(message));
-  } else if (type == Type::Warn) {
-    Logger::warn(highlight_quotes(message));
-  } else if (type == Type::Fatal) {
-    Logger::fatal(highlight_quotes(message));
+  if (!as_tail) {
+    if (type == Type::Err) {
+      Logger::error(highlight_quotes(message));
+    } else if (type == Type::Warn) {
+      Logger::warn(highlight_quotes(message));
+    } else if (type == Type::Fatal) {
+      Logger::fatal(highlight_quotes(message));
+    }
   }
   auto term_color = fmt::terminal_color::red;
-  if (type == Type::Warn) {
-    term_color = fmt::terminal_color::bright_yellow;
-  } else if (type == Type::Fatal) {
-    term_color = fmt::terminal_color::bright_red;
+  switch (type) {
+    case Type::Warn:
+      term_color = fmt::terminal_color::yellow;
+      break;
+    case Type::Fatal:
+      term_color = fmt::terminal_color::red;
+      break;
+    default: break;
   }
   fmt::print(fmt::text_style(fmt::emphasis::bold), "  at : [{}:{}:{}{}\n", 
     fmt::styled(get_location().file->get_path(), fmt::fg(fmt::terminal_color::bright_blue)), 
@@ -46,10 +52,10 @@ void Error::print() {
     fmt::styled(get_location().column, fmt::fg(fmt::terminal_color::white) | fmt::emphasis::bold),
     fmt::styled("]", fmt::emphasis::bold));
   fmt::print(fmt::text_style(fmt::emphasis::bold), "     |\n");
-  if (!dbg_info.line_before_before.empty()) {
+  if (!dbg_info.line_before_before.empty() && !as_tail) {
     fmt::print(fmt::text_style(fmt::emphasis::bold), "{:>4} | {}\n", get_location().line - 2, fmt::styled(dbg_info.line_before_before, fmt::fg(fmt::terminal_color::black)));
   }
-  if (!dbg_info.line_before.empty()) {
+  if (!dbg_info.line_before.empty() && !as_tail) {
     fmt::print(fmt::text_style(fmt::emphasis::bold), "{:>4} | {}\n", get_location().line - 1, fmt::styled(dbg_info.line_before, fmt::fg(fmt::terminal_color::black)));
   }
   fmt::print(fmt::text_style(fmt::emphasis::bold), "{:>4} | {}\n", get_location().line, fmt::styled(dbg_info.line, fmt::fg(fmt::terminal_color::black)));
@@ -65,13 +71,15 @@ void Error::print() {
     fmt::print(" {}", fmt::styled(info.highlight, fmt::fg(term_color) | fmt::emphasis::bold));
   }
   fmt::print("\n");
-  if (!dbg_info.line_after.empty()) {
+  if (!dbg_info.line_after.empty() && !as_tail) {
     fmt::print(fmt::text_style(fmt::emphasis::bold), "{:>4} | {}\n", get_location().line + 1, fmt::styled(dbg_info.line_after, fmt::fg(fmt::terminal_color::black)));
   }
-  if (!dbg_info.line_after_after.empty()) {
+  if (!dbg_info.line_after_after.empty() && !as_tail) {
     fmt::print(fmt::text_style(fmt::emphasis::bold), "{:>4} | {}\n", get_location().line + 2, fmt::styled(dbg_info.line_after_after, fmt::fg(fmt::terminal_color::black)));
   }
-  fmt::print(fmt::text_style(fmt::emphasis::bold), "     |\n");
+  if (!(info.help.empty() && info.note.empty() && info.see.empty() && info.related.empty())) {
+    fmt::print(fmt::text_style(fmt::emphasis::bold), "     |\n");
+  }
   if (!info.help.empty()) {
     fmt::print(fmt::text_style(fmt::emphasis::bold), " {}: {}\n", fmt::styled("help", fmt::fg(fmt::terminal_color::bright_yellow) | fmt::emphasis::bold), highlight_quotes(message_formatter(info.help)));
   }
@@ -81,6 +89,13 @@ void Error::print() {
   if (!info.see.empty()) {
     fmt::print(fmt::text_style(fmt::emphasis::bold), "  {}: {}\n", fmt::styled("see", fmt::fg(fmt::terminal_color::bright_green) | fmt::emphasis::bold), highlight_quotes(message_formatter(info.see)));
   }
-  fmt::print(fmt::text_style(fmt::emphasis::bold), "     |\n\n");
+  for (auto& [loc, info] : info.related) {
+    fmt::print(fmt::text_style(fmt::emphasis::bold), "     |\n");
+    auto err = E("", loc, info, type);
+    err.print(true);
+  }
+  if (!as_tail) {
+    fmt::print(fmt::text_style(fmt::emphasis::bold), "     |\n\n");
+  }
 }
 }

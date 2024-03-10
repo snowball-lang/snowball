@@ -15,6 +15,7 @@ public:
     std::string help = "";
     std::string note = "";
     std::string see = "";
+    std::vector<std::pair<frontend::SourceLocation, Info>> related = {};
   };
   enum class Type {
     Err,
@@ -39,7 +40,7 @@ public:
   Info get_info() const { return info; }
   Type get_type() const { return type; }
 
-  void print();
+  void print(bool = false);
 };
 
 template <typename... Args>

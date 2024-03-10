@@ -1,0 +1,13 @@
+
+#include "compiler/sil/insts.h"
+#include "compiler/sil/binder.h"
+
+namespace snowball {
+namespace sil {
+
+void Binder::visit(ast::Call* node) {
+    sn_assert(false, "Not implemented call");
+}
+
+}
+}

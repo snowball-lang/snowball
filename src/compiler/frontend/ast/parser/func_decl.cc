@@ -14,13 +14,12 @@ ast::FnDecl* Parser::parse_fn_decl(const ast::AttributedNode& attrs) {
   assert(is(Token::Type::KwordFunc));
   attrs.assert_is_func();
   next();
-
   auto name = expect(Token::Type::Identifier, "an identifier for the function name", Token::Type::BracketLparent)
     .to_string();
+  auto pos = loc();
   next();
   auto generics = parse_generics();
   consume(Token::Type::BracketLparent, "an open parenthesis after the function name", Token::Type::BracketLcurly);
-
   std::vector<ast::VarDecl*> params;
   while (!is(Token::Type::BracketRparent)) {
     auto pos = loc();
@@ -41,7 +40,7 @@ ast::FnDecl* Parser::parse_fn_decl(const ast::AttributedNode& attrs) {
   expect(Token::Type::BracketLcurly, "an opening curly brace after the return type");
   auto block = parse_block();
   next(); // skip the closing curly brace
-  return node<ast::FnDecl>(name, params, return_type, block, generics, attrs);
+  return pnode<ast::FnDecl>(pos, name, params, return_type, block, generics, attrs);
 }
 
 }

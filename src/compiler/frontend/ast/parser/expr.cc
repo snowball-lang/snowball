@@ -35,6 +35,24 @@ ast::Expr* Parser::parse_expr(bool allow_assign) {
     break; // TODO: Remove this break statement, support binary expressions, etc.
   }
   next();
+  while (true) {
+    switch (current.type) {
+      case Token::Type::BracketLparent: {
+        std::vector<ast::Expr*> args;
+        while (!is(Token::Type::BracketRparent, peek())) {
+          args.push_back(parse_expr());
+          prev();
+          if (is(Token::Type::BracketRparent, peek())) break;
+          consume(Token::Type::SymComma, "a comma after the argument", Token::Type::BracketRparent);
+        }
+        next();
+        consume(Token::Type::BracketRparent, "a closing parenthesis after the arguments");
+        expr = pnode<ast::Call>(expr->get_location(), expr, args);
+      } break;
+      default: goto continue_parse;
+    }
+  }
+continue_parse:
   assert(expr);
   return expr;
 }
