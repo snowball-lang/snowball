@@ -9,6 +9,7 @@
 #include "compiler/frontend/ast/visitors.h"
 #include "compiler/frontend/ast/nodes.h"
 #include "compiler/frontend/sema/universe.h"
+#include "compiler/frontend/sema/ctx.h"
 #include "compiler/reports/reporter.h"
 #include "compiler/utils/utils.h"
 #include "compiler/ctx.h"
@@ -24,71 +25,13 @@ public:
   ~StopTypeChecking() = default;
 };
 
-class TypeCheckItem {
-public:
-  enum Kind { Func, Type, Var };
-private:
-  Kind kind;
-  union {
-    // TODO:
-    ast::types::Type* type;
-    ast::VarDecl* var;
-  };
-  std::vector<ast::FnDecl*> funcs;
-public:
-  ~TypeCheckItem() = default;
-  TypeCheckItem(ast::types::Type* type) : kind(Kind::Type), type(type) {}
-  TypeCheckItem(ast::VarDecl* var) : kind(Kind::Var), var(var) {}
-  TypeCheckItem(std::vector<ast::FnDecl*>& funcs) : kind(Kind::Func), funcs(funcs) {}
-
-  auto get_kind() const { return kind; }
-  auto get_type() const { assert(is_type()); return type; }
-  auto get_var() const { assert(is_var()); return var; }
-  auto get_funcs() const { assert(is_func()); return funcs; }
-
-  bool is_type() const { return kind == Kind::Type; }
-  bool is_func() const { return kind == Kind::Func; }
-  bool is_var() const { return kind == Kind::Var; }
-
-  static auto create_type(ast::types::Type* type) { 
-    return TypeCheckItem(type); 
-  }
-
-  static auto create_var(ast::VarDecl* var) {
-    return TypeCheckItem(var);
-  }
-
-  static auto create_fn_decl(std::vector<ast::FnDecl*> funcs) {
-    return TypeCheckItem(funcs);
-  }
-};
-
-class NameAccumulator {
-  NamespacePath path;
-  std::string name = "";
-public:
-  NameAccumulator() : path(NamespacePath::dummy()) {}
-  ~NameAccumulator() = default;
-
-  void add(const std::string& part, const std::string& name = "");
-  bool is_empty() const { return path.is_empty(); }
-  bool is_name() const { return path.size() == 1; } // Just a name, no namespace
-  NamespacePath get_path(const std::string& name) const;
-  std::string get_name() const { return name; }
-};
-
-struct MonorphosizedFn {
-  ast::FnDecl* decl;
-  std::map<std::string, ast::types::Type*> generics;
-};
-
 class TypeChecker : public ast::AstVisitor, public Reporter {
   Universe<TypeCheckItem> universe;
   std::vector<Module>& modules;
   std::vector<NamespacePath> allowed_uuids;
   std::map<uint64_t, MonorphosizedFn> generic_registry;
-
-  const Module* current_module = nullptr;
+  TypeCheckerContext ctx;
+  std::unordered_map<uint64_t, TypeCheckerContext> generic_contexts;
 public:
   TypeChecker(const Ctx& ctx, std::vector<Module>& modules);
   ~TypeChecker() = default;
@@ -99,6 +42,7 @@ public:
 #undef SN_REGISTER_ACCEPT
 
   auto& get_universe() { return universe; }
+  auto& get_generic_registry() { return generic_registry; }
 private:
   void register_builtins();
 
@@ -131,6 +75,10 @@ private:
     const SourceLocation& loc, bool identified = false);
   ast::FnDecl* deduce_func(ast::FnDecl* node, const std::vector<ast::types::Type*>& args, const SourceLocation& loc);
   ast::FnDecl* propagate_generic(ast::FnDecl* node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
+  ast::FnDecl* monorphosize(ast::FnDecl*& node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
+  TypeCheckerContext& get_generic_context(uint64_t id);
+  TypeCheckerContext& create_generic_context(uint64_t id);
+  void set_generic_context(const TypeCheckerContext& ctx);
   bool type_match(ast::types::Type* a, ast::types::Type* b);
 
   std::optional<std::string> get_did_you_mean(const std::string& name);

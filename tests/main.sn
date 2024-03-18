@@ -1,5 +1,6 @@
 
 public func x<T>(x: T) {
+  let a = x;
 }
 
 public func main() {

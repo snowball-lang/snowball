@@ -9,8 +9,9 @@ namespace snowball {
 template <typename T>
 class Cloneable {
 public:
-  virtual T* clone() const {
-    return new T(*static_cast<const T*>(this));
+  virtual T* clone() const = 0;
+  static T* default_clone(const T* self) {
+    return new T(*static_cast<const T*>(self));
   }
 };
 

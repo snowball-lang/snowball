@@ -19,7 +19,7 @@ void TypeChecker::check() {
   register_builtins();
   try {
     for (auto& module : modules) {
-      current_module = &module;
+      ctx.current_module = &module;
       universe.add_scope();
       allowed_uuids.push_back(module.get_path());
       generate_global_scope(module.get_ast());
@@ -27,7 +27,7 @@ void TypeChecker::check() {
       universe.remove_scope();
     }
     for (auto& module : modules) {
-      current_module = &module;
+      ctx.current_module = &module;
       universe.add_scope();
       allowed_uuids.push_back(module.get_path());
       for (auto& stmt : module.get_ast()) {
@@ -64,7 +64,7 @@ void TypeChecker::register_builtins() {
 }
 
 NamespacePath TypeChecker::get_namespace_path(const std::string& name) {
-  auto path = current_module->get_path();
+  auto path = ctx.current_module->get_path();
   path.push(name);
   // TODO: Classes, etc.
   return path;
@@ -89,6 +89,27 @@ ast::types::UnknownType* TypeChecker::get_unknown_type() {
 
 ast::types::ErrorType* TypeChecker::get_error_type() {
   return ast::types::ErrorType::create();
+}
+
+TypeCheckerContext& TypeChecker::get_generic_context(uint64_t id) {
+  auto it = generic_contexts.find(id);
+  sn_assert(it != generic_contexts.end(), "Generic context not found");
+  return it->second;
+}
+
+TypeCheckerContext& TypeChecker::create_generic_context(uint64_t id) {
+  auto ctx = TypeCheckerContext {
+    .allowed_uuids = this->ctx.allowed_uuids,
+    .current_module = this->ctx.current_module,
+    .scopes = universe.get_scopes()
+  };
+  generic_contexts[id] = ctx;
+  return generic_contexts[id];
+}
+
+void TypeChecker::set_generic_context(const TypeCheckerContext& ctx) { 
+  universe.get_scopes() = ctx.scopes; 
+  this->ctx = ctx;
 }
 
 }

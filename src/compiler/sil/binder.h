@@ -38,11 +38,12 @@ class Binder : public ast::AstVisitor, public Reporter {
   std::map<uint64_t, sil::Inst*> var_ids;
 
   Inst* value = nullptr; // The current value of the binder
+  bool generate_bodies = false;
 public:
   Binder(const Ctx& ctx, std::vector<frontend::Module>& modules, sema::Universe<sema::TypeCheckItem>& universe);
   ~Binder() = default;
 
-  void bind();
+  void bind(const std::map<uint64_t, sema::MonorphosizedFn>& generic_registry = {});
   Inst* accept(ast::Node* node);
 
   auto& get_modules() { return sil_modules; }
@@ -51,7 +52,7 @@ public:
 
   void err(const LocationHolder& holder, const std::string& message, 
     const Error::Info& info = Error::Info(), Error::Type type = Error::Type::Err, 
-    bool fatal = true);
+    bool fatal = false);
 
 private:
 #define SN_REGISTER_ACCEPT(n) virtual void visit(ast::n* node) override;

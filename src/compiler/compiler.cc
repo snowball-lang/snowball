@@ -33,7 +33,7 @@ bool Compiler::compile() {
     return EXIT_FAILURE;
   }
   sil::Binder binder(ctx, modules, type_checker.get_universe());
-  binder.bind();
+  binder.bind(type_checker.get_generic_registry());
   if (binder.handle_errors()) {
     return EXIT_FAILURE;
   }

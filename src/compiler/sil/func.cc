@@ -21,7 +21,9 @@ void Binder::visit(ast::FnDecl* node) {
   auto body = accept(node->get_body());
   assert(body->is<Block>());
   func->set_body(body->as<Block>());
-  current_module.add_fn_decl(func);
+  if (node->get_generics().size() == 0) {
+    current_module.add_fn_decl(func);
+  }
   value = func;
 }
 

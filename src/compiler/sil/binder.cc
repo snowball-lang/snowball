@@ -9,15 +9,22 @@ Binder::Binder(const Ctx& ctx, std::vector<frontend::Module>& modules, sema::Uni
     fn_decls(universe.get_fn_decls()), current_module(sil::Module(NamespacePath::dummy())) {
     }
 
-void Binder::bind() {
+void Binder::bind(const std::map<uint64_t, sema::MonorphosizedFn>& generic_registry) {
   try {
-    for (auto& module : ast_modules) {
-      current_module = sil::Module(module.get_path());
-      for (auto& item : module.get_ast()) {
-        item->accept(this);
+    do {
+      for (auto& [_, func] : generic_registry) {
+        func.decl->accept(this);
       }
-      sil_modules.push_back(current_module);
-    }
+      for (auto& module : ast_modules) {
+        current_module = sil::Module(module.get_path());
+        for (auto& item : module.get_ast()) {
+          item->accept(this);
+        }
+        if (generate_bodies)
+          sil_modules.push_back(current_module);
+      }
+      generate_bodies = true;
+    } while (!generate_bodies);
   } catch (const StopBindingIR&) {
     // Do nothing
   }

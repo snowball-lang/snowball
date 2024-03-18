@@ -26,9 +26,12 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast) {
       }
       sn_assert(param_types.size() == fn_decl->get_params().size(), "param_types.size() != fn_decl->get_params().size()");
       auto ret_type = get_type(fn_decl->get_return_type());
-      auto func_type = ast::types::FuncType::create(param_types, ret_type);
+      auto func_type = ast::types::FuncType::create(param_types, ret_type, false);
       unify(decl->get_type(), func_type, fn_decl->get_return_type().get_location());
-      universe.add_fn_decl(path, fn_decl);
+        universe.add_fn_decl(path, fn_decl);
+      if (fn_decl->get_generics().size() > 0) {
+        create_generic_context(fn_decl->get_id());
+      }
       universe.remove_scope();
     }
   }

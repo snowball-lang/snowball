@@ -7,6 +7,10 @@
 
 #include "compiler/frontend/location.h"
 #include "compiler/frontend/ast/types.h"
+#include "compiler/utils/clone.h"
+
+#define SN_DEFAULT_CLONE() \
+  Node* clone() const override { return Cloneable<self>::default_clone(this); }
 
 namespace snowball {
 namespace frontend {
@@ -14,7 +18,7 @@ namespace ast {
 
 class AstVisitor;
 
-class Node : public LocationHolder {
+class Node : public LocationHolder, public Cloneable<Node> {
   types::Type* type = nullptr;
 public:
   Node(const SourceLocation& location) : LocationHolder(location) {}

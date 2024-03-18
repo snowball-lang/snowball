@@ -27,6 +27,17 @@
 #endif
 
 namespace snowball {
+
+template <typename...Ts>
+class Self;
+
+template <typename X, typename...Ts>
+class Self<X,Ts...> : public Ts...
+{
+protected:
+    typedef X self;
+};
+
 namespace utils {
 
 std::vector<std::string> split(std::string str, const std::string& delimiter);

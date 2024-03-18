@@ -103,6 +103,37 @@ public:
   }
 };
 
+class Call final : public Inst {
+  Inst* callee;
+  std::vector<Inst*> args;
+public:
+  Call(LocationHolder& loc, ast::types::Type* type, Inst* callee, const std::vector<Inst*>& args)
+    : Inst(loc, type), callee(callee), args(args) {}
+  ~Call() = default;
+
+  auto get_callee() const { return callee; }
+  auto get_args() const { return args; }
+  EMITABLE()
+
+  static auto create(LocationHolder loc, ast::types::Type* type, Inst* callee, const std::vector<Inst*>& args) {
+    return new Call(loc, type, callee, args);
+  }
+};
+
+class ConstInt final : public Inst {
+  int64_t value;
+public:
+  ConstInt(LocationHolder& loc, ast::types::Type* type, int64_t value) : Inst(loc, type), value(value) {}
+  ~ConstInt() = default;
+
+  auto get_value() const { return value; }
+  EMITABLE()
+
+  static auto create(LocationHolder loc, ast::types::Type* type, int64_t value) {
+    return new ConstInt(loc, type, value);
+  }
+};
+
 }
 }
 

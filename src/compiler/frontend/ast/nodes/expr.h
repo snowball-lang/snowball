@@ -9,7 +9,7 @@ namespace snowball {
 namespace frontend {
 namespace ast {
 
-class Ident final : public Expr, public GenericNode<> {
+class Ident final : public Self<Ident>, public Expr, public GenericNode<> {
   std::string name;
   uint64_t var_id = 0;
 public:
@@ -28,6 +28,7 @@ public:
   }
 
   SN_VISIT()
+  SN_DEFAULT_CLONE()
 };
 
 class TypeRef final : public LocationHolder, public GenericNode<TypeRef> {
@@ -46,7 +47,7 @@ public:
   }
 };
 
-class Number final : public Expr {
+class Number final : public Self<Number>, public Expr {
   std::string value;
 public:
   Number(const SourceLocation& location, const std::string& value)
@@ -60,21 +61,25 @@ public:
   }
 
   SN_VISIT()
+  SN_DEFAULT_CLONE()
 };
 
-class Call final : public Expr {
+class Call final : public Expr, public GenericNode<TypeRef> {
   Expr* callee;
   std::vector<Expr*> args;
 public:
-  Call(const SourceLocation& location, Expr* callee, std::vector<Expr*> args)
-    : Expr(location), callee(callee), args(args) {}
+  Call(const SourceLocation& location, Expr* callee, std::vector<Expr*> args, 
+    const std::vector<TypeRef>& generics = {})
+    : Expr(location), GenericNode(generics), callee(callee), args(args) {}
   ~Call() = default;
 
   auto get_callee() const { return callee; }
   auto get_args() const { return args; }
+  Node* clone() const override;
 
-  static auto create(const SourceLocation& location, Expr* callee, std::vector<Expr*> args) {
-    return new Call(location, callee, args);
+  static auto create(const SourceLocation& location, Expr* callee, std::vector<Expr*> args,
+    const std::vector<TypeRef>& generics = {}) {
+    return new Call(location, callee, args, generics);
   }
 
   SN_VISIT()

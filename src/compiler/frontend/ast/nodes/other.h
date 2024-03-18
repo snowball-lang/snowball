@@ -5,6 +5,8 @@
 #include <vector>
 #include <optional>
 
+#include "compiler/utils/utils.h"
+
 namespace snowball {
 namespace frontend {
 namespace ast {

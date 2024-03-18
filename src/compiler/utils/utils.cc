@@ -4,9 +4,11 @@
 
 #include <vector>
 #include <string>
+#include <cassert>
 
 namespace snowball {
 uint64_t Identified::next_id = 1;
+Identified::Identified() : id(next_id++) { }
 
 namespace utils {
 

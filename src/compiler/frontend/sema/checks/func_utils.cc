@@ -46,8 +46,13 @@ ast::FnDecl* TypeChecker::get_best_match(const std::vector<ast::FnDecl*>& decls,
           .see = "https://snowball-lang.gitbook.io/docs/language-reference/functions"
         });
       return nullptr;
-    case 1:
-      return deduce_func(matches.at(0), args, loc);
+    case 1: {
+      auto match = matches.at(0);
+      if (match->get_generics().size() == 0) {
+        return match;
+      }
+      return deduce_func(match, args, loc);
+    }
     default:
       err(loc, fmt::format("Ambiguous call to function '{}'. Multiple functions match the call", decls.at(0)->get_name()), 
         Error::Info {
@@ -116,16 +121,42 @@ ast::FnDecl* TypeChecker::propagate_generic(ast::FnDecl* node, const std::map<st
       });
     }
   }
-  auto decl = node->clone();
-  decl->get_type() = nullptr;
-  decl->increment_id();
-  decl->clear_generics();
+  auto decl = (ast::FnDecl*)node->clone();
+  return monorphosize(decl, deduced, loc);
+}
+
+ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::string, ast::types::Type*>& deduced, const SourceLocation& loc) {
+  node->clear_generics();
+  auto fn_ty_copy = node->get_type()->as_func();
+  node->get_type() = nullptr;
+  auto state = get_generic_context(node->get_id());
+  node->increment_id();
   generic_registry[node->get_id()] = MonorphosizedFn {
     .decl = node,
     .generics = deduced
   };
-  sn_assert(false, "not implemented (generic propagation)");
-  return decl;
+  
+  auto backup = ctx;
+  backup.scopes = universe.get_scopes();
+  set_generic_context(state);
+  universe.add_scope();
+  for (auto& [name, type] : deduced) {
+    universe.add_item(name, TypeCheckItem::create_type(type));
+  }
+  std::vector<ast::types::Type*> params;
+  params.reserve(node->get_params().size());
+  for (auto& param : node->get_params()) {
+    param->get_type() = nullptr;
+    assert(param->get_decl_type());
+    params.push_back(get_type(param->get_decl_type().value()));
+    unify(param->get_type(), params.back(), param->get_location());
+  }
+  auto ret = get_type(node->get_return_type());
+  unify(node->get_type(), ast::types::FuncType::create(params, ret, fn_ty_copy->is_variadic()), node->get_location());
+  node->accept(this);
+  universe.remove_scope();
+  set_generic_context(backup);
+  return node;
 }
 
 }

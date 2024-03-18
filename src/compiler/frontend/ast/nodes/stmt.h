@@ -27,7 +27,7 @@ class Block final : public Stmt {
 public:
   Block(const SourceLocation& location, const std::vector<Node*>& stmts) : Stmt(location), stmts(stmts) {}
   ~Block() = default;
-
+  Node* clone() const override;
   auto get_stmts() const { return stmts; }
   static auto create(const SourceLocation& location, const std::vector<Node*>& stmts) {
     return new Block(location, stmts);
@@ -37,26 +37,30 @@ public:
 };
 
 class FnDecl final : public Stmt, public GenericNode<>, 
-  public AttributedNode, public Identified, public Cloneable<FnDecl> {
+  public AttributedNode, public Identified {
 private:
   std::string name;
   std::vector<VarDecl*> params;
   TypeRef return_type;
   Block* body;
+  // This is a clone of the body, used for cloning the function, 
+  // and fetching the body without it not being typechecked
+  Block* body_clone = nullptr;
 public:
   FnDecl(const SourceLocation& location, const std::string& name,   
         const std::vector<VarDecl*>& params, TypeRef return_type, Block* body,
         std::optional<GenericNode> generics = std::nullopt, 
         const AttributedNode& attributes = AttributedNode())
     : Stmt(location), GenericNode(generics), AttributedNode(attributes), name(name), params(params), 
-      return_type(return_type), body(body) {}
+      return_type(return_type), body(body) { create_body_clone(); }
   ~FnDecl() = default;
 
   auto& get_name() const { return name; }
   auto& get_params() { return params; }
   auto& get_return_type() { return return_type; }
   auto get_body() const { return body; }
-
+  void create_body_clone();
+  Node* clone() const override;
   static auto create(const SourceLocation& location, const std::string& name, 
       const std::vector<VarDecl*>& params, TypeRef return_type, Block* body,
       std::optional<GenericNode> generics = std::nullopt, 
@@ -82,7 +86,7 @@ public:
   auto& get_name() const { return name; }
   auto& get_decl_type() { return type; }
   auto& get_value() { return value; }
-
+  Node* clone() const override;
   void set_used() { used++; }
   auto get_used() const { return used; }
 

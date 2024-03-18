@@ -93,20 +93,22 @@ public:
 class FuncType final : public Type {
   std::vector<Type*> param_types;
   Type* return_type;
+  bool variadic = false;
 public:
-  FuncType(const std::vector<Type*>& param_types, Type* return_type) 
-    : param_types(param_types), return_type(return_type) {}
+  FuncType(const std::vector<Type*>& param_types, Type* return_type, bool variadic)
+    : param_types(param_types), return_type(return_type), variadic(variadic) {}
   ~FuncType() = default;
 
   auto& get_param_types() { return param_types; }
   auto& get_return_type() { return return_type; }
 
-  static auto create(const std::vector<Type*>& param_types, Type* return_type) {
-    return new FuncType(param_types, return_type);
+  static auto create(const std::vector<Type*>& param_types, Type* return_type, bool variadic) {
+    return new FuncType(param_types, return_type, variadic);
   }
 
   FuncType* as_func() override { return this; }
   bool is_func() const override { return true; }
+  bool is_variadic() const { return variadic; }
 
   std::string get_printable_name() const override;
   std::string get_mangled_name() const override;
