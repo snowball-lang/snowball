@@ -6,7 +6,10 @@ namespace snowball {
 namespace sil {
 
 void Binder::visit(ast::Number* node) {
-    sn_assert(false, "Not implemented");
+  auto number = node->get_value();
+  assert(number.size() > 0);
+  int64_t int_val = std::stoull(number);
+  value = ConstInt::create(node->get_location(), get_type(node), int_val);
 }
 
 }

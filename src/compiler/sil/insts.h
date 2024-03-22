@@ -2,9 +2,10 @@
 #ifndef __SNOWBALL_COMPILER_SIL_INSTS_H__
 #define __SNOWBALL_COMPILER_SIL_INSTS_H__
 
+#include "compiler/utils/id.h"
+#include "compiler/sil/module.h"
 #include "compiler/frontend/ast/types.h"
 #include "compiler/frontend/ast/nodes.h"
-#include "compiler/utils/id.h"
 
 namespace snowball {
 namespace sil {
@@ -50,10 +51,12 @@ class FuncDecl final : public Inst, public ast::AttributedNode, public Identifie
   std::string name;
   std::vector<ParamType> params;
   std::optional<Block*> body;
+  Module parent_module;
 public:
   FuncDecl(LocationHolder& loc, ast::types::Type* type, const std::string& name, const std::vector<ParamType>& params,
-    const ast::AttributedNode& attrs, std::optional<Block*> body = std::nullopt, uint64_t id = 0)
-    : Identified(id), Inst(loc, type), AttributedNode(attrs), name(name), params(params), body(body) {}
+    const Module& parent_module, const ast::AttributedNode& attrs, std::optional<Block*> body = std::nullopt, 
+    int64_t id = 0) : Identified(id), Inst(loc, type), AttributedNode(attrs), name(name), params(params), body(body),
+    parent_module(parent_module) {}
   ~FuncDecl() = default;
 
   auto get_name() const { return name; }
@@ -63,9 +66,9 @@ public:
   EMITABLE()
 
   static auto create(LocationHolder loc, ast::types::Type* type, const std::string& name, const std::vector<ParamType>& params,
-    const ast::AttributedNode& attrs, std::optional<Block*> body = std::nullopt, uint64_t id = 0) {
+    const Module& parent_module, const ast::AttributedNode& attrs, std::optional<Block*> body = std::nullopt, uint64_t id = 0) {
     assert(id > 0);
-    return new FuncDecl(loc, type, name, params, attrs, body, id);
+    return new FuncDecl(loc, type, name, params, parent_module, attrs, body, id);
   }
 };
 

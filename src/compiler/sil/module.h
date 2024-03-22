@@ -3,18 +3,19 @@
 #define __SNOWBALL_COMPILER_SIL_MODULE_H__
 
 #include <vector>
-#include "compiler/sil/insts.h"
-#include "compiler/sil/binder.h"
+#include "compiler/frontend/location.h"
 
 namespace snowball {
 namespace sil {
 
+class FuncDecl;
+
 class Module {
   std::vector<FuncDecl*> fn_decls;
-  NamespacePath path;
+  frontend::NamespacePath path;
   // TODO: variables
 public:
-  Module(NamespacePath path) : path(path) {}
+  Module(frontend::NamespacePath path) : path(path) {}
   ~Module() = default;
 
   void add_fn_decl(FuncDecl* fn_decl) { fn_decls.push_back(fn_decl); }

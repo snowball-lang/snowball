@@ -382,19 +382,19 @@ std::vector<Token> Lexer::lex() {
             .type = mode == FLOAT ? Token::Type::ValueFloat : Token::Type::ValueNumber,
             .location = std::make_pair(line, column - num.size()),
           };
-          std::string prefix;
+          std::string suffix;
           if (GET_CHAR(0) == 'u' || GET_CHAR(0) == 'U') {
-            prefix += "u";
+            suffix += "U";
             EAT_CHAR(1);
           } else if (GET_CHAR(0) == 'i' || GET_CHAR(0) == 'I') {
-            prefix += "i";
+            suffix += "I";
             EAT_CHAR(1);
           }
           if (GET_CHAR(0) == 'l' || GET_CHAR(0) == 'L') {
-            prefix += "l";
+            suffix += "L";
             EAT_CHAR(1);
           }
-          tk.value = prefix + tk.value;
+          tk.value = tk.value + suffix;
           add_token(tk);
           if (isRange) { // we add '..' if it's a range expr (1..5)
             consume(Token::Type::SymDot);
