@@ -20,7 +20,7 @@ void TypeChecker::visit(ast::Ident* node) {
     return;
   }
   if (item.value().is_type()) {
-    err(node->get_location(), fmt::format("use of type '{}' is not allowed", node->get_name()), Error::Info {
+    err(node->get_location(), fmt::format("use of type '{}' is not allowed", item.value().get_type()->get_printable_name()), Error::Info {
       .highlight = fmt::format("Expected a value but '{}' is a type", node->get_name()),
       .help = fmt::format("Did you mean to use a variable with the name '{}'?", node->get_name()),
       .note = "You cant access types and use them as values in this context."

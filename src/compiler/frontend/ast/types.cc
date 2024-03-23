@@ -43,11 +43,11 @@ std::string FuncType::get_printable_name() const {
 }
 
 std::string FuncType::get_mangled_name() const {
-  std::string name = "fn_";
+  std::string name = "fnTy";
   for (auto& param : param_types) {
     name += param->get_mangled_name();
   }
-  name += "_";
+  name += "R";
   name += return_type->get_mangled_name();
   return fmt::format("{}{}", name.size(), name);
 }

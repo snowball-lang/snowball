@@ -145,7 +145,7 @@ llvm::DISubprogram* LLVMBuilder::get_disubprogram(const sil::FuncDecl* node) {
   auto derive = llvm::cast<llvm::DIDerivedType>(get_ditype(node->get_type()->as_func()));
   auto type = llvm::cast<llvm::DISubroutineType>(derive->getRawBaseType());
   return dbg.builder->createFunction(
-    dbg.unit, node->get_name(), node->get_name(), file, loc.line, type, loc.line, llvm::DINode::FlagPrototyped, 
+    dbg.unit, node->get_printable_name(), node->get_mangled_name(), file, loc.line, type, loc.line, llvm::DINode::FlagPrototyped, 
     llvm::DISubprogram::toSPFlags(
       /*IsLocalToUnit=*/true,
       /*IsDefinition=*/true,

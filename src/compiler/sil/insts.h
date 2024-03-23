@@ -64,6 +64,7 @@ public:
   auto get_body() const { return body; }
   void set_body(Block* b) { body = b; }
   std::string get_mangled_name() const;
+  std::string get_printable_name() const;
   EMITABLE()
 
   static auto create(LocationHolder loc, ast::types::Type* type, const std::string& name, const std::vector<ParamType>& params,

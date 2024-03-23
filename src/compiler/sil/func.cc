@@ -38,5 +38,12 @@ std::string FuncDecl::get_mangled_name() const {
   return fmt::format("_ZSN{}{}{}{}.{}", name.size(), name, type_mangle.size(), type_mangle, get_id());
 }
 
+std::string FuncDecl::get_printable_name() const {
+  std::string base = parent_module->get_path().get_path_string();
+  // TODO: check if it's inside a class!
+  // note: get_path_string() already returns path with "::" sufix
+  return fmt::format("{}{}", base, get_name());
+}
+
 }
 }
