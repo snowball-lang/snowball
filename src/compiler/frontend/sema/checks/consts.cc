@@ -29,7 +29,7 @@ void TypeChecker::visit(ast::Number* node) {
       }
     }
   }
-  auto type = (_unsigned ? std::string("U") : "I") + std::to_string(bytes);
+  auto type = (_unsigned ? std::string("u") : "i") + std::to_string(bytes);
   unify(node->get_type(), get_type(type), node->get_location());
 }
 

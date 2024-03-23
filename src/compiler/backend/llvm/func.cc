@@ -12,7 +12,7 @@ void LLVMBuilder::emit(const sil::FuncDecl* node) {
     if (node->get_external() != frontend::ast::AttributedNode::None) {
       linkage = llvm::Function::ExternalLinkage;
     }
-    auto fn = llvm::Function::Create(fn_type, linkage, node->get_name(), *builder_ctx.module);
+    auto fn = llvm::Function::Create(fn_type, linkage, node->get_mangled_name(), *builder_ctx.module);
     fn->setCallingConv(llvm::CallingConv::C);
     if (node->get_inline())
       fn->addFnAttr(llvm::Attribute::AlwaysInline);

@@ -13,6 +13,8 @@ void TypeChecker::visit(ast::FnDecl* node) {
   assert(node->get_type()->is_func());
   auto fn_type = node->get_type()->as_func();
   auto path = get_namespace_path(node->get_name());
+  auto backup = ctx.current_function;
+  ctx.current_function = node;
   universe.add_scope();
   assert(fn_type->get_param_types().size() == node->get_params().size());
   for (size_t i = 0; i < node->get_generics().size(); ++i) {
@@ -25,6 +27,7 @@ void TypeChecker::visit(ast::FnDecl* node) {
     define_variable(node->get_params()[i], node->get_params()[i]->get_location());
   }
   node->get_body()->accept(this);
+  ctx.current_function = backup;
   universe.remove_scope();
 }
 

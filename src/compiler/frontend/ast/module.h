@@ -18,6 +18,7 @@ public:
 
   auto& get_ast() { return ast; }
   auto get_path() const { return path; }
+  void mutate_ast(ast::Stmt* x) { ast.push_back(x); }
 };
 
 }

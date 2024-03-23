@@ -88,7 +88,7 @@ class LLVMBuilder : public sil::SilVisitor {
 public:
   LLVMBuilder(const Ctx& ctx, std::map<uint64_t, sil::Inst*>& inst_map);
 
-  void build(std::vector<sil::Module>& modules);
+  void build(std::vector<std::shared_ptr<sil::Module>>& modules);
   void dump(llvm::raw_ostream& os = llvm::errs());
 };
 

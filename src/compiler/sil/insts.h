@@ -51,10 +51,10 @@ class FuncDecl final : public Inst, public ast::AttributedNode, public Identifie
   std::string name;
   std::vector<ParamType> params;
   std::optional<Block*> body;
-  Module parent_module;
+  const std::shared_ptr<Module> parent_module;
 public:
   FuncDecl(LocationHolder& loc, ast::types::Type* type, const std::string& name, const std::vector<ParamType>& params,
-    const Module& parent_module, const ast::AttributedNode& attrs, std::optional<Block*> body = std::nullopt, 
+    const std::shared_ptr<Module>& parent_module, const ast::AttributedNode& attrs, std::optional<Block*> body = std::nullopt, 
     int64_t id = 0) : Identified(id), Inst(loc, type), AttributedNode(attrs), name(name), params(params), body(body),
     parent_module(parent_module) {}
   ~FuncDecl() = default;
@@ -63,10 +63,11 @@ public:
   auto get_params() const { return params; }
   auto get_body() const { return body; }
   void set_body(Block* b) { body = b; }
+  std::string get_mangled_name() const;
   EMITABLE()
 
   static auto create(LocationHolder loc, ast::types::Type* type, const std::string& name, const std::vector<ParamType>& params,
-    const Module& parent_module, const ast::AttributedNode& attrs, std::optional<Block*> body = std::nullopt, uint64_t id = 0) {
+    const std::shared_ptr<Module>& parent_module, const ast::AttributedNode& attrs, std::optional<Block*> body = std::nullopt, uint64_t id = 0) {
     assert(id > 0);
     return new FuncDecl(loc, type, name, params, parent_module, attrs, body, id);
   }

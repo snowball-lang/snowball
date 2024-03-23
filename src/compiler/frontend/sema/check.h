@@ -29,7 +29,7 @@ class TypeChecker : public ast::AstVisitor, public Reporter {
   Universe<TypeCheckItem> universe;
   std::vector<Module>& modules;
   std::vector<NamespacePath> allowed_uuids;
-  std::map<uint64_t, MonorphosizedFn> generic_registry;
+  std::map<uint64_t, std::vector<MonorphosizedFn>> generic_registry;
   TypeCheckerContext ctx;
   std::unordered_map<uint64_t, TypeCheckerContext> generic_contexts;
 public:

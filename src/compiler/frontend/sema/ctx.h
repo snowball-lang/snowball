@@ -77,7 +77,8 @@ struct MonorphosizedFn final {
 
 struct TypeCheckerContext final {
   std::vector<NamespacePath> allowed_uuids;
-  const Module* current_module = nullptr;
+  Module* current_module = nullptr;
+  const ast::FnDecl* current_function = nullptr;
   std::vector<Scope<TypeCheckItem>> scopes;
 
   ~TypeCheckerContext() = default;

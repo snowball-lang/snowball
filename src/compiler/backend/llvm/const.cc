@@ -5,7 +5,7 @@ namespace snowball {
 namespace backend {
 
 void LLVMBuilder::emit(const sil::ConstInt* node) {
-  sn_assert(false, "Not implemented const int");
+  value = llvm::ConstantInt::get(get_type(node->get_type()), node->get_value());
 }
 
 }

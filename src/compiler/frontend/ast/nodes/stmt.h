@@ -46,6 +46,7 @@ private:
   // This is a clone of the body, used for cloning the function, 
   // and fetching the body without it not being typechecked
   Block* body_clone = nullptr;
+  bool generic_instanced = false;
 public:
   FnDecl(const SourceLocation& location, const std::string& name,   
         const std::vector<VarDecl*>& params, TypeRef return_type, Block* body,
@@ -61,6 +62,8 @@ public:
   auto get_body() const { return body; }
   void create_body_clone();
   Node* clone() const override;
+  bool is_generic_instanced() const;
+  void set_generic_instanced();
   static auto create(const SourceLocation& location, const std::string& name, 
       const std::vector<VarDecl*>& params, TypeRef return_type, Block* body,
       std::optional<GenericNode> generics = std::nullopt, 

@@ -3,6 +3,10 @@ public func x<T>(x: T) {
   let a = x;
 }
 
+public func x() {
+}
+
 public func main() {
-  let b = x(2);
+  x(2);
+  x();
 }

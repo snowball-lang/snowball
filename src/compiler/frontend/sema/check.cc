@@ -43,6 +43,9 @@ void TypeChecker::check() {
 
 void TypeChecker::err(const LocationHolder& holder, const std::string& message, 
     const Error::Info& info, Error::Type type, bool fatal) {
+  if (ctx.current_function && ctx.current_function->is_generic_instanced()) {
+    return; // skip duplicated errors from generic insatnce intantiations
+  }
   add_error(E(message, holder.get_location(), info, type));
   if (fatal && type != Error::Type::Warn)
     throw StopTypeChecking();
@@ -101,6 +104,7 @@ TypeCheckerContext& TypeChecker::create_generic_context(uint64_t id) {
   auto ctx = TypeCheckerContext {
     .allowed_uuids = this->ctx.allowed_uuids,
     .current_module = this->ctx.current_module,
+    .current_function = this->ctx.current_function,
     .scopes = universe.get_scopes()
   };
   generic_contexts[id] = ctx;

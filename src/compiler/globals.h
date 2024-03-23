@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <functional>
 #include <fstream>
+#include <cassert>
 
 #include "utils/utils.h"
 

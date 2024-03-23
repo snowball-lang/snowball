@@ -77,15 +77,15 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::map<uint64_t, sil::Inst*>& inst_ma
   builder_ctx.module->setTargetTriple(llvm::sys::getDefaultTargetTriple());
 }
 
-void LLVMBuilder::build(std::vector<sil::Module>& modules) {
+void LLVMBuilder::build(std::vector<std::shared_ptr<sil::Module>>& modules) {
   for (auto& module : modules) {
-    for (auto& func : module.get_fn_decls()) {
+    for (auto& func : module->get_fn_decls()) {
       build(func);
     }
   }
   just_declare = false;
   for (auto& module : modules) {
-    for (auto& func : module.get_fn_decls()) {
+    for (auto& func : module->get_fn_decls()) {
       build(func);
     }
   }

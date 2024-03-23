@@ -76,6 +76,14 @@ void FnDecl::create_body_clone() {
   }
 }
 
+bool FnDecl::is_generic_instanced() const {
+  return generic_instanced;
+}
+
+void FnDecl::set_generic_instanced() {
+  generic_instanced = true;
+}
+
 }
 }
 }

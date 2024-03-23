@@ -105,20 +105,17 @@ ast::FnDecl* TypeChecker::deduce_func(ast::FnDecl* node, const std::vector<ast::
 
 ast::FnDecl* TypeChecker::propagate_generic(ast::FnDecl* node, const std::map<std::string, ast::types::Type*>& deduced, const SourceLocation& loc) {
   if (generic_registry.find(node->get_id()) != generic_registry.end()) {
-    auto monorph = generic_registry[node->get_id()];
-    assert(deduced.size() == monorph.generics.size());
-    size_t i = 0;
-    if (std::find_if(monorph.generics.begin(), monorph.generics.end(), [&](auto& gen) {
-      i++;
-      return type_match(gen.second, deduced.at(gen.first));
-    }) != monorph.generics.end()) {
-      err(loc, "Generic parameters not fully deduced", Error::Info {
-        .highlight = "Generic parameters not fully deduced",
-        .help = "Try explicitly specifying all generic type parameters",
-        .related = {{ node->get_location(), Error::Info {
-          .highlight = "Generic parameters declared here"
-        }}}
-      });
+    auto monorphs = generic_registry[node->get_id()];
+    // used for caching generic functions and prevent rechecking every time
+    for (auto& monorph : monorphs) {
+      assert(deduced.size() == monorph.generics.size());
+      size_t i = 0;
+      if (std::find_if(monorph.generics.begin(), monorph.generics.end(), [&](auto& gen) {
+        i++;
+        return type_match(gen.second, deduced.at(gen.first));
+      }) != monorph.generics.end()) {
+        return monorph.decl;
+      }
     }
   }
   auto decl = (ast::FnDecl*)node->clone();
@@ -130,12 +127,12 @@ ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::s
   auto fn_ty_copy = node->get_type()->as_func();
   node->get_type() = nullptr;
   auto state = get_generic_context(node->get_id());
-  node->increment_id();
-  generic_registry[node->get_id()] = MonorphosizedFn {
+  node->set_generic_instanced();
+  generic_registry[node->get_id()].push_back(MonorphosizedFn {
     .decl = node,
     .generics = deduced
-  };
-  
+  });
+  node->increment_id();  
   auto backup = ctx;
   backup.scopes = universe.get_scopes();
   set_generic_context(state);
@@ -154,6 +151,7 @@ ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::s
   auto ret = get_type(node->get_return_type());
   unify(node->get_type(), ast::types::FuncType::create(params, ret, fn_ty_copy->is_variadic()), node->get_location());
   node->accept(this);
+  state.current_module->mutate_ast(node);
   universe.remove_scope();
   set_generic_context(backup);
   return node;
