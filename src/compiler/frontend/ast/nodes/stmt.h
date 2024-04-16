@@ -107,28 +107,29 @@ class ClassDecl final : public Stmt, public GenericNode<>,
 private:
   std::string name;
   bool generic_instanced = false;
+  std::vector<VarDecl*> vars;
+  std::vector<FnDecl*> funcs;
 public:
   ClassDecl(const SourceLocation& location, const std::string& name,   
         const std::vector<VarDecl*>& vars, const std::vector<FnDecl*>& funcs,
         std::optional<GenericNode> generics = std::nullopt, 
         const AttributedNode& attributes = AttributedNode())
-    : Stmt(location), GenericNode(generics), AttributedNode(attributes), name(name), params(params), 
-      return_type(return_type), body(body) { create_body_clone(); }
-  ~FnDecl() = default;
+    : Stmt(location), GenericNode(generics), AttributedNode(attributes), 
+      name(name), vars(vars), funcs(funcs) {}
+
+  ~ClassDecl() = default;
 
   auto& get_name() const { return name; }
-  auto& get_params() { return params; }
-  auto& get_return_type() { return return_type; }
-  auto get_body() const { return body; }
-  void create_body_clone();
+  auto& get_vars() { return vars; }
+  auto& get_funcs() { return funcs; }
   Node* clone() const override;
   bool is_generic_instanced() const;
   void set_generic_instanced();
   static auto create(const SourceLocation& location, const std::string& name, 
-      const std::vector<VarDecl*>& params, TypeRef return_type, Block* body,
+      const std::vector<VarDecl*>& vars, const std::vector<FnDecl*>& funcs,
       std::optional<GenericNode> generics = std::nullopt, 
       const AttributedNode& attributes = AttributedNode()) {
-    return new FnDecl(location, name, params, return_type, body, generics, attributes);
+    return new ClassDecl(location, name, vars, funcs, generics, attributes);
   }
 
   SN_VISIT()

@@ -91,6 +91,7 @@ private:
   ast::Expr* parse_expr(bool allow_assign = true);
   ast::VarDecl* parse_var_decl();
   ast::Block* parse_block(Token::Type terminator = Token::Type::BracketRcurly);
+  ast::ClassDecl* parse_class_decl(const ast::AttributedNode& attrs);
 
   void parse_extern_decl(ast::AttributedNode& node);
 };
