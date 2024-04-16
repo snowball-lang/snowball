@@ -44,7 +44,10 @@ DefinedType::ClassField::ClassField(
   , initializedValue(initializedValue)
   , isMutable(isMutable) { }
 Syntax::Statement::DefinedTypeDef* DefinedType::getAST() const { return ast; }
-void DefinedType::addField(ClassField* f) { fields.emplace_back(f); }
+void DefinedType::addField(ClassField* f, bool toStart) { 
+  if (toStart) fields.insert(fields.begin(), f);
+  else fields.emplace_back(f);
+}
 bool DefinedType::is(DefinedType* ty) const {
   auto otherArgs = ty->getGenerics();
   bool genericSizeEqual = otherArgs.size() == generics.size();

@@ -39,7 +39,7 @@ Transformer::getFromIndex(DBGSourceInfo* dbgInfo, Expression::Index* index, bool
     std::shared_ptr<ir::Value> indexValue = nullptr;
     if (!isStatic) {
 #define FIND_FIELD(field_type) \
-  auto fields = ty->getFields(); \
+  auto& fields = ((decltype(ty))ty->getModule()->typeInformation[ty->getId()].get())->getFields(); \
   bool fieldFound = false; \
   auto fieldValue = std::find_if(fields.begin(), fields.end(), [&](field_type* f) { \
                                  bool e = f->name == name; \

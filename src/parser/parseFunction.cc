@@ -96,6 +96,8 @@ fetch_attrs:
     return Attributes::NO_MANGLE;
   } else if (attr == "export") {
     return Attributes::EXPORT;
+  } else if (attr == "explicit") {
+    return Attributes::EXPLICIT;
   } else if (attr == "bench") {
     return Attributes::BENCH;
   } else if (attr == "__internal__") {
@@ -394,7 +396,7 @@ snowballInvalidDefaultOperatorCase:
       if (is<TokenType::KWORD_SUPER>()) {
         hasSuperArgs = true;
         if (!m_current_class->getParent()) {
-          createError<SYNTAX_ERROR>("Cant call super on a class that doesn't extend "
+          createError<SYNTAX_ERROR>("Cant call super on a class that doesnt extend "
                                     "from another class!");
         }
         next();

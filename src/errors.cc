@@ -76,7 +76,7 @@ void NiceError::print_error(bool asTail) const {
     Logger::elog(FMT("  %s%4i%s │  %s", BBLK, cb_dbg_info->line - 1, BLK, cb_dbg_info->line_before.c_str()));
   // highlight line where the error is
   // e.g.  hello<String>(1, 2, 3)
-  // ~~~~~
+  //       ~~~~~
   // converted to
   // [white]hello[gray]<string>(1, 2, 3)
   std::string line_str = "";

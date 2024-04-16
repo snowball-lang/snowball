@@ -40,6 +40,7 @@ enum Attributes {
   EXPORT,
   OVERRIDE,
   FIRST_ARG_IS_SELF,
+  EXPLICIT,
   UNSAFE_FUNC_NOT_BODY,
   UNSAFE, // also used for blocks
 

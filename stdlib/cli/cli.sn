@@ -1,7 +1,16 @@
 
 import std::map::{Map};
 import std::opt::{Option, none, some}
+import std::cli::arg;
+import std::cli::opt as cliOpt; // cliOpt to avoid name conflict with std::opt
 import std::io;
+
+// MARK - Type exports
+
+public type Arg = arg::Arg;
+public type Opt = cliOpt::Opt;
+
+// MARK - Main implementation
 
 /**
  * @brief Custom exception class for handling argument-related errors.
@@ -10,116 +19,6 @@ import std::io;
  * It inherits from the base Exception class and provides a specific error type for argument-related issues.
  */
 public class ArgumentError extends Exception {}
-/**
- * @brief A class representing a command-line option.
- * 
- * This class represents a command-line option, which can have various attributes such as a name, description, 
- * required flag, default value, and aliases. Options are used to configure the behavior of command-line programs 
- * by specifying additional parameters and settings.
- */
-public class Opt {
-  /// @brief The name of the option.
-  let mut name: String;
-  /// @brief The description of the option.
-  let mut description: Option<String>;
-  /// @brief The default value of the option.
-  let mut default_val: Option<String>;
-  /// @brief The aliases associated with the option.
-  let mut aliases: Vector<String>;
-  /**
-   * @brief Constructs an Opt object with the specified parameters.
-   * @param[in] name The name of the option.
-   * @param[in] description The description of the option.
-   * @param[in] required Flag indicating whether the option is required.
-   * @param[in] default_val The default value of the option.
-   * @param[in] aliases The aliases associated with the option.
-   */
-  public: Opt(name: String, description: String = "",
-              default_val: Option<String> = none<?String>(), 
-              aliases: Vector<String> = new Vector<String>()) {
-    self.name = name;
-    if description.empty() { self.description = none<?String>(); } 
-    else { self.description = some(description); }
-    self.default_val = default_val;
-    self.aliases = aliases;
-  }
-  /// Sets the name of the option.
-  @inline mut func name(n: String) Self 
-    { self.name = n; return self; }
-  /// Sets the description of the option.
-  @inline mut func description(d: String) Self 
-    { self.description = some(d); return self; }
-  /// Sets the default value of the option.
-  @inline mut func default_val(d: String) Self 
-    { self.default_val = some(d); return self; }
-  /// Adds an alias to the option.
-  @inline mut func add_alias(a: String) Self 
-    { self.aliases.push(a); return self; }
-  /// @brief Returns the name of the option.
-  @inline func name() String { return self.name; }
-  /// @brief Returns the description of the option.
-  @inline func description() Option<String> { return self.description; }
-  /// @brief Returns the default value of the option.
-  @inline func default_val() Option<String> { return self.default_val; }
-  /// @brief Returns the aliases associated with the option.
-  @inline func aliases() Vector<String> { return self.aliases; }
-  /// @brief Overloads the equality operator for the Opt class.
-  @inline operator func ==(other: Opt) bool 
-    { return self.name == other.name; }
-}
-/**
- * @brief A class representing a command-line argument.
- * 
- * This class represents a command-line argument, which typically serves as input parameters for a command-line program.
- * An argument can have attributes such as a name, description, required flag, and default value. Command-line arguments 
- * are used to specify input values or configurations when executing a program from the command line.
- */
-public class Arg { 
-  /// @brief The name of the argument.
-  let mut name: String;
-  /// @brief The description of the argument.
-  let mut description: Option<String>;
-  /// @brief Flag indicating whether the argument is required.
-  let mut required: bool; 
-  /// @brief The default value of the argument.
-  let mut default_val: Option<String>;
-  /**
-   * @brief Constructs an Arg object with the specified parameters.
-   * @param[in] name The name of the argument.
-   * @param[in] description The description of the argument.
-   * @param[in] required Flag indicating whether the argument is required.
-   * @param[in] default_val The default value of the argument.
-   */
-  public: Arg(name: String, description: String = "", required: bool = false) {
-    self.name = name;
-    if description.empty() { self.description = none<?String>(); }
-    else { self.description = some(description); }
-    self.required = required;
-    self.default_val = none<?String>();
-  }
-  /// Sets the name of the argument.
-  @inline mut func name(n: String) Self 
-    { self.name = n; return self; }
-  /// Sets the description of the argument.
-  @inline mut func description(d: String) Self 
-    { self.description = some(d); return self; }
-  /// Sets the required flag of the argument.
-  @inline mut func required(r: bool) Self 
-    { self.required = r; return self; }
-  /// Sets the default value of the argument.
-  @inline mut func default_val(d: String) Self 
-    { self.default_val = some(d); return self; }
-  /// Returns the name of the argument.
-  @inline func name() String { return self.name; }
-  /// Returns the description of the argument.
-  @inline func description() Option<String> { return self.description; }
-  /// Returns the required flag of the argument.
-  @inline func required() bool { return self.required; }
-  /// Returns the default value of the argument.
-  @inline func default_val() Option<String> { return self.default_val; }
-  /// Overloads the equality operator for the Arg class.
-  operator func ==(other: Arg) bool { return self.name == other.name; }
-}
 /**
  * @brief A class representing a command-line interface (CLI).
  *        The CLI can have a name, version, description, author, license, repository,
@@ -148,7 +47,6 @@ public class Cli {
    * @param[in] version The version of the CLI.
   */
   public: Cli(name: String, version: String = "") : name(name) {
-    self.version = none<?String>();
     if version.empty() { self.version = none<?String>(); } 
     else { self.version = some(version); }
     self.author = none<?String>();

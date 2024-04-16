@@ -1,0 +1,111 @@
+
+import std::uuid::uuid::{ UUID };
+import std::uuid::error::{ UuidError };
+import std::time;
+import std::rand;
+
+@use_macro(todo)
+import std::panics;
+
+public enum UuidStrategy {
+  Default,
+  TimeBased,
+  Random,
+  NameBased
+}
+
+/**
+ * @brief Factory class for generating UUID instances.
+ * 
+ * The UuidFactory class provides methods for creating UUID instances using different strategies or algorithms.
+ */
+public class UuidFactory {
+  public: UuidFactory() { }
+
+  /**
+   * @brief Generates a new UUID instance using the default strategy.
+   * 
+   * This method generates a new UUID instance using the default strategy, which may vary depending on the 
+   * implementation. It provides a convenient way to obtain a UUID without specifying a particular strategy.
+   * 
+   * @return A new UUID instance generated using the default strategy.
+   */
+  func generate_uuid() UUID {
+    return self.generate_uuid_with_strategy(UuidStrategy::Default);
+  }
+  /**
+   * @brief Generates a new UUID instance using the specified strategy.
+   * 
+   * This method generates a new UUID instance using the specified strategy. The strategy parameter allows 
+   * customization of the UUID generation process by selecting a specific algorithm or method for creating UUIDs.
+   * 
+   * @param[in] strategy The strategy to use for generating the UUID instance.
+   * @return A new UUID instance generated using the specified strategy.
+   */
+  func generate_uuid_with_strategy(strategy: UuidStrategy) UUID {
+    case strategy {
+      Default => return self.default_strategy(),
+      TimeBased => return self.time_based_strategy(),
+      Random => return self.random_strategy(),
+      NameBased => throw new UuidError("Name-based strategy should be used with UuidFactory::generate_uuid_with_name!")
+    }
+  }
+  /**
+   * @brief Generates a new UUID instance using the default strategy.
+   * 
+   * This method generates a new UUID instance using the default strategy, which may vary depending on the 
+   * implementation. It provides a convenient way to obtain a UUID without specifying a particular strategy.
+   * 
+   * @return A new UUID instance generated using the default strategy.
+   */
+  func default_strategy() UUID {
+    return self.time_based_strategy();
+  }
+  /**
+   * @brief Generates a new UUID instance using the time-based strategy.
+   * 
+   * This method generates a new UUID instance using the time-based strategy, which generates UUIDs based on 
+   * the current time. This strategy is typically used for generating UUIDs that are unique across both space 
+   * and time, and is commonly used in various computing systems and applications to uniquely identify entities 
+   * or resources.
+   * 
+   * @return A new UUID instance generated using the time-based strategy.
+   */
+  func time_based_strategy() UUID {
+    let current_millis = (time::clock() / 1000) as u64;
+    let interval = current_millis - 0x01B21DD213814000;
+    
+    let msb = (interval << 32) | (0x00000000FFFF0000UL) | (0x0000000000000000UL);
+    let lsb = (0xC000000000000000UL) | (0x0000000000000000UL);
+
+    return new UUID(msb, lsb);
+  }
+  /**
+   * @brief Generates a new UUID instance using the random strategy.
+   * 
+   * This method generates a new UUID instance using the random strategy, which generates UUIDs using a 
+   * pseudo-random number generator. This strategy is typically used for generating UUIDs that are unique 
+   * across both space and time, and is commonly used in various computing systems and applications to 
+   * uniquely identify entities or resources.
+   * 
+   * @return A new UUID instance generated using the random strategy.
+   */
+  func random_strategy() UUID {
+    todo!("Implement random strategy!");
+    return new UUID(0, 0);
+  }
+  /**
+   * @brief Generates a new UUID instance using the name-based strategy.
+   * 
+   * This method generates a new UUID instance using the name-based strategy, which generates UUIDs based on 
+   * a name that is provided by the caller. This strategy is typically used for generating UUIDs that are 
+   * unique across both space and time, and is commonly used in various computing systems and applications 
+   * to uniquely identify entities or resources.
+   * 
+   * @return A new UUID instance generated using the name-based strategy.
+   */
+  func name_based_strategy(name: String) UUID {
+    todo!("Implement name-based strategy once hashing module is implemented!");
+    return new UUID(0, 0);
+  }
+}

@@ -124,7 +124,10 @@ class DefinedType : public AcceptorExtend<DefinedType, BaseType> {
   /// @note It does not include the parent fields!
   auto& getFields() const { return fields; }
   /// @brief Append a new field (ClassField) to the list
-  void addField(ClassField* f);
+  void addField(ClassField* f, bool toStart = false);
+  /// @brief Set the fields for the class
+  /// @note This should not be used unless you know what you are doing
+  void setFields(std::vector<ClassField*> f) { fields = f; }
   /// @c Type::toRef() for information about this function.
   /// @note It essentially does the same thing except it adds
   ///  generics if needed

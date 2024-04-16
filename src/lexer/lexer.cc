@@ -564,6 +564,9 @@ void Lexer::tokenize() {
             prefix += "l";
             EAT_CHAR(1);
           }
+          if (!prefix.empty() && mode == FLOAT) {
+            lexer_error(Error::SYNTAX_ERROR, "invalid float number suffix", prefix.size());
+          }
           tk.value = prefix + tk.value;
           tokens.emplace_back(tk);
           if (isRange) { // we add '..' if it's a range expr (1..5)

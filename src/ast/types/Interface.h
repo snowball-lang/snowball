@@ -106,7 +106,7 @@ class InterfaceType : public BaseType {
   std::string getMangledName() const override;
   /// @return A list containing all the fields declared for the interface
   /// @note It does not include the parent fields!
-  auto getFields() const { return fields; }
+  auto& getFields() const { return fields; }
   /// @brief Add a new field to the interface
   void addField(Member* f) { fields.emplace_back(f); }
   /// @c Type::toRef() for information about this function.

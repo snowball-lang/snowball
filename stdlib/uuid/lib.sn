@@ -1,0 +1,23 @@
+
+import std::uuid::factory;
+import std::uuid::uuid;
+
+public type UuidStrategy = factory::UuidStrategy;
+
+public const global_factory: factory::UuidFactory = new factory::UuidFactory();
+
+public func create() uuid::UUID {
+    return global_factory.generate_uuid();
+}
+
+public func create_from_time() uuid::UUID {
+    return global_factory.generate_uuid_with_strategy(UuidStrategy::TimeBased);
+}
+
+public func create_from_random() uuid::UUID {
+    return global_factory.generate_uuid_with_strategy(UuidStrategy::Random);
+}
+
+public func create_from_name(name: String) uuid::UUID {
+    return global_factory.name_based_strategy(name);
+}

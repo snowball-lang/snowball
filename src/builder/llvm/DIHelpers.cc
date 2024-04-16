@@ -105,7 +105,8 @@ llvm::DIType* LLVMBuilder::getDIType(types::Type* ty) {
                                      dbgInfo->line,
                                      layout.getTypeAllocSizeInBits(getLLVMType(t->type)),
                                      0,
-                                     structLayout->getElementOffsetInBits(fieldIndex),
+                                     fieldIndex < llvmType->getStructNumElements() ?
+                                       structLayout->getElementOffsetInBits(fieldIndex) : 0,
                                      llvm::DINode::FlagZero,
                                      getDIType(t->type)
                                    );

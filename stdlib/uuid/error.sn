@@ -1,0 +1,10 @@
+/**
+ * @brief Custom exception class for handling errors related to UUID operations.
+ * 
+ * UuidError is a subclass of the base Exception class, specifically designed to handle errors 
+ * encountered during UUID operations or processing. It provides a specialized exception type 
+ * for situations where UUID-related errors occur, allowing for more precise error handling 
+ * and exception management.
+ */
+public class UuidError extends Exception 
+  { }

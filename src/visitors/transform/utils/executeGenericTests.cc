@@ -36,6 +36,8 @@ void Transformer::executeGenericTests(Expression::WhereClause* clause, types::Ty
         if ((utils::is<types::IntType>(generic) || utils::is<types::FloatType>(generic))
             && (interface->getUUID() == (ctx->imports->CORE_UUID + "std.ToString:0"))) { // note: Make sure to always match the UUID
           found = true;
+        } else if (utils::is<types::EnumType>(generic) && interface->is(ctx->getBuiltinTypeImpl("EnumType"))) {
+          found = true;
         }
       }
       if (!found) {

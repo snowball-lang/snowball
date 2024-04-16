@@ -123,7 +123,12 @@ return Attributes::INVALID;
         auto var = parseConstant();
         var->setPrivacy(Syntax::Statement::Privacy::fromInt(!inPrivateScope));
         if (var->getValue() == nullptr) {
-          createError<SYNTAX_ERROR>("expected a value for constant declaration!");
+          createError<SYNTAX_ERROR>("expected a value for constant declaration!", {
+            .note = "Static constants must have a value initialized because they don't "
+                    "have a constructor to initialize them.",
+            .help = "To fix this error, you can either remove the 'static' keyword or "
+                    "initialize the constant with a value."
+          });
         }
         cls->addVariable(var);
         assert_tok<TokenType::SYM_SEMI_COLLON>("a ';'");

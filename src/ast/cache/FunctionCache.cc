@@ -80,8 +80,8 @@ void Functions::performInheritance(types::DefinedType* ty, types::DefinedType* p
     name = childUUID + "." + name;
     for (auto fn : functions) { setFunction(name, fn.function, fn.state); }
   }
-  for (auto f : parent->getFields()) {
-    ty->addField(f);
+  for (auto f = parent->getFields().rbegin(); f != parent->getFields().rend(); f++) {
+    ty->addField(*f, true);
   }
   ty->hasVtable = parent->hasVtable;
   return;

@@ -55,14 +55,24 @@ ImportService::getImportPath(const std::string package, std::vector<std::string>
   if (!exists) {
     if (fs::is_directory(fullPath)) {
       auto configFile = fullPath / "sn.toml";
+      if (!fs::exists(configFile)) {
+        auto libPath = fullPath / "lib.sn";
+        if (fs::exists(libPath)) {
+          return {libPath, fullPath, ""};
+        }
+        return {"", "", "Package doesnt have a sn.toml file!"};
+      }
+
       auto config = toml::parse_file(configFile.string());
       auto entry = config["package"]["main"].value_or<std::string>("<invalid>");
       if (entry == "<invalid>") {
-        return {"", "", "Package doesn't have a main entry defined!"};
+        return {"", "", "Package doesnt have a main entry defined!"};
       }
       auto finalPath = fullPath / entry;
       if (fullPath.stem().empty()) fullPath = fullPath.parent_path();
-      assert(access(finalPath.c_str(), F_OK) != -1);
+      if (access(finalPath.c_str(), F_OK) == -1) {
+        return {"", "", "Package main entry doesnt exist!"};
+      }
       return {finalPath, fullPath, ""};
     }
   }

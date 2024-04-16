@@ -1,0 +1,55 @@
+import std::opt::{Option, none, some}
+
+/**
+ * @brief A class representing a command-line argument.
+ * 
+ * This class represents a command-line argument, which typically serves as input parameters for a command-line program.
+ * An argument can have attributes such as a name, description, required flag, and default value. Command-line arguments 
+ * are used to specify input values or configurations when executing a program from the command line.
+ */
+public class Arg { 
+  /// @brief The name of the argument.
+  let mut name: String;
+  /// @brief The description of the argument.
+  let mut description: Option<String>;
+  /// @brief Flag indicating whether the argument is required.
+  let mut required: bool; 
+  /// @brief The default value of the argument.
+  let mut default_val: Option<String>;
+  /**
+   * @brief Constructs an Arg object with the specified parameters.
+   * @param[in] name The name of the argument.
+   * @param[in] description The description of the argument.
+   * @param[in] required Flag indicating whether the argument is required.
+   * @param[in] default_val The default value of the argument.
+   */
+  public: Arg(name: String, description: String = "", required: bool = false) {
+    self.name = name;
+    if description.empty() { self.description = none<?String>(); }
+    else { self.description = some(description); }
+    self.required = required;
+    self.default_val = none<?String>();
+  }
+  /// Sets the name of the argument.
+  @inline mut func name(n: String) Self 
+    { self.name = n; return self; }
+  /// Sets the description of the argument.
+  @inline mut func description(d: String) Self 
+    { self.description = some(d); return self; }
+  /// Sets the required flag of the argument.
+  @inline mut func required(r: bool) Self 
+    { self.required = r; return self; }
+  /// Sets the default value of the argument.
+  @inline mut func default_val(d: String) Self 
+    { self.default_val = some(d); return self; }
+  /// Returns the name of the argument.
+  @inline func name() String { return self.name; }
+  /// Returns the description of the argument.
+  @inline func description() Option<String> { return self.description; }
+  /// Returns the required flag of the argument.
+  @inline func required() bool { return self.required; }
+  /// Returns the default value of the argument.
+  @inline func default_val() Option<String> { return self.default_val; }
+  /// Overloads the equality operator for the Arg class.
+  operator func ==(other: Arg) bool { return self.name == other.name; }
+}

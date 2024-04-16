@@ -147,6 +147,7 @@ LLVMBuilder::LLVMBuilder(
   llvm::initializeHardwareLoopsPass(registry);
   llvm::initializeReplaceWithVeclibLegacyPass(registry);
   llvm::initializeTypePromotionLegacyPass(registry);
+
   newContext();
   module = newModule();
 }

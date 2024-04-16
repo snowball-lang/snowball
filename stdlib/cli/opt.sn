@@ -1,0 +1,59 @@
+import std::opt::{Option, none, some}
+
+/**
+ * @brief A class representing a command-line option.
+ * 
+ * This class represents a command-line option, which can have various attributes such as a name, description, 
+ * required flag, default value, and aliases. Options are used to configure the behavior of command-line programs 
+ * by specifying additional parameters and settings.
+ */
+public class Opt {
+  /// @brief The name of the option.
+  let mut name: String;
+  /// @brief The description of the option.
+  let mut description: Option<String>;
+  /// @brief The default value of the option.
+  let mut default_val: Option<String>;
+  /// @brief The aliases associated with the option.
+  let mut aliases: Vector<String>;
+  /**
+   * @brief Constructs an Opt object with the specified parameters.
+   * @param[in] name The name of the option.
+   * @param[in] description The description of the option.
+   * @param[in] required Flag indicating whether the option is required.
+   * @param[in] default_val The default value of the option.
+   * @param[in] aliases The aliases associated with the option.
+   */
+  public: Opt(name: String, description: String = "",
+              default_val: Option<String> = none<?String>(), 
+              aliases: Vector<String> = new Vector<String>()) {
+    self.name = name;
+    if description.empty() { self.description = none<?String>(); } 
+    else { self.description = some(description); }
+    self.default_val = default_val;
+    self.aliases = aliases;
+  }
+  /// Sets the name of the option.
+  @inline mut func name(n: String) Self 
+    { self.name = n; return self; }
+  /// Sets the description of the option.
+  @inline mut func description(d: String) Self 
+    { self.description = some(d); return self; }
+  /// Sets the default value of the option.
+  @inline mut func default_val(d: String) Self 
+    { self.default_val = some(d); return self; }
+  /// Adds an alias to the option.
+  @inline mut func add_alias(a: String) Self 
+    { self.aliases.push(a); return self; }
+  /// @brief Returns the name of the option.
+  @inline func name() String { return self.name; }
+  /// @brief Returns the description of the option.
+  @inline func description() Option<String> { return self.description; }
+  /// @brief Returns the default value of the option.
+  @inline func default_val() Option<String> { return self.default_val; }
+  /// @brief Returns the aliases associated with the option.
+  @inline func aliases() Vector<String> { return self.aliases; }
+  /// @brief Overloads the equality operator for the Opt class.
+  @inline operator func ==(other: Opt) bool 
+    { return self.name == other.name; }
+}

@@ -25,7 +25,7 @@ TransformContext::TransformContext(
   auto coreMod = std::make_shared<ir::Module>("Std", imports->CORE_UUID);
   auto coreModItem = std::make_shared<transform::Item>(coreMod);
   addItem("Std", coreModItem);
-  std::vector<std::string> coreBuiltins = {"Sized", "Numeric", "Callable"};
+  std::vector<std::string> coreBuiltins = {"Sized", "Numeric", "Callable", "EnumType"};
   for (const auto& builtin : coreBuiltins) {
     const auto baseUuid = imports->CORE_UUID + builtin;
     auto transformedType = new types::InterfaceType(builtin, baseUuid, coreMod, {});

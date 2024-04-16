@@ -143,11 +143,13 @@ class extends IntegerImpl {
     }
 
     @inline
+    @explicit
     func to_string(self: bool) String {
       if self { return "1"; }
       return "0";
     }
 
+    @explicit
     func to_string(self: f64) String {
       let mut n = self;
       let mut buffer = ptr::Allocator<?u8>::alloc(16).ptr();
@@ -184,6 +186,7 @@ class extends IntegerImpl {
     }
 
     @inline
+    @explicit
     func to_string<>(self: f32) String {
       return (self as f64).to_string();
     }

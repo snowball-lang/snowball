@@ -1,0 +1,42 @@
+/**
+ * @brief A class representing a universally unique identifier (UUID).
+ * 
+ * This class provides functionality to generate and work with universally unique identifiers (UUIDs). UUIDs are 128-bit 
+ * identifiers that are unique across both space and time, commonly used in various computing systems and applications 
+ * to uniquely identify entities or resources. This class allows for the creation, manipulation, and validation of UUIDs, 
+ * providing a standardized way to work with unique identifiers in software systems.
+ * 
+ * @details The UUID class implements the generation of UUIDs using various methods, including random-based generation 
+ * and time-based generation. It also supports parsing and formatting UUID strings, allowing for interoperability with 
+ * different systems and data formats. Additionally, the class provides methods for comparing UUIDs, extracting 
+ * individual components of a UUID, and validating UUID strings.
+ * 
+ * The implementation of UUID generation typically follows industry-standard algorithms such as RFC 4122, which defines 
+ * the structure and generation rules for UUIDs. This class ensures that generated UUIDs adhere to these standards and 
+ * are universally unique within the context of the system or application.
+ * 
+ * This class may also include methods for converting UUIDs to and from various representations, such as hexadecimal 
+ * strings or byte arrays, to facilitate integration with different programming languages and data formats.
+ */
+public class UUID implements ToString, Debug {
+  /// @brief most significant 64 bits of UUID.
+  let msb: u64;
+  /// @brief least significant 64 bits of UUID.
+  let lsb: u64;
+  /**
+   * @brief Constructs a new UUID object from 2 64-bit integers.
+   * @param[in] msb The most significant 64 bits of the UUID.
+   * @param[in] lsb The least significant 64 bits of the UUID.
+   */
+  public: UUID(msb: u64, lsb: u64)
+    : msb(msb), lsb(lsb) { }
+
+  /**
+   * @brief Show the string representation of the UUID.
+   * @return The string representation of the UUID.
+   */
+  //@inline
+  //func to_string() String {
+  //  let mut buffer = String::with_capacity(36);
+  //}
+}

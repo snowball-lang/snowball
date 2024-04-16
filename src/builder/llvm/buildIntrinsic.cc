@@ -44,6 +44,15 @@ bool LLVMBuilder::buildIntrinsic(ir::Call* call) {
   } else if (name == "sn.debugbreak") {
     assert(args.size() == 0);
     builder->CreateIntrinsic(llvm::Intrinsic::debugtrap, {}, {});
+  } else if (name == "sn.discriminant") {
+    assert(args.size() == 1);
+    auto val = expr(args[0].get());
+    if (val->getType()->isPointerTy()) {
+      this->value = builder->CreateStructGEP(getLLVMType(args[0]->getType()), val, 0); // the analyser should have ensured this is an enum
+      this->value = builder->CreateLoad(builder->getInt32Ty(), this->value);
+    } else {
+      this->value = builder->CreateExtractValue(val, 0);
+    }
   } else Syntax::E<BUG>(call, FMT("unknown intrinsic: %s", name.c_str()));
   return true;
 }

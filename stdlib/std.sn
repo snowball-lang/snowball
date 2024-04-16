@@ -694,7 +694,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
       // We concatenate the string views.
       // StringView::concat() will handle the memory allocation and deallocation, 
       // thus we don't have to worry about it.
-      let result = Self::concat(self.c_str(), other.c_str(), self.length, other.length); 
+      let result = Self::concat(self.bytes(), other.bytes(), self.length, other.length); 
       // We return the concatenated string view.
       return new Self(result, self.length + other.length);
     }
@@ -704,6 +704,7 @@ public class StringView<Char: Sized = u8> implements ToString, Clone<Self> {
      * @return The concatenated string view.
      */
     @inline
+    @explicit
     operator func +(other: Char) Self { 
       // We concatenate the string view with a character.
       // StringView::concat() will handle the memory allocation and deallocation,

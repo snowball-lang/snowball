@@ -22,7 +22,7 @@ public func panic(
 ) {
   io::println("\n\n--------------------");
   io::println("Program panicked with message: " + message)
-  io::println(" at " + _location.file() + "\e[1;37m:" + _location.line() + ":" + _location.column() + "\e[0m");
+  io::println(" at " + _location.file() + "\e[1;37m:" + _location.line().to_string() + ":" + _location.column().to_string() + "\e[0m");
   io::println("\e[1;37mnote:\e[0m run with \e[1;37m`SN_BACKTRACE=1`\e[0m environment variable to get a backtrace\n");
   io::exit(127);
 }
