@@ -1,8 +1,12 @@
 
+class Hello {
+  
+}
+
 public func x<T>(d: T) {
   let a = d;
 }
 
 public func main() {
-  x(2);
+  x(2); 
 }
