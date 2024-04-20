@@ -68,20 +68,27 @@ private:
 
   bool unify(ast::types::Type*& a, ast::types::Type* b,
     const SourceLocation& holder = SourceLocation::dummy(), bool just_check = false);
+
   ast::types::UnknownType* get_unknown_type();
   ast::types::ErrorType* get_error_type();
+
   void define_variable(ast::VarDecl* node, const SourceLocation& loc);
+  std::optional<std::string> get_did_you_mean(const std::string& name);
+
   ast::FnDecl* get_best_match(const std::vector<ast::FnDecl*>& decls, const std::vector<ast::types::Type*>& args, 
     const SourceLocation& loc, bool identified = false);
   ast::FnDecl* deduce_func(ast::FnDecl* node, const std::vector<ast::types::Type*>& args, const SourceLocation& loc);
   ast::FnDecl* propagate_generic(ast::FnDecl* node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
   ast::FnDecl* monorphosize(ast::FnDecl*& node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
+
   TypeCheckerContext& get_generic_context(uint64_t id);
   TypeCheckerContext& create_generic_context(uint64_t id);
   void set_generic_context(const TypeCheckerContext& ctx);
+
   bool type_match(ast::types::Type* a, ast::types::Type* b);
 
-  std::optional<std::string> get_did_you_mean(const std::string& name);
+  void do_global_func(ast::FnDecl* fn_decl);
+  void do_global_class(ast::ClassDecl* class_decl);
 };
 
 }
