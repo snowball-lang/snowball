@@ -117,7 +117,7 @@ public:
     : Stmt(location), GenericNode(generics), AttributedNode(attributes), 
       name(name), vars(vars), funcs(funcs) {}
 
-  ~ClassDecl() = default;
+  virtual ~ClassDecl() = default;
 
   auto& get_name() const { return name; }
   auto& get_vars() { return vars; }

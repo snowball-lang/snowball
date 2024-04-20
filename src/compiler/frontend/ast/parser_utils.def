@@ -1,0 +1,8 @@
+
+struct ParsingClassResult
+{
+  std::vector<ast::VarDecl*> vars;
+  std::vector<ast::FnDecl*> funcs;
+};
+
+ParsingClassResult parse_class_body();

@@ -99,6 +99,10 @@ public:
   void assert_is_func() const;
   void assert_is_var() const;
   void assert_is_type() const;
+
+  static auto empty() {
+    return AttributedNode();
+  }
 };
 
 }

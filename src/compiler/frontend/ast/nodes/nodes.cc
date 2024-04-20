@@ -70,6 +70,23 @@ Node* VarDecl::clone() const {
   return clone;
 }
 
+Node* ClassDecl::clone() const {
+  std::vector<FnDecl*> new_funcs;
+  std::vector<VarDecl*> new_vars;
+  new_funcs.reserve(funcs.size());
+  new_vars.reserve(vars.size());
+  for (auto func : funcs) {
+    new_funcs.push_back((FnDecl*)func->clone());
+  }
+  for (auto var : vars) {
+    new_vars.push_back((VarDecl*)var->clone());
+  }
+  auto clone = Cloneable<ClassDecl>::default_clone(this);
+  clone->funcs = new_funcs;
+  clone->vars = new_vars;
+  return clone;
+}
+
 void FnDecl::create_body_clone() {
   if (get_generics().size() > 0) {
     body_clone = (Block*)body->clone();
@@ -80,9 +97,8 @@ bool FnDecl::is_generic_instanced() const {
   return generic_instanced;
 }
 
-void FnDecl::set_generic_instanced() {
-  generic_instanced = true;
-}
+void FnDecl::set_generic_instanced() { generic_instanced = true; }
+void ClassDecl::set_generic_instanced() { generic_instanced = true; }
 
 }
 }

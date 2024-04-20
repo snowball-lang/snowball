@@ -10,12 +10,12 @@
 namespace snowball {
 namespace frontend {
 
-ast::VarDecl* Parser::parse_var_decl() {
+ast::VarDecl* Parser::parse_var_decl(ast::AttributedNode attrs) {
+  attrs.assert_is_var();
   assert(is(Token::Type::KwordVar));
   next();
-  ast::AttributedNode attribs;
-  attribs.set_mut(is(Token::Type::KwordMutable));
-  if (attribs.get_mut()) next();
+  attrs.set_mut(is(Token::Type::KwordMutable));
+  if (attrs.get_mut()) next();
   auto name = expect(Token::Type::Identifier, "an identifier for the variable name", Token::Type::SymColon)
     .to_string();
   auto pos = loc();
@@ -29,7 +29,7 @@ ast::VarDecl* Parser::parse_var_decl() {
   if (is(Token::Type::OpEq)) {
     expr = parse_expr(false);
   }
-  return pnode<ast::VarDecl>(pos, name, type, expr, attribs);
+  return pnode<ast::VarDecl>(pos, name, type, expr, attrs);
 }
 
 }

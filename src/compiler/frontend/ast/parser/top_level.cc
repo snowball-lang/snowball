@@ -95,6 +95,10 @@ ast::TopLevelAst Parser::parse_top_level(Token::Type terminator) {
         top_level.push_back(parse_fn_decl(global_attrs));
         global_attrs = ast::AttributedNode();
         break;
+      case Token::Type::KwordClass:
+        top_level.push_back(parse_class_decl(global_attrs));
+        global_attrs = ast::AttributedNode();
+        break;
       default:
         err("Unexpected token found while parsing top-level", Error::Info {
           .highlight = fmt::format("Token '{}' is not expected here", current),

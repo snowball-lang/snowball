@@ -89,11 +89,13 @@ private:
   ast::TypeRef parse_type_ref();
   ast::Node* parse_stmt(const Token& peek);
   ast::Expr* parse_expr(bool allow_assign = true);
-  ast::VarDecl* parse_var_decl();
+  ast::VarDecl* parse_var_decl(ast::AttributedNode attrs);
   ast::Block* parse_block(Token::Type terminator = Token::Type::BracketRcurly);
   ast::ClassDecl* parse_class_decl(const ast::AttributedNode& attrs);
 
   void parse_extern_decl(ast::AttributedNode& node);
+
+#include "compiler/frontend/ast/parser_utils.def"
 };
 
 }
