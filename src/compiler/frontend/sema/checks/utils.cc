@@ -86,7 +86,15 @@ ast::types::Type* TypeChecker::get_type(const ast::Expr* expr) {
     return ast::types::ErrorType::create();
   }
   if (item->is_type()) {
-    return item->get_type();
+    std::vector<ast::types::Type*> generics;
+    if (auto id = expr->as<ast::Ident>()) {
+      auto idnt_generics = id->get_generics();
+      generics.reserve(idnt_generics.size());
+      for (auto& gen : idnt_generics) {
+        generics.push_back(get_type(gen));
+      }
+    }
+    return deduce_type(item->get_type(), generics, expr->get_location());
   } else {
     err(expr->get_location(), fmt::format("Expected type but '{}' is not a type", name), 
       Error::Info {
@@ -105,11 +113,60 @@ ast::types::Type* TypeChecker::get_type(const std::string& name) {
   return get_type(NamespacePath({name}));
 }
 
-ast::types::Type* TypeChecker::deduce_type(ast::types::Type* type, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc) {
-  if (generics.size() == 0) {
-    return type;
+ast::types::Type* TypeChecker::deduce_type(ast::types::Type* type, const std::vector<ast::types::Type*>& generics, const SourceLocation& loc) {
+  if (auto as_class = type->as_class()) {
+    auto decl = (ast::ClassDecl*)as_class->get_decl();
+    std::map<std::string, ast::types::Type*> deduced;
+    if (generics.size() > 0) {
+      for (size_t i = 0; i < decl->get_generics().size(); ++i) {
+        auto gen = decl->get_generics().at(i);
+        if (i < generics.size()) {
+          deduced[gen.get_name()] = generics.at(i);
+        } else {
+          err(loc, "Not enough generics provided for class", Error::Info {
+            .highlight = "Not enough generics",
+            .help = "You didn't provide enough generics for this class. Maybe you forgot to specify some?"
+          }, Error::Type::Err, false);
+        }
+      }
+    }
+    if (generics.size() < decl->get_generics().size()) {
+      for (size_t i = generics.size(); i < decl->get_generics().size(); ++i) {
+        // TODO: Check if the generic has a default value
+        // if not, add unknown type
+        deduced[decl->get_generics().at(i).get_name()] = get_unknown_type();
+      }
+    }
+    if (as_class->get_generics().size() < generics.size()) {
+      err(loc, "Too many generics provided for class", Error::Info {
+        .highlight = "Too many generics",
+        .help = "You provided too many generics for this class. Maybe you forgot to specify some?"
+      }, Error::Type::Err, false);
+    }
+    if (deduced.size() > 0) {
+      if (generic_class_registry.find(decl->get_id()) != generic_class_registry.end()) {
+        for (auto& monorph : generic_class_registry[decl->get_id()]) {
+          bool match = true;
+          for (auto [key,_] : monorph.generics) {
+            match = unify(deduced[key], monorph.generics[key], loc, true);
+          }
+          if (match) {
+            return monorph.decl->get_type();
+          }
+        }
+      }
+      auto clone = (ast::ClassDecl*)decl->clone();
+      return monorphosize(clone, deduced, loc)->get_type();
+    }
+  } else {
+    if (generics.size() > 0) {
+      err(loc, "Type has no generics to deduce", Error::Info {
+        .highlight = "No generics to deduce",
+        .help = "This type has no generics to deduce. Maybe you forgot to specify them?"
+      }, Error::Type::Err, false);
+    }
   }
-  sn_assert(false, "not implemented (types with generics!)");
+  return type;
 }
 
 void NameAccumulator::add(const std::string& part, const std::string& name) {

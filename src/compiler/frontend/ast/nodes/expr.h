@@ -31,19 +31,17 @@ public:
   SN_DEFAULT_CLONE()
 };
 
-class TypeRef final : public LocationHolder, public GenericNode<TypeRef> {
+class TypeRef final : public LocationHolder {
   Expr* name;
 public:
-  TypeRef(const SourceLocation& location, Expr* name, 
-    std::optional<GenericNode<TypeRef>> generics = std::nullopt)
-    : LocationHolder(location), GenericNode(generics), name(name) {}
+  TypeRef(const SourceLocation& location, Expr* name)
+    : LocationHolder(location), name(name) {}
   ~TypeRef() = default;
 
   auto get_name() const { return name; }
 
-  static auto create(const SourceLocation& location, Expr* name, 
-    std::optional<GenericNode<TypeRef>> generics = std::nullopt) {
-    return TypeRef(location, name, generics);
+  static auto create(const SourceLocation& location, Expr* name) {
+    return TypeRef(location, name);
   }
 };
 

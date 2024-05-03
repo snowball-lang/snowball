@@ -31,6 +31,15 @@ bool Reporter::handle_errors() {
   return error_count > 0;
 }
 
+size_t Reporter::get_error_count() const {
+  unsigned int error_count = 0;
+  for (auto error : errors) {
+    if (error.get_type() == Error::Type::Err)
+      error_count++;
+  }
+  return error_count;
+}
+
 bool Reporter::has_errors() const {
   return errors.size() > 0;
 }

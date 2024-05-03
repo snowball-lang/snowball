@@ -115,7 +115,8 @@
         "ranges": "cpp",
         "span": "cpp",
         "valarray": "cpp",
-        "expected": "cpp"
+        "expected": "cpp",
+        "cfenv": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "todo-tree.tree.scanMode": "workspace",

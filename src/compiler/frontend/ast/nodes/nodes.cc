@@ -100,6 +100,10 @@ bool FnDecl::is_generic_instanced() const {
 void FnDecl::set_generic_instanced() { generic_instanced = true; }
 void ClassDecl::set_generic_instanced() { generic_instanced = true; }
 
+bool ClassDecl::is_generic_instanced() const {
+  return generic_instanced;
+}
+
 }
 }
 }

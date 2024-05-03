@@ -26,6 +26,8 @@ void TypeChecker::check() {
       allowed_uuids.pop_back();
       universe.remove_scope();
     }
+    if (get_error_count() > 0)
+      throw StopTypeChecking();
     for (auto& module : modules) {
       ctx.current_module = &module;
       universe.add_scope();

@@ -1,6 +1,7 @@
 
-#include "compiler/frontend/ast/types.h"
 #include "compiler/utils/utils.h"
+#include "compiler/frontend/ast/nodes.h"
+#include "compiler/frontend/ast/types.h"
 
 namespace snowball {
 namespace frontend {
@@ -111,6 +112,19 @@ std::string ClassType::get_mangled_name() const {
     name += "EG";
   }
   return fmt::format("{}{}", name.size(), name);
+}
+
+bool ClassType::is_deep_unknown() const {
+  bool unknown = false;
+  if (has_generics()) {
+    for (const auto& generic : get_generics()) {
+      if (generic->is_deep_unknown()) {
+        unknown = true;
+        break;
+      }
+    }
+  }
+  return unknown;
 }
 
 }

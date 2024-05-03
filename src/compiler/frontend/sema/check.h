@@ -30,6 +30,7 @@ class TypeChecker : public ast::AstVisitor, public Reporter {
   std::vector<Module>& modules;
   std::vector<NamespacePath> allowed_uuids;
   std::map<uint64_t, std::vector<MonorphosizedFn>> generic_registry;
+  std::map<uint64_t, std::vector<MonorphosizedClass>> generic_class_registry;
   TypeCheckerContext ctx;
   std::unordered_map<uint64_t, TypeCheckerContext> generic_contexts;
 public:
@@ -80,8 +81,9 @@ private:
   ast::FnDecl* deduce_func(ast::FnDecl* node, const std::vector<ast::types::Type*>& args, const SourceLocation& loc, const std::vector<ast::TypeRef>& generics);
   ast::FnDecl* propagate_generic(ast::FnDecl* node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
   ast::FnDecl* monorphosize(ast::FnDecl*& node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
+  ast::ClassDecl* monorphosize(ast::ClassDecl*& node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
 
-  ast::types::Type* deduce_type(ast::types::Type* type, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
+  ast::types::Type* deduce_type(ast::types::Type* type, const std::vector<ast::types::Type*>& generics, const SourceLocation& loc);
 
   TypeCheckerContext& get_generic_context(uint64_t id);
   TypeCheckerContext& create_generic_context(uint64_t id);

@@ -27,6 +27,7 @@ void TypeChecker::visit(ast::ClassDecl* node) {
     var->accept(this);
   }
   universe.remove_scope();
+  ctx.current_class = backup;
 }
 
 }

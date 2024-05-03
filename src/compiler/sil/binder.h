@@ -23,6 +23,7 @@ public:
 
 struct BinderCtx {
   std::optional<ast::FnDecl*> ast_current_func = std::nullopt;
+  std::optional<ast::ClassDecl*> ast_current_class = std::nullopt;
 };
 
 /**
@@ -43,7 +44,6 @@ class Binder : public ast::AstVisitor, public Reporter {
 
   BinderCtx ctx;
   Inst* value = nullptr; // The current value of the binder
-  bool generate_bodies = false;
 public:
   Binder(const Ctx& ctx, std::vector<frontend::Module>& modules, sema::Universe<sema::TypeCheckItem>& universe);
   ~Binder() = default;
@@ -53,6 +53,7 @@ public:
 
   auto& get_modules() { return sil_modules; }
   ast::types::Type* get_type(ast::Node* node);
+  ast::types::Type* check_type(ast::types::Type*& type, const SourceLocation& loc);
   auto& get_insts() { return var_ids; }
 
   void err(const LocationHolder& holder, const std::string& message, 

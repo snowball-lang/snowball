@@ -14,6 +14,8 @@
 namespace snowball {
 namespace frontend {
 namespace ast {
+class ClassDecl;
+
 namespace types {
 
 class IntType;
@@ -41,6 +43,7 @@ public:
 #undef CHILD
   virtual std::string get_printable_name() const = 0;
   virtual std::string get_mangled_name() const = 0;
+  virtual bool is_deep_unknown() const { return false; }
 };
 
 class IntType final : public Type {
@@ -169,6 +172,7 @@ public:
 
   UnknownType* as_unknown() { return this; }
   bool is_unknown() const { return true; }
+  bool is_deep_unknown() const override { return true; }
 
   std::string get_printable_name() const override;
   std::string get_mangled_name() const override;
@@ -191,21 +195,24 @@ public:
 class ClassType final : public Type, public GenericNode<Type*>, public Identified,
   public LocationHolder {
   NamespacePath path;
+  ast::ClassDecl* decl;
 public:
-  ClassType(const NamespacePath& path, const std::vector<Type*>& generics, const SourceLocation& loc)
-    : GenericNode<Type*>(generics), LocationHolder(loc), path(path) {}
+  ClassType(ast::ClassDecl* decl, const NamespacePath& path, const std::vector<Type*>& generics, const SourceLocation& loc)
+    : GenericNode<Type*>(generics), LocationHolder(loc), decl(decl), path(path) {}
 
   ~ClassType() = default;
 
   auto get_name() const { return path.get_last(); }
   auto get_path() const { return path; }
+  auto get_decl() const { return decl; }
 
-  static auto create(const NamespacePath& path, const std::vector<Type*>& generics, const SourceLocation& loc) {
-    return new ClassType(path, generics, loc);
+  static auto create(ast::ClassDecl* decl, const NamespacePath& path, const std::vector<Type*>& generics, const SourceLocation& loc) {
+    return new ClassType(decl, path, generics, loc);
   }
 
   ClassType* as_class() override { return this; }
   bool is_class() const override { return true; }
+  bool is_deep_unknown() const override; // It's unknown if any of the generics are unknown
 
   std::string get_printable_name() const override;
   std::string get_mangled_name() const override;

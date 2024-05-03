@@ -11,19 +11,16 @@ Binder::Binder(const Ctx& ctx, std::vector<frontend::Module>& modules, sema::Uni
 
 void Binder::bind(const std::map<uint64_t, std::vector<sema::MonorphosizedFn>>& generic_registry) {
   try {
-    for (char i = 1; i >= 0; i--) {
-      for (auto& [_, reg] : generic_registry) {
-        for (auto& func : reg) func.decl->accept(this);
+    for (auto& [_, reg] : generic_registry) {
+      for (auto& func : reg) func.decl->accept(this);
+    }
+    for (size_t j = 0; j < ast_modules.size(); j++) {
+      auto module = ast_modules[j];
+      current_module = std::make_shared<sil::Module>(module.get_path());
+      for (size_t i = 0; i < module.get_ast().size(); i++) {
+        module.get_ast()[i]->accept(this);
       }
-      for (auto& module : ast_modules) {
-        current_module = std::make_shared<sil::Module>(module.get_path());
-        for (auto& item : module.get_ast()) {
-          item->accept(this);
-        }
-        if (generate_bodies)
-          sil_modules.push_back(current_module);
-      }
-      generate_bodies = (bool)i;
+      sil_modules.push_back(current_module);
     }
   } catch (const StopBindingIR&) {
     // Do nothing
@@ -35,26 +32,37 @@ Inst* Binder::accept(ast::Node* node) {
   return value;
 }
 
-ast::types::Type* Binder::get_type(ast::Node* node) {
-  auto type = node->get_type();
+#define THROW_ERROR(t) \
+  err(loc, "Type should be known at this point", Error::Info { \
+    .highlight = fmt::format("Type '{}' should be known at this point", type->get_printable_name()), \
+    .help = "Maybe you forgot to set a type to a variable or forgot a generic parameter?", \
+    .note = "The type '_' is used to represent an unknown type" \
+  }, Error::Type::Err, t); 
+
+ast::types::Type* Binder::check_type(ast::types::Type*& type, const SourceLocation& loc) {
   if (type->is_unknown()) {
     auto knwon = constraints.at(type->as_unknown()->get_id());
     if (knwon->is_unknown()) {
-      err(node->get_location(), "Type should be known at this point", Error::Info {
-        .highlight = fmt::format("Type '{}' should be known at this point", type->get_printable_name()),
-        .help = "Maybe you forgot to set a type to a variable or forgot a generic parameter?",
-        .note = "The type '_' is used to represent an unknown type"
-      });
+      THROW_ERROR(false)
     }
     type = knwon;
+  } else if (type->is_deep_unknown()) {
+    THROW_ERROR(true) // deep unknown is a fatal error
   }
   assert(!type->is_error());
   return type;
 }
 
+#undef THROW_ERROR
+
+ast::types::Type* Binder::get_type(ast::Node* node) {
+  return check_type(node->get_type(), node->get_location());
+}
+
 void Binder::err(const LocationHolder& holder, const std::string& message, 
     const Error::Info& info, Error::Type type, bool fatal) {
-  if (ctx.ast_current_func && ctx.ast_current_func.value()->is_generic_instanced()) {
+  if ((ctx.ast_current_func && ctx.ast_current_func.value()->is_generic_instanced()) ||
+      (ctx.ast_current_class && ctx.ast_current_class.value()->is_generic_instanced())) {
     return; // skip duplicated errors from generic insatnce intantiations
   }
   add_error(E(message, holder.get_location(), info, type));

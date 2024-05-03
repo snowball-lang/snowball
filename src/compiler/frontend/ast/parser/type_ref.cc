@@ -15,10 +15,9 @@ ast::TypeRef Parser::parse_type_ref() {
     case Token::Type::Identifier: {
       auto name = node<ast::Ident>(current.to_string());
       next();
-      std::optional<ast::GenericNode<ast::TypeRef>> generics = std::nullopt;
       if (is(Token::Type::OpLt)) 
-        generics = parse_generics_expr();
-      return ast::TypeRef::create(name->get_location(), name, generics);
+        name->mutate_generics(parse_generics_expr());
+      return ast::TypeRef::create(name->get_location(), name);
     }
     default: {
       err("Unexpected token found while parsing type reference", Error::Info {

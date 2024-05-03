@@ -75,6 +75,11 @@ struct MonorphosizedFn final {
   std::map<std::string, ast::types::Type*> generics;
 };
 
+struct MonorphosizedClass final {
+  ast::ClassDecl* decl;
+  std::map<std::string, ast::types::Type*> generics;
+};
+
 struct TypeCheckerContext final {
   std::vector<NamespacePath> allowed_uuids;
   Module* current_module = nullptr;

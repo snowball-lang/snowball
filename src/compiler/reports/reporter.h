@@ -13,6 +13,9 @@ public:
   bool handle_errors();
   bool has_errors() const;
 
+  // not counting warnings
+  size_t get_error_count() const;
+
   void add_error(const Error& error);
 };
 
