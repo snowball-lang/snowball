@@ -36,7 +36,7 @@ void TypeChecker::visit(ast::Ident* node) {
     return;
   }
   auto fn_decls = item.value().get_funcs();
-  auto fn = get_best_match(fn_decls, {}, node->get_location(), true);
+  auto fn = get_best_match(fn_decls, {}, node->get_location(), node->get_generics(), true);
   // todo: set function as used
   node->set_var_id(fn->get_id());
   unify(node->get_type(), fn->get_type(), node->get_location());

@@ -51,7 +51,23 @@ void TypeChecker::do_global_func(ast::FnDecl* fn_decl) {
 }
 
 void TypeChecker::do_global_class(ast::ClassDecl* class_decl) {
-  sn_assert(false, "Not implemented");
+  // We only define the class here, we don't check the methods
+  // class methods are checked in the second pass
+  universe.add_scope();
+  auto path = get_namespace_path(class_decl->get_name());
+  std::vector<ast::types::Type*> generics;
+  for (auto& generic : class_decl->get_generics()) {
+    auto generic_ty = ast::types::GenericType::create(generic.get_name());
+    universe.add_item(generic.get_name(), generic_ty);
+    generics.push_back(generic_ty);
+  }
+  auto class_type = ast::types::ClassType::create(path, generics, class_decl->get_location());
+  unify(class_decl->get_type(), class_type, class_decl->get_location());
+  universe.add_type(path, class_type);
+  if (class_decl->get_generics().size() > 0) {
+    create_generic_context(class_decl->get_id());
+  }
+  universe.remove_scope();
 }
 
 }

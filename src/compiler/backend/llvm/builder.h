@@ -49,9 +49,14 @@ public:
 };
 
 class LLVMBuilder : public sil::SilVisitor {
+  struct BuilderCache {
+    std::map<uint64_t, llvm::StructType*> struct_map;
+  };
+
   std::unique_ptr<llvm::LLVMContext> llvm_ctx;
   std::unique_ptr<llvm::IRBuilder<>> builder;
   LLVMBuilderContext builder_ctx;
+  BuilderCache builder_cache;
 
   llvm::Value* value = nullptr; // The current value being built
 

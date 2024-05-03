@@ -41,7 +41,7 @@ void TypeChecker::visit(ast::Call* node) {
       callee_type = var->get_type();
     } else {
       auto fn_decls = item.value().get_funcs();
-      auto fn = get_best_match(fn_decls, arg_types, node->get_location());
+      auto fn = get_best_match(fn_decls, arg_types, node->get_location(), ident->get_generics());
       ident->set_var_id(fn->get_id());
       callee_type = fn->get_type();
     }

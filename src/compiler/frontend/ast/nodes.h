@@ -31,7 +31,9 @@ public:
   template <typename T>
   [[nodiscard]] auto as() { return dynamic_cast<T*>(this); }
   template <typename T>
-  bool is() { return as<T>() != nullptr; }
+  [[nodiscard]] auto as() const { return dynamic_cast<const T*>(this); }
+  template <typename T>
+  bool is() const { return as<T>() != nullptr; }
 };
 
 class Stmt : public Node {

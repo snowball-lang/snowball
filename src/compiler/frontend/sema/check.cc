@@ -105,6 +105,7 @@ TypeCheckerContext& TypeChecker::create_generic_context(uint64_t id) {
     .allowed_uuids = this->ctx.allowed_uuids,
     .current_module = this->ctx.current_module,
     .current_function = this->ctx.current_function,
+    .current_class = this->ctx.current_class,
     .scopes = universe.get_scopes()
   };
   generic_contexts[id] = ctx;

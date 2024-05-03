@@ -9,7 +9,7 @@ namespace sema {
 using namespace utils;
 
 ast::FnDecl* TypeChecker::get_best_match(const std::vector<ast::FnDecl*>& decls, const std::vector<ast::types::Type*>& args, 
-    const SourceLocation& loc, bool identified) {
+    const SourceLocation& loc, const std::vector<ast::TypeRef>& generics, bool identified) {
   std::vector<ast::FnDecl*> matches;
   if (decls.size() > 1 && identified) {
     err(loc, "Expected arguments provided to function call!", Error::Info {
@@ -51,7 +51,7 @@ ast::FnDecl* TypeChecker::get_best_match(const std::vector<ast::FnDecl*>& decls,
       if (match->get_generics().size() == 0) {
         return match;
       }
-      return deduce_func(match, args, loc);
+      return deduce_func(match, args, loc, generics);
     }
     default:
       err(loc, fmt::format("Ambiguous call to function '{}'. Multiple functions match the call", decls.at(0)->get_name()), 
@@ -64,11 +64,18 @@ ast::FnDecl* TypeChecker::get_best_match(const std::vector<ast::FnDecl*>& decls,
   }
 }
 
-ast::FnDecl* TypeChecker::deduce_func(ast::FnDecl* node, const std::vector<ast::types::Type*>& args, const SourceLocation& loc) {
+ast::FnDecl* TypeChecker::deduce_func(ast::FnDecl* node, const std::vector<ast::types::Type*>& args, 
+                                    const SourceLocation& loc, const std::vector<ast::TypeRef>& generics) {
   if (node->get_generics().size() == 0) {
     return node;
   }
   std::map<std::string, ast::types::Type*> deduced;
+  for (size_t i = 0; i < generics.size(); ++i) {
+    auto gen = node->get_generics().at(i);
+    auto arg = get_type(generics.at(i));
+    deduced[gen.get_name()] = arg;
+  }
+
   for (size_t i = 0; i < args.size(); ++i) {
     auto param = node->get_params().at(i);
     auto arg = args.at(i);

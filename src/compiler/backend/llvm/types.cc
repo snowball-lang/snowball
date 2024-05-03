@@ -18,6 +18,20 @@ llvm::Type* LLVMBuilder::get_type(types::Type* type) {
     return llvm::Type::getVoidTy(*llvm_ctx);
   } else if (type->is_func()) {
     return get_func_type(type->as_func())->getPointerTo();
+  } else if (type->is_class()) {
+    auto class_type = type->as_class();
+    if (builder_cache.struct_map.count(class_type->get_id())) {
+      return builder_cache.struct_map[class_type->get_id()];
+    }
+    // TODO: Create also the virtual table
+    auto struct_type = llvm::StructType::create(*llvm_ctx, type->get_mangled_name());
+    builder_cache.struct_map[class_type->get_id()] = struct_type;
+    std::vector<llvm::Type*> members;
+    //for (auto& member : class_type->get_members()) {
+    //  members.push_back(get_type(member));
+    //}
+    struct_type->setBody(members);
+    return struct_type;
   } else {
     llvm_unreachable("Unknown type");
   }
@@ -50,6 +64,18 @@ llvm::DIType* LLVMBuilder::get_ditype(types::Type* type) {
     }
     auto routine = dbg.builder->createSubroutineType(dbg.builder->getOrCreateTypeArray(args));
     return dbg.builder->createPointerType(routine, 64);
+  } else if (auto class_ty = type->as_class()) {
+    // TODO: Add virtual table
+    auto struct_ty = get_type(type);
+    auto layout = builder_ctx.module->getDataLayout().getStructLayout(llvm::cast<llvm::StructType>(struct_ty));
+    std::vector<llvm::Metadata*> members;
+    auto file = dbg.get_file(class_ty->get_location().file->get_path());
+    // TODO: Add members
+    //for (unsigned i = 0; i < struct_ty->getStructNumElements(); i++) {
+    //  auto member = dbg.builder->createMemberType("", file, 0, layout->getElementOffsetInBits(i), get_ditype(class_ty->get_members()[i]));
+    //  members.push_back(member);
+    //}
+    return dbg.builder->createStructType(dbg.scope, type->get_printable_name(), file, 0, layout->getSizeInBits(), 0 /* TODO: Aligment! */, llvm::DINode::DIFlags::FlagZero, nullptr, dbg.builder->getOrCreateArray(members));
   } else {
     llvm_unreachable("Unknown type");
   }

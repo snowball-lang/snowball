@@ -79,6 +79,7 @@ struct TypeCheckerContext final {
   std::vector<NamespacePath> allowed_uuids;
   Module* current_module = nullptr;
   const ast::FnDecl* current_function = nullptr;
+  const ast::ClassDecl* current_class = nullptr;
   std::vector<Scope<TypeCheckItem>> scopes;
 
   ~TypeCheckerContext() = default;

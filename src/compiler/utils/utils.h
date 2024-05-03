@@ -14,10 +14,14 @@
 
 #include "compiler/utils/logger.h"
 
+#ifndef sn_abort
+#define sn_abort() abort()
+#endif
+
 #ifndef NDEBUG
 #define sn_assert(expr, ...) if (!(expr)) { \
   snowball::utils::Logger::fatal(F(__VA_ARGS__)); \
-  abort(); \
+  sn_abort(); \
 }
 
 #define DBG(x) fmt::print("DBG: "#x" = {}\n", x);

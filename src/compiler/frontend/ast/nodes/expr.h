@@ -9,7 +9,7 @@ namespace snowball {
 namespace frontend {
 namespace ast {
 
-class Ident final : public Self<Ident>, public Expr, public GenericNode<> {
+class Ident final : public Self<Ident>, public Expr, public GenericNode<ast::TypeRef> {
   std::string name;
   uint64_t var_id = 0;
 public:
@@ -39,7 +39,7 @@ public:
     : LocationHolder(location), GenericNode(generics), name(name) {}
   ~TypeRef() = default;
 
-  auto get_name() { return name; }
+  auto get_name() const { return name; }
 
   static auto create(const SourceLocation& location, Expr* name, 
     std::optional<GenericNode<TypeRef>> generics = std::nullopt) {

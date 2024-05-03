@@ -39,9 +39,7 @@ public:
   ~GenericNode() = default;
   void clear_generics() { generics.clear(); } // only use if you know what you're doing
   auto get_generics() const { return generics; }
-  static auto create(const std::vector<T>& generics) {
-    return GenericNode(generics);
-  }
+  bool has_generics() const { return !generics.empty(); }
 };
 
 class AttributedNode {

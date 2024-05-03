@@ -6,8 +6,11 @@ namespace frontend {
 
 std::string NamespacePath::get_path_string() const {
   std::string path_str;
-  for (const auto& part : path) {
-    path_str += part + "::";
+  for (size_t i = 0; i < path.size(); ++i) {
+    path_str += path[i];
+    if (i != path.size() - 1) {
+      path_str += "::";
+    }
   }
   return path_str;
 }

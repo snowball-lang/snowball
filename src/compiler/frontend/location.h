@@ -45,6 +45,7 @@ public:
   explicit NamespacePath(const std::string& path) : path({path}) {}
   std::vector<std::string> get_path() const { return path; }
   std::string get_path_string() const;
+  std::string get_last() const { return path.back(); }
   bool is_empty() const { return path.empty(); }
   auto size() const { return path.size(); }
   ~NamespacePath() = default;
@@ -63,6 +64,11 @@ public:
 
   static NamespacePath dummy() { return NamespacePath(std::vector<std::string>{}); }
 };
+
+// for "fmt::format"
+static auto format_as(const NamespacePath& path) -> std::string {
+  return path.get_path_string();
+}
 
 }
 }

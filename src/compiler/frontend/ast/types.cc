@@ -84,6 +84,35 @@ std::string VoidType::get_mangled_name() const {
   return "4void";
 }
 
+std::string ClassType::get_printable_name() const {
+  std::string generic_string = "";
+  if (has_generics()) {
+    generic_string = "<";
+    const auto& generics = get_generics();
+    for (size_t i = 0; i < generics.size(); i++) {
+      generic_string += generics[i]->get_printable_name();
+      if (i != generics.size() - 1) {
+        generic_string += ", ";
+      }
+    }
+    generic_string += ">";
+  }
+  return fmt::format("{}{}", path, generic_string);
+}
+
+std::string ClassType::get_mangled_name() const {
+  std::string name = "cTy";
+  name += path.get_path_string();
+  if (has_generics()) {
+    name += "G";  
+    for (const auto& generic : get_generics()) {
+      name += generic->get_mangled_name();
+    }
+    name += "EG";
+  }
+  return fmt::format("{}{}", name.size(), name);
+}
+
 }
 }
 }

@@ -57,14 +57,14 @@ private:
   void generate_global_scope(ast::TopLevelAst& ast);
   NamespacePath get_namespace_path(const std::string& name);
   
-  GetResult get_item(ast::Expr* expr, NameAccumulator acc = NameAccumulator());
+  GetResult get_item(const ast::Expr* expr, NameAccumulator acc = NameAccumulator());
   GetResult get_item(const NamespacePath& path);
   GetResult get_item(const std::string& name);
 
   ast::types::Type* get_type(const NamespacePath& path);
-  ast::types::Type* get_type(ast::Expr* expr);
+  ast::types::Type* get_type(const ast::Expr* expr);
   ast::types::Type* get_type(const std::string& name);
-  ast::types::Type* get_type(ast::TypeRef& tr);
+  ast::types::Type* get_type(const ast::TypeRef& tr);
 
   bool unify(ast::types::Type*& a, ast::types::Type* b,
     const SourceLocation& holder = SourceLocation::dummy(), bool just_check = false);
@@ -76,10 +76,12 @@ private:
   std::optional<std::string> get_did_you_mean(const std::string& name);
 
   ast::FnDecl* get_best_match(const std::vector<ast::FnDecl*>& decls, const std::vector<ast::types::Type*>& args, 
-    const SourceLocation& loc, bool identified = false);
-  ast::FnDecl* deduce_func(ast::FnDecl* node, const std::vector<ast::types::Type*>& args, const SourceLocation& loc);
+    const SourceLocation& loc, const std::vector<ast::TypeRef>& generics, bool identified = false);
+  ast::FnDecl* deduce_func(ast::FnDecl* node, const std::vector<ast::types::Type*>& args, const SourceLocation& loc, const std::vector<ast::TypeRef>& generics);
   ast::FnDecl* propagate_generic(ast::FnDecl* node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
   ast::FnDecl* monorphosize(ast::FnDecl*& node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
+
+  ast::types::Type* deduce_type(ast::types::Type* type, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
 
   TypeCheckerContext& get_generic_context(uint64_t id);
   TypeCheckerContext& create_generic_context(uint64_t id);

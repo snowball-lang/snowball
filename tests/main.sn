@@ -1,12 +1,14 @@
 
-class Hello {
+class Hello<T> {
   
 }
 
-public func x<T>(d: T) {
+
+public func v<T>(d: i32) {
   let a = d;
 }
 
-public func main() {
-  x(2); 
+public func x(d: Hello) {
+  let a = d;
+  v::<i32<i32>>(12);
 }

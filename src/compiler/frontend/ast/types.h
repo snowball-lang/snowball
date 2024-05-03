@@ -7,6 +7,10 @@
 #include <cstddef>
 #include <cassert>
 
+#include "compiler/utils/id.h"
+#include "compiler/frontend/location.h"
+#include "compiler/frontend/ast/nodes/other.h"
+
 namespace snowball {
 namespace frontend {
 namespace ast {
@@ -19,6 +23,7 @@ class GenericType;
 class ErrorType;
 class UnknownType;
 class VoidType;
+class ClassType;
 
 class Type {
 public:
@@ -32,6 +37,7 @@ public:
   CHILD(error, ErrorType)
   CHILD(unknown, UnknownType)
   CHILD(void, VoidType)
+  CHILD(class, ClassType)
 #undef CHILD
   virtual std::string get_printable_name() const = 0;
   virtual std::string get_mangled_name() const = 0;
@@ -177,6 +183,29 @@ public:
 
   virtual VoidType* as_void() { return this; }
   virtual bool is_void() const { return true; }
+
+  std::string get_printable_name() const override;
+  std::string get_mangled_name() const override;
+};
+
+class ClassType final : public Type, public GenericNode<Type*>, public Identified,
+  public LocationHolder {
+  NamespacePath path;
+public:
+  ClassType(const NamespacePath& path, const std::vector<Type*>& generics, const SourceLocation& loc)
+    : GenericNode<Type*>(generics), LocationHolder(loc), path(path) {}
+
+  ~ClassType() = default;
+
+  auto get_name() const { return path.get_last(); }
+  auto get_path() const { return path; }
+
+  static auto create(const NamespacePath& path, const std::vector<Type*>& generics, const SourceLocation& loc) {
+    return new ClassType(path, generics, loc);
+  }
+
+  ClassType* as_class() override { return this; }
+  bool is_class() const override { return true; }
 
   std::string get_printable_name() const override;
   std::string get_mangled_name() const override;

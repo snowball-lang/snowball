@@ -10,8 +10,8 @@ namespace snowball {
 namespace frontend {
 namespace sema {
 
-TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator acc) {
-  if (auto id = expr->as<ast::Ident>()) {
+TypeChecker::GetResult TypeChecker::get_item(const ast::Expr* expr, NameAccumulator acc) {
+  if (const auto id = expr->as<ast::Ident>()) {
     auto path = acc.get_path(id->get_name());
     acc.add(id->get_name());
     if (auto item = universe.get_item(id->get_name()); 
@@ -21,8 +21,11 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
       return {TypeCheckItem::create_type(type.value()), acc.get_name()};
     } else {
       for (auto& uuid : allowed_uuids) {
-        if (auto fns = universe.get_fn_decl(uuid + path); fns.size() > 0) {
+        auto new_path = uuid + path;
+        if (auto fns = universe.get_fn_decl(new_path); fns.size() > 0) {
           return {TypeCheckItem::create_fn_decl({fns}), acc.get_name()};
+        } else if (auto type = universe.get_type(new_path)) {
+          return {TypeCheckItem::create_type(type.value()), acc.get_name()};
         }
       }
       return {std::nullopt, acc.get_name()};
@@ -70,7 +73,7 @@ ast::types::Type* TypeChecker::get_type(const NamespacePath& path) {
   return get_type(expr);
 }
 
-ast::types::Type* TypeChecker::get_type(ast::Expr* expr) {
+ast::types::Type* TypeChecker::get_type(const ast::Expr* expr) {
   auto [item, name] = get_item(expr);
   if (!item.has_value()) {
     auto dym = get_did_you_mean(name);
@@ -94,12 +97,19 @@ ast::types::Type* TypeChecker::get_type(ast::Expr* expr) {
   }
 }
 
-ast::types::Type* TypeChecker::get_type(ast::TypeRef& tr) {
+ast::types::Type* TypeChecker::get_type(const ast::TypeRef& tr) {
   return get_type(tr.get_name());
 }
 
 ast::types::Type* TypeChecker::get_type(const std::string& name) {
   return get_type(NamespacePath({name}));
+}
+
+ast::types::Type* TypeChecker::deduce_type(ast::types::Type* type, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc) {
+  if (generics.size() == 0) {
+    return type;
+  }
+  sn_assert(false, "not implemented (types with generics!)");
 }
 
 void NameAccumulator::add(const std::string& part, const std::string& name) {

@@ -18,9 +18,20 @@ ast::Expr* Parser::parse_expr(bool allow_assign) {
   while (true) {
     next();
     switch (current.type) {
-      case Token::Type::Identifier:
-        expr = node<ast::Ident>(current.to_string());
+      case Token::Type::Identifier: {
+        auto name = current.to_string();
+        std::optional<ast::GenericNode<ast::TypeRef>> generics;
+        if (is(Token::Type::SymColcol, peek())) {
+          next();
+          if (is(Token::Type::OpLt, peek())) {
+            next();
+            generics = parse_generics_expr();
+          }
+          prev();
+        }
+        expr = node<ast::Ident>(name, generics);
         break;
+      }
       case Token::Type::ValueNumber:
         expr = node<ast::Number>(current.to_string());
         break;

@@ -25,7 +25,6 @@ void TypeChecker::visit(ast::Number* node) {
           }
           break;
         }
-        default: assert(false);
       }
     }
   }
