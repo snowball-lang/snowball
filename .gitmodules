@@ -1,0 +1,3 @@
+[submodule "src/app/vendor/confy"]
+	path = src/app/vendor/confy
+	url = https://github.com/mauro-balades/Confy
