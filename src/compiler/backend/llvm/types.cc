@@ -24,16 +24,17 @@ llvm::Type* LLVMBuilder::get_type(types::Type* type) {
       return builder_cache.struct_map[class_type->get_id()];
     }
     // TODO: Create also the virtual table
+    auto decl = class_type->get_decl();
     auto struct_type = llvm::StructType::create(*llvm_ctx, type->get_mangled_name());
     builder_cache.struct_map[class_type->get_id()] = struct_type;
     std::vector<llvm::Type*> members;
-    //for (auto& member : class_type->get_members()) {
-    //  members.push_back(get_type(member));
-    //}
+    for (auto& member : decl->get_vars()) {
+      members.push_back(get_type(member->get_type()));
+    }
     struct_type->setBody(members);
     return struct_type;
   } else {
-    llvm_unreachable("Unknown type");
+    llvm_unreachable(("Unsuported llvm type: " + type->get_printable_name()).c_str());
   }
 }
 
@@ -71,10 +72,14 @@ llvm::DIType* LLVMBuilder::get_ditype(types::Type* type) {
     std::vector<llvm::Metadata*> members;
     auto file = dbg.get_file(class_ty->get_location().file->get_path());
     // TODO: Add members
-    //for (unsigned i = 0; i < struct_ty->getStructNumElements(); i++) {
-    //  auto member = dbg.builder->createMemberType("", file, 0, layout->getElementOffsetInBits(i), get_ditype(class_ty->get_members()[i]));
-    //  members.push_back(member);
-    //}
+    auto decl = class_ty->get_decl();
+    for (size_t i = 0; i < decl->get_vars().size(); i++) {
+      auto var = decl->get_vars()[i];
+      auto var_ty = get_ditype(var->get_type());
+      auto loc = var->get_location();
+      // TODO: Alignment and offset
+      members.push_back(dbg.builder->createMemberType(dbg.scope, var->get_name(), file, loc.line, layout->getElementOffsetInBits(i),0,0, llvm::DINode::DIFlags::FlagZero, var_ty));
+    }
     return dbg.builder->createStructType(dbg.scope, type->get_printable_name(), file, 0, layout->getSizeInBits(), 0 /* TODO: Aligment! */, llvm::DINode::DIFlags::FlagZero, nullptr, dbg.builder->getOrCreateArray(members));
   } else {
     llvm_unreachable("Unknown type");

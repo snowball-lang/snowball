@@ -55,7 +55,6 @@ public:
     : Stmt(location), GenericNode(generics), AttributedNode(attributes), name(name), params(params), 
       return_type(return_type), body(body) { create_body_clone(); }
   ~FnDecl() = default;
-
   auto& get_name() const { return name; }
   auto& get_params() { return params; }
   auto& get_return_type() { return return_type; }
@@ -64,6 +63,7 @@ public:
   Node* clone() const override;
   bool is_generic_instanced() const;
   void set_generic_instanced();
+  bool should_generate() const;
   static auto create(const SourceLocation& location, const std::string& name, 
       const std::vector<VarDecl*>& params, TypeRef return_type, Block* body,
       std::optional<GenericNode> generics = std::nullopt, 

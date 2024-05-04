@@ -14,16 +14,19 @@ void Binder::visit(ast::FnDecl* node) {
   auto sil_params = std::vector<std::pair<uint64_t, std::string>>();
   for (auto param : params) {
     sil_params.push_back({param->get_id(), param->get_name()});
-    accept(param);
   }
   auto func = FuncDecl::create(node->get_location(), type, name, sil_params, current_module, *node, std::nullopt, node->get_id());
   auto backup = ctx.ast_current_func;
   ctx.ast_current_func = node;
+  for (auto param : params) {
+    accept(param);
+  }
   var_ids.insert({node->get_id(), func});  
   auto body = accept(node->get_body());
   assert(body->is<Block>());
   func->set_body(body->as<Block>());
-  if (node->get_generics().size() == 0) {
+  std::string arg_string;
+  if (node->should_generate()) {
     current_module->add_fn_decl(func);
   }
   ctx.ast_current_func = backup;

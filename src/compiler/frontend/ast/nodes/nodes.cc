@@ -46,6 +46,7 @@ Node* FnDecl::clone() const {
   auto clone = Cloneable<FnDecl>::default_clone(this);
   clone->params = new_params;
   clone->body = (Block*)body_clone->clone();
+  clone->id = id;
   return clone;
 }
 
@@ -84,6 +85,7 @@ Node* ClassDecl::clone() const {
   auto clone = Cloneable<ClassDecl>::default_clone(this);
   clone->funcs = new_funcs;
   clone->vars = new_vars;
+  clone->id = id;
   return clone;
 }
 
@@ -95,6 +97,17 @@ void FnDecl::create_body_clone() {
 
 bool FnDecl::is_generic_instanced() const {
   return generic_instanced;
+}
+
+bool FnDecl::should_generate() const {
+  bool has_generic_params = false;
+  for (const auto& param : params) {
+    if (param->get_type()->is_deep_generic()) {
+      has_generic_params = true;
+      break;
+    }
+  }
+  return get_generics().size() == 0 && !has_generic_params;
 }
 
 void FnDecl::set_generic_instanced() { generic_instanced = true; }

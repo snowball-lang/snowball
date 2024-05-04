@@ -44,6 +44,7 @@ public:
   virtual std::string get_printable_name() const = 0;
   virtual std::string get_mangled_name() const = 0;
   virtual bool is_deep_unknown() const { return false; }
+  virtual bool is_deep_generic() const { return false; }
 };
 
 class IntType final : public Type {
@@ -137,6 +138,7 @@ public:
 
   GenericType* as_generic() override { return this; }
   bool is_generic() const override { return true; }
+  bool is_deep_generic() const override { return true; }
 
   std::string get_printable_name() const override;
   std::string get_mangled_name() const override;
@@ -213,6 +215,7 @@ public:
   ClassType* as_class() override { return this; }
   bool is_class() const override { return true; }
   bool is_deep_unknown() const override; // It's unknown if any of the generics are unknown
+  bool is_deep_generic() const override; // It's generic if any of the generics are generic
 
   std::string get_printable_name() const override;
   std::string get_mangled_name() const override;

@@ -79,14 +79,14 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::map<uint64_t, sil::Inst*>& inst_ma
 
 void LLVMBuilder::build(std::vector<std::shared_ptr<sil::Module>>& modules) {
   for (auto& module : modules) {
-    for (auto& func : module->get_fn_decls()) {
-      build(func);
+    for (auto& fn : module->get_fn_decls()) {
+      build(fn);
     }
   }
   just_declare = false;
   for (auto& module : modules) {
-    for (auto& func : module->get_fn_decls()) {
-      build(func);
+    for (auto& fn : module->get_fn_decls()) {
+      build(fn);
     }
   }
 }

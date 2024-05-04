@@ -1,8 +1,16 @@
 
 class Hello<T> {
-  
+  let a: i32 = 24;
 }
 
-public func x(d: Hello<i32>) {
-  let a = d;
+public func x<T>(a: T) {
+}
+
+public func y<D>(a: D) {
+  x(a);
+}
+
+public func z(a: i32) {
+  y(42);
+  y(42);
 }

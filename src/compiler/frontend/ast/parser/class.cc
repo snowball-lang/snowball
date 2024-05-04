@@ -28,10 +28,7 @@ Parser::ParsingClassResult Parser::parse_class_body() {
   ParsingClassResult result;
   ast::AttributedNode attrs;
   expect(Token::Type::BracketLcurly, "an opening curly brace after the return type");
-  if (is(Token::Type::BracketRcurly, peek())) {
-    next();
-    return result;
-  }
+  next();
   while (!is(Token::Type::BracketRcurly)) {
     switch (current.type) {
       case Token::Type::KwordPublic:
@@ -80,6 +77,7 @@ Parser::ParsingClassResult Parser::parse_class_body() {
       case Token::Type::KwordVar: {
         auto var = parse_var_decl(attrs);
         result.vars.push_back(var);
+        consume(Token::Type::SymSemiColon, "a semicolon after the variable declaration");
         break;
       }
       default:

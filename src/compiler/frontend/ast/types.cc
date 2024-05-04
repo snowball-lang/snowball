@@ -127,6 +127,19 @@ bool ClassType::is_deep_unknown() const {
   return unknown;
 }
 
+bool ClassType::is_deep_generic() const {
+  bool is_generic = false;
+  if (has_generics()) {
+    for (const auto& generic : get_generics()) {
+      if (generic->is_deep_generic()) {
+        is_generic = true;
+        break;
+      }
+    }
+  }
+  return is_generic;
+}
+
 }
 }
 }
