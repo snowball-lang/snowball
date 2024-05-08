@@ -3,6 +3,7 @@
 #define __SNOWBALL_CTX_H__
 
 #include <filesystem>
+#include "compiler/package.h"
 
 namespace snowball {
 
@@ -51,6 +52,8 @@ struct Ctx {
   BuildMode build_mode;
   EmitType emit_type;
   OptLevel opt_level = OptLevel::None;
+
+  PackageConfig package_config = std::nullopt;
 };
 
 }

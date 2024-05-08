@@ -3,6 +3,7 @@
 #define __SNOWBALL_CLI_H__
 
 #include "compiler/ctx.h"
+#include "compiler/package.h"
 
 namespace snowball {
 namespace cli {
@@ -28,6 +29,8 @@ public:
   const Ctx parse(int argc, char** argv);
 private:
   void make_run();
+
+  void get_package_config(Ctx& ctx, const std::string& path = "");
 };
 
 }
