@@ -1,3 +1,4 @@
 project {
-    
-}
+    type: "lib";
+    main: "tests/main.sn";
+};

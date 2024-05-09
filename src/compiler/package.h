@@ -17,6 +17,7 @@ struct PackageConfigBase {
     std::string type = "both"; // "lib", "exe", "both"
     std::vector<std::string> authors;
     std::string license;
+    std::filesystem::path path;
   } project;
 
   struct Build {

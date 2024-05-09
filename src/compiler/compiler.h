@@ -16,9 +16,9 @@ namespace snowball {
  *  source core providing a simple interface to the user.
 */
 class Compiler {
-  const Ctx ctx;
+  Ctx ctx;
 public:
-  Compiler(const Ctx& ctx);
+  Compiler(Ctx& ctx);
   ~Compiler() = default;
 
   /**
@@ -33,7 +33,7 @@ public:
    * @param ctx The context of the compiler.
    * @return true if the compilation was successful, false otherwise.
    */
-  static bool compile(const Ctx& ctx);
+  static bool compile(Ctx& ctx);
 };
 
 }

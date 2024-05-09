@@ -48,7 +48,6 @@ enum class OptLevel {
  *  it does not contain any sort of environment information.
  */
 struct Ctx {
-  std::filesystem::path input_file;
   BuildMode build_mode;
   EmitType emit_type;
   OptLevel opt_level = OptLevel::None;

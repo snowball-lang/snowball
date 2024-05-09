@@ -53,7 +53,8 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::map<uint64_t, sil::Inst*>& inst_ma
   builder_ctx.module = std::make_unique<llvm::Module>("main", *llvm_ctx);
   dbg.debug = ctx.opt_level == OptLevel::None;
   dbg.builder = std::make_unique<llvm::DIBuilder>(*builder_ctx.module);
-  llvm::DIFile* file = dbg.get_file(ctx.input_file);
+  auto input_file = ctx.package_config.value().project.path / ctx.package_config.value().project.main;
+  llvm::DIFile* file = dbg.get_file(input_file);
   dbg.unit = dbg.builder->createCompileUnit(
     llvm::dwarf::DW_LANG_C_plus_plus,
     file,
