@@ -1,4 +1,5 @@
 
+#include <algorithm>
 #include "compiler/frontend/location.h"
 
 namespace snowball {
@@ -17,11 +18,16 @@ std::string NamespacePath::get_path_string() const {
 
 NamespacePath NamespacePath::from_file(const std::filesystem::path& file) {
   std::vector<std::string> path;
-  auto parent = file.parent_path();
-  while (parent != file.root_path()) {
-    path.push_back(parent.filename().string());
-    parent = parent.parent_path();
+  bool add = false;
+  for (auto& part : file.parent_path()) {
+    if (!add) { // Skip the root path
+      add = true;
+      continue;
+    }
+    path.push_back(part.string());
   }
+  // Add the file name without extension
+  path.push_back(file.stem().string());
   return NamespacePath(path);
 }
 

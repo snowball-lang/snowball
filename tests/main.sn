@@ -7,7 +7,6 @@ class Hello<T> {
 }
 
 func test2<T>(x: T) {
-  test::hello();
 }
 
 
