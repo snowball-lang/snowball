@@ -31,6 +31,33 @@ public:
   SN_DEFAULT_CLONE()
 };
 
+class MemberAccess final : public Self<MemberAccess>, public Expr {
+public:
+  enum AccessType {
+    Default,
+    Static,
+  };
+private:
+  Expr* object;
+  Ident* member;
+  AccessType access_type;
+public:
+  MemberAccess(const SourceLocation& location, Expr* object, Ident* member, AccessType access_type = AccessType::Default)
+    : Expr(location), object(object), member(member), access_type(access_type) {}
+  ~MemberAccess() = default;
+
+  auto get_object() const { return object; }
+  auto get_member() const { return member; }
+  auto get_access_type() const { return access_type; }
+
+  static auto create(const SourceLocation& location, Expr* object, Ident* member, AccessType access_type = AccessType::Default) {
+    return new MemberAccess(location, object, member, access_type);
+  }
+
+  SN_VISIT()
+  SN_DEFAULT_CLONE()
+};
+
 class TypeRef final : public LocationHolder {
   Expr* name;
 public:

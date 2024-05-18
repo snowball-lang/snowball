@@ -6,3 +6,4 @@ struct ParsingClassResult
 };
 
 ParsingClassResult parse_class_body();
+ast::Ident* parse_ident(); // parse an identifier (used as expression identifier)

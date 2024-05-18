@@ -183,7 +183,7 @@ set (RUNTIME_FILES
 
 set(APP_HEADERS_DIR src/app/)
 file(GLOB_RECURSE APP_HEADERS ${APP_HEADERS_DIR}/*.h ${APP_HEADERS_DIR}/*.hpp)
-file(GLOB_RECURSE APP_SOURCES src/app/*.cc src/app/*.cc src/app/*.c)
+file(GLOB_RECURSE APP_SOURCES src/app/src/*.cc src/app/*.c)
 set (APP_FILES
   ${APP_HEADERS}
   ${APP_SOURCES})

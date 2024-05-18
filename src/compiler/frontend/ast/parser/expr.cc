@@ -19,17 +19,7 @@ ast::Expr* Parser::parse_expr(bool allow_assign) {
     next();
     switch (current.type) {
       case Token::Type::Identifier: {
-        auto name = current.to_string();
-        std::optional<ast::GenericNode<ast::TypeRef>> generics;
-        if (is(Token::Type::SymColcol, peek())) {
-          next();
-          if (is(Token::Type::OpLt, peek())) {
-            next();
-            generics = parse_generics_expr();
-          }
-          prev();
-        }
-        expr = node<ast::Ident>(name, generics);
+        expr = parse_ident();
         break;
       }
       case Token::Type::ValueNumber:
@@ -60,12 +50,35 @@ ast::Expr* Parser::parse_expr(bool allow_assign) {
         consume(Token::Type::BracketRparent, "a closing parenthesis after the arguments");
         expr = pnode<ast::Call>(expr->get_location(), expr, args);
       } break;
+      case Token::Type::SymDot:
+      case Token::Type::SymColcol: {
+        auto op = current.type == Token::Type::SymDot 
+          ? ast::MemberAccess::AccessType::Default 
+          : ast::MemberAccess::AccessType::Static;
+        next();
+        auto name = parse_ident();
+        expr = node<ast::MemberAccess>(expr, name, op);
+        next();
+      } break;
       default: goto continue_parse;
     }
   }
 continue_parse:
   assert(expr);
   return expr;
+}
+
+ast::Ident* Parser::parse_ident() {
+  auto l = loc();
+  auto name = expect(Token::Type::Identifier, "an identifier");
+  std::optional<ast::GenericNode<ast::TypeRef>> generics;
+  if (is(Token::Type::SymColcol) && is(Token::Type::OpLt, peek())) {
+    next();
+    generics = parse_generics_expr();
+    next();
+    consume(Token::Type::OpGt, "a greater than symbol '>' after the generics");
+  }
+  return pnode<ast::Ident>(l, name.to_string());
 }
 
 }
