@@ -143,7 +143,7 @@ llvm::AllocaInst* LLVMBuilder::alloc(types::Type* type, const std::string& name)
 llvm::DISubprogram* LLVMBuilder::get_disubprogram(const sil::FuncDecl* node) {
   auto loc = node->get_location();
   auto file = dbg.get_file(loc.file->get_path());
-  auto derive = llvm::cast<llvm::DIDerivedType>(get_ditype(node->get_type()->as_func()));
+  auto derive = llvm::cast<llvm::DIDerivedType>(get_ditype(node->get_type()));
   auto type = llvm::cast<llvm::DISubroutineType>(derive->getRawBaseType());
   return dbg.builder->createFunction(
     dbg.unit, node->get_printable_name(), node->get_mangled_name(), file, loc.line, type, loc.line, llvm::DINode::FlagPrototyped, 

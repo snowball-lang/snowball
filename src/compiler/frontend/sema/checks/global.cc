@@ -19,7 +19,10 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast) {
       do_global_func(fn_decl);
     } else if (auto class_decl = decl->as<ast::ClassDecl>()) {
       for (auto& method : class_decl->get_funcs()) {
+        auto backup = ctx.current_class;
+        ctx.current_class = class_decl;
         do_global_func(method);
+        ctx.current_class = backup;
       }
     }
   }
@@ -43,6 +46,7 @@ void TypeChecker::do_global_func(ast::FnDecl* fn_decl) {
   auto ret_type = get_type(fn_decl->get_return_type());
   auto func_type = ast::types::FuncType::create(param_types, ret_type, false);
   unify(fn_decl->get_type(), func_type, fn_decl->get_return_type().get_location());
+  add_self_param(fn_decl);
   universe.add_fn_decl(path, fn_decl);
   if (fn_decl->get_generics().size() > 0) {
     create_generic_context(fn_decl->get_id());

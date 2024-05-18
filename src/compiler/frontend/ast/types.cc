@@ -140,6 +140,30 @@ bool ClassType::is_deep_generic() const {
   return is_generic;
 }
 
+Type* Type::get_reference_to() {
+  return ReferenceType::create(this);
+}
+
+Type* Type::get_pointer_to() {
+  return PointerType::create(this);
+}
+
+std::string ReferenceType::get_printable_name() const {
+  return fmt::format("&{}", ref->get_printable_name());
+}
+
+std::string ReferenceType::get_mangled_name() const {
+  return fmt::format("R{}", ref->get_mangled_name());
+}
+
+std::string PointerType::get_printable_name() const {
+  return fmt::format("*{}", pointee->get_printable_name());
+}
+
+std::string PointerType::get_mangled_name() const {
+  return fmt::format("P{}", pointee->get_mangled_name());
+}
+
 }
 }
 }

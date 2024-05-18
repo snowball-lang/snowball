@@ -26,7 +26,7 @@ void Binder::visit(ast::FnDecl* node) {
   assert(body->is<Block>());
   func->set_body(body->as<Block>());
   std::string arg_string;
-  if (node->should_generate()) {
+  if (node->should_generate() && (ctx.ast_current_class ? !ctx.ast_current_class.value()->has_generics() : true)) {
     current_module->add_fn_decl(func);
   }
   ctx.ast_current_func = backup;

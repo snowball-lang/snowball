@@ -76,18 +76,18 @@ public:
 
 class VarDecl final : public Stmt, public AttributedNode, public Identified {
   std::string name;
-  std::optional<TypeRef> type;
+  std::optional<TypeRef> decl_type;
   std::optional<Expr*> value;
   unsigned int used = 0;
 public:
   VarDecl(const SourceLocation& location, const std::string& name, 
       std::optional<TypeRef> type, std::optional<Expr*> value, 
       const AttributedNode& attributes = AttributedNode())
-    : Stmt(location), AttributedNode(attributes), name(name), type(type), value(value) {}
+    : Stmt(location), AttributedNode(attributes), name(name), decl_type(type), value(value) {}
   ~VarDecl() = default;
 
   auto& get_name() const { return name; }
-  auto& get_decl_type() { return type; }
+  auto& get_decl_type() { return decl_type; }
   auto& get_value() { return value; }
   Node* clone() const override;
   void set_used() { used++; }

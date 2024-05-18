@@ -27,6 +27,7 @@ public:
   virtual void accept(ast::AstVisitor* v) = 0;
 
   auto& get_type() { return type; }
+  auto get_type() const { return type; }
 
   template <typename T>
   [[nodiscard]] auto as() { return dynamic_cast<T*>(this); }

@@ -33,6 +33,10 @@ llvm::Type* LLVMBuilder::get_type(types::Type* type) {
     }
     struct_type->setBody(members);
     return struct_type;
+  } else if (type->is_reference()) {
+    return builder->getPtrTy(); // In llvm, references are just pointers
+  } else if (type->is_pointer()) {
+    return builder->getPtrTy();
   } else {
     llvm_unreachable(("Unsuported llvm type: " + type->get_printable_name()).c_str());
   }
@@ -81,8 +85,12 @@ llvm::DIType* LLVMBuilder::get_ditype(types::Type* type) {
       members.push_back(dbg.builder->createMemberType(dbg.scope, var->get_name(), file, loc.line, layout->getElementOffsetInBits(i),0,0, llvm::DINode::DIFlags::FlagZero, var_ty));
     }
     return dbg.builder->createStructType(dbg.scope, type->get_printable_name(), file, 0, layout->getSizeInBits(), 0 /* TODO: Aligment! */, llvm::DINode::DIFlags::FlagZero, nullptr, dbg.builder->getOrCreateArray(members));
+  } else if (auto ref = type->as_reference()) {
+    return dbg.builder->createReferenceType(llvm::dwarf::DW_TAG_reference_type, get_ditype(ref->get_ref()));
+  } else if (auto ptr = type->as_pointer()) {
+    return dbg.builder->createPointerType(get_ditype(ptr->get_pointee()), 64);
   } else {
-    llvm_unreachable("Unknown type");
+    llvm_unreachable(("Unsuported llvm type: " + type->get_printable_name()).c_str());
   }
 }
 

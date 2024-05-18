@@ -26,6 +26,8 @@ class ErrorType;
 class UnknownType;
 class VoidType;
 class ClassType;
+class ReferenceType;
+class PointerType;
 
 class Type {
 public:
@@ -40,11 +42,16 @@ public:
   CHILD(unknown, UnknownType)
   CHILD(void, VoidType)
   CHILD(class, ClassType)
+  CHILD(reference, ReferenceType)
+  CHILD(pointer, PointerType)
 #undef CHILD
   virtual std::string get_printable_name() const = 0;
   virtual std::string get_mangled_name() const = 0;
   virtual bool is_deep_unknown() const { return false; }
   virtual bool is_deep_generic() const { return false; }
+
+  Type* get_reference_to();
+  Type* get_pointer_to();
 };
 
 class IntType final : public Type {
@@ -216,6 +223,40 @@ public:
   bool is_class() const override { return true; }
   bool is_deep_unknown() const override; // It's unknown if any of the generics are unknown
   bool is_deep_generic() const override; // It's generic if any of the generics are generic
+
+  std::string get_printable_name() const override;
+  std::string get_mangled_name() const override;
+};
+
+class ReferenceType final : public Type {
+  Type* ref;
+public:
+  ReferenceType(Type* ref) : ref(ref) {}
+  ~ReferenceType() = default;
+
+  auto get_ref() const { return ref; }
+
+  static auto create(Type* ref) { return new ReferenceType(ref); }
+
+  ReferenceType* as_reference() override { return this; }
+  bool is_reference() const override { return true; }
+
+  std::string get_printable_name() const override;
+  std::string get_mangled_name() const override;
+};
+
+class PointerType final : public Type {
+  Type* pointee;
+public:
+  PointerType(Type* pointee) : pointee(pointee) {}
+  ~PointerType() = default;
+
+  auto get_pointee() const { return pointee; }
+
+  static auto create(Type* pointee) { return new PointerType(pointee); }
+
+  PointerType* as_pointer() override { return this; }
+  bool is_pointer() const override { return true; }
 
   std::string get_printable_name() const override;
   std::string get_mangled_name() const override;
