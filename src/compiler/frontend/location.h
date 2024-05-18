@@ -58,6 +58,8 @@ public:
   auto operator<(const NamespacePath& other) const { return path < other.path; }
   auto operator+(const NamespacePath& other) const { 
     auto new_path = path;
+    if (path[0].empty()) // if this is empty, return the other
+      return other;
     new_path.insert(new_path.end(), other.path.begin(), other.path.end());
     return NamespacePath(new_path);
   }

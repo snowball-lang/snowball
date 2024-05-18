@@ -7,8 +7,8 @@ class Hello<T> {
 }
 
 func test2<T>(x: T) {
+  crate::mod::test3(x);
 }
-
 
 func test(x: Hello<i32>) {
   test2(x);

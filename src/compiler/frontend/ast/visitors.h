@@ -11,9 +11,9 @@ namespace ast {
 
 class AstVisitor {
 protected:
-  const Ctx& ctx;
+  const Ctx& vctx;
 public:
-  AstVisitor(const Ctx& ctx) : ctx(ctx) {}
+  AstVisitor(const Ctx& ctx) : vctx(ctx) {}
   
 #define SN_REGISTER_ACCEPT(n) virtual void visit(n* node) = 0;
 #include "compiler/frontend/ast/nodes.def"

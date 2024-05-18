@@ -28,7 +28,7 @@ public:
 class TypeChecker : public ast::AstVisitor, public Reporter {
   Universe<TypeCheckItem> universe;
   std::vector<Module>& modules;
-  std::vector<NamespacePath> allowed_uuids;
+  std::vector<NamespacePath> allowed_uuids = {NamespacePath{""}};
   std::map<uint64_t, std::vector<MonorphosizedFn>> generic_registry;
   std::map<uint64_t, std::vector<MonorphosizedClass>> generic_class_registry;
   TypeCheckerContext ctx;
@@ -95,7 +95,7 @@ private:
   void do_global_func(ast::FnDecl* fn_decl);
   void do_global_class(ast::ClassDecl* class_decl);
 
-  std::optional<const Module> get_module(const NamespacePath& path);
+  std::optional<NamespacePath> search_module(const NamespacePath& path);
 };
 
 }

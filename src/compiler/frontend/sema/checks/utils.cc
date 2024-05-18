@@ -26,8 +26,8 @@ TypeChecker::GetResult TypeChecker::get_item(const ast::Expr* expr, NameAccumula
           return {TypeCheckItem::create_fn_decl({fns}), acc.get_name()};
         } else if (auto type = universe.get_type(new_path)) {
           return {TypeCheckItem::create_type(type.value()), acc.get_name()};
-        } else if (auto mod = get_module(new_path); mod.has_value()) {
-          return {TypeCheckItem::create_module(new_path), acc.get_name()};
+        } else if (auto mod = search_module(new_path)) {
+          return {TypeCheckItem::create_module(mod.value()), acc.get_name()};
         }
       }
       return {std::nullopt, acc.get_name()};
@@ -235,10 +235,20 @@ NamespacePath NameAccumulator::get_path(const std::string& name) const {
   return p;
 }
 
-std::optional<const Module> TypeChecker::get_module(const NamespacePath& path) {
+std::optional<NamespacePath> TypeChecker::search_module(const NamespacePath& path) {
+  if (path.size() == 1 && path[0] == "crate") {
+    auto mod_path = ctx.current_module->get_path();
+    std::vector<std::string> parts;
+    // We remove the amount of parts from the current module path
+    // to get the crate path
+    for (size_t i = 0; i < mod_path.size() - 1; ++i) {
+      parts.push_back(mod_path[i]);
+    }
+    return NamespacePath(parts);
+  }
   for (auto& mod : modules) {
     if (mod.get_path() == path) {
-      return mod;
+      return mod.get_path();
     }
   }
   return std::nullopt;
