@@ -11,16 +11,32 @@ namespace sema {
 #define SUCCESS just_check ? true : (a = b, true)
 
 bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b, const SourceLocation& loc, bool just_check) {
-  if (!a) return (a = b);
+  if (!a) return SUCCESS;
   if (a->is_int() && b->is_int()) {
     if (a->as_int()->get_bits() == b->as_int()->get_bits() &&
-        a->as_int()->is_signed() == b->as_int()->is_signed()) {
+        a->as_int()->is_signed() == b->as_int()->is_signed())
       return SUCCESS;
-    }
   } else if (a->is_float() && b->is_float()) {
-    if (a->as_float()->get_bits() == b->as_float()->get_bits()) {
+    if (a->as_float()->get_bits() == b->as_float()->get_bits())
       return SUCCESS;
-    }
+  } else if (a->is_generic() && b->is_generic()) {
+    if (a->get_printable_name() == b->get_printable_name())
+      return SUCCESS;
+  } else if (a->is_void() && b->is_void()) {
+    return SUCCESS;
+  } else if (a->is_class() && b->is_class()) {
+    auto ac = a->as_class();
+    auto bc = b->as_class();
+    if (ac->get_id() == bc->get_id())
+      return SUCCESS;
+  } else if (a->is_reference() && b->is_reference()) {
+    return unify(a->as_reference()->get_mut_ref(), b->as_reference()->get_mut_ref(), loc, just_check);
+  } else if (a->is_pointer() && b->is_pointer()) {
+    return unify(a->as_pointer()->get_mut_pointee(), b->as_pointer()->get_mut_pointee(), loc, just_check);
+  } else if (a->is_error() || b->is_error()) {
+    return SUCCESS;
+  } else if (a->is_unknown()) {
+    return unify(universe.get_constraints().at(a->as_unknown()->get_id()), b, loc, just_check);
   } else if (a->is_func() && b->is_func()) {
     auto a_func = a->as_func();
     auto b_func = b->as_func();
@@ -37,14 +53,6 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b, const SourceL
         if (match) return SUCCESS;
       }
     }
-  } else if (a->is_generic() && b->is_generic()) {
-    if (a->get_printable_name() == b->get_printable_name()) {
-      return SUCCESS;
-    }
-  } else if (a->is_error() || b->is_error()) {
-    return SUCCESS;
-  } else if (a->is_unknown()) {
-    return unify(universe.get_constraints().at(a->as_unknown()->get_id()), b, loc, just_check);
   }
   if (just_check) return false;
   err(loc, fmt::format("Type mismatch between '{}' and '{}'", 

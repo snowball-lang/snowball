@@ -6,9 +6,6 @@ class Hello<T> {
   } 
 }
 
-func test(x: Hello<i32>) {
-}
-
 func test2<T>(x: Hello<T>) {
 }
 

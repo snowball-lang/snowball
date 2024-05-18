@@ -25,7 +25,7 @@ ast::FnDecl* TypeChecker::get_best_match(const std::vector<ast::FnDecl*>& decls,
       continue;
     bool match = true;
     for (size_t i = 0; i < args.size(); ++i) {
-      if (decl->get_params().at(i)->get_type()->is_generic()) continue;
+      if (decl->get_params().at(i)->get_type()->is_deep_generic()) continue;
       if (!type_match(decl->get_params().at(i)->get_type(), args.at(i))) {
         match = false;
         break;
@@ -72,24 +72,38 @@ ast::FnDecl* TypeChecker::deduce_func(ast::FnDecl* node, const std::vector<ast::
     auto arg = get_type(generics.at(i));
     deduced[gen.get_name()] = arg;
   }
+  std::function<void(const ast::VarDecl*, ast::types::Type*, ast::types::Type*, bool)> check_generic = [&](auto param, auto pgen, auto arg, auto already_checked) {
+    if (auto cls = pgen->as_class(); cls && !already_checked) {
+      check_generic(param, cls, arg, true);
+      if (auto cls_arg = arg->as_class()) {
+        if (cls->get_generics().size() != cls_arg->get_generics().size()) {
+          return;
+        }
+        for (size_t i = 0; i < cls->get_generics().size(); ++i) {
+          check_generic(param, cls->get_generics().at(i), cls_arg->get_generics().at(i), false);
+        }
+      }
+      return;
+    }
+    if (!pgen->is_generic()) return;
+    auto gen = pgen->as_generic();
+    if (deduced.find(gen->get_name()) != deduced.end()) {
+      if (!type_match(deduced[gen->get_name()], arg)) {
+        err(loc, fmt::format("Type mismatch for generic parameter '{}'. Expected type '{}' but got type '{}'", 
+          gen->get_name(), deduced[gen->get_name()]->get_printable_name(), arg->get_printable_name()), Error::Info {
+            .highlight = fmt::format("Type mismatch for generic parameter '{}'. Expected type '{}' but got type '{}'", 
+              gen->get_name(), deduced[gen->get_name()]->get_printable_name(), arg->get_printable_name()),
+            .help = fmt::format("Try calling the function with the correct number of arguments and types")
+          });
+      }
+      return;
+    }
+    deduced[gen->get_name()] = arg;
+  };
   for (size_t i = 0; i < args.size(); ++i) {
     auto param = node->get_params().at(i);
     auto arg = args.at(i);
-    if (param->get_type()->is_generic()) {
-      auto gen = param->get_type()->as_generic();
-      if (deduced.find(gen->get_name()) != deduced.end()) {
-        if (!type_match(deduced[gen->get_name()], arg)) {
-          err(loc, fmt::format("Type mismatch for generic parameter '{}'. Expected type '{}' but got type '{}'", 
-            gen->get_name(), deduced[gen->get_name()]->get_printable_name(), arg->get_printable_name()), Error::Info {
-              .highlight = fmt::format("Type mismatch for generic parameter '{}'. Expected type '{}' but got type '{}'", 
-                gen->get_name(), deduced[gen->get_name()]->get_printable_name(), arg->get_printable_name()),
-              .help = fmt::format("Try calling the function with the correct number of arguments and types")
-            });
-        }
-        continue;
-      }
-      deduced[gen->get_name()] = arg;
-    }
+    check_generic(param, param->get_type(), arg, false);
   }
   for (auto& gen : node->get_generics()) {
     // TODO: Default generic types implementation here!

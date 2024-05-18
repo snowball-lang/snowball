@@ -235,6 +235,7 @@ public:
   ~ReferenceType() = default;
 
   auto get_ref() const { return ref; }
+  auto& get_mut_ref() { return ref; }
 
   static auto create(Type* ref) { return new ReferenceType(ref); }
 
@@ -252,6 +253,7 @@ public:
   ~PointerType() = default;
 
   auto get_pointee() const { return pointee; }
+  auto& get_mut_pointee() { return pointee; }
 
   static auto create(Type* pointee) { return new PointerType(pointee); }
 
