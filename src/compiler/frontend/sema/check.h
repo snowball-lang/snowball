@@ -55,7 +55,7 @@ private:
 
   using GetResult = std::pair<std::optional<TypeCheckItem>, std::string>;
 
-  void generate_global_scope(ast::TopLevelAst& ast);
+  void generate_global_scope(ast::TopLevelAst& ast, bool first = false);
   NamespacePath get_namespace_path(const std::string& name);
   
   GetResult get_item(const ast::Expr* expr, NameAccumulator acc = NameAccumulator());

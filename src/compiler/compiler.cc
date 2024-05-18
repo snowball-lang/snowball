@@ -40,7 +40,6 @@ bool Compiler::compile() {
         }
       }
     }
-
     frontend::sema::TypeChecker type_checker(ctx, modules);
     type_checker.check();
     if (type_checker.handle_errors()) {

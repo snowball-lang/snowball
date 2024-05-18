@@ -1,15 +1,8 @@
 
-class Hello<T> {
-  public let a: T;
-  public func hello() {
-    
-  } 
-}
-
 func test2<T>(x: T) {
   crate::mod::test3(x);
 }
 
-func test(x: Hello<i32>) {
+func test(x: crate::mod::Hello<f32>) {
   test2(x);
 }

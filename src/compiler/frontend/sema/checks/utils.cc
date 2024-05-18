@@ -159,6 +159,14 @@ ast::types::Type* TypeChecker::get_type(const std::string& name) {
 ast::types::Type* TypeChecker::deduce_type(ast::types::Type* type, const std::vector<ast::types::Type*>& generics, const SourceLocation& loc) {
   if (auto as_class = type->as_class()) {
     auto decl = (ast::ClassDecl*)as_class->get_decl();
+    if (!decl->is_complete()) {
+      err(loc, "Class is not complete", Error::Info {
+        .highlight = "This class is empty",
+        .help = "The class you are trying to use is not complete, No methods or fields have been defined yet.",
+        .note = "This is probably due to a circular dependency issue in your code."
+      }, Error::Type::Err, false);
+      return ast::types::ErrorType::create();
+    }
     std::map<std::string, ast::types::Type*> deduced;
     if (generics.size() > 0) {
       for (size_t i = 0; i < decl->get_generics().size(); ++i) {

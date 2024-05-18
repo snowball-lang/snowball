@@ -8,11 +8,14 @@ namespace snowball {
 namespace frontend {
 namespace sema {
 
-void TypeChecker::generate_global_scope(ast::TopLevelAst& ast) {
-  for (auto& decl : ast) { 
-    if (auto class_decl = decl->as<ast::ClassDecl>()) {
-      do_global_class(class_decl);
+void TypeChecker::generate_global_scope(ast::TopLevelAst& ast, bool first) {
+  if (first) {
+    for (auto& decl : ast) { 
+      if (auto class_decl = decl->as<ast::ClassDecl>()) {
+        do_global_class(class_decl);
+      }
     }
+    return;
   }
   for (auto& decl : ast) {
     if (auto fn_decl = decl->as<ast::FnDecl>()) {
@@ -24,6 +27,7 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast) {
         do_global_func(method);
         ctx.current_class = backup;
       }
+      class_decl->set_complete();
     }
   }
 }

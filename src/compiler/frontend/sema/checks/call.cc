@@ -50,6 +50,38 @@ void TypeChecker::visit(ast::Call* node) {
       ident->set_var_id(fn->get_id());
       callee_type = fn->get_type();
     }
+  } else if (auto index = node->get_callee()->as<ast::MemberAccess>()) {
+    auto [item, name] = get_item(index);
+    if (!item.has_value()) {
+      err(node->get_location(), fmt::format("use of undeclared identifier when calling '{}'", name), Error::Info {
+        .highlight = 
+          fmt::format("Variable or function '{}' not found.")
+      }, Error::Type::Err, false);
+      unify(node->get_type(), ast::types::ErrorType::create());
+      return;
+    }
+    if (item.value().is_type()) {
+      err(node->get_location(), fmt::format("Types cant be called as values and type '{}' has been used as callee!", item.value().get_type()->get_printable_name()), Error::Info {
+        .highlight = fmt::format("Symbol '{}' is a type!", item.value().get_type()->get_printable_name()),
+        .help = fmt::format("Types cannot be called as functions. Did you mean to use a 'new' expression?")
+      });
+      unify(node->get_type(), ast::types::ErrorType::create());
+      return;
+    } else if (item.value().is_var()) {
+      auto var = item.value().get_var();
+      var->set_used();
+      index->set_var_id(var->get_id());
+      callee_type = var->get_type();
+    } else if (item.value().is_module()) {
+      err(node->get_location(), fmt::format("cannot call module '{}'", name), Error::Info {
+        .highlight = fmt::format("'{}' is a module", name)
+      }, Error::Type::Err, false);
+    } else {
+      auto fn_decls = item.value().get_funcs();
+      auto fn = get_best_match(fn_decls, arg_types, node->get_location(), index->get_member()->get_generics());
+      index->set_var_id(fn->get_id());
+      callee_type = fn->get_type();
+    }
   } else {
     node->get_callee()->accept(this);
     callee_type = node->get_callee()->get_type();

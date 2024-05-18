@@ -17,7 +17,16 @@ ast::TypeRef Parser::parse_type_ref() {
       next();
       if (is(Token::Type::OpLt)) 
         name->mutate_generics(parse_generics_expr());
-      return ast::TypeRef::create(name->get_location(), name);
+      ast::Expr* expr = name;
+      while (is(Token::Type::SymColcol)) {
+        next();
+        auto name = node<ast::Ident>(current.to_string());
+        next();
+        if (is(Token::Type::OpLt)) 
+          name->mutate_generics(parse_generics_expr());
+        expr = node<ast::MemberAccess>(expr, name, ast::MemberAccess::AccessType::Static);
+      }
+      return ast::TypeRef::create(name->get_location(), expr);
     }
     default: {
       err("Unexpected token found while parsing type reference", Error::Info {

@@ -13,6 +13,7 @@ std::optional<std::string> TypeChecker::get_did_you_mean(const std::string& name
       names.push_back(key);
     }
   }
+  names.push_back("crate");
   return utils::did_you_mean(name, names);
 }
 

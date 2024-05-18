@@ -18,13 +18,16 @@ TypeChecker::TypeChecker(const Ctx& ctx, std::vector<Module>& modules)
 void TypeChecker::check() {
   register_builtins();
   try {
-    for (auto& module : modules) {
-      ctx.current_module = &module;
-      universe.add_scope();
-      allowed_uuids.push_back(module.get_path());
-      generate_global_scope(module.get_ast());
-      allowed_uuids.pop_back();
-      universe.remove_scope();
+    for (bool first = true;; first = false) {
+      for (auto& module : modules) {
+        ctx.current_module = &module;
+        universe.add_scope();
+        allowed_uuids.push_back(module.get_path());
+        generate_global_scope(module.get_ast(), first);
+        allowed_uuids.pop_back();
+        universe.remove_scope();
+      }
+      if (!first) break;
     }
     if (get_error_count() > 0)
       throw StopTypeChecking();

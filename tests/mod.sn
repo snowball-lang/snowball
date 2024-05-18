@@ -1,4 +1,11 @@
 
-func test3(x: create::main::Hello) {
+class Hello<T> {
+  public let a: T;
+  public func hello() {
+    
+  } 
+}
+
+func test3<T>(x: T) {
   
 }

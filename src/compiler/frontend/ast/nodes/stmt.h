@@ -109,6 +109,7 @@ private:
   bool generic_instanced = false;
   std::vector<VarDecl*> vars;
   std::vector<FnDecl*> funcs;
+  bool complete = false; // If the class is complete, i.e. all methods are defined
 public:
   ClassDecl(const SourceLocation& location, const std::string& name,   
         const std::vector<VarDecl*>& vars, const std::vector<FnDecl*>& funcs,
@@ -125,6 +126,8 @@ public:
   Node* clone() const override;
   bool is_generic_instanced() const;
   void set_generic_instanced();
+  void set_complete() { complete = true; }
+  auto is_complete() const { return complete; }
   static auto create(const SourceLocation& location, const std::string& name, 
       const std::vector<VarDecl*>& vars, const std::vector<FnDecl*>& funcs,
       std::optional<GenericNode> generics = std::nullopt, 
