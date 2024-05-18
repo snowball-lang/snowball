@@ -161,7 +161,7 @@ ast::types::Type* TypeChecker::deduce_type(ast::types::Type* type, const std::ve
   } else {
     if (generics.size() > 0) {
       err(loc, "Type has no generics to deduce", Error::Info {
-        .highlight = "No generics to deduce",
+        .highlight = type->get_printable_name() + " has no generics to deduce",
         .help = "This type has no generics to deduce. Maybe you forgot to specify them?"
       }, Error::Type::Err, false);
     }

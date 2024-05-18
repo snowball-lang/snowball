@@ -6,7 +6,8 @@ class Hello<T> {
   } 
 }
 
-func test2<T>(x: Hello<T>) {
+func test2<T>(x: T) {
+  t.hello();
 }
 
 
