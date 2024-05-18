@@ -63,6 +63,34 @@ public:
   }
 
   static NamespacePath dummy() { return NamespacePath(std::vector<std::string>{}); }
+
+  class const_iterator {
+    std::vector<std::string>::const_iterator it;
+  public:
+    const_iterator(std::vector<std::string>::const_iterator it) : it(it) {}
+    auto operator*() const { return *it; }
+    auto operator++() { ++it; return *this; }
+    auto operator++(int) { auto tmp = *this; ++it; return tmp; }
+    auto operator==(const const_iterator& other) const { return it == other.it; }
+    auto operator!=(const const_iterator& other) const { return it != other.it; }
+  };
+
+  class iterator {
+    std::vector<std::string>::iterator it;
+  public:
+    iterator(std::vector<std::string>::iterator it) : it(it) {}
+    auto operator*() { return *it; }
+    auto operator++() { ++it; return *this; }
+    auto operator++(int) { auto tmp = *this; ++it; return tmp; }
+    auto operator==(const iterator& other) const { return it == other.it; }
+    auto operator!=(const iterator& other) const { return it != other.it; }
+  };
+
+  auto begin() const { return const_iterator(path.begin()); }
+  auto end() const { return const_iterator(path.end()); }
+
+  auto begin() { return iterator(path.begin()); }
+  auto end() { return iterator(path.end()); }
 };
 
 // for "fmt::format"

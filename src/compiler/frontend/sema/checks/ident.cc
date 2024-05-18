@@ -28,6 +28,13 @@ void TypeChecker::visit(ast::Ident* node) {
     unify(node->get_type(), ast::types::ErrorType::create());
     return;
   }
+  if (item.value().is_module()) {
+    err(node->get_location(), fmt::format("cannot call module '{}'", node->get_name()), Error::Info {
+      .highlight = fmt::format("Module '{}' cannot be called", node->get_name()),
+      .help = fmt::format("Did you mean to call a function or access a variable in the module '{}'?", node->get_name())
+    }, Error::Type::Err, false);
+    return;
+  }
   if (item.value().is_var()) {
     auto var = item.value().get_var();
     var->set_used();

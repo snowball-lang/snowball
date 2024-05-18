@@ -19,7 +19,7 @@ namespace sema {
 
 class TypeCheckItem final {
 public:
-  enum Kind { Func, Type, Var };
+  enum Kind { Func, Type, Var, Module };
 private:
   Kind kind;
   union {
@@ -27,21 +27,25 @@ private:
     ast::types::Type* type;
     ast::VarDecl* var;
   };
+  const NamespacePath module = NamespacePath::dummy();
   std::vector<ast::FnDecl*> funcs;
 public:
   ~TypeCheckItem() = default;
   TypeCheckItem(ast::types::Type* type) : kind(Kind::Type), type(type) {}
   TypeCheckItem(ast::VarDecl* var) : kind(Kind::Var), var(var) {}
   TypeCheckItem(std::vector<ast::FnDecl*>& funcs) : kind(Kind::Func), funcs(funcs) {}
+  TypeCheckItem(const NamespacePath& module) : kind(Kind::Module), module(module) {}
 
   auto get_kind() const { return kind; }
   auto get_type() const { assert(is_type()); return type; }
   auto get_var() const { assert(is_var()); return var; }
   auto get_funcs() const { assert(is_func()); return funcs; }
+  auto get_module() const { assert(is_module()); return module; }
 
   bool is_type() const { return kind == Kind::Type; }
   bool is_func() const { return kind == Kind::Func; }
   bool is_var() const { return kind == Kind::Var; }
+  bool is_module() const { return kind == Kind::Module; }
 
   static auto create_type(ast::types::Type* type) { 
     return TypeCheckItem(type); 
@@ -54,6 +58,10 @@ public:
   static auto create_fn_decl(std::vector<ast::FnDecl*> funcs) {
     return TypeCheckItem(funcs);
   }
+
+  static auto create_module(const NamespacePath& module) {
+    return TypeCheckItem(module);
+  }
 };
 
 class NameAccumulator final {
@@ -64,10 +72,12 @@ public:
   ~NameAccumulator() = default;
 
   void add(const std::string& part, const std::string& name = "");
+  void add(const NamespacePath& path);
   bool is_empty() const { return path.is_empty(); }
   bool is_name() const { return path.size() == 1; } // Just a name, no namespace
   NamespacePath get_path(const std::string& name) const;
   std::string get_name() const { return name; }
+  auto get_path() const { return path; }
 };
 
 struct MonorphosizedFn final {

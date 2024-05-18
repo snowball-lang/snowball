@@ -39,6 +39,11 @@ void TypeChecker::visit(ast::Call* node) {
       var->set_used();
       ident->set_var_id(var->get_id());
       callee_type = var->get_type();
+    } else if (item.value().is_module()) {
+      err(node->get_location(), fmt::format("cannot call module '{}'", ident->get_name()), Error::Info {
+        .highlight = fmt::format("Module '{}' cannot be called", ident->get_name()),
+        .help = fmt::format("Did you mean to call a function or access a variable in the module '{}'?", ident->get_name())
+      }, Error::Type::Err, false);
     } else {
       auto fn_decls = item.value().get_funcs();
       auto fn = get_best_match(fn_decls, arg_types, node->get_location(), ident->get_generics());

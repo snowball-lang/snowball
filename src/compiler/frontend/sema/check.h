@@ -94,6 +94,8 @@ private:
 
   void do_global_func(ast::FnDecl* fn_decl);
   void do_global_class(ast::ClassDecl* class_decl);
+
+  std::optional<const Module> get_module(const NamespacePath& path);
 };
 
 }

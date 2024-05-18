@@ -16,7 +16,10 @@ Parser::Parser(const Ctx& ctx, const std::shared_ptr<SourceFile>& file, const st
 }
 
 Module Parser::parse() {
-  auto path = NamespacePath::from_file(file->get_path());
+  auto root_path = ctx.package_config.value().project.path;
+  // substract the root path from the file path
+  auto f = file->get_path().substr(root_path.string().size());
+  auto path = NamespacePath::from_file(f);
   try {
     return Module(parse_top_level(), path);
   } catch (const StopParsing&) {

@@ -26,16 +26,59 @@ TypeChecker::GetResult TypeChecker::get_item(const ast::Expr* expr, NameAccumula
           return {TypeCheckItem::create_fn_decl({fns}), acc.get_name()};
         } else if (auto type = universe.get_type(new_path)) {
           return {TypeCheckItem::create_type(type.value()), acc.get_name()};
+        } else if (auto mod = get_module(new_path); mod.has_value()) {
+          return {TypeCheckItem::create_module(new_path), acc.get_name()};
         }
       }
       return {std::nullopt, acc.get_name()};
     }
-  } /*else if (auto member = expr->as<ast::MemberExpr>()) {
-    // TODO: Check if it's static or not
-    acc.add(member->get_name());
-    return get_item(member->get_expr(), acc);
-  }*/ else {
-    sn_assert(false, "not implemented");
+  } else if (auto member = expr->as<ast::MemberAccess>()) {
+    auto [obj, obj_name] = get_item(member->get_object(), acc);
+    if (!obj.has_value()) {
+      return {std::nullopt, obj_name};
+    }
+    if (obj->is_type()) {
+      if (member->get_access_type() != ast::MemberAccess::AccessType::Static) {
+        err(member->get_location(), "use of type as value is not allowed", Error::Info {
+          .highlight = "Expected a value but type is used",
+          .help = "You cant use a type as a value in this context."
+        }, Error::Type::Err, false);
+        return {std::nullopt, obj_name};
+      }
+      sn_assert(false, "not implemented (static member access for types)");
+    } else if (obj->is_module()) {
+      auto mod = obj->get_module();
+      if (member->get_access_type() != ast::MemberAccess::AccessType::Static) {
+        err(member->get_location(), "use of module as value is not allowed", Error::Info {
+          .highlight = "Expected a value but module is used",
+          .help = "You cant use a module as a value in this context."
+        }, Error::Type::Err, false);
+        return {std::nullopt, obj_name};
+      }
+      acc.add(mod);
+      return get_item(member->get_member(), acc);
+    } else if (obj->is_var()) {
+      if (member->get_access_type() == ast::MemberAccess::AccessType::Static) {
+        err(member->get_location(), "use of variable as type is not allowed", Error::Info {
+          .highlight = "Expected a type but variable is used",
+          .help = "You cant use a variable as a type in this context."
+        }, Error::Type::Err, false);
+        return {std::nullopt, obj_name};
+      }
+      sn_assert(false, "not implemented (var member access)");
+    } else if (obj->is_func()) {
+      if (member->get_access_type() == ast::MemberAccess::AccessType::Static) {
+        err(member->get_location(), "use of function as type is not allowed", Error::Info {
+          .highlight = "Expected a type but function is used",
+          .help = "You cant use a function as a type in this context."
+        }, Error::Type::Err, false);
+        return {std::nullopt, obj_name};
+      }
+      sn_assert(false, "not implemented (fn_decl member access)");
+    }
+    sn_assert(false, "Invalid member access object found!");
+  } else {
+    sn_assert(false, "not implemented (invalid expr type for get_item)");
   }
 }
 
@@ -179,11 +222,26 @@ void NameAccumulator::add(const std::string& part, const std::string& name) {
   }
   this->name += name;
 }
+
+void NameAccumulator::add(const NamespacePath& path) {
+  for (auto part : path) {
+    add(part);
+  }
+}
   
 NamespacePath NameAccumulator::get_path(const std::string& name) const { 
   auto p = path;
   p.push(name);
   return p;
+}
+
+std::optional<const Module> TypeChecker::get_module(const NamespacePath& path) {
+  for (auto& mod : modules) {
+    if (mod.get_path() == path) {
+      return mod;
+    }
+  }
+  return std::nullopt;
 }
 
 }
