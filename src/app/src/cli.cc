@@ -5,6 +5,7 @@
 #include <llvm/Support/CommandLine.h>
 
 #include "app/cli.h"
+#include "compiler/utils/utils.h"
 #include "compiler/utils/logger.h"
 #include "compiler/reports/error.h"
 #include "compiler/frontend/location.h"
@@ -59,7 +60,7 @@ Ctx CLI::parse(int argc, char** argv) {
     cl::PrintVersionMessage();
     exit(EXIT_SUCCESS);
   } else {
-    Logger::error("Unknown mode '{}'", mode);
+    Logger::error(F("Unknown mode '{}'", mode));
     print_help(args);
   }
 
@@ -158,16 +159,16 @@ public:
 void CLI::get_package_config(Ctx& ctx, const std::string& path) {
   static auto interface = confy::Interface::create({
     {"project", confy::Type::Object({
-        {"name", confy::Type::String},
-        {"version", confy::Type::String},
-        {"authors", confy::Type::Array(confy::Type::String)},
-        {"description", confy::Type::String},
-        {"license", confy::Type::String},
-        {"type", ConfyPackageType::create()},
-        {"main", confy::Type::String},
+      {"name", confy::Type::String},
+      {"version", confy::Type::String},
+      {"authors", confy::Type::Array(confy::Type::String)},
+      {"description", confy::Type::String},
+      {"license", confy::Type::String},
+      {"type", ConfyPackageType::create()},
+      {"src", confy::Type::String}
     })},
     {"build", confy::Type::Object({
-        {"linkage_libs", confy::Type::Array(confy::Type::String)}
+      {"linkage_libs", confy::Type::Array(confy::Type::String)}
     })}
   });
   std::string config_path = path.empty() ? "sn.confy" : path;
@@ -189,16 +190,16 @@ void CLI::get_package_config(Ctx& ctx, const std::string& path) {
       authors.push_back(author->as_string());
     }
   }
+  auto default_path = config.get_string_or("project.src", path.empty() ? "." : path);
   ctx.package_config = PackageConfigBase{
     .project = {
       .name = config.get_string_or("project.name", "<unnamed>"),
       .version = config.get_string_or("project.version", "0.1.0"),
       .description = config.get_string_or("project.description", "<no description>"),
-      .main = config.get_string_or("project.main", "src/main.sn"),
       .type = config.get_string_or("project.type", "lib"),
       .authors = authors,
       .license = config.get_string_or("project.license", "<no license>"),
-      .path = std::filesystem::absolute(path.empty() ? "." : path).lexically_normal()
+      .path = std::filesystem::absolute(default_path).lexically_normal()
     },
     .build = {
       .linkage_libs = {} // TODO: Implement linkage libs

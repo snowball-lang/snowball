@@ -1,5 +1,5 @@
 project {
     name: "tests";
     type: "lib";
-    main: "tests/main.sn";
+    src: "./tests";
 };

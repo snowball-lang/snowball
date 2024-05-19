@@ -1,7 +1,8 @@
 
 #include <vector>
-#include "compiler/reports/reporter.h"
+#include "compiler/utils/utils.h"
 #include "compiler/utils/logger.h"
+#include "compiler/reports/reporter.h"
 
 namespace snowball {
 using namespace utils;
@@ -27,7 +28,7 @@ bool Reporter::handle_errors() {
     }
   }
   if (has_errors())
-    Logger::info("Snowball encountered {} error(s) and {} warning(s).", error_count, warning_count);
+    Logger::info(F("Snowball encountered {} error(s) and {} warning(s).", error_count, warning_count));
   return error_count > 0;
 }
 

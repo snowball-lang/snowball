@@ -56,7 +56,7 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::map<uint64_t, sil::Inst*>& inst_ma
             || ctx.opt_level == OptLevel::ReleaseWithDebug;
 
   dbg.builder = std::make_unique<llvm::DIBuilder>(*builder_ctx.module);
-  auto input_file = ctx.package_config.value().project.path / ctx.package_config.value().project.main;
+  auto input_file = ctx.package_config.value().project.path;
   llvm::DIFile* file = dbg.get_file(input_file);
   dbg.unit = dbg.builder->createCompileUnit(
     llvm::dwarf::DW_LANG_C_plus_plus,

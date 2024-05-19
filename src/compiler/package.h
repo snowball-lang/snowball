@@ -13,7 +13,6 @@ struct PackageConfigBase {
     std::string name;
     std::string version;
     std::string description;
-    std::string main;
     std::string type = "both"; // "lib", "exe", "both"
     std::vector<std::string> authors;
     std::string license;

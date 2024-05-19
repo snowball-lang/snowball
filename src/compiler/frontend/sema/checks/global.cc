@@ -59,7 +59,7 @@ void TypeChecker::do_global_func(ast::FnDecl* fn_decl) {
           .highlight = "Function with same linkage name already declared!",
           .help = "Function with same linkage name already declared, to fix this change the linkage name",
           .see = "https://snowball-lang.gitbook.io/docs/language-reference/functions/external-functions"
-        }, Error::Type::Err);
+        }, Error::Type::Err, false);
         break;
       }
     }

@@ -34,6 +34,8 @@ public:
    * @return true if the compilation was successful, false otherwise.
    */
   static bool compile(Ctx& ctx);
+private:
+  std::string get_package_type_string();
 };
 
 }

@@ -31,6 +31,7 @@ void Error::print(bool as_tail) {
     }
     return result;
   };
+  Logger::raw("");
   if (!as_tail) {
     if (type == Type::Err) {
       Logger::error(highlight_quotes(message));
