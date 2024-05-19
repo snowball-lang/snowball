@@ -113,10 +113,10 @@ std::string Compiler::get_package_type_string() {
     case EmitType::Ast: output += "ast"; break;
   }
   switch (ctx.opt_level) {
-    case OptLevel::Debug: output += " debug"; break;
-    case OptLevel::Release: output += " release"; break;
-    case OptLevel::ReleaseFast: output += " release-fast"; break;
-    case OptLevel::ReleaseWithDebug: output += " release-with-debug"; break;
+    case OptLevel::Debug: output += " + debug"; break;
+    case OptLevel::Release: output += " + release"; break;
+    case OptLevel::ReleaseFast: output += " + release-fast"; break;
+    case OptLevel::ReleaseWithDebug: output += " + release-with-debug"; break;
   }
   output += "]";
   switch (ctx.target) {
