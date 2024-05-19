@@ -54,7 +54,6 @@ class FuncDecl final : public Inst, public ast::AttributedNode, public Identifie
   std::vector<ParamType> params;
   std::optional<Block*> body;
   const std::shared_ptr<Module> parent_module;
-  std::unordered_map<uint64_t, sil::Inst*> var_ids;
 public:
   FuncDecl(LocationHolder& loc, ast::types::Type* type, const std::string& name, const std::vector<ParamType>& params,
     const std::shared_ptr<Module>& parent_module, const ast::AttributedNode& attrs, std::optional<Block*> body = std::nullopt, 
@@ -69,9 +68,6 @@ public:
   std::string get_mangled_name() const;
   std::string get_printable_name() const;
 
-  void add_var_id(uint64_t id, sil::Inst* inst) { var_ids.insert({id, inst}); }
-  auto get_var(uint64_t id) const { return var_ids.at(id); }
-  auto has_var(uint64_t id) const { return var_ids.find(id) != var_ids.end(); }
   EMITABLE()
 
   static auto create(LocationHolder loc, ast::types::Type* type, const std::string& name, const std::vector<ParamType>& params,

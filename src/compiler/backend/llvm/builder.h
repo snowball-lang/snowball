@@ -35,13 +35,7 @@ public:
     : module(std::make_unique<llvm::Module>("main", *ctx)), inst_map(inst_map) {}
 
   llvm::Value* get_value(uint64_t id) { return value_map.at(id); }
-
-  sil::Inst* get_inst(uint64_t id) { 
-    if (current_sil_func && current_sil_func->has_var(id)) {
-      return current_sil_func->get_var(id);
-    }
-    return inst_map.at(id); 
-  }
+  sil::Inst* get_inst(uint64_t id) { return inst_map.at(id); }
 
   void set_current_func(llvm::Function* func, const sil::FuncDecl* sil_func) 
     { current_func = func; current_sil_func = sil_func; }
