@@ -60,6 +60,7 @@ struct Ctx {
   OptLevel opt_level = OptLevel::Release;
   Target target = Target::Unknown;
 
+  std::string config_path = "";
   PackageConfig package_config = std::nullopt;
 };
 

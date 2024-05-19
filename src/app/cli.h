@@ -15,6 +15,12 @@
 #define SN_UNK
 #endif
 
+#ifdef NDEBUG
+#define SNOWBALL_BUILD_TYPE "release"
+#else
+#define SNOWBALL_BUILD_TYPE "debug"
+#endif
+
 namespace snowball {
 namespace cli {
 
@@ -25,6 +31,7 @@ namespace cli {
  *  providing a simple interface to the user.
  */
 class CLI {
+  using Args = std::vector<const char*>;
 public:
   CLI();
   ~CLI() = default;
@@ -46,7 +53,11 @@ public:
    */
   static void get_package_config(Ctx& ctx, const std::string& path = "");
 private:
-  void make_run();
+  static void make_build(Ctx& ctx, Args& args, bool for_run = false);
+  static void parse_args(Args& args);
+  static void print_help(Args& args);
+ 
+  static void hide_args();
 };
 
 }

@@ -21,7 +21,7 @@ Compiler::Compiler(Ctx& ctx) : ctx(ctx) {
 bool Compiler::compile() {
   // TODO: Iterate through the whole project and compile everything.
   //  For now, we will just do the input_file.
-  CLI::get_package_config(ctx);
+  CLI::get_package_config(ctx, ctx.config_path);
   // TODO: Populate allowed_paths with all the paths in the project and in the dependencies.
   std::vector<std::filesystem::path> allowed_paths = {ctx.package_config.value().project.path};
   std::vector<frontend::Module> modules;

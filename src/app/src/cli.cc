@@ -1,15 +1,24 @@
 
+#include <iostream>
 #include <filesystem>
 
+#include <llvm/Support/CommandLine.h>
+
 #include "app/cli.h"
+#include "compiler/utils/logger.h"
 #include "compiler/reports/error.h"
 #include "compiler/frontend/location.h"
 
 #define CONFY_USE_UTILS
 #include "app/vendor/confy/src/confy.hpp"
 
+#define SNOWBALL_PRINT_MESSAGE \
+  << "Snowball Compiler " << _SNOWBALL_VERSION << " (" << SNOWBALL_BUILD_TYPE << " build)" << "\n";
+
 namespace snowball {
 namespace cli {
+using namespace llvm;
+using namespace utils;
 
 CLI::CLI() {}
 
@@ -30,8 +39,97 @@ Ctx CLI::parse(int argc, char** argv) {
 #error "Unknown target compiler"
 #endif
 
+  cl::SetVersionPrinter([](raw_ostream & OS) {
+      OS SNOWBALL_PRINT_MESSAGE;
+    });
+  std::vector<const char*> args{argv[0]};
+  if (argc < 2) {
+    print_help(args);
+  }
+  for (int i = 2; i < argc; i++)
+    args.push_back(argv[i]);
+  std::string mode = argv[1];
+  cl::OptionCategory category("General Snowball Options");
+  cl::opt<std::string> config("config", cl::desc("Path to the configuration file"), cl::cat(category));
+  if (mode == "build") {
+    make_build(ctx, args);
+  } else if (mode == "run") {
+    make_build(ctx, args, true);
+  } else if (mode == "--version" || mode == "-v") {
+    cl::PrintVersionMessage();
+    exit(EXIT_SUCCESS);
+  } else {
+    Logger::error("Unknown mode '{}'", mode);
+    print_help(args);
+  }
 
+  if (!config.empty()) {
+    ctx.config_path = config;
+    get_package_config(ctx, config);
+  }
+  
   return ctx;
+}
+
+// CLI COMMANDS
+
+void CLI::print_help(Args& args) {
+  hide_args();
+  cl::OptionCategory helpCategory("Help Options");
+  cl::SubCommand run("run", "Run a Snowball program");
+  cl::SubCommand build("build", "Build a Snowball program");
+  parse_args(args);
+  cl::PrintHelpMessage();
+  exit(EXIT_SUCCESS);
+}
+
+void CLI::parse_args(Args& args) {
+  cl::ParseCommandLineOptions(args.size(), args.data(), "Snowball Compiler", nullptr, nullptr, true);
+}
+
+void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
+  ctx.build_mode = for_run ? BuildMode::Run : BuildMode::Build;
+  cl::OptionCategory category(for_run ? "Run Options" : "Build Options");
+  cl::opt<OptLevel> opt_level("O", cl::desc("Optimisation level"), cl::values(
+    clEnumValN(OptLevel::Release, "release", "Release build"),
+    clEnumValN(OptLevel::Debug, "debug", "Debug build"),
+    clEnumValN(OptLevel::ReleaseWithDebug, "release-with-debug", "Release build with debug info"),
+    clEnumValN(OptLevel::ReleaseFast, "release-fast", "Release build with fast optimisations")
+  ), cl::init(OptLevel::Release), cl::cat(category));
+  cl::opt<EmitType>* emit_type = nullptr;
+  cl::opt<Target>* target = nullptr;
+  if (!for_run) {
+    emit_type = new cl::opt<EmitType>("emit", cl::desc("Emit type"), cl::values(
+      clEnumValN(EmitType::Llvm, "llvm", "LLVM IR"),
+      clEnumValN(EmitType::Asm, "asm", "Assembly"),
+      clEnumValN(EmitType::Object, "obj", "Object file"),
+      clEnumValN(EmitType::Executable, "exec", "Executable file"),
+      clEnumValN(EmitType::Ast, "ast", "Abstract Syntax Tree"),
+      clEnumValN(EmitType::Sil, "sil", "Snowball Intermediate Language")
+    ), cl::init(EmitType::Llvm), cl::cat(category));
+    target = new cl::opt<Target>("target", cl::desc("Target OS"), cl::values(
+      clEnumValN(Target::Windows, "windows", "Windows"),
+      clEnumValN(Target::Linux, "linux", "Linux"),
+      clEnumValN(Target::MacOS, "macos", "macOS")
+    ), cl::init(Target::Unknown), cl::cat(category));
+  }
+  parse_args(args);
+  ctx.opt_level = opt_level;
+  if (emit_type) {
+    ctx.emit_type = *emit_type;
+    delete emit_type;
+  }
+  if (target && *target != Target::Unknown) {
+    ctx.target = *target;
+    delete target;
+  }
+}
+
+void CLI::hide_args() {
+  auto args = cl::getRegisteredOptions();
+  for (auto& arg : args) {
+    arg.getValue()->setHiddenFlag(cl::ReallyHidden);
+  }
 }
 
 // CONFY IMPLEMENTATION
