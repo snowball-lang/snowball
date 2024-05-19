@@ -47,6 +47,7 @@ private:
   // and fetching the body without it not being typechecked
   Block* body_clone = nullptr;
   bool generic_instanced = false;
+  std::optional<types::Type*> parent_type = std::nullopt;
 public:
   FnDecl(const SourceLocation& location, const std::string& name,   
         const std::vector<VarDecl*>& params, TypeRef return_type, Block* body,
@@ -64,6 +65,8 @@ public:
   bool is_generic_instanced() const;
   void set_generic_instanced();
   bool should_generate() const;
+  void set_parent_type(types::Type* type) { parent_type = type; }
+  auto get_parent_type() const { return parent_type; }
   static auto create(const SourceLocation& location, const std::string& name, 
       const std::vector<VarDecl*>& params, TypeRef return_type, Block* body,
       std::optional<GenericNode> generics = std::nullopt, 

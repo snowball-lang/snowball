@@ -1,10 +1,6 @@
 
-func test2<T>(x: T) {
-  crate::mod::test3(x);
-}
 
 func test(x: crate::mod::Hello<f32>) {
-  test2(x);
   x.hello();
 }
 

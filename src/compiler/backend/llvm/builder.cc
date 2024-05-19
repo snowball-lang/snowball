@@ -5,7 +5,7 @@
 namespace snowball {
 namespace backend {
 
-LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::map<uint64_t, sil::Inst*>& inst_map) : Builder(ctx),
+LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map) : Builder(ctx),
   llvm_ctx(std::make_unique<llvm::LLVMContext>()), builder_ctx(llvm_ctx, inst_map) {
   llvm::InitializeAllTargetInfos();
   llvm::InitializeAllTargets();

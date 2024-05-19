@@ -10,6 +10,8 @@
 #include "compiler/frontend/sema/universe.h"
 #include "compiler/frontend/sema/check.h"
 
+#include <unordered_map>
+
 namespace snowball {
 namespace sil {
 
@@ -23,6 +25,7 @@ public:
 
 struct BinderCtx {
   std::optional<ast::FnDecl*> ast_current_func = std::nullopt;
+  std::optional<sil::FuncDecl*> current_func = std::nullopt;
   std::optional<ast::ClassDecl*> ast_current_class = std::nullopt;
 };
 
@@ -40,7 +43,7 @@ class Binder : public ast::AstVisitor, public Reporter {
   std::map<NamespacePath, ast::types::Type*> types;
   std::vector<ast::types::Type*> constraints;
   std::vector<std::pair<NamespacePath, ast::FnDecl*>> fn_decls;
-  std::map<uint64_t, sil::Inst*> var_ids;
+  std::unordered_map<uint64_t, sil::Inst*> var_ids;
 
   BinderCtx ctx;
   Inst* value = nullptr; // The current value of the binder
@@ -48,7 +51,7 @@ public:
   Binder(const Ctx& ctx, std::vector<frontend::Module>& modules, sema::Universe<sema::TypeCheckItem>& universe);
   ~Binder() = default;
 
-  void bind(const std::map<uint64_t, std::vector<sema::MonorphosizedFn>>& generic_registry = {});
+  void bind(const std::pair<std::map<uint64_t, std::vector<sema::MonorphosizedClass>>, std::map<uint64_t, std::vector<sema::MonorphosizedFn>>> generic_registry = {});
   Inst* accept(ast::Node* node);
 
   auto& get_modules() { return sil_modules; }

@@ -9,14 +9,24 @@ Binder::Binder(const Ctx& ctx, std::vector<frontend::Module>& modules, sema::Uni
     fn_decls(universe.get_fn_decls()), current_module(std::make_shared<sil::Module>(NamespacePath::dummy())) {
     }
 
-void Binder::bind(const std::map<uint64_t, std::vector<sema::MonorphosizedFn>>& generic_registry) {
+void Binder::bind(const std::pair<std::map<uint64_t, std::vector<sema::MonorphosizedClass>>, std::map<uint64_t, std::vector<sema::MonorphosizedFn>>> generic_registry) {
   try {
-    for (auto& [_, reg] : generic_registry) {
-      for (auto& func : reg) func.decl->accept(this);
-    }
+    bool first = true;
     for (size_t j = 0; j < ast_modules.size(); j++) {
       auto module = ast_modules[j];
       current_module = std::make_shared<sil::Module>(module.get_path(), module.is_main);
+      if (first) {
+        // We dont care about what module we are in, we just want to bind the generics
+        // TODO: Am I cooked?
+        first = false;
+        for (auto& [_, reg] : generic_registry.second) {
+          for (auto& func : reg) func.decl->accept(this);
+        }
+        for (auto& [_, reg] : generic_registry.first) {
+          for (auto& cls : reg) for (auto& m : cls.decl->get_funcs())
+            m->accept(this);
+        }
+      }
       for (size_t i = 0; i < module.get_ast().size(); i++) {
         module.get_ast()[i]->accept(this);
       }

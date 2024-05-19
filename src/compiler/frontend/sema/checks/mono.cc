@@ -64,13 +64,18 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const std::map<
     universe.add_item(name, TypeCheckItem::create_type(type));
     new_generics.push_back(type);
   }
+  auto backup_class = ctx.current_class;
+  ctx.current_class = node;
+  unify(node->get_type(), ast::types::ClassType::create(node, class_ty_copy->get_path(), new_generics, class_ty_copy->get_location()), node->get_location());
   for (auto& var : node->get_vars()) {
     var->accept(this);
   }
   for (auto& method : node->get_funcs()) {
     method->accept(this);
+    method->set_parent_type(node->get_type());
+    add_self_param(method, true);
   }
-  unify(node->get_type(), ast::types::ClassType::create(node, class_ty_copy->get_path(), new_generics, class_ty_copy->get_location()), node->get_location());
+  ctx.current_class = backup_class;
   universe.remove_scope();
   set_generic_context(backup);
   return node;

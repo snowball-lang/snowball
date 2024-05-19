@@ -46,7 +46,7 @@ public:
 #undef SN_REGISTER_ACCEPT
 
   auto& get_universe() { return universe; }
-  auto& get_generic_registry() { return generic_registry; }
+  auto get_generic_registry() { return std::make_pair(generic_class_registry, generic_registry); }
 private:
   void register_builtins();
 
@@ -87,7 +87,7 @@ private:
   ast::FnDecl* propagate_generic(ast::FnDecl* node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
   ast::FnDecl* monorphosize(ast::FnDecl*& node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
   ast::ClassDecl* monorphosize(ast::ClassDecl*& node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
-  void add_self_param(ast::FnDecl*& node);
+  void add_self_param(ast::FnDecl*& node, bool as_monorph = false);
 
   std::vector<ast::types::Type*> fetch_generics_from_node(const ast::Node* node);
   ast::types::Type* deduce_type(ast::types::Type* type, const std::vector<ast::types::Type*>& generics, const SourceLocation& loc);
@@ -105,17 +105,15 @@ private:
   void check_for_entry(ast::FnDecl* fn_decl);
 
   enum CastType {
-    NoCast,
-    AutoRef,
-    AutoDeref,
-    Cast,
     Invalid,
+    NoCast, Cast,
+    AutoRef, AutoDeref,
   };
   CastType can_cast(ast::types::Type* from, ast::types::Type* to);
   /// It will overwrite the node if it can cast.
   /// @returns true if the cast type is invalid
   /// @see can_cast
-  bool try_cast(ast::Node* node, ast::types::Type* to);
+  bool try_cast(ast::Expr*& node, ast::types::Type* to);
 };
 
 }

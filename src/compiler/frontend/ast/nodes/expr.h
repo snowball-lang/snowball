@@ -115,6 +115,23 @@ public:
   SN_VISIT()
 };
 
+class Reference final : public Self<Reference>, public Expr {
+  Expr* expr;
+public:
+  Reference(const SourceLocation& location, Expr* expr)
+    : Expr(location), expr(expr) {}
+  ~Reference() = default;
+
+  auto get_expr() const { return expr; }
+
+  static auto create(const SourceLocation& location, Expr* expr) {
+    return new Reference(location, expr);
+  }
+
+  SN_VISIT()
+  SN_DEFAULT_CLONE()
+};
+
 }
 }
 }

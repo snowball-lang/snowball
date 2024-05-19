@@ -16,14 +16,16 @@ TypeChecker::CastType TypeChecker::can_cast(ast::types::Type* from, ast::types::
   return CastType::Invalid;
 }
 
-bool TypeChecker::try_cast(ast::Node* node, ast::types::Type* to) {
+bool TypeChecker::try_cast(ast::Expr*& node, ast::types::Type* to) {
   auto from = node->get_type();
   auto cast = can_cast(from, to);
   switch (cast) {
     case CastType::NoCast:
       break;
     case CastType::AutoRef:
-      sn_assert(false, "AutoRef not implemented");
+      node = ast::Reference::create(node->get_location(), node);
+      node->get_type() = to;
+      break;
     case CastType::AutoDeref:
       sn_assert(false, "AutoDeref not implemented");
     case CastType::Cast:

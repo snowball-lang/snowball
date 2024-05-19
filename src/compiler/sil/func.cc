@@ -17,7 +17,9 @@ void Binder::visit(ast::FnDecl* node) {
   }
   auto func = FuncDecl::create(node->get_location(), type, name, sil_params, current_module, *node, std::nullopt, node->get_id());
   auto backup = ctx.ast_current_func;
+  auto backup2 = ctx.current_func;
   ctx.ast_current_func = node;
+  ctx.current_func = func;
   for (auto param : params) {
     accept(param);
   }
@@ -25,11 +27,11 @@ void Binder::visit(ast::FnDecl* node) {
   auto body = accept(node->get_body());
   assert(body->is<Block>());
   func->set_body(body->as<Block>());
-  std::string arg_string;
-  if (node->should_generate() && (ctx.ast_current_class ? !ctx.ast_current_class.value()->has_generics() : true)) {
+  if (node->should_generate()) {
     current_module->add_fn_decl(func);
   }
   ctx.ast_current_func = backup;
+  ctx.current_func = backup2;
   value = func;
 }
 

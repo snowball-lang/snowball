@@ -19,11 +19,11 @@ using namespace frontend::ast::types;
 }
 
 class LLVMBuilderContext {
-  std::map<uint64_t, llvm::Function*> func_map;
-  std::map<uint64_t, llvm::Value*> value_map;
+  std::unordered_map<uint64_t, llvm::Value*> value_map;
 
-  std::map<uint64_t, sil::Inst*> inst_map;
+  std::unordered_map<uint64_t, sil::Inst*> inst_map;
   llvm::Function* current_func = nullptr;
+  const sil::FuncDecl* current_sil_func = nullptr;
 
 public:
   std::unique_ptr<llvm::Module> module;
@@ -31,22 +31,22 @@ public:
 
   bool dont_load = false;
 
-  LLVMBuilderContext(std::unique_ptr<llvm::LLVMContext>& ctx, std::map<uint64_t, sil::Inst*>& inst_map) 
+  LLVMBuilderContext(std::unique_ptr<llvm::LLVMContext>& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map) 
     : module(std::make_unique<llvm::Module>("main", *ctx)), inst_map(inst_map) {}
 
-  llvm::Function* get_func(uint64_t id) { return func_map.at(id); }
   llvm::Value* get_value(uint64_t id) { return value_map.at(id); }
 
-  sil::Inst* get_inst(uint64_t id) { return inst_map.at(id); }
-
-  void set_current_func(llvm::Function* func) { current_func = func; }
-  llvm::Function* get_current_func() { return current_func; }
-
-  void set_func(uint64_t id, llvm::Function* func) { 
-    func_map[id] = func; 
-    set_value(id, func);
+  sil::Inst* get_inst(uint64_t id) { 
+    if (current_sil_func && current_sil_func->has_var(id)) {
+      return current_sil_func->get_var(id);
+    }
+    return inst_map.at(id); 
   }
 
+  void set_current_func(llvm::Function* func, const sil::FuncDecl* sil_func) 
+    { current_func = func; current_sil_func = sil_func; }
+  llvm::Function* get_current_func() { return current_func; }
+  const sil::FuncDecl* get_current_sil_func() { return current_sil_func; }
   void set_value(uint64_t id, llvm::Value* value) { value_map[id] = value; }
 };
 
@@ -97,7 +97,7 @@ class LLVMBuilder : public sil::Builder {
 
   void check_and_optimize();
 public:
-  LLVMBuilder(const Ctx& ctx, std::map<uint64_t, sil::Inst*>& inst_map);
+  LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map);
 
   void build(std::vector<std::shared_ptr<sil::Module>>& modules) override;
   void dump(llvm::raw_ostream& os = llvm::errs()) override;

@@ -64,6 +64,19 @@ std::vector<T> map(const std::vector<U>& vec, std::function<T(U)> fn) {
   return result;
 }
 
+template <int N>
+std::string gen_random_string() {
+  static const char alphanum[] =
+    "0123456789"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz";
+  std::string s;
+  for (int i = 0; i < N; ++i) {
+    s += alphanum[rand() % (sizeof(alphanum) - 1)];
+  }
+  return s;
+}
+
 }
 }
 

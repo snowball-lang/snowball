@@ -140,14 +140,19 @@ ast::FnDecl* TypeChecker::propagate_generic(ast::FnDecl* node, const std::map<st
   return monorphosize(decl, deduced, loc);
 }
 
-void TypeChecker::add_self_param(ast::FnDecl*& node) {
+void TypeChecker::add_self_param(ast::FnDecl*& node, bool as_monorph) {
   auto current_class = ctx.current_class;
   if (node->get_static() || !current_class) return;
   auto& params = node->get_params();
-  if (params.size() > 0 && params[0]->get_name() == "self") return; // already has a self param
+  if (params.size() > 0 && params[0]->get_name() == "self" && !as_monorph) return; // already has a self param
   auto self = ast::VarDecl::create(node->get_location(), "self", std::nullopt, std::nullopt);
   self->set_used();
   unify(self->get_type(), current_class->get_type()->get_reference_to(), node->get_location());
+  if (as_monorph) {
+    params[0] = self;
+    node->get_type()->as_func()->get_param_types()[0] = self->get_type();
+    return;
+  }
   params.insert(params.begin(), self);
   node->get_type()->as_func()->get_param_types().insert(node->get_type()->as_func()->get_param_types().begin(), self->get_type());
 }

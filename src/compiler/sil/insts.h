@@ -7,6 +7,8 @@
 #include "compiler/frontend/ast/types.h"
 #include "compiler/frontend/ast/nodes.h"
 
+#include <unordered_map>
+
 namespace snowball {
 namespace sil {
 
@@ -52,6 +54,7 @@ class FuncDecl final : public Inst, public ast::AttributedNode, public Identifie
   std::vector<ParamType> params;
   std::optional<Block*> body;
   const std::shared_ptr<Module> parent_module;
+  std::unordered_map<uint64_t, sil::Inst*> var_ids;
 public:
   FuncDecl(LocationHolder& loc, ast::types::Type* type, const std::string& name, const std::vector<ParamType>& params,
     const std::shared_ptr<Module>& parent_module, const ast::AttributedNode& attrs, std::optional<Block*> body = std::nullopt, 
@@ -65,6 +68,10 @@ public:
   void set_body(Block* b) { body = b; }
   std::string get_mangled_name() const;
   std::string get_printable_name() const;
+
+  void add_var_id(uint64_t id, sil::Inst* inst) { var_ids.insert({id, inst}); }
+  auto get_var(uint64_t id) const { return var_ids.at(id); }
+  auto has_var(uint64_t id) const { return var_ids.find(id) != var_ids.end(); }
   EMITABLE()
 
   static auto create(LocationHolder loc, ast::types::Type* type, const std::string& name, const std::vector<ParamType>& params,
@@ -103,8 +110,8 @@ public:
   auto get_value() const { return value; }
   EMITABLE()
 
-  static auto create(LocationHolder loc, Inst* value) {
-    return new ValueUse(loc, value->get_type(), value);
+  static auto create(LocationHolder loc, ast::types::Type* type, Inst* value) {
+    return new ValueUse(loc, type, value);
   }
 };
 
@@ -136,6 +143,20 @@ public:
 
   static auto create(LocationHolder loc, ast::types::Type* type, int64_t value) {
     return new ConstInt(loc, type, value);
+  }
+};
+
+class Reference final : public Inst {
+  Inst* value;
+public:
+  Reference(LocationHolder& loc, ast::types::Type* type, Inst* value) : Inst(loc, type), value(value) {}
+  ~Reference() = default;
+
+  auto get_value() const { return value; }
+  EMITABLE()
+
+  static auto create(LocationHolder loc, ast::types::Type* type, Inst* value) {
+    return new Reference(loc, type, value);
   }
 };
 

@@ -246,6 +246,9 @@ public:
 
   std::string get_printable_name() const override;
   std::string get_mangled_name() const override;
+
+  bool is_deep_unknown() const override { return ref->is_deep_unknown(); }
+  bool is_deep_generic() const override { return ref->is_deep_generic(); }
 };
 
 class PointerType final : public Type {
@@ -264,6 +267,9 @@ public:
 
   std::string get_printable_name() const override;
   std::string get_mangled_name() const override;
+
+  bool is_deep_unknown() const override { return pointee->is_deep_unknown(); }
+  bool is_deep_generic() const override { return pointee->is_deep_generic(); }
 };
 
 }

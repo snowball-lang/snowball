@@ -17,15 +17,15 @@ void LLVMBuilder::emit(const sil::FuncDecl* node) {
     fn->setCallingConv(llvm::CallingConv::C);
     if (node->get_inline())
       fn->addFnAttr(llvm::Attribute::AlwaysInline);
-    builder_ctx.set_func(node->get_id(), fn);
+    builder_ctx.set_value(node->get_id(), fn);
   } else if (node->get_external() == frontend::ast::AttributedNode::None) {
-    auto func = builder_ctx.get_func(node->get_id());
+    auto func = llvm::cast<llvm::Function>(builder_ctx.get_value(node->get_id()));
     auto entry = llvm::BasicBlock::Create(*llvm_ctx, "entry", func);
     builder->SetInsertPoint(entry);
     func->setSubprogram(get_disubprogram(node));
     dbg.scope = func->getSubprogram();
     assert(node->get_params().size() == fn_type->getNumParams());
-    builder_ctx.set_current_func(func);
+    builder_ctx.set_current_func(func, node);
     size_t arg_idx = 0;
     for (auto& [id, name] : node->get_params()) {
       auto arg = func->arg_begin();

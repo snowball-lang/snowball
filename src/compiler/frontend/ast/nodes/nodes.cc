@@ -113,7 +113,13 @@ bool FnDecl::should_generate() const {
       break;
     }
   }
-  return get_generics().size() == 0 && !has_generic_params;
+  bool parent_is_ok = true;
+  if (parent_type) {
+    if (auto as_class = parent_type.value()->as_class()) {
+      parent_is_ok = !as_class->is_deep_generic();
+    }
+  }
+  return (get_generics().size() == 0) && (!has_generic_params) && (parent_is_ok);
 }
 
 void FnDecl::set_generic_instanced() { generic_instanced = true; }

@@ -26,6 +26,9 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast, bool first) {
         ctx.current_class = class_decl;
         do_global_func(method);
         ctx.current_class = backup;
+        if (!class_decl->has_generics()) {
+          method->set_parent_type(class_decl->get_type());
+        }
       }
       class_decl->set_complete();
     }
