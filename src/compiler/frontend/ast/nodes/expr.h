@@ -47,7 +47,8 @@ public:
     : Expr(location), object(object), member(member), access_type(access_type) {}
   ~MemberAccess() = default;
 
-  auto get_object() const { return object; }
+  auto& get_object() { return object; }
+  auto get_const_object() const { return object; }
   auto get_member() const { return member; }
   auto get_access_type() const { return access_type; }
 
@@ -103,7 +104,7 @@ public:
   ~Call() = default;
 
   auto get_callee() const { return callee; }
-  auto get_args() const { return args; }
+  auto& get_args() { return args; }
   Node* clone() const override;
 
   static auto create(const SourceLocation& location, Expr* callee, std::vector<Expr*> args,

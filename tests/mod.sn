@@ -3,7 +3,7 @@ class Hello<T> {
   public let a: T;
   public func hello() {
     
-  } 
+  }
 }
 
 public func test3<T>(_x: T) {

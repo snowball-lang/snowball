@@ -33,7 +33,7 @@ TypeChecker::GetResult TypeChecker::get_item(const ast::Expr* expr, NameAccumula
       return {std::nullopt, acc.get_name()};
     }
   } else if (auto member = expr->as<ast::MemberAccess>()) {
-    auto [obj, obj_name] = get_item(member->get_object(), acc);
+    auto [obj, obj_name] = get_item(member->get_const_object(), acc);
     if (!obj.has_value()) {
       return {std::nullopt, obj_name};
     }
@@ -65,7 +65,7 @@ TypeChecker::GetResult TypeChecker::get_item(const ast::Expr* expr, NameAccumula
         }, Error::Type::Err, false);
         return {std::nullopt, obj_name};
       }
-      sn_assert(false, "not implemented (var member access)");
+      return get_from_type(member, obj->get_var()->get_type());
     } else if (obj->is_func()) {
       if (member->get_access_type() == ast::MemberAccess::AccessType::Static) {
         err(member->get_location(), "use of function as type is not allowed", Error::Info {
@@ -234,6 +234,38 @@ NamespacePath NameAccumulator::get_path(const std::string& name) const {
   auto p = path;
   p.push(name);
   return p;
+}
+
+TypeChecker::GetResult TypeChecker::get_from_type(const ast::MemberAccess* node, ast::types::Type* type) {
+  auto member = node->get_member();
+  auto member_name = member->get_name();
+  auto full_name = type->get_printable_name() + "::" + member_name;
+  if (auto as_class = type->as_class()) {
+    auto decl = as_class->get_decl();
+    for (auto& field : decl->get_vars()) {
+      if (field->get_name() == member_name) {
+        return {TypeCheckItem::create_var(field), full_name};
+      }
+    }
+    std::vector<ast::FnDecl*> methods;
+    for (auto& method : decl->get_funcs()) {
+      if (method->get_name() == member_name) {
+        methods.push_back(method);
+      }
+    }
+    if (methods.size() > 0) {
+      return {TypeCheckItem::create_fn_decl(methods), full_name};
+    }
+    err(node->get_location(), "Coudnt find member named '" + member_name + "' in class '" + type->get_printable_name() + "'!", Error::Info {
+      .highlight = fmt::format("Member '{}' not found in class '{}'", member_name, type->get_printable_name())
+    });
+  } else {
+    err(node->get_location(), "Expected class type but found '" + type->get_printable_name() + "'", Error::Info {
+      .highlight = "Not a class type",
+      .help = "We expected a class type here, but found something else. Maybe you forgot to import a module?"
+    }, Error::Type::Err, false);
+  }
+  return std::make_pair(std::nullopt, full_name);
 }
 
 std::optional<NamespacePath> TypeChecker::search_module(const NamespacePath& path) {

@@ -44,6 +44,7 @@ void TypeChecker::visit(ast::Call* node) {
         .highlight = fmt::format("Module '{}' cannot be called", ident->get_name()),
         .help = fmt::format("Did you mean to call a function or access a variable in the module '{}'?", ident->get_name())
       }, Error::Type::Err, false);
+      return;
     } else {
       auto fn_decls = item.value().get_funcs();
       auto fn = get_best_match(fn_decls, arg_types, node->get_location(), ident->get_generics());
@@ -51,11 +52,12 @@ void TypeChecker::visit(ast::Call* node) {
       callee_type = fn->get_type();
     }
   } else if (auto index = node->get_callee()->as<ast::MemberAccess>()) {
+    auto& object = index->get_object();
     auto [item, name] = get_item(index);
     if (!item.has_value()) {
       err(node->get_location(), fmt::format("use of undeclared identifier when calling '{}'", name), Error::Info {
         .highlight = 
-          fmt::format("Variable or function '{}' not found.")
+          fmt::format("Variable or function '{}' not found inside '{}'", index->get_member()->get_name(), name),
       }, Error::Type::Err, false);
       unify(node->get_type(), ast::types::ErrorType::create());
       return;
@@ -68,6 +70,9 @@ void TypeChecker::visit(ast::Call* node) {
       unify(node->get_type(), ast::types::ErrorType::create());
       return;
     } else if (item.value().is_var()) {
+      if (index->get_access_type() == ast::MemberAccess::Default) {
+        object->accept(this);
+      }
       auto var = item.value().get_var();
       var->set_used();
       index->set_var_id(var->get_id());
@@ -76,8 +81,14 @@ void TypeChecker::visit(ast::Call* node) {
       err(node->get_location(), fmt::format("cannot call module '{}'", name), Error::Info {
         .highlight = fmt::format("'{}' is a module", name)
       }, Error::Type::Err, false);
+      return;
     } else {
       auto fn_decls = item.value().get_funcs();
+      if (index->get_access_type() == ast::MemberAccess::Default) {
+        object->accept(this);
+        arg_types.insert(arg_types.begin(), object->get_type());
+        node->get_args().insert(node->get_args().begin(), object); 
+      }
       auto fn = get_best_match(fn_decls, arg_types, node->get_location(), index->get_member()->get_generics());
       index->set_var_id(fn->get_id());
       callee_type = fn->get_type();

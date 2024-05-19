@@ -65,6 +65,8 @@ private:
   GetResult get_item(const NamespacePath& path);
   GetResult get_item(const std::string& name);
 
+  GetResult get_from_type(const ast::MemberAccess* node, ast::types::Type* type);
+
   ast::types::Type* get_type(const NamespacePath& path);
   ast::types::Type* get_type(const ast::Expr* expr);
   ast::types::Type* get_type(const std::string& name);
