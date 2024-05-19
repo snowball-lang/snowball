@@ -9,7 +9,8 @@ void LLVMBuilder::emit(const sil::FuncDecl* node) {
   auto fn_type = get_func_type(node->get_type()->as_func());  
   if (just_declare) {
     auto linkage = llvm::Function::InternalLinkage;
-    if (node->get_external() != frontend::ast::AttributedNode::None) {
+    if (node->get_external() != frontend::ast::AttributedNode::None
+      || node->get_privacy() == frontend::ast::AttributedNode::Public) {
       linkage = llvm::Function::ExternalLinkage;
     }
     auto fn = llvm::Function::Create(fn_type, linkage, node->get_mangled_name(), *builder_ctx.module);

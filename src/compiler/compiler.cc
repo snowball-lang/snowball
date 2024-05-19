@@ -7,13 +7,16 @@
 #include "compiler/frontend/sema/check.h"
 #include "compiler/sil/binder.h"
 #include "compiler/backend/llvm/builder.h"
+#include "compiler/backend/drivers.h"
 
 #include "app/cli.h"
 
 namespace snowball {
 using namespace cli;
 
-Compiler::Compiler(Ctx& ctx) : ctx(ctx) {}
+Compiler::Compiler(Ctx& ctx) : ctx(ctx) {
+  driver::initialize_paths(ctx);
+}
 
 bool Compiler::compile() {
   // TODO: Iterate through the whole project and compile everything.
@@ -50,17 +53,21 @@ bool Compiler::compile() {
     if (binder.handle_errors()) {
       return EXIT_FAILURE;
     }
+    sil::Builder* builder;
     switch (ctx.emit_type) {
       case EmitType::Llvm:
       case EmitType::Object:
       case EmitType::Executable:
       case EmitType::Asm: {
-        backend::LLVMBuilder llvm_builder(ctx, binder.get_insts());
-        llvm_builder.build(binder.get_modules());
-        llvm_builder.dump();
+        builder = new backend::LLVMBuilder(ctx, binder.get_insts());
       } break;
       default: sn_assert(false, "Unknown emit type");
     }
+    bool is_object = ctx.emit_type == EmitType::Object || ctx.emit_type == EmitType::Executable;
+    auto output_file = driver::get_output_path(ctx, false, is_object); 
+    builder->build(binder.get_modules());
+    builder->dump();
+    builder->emit(output_file);
   }
   return EXIT_SUCCESS;
 }

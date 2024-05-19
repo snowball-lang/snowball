@@ -18,6 +18,19 @@ Ctx CLI::parse(int argc, char** argv) {
   Ctx ctx;
   ctx.build_mode = BuildMode::Build;
   ctx.emit_type = EmitType::Llvm;
+#ifdef SN_WIN
+  ctx.target = Target::Windows;
+#elif defined(SN_LIN)
+  ctx.target = Target::Linux;
+#elif defined(SN_MAC)
+  ctx.target = Target::MacOS;
+#elif defined(SN_UNK)
+  ctx.target = Target::Unknown;
+#else
+#error "Unknown target compiler"
+#endif
+
+
   return ctx;
 }
 

@@ -32,12 +32,19 @@ enum class EmitType {
  * @brief Optimisation level.
  */
 enum class OptLevel {
-  None,
-  O1,
-  O2,
-  O3,
-  Os,
-  Oz  
+  Release,
+  Debug,
+  ReleaseWithDebug,
+  ReleaseFast,
+};
+/**
+ * @brief The OS enum represents the different operating systems.
+*/
+enum class Target {
+  Windows,
+  Linux,
+  MacOS,
+  Unknown
 };
 /**
  * @brief The Ctx class is responsible for managing the context of the compiler.
@@ -50,7 +57,8 @@ enum class OptLevel {
 struct Ctx {
   BuildMode build_mode;
   EmitType emit_type;
-  OptLevel opt_level = OptLevel::None;
+  OptLevel opt_level = OptLevel::Release;
+  Target target = Target::Unknown;
 
   PackageConfig package_config = std::nullopt;
 };

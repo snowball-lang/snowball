@@ -27,6 +27,8 @@ class LLVMBuilderContext {
 
 public:
   std::unique_ptr<llvm::Module> module;
+  llvm::TargetMachine* target_machine = nullptr;  
+
   bool dont_load = false;
 
   LLVMBuilderContext(std::unique_ptr<llvm::LLVMContext>& ctx, std::map<uint64_t, sil::Inst*>& inst_map) 
@@ -48,7 +50,7 @@ public:
   void set_value(uint64_t id, llvm::Value* value) { value_map[id] = value; }
 };
 
-class LLVMBuilder : public sil::SilVisitor {
+class LLVMBuilder : public sil::Builder {
   struct BuilderCache {
     std::map<uint64_t, llvm::StructType*> struct_map;
     std::map<uint64_t, llvm::DIType*> ditype_map;
@@ -69,6 +71,8 @@ class LLVMBuilder : public sil::SilVisitor {
   llvm::Value* expr(sil::Inst* inst);
   llvm::Value* load(llvm::Value* ptr, types::Type* type);
   llvm::AllocaInst* alloc(types::Type* type, const std::string& name = "");
+
+  void set_debug_info(const sil::Inst* node);
 
   llvm::Type* get_type(types::Type* type);
   llvm::DIType* get_ditype(types::Type* type);
@@ -91,11 +95,13 @@ class LLVMBuilder : public sil::SilVisitor {
     llvm::DIFile* get_file(const std::string& path);
   } dbg;
 
+  void check_and_optimize();
 public:
   LLVMBuilder(const Ctx& ctx, std::map<uint64_t, sil::Inst*>& inst_map);
 
-  void build(std::vector<std::shared_ptr<sil::Module>>& modules);
-  void dump(llvm::raw_ostream& os = llvm::errs());
+  void build(std::vector<std::shared_ptr<sil::Module>>& modules) override;
+  void dump(llvm::raw_ostream& os = llvm::errs()) override;
+  int emit(std::filesystem::path path) override;
 };
 
 }

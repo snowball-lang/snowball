@@ -5,7 +5,7 @@
 namespace snowball {
 namespace backend {
 
-LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::map<uint64_t, sil::Inst*>& inst_map) : SilVisitor(ctx),
+LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::map<uint64_t, sil::Inst*>& inst_map) : Builder(ctx),
   llvm_ctx(std::make_unique<llvm::LLVMContext>()), builder_ctx(llvm_ctx, inst_map) {
   llvm::InitializeAllTargetInfos();
   llvm::InitializeAllTargets();
@@ -51,7 +51,10 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::map<uint64_t, sil::Inst*>& inst_ma
   llvm::initializeTypePromotionLegacyPass(registry);
   builder = std::make_unique<llvm::IRBuilder<>>(*llvm_ctx);
   builder_ctx.module = std::make_unique<llvm::Module>("main", *llvm_ctx);
-  dbg.debug = ctx.opt_level == OptLevel::None;
+
+  dbg.debug = ctx.opt_level == OptLevel::Debug 
+            || ctx.opt_level == OptLevel::ReleaseWithDebug;
+
   dbg.builder = std::make_unique<llvm::DIBuilder>(*builder_ctx.module);
   auto input_file = ctx.package_config.value().project.path / ctx.package_config.value().project.main;
   llvm::DIFile* file = dbg.get_file(input_file);
@@ -70,12 +73,27 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::map<uint64_t, sil::Inst*>& inst_ma
     "Snowball Compiler Version",
     llvm::ConstantDataArray::getString(*llvm_ctx, _SNOWBALL_VERSION, true)
   );
+  auto engine = llvm::EngineBuilder();
+  std::string target;
+  switch (ctx.target) {
+    case Target::Linux:
+      target = "x86_64-unknown-linux-gnu";
+      break;
+    case Target::MacOS:
+      target = "x86_64-apple-darwin";
+      break;
+    case Target::Windows:
+      target = "x86_64-pc-windows-msvc";
+      break;
+    default: sn_unreachable();
+  };
+  // Set the target triple
+  builder_ctx.target_machine = engine.selectTarget(llvm::Triple(target), "", "", llvm::SmallVector<std::string, 0>());
+  builder_ctx.module->setTargetTriple(target);
   // darwin only supports dwarf2
   if (llvm::Triple(builder_ctx.module->getTargetTriple()).isOSDarwin()) { 
     builder_ctx.module->addModuleFlag(llvm::Module::Warning, "Dwarf Version", 2); 
   }
-  // Set the target triple
-  builder_ctx.module->setTargetTriple(llvm::sys::getDefaultTargetTriple());
 }
 
 void LLVMBuilder::build(std::vector<std::shared_ptr<sil::Module>>& modules) {
@@ -90,6 +108,7 @@ void LLVMBuilder::build(std::vector<std::shared_ptr<sil::Module>>& modules) {
       build(fn);
     }
   }
+  check_and_optimize();
 }
 
 void LLVMBuilder::dump(llvm::raw_ostream& os) {
@@ -111,8 +130,22 @@ llvm::DIFile* LLVMBuilder::DebugUtils::get_file(const std::string& path) {
 }
 
 llvm::Value* LLVMBuilder::build(sil::Inst* inst) {
+  builder_ctx.dont_load = false;
+  set_debug_info(inst);
   inst->emit(this);
   return value;
+}
+
+void LLVMBuilder::set_debug_info(const sil::Inst* node) {
+  if (node) {
+    auto info = node->get_location();
+    if (auto f = builder_ctx.get_current_func()) {
+      auto loc = llvm::DILocation::get(*llvm_ctx, info.line, info.column, f->getSubprogram());
+      builder->SetCurrentDebugLocation(loc);
+      return;
+    }
+  }
+  builder->SetCurrentDebugLocation(llvm::DebugLoc());
 }
 
 llvm::Value* LLVMBuilder::expr(sil::Inst* inst) {

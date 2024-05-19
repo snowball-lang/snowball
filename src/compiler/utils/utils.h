@@ -30,6 +30,13 @@
 #define DBG(x)
 #endif
 
+#ifndef sn_unreachable
+#define sn_unreachable() { \
+  snowball::utils::Logger::fatal("Unreachable code reached."); \
+  sn_abort(); \
+}
+#endif
+
 namespace snowball {
 
 template <typename...Ts>
