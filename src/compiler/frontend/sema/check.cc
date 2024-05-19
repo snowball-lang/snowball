@@ -41,6 +41,7 @@ void TypeChecker::check() {
       allowed_uuids.pop_back();
       universe.remove_scope();
     }
+    post_check();
   } catch (const StopTypeChecking&) {
     // Do nothing
   }
@@ -54,6 +55,27 @@ void TypeChecker::err(const LocationHolder& holder, const std::string& message,
   add_error(E(message, holder.get_location(), info, type));
   if (fatal && type != Error::Type::Warn)
     throw StopTypeChecking();
+}
+
+void TypeChecker::post_check() {
+  if (get_error_count() > 0)
+    return;
+
+  if (vctx.emit_type == EmitType::Executable) {
+    bool found_main = false;
+    for (auto& decl : external_declared) {
+      if (decl == "main") {
+        found_main = true;
+        break;
+      }
+    }
+    if (!found_main) {
+      err(SourceLocation(0, 0, 0, std::make_shared<SourceFile>()), "No main function found", Error::Info {
+        .highlight = "No main function found",
+        .help = "You need to define a main function to compile an executable"
+      }, Error::Type::Err, true);
+    }
+  }
 }
 
 void TypeChecker::register_builtins() {

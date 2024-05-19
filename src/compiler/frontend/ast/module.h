@@ -12,7 +12,8 @@ class Module {
   ast::TopLevelAst ast;
   NamespacePath path;
 public:
-  Module(ast::TopLevelAst ast, NamespacePath path) 
+  const bool is_main = false;
+  Module(ast::TopLevelAst ast, NamespacePath path, bool is_main = false)
     : ast(ast), path(path) {}
   ~Module() = default;
 

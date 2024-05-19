@@ -20,10 +20,11 @@ Module Parser::parse() {
   // substract the root path from the file path
   auto f = file->get_path().substr(root_path.string().size());
   auto path = NamespacePath::from_file(f);
+  bool is_main = (root_path == ctx.root_package_config.value().project.path);
   try {
-    return Module(parse_top_level(), path);
+    return Module(parse_top_level(), path, is_main);
   } catch (const StopParsing&) {
-    return Module(ast::TopLevelAst(), path); // we are gonna error out anyway
+    return Module(ast::TopLevelAst(), path, is_main); // we are gonna error out anyway
   }
 }
 

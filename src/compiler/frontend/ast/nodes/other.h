@@ -69,6 +69,7 @@ private:
   bool is_final = false;
   bool is_virtual = false; 
   bool is_inline = false;  
+  std::optional<std::string> link_name;
   Extern external = None;
   Privacy privacy = Private;
 public:
@@ -85,6 +86,7 @@ public:
   auto get_virtual() const { return is_virtual; }
   auto get_inline() const { return is_inline; }
   auto get_external() const { return external; }
+  auto get_link_name() const { return link_name; }
   
   void set_privacy(Privacy privacy) { this->privacy = privacy; }
   void set_static(bool is_static) { this->is_static = is_static; }
@@ -96,6 +98,7 @@ public:
   void set_virtual(bool is_virtual) { this->is_virtual = is_virtual; }
   void set_inline(bool is_inline) { this->is_inline = is_inline; }
   void set_external(Extern external) { this->external = external; }
+  void set_link_name(const std::string& link_name) { this->link_name = link_name; }
 
   void set_privacy(int privacy) { this->privacy = static_cast<Privacy>(privacy); }
 

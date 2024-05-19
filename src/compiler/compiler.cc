@@ -22,9 +22,12 @@ bool Compiler::compile() {
   // TODO: Iterate through the whole project and compile everything.
   //  For now, we will just do the input_file.
   CLI::get_package_config(ctx, ctx.config_path);
+  ctx.root_package_config = ctx.package_config; 
   // TODO: Populate allowed_paths with all the paths in the project and in the dependencies.
   std::vector<std::filesystem::path> allowed_paths = {ctx.package_config.value().project.path};
   std::vector<frontend::Module> modules;
+  std::vector<std::filesystem::path> object_files;
+  bool is_object = ctx.emit_type == EmitType::Object || ctx.emit_type == EmitType::Executable;
   for (auto& path : allowed_paths) {
     sn_assert(std::filesystem::exists(path), "Path does not exist (looking for {})", path.string());
     // Iterate recursively through the project and the dependencies.
@@ -63,11 +66,15 @@ bool Compiler::compile() {
       } break;
       default: sn_assert(false, "Unknown emit type");
     }
-    bool is_object = ctx.emit_type == EmitType::Object || ctx.emit_type == EmitType::Executable;
     auto output_file = driver::get_output_path(ctx, false, is_object); 
+    object_files.push_back(output_file);
     builder->build(binder.get_modules());
     builder->dump();
     builder->emit(output_file);
+  }
+  if (is_object) {
+    auto output = driver::get_output_path(ctx, true);
+    backend::LLVMBuilder::link(ctx, object_files, output);
   }
   return EXIT_SUCCESS;
 }

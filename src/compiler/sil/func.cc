@@ -34,6 +34,9 @@ void Binder::visit(ast::FnDecl* node) {
 }
 
 std::string FuncDecl::get_mangled_name() const {
+  if (get_link_name()) {
+    return get_link_name().value();
+  }
   auto type = get_type()->as_func();
   assert(type);
   auto name = get_name();

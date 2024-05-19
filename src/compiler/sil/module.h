@@ -15,7 +15,9 @@ class Module {
   frontend::NamespacePath path;
   // TODO: variables
 public:
-  Module(frontend::NamespacePath path) : path(path) {}
+  const bool is_main = false;
+  Module(frontend::NamespacePath path, bool is_main = false)
+    : path(path), is_main(is_main) {}
   ~Module() = default;
 
   void add_fn_decl(FuncDecl* fn_decl) { fn_decls.push_back(fn_decl); }

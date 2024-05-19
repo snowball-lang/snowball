@@ -16,7 +16,6 @@ int LLVMBuilder::emit(std::filesystem::path path) {
     case EmitType::Llvm: {
       llvm::raw_fd_ostream raw_os(path.string(), ec, llvm::sys::fs::OF_None);
       dump(raw_os);
-      utils::Logger::info("Snowball project compiled to an LLVM file! ✨\n");
       return EXIT_SUCCESS;
     }
     case EmitType::Object:
@@ -33,7 +32,6 @@ int LLVMBuilder::emit(std::filesystem::path path) {
   if (builder_ctx.target_machine->addPassesToEmitFile(pass, os, nullptr, file_type)) {
     sn_assert(false, "The target machine can't emit a file of this type");
   }
-  utils::Logger::info("Snowball project compiled to an object file! ✨\n");
   pass.run(*builder_ctx.module);
   os.flush();
   return EXIT_SUCCESS;

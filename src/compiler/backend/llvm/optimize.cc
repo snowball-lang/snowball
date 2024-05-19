@@ -49,18 +49,6 @@ void LLVMBuilder::check_and_optimize() {
   pass_manager.run(*builder_ctx.module);
   applyDebugTransformations(builder_ctx.module.get(), dbg.debug);
 
-  if (dbg.debug) {
-    llvm::legacy::FunctionPassManager fpm(builder_ctx.module.get());
-    fpm.add(llvm::createFunctionInliningPass());
-    fpm.add(llvm::createConstantMergePass());
-     
-    fpm.doInitialization();
-    for (auto& f : *builder_ctx.module) {
-      fpm.run(f);
-    }
-    fpm.doFinalization();
-  }
-
   if (vctx.opt_level == OptLevel::ReleaseWithDebug) {
     llvm::legacy::PassManager debug_pass_manager;
     debug_pass_manager.add(llvm::createStripDeadPrototypesPass());

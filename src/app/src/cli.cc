@@ -96,8 +96,10 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
     clEnumValN(OptLevel::ReleaseWithDebug, "release-with-debug", "Release build with debug info"),
     clEnumValN(OptLevel::ReleaseFast, "release-fast", "Release build with fast optimisations")
   ), cl::init(OptLevel::Release), cl::cat(category));
+  cl::opt<std::string> output("cc", cl::desc("Custom C compiler"), cl::cat(category));
   cl::opt<EmitType>* emit_type = nullptr;
   cl::opt<Target>* target = nullptr;
+  cl::opt<bool>* static_link = nullptr;
   if (!for_run) {
     emit_type = new cl::opt<EmitType>("emit", cl::desc("Emit type"), cl::values(
       clEnumValN(EmitType::Llvm, "llvm", "LLVM IR"),
@@ -112,9 +114,11 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
       clEnumValN(Target::Linux, "linux", "Linux"),
       clEnumValN(Target::MacOS, "macos", "macOS")
     ), cl::init(Target::Unknown), cl::cat(category));
+    static_link = new cl::opt<bool>("static", cl::desc("Static linkage"), cl::cat(category));
   }
   parse_args(args);
   ctx.opt_level = opt_level;
+  ctx.custom_cc = output;
   if (emit_type) {
     ctx.emit_type = *emit_type;
     delete emit_type;
@@ -122,6 +126,10 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
   if (target && *target != Target::Unknown) {
     ctx.target = *target;
     delete target;
+  }
+  if (static_link) {
+    ctx.static_lib = *static_link;
+    delete static_link;
   }
 }
 

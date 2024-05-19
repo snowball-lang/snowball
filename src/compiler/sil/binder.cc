@@ -16,7 +16,7 @@ void Binder::bind(const std::map<uint64_t, std::vector<sema::MonorphosizedFn>>& 
     }
     for (size_t j = 0; j < ast_modules.size(); j++) {
       auto module = ast_modules[j];
-      current_module = std::make_shared<sil::Module>(module.get_path());
+      current_module = std::make_shared<sil::Module>(module.get_path(), module.is_main);
       for (size_t i = 0; i < module.get_ast().size(); i++) {
         module.get_ast()[i]->accept(this);
       }

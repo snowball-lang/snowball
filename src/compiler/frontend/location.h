@@ -12,6 +12,7 @@ struct SourceFile {
   std::filesystem::path path;
 public:
   SourceFile(const std::filesystem::path& path) : path(path) {}
+  SourceFile() = default;
   std::string get_path() const { return path.string(); }
   ~SourceFile() = default;
 };

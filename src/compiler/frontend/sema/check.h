@@ -33,11 +33,14 @@ class TypeChecker : public ast::AstVisitor, public Reporter {
   std::map<uint64_t, std::vector<MonorphosizedClass>> generic_class_registry;
   TypeCheckerContext ctx;
   std::unordered_map<uint64_t, TypeCheckerContext> generic_contexts;
+  // A vector used to keep track of extenral "unmangled" names
+  std::vector<std::string> external_declared;
 public:
   TypeChecker(const Ctx& ctx, std::vector<Module>& modules);
   ~TypeChecker() = default;
 
   void check();
+  void post_check();
 #define SN_REGISTER_ACCEPT(n) virtual void visit(ast::n* node) override;
 #include "compiler/frontend/ast/nodes.def"
 #undef SN_REGISTER_ACCEPT
@@ -97,6 +100,7 @@ private:
   void do_global_class(ast::ClassDecl* class_decl);
 
   std::optional<NamespacePath> search_module(const NamespacePath& path);
+  void check_for_entry(ast::FnDecl* fn_decl);
 };
 
 }

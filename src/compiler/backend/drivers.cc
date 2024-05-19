@@ -84,5 +84,22 @@ std::filesystem::path get_workspace_path(const Ctx& ctx, WorkSpaceType type) {
   }
 }
 
+std::string get_cc(const Ctx& ctx) {
+  if (ctx.custom_cc != "") {
+    return ctx.custom_cc;
+  }
+  if (auto cc = std::getenv("SNOWBALL_CC"); cc != nullptr) {
+    return cc;
+  }
+  switch (ctx.target) {
+    case Target::Windows:
+      return "cl";
+    case Target::Linux:
+    case Target::MacOS:
+      return "cc";
+    default: sn_unreachable();
+  }
+}
+
 }
 }

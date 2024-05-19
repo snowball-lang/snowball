@@ -6,3 +6,7 @@ func test2<T>(x: T) {
 func test(x: crate::mod::Hello<f32>) {
   test2(x);
 }
+
+public func main() i32 {
+
+}

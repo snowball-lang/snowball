@@ -102,6 +102,8 @@ public:
   void build(std::vector<std::shared_ptr<sil::Module>>& modules) override;
   void dump(llvm::raw_ostream& os = llvm::errs()) override;
   int emit(std::filesystem::path path) override;
+
+  static void link(const Ctx& ctx, std::vector<std::filesystem::path>& paths, std::filesystem::path output);
 };
 
 }

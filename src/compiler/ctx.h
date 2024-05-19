@@ -61,6 +61,10 @@ struct Ctx {
   Target target = Target::Unknown;
 
   std::string config_path = "";
+  std::string custom_cc = "";
+  bool static_lib = false;
+
+  PackageConfig root_package_config = std::nullopt;
   PackageConfig package_config = std::nullopt;
 };
 

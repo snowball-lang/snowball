@@ -12,6 +12,10 @@ namespace snowball {
 using namespace utils;
 
 void Error::print(bool as_tail) {
+  if (get_location().length == 0) {
+    Logger::error(message);
+    return;
+  }
   auto contents = globals::read_file(get_location().file->get_path());
   auto dbg_info = reports::DebugSourceLocation::from_file(contents, get_location().line);
   auto message_formatter = [](const std::string& message) {

@@ -51,6 +51,21 @@ void TypeChecker::do_global_func(ast::FnDecl* fn_decl) {
   auto func_type = ast::types::FuncType::create(param_types, ret_type, false);
   unify(fn_decl->get_type(), func_type, fn_decl->get_return_type().get_location());
   add_self_param(fn_decl);
+  if (fn_decl->get_link_name().has_value()) {
+    auto link_name = fn_decl->get_link_name().value();
+    for (auto& decl : external_declared) {
+      if (decl == link_name) {
+        err(fn_decl->get_location(), fmt::format("Function with linkage name '{}' already declared!", link_name), Error::Info {
+          .highlight = "Function with same linkage name already declared!",
+          .help = "Function with same linkage name already declared, to fix this change the linkage name",
+          .see = "https://snowball-lang.gitbook.io/docs/language-reference/functions/external-functions"
+        }, Error::Type::Err);
+        break;
+      }
+    }
+    external_declared.push_back(link_name);
+  }
+  check_for_entry(fn_decl);
   universe.add_fn_decl(path, fn_decl);
   if (fn_decl->get_generics().size() > 0) {
     create_generic_context(fn_decl->get_id());
@@ -76,6 +91,38 @@ void TypeChecker::do_global_class(ast::ClassDecl* class_decl) {
     create_generic_context(class_decl->get_id());
   }
   universe.remove_scope();
+}
+
+void TypeChecker::check_for_entry(ast::FnDecl* fn_decl) {
+  if (fn_decl->get_name() != "main" 
+      || ctx.current_module->is_main
+      || fn_decl->get_privacy() != ast::AttributedNode::Privacy::Public) {
+    return;
+  }
+  if (fn_decl->get_params().size() != 0) {
+    err(fn_decl->get_location(), "Main function should not have any parameters!", Error::Info {
+      .highlight = "Multiple parameters found!",
+      .help = "Main function should not have any parameters, to use command line arguments use the 'std::env' module",
+      .see = "https://snowball-lang.gitbook.io/docs/language-reference/functions/program-entries"
+    }, Error::Type::Err);
+  }
+  auto ret_type = fn_decl->get_type()->as_func()->get_return_type();
+  if (!ret_type->is_int() || !(ret_type->as_int()->get_bits() == 32)) {
+    err(fn_decl->get_location(), "Main function should return an integer of 32 bits!", Error::Info {
+      .highlight = "Return type is not 'i32'",
+      .help = "Main function should return an integer of 32 bits, to return a value use 'return' statement",
+      .see = "https://snowball-lang.gitbook.io/docs/language-reference/functions/program-entries"
+    }, Error::Type::Err);
+  }
+  if (fn_decl->get_generics().size() > 0) {
+    err(fn_decl->get_location(), "Main function should not have any generics!", Error::Info {
+      .highlight = "Generics found!",
+      .help = "Main function should not have any generics, to use generics in a function use a normal function",
+      .see = "https://snowball-lang.gitbook.io/docs/language-reference/functions/program-entries"
+    }, Error::Type::Err);
+  }
+  fn_decl->set_link_name("main");
+  external_declared.push_back("main");
 }
 
 }
