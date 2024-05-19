@@ -120,10 +120,10 @@ std::string Compiler::get_package_type_string() {
   }
   output += "]";
   switch (ctx.target) {
-    case Target::Linux: output += " (Linux)"; break;
-    case Target::MacOS: output += " (MacOS)"; break;
-    case Target::Windows: output += " (Windows)"; break;
-    case Target::Unknown: output += " (Unknown)"; break;
+    case Target::Linux: output += " (linux)"; break;
+    case Target::MacOS: output += " (macos)"; break;
+    case Target::Windows: output += " (windows)"; break;
+    case Target::Unknown: output += " (unknown)"; break;
   }
   return output;
 }

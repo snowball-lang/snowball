@@ -97,7 +97,7 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
     clEnumValN(OptLevel::ReleaseWithDebug, "release-with-debug", "Release build with debug info"),
     clEnumValN(OptLevel::ReleaseFast, "release-fast", "Release build with fast optimisations")
   ), cl::init(OptLevel::Release), cl::cat(category));
-  cl::opt<std::string> output("cc", cl::desc("Custom C compiler"), cl::cat(category));
+  cl::opt<std::string> cc("cc", cl::desc("Custom C compiler"), cl::cat(category));
   cl::opt<EmitType>* emit_type = nullptr;
   cl::opt<Target>* target = nullptr;
   cl::opt<bool>* static_link = nullptr;
@@ -119,7 +119,7 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
   }
   parse_args(args);
   ctx.opt_level = opt_level;
-  ctx.custom_cc = output;
+  ctx.custom_cc = cc;
   if (emit_type) {
     ctx.emit_type = *emit_type;
     delete emit_type;

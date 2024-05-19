@@ -6,6 +6,6 @@ class Hello<T> {
   } 
 }
 
-public func test3<T>(x: T) {
+public func test3<T>(_x: T) {
   
 }

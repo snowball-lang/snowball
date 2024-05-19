@@ -23,8 +23,9 @@ std::filesystem::path get_output_path(const Ctx& ctx, bool for_linking, bool for
         case Target::Windows:
           return default_output_path / (name + ".obj");
         case Target::Linux:
-        case Target::MacOS:
           return default_output_path / (name + ".o");
+        case Target::MacOS:
+          return default_output_path / (name + ".dylib");
         default: sn_unreachable();
       }
     } break;
