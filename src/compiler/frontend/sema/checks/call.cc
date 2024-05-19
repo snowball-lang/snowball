@@ -109,17 +109,19 @@ void TypeChecker::visit(ast::Call* node) {
     unify(node->get_type(), ast::types::ErrorType::create());
     return;
   }
+  auto as_func = callee_type->as_func();
   for (size_t i = 0; i < arg_types.size(); i++) {
-    if (!type_match(callee_type->as_func()->get_param_types()[i], arg_types[i])) {
+    auto invalid = try_cast(node->get_args()[i], as_func->get_param_types()[i]);
+    if (invalid) {
       err(node->get_location(), fmt::format("Type mismatch in argument {} of call to function '{}'", i + 1, callee_type->get_printable_name()), Error::Info {
         .highlight = fmt::format("Type mismatch in argument {} of call to function '{}'", i + 1, callee_type->get_printable_name()),
-        .help = fmt::format("Expected '{}' but found '{}'", callee_type->as_func()->get_param_types()[i]->get_printable_name(), arg_types[i]->get_printable_name())
+        .help = fmt::format("Expected '{}' but found '{}'", as_func->get_param_types()[i]->get_printable_name(), arg_types[i]->get_printable_name())
       }, Error::Type::Err, false);
       unify(node->get_type(), ast::types::ErrorType::create());
       return;
     }
   }
-  unify(node->get_type(), callee_type->as_func()->get_return_type());
+  unify(node->get_type(), as_func->get_return_type());
 }
 
 }

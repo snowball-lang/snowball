@@ -8,6 +8,16 @@ namespace frontend {
 namespace ast {
 namespace types {
 
+unsigned int Type::reference_depth() {
+  unsigned int depth = 0;
+  Type* current = this;
+  while (current->is_reference()) {
+    depth++;
+    current = current->as_reference()->get_ref();
+  }
+  return depth;
+}
+
 std::string IntType::get_printable_name() const {
   if (bits == 1) {
     return "bool";

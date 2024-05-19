@@ -103,6 +103,19 @@ private:
 
   std::optional<NamespacePath> search_module(const NamespacePath& path);
   void check_for_entry(ast::FnDecl* fn_decl);
+
+  enum CastType {
+    NoCast,
+    AutoRef,
+    AutoDeref,
+    Cast,
+    Invalid,
+  };
+  CastType can_cast(ast::types::Type* from, ast::types::Type* to);
+  /// It will overwrite the node if it can cast.
+  /// @returns true if the cast type is invalid
+  /// @see can_cast
+  bool try_cast(ast::Node* node, ast::types::Type* to);
 };
 
 }

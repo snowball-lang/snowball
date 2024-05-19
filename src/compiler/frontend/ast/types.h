@@ -52,6 +52,8 @@ public:
 
   Type* get_reference_to();
   Type* get_pointer_to();
+
+  unsigned int reference_depth();
 };
 
 class IntType final : public Type {

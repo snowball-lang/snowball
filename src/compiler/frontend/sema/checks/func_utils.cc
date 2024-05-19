@@ -26,7 +26,8 @@ ast::FnDecl* TypeChecker::get_best_match(const std::vector<ast::FnDecl*>& decls,
     bool match = true;
     for (size_t i = 0; i < args.size(); ++i) {
       if (decl->get_params().at(i)->get_type()->is_deep_generic()) continue;
-      if (!type_match(decl->get_params().at(i)->get_type(), args.at(i))) {
+      if (can_cast(args.at(i), decl->get_params().at(i)->get_type()) == CastType::Invalid) {
+        // TODO: different casts can have different costs
         match = false;
         break;
       }
