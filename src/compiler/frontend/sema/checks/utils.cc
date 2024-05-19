@@ -129,14 +129,7 @@ ast::types::Type* TypeChecker::get_type(const ast::Expr* expr) {
     return ast::types::ErrorType::create();
   }
   if (item->is_type()) {
-    std::vector<ast::types::Type*> generics;
-    if (auto id = expr->as<ast::Ident>()) {
-      auto idnt_generics = id->get_generics();
-      generics.reserve(idnt_generics.size());
-      for (auto& gen : idnt_generics) {
-        generics.push_back(get_type(gen));
-      }
-    }
+    std::vector<ast::types::Type*> generics = fetch_generics_from_node(expr);
     return deduce_type(item->get_type(), generics, expr->get_location());
   } else {
     err(expr->get_location(), fmt::format("Expected type but '{}' is not a type", name), 
@@ -260,6 +253,20 @@ std::optional<NamespacePath> TypeChecker::search_module(const NamespacePath& pat
     }
   }
   return std::nullopt;
+}
+
+std::vector<ast::types::Type*> TypeChecker::fetch_generics_from_node(const ast::Node* node) {
+  std::vector<ast::types::Type*> generics;
+  if (auto id = node->as<ast::Ident>()) {
+    auto idnt_generics = id->get_generics();
+    generics.reserve(idnt_generics.size());
+    for (auto& gen : idnt_generics) {
+      generics.push_back(get_type(gen));
+    }
+  } else if (auto member = node->as<ast::MemberAccess>()) {
+    return fetch_generics_from_node(member->get_member());
+  }
+  return generics;
 }
 
 }

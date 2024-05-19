@@ -84,6 +84,7 @@ private:
   ast::ClassDecl* monorphosize(ast::ClassDecl*& node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
   void add_self_param(ast::FnDecl*& node);
 
+  std::vector<ast::types::Type*> fetch_generics_from_node(const ast::Node* node);
   ast::types::Type* deduce_type(ast::types::Type* type, const std::vector<ast::types::Type*>& generics, const SourceLocation& loc);
 
   TypeCheckerContext& get_generic_context(uint64_t id);

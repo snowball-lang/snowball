@@ -51,6 +51,7 @@ public:
 class LLVMBuilder : public sil::SilVisitor {
   struct BuilderCache {
     std::map<uint64_t, llvm::StructType*> struct_map;
+    std::map<uint64_t, llvm::DIType*> ditype_map;
   };
 
   std::unique_ptr<llvm::LLVMContext> llvm_ctx;

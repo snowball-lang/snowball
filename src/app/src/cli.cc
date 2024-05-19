@@ -79,7 +79,7 @@ void CLI::get_package_config(Ctx& ctx, const std::string& path) {
       .type = config.get_string_or("project.type", "lib"),
       .authors = authors,
       .license = config.get_string_or("project.license", "<no license>"),
-      .path = std::filesystem::absolute(path.empty() ? "." : path)
+      .path = std::filesystem::absolute(path.empty() ? "." : path).lexically_normal()
     },
     .build = {
       .linkage_libs = {} // TODO: Implement linkage libs

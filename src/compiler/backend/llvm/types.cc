@@ -70,6 +70,9 @@ llvm::DIType* LLVMBuilder::get_ditype(types::Type* type) {
     auto routine = dbg.builder->createSubroutineType(dbg.builder->getOrCreateTypeArray(args));
     return dbg.builder->createPointerType(routine, 64);
   } else if (auto class_ty = type->as_class()) {
+    if (builder_cache.ditype_map.count(class_ty->get_id())) {
+      return builder_cache.ditype_map[class_ty->get_id()];
+    }
     // TODO: Add virtual table
     auto struct_ty = get_type(type);
     auto layout = builder_ctx.module->getDataLayout().getStructLayout(llvm::cast<llvm::StructType>(struct_ty));
@@ -77,6 +80,8 @@ llvm::DIType* LLVMBuilder::get_ditype(types::Type* type) {
     auto file = dbg.get_file(class_ty->get_location().file->get_path());
     // TODO: Add members
     auto decl = class_ty->get_decl();
+    auto ty = dbg.builder->createStructType(dbg.scope, type->get_printable_name(), file, 0, layout->getSizeInBits(), 0 /* TODO: Aligment! */, llvm::DINode::DIFlags::FlagZero, nullptr, {});
+    builder_cache.ditype_map[class_ty->get_id()] = ty;
     for (size_t i = 0; i < decl->get_vars().size(); i++) {
       auto var = decl->get_vars()[i];
       auto var_ty = get_ditype(var->get_type());
@@ -84,7 +89,8 @@ llvm::DIType* LLVMBuilder::get_ditype(types::Type* type) {
       // TODO: Alignment and offset
       members.push_back(dbg.builder->createMemberType(dbg.scope, var->get_name(), file, loc.line, layout->getElementOffsetInBits(i),0,0, llvm::DINode::DIFlags::FlagZero, var_ty));
     }
-    return dbg.builder->createStructType(dbg.scope, type->get_printable_name(), file, 0, layout->getSizeInBits(), 0 /* TODO: Aligment! */, llvm::DINode::DIFlags::FlagZero, nullptr, dbg.builder->getOrCreateArray(members));
+    ty->replaceElements(dbg.builder->getOrCreateArray(members));
+    return ty;
   } else if (auto ref = type->as_reference()) {
     return dbg.builder->createReferenceType(llvm::dwarf::DW_TAG_reference_type, get_ditype(ref->get_ref()));
   } else if (auto ptr = type->as_pointer()) {
