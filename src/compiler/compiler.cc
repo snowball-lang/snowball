@@ -12,6 +12,10 @@
 
 #include "app/cli.h"
 
+#ifndef SNOWBALL_DUMP_OUTPUT
+#define SNOWBALL_DUMP_OUTPUT 0
+#endif
+
 namespace snowball {
 using namespace cli;
 using namespace utils;
@@ -83,7 +87,9 @@ bool Compiler::compile() {
     auto output_file = driver::get_output_path(ctx, false, is_object); 
     object_files.push_back(output_file);
     builder->build(binder.get_modules());
-    //builder->dump();
+#if SNOWBALL_DUMP_OUTPUT == 1
+    builder->dump();
+#endif
     builder->emit(output_file);
   }
   if (is_object) {
