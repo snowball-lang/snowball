@@ -1,7 +1,7 @@
 
 
 func test(x: crate::mod::Hello<f32>) {
-  x.hello();
+  x.hello(x.a);
 }
 
 public func main() i32 {

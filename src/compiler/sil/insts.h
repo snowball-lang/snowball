@@ -111,6 +111,24 @@ public:
   }
 };
 
+class ValueIndex final : public Inst {
+  Inst* value;
+  uint64_t index;
+public:
+  ValueIndex(LocationHolder& loc, ast::types::Type* type, Inst* value, uint64_t index) 
+    : Inst(loc, type), value(value), index(index) {}
+  ~ValueIndex() = default;
+
+  auto get_value() const { return value; }
+  auto get_index() const { return index; }
+  EMITABLE()
+
+  static auto create(LocationHolder loc, ast::types::Type* type, Inst* value, uint64_t index) {
+    return new ValueIndex(loc, type, value, index);
+  }
+};
+
+
 class Call final : public Inst {
   Inst* callee;
   std::vector<Inst*> args;

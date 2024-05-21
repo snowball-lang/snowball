@@ -42,6 +42,8 @@ private:
   Ident* member;
   AccessType access_type;
   uint64_t var_id = 0;
+  uint64_t index = 0;
+  enum { Var, Index } kind = Var;
 public:
   MemberAccess(const SourceLocation& location, Expr* object, Ident* member, AccessType access_type = AccessType::Default)
     : Expr(location), object(object), member(member), access_type(access_type) {}
@@ -52,7 +54,14 @@ public:
   auto get_member() const { return member; }
   auto get_access_type() const { return access_type; }
 
-  auto get_var_id() const { return var_id; }
+  auto is_type_index() const { return kind == Index; }
+  auto get_index() const { assert(is_type_index()); return index; }
+  void set_index(uint64_t idx) { 
+    kind = Index;
+    index = idx; 
+  }
+
+  auto get_var_id() const { assert(!is_type_index()); return var_id; }
   void set_var_id(uint64_t id) { var_id = id; }
 
   static auto create(const SourceLocation& location, Expr* object, Ident* member, AccessType access_type = AccessType::Default) {

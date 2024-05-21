@@ -61,14 +61,14 @@ private:
   void generate_global_scope(ast::TopLevelAst& ast, bool first = false);
   NamespacePath get_namespace_path(const std::string& name);
   
-  GetResult get_item(const ast::Expr* expr, NameAccumulator acc = NameAccumulator());
+  GetResult get_item(ast::Expr* expr, NameAccumulator acc = NameAccumulator());
   GetResult get_item(const NamespacePath& path);
   GetResult get_item(const std::string& name);
 
-  GetResult get_from_type(const ast::MemberAccess* node, ast::types::Type* type);
+  GetResult get_from_type(ast::MemberAccess* node, ast::types::Type* type);
 
   ast::types::Type* get_type(const NamespacePath& path);
-  ast::types::Type* get_type(const ast::Expr* expr);
+  ast::types::Type* get_type(ast::Expr* expr);
   ast::types::Type* get_type(const std::string& name);
   ast::types::Type* get_type(const ast::TypeRef& tr);
 
@@ -100,6 +100,8 @@ private:
 
   void do_global_func(ast::FnDecl* fn_decl);
   void do_global_class(ast::ClassDecl* class_decl);
+  // note: Universe scope must be added before calling this function
+  void check_fn(ast::FnDecl*& fn_decl, bool as_monorph = false);
 
   std::optional<NamespacePath> search_module(const NamespacePath& path);
   void check_for_entry(ast::FnDecl* fn_decl);

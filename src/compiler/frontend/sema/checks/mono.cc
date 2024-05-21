@@ -71,9 +71,9 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const std::map<
     var->accept(this);
   }
   for (auto& method : node->get_funcs()) {
-    method->accept(this);
+    check_fn(method, true);
     method->set_parent_type(node->get_type());
-    add_self_param(method, true);
+    method->accept(this);
   }
   ctx.current_class = backup_class;
   universe.remove_scope();

@@ -24,6 +24,8 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast, bool first) {
       for (auto& method : class_decl->get_funcs()) {
         auto backup = ctx.current_class;
         ctx.current_class = class_decl;
+        for (auto& generic : class_decl->get_generics())
+          universe.add_item(generic.get_name(), ast::types::GenericType::create(generic.get_name()));
         do_global_func(method);
         ctx.current_class = backup;
         if (!class_decl->has_generics()) {
@@ -38,22 +40,7 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast, bool first) {
 void TypeChecker::do_global_func(ast::FnDecl* fn_decl) {
   universe.add_scope();
   auto path = get_namespace_path(fn_decl->get_name());
-  for (auto& generic : fn_decl->get_generics())
-    universe.add_item(generic.get_name(), ast::types::GenericType::create(generic.get_name()));
-  std::vector<ast::types::Type*> param_types;
-  unsigned int i = 0;
-  for (auto& param : fn_decl->get_params()) {
-    param_types.push_back(nullptr);
-    assert(param->get_decl_type());
-    unify(param_types[i], get_type(param->get_decl_type().value()), param->get_location());
-    param->get_type() = param_types[i];
-    i++;
-  }
-  sn_assert(param_types.size() == fn_decl->get_params().size(), "param_types.size() != fn_decl->get_params().size()");
-  auto ret_type = get_type(fn_decl->get_return_type());
-  auto func_type = ast::types::FuncType::create(param_types, ret_type, false);
-  unify(fn_decl->get_type(), func_type, fn_decl->get_return_type().get_location());
-  add_self_param(fn_decl);
+  check_fn(fn_decl);
   if (fn_decl->get_link_name().has_value()) {
     auto link_name = fn_decl->get_link_name().value();
     for (auto& decl : external_declared) {

@@ -13,7 +13,7 @@
 #include "app/cli.h"
 
 #ifndef SNOWBALL_DUMP_OUTPUT
-#define SNOWBALL_DUMP_OUTPUT 0
+#define SNOWBALL_DUMP_OUTPUT 1
 #endif
 
 namespace snowball {

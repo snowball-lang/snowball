@@ -10,7 +10,7 @@ namespace snowball {
 namespace frontend {
 namespace sema {
 
-TypeChecker::GetResult TypeChecker::get_item(const ast::Expr* expr, NameAccumulator acc) {
+TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator acc) {
   if (const auto id = expr->as<ast::Ident>()) {
     auto path = acc.get_path(id->get_name());
     acc.add(id->get_name());
@@ -116,7 +116,7 @@ ast::types::Type* TypeChecker::get_type(const NamespacePath& path) {
   return get_type(expr);
 }
 
-ast::types::Type* TypeChecker::get_type(const ast::Expr* expr) {
+ast::types::Type* TypeChecker::get_type(ast::Expr* expr) {
   auto [item, name] = get_item(expr);
   if (!item.has_value()) {
     auto dym = get_did_you_mean(name);
@@ -236,16 +236,19 @@ NamespacePath NameAccumulator::get_path(const std::string& name) const {
   return p;
 }
 
-TypeChecker::GetResult TypeChecker::get_from_type(const ast::MemberAccess* node, ast::types::Type* type) {
+TypeChecker::GetResult TypeChecker::get_from_type(ast::MemberAccess* node, ast::types::Type* type) {
   auto member = node->get_member();
   auto member_name = member->get_name();
   auto full_name = type->get_printable_name() + "::" + member_name;
   if (auto as_class = type->as_class()) {
     auto decl = as_class->get_decl();
+    size_t index = 0;
     for (auto& field : decl->get_vars()) {
       if (field->get_name() == member_name) {
+        node->set_index(index);
         return {TypeCheckItem::create_var(field), full_name};
       }
+      index++;
     }
     std::vector<ast::FnDecl*> methods;
     for (auto& method : decl->get_funcs()) {
