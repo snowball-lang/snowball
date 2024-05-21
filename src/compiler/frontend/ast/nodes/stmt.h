@@ -28,7 +28,7 @@ public:
   Block(const SourceLocation& location, const std::vector<Node*>& stmts) : Stmt(location), stmts(stmts) {}
   ~Block() = default;
   Node* clone() const override;
-  auto get_stmts() const { return stmts; }
+  auto& get_stmts() { return stmts; }
   static auto create(const SourceLocation& location, const std::vector<Node*>& stmts) {
     return new Block(location, stmts);
   }
@@ -42,7 +42,7 @@ private:
   std::string name;
   std::vector<VarDecl*> params;
   TypeRef return_type;
-  Block* body;
+  std::optional<Block*> body;
   // This is a clone of the body, used for cloning the function, 
   // and fetching the body without it not being typechecked
   Block* body_clone = nullptr;
@@ -50,11 +50,9 @@ private:
   std::optional<types::Type*> parent_type = std::nullopt;
 public:
   FnDecl(const SourceLocation& location, const std::string& name,   
-        const std::vector<VarDecl*>& params, TypeRef return_type, Block* body,
+        const std::vector<VarDecl*>& params, TypeRef return_type, std::optional<Block*> body,
         std::optional<GenericNode> generics = std::nullopt, 
-        const AttributedNode& attributes = AttributedNode())
-    : Stmt(location), GenericNode(generics), AttributedNode(attributes), name(name), params(params), 
-      return_type(return_type), body(body) { create_body_clone(); }
+        const AttributedNode& attributes = AttributedNode());
   ~FnDecl() = default;
   auto& get_name() const { return name; }
   auto& get_params() { return params; }
@@ -68,7 +66,7 @@ public:
   void set_parent_type(types::Type* type) { parent_type = type; }
   auto get_parent_type() const { return parent_type; }
   static auto create(const SourceLocation& location, const std::string& name, 
-      const std::vector<VarDecl*>& params, TypeRef return_type, Block* body,
+      const std::vector<VarDecl*>& params, TypeRef return_type, std::optional<Block*> body,
       std::optional<GenericNode> generics = std::nullopt, 
       const AttributedNode& attributes = AttributedNode()) {
     return new FnDecl(location, name, params, return_type, body, generics, attributes);

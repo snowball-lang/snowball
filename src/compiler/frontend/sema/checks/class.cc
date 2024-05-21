@@ -21,10 +21,11 @@ void TypeChecker::visit(ast::ClassDecl* node) {
     auto as_generic = generic->as_generic();
     universe.add_item(as_generic->get_name(), as_generic);
   }
-  // We do not generate the methods here, we only check the class
-  // and it's variables
   for (auto& var : node->get_vars()) {
     var->accept(this);
+  }
+  for (auto& method : node->get_funcs()) {
+    method->accept(this);
   }
   universe.remove_scope();
   ctx.current_class = backup;

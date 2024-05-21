@@ -1,9 +1,9 @@
 
+external "C" func printf();
 
-func test(x: crate::mod::Hello<f32>) {
+public func test(x: crate::mod::Hello<f32>) {
   x.hello(x.a);
 }
 
 public func main() i32 {
-
 }

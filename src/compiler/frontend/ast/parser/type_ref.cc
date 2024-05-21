@@ -29,6 +29,7 @@ ast::TypeRef Parser::parse_type_ref() {
       return ast::TypeRef::create(name->get_location(), expr);
     }
     default: {
+      next();
       err("Unexpected token found while parsing type reference", Error::Info {
         .highlight = fmt::format("Token '{}' is not expected here", current),
         .help = "At the top-level, only top-level items are allowed",

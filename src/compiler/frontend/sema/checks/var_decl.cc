@@ -11,7 +11,7 @@ void TypeChecker::visit(ast::VarDecl* node) {
     unify(node->get_type(), get_type(type.value()), type.value().get_location());
     // TODO: add type to the infer context
   }
-  if (auto expr = node->get_value()) {
+  if (auto& expr = node->get_value()) {
     expr.value()->accept(this);
     if (expr.value()->get_type()->is_error())
       return;
@@ -20,6 +20,7 @@ void TypeChecker::visit(ast::VarDecl* node) {
   if (!node->get_decl_type() && !node->get_value()) {
     unify(node->get_type(), get_unknown_type());
   }
+  assert(node->get_type() != nullptr);
   define_variable(node, node->get_location());
 }
 

@@ -34,12 +34,17 @@ ast::FnDecl* Parser::parse_fn_decl(const ast::AttributedNode& attrs) {
   }
   consume(Token::Type::BracketRparent, "a closing parenthesis after the parameters"); // no recovery
   ast::TypeRef return_type = node<ast::TypeRef>(node<ast::Ident>("void"));
-  if (!is(Token::Type::BracketLcurly)) {
+  if (!is(Token::Type::BracketLcurly) && !is(Token::Type::SymSemiColon)) {
     return_type = parse_type_ref();
   }
-  expect(Token::Type::BracketLcurly, "an opening curly brace after the return type");
-  auto block = parse_block();
-  next(); // skip the closing curly brace
+  std::optional<ast::Block*> block = std::nullopt;
+  if (is(Token::Type::SymSemiColon)) {
+    next();
+  } else {
+    expect(Token::Type::BracketLcurly, "an opening curly brace after the return type");
+    block = parse_block();
+    next(); // skip the closing curly brace
+  }
   return pnode<ast::FnDecl>(pos, name, params, return_type, block, generics, attrs);
 }
 
