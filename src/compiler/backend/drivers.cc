@@ -102,5 +102,15 @@ std::string get_cc(const Ctx& ctx) {
   }
 }
 
+int run(const Ctx& ctx, const std::string& output) {
+  std::vector<std::string> args;
+  args.push_back(output);
+  std::string cmd;
+  for (auto& arg : args) {
+    cmd += arg + " ";
+  }
+  return std::system(cmd.c_str());
+}
+
 }
 }

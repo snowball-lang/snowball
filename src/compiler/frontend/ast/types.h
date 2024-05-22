@@ -30,6 +30,7 @@ class ReferenceType;
 class PointerType;
 
 class Type {
+  bool is_mutable = false;
 public:
   virtual ~Type() = default;
 #define CHILD(x, y) virtual y* as_##x() { return nullptr; } \
@@ -53,7 +54,11 @@ public:
   Type* get_reference_to();
   Type* get_pointer_to();
 
+  bool is_mutable_type() const { return is_mutable; }
   unsigned int reference_depth();
+
+  Type() = default;
+  Type(bool is_mutable) : is_mutable(is_mutable) {}
 };
 
 class IntType final : public Type {
@@ -254,13 +259,16 @@ public:
 class PointerType final : public Type {
   Type* pointee;
 public:
-  PointerType(Type* pointee) : pointee(pointee) {}
+  PointerType(Type* pointee, bool is_const) 
+    : Type(!is_const), pointee(pointee) {}
   ~PointerType() = default;
 
   auto get_pointee() const { return pointee; }
   auto& get_mut_pointee() { return pointee; }
 
-  static auto create(Type* pointee) { return new PointerType(pointee); }
+  static auto create(Type* pointee, bool is_const = false) {
+    return new PointerType(pointee, is_const);
+  }
 
   PointerType* as_pointer() override { return this; }
   bool is_pointer() const override { return true; }

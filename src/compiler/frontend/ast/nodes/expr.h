@@ -72,17 +72,50 @@ public:
   SN_DEFAULT_CLONE()
 };
 
-class TypeRef final : public LocationHolder {
-  Expr* name;
+class PointerType;
+
+class TypeRef : public LocationHolder {
 public:
-  TypeRef(const SourceLocation& location, Expr* name)
-    : LocationHolder(location), name(name) {}
+  enum Type {
+    Pointer = 0,
+    Normal  = 1,
+  };
+private:
+  Expr* name;
+  Type tt = Type::Normal;
+  friend PointerType;
+public:
+  TypeRef(const SourceLocation& location, Expr* name, Type tt)
+    : LocationHolder(location), name(name), tt(tt) {}
   ~TypeRef() = default;
 
   auto get_name() const { return name; }
 
-  static auto create(const SourceLocation& location, Expr* name) {
-    return TypeRef(location, name);
+#define SUB_TYPE(nType, name, eName) \
+  nType* as_##name() const { \
+    if (tt == Type::eName) return (nType*)this; \
+    return nullptr; } \
+  bool is_##name() const { return tt == Type::eName; }
+  SUB_TYPE(PointerType, pointer, Pointer)
+#undef SUB_TYPE
+
+  static auto create(const SourceLocation& location, Expr* name, Type tt = Type::Normal) {
+    return TypeRef(location, name, tt);
+  }
+};
+
+class PointerType : public TypeRef, public Self<PointerType> {
+  bool is_const;
+public:
+  PointerType(const SourceLocation& location, TypeRef type, bool is_const)
+    : TypeRef(location, type.get_name(), Pointer), is_const(is_const) {}
+  ~PointerType() = default;
+
+  auto get_type() const { return get_name(); }
+  auto is_const_pointer() const { return is_const; }
+
+  static auto create(const SourceLocation& location, TypeRef type, bool is_const) {
+    return PointerType(location, type, is_const);
   }
 };
 

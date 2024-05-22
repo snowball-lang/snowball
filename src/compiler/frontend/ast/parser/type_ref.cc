@@ -28,8 +28,29 @@ ast::TypeRef Parser::parse_type_ref() {
       }
       return ast::TypeRef::create(name->get_location(), expr);
     }
-    default: {
+    case Token::Type::OpMul: {
       next();
+      bool is_const = false;
+      switch (current.type) {
+        case Token::Type::KwordConst: {
+          is_const = true;
+          next();
+          break;
+        } 
+        case Token::Type::KwordMutable: {
+          next();
+          break;
+        }
+        default: err("Expected 'const' or 'mut' after the '*' in a pointer type", Error::Info {
+          .highlight = fmt::format("Token '{}' is not expected here", current),
+          .help = "Add 'const' or 'mutable' after the '*' in a pointer type",
+          .see = "https://snowball-lang.gitbook.io/docs/language-reference/types/pointer-types"
+        });
+      }
+      auto type = parse_type_ref();
+      return ast::PointerType::create(type.get_location(), type, is_const);
+    }
+    default: {
       err("Unexpected token found while parsing type reference", Error::Info {
         .highlight = fmt::format("Token '{}' is not expected here", current),
         .help = "At the top-level, only top-level items are allowed",

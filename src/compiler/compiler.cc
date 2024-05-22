@@ -92,12 +92,16 @@ bool Compiler::compile() {
 #endif
     builder->emit(output_file);
   }
+  auto output = driver::get_output_path(ctx, true);
   if (is_object) {
-    auto output = driver::get_output_path(ctx, true);
     backend::LLVMBuilder::link(ctx, object_files, output);
   }
   auto end = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+  if (ctx.build_mode == BuildMode::Run) {
+    Logger::status("Running", ctx.package_config.value().project.name);
+    return driver::run(ctx, output);
+  }
   Logger::raw("");
   Logger::success(F("Compiled snowball project in {}ms!", duration));
   return EXIT_SUCCESS;
