@@ -12,5 +12,16 @@ void Binder::visit(ast::Number* node) {
   value = ConstInt::create(node->get_location(), get_type(node), int_val);
 }
 
+void Binder::visit(ast::String* node) {
+  auto val = node->get_value();
+  // Remove the parsed quotes form the value
+  val = val.substr(1, val.size() - 2);
+  if (node->get_prefix() == 'b' || node->get_prefix() == 'B') {
+    value = ConstString::create(node->get_location(), get_type(node), val);
+    return;
+  }
+  sn_assert(false, "Normal strings are not supported yet!");
+}
+
 }
 }

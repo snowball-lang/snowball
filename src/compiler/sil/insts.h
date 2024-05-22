@@ -160,6 +160,21 @@ public:
   }
 };
 
+class ConstString final : public Inst {
+  std::string value;
+public:
+  ConstString(LocationHolder& loc, ast::types::Type* type, const std::string& value) 
+    : Inst(loc, type), value(value) {}
+  ~ConstString() = default;
+
+  auto get_value() const { return value; }
+  EMITABLE()
+
+  static auto create(LocationHolder loc, ast::types::Type* type, const std::string& value) {
+    return new ConstString(loc, type, value);
+  }
+};
+
 class Reference final : public Inst {
   Inst* value;
 public:

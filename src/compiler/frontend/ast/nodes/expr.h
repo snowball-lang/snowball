@@ -136,6 +136,26 @@ public:
   SN_DEFAULT_CLONE()
 };
 
+class String final : public Self<String>, public Expr {
+  std::string value;
+  char prefix = 0;
+public:
+  String(const SourceLocation& location, const std::string& value, char prefix = 0)
+    : Expr(location), value(value), prefix(prefix) {}
+  ~String() = default;
+
+  auto get_value() const { return value; }
+  auto get_prefix() const { return prefix; }
+
+  static auto create(const SourceLocation& location, const std::string& value, char prefix = 0) {
+    return new String(location, value, prefix);
+  }
+
+  SN_VISIT()
+  SN_DEFAULT_CLONE()
+};
+
+
 class Call final : public Expr, public GenericNode<TypeRef> {
   Expr* callee;
   std::vector<Expr*> args;
