@@ -1,5 +1,5 @@
 
-external "C" func printf(x: *const u8);
+unsafe external "C" func printf(x: *const u8);
 
 public func test(x: crate::mod::Hello<f32>) {
   x.hello(x.a);

@@ -7,3 +7,7 @@ struct ParsingClassResult
 
 ParsingClassResult parse_class_body();
 ast::Ident* parse_ident(); // parse an identifier (used as expression identifier)
+bool parse_operator(std::vector<ast::Expr*>& exprs);
+void parse_extern_decl(ast::AttributedNode& node);
+
+ast::Expr* fix_precedence(std::vector<ast::Expr*>& exprs);
