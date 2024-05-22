@@ -1,6 +1,6 @@
 class Hello<T> {
   let a: T;
   public func hello(x: T) {
-    
+    let n = x;
   }
 }

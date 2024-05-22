@@ -26,7 +26,9 @@ void TypeChecker::visit(ast::FnDecl* node) {
     assert(node->get_params().at(i)->get_type() != nullptr);
     define_variable(node->get_params()[i], node->get_params()[i]->get_location());
   }
-  node->get_body()->accept(this);
+  if (auto block = node->get_body()) {
+    block.value()->accept(this);
+  }
   ctx.current_function = backup;
   universe.remove_scope();
 }

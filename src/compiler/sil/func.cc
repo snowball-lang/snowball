@@ -24,9 +24,11 @@ void Binder::visit(ast::FnDecl* node) {
     accept(param);
   }
   var_ids.insert({node->get_id(), func});  
-  auto body = accept(node->get_body());
-  assert(body->is<Block>());
-  func->set_body(body->as<Block>());
+  if (auto block = node->get_body()) {
+    auto body = accept(block.value());
+    assert(body->is<Block>());
+    func->set_body(body->as<Block>());
+  }
   if (node->should_generate()) {
     current_module->add_fn_decl(func);
   }
