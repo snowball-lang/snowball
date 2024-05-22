@@ -45,6 +45,12 @@ ast::FnDecl* Parser::parse_fn_decl(const ast::AttributedNode& attrs) {
     block = parse_block();
     next(); // skip the closing curly brace
   }
+  if (attrs.get_external() == ast::AttributedNode::Extern::C && !attrs.get_unsafe()) {
+    err("extern functions must be marked as unsafe", Error::Info {
+      .highlight = fmt::format("This function is marked as extern"),
+      .help = fmt::format("Mark this function as unsafe to allow extern functions"),
+    }, Error::Type::Err);
+  }
   return pnode<ast::FnDecl>(pos, name, params, return_type, block, generics, attrs);
 }
 

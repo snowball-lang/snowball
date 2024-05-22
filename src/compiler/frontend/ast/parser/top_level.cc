@@ -30,6 +30,7 @@ ast::TopLevelAst Parser::parse_top_level(Token::Type terminator) {
           case Token::Type::KwordFinal:
           case Token::Type::KwordExtern:
           case Token::Type::KwordTypedef:
+          case Token::Type::KwordUnsafe:
             break;
           default:
             err("Expected a top-level item after privacy modifier", Error::Info {
@@ -47,6 +48,7 @@ ast::TopLevelAst Parser::parse_top_level(Token::Type terminator) {
           case Token::Type::KwordFunc:
           case Token::Type::KwordExtern:
           case Token::Type::KwordStatic:
+          case Token::Type::KwordUnsafe:
             break;
           default:
             err("Expected a function declaration after 'inline' keyword", Error::Info {
@@ -79,6 +81,7 @@ ast::TopLevelAst Parser::parse_top_level(Token::Type terminator) {
           case Token::Type::KwordFunc:
           case Token::Type::KwordConst:
           case Token::Type::KwordExtern:
+          case Token::Type::KwordUnsafe:
             break;
           default:
             err("Expected a top-level item after 'static' keyword", Error::Info {
@@ -98,6 +101,23 @@ ast::TopLevelAst Parser::parse_top_level(Token::Type terminator) {
       case Token::Type::KwordClass:
         top_level.push_back(parse_class_decl(global_attrs));
         global_attrs = ast::AttributedNode();
+        break;
+      case Token::Type::KwordUnsafe:
+        global_attrs.set_unsafe(true);
+        next();
+        switch (current.type) {
+          case Token::Type::KwordFunc:
+          case Token::Type::KwordExtern:
+          case Token::Type::KwordStatic:
+          case Token::Type::KwordInline:
+            break;
+          default:
+            err("Expected a top-level item after 'unsafe' keyword", Error::Info {
+              .highlight = fmt::format("Token '{}' is not expected here", current),
+              .help = "At the top-level, only top-level items are allowed",
+              .see = "https://snowball-lang.gitbook.io/docs/language-reference/global-scope"
+            });
+        }
         break;
       default:
         err("Unexpected token found while parsing top-level", Error::Info {
