@@ -1,4 +1,7 @@
 
+#ifndef __SNOWBALL_FRONTEND_AST_OPERATORS_H__
+#define __SNOWBALL_FRONTEND_AST_OPERATORS_H__
+
 namespace snowball {
 namespace frontend {
 
@@ -11,3 +14,5 @@ enum class Operator {
 
 }
 }
+
+#endif // __SNOWBALL_FRONTEND_AST_OPERATORS_H__
