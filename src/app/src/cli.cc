@@ -39,14 +39,12 @@ Ctx CLI::parse(int argc, char** argv) {
 #else
 #error "Unknown target compiler"
 #endif
-
   cl::SetVersionPrinter([](raw_ostream & OS) {
       OS SNOWBALL_PRINT_MESSAGE;
     });
   std::vector<const char*> args{argv[0]};
-  if (argc < 2) {
+  if (argc < 2)
     print_help(args);
-  }
   for (int i = 2; i < argc; i++)
     args.push_back(argv[i]);
   std::string mode = argv[1];
@@ -64,12 +62,8 @@ Ctx CLI::parse(int argc, char** argv) {
     Logger::error(F("Unknown mode '{}'", mode));
     print_help(args);
   }
-
-  if (!config.empty()) {
+  if (!config.empty())
     ctx.config_path = config;
-    get_package_config(ctx, config);
-  }
-  
   return ctx;
 }
 
