@@ -154,8 +154,8 @@ Type* Type::get_reference_to() {
   return ReferenceType::create(this);
 }
 
-Type* Type::get_pointer_to() {
-  return PointerType::create(this);
+Type* Type::get_pointer_to(bool is_const) {
+  return PointerType::create(this, is_const);
 }
 
 std::string ReferenceType::get_printable_name() const {

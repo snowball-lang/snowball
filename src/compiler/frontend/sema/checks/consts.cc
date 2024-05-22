@@ -32,6 +32,21 @@ void TypeChecker::visit(ast::Number* node) {
   unify(node->get_type(), get_type(type), node->get_location());
 }
 
+void TypeChecker::visit(ast::String* node) {
+  switch (node->get_prefix()) {
+    case 'b':
+    case 'B':
+      unify(node->get_type(), get_type("u8")->get_pointer_to(false), node->get_location());
+      break;
+    case 0:
+      sn_assert(false, "Normal strings are not supported yet!");
+    default: err(node->get_location(), "Invalid string prefix!", Error::Info {
+      .highlight = "Invalid string prefix",
+      .help = "Valid string prefixes are 'b' and 'B' for byte strings."
+    }, Error::Type::Err, false);
+  }
+}
+
 }
 }
 }

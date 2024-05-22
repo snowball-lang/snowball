@@ -52,7 +52,7 @@ public:
   virtual bool is_deep_generic() const { return false; }
 
   Type* get_reference_to();
-  Type* get_pointer_to();
+  Type* get_pointer_to(bool is_const = false);
 
   bool is_mutable_type() const { return is_mutable; }
   unsigned int reference_depth();

@@ -10,6 +10,10 @@
 
 #include "compiler/utils/utils.h"
 
+#define NEXT_TO(i, f) \
+  (i.location.first == f.location.first && \
+   i.location.second == f.location.second-1)
+
 namespace snowball {
 namespace frontend {
 
@@ -19,11 +23,20 @@ ast::Expr* Parser::parse_expr(bool allow_assign) {
     next();
     switch (current.type) {
       case Token::Type::Identifier: {
+        if (NEXT_TO(current, peek()) && is(Token::Type::ValueString, peek())) {
+          auto prefix = current.to_string()[0];
+          next();
+          expr = node<ast::String>(current.to_string(), prefix);
+          break;
+        }
         expr = parse_ident();
         break;
       }
       case Token::Type::ValueNumber:
         expr = node<ast::Number>(current.to_string());
+        break;
+      case Token::Type::ValueString:
+        expr = node<ast::String>(current.to_string());
         break;
       default:
         err("Unexpected token found while parsing expression", Error::Info {

@@ -1,12 +1,20 @@
 
 #include "compiler/sil/insts.h"
 #include "compiler/sil/binder.h"
+#include "compiler/frontend/ast/nodes.h"
 
 namespace snowball {
 namespace sil {
 
+using Extern = frontend::ast::AttributedNode::Extern;
+
 void Binder::visit(ast::VarDecl* node) {
-  if (node->get_used() == 0 && !utils::sw(node->get_name(), "_")) {
+  if (node->get_used() == 0 
+      && !utils::sw(node->get_name(), "_") 
+      && (ctx.current_func 
+        ? ctx.current_func.value()->get_external() == Extern::None 
+        : true
+      )) {
     err(node->get_location(), fmt::format("variable '{}' is declared but never used", node->get_name()), Error::Info {
       .highlight = fmt::format("This variable has never been used"),
       .help = fmt::format("Prefix the variable name with an underscore to suppress this warning\nFor example: _{}", node->get_name()),
