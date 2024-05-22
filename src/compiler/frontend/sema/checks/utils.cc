@@ -142,6 +142,10 @@ ast::types::Type* TypeChecker::get_type(ast::Expr* expr) {
 }
 
 ast::types::Type* TypeChecker::get_type(const ast::TypeRef& tr) {
+  if (auto as_ptr = tr.as_pointer()) {
+    auto pointee = get_type(as_ptr->get_type());
+    return ast::types::PointerType::create(pointee, as_ptr->is_const_pointer());
+  }
   return get_type(tr.get_name());
 }
 
