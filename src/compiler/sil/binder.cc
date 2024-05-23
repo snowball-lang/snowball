@@ -23,8 +23,12 @@ void Binder::bind(const std::pair<std::map<uint64_t, std::vector<sema::Monorphos
           for (auto& func : reg) func.decl->accept(this);
         }
         for (auto& [_, reg] : generic_registry.first) {
-          for (auto& cls : reg) for (auto& m : cls.decl->get_funcs())
-            m->accept(this);
+          for (auto& cls : reg) {
+            if (cls.decl->get_type()->is_deep_unknown()) continue;
+            for (auto& m : cls.decl->get_funcs()) {
+              m->accept(this);
+            }
+          }
         }
       }
       for (size_t i = 0; i < module.get_ast().size(); i++) {

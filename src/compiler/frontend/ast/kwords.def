@@ -40,6 +40,7 @@
 #define SN_KEYWORD_OPERATOR  "operator"
 #define SN_KEYWORD_VARIABLE  "let"
 #define SN_KEYWORD_NEW       "new"
+#define SN_KEYWORD_DELETE    "delete"
 #define SN_KEYWORD_THROW     "throw"
 #define SN_KEYWORD_CONSTANT  "const"
 #define SN_KEYWORD_TRY       "try"

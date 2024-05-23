@@ -18,8 +18,9 @@ namespace snowball {
 namespace frontend {
 
 ast::Expr* Parser::parse_expr(bool allow_assign) {
-  ast::Expr* expr = nullptr;
+  std::vector<ast::Expr*> exprs;
   while (true) {
+    ast::Expr* expr = nullptr;
     next();
     switch (current.type) {
       case Token::Type::Identifier: {
@@ -46,39 +47,41 @@ ast::Expr* Parser::parse_expr(bool allow_assign) {
         });
         assert(false);
     }
-    break; // TODO: Remove this break statement, support binary expressions, etc.
-  }
-  next();
-  while (true) {
-    switch (current.type) {
-      case Token::Type::BracketLparent: {
-        std::vector<ast::Expr*> args;
-        while (!is(Token::Type::BracketRparent, peek())) {
-          args.push_back(parse_expr());
-          prev();
-          if (is(Token::Type::BracketRparent, peek())) break;
-          consume(Token::Type::SymComma, "a comma after the argument", Token::Type::BracketRparent);
-        }
-        next();
-        consume(Token::Type::BracketRparent, "a closing parenthesis after the arguments");
-        expr = pnode<ast::Call>(expr->get_location(), expr, args);
-      } break;
-      case Token::Type::SymDot:
-      case Token::Type::SymColcol: {
-        auto op = current.type == Token::Type::SymDot 
-          ? ast::MemberAccess::AccessType::Default 
-          : ast::MemberAccess::AccessType::Static;
-        next();
-        auto name = parse_ident();
-        expr = node<ast::MemberAccess>(expr, name, op);
-        next();
-      } break;
-      default: goto continue_parse;
+    next();
+    while (true) {
+      switch (current.type) {
+        case Token::Type::BracketLparent: {
+          std::vector<ast::Expr*> args;
+          while (!is(Token::Type::BracketRparent, peek())) {
+            args.push_back(parse_expr());
+            prev();
+            if (is(Token::Type::BracketRparent, peek())) break;
+            consume(Token::Type::SymComma, "a comma after the argument", Token::Type::BracketRparent);
+          }
+          next();
+          consume(Token::Type::BracketRparent, "a closing parenthesis after the arguments");
+          expr = pnode<ast::Call>(expr->get_location(), expr, args);
+        } break;
+        case Token::Type::SymDot:
+        case Token::Type::SymColcol: {
+          auto op = current.type == Token::Type::SymDot 
+            ? ast::MemberAccess::AccessType::Default 
+            : ast::MemberAccess::AccessType::Static;
+          next();
+          auto name = parse_ident();
+          expr = node<ast::MemberAccess>(expr, name, op);
+          next();
+        } break;
+        default: goto continue_parse;
+      }
+    }
+  continue_parse:
+    exprs.push_back(expr);
+    if (parse_operator(exprs)) {
+      break;
     }
   }
-continue_parse:
-  assert(expr);
-  return expr;
+  return fix_precedence(exprs);
 }
 
 ast::Ident* Parser::parse_ident() {

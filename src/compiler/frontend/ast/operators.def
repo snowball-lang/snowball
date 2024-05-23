@@ -1,0 +1,85 @@
+
+#ifndef DEFINE_OP
+#error "DEFINE_OP must be defined"
+#endif
+
+DEFINE_OP(OpMul, Mul, "*")
+DEFINE_OP(OpMod, Mod, "%")
+DEFINE_OP(OpDiv, Div, "/")
+DEFINE_OP(OpPlus, Plus, "+")
+DEFINE_OP(OpMinus, Minus, "-")
+DEFINE_OP(OpMuleq, Muleq, "*=")
+DEFINE_OP(OpDiveq, Diveq, "/=")
+DEFINE_OP(OpModEq, ModEq, "%=")
+DEFINE_OP(OpPluseq, Pluseq, "+=")
+DEFINE_OP(OpMinuseq, Minuseq, "-=")
+DEFINE_OP(OpGt, Gt, ">")
+DEFINE_OP(OpLt, Lt, "<")
+DEFINE_OP(OpArrow, Arrow, "->")
+DEFINE_OP(OpEqeq, Eqeq, "==")
+DEFINE_OP(OpGteq, Gteq, ">=")
+DEFINE_OP(OpLteq, Lteq, "<=")
+DEFINE_OP(OpNoteq, Noteq, "!=")
+DEFINE_OP(OpEq, Eq, "=")
+DEFINE_OP(OpNot, Not, "!")
+DEFINE_OP(OpAnd, And, "&&")
+DEFINE_OP(OpOr, Or, "||")
+DEFINE_OP(OpBitNot, BitNot, "~")
+DEFINE_OP(OpBitOr, BitOr, "|")
+DEFINE_OP(OpBitAnd, BitAnd, "&")
+DEFINE_OP(OpBitXor, BitXor, "^")
+DEFINE_OP(OpBitOrEq, BitOrEq, "|=")
+DEFINE_OP(OpBitRshift, BitRshift, ">>")
+DEFINE_OP(OpBitLshift, BitLshift, "<<")
+DEFINE_OP(OpBitAndEq, BitAndEq, "&=")
+DEFINE_OP(OpBitXorEq, BitXorEq, "^=")
+DEFINE_OP(OpBitRshiftEq, BitRshiftEq, ">>=")
+DEFINE_OP(OpBitLshiftEq, BitLshiftEq, "<<=")
+
+DEFINE_OP(KwordNew, New, "new")
+DEFINE_OP(KwordDelete, Delete, "destroy")
+
+#ifdef DEFINE_OP_NAME
+DEFINE_OP_NAME(Mul, "mul")
+DEFINE_OP_NAME(Mod, "mod")
+DEFINE_OP_NAME(Div, "div")
+DEFINE_OP_NAME(Plus, "add")
+DEFINE_OP_NAME(Minus, "sub")
+DEFINE_OP_NAME(Muleq, "muleq")
+DEFINE_OP_NAME(Diveq, "diveq")
+DEFINE_OP_NAME(ModEq, "modeq")
+DEFINE_OP_NAME(Pluseq, "addeq")
+DEFINE_OP_NAME(Minuseq, "subeq")
+DEFINE_OP_NAME(Gt, "gt")
+DEFINE_OP_NAME(Lt, "lt")
+DEFINE_OP_NAME(Arrow, "arrow")
+DEFINE_OP_NAME(Eqeq, "eqeq")
+DEFINE_OP_NAME(Gteq, "gteq")
+DEFINE_OP_NAME(Lteq, "lteq")
+DEFINE_OP_NAME(Noteq, "noteq")
+DEFINE_OP_NAME(Eq, "eq")
+DEFINE_OP_NAME(Not, "not")
+DEFINE_OP_NAME(And, "and")
+DEFINE_OP_NAME(Or, "or")
+DEFINE_OP_NAME(BitNot, "bitnot")
+DEFINE_OP_NAME(BitOr, "bitor")
+DEFINE_OP_NAME(BitAnd, "bitand")
+DEFINE_OP_NAME(BitXor, "bitxor")
+DEFINE_OP_NAME(BitOrEq, "bitoreq")
+DEFINE_OP_NAME(BitRshift, "bitrshift")
+DEFINE_OP_NAME(BitLshift, "bitlshift")
+DEFINE_OP_NAME(BitAndEq, "bitandeq")
+DEFINE_OP_NAME(BitXorEq, "bitxoreq")
+DEFINE_OP_NAME(BitRshiftEq, "bitrshifteq")
+DEFINE_OP_NAME(BitLshiftEq, "bitlshifteq")
+
+#ifndef OP_NO_KEYWORDS
+DEFINE_OP_NAME(New, "new")
+DEFINE_OP_NAME(Delete, "delete")
+#undef OP_NO_KEYWORDS
+#endif
+
+#undef DEFINE_OP_NAME
+#endif
+
+#undef DEFINE_OP

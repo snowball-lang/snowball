@@ -263,8 +263,8 @@ TypeChecker::GetResult TypeChecker::get_from_type(ast::MemberAccess* node, ast::
     if (methods.size() > 0) {
       return {TypeCheckItem::create_fn_decl(methods), full_name};
     }
-    err(node->get_location(), "Coudnt find member named '" + member_name + "' in class '" + type->get_printable_name() + "'!", Error::Info {
-      .highlight = fmt::format("Member '{}' not found in class '{}'", member_name, type->get_printable_name())
+    err(node->get_location(), "Coudnt find member named '" + printable_op(member_name) + "' in class '" + type->get_printable_name() + "'!", Error::Info {
+      .highlight = fmt::format("Member '{}' not found in class '{}'", printable_op(member_name), type->get_printable_name())
     });
   } else {
     err(node->get_location(), "Expected class type but found '" + type->get_printable_name() + "'", Error::Info {

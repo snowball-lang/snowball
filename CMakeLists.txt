@@ -298,16 +298,13 @@ add_compile_definitions(LIBC_VERSION="${_LIBC_VERSION}")
 add_compile_definitions(_SNOWBALL_VERSION="${version}")
 add_compile_definitions(_SNOWBALL_VERSION_NUMBER=${versionID})
 
-FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz)
-FetchContent_MakeAvailable(json)
-
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${LLVM_INCLUDE_DIRS}
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<INSTALL_INTERFACE:include> PRIVATE source)
     target_include_directories(${PROJECT_NAME} PUBLIC ${LLVM_INCLUDE_DIRS} ${PROJECT_INCLUDE_DIRS} ${backtrace_INCLUDE_DIRS})
-    target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES} nlohmann_json::nlohmann_json fmt::fmt)
+    target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES} fmt::fmt)
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
 add_compile_definitions("_SN_DEBUG=$<CONFIG:Debug>")

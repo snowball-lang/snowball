@@ -6,6 +6,7 @@
 #include "compiler/sil/module.h"
 #include "compiler/frontend/ast/types.h"
 #include "compiler/frontend/ast/nodes.h"
+#include "compiler/frontend/ast/operators.h"
 
 #include <unordered_map>
 
@@ -74,6 +75,29 @@ public:
     const std::shared_ptr<Module>& parent_module, const ast::AttributedNode& attrs, std::optional<Block*> body = std::nullopt, uint64_t id = 0) {
     assert(id > 0);
     return new FuncDecl(loc, type, name, params, parent_module, attrs, body, id);
+  }
+};
+
+class BinaryOp final : public Inst {
+  Inst* lhs;
+  std::optional<Inst*> rhs;
+  Operator op;
+  uint64_t var_id = 0;
+public:
+  BinaryOp(LocationHolder& loc, ast::types::Type* type, Inst* lhs, Operator op, std::optional<Inst*> rhs = std::nullopt)
+    : Inst(loc, type), lhs(lhs), rhs(rhs), op(op) {}
+  ~BinaryOp() = default;
+
+  auto get_lhs() const { return lhs; }
+  auto get_rhs() const { return rhs; }
+  auto get_op() const { return op; }
+  EMITABLE()
+
+  void set_var_id(uint64_t id) { var_id = id; }
+  auto get_var_id() const { return var_id; }
+
+  static auto create(LocationHolder loc, ast::types::Type* type, Inst* lhs, Operator op, std::optional<Inst*> rhs = std::nullopt) {
+    return new BinaryOp(loc, type, lhs, op, rhs);
   }
 };
 

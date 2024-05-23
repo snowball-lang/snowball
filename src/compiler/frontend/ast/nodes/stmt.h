@@ -79,12 +79,19 @@ class VarDecl final : public Stmt, public AttributedNode, public Identified {
   std::string name;
   std::optional<TypeRef> decl_type;
   std::optional<Expr*> value;
+  std::optional<FnDecl*> arg_for = std::nullopt;
   unsigned int used = 0;
 public:
   VarDecl(const SourceLocation& location, const std::string& name, 
       std::optional<TypeRef> type, std::optional<Expr*> value, 
       const AttributedNode& attributes = AttributedNode())
-    : Stmt(location), AttributedNode(attributes), name(name), decl_type(type), value(value) {}
+    : Stmt(location), AttributedNode(attributes), name(name), 
+      decl_type(type), value(value) {}
+  VarDecl(const SourceLocation& location, const std::string& name, 
+      std::optional<TypeRef> type, std::optional<Expr*> value, FnDecl* arg_for,
+      const AttributedNode& attributes = AttributedNode())
+    : Stmt(location), AttributedNode(attributes), name(name), 
+      decl_type(type), value(value), arg_for(arg_for) {}
   ~VarDecl() = default;
 
   auto& get_name() const { return name; }
@@ -94,10 +101,22 @@ public:
   void set_used() { used++; }
   auto get_used() const { return used; }
 
+  auto get_arg_for() const { return arg_for; }
+  void mutate_arg_for(FnDecl* new_arg_for) {
+    assert(arg_for.has_value());
+    arg_for = new_arg_for;
+  }
+
   static auto create(const SourceLocation& location, const std::string& name, 
       std::optional<TypeRef> type, std::optional<Expr*> value, 
       const AttributedNode& attributes = AttributedNode()) {
     return new VarDecl(location, name, type, value, attributes);
+  }
+
+  static auto create(const SourceLocation& location, const std::string& name, 
+      std::optional<TypeRef> type, std::optional<Expr*> value, FnDecl* arg_for,
+      const AttributedNode& attributes = AttributedNode()) {
+    return new VarDecl(location, name, type, value, arg_for, attributes);
   }
 
   SN_VISIT()

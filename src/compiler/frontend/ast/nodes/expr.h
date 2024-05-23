@@ -2,8 +2,9 @@
 #ifndef __SNOWBALL_FRONTEND_AST_NODES_EXPR_H__
 #define __SNOWBALL_FRONTEND_AST_NODES_EXPR_H__
 
-#include "compiler/frontend/ast/nodes/other.h"
 #include "compiler/utils/id.h"
+#include "compiler/frontend/ast/operators.h"
+#include "compiler/frontend/ast/nodes/other.h"
 
 namespace snowball {
 namespace frontend {
@@ -155,6 +156,36 @@ public:
   SN_DEFAULT_CLONE()
 };
 
+class BinaryOp final : public Self<BinaryOp>, public Expr {
+  Operator op;
+  std::optional<Expr*> lhs;
+  std::optional<Expr*> rhs;
+  std::optional<Expr*> call;
+public:
+  BinaryOp(const SourceLocation& location, Operator op, std::optional<Expr*> lhs = std::nullopt, std::optional<Expr*> rhs = std::nullopt)
+    : Expr(location), op(op), lhs(lhs), rhs(rhs) {}
+  ~BinaryOp() = default;
+
+  auto get_op() const { return op; }
+  auto get_lhs() const { return lhs; }
+  auto get_rhs() const { return rhs; }
+
+  auto& get_lhs() { return lhs; }
+  auto& get_rhs() { return rhs; }
+
+  void mutate_lhs(Expr* new_lhs) { lhs = new_lhs; }
+  void mutate_rhs(Expr* new_rhs) { rhs = new_rhs; }
+
+  auto get_call() const { return call; }
+  void set_call(Expr* new_call) { assert(!call.has_value()); call = new_call; }
+
+  static auto create(const SourceLocation& location, Operator op, std::optional<Expr*> lhs = std::nullopt, std::optional<Expr*> rhs = std::nullopt) {
+    return new BinaryOp(location, op, lhs, rhs);
+  }
+
+  SN_VISIT()
+  SN_DEFAULT_CLONE()
+};
 
 class Call final : public Expr, public GenericNode<TypeRef> {
   Expr* callee;

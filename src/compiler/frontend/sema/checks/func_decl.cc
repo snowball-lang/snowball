@@ -24,7 +24,9 @@ void TypeChecker::visit(ast::FnDecl* node) {
   auto typed_args = fn_type->get_param_types();
   for (size_t i = 0; i < node->get_params().size(); ++i) {
     assert(node->get_params().at(i)->get_type() != nullptr);
-    define_variable(node->get_params()[i], node->get_params()[i]->get_location());
+    auto param = node->get_params().at(i);
+    param->mutate_arg_for(node);
+    define_variable(param, param->get_location());
   }
   if (auto block = node->get_body()) {
     block.value()->accept(this);

@@ -13,6 +13,7 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast, bool first) {
     for (auto& decl : ast) { 
       if (auto class_decl = decl->as<ast::ClassDecl>()) {
         do_global_class(class_decl);
+        class_decl->set_complete();
       }
     }
     return;
@@ -32,7 +33,6 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast, bool first) {
           method->set_parent_type(class_decl->get_type());
         }
       }
-      class_decl->set_complete();
     }
   }
 }

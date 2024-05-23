@@ -1,0 +1,65 @@
+
+#include "compiler/frontend/ast/nodes.h"
+#include "compiler/frontend/sema/check.h"
+
+namespace snowball {
+namespace frontend {
+namespace sema {
+
+void TypeChecker::visit(ast::BinaryOp* node) {
+  auto& lhs = node->get_lhs().value();
+  auto rhs = node->get_rhs();
+  auto op = node->get_op();
+  lhs->accept(this);
+  if (rhs.has_value()) 
+    rhs.value()->accept(this);
+  if (op == Operator::Eq) {
+    unify(lhs->get_type(), rhs.value()->get_type(), node->get_location());
+    do_deduce(lhs);
+  }
+
+  auto lhs_type = lhs->get_type();
+  if (lhs_type->is_int() || lhs_type->is_float()) {
+    unify(node->get_type(), lhs->get_type(), node->get_location());
+    // TODO: Implement the rest of the binary operators
+    return;
+  } 
+
+  // unify(node->get_type(), lhs->get_type(), node->get_location());
+  // Create a call to the operator function
+  std::vector<ast::Expr*> args;
+  if (rhs.has_value()) {
+    args.push_back(rhs.value());
+  }
+  auto call = ast::Call::create(node->get_location(), 
+    ast::MemberAccess::create(node->get_location(), 
+      lhs,
+      ast::Ident::create(node->get_location(), op_to_string(op))),
+    args
+  );
+  call->accept(this);
+  node->set_call(call);
+}
+
+std::string TypeChecker::op_to_string(Operator op) {
+#define DEFINE_OP(_1, _2, _3)
+#define DEFINE_OP_NAME(o, n) \
+  case Operator::o: return "$" n;
+  switch (op) {
+#include "compiler/frontend/ast/operators.def"
+  }
+  sn_unreachable();
+#undef DEFINE_OP_NAME
+}
+
+std::string TypeChecker::printable_op(std::string op) {
+  if (op[0] == '$') {
+    return "operator " + op.substr(1);
+  }
+  return op;
+}
+
+
+}
+}
+}
