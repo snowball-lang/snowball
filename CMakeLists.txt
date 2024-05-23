@@ -287,6 +287,9 @@ if (NOT "${LLVM_CONFIG_EXECUTABLE}" STREQUAL "")
 endif()
 find_program(LLVM_CONFIG_EXECUTABLE NAMES "${CONFIG_NAME}" "${CONFIG_NAME}-14")
 
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz)
+FetchContent_MakeAvailable(json)
+
 execute_process(COMMAND ${CONFIG_NAME} --ldflags OUTPUT_VARIABLE LLVM_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
 string(REPLACE "\n" " " LLVM_LDFLAGS "${LLVM_LDFLAGS} ${LLVM_LDFLAGS2}")
 string(STRIP ${LLVM_LDFLAGS} LLVM_LDFLAGS)
@@ -304,7 +307,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<INSTALL_INTERFACE:include> PRIVATE source)
     target_include_directories(${PROJECT_NAME} PUBLIC ${LLVM_INCLUDE_DIRS} ${PROJECT_INCLUDE_DIRS} ${backtrace_INCLUDE_DIRS})
-    target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES} fmt::fmt)
+    target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES} nlohmann_json::nlohmann_json fmt::fmt)
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
 add_compile_definitions("_SN_DEBUG=$<CONFIG:Debug>")
