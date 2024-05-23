@@ -2,8 +2,8 @@
 unsafe external "C" func printf(x: *const u8);
 
 public func test(x: crate::mod::Hello<f32>, b: crate::mod::Hello<f32>) {
-  x + b.a;
-  x.hello(b.a);
+  let k = x.a + b.a;
+  x.hello(k);
 }
 
 public func main() i32 {
