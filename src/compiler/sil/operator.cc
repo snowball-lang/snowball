@@ -6,8 +6,9 @@ namespace snowball {
 namespace sil {
 
 void Binder::visit(ast::BinaryOp* node) {
-  if (node->get_var_id() != 0) {
-    sn_assert(false, "BinaryOp not implemented for var_id");
+  if (auto call = node->get_call()) {
+    value = accept(call.value());
+    return;
   }
   std::optional<Inst*> rhs;
   if (node->get_rhs().has_value()) {

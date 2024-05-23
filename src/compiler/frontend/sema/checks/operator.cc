@@ -25,11 +25,40 @@ void TypeChecker::visit(ast::BinaryOp* node) {
     return;
   } 
 
-  // TODO: Implement the rest of the binary operators
-  // TODO: This following line is a temporary fix
   // unify(node->get_type(), lhs->get_type(), node->get_location());
-  sn_assert(false, "BinaryOp not implemented for var_id");
+  // Create a call to the operator function
+  std::vector<ast::Expr*> args;
+  if (rhs.has_value()) {
+    args.push_back(rhs.value());
+  }
+  auto call = ast::Call::create(node->get_location(), 
+    ast::MemberAccess::create(node->get_location(), 
+      lhs,
+      ast::Ident::create(node->get_location(), op_to_string(op))),
+    args
+  );
+  call->accept(this);
+  node->set_call(call);
 }
+
+std::string TypeChecker::op_to_string(Operator op) {
+#define DEFINE_OP(_1, _2, _3)
+#define DEFINE_OP_NAME(o, n) \
+  case Operator::o: return "$" n;
+  switch (op) {
+#include "compiler/frontend/ast/operators.def"
+  }
+  sn_unreachable();
+#undef DEFINE_OP_NAME
+}
+
+std::string TypeChecker::printable_op(std::string op) {
+  if (op[0] == '$') {
+    return "operator " + op.substr(1);
+  }
+  return op;
+}
+
 
 }
 }

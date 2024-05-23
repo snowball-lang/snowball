@@ -40,6 +40,7 @@ Parser::ParsingClassResult Parser::parse_class_body() {
           case Token::Type::KwordStatic:
           case Token::Type::KwordConst:
           case Token::Type::KwordVar:
+          case Token::Type::KwordOperator:
             break;
           default:
             err("Expected a class member after privacy modifier", Error::Info {
@@ -59,6 +60,21 @@ Parser::ParsingClassResult Parser::parse_class_body() {
             break;
           default:
             err("Expected a class member after 'static' keyword", Error::Info {
+              .highlight = fmt::format("Token '{}' is not expected here", current),
+              .help = "At the class level, only class members are allowed",
+              .see = "https://snowball-lang.gitbook.io/docs/language-reference/classes"
+            });
+        }
+        break;
+      }
+      case Token::Type::KwordOperator: {
+        attrs.set_operator(true);
+        next();
+        switch (current.type) {
+          case Token::Type::KwordFunc:
+            break;
+          default:
+            err("Expected a class member after 'operator' keyword", Error::Info {
               .highlight = fmt::format("Token '{}' is not expected here", current),
               .help = "At the class level, only class members are allowed",
               .see = "https://snowball-lang.gitbook.io/docs/language-reference/classes"

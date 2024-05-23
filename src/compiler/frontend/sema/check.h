@@ -124,6 +124,10 @@ private:
   /// @returns true if the cast type is invalid
   /// @see can_cast
   bool try_cast(ast::Expr*& node, ast::types::Type* to);
+public:
+  static std::string op_to_string(Operator op);
+  // IF it starts with "$" we will consider it as an operator
+  static std::string printable_op(std::string op);
 };
 
 }

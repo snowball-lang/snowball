@@ -6,6 +6,7 @@
 #include "compiler/frontend/ast/nodes.h"
 
 #include "compiler/utils/utils.h"
+#include "compiler/frontend/sema/check.h"
 
 namespace snowball {
 namespace frontend {
@@ -14,8 +15,30 @@ ast::FnDecl* Parser::parse_fn_decl(const ast::AttributedNode& attrs) {
   assert(is(Token::Type::KwordFunc));
   attrs.assert_is_func();
   next();
-  auto name = expect(Token::Type::Identifier, "an identifier for the function name", Token::Type::BracketLparent)
-    .to_string();
+  std::string name;
+  if (attrs.get_operator()) {
+    switch (current.type) {
+#define DEFINE_OP(_1, _2, _3)
+#define DEFINE_OP_NAME(o, n) \
+      case Token::Type::Op##o: \
+        name = sema::TypeChecker::op_to_string(Operator::o); \
+        break;
+#define OP_NO_KEYWORDS
+#include "compiler/frontend/ast/operators.def"
+#undef DEFINE_OP_NAME
+#undef DEFINE_OP
+      // TODO: new, delete, bool, and cast operators
+      default:
+        err("Expected an operator after the 'operator' keyword", Error::Info {
+          .highlight = fmt::format("Token '{}' is not expected here", current),
+          .help = "Expected an operator after the 'operator' keyword",
+          .see = "https://snowball-lang.gitbook.io/docs/language-reference/operators"
+        }, Error::Type::Err, false);
+    }
+  } else {
+    name = expect(Token::Type::Identifier, "an identifier for the function name", Token::Type::BracketLparent)
+      .to_string();
+  }
   auto pos = loc();
   next();
   auto generics = parse_generics();

@@ -43,7 +43,7 @@ ast::FnDecl* TypeChecker::get_best_match(const std::vector<ast::FnDecl*>& decls,
           .highlight = fmt::format("No matching function found for call."),
           .help = "Try calling the function with the correct number of arguments and types",
           .note = fmt::format("Function '{}' DOES exist but the arguements provided does not match any signature.", 
-            decls.at(0)->get_name()),
+            printable_op(decls.at(0)->get_name())),
           .see = "https://snowball-lang.gitbook.io/docs/language-reference/functions"
         });
       return nullptr;
