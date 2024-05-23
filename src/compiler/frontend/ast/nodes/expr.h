@@ -160,6 +160,7 @@ class BinaryOp final : public Self<BinaryOp>, public Expr {
   Operator op;
   std::optional<Expr*> lhs;
   std::optional<Expr*> rhs;
+  uint64_t var_id = 0;
 public:
   BinaryOp(const SourceLocation& location, Operator op, std::optional<Expr*> lhs = std::nullopt, std::optional<Expr*> rhs = std::nullopt)
     : Expr(location), op(op), lhs(lhs), rhs(rhs) {}
@@ -168,6 +169,15 @@ public:
   auto get_op() const { return op; }
   auto get_lhs() const { return lhs; }
   auto get_rhs() const { return rhs; }
+
+  auto& get_lhs() { return lhs; }
+  auto& get_rhs() { return rhs; }
+
+  void mutate_lhs(Expr* new_lhs) { lhs = new_lhs; }
+  void mutate_rhs(Expr* new_rhs) { rhs = new_rhs; }
+
+  auto get_var_id() const { return var_id; }
+  void set_var_id(uint64_t id) { var_id = id; }
 
   static auto create(const SourceLocation& location, Operator op, std::optional<Expr*> lhs = std::nullopt, std::optional<Expr*> rhs = std::nullopt) {
     return new BinaryOp(location, op, lhs, rhs);

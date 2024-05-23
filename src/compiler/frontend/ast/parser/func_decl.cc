@@ -28,7 +28,7 @@ ast::FnDecl* Parser::parse_fn_decl(const ast::AttributedNode& attrs) {
     if (is(Token::Type::BracketRparent)) break;
     next(1 + !is(Token::Type::SymColon)); // skip the identifier and the colon
     auto param_type = parse_type_ref();
-    params.push_back(ast::VarDecl::create(pos, param_name, param_type, std::nullopt));
+    params.push_back(ast::VarDecl::create(pos, param_name, param_type, std::nullopt, nullptr));
     if (is(Token::Type::BracketRparent)) break;
     consume(Token::Type::SymComma, "a comma after the parameter", Token::Type::BracketRparent);
   }

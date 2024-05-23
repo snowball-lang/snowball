@@ -95,7 +95,7 @@ public:
   }
 
   void add_var_id(uint64_t id, ast::Stmt* stmt) { var_ids[id] = stmt; }
-  auto get_var_id(uint64_t id) {
+  std::optional<ast::Stmt*> get_var_id(uint64_t id) {
     auto it = var_ids.find(id);
     if (it != var_ids.end()) {
       return std::optional(it->second);

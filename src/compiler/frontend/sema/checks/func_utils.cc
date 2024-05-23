@@ -145,7 +145,7 @@ void TypeChecker::add_self_param(ast::FnDecl*& node, bool as_monorph) {
   if (node->get_static() || !current_class) return;
   auto& params = node->get_params();
   if (params.size() > 0 && params[0]->get_name() == "self" && !as_monorph) return; // already has a self param
-  auto self = ast::VarDecl::create(node->get_location(), "self", std::nullopt, std::nullopt);
+  auto self = ast::VarDecl::create(node->get_location(), "self", std::nullopt, std::nullopt, node);
   self->set_used();
   unify(self->get_type(), current_class->get_type()->get_reference_to(), node->get_location());
   if (as_monorph) {
@@ -154,26 +154,19 @@ void TypeChecker::add_self_param(ast::FnDecl*& node, bool as_monorph) {
     return;
   }
   params.insert(params.begin(), self);
-  node->get_type()->as_func()->get_param_types().insert(node->get_type()->as_func()->get_param_types().begin(), self->get_type());
 }
 
 void TypeChecker::check_fn(ast::FnDecl*& fn_decl, bool as_monorph) {
   for (auto& generic : fn_decl->get_generics())
     universe.add_item(generic.get_name(), ast::types::GenericType::create(generic.get_name()));
-  std::vector<ast::types::Type*> param_types;
-  unsigned int i = 0;
   for (auto& param : fn_decl->get_params()) {
-    param_types.push_back(nullptr);
     param->get_type() = nullptr;
     // Some inserted arguments like "self" are not declared
-    if (param->get_decl_type().has_value()) 
-      unify(param_types[i], get_type(param->get_decl_type().value()), param->get_location());
-    param->get_type() = param_types[i];
-    i++;
+    if (param->get_decl_type().has_value())
+      unify(param->get_type(), get_type(param->get_decl_type().value()), param->get_location());
   }
-  sn_assert(param_types.size() == fn_decl->get_params().size(), "param_types.size() != fn_decl->get_params().size()");
   auto ret_type = get_type(fn_decl->get_return_type());
-  auto func_type = ast::types::FuncType::create(param_types, ret_type, false);
+  auto func_type = ast::types::FuncType::create(fn_decl, ret_type, false);
   fn_decl->get_type() = nullptr;
   unify(fn_decl->get_type(), func_type, fn_decl->get_return_type().get_location());
   add_self_param(fn_decl, as_monorph);

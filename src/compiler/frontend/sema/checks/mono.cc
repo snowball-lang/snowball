@@ -26,16 +26,14 @@ ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::s
   for (auto& [name, type] : deduced) {
     universe.add_item(name, TypeCheckItem::create_type(type));
   }
-  std::vector<ast::types::Type*> params;
-  params.reserve(node->get_params().size());
   for (auto& param : node->get_params()) {
     param->get_type() = nullptr;
     assert(param->get_decl_type());
-    params.push_back(get_type(param->get_decl_type().value()));
-    unify(param->get_type(), params.back(), param->get_location());
+    auto ty = get_type(param->get_decl_type().value());
+    unify(param->get_type(), ty, param->get_location());
   }
   auto ret = get_type(node->get_return_type());
-  unify(node->get_type(), ast::types::FuncType::create(params, ret, fn_ty_copy->is_variadic()), node->get_location());
+  unify(node->get_type(), ast::types::FuncType::create(node, ret, fn_ty_copy->is_variadic()), node->get_location());
   node->accept(this);
   state.current_module->mutate_ast(node);
   universe.remove_scope();

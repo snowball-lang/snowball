@@ -39,6 +39,7 @@ public:
   ~GenericNode() = default;
   void clear_generics() { generics.clear(); } // only use if you know what you're doing
   auto get_generics() const { return generics; }
+  auto& get_generics() { return generics; }
   bool has_generics() const { return !generics.empty(); }
 
   // note: This function should be used in really rare cases

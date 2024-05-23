@@ -36,6 +36,9 @@ DEFINE_OP(OpBitXorEq, BitXorEq, "^=")
 DEFINE_OP(OpBitRshiftEq, BitRshiftEq, ">>=")
 DEFINE_OP(OpBitLshiftEq, BitLshiftEq, "<<=")
 
+DEFINE_OP(KwordNew, New, "new")
+DEFINE_OP(KwordDelete, Delete, "destroy")
+
 #ifdef DEFINE_OP_NAME
 DEFINE_OP_NAME(OpMul, "mul")
 DEFINE_OP_NAME(OpMod, "mod")
@@ -69,6 +72,10 @@ DEFINE_OP_NAME(OpBitAndEq, "bitandeq")
 DEFINE_OP_NAME(OpBitXorEq, "bitxoreq")
 DEFINE_OP_NAME(OpBitRshiftEq, "bitrshifteq")
 DEFINE_OP_NAME(OpBitLshiftEq, "bitlshifteq")
+
+DEFINE_OP_NAME(KwordNew, "new")
+DEFINE_OP_NAME(KwordDelete, "delete")
+
 #undef DEFINE_OP_NAME
 #endif
 

@@ -27,8 +27,19 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b, const SourceL
   } else if (a->is_class() && b->is_class()) {
     auto ac = a->as_class();
     auto bc = b->as_class();
-    if (ac->get_id() == bc->get_id())
-      return SUCCESS;
+    if (ac->get_path() == bc->get_path()) {
+      if (ac->get_generics().size() == bc->get_generics().size()) {
+        bool match = true;
+        for (size_t i = 0; i < ac->get_generics().size(); i++) {
+          if (!unify(ac->get_generics()[i], bc->get_generics()[i], loc, true)) {
+            match = false;
+            break;
+          }
+        }
+        if (match) 
+          return SUCCESS;
+      }
+    }
   } else if (a->is_reference() && b->is_reference()) {
     return unify(a->as_reference()->get_mut_ref(), b->as_reference()->get_mut_ref(), loc, just_check);
   } else if (a->is_pointer() && b->is_pointer()) {

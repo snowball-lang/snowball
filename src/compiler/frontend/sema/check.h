@@ -74,6 +74,14 @@ private:
 
   bool unify(ast::types::Type*& a, ast::types::Type* b,
     const SourceLocation& holder = SourceLocation::dummy(), bool just_check = false);
+  /// Deduce an expression based on it's type.
+  /// For example, if the expr is an identifier (e.g. a), we will try to
+  /// find the variable `a` in the current scope and deduce it's type.
+  // e.g. let a: Hello;
+  //      a = new Hello<i32>(1);
+  // This function should only be called in specific deduce-cases, like in assigments,
+  // function calls, etc.
+  void do_deduce(ast::Expr* expr); 
 
   ast::types::UnknownType* get_unknown_type();
   ast::types::ErrorType* get_error_type();

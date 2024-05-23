@@ -421,6 +421,8 @@ std::vector<Token> Lexer::lex() {
           };
           if (identifier == SN_KEYWORD_NEW) {
             tk.type = Token::KwordNew;
+          } else if (identifier == SN_KEYWORD_DELETE) {
+            tk.type = Token::KwordDelete;
           } else if (identifier == SN_KEYWORD_THROW) {
             tk.type = Token::KwordThrow;
           } else if (identifier == SN_KEYWORD_IF) {

@@ -109,6 +109,7 @@ std::string Token::to_string() const {
     case Type::KwordInline: return SN_KEYWORD_INLINE;
     case Type::KwordExtern: return SN_KEYWORD_EXTERN;
     case Type::KwordNew: return SN_KEYWORD_NEW;
+    case Type::KwordDelete: return SN_KEYWORD_DELETE;
     case Type::KwordThrow: return SN_KEYWORD_THROW;
     case Type::KwordTry: return SN_KEYWORD_TRY;
     case Type::KwordInter: return SN_KEYWORD_INTER;

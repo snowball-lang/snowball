@@ -36,7 +36,7 @@ struct Token {
     KwordNamespace, KwordStruct, KwordPublic, KwordCase, KwordSwitch, KwordStatic, 
     KwordReturn, KwordPrivate, KwordDefault, KwordTry, KwordCatch, 
     KwordContinue, KwordInter, KwordExtends, KwordImplements, KwordAbstract,
-    KwordFinal, KwordInline,
+    KwordFinal, KwordInline, KwordDelete,
     
     KwordEndingPoint, // This is a marker for the end of the keywords
     

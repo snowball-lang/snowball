@@ -46,8 +46,8 @@ public:
   CHILD(reference, ReferenceType)
   CHILD(pointer, PointerType)
 #undef CHILD
-  virtual std::string get_printable_name() const = 0;
-  virtual std::string get_mangled_name() const = 0;
+  virtual std::string get_printable_name() = 0;
+  virtual std::string get_mangled_name() = 0;
   virtual bool is_deep_unknown() const { return false; }
   virtual bool is_deep_generic() const { return false; }
 
@@ -88,8 +88,8 @@ public:
   IntType* as_int() override { return this; }
   bool is_int() const override { return true; }
 
-  std::string get_printable_name() const override;
-  std::string get_mangled_name() const override;
+  std::string get_printable_name() override;
+  std::string get_mangled_name() override;
 };
 
 class FloatType final : public Type {
@@ -110,32 +110,35 @@ public:
   FloatType* as_float() override { return this; }
   bool is_float() const override { return true; }
 
-  std::string get_printable_name() const override;
-  std::string get_mangled_name() const override;
+  std::string get_printable_name() override;
+  std::string get_mangled_name() override;
 };
 
 class FuncType final : public Type {
-  std::vector<Type*> param_types;
+  std::optional<std::vector<Type*>> param_types_cache;
   Type* return_type;
   bool variadic = false;
+  FnDecl* linked = nullptr;
 public:
-  FuncType(const std::vector<Type*>& param_types, Type* return_type, bool variadic)
-    : param_types(param_types), return_type(return_type), variadic(variadic) {}
+  FuncType(FnDecl* linked, Type* return_type, bool variadic)
+    : return_type(return_type), variadic(variadic), linked(linked) {}
   ~FuncType() = default;
 
-  auto& get_param_types() { return param_types; }
+  std::vector<Type*> get_param_types();
   auto& get_return_type() { return return_type; }
 
-  static auto create(const std::vector<Type*>& param_types, Type* return_type, bool variadic) {
-    return new FuncType(param_types, return_type, variadic);
+  static auto create(FnDecl* linked, Type* return_type, bool variadic = false) {
+    return new FuncType(linked, return_type, variadic);
   }
 
   FuncType* as_func() override { return this; }
   bool is_func() const override { return true; }
   bool is_variadic() const { return variadic; }
 
-  std::string get_printable_name() const override;
-  std::string get_mangled_name() const override;
+  void recalibrate_cache();
+
+  std::string get_printable_name() override;
+  std::string get_mangled_name() override;
 };
 
 class GenericType final : public Type {
@@ -154,8 +157,8 @@ public:
   bool is_generic() const override { return true; }
   bool is_deep_generic() const override { return true; }
 
-  std::string get_printable_name() const override;
-  std::string get_mangled_name() const override;
+  std::string get_printable_name() override;
+  std::string get_mangled_name() override;
 };
 
 class ErrorType final : public Type {
@@ -168,8 +171,8 @@ public:
   ErrorType* as_error() override { return this; }
   bool is_error() const override { return true; }
 
-  std::string get_printable_name() const override;
-  std::string get_mangled_name() const override;
+  std::string get_printable_name() override;
+  std::string get_mangled_name() override;
 };
 
 class UnknownType final : public Type {
@@ -190,8 +193,8 @@ public:
   bool is_unknown() const { return true; }
   bool is_deep_unknown() const override { return true; }
 
-  std::string get_printable_name() const override;
-  std::string get_mangled_name() const override;
+  std::string get_printable_name() override;
+  std::string get_mangled_name() override;
 };
 
 class VoidType final : public Type {
@@ -204,8 +207,8 @@ public:
   virtual VoidType* as_void() { return this; }
   virtual bool is_void() const { return true; }
 
-  std::string get_printable_name() const override;
-  std::string get_mangled_name() const override;
+  std::string get_printable_name() override;
+  std::string get_mangled_name() override;
 };
 
 class ClassType final : public Type, public GenericNode<Type*>, public Identified,
@@ -231,8 +234,8 @@ public:
   bool is_deep_unknown() const override; // It's unknown if any of the generics are unknown
   bool is_deep_generic() const override; // It's generic if any of the generics are generic
 
-  std::string get_printable_name() const override;
-  std::string get_mangled_name() const override;
+  std::string get_printable_name() override;
+  std::string get_mangled_name() override;
 };
 
 class ReferenceType final : public Type {
@@ -249,8 +252,8 @@ public:
   ReferenceType* as_reference() override { return this; }
   bool is_reference() const override { return true; }
 
-  std::string get_printable_name() const override;
-  std::string get_mangled_name() const override;
+  std::string get_printable_name() override;
+  std::string get_mangled_name() override;
 
   bool is_deep_unknown() const override { return ref->is_deep_unknown(); }
   bool is_deep_generic() const override { return ref->is_deep_generic(); }
@@ -273,8 +276,8 @@ public:
   PointerType* as_pointer() override { return this; }
   bool is_pointer() const override { return true; }
 
-  std::string get_printable_name() const override;
-  std::string get_mangled_name() const override;
+  std::string get_printable_name() override;
+  std::string get_mangled_name() override;
 
   bool is_deep_unknown() const override { return pointee->is_deep_unknown(); }
   bool is_deep_generic() const override { return pointee->is_deep_generic(); }
