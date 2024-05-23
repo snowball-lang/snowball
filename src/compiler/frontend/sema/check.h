@@ -81,7 +81,8 @@ private:
   //      a = new Hello<i32>(1);
   // This function should only be called in specific deduce-cases, like in assigments,
   // function calls, etc.
-  void do_deduce(ast::Expr* expr); 
+  // @note Return value may be nullptr
+  ast::Stmt* do_deduce(ast::Expr* expr); 
 
   ast::types::UnknownType* get_unknown_type();
   ast::types::ErrorType* get_error_type();
@@ -113,6 +114,8 @@ private:
 
   std::optional<NamespacePath> search_module(const NamespacePath& path);
   void check_for_entry(ast::FnDecl* fn_decl);
+  
+  bool is_mutable(ast::Expr* expr, ast::Stmt* stmt);
 
   enum CastType {
     Invalid,

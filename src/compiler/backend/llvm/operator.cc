@@ -38,6 +38,13 @@ void LLVMBuilder::emit(const sil::BinaryOp* node) {
       OPERATOR(Gt, CreateICmpSGT)
       OPERATOR(Lteq, CreateICmpSLE)
       OPERATOR(Gteq, CreateICmpSGE)
+      case frontend::Operator::Eq: {
+        if (llvm::isa<llvm::LoadInst>(left)) {
+          left = llvm::cast<llvm::LoadInst>(left)->getPointerOperand();
+        }
+        value = builder->CreateStore(right, left);
+        break;
+      }
       default: sn_unreachable();
     }
   } else if (type->is_float()) {
@@ -52,6 +59,13 @@ void LLVMBuilder::emit(const sil::BinaryOp* node) {
       OPERATOR(Gt, CreateFCmpOGT)
       OPERATOR(Lteq, CreateFCmpOLE)
       OPERATOR(Gteq, CreateFCmpOGE)
+      case frontend::Operator::Eq: {
+        if (llvm::isa<llvm::LoadInst>(left)) {
+          left = llvm::cast<llvm::LoadInst>(left)->getPointerOperand();
+        }
+        value = builder->CreateStore(right, left);
+        break;
+      }
       default: sn_unreachable();
     }
   } else {

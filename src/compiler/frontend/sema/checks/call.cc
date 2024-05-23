@@ -20,7 +20,7 @@ void TypeChecker::visit(ast::Call* node) {
       auto dym = get_did_you_mean(ident->get_name());
       err(node->get_location(), fmt::format("use of undeclared identifier when calling '{}'", ident->get_name()), Error::Info {
         .highlight = 
-          fmt::format("Variable or function '{}' not found. {}", ident->get_name(), 
+          fmt::format("Variable or function '{}' not found. {}", printable_op(ident->get_name()), 
           dym.has_value() ? fmt::format("Did you mean '{}'?", dym.value()) : ""),
         .help = fmt::format("Did you mean to declare a variable with the name '{}'?", ident->get_name())
       }, Error::Type::Err, false);
@@ -57,7 +57,7 @@ void TypeChecker::visit(ast::Call* node) {
     if (!item.has_value()) {
       err(node->get_location(), fmt::format("use of undeclared identifier when calling '{}'", name), Error::Info {
         .highlight = 
-          fmt::format("Variable or function '{}' not found inside '{}'", index->get_member()->get_name(), name),
+          fmt::format("Variable or function '{}' not found inside '{}'", printable_op(index->get_member()->get_name()), name),
       }, Error::Type::Err, false);
       unify(node->get_type(), ast::types::ErrorType::create());
       return;

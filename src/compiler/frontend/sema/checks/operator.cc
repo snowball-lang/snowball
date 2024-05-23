@@ -15,12 +15,19 @@ void TypeChecker::visit(ast::BinaryOp* node) {
     rhs.value()->accept(this);
   if (op == Operator::Eq) {
     unify(lhs->get_type(), rhs.value()->get_type(), node->get_location());
-    do_deduce(lhs);
+    auto stmt = do_deduce(lhs);
+    if (!is_mutable(lhs, stmt)) {
+      err(node->get_location(), "Cannot assign to immutable variable", Error::Info {
+        .highlight = "Symbol not mutable",
+        .help = "Make sure the variable is mutable",
+        .see = "https://snowball-lang.gitbook.io/docs/language-reference/types/mutability"
+      }, Error::Type::Err, false);
+    }
   }
 
   auto lhs_type = lhs->get_type();
   if (lhs_type->is_int() || lhs_type->is_float()) {
-    unify(node->get_type(), lhs->get_type(), node->get_location());
+    unify(node->get_type(), lhs_type, node->get_location());
     // TODO: Implement the rest of the binary operators
     return;
   } 
@@ -39,6 +46,7 @@ void TypeChecker::visit(ast::BinaryOp* node) {
   );
   call->accept(this);
   node->set_call(call);
+  unify(node->get_type(), call->get_type(), node->get_location());
 }
 
 std::string TypeChecker::op_to_string(Operator op) {

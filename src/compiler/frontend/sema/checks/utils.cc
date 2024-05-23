@@ -243,7 +243,7 @@ NamespacePath NameAccumulator::get_path(const std::string& name) const {
 TypeChecker::GetResult TypeChecker::get_from_type(ast::MemberAccess* node, ast::types::Type* type) {
   auto member = node->get_member();
   auto member_name = member->get_name();
-  auto full_name = type->get_printable_name() + "::" + member_name;
+  auto full_name = type->get_printable_name() + "::" + printable_op(member_name);
   if (auto as_class = type->as_class()) {
     auto decl = as_class->get_decl();
     size_t index = 0;
