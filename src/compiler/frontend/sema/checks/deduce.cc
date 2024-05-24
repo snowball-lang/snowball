@@ -6,7 +6,7 @@ namespace snowball {
 namespace frontend {
 namespace sema {
 
-void TypeChecker::do_deduce(ast::Expr* expr) {
+ast::Stmt* TypeChecker::do_deduce(ast::Expr* expr) {
   if (auto ident = expr->as<ast::Ident>()) {
     auto var = ident->get_var_id();
     if (var != 0) {
@@ -19,9 +19,20 @@ void TypeChecker::do_deduce(ast::Expr* expr) {
         if (auto arg_for = as_var->get_arg_for()) {
           arg_for.value()->get_type()->as_func()->recalibrate_cache();
         }
+        return as_var;
       }
     }
   }
+  return nullptr;
+}
+
+bool TypeChecker::is_mutable(ast::Expr* expr, ast::Stmt* stmt) {
+  if (!stmt) return false;
+  if (auto as_var = stmt->as<ast::VarDecl>()) {
+    return as_var->get_mut();
+  }
+  // TODO: More cases
+  return false;
 }
 
 }

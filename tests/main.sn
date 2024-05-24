@@ -2,7 +2,8 @@
 unsafe external "C" func printf(x: *const u8);
 
 public func test(x: crate::mod::Hello<f32>, b: crate::mod::Hello<f32>) {
-  let k = x.a + b.a;
+  let mut k = x.a + b.a;
+  k = b.a;
   x.hello(k);
 }
 

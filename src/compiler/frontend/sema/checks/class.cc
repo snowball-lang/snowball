@@ -23,6 +23,12 @@ void TypeChecker::visit(ast::ClassDecl* node) {
   }
   for (auto& var : node->get_vars()) {
     var->accept(this);
+    if (var->get_type()->is_deep_unknown()) {
+      err(var->get_location(), "Class variable cannot be of unknown type", Error::Info {
+        .highlight = fmt::format("Variable with type: {}", var->get_type()->get_printable_name()),
+        .note = "Unknown types are represented as '_'",
+      });
+    }
   }
   for (auto& method : node->get_funcs()) {
     method->accept(this);
