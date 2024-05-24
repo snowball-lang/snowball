@@ -5,7 +5,7 @@ namespace snowball {
 namespace backend {
 
 #define IS_EXTERNAL_FN \
-  node->get_parent_module()->parent_crate != builder_ctx.parent_crate
+  node->get_parent_module()->parent_crate.value() != builder_ctx.parent_crate
 
 void LLVMBuilder::emit(const sil::FuncDecl* node) {
   assert(node->get_type()->is_func());

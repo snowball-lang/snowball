@@ -7,11 +7,10 @@
 namespace snowball {
 namespace driver {
 
-std::filesystem::path get_output_path(const Ctx& ctx, bool for_linking, bool for_object_file) {
+std::filesystem::path get_output_path(const Ctx& ctx, const std::string& name, bool for_linking, bool for_object_file) {
   auto emit_type = ctx.emit_type;
   auto workspace = for_linking ? WorkSpaceType::Bin : (for_object_file ? WorkSpaceType::Obj : WorkSpaceType::Build);
   auto default_output_path = get_workspace_path(ctx, workspace);
-  auto name = ctx.package_config.value().project.name;
   if (for_object_file && ctx.emit_type == EmitType::Executable) {
     emit_type = EmitType::Object;
   }

@@ -33,6 +33,8 @@ bool Compiler::compile() {
   // TODO: Populate allowed_paths with all the paths in the project and in the dependencies.
   std::vector<std::filesystem::path> allowed_paths = {(ctx.package_config.value().project.path).lexically_normal()};
   std::vector<frontend::Module> modules;
+  // Unsigned is the number of modules appened for this path
+  std::vector<frontend::NamespacePath> module_paths;
   std::vector<std::filesystem::path> object_files;
   bool is_object = ctx.emit_type == EmitType::Object || ctx.emit_type == EmitType::Executable;
   Logger::status("Project", F("{} v{} {}", ctx.package_config.value().project.name, 
@@ -65,6 +67,7 @@ bool Compiler::compile() {
         frontend::Parser parser(ctx, source_file, tokens);
         modules.push_back(parser.parse());
         modules.back().parent_crate = module_root_path;
+        module_paths.push_back(module_root_path);
         if (parser.handle_errors()) {
           return EXIT_FAILURE;
         }
@@ -73,16 +76,22 @@ bool Compiler::compile() {
     // We add the top module so that it can be accessed from 
     // other modules in the same project.
     modules.push_back(frontend::Module({}, module_root_path, modules.at(0).is_main));
-    frontend::sema::TypeChecker type_checker(ctx, modules);
-    type_checker.check();
-    if (type_checker.handle_errors()) {
-      return EXIT_FAILURE;
-    }
-    sil::Binder binder(ctx, modules, type_checker.get_universe());
-    binder.bind(type_checker.get_generic_registry());
-    if (binder.handle_errors()) {
-      return EXIT_FAILURE;
-    }
+    modules.back().parent_crate = module_root_path;
+    module_paths.push_back(module_root_path);
+  }
+  frontend::sema::TypeChecker type_checker(ctx, modules);
+  type_checker.check();
+  if (type_checker.handle_errors()) {
+    return EXIT_FAILURE;
+  }
+  sil::Binder binder(ctx, modules, type_checker.get_universe());
+  binder.bind(type_checker.get_generic_registry());
+  if (binder.handle_errors()) {
+    return EXIT_FAILURE;
+  }
+  auto last_module_root_path = frontend::NamespacePath::dummy();
+  for (unsigned i = 0; i < binder.get_modules().size(); i++) {
+    auto module_root_path = module_paths.at(i);
     sil::Builder* builder;
     switch (ctx.emit_type) {
       case EmitType::Llvm:
@@ -93,15 +102,18 @@ bool Compiler::compile() {
       } break;
       default: sn_assert(false, "Unknown emit type");
     }
-    auto output_file = driver::get_output_path(ctx, false, is_object); 
-    object_files.push_back(output_file);
+    auto output_file = driver::get_output_path(ctx, module_root_path[0], false, is_object); 
+    if (last_module_root_path != module_root_path) {
+      object_files.push_back(output_file);
+    }
+    last_module_root_path = module_root_path;
     builder->build(binder.get_modules());
-#if SNOWBALL_DUMP_OUTPUT == 1
+  #if SNOWBALL_DUMP_OUTPUT == 1
     builder->dump();
-#endif
+  #endif
     builder->emit(output_file);
   }
-  auto output = driver::get_output_path(ctx, true);
+  auto output = driver::get_output_path(ctx, ctx.root_package_config.value().project.name, true);
   if (is_object) {
     backend::LLVMBuilder::link(ctx, object_files, output);
   }
