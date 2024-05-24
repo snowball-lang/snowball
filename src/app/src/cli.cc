@@ -187,7 +187,7 @@ void CLI::get_package_config(Ctx& ctx, const std::string& path) {
       authors.push_back(author->as_string());
     }
   }
-  auto default_path = config.get_string_or("project.src", path.empty() ? "." : path);
+  auto default_path = path.empty() ? "." : path;
   ctx.package_config = PackageConfigBase{
     .project = {
       .name = config.get_string_or("project.name", "<unnamed>"),

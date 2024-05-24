@@ -31,7 +31,7 @@ bool Compiler::compile() {
   CLI::get_package_config(ctx, ctx.config_path);
   ctx.root_package_config = ctx.package_config; 
   // TODO: Populate allowed_paths with all the paths in the project and in the dependencies.
-  std::vector<std::filesystem::path> allowed_paths = {(ctx.package_config.value().project.path / "..").lexically_normal()};
+  std::vector<std::filesystem::path> allowed_paths = {(ctx.package_config.value().project.path).lexically_normal()};
   std::vector<frontend::Module> modules;
   std::vector<std::filesystem::path> object_files;
   bool is_object = ctx.emit_type == EmitType::Object || ctx.emit_type == EmitType::Executable;
