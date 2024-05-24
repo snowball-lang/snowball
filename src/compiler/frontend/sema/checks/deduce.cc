@@ -32,7 +32,7 @@ bool TypeChecker::is_mutable(ast::Expr* expr, ast::Stmt* stmt) {
     return as_var->get_mut();
   }
   // TODO: More cases
-  return false;
+  return stmt->get_type()->is_mutable_type();
 }
 
 }
