@@ -15,6 +15,7 @@ void Binder::bind(const std::pair<std::map<uint64_t, std::vector<sema::Monorphos
     for (size_t j = 0; j < ast_modules.size(); j++) {
       auto module = ast_modules[j];
       current_module = std::make_shared<sil::Module>(module.get_path(), module.is_main);
+      current_module->parent_crate = module.parent_crate;
       if (first) {
         // We dont care about what module we are in, we just want to bind the generics
         // TODO: Am I cooked?

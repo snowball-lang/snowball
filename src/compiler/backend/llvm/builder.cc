@@ -5,8 +5,8 @@
 namespace snowball {
 namespace backend {
 
-LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map) : Builder(ctx),
-  llvm_ctx(std::make_unique<llvm::LLVMContext>()), builder_ctx(llvm_ctx, inst_map) {
+LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map, frontend::NamespacePath parent_crate) : Builder(ctx),
+  llvm_ctx(std::make_unique<llvm::LLVMContext>()), builder_ctx(llvm_ctx, inst_map, parent_crate) {
   llvm::InitializeAllTargetInfos();
   llvm::InitializeAllTargets();
   llvm::InitializeAllTargetMCs();
@@ -97,13 +97,13 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*
 }
 
 void LLVMBuilder::build(std::vector<std::shared_ptr<sil::Module>>& modules) {
-  for (auto& module : modules) {
+  for (auto module : modules) {
     for (auto& fn : module->get_fn_decls()) {
       build(fn);
     }
   }
   just_declare = false;
-  for (auto& module : modules) {
+  for (auto module : modules) {
     for (auto& fn : module->get_fn_decls()) {
       build(fn);
     }

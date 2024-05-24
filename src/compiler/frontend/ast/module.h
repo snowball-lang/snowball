@@ -13,6 +13,7 @@ class Module {
   NamespacePath path;
 public:
   const bool is_main = false;
+  std::optional<NamespacePath> parent_crate = std::nullopt;
   Module(ast::TopLevelAst ast, NamespacePath path, bool is_main = false)
     : ast(ast), path(path) {}
   ~Module() = default;

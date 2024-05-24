@@ -69,6 +69,8 @@ public:
   std::string get_mangled_name() const;
   std::string get_printable_name() const;
 
+  auto get_parent_module() const { return parent_module; }
+
   EMITABLE()
 
   static auto create(LocationHolder loc, ast::types::Type* type, const std::string& name, const std::vector<ParamType>& params,

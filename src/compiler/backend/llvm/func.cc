@@ -4,13 +4,17 @@
 namespace snowball {
 namespace backend {
 
+#define IS_EXTERNAL_FN \
+  node->get_parent_module()->parent_crate != builder_ctx.parent_crate
+
 void LLVMBuilder::emit(const sil::FuncDecl* node) {
   assert(node->get_type()->is_func());
   auto fn_type = get_func_type(node->get_type()->as_func());  
   if (just_declare) {
     auto linkage = llvm::Function::InternalLinkage;
     if (node->get_external() != frontend::ast::AttributedNode::None
-      || node->get_privacy() == frontend::ast::AttributedNode::Public) {
+      || node->get_privacy() == frontend::ast::AttributedNode::Public
+      || (IS_EXTERNAL_FN)) {
       linkage = llvm::Function::ExternalLinkage;
     }
     auto fn = llvm::Function::Create(fn_type, linkage, node->get_mangled_name(), *builder_ctx.module);
@@ -19,6 +23,11 @@ void LLVMBuilder::emit(const sil::FuncDecl* node) {
       fn->addFnAttr(llvm::Attribute::AlwaysInline);
     builder_ctx.set_value(node->get_id(), fn);
   } else if (node->get_external() == frontend::ast::AttributedNode::None) {
+    if (IS_EXTERNAL_FN) {
+      // We dont want to declare the function multiple times
+      // Let's leave it as external
+      return;
+    }
     auto func = llvm::cast<llvm::Function>(builder_ctx.get_value(node->get_id()));
     auto entry = llvm::BasicBlock::Create(*llvm_ctx, "entry", func);
     builder->SetInsertPoint(entry);

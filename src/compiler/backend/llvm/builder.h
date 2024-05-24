@@ -27,12 +27,15 @@ class LLVMBuilderContext {
 
 public:
   std::unique_ptr<llvm::Module> module;
+  frontend::NamespacePath parent_crate;
   llvm::TargetMachine* target_machine = nullptr;  
 
   bool dont_load = false;
 
-  LLVMBuilderContext(std::unique_ptr<llvm::LLVMContext>& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map) 
-    : module(std::make_unique<llvm::Module>("main", *ctx)), inst_map(inst_map) {}
+  LLVMBuilderContext(std::unique_ptr<llvm::LLVMContext>& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map,
+    frontend::NamespacePath parent_crate) 
+    : module(std::make_unique<llvm::Module>("main", *ctx)), inst_map(inst_map),
+      parent_crate(parent_crate) {}
 
   llvm::Value* get_value(uint64_t id) { return value_map.at(id); }
   sil::Inst* get_inst(uint64_t id) { return inst_map.at(id); }
@@ -91,7 +94,7 @@ class LLVMBuilder : public sil::Builder {
 
   void check_and_optimize();
 public:
-  LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map);
+  LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map, frontend::NamespacePath parent_crate);
 
   void build(std::vector<std::shared_ptr<sil::Module>>& modules) override;
   void dump(llvm::raw_ostream& os = llvm::errs()) override;

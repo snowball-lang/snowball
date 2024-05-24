@@ -16,15 +16,13 @@ std::string NamespacePath::get_path_string() const {
   return path_str;
 }
 
-NamespacePath NamespacePath::from_file(const std::filesystem::path& file) {
+NamespacePath NamespacePath::from_file(const std::filesystem::path& file, bool without_root) {
   std::vector<std::string> path;
-  bool add = false;
   for (auto& part : file.parent_path()) {
-    if (!add) { // Skip the root path
-      add = true;
-      continue;
-    }
     path.push_back(part.string());
+  }
+  if (without_root) {
+    return NamespacePath(path[1]);
   }
   // Add the file name without extension
   path.push_back(file.stem().string());

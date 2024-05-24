@@ -69,7 +69,7 @@ void TypeChecker::post_check() {
         break;
       }
     }
-    if (!found_main) {
+    if (!found_main && ctx.current_module->is_main) {
       err(SourceLocation(0, 0, 0, std::make_shared<SourceFile>()), "No main function found", Error::Info {
         .highlight = "No main function found",
         .help = "You need to define a main function to compile an executable"

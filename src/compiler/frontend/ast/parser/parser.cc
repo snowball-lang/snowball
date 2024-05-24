@@ -1,6 +1,7 @@
 
 
 #include <cassert>
+#include <filesystem>
 
 #include "compiler/frontend/ast/parser.h"
 #include "compiler/frontend/ast/nodes.h"
@@ -15,12 +16,58 @@ Parser::Parser(const Ctx& ctx, const std::shared_ptr<SourceFile>& file, const st
   current = tokens[0]; // we know that there is at least one token
 }
 
+namespace {
+
+std::string remove_sub_folders(const std::string& full, const std::string& sub) {
+  // Split full path into directories
+  std::istringstream fullStream(full);
+  std::vector<std::string> fullDirs;
+  std::string dir;
+  while (std::getline(fullStream, dir, '/')) {
+    fullDirs.push_back(dir);
+  }  
+  // Split subpath into directories
+  std::istringstream subStream(sub);
+  std::vector<std::string> subDirs;
+  while (std::getline(subStream, dir, '/')) {
+    subDirs.push_back(dir);
+  }
+  // Find the position of subpath in full path
+  size_t pos = full.find(sub);  
+  // If subpath is not found, return the full path
+  if (pos == std::string::npos) {
+    return full;
+  }
+  // Find the position of the second occurrence of '/' after the subpath
+  size_t secondSlash = full.find('/', pos + sub.length());  
+  // If second slash is not found, return the full path
+  if (secondSlash == std::string::npos) {
+    return full;
+  }
+  // Extract the part after the second slash
+  std::string result = full.substr(secondSlash + 1);
+  // Find the position of the next '/' after the second slash
+  size_t nextSlash = result.find('/');  
+  // If next slash is found, remove everything before it
+  if (nextSlash != std::string::npos) {
+    result = result.substr(nextSlash + 1);
+  }
+  // Prepend the directory right before the subpath
+  auto result_path = result;
+  result_path = result_path.substr(0, result_path.find_first_of('.'));
+  return result_path;
+}
+}
+
 Module Parser::parse() {
-  auto root_path = ctx.package_config.value().project.path;
-  // substract the root path from the file path
-  auto f = file->get_path().substr((root_path/"..").lexically_normal().string().size());
-  auto path = NamespacePath::from_file(f);
-  bool is_main = (root_path == ctx.root_package_config.value().project.path);
+  auto root_name = ctx.package_config.value().project.name;
+  // Subtract from the path until we find the src dir
+  auto src_dir = std::filesystem::path(ctx.package_config.value().project.src);
+  auto dir = std::filesystem::path(file->get_path());
+  // Find the first instance of the src_dir
+  auto new_dir = remove_sub_folders(dir, src_dir);
+  auto path = NamespacePath::from_file(root_name + "/" + new_dir);
+  bool is_main = (root_name == ctx.root_package_config.value().project.name);
   try {
     return Module(parse_top_level(), path, is_main);
   } catch (const StopParsing&) {

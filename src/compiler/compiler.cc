@@ -14,7 +14,7 @@
 #include "app/vendor/reky/src/reky.hpp"
 
 #ifndef SNOWBALL_DUMP_OUTPUT
-#define SNOWBALL_DUMP_OUTPUT 1
+#define SNOWBALL_DUMP_OUTPUT 0
 #endif
 
 namespace snowball {
@@ -39,15 +39,17 @@ bool Compiler::compile() {
     ctx.package_config.value().project.version, get_package_type_string()));
   reky::fetch_dependencies(ctx, allowed_paths);
   auto start = std::chrono::high_resolution_clock::now();
-  for (auto& path : allowed_paths) {
+  for (auto ipath = allowed_paths.rbegin(); ipath != allowed_paths.rend(); ipath++) {
+    auto path = *ipath;
     // Change the project context to the current project (e.g. when changing directories)
     CLI::get_package_config(ctx, path / "sn.confy");
-    // Display the current project being compiled
+    // TODO: Display the current project being compiled
     auto project_path = ctx.package_config.value().project.path.string();
     project_path.erase(project_path.begin(), 
       project_path.begin() +
-      ctx.package_config.value().project.path.parent_path().string().size());
-    Logger::status("Compiling", frontend::NamespacePath::from_file(project_path).get_path_string());
+      ctx.package_config.value().project.path.parent_path().parent_path().string().size());
+    auto module_root_path = frontend::NamespacePath::from_file(project_path, true);
+    Logger::status("Compiling", module_root_path[0]);
     //Logger::progress("Compiling", i / allowed_paths.size()+1);
     sn_assert(std::filesystem::exists(path), "Path does not exist (looking for {})", path.string());
     // Iterate recursively through the project and the dependencies.
@@ -62,11 +64,15 @@ bool Compiler::compile() {
         }
         frontend::Parser parser(ctx, source_file, tokens);
         modules.push_back(parser.parse());
+        modules.back().parent_crate = module_root_path;
         if (parser.handle_errors()) {
           return EXIT_FAILURE;
         }
       }
     }
+    // We add the top module so that it can be accessed from 
+    // other modules in the same project.
+    modules.push_back(frontend::Module({}, module_root_path, modules.at(0).is_main));
     frontend::sema::TypeChecker type_checker(ctx, modules);
     type_checker.check();
     if (type_checker.handle_errors()) {
@@ -83,7 +89,7 @@ bool Compiler::compile() {
       case EmitType::Object:
       case EmitType::Executable:
       case EmitType::Asm: {
-        builder = new backend::LLVMBuilder(ctx, binder.get_insts());
+        builder = new backend::LLVMBuilder(ctx, binder.get_insts(), module_root_path);
       } break;
       default: sn_assert(false, "Unknown emit type");
     }

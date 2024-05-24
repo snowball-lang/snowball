@@ -1,6 +1,4 @@
 
-unsafe external "C" func printf(x: *const u8);
-
 public func test(x: crate::mod::Hello<f32>, b: crate::mod::Hello<f32>) {
   let mut k = x.a + b.a;
   k = b.a;
@@ -8,5 +6,5 @@ public func test(x: crate::mod::Hello<f32>, b: crate::mod::Hello<f32>) {
 }
 
 public func main() i32 {
-  printf(b"Hello, world!\n");
+  std::main::printf(b"Hello, world!\n");
 }
