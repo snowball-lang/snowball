@@ -17,6 +17,7 @@ struct PackageConfigBase {
     std::vector<std::string> authors;
     std::string license;
     std::filesystem::path path;
+    std::string src;
   } project;
 
   struct Build {

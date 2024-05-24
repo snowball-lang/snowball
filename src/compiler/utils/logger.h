@@ -31,7 +31,7 @@ public:
   }
 
   static void raw(const std::string& message) {
-    fmt::print("{}\n", message);
+    fmt::print("{}", message);
   }
 
   static void status(const std::string& label, const std::string& message) {

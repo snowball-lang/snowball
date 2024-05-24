@@ -14,7 +14,7 @@
 #include "app/vendor/reky/src/reky.hpp"
 
 #ifndef SNOWBALL_DUMP_OUTPUT
-#define SNOWBALL_DUMP_OUTPUT 0
+#define SNOWBALL_DUMP_OUTPUT 1
 #endif
 
 namespace snowball {
@@ -51,7 +51,8 @@ bool Compiler::compile() {
     //Logger::progress("Compiling", i / allowed_paths.size()+1);
     sn_assert(std::filesystem::exists(path), "Path does not exist (looking for {})", path.string());
     // Iterate recursively through the project and the dependencies.
-    for (auto& entry : std::filesystem::recursive_directory_iterator(path)) {
+    auto src_path = path / ctx.package_config.value().project.src;
+    for (auto& entry : std::filesystem::recursive_directory_iterator(src_path)) {
       if (entry.is_regular_file() && entry.path().extension() == ".sn") {
         auto source_file = std::make_shared<frontend::SourceFile>(entry);
         frontend::Lexer lexer(ctx, source_file);
@@ -104,7 +105,7 @@ bool Compiler::compile() {
     Logger::status("Running", ctx.package_config.value().project.name);
     return driver::run(ctx, output);
   }
-  Logger::raw("");
+  Logger::raw("\n");
   Logger::success(F("Compiled snowball project in {}ms!", duration));
   return EXIT_SUCCESS;
 }

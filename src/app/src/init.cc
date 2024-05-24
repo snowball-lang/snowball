@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include <filesystem>
+#include <fstream>
 
 #include <llvm/Support/CommandLine.h>
 
@@ -47,7 +48,7 @@ void CLI::make_init(Ctx& ctx, Args& args, bool new_project) {
 
   cl::OptionCategory category("Init Snowball Options");
   cl::opt<std::string> name("name", cl::desc("Name of the project"), cl::cat(category));
-  cl::opt<std::string> version("version", cl::desc("Version of the project"), cl::cat(category));
+  cl::opt<std::string> version("lib-version", cl::desc("Version of the project"), cl::cat(category));
   cl::opt<std::string> description("description", cl::desc("Description of the project"), cl::cat(category));
   cl::opt<LibType> lib_type("lib-type", cl::desc("Type of the library"), cl::values(
     clEnumValN(LibType::Exe, "exe", "Executable"),
@@ -60,11 +61,11 @@ void CLI::make_init(Ctx& ctx, Args& args, bool new_project) {
     err("Name is required for the project!");
   }
   if (version.empty()) {
-    err("Version is required for the project!");
+    version = "0.1.0";
   }
 
   if (new_project) {
-    auto path = std::filesystem::current_path() / name;
+    auto path = std::filesystem::current_path() / name.getValue();
     Logger::status("Creating", fmt::format("Project at {}", path.string()));
     if (!std::filesystem::exists(path))
       std::filesystem::create_directory(path);
@@ -101,6 +102,7 @@ void CLI::make_init(Ctx& ctx, Args& args, bool new_project) {
   write_file("sn.reky", SN_REKY);
 
   Logger::status("Finished", "Project creation");
+  exit(0);
 }
 
 }
