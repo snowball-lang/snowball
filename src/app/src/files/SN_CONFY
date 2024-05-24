@@ -1,0 +1,7 @@
+
+project {{
+  name: "{}";
+  description: "{}";
+  version: "{}";
+  type: "{}";
+}};  

@@ -55,6 +55,8 @@ Ctx CLI::parse(int argc, char** argv) {
   } else if (mode == "run") {
     make_build(ctx, args, true);
     ctx.emit_type = EmitType::Executable;
+  } else if (mode == "init" || mode == "new") {
+    make_init(ctx, args, mode == "new");
   } else if (mode == "--version" || mode == "-v") {
     cl::PrintVersionMessage();
     exit(EXIT_SUCCESS);

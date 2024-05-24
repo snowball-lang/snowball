@@ -54,6 +54,8 @@ public:
   static void get_package_config(Ctx& ctx, const std::string& path = "");
 private:
   static void make_build(Ctx& ctx, Args& args, bool for_run = false);
+  static void make_init(Ctx& ctx, Args& args, bool new_project = false);
+
   static void parse_args(Args& args);
   static void print_help(Args& args);
  
