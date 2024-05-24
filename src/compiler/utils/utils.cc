@@ -5,12 +5,18 @@
 #include <vector>
 #include <string>
 #include <cassert>
+#include <algorithm>
+#include <cctype>
 
 namespace snowball {
 uint64_t Identified::next_id = 1;
 Identified::Identified() : id(next_id++) { }
 
 namespace utils {
+
+void strip(std::string& str) {
+  str.erase(std::remove_if(str.begin(), str.end(), [](unsigned char x) { return std::isspace(x); }), str.end());
+}
 
 std::vector<std::string> split(std::string str, const std::string& delimiter) {
   std::vector<std::string> result;

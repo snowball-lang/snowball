@@ -54,6 +54,7 @@ namespace utils {
 std::vector<std::string> split(std::string str, const std::string& delimiter);
 std::string join(const std::vector<std::string>& vec, const std::string& delimiter);
 bool sw(const std::string& str, const std::string& prefix);
+void strip(std::string& str);
 
 template <typename T, typename U>
 std::vector<T> map(const std::vector<U>& vec, std::function<T(U)> fn) {

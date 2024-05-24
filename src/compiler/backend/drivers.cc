@@ -112,5 +112,23 @@ int run(const Ctx& ctx, const std::string& output) {
   return std::system(cmd.c_str());
 }
 
+std::string get_git(const Ctx& ctx) {
+  if (auto git = std::getenv("SNOWBALL_GIT"); git != nullptr) {
+    return git;
+  }
+  return "git";
+}
+
+std::filesystem::path get_snowball_home() {
+  if (auto home = std::getenv("SNOWBALL_HOME"); home != nullptr) {
+    return home;
+  }
+  auto home = std::getenv("HOME");
+  if (home == nullptr) {
+    home = std::getenv("USERPROFILE");
+  }
+  return std::filesystem::path(home) / ".snowball";
+}
+
 }
 }

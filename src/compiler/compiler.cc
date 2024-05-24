@@ -11,9 +11,10 @@
 #include "compiler/backend/drivers.h"
 
 #include "app/cli.h"
+#include "app/vendor/reky/src/reky.hpp"
 
 #ifndef SNOWBALL_DUMP_OUTPUT
-#define SNOWBALL_DUMP_OUTPUT 1
+#define SNOWBALL_DUMP_OUTPUT 0
 #endif
 
 namespace snowball {
@@ -36,6 +37,7 @@ bool Compiler::compile() {
   bool is_object = ctx.emit_type == EmitType::Object || ctx.emit_type == EmitType::Executable;
   Logger::status("Project", F("{} v{} {}", ctx.package_config.value().project.name, 
     ctx.package_config.value().project.version, get_package_type_string()));
+  reky::fetch_dependencies(ctx, allowed_paths);
   auto start = std::chrono::high_resolution_clock::now();
   for (auto& path : allowed_paths) {
     // Change the project context to the current project (e.g. when changing directories)

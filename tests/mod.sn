@@ -3,6 +3,6 @@ class Hello<T> {
   public func hello(x: T) {
     let _n = x;
   }
-  public operator func +(y: T) {
+  public operator func +(_y: T) {
   }
 }
