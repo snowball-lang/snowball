@@ -110,7 +110,9 @@ void LLVMBuilder::build(std::vector<std::shared_ptr<sil::Module>>& modules) {
       build(fn);
     }
   }
-  check_and_optimize();
+  dbg.builder->finalize();
+  auto err = llvm::verifyModule(*builder_ctx.module, &llvm::errs());
+  sn_assert(!err, "Module verification failed");
 }
 
 class CommentWriter : public llvm::AssemblyAnnotationWriter {
@@ -121,8 +123,6 @@ public:
     if (auto sub = F->getSubprogram())
       OS << "; [#name=" << sub->getName() << "]\n";  // Output # uses
   }
-
-
 };
 
 void LLVMBuilder::dump(llvm::raw_ostream& os) {

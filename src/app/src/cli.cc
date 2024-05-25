@@ -100,12 +100,13 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
   cl::opt<bool>* static_link = nullptr;
   if (!for_run) {
     emit_type = new cl::opt<EmitType>("emit", cl::desc("Emit type"), cl::values(
-      clEnumValN(EmitType::Llvm, "llvm", "LLVM IR"),
+      clEnumValN(EmitType::Llvm, "llvm-ir", "LLVM IR"),
       clEnumValN(EmitType::Asm, "asm", "Assembly"),
       clEnumValN(EmitType::Object, "obj", "Object file"),
       clEnumValN(EmitType::Executable, "exec", "Executable file"),
       clEnumValN(EmitType::Ast, "ast", "Abstract Syntax Tree"),
-      clEnumValN(EmitType::Sil, "sil", "Snowball Intermediate Language")
+      clEnumValN(EmitType::Sil, "sil", "Snowball Intermediate Language"),
+      clEnumValN(EmitType::LlvmBc, "llvm-bc", "LLVM Bitcode")
     ), cl::init(EmitType::Llvm), cl::cat(category));
     target = new cl::opt<Target>("target", cl::desc("Target OS"), cl::values(
       clEnumValN(Target::Windows, "windows", "Windows"),

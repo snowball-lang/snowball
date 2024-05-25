@@ -26,7 +26,8 @@ enum class EmitType {
   Object,
   Executable,
   Ast,
-  Sil
+  Sil,
+  LlvmBc
 };
 /**
  * @brief Optimisation level.

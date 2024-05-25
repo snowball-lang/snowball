@@ -92,7 +92,9 @@ class LLVMBuilder : public sil::Builder {
     llvm::DIFile* get_file(const std::string& path);
   } dbg;
 
-  void check_and_optimize();
+  static void output_object_file(llvm::Module& module, std::filesystem::path path,
+    std::shared_ptr<llvm::LLVMContext> ctx, llvm::TargetMachine* target_machine, EmitType emit_type);
+  static void check_and_optimize(llvm::Module* module, llvm::TargetMachine* target_machine, OptLevel opt_level);
 public:
   LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map, frontend::NamespacePath parent_crate);
 

@@ -12,11 +12,13 @@ std::filesystem::path get_output_path(const Ctx& ctx, const std::string& name, b
   auto workspace = for_linking ? WorkSpaceType::Bin : (for_object_file ? WorkSpaceType::Obj : WorkSpaceType::Build);
   auto default_output_path = get_workspace_path(ctx, workspace);
   if (for_object_file && ctx.emit_type == EmitType::Executable) {
-    emit_type = EmitType::Object;
+    emit_type = EmitType::LlvmBc;
   }
   switch (emit_type) {
     case EmitType::Llvm:
       return default_output_path / (name + ".ll");
+    case EmitType::LlvmBc:
+      return default_output_path / (name + ".bc");
     case EmitType::Object:{
       switch (ctx.target) {
         case Target::Windows:

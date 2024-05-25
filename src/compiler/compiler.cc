@@ -36,7 +36,6 @@ bool Compiler::compile() {
   // Unsigned is the number of modules appened for this path
   std::vector<frontend::NamespacePath> module_paths;
   std::vector<std::filesystem::path> object_files;
-  bool is_object = ctx.emit_type == EmitType::Object || ctx.emit_type == EmitType::Executable;
   Logger::status("Project", F("{} v{} {}", ctx.package_config.value().project.name, 
     ctx.package_config.value().project.version, get_package_type_string()));
   reky::fetch_dependencies(ctx, allowed_paths);
@@ -89,20 +88,31 @@ bool Compiler::compile() {
   if (binder.handle_errors()) {
     return EXIT_FAILURE;
   }
+  auto& sil_modules = binder.get_modules();
+  // Add an output module since we need to have a main/general module to link everything to.
+  auto output_namespace_path = frontend::NamespacePath(".libroot");
+  sil_modules.push_back(std::make_shared<sil::Module>(output_namespace_path));
+  module_paths.push_back(output_namespace_path);
+
   auto last_module_root_path = frontend::NamespacePath::dummy();
-  for (unsigned i = 0; i < binder.get_modules().size(); i++) {
+  for (unsigned i = 0; i < sil_modules.size(); i++) {
     auto module_root_path = module_paths.at(i);
     sil::Builder* builder;
     switch (ctx.emit_type) {
       case EmitType::Llvm:
       case EmitType::Object:
       case EmitType::Executable:
+      case EmitType::LlvmBc:
       case EmitType::Asm: {
         builder = new backend::LLVMBuilder(ctx, binder.get_insts(), module_root_path);
       } break;
       default: sn_assert(false, "Unknown emit type");
     }
-    auto output_file = driver::get_output_path(ctx, module_root_path[0], false, is_object); 
+    auto emit_type = ctx.emit_type;
+    // Compile to LLVM bitcode if we are compiling to an executable.
+    ctx.emit_type = EmitType::LlvmBc;
+    auto output_file = driver::get_output_path(ctx, module_root_path[0], false, true); 
+    ctx.emit_type = emit_type;
     if (last_module_root_path != module_root_path) {
       object_files.push_back(output_file);
     }
@@ -114,7 +124,9 @@ bool Compiler::compile() {
     builder->emit(output_file);
   }
   auto output = driver::get_output_path(ctx, ctx.root_package_config.value().project.name, true);
-  if (is_object) {
+  if (ctx.emit_type == EmitType::Executable || ctx.emit_type == EmitType::Object
+    || ctx.emit_type == EmitType::LlvmBc || ctx.emit_type == EmitType::Asm 
+    || ctx.emit_type == EmitType::Llvm) {
     backend::LLVMBuilder::link(ctx, object_files, output);
   }
   auto end = std::chrono::high_resolution_clock::now();
@@ -142,6 +154,7 @@ std::string Compiler::get_package_type_string() {
     case EmitType::Llvm: output += "llvm"; break;
     case EmitType::Sil: output += "sil"; break;
     case EmitType::Ast: output += "ast"; break;
+    case EmitType::LlvmBc: output += "llvm-bc"; break;
   }
   switch (ctx.opt_level) {
     case OptLevel::Debug: output += " + debug"; break;
