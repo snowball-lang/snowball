@@ -1,10 +1,4 @@
 
-public func test(x: crate::mod::Hello<f32>, b: crate::mod::Hello<f32>) {
-  let mut k = x.a + b.a;
-  k = b.a;
-  x.hello(k);
-}
-
 public func main() i32 {
   std::main::printf(b"Hello, world!\n");
 }

@@ -2,6 +2,8 @@
 #include "compiler/backend/llvm/builder.h"
 #include "compiler/backend/llvm/llvm.h"
 
+#include <llvm/IR/AssemblyAnnotationWriter.h>
+
 namespace snowball {
 namespace backend {
 
@@ -111,8 +113,20 @@ void LLVMBuilder::build(std::vector<std::shared_ptr<sil::Module>>& modules) {
   check_and_optimize();
 }
 
+class CommentWriter : public llvm::AssemblyAnnotationWriter {
+public:
+ virtual void emitFunctionAnnot(const llvm::Function *F,
+                              llvm::formatted_raw_ostream &OS) {
+    OS << "; [#uses=" << F->getNumUses() << "]\n";  // Output # uses
+    if (auto sub = F->getSubprogram())
+      OS << "; [#name=" << sub->getName() << "]\n";  // Output # uses
+  }
+
+
+};
+
 void LLVMBuilder::dump(llvm::raw_ostream& os) {
-  builder_ctx.module->print(os, nullptr);
+  builder_ctx.module->print(os, new CommentWriter(), false, true);
 }
 
 llvm::DIFile* LLVMBuilder::DebugUtils::get_file(const std::string& path) {
