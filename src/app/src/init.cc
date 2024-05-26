@@ -99,7 +99,8 @@ void CLI::make_init(Ctx& ctx, Args& args, bool new_project) {
 
   Logger::status("Creating", "Project files");
   std::filesystem::create_directory("src");
-  write_file("src/main.sn", lib_type == LibType::Exe ? EXECUTABLE_MAIN : LIBRARY_MAIN);
+  std::string entry = lib_type == LibType::Exe ? "main.sn" : "lib.sn";
+  write_file("src/" + entry, lib_type == LibType::Exe ? EXECUTABLE_MAIN : LIBRARY_MAIN);
   write_file("sn.confy", fmt::format(SN_CONFY, name, description, version, lib_type_str));
   write_file(".gitignore", _GITIGNORE);
   write_file("sn.reky", SN_REKY);
