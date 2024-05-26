@@ -9,6 +9,10 @@ namespace frontend {
 namespace sema {
 
 void TypeChecker::visit(ast::FnDecl* node) {
+  if (node->is_generic_instanced()) {
+    // Skip generic instanced functions
+    return;
+  }
   assert(node->get_type());
   assert(node->get_type()->is_func());
   auto fn_type = node->get_type()->as_func();
