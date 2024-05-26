@@ -1,5 +1,6 @@
 
 #include "compiler/ctx.h"
+#include "compiler/utils/hash.h"
 #include "compiler/backend/drivers.h"
 #include "compiler/backend/llvm/builder.h"
 
@@ -12,9 +13,9 @@ void LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths
   auto obj_path = driver::get_workspace_path(ctx, driver::WorkSpaceType::Obj);
   // Get all the llvm bitcode files and link them
   auto builder_ctx = std::make_shared<llvm::LLVMContext>();
-  auto libroot_path = obj_path / ".libroot.bc";
-  auto buffer = llvm::MemoryBuffer::getFile(libroot_path.string());
-  sn_assert(buffer, "Failed to open file: " + libroot_path.string());
+  auto libroot_path = (obj_path / utils::hash::hashString(".libroot")).string() + ".bc";
+  auto buffer = llvm::MemoryBuffer::getFile(libroot_path);
+  sn_assert(buffer, "Failed to open file: " + libroot_path);
   auto libroot = llvm::parseBitcodeFile(buffer.get()->getMemBufferRef(), *builder_ctx);
   llvm::Linker ld(*libroot.get());
   for (auto& path : paths) {
@@ -43,7 +44,7 @@ void LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths
       std::error_code ec;
       llvm::raw_fd_ostream os(output.string(), ec, llvm::sys::fs::OF_Text);
       sn_assert(!ec, "Failed to open file: " + output.string());
-      libroot.get()->print(os, nullptr);
+      libroot.get()->print(os, new CommentWriter(), false, true);
       os.flush();
       return;
     }

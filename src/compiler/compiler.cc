@@ -39,22 +39,37 @@ bool Compiler::compile() {
   Logger::status("Project", F("{} v{} {}", ctx.package_config.value().project.name, 
     ctx.package_config.value().project.version, get_package_type_string()));
   reky::fetch_dependencies(ctx, allowed_paths);
+  static auto progress_i = 0.0;
+  auto print_compiling_bar = [&]() {
+    std::vector<std::string> modules;
+    for (size_t i = 0; i < module_paths.size(); i++) {
+      if (i == 0) {
+        modules.push_back(module_paths.at(i).get_path_string());
+        continue;
+      } 
+      if (module_paths.at(i) != module_paths.at(i-1)) {
+        modules.push_back(module_paths.at(i).get_path_string());
+      }
+    }
+    Logger::progress("Compiling", progress_i, utils::join(modules, ", "));
+  }; 
   auto start = std::chrono::high_resolution_clock::now();
   for (auto ipath = allowed_paths.rbegin(); ipath != allowed_paths.rend(); ipath++) {
     auto path = *ipath;
     // Change the project context to the current project (e.g. when changing directories)
     CLI::get_package_config(ctx, path / "sn.confy");
     // TODO: Display the current project being compiled
-    auto project_path = ctx.package_config.value().project.path.string();
+    auto package_ctx = ctx.package_config.value();
+    auto project_path = package_ctx.project.path.string();
     project_path.erase(project_path.begin(), 
       project_path.begin() +
-      ctx.package_config.value().project.path.parent_path().parent_path().string().size());
+      package_ctx.project.path.parent_path().parent_path().string().size());
     auto module_root_path = frontend::NamespacePath::from_file(project_path, true);
-    Logger::status("Compiling", module_root_path[0]);
+    Logger::status("Compiling", fmt::format("{} v{}", package_ctx.project.name, package_ctx.project.version));
     //Logger::progress("Compiling", i / allowed_paths.size()+1);
     sn_assert(std::filesystem::exists(path), "Path does not exist (looking for {})", path.string());
     // Iterate recursively through the project and the dependencies.
-    auto src_path = path / ctx.package_config.value().project.src;
+    auto src_path = path / package_ctx.project.src;
     for (auto& entry : std::filesystem::recursive_directory_iterator(src_path)) {
       if (entry.is_regular_file() && entry.path().extension() == ".sn") {
         auto source_file = std::make_shared<frontend::SourceFile>(entry);
@@ -70,6 +85,7 @@ bool Compiler::compile() {
         if (parser.handle_errors()) {
           return EXIT_FAILURE;
         }
+        print_compiling_bar();
       }
     }
     // We add the top module so that it can be accessed from 
@@ -77,12 +93,15 @@ bool Compiler::compile() {
     modules.push_back(frontend::Module({}, module_root_path, modules.at(0).is_main));
     modules.back().parent_crate = module_root_path;
     module_paths.push_back(module_root_path);
+    progress_i += 0.5 / allowed_paths.size();
   }
+  print_compiling_bar();
   frontend::sema::TypeChecker type_checker(ctx, modules);
   type_checker.check();
   if (type_checker.handle_errors()) {
     return EXIT_FAILURE;
   }
+  print_compiling_bar();
   sil::Binder binder(ctx, modules, type_checker.get_universe());
   binder.bind(type_checker.get_generic_registry());
   if (binder.handle_errors()) {
@@ -93,7 +112,9 @@ bool Compiler::compile() {
   auto output_namespace_path = frontend::NamespacePath(".libroot");
   sil_modules.push_back(std::make_shared<sil::Module>(output_namespace_path));
   module_paths.push_back(output_namespace_path);
-
+  bool is_object = ctx.emit_type == EmitType::Executable || ctx.emit_type == EmitType::Object
+                || ctx.emit_type == EmitType::LlvmBc || ctx.emit_type == EmitType::Asm
+                || ctx.emit_type == EmitType::Llvm;
   auto last_module_root_path = frontend::NamespacePath::dummy();
   for (unsigned i = 0; i < sil_modules.size(); i++) {
     auto module_root_path = module_paths.at(i);
@@ -108,11 +129,14 @@ bool Compiler::compile() {
       } break;
       default: sn_assert(false, "Unknown emit type");
     }
-    auto emit_type = ctx.emit_type;
-    // Compile to LLVM bitcode if we are compiling to an executable.
-    ctx.emit_type = EmitType::LlvmBc;
-    auto output_file = driver::get_output_path(ctx, module_root_path[0], false, true); 
-    ctx.emit_type = emit_type;
+    auto output_file = driver::get_output_path(ctx, module_root_path[0], false, is_object); 
+    if (is_object) {
+      auto emit_type = ctx.emit_type;
+      // Compile to LLVM bitcode if we are compiling to an executable.
+      ctx.emit_type = EmitType::LlvmBc;
+      output_file = driver::get_output_path(ctx, module_root_path[0], false, is_object);
+      ctx.emit_type = emit_type;
+    }
     if (last_module_root_path != module_root_path) {
       object_files.push_back(output_file);
     }
@@ -124,9 +148,7 @@ bool Compiler::compile() {
     builder->emit(output_file);
   }
   auto output = driver::get_output_path(ctx, ctx.root_package_config.value().project.name, true);
-  if (ctx.emit_type == EmitType::Executable || ctx.emit_type == EmitType::Object
-    || ctx.emit_type == EmitType::LlvmBc || ctx.emit_type == EmitType::Asm 
-    || ctx.emit_type == EmitType::Llvm) {
+  if (is_object) {
     backend::LLVMBuilder::link(ctx, object_files, output);
   }
   auto end = std::chrono::high_resolution_clock::now();
@@ -135,6 +157,7 @@ bool Compiler::compile() {
     Logger::status("Running", ctx.package_config.value().project.name);
     return driver::run(ctx, output);
   }
+  Logger::reset_status();
   Logger::raw("\n");
   Logger::success(F("Compiled snowball project in {}ms!", duration));
   return EXIT_SUCCESS;

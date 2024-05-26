@@ -3,12 +3,16 @@
 #include "compiler/ctx.h"
 #include "compiler/backend/drivers.h"
 #include "compiler/utils/utils.h"
+#include "compiler/utils/hash.h"
 
 namespace snowball {
 namespace driver {
 
 std::filesystem::path get_output_path(const Ctx& ctx, const std::string& name, bool for_linking, bool for_object_file) {
   auto emit_type = ctx.emit_type;
+  auto output_name = name;
+  if (for_object_file)
+    output_name = utils::hash::hashString(name);
   auto workspace = for_linking ? WorkSpaceType::Bin : (for_object_file ? WorkSpaceType::Obj : WorkSpaceType::Build);
   auto default_output_path = get_workspace_path(ctx, workspace);
   if (for_object_file && ctx.emit_type == EmitType::Executable) {
@@ -16,44 +20,44 @@ std::filesystem::path get_output_path(const Ctx& ctx, const std::string& name, b
   }
   switch (emit_type) {
     case EmitType::Llvm:
-      return default_output_path / (name + ".ll");
+      return default_output_path / (output_name + ".ll");
     case EmitType::LlvmBc:
-      return default_output_path / (name + ".bc");
+      return default_output_path / (output_name + ".bc");
     case EmitType::Object:{
       switch (ctx.target) {
         case Target::Windows:
-          return default_output_path / (name + ".obj");
+          return default_output_path / (output_name + ".obj");
         case Target::Linux:
-          return default_output_path / (name + ".o");
+          return default_output_path / (output_name + ".o");
         case Target::MacOS:
-          return default_output_path / (name + ".dylib");
+          return default_output_path / (output_name + ".dylib");
         default: sn_unreachable();
       }
     } break;
     case EmitType::Executable:{
       switch (ctx.target) {
         case Target::Windows:
-          return default_output_path / (name + ".exe");
+          return default_output_path / (output_name + ".exe");
         case Target::Linux:
         case Target::MacOS:
-          return default_output_path / name;
+          return default_output_path / output_name;
         default: sn_unreachable();
       }
     } break;
     case EmitType::Asm:{
       switch (ctx.target) {
         case Target::Windows:
-          return default_output_path / (name + ".asm");
+          return default_output_path / (output_name + ".asm");
         case Target::Linux:
         case Target::MacOS:
-          return default_output_path / (name + ".s");
+          return default_output_path / (output_name + ".s");
         default: sn_unreachable();
       }
     } break;
     case EmitType::Ast:
-      return default_output_path / (name + ".ast");
+      return default_output_path / (output_name + ".ast");
     case EmitType::Sil:
-      return default_output_path / (name + ".sil");
+      return default_output_path / (output_name + ".sil");
     default: sn_unreachable();
   }
 }

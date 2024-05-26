@@ -35,10 +35,11 @@ public:
   }
 
   static void status(const std::string& label, const std::string& message) {
+    Logger::reset_status();
     fmt::print("{:>11} {}\n", fmt::styled(label, fmt::fg(fmt::terminal_color::bright_green) | fmt::emphasis::bold), message);
   }
 
-  static void progress(const std::string& label, float progress = 0.0f) {
+  static void progress(const std::string& label, float progress = 0.0f, const std::string& message = "") {
     Logger::reset_status();
     std::stringstream output;
     output << "[";
@@ -52,7 +53,7 @@ public:
         output << " ";
     }
     output << "] ";
-    fmt::print("{:>10} {} {}%", fmt::styled(label, fmt::fg(fmt::terminal_color::green) | fmt::emphasis::bold), output.str(), int(progress * 100.0f));
+    fmt::print("{:>11} {} {}% {}", fmt::styled(label, fmt::fg(fmt::terminal_color::bright_green) | fmt::emphasis::faint | fmt::emphasis::bold), output.str(), int(progress * 100.0f), message);
     fflush(stdout);
   }
 

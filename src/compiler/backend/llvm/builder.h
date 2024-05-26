@@ -47,6 +47,16 @@ public:
   void set_value(uint64_t id, llvm::Value* value) { value_map[id] = value; }
 };
 
+class CommentWriter : public llvm::AssemblyAnnotationWriter {
+public:
+ virtual void emitFunctionAnnot(const llvm::Function *F,
+                              llvm::formatted_raw_ostream &OS) {
+    OS << "; [#uses=" << F->getNumUses() << "]\n";  // Output # uses
+    if (auto sub = F->getSubprogram())
+      OS << "; [#name=" << sub->getName() << "]\n";  // Output # uses
+  }
+};
+
 class LLVMBuilder : public sil::Builder {
   struct BuilderCache {
     std::map<uint64_t, llvm::StructType*> struct_map;

@@ -1,4 +1,5 @@
 
 public func main() i32 {
   std::main::printf(b"Hello, world!\n");
+  //std::main::test(2);
 }

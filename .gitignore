@@ -73,3 +73,5 @@ install_deps_temp/
 result
 .direnv/
 .cmake/
+
+*.class
