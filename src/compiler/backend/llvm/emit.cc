@@ -14,9 +14,10 @@ int LLVMBuilder::emit(std::filesystem::path path) {
   sn_assert(!ec, "Failed to open file: " + path.string());
   llvm::WriteBitcodeToFile(*builder_ctx.module, os);
   os.flush();
+  auto file_name = path.filename().stem().string();
   llvm::raw_fd_ostream hos(path.string() + ".hash", ec, llvm::sys::fs::OF_Text);
   sn_assert(!ec, "Failed to open file: " + path.string() + ".hash");
-  hos << path.string();
+  hos << file_name;
   hos.flush();
   return EXIT_SUCCESS;
 }
