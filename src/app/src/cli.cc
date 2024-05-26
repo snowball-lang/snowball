@@ -106,7 +106,8 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
       clEnumValN(EmitType::Executable, "exec", "Executable file"),
       clEnumValN(EmitType::Ast, "ast", "Abstract Syntax Tree"),
       clEnumValN(EmitType::Sil, "sil", "Snowball Intermediate Language"),
-      clEnumValN(EmitType::LlvmBc, "llvm-bc", "LLVM Bitcode")
+      clEnumValN(EmitType::LlvmBc, "llvm-bc", "LLVM Bitcode"),
+      clEnumValN(EmitType::RekyFreeze, "reky-freeze", "Show Reky Freeze")
     ), cl::init(EmitType::Executable), cl::cat(category));
     target = new cl::opt<Target>("target", cl::desc("Target OS"), cl::values(
       clEnumValN(Target::Windows, "windows", "Windows"),

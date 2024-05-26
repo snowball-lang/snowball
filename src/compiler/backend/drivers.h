@@ -1,6 +1,9 @@
 
 #include <filesystem>
 
+#ifndef __SNOWBALL_COMPILER_BACKEND_DRIVERS_H__
+#define __SNOWBALL_COMPILER_BACKEND_DRIVERS_H__
+
 namespace snowball {
 namespace driver {
 
@@ -23,3 +26,5 @@ int run(const Ctx& ctx, const std::string& output);
 
 }
 }
+
+#endif // __SNOWBALL_COMPILER_BACKEND_DRIVERS_H__

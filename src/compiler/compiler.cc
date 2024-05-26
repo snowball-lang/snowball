@@ -32,13 +32,17 @@ bool Compiler::compile() {
   ctx.root_package_config = ctx.package_config; 
   // TODO: Populate allowed_paths with all the paths in the project and in the dependencies.
   std::vector<std::filesystem::path> allowed_paths = {(ctx.package_config.value().project.path).lexically_normal()};
+  auto reky_cache = reky::fetch_dependencies(ctx, allowed_paths);
+  if (ctx.emit_type == EmitType::RekyFreeze) {
+    reky_cache.save(std::cout);
+    return EXIT_SUCCESS;
+  }
   std::vector<frontend::Module> modules;
   // Unsigned is the number of modules appened for this path
   std::vector<frontend::NamespacePath> module_paths;
   std::vector<std::filesystem::path> object_files;
   Logger::status("Project", F("{} v{} {}", ctx.package_config.value().project.name, 
     ctx.package_config.value().project.version, get_package_type_string()));
-  reky::fetch_dependencies(ctx, allowed_paths);
   static auto progress_i = 0.0;
   auto print_compiling_bar = [&]() {
     std::vector<std::string> modules;
@@ -178,6 +182,7 @@ std::string Compiler::get_package_type_string() {
     case EmitType::Sil: output += "sil"; break;
     case EmitType::Ast: output += "ast"; break;
     case EmitType::LlvmBc: output += "llvm-bc"; break;
+    case EmitType::RekyFreeze: sn_unreachable();
   }
   switch (ctx.opt_level) {
     case OptLevel::Debug: output += " + debug"; break;
