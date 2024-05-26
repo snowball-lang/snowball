@@ -14,7 +14,7 @@ ast::Stmt* TypeChecker::do_deduce(ast::Expr* expr) {
       sn_assert(decl.has_value(), "Variable not found for deduce");
       auto& var_decl = decl.value();
       auto& type = var_decl->get_type();
-      unify(type, ident->get_type(), ident->get_location());
+      unify(type, expr->get_type(), ident->get_location());
       if (auto as_var = var_decl->as<ast::VarDecl>()) {
         if (auto arg_for = as_var->get_arg_for()) {
           arg_for.value()->get_type()->as_func()->recalibrate_cache();

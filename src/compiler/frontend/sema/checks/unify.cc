@@ -54,6 +54,11 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b, const SourceL
       // TODO: Is this the right way to handle this?
       return just_check ? true : (constraint = b, true);
     }
+    if (b->is_unknown()) {
+      auto b_unknown = b->as_unknown();
+      auto& b_constraint = universe.get_constraints().at(b_unknown->get_id());
+      return unify(constraint, b_constraint, loc, just_check);
+    }
     return unify(constraint, b, loc, just_check);
   } else if (a->is_func() && b->is_func()) {
     auto a_func = a->as_func();

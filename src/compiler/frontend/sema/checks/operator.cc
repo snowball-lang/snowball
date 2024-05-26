@@ -23,6 +23,8 @@ void TypeChecker::visit(ast::BinaryOp* node) {
         .see = "https://snowball-lang.gitbook.io/docs/language-reference/types/mutability"
       }, Error::Type::Err, false);
     }
+    unify(node->get_type(), lhs->get_type(), node->get_location());
+    return;
   }
 
   auto lhs_type = lhs->get_type();
