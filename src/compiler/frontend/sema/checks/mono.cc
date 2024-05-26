@@ -35,6 +35,10 @@ ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::s
   auto ret = get_type(node->get_return_type());
   unify(node->get_type(), ast::types::FuncType::create(node, ret, fn_ty_copy->is_variadic()), node->get_location());
   node->accept(this);
+  check_fn(node, true);
+  if (node->get_body()) {
+    node->get_body().value()->accept(this);
+  }
   state.current_module->mutate_ast(node);
   universe.remove_scope();
   set_generic_context(backup);
@@ -69,9 +73,11 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const std::map<
     var->accept(this);
   }
   for (auto& method : node->get_funcs()) {
+    universe.add_scope();
     check_fn(method, true);
     method->set_parent_type(node->get_type());
     method->accept(this);
+    universe.remove_scope();
   }
   ctx.current_class = backup_class;
   universe.remove_scope();

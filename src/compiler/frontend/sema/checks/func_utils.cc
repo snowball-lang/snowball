@@ -164,6 +164,7 @@ void TypeChecker::check_fn(ast::FnDecl*& fn_decl, bool as_monorph) {
     // Some inserted arguments like "self" are not declared
     if (param->get_decl_type().has_value())
       unify(param->get_type(), get_type(param->get_decl_type().value()), param->get_location());
+    define_variable(param, param->get_location());
   }
   auto ret_type = get_type(fn_decl->get_return_type());
   auto func_type = ast::types::FuncType::create(fn_decl, ret_type, false);

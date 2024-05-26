@@ -126,7 +126,7 @@ ast::types::Type* TypeChecker::get_type(ast::Expr* expr) {
         ? fmt::format("Theres a symbol with a close name called '{}'.\nDid you mean to use that instead?", dym.value()) 
         : "Maybe you forgot to import a module?"
     });
-    return ast::types::ErrorType::create();
+    return get_error_type();
   }
   if (item->is_type()) {
     std::vector<ast::types::Type*> generics = fetch_generics_from_node(expr);
@@ -137,7 +137,7 @@ ast::types::Type* TypeChecker::get_type(ast::Expr* expr) {
         .highlight = "Not a type",
         .help = "We expected a type here, but found something else. Maybe you forgot to import a module?"
       }, Error::Type::Err, false);
-    return ast::types::ErrorType::create();
+    return get_error_type();
   }
 }
 
@@ -162,7 +162,7 @@ ast::types::Type* TypeChecker::deduce_type(ast::types::Type* type, const std::ve
         .help = "The class you are trying to use is not complete, No methods or fields have been defined yet.",
         .note = "This is probably due to a circular dependency issue in your code."
       }, Error::Type::Err, false);
-      return ast::types::ErrorType::create();
+      return get_error_type();
     }
     std::map<std::string, ast::types::Type*> deduced;
     if (generics.size() > 0) {

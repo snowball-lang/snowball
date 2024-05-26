@@ -14,7 +14,7 @@ void TypeChecker::visit(ast::MemberAccess* node) {
         fmt::format("Variable '{}' not found.", name),
       .help = fmt::format("Did you mean to declare a variable with the name '{}'?", name)
     }, Error::Type::Err, false);
-    unify(node->get_type(), ast::types::ErrorType::create());
+    unify(node->get_type(), get_error_type());
     return;
   }
   if (item.value().is_type()) {
@@ -23,7 +23,7 @@ void TypeChecker::visit(ast::MemberAccess* node) {
       .help = fmt::format("Did you mean to use a variable with the name '{}'?", name),
       .note = "You cant access types and use them as values in this context."
     }, Error::Type::Err, false);
-    unify(node->get_type(), ast::types::ErrorType::create());
+    unify(node->get_type(), get_error_type());
     return;
   }
   if (item.value().is_module()) {

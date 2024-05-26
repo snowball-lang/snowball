@@ -9,6 +9,7 @@
 #include <cctype>
 
 namespace snowball {
+Identified::Identified(uint64_t id) : id(id) {}
 uint64_t Identified::next_id = 1;
 Identified::Identified() : id(next_id++) { }
 

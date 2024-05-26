@@ -10,7 +10,7 @@ void TypeChecker::visit(ast::Reference* node) {
   node->get_expr()->accept(this);
   auto expr_type = node->get_expr()->get_type();
   if (expr_type->is_error()) {
-    unify(node->get_type(), ast::types::ErrorType::create());
+    unify(node->get_type(), get_error_type());
     return;
   }
   unify(node->get_type(), expr_type->get_reference_to(), node->get_location());

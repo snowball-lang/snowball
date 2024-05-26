@@ -3,13 +3,15 @@ public func test(x: crate::mod::Hello<i32>) {
   x.hello(2);
 }
 
-public func test2(x: crate::mod::Hello<*const u8>) {
-  x.hello(b"x");
+public func balls<T>(x: T) {
+  let mut n: T = x;
 }
 
 public func main() i32 {
   let mut a;
   a = 24;
+  balls(2);
+  balls(b"2");
   std::main::printf(b"Hello, world!\n");
   std::main::test(2);
   std::main::test(b"2");

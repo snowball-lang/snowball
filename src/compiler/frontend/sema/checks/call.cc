@@ -24,7 +24,7 @@ void TypeChecker::visit(ast::Call* node) {
           dym.has_value() ? fmt::format("Did you mean '{}'?", dym.value()) : ""),
         .help = fmt::format("Did you mean to declare a variable with the name '{}'?", ident->get_name())
       }, Error::Type::Err, false);
-      unify(node->get_type(), ast::types::ErrorType::create());
+      unify(node->get_type(), get_error_type());
       return;
     }
     if (item.value().is_type()) {
@@ -32,7 +32,7 @@ void TypeChecker::visit(ast::Call* node) {
         .highlight = fmt::format("Symbol '{}' is a type!", item.value().get_type()->get_printable_name()),
         .help = fmt::format("Types cannot be called as functions. Did you mean to use a 'new' expression?")
       });
-      unify(node->get_type(), ast::types::ErrorType::create());
+      unify(node->get_type(), get_error_type());
       return;
     } else if (item.value().is_var()) {
       auto var = item.value().get_var();
@@ -59,7 +59,7 @@ void TypeChecker::visit(ast::Call* node) {
         .highlight = 
           fmt::format("Variable or function '{}' not found inside '{}'", printable_op(index->get_member()->get_name()), name),
       }, Error::Type::Err, false);
-      unify(node->get_type(), ast::types::ErrorType::create());
+      unify(node->get_type(), get_error_type());
       return;
     }
     if (item.value().is_type()) {
@@ -67,7 +67,7 @@ void TypeChecker::visit(ast::Call* node) {
         .highlight = fmt::format("Symbol '{}' is a type!", item.value().get_type()->get_printable_name()),
         .help = fmt::format("Types cannot be called as functions. Did you mean to use a 'new' expression?")
       });
-      unify(node->get_type(), ast::types::ErrorType::create());
+      unify(node->get_type(), get_error_type());
       return;
     } else if (item.value().is_var()) {
       if (index->get_access_type() == ast::MemberAccess::Default) {
@@ -106,7 +106,7 @@ void TypeChecker::visit(ast::Call* node) {
       .highlight = callee_type->get_printable_name(),
       .help = fmt::format("Expected a function but '{}' is not a function", callee_type->get_printable_name())
     }, Error::Type::Err, false);
-    unify(node->get_type(), ast::types::ErrorType::create());
+    unify(node->get_type(), get_error_type());
     return;
   }
   auto as_func = callee_type->as_func();
@@ -117,7 +117,7 @@ void TypeChecker::visit(ast::Call* node) {
         .highlight = fmt::format("Type mismatch in argument {} of call to function '{}'", i + 1, callee_type->get_printable_name()),
         .help = fmt::format("Expected '{}' but found '{}'", as_func->get_param_types()[i]->get_printable_name(), arg_types[i]->get_printable_name())
       }, Error::Type::Err, false);
-      unify(node->get_type(), ast::types::ErrorType::create());
+      unify(node->get_type(), get_error_type());
       return;
     }
   }

@@ -12,11 +12,21 @@ Binder::Binder(const Ctx& ctx, std::vector<frontend::Module>& modules, sema::Uni
 void Binder::bind() {
   try {
     for (size_t j = 0; j < ast_modules.size(); j++) {
+      just_declare = true;
       auto module = ast_modules[j];
       current_module = std::make_shared<sil::Module>(module.get_path(), module.is_main);
       current_module->parent_crate = module.parent_crate;
-      for (size_t i = 0; i < module.get_ast().size(); i++) {
-        module.get_ast()[i]->accept(this);
+      auto ast = module.get_ast();
+      for (auto& node : ast) {
+        if (node->is<ast::FnDecl>() ||
+            node->is<ast::ClassDecl>() ||
+            node->is<ast::VarDecl>()) {
+          node->accept(this);
+        }
+      }
+      just_declare = false;
+      for (auto& node : ast) {
+        node->accept(this);
       }
       sil_modules.push_back(current_module);
     }

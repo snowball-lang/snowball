@@ -45,6 +45,8 @@ class Binder : public ast::AstVisitor, public Reporter {
   std::vector<std::pair<NamespacePath, ast::FnDecl*>> fn_decls;
   std::unordered_map<uint64_t, sil::Inst*> var_ids;
 
+  bool just_declare = true;
+
   BinderCtx ctx;
   Inst* value = nullptr; // The current value of the binder
 public:

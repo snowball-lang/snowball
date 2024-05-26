@@ -15,7 +15,13 @@ void Binder::visit(ast::FnDecl* node) {
   for (auto param : params) {
     sil_params.push_back({param->get_id(), param->get_name()});
   }
-  auto func = FuncDecl::create(node->get_location(), type, name, sil_params, current_module, *node, std::nullopt, node->get_id());
+  if (just_declare) {
+    auto func = FuncDecl::create(node->get_location(), type, name, sil_params, current_module, *node, std::nullopt, node->get_id());
+    var_ids.insert({node->get_id(), func});
+    value = func;
+    return;
+  }
+  auto func = (sil::FuncDecl*)var_ids.find(node->get_id())->second;  
   auto backup = ctx.ast_current_func;
   auto backup2 = ctx.current_func;
   ctx.ast_current_func = node;
@@ -23,7 +29,6 @@ void Binder::visit(ast::FnDecl* node) {
   for (auto param : params) {
     accept(param);
   }
-  var_ids.insert({node->get_id(), func});  
   if (auto block = node->get_body()) {
     auto body = accept(block.value());
     assert(body->is<Block>());
