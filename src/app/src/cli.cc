@@ -93,7 +93,7 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
     clEnumValN(OptLevel::Debug, "debug", "Debug build"),
     clEnumValN(OptLevel::ReleaseWithDebug, "release-with-debug", "Release build with debug info"),
     clEnumValN(OptLevel::ReleaseFast, "release-fast", "Release build with fast optimisations")
-  ), cl::init(OptLevel::Release), cl::cat(category));
+  ), cl::init(OptLevel::Debug), cl::cat(category));
   cl::opt<std::string> cc("cc", cl::desc("Custom C compiler"), cl::cat(category));
   cl::opt<EmitType>* emit_type = nullptr;
   cl::opt<Target>* target = nullptr;
@@ -107,7 +107,7 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
       clEnumValN(EmitType::Ast, "ast", "Abstract Syntax Tree"),
       clEnumValN(EmitType::Sil, "sil", "Snowball Intermediate Language"),
       clEnumValN(EmitType::LlvmBc, "llvm-bc", "LLVM Bitcode")
-    ), cl::init(EmitType::Llvm), cl::cat(category));
+    ), cl::init(EmitType::Executable), cl::cat(category));
     target = new cl::opt<Target>("target", cl::desc("Target OS"), cl::values(
       clEnumValN(Target::Windows, "windows", "Windows"),
       clEnumValN(Target::Linux, "linux", "Linux"),

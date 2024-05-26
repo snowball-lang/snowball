@@ -51,7 +51,7 @@ public:
   Binder(const Ctx& ctx, std::vector<frontend::Module>& modules, sema::Universe<sema::TypeCheckItem>& universe);
   ~Binder() = default;
 
-  void bind(const std::pair<std::map<uint64_t, std::vector<sema::MonorphosizedClass>>, std::map<uint64_t, std::vector<sema::MonorphosizedFn>>> generic_registry = {});
+  void bind();
   Inst* accept(ast::Node* node);
 
   auto& get_modules() { return sil_modules; }

@@ -12,7 +12,7 @@ ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::s
   node->clear_generics();
   auto fn_ty_copy = node->get_type()->as_func();
   node->get_type() = nullptr;
-  auto state = get_generic_context(node->get_id());
+  auto state = get_generic_context(node->get_generic_id());
   node->set_generic_instanced();
   generic_registry[node->get_id()].push_back(MonorphosizedFn {
     .decl = node,
@@ -75,6 +75,7 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const std::map<
   }
   ctx.current_class = backup_class;
   universe.remove_scope();
+  state.current_module->mutate_ast(node);
   set_generic_context(backup);
   return node;
 }

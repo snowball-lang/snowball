@@ -7,6 +7,10 @@ namespace frontend {
 namespace sema {
 
 void TypeChecker::visit(ast::ClassDecl* node) {
+  if (node->is_generic_instanced()) {
+    // We don't need to check the class if it's already instanced
+    return;
+  }
   assert(node->get_type());
   assert(node->get_type()->is_class());
   auto class_type = node->get_type()->as_class();

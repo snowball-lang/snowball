@@ -46,7 +46,6 @@ public:
 #undef SN_REGISTER_ACCEPT
 
   auto& get_universe() { return universe; }
-  auto get_generic_registry() { return std::make_pair(generic_class_registry, generic_registry); }
 private:
   void register_builtins();
 

@@ -48,6 +48,7 @@ private:
   Block* body_clone = nullptr;
   bool generic_instanced = false;
   std::optional<types::Type*> parent_type = std::nullopt;
+  std::optional<uint64_t> generic_id = std::nullopt;
 public:
   FnDecl(const SourceLocation& location, const std::string& name,   
         const std::vector<VarDecl*>& params, TypeRef return_type, std::optional<Block*> body,
@@ -65,6 +66,7 @@ public:
   bool should_generate() const;
   void set_parent_type(types::Type* type) { parent_type = type; }
   auto get_parent_type() const { return parent_type; }
+  uint64_t get_generic_id() const;
   static auto create(const SourceLocation& location, const std::string& name, 
       const std::vector<VarDecl*>& params, TypeRef return_type, std::optional<Block*> body,
       std::optional<GenericNode> generics = std::nullopt, 
@@ -127,6 +129,7 @@ class ClassDecl final : public Stmt, public GenericNode<>,
 private:
   std::string name;
   bool generic_instanced = false;
+  bool has_been_monorphosized = false;
   std::vector<VarDecl*> vars;
   std::vector<FnDecl*> funcs;
   bool complete = false; // If the class is complete, i.e. all methods are defined
