@@ -74,19 +74,7 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*
     llvm::ConstantDataArray::getString(*llvm_ctx, _SNOWBALL_VERSION, true)
   );
   auto engine = llvm::EngineBuilder();
-  std::string target;
-  switch (ctx.target) {
-    case Target::Linux:
-      target = "x86_64-unknown-linux-gnu";
-      break;
-    case Target::MacOS:
-      target = "x86_64-apple-darwin";
-      break;
-    case Target::Windows:
-      target = "x86_64-pc-windows-msvc";
-      break;
-    default: sn_unreachable();
-  };
+  auto target = get_target_triple();
   // Set the target triple
   builder_ctx.target_machine = engine.selectTarget(llvm::Triple(target), "", "", llvm::SmallVector<std::string, 0>());
   builder_ctx.module->setTargetTriple(target);
@@ -94,6 +82,32 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*
   if (llvm::Triple(builder_ctx.module->getTargetTriple()).isOSDarwin()) { 
     builder_ctx.module->addModuleFlag(llvm::Module::Warning, "Dwarf Version", 2); 
   }
+}
+
+std::string LLVMBuilder::get_target_triple() {
+  std::string target;
+  switch (vctx.arch) {
+    case Arch::X86_64:
+      target = "x86_64";
+      break;
+    case Arch::Arm64:
+      target = "aarch64";
+      break;
+    default: sn_unreachable();
+  }
+  switch (vctx.target) {
+    case Target::Linux:
+      target += "-linux-gnu";
+      break;
+    case Target::MacOS:
+      target += "-macos-none";
+      break;
+    case Target::Windows:
+      target += "-pc-windows-msvc";
+      break;
+    default: sn_unreachable();
+  }
+  return target;
 }
 
 void LLVMBuilder::build(std::vector<std::shared_ptr<sil::Module>>& modules) {

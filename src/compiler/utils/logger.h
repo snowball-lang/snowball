@@ -35,6 +35,11 @@ public:
     fmt::print("{}: {}\n", fmt::styled("success", fmt::fg(fmt::terminal_color::bright_green) | fmt::emphasis::bold), message);
   }
 
+  static void debug(const std::string& message) {
+    reset_status();
+    fmt::print("{}: {}\n", fmt::styled("debug", fmt::fg(fmt::terminal_color::bright_magenta) | fmt::emphasis::bold), message);
+  }
+
   static void raw(const std::string& message) {
     reset_status();
     fmt::print("{}", message);
@@ -70,6 +75,13 @@ public:
 };
 
 std::string highlight_quotes(const std::string& message);
+
+#ifndef SNOWBALL_VERBOSE
+#define SNOWBALL_VERBOSE(ctx, message) \
+  if (ctx.verbose) { \
+    utils::Logger::debug(message); \
+  }
+#endif
 
 }
 }

@@ -15,6 +15,12 @@
 #define SN_UNK
 #endif
 
+#if defined(__x86_64__) || defined(_M_X64)
+#define SN_X86_64
+#elif defined(AARCH64) || defined(__aarch64__)
+#define SN_ARM64
+#endif
+
 #ifdef NDEBUG
 #define SNOWBALL_BUILD_TYPE "release"
 #else

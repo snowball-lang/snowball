@@ -80,6 +80,7 @@ class LLVMBuilder : public sil::Builder {
   llvm::AllocaInst* alloc(types::Type* type, const std::string& name = "");
 
   void set_debug_info(const sil::Inst* node);
+  std::string get_target_triple();
 
   llvm::Type* get_type(types::Type* type);
   llvm::DIType* get_ditype(types::Type* type);

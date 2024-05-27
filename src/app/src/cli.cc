@@ -39,6 +39,11 @@ Ctx CLI::parse(int argc, char** argv) {
 #else
 #error "Unknown target compiler"
 #endif
+#ifdef SN_X86_64
+  ctx.arch = Arch::X86_64;
+#elif defined(SN_ARM64)
+  ctx.arch = Arch::Arm64;
+#endif
   cl::SetVersionPrinter([](raw_ostream & OS) {
       OS SNOWBALL_PRINT_MESSAGE;
     });
@@ -95,7 +100,14 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
     clEnumValN(OptLevel::ReleaseFast, "release-fast", "Release build with fast optimisations")
   ), cl::init(OptLevel::Debug), cl::cat(category));
   cl::opt<std::string> cc("cc", cl::desc("Custom C compiler"), cl::cat(category));
+  cl::opt<LinkerType> linker_type("linker", cl::desc("Linker type"), cl::values(
+    clEnumValN(LinkerType::Lld, "lld", "LLD"),
+    clEnumValN(LinkerType::Mold, "mold", "Mold"),
+    clEnumValN(LinkerType::Detect, "detect", "Detect")
+  ), cl::init(LinkerType::Detect), cl::cat(category));
+  cl::opt<bool> verbose("verbose", cl::desc("Verbose output"), cl::cat(category));
   cl::opt<EmitType>* emit_type = nullptr;
+  cl::opt<Arch>* arch = nullptr;
   cl::opt<Target>* target = nullptr;
   cl::opt<bool>* static_link = nullptr;
   if (!for_run) {
@@ -114,11 +126,17 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
       clEnumValN(Target::Linux, "linux", "Linux"),
       clEnumValN(Target::MacOS, "macos", "macOS")
     ), cl::init(Target::Unknown), cl::cat(category));
+    arch = new cl::opt<Arch>("arch", cl::desc("Architecture"), cl::values(
+      clEnumValN(Arch::X86_64, "x86_64", "x86_64"),
+      clEnumValN(Arch::Arm64, "arm64", "Arm64")
+    ), cl::init(Arch::Unknown), cl::cat(category));
     static_link = new cl::opt<bool>("static", cl::desc("Static linkage"), cl::cat(category));
   }
   parse_args(args);
   ctx.opt_level = opt_level;
   ctx.custom_cc = cc;
+  ctx.linker_type = linker_type;  
+  ctx.verbose = verbose;
   if (emit_type) {
     ctx.emit_type = *emit_type;
     delete emit_type;
@@ -126,6 +144,10 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
   if (target && *target != Target::Unknown) {
     ctx.target = *target;
     delete target;
+  }
+  if (arch && *arch != Arch::Unknown) {
+    ctx.arch = *arch;
+    delete arch;
   }
   if (static_link) {
     ctx.static_lib = *static_link;

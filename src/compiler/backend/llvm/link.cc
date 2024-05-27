@@ -29,8 +29,10 @@ void LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths
     sn_assert(!failed, "Failed to link module: " + path.string());
   }
   auto engine = llvm::EngineBuilder();
-  auto target_machine = engine.selectTarget(llvm::Triple(libroot.get()->getTargetTriple()), "", "", llvm::SmallVector<std::string, 1>());
+  auto triple_str = libroot.get()->getTargetTriple();
+  auto target_machine = engine.selectTarget(llvm::Triple(triple_str), "", "", llvm::SmallVector<std::string, 1>());
   check_and_optimize(libroot.get().get(), target_machine, ctx.opt_level);
+  SNOWBALL_VERBOSE(ctx, "Target triple: " + triple_str);
   switch (ctx.emit_type) {
     case EmitType::LlvmBc: {
       std::error_code ec;
@@ -54,11 +56,35 @@ void LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths
   auto obj_output = driver::get_output_path(ctx, ctx.root_package_config.value().project.name + ".tmp");
   output_object_file(*libroot.get(), obj_output, builder_ctx, target_machine, ctx.emit_type);
   auto cc = driver::get_cc(ctx);
+  auto gcc = fmt::format("{}-gcc", triple_str);
+  bool is_gcc = false;
+  if (cc == "cc" && driver::program_exists(gcc)) {
+    cc = gcc;
+    is_gcc = true;
+  }
   std::vector<std::string> args;
   args.push_back(cc);
+  switch (driver::get_linker_type(ctx)) {
+    case LinkerType::Lld:
+      args.push_back("-fuse-ld=lld");
+      break;
+    case LinkerType::Mold:
+      args.push_back("-fuse-ld=mold");
+      break;
+    default: break;
+  }
   args.push_back("-o");
   args.push_back(output.string());
   args.push_back(obj_output.string());
+  if (driver::cc_is_clang(ctx) && !is_gcc) {
+    args.push_back("--target=" + triple_str);
+  #ifdef SN_LIN
+    auto path = fmt::format("/usr/{}", triple_str);
+    if (std::filesystem::exists(path)) {
+      args.push_back(fmt::format("--sysroot={}", path));
+    }
+  #endif
+  }
   args.push_back("-L");
   args.push_back(driver::get_workspace_path(ctx, driver::WorkSpaceType::Libs).string());
   for (auto& lib : ctx.package_config.value().build.linkage_libs) {
@@ -72,12 +98,13 @@ void LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths
   }
   args.push_back("-no-pie");
   args.push_back("-lm");
-  
   std::string cmd;
   for (auto& arg : args) {
     cmd += arg + " ";
   }
+  SNOWBALL_VERBOSE(ctx, "Using the following command to link: " + cmd);
   std::system(cmd.c_str());
+  std::filesystem::remove(obj_output);
 }
 
 void LLVMBuilder::output_object_file(llvm::Module& module, std::filesystem::path path,

@@ -23,6 +23,9 @@ std::string get_cc(const Ctx& ctx);
 std::string get_git(const Ctx& ctx);
 std::filesystem::path get_snowball_home();
 int run(const Ctx& ctx, const std::string& output);
+LinkerType get_linker_type(const Ctx& ctx);
+bool program_exists(const std::string& name);
+bool cc_is_clang(const Ctx& ctx);
 
 }
 }

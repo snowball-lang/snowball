@@ -41,11 +41,27 @@ enum class OptLevel {
 };
 /**
  * @brief The OS enum represents the different operating systems.
-*/
+ */
 enum class Target {
   Windows,
   Linux,
   MacOS,
+  Unknown
+};
+/**
+ * @brief Linker type.
+ */
+enum class LinkerType {
+  Lld,
+  Mold,
+  Detect
+};
+/**
+ * @brief Architecture used by the compiler.
+ */
+enum class Arch {
+  X86_64,
+  Arm64,
   Unknown
 };
 /**
@@ -61,10 +77,14 @@ struct Ctx {
   EmitType emit_type;
   OptLevel opt_level = OptLevel::Release;
   Target target = Target::Unknown;
+  Arch arch = Arch::Unknown;
 
   std::string config_path = "";
   std::string custom_cc = "";
   bool static_lib = false;
+  LinkerType linker_type = LinkerType::Detect;
+
+  bool verbose = false;
 
   PackageConfig root_package_config = std::nullopt;
   PackageConfig package_config = std::nullopt;

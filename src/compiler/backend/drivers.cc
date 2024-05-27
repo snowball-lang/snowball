@@ -135,5 +135,34 @@ std::filesystem::path get_snowball_home() {
   return std::filesystem::path(home) / ".snowball";
 }
 
+LinkerType get_linker_type(const Ctx& ctx) {
+  if (ctx.linker_type == LinkerType::Detect) {
+    if (program_exists("ld.mold") && ctx.target != Target::MacOS) {
+      return LinkerType::Mold;
+    } else if (program_exists("ld.lld")) {
+      return LinkerType::Lld;
+    }
+  }
+  return ctx.linker_type;
+}
+
+bool program_exists(const std::string& name) {
+#ifdef SN_WIN
+  return std::system(("where " + name + " > nul 2>&1").c_str()) == 0;
+#else
+  return std::system(("which " + name + " > /dev/null 2>&1").c_str()) == 0;
+#endif
+}
+
+bool cc_is_clang(const Ctx& ctx) {
+  auto cc = get_cc(ctx);
+#ifdef SN_WIN
+  return run(ctx, cc + " --version 2>&1 | findstr /C:\"clang version\"") == 0;
+#else
+  // Check if we find "clang version" in the output of the compiler
+  return run(ctx, cc + " --version 2>&1 | grep -q 'clang version'") == 0;
+#endif
+}
+
 }
 }
