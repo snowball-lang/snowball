@@ -1,3 +1,5 @@
 *.h linguist-language=C
 *.sn linguist-language=Swift
 Dockerfile.* linguist-language=Dockerfile
+*.reky linguist-language=Shell
+*.confy linguist-language=Markdown

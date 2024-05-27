@@ -1,1 +1,10 @@
+# Reky's project dependencies!
+# This file contains your project's dependencies. For more information, refer
+# to the documentation: https://snowball-lang.gitbook.io/docs/reky/getting-started
+#
+# Any changes done to this file will be reflected in the next build. Note that 
+# removing a dependency will not remove it from the project, you will need to
+# manually remove it from the project's build path or run `snowball clean`.
+
+# Standard library
 std == 0.1.0
