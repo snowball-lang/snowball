@@ -9,7 +9,7 @@
 namespace snowball {
 namespace backend {
 
-void LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths, std::filesystem::path output) {  
+int LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths, std::filesystem::path output) {  
   auto obj_path = driver::get_workspace_path(ctx, driver::WorkSpaceType::Obj);
   // Get all the llvm bitcode files and link them
   auto builder_ctx = std::make_shared<llvm::LLVMContext>();
@@ -40,7 +40,7 @@ void LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths
       sn_assert(!ec, "Failed to open file: " + output.string());
       llvm::WriteBitcodeToFile(*libroot.get(), os);
       os.flush();
-      return;
+      return EXIT_SUCCESS;
     }
     case EmitType::Llvm: {
       std::error_code ec;
@@ -48,7 +48,7 @@ void LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths
       sn_assert(!ec, "Failed to open file: " + output.string());
       libroot.get()->print(os, new CommentWriter(), false, true);
       os.flush();
-      return;
+      return EXIT_SUCCESS;
     }
     default: break;
   }
@@ -58,7 +58,11 @@ void LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths
   auto cc = driver::get_cc(ctx);
   auto gcc = fmt::format("{}-gcc", triple_str);
   bool is_gcc = false;
-  if (cc == "cc" && driver::program_exists(gcc)) {
+  bool is_custom = false;
+  if (!ctx.custom_linker.empty()) {
+    cc = ctx.custom_linker;
+    is_custom = true;
+  } else if (cc == "cc" && driver::program_exists(gcc)) {
     cc = gcc;
     is_gcc = true;
   }
@@ -76,7 +80,7 @@ void LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths
   args.push_back("-o");
   args.push_back(output.string());
   args.push_back(obj_output.string());
-  if (driver::cc_is_clang(ctx) && !is_gcc) {
+  if (driver::cc_is_clang(ctx) && !is_gcc && !is_custom) {
     args.push_back("--target=" + triple_str);
   #ifdef SN_LIN
     auto path = fmt::format("/usr/{}", triple_str);
@@ -84,6 +88,10 @@ void LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths
       args.push_back(fmt::format("--sysroot={}", path));
     }
   #endif
+  } else if (!is_gcc && !is_custom) {
+    return error(fmt::format("you are cross compiling to {}, but the linker used ({})"
+      " does not support cross compilation. You can use the `--ld=LINKER` flag to specify a linker that supports cross compilation.",
+      triple_str, cc));
   }
   args.push_back("-L");
   args.push_back(driver::get_workspace_path(ctx, driver::WorkSpaceType::Libs).string());
@@ -105,6 +113,7 @@ void LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths
   SNOWBALL_VERBOSE(ctx, "Using the following command to link: " + cmd);
   std::system(cmd.c_str());
   std::filesystem::remove(obj_output);
+  return EXIT_SUCCESS;
 }
 
 void LLVMBuilder::output_object_file(llvm::Module& module, std::filesystem::path path,

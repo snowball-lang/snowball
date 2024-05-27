@@ -100,6 +100,7 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
     clEnumValN(OptLevel::ReleaseFast, "release-fast", "Release build with fast optimisations")
   ), cl::init(OptLevel::Debug), cl::cat(category));
   cl::opt<std::string> cc("cc", cl::desc("Custom C compiler"), cl::cat(category));
+  cl::opt<std::string> ld("ld", cl::desc("Custom linker"), cl::cat(category));
   cl::opt<LinkerType> linker_type("linker", cl::desc("Linker type"), cl::values(
     clEnumValN(LinkerType::Lld, "lld", "LLD"),
     clEnumValN(LinkerType::Mold, "mold", "Mold"),
@@ -135,6 +136,7 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
   parse_args(args);
   ctx.opt_level = opt_level;
   ctx.custom_cc = cc;
+  ctx.custom_linker = ld;
   ctx.linker_type = linker_type;  
   ctx.verbose = verbose;
   if (emit_type) {

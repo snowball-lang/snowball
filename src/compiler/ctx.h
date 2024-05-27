@@ -81,6 +81,7 @@ struct Ctx {
 
   std::string config_path = "";
   std::string custom_cc = "";
+  std::string custom_linker = "";
   bool static_lib = false;
   LinkerType linker_type = LinkerType::Detect;
 

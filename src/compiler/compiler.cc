@@ -153,7 +153,10 @@ bool Compiler::compile() {
   }
   auto output = driver::get_output_path(ctx, ctx.root_package_config.value().project.name, true);
   if (is_object) {
-    backend::LLVMBuilder::link(ctx, object_files, output);
+    auto err = backend::LLVMBuilder::link(ctx, object_files, output);
+    if (err) {
+      return err;
+    }
   }
   auto end = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();

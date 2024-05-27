@@ -204,5 +204,12 @@ llvm::DISubprogram* LLVMBuilder::get_disubprogram(const sil::FuncDecl* node) {
   );
 }
 
+int LLVMBuilder::error(const std::string& msg) {
+  auto ef = std::make_shared<frontend::SourceFile>();
+  auto err = E(msg, frontend::SourceLocation(0, 0, 0, ef));
+  err.print();
+  return 1;
+}
+
 }
 }

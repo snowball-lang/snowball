@@ -113,7 +113,8 @@ public:
   void dump(llvm::raw_ostream& os = llvm::errs()) override;
   int emit(std::filesystem::path path) override;
 
-  static void link(const Ctx& ctx, std::vector<std::filesystem::path>& paths, std::filesystem::path output);
+  static int error(const std::string& msg);
+  static int link(const Ctx& ctx, std::vector<std::filesystem::path>& paths, std::filesystem::path output);
 };
 
 }
