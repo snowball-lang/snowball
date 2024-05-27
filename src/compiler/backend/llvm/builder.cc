@@ -100,7 +100,7 @@ std::string LLVMBuilder::get_target_triple() {
       target += "-linux-gnu";
       break;
     case Target::MacOS:
-      target += "-macos-none";
+      target += "-apple-darwin";
       break;
     case Target::Windows:
       target += "-pc-windows-msvc";
