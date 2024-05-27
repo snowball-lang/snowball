@@ -1,5 +1,8 @@
 *.h linguist-language=C
 *.sn linguist-language=Swift
 Dockerfile.* linguist-language=Dockerfile
-*.reky, src/app/src/files/SN_REKY linguist-language=Shell
-*.confy, src/app/src/files/SN_CONFY linguist-language=CoffeeScript
+*.reky linguist-language=Shell
+*.confy linguist-language=CoffeeScript
+
+src/app/src/files/SN_CONFY linguist-language=CoffeeScript
+src/app/src/files/SN_REKY linguist-language=Shell
