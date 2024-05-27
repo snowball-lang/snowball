@@ -2,4 +2,4 @@
 *.sn linguist-language=Swift
 Dockerfile.* linguist-language=Dockerfile
 *.reky linguist-language=Shell
-*.confy linguist-language=Markdown
+*.confy linguist-language=CoffeeScript
