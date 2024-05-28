@@ -1,4 +1,6 @@
 
+#include <blake3.h>
+
 #ifndef __SNOWBALL_COMPILER_UTILS_HASH_H__
 #define __SNOWBALL_COMPILER_UTILS_HASH_H__
 
@@ -6,23 +8,20 @@ namespace snowball {
 namespace utils {
 namespace hash {
 
-const char XOR_KEY = 0x5A;
-const std::string CHAR_SET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-const int CHAR_SET_SIZE = CHAR_SET.size();
-const int MIN_LENGTH = 45;
+#define SNOWBALL_HASH_LEN 64
 
-// Function to hash (encode) the string ensuring alphanumeric characters
-static std::string hashString(const std::string &input) {
-  std::string hashed;
-  for (char c : input) {
-    char newChar = CHAR_SET[(c ^ XOR_KEY) % CHAR_SET_SIZE];
-    hashed.push_back(newChar);
-  }  
-  // Add consistent padding to ensure the minimum length
-  while (hashed.size() < MIN_LENGTH) {
-    hashed.push_back(CHAR_SET[hashed.size() % CHAR_SET_SIZE]);
+static const std::string hashString(const std::string& str) {
+  blake3_hasher hasher;
+  blake3_hasher_init(&hasher);
+  size_t len = str.length();
+  blake3_hasher_update(&hasher, str.c_str(), len);
+  uint8_t hash[SNOWBALL_HASH_LEN];
+  blake3_hasher_finalize(&hasher, hash, SNOWBALL_HASH_LEN);
+  char hash_str[SNOWBALL_HASH_LEN];
+  for (size_t i = 0; i < SNOWBALL_HASH_LEN; i += 1) {
+    sprintf(hash_str + i, "%02x", hash[i]);
   }
-  return hashed;
+  return hash_str;
 }
 
 }

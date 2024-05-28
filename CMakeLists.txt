@@ -290,6 +290,8 @@ find_program(LLVM_CONFIG_EXECUTABLE NAMES "${CONFIG_NAME}" "${CONFIG_NAME}-14")
 FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz)
 FetchContent_MakeAvailable(json)
 
+include(blake3.cmake)
+
 execute_process(COMMAND ${CONFIG_NAME} --ldflags OUTPUT_VARIABLE LLVM_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
 string(REPLACE "\n" " " LLVM_LDFLAGS "${LLVM_LDFLAGS} ${LLVM_LDFLAGS2}")
 string(STRIP ${LLVM_LDFLAGS} LLVM_LDFLAGS)
@@ -301,13 +303,15 @@ add_compile_definitions(LIBC_VERSION="${_LIBC_VERSION}")
 add_compile_definitions(_SNOWBALL_VERSION="${version}")
 add_compile_definitions(_SNOWBALL_VERSION_NUMBER=${versionID})
 
+message(STATUS "Blake3 source dir: ${BLAKE3_SOURCE_DIR}")
+
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${LLVM_INCLUDE_DIRS}
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-    $<INSTALL_INTERFACE:include> PRIVATE source)
+    $<INSTALL_INTERFACE:include> ${BLAKE3_SOURCE_DIR} PRIVATE source)
     target_include_directories(${PROJECT_NAME} PUBLIC ${LLVM_INCLUDE_DIRS} ${PROJECT_INCLUDE_DIRS} ${backtrace_INCLUDE_DIRS})
-    target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES} nlohmann_json::nlohmann_json fmt::fmt)
+    target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES} nlohmann_json::nlohmann_json fmt::fmt ${BLAKE3_BUILD_DIR}/libblake3.a)
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
 add_compile_definitions("_SN_DEBUG=$<CONFIG:Debug>")
