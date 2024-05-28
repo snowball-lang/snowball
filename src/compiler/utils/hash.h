@@ -9,7 +9,7 @@ namespace hash {
 const char XOR_KEY = 0x5A;
 const std::string CHAR_SET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 const int CHAR_SET_SIZE = CHAR_SET.size();
-const int MIN_LENGTH = 35;
+const int MIN_LENGTH = 45;
 
 // Function to hash (encode) the string ensuring alphanumeric characters
 static std::string hashString(const std::string &input) {

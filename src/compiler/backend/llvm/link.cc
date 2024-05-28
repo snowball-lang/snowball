@@ -111,8 +111,11 @@ int LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths,
     cmd += arg + " ";
   }
   SNOWBALL_VERBOSE(ctx, "Using the following command to link: " + cmd);
-  std::system(cmd.c_str());
+  auto err = std::system(cmd.c_str());
   std::filesystem::remove(obj_output);
+  if (err) {
+    return error(F("Linking failed with error code: {}", err));
+  }
   return EXIT_SUCCESS;
 }
 
