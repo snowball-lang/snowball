@@ -37,8 +37,8 @@ namespace cli {
  *  providing a simple interface to the user.
  */
 class CLI {
-  using Args = std::vector<const char*>;
 public:
+  using Args = std::vector<const char*>;
   CLI();
   ~CLI() = default;
 
@@ -58,14 +58,15 @@ public:
    * @param path The path to the configuration file.
    */
   static void get_package_config(Ctx& ctx, const std::string& path = "");
+
+  static void hide_args();
+  static void parse_args(Args& args);
 private:
   static void make_build(Ctx& ctx, Args& args, bool for_run = false);
   static void make_init(Ctx& ctx, Args& args, bool new_project = false);
+  static void make_reky(Ctx& ctx, Args& args);
 
-  static void parse_args(Args& args);
-  static void print_help(Args& args);
- 
-  static void hide_args();
+  static void print_help(Args& args); 
 };
 
 }

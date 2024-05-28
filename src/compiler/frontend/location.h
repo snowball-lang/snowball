@@ -52,7 +52,7 @@ public:
   ~NamespacePath() = default;
 
   void push(const std::string& part) { path.push_back(part); }
-  static NamespacePath from_file(const std::filesystem::path& file, bool without_root = false);
+  static NamespacePath from_file(const std::filesystem::path& file);
 
   auto operator[](size_t i) const { return path[i]; }
   auto operator==(const NamespacePath& other) const { return path == other.path; }

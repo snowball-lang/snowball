@@ -70,6 +70,7 @@ void initialize_paths(const Ctx& ctx) {
   std::filesystem::create_directory(get_workspace_path(ctx, WorkSpaceType::Libs));
   std::filesystem::create_directory(get_workspace_path(ctx, WorkSpaceType::Obj));
   std::filesystem::create_directory(get_workspace_path(ctx, WorkSpaceType::Data));
+  std::filesystem::create_directory(get_workspace_path(ctx, WorkSpaceType::Reky));
 }
 
 std::filesystem::path get_workspace_path(const Ctx& ctx, WorkSpaceType type) {
@@ -86,6 +87,8 @@ std::filesystem::path get_workspace_path(const Ctx& ctx, WorkSpaceType type) {
       return ".sn/obj";
     case WorkSpaceType::Data:
       return ".sn/data";
+    case WorkSpaceType::Reky:
+      return ".sn/reky";
     default: sn_unreachable();
   }
 }

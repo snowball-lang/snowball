@@ -62,6 +62,8 @@ Ctx CLI::parse(int argc, char** argv) {
     ctx.emit_type = EmitType::Executable;
   } else if (mode == "init" || mode == "new") {
     make_init(ctx, args, mode == "new");
+  } else if (mode == "reky") {
+    make_reky(ctx, args);
   } else if (mode == "--version" || mode == "-v") {
     cl::PrintVersionMessage();
     exit(EXIT_SUCCESS);
@@ -81,6 +83,7 @@ void CLI::print_help(Args& args) {
   cl::OptionCategory helpCategory("Help Options");
   cl::SubCommand run("run", "Run a Snowball program");
   cl::SubCommand build("build", "Build a Snowball program");
+  cl::SubCommand reky("reky", "Run snowball's package manager");
   parse_args(args);
   cl::PrintHelpMessage();
   exit(EXIT_SUCCESS);
@@ -119,8 +122,7 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
       clEnumValN(EmitType::Executable, "exec", "Executable file"),
       clEnumValN(EmitType::Ast, "ast", "Abstract Syntax Tree"),
       clEnumValN(EmitType::Sil, "sil", "Snowball Intermediate Language"),
-      clEnumValN(EmitType::LlvmBc, "llvm-bc", "LLVM Bitcode"),
-      clEnumValN(EmitType::RekyFreeze, "reky-freeze", "Show Reky Freeze")
+      clEnumValN(EmitType::LlvmBc, "llvm-bc", "LLVM Bitcode")
     ), cl::init(EmitType::Executable), cl::cat(category));
     target = new cl::opt<Target>("target", cl::desc("Target OS"), cl::values(
       clEnumValN(Target::Windows, "windows", "Windows"),
@@ -223,7 +225,7 @@ void CLI::get_package_config(Ctx& ctx, const std::string& path) {
       .authors = authors,
       .license = config.get_string_or("project.license", "<no license>"),
       .path = std::filesystem::absolute(default_path).lexically_normal(),
-      .src = config.get_string_or("project.src", "./src"),
+      .src = std::filesystem::relative(config.get_string_or("project.src", "./src")).lexically_normal(),
     },
     .build = {
       .linkage_libs = {} // TODO: Implement linkage libs

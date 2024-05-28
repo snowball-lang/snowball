@@ -27,8 +27,7 @@ enum class EmitType {
   Executable,
   Ast,
   Sil,
-  LlvmBc,
-  RekyFreeze
+  LlvmBc
 };
 /**
  * @brief Optimisation level.

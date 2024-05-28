@@ -8,6 +8,9 @@
 #include "ctx.h"
 
 namespace snowball {
+namespace reky {
+class RekyManager;
+}
 
 /**
  * @brief The Compiler class is responsible for compiling the source code into a binary file.
@@ -34,6 +37,12 @@ public:
    * @return true if the compilation was successful, false otherwise.
    */
   static bool compile(Ctx& ctx);
+  /**
+   * @brief It prepares the context for the compilation.
+   * @param reky The RekyManager instance (used as out parameter). Default is nullptr.
+   * @return A list of allowed paths (uncompleted list).
+   */
+  static std::vector<std::filesystem::path> prepare_context(Ctx& ctx, reky::RekyManager** reky = nullptr);
 private:
   std::string get_package_type_string();
 };

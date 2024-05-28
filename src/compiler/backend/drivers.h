@@ -13,7 +13,8 @@ enum WorkSpaceType {
   Deps,
   Libs,
   Obj,
-  Data
+  Data,
+  Reky,
 };
 
 std::filesystem::path get_output_path(const Ctx& ctx, const std::string& name, bool for_linking = false, bool for_object_file = false);

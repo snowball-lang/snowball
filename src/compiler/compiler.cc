@@ -22,21 +22,12 @@ using namespace cli;
 using namespace utils;
 
 Compiler::Compiler(Ctx& ctx) : ctx(ctx) {
-  driver::initialize_paths(ctx);
 }
 
 bool Compiler::compile() {
   // TODO: Iterate through the whole project and compile everything.
   //  For now, we will just do the input_file.
-  CLI::get_package_config(ctx, ctx.config_path);
-  ctx.root_package_config = ctx.package_config; 
-  // TODO: Populate allowed_paths with all the paths in the project and in the dependencies.
-  std::vector<std::filesystem::path> allowed_paths = {(ctx.package_config.value().project.path).lexically_normal()};
-  auto reky_cache = reky::fetch_dependencies(ctx, allowed_paths);
-  if (ctx.emit_type == EmitType::RekyFreeze) {
-    reky_cache.save(std::cout);
-    return EXIT_SUCCESS;
-  }
+  auto allowed_paths = prepare_context(ctx);
   std::vector<frontend::Module> modules;
   // Unsigned is the number of modules appened for this path
   std::vector<frontend::NamespacePath> module_paths;
@@ -64,11 +55,8 @@ bool Compiler::compile() {
     CLI::get_package_config(ctx, path / "sn.confy");
     // TODO: Display the current project being compiled
     auto package_ctx = ctx.package_config.value();
-    auto project_path = package_ctx.project.path.string();
-    project_path.erase(project_path.begin(), 
-      project_path.begin() +
-      package_ctx.project.path.parent_path().parent_path().string().size());
-    auto module_root_path = frontend::NamespacePath::from_file(project_path, true);
+    auto project_name = package_ctx.project.name;
+    auto module_root_path = frontend::NamespacePath::from_file(project_name);
     Logger::status("Compiling", fmt::format("{} v{}", package_ctx.project.name, package_ctx.project.version));
     //Logger::progress("Compiling", i / allowed_paths.size()+1);
     sn_assert(std::filesystem::exists(path), "Path does not exist (looking for {})", path.string());
@@ -185,7 +173,6 @@ std::string Compiler::get_package_type_string() {
     case EmitType::Sil: output += "sil"; break;
     case EmitType::Ast: output += "ast"; break;
     case EmitType::LlvmBc: output += "llvm-bc"; break;
-    case EmitType::RekyFreeze: sn_unreachable();
   }
   switch (ctx.opt_level) {
     case OptLevel::Debug: output += " + debug"; break;
@@ -201,6 +188,19 @@ std::string Compiler::get_package_type_string() {
     case Target::Unknown: output += " (unknown)"; break;
   }
   return output;
+}
+
+std::vector<std::filesystem::path> Compiler::prepare_context(Ctx& ctx, reky::RekyManager** reky) {
+  driver::initialize_paths(ctx);
+
+  CLI::get_package_config(ctx, ctx.config_path);
+  ctx.root_package_config = ctx.package_config; 
+  std::vector<std::filesystem::path> allowed_paths = {ctx.package_config.value().project.path};
+  auto manager = reky::fetch_dependencies(ctx, allowed_paths);
+  if (reky)
+    *reky = manager;
+  else delete manager;
+  return allowed_paths;
 }
 
 } // namespace snowball
