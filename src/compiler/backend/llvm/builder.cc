@@ -50,7 +50,7 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*
   llvm::initializeReplaceWithVeclibLegacyPass(registry);
   llvm::initializeTypePromotionLegacyPass(registry);
   builder = std::make_unique<llvm::IRBuilder<>>(*llvm_ctx);
-  builder_ctx.module = std::make_unique<llvm::Module>("main", *llvm_ctx);
+  builder_ctx.module = std::make_unique<llvm::Module>(parent_crate.get_path_string(), *llvm_ctx);
 
   dbg.debug = ctx.opt_level == OptLevel::Debug 
             || ctx.opt_level == OptLevel::ReleaseWithDebug;

@@ -85,10 +85,18 @@ void TypeChecker::do_global_class(ast::ClassDecl* class_decl) {
 
 void TypeChecker::check_for_entry(ast::FnDecl* fn_decl) {
   if (fn_decl->get_name() != "main" 
-      || ctx.current_module->is_main
+      || !ctx.current_module->is_main
       || fn_decl->get_privacy() != ast::AttributedNode::Privacy::Public) {
     return;
   }
+  if (has_entry_declared) {
+    err(fn_decl->get_location(), "Multiple entry points found!", Error::Info {
+      .highlight = "Multiple entry points found!",
+      .help = "Multiple entry points found, to fix this remove the 'main' function from one of the modules",
+      .see = "https://snowball-lang.gitbook.io/docs/language-reference/functions/program-entries"
+    }, Error::Type::Err);
+  }
+  has_entry_declared = true;
   if (fn_decl->get_params().size() != 0) {
     err(fn_decl->get_location(), "Main function should not have any parameters!", Error::Info {
       .highlight = "Multiple parameters found!",

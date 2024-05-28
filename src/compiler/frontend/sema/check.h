@@ -35,6 +35,7 @@ class TypeChecker : public ast::AstVisitor, public Reporter {
   std::unordered_map<uint64_t, TypeCheckerContext> generic_contexts;
   // A vector used to keep track of extenral "unmangled" names
   std::vector<std::string> external_declared;
+  bool has_entry_declared = false;
 public:
   TypeChecker(const Ctx& ctx, std::vector<Module>& modules);
   ~TypeChecker() = default;

@@ -82,7 +82,7 @@ bool Compiler::compile() {
     }
     // We add the top module so that it can be accessed from 
     // other modules in the same project.
-    modules.push_back(frontend::Module({}, module_root_path, modules.at(0).is_main));
+    modules.push_back(frontend::Module({}, module_root_path, modules.back().is_main));
     modules.back().parent_crate = module_root_path;
     module_paths.push_back(module_root_path);
     progress_i += 0.5 / allowed_paths.size();

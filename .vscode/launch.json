@@ -10,7 +10,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/snowball",
-            "args": ["reky", "dot"],
+            "args": ["run"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

@@ -61,20 +61,11 @@ void TypeChecker::post_check() {
   if (get_error_count() > 0)
     return;
 
-  if (vctx.emit_type == EmitType::Executable) {
-    bool found_main = false;
-    for (auto& decl : external_declared) {
-      if (decl == "main") {
-        found_main = true;
-        break;
-      }
-    }
-    if (!found_main && ctx.current_module->is_main) {
-      err(SourceLocation(0, 0, 0, std::make_shared<SourceFile>()), "No main function found", Error::Info {
-        .highlight = "No main function found",
-        .help = "You need to define a main function to compile an executable"
-      }, Error::Type::Err, true);
-    }
+  if (vctx.emit_type == EmitType::Executable && !has_entry_declared) {
+    err(SourceLocation(0, 0, 0, std::make_shared<SourceFile>()), "No entry point function found!", Error::Info {
+      .highlight = "No main function found",
+      .help = "You need to define a main function to compile an executable"
+    }, Error::Type::Err, true);    
   }
 }
 
