@@ -5,10 +5,10 @@
 #include <iostream>
 
 #include "compiler/ctx.h"
-#include "compiler/sil/module.h"
-#include "compiler/sil/insts.h"
-#include "compiler/sil/visitor.h"
 #include "compiler/frontend/ast/types.h"
+#include "compiler/sil/insts.h"
+#include "compiler/sil/module.h"
+#include "compiler/sil/visitor.h"
 
 #include "compiler/backend/llvm/llvm.h"
 
@@ -28,20 +28,26 @@ class LLVMBuilderContext {
 public:
   std::unique_ptr<llvm::Module> module;
   frontend::NamespacePath parent_crate;
-  llvm::TargetMachine* target_machine = nullptr;  
+  llvm::TargetMachine* target_machine = nullptr;
 
   bool dont_load = false;
 
-  LLVMBuilderContext(std::unique_ptr<llvm::LLVMContext>& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map,
-    frontend::NamespacePath parent_crate) 
-    : module(std::make_unique<llvm::Module>("main", *ctx)), inst_map(inst_map),
-      parent_crate(parent_crate) {}
+  LLVMBuilderContext(
+          std::unique_ptr<llvm::LLVMContext>& ctx,
+          std::unordered_map<uint64_t, sil::Inst*>& inst_map,
+          frontend::NamespacePath parent_crate
+  )
+    : module(std::make_unique<llvm::Module>("main", *ctx))
+    , inst_map(inst_map)
+    , parent_crate(parent_crate) {}
 
   llvm::Value* get_value(uint64_t id) { return value_map.at(id); }
   sil::Inst* get_inst(uint64_t id) { return inst_map.at(id); }
 
-  void set_current_func(llvm::Function* func, const sil::FuncDecl* sil_func) 
-    { current_func = func; current_sil_func = sil_func; }
+  void set_current_func(llvm::Function* func, const sil::FuncDecl* sil_func) {
+    current_func = func;
+    current_sil_func = sil_func;
+  }
   llvm::Function* get_current_func() { return current_func; }
   const sil::FuncDecl* get_current_sil_func() { return current_sil_func; }
   void set_value(uint64_t id, llvm::Value* value) { value_map[id] = value; }
@@ -49,11 +55,11 @@ public:
 
 class CommentWriter : public llvm::AssemblyAnnotationWriter {
 public:
- virtual void emitFunctionAnnot(const llvm::Function *F,
-                              llvm::formatted_raw_ostream &OS) {
-    OS << "; [#uses=" << F->getNumUses() << "]\n";  // Output # uses
+  virtual void
+  emitFunctionAnnot(const llvm::Function* F, llvm::formatted_raw_ostream& OS) {
+    OS << "; [#uses=" << F->getNumUses() << "]\n"; // Output # uses
     if (auto sub = F->getSubprogram())
-      OS << "; [#name=" << sub->getName() << "]\n";  // Output # uses
+      OS << "; [#name=" << sub->getName() << "]\n"; // Output # uses
   }
 };
 
@@ -103,21 +109,32 @@ class LLVMBuilder : public sil::Builder {
     llvm::DIFile* get_file(const std::string& path);
   } dbg;
 
-  static void output_object_file(llvm::Module& module, std::filesystem::path path,
-    std::shared_ptr<llvm::LLVMContext> ctx, llvm::TargetMachine* target_machine, EmitType emit_type);
-  static void check_and_optimize(llvm::Module* module, llvm::TargetMachine* target_machine, OptLevel opt_level);
+  static void output_object_file(
+          llvm::Module& module, std::filesystem::path path,
+          std::shared_ptr<llvm::LLVMContext> ctx, llvm::TargetMachine* target_machine,
+          EmitType emit_type
+  );
+  static void check_and_optimize(
+          llvm::Module* module, llvm::TargetMachine* target_machine, OptLevel opt_level
+  );
+
 public:
-  LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map, frontend::NamespacePath parent_crate);
+  LLVMBuilder(
+          const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map,
+          frontend::NamespacePath parent_crate
+  );
 
   void build(std::vector<std::shared_ptr<sil::Module>>& modules) override;
   void dump(llvm::raw_ostream& os = llvm::errs()) override;
   int emit(std::filesystem::path path) override;
 
   static int error(const std::string& msg);
-  static int link(const Ctx& ctx, std::vector<std::filesystem::path>& paths, std::filesystem::path output);
+  static int
+  link(const Ctx& ctx, std::vector<std::filesystem::path>& paths,
+       std::filesystem::path output);
 };
 
-}
-}
+} // namespace backend
+} // namespace snowball
 
 #endif // __SNOWBALL_BACKEND_LLVM_BUILDER_H__

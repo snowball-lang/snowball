@@ -24,8 +24,8 @@ static const std::string hashString(const std::string& str) {
   return hash_str;
 }
 
-}
-}
-}
+} // namespace hash
+} // namespace utils
+} // namespace snowball
 
 #endif // __SNOWBALL_COMPILER_UTILS_HASH_H__

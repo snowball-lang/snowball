@@ -9,6 +9,7 @@
 #include <llvm/Support/TargetSelect.h>
 
 #include <llvm/IR/Argument.h>
+#include <llvm/IR/AssemblyAnnotationWriter.h>
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/DIBuilder.h>
@@ -64,7 +65,6 @@
 #include <llvm/Transforms/IPO/WholeProgramDevirt.h>
 #include <llvm/Transforms/Utils/Cloning.h>
 #include <llvm/Transforms/Utils/Debugify.h>
-#include <llvm/IR/AssemblyAnnotationWriter.h>
 
 #define SNOWBALL_UTILS_REDEFINE_F__
 #include "compiler/utils/utils.h"

@@ -17,7 +17,7 @@ public:
 
   static DebugSourceLocation from_file(const std::string& file, unsigned int line);
 };
-}
-}
+} // namespace reports
+} // namespace snowball
 
 #endif // __SNOWBALL_COMPILER_REPORTS_DBG_H__

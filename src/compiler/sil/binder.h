@@ -3,12 +3,12 @@
 #define __SNOWBALL_COMPILER_SIL_BINDER_H__
 
 #include "compiler/ctx.h"
+#include "compiler/frontend/ast/module.h"
+#include "compiler/frontend/sema/check.h"
+#include "compiler/frontend/sema/universe.h"
+#include "compiler/reports/reporter.h"
 #include "compiler/sil/insts.h"
 #include "compiler/sil/module.h"
-#include "compiler/reports/reporter.h"
-#include "compiler/frontend/ast/module.h"
-#include "compiler/frontend/sema/universe.h"
-#include "compiler/frontend/sema/check.h"
 
 #include <unordered_map>
 
@@ -34,7 +34,7 @@ struct BinderCtx {
  *
  * This class is used to bind SIL instructions together. It is used to bind
  * instructions together to form a function body.
-*/
+ */
 class Binder : public ast::AstVisitor, public Reporter {
   std::vector<frontend::Module>& ast_modules;
   std::vector<std::shared_ptr<Module>> sil_modules;
@@ -50,7 +50,8 @@ class Binder : public ast::AstVisitor, public Reporter {
   BinderCtx ctx;
   Inst* value = nullptr; // The current value of the binder
 public:
-  Binder(const Ctx& ctx, std::vector<frontend::Module>& modules, sema::Universe<sema::TypeCheckItem>& universe);
+  Binder(const Ctx& ctx, std::vector<frontend::Module>& modules,
+         sema::Universe<sema::TypeCheckItem>& universe);
   ~Binder() = default;
 
   void bind();
@@ -61,9 +62,10 @@ public:
   ast::types::Type* check_type(ast::types::Type*& type, const SourceLocation& loc);
   auto& get_insts() { return var_ids; }
 
-  void err(const LocationHolder& holder, const std::string& message, 
-    const Error::Info& info = Error::Info(), Error::Type type = Error::Type::Err, 
-    bool fatal = false);
+  void
+  err(const LocationHolder& holder, const std::string& message,
+      const Error::Info& info = Error::Info(), Error::Type type = Error::Type::Err,
+      bool fatal = false);
 
 private:
 #define SN_REGISTER_ACCEPT(n) virtual void visit(ast::n* node) override;
@@ -71,7 +73,7 @@ private:
 #undef SN_REGISTER_ACCEPT
 };
 
-}
-}
+} // namespace sil
+} // namespace snowball
 
 #endif // __SNOWBALL_COMPILER_SIL_BINDER_H__

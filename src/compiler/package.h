@@ -27,7 +27,6 @@ struct PackageConfigBase {
 
 using PackageConfig = std::optional<PackageConfigBase>;
 
-}
+} // namespace snowball
 
 #endif // __SNOWBALL_PACKAGE_CONFIG_H__
-

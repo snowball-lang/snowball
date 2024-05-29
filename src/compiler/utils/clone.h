@@ -10,12 +10,9 @@ template <typename T>
 class Cloneable {
 public:
   virtual T* clone() const = 0;
-  static T* default_clone(const T* self) {
-    return new T(*static_cast<const T*>(self));
-  }
+  static T* default_clone(const T* self) { return new T(*static_cast<const T*>(self)); }
 };
 
-}
+} // namespace snowball
 
 #endif // __SNOWBALL_COMPILER_UTILS_CLONE_H__
-

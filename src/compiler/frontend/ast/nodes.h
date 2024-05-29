@@ -2,14 +2,14 @@
 #ifndef __SNOWBALL_FRONTEND_AST_NODES_H__
 #define __SNOWBALL_FRONTEND_AST_NODES_H__
 
-#include <vector>
 #include <memory>
+#include <vector>
 
-#include "compiler/frontend/location.h"
 #include "compiler/frontend/ast/types.h"
+#include "compiler/frontend/location.h"
 #include "compiler/utils/clone.h"
 
-#define SN_DEFAULT_CLONE() \
+#define SN_DEFAULT_CLONE()                                                             \
   Node* clone() const override { return Cloneable<self>::default_clone(this); }
 
 namespace snowball {
@@ -20,8 +20,10 @@ class AstVisitor;
 
 class Node : public LocationHolder, public Cloneable<Node> {
   types::Type* type = nullptr;
+
 public:
-  Node(const SourceLocation& location) : LocationHolder(location) {}
+  Node(const SourceLocation& location)
+    : LocationHolder(location) {}
   virtual ~Node() = default;
 
   virtual void accept(ast::AstVisitor* v) = 0;
@@ -30,36 +32,44 @@ public:
   auto get_type() const { return type; }
 
   template <typename T>
-  [[nodiscard]] auto as() { return dynamic_cast<T*>(this); }
+  [[nodiscard]] auto as() {
+    return dynamic_cast<T*>(this);
+  }
   template <typename T>
-  [[nodiscard]] auto as() const { return dynamic_cast<const T*>(this); }
+  [[nodiscard]] auto as() const {
+    return dynamic_cast<const T*>(this);
+  }
   template <typename T>
-  bool is() const { return as<T>() != nullptr; }
+  bool is() const {
+    return as<T>() != nullptr;
+  }
 };
 
 class Stmt : public Node {
 public:
-  Stmt(const SourceLocation& location) : Node(location) {}
+  Stmt(const SourceLocation& location)
+    : Node(location) {}
   virtual ~Stmt() = default;
 };
 
 class Expr : public Node {
 public:
-  Expr(const SourceLocation& location) : Node(location) {}
+  Expr(const SourceLocation& location)
+    : Node(location) {}
   virtual ~Expr() = default;
 };
 
 using TopLevelAst = std::vector<Stmt*>;
 
-}
-}
-}
+} // namespace ast
+} // namespace frontend
+} // namespace snowball
 
 #define SN_VISIT() virtual void accept(ast::AstVisitor* v) override;
 
-#include "compiler/frontend/ast/nodes/stmt.h"
 #include "compiler/frontend/ast/nodes/expr.h"
 #include "compiler/frontend/ast/nodes/other.h"
+#include "compiler/frontend/ast/nodes/stmt.h"
 
 #undef SN_VISIT
 #endif // __SNOWBALL_FRONTEND_AST_NODES_H_

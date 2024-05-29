@@ -11,10 +11,11 @@ namespace snowball {
 
 /**
  * @brief The BuildMode enum represents the different build modes of the compiler.
- * 
+ *
  * The build mode is used to tell the compiler what to do.
  */
-enum class BuildMode {
+enum class BuildMode
+{
   Build,
   Run,
   Test
@@ -22,8 +23,9 @@ enum class BuildMode {
 /**
  * @brief Emit type as target.
  */
-enum class EmitType {
-  Llvm, 
+enum class EmitType
+{
+  Llvm,
   Asm,
   Object,
   Executable,
@@ -34,7 +36,8 @@ enum class EmitType {
 /**
  * @brief Optimisation level.
  */
-enum class OptLevel {
+enum class OptLevel
+{
   Release,
   Debug,
   ReleaseWithDebug,
@@ -43,7 +46,8 @@ enum class OptLevel {
 /**
  * @brief The OS enum represents the different operating systems.
  */
-enum class Target {
+enum class Target
+{
   Windows,
   Linux,
   MacOS,
@@ -52,7 +56,8 @@ enum class Target {
 /**
  * @brief Linker type.
  */
-enum class LinkerType {
+enum class LinkerType
+{
   Lld,
   Mold,
   Detect
@@ -60,14 +65,15 @@ enum class LinkerType {
 /**
  * @brief Architecture used by the compiler.
  */
-enum class Arch {
+enum class Arch
+{
   X86_64,
   Arm64,
   Unknown
 };
 /**
  * @brief The Ctx class is responsible for managing the context of the compiler.
- * 
+ *
  * The context is a set of variables that are used to store information about the
  *  current state of the compiler.
  * @note It just contains flags and other variables to tell the compiler what to do.
@@ -93,6 +99,6 @@ struct Ctx {
   PackageConfig package_config = std::nullopt;
 };
 
-}
+} // namespace snowball
 
 #endif // __SNOWBALL_CTX_H__

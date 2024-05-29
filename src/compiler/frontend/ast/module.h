@@ -2,8 +2,8 @@
 #ifndef __SNOWBALL_FRONTEND_AST_MODULE_H__
 #define __SNOWBALL_FRONTEND_AST_MODULE_H__
 
-#include <vector>
 #include "compiler/frontend/ast/nodes.h"
+#include <vector>
 
 namespace snowball {
 namespace frontend {
@@ -11,11 +11,14 @@ namespace frontend {
 class Module {
   ast::TopLevelAst ast;
   NamespacePath path;
+
 public:
   const bool is_main = false;
   std::optional<NamespacePath> parent_crate = std::nullopt;
   Module(ast::TopLevelAst ast, NamespacePath path, bool is_main = false)
-    : ast(ast), path(path), is_main(is_main) {}
+    : ast(ast)
+    , path(path)
+    , is_main(is_main) {}
   ~Module() = default;
 
   auto& get_ast() { return ast; }
@@ -23,7 +26,7 @@ public:
   void mutate_ast(ast::Stmt* x) { ast.push_back(x); }
 };
 
-}
-}
+} // namespace frontend
+} // namespace snowball
 
 #endif // __SNOWBALL_FRONTEND_AST_MODULE_H_

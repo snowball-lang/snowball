@@ -2,8 +2,8 @@
 #ifndef __SNOWBALL_FRONTEND_AST_NODES_OTHER_H__
 #define __SNOWBALL_FRONTEND_AST_NODES_OTHER_H__
 
-#include <vector>
 #include <optional>
+#include <vector>
 
 #include "compiler/utils/utils.h"
 
@@ -15,8 +15,10 @@ class TypeRef;
 
 class GenericDecl {
   std::string name;
+
 public:
-  GenericDecl(const std::string& name) : name(name) {}
+  GenericDecl(const std::string& name)
+    : name(name) {}
   ~GenericDecl() = default;
 
   auto get_name() const { return name; }
@@ -30,11 +32,10 @@ template <typename T = GenericDecl>
 class GenericNode {
   std::vector<T> generics; // we don't use pointers here to save memory
 public:
-  GenericNode(const std::vector<T>& generics) : generics(generics) {}
+  GenericNode(const std::vector<T>& generics)
+    : generics(generics) {}
   GenericNode(std::optional<GenericNode<T>> generics) {
-    if (generics.has_value()) {
-      this->generics = generics->get_generics();
-    }
+    if (generics.has_value()) { this->generics = generics->get_generics(); }
   }
   ~GenericNode() = default;
   void clear_generics() { generics.clear(); } // only use if you know what you're doing
@@ -43,38 +44,40 @@ public:
   bool has_generics() const { return !generics.empty(); }
 
   // note: This function should be used in really rare cases
-  void mutate_generics(GenericNode<T> node) {
-    generics = node.get_generics();
-  }
+  void mutate_generics(GenericNode<T> node) { generics = node.get_generics(); }
 };
 
 class AttributedNode {
 public:
-  enum Extern {
+  enum Extern
+  {
     C,
     Snowball,
     System,
     None,
   };
-  enum Privacy {
+  enum Privacy
+  {
     // It has to be in this order to avoid conflicts with set_privacy(int)
     Private = 0,
     Public = 1,
   };
+
 private:
   bool is_static = false;
   bool is_const = false;
   bool is_mut = false;
-  bool is_abstract = false; 
-  bool is_override = false; 
+  bool is_abstract = false;
+  bool is_override = false;
   bool is_final = false;
-  bool is_virtual = false; 
-  bool is_inline = false;  
+  bool is_virtual = false;
+  bool is_inline = false;
   bool is_unsafe = false;
   bool is_operator = false;
   std::optional<std::string> link_name;
   Extern external = None;
   Privacy privacy = Private;
+
 public:
   AttributedNode() = default;
   ~AttributedNode() = default;
@@ -92,7 +95,7 @@ public:
   auto get_link_name() const { return link_name; }
   auto get_unsafe() const { return is_unsafe; }
   auto get_operator() const { return is_operator; }
-  
+
   void set_privacy(Privacy privacy) { this->privacy = privacy; }
   void set_static(bool is_static) { this->is_static = is_static; }
   void set_const(bool is_const) { this->is_const = is_const; }
@@ -113,13 +116,11 @@ public:
   void assert_is_var() const;
   void assert_is_type() const;
 
-  static auto empty() {
-    return AttributedNode();
-  }
+  static auto empty() { return AttributedNode(); }
 };
 
-}
-}
-}
+} // namespace ast
+} // namespace frontend
+} // namespace snowball
 
 #endif // __SNOWBALL_FRONTEND_AST_NODES_OTHER_H__

@@ -2,14 +2,14 @@
 #ifndef __SNOWBALL_FRONTEND_AST_TYPES_H__
 #define __SNOWBALL_FRONTEND_AST_TYPES_H__
 
-#include <vector>
-#include <string>
-#include <cstddef>
 #include <cassert>
+#include <cstddef>
+#include <string>
+#include <vector>
 
-#include "compiler/utils/id.h"
-#include "compiler/frontend/location.h"
 #include "compiler/frontend/ast/nodes/other.h"
+#include "compiler/frontend/location.h"
+#include "compiler/utils/id.h"
 
 namespace snowball {
 namespace frontend {
@@ -31,10 +31,12 @@ class PointerType;
 
 class Type {
   bool is_mutable = false;
+
 public:
   virtual ~Type() = default;
-#define CHILD(x, y) virtual y* as_##x() { return nullptr; } \
-                    virtual bool is_##x() const { return false; }
+#define CHILD(x, y)                                                                    \
+  virtual y* as_##x() { return nullptr; }                                              \
+  virtual bool is_##x() const { return false; }
   CHILD(int, IntType)
   CHILD(float, FloatType)
   CHILD(func, FuncType)
@@ -58,15 +60,18 @@ public:
   unsigned int reference_depth();
 
   Type() = default;
-  Type(bool is_mutable) : is_mutable(is_mutable) {}
+  Type(bool is_mutable)
+    : is_mutable(is_mutable) {}
 };
 
 class IntType final : public Type {
   unsigned int bits;
   bool _signed;
+
 public:
-  IntType(unsigned int bits, bool is_signed)  
-    : bits(bits), _signed(is_signed) {}
+  IntType(unsigned int bits, bool is_signed)
+    : bits(bits)
+    , _signed(is_signed) {}
   ~IntType() = default;
 
   auto get_bits() const { return bits; }
@@ -94,15 +99,15 @@ public:
 
 class FloatType final : public Type {
   unsigned int bits;
+
 public:
-  FloatType(unsigned int bits) : bits(bits) {}
+  FloatType(unsigned int bits)
+    : bits(bits) {}
   ~FloatType() = default;
 
   auto get_bits() const { return bits; }
 
-  static auto create(unsigned int bits) {
-    return new FloatType(bits);
-  }
+  static auto create(unsigned int bits) { return new FloatType(bits); }
 
   static auto create_f32() { return create(32); }
   static auto create_f64() { return create(64); }
@@ -119,9 +124,12 @@ class FuncType final : public Type {
   Type* return_type;
   bool variadic = false;
   FnDecl* linked = nullptr;
+
 public:
   FuncType(FnDecl* linked, Type* return_type, bool variadic)
-    : return_type(return_type), variadic(variadic), linked(linked) {}
+    : return_type(return_type)
+    , variadic(variadic)
+    , linked(linked) {}
   ~FuncType() = default;
 
   std::vector<Type*> get_param_types();
@@ -143,15 +151,15 @@ public:
 
 class GenericType final : public Type {
   std::string name;
+
 public:
-  GenericType(const std::string& name) : name(name) {}
+  GenericType(const std::string& name)
+    : name(name) {}
   ~GenericType() = default;
 
   auto get_name() const { return name; }
 
-  static auto create(const std::string& name) {
-    return new GenericType(name);
-  }
+  static auto create(const std::string& name) { return new GenericType(name); }
 
   GenericType* as_generic() override { return this; }
   bool is_generic() const override { return true; }
@@ -177,13 +185,15 @@ public:
 
 class UnknownType final : public Type {
   size_t id;
+
 public:
-  UnknownType(size_t id) : id(id) {}
+  UnknownType(size_t id)
+    : id(id) {}
   ~UnknownType() = default;
 
   auto get_id() const { return id; }
 
-  static auto create(std::vector<ast::types::Type*>& constrs) { 
+  static auto create(std::vector<ast::types::Type*>& constrs) {
     auto ty = new UnknownType(constrs.size());
     constrs.push_back(ty);
     return ty;
@@ -211,13 +221,22 @@ public:
   std::string get_mangled_name() override;
 };
 
-class ClassType final : public Type, public GenericNode<Type*>, public Identified,
-  public LocationHolder {
+class ClassType final : public Type,
+                        public GenericNode<Type*>,
+                        public Identified,
+                        public LocationHolder {
   NamespacePath path;
   ast::ClassDecl* decl;
+
 public:
-  ClassType(ast::ClassDecl* decl, const NamespacePath& path, const std::vector<Type*>& generics, const SourceLocation& loc)
-    : GenericNode<Type*>(generics), LocationHolder(loc), decl(decl), path(path) {}
+  ClassType(
+          ast::ClassDecl* decl, const NamespacePath& path,
+          const std::vector<Type*>& generics, const SourceLocation& loc
+  )
+    : GenericNode<Type*>(generics)
+    , LocationHolder(loc)
+    , decl(decl)
+    , path(path) {}
 
   ~ClassType() = default;
 
@@ -225,14 +244,18 @@ public:
   auto get_path() const { return path; }
   auto get_decl() const { return decl; }
 
-  static auto create(ast::ClassDecl* decl, const NamespacePath& path, const std::vector<Type*>& generics, const SourceLocation& loc) {
+  static auto
+  create(ast::ClassDecl* decl, const NamespacePath& path,
+         const std::vector<Type*>& generics, const SourceLocation& loc) {
     return new ClassType(decl, path, generics, loc);
   }
 
   ClassType* as_class() override { return this; }
   bool is_class() const override { return true; }
-  bool is_deep_unknown() const override; // It's unknown if any of the generics are unknown
-  bool is_deep_generic() const override; // It's generic if any of the generics are generic
+  bool
+  is_deep_unknown() const override; // It's unknown if any of the generics are unknown
+  bool
+  is_deep_generic() const override; // It's generic if any of the generics are generic
 
   std::string get_printable_name() override;
   std::string get_mangled_name() override;
@@ -240,8 +263,10 @@ public:
 
 class ReferenceType final : public Type {
   Type* ref;
+
 public:
-  ReferenceType(Type* ref) : ref(ref) {}
+  ReferenceType(Type* ref)
+    : ref(ref) {}
   ~ReferenceType() = default;
 
   auto get_ref() const { return ref; }
@@ -261,9 +286,11 @@ public:
 
 class PointerType final : public Type {
   Type* pointee;
+
 public:
-  PointerType(Type* pointee, bool is_const) 
-    : Type(!is_const), pointee(pointee) {}
+  PointerType(Type* pointee, bool is_const)
+    : Type(!is_const)
+    , pointee(pointee) {}
   ~PointerType() = default;
 
   auto get_pointee() const { return pointee; }
@@ -283,9 +310,9 @@ public:
   bool is_deep_generic() const override { return pointee->is_deep_generic(); }
 };
 
-}
-}
-}
-}
+} // namespace types
+} // namespace ast
+} // namespace frontend
+} // namespace snowball
 
 #endif // __SNOWBALL_FRONTEND_AST_TYPES_H__

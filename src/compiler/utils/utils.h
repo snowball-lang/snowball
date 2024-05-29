@@ -8,9 +8,9 @@
 #ifndef __SNOWBALL_COMPILER_UTILS_UTILS_H__
 #define __SNOWBALL_COMPILER_UTILS_UTILS_H__
 
+#include <functional>
 #include <string>
 #include <vector>
-#include <functional>
 
 #include "compiler/utils/logger.h"
 
@@ -19,34 +19,35 @@
 #endif
 
 #ifndef NDEBUG
-#define sn_assert(expr, ...) if (!(expr)) { \
-  snowball::utils::Logger::fatal(F(__VA_ARGS__)); \
-  sn_abort(); \
-}
+#define sn_assert(expr, ...)                                                           \
+  if (!(expr)) {                                                                       \
+    snowball::utils::Logger::fatal(F(__VA_ARGS__));                                    \
+    sn_abort();                                                                        \
+  }
 
-#define DBG(x) fmt::print("DBG: "#x" = {}\n", x);
+#define DBG(x) fmt::print("DBG: " #x " = {}\n", x);
 #else
 #define sn_assert(expr, ...)
 #define DBG(x)
 #endif
 
 #ifndef sn_unreachable
-#define sn_unreachable() { \
-  snowball::utils::Logger::fatal("Unreachable code reached."); \
-  sn_abort(); \
-}
+#define sn_unreachable()                                                               \
+  {                                                                                    \
+    snowball::utils::Logger::fatal("Unreachable code reached.");                       \
+    sn_abort();                                                                        \
+  }
 #endif
 
 namespace snowball {
 
-template <typename...Ts>
+template <typename... Ts>
 class Self;
 
-template <typename X, typename...Ts>
-class Self<X,Ts...> : public Ts...
-{
+template <typename X, typename... Ts>
+class Self<X, Ts...> : public Ts... {
 protected:
-    typedef X self;
+  typedef X self;
 };
 
 namespace utils {
@@ -59,26 +60,21 @@ void strip(std::string& str);
 template <typename T, typename U>
 std::vector<T> map(const std::vector<U>& vec, std::function<T(U)> fn) {
   std::vector<T> result;
-  for (auto& item : vec) {
-    result.push_back(fn(item));
-  }
+  for (auto& item : vec) { result.push_back(fn(item)); }
   return result;
 }
 
 template <int N>
 std::string gen_random_string() {
-  static const char alphanum[] =
-    "0123456789"
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "abcdefghijklmnopqrstuvwxyz";
+  static const char alphanum[] = "0123456789"
+                                 "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                 "abcdefghijklmnopqrstuvwxyz";
   std::string s;
-  for (int i = 0; i < N; ++i) {
-    s += alphanum[rand() % (sizeof(alphanum) - 1)];
-  }
+  for (int i = 0; i < N; ++i) { s += alphanum[rand() % (sizeof(alphanum) - 1)]; }
   return s;
 }
 
-}
-}
+} // namespace utils
+} // namespace snowball
 
 #endif // __SNOWBALL_COMPILER_UTILS_UTILS_H__

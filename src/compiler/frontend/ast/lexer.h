@@ -6,18 +6,18 @@
 
 #include "compiler/ctx.h"
 #include "compiler/frontend/ast/token.h"
-#include "compiler/reports/reporter.h"
 #include "compiler/frontend/location.h"
+#include "compiler/reports/reporter.h"
 
 namespace snowball {
 namespace frontend {
 
 /**
  * @brief The Lexer class is responsible for lexing the source code into tokens.
- * 
- * The lexer takes care of absolutely everything that is needed to lex the 
+ *
+ * The lexer takes care of absolutely everything that is needed to lex the
  *  source code providing a simple interface to the user.
-*/
+ */
 class Lexer : public Reporter {
   const Ctx ctx;
   std::vector<Token> tokens;
@@ -28,19 +28,24 @@ class Lexer : public Reporter {
   unsigned int tok_index = 0;
 
   std::shared_ptr<SourceFile> file;
+
 public:
   Lexer(const Ctx& ctx, std::shared_ptr<SourceFile> file);
   ~Lexer() = default;
 
   std::vector<Token> lex();
+
 private:
   void add_token(const Token& token);
   void consume(Token::Type type, unsigned int length = 1U);
 
-  void shoot_error(const std::string& message, const Error::Info& info = Error::Info(), Error::Type type = Error::Type::Err);
+  void shoot_error(
+          const std::string& message, const Error::Info& info = Error::Info(),
+          Error::Type type = Error::Type::Err
+  );
 };
 
-}
-}
+} // namespace frontend
+} // namespace snowball
 
 #endif // __SNOWBALL_FRONTEND_AST_LEXER_H_

@@ -2,14 +2,14 @@
 #ifndef __SNOWBALL_FRONTEND_AST_NODES_STMT_H__
 #define __SNOWBALL_FRONTEND_AST_NODES_STMT_H__
 
-#include <vector>
 #include <optional>
 #include <string>
+#include <vector>
 
-#include "compiler/utils/id.h"
-#include "compiler/utils/clone.h"
+#include "compiler/frontend/ast/nodes/expr.h"
 #include "compiler/frontend/ast/nodes/other.h"
-#include "compiler/frontend/ast/nodes/expr.h" 
+#include "compiler/utils/clone.h"
+#include "compiler/utils/id.h"
 
 namespace snowball {
 namespace frontend {
@@ -24,8 +24,11 @@ class VarDecl;
 
 class Block final : public Stmt {
   std::vector<Node*> stmts;
+
 public:
-  Block(const SourceLocation& location, const std::vector<Node*>& stmts) : Stmt(location), stmts(stmts) {}
+  Block(const SourceLocation& location, const std::vector<Node*>& stmts)
+    : Stmt(location)
+    , stmts(stmts) {}
   ~Block() = default;
   Node* clone() const override;
   auto& get_stmts() { return stmts; }
@@ -36,24 +39,27 @@ public:
   SN_VISIT()
 };
 
-class FnDecl final : public Stmt, public GenericNode<>, 
-  public AttributedNode, public Identified {
+class FnDecl final : public Stmt,
+                     public GenericNode<>,
+                     public AttributedNode,
+                     public Identified {
 private:
   std::string name;
   std::vector<VarDecl*> params;
   TypeRef return_type;
   std::optional<Block*> body;
-  // This is a clone of the body, used for cloning the function, 
+  // This is a clone of the body, used for cloning the function,
   // and fetching the body without it not being typechecked
   Block* body_clone = nullptr;
   bool generic_instanced = false;
   std::optional<types::Type*> parent_type = std::nullopt;
   std::optional<uint64_t> generic_id = std::nullopt;
+
 public:
-  FnDecl(const SourceLocation& location, const std::string& name,   
-        const std::vector<VarDecl*>& params, TypeRef return_type, std::optional<Block*> body,
-        std::optional<GenericNode> generics = std::nullopt, 
-        const AttributedNode& attributes = AttributedNode());
+  FnDecl(const SourceLocation& location, const std::string& name,
+         const std::vector<VarDecl*>& params, TypeRef return_type,
+         std::optional<Block*> body, std::optional<GenericNode> generics = std::nullopt,
+         const AttributedNode& attributes = AttributedNode());
   ~FnDecl() = default;
   auto& get_name() const { return name; }
   auto& get_params() { return params; }
@@ -67,10 +73,11 @@ public:
   void set_parent_type(types::Type* type) { parent_type = type; }
   auto get_parent_type() const { return parent_type; }
   uint64_t get_generic_id() const;
-  static auto create(const SourceLocation& location, const std::string& name, 
-      const std::vector<VarDecl*>& params, TypeRef return_type, std::optional<Block*> body,
-      std::optional<GenericNode> generics = std::nullopt, 
-      const AttributedNode& attributes = AttributedNode()) {
+  static auto
+  create(const SourceLocation& location, const std::string& name,
+         const std::vector<VarDecl*>& params, TypeRef return_type,
+         std::optional<Block*> body, std::optional<GenericNode> generics = std::nullopt,
+         const AttributedNode& attributes = AttributedNode()) {
     return new FnDecl(location, name, params, return_type, body, generics, attributes);
   }
 
@@ -83,17 +90,25 @@ class VarDecl final : public Stmt, public AttributedNode, public Identified {
   std::optional<Expr*> value;
   std::optional<FnDecl*> arg_for = std::nullopt;
   unsigned int used = 0;
+
 public:
-  VarDecl(const SourceLocation& location, const std::string& name, 
-      std::optional<TypeRef> type, std::optional<Expr*> value, 
-      const AttributedNode& attributes = AttributedNode())
-    : Stmt(location), AttributedNode(attributes), name(name), 
-      decl_type(type), value(value) {}
-  VarDecl(const SourceLocation& location, const std::string& name, 
-      std::optional<TypeRef> type, std::optional<Expr*> value, FnDecl* arg_for,
-      const AttributedNode& attributes = AttributedNode())
-    : Stmt(location), AttributedNode(attributes), name(name), 
-      decl_type(type), value(value), arg_for(arg_for) {}
+  VarDecl(const SourceLocation& location, const std::string& name,
+          std::optional<TypeRef> type, std::optional<Expr*> value,
+          const AttributedNode& attributes = AttributedNode())
+    : Stmt(location)
+    , AttributedNode(attributes)
+    , name(name)
+    , decl_type(type)
+    , value(value) {}
+  VarDecl(const SourceLocation& location, const std::string& name,
+          std::optional<TypeRef> type, std::optional<Expr*> value, FnDecl* arg_for,
+          const AttributedNode& attributes = AttributedNode())
+    : Stmt(location)
+    , AttributedNode(attributes)
+    , name(name)
+    , decl_type(type)
+    , value(value)
+    , arg_for(arg_for) {}
   ~VarDecl() = default;
 
   auto& get_name() const { return name; }
@@ -109,23 +124,27 @@ public:
     arg_for = new_arg_for;
   }
 
-  static auto create(const SourceLocation& location, const std::string& name, 
-      std::optional<TypeRef> type, std::optional<Expr*> value, 
-      const AttributedNode& attributes = AttributedNode()) {
+  static auto
+  create(const SourceLocation& location, const std::string& name,
+         std::optional<TypeRef> type, std::optional<Expr*> value,
+         const AttributedNode& attributes = AttributedNode()) {
     return new VarDecl(location, name, type, value, attributes);
   }
 
-  static auto create(const SourceLocation& location, const std::string& name, 
-      std::optional<TypeRef> type, std::optional<Expr*> value, FnDecl* arg_for,
-      const AttributedNode& attributes = AttributedNode()) {
+  static auto
+  create(const SourceLocation& location, const std::string& name,
+         std::optional<TypeRef> type, std::optional<Expr*> value, FnDecl* arg_for,
+         const AttributedNode& attributes = AttributedNode()) {
     return new VarDecl(location, name, type, value, arg_for, attributes);
   }
 
   SN_VISIT()
 };
 
-class ClassDecl final : public Stmt, public GenericNode<>, 
-  public AttributedNode, public Identified {
+class ClassDecl final : public Stmt,
+                        public GenericNode<>,
+                        public AttributedNode,
+                        public Identified {
 private:
   std::string name;
   bool generic_instanced = false;
@@ -134,12 +153,18 @@ private:
   std::vector<FnDecl*> funcs;
   bool complete = false; // If the class is complete, i.e. all methods are defined
 public:
-  ClassDecl(const SourceLocation& location, const std::string& name,   
-        const std::vector<VarDecl*>& vars, const std::vector<FnDecl*>& funcs,
-        std::optional<GenericNode> generics = std::nullopt, 
-        const AttributedNode& attributes = AttributedNode())
-    : Stmt(location), GenericNode(generics), AttributedNode(attributes), 
-      name(name), vars(vars), funcs(funcs) {}
+  ClassDecl(
+          const SourceLocation& location, const std::string& name,
+          const std::vector<VarDecl*>& vars, const std::vector<FnDecl*>& funcs,
+          std::optional<GenericNode> generics = std::nullopt,
+          const AttributedNode& attributes = AttributedNode()
+  )
+    : Stmt(location)
+    , GenericNode(generics)
+    , AttributedNode(attributes)
+    , name(name)
+    , vars(vars)
+    , funcs(funcs) {}
 
   virtual ~ClassDecl() = default;
 
@@ -151,18 +176,19 @@ public:
   void set_generic_instanced();
   void set_complete() { complete = true; }
   auto is_complete() const { return complete; }
-  static auto create(const SourceLocation& location, const std::string& name, 
-      const std::vector<VarDecl*>& vars, const std::vector<FnDecl*>& funcs,
-      std::optional<GenericNode> generics = std::nullopt, 
-      const AttributedNode& attributes = AttributedNode()) {
+  static auto
+  create(const SourceLocation& location, const std::string& name,
+         const std::vector<VarDecl*>& vars, const std::vector<FnDecl*>& funcs,
+         std::optional<GenericNode> generics = std::nullopt,
+         const AttributedNode& attributes = AttributedNode()) {
     return new ClassDecl(location, name, vars, funcs, generics, attributes);
   }
 
   SN_VISIT()
 };
 
-}
-}
-}
+} // namespace ast
+} // namespace frontend
+} // namespace snowball
 
 #endif // __SNOWBALL_FRONTEND_AST_NODES_STMT_H__

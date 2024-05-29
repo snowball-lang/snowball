@@ -5,14 +5,14 @@
 #include <string>
 #include <vector>
 
+#include "compiler/ctx.h"
 #include "compiler/frontend/ast/module.h"
-#include "compiler/frontend/ast/visitors.h"
 #include "compiler/frontend/ast/nodes.h"
-#include "compiler/frontend/sema/universe.h"
+#include "compiler/frontend/ast/visitors.h"
 #include "compiler/frontend/sema/ctx.h"
+#include "compiler/frontend/sema/universe.h"
 #include "compiler/reports/reporter.h"
 #include "compiler/utils/utils.h"
-#include "compiler/ctx.h"
 
 namespace snowball {
 namespace frontend {
@@ -36,6 +36,7 @@ class TypeChecker : public ast::AstVisitor, public Reporter {
   // A vector used to keep track of extenral "unmangled" names
   std::vector<std::string> external_declared;
   bool has_entry_declared = false;
+
 public:
   TypeChecker(const Ctx& ctx, std::vector<Module>& modules);
   ~TypeChecker() = default;
@@ -47,12 +48,14 @@ public:
 #undef SN_REGISTER_ACCEPT
 
   auto& get_universe() { return universe; }
+
 private:
   void register_builtins();
 
-  void err(const LocationHolder& holder, const std::string& message, 
-    const Error::Info& info = Error::Info(), Error::Type type = Error::Type::Err, 
-    bool fatal = true);
+  void
+  err(const LocationHolder& holder, const std::string& message,
+      const Error::Info& info = Error::Info(), Error::Type type = Error::Type::Err,
+      bool fatal = true);
 
   // --- internal helpers ---
 
@@ -60,7 +63,7 @@ private:
 
   void generate_global_scope(ast::TopLevelAst& ast, bool first = false);
   NamespacePath get_namespace_path(const std::string& name);
-  
+
   GetResult get_item(ast::Expr* expr, NameAccumulator acc = NameAccumulator());
   GetResult get_item(const NamespacePath& path);
   GetResult get_item(const std::string& name);
@@ -72,8 +75,10 @@ private:
   ast::types::Type* get_type(const std::string& name);
   ast::types::Type* get_type(const ast::TypeRef& tr);
 
-  bool unify(ast::types::Type*& a, ast::types::Type* b,
-    const SourceLocation& holder = SourceLocation::dummy(), bool just_check = false);
+  bool
+  unify(ast::types::Type*& a, ast::types::Type* b,
+        const SourceLocation& holder = SourceLocation::dummy(),
+        bool just_check = false);
   /// Deduce an expression based on it's type.
   /// For example, if the expr is an identifier (e.g. a), we will try to
   /// find the variable `a` in the current scope and deduce it's type.
@@ -82,7 +87,7 @@ private:
   // This function should only be called in specific deduce-cases, like in assigments,
   // function calls, etc.
   // @note Return value may be nullptr
-  ast::Stmt* do_deduce(ast::Expr* expr); 
+  ast::Stmt* do_deduce(ast::Expr* expr);
 
   ast::types::UnknownType* get_unknown_type();
   ast::types::ErrorType* get_error_type();
@@ -90,16 +95,35 @@ private:
   void define_variable(ast::VarDecl* node, const SourceLocation& loc);
   std::optional<std::string> get_did_you_mean(const std::string& name);
 
-  ast::FnDecl* get_best_match(const std::vector<ast::FnDecl*>& decls, const std::vector<ast::types::Type*>& args, 
-    const SourceLocation& loc, const std::vector<ast::TypeRef>& generics, bool identified = false);
-  ast::FnDecl* deduce_func(ast::FnDecl* node, const std::vector<ast::types::Type*>& args, const SourceLocation& loc, const std::vector<ast::TypeRef>& generics);
-  ast::FnDecl* propagate_generic(ast::FnDecl* node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
-  ast::FnDecl* monorphosize(ast::FnDecl*& node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
-  ast::ClassDecl* monorphosize(ast::ClassDecl*& node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc);
+  ast::FnDecl* get_best_match(
+          const std::vector<ast::FnDecl*>& decls,
+          const std::vector<ast::types::Type*>& args, const SourceLocation& loc,
+          const std::vector<ast::TypeRef>& generics, bool identified = false
+  );
+  ast::FnDecl* deduce_func(
+          ast::FnDecl* node, const std::vector<ast::types::Type*>& args,
+          const SourceLocation& loc, const std::vector<ast::TypeRef>& generics
+  );
+  ast::FnDecl* propagate_generic(
+          ast::FnDecl* node, const std::map<std::string, ast::types::Type*>& generics,
+          const SourceLocation& loc
+  );
+  ast::FnDecl* monorphosize(
+          ast::FnDecl*& node, const std::map<std::string, ast::types::Type*>& generics,
+          const SourceLocation& loc
+  );
+  ast::ClassDecl* monorphosize(
+          ast::ClassDecl*& node,
+          const std::map<std::string, ast::types::Type*>& generics,
+          const SourceLocation& loc
+  );
   void add_self_param(ast::FnDecl*& node, bool as_monorph = false);
 
   std::vector<ast::types::Type*> fetch_generics_from_node(const ast::Node* node);
-  ast::types::Type* deduce_type(ast::types::Type* type, const std::vector<ast::types::Type*>& generics, const SourceLocation& loc);
+  ast::types::Type* deduce_type(
+          ast::types::Type* type, const std::vector<ast::types::Type*>& generics,
+          const SourceLocation& loc
+  );
 
   TypeCheckerContext& get_generic_context(uint64_t id);
   TypeCheckerContext& create_generic_context(uint64_t id);
@@ -114,27 +138,31 @@ private:
 
   std::optional<NamespacePath> search_module(const NamespacePath& path);
   void check_for_entry(ast::FnDecl* fn_decl);
-  
+
   bool is_mutable(ast::Expr* expr, ast::Stmt* stmt);
 
-  enum CastType {
+  enum CastType
+  {
     Invalid,
-    NoCast, Cast,
-    AutoRef, AutoDeref,
+    NoCast,
+    Cast,
+    AutoRef,
+    AutoDeref,
   };
   CastType can_cast(ast::types::Type* from, ast::types::Type* to);
   /// It will overwrite the node if it can cast.
   /// @returns true if the cast type is invalid
   /// @see can_cast
   bool try_cast(ast::Expr*& node, ast::types::Type* to);
+
 public:
   static std::string op_to_string(Operator op);
   // IF it starts with "$" we will consider it as an operator
   static std::string printable_op(std::string op);
 };
 
-}
-}
-}
+} // namespace sema
+} // namespace frontend
+} // namespace snowball
 
 #endif // __SNOWBALL_FRONTEND_SEMA_CHECK_H_

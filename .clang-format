@@ -56,13 +56,12 @@ BreakStringLiterals: true
 
 CommentPragmas:  '^ IWYU pragma:'
 CompactNamespaces: false
-ConstructorInitializerIndentWidth: 4
+ConstructorInitializerIndentWidth: 2
 ContinuationIndentWidth: 8
 Cpp11BracedListStyle: true
 SpaceBeforeCpp11BracedList: false
 DerivePointerAlignment: false
-ExperimentalAutoDetectBinPacking: false
-PackConstructorInitializers: NextLine
+PackConstructorInitializers: BinPack
 ForEachMacros:   [ foreach ]
 IndentCaseLabels: true
 FixNamespaceComments: true

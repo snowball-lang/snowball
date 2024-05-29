@@ -5,13 +5,13 @@
 #include <string>
 #include <vector>
 
+#include "compiler/ctx.h"
 #include "compiler/frontend/ast/module.h"
-#include "compiler/frontend/ast/visitors.h"
 #include "compiler/frontend/ast/nodes.h"
+#include "compiler/frontend/ast/visitors.h"
 #include "compiler/frontend/sema/universe.h"
 #include "compiler/reports/reporter.h"
 #include "compiler/utils/utils.h"
-#include "compiler/ctx.h"
 
 namespace snowball {
 namespace frontend {
@@ -19,7 +19,14 @@ namespace sema {
 
 class TypeCheckItem final {
 public:
-  enum Kind { Func, Type, Var, Module };
+  enum Kind
+  {
+    Func,
+    Type,
+    Var,
+    Module
+  };
+
 private:
   Kind kind;
   union {
@@ -30,34 +37,54 @@ private:
   std::optional<uint64_t> as_index = std::nullopt;
   const NamespacePath module = NamespacePath::dummy();
   std::vector<ast::FnDecl*> funcs;
+
 public:
   ~TypeCheckItem() = default;
-  TypeCheckItem(ast::types::Type* type) : kind(Kind::Type), type(type) {}
-  TypeCheckItem(ast::VarDecl* var, std::optional<uint64_t> as_index) : kind(Kind::Var), var(var) {}
-  TypeCheckItem(std::vector<ast::FnDecl*>& funcs) : kind(Kind::Func), funcs(funcs) {}
-  TypeCheckItem(const NamespacePath& module) : kind(Kind::Module), module(module) {}
+  TypeCheckItem(ast::types::Type* type)
+    : kind(Kind::Type)
+    , type(type) {}
+  TypeCheckItem(ast::VarDecl* var, std::optional<uint64_t> as_index)
+    : kind(Kind::Var)
+    , var(var) {}
+  TypeCheckItem(std::vector<ast::FnDecl*>& funcs)
+    : kind(Kind::Func)
+    , funcs(funcs) {}
+  TypeCheckItem(const NamespacePath& module)
+    : kind(Kind::Module)
+    , module(module) {}
 
   auto get_kind() const { return kind; }
-  auto get_type() const { assert(is_type()); return type; }
-  auto get_var() const { assert(is_var()); return var; }
-  auto get_funcs() const { assert(is_func()); return funcs; }
-  auto get_module() const { assert(is_module()); return module; }
+  auto get_type() const {
+    assert(is_type());
+    return type;
+  }
+  auto get_var() const {
+    assert(is_var());
+    return var;
+  }
+  auto get_funcs() const {
+    assert(is_func());
+    return funcs;
+  }
+  auto get_module() const {
+    assert(is_module());
+    return module;
+  }
 
   bool is_type() const { return kind == Kind::Type; }
   bool is_func() const { return kind == Kind::Func; }
   bool is_var() const { return kind == Kind::Var; }
   bool is_module() const { return kind == Kind::Module; }
 
-  auto get_index() const { 
+  auto get_index() const {
     assert(is_var());
-    return as_index; 
+    return as_index;
   }
 
-  static auto create_type(ast::types::Type* type) { 
-    return TypeCheckItem(type); 
-  }
+  static auto create_type(ast::types::Type* type) { return TypeCheckItem(type); }
 
-  static auto create_var(ast::VarDecl* var, std::optional<uint64_t> as_index = std::nullopt) {
+  static auto
+  create_var(ast::VarDecl* var, std::optional<uint64_t> as_index = std::nullopt) {
     return TypeCheckItem(var, as_index);
   }
 
@@ -73,8 +100,10 @@ public:
 class NameAccumulator final {
   NamespacePath path;
   std::string name = "";
+
 public:
-  NameAccumulator() : path(NamespacePath::dummy()) {}
+  NameAccumulator()
+    : path(NamespacePath::dummy()) {}
   ~NameAccumulator() = default;
 
   void add(const std::string& part, const std::string& name = "");
@@ -106,8 +135,8 @@ struct TypeCheckerContext final {
   ~TypeCheckerContext() = default;
 };
 
-}
-}
-}
+} // namespace sema
+} // namespace frontend
+} // namespace snowball
 
 #endif // __SNOWBALL_FRONTEND_SEMA_CHECK_CTX_H_

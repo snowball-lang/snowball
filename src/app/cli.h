@@ -31,8 +31,9 @@ namespace snowball {
 namespace cli {
 
 /**
- * @brief The CLI class is responsible for managing the command line interface of the compiler.
- * 
+ * @brief The CLI class is responsible for managing the command line interface of the
+ * compiler.
+ *
  * The CLI class is responsible for parsing the command line arguments and
  *  providing a simple interface to the user.
  */
@@ -44,7 +45,7 @@ public:
 
   /**
    * @brief Parses the command line arguments.
-   * 
+   *
    * @param argc The number of arguments.
    * @param argv The arguments.
    * @return true if the parsing was successful, false otherwise.
@@ -53,7 +54,7 @@ public:
 
   /**
    * @brief Gets the package configuration.
-   * 
+   *
    * @param ctx The context of the compiler.
    * @param path The path to the configuration file.
    */
@@ -61,15 +62,16 @@ public:
 
   static void hide_args();
   static void parse_args(Args& args);
+
 private:
   static void make_build(Ctx& ctx, Args& args, bool for_run = false);
   static void make_init(Ctx& ctx, Args& args, bool new_project = false);
   static void make_reky(Ctx& ctx, Args& args);
 
-  static void print_help(Args& args); 
+  static void print_help(Args& args);
 };
 
-}
-}
+} // namespace cli
+} // namespace snowball
 
 #endif // __SNOWBALL_CLI_H__

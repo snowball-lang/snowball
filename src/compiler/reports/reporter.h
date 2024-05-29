@@ -2,13 +2,14 @@
 #ifndef __SNOWBALL_COMPILER_REPORTS_REPORTER_H__
 #define __SNOWBALL_COMPILER_REPORTS_REPORTER_H__
 
-#include <vector>
 #include "compiler/reports/error.h"
+#include <vector>
 
 namespace snowball {
 
 class Reporter {
   std::vector<Error> errors;
+
 public:
   bool handle_errors();
   bool has_errors() const;
@@ -19,6 +20,6 @@ public:
   void add_error(const Error& error);
 };
 
-}
+} // namespace snowball
 
 #endif // __SNOWBALL_COMPILER_REPORTS_REPORTER_H__
