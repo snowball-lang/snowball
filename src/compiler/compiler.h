@@ -6,11 +6,26 @@
 #include <vector>
 
 #include "ctx.h"
+#include "compiler/utils/timers.h"
+
+#include "compiler/frontend/ast/lexer.h"
+#include "compiler/frontend/ast/parser.h"
+#include "compiler/frontend/location.h"
+#include "compiler/frontend/ast/module.h"
+#include "compiler/frontend/sema/check.h"
+#include "compiler/backend/llvm/builder.h"
+#include "compiler/backend/drivers.h"
 
 namespace snowball {
 namespace reky {
 class RekyManager;
 }
+
+class CompilationError final : public std::exception {
+public:
+  CompilationError() = default;
+  ~CompilationError() = default;
+};
 
 /**
  * @brief The Compiler class is responsible for compiling the source code into a binary file.
@@ -20,6 +35,15 @@ class RekyManager;
 */
 class Compiler {
   Ctx ctx;
+  utils::Timer timer;
+
+  std::vector<frontend::Module> modules;
+  std::vector<frontend::NamespacePath> module_paths;
+  std::vector<std::filesystem::path> object_files;
+
+  std::vector<std::filesystem::path> allowed_paths;
+
+  float progress_iteration = 0.0;
 public:
   Compiler(Ctx& ctx);
   ~Compiler() = default;
@@ -43,8 +67,18 @@ public:
    * @return A list of allowed paths (uncompleted list).
    */
   static std::vector<std::filesystem::path> prepare_context(Ctx& ctx, reky::RekyManager** reky = nullptr);
+
+  struct MiddleEndResult {
+    std::vector<std::shared_ptr<sil::Module>> sil_modules;
+    std::unordered_map<uint64_t, sil::Inst*> sil_insts;
+  };
 private:
+
   std::string get_package_type_string();
+  void print_compiling_bar();
+  void run_frontend();
+  MiddleEndResult run_middleend();
+  void stop_compilation();
 };
 
 }

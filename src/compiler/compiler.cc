@@ -25,142 +25,85 @@ Compiler::Compiler(Ctx& ctx) : ctx(ctx) {
 }
 
 bool Compiler::compile() {
-  // TODO: Iterate through the whole project and compile everything.
-  //  For now, we will just do the input_file.
-  auto allowed_paths = prepare_context(ctx);
-  std::vector<frontend::Module> modules;
-  // Unsigned is the number of modules appened for this path
-  std::vector<frontend::NamespacePath> module_paths;
-  std::vector<std::filesystem::path> object_files;
-  Logger::status("Project", F("{} v{} {}", ctx.package_config.value().project.name, 
-    ctx.package_config.value().project.version, get_package_type_string()));
-  static auto progress_i = 0.0;
-  auto print_compiling_bar = [&]() {
-    std::vector<std::string> modules;
-    for (size_t i = 0; i < module_paths.size(); i++) {
-      if (i == 0) {
-        modules.push_back(module_paths.at(i).get_path_string());
-        continue;
-      } 
-      if (module_paths.at(i) != module_paths.at(i-1)) {
-        modules.push_back(module_paths.at(i).get_path_string());
+  try {
+    allowed_paths = prepare_context(ctx);
+    Logger::status("Project", F("{} v{} {}", ctx.package_config.value().project.name, 
+      ctx.package_config.value().project.version, get_package_type_string()));
+    auto start = std::chrono::high_resolution_clock::now();
+    run_frontend();
+    auto sil = run_middleend();
+    auto sil_modules = sil.sil_modules;
+    auto sil_insts = sil.sil_insts;
+    bool is_object = ctx.emit_type == EmitType::Executable || ctx.emit_type == EmitType::Object
+                  || ctx.emit_type == EmitType::LlvmBc || ctx.emit_type == EmitType::Asm
+                  || ctx.emit_type == EmitType::Llvm;
+    auto last_module_root_path = frontend::NamespacePath::dummy();
+    timer.start("Building Output", true);
+    for (unsigned i = 0; i < sil_modules.size(); i++) {
+      auto module_root_path = module_paths.at(i);
+      sil::Builder* builder;
+      switch (ctx.emit_type) {
+        case EmitType::Llvm:
+        case EmitType::Object:
+        case EmitType::Executable:
+        case EmitType::LlvmBc:
+        case EmitType::Asm: {
+          builder = new backend::LLVMBuilder(ctx, sil_insts, module_root_path);
+        } break;
+        default: sn_assert(false, "Unknown emit type");
       }
-    }
-    Logger::progress("Compiling", progress_i, utils::join(modules, ", "));
-  }; 
-  auto start = std::chrono::high_resolution_clock::now();
-  for (auto ipath = allowed_paths.rbegin(); ipath != allowed_paths.rend(); ipath++) {
-    auto path = *ipath;
-    // Change the project context to the current project (e.g. when changing directories)
-    CLI::get_package_config(ctx, path / "sn.confy");
-    // TODO: Display the current project being compiled
-    auto package_ctx = ctx.package_config.value();
-    auto project_name = package_ctx.project.name;
-    auto module_root_path = frontend::NamespacePath::from_file(project_name);
-    Logger::status("Compiling", fmt::format("{} v{}", package_ctx.project.name, package_ctx.project.version));
-    //Logger::progress("Compiling", i / allowed_paths.size()+1);
-    sn_assert(std::filesystem::exists(path), "Path does not exist (looking for {})", path.string());
-    // Iterate recursively through the project and the dependencies.
-    auto src_path = path / package_ctx.project.src;
-    for (auto& entry : std::filesystem::recursive_directory_iterator(src_path)) {
-      if (entry.is_regular_file() && entry.path().extension() == ".sn") {
-        auto source_file = std::make_shared<frontend::SourceFile>(entry);
-        frontend::Lexer lexer(ctx, source_file);
-        auto tokens = lexer.lex();
-        if (lexer.handle_errors()) {
-          return EXIT_FAILURE;
-        }
-        frontend::Parser parser(ctx, source_file, tokens);
-        modules.push_back(parser.parse());
-        modules.back().parent_crate = module_root_path;
-        module_paths.push_back(module_root_path);
-        if (parser.handle_errors()) {
-          return EXIT_FAILURE;
-        }
-        print_compiling_bar();
+      auto output_file = driver::get_output_path(ctx, module_root_path[0], false, is_object); 
+      if (is_object) {
+        auto emit_type = ctx.emit_type;
+        // Compile to LLVM bitcode if we are compiling to an executable.
+        ctx.emit_type = EmitType::LlvmBc;
+        output_file = driver::get_output_path(ctx, module_root_path[0], false, is_object);
+        ctx.emit_type = emit_type;
       }
+      if (last_module_root_path != module_root_path) {
+        object_files.push_back(output_file);
+      }
+      last_module_root_path = module_root_path;
+      builder->build(sil_modules);
+    #if SNOWBALL_DUMP_OUTPUT == 1
+      builder->dump();
+    #endif
+      builder->emit(output_file);
     }
-    // We add the top module so that it can be accessed from 
-    // other modules in the same project.
-    modules.push_back(frontend::Module({}, module_root_path, modules.back().is_main));
-    modules.back().parent_crate = module_root_path;
-    module_paths.push_back(module_root_path);
-    progress_i += 0.5 / allowed_paths.size();
-  }
-  print_compiling_bar();
-  frontend::sema::TypeChecker type_checker(ctx, modules);
-  type_checker.check();
-  if (type_checker.handle_errors()) {
-    return EXIT_FAILURE;
-  }
-  print_compiling_bar();
-  sil::Binder binder(ctx, modules, type_checker.get_universe());
-  binder.bind();
-  if (binder.handle_errors()) {
-    return EXIT_FAILURE;
-  }
-  auto& sil_modules = binder.get_modules();
-  // Add an output module since we need to have a main/general module to link everything to.
-  auto output_namespace_path = frontend::NamespacePath(".libroot");
-  sil_modules.push_back(std::make_shared<sil::Module>(output_namespace_path));
-  module_paths.push_back(output_namespace_path);
-  bool is_object = ctx.emit_type == EmitType::Executable || ctx.emit_type == EmitType::Object
-                || ctx.emit_type == EmitType::LlvmBc || ctx.emit_type == EmitType::Asm
-                || ctx.emit_type == EmitType::Llvm;
-  auto last_module_root_path = frontend::NamespacePath::dummy();
-  for (unsigned i = 0; i < sil_modules.size(); i++) {
-    auto module_root_path = module_paths.at(i);
-    sil::Builder* builder;
-    switch (ctx.emit_type) {
-      case EmitType::Llvm:
-      case EmitType::Object:
-      case EmitType::Executable:
-      case EmitType::LlvmBc:
-      case EmitType::Asm: {
-        builder = new backend::LLVMBuilder(ctx, binder.get_insts(), module_root_path);
-      } break;
-      default: sn_assert(false, "Unknown emit type");
-    }
-    auto output_file = driver::get_output_path(ctx, module_root_path[0], false, is_object); 
+    timer.stop("Building Output");
+    auto output = driver::get_output_path(ctx, ctx.root_package_config.value().project.name, true);
     if (is_object) {
-      auto emit_type = ctx.emit_type;
-      // Compile to LLVM bitcode if we are compiling to an executable.
-      ctx.emit_type = EmitType::LlvmBc;
-      output_file = driver::get_output_path(ctx, module_root_path[0], false, is_object);
-      ctx.emit_type = emit_type;
+      timer.start("Linking", true);
+      auto err = backend::LLVMBuilder::link(ctx, object_files, output);
+      timer.stop("Linking");
+      if (err) {
+        return err;
+      }
     }
-    if (last_module_root_path != module_root_path) {
-      object_files.push_back(output_file);
+    // TODO: give cli option
+    // timer.print_all();
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    if (ctx.build_mode == BuildMode::Run) {
+      Logger::status("Running", ctx.package_config.value().project.name);
+      return driver::run(ctx, output);
     }
-    last_module_root_path = module_root_path;
-    builder->build(binder.get_modules());
-  #if SNOWBALL_DUMP_OUTPUT == 1
-    builder->dump();
-  #endif
-    builder->emit(output_file);
+    Logger::reset_status();
+    Logger::raw("\n");
+    Logger::success(F("Compiled snowball project in {}ms!", duration));
+    return EXIT_SUCCESS;
+  } catch (CompilationError& e) {
+    return EXIT_FAILURE;
   }
-  auto output = driver::get_output_path(ctx, ctx.root_package_config.value().project.name, true);
-  if (is_object) {
-    auto err = backend::LLVMBuilder::link(ctx, object_files, output);
-    if (err) {
-      return err;
-    }
-  }
-  auto end = std::chrono::high_resolution_clock::now();
-  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-  if (ctx.build_mode == BuildMode::Run) {
-    Logger::status("Running", ctx.package_config.value().project.name);
-    return driver::run(ctx, output);
-  }
-  Logger::reset_status();
-  Logger::raw("\n");
-  Logger::success(F("Compiled snowball project in {}ms!", duration));
-  return EXIT_SUCCESS;
 }
 
 bool Compiler::compile(Ctx& ctx) {
   Compiler compiler(ctx);
   return compiler.compile();
+}
+
+void Compiler::stop_compilation() {
+  throw CompilationError();
 }
 
 std::string Compiler::get_package_type_string() {
@@ -188,6 +131,20 @@ std::string Compiler::get_package_type_string() {
     case Target::Unknown: output += " (unknown)"; break;
   }
   return output;
+}
+
+void Compiler::print_compiling_bar() {
+  std::vector<std::string> modules;
+  for (size_t i = 0; i < module_paths.size(); i++) {
+    if (i == 0) {
+      modules.push_back(module_paths.at(i).get_path_string());
+      continue;
+    } 
+    if (module_paths.at(i) != module_paths.at(i-1)) {
+      modules.push_back(module_paths.at(i).get_path_string());
+    }
+  }
+  Logger::progress("Compiling", progress_iteration, utils::join(modules, ", "));
 }
 
 std::vector<std::filesystem::path> Compiler::prepare_context(Ctx& ctx, reky::RekyManager** reky) {
