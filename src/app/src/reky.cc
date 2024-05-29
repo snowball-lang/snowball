@@ -26,6 +26,7 @@ void print_reky_help(CLI::Args& args) {
   CLI::hide_args();
   cl::SubCommand freeze("freeze", "Freeze the current project's dependencies");
   cl::SubCommand run("run", "Run the current project");
+  cl::SubCommand dot("dot", "Export the dependency graph to a dot file");
   CLI::parse_args(args);
   cl::PrintHelpMessage();
   exit(EXIT_SUCCESS);
