@@ -4,7 +4,7 @@ public func test(x: crate::mod::Hello<i32>) {
 }
 
 public func balls<T>(x: T) {
-  let mut n: T = x;
+  let mut _n: T = x;
 }
 
 public func main() i32 {

@@ -16,6 +16,12 @@ void Timer::stop(const std::string& name) {
 
 void Timer::print_all(TimerType type) {
   Logger::status("Time", "Printing all times...");
+  Logger::raw("\n");
+  int longest_name = 0;
+  for (auto& [name, time] : times_start) {
+    longest_name = std::max(longest_name, (int)name.size());
+  }
+  unsigned int average = 0;
   for (auto& [name, time] : times_start) {
     auto start = time.first;
     auto important = time.second;
@@ -26,7 +32,26 @@ void Timer::print_all(TimerType type) {
       return pair.first == name;
     })->second;
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    Logger::raw(F("\t {} -> {}ms\n", name, duration.count()));
+    average += duration.count();
+  }
+  for (auto& [name, time] : times_start) {
+    auto start = time.first;
+    auto important = time.second;
+    if (type == TimerType::Basic && !important) {
+      continue;
+    }
+    auto end = std::find_if(times_end.begin(), times_end.end(), [&name](auto& pair) {
+      return pair.first == name;
+    })->second;
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::string spacing(longest_name - name.size(), ' ');
+    fmt::terminal_color color = fmt::terminal_color::bright_green;
+    if ((unsigned)duration.count() > average / times_start.size()) {
+      color = fmt::terminal_color::bright_red;
+    } else if ((unsigned)duration.count() > average / times_start.size() / 2) {
+      color = fmt::terminal_color::bright_yellow;
+    }
+    Logger::raw(F("\t    {} {}= {}\n", name, spacing, fmt::styled(std::to_string(duration.count()) + "ms", fmt::fg(color) | fmt::emphasis::bold)));
   }
 }
 
