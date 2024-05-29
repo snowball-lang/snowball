@@ -3,7 +3,9 @@
 #define __SNOWBALL_CTX_H__
 
 #include <filesystem>
+
 #include "compiler/package.h"
+#include "compiler/utils/timers.h"
 
 namespace snowball {
 
@@ -83,6 +85,7 @@ struct Ctx {
   std::string custom_linker = "";
   bool static_lib = false;
   LinkerType linker_type = LinkerType::Detect;
+  utils::TimerType timer = utils::TimerType::None;
 
   bool verbose = false;
 

@@ -114,6 +114,7 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
   cl::opt<Arch>* arch = nullptr;
   cl::opt<Target>* target = nullptr;
   cl::opt<bool>* static_link = nullptr;
+  cl::opt<utils::TimerType>* timer_type = nullptr;
   if (!for_run) {
     emit_type = new cl::opt<EmitType>("emit", cl::desc("Emit type"), cl::values(
       clEnumValN(EmitType::Llvm, "llvm-ir", "LLVM IR"),
@@ -129,6 +130,11 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
       clEnumValN(Target::Linux, "linux", "Linux"),
       clEnumValN(Target::MacOS, "macos", "macOS")
     ), cl::init(Target::Unknown), cl::cat(category));
+    timer_type = new cl::opt<utils::TimerType>("timer", cl::desc("Show snowball's performance on different stages"), cl::values(
+      clEnumValN(utils::TimerType::None, "none", "None"),
+      clEnumValN(utils::TimerType::Full, "full", "Full"),
+      clEnumValN(utils::TimerType::Basic, "basic", "Show")
+    ), cl::init(utils::TimerType::None), cl::cat(category));
     arch = new cl::opt<Arch>("arch", cl::desc("Architecture"), cl::values(
       clEnumValN(Arch::X86_64, "x86_64", "x86_64"),
       clEnumValN(Arch::Arm64, "arm64", "Arm64")
@@ -141,6 +147,10 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
   ctx.custom_linker = ld;
   ctx.linker_type = linker_type;  
   ctx.verbose = verbose;
+  if (timer_type) {
+    ctx.timer = *timer_type;
+    delete timer_type;
+  }
   if (emit_type) {
     ctx.emit_type = *emit_type;
     delete emit_type;

@@ -13,7 +13,8 @@ using ChronoTime = std::chrono::time_point<std::chrono::high_resolution_clock>;
 
 enum class TimerType {
   Basic,
-  Full
+  Full,
+  None
 };
 
 class Timer {

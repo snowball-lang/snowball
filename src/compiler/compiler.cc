@@ -80,8 +80,7 @@ bool Compiler::compile() {
         return err;
       }
     }
-    // TODO: give cli option
-    // timer.print_all();
+    post_compile();
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     if (ctx.build_mode == BuildMode::Run) {
@@ -104,6 +103,12 @@ bool Compiler::compile(Ctx& ctx) {
 
 void Compiler::stop_compilation() {
   throw CompilationError();
+}
+
+void Compiler::post_compile() {
+  if (ctx.timer != TimerType::None) {
+    timer.print_all(ctx.timer);
+  }
 }
 
 std::string Compiler::get_package_type_string() {

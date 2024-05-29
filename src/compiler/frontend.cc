@@ -23,7 +23,7 @@ void Compiler::run_frontend() {
     auto src_path = path / package_ctx.project.src;
     for (auto& entry : std::filesystem::recursive_directory_iterator(src_path)) {
       if (entry.is_regular_file() && entry.path().extension() == ".sn") {
-        auto timer_name = project_name + "::" + entry.path().filename().stem().string();
+        auto timer_name = "module " + project_name + "::" + entry.path().filename().stem().string();
         timer.start(timer_name);
         auto source_file = std::make_shared<frontend::SourceFile>(entry);
         frontend::Lexer lexer(ctx, source_file);
