@@ -16,10 +16,3 @@ public func main() i32 {
   std::main::test(2);
   std::main::test(b"2");
 }
-
-
-func @(x: i32) {}
-
-func hello IloveMyBallsSoMuch) {
-  let x;
-}
