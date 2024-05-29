@@ -12,12 +12,10 @@ void Compiler::run_frontend() {
     auto path = *ipath;
     // Change the project context to the current project (e.g. when changing directories)
     CLI::get_package_config(ctx, path / "sn.confy");
-    // TODO: Display the current project being compiled
     auto package_ctx = ctx.package_config.value();
     auto project_name = package_ctx.project.name;
     auto module_root_path = frontend::NamespacePath::from_file(project_name);
     Logger::status("Compiling", fmt::format("{} v{}", package_ctx.project.name, package_ctx.project.version));
-    //Logger::progress("Compiling", i / allowed_paths.size()+1);
     sn_assert(std::filesystem::exists(path), "Path does not exist (looking for {})", path.string());
     // Iterate recursively through the project and the dependencies.
     auto src_path = path / package_ctx.project.src;
