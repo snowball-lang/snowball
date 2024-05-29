@@ -84,7 +84,7 @@ bool Compiler::compile() {
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     if (ctx.build_mode == BuildMode::Run) {
-      Logger::status("Running", ctx.package_config.value().project.name);
+      Logger::status("Running", ctx.root_package_config.value().project.name);
       return driver::run(ctx, output);
     }
     Logger::reset_status();
