@@ -15,7 +15,7 @@ void Timer::stop(const std::string& name) {
 }
 
 void Timer::print_all(TimerType type) {
-  Logger::status("Time", "Printing all times...");
+  Logger::status("Timings", "Printing all times...");
   Logger::raw("\n");
   int longest_name = 0;
   for (auto& [name, time] : times_start) {
