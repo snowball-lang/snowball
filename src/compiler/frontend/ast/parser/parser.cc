@@ -155,6 +155,7 @@ void Parser::_recover(std::vector<Token::Type> tys) {
         sn_assert(false, "Eof should be the only token in the recovery set")
       }
       if (is(tys[i])) {
+        prev();
         return;
       }
     }

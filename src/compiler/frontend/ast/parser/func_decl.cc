@@ -42,7 +42,7 @@ ast::FnDecl* Parser::parse_fn_decl(const ast::AttributedNode& attrs) {
   auto pos = loc();
   next();
   auto generics = parse_generics();
-  consume(Token::Type::BracketLparent, "an open parenthesis after the function name", Token::Type::BracketLcurly);
+  consume(Token::Type::BracketLparent, "an open parenthesis after the function name", std::vector{Token::Type::BracketLcurly, Token::Type::BracketRparent});
   std::vector<ast::VarDecl*> params;
   while (!is(Token::Type::BracketRparent)) {
     auto pos = loc();

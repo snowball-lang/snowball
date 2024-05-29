@@ -234,6 +234,7 @@ std::vector<Token> Lexer::lex() {
               .help = "Make sure to close the string with '\"'.",
               .note = "Strings that start with '\"' must end with '\"'.",
             });
+            break;
           } else if (GET_CHAR(0) == '\n') {
             tok_index++;
             shoot_error("Found an unexpected newline while lexing a 'string'!", Error::Info {
