@@ -4,6 +4,8 @@
 #include "compiler/backend/drivers.h"
 #include "compiler/backend/llvm/builder.h"
 
+#include "app/cli.h"
+
 #include <llvm/Bitcode/BitcodeWriter.h>
 
 namespace snowball {
@@ -55,19 +57,11 @@ int LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths,
   // Generate object file
   auto obj_output = driver::get_output_path(ctx, ctx.root_package_config.value().project.name + ".tmp");
   output_object_file(*libroot.get(), obj_output, builder_ctx, target_machine, ctx.emit_type);
-  auto cc = driver::get_cc(ctx);
-  auto gcc = fmt::format("{}-gcc", triple_str);
-  bool is_gcc = false;
-  bool is_custom = false;
-  if (!ctx.custom_linker.empty()) {
-    cc = ctx.custom_linker;
-    is_custom = true;
-  } else if (cc == "cc" && driver::program_exists(gcc)) {
-    cc = gcc;
-    is_gcc = true;
-  }
+  auto cc = get_linker(ctx, triple_str);
+  if (!cc.has_value())
+    return EXIT_FAILURE;
   std::vector<std::string> args;
-  args.push_back(cc);
+  args.push_back(cc.value());
   switch (driver::get_linker_type(ctx)) {
     case LinkerType::Lld:
       args.push_back("-fuse-ld=lld");
@@ -80,7 +74,7 @@ int LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths,
   args.push_back("-o");
   args.push_back(output.string());
   args.push_back(obj_output.string());
-  if (driver::cc_is_clang(ctx) && !is_gcc && !is_custom) {
+  if (driver::cc_is_clang(ctx, cc.value())) {
     args.push_back("--target=" + triple_str);
   #ifdef SN_LIN
     auto path = fmt::format("/usr/{}", triple_str);
@@ -88,10 +82,6 @@ int LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths,
       args.push_back(fmt::format("--sysroot={}", path));
     }
   #endif
-  } else if (!is_gcc && !is_custom) {
-    return error(fmt::format("you are cross compiling to {}, but the linker used ({})"
-      " does not support cross compilation. You can use the `--ld=LINKER` flag to specify a linker that supports cross compilation.",
-      triple_str, cc));
   }
   args.push_back("-L");
   args.push_back(driver::get_workspace_path(ctx, driver::WorkSpaceType::Libs).string());
@@ -136,6 +126,22 @@ void LLVMBuilder::output_object_file(llvm::Module& module, std::filesystem::path
   }
   pass.run(module);
   os.flush();
+}
+
+std::optional<std::string> LLVMBuilder::get_linker(const Ctx& ctx, const std::string& triple) {
+  auto cc = driver::get_cc(ctx);
+  auto gcc = fmt::format("{}-gcc", triple);
+  if (!ctx.custom_linker.empty()) {
+    cc = ctx.custom_linker;
+  } else if (cc == "cc" && driver::program_exists(gcc)) {
+    cc = gcc;
+  } else if (!driver::cc_is_clang(ctx, cc)) {
+    error(fmt::format("you are cross compiling to {}, but the linker used ({})"
+      " does not support cross compilation. You can use the `--ld=LINKER` flag to specify a linker that supports cross compilation.",
+      triple, cc));
+    return std::nullopt;
+  }
+  return cc;
 }
 
 }

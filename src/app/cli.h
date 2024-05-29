@@ -7,7 +7,7 @@
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 #define SN_WIN
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(linux) || defined(__linux)
 #define SN_LIN
 #elif defined(__APPLE__) || defined(__MACH__)
 #define SN_MAC

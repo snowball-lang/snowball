@@ -157,8 +157,7 @@ bool program_exists(const std::string& name) {
 #endif
 }
 
-bool cc_is_clang(const Ctx& ctx) {
-  auto cc = get_cc(ctx);
+bool cc_is_clang(const Ctx& ctx, const std::string& cc) {
 #ifdef SN_WIN
   return run(ctx, cc + " --version 2>&1 | findstr /C:\"clang version\"") == 0;
 #else
