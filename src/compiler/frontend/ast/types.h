@@ -244,6 +244,9 @@ public:
   auto get_path() const { return path; }
   auto get_decl() const { return decl; }
 
+  bool is_interface_decl() const;
+  bool is_class_decl() const;
+
   static auto
   create(ast::ClassDecl* decl, const NamespacePath& path,
          const std::vector<Type*>& generics, const SourceLocation& loc) {

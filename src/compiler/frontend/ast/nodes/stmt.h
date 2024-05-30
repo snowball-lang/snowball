@@ -165,19 +165,16 @@ private:
   std::vector<TypeRef> implemented_interfaces;
 
 public:
+// clang-format off
   ClassDecl(
           const SourceLocation& location, const std::string& name,
           const std::vector<VarDecl*>& vars, const std::vector<FnDecl*>& funcs,
           ClassType class_type = ClassType::Class,
           std::optional<GenericNode> generics = std::nullopt,
-          const AttributedNode& attributes = AttributedNode()
-  )
-    : Stmt(location)
-    , GenericNode(generics)
-    , AttributedNode(attributes)
-    , name(name)
-    , vars(vars)
-    , funcs(funcs) {}
+          const AttributedNode& attributes = AttributedNode())
+    : Stmt(location), GenericNode(generics), AttributedNode(attributes), 
+      name(name), vars(vars), funcs(funcs), class_type(class_type) {}
+// clang-format on
 
   virtual ~ClassDecl() = default;
 
@@ -193,7 +190,9 @@ public:
   void set_implemented_interfaces(const std::vector<TypeRef>& interfaces) {
     implemented_interfaces = interfaces;
   }
-  auto get_implemented_interfaces() const { return implemented_interfaces; }
+  auto& get_implemented_interfaces() { return implemented_interfaces; }
+  bool is_interface() const { return class_type == ClassType::Interface; }
+  bool is_class() const { return class_type == ClassType::Class; }
   static auto
   create(const SourceLocation& location, const std::string& name,
          const std::vector<VarDecl*>& vars, const std::vector<FnDecl*>& funcs,

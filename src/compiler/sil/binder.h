@@ -59,6 +59,7 @@ public:
 
   auto& get_modules() { return sil_modules; }
   ast::types::Type* get_type(ast::Node* node);
+  ast::types::Type* get_type(ast::types::Type* type, const SourceLocation& loc);
   ast::types::Type* check_type(ast::types::Type*& type, const SourceLocation& loc);
   auto& get_insts() { return var_ids; }
 

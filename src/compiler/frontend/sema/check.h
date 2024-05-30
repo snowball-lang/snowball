@@ -78,7 +78,7 @@ private:
   bool
   unify(ast::types::Type*& a, ast::types::Type* b,
         const SourceLocation& holder = SourceLocation::dummy(),
-        bool just_check = false);
+        bool just_check = false, bool ignore_self = false);
   /// Deduce an expression based on it's type.
   /// For example, if the expr is an identifier (e.g. a), we will try to
   /// find the variable `a` in the current scope and deduce it's type.
@@ -129,7 +129,7 @@ private:
   TypeCheckerContext& create_generic_context(uint64_t id);
   void set_generic_context(const TypeCheckerContext& ctx);
 
-  bool type_match(ast::types::Type* a, ast::types::Type* b);
+  bool type_match(ast::types::Type* a, ast::types::Type* b, bool ignore_self = false);
 
   void do_global_func(ast::FnDecl* fn_decl);
   void do_global_class(ast::ClassDecl* class_decl);
@@ -140,6 +140,7 @@ private:
   void check_for_entry(ast::FnDecl* fn_decl);
 
   bool is_mutable(ast::Expr* expr, ast::Stmt* stmt);
+  void check_implementations(ast::ClassDecl* class_decl);
 
   enum CastType
   {

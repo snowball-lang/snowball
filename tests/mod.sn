@@ -1,14 +1,15 @@
 
-interface Lol {
-  func hello(x: i32);
+interface Lol<T> {
+  func hello(x: T);
 }
 
-class Hello<T> implements Lol {
+class Hello<T> implements Lol<T> {
   let a: T;
 
   public func hello(x: T) {
     let _n = x;
   }
+  
   public operator func +(_y: T) {
   }
 }
