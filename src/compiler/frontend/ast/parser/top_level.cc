@@ -102,6 +102,10 @@ ast::TopLevelAst Parser::parse_top_level(Token::Type terminator) {
         top_level.push_back(parse_class_decl(global_attrs));
         global_attrs = ast::AttributedNode();
         break;
+      case Token::Type::KwordInter:
+        top_level.push_back(parse_interface_decl(global_attrs));
+        global_attrs = ast::AttributedNode();
+        break;
       case Token::Type::KwordUnsafe:
         global_attrs.set_unsafe(true);
         next();

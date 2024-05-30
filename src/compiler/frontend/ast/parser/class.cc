@@ -19,9 +19,25 @@ ast::ClassDecl* Parser::parse_class_decl(const ast::AttributedNode& attrs) {
   auto pos = loc();
   next();
   auto generics = parse_generics();
+  std::vector<ast::TypeRef> implemented_interfaces;
+  switch (current.type) {
+    case Token::Type::KwordImplements: {
+      next();
+      while (!is(Token::Type::BracketLcurly)) {
+        auto interface = parse_type_ref();
+        implemented_interfaces.push_back(interface);
+        if (is(Token::Type::BracketLcurly)) break;
+        consume(Token::Type::SymComma, "a comma after the implemented interface", Token::Type::BracketLcurly);
+      }
+      break;
+    }
+    default: break;
+  }
   auto block = parse_class_body();
   next(); // skip the closing curly brace
-  return pnode<ast::ClassDecl>(pos, name, block.vars, block.funcs, generics, attrs);
+  auto cls = pnode<ast::ClassDecl>(pos, name, block.vars, block.funcs, ast::ClassDecl::ClassType::Class, generics, attrs);
+  cls->set_implemented_interfaces(implemented_interfaces);
+  return cls;
 }
 
 Parser::ParsingClassResult Parser::parse_class_body() { 

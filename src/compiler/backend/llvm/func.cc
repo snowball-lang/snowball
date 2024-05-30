@@ -14,7 +14,8 @@ void LLVMBuilder::emit(const sil::FuncDecl* node) {
     auto linkage = llvm::Function::InternalLinkage;
     if (node->get_external() != frontend::ast::AttributedNode::None
       || node->get_privacy() == frontend::ast::AttributedNode::Public
-      || (IS_EXTERNAL_FN)) {
+      || (IS_EXTERNAL_FN)
+      || !node->get_body().has_value()) {
       linkage = llvm::Function::ExternalLinkage;
     }
     auto fn = llvm::Function::Create(fn_type, linkage, node->get_mangled_name(), *builder_ctx.module);
@@ -23,7 +24,7 @@ void LLVMBuilder::emit(const sil::FuncDecl* node) {
       fn->addFnAttr(llvm::Attribute::AlwaysInline);
     builder_ctx.set_value(node->get_id(), fn);
   } else if (node->get_external() == frontend::ast::AttributedNode::None) {
-    if (IS_EXTERNAL_FN) {
+    if (IS_EXTERNAL_FN || !node->get_body().has_value()) {
       // We dont want to declare the function multiple times
       // Let's leave it as external
       return;
@@ -44,7 +45,6 @@ void LLVMBuilder::emit(const sil::FuncDecl* node) {
       auto alloc = build(builder_ctx.get_inst(id));
       builder->CreateStore(arg, alloc);
     }
-    assert(node->get_body().has_value());
     build(node->get_body().value());
     if (builder->GetInsertBlock()->empty() || !builder->GetInsertBlock()->back().isTerminator()) {
       if (fn_type->getReturnType()->isVoidTy()) {

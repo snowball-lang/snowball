@@ -1,6 +1,11 @@
-class Hello<T> {
+
+interface Lol {
+  func hello(x: i32);
+}
+
+class Hello<T> implements Lol {
   let a: T;
-  
+
   public func hello(x: T) {
     let _n = x;
   }

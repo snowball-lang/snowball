@@ -147,6 +147,12 @@ class ClassDecl : public Stmt,
                   public GenericNode<>,
                   public AttributedNode,
                   public Identified {
+public:
+  enum class ClassType
+  {
+    Class,
+    Interface
+  };
 private:
   friend InterfaceDecl;
   std::string name;
@@ -155,11 +161,8 @@ private:
   std::vector<VarDecl*> vars;
   std::vector<FnDecl*> funcs;
   bool complete = false; // If the class is complete, i.e. all methods are defined
-  enum class ClassType
-  {
-    Class,
-    Interface
-  } class_type = ClassType::Class;
+  ClassType class_type = ClassType::Class;
+  std::vector<TypeRef> implemented_interfaces;
 
 public:
   ClassDecl(
@@ -187,6 +190,10 @@ public:
   void set_complete() { complete = true; }
   auto is_complete() const { return complete; }
   auto get_class_type() const { return class_type; }
+  void set_implemented_interfaces(const std::vector<TypeRef>& interfaces) {
+    implemented_interfaces = interfaces;
+  }
+  auto get_implemented_interfaces() const { return implemented_interfaces; }
   static auto
   create(const SourceLocation& location, const std::string& name,
          const std::vector<VarDecl*>& vars, const std::vector<FnDecl*>& funcs,
