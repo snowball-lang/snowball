@@ -12,7 +12,9 @@ void Binder::visit(ast::Call* node) {
   for (auto arg : node->get_args()) {
     args.push_back(accept(arg));
   }
-  value = Call::create(node->get_location(), get_type(node), callee, args);
+  auto call = Call::create(node->get_location(), get_type(node), callee, args);
+  optimize_virtual_call(call);
+  value = call;
 }
 
 }

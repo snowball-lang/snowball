@@ -64,6 +64,7 @@ class FuncDecl final : public Inst, public ast::AttributedNode, public Identifie
   std::vector<ParamType> params;
   std::optional<Block*> body;
   const std::shared_ptr<Module> parent_module;
+  std::optional<ast::types::Type*> parent_type;
 
 public:
   FuncDecl(
@@ -88,6 +89,9 @@ public:
   void set_body(Block* b) { body = b; }
   std::string get_mangled_name() const;
   std::string get_printable_name() const;
+
+  void set_parent_type(ast::types::Type* type) { parent_type = type; }
+  auto get_parent_type() const { return parent_type; }
 
   auto get_parent_module() const { return parent_module; }
 
@@ -204,6 +208,7 @@ public:
 class Call final : public Inst {
   Inst* callee;
   std::vector<Inst*> args;
+  bool ignore_virtual = false; // Optimization flag
 
 public:
   Call(LocationHolder& loc, ast::types::Type* type, Inst* callee,
@@ -215,6 +220,9 @@ public:
 
   auto get_callee() const { return callee; }
   auto get_args() const { return args; }
+
+  void set_ignore_virtual(bool flag) { ignore_virtual = flag; }
+  auto should_ignore_virtual() const { return ignore_virtual; }
   EMITABLE()
 
   static auto

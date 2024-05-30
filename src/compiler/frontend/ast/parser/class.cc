@@ -57,6 +57,7 @@ Parser::ParsingClassResult Parser::parse_class_body() {
           case Token::Type::KwordConst:
           case Token::Type::KwordVar:
           case Token::Type::KwordOperator:
+          case Token::Type::KwordVirtual:
             break;
           default:
             err("Expected a class member after privacy modifier", Error::Info {
@@ -110,6 +111,21 @@ Parser::ParsingClassResult Parser::parse_class_body() {
         auto var = parse_var_decl(attrs);
         result.vars.push_back(var);
         consume(Token::Type::SymSemiColon, "a semicolon after the variable declaration");
+        break;
+      }
+      case Token::Type::KwordVirtual: {
+        attrs.set_virtual(true);
+        next();
+        switch (current.type) {
+          case Token::Type::KwordFunc:
+            break;
+          default:
+            err("Expected a class member after 'virtual' keyword", Error::Info {
+              .highlight = fmt::format("Token '{}' is not expected here", current),
+              .help = "At the class level, only class members are allowed",
+              .see = "https://snowball-lang.gitbook.io/docs/language-reference/classes"
+            });
+        }
         break;
       }
       default:
