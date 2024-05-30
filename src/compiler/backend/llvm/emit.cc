@@ -19,6 +19,15 @@ int LLVMBuilder::emit(std::filesystem::path path) {
   sn_assert(!ec, "Failed to open file: " + path.string() + ".hash");
   hos << file_name;
   hos.flush();
+  if (vctx.emit_type == EmitType::Llvm) {
+    // Replace .bc with .ll
+    auto new_path = path;
+    new_path.replace_extension(".ll");
+    llvm::raw_fd_ostream los(new_path.string(), ec, llvm::sys::fs::OF_Text);
+    sn_assert(!ec, "Failed to open file: " + path.string() + ".ll");
+    builder_ctx.module->print(los, nullptr);
+    los.flush();
+  }
   return EXIT_SUCCESS;
 }
 
