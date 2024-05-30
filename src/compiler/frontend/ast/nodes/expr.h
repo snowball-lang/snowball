@@ -241,15 +241,13 @@ public:
   SN_DEFAULT_CLONE()
 };
 
-class Call final : public Expr, public GenericNode<TypeRef> {
+class Call final : public Expr {
   Expr* callee;
   std::vector<Expr*> args;
 
 public:
-  Call(const SourceLocation& location, Expr* callee, std::vector<Expr*> args,
-       const std::vector<TypeRef>& generics = {})
+  Call(const SourceLocation& location, Expr* callee, std::vector<Expr*> args)
     : Expr(location)
-    , GenericNode(generics)
     , callee(callee)
     , args(args) {}
   ~Call() = default;
@@ -259,9 +257,8 @@ public:
   Node* clone() const override;
 
   static auto
-  create(const SourceLocation& location, Expr* callee, std::vector<Expr*> args,
-         const std::vector<TypeRef>& generics = {}) {
-    return new Call(location, callee, args, generics);
+  create(const SourceLocation& location, Expr* callee, std::vector<Expr*> args) {
+    return new Call(location, callee, args);
   }
 
   SN_VISIT()

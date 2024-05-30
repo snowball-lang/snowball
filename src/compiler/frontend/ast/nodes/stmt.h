@@ -141,21 +141,31 @@ public:
   SN_VISIT()
 };
 
-class ClassDecl final : public Stmt,
-                        public GenericNode<>,
-                        public AttributedNode,
-                        public Identified {
+class InterfaceDecl;
+
+class ClassDecl : public Stmt,
+                  public GenericNode<>,
+                  public AttributedNode,
+                  public Identified {
 private:
+  friend InterfaceDecl;
   std::string name;
   bool generic_instanced = false;
   bool has_been_monorphosized = false;
   std::vector<VarDecl*> vars;
   std::vector<FnDecl*> funcs;
   bool complete = false; // If the class is complete, i.e. all methods are defined
+  enum class ClassType
+  {
+    Class,
+    Interface
+  } class_type = ClassType::Class;
+
 public:
   ClassDecl(
           const SourceLocation& location, const std::string& name,
           const std::vector<VarDecl*>& vars, const std::vector<FnDecl*>& funcs,
+          ClassType class_type = ClassType::Class,
           std::optional<GenericNode> generics = std::nullopt,
           const AttributedNode& attributes = AttributedNode()
   )
@@ -176,12 +186,14 @@ public:
   void set_generic_instanced();
   void set_complete() { complete = true; }
   auto is_complete() const { return complete; }
+  auto get_class_type() const { return class_type; }
   static auto
   create(const SourceLocation& location, const std::string& name,
          const std::vector<VarDecl*>& vars, const std::vector<FnDecl*>& funcs,
+         ClassType class_type = ClassType::Class,
          std::optional<GenericNode> generics = std::nullopt,
          const AttributedNode& attributes = AttributedNode()) {
-    return new ClassDecl(location, name, vars, funcs, generics, attributes);
+    return new ClassDecl(location, name, vars, funcs, class_type, generics, attributes);
   }
 
   SN_VISIT()

@@ -132,7 +132,8 @@ public:
   static int
   link(const Ctx& ctx, std::vector<std::filesystem::path>& paths,
        std::filesystem::path output);
-  static std::optional<std::string> get_linker(const Ctx& ctx, const std::string& triple);
+  static std::optional<std::string>
+  get_linker(const Ctx& ctx, const std::string& triple);
 };
 
 } // namespace backend
