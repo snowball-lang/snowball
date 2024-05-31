@@ -53,7 +53,6 @@ ast::TypeRef Parser::parse_type_ref() {
     default: {
       err("Unexpected token found while parsing type reference", Error::Info {
         .highlight = fmt::format("Token '{}' is not expected here", current),
-        .help = "At the top-level, only top-level items are allowed",
         .see = "https://snowball-lang.gitbook.io/docs/language-reference/types"
       });
     }

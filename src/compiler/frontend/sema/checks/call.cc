@@ -58,7 +58,7 @@ void TypeChecker::visit(ast::Call* node) {
       err(node->get_location(), fmt::format("use of undeclared identifier when calling '{}'", name), Error::Info {
         .highlight = 
           fmt::format("Variable or function '{}' not found inside '{}'", printable_op(index->get_member()->get_name()), name),
-      }, Error::Type::Err, false);
+      });
       unify(node->get_type(), get_error_type());
       return;
     }

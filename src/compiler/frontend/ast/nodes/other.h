@@ -15,16 +15,17 @@ class TypeRef;
 
 class GenericDecl {
   std::string name;
+  std::vector<TypeRef> constraints;
 
 public:
-  GenericDecl(const std::string& name)
-    : name(name) {}
+  GenericDecl(const std::string& name, const std::vector<TypeRef>& constraints = {})
+    : name(name), constraints(constraints) {}
   ~GenericDecl() = default;
 
   auto get_name() const { return name; }
-  static auto create(const std::string& name) {
+  static auto create(const std::string& name, const std::vector<TypeRef>& constraints = {}) {
     // note: This shoudn't be created with a `new` keyword
-    return GenericDecl(name);
+    return GenericDecl(name, constraints);
   }
 };
 

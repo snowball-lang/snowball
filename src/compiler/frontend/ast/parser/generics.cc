@@ -17,8 +17,21 @@ std::optional<ast::GenericNode<>> Parser::parse_generics() {
     next();
     std::vector<ast::GenericDecl> generics;
     while (!is(Token::Type::OpGt)) {
+      std::vector<ast::TypeRef> constraints;
       auto name = expect(Token::Type::Identifier, "an identifier for the generic name", {Token::Type::OpGt, Token::Type::SymComma}).to_string();
-      generics.push_back(ast::GenericDecl::create(name));
+      if (is(Token::Type::SymColon, peek())) {
+        next();
+        while (true) {
+          next();
+          constraints.push_back(parse_type_ref());
+          if (is(Token::Type::OpPlus)) {
+            next();
+            continue;
+          }
+          break;
+        }
+      }
+      generics.push_back(ast::GenericDecl::create(name, constraints));
       if (is(Token::Type::OpGt)) break; // we recover from this error
       else if (is(Token::Type::SymComma)) continue;
       next();
