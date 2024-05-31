@@ -17,6 +17,15 @@ void Binder::visit(ast::Call* node) {
   value = call;
 }
 
+std::optional<FuncDecl*> Call::get_callee_as_func() const {
+  auto callee = get_callee();
+  auto func_use = callee->as<ValueUse>();
+  if (!func_use) return std::nullopt;
+  auto func = func_use->get_value()->as<FuncDecl>();
+  if (!func) return std::nullopt;
+  return func;
+}
+
 }
 } // namespace snowball
 

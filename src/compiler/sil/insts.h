@@ -223,6 +223,8 @@ public:
 
   void set_ignore_virtual(bool flag) { ignore_virtual = flag; }
   auto should_ignore_virtual() const { return ignore_virtual; }
+
+  std::optional<FuncDecl*> get_callee_as_func() const;
   EMITABLE()
 
   static auto

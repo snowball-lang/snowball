@@ -102,6 +102,7 @@ Parser::ParsingClassResult Parser::parse_class_body() {
       case Token::Type::KwordFunc: {
         auto fn = parse_fn_decl(attrs);
         result.funcs.push_back(fn);
+        attrs = ast::AttributedNode::empty();
         break;
       }
       case Token::Type::KwordConst: {
@@ -110,6 +111,7 @@ Parser::ParsingClassResult Parser::parse_class_body() {
       case Token::Type::KwordVar: {
         auto var = parse_var_decl(attrs);
         result.vars.push_back(var);
+        attrs = ast::AttributedNode::empty();
         consume(Token::Type::SymSemiColon, "a semicolon after the variable declaration");
         break;
       }
