@@ -9,7 +9,7 @@ namespace sema {
 using namespace utils;
 
 ast::FnDecl* TypeChecker::get_best_match(const std::vector<ast::FnDecl*>& decls, const std::vector<ast::types::Type*>& args, 
-    const SourceLocation& loc, const std::vector<ast::TypeRef>& generics, bool identified) {
+    const SourceLocation& loc, const std::vector<ast::TypeRef>& generics, bool identified, bool ignore_self) {
   std::vector<ast::FnDecl*> matches;
   if (decls.size() > 1 && identified) {
     err(loc, "Expected arguments provided to function call!", Error::Info {
@@ -24,7 +24,8 @@ ast::FnDecl* TypeChecker::get_best_match(const std::vector<ast::FnDecl*>& decls,
     if (decl->get_params().size() != args.size() || identified) 
       continue;
     bool match = true;
-    for (size_t i = 0; i < args.size(); ++i) {
+    sn_assert(!(ignore_self && args.size() < 1), "Invalid ignore_self parameter given!");
+    for (size_t i = ignore_self; i < args.size(); ++i) {
       if (decl->get_params().at(i)->get_type()->is_deep_generic()) continue;
       if (can_cast(args.at(i), decl->get_params().at(i)->get_type()) == CastType::Invalid) {
         // TODO: different casts can have different costs

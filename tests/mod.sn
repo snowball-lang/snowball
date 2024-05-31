@@ -1,6 +1,6 @@
 
-interface Lol<T> {
-  func hello(x: T);
+interface Lol<D> {
+  func hello(x: D);
 }
 
 class Hello<T> implements crate::mod::Lol<T> {

@@ -15,7 +15,7 @@ void TypeChecker::visit(ast::Call* node) {
   }
   ast::types::Type* callee_type = nullptr;
   if (auto ident = node->get_callee()->as<ast::Ident>()) {
-    auto item = get_item(ident).first;
+    auto item = get_item(ident).item;
     if (!item.has_value()) {
       auto dym = get_did_you_mean(ident->get_name());
       err(node->get_location(), fmt::format("use of undeclared identifier when calling '{}'", ident->get_name()), Error::Info {
@@ -53,7 +53,7 @@ void TypeChecker::visit(ast::Call* node) {
     }
   } else if (auto index = node->get_callee()->as<ast::MemberAccess>()) {
     auto& object = index->get_object();
-    auto [item, name] = get_item(index);
+    auto [item, name, ignore_self] = get_item(index);
     if (!item.has_value()) {
       err(node->get_location(), fmt::format("use of undeclared identifier when calling '{}'", name), Error::Info {
         .highlight = 
@@ -89,7 +89,7 @@ void TypeChecker::visit(ast::Call* node) {
         arg_types.insert(arg_types.begin(), object->get_type());
         node->get_args().insert(node->get_args().begin(), object); 
       }
-      auto fn = get_best_match(fn_decls, arg_types, node->get_location(), index->get_member()->get_generics());
+      auto fn = get_best_match(fn_decls, arg_types, node->get_location(), index->get_member()->get_generics(), false, ignore_self);
       index->set_var_id(fn->get_id());
       callee_type = fn->get_type();
     }

@@ -59,7 +59,11 @@ private:
 
   // --- internal helpers ---
 
-  using GetResult = std::pair<std::optional<TypeCheckItem>, std::string>;
+  struct GetResult {
+    std::optional<TypeCheckItem> item;
+    std::string name;
+    bool ignore_self = false;
+  };
 
   void generate_global_scope(ast::TopLevelAst& ast, bool first = false);
   NamespacePath get_namespace_path(const std::string& name);
@@ -98,7 +102,8 @@ private:
   ast::FnDecl* get_best_match(
           const std::vector<ast::FnDecl*>& decls,
           const std::vector<ast::types::Type*>& args, const SourceLocation& loc,
-          const std::vector<ast::TypeRef>& generics, bool identified = false
+          const std::vector<ast::TypeRef>& generics, bool identified = false,
+          bool ignore_self = false
   );
   ast::FnDecl* deduce_func(
           ast::FnDecl* node, const std::vector<ast::types::Type*>& args,

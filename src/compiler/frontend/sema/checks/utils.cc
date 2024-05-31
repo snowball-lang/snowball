@@ -33,9 +33,10 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
       return {std::nullopt, acc.get_name()};
     }
   } else if (auto member = expr->as<ast::MemberAccess>()) {
-    auto [obj, obj_name] = get_item(member->get_const_object(), acc);
+    auto [obj, obj_name, ignore_self] = get_item(member->get_const_object(), acc);
+    assert(!ignore_self);
     if (!obj.has_value()) {
-      return {std::nullopt, obj_name};
+      return {std::nullopt, obj_name, false};
     }
     if (obj->is_type()) {
       if (member->get_access_type() != ast::MemberAccess::AccessType::Static) {
@@ -43,7 +44,7 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
           .highlight = "Expected a value but type is used",
           .help = "You cant use a type as a value in this context."
         }, Error::Type::Err, false);
-        return {std::nullopt, obj_name};
+        return {std::nullopt, obj_name, false};
       }
       sn_assert(false, "not implemented (static member access for types)");
     } else if (obj->is_module()) {
@@ -53,7 +54,7 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
           .highlight = "Expected a value but module is used",
           .help = "You cant use a module as a value in this context."
         }, Error::Type::Err, false);
-        return {std::nullopt, obj_name};
+        return {std::nullopt, obj_name, false};
       }
       acc.add(mod);
       return get_item(member->get_member(), acc);
@@ -63,7 +64,7 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
           .highlight = "Expected a type but variable is used",
           .help = "You cant use a variable as a type in this context."
         }, Error::Type::Err, false);
-        return {std::nullopt, obj_name};
+        return {std::nullopt, obj_name, false};
       }
       return get_from_type(member, obj->get_var()->get_type());
     } else if (obj->is_func()) {
@@ -72,7 +73,7 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
           .highlight = "Expected a type but function is used",
           .help = "You cant use a function as a type in this context."
         }, Error::Type::Err, false);
-        return {std::nullopt, obj_name};
+        return {std::nullopt, obj_name, false};
       }
       sn_assert(false, "not implemented (fn_decl member access)");
     }
@@ -117,7 +118,8 @@ ast::types::Type* TypeChecker::get_type(const NamespacePath& path) {
 }
 
 ast::types::Type* TypeChecker::get_type(ast::Expr* expr) {
-  auto [item, name] = get_item(expr);
+  auto [item, name, ignore_self] = get_item(expr);
+  assert(!ignore_self);
   if (!item.has_value()) {
     auto dym = get_did_you_mean(name);
     err(expr->get_location(), "Coudnt find type named '" + name + "' in the current scope!", Error::Info {
@@ -292,6 +294,7 @@ TypeChecker::GetResult TypeChecker::get_from_type(ast::MemberAccess* node, ast::
       });
       return {std::nullopt, full_name};
     }
+    result->ignore_self = true;
     return *result;
   } else {
     err(node->get_location(), "Expected class type but found '" + type->get_printable_name() + "'", Error::Info {
@@ -299,7 +302,7 @@ TypeChecker::GetResult TypeChecker::get_from_type(ast::MemberAccess* node, ast::
       .help = "We expected a class type here, but found something else. Maybe you forgot to import a module?"
     }, Error::Type::Err, false);
   }
-  return std::make_pair(std::nullopt, full_name);
+  return {std::nullopt, full_name, false};
 }
 
 std::optional<NamespacePath> TypeChecker::search_module(const NamespacePath& path) {
