@@ -158,7 +158,7 @@ void TypeChecker::add_self_param(ast::FnDecl*& node, bool as_monorph) {
 
 void TypeChecker::check_fn(ast::FnDecl*& fn_decl, bool as_monorph) {
   for (auto& generic : fn_decl->get_generics())
-    universe.add_item(generic.get_name(), ast::types::GenericType::create(generic.get_name()));
+    universe.add_item(generic.get_name(), create_generic_type(generic));
   for (auto& param : fn_decl->get_params()) {
     param->get_type() = nullptr;
     // Some inserted arguments like "self" are not declared

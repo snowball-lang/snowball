@@ -35,7 +35,7 @@ private:
     ast::VarDecl* var;
   };
   std::optional<uint64_t> as_index = std::nullopt;
-  const NamespacePath module = NamespacePath::dummy();
+  NamespacePath module = NamespacePath::dummy();
   std::vector<ast::FnDecl*> funcs;
 
 public:

@@ -151,15 +151,20 @@ public:
 
 class GenericType final : public Type {
   std::string name;
+  std::vector<Type*> constraints;
 
 public:
-  GenericType(const std::string& name)
-    : name(name) {}
+  GenericType(const std::string& name, const std::vector<Type*>& constraints)
+    : name(name), constraints(constraints) {}
   ~GenericType() = default;
 
   auto get_name() const { return name; }
+  void add_constraints(Type* ty) { constraints.push_back(ty); }
+  auto get_constraints() const { return constraints; }
 
-  static auto create(const std::string& name) { return new GenericType(name); }
+  static auto create(const std::string& name, const std::vector<Type*>& constraints = {}) { 
+    return new GenericType(name, constraints); 
+  }
 
   GenericType* as_generic() override { return this; }
   bool is_generic() const override { return true; }

@@ -20,13 +20,16 @@ void TypeChecker::visit(ast::ClassDecl* node) {
   ctx.current_class = node;
   universe.add_scope();
   assert(class_type->get_generics().size() == node->get_generics().size());
+  size_t generic_index = 0;
   for (auto& generic : class_type->get_generics()) {
     sn_assert(generic->is_generic(), "generic type is not generic");
     auto as_generic = generic->as_generic();
     universe.add_item(as_generic->get_name(), as_generic);
-    for (auto& constraint : as_generic->get_constraints()) {
-      constraint.set_internal_type(get_type(constraint));
+    auto constraints = node->get_generics()[generic_index].get_constraints();
+    for (auto& constraint : constraints) {
+      as_generic->add_constraints(get_type(constraint));
     }
+    generic_index++;
   }
   for (auto& impl : node->get_implemented_interfaces()) {
     auto interface = get_type(impl);

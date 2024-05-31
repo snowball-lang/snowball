@@ -118,6 +118,7 @@ private:
           const SourceLocation& loc
   );
   void add_self_param(ast::FnDecl*& node, bool as_monorph = false);
+  ast::types::GenericType* create_generic_type(ast::GenericDecl decl);
 
   std::vector<ast::types::Type*> fetch_generics_from_node(const ast::Node* node);
   ast::types::Type* deduce_type(

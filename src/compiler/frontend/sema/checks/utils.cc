@@ -267,15 +267,13 @@ TypeChecker::GetResult TypeChecker::get_from_type(ast::MemberAccess* node, ast::
       .highlight = fmt::format("Member '{}' not found in class '{}'", printable_op(member_name), type->get_printable_name())
     });
   } else if (auto as_generic = type->as_generic()) {
-    GetResult result;
-    bool found = false;
+    std::optional<GetResult> result;
     std::vector<std::string> names;
+    bool found = false;
     for (auto& constraint : as_generic->get_constraints()) {
-      assert(constraint.get_internal_type().has_value());
-      auto constraint_type = constraint.get_internal_type().value();
-      names.push_back(constraint.get_name());
-      result = get_from_type(node, constraint_type.value());
-      if (result.first.has_value() && found) {
+      names.push_back(constraint->get_printable_name());
+      result = get_from_type(node, constraint);
+      if (result.has_value() && found) {
         // TODO: Maybe we should just a append the functions to the list and let the
         //   function deduce the correct one
         err(node->get_location(), "Generic type has more than one member", Error::Info {
@@ -283,16 +281,18 @@ TypeChecker::GetResult TypeChecker::get_from_type(ast::MemberAccess* node, ast::
           .help = "You can only access one member of a generic type at a time."
         }, Error::Type::Err, false);
       }
-      if (result.first.has_value()) {
+      if (result.has_value()) {
         found = true;
       }
     }
     if (!found) {
       err(node->get_location(), "Coudnt find member named '" + printable_op(member_name) + "' in generic type '" + type->get_printable_name() + "'!", Error::Info {
         .highlight = fmt::format("Member '{}' not found in generic type '{}'", printable_op(member_name), type->get_printable_name()),
-        .note = fmt::format("The generic type has the following constraints: {}", utils::join(names, ", "))
+        .note = names.empty() ? "" : fmt::format("The generic type has the following constraints: {}", utils::join(names, ", "))
       });
+      return {std::nullopt, full_name};
     }
+    return *result;
   } else {
     err(node->get_location(), "Expected class type but found '" + type->get_printable_name() + "'", Error::Info {
       .highlight = "Not a class type",
@@ -333,6 +333,16 @@ std::vector<ast::types::Type*> TypeChecker::fetch_generics_from_node(const ast::
     return fetch_generics_from_node(member->get_member());
   }
   return generics;
+}
+
+
+ast::types::GenericType* TypeChecker::create_generic_type(ast::GenericDecl decl) {
+  // TODO: Create a cache system for generic types, to avoid creating over and over
+  auto generic = ast::types::GenericType::create(decl.get_name());
+  for (auto& constraint : decl.get_constraints()) {
+    generic->add_constraints(get_type(constraint));
+  }
+  return generic;
 }
 
 }
