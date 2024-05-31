@@ -23,6 +23,7 @@ public:
   ~GenericDecl() = default;
 
   auto get_name() const { return name; }
+  auto& get_constraints() { return constraints; }
   static auto create(const std::string& name, const std::vector<TypeRef>& constraints = {}) {
     // note: This shoudn't be created with a `new` keyword
     return GenericDecl(name, constraints);
