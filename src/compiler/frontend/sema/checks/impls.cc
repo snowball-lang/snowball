@@ -56,7 +56,7 @@ void TypeChecker::check_generic_impls(ast::types::Type* x, const std::vector<ast
     }
     if (!satisfies_interface) {
       err(loc, fmt::format("Type '{}' does not implement interface '{}'", x->get_printable_name(), impl->get_printable_name()), Error::Info {
-        .highlight = fmt::format("Type '{}' does not implement interface '{}'", x->get_printable_name(), impl->get_printable_name()),
+        .highlight = "Invalid generic instantiation",
         .help = fmt::format("Implement interface '{}' in type '{}'", impl->get_printable_name(), x->get_printable_name()),
         .note = fmt::format("Expected a type that implements interface '{}'", impl->get_printable_name())
       });
