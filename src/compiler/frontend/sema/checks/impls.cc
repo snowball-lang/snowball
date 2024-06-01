@@ -40,6 +40,26 @@ void TypeChecker::check_implementations(ast::ClassDecl* class_decl) {
   }
 }
 
+void TypeChecker::check_generic_impls(ast::types::Type* x, const std::vector<ast::types::Type*> impls) {
+  bool satisfies = true;
+  for (auto& impl : impls) {
+    bool match = true;
+    if (auto as_class = x->as_class()) {
+      auto decl = as_class->get_decl();
+      bool
+      for (auto& class_impl : decl->get_implemented_interfaces()) {
+        if (!type_match(class_impl)) {
+          
+        }
+      }
+    }
+    if (!match) {
+      satisfies = false;
+      break;
+    }
+  }
+}
+
 }
 }
 }

@@ -147,6 +147,7 @@ private:
 
   bool is_mutable(ast::Expr* expr, ast::Stmt* stmt);
   void check_implementations(ast::ClassDecl* class_decl);
+  void check_generic_impls(ast::types::Type* x, const std::vector<ast::types::Type*> impls);
 
   enum CastType
   {

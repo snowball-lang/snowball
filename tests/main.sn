@@ -10,6 +10,7 @@ public func balls<T: crate::mod::Lol<i32>>(x: T) {
 public func main() i32 {
   let mut a;
   a = 24;
+  balls(2);
   std::main::printf(b"Hello, world!\n");
   std::main::test(2);
   std::main::test(b"2");
