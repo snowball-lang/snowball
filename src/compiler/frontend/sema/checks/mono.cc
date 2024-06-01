@@ -66,6 +66,9 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const std::map<
     universe.add_item(name, TypeCheckItem::create_type(type));
     new_generics.push_back(type);
   }
+  for (auto& impl : node->get_implemented_interfaces()) {
+    impl.set_internal_type(get_type(impl));
+  }
   auto backup_class = ctx.current_class;
   ctx.current_class = node;
   unify(node->get_type(), ast::types::ClassType::create(node, class_ty_copy->get_path(), new_generics, class_ty_copy->get_location()), node->get_location());

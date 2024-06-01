@@ -25,7 +25,7 @@ void TypeChecker::visit(ast::ClassDecl* node) {
     sn_assert(generic->is_generic(), "generic type is not generic");
     auto as_generic = generic->as_generic();
     universe.add_item(as_generic->get_name(), as_generic);
-    auto constraints = node->get_generics()[generic_index].get_constraints();
+    auto& constraints = node->get_generics()[generic_index].get_constraints();
     for (auto& constraint : constraints) {
       as_generic->add_constraints(get_type(constraint));
     }

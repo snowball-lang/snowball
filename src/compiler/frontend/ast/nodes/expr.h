@@ -71,6 +71,7 @@ public:
   auto get_const_object() const { return object; }
   auto get_member() const { return member; }
   auto get_access_type() const { return access_type; }
+  Node* clone() const override;
 
   auto is_type_index() const { return kind == Index; }
   auto get_index() const {
@@ -95,7 +96,6 @@ public:
   }
 
   SN_VISIT()
-  SN_DEFAULT_CLONE()
 };
 
 class PointerType;

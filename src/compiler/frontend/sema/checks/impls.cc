@@ -47,7 +47,7 @@ void TypeChecker::check_generic_impls(ast::types::Type* x, const std::vector<ast
       auto class_decl = as_class->get_decl();
       for (auto class_impl : class_decl->get_implemented_interfaces()) {
         if (auto class_impl_ty = class_impl.get_internal_type()) {
-          if (type_match(impl, class_impl_ty.value(), true)) {
+          if (type_match(impl, class_impl_ty.value())) {
             satisfies_interface = true;
             break;
           }

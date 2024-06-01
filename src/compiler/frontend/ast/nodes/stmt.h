@@ -157,7 +157,6 @@ private:
   friend InterfaceDecl;
   std::string name;
   bool generic_instanced = false;
-  bool has_been_monorphosized = false;
   std::vector<VarDecl*> vars;
   std::vector<FnDecl*> funcs;
   bool complete = false; // If the class is complete, i.e. all methods are defined
