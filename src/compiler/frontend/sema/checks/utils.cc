@@ -339,11 +339,15 @@ std::vector<ast::types::Type*> TypeChecker::fetch_generics_from_node(const ast::
 }
 
 
-ast::types::GenericType* TypeChecker::create_generic_type(ast::GenericDecl decl) {
+ast::types::GenericType* TypeChecker::create_generic_type(ast::GenericDecl& decl) {
   // TODO: Create a cache system for generic types, to avoid creating over and over
   auto generic = ast::types::GenericType::create(decl.get_name());
   for (auto& constraint : decl.get_constraints()) {
-    generic->add_constraints(get_type(constraint));
+    auto ty = constraint.get_internal_type().has_value() 
+      ? constraint.get_internal_type().value() 
+      : get_type(constraint.get_name());
+    constraint.set_internal_type(ty);
+    generic->add_constraints(ty);
   }
   return generic;
 }

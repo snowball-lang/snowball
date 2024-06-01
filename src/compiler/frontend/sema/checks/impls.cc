@@ -40,22 +40,26 @@ void TypeChecker::check_implementations(ast::ClassDecl* class_decl) {
   }
 }
 
-void TypeChecker::check_generic_impls(ast::types::Type* x, const std::vector<ast::types::Type*> impls) {
-  bool satisfies = true;
+void TypeChecker::check_generic_impls(ast::types::Type* x, const std::vector<ast::types::Type*> impls, const SourceLocation& loc) {
   for (auto& impl : impls) {
-    bool match = true;
+    bool satisfies_interface = false;
     if (auto as_class = x->as_class()) {
-      auto decl = as_class->get_decl();
-      bool
-      for (auto& class_impl : decl->get_implemented_interfaces()) {
-        if (!type_match(class_impl)) {
-          
+      auto class_decl = as_class->get_decl();
+      for (auto class_impl : class_decl->get_implemented_interfaces()) {
+        if (auto class_impl_ty = class_impl.get_internal_type()) {
+          if (type_match(impl, class_impl_ty.value(), true)) {
+            satisfies_interface = true;
+            break;
+          }
         }
       }
     }
-    if (!match) {
-      satisfies = false;
-      break;
+    if (!satisfies_interface) {
+      err(loc, fmt::format("Type '{}' does not implement interface '{}'", x->get_printable_name(), impl->get_printable_name()), Error::Info {
+        .highlight = fmt::format("Type '{}' does not implement interface '{}'", x->get_printable_name(), impl->get_printable_name()),
+        .help = fmt::format("Implement interface '{}' in type '{}'", impl->get_printable_name(), x->get_printable_name()),
+        .note = fmt::format("Expected a type that implements interface '{}'", impl->get_printable_name())
+      });
     }
   }
 }

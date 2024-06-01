@@ -123,7 +123,7 @@ private:
           const SourceLocation& loc
   );
   void add_self_param(ast::FnDecl*& node, bool as_monorph = false);
-  ast::types::GenericType* create_generic_type(ast::GenericDecl decl);
+  ast::types::GenericType* create_generic_type(ast::GenericDecl& decl);
 
   std::vector<ast::types::Type*> fetch_generics_from_node(const ast::Node* node);
   ast::types::Type* deduce_type(
@@ -147,7 +147,8 @@ private:
 
   bool is_mutable(ast::Expr* expr, ast::Stmt* stmt);
   void check_implementations(ast::ClassDecl* class_decl);
-  void check_generic_impls(ast::types::Type* x, const std::vector<ast::types::Type*> impls);
+  void check_generic_impls(ast::types::Type* x, const std::vector<ast::types::Type*> impls,
+                            const SourceLocation& loc);
 
   enum CastType
   {

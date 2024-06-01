@@ -35,8 +35,9 @@ void TypeChecker::check() {
       ctx.current_module = &module;
       universe.add_scope();
       allowed_uuids.push_back(module.get_path());
-      for (auto& stmt : module.get_ast()) {
-        stmt->accept(this);
+      auto& ast = module.get_ast();
+      for (size_t i = 0; i < ast.size(); i++) {
+        ast[i]->accept(this);
       }
       allowed_uuids.pop_back();
       universe.remove_scope();

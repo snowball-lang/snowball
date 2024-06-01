@@ -109,7 +109,8 @@ ast::FnDecl* TypeChecker::deduce_func(ast::FnDecl* node, const std::vector<ast::
   }
   for (auto& gen : node->get_generics()) {
     // TODO: Default generic types implementation here!
-    if (deduced.find(gen.get_name()) == deduced.end()) {
+    auto deduced_gen = deduced.find(gen.get_name());
+    if (deduced_gen == deduced.end()) {
       err(loc, fmt::format("Generic parameter '{}' has not been deduced", gen.get_name()), Error::Info {
         .highlight = fmt::format("Coudnt deduce '{}' from call signature", gen.get_name()),
         .help = fmt::format("Try explicitly specifying all generic type parameters"),
@@ -118,6 +119,12 @@ ast::FnDecl* TypeChecker::deduce_func(ast::FnDecl* node, const std::vector<ast::
         }}}
       });
     }
+    std::vector<ast::types::Type*> constraints_args;
+    for (auto& c : gen.get_constraints()) {
+      assert(c.get_internal_type().has_value());
+      constraints_args.push_back(c.get_internal_type().value());
+    }
+    check_generic_impls(deduced_gen->second, constraints_args, loc);
   }
   return propagate_generic(node, deduced, loc);
 }
