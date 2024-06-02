@@ -9,8 +9,6 @@ public func balls<B: crate::mod::Lol<i32>>(x: B) {
 
 public func main() i32 {
   let mut a;
+  std::main::test(a);
   a = 24;
-  std::main::printf(b"Hello, world!\n");
-  std::main::test(2);
-  std::main::test(b"2");
 }

@@ -58,9 +58,15 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b,
       if (b->is_unknown()) {
         auto b_unknown = b->as_unknown();
         auto& b_constraint = universe.get_constraints().at(b_unknown->get_id());
-        return unify(constraint, b_constraint, loc, just_check);
+        if (auto unk = b_constraint->as_unknown(); unk && unk->get_id() == b_unknown->get_id() && !just_check) {
+          // Avoid infinite recursion
+         return (b_constraint = a, true);
+        } else if (b_unknown->get_id() == as_unknown->get_id()) {
+          return SUCCESS;
+        }
+      } else {
+        return unify(constraint, b, loc, just_check);
       }
-      return unify(constraint, b, loc, just_check);
     }
   } else if (a->is_func() && b->is_func()) {
     auto a_func = a->as_func();
