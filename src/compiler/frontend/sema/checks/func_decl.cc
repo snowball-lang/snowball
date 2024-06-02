@@ -23,7 +23,7 @@ void TypeChecker::visit(ast::FnDecl* node) {
   assert(fn_type->get_param_types().size() == node->get_params().size());
   for (size_t i = 0; i < node->get_generics().size(); ++i) {
     auto generic = node->get_generics()[i];
-    universe.add_item(generic.get_name(), ast::types::GenericType::create(generic.get_name()));
+    universe.add_item(generic.get_name(), create_generic_type(generic));
   }
   auto typed_args = fn_type->get_param_types();
   for (size_t i = 0; i < node->get_params().size(); ++i) {

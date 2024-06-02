@@ -1,9 +1,15 @@
-class Hello<T> {
+
+interface Lol<D> {
+  func hello(x: D);
+}
+
+class Hello<T> implements crate::mod::Lol<T> {
   let a: T;
-  
-  public func hello(x: T) {
+
+  public virtual func hello(x: T) {
     let _n = x;
   }
+  
   public operator func +(_y: T) {
   }
 }

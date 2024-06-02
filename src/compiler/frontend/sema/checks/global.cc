@@ -26,7 +26,7 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast, bool first) {
         auto backup = ctx.current_class;
         ctx.current_class = class_decl;
         for (auto& generic : class_decl->get_generics())
-          universe.add_item(generic.get_name(), ast::types::GenericType::create(generic.get_name()));
+          universe.add_item(generic.get_name(), create_generic_type(generic));
         do_global_func(method);
         ctx.current_class = backup;
         if (!class_decl->has_generics()) {
@@ -70,6 +70,7 @@ void TypeChecker::do_global_class(ast::ClassDecl* class_decl) {
   auto path = get_namespace_path(class_decl->get_name());
   std::vector<ast::types::Type*> generics;
   for (auto& generic : class_decl->get_generics()) {
+    // TODO: Should we use `create_generic_type` here?
     auto generic_ty = ast::types::GenericType::create(generic.get_name());
     universe.add_item(generic.get_name(), generic_ty);
     generics.push_back(generic_ty);

@@ -67,6 +67,10 @@ ast::types::Type* Binder::get_type(ast::Node* node) {
   return check_type(node->get_type(), node->get_location());
 }
 
+ast::types::Type* Binder::get_type(ast::types::Type* type, const SourceLocation& loc) {
+  return check_type(type, loc);
+}
+
 void Binder::err(const LocationHolder& holder, const std::string& message, 
     const Error::Info& info, Error::Type type, bool fatal) {
   if ((ctx.ast_current_func && ctx.ast_current_func.value()->is_generic_instanced()) ||

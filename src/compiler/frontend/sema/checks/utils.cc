@@ -33,9 +33,10 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
       return {std::nullopt, acc.get_name()};
     }
   } else if (auto member = expr->as<ast::MemberAccess>()) {
-    auto [obj, obj_name] = get_item(member->get_const_object(), acc);
+    auto [obj, obj_name, ignore_self] = get_item(member->get_const_object(), acc);
+    assert(!ignore_self);
     if (!obj.has_value()) {
-      return {std::nullopt, obj_name};
+      return {std::nullopt, obj_name, false};
     }
     if (obj->is_type()) {
       if (member->get_access_type() != ast::MemberAccess::AccessType::Static) {
@@ -43,7 +44,7 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
           .highlight = "Expected a value but type is used",
           .help = "You cant use a type as a value in this context."
         }, Error::Type::Err, false);
-        return {std::nullopt, obj_name};
+        return {std::nullopt, obj_name, false};
       }
       sn_assert(false, "not implemented (static member access for types)");
     } else if (obj->is_module()) {
@@ -53,7 +54,7 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
           .highlight = "Expected a value but module is used",
           .help = "You cant use a module as a value in this context."
         }, Error::Type::Err, false);
-        return {std::nullopt, obj_name};
+        return {std::nullopt, obj_name, false};
       }
       acc.add(mod);
       return get_item(member->get_member(), acc);
@@ -63,7 +64,7 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
           .highlight = "Expected a type but variable is used",
           .help = "You cant use a variable as a type in this context."
         }, Error::Type::Err, false);
-        return {std::nullopt, obj_name};
+        return {std::nullopt, obj_name, false};
       }
       return get_from_type(member, obj->get_var()->get_type());
     } else if (obj->is_func()) {
@@ -72,7 +73,7 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
           .highlight = "Expected a type but function is used",
           .help = "You cant use a function as a type in this context."
         }, Error::Type::Err, false);
-        return {std::nullopt, obj_name};
+        return {std::nullopt, obj_name, false};
       }
       sn_assert(false, "not implemented (fn_decl member access)");
     }
@@ -117,7 +118,8 @@ ast::types::Type* TypeChecker::get_type(const NamespacePath& path) {
 }
 
 ast::types::Type* TypeChecker::get_type(ast::Expr* expr) {
-  auto [item, name] = get_item(expr);
+  auto [item, name, ignore_self] = get_item(expr);
+  assert(!ignore_self);
   if (!item.has_value()) {
     auto dym = get_did_you_mean(name);
     err(expr->get_location(), "Coudnt find type named '" + name + "' in the current scope!", Error::Info {
@@ -266,13 +268,41 @@ TypeChecker::GetResult TypeChecker::get_from_type(ast::MemberAccess* node, ast::
     err(node->get_location(), "Coudnt find member named '" + printable_op(member_name) + "' in class '" + type->get_printable_name() + "'!", Error::Info {
       .highlight = fmt::format("Member '{}' not found in class '{}'", printable_op(member_name), type->get_printable_name())
     });
+  } else if (auto as_generic = type->as_generic()) {
+    std::optional<GetResult> result;
+    std::vector<std::string> names;
+    bool found = false;
+    for (auto& constraint : as_generic->get_constraints()) {
+      names.push_back(constraint->get_printable_name());
+      result = get_from_type(node, constraint);
+      if (result.has_value() && found) {
+        // TODO: Maybe we should just a append the functions to the list and let the
+        //   function deduce the correct one
+        err(node->get_location(), "Generic type has more than one member", Error::Info {
+          .highlight = "Generic type has more than one member",
+          .help = "You can only access one member of a generic type at a time."
+        }, Error::Type::Err, false);
+      }
+      if (result.has_value()) {
+        found = true;
+      }
+    }
+    if (!found) {
+      err(node->get_location(), "Coudnt find member named '" + printable_op(member_name) + "' in generic type '" + type->get_printable_name() + "'!", Error::Info {
+        .highlight = fmt::format("Member '{}' not found in generic type '{}'", printable_op(member_name), type->get_printable_name()),
+        .note = names.empty() ? "" : fmt::format("The generic type has the following constraints: {}", utils::join(names, ", "))
+      });
+      return {std::nullopt, full_name};
+    }
+    result->ignore_self = true;
+    return *result;
   } else {
     err(node->get_location(), "Expected class type but found '" + type->get_printable_name() + "'", Error::Info {
       .highlight = "Not a class type",
       .help = "We expected a class type here, but found something else. Maybe you forgot to import a module?"
     }, Error::Type::Err, false);
   }
-  return std::make_pair(std::nullopt, full_name);
+  return {std::nullopt, full_name, false};
 }
 
 std::optional<NamespacePath> TypeChecker::search_module(const NamespacePath& path) {
@@ -306,6 +336,20 @@ std::vector<ast::types::Type*> TypeChecker::fetch_generics_from_node(const ast::
     return fetch_generics_from_node(member->get_member());
   }
   return generics;
+}
+
+
+ast::types::GenericType* TypeChecker::create_generic_type(ast::GenericDecl& decl) {
+  // TODO: Create a cache system for generic types, to avoid creating over and over
+  auto generic = ast::types::GenericType::create(decl.get_name());
+  for (auto& constraint : decl.get_constraints()) {
+    auto ty = constraint.get_internal_type().has_value() 
+      ? constraint.get_internal_type().value() 
+      : get_type(constraint.get_name());
+    constraint.set_internal_type(ty);
+    generic->add_constraints(ty);
+  }
+  return generic;
 }
 
 }

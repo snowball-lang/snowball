@@ -59,7 +59,11 @@ private:
 
   // --- internal helpers ---
 
-  using GetResult = std::pair<std::optional<TypeCheckItem>, std::string>;
+  struct GetResult {
+    std::optional<TypeCheckItem> item;
+    std::string name;
+    bool ignore_self = false;
+  };
 
   void generate_global_scope(ast::TopLevelAst& ast, bool first = false);
   NamespacePath get_namespace_path(const std::string& name);
@@ -78,7 +82,7 @@ private:
   bool
   unify(ast::types::Type*& a, ast::types::Type* b,
         const SourceLocation& holder = SourceLocation::dummy(),
-        bool just_check = false);
+        bool just_check = false, bool ignore_self = false);
   /// Deduce an expression based on it's type.
   /// For example, if the expr is an identifier (e.g. a), we will try to
   /// find the variable `a` in the current scope and deduce it's type.
@@ -98,7 +102,8 @@ private:
   ast::FnDecl* get_best_match(
           const std::vector<ast::FnDecl*>& decls,
           const std::vector<ast::types::Type*>& args, const SourceLocation& loc,
-          const std::vector<ast::TypeRef>& generics, bool identified = false
+          const std::vector<ast::TypeRef>& generics, bool identified = false,
+          bool ignore_self = false
   );
   ast::FnDecl* deduce_func(
           ast::FnDecl* node, const std::vector<ast::types::Type*>& args,
@@ -118,6 +123,7 @@ private:
           const SourceLocation& loc
   );
   void add_self_param(ast::FnDecl*& node, bool as_monorph = false);
+  ast::types::GenericType* create_generic_type(ast::GenericDecl& decl);
 
   std::vector<ast::types::Type*> fetch_generics_from_node(const ast::Node* node);
   ast::types::Type* deduce_type(
@@ -129,7 +135,7 @@ private:
   TypeCheckerContext& create_generic_context(uint64_t id);
   void set_generic_context(const TypeCheckerContext& ctx);
 
-  bool type_match(ast::types::Type* a, ast::types::Type* b);
+  bool type_match(ast::types::Type* a, ast::types::Type* b, bool ignore_self = false);
 
   void do_global_func(ast::FnDecl* fn_decl);
   void do_global_class(ast::ClassDecl* class_decl);
@@ -140,6 +146,9 @@ private:
   void check_for_entry(ast::FnDecl* fn_decl);
 
   bool is_mutable(ast::Expr* expr, ast::Stmt* stmt);
+  void check_implementations(ast::ClassDecl* class_decl);
+  void check_generic_impls(ast::types::Type* x, const std::vector<ast::types::Type*> impls,
+                            const SourceLocation& loc);
 
   enum CastType
   {

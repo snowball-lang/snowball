@@ -39,6 +39,10 @@ void Binder::visit(ast::FnDecl* node) {
   }
   ctx.ast_current_func = backup;
   ctx.current_func = backup2;
+  if (ctx.ast_current_class) {
+    auto cls = ctx.ast_current_class.value();
+    func->set_parent_type(cls->get_type());
+  }
   value = func;
 }
 
@@ -50,12 +54,19 @@ std::string FuncDecl::get_mangled_name() const {
   assert(type);
   auto name = get_name();
   auto type_mangle = type->get_mangled_name();
-  return fmt::format("_ZSN{}{}{}{}.{}", name.size(), name, type_mangle.size(), type_mangle, get_id());
+  std::string parent_type_mangle;
+  if (parent_type) {
+    parent_type_mangle = "_P" + parent_type.value()->get_mangled_name();
+  }
+  return fmt::format("_ZSN{}{}{}{}{}.{}", parent_type_mangle, name.size(), name, type_mangle.size(), type_mangle, get_id());
 }
 
 std::string FuncDecl::get_printable_name() const {
   std::string base = parent_module->get_path().get_path_string();
-  // TODO: check if it's inside a class!
+  if (parent_type) {
+    // The parent type already includes the module path
+    base = parent_type.value()->get_printable_name();
+  }
   return fmt::format("{}::{}", base, get_name());
 }
 

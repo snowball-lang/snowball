@@ -12,6 +12,10 @@ void LLVMBuilder::emit(const sil::Call* node) {
   }
   auto callee = expr(node->get_callee());
   set_debug_info(node);
+  if (auto val = do_vcall(node, callee, args)) {
+    value = val;
+    return;
+  }
   auto fn_type = node->get_callee()->get_type()->as_func();
   assert(fn_type != nullptr);
   value = builder->CreateCall(get_func_type(fn_type), callee, args); 

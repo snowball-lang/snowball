@@ -112,6 +112,9 @@ std::string ClassType::get_printable_name() {
   return fmt::format("{}{}", path, generic_string);
 }
 
+bool ClassType::is_interface_decl() const { return decl->is_interface(); }
+bool ClassType::is_class_decl() const { return decl->is_class(); }
+
 std::string ClassType::get_mangled_name() {
   std::string name = "cTy";
   name += path.get_path_string();

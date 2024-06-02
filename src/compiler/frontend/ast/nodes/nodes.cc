@@ -53,6 +53,7 @@ Node* FnDecl::clone() const {
     clone->body = (Block*)body.value()->clone();
   }
   clone->generic_id = id;
+  clone->get_type() = get_type();
   return clone;
 }
 
@@ -63,6 +64,13 @@ uint64_t FnDecl::get_generic_id() const {
   return id;
 }
 
+Node* MemberAccess::clone() const {
+  auto clone = Cloneable<MemberAccess>::default_clone(this);
+  clone->object = (Expr*)object->clone();
+  clone->member = (Ident*)member->clone();
+  return clone;
+}
+
 Node* Call::clone() const {
   std::vector<Expr*> new_args;
   new_args.reserve(args.size());
@@ -71,6 +79,7 @@ Node* Call::clone() const {
   }
   auto clone = Cloneable<Call>::default_clone(this);
   clone->args = new_args;
+  clone->callee = (Expr*)callee->clone();
   return clone;
 }
 
@@ -98,6 +107,7 @@ Node* ClassDecl::clone() const {
   auto clone = Cloneable<ClassDecl>::default_clone(this);
   clone->funcs = new_funcs;
   clone->vars = new_vars;
+  clone->get_type() = get_type();
   clone->id = id;
   return clone;
 }

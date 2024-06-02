@@ -20,11 +20,32 @@ void TypeChecker::visit(ast::ClassDecl* node) {
   ctx.current_class = node;
   universe.add_scope();
   assert(class_type->get_generics().size() == node->get_generics().size());
-  for (const auto& generic : class_type->get_generics()) {
+  size_t generic_index = 0;
+  for (auto& generic : class_type->get_generics()) {
     sn_assert(generic->is_generic(), "generic type is not generic");
     auto as_generic = generic->as_generic();
     universe.add_item(as_generic->get_name(), as_generic);
+    auto& constraints = node->get_generics()[generic_index].get_constraints();
+    for (auto& constraint : constraints) {
+      as_generic->add_constraints(get_type(constraint));
+    }
+    generic_index++;
   }
+  for (auto& impl : node->get_implemented_interfaces()) {
+    auto interface = get_type(impl);
+    impl.set_internal_type(interface);
+    bool is_interface = false;
+    if (auto as_class = interface->as_class()) {
+      is_interface = as_class->is_interface_decl();
+    }
+    if (!is_interface) {
+      err(impl.get_location(), "Implemented interface is not an interface", Error::Info {
+        .highlight = fmt::format("Implemented interface is of type: {}", interface->get_printable_name()),
+        .note = "Interfaces are represented as 'interface' keyword",
+      });
+    }
+  }
+  check_implementations(node);
   for (auto& var : node->get_vars()) {
     var->accept(this);
     if (var->get_type()->is_deep_unknown()) {

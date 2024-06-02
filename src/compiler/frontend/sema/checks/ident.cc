@@ -7,7 +7,7 @@ namespace frontend {
 namespace sema {
 
 void TypeChecker::visit(ast::Ident* node) {
-  auto item = get_item(node).first;
+  auto item = get_item(node).item;
   if (!item.has_value()) {
     auto dym = get_did_you_mean(node->get_name());
     err(node->get_location(), fmt::format("use of undeclared identifier '{}'", node->get_name()), Error::Info {

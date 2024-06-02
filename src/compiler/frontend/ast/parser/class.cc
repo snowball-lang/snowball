@@ -19,9 +19,25 @@ ast::ClassDecl* Parser::parse_class_decl(const ast::AttributedNode& attrs) {
   auto pos = loc();
   next();
   auto generics = parse_generics();
+  std::vector<ast::TypeRef> implemented_interfaces;
+  switch (current.type) {
+    case Token::Type::KwordImplements: {
+      next();
+      while (!is(Token::Type::BracketLcurly)) {
+        auto interface = parse_type_ref();
+        implemented_interfaces.push_back(interface);
+        if (is(Token::Type::BracketLcurly)) break;
+        consume(Token::Type::SymComma, "a comma after the implemented interface", Token::Type::BracketLcurly);
+      }
+      break;
+    }
+    default: break;
+  }
   auto block = parse_class_body();
   next(); // skip the closing curly brace
-  return pnode<ast::ClassDecl>(pos, name, block.vars, block.funcs, generics, attrs);
+  auto cls = pnode<ast::ClassDecl>(pos, name, block.vars, block.funcs, ast::ClassDecl::ClassType::Class, generics, attrs);
+  cls->set_implemented_interfaces(implemented_interfaces);
+  return cls;
 }
 
 Parser::ParsingClassResult Parser::parse_class_body() { 
@@ -41,6 +57,7 @@ Parser::ParsingClassResult Parser::parse_class_body() {
           case Token::Type::KwordConst:
           case Token::Type::KwordVar:
           case Token::Type::KwordOperator:
+          case Token::Type::KwordVirtual:
             break;
           default:
             err("Expected a class member after privacy modifier", Error::Info {
@@ -85,6 +102,7 @@ Parser::ParsingClassResult Parser::parse_class_body() {
       case Token::Type::KwordFunc: {
         auto fn = parse_fn_decl(attrs);
         result.funcs.push_back(fn);
+        attrs = ast::AttributedNode::empty();
         break;
       }
       case Token::Type::KwordConst: {
@@ -93,7 +111,23 @@ Parser::ParsingClassResult Parser::parse_class_body() {
       case Token::Type::KwordVar: {
         auto var = parse_var_decl(attrs);
         result.vars.push_back(var);
+        attrs = ast::AttributedNode::empty();
         consume(Token::Type::SymSemiColon, "a semicolon after the variable declaration");
+        break;
+      }
+      case Token::Type::KwordVirtual: {
+        attrs.set_virtual(true);
+        next();
+        switch (current.type) {
+          case Token::Type::KwordFunc:
+            break;
+          default:
+            err("Expected a class member after 'virtual' keyword", Error::Info {
+              .highlight = fmt::format("Token '{}' is not expected here", current),
+              .help = "At the class level, only class members are allowed",
+              .see = "https://snowball-lang.gitbook.io/docs/language-reference/classes"
+            });
+        }
         break;
       }
       default:

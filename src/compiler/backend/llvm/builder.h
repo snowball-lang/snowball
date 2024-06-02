@@ -91,6 +91,7 @@ class LLVMBuilder : public sil::Builder {
   llvm::Type* get_type(types::Type* type);
   llvm::DIType* get_ditype(types::Type* type);
   llvm::FunctionType* get_func_type(types::FuncType* type);
+  llvm::Value* do_vcall(const sil::Call* node, llvm::Value* callee, std::vector<llvm::Value*>& args);
 
   llvm::DISubprogram* get_disubprogram(const sil::FuncDecl* node);
 

@@ -71,6 +71,7 @@ public:
   auto get_const_object() const { return object; }
   auto get_member() const { return member; }
   auto get_access_type() const { return access_type; }
+  Node* clone() const override;
 
   auto is_type_index() const { return kind == Index; }
   auto get_index() const {
@@ -95,7 +96,6 @@ public:
   }
 
   SN_VISIT()
-  SN_DEFAULT_CLONE()
 };
 
 class PointerType;
@@ -111,6 +111,7 @@ public:
 private:
   Expr* name;
   Type tt = Type::Normal;
+  std::optional<ast::types::Type*> inner_type = std::nullopt;
   friend PointerType;
 
 public:
@@ -121,6 +122,8 @@ public:
   ~TypeRef() = default;
 
   auto get_name() const { return name; }
+  void set_internal_type(ast::types::Type* type) { inner_type = type; }
+  auto get_internal_type() const { return inner_type; }
 
 #define SUB_TYPE(nType, name, eName)                                                   \
   nType* as_##name() const {                                                           \

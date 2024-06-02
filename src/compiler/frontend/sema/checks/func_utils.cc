@@ -9,7 +9,7 @@ namespace sema {
 using namespace utils;
 
 ast::FnDecl* TypeChecker::get_best_match(const std::vector<ast::FnDecl*>& decls, const std::vector<ast::types::Type*>& args, 
-    const SourceLocation& loc, const std::vector<ast::TypeRef>& generics, bool identified) {
+    const SourceLocation& loc, const std::vector<ast::TypeRef>& generics, bool identified, bool ignore_self) {
   std::vector<ast::FnDecl*> matches;
   if (decls.size() > 1 && identified) {
     err(loc, "Expected arguments provided to function call!", Error::Info {
@@ -24,7 +24,8 @@ ast::FnDecl* TypeChecker::get_best_match(const std::vector<ast::FnDecl*>& decls,
     if (decl->get_params().size() != args.size() || identified) 
       continue;
     bool match = true;
-    for (size_t i = 0; i < args.size(); ++i) {
+    sn_assert(!(ignore_self && args.size() < 1), "Invalid ignore_self parameter given!");
+    for (size_t i = ignore_self; i < args.size(); ++i) {
       if (decl->get_params().at(i)->get_type()->is_deep_generic()) continue;
       if (can_cast(args.at(i), decl->get_params().at(i)->get_type()) == CastType::Invalid) {
         // TODO: different casts can have different costs
@@ -108,7 +109,8 @@ ast::FnDecl* TypeChecker::deduce_func(ast::FnDecl* node, const std::vector<ast::
   }
   for (auto& gen : node->get_generics()) {
     // TODO: Default generic types implementation here!
-    if (deduced.find(gen.get_name()) == deduced.end()) {
+    auto deduced_gen = deduced.find(gen.get_name());
+    if (deduced_gen == deduced.end()) {
       err(loc, fmt::format("Generic parameter '{}' has not been deduced", gen.get_name()), Error::Info {
         .highlight = fmt::format("Coudnt deduce '{}' from call signature", gen.get_name()),
         .help = fmt::format("Try explicitly specifying all generic type parameters"),
@@ -117,6 +119,12 @@ ast::FnDecl* TypeChecker::deduce_func(ast::FnDecl* node, const std::vector<ast::
         }}}
       });
     }
+    std::vector<ast::types::Type*> constraints_args;
+    for (auto& c : gen.get_constraints()) {
+      assert(c.get_internal_type().has_value());
+      constraints_args.push_back(c.get_internal_type().value());
+    }
+    check_generic_impls(deduced_gen->second, constraints_args, loc);
   }
   return propagate_generic(node, deduced, loc);
 }
@@ -158,7 +166,7 @@ void TypeChecker::add_self_param(ast::FnDecl*& node, bool as_monorph) {
 
 void TypeChecker::check_fn(ast::FnDecl*& fn_decl, bool as_monorph) {
   for (auto& generic : fn_decl->get_generics())
-    universe.add_item(generic.get_name(), ast::types::GenericType::create(generic.get_name()));
+    universe.add_item(generic.get_name(), create_generic_type(generic));
   for (auto& param : fn_decl->get_params()) {
     param->get_type() = nullptr;
     // Some inserted arguments like "self" are not declared

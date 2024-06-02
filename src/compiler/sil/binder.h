@@ -59,6 +59,7 @@ public:
 
   auto& get_modules() { return sil_modules; }
   ast::types::Type* get_type(ast::Node* node);
+  ast::types::Type* get_type(ast::types::Type* type, const SourceLocation& loc);
   ast::types::Type* check_type(ast::types::Type*& type, const SourceLocation& loc);
   auto& get_insts() { return var_ids; }
 
@@ -71,6 +72,8 @@ private:
 #define SN_REGISTER_ACCEPT(n) virtual void visit(ast::n* node) override;
 #include "compiler/frontend/ast/nodes.def"
 #undef SN_REGISTER_ACCEPT
+
+#include "compiler/sil/optimize.def"
 };
 
 } // namespace sil
