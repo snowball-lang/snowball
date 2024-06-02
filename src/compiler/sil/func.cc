@@ -12,6 +12,11 @@ void Binder::visit(ast::FnDecl* node) {
   auto name = node->get_name();
   auto params = node->get_params();
   auto sil_params = std::vector<std::pair<uint64_t, std::string>>();
+  for (auto& gen : node->get_generics()) {
+    for (auto& constraint : gen.get_constraints()) {
+      (void)get_type(constraint.get_internal_type().value(), constraint.get_location());
+    }
+  }
   for (auto param : params) {
     sil_params.push_back({param->get_id(), param->get_name()});
   }

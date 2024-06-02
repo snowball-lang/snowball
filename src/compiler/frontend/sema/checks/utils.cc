@@ -198,7 +198,7 @@ ast::types::Type* TypeChecker::deduce_type(ast::types::Type* type, const std::ve
         for (auto& monorph : generic_class_registry[decl->get_id()]) {
           bool match = true;
           for (auto [key,_] : monorph.generics) {
-            match = unify(deduced[key], monorph.generics[key], loc, true);
+            match = type_match(deduced[key], monorph.generics[key]);
           }
           if (match) {
             return monorph.decl->get_type();
@@ -340,7 +340,7 @@ std::vector<ast::types::Type*> TypeChecker::fetch_generics_from_node(const ast::
 
 
 ast::types::GenericType* TypeChecker::create_generic_type(ast::GenericDecl& decl) {
-  // TODO: Create a cache system for generic types, to avoid creating over and over
+  // TODO: Create a cache system for generic types, to avoid creating over and over  
   auto generic = ast::types::GenericType::create(decl.get_name());
   for (auto& constraint : decl.get_constraints()) {
     auto ty = constraint.get_internal_type().has_value() 

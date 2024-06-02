@@ -3,7 +3,7 @@ public func test(x: crate::mod::Hello<i32>) {
   balls(x);
 }
 
-public func balls<T: crate::mod::Lol<i32>>(x: T) {
+public func balls<B: crate::mod::Lol<>>(x: B) {
   x.hello(32);
 }
 
