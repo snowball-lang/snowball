@@ -50,9 +50,10 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b,
   } else if (a->is_unknown()) {
     auto as_unknown = a->as_unknown();
     auto& constraint = universe.get_constraints().at(as_unknown->get_id());
-    if (auto unk = constraint->as_unknown(); unk && unk->get_id() == as_unknown->get_id()) {
+    if (auto unk = constraint->as_unknown(); unk && unk->get_id() == as_unknown->get_id() && !just_check) {
       // Avoid infinite recursion
       // TODO: Is this the right way to handle this?
+      return (constraint = b, true);
     } else {
       if (b->is_unknown()) {
         auto b_unknown = b->as_unknown();
