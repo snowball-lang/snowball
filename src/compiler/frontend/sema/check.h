@@ -10,6 +10,7 @@
 #include "compiler/frontend/ast/nodes.h"
 #include "compiler/frontend/ast/visitors.h"
 #include "compiler/frontend/sema/ctx.h"
+#include "compiler/frontend/sema/uuids.h"
 #include "compiler/frontend/sema/universe.h"
 #include "compiler/reports/reporter.h"
 #include "compiler/utils/utils.h"
@@ -32,11 +33,10 @@ enum class UnifyFlags
   IgnoreSelf = 1 << 2,
 };
 
-
 class TypeChecker : public ast::AstVisitor, public Reporter {
   Universe<TypeCheckItem> universe;
   std::vector<Module>& modules;
-  std::vector<NamespacePath> allowed_uuids = {NamespacePath{""}};
+  std::vector<NamespacePath> allowed_uuids = ALLOWED_UUIDS;
   std::map<uint64_t, std::vector<MonorphosizedFn>> generic_registry;
   std::map<uint64_t, std::vector<MonorphosizedClass>> generic_class_registry;
   TypeCheckerContext ctx;

@@ -3,11 +3,10 @@ interface Lol<D> {
   func hello(x: D);
 }
 
-final class Hello<T> implements crate::mod::Lol<T> {
+final class Hello<T> implements ToString {
   let a: T;
 
-  public virtual func hello(x: T) {
-    let _n = x;
+  public virtual func to_string() String {
   }
   
   public operator func +(_y: T) {

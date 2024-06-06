@@ -1,14 +1,14 @@
 
 public func test(x: crate::mod::Hello<i32>) {
+  balls(x);
 }
 
-public func balls<B: crate::mod::Lol<i32>>(x: B) {
-  x.hello(32);
+public func balls<B: core::string::ToString>(x: B) {
+  x.to_string();
 }
 
 public func main() i32 {
   let mut a;
-  let x = std::main::test(a);
+  std::main::test(a);
   a = 24;
-  std::main::test(x);
 }
