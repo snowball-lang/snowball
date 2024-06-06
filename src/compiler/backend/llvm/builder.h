@@ -93,6 +93,8 @@ class LLVMBuilder : public sil::Builder {
   llvm::FunctionType* get_func_type(types::FuncType* type);
   llvm::Value* do_vcall(const sil::Call* node, llvm::Value* callee, std::vector<llvm::Value*>& args);
 
+  llvm::Type* get_vtable_type(types::ClassType* type);
+
   llvm::DISubprogram* get_disubprogram(const sil::FuncDecl* node);
 
   bool just_declare = true;

@@ -160,6 +160,19 @@ FnDecl::FnDecl(const SourceLocation& location, const std::string& name,
         }
       }
 
+bool ClassDecl::has_vtable() const {
+  bool has_virtual = false;
+  if (implemented_interfaces.size() > 0) 
+    return true;
+  for (const auto& func : funcs) {
+    if (func->get_virtual()) {
+      has_virtual = true;
+      break;
+    }
+  }
+  return has_virtual;
+}
+
 }
 }
 }

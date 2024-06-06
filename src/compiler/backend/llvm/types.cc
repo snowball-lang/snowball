@@ -25,9 +25,12 @@ llvm::Type* LLVMBuilder::get_type(types::Type* type) {
     }
     // TODO: Create also the virtual table
     auto decl = class_type->get_decl();
-    auto struct_type = llvm::StructType::create(*llvm_ctx, type->get_mangled_name());
+    auto struct_type = llvm::StructType::create(*llvm_ctx, "class." + type->get_mangled_name());
     builder_cache.struct_map[class_type->get_id()] = struct_type;
     std::vector<llvm::Type*> members;
+    if (auto vtable = get_vtable_type(class_type)) {
+      members.push_back(vtable->getPointerTo());
+    }
     for (auto& member : decl->get_vars()) {
       members.push_back(get_type(member->get_type()));
     }

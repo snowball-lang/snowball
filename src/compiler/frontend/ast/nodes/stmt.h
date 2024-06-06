@@ -180,18 +180,26 @@ public:
   auto& get_name() const { return name; }
   auto& get_vars() { return vars; }
   auto& get_funcs() { return funcs; }
+
   Node* clone() const override;
+
   bool is_generic_instanced() const;
   void set_generic_instanced();
+
   void set_complete() { complete = true; }
   auto is_complete() const { return complete; }
-  auto get_class_type() const { return class_type; }
+  
+  auto& get_implemented_interfaces() { return implemented_interfaces; }
   void set_implemented_interfaces(const std::vector<TypeRef>& interfaces) {
     implemented_interfaces = interfaces;
   }
-  auto& get_implemented_interfaces() { return implemented_interfaces; }
+  
+  auto get_class_type() const { return class_type; }
   bool is_interface() const { return class_type == ClassType::Interface; }
   bool is_class() const { return class_type == ClassType::Class; }
+
+  bool has_vtable() const;
+
   static auto
   create(const SourceLocation& location, const std::string& name,
          const std::vector<VarDecl*>& vars, const std::vector<FnDecl*>& funcs,

@@ -50,17 +50,24 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b,
   } else if (a->is_unknown()) {
     auto as_unknown = a->as_unknown();
     auto& constraint = universe.get_constraints().at(as_unknown->get_id());
-    if (auto unk = constraint->as_unknown(); unk && unk->get_id() == as_unknown->get_id()) {
+    if (auto unk = constraint->as_unknown(); unk && unk->get_id() == as_unknown->get_id() && !just_check) {
       // Avoid infinite recursion
       // TODO: Is this the right way to handle this?
-      return just_check ? true : (constraint = b, true);
+      return (constraint = b, true);
+    } else {
+      if (b->is_unknown()) {
+        auto b_unknown = b->as_unknown();
+        auto& b_constraint = universe.get_constraints().at(b_unknown->get_id());
+        if (auto unk = b_constraint->as_unknown(); unk && unk->get_id() == b_unknown->get_id() && !just_check) {
+          // Avoid infinite recursion
+         return (b_constraint = a, true);
+        } else if (b_unknown->get_id() == as_unknown->get_id()) {
+          return SUCCESS;
+        }
+      } else {
+        return unify(constraint, b, loc, just_check);
+      }
     }
-    if (b->is_unknown()) {
-      auto b_unknown = b->as_unknown();
-      auto& b_constraint = universe.get_constraints().at(b_unknown->get_id());
-      return unify(constraint, b_constraint, loc, just_check);
-    }
-    return unify(constraint, b, loc, just_check);
   } else if (a->is_func() && b->is_func()) {
     auto a_func = a->as_func();
     auto b_func = b->as_func();

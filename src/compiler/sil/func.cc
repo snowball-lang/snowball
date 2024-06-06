@@ -11,16 +11,25 @@ void Binder::visit(ast::FnDecl* node) {
   auto type = get_type(node);
   auto name = node->get_name();
   auto params = node->get_params();
-  auto sil_params = std::vector<std::pair<uint64_t, std::string>>();
-  for (auto param : params) {
-    sil_params.push_back({param->get_id(), param->get_name()});
-  }
+  // We need to declare the function first, this is because we need to know the
+  // all the functions before we can bind them together. This allows us 
+  // to call functions before they are declared.
   if (just_declare) {
+    auto sil_params = std::vector<std::pair<uint64_t, std::string>>();
+    for (auto& gen : node->get_generics()) {
+      for (auto& constraint : gen.get_constraints()) {
+        (void)get_type(constraint.get_internal_type().value(), constraint.get_location());
+      }
+    }
+    for (auto param : params) {
+      sil_params.push_back({param->get_id(), param->get_name()});
+    }
     auto func = FuncDecl::create(node->get_location(), type, name, sil_params, current_module, *node, std::nullopt, node->get_id());
     var_ids.insert({node->get_id(), func});
     value = func;
     return;
   }
+  
   auto func = (sil::FuncDecl*)var_ids.find(node->get_id())->second;  
   auto backup = ctx.ast_current_func;
   auto backup2 = ctx.current_func;
