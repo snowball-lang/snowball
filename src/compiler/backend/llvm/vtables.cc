@@ -38,7 +38,7 @@ llvm::Type* LLVMBuilder::get_vtable_type(types::ClassType* type) {
   auto vtable = llvm::StructType::create(*llvm_ctx.get(), "vtable." + type->get_mangled_name());
   struct_map[node->get_id()] = vtable;
   vtable_types.push_back(builder->getPtrTy()); // Pointer to the vtable
-  for (auto& _ : node->get_implemented_interfaces()) {
+  for (size_t i = 0; i < node->get_implemented_interfaces().size(); i++) {
     vtable_types.push_back(builder->getPtrTy()); // We don't really care about the type of the vtable
   }
   vtable->setBody(vtable_types);

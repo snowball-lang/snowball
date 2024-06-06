@@ -8,10 +8,11 @@ namespace snowball {
 namespace frontend {
 namespace sema {
 
-#define SUCCESS just_check ? true : (a = b, true)
+#define SUCCESS (flags & static_cast<int>(UnifyFlags::JustCheck)) ? true : (a = b, true)
 
 bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b, 
-                      const SourceLocation& loc, bool just_check, bool ignore_self) {
+                      const SourceLocation& loc, int flags) {
+  bool just_check = flags & static_cast<int>(UnifyFlags::JustCheck);
   if (!a) return SUCCESS;
   if (a->is_int() && b->is_int()) {
     if (a->as_int()->get_bits() == b->as_int()->get_bits() &&
@@ -64,7 +65,7 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b,
         } else if (b_unknown->get_id() == as_unknown->get_id()) {
           return SUCCESS;
         }
-      } else {
+      } else if (!just_check) {
         return unify(constraint, b, loc, just_check);
       }
     }
@@ -73,6 +74,7 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b,
     auto b_func = b->as_func();
     if (a_func->get_param_types().size() == b_func->get_param_types().size()) {
       bool match = true;
+      bool ignore_self = flags & static_cast<int>(UnifyFlags::IgnoreSelf);
       assert(!(ignore_self && a_func->get_param_types().size() < 2));
       for (size_t i = ignore_self; i < a_func->get_param_types().size(); i++) {
         if (!unify(a_func->get_param_types()[i], b_func->get_param_types()[i], loc, true)) {
@@ -99,7 +101,9 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b,
 }
 
 bool TypeChecker::type_match(ast::types::Type* a, ast::types::Type* b, bool ignore_self) {
-  return unify(a, b, SourceLocation::dummy(), true, ignore_self);
+  int flags = static_cast<int>(UnifyFlags::JustCheck);
+  if (ignore_self) flags |= static_cast<int>(UnifyFlags::IgnoreSelf);
+  return unify(a, b, SourceLocation::dummy(), flags);
 }
 
 }

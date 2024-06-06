@@ -25,6 +25,14 @@ public:
   ~StopTypeChecking() = default;
 };
 
+enum class UnifyFlags
+{
+  None = 1 << 0,
+  JustCheck = 1 << 1,
+  IgnoreSelf = 1 << 2,
+};
+
+
 class TypeChecker : public ast::AstVisitor, public Reporter {
   Universe<TypeCheckItem> universe;
   std::vector<Module>& modules;
@@ -75,14 +83,14 @@ private:
   GetResult get_from_type(ast::MemberAccess* node, ast::types::Type* type);
 
   ast::types::Type* get_type(const NamespacePath& path);
-  ast::types::Type* get_type(ast::Expr* expr);
+  ast::types::Type* get_type(ast::Expr* expr, bool no_unknown = false);
   ast::types::Type* get_type(const std::string& name);
-  ast::types::Type* get_type(const ast::TypeRef& tr);
+  ast::types::Type* get_type(const ast::TypeRef& tr, bool no_unknown = false);
 
   bool
   unify(ast::types::Type*& a, ast::types::Type* b,
         const SourceLocation& holder = SourceLocation::dummy(),
-        bool just_check = false, bool ignore_self = false);
+        int flags = static_cast<int>(UnifyFlags::None));
   /// Deduce an expression based on it's type.
   /// For example, if the expr is an identifier (e.g. a), we will try to
   /// find the variable `a` in the current scope and deduce it's type.

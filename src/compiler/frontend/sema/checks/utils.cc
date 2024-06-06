@@ -117,7 +117,7 @@ ast::types::Type* TypeChecker::get_type(const NamespacePath& path) {
   return get_type(expr);
 }
 
-ast::types::Type* TypeChecker::get_type(ast::Expr* expr) {
+ast::types::Type* TypeChecker::get_type(ast::Expr* expr, bool no_unknown) {
   auto [item, name, ignore_self] = get_item(expr);
   assert(!ignore_self);
   if (!item.has_value()) {
@@ -132,7 +132,15 @@ ast::types::Type* TypeChecker::get_type(ast::Expr* expr) {
   }
   if (item->is_type()) {
     std::vector<ast::types::Type*> generics = fetch_generics_from_node(expr);
-    return deduce_type(item->get_type(), generics, expr->get_location());
+    auto ty = deduce_type(item->get_type(), generics, expr->get_location());
+    if (no_unknown && ty->is_deep_unknown()) {
+      err(expr->get_location(), "Type should be known in this context", Error::Info {
+        .highlight = fmt::format("Type '{}' should be known in this context", ty->get_printable_name()),
+        .help = "Maybe you forgot to set a type to a variable or forgot a generic parameter?",
+        .note = "The type '_' is used to represent an unknown type"
+      });
+    }
+    return ty;
   } else {
     err(expr->get_location(), fmt::format("Expected type but '{}' is not a type", name), 
       Error::Info {
@@ -143,12 +151,12 @@ ast::types::Type* TypeChecker::get_type(ast::Expr* expr) {
   }
 }
 
-ast::types::Type* TypeChecker::get_type(const ast::TypeRef& tr) {
+ast::types::Type* TypeChecker::get_type(const ast::TypeRef& tr, bool no_unknown) {
   if (auto as_ptr = tr.as_pointer()) {
     auto pointee = get_type(as_ptr->get_type());
     return ast::types::PointerType::create(pointee, as_ptr->is_const_pointer());
   }
-  return get_type(tr.get_name());
+  return get_type(tr.get_name(), no_unknown);
 }
 
 ast::types::Type* TypeChecker::get_type(const std::string& name) {
@@ -345,7 +353,7 @@ ast::types::GenericType* TypeChecker::create_generic_type(ast::GenericDecl& decl
   for (auto& constraint : decl.get_constraints()) {
     auto ty = constraint.get_internal_type().has_value() 
       ? constraint.get_internal_type().value() 
-      : get_type(constraint.get_name());
+      : get_type(constraint.get_name(), true);
     constraint.set_internal_type(ty);
     generic->add_constraints(ty);
   }
