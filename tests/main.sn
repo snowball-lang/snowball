@@ -2,12 +2,16 @@
 public func test(x: crate::mod::Hello<i32>) {
 }
 
-public func balls<B: crate::mod::Lol<>>(x: B) {
+public func balls<B: crate::mod::Lol<i32>>(x: B) {
   x.hello(32);
+}
+
+func x<T>(d: T) T {
+  let a: T;
 }
 
 public func main() i32 {
   let mut a;
-  a = 24;
-  std::main::test(a);
+  x(a);
+  a = b"24";
 }

@@ -47,6 +47,7 @@ llvm::Type* LLVMBuilder::get_type(types::Type* type) {
 
 llvm::FunctionType* LLVMBuilder::get_func_type(types::FuncType* func_type) {
   std::vector<llvm::Type*> param_types;
+  func_type->recalibrate_cache();
   for (auto& param : func_type->get_param_types()) {
     param_types.push_back(get_type(param));
   }

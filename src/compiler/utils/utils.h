@@ -31,15 +31,12 @@
 #define DBG(x)
 #endif
 
-#ifndef sn_unreachable
-#define sn_unreachable()                                                               \
-  {                                                                                    \
-    snowball::utils::Logger::fatal("Unreachable code reached.");                       \
-    sn_abort();                                                                        \
-  }
-#endif
-
 namespace snowball {
+
+[[noreturn]] static void sn_unreachable() {                                                                                    \
+  snowball::utils::Logger::fatal("Unreachable code reached.");                       
+  sn_abort();                                                                        
+}
 
 template <typename... Ts>
 class Self;

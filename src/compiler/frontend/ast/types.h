@@ -125,6 +125,8 @@ class FuncType final : public Type {
   bool variadic = false;
   FnDecl* linked = nullptr;
 
+  bool cached = false;
+
 public:
   FuncType(FnDecl* linked, Type* return_type, bool variadic)
     : return_type(return_type)
@@ -144,6 +146,13 @@ public:
   bool is_variadic() const { return variadic; }
 
   void recalibrate_cache();
+
+  void mutate_return_type(Type* ty) { return_type = ty; }
+
+  // Cache used by the binder to avoid re-compiling types over and over
+  // It does not have any relation with the argument types-cache
+  void set_cached() { cached = true; }
+  bool is_cached() const { return cached; }
 
   std::string get_printable_name() override;
   std::string get_mangled_name() override;

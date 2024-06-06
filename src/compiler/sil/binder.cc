@@ -48,6 +48,7 @@ Inst* Binder::accept(ast::Node* node) {
   }, Error::Type::Err, t); 
 
 ast::types::Type* Binder::check_type(ast::types::Type*& type, const SourceLocation& loc) {
+  static std::unordered_map<uint64_t, ast::types::FuncType*> func_types_cache;
   if (type->is_unknown()) {
     auto knwon = constraints.at(type->as_unknown()->get_id());
     if (knwon->is_unknown()) {
@@ -56,6 +57,11 @@ ast::types::Type* Binder::check_type(ast::types::Type*& type, const SourceLocati
     type = knwon;
   } else if (type->is_deep_unknown()) {
     THROW_ERROR(true) // deep unknown is a fatal error
+  }
+  if (auto as_func = type->as_func(); as_func && !as_func->is_cached()) {
+    as_func->set_cached();
+    as_func->recalibrate_cache();
+    as_func->mutate_return_type(get_type(as_func->get_return_type(), loc));
   }
   assert(!type->is_error());
   return type;

@@ -19,8 +19,8 @@ void LLVMBuilder::emit(const sil::BinaryOp* node) {
   auto type = node->get_type();
   auto op = node->get_op();
 
-  if (type->is_int()) {
-    bool is_signed = type->as_int()->is_signed();
+  if (type->is_int() || type->is_pointer()) {
+    bool is_signed = type->is_pointer() ? false : type->as_int()->is_signed();
     switch (op) {
       UIOP(Plus, CreateAdd, CreateNSWAdd)
       UIOP(Minus, CreateSub, CreateNSWSub)
