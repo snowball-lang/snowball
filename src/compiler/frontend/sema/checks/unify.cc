@@ -75,7 +75,7 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b,
     if (a_func->get_param_types().size() == b_func->get_param_types().size()) {
       bool match = true;
       bool ignore_self = flags & static_cast<int>(UnifyFlags::IgnoreSelf);
-      assert(!(ignore_self && a_func->get_param_types().size() < 2));
+      assert(!(ignore_self && a_func->get_param_types().size() < 1));
       for (size_t i = ignore_self; i < a_func->get_param_types().size(); i++) {
         if (!unify(a_func->get_param_types()[i], b_func->get_param_types()[i], loc, true)) {
           match = false;
