@@ -14,7 +14,7 @@ ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::s
   node->get_type() = nullptr;
   auto state = get_generic_context(node->get_generic_id());
   node->set_generic_instanced();
-  generic_registry[node->get_id()].push_back(MonorphosizedFn {
+  generic_registry[node->get_generic_id()].push_back(MonorphosizedFn {
     .decl = node,
     .generics = deduced
   });

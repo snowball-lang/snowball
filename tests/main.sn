@@ -6,12 +6,9 @@ public func balls<B: crate::mod::Lol<i32>>(x: B) {
   x.hello(32);
 }
 
-func x<T>(d: T) T {
-  let a: T;
-}
-
 public func main() i32 {
   let mut a;
-  x(a);
-  a = b"24";
+  let x = std::main::test(a);
+  a = 24;
+  std::main::test(x);
 }
