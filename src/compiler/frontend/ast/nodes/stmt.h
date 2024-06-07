@@ -15,6 +15,18 @@ namespace snowball {
 namespace frontend {
 namespace ast {
 
+// --- Module Holder (declare here to avoid circular dependency) ---
+
+class ModuleHolder {
+  std::optional<NamespacePath> path;
+public:
+  ModuleHolder() : path(NamespacePath::dummy()) {}
+  ~ModuleHolder() = default;
+
+  void set_module_path(const NamespacePath& path) { this->path = path; }
+  auto get_module_path() const { return path; }
+};
+
 // --- Forward declarations ---
 
 class TypeRef;
@@ -42,7 +54,8 @@ public:
 class FnDecl final : public Stmt,
                      public GenericNode<>,
                      public AttributedNode,
-                     public Identified {
+                     public Identified,
+                     public ModuleHolder {
 private:
   std::string name;
   std::vector<VarDecl*> params;
@@ -150,7 +163,8 @@ class InterfaceDecl;
 class ClassDecl : public Stmt,
                   public GenericNode<>,
                   public AttributedNode,
-                  public Identified {
+                  public Identified,
+                  public ModuleHolder {
 public:
   enum class ClassType
   {

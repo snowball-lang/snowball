@@ -79,6 +79,7 @@ private:
   GetResult get_item(const std::string& name);
 
   GetResult get_from_type(ast::MemberAccess* node, ast::types::Type* type);
+  GetResult check_privacy(GetResult result, const SourceLocation& loc);
 
   ast::types::Type* get_type(const NamespacePath& path);
   ast::types::Type* get_type(ast::Expr* expr, bool no_unknown = false);
