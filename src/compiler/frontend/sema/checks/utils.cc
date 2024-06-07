@@ -254,12 +254,16 @@ TypeChecker::GetResult TypeChecker::get_from_type(ast::MemberAccess* node, ast::
   auto member = node->get_member();
   auto member_name = member->get_name();
   auto full_name = type->get_printable_name() + "::" + printable_op(member_name);
+  if (auto as_ref = type->as_reference()) {
+    // We dont do a recursive call here, because we can only get the member
+    // of the reference (in just one level deep)
+    type = as_ref->get_ref();
+  }
   if (auto as_class = type->as_class()) {
     auto decl = as_class->get_decl();
     size_t index = 0;
     for (auto& field : decl->get_vars()) {
       if (field->get_name() == member_name) {
-        node->set_index(index);
         return {TypeCheckItem::create_var(field), full_name};
       }
       index++;

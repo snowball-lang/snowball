@@ -30,7 +30,11 @@ void Binder::visit(ast::VarDecl* node) {
       .help = fmt::format("Variables cannot have type void, maybe remove the variable declaration?"),
     }, Error::Type::Err);
   }
-  value = VarDecl::create(node->get_location(), ty, node->get_name(), *node, var_value, node->get_id());
+  auto var = VarDecl::create(node->get_location(), ty, node->get_name(), *node, var_value, node->get_id());
+  if (node->get_member_index()) {
+    var->set_index(node->get_member_index().value());
+  }
+  value = var;
   var_ids.insert({node->get_id(), value});
 }
 

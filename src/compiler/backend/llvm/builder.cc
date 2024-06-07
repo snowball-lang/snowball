@@ -172,6 +172,7 @@ llvm::Value* LLVMBuilder::expr(sil::Inst* inst) {
 llvm::Value* LLVMBuilder::load(llvm::Value* ptr, types::Type* type) {
   auto ll = get_type(type);
   if (builder_ctx.dont_load || !ptr->getType()->isPointerTy()) {
+    builder_ctx.dont_load = false;
     return ptr;
   }
   return builder->CreateLoad(ll, ptr, ll->isPointerTy() ? "" : "loadtmp");

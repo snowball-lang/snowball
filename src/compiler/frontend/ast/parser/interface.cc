@@ -38,6 +38,9 @@ ast::ClassDecl* Parser::parse_interface_decl(const ast::AttributedNode& attrs) {
         case Token::Type::KwordStatic:
           SET_ATTR(static);
           break;
+        case Token::Type::KwordOperator:
+          SET_ATTR(operator);
+          break;
         case Token::Type::KwordPublic:
         case Token::Type::KwordPrivate:
           fn_attrs.set_privacy(current.type == Token::Type::KwordPublic 
@@ -54,7 +57,7 @@ ast::ClassDecl* Parser::parse_interface_decl(const ast::AttributedNode& attrs) {
       }
     }
   parse_fn_decl:
-    funcs.push_back(parse_fn_decl(attrs));
+    funcs.push_back(parse_fn_decl(fn_attrs));
     funcs.back()->set_virtual(true);
     fn_attrs = ast::AttributedNode::empty();
   }

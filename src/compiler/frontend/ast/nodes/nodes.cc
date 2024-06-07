@@ -24,6 +24,11 @@ void AttributedNode::assert_is_type() const {
 #include "compiler/frontend/ast/nodes.def"
 #undef SN_REGISTER_ACCEPT
 
+void MemberAccess::set_var_id(uint64_t id) {
+  var_id = id;
+  member->set_var_id(id);
+}
+
 Node* Block::clone() const {
   std::vector<Node*> new_stmts;
   new_stmts.reserve(stmts.size());
@@ -68,6 +73,21 @@ Node* MemberAccess::clone() const {
   auto clone = Cloneable<MemberAccess>::default_clone(this);
   clone->object = (Expr*)object->clone();
   clone->member = (Ident*)member->clone();
+  return clone;
+}
+
+Node* BinaryOp::clone() const {
+  auto clone = Cloneable<BinaryOp>::default_clone(this);
+  if (lhs)
+    clone->lhs = (Expr*)lhs.value()->clone();
+  if (rhs)
+    clone->rhs = (Expr*)rhs.value()->clone();
+  return clone;
+}
+
+Node* Reference::clone() const {
+  auto clone = Cloneable<Reference>::default_clone(this);
+  clone->expr = (Expr*)expr->clone();
   return clone;
 }
 

@@ -36,7 +36,6 @@ private:
     ast::types::Type* type;
     ast::VarDecl* var;
   };
-  std::optional<uint64_t> as_index = std::nullopt;
   NamespacePath module = NamespacePath::dummy();
   std::vector<ast::FnDecl*> funcs;
 
@@ -45,7 +44,7 @@ public:
   TypeCheckItem(ast::types::Type* type)
     : kind(Kind::Type)
     , type(type) {}
-  TypeCheckItem(ast::VarDecl* var, std::optional<uint64_t> as_index)
+  TypeCheckItem(ast::VarDecl* var)
     : kind(Kind::Var)
     , var(var) {}
   TypeCheckItem(std::vector<ast::FnDecl*>& funcs)
@@ -78,16 +77,11 @@ public:
   bool is_var() const { return kind == Kind::Var; }
   bool is_module() const { return kind == Kind::Module; }
 
-  auto get_index() const {
-    assert(is_var());
-    return as_index;
-  }
-
   static auto create_type(ast::types::Type* type) { return TypeCheckItem(type); }
 
   static auto
-  create_var(ast::VarDecl* var, std::optional<uint64_t> as_index = std::nullopt) {
-    return TypeCheckItem(var, as_index);
+  create_var(ast::VarDecl* var) {
+    return TypeCheckItem(var);
   }
 
   static auto create_fn_decl(std::vector<ast::FnDecl*> funcs) {

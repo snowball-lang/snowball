@@ -19,8 +19,8 @@ void TypeChecker::check_implementations(ast::ClassDecl* class_decl) {
           && type_match(method->get_type(), class_method->get_type(), true)) {
           // note: Repeated function declarations are checked in the global scope
           if (!class_method->get_virtual()) {
-            err(class_method->get_location(), fmt::format("Method '{}' is expected to be virtual", class_method->get_name()), Error::Info {
-              .highlight = fmt::format("Method is not virtual", class_method->get_name()),
+            err(class_method->get_location(), fmt::format("Method '{}' is expected to be virtual", printable_op(class_method->get_name())), Error::Info {
+              .highlight = fmt::format("Method is not virtual", printable_op(class_method->get_name())),
               .help = fmt::format("Methods that are implemented from interfaces must be virtual"),
               .note = fmt::format("This method is implemented from interface '{}'", interface_ty->get_printable_name())
             }, Error::Type::Err, false);

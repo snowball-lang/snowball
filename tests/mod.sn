@@ -1,17 +1,21 @@
 
 interface Lol<D> {
-  func hello(x: D);
+  operator func +(x: D);
 }
 
 final class Hello<T> implements Lol<T>, ToString {
-  let a: T;
+  let mut a: T;
 
-  public virtual func hello(x: T) {
+  init(x: T) {
+    self.a = x;
+  }
+
+  public func hello(x: T) {
   }
 
   public virtual func to_string() String {
   }
   
-  public operator func +(_y: T) {
+  public virtual operator func +(_y: T) {
   }
 }

@@ -153,12 +153,12 @@ void TypeChecker::add_self_param(ast::FnDecl*& node, bool as_monorph) {
   if (node->get_static() || !current_class) return;
   auto& params = node->get_params();
   if (params.size() > 0 && params[0]->get_name() == "self" && !as_monorph) return; // already has a self param
+  debug(F("\t\t[add_self_param] Adding self param to function '{}' ({})", node->get_name(), current_class->get_type()->get_printable_name()));
   auto self = ast::VarDecl::create(node->get_location(), "self", std::nullopt, std::nullopt, node);
-  self->set_used();
+  self->set_used(); // TODO: Remove this in the future?
   unify(self->get_type(), current_class->get_type()->get_reference_to(), node->get_location());
   if (as_monorph) {
     params[0] = self;
-    node->get_type()->as_func()->get_param_types()[0] = self->get_type();
     return;
   }
   params.insert(params.begin(), self);
@@ -167,18 +167,19 @@ void TypeChecker::add_self_param(ast::FnDecl*& node, bool as_monorph) {
 void TypeChecker::check_fn(ast::FnDecl*& fn_decl, bool as_monorph) {
   for (auto& generic : fn_decl->get_generics())
     universe.add_item(generic.get_name(), create_generic_type(generic));
+  add_self_param(fn_decl, as_monorph);
   for (auto& param : fn_decl->get_params()) {
-    param->get_type() = nullptr;
     // Some inserted arguments like "self" are not declared
-    if (param->get_decl_type().has_value())
+    if (param->get_decl_type().has_value()) {
+      param->get_type() = nullptr;
       unify(param->get_type(), get_type(param->get_decl_type().value()), param->get_location());
+    }
     define_variable(param, param->get_location());
   }
   auto ret_type = get_type(fn_decl->get_return_type());
   auto func_type = ast::types::FuncType::create(fn_decl, ret_type, false);
   fn_decl->get_type() = nullptr;
   unify(fn_decl->get_type(), func_type, fn_decl->get_return_type().get_location());
-  add_self_param(fn_decl, as_monorph);
   func_type->recalibrate_cache();
 }
 

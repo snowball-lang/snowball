@@ -49,12 +49,6 @@ private:
   Ident* member;
   AccessType access_type;
   uint64_t var_id = 0;
-  uint64_t index = 0;
-  enum
-  {
-    Var,
-    Index
-  } kind = Var;
 
 public:
   MemberAccess(
@@ -73,21 +67,8 @@ public:
   auto get_access_type() const { return access_type; }
   Node* clone() const override;
 
-  auto is_type_index() const { return kind == Index; }
-  auto get_index() const {
-    assert(is_type_index());
-    return index;
-  }
-  void set_index(uint64_t idx) {
-    kind = Index;
-    index = idx;
-  }
-
-  auto get_var_id() const {
-    assert(!is_type_index());
-    return var_id;
-  }
-  void set_var_id(uint64_t id) { var_id = id; }
+  auto get_var_id() const { return var_id; }
+  void set_var_id(uint64_t id);
 
   static auto
   create(const SourceLocation& location, Expr* object, Ident* member,
@@ -220,6 +201,7 @@ public:
   auto get_op() const { return op; }
   auto get_lhs() const { return lhs; }
   auto get_rhs() const { return rhs; }
+  Node* clone() const override;
 
   auto& get_lhs() { return lhs; }
   auto& get_rhs() { return rhs; }
@@ -241,7 +223,6 @@ public:
   }
 
   SN_VISIT()
-  SN_DEFAULT_CLONE()
 };
 
 class Call final : public Expr {
@@ -277,13 +258,13 @@ public:
   ~Reference() = default;
 
   auto get_expr() const { return expr; }
+  Node* clone() const override;
 
   static auto create(const SourceLocation& location, Expr* expr) {
     return new Reference(location, expr);
   }
 
   SN_VISIT()
-  SN_DEFAULT_CLONE()
 };
 
 } // namespace ast

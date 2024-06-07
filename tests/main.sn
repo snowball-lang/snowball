@@ -1,9 +1,10 @@
 
 public func test(x: crate::mod::Hello<i32>) {
   balls(x);
+  x.hello(24); 
 }
 
-public func balls<B: core::string::ToString>(x: B) {
+public func balls<B: std::string::ToString>(x: B) {
   x.to_string();
 }
 

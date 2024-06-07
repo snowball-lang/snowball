@@ -37,11 +37,7 @@ void TypeChecker::visit(ast::MemberAccess* node) {
   if (item.value().is_var()) {
     auto var = item.value().get_var();
     var->set_used();
-    if (auto idx = item.value().get_index()) {
-      node->set_index(idx.value());
-    } else {
-      node->set_var_id(var->get_id());
-    }
+    node->set_var_id(var->get_id());
     node->get_object()->accept(this);
     unify(node->get_type(), var->get_type(), node->get_location());
     return;

@@ -56,6 +56,9 @@ void TypeChecker::visit(ast::ClassDecl* node) {
     }
   }
   for (auto& method : node->get_funcs()) {
+    debug(F("\tChecking method ({}): '{}' with type: {}", node->get_type()->get_printable_name(), 
+      method->get_name(), method->get_type()->get_printable_name()));
+    method->set_parent_type(node->get_type());
     method->accept(this);
   }
   universe.remove_scope();

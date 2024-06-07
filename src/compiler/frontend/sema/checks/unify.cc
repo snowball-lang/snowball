@@ -33,7 +33,7 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b,
       if (ac->get_generics().size() == bc->get_generics().size()) {
         bool match = true;
         for (size_t i = 0; i < ac->get_generics().size(); i++) {
-          if (!unify(ac->get_generics()[i], bc->get_generics()[i], loc, true)) {
+          if (!unify(ac->get_generics()[i], bc->get_generics()[i], loc, (int)UnifyFlags::JustCheck)) {
             match = false;
             break;
           }
@@ -43,9 +43,9 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b,
       }
     }
   } else if (a->is_reference() && b->is_reference()) {
-    return unify(a->as_reference()->get_mut_ref(), b->as_reference()->get_mut_ref(), loc, just_check);
+    return unify(a->as_reference()->get_mut_ref(), b->as_reference()->get_mut_ref(), loc, flags);
   } else if (a->is_pointer() && b->is_pointer()) {
-    return unify(a->as_pointer()->get_mut_pointee(), b->as_pointer()->get_mut_pointee(), loc, just_check);
+    return unify(a->as_pointer()->get_mut_pointee(), b->as_pointer()->get_mut_pointee(), loc, flags);
   } else if (a->is_error() || b->is_error()) {
     return SUCCESS;
   } else if (a->is_unknown()) {
@@ -66,7 +66,7 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b,
           return SUCCESS;
         }
       } else if (!just_check) {
-        return unify(constraint, b, loc, just_check);
+        return unify(constraint, b, loc, flags);
       }
     }
   } else if (a->is_func() && b->is_func()) {
@@ -77,13 +77,13 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b,
       bool ignore_self = flags & static_cast<int>(UnifyFlags::IgnoreSelf);
       assert(!(ignore_self && a_func->get_param_types().size() < 1));
       for (size_t i = ignore_self; i < a_func->get_param_types().size(); i++) {
-        if (!unify(a_func->get_param_types()[i], b_func->get_param_types()[i], loc, true)) {
+        if (!unify(a_func->get_param_types()[i], b_func->get_param_types()[i], loc, (int)UnifyFlags::JustCheck)) {
           match = false;
           break;
         }
       }
       if (match) {
-        match = unify(a_func->get_return_type(), b_func->get_return_type(), loc, true);
+        match = unify(a_func->get_return_type(), b_func->get_return_type(), loc, (int)UnifyFlags::JustCheck);
         if (match) return SUCCESS;
       }
     }
@@ -95,7 +95,7 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b,
         a->get_printable_name(), b->get_printable_name()),
       .help = "Try casting the type to the expected type by using a cast expression",
       .see = "https://snowball-lang.gitbook.io/docs/language-reference/casting"
-    }, Error::Type::Err, false);
+    }, Error::Type::Err, true);
   a = get_error_type();
   return false;
 }

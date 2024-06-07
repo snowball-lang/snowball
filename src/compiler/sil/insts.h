@@ -142,6 +142,7 @@ public:
 class VarDecl final : public Inst, public ast::AttributedNode, public Identified {
   std::string name;
   std::optional<Inst*> value;
+  std::optional<uint64_t> index; // Member access index
 
 public:
   VarDecl(LocationHolder& loc, ast::types::Type* type, const std::string& name,
@@ -157,6 +158,9 @@ public:
   auto get_name() const { return name; }
   auto get_value() const { return value; }
   EMITABLE()
+
+  void set_index(uint64_t idx) { index = idx; }
+  auto get_index() const { return index; }
 
   static auto
   create(LocationHolder loc, ast::types::Type* type, const std::string& name,

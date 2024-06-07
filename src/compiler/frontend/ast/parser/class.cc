@@ -45,6 +45,7 @@ Parser::ParsingClassResult Parser::parse_class_body() {
   ast::AttributedNode attrs;
   expect(Token::Type::BracketLcurly, "an opening curly brace after the return type");
   next();
+  uint64_t member_count = 0;
   while (!is(Token::Type::BracketRcurly)) {
     switch (current.type) {
       case Token::Type::KwordPublic:
@@ -110,6 +111,7 @@ Parser::ParsingClassResult Parser::parse_class_body() {
       }
       case Token::Type::KwordVar: {
         auto var = parse_var_decl(attrs);
+        var->set_member_index(member_count++);
         result.vars.push_back(var);
         attrs = ast::AttributedNode::empty();
         consume(Token::Type::SymSemiColon, "a semicolon after the variable declaration");
@@ -120,6 +122,7 @@ Parser::ParsingClassResult Parser::parse_class_body() {
         next();
         switch (current.type) {
           case Token::Type::KwordFunc:
+          case Token::Type::KwordOperator:
             break;
           default:
             err("Expected a class member after 'virtual' keyword", Error::Info {
@@ -130,6 +133,15 @@ Parser::ParsingClassResult Parser::parse_class_body() {
         }
         break;
       }
+      case Token::Type::Identifier: // This must be the last case always!
+        if (current.to_string() == "init") {
+          attrs.set_operator(true);
+          auto fn = parse_fn_decl(attrs, true);
+          result.funcs.push_back(fn);
+          attrs = ast::AttributedNode::empty();
+          break;
+        }
+        [[fallthrough]];
       default:
         err("Expected a class member", Error::Info {
           .highlight = fmt::format("Token '{}' is not expected here", current),

@@ -90,7 +90,7 @@ private:
   ast::TopLevelAst parse_top_level(Token::Type terminator = Token::Type::Eof);
   std::optional<ast::GenericNode<>> parse_generics(); // only if present
   ast::GenericNode<ast::TypeRef> parse_generics_expr();
-  ast::FnDecl* parse_fn_decl(const ast::AttributedNode& attrs);
+  ast::FnDecl* parse_fn_decl(const ast::AttributedNode& attrs, bool is_constructor = false);
   ast::TypeRef parse_type_ref();
   ast::Node* parse_stmt(const Token& peek);
   ast::Expr* parse_expr(bool allow_assign = true);

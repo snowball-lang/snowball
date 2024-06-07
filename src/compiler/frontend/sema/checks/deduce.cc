@@ -22,6 +22,13 @@ ast::Stmt* TypeChecker::do_deduce(ast::Expr* expr) {
         return as_var;
       }
     }
+  } else if (auto idx = expr->as<ast::MemberAccess>()) {
+    // We do not want to deduce a member access, as it is not a variable
+    // but we do want to return the variable that the member access is based on
+    auto var = idx->get_var_id();
+    if (var != 0) {
+      return universe.get_var_id(var).value();
+    }
   }
   return nullptr;
 }

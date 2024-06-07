@@ -89,6 +89,7 @@ class VarDecl final : public Stmt, public AttributedNode, public Identified {
   std::optional<TypeRef> decl_type;
   std::optional<Expr*> value;
   std::optional<FnDecl*> arg_for = std::nullopt;
+  std::optional<uint64_t> index; // Member access index
   unsigned int used = 0;
 
 public:
@@ -117,6 +118,9 @@ public:
   Node* clone() const override;
   void set_used() { used++; }
   auto get_used() const { return used; }
+
+  auto get_member_index() const { return index; }
+  void set_member_index(uint64_t idx) { index = idx; }
 
   auto get_arg_for() const { return arg_for; }
   void mutate_arg_for(FnDecl* new_arg_for) {

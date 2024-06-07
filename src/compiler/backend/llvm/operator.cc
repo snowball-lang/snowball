@@ -14,7 +14,8 @@ namespace backend {
 
 void LLVMBuilder::emit(const sil::BinaryOp* node) {
   // TODO: Support unary operators
-  auto left = expr(node->get_lhs());
+  bool no_load = node->get_op() == frontend::Operator::Eq;
+  auto left = no_load ? build(node->get_lhs()) : expr(node->get_lhs());
   auto right = expr(node->get_rhs().value());
   auto type = node->get_type();
   auto op = node->get_op();

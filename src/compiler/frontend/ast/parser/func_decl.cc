@@ -11,12 +11,14 @@
 namespace snowball {
 namespace frontend {
 
-ast::FnDecl* Parser::parse_fn_decl(const ast::AttributedNode& attrs) {
-  assert(is(Token::Type::KwordFunc));
+ast::FnDecl* Parser::parse_fn_decl(const ast::AttributedNode& attrs, bool is_constructor) {
+  if (!is_constructor) {
+    assert(is(Token::Type::KwordFunc));
+    next();
+  }
   attrs.assert_is_func();
-  next();
   std::string name;
-  if (attrs.get_operator()) {
+  if (attrs.get_operator() && !is_constructor) {
     switch (current.type) {
 #define DEFINE_OP(_1, _2, _3)
 #define DEFINE_OP_NAME(o, n) \
@@ -34,6 +36,14 @@ ast::FnDecl* Parser::parse_fn_decl(const ast::AttributedNode& attrs) {
           .help = "Expected an operator after the 'operator' keyword",
           .see = "https://snowball-lang.gitbook.io/docs/language-reference/operators"
         }, Error::Type::Err, false);
+    }
+  } else if (is_constructor) {
+    name = sema::TypeChecker::op_to_string(Operator::New);
+    if (attrs.get_static() || attrs.get_virtual()) {
+      err("Constructors cannot have modifiers", Error::Info {
+        .highlight = fmt::format("Constructors cannot have modifiers"),
+        .help = fmt::format("Constructors are implicitly static, non-virtual, and non-operator functions"),
+      }, Error::Type::Err);
     }
   } else {
     name = expect(Token::Type::Identifier, "an identifier for the function name", Token::Type::BracketLparent)
