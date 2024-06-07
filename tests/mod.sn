@@ -3,7 +3,7 @@ interface Lol<D> {
   operator func +(x: D);
 }
 
-final class Hello<T> implements Lol<T>, ToString {
+public(crate) final class Hello<T> implements Lol<T>, ToString {
   let mut a: T;
 
   init(x: T) {
