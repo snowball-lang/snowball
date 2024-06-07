@@ -63,7 +63,19 @@ void Error::print(bool as_tail) {
   if (!dbg_info.line_before.empty() && !as_tail) {
     fmt::print(fmt::text_style(fmt::emphasis::bold), "{:>4} | {}\n", get_location().line - 1, fmt::styled(dbg_info.line_before, fmt::fg(fmt::terminal_color::black)));
   }
-  fmt::print(fmt::text_style(fmt::emphasis::bold), "{:>4} | {}\n", get_location().line, fmt::styled(dbg_info.line, fmt::fg(fmt::terminal_color::black)));
+  auto err_line = dbg_info.line.substr(0, get_location().column - 1);
+  // We need to highlight the error. We reset the color and then change it after the error
+  err_line += fmt::format(
+    fmt::fg(term_color) | fmt::emphasis::bold, 
+    "{}", 
+    dbg_info.line.substr(get_location().column - 1, get_location().length)
+  );
+  err_line += fmt::format(
+    fmt::fg(fmt::terminal_color::black) | fmt::emphasis::bold, 
+    "{}", 
+    dbg_info.line.substr(get_location().column - 1 + get_location().length)
+  );
+  fmt::print(fmt::text_style(fmt::emphasis::bold), "{:>4} | {}\n", get_location().line, fmt::styled(err_line, fmt::fg(fmt::terminal_color::black)));
   fmt::print(fmt::text_style(fmt::emphasis::bold), "     | ");
   for (unsigned int i = 0; i < get_location().column-1; i++) {
     fmt::print(" ");

@@ -20,7 +20,7 @@ void Compiler::run_frontend() {
     // Iterate recursively through the project and the dependencies.
     auto src_path = path / package_ctx.project.src;
     for (auto& entry : std::filesystem::recursive_directory_iterator(src_path)) {
-      if (entry.is_regular_file() && entry.path().extension() == ".sn") {
+      if (entry.is_regular_file() && entry.path().extension() == ".sn" && !utils::sw(entry.path().filename().string(), "_")) {
         auto timer_name = "module " + project_name + "::" + entry.path().filename().stem().string();
         timer.start(timer_name);
         auto source_file = std::make_shared<frontend::SourceFile>(entry);
