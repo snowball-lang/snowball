@@ -3,8 +3,11 @@ interface Lol<D> {
   func hello(x: D);
 }
 
-final class Hello<T> implements ToString {
+final class Hello<T> implements Lol<T>, ToString {
   let a: T;
+
+  public virtual func hello(x: T) {
+  }
 
   public virtual func to_string() String {
   }

@@ -22,9 +22,9 @@ void TypeChecker::check() {
       for (auto& module : modules) {
         ctx.current_module = &module;
         universe.add_scope();
-        allowed_uuids.push_back(module.get_path());
+        ctx.allowed_uuids.push_back(module.get_path());
         generate_global_scope(module.get_ast(), first);
-        allowed_uuids.pop_back();
+        ctx.allowed_uuids.pop_back();
         universe.remove_scope();
       }
       if (!first) break;
@@ -34,12 +34,12 @@ void TypeChecker::check() {
     for (auto& module : modules) {
       ctx.current_module = &module;
       universe.add_scope();
-      allowed_uuids.push_back(module.get_path());
+      ctx.allowed_uuids.push_back(module.get_path());
       auto& ast = module.get_ast();
       for (size_t i = 0; i < ast.size(); i++) {
         ast[i]->accept(this);
       }
-      allowed_uuids.pop_back();
+      ctx.allowed_uuids.pop_back();
       universe.remove_scope();
     }
     post_check();

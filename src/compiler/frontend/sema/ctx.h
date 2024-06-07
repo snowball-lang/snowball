@@ -13,6 +13,8 @@
 #include "compiler/reports/reporter.h"
 #include "compiler/utils/utils.h"
 
+#include "compiler/frontend/sema/uuids.h"
+
 namespace snowball {
 namespace frontend {
 namespace sema {
@@ -126,7 +128,7 @@ struct MonorphosizedClass final {
 };
 
 struct TypeCheckerContext final {
-  std::vector<NamespacePath> allowed_uuids;
+  std::vector<NamespacePath> allowed_uuids = ALLOWED_UUIDS;
   Module* current_module = nullptr;
   const ast::FnDecl* current_function = nullptr;
   const ast::ClassDecl* current_class = nullptr;

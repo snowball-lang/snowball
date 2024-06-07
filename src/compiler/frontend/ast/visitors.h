@@ -13,9 +13,11 @@ class AstVisitor {
 protected:
   const Ctx& vctx;
 
+  // Message shown if `--debug-verbose` is enabled
+  // note: It does not disable in release mode!
+  void debug(const std::string& msg) const;
 public:
-  AstVisitor(const Ctx& ctx)
-    : vctx(ctx) {}
+  AstVisitor(const Ctx& ctx);
 
 #define SN_REGISTER_ACCEPT(n) virtual void visit(n* node) = 0;
 #include "compiler/frontend/ast/nodes.def"

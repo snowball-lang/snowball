@@ -94,6 +94,7 @@ struct Ctx {
   utils::TimerType timer = utils::TimerType::None;
 
   bool verbose = false;
+  bool debug_verbose = false;
 
   PackageConfig root_package_config = std::nullopt;
   PackageConfig package_config = std::nullopt;

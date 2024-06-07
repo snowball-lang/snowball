@@ -20,7 +20,7 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
     } else if (auto type = universe.get_type(path)) {
       return {TypeCheckItem::create_type(type.value()), acc.get_name()};
     } else {
-      for (auto& uuid : allowed_uuids) {
+      for (auto& uuid : ctx.allowed_uuids) {
         auto new_path = uuid + path;
         if (auto fns = universe.get_fn_decl(new_path); fns.size() > 0) {
           return {TypeCheckItem::create_fn_decl({fns}), acc.get_name()};

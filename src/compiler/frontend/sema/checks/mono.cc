@@ -14,12 +14,19 @@ ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::s
   node->get_type() = nullptr;
   auto state = get_generic_context(node->get_generic_id());
   node->set_generic_instanced();
+  if (vctx.debug_verbose) {
+    std::string gen_str;
+    for (auto& [name, type] : deduced)
+      gen_str += "<" + name + ": " + type->get_printable_name() + ">, ";
+    gen_str = gen_str.substr(0, gen_str.size() - 2);
+    debug(F("Monorphosizing function {} with [{}]", node->get_name(), gen_str));
+  }
   generic_registry[node->get_generic_id()].push_back(MonorphosizedFn {
     .decl = node,
     .generics = deduced
   });
   node->increment_id();  
-  auto backup = ctx;
+  TypeCheckerContext backup = ctx;
   backup.scopes = universe.get_scopes();
   set_generic_context(state);
   universe.add_scope();
@@ -51,12 +58,19 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const std::map<
   node->get_type() = nullptr;
   auto state = get_generic_context(node->get_id());
   node->set_generic_instanced();
+  if (vctx.debug_verbose) {
+    std::string gen_str;
+    for (auto& [name, type] : generics)
+      gen_str += "<" + name + ": " + type->get_printable_name() + ">, ";
+    gen_str = gen_str.substr(0, gen_str.size() - 2);
+    debug(F("Monorphosizing class {} with [{}]", node->get_name(), gen_str));
+  }
   generic_class_registry[node->get_id()].push_back(MonorphosizedClass {
     .decl = node,
     .generics = generics
   });
   node->increment_id();
-  auto backup = ctx;
+  TypeCheckerContext backup = ctx;
   backup.scopes = universe.get_scopes();
   set_generic_context(state);
   universe.add_scope();

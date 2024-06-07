@@ -110,6 +110,7 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
     clEnumValN(LinkerType::Detect, "detect", "Detect")
   ), cl::init(LinkerType::Detect), cl::cat(category));
   cl::opt<bool> verbose("verbose", cl::desc("Verbose output"), cl::cat(category));
+  cl::opt<bool> debug_verbose("debug-verbose", cl::desc("Debug verbose output"), cl::cat(category));
   cl::opt<EmitType>* emit_type = nullptr;
   cl::opt<Arch>* arch = nullptr;
   cl::opt<Target>* target = nullptr;
@@ -147,6 +148,7 @@ void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
   ctx.custom_linker = ld;
   ctx.linker_type = linker_type;  
   ctx.verbose = verbose;
+  ctx.debug_verbose = debug_verbose;
   if (timer_type) {
     ctx.timer = *timer_type;
     delete timer_type;
