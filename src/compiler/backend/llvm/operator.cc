@@ -70,7 +70,16 @@ void LLVMBuilder::emit(const sil::BinaryOp* node) {
       default: sn_unreachable();
     }
   } else {
-    sn_unreachable();
+    switch (op) {
+      case frontend::Operator::Eq: {
+        if (llvm::isa<llvm::LoadInst>(left)) {
+          left = llvm::cast<llvm::LoadInst>(left)->getPointerOperand();
+        }
+        value = builder->CreateStore(right, left);
+        break;
+      }
+      default: sn_unreachable();
+    }
   }
 }
 

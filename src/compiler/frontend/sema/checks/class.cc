@@ -48,6 +48,7 @@ void TypeChecker::visit(ast::ClassDecl* node) {
   check_implementations(node);
   for (auto& var : node->get_vars()) {
     var->accept(this);
+    var->set_parent_type(node->get_type());
     if (var->get_type()->is_deep_unknown()) {
       err(var->get_location(), "Class variable cannot be of unknown type", Error::Info {
         .highlight = fmt::format("Variable with type: {}", var->get_type()->get_printable_name()),
