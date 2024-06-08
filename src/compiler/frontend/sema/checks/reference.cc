@@ -17,7 +17,12 @@ void TypeChecker::visit(ast::Reference* node) {
         .highlight = "Borrowed another time here",
         .note = "Cannot borrow a variable mutably more than once"
       }, Error::Type::Err, false);
-    } 
+    } else if (node->is_mutable() && !as_var->get_mut()) {
+      err(node->get_location(), F("Cannot mutably borrow immutable variable '{}'", as_var->get_name()), Error::Info {
+        .highlight = "Variable declared here",
+        .help = "Try making the variable mutable by adding the 'mut' keyword"
+      }, Error::Type::Err, false);
+    }
     if (node->is_mutable()) {
       as_var->set_mutably_borrowed();
     } else {
