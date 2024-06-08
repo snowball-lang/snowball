@@ -23,12 +23,12 @@ bool LLVMBuilder::run_linker(
   bool can_exit = false;
 
   const auto& triple = target_machine->getTargetTriple();
-  LldArgsBuilder args_builder(target_machine, obj, output);
-  const auto args = args_builder.build_c();
+  LldArgsBuilder args_builder(target_machine, output, obj);
+  auto args = args_builder.build_c();
 
   if (triple.isOSBinFormatELF()) {
     return lld::elf::link(args, llvm::outs(), llvm::errs(),
-                        can_exit, true);
+                        can_exit, false);
   } else if (triple.isOSBinFormatMachO()) {
     return lld::macho::link(args, llvm::outs(), llvm::errs(),
                           can_exit, false);

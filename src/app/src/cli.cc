@@ -11,7 +11,8 @@
 #include "compiler/frontend/location.h"
 
 #include "compiler/globals.h"
-#include "compiler/cl_args.h"
+
+#include <lld/Common/Driver.h>
 
 #define CONFY_USE_UTILS
 #include "app/vendor/confy/src/confy.hpp"
@@ -40,7 +41,7 @@ Ctx CLI::parse(int argc, char** argv) {
   std::string mode = argv[1];
 
   cl::OptionCategory category("General Snowball Options");
-  cl::opt<std::string> config("config", cl::desc("Path to the configuration file"), cl::cat(category));
+  static cl::opt<std::string> config("config", cl::desc("Path to the configuration file"), cl::cat(category));
   if (mode == "build") {
     make_build(ctx, args);
   } else if (mode == "run") {
@@ -76,7 +77,6 @@ void CLI::print_help(Args& args) {
 }
 
 void CLI::parse_args(Args& args) {
-  opts::register_globals();
   cl::ParseCommandLineOptions(args.size(), args.data(), "Snowball Compiler", nullptr, nullptr, false);
 }
 

@@ -73,16 +73,12 @@ bool Compiler::compile() {
       builder->emit(output_file);
     }
     timer.stop("Building Output");
+    post_compile();
     auto output = driver::get_output_path(ctx, ctx.root_package_config.value().project.name, true);
     if (is_object) {
-      timer.start("Linking", true);
       auto err = backend::LLVMBuilder::link(ctx, object_files, output);
-      timer.stop("Linking");
-      if (err) {
-        return err;
-      }
+      if (err) return err;
     }
-    post_compile();
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     if (ctx.build_mode == BuildMode::Run) {
@@ -108,6 +104,7 @@ void Compiler::stop_compilation() {
 }
 
 void Compiler::post_compile() {
+  auto t = global;
   if (global.timer_type != TimerType::None) {
     timer.print_all();
   }

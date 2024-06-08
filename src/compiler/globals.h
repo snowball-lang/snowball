@@ -10,6 +10,8 @@
 #include "utils/utils.h"
 #include "compiler/ctx.h"
 
+#include "app/cli.h"
+
 namespace snowball {
 namespace globals {
 static std::function<std::string(const std::filesystem::path&)> read_file =
@@ -37,12 +39,26 @@ struct GlobalContext {
   OptLevel opt_level = OptLevel::Debug;
 
   // Output options
-  Target target = Target::Unknown;
-  Arch arch = Arch::Unknown;
+#ifdef SN_WIN
+  Target target = Target::Windows;
+#elif defined(SN_LIN)
+  Target target = Target::Linux;
+#elif defined(SN_MAC)
+  Target target = Target::MacOS;
+#else
+#error "Unknown target compiler"
+#endif
+#ifdef SN_X86
+  Arch arch = Arch::X86;
+#elif defined(SN_X86_64)
+  Arch arch = Arch::X86_64;
+#else
+#error "Unknown architecture"
+#endif
   bool static_link = false;
 };
 
-extern GlobalContext* global;
+extern GlobalContext global;
 
 } // namespace snowball
 

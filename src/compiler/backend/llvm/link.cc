@@ -58,10 +58,13 @@ bool LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths
   // Generate object file
   auto obj_output = driver::get_output_path(ctx, ctx.root_package_config.value().project.name + ".tmp");
   output_object_file(*libroot.get(), obj_output, builder_ctx, target_machine, global.emit_type);
-  auto err = run_linker(ctx, obj_output, output, target_machine);
+  if (global.emit_type == EmitType::Object) {
+    return EXIT_SUCCESS;
+  }
+  auto succ = run_linker(ctx, obj_output, output, target_machine);
   std::filesystem::remove(obj_output);
-  if (err) {
-    return error(F("Linking failed with error code: {}", err));
+  if (!succ) {
+    return error(F("Linking failed with error code: {}", (int)!succ));
   }
   return EXIT_SUCCESS;
 }
