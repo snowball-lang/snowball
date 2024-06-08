@@ -161,7 +161,7 @@ message(STATUS ${LLVM_DEFINITIONS})
 message(STATUS ${LLVM_ENABLE_ZLIB})
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
-message(STATUS "Build a static binary (aka, for windows): ${BUILD_FOR_WIN}")
+message(STATUS "Build a static binary: ${BUILD_FOR_WIN}")
 set(CMAKE_CXX_STANDARD 17)
 file(GLOB_RECURSE PROJECT_SOURCES src/compiler/*.cc src/compiler/**/*cc src/compiler/*.c)
 file(GLOB_RECURSE PROJECT_CMAKE_UTILS cmake/*.cmake)
@@ -211,14 +211,16 @@ llvm_map_components_to_libnames(llvm_libs
   ObjCARCOpts
   Remarks
   ScalarOpts
-  Support
   Symbolize
   Target
   TransformUtils
   Vectorize
-  nativecodegen
   ExecutionEngine
-  Linker
+  nativecodegen
+  option
+  lto
+  support
+  windowsdriver windowsmanifest symbolize
 )
 
 ##################################################    Targets     ##################################################
@@ -238,9 +240,21 @@ else()
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,$ORIGIN/../lib")
 endif()
 
+# Add "LLD" libraries for all targets to the linker flags
+set(LLD_LINKED_NAMES "lldCOFF" "lldELF" "lldMachO" "lldMinGW" "lldWasm" "LLVMLibDriver" "lldCommon")
+set(LLD_LINKED_LIBS "")
+foreach(name ${LLD_LINKED_NAMES})
+  list(APPEND LLD_LINKED_LIBS "${LLVM_LIBRARY_DIRS}/lib${name}.a")
+endforeach()
+
+if(APPLE)
+  # LLD 13.0.0 on Mac needs libxar
+  list(APPEND LLD_LINKED_LIBS -lxar)
+endif()
+message(STATUS "LLD libraries: ${LLD_LINKED_LIBS}")
+
 add_executable(snowballexe ${APP_FILES})
 target_include_directories(snowballexe PUBLIC ${APP_HEADERS_DIR})
-target_link_libraries(snowballexe PUBLIC ${PROJECT_NAME} ${GLIB_LIBRARIES})
 
 if (${BUILD_FOR_WIN})
   set_target_properties(snowballexe PROPERTIES OUTPUT_NAME ${PROJECT_NAME}.exe)
@@ -255,9 +269,6 @@ foreach(target ${LLVM_TARGETS_TO_BUILD})
   list(APPEND targets "LLVM${target}CodeGen")
 endforeach()
 
-execute_process(COMMAND gcc -dumpversion OUTPUT_VARIABLE _LIBC_VERSION)
-string(REGEX REPLACE "\n" "" _LIBC_VERSION "${_LIBC_VERSION}")
-
 if (DEFINED ENV{BUILD_FOR_CE})
   add_compile_definitions(_SNOWBALL_BUILD_FOR_CE="1")
 endif()
@@ -267,26 +278,25 @@ FetchContent_MakeAvailable(json)
 
 include(blake3.cmake)
 
-execute_process(COMMAND ${CONFIG_NAME} --ldflags OUTPUT_VARIABLE LLVM_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
-string(REPLACE "\n" " " LLVM_LDFLAGS "${LLVM_LDFLAGS} ${LLVM_LDFLAGS2}")
-string(STRIP ${LLVM_LDFLAGS} LLVM_LDFLAGS)
-
-message(STATUS "${LLVM_LDFLAGS}")
-add_compile_definitions(LLVM_LDFLAGS="${LLVM_LDFLAGS}")
-add_compile_definitions(LIBC_VERSION="${_LIBC_VERSION}")
-
 add_compile_definitions(_SNOWBALL_VERSION="${version}")
 add_compile_definitions(_SNOWBALL_VERSION_NUMBER=${versionID})
 
 message(STATUS "Blake3 source dir: ${BLAKE3_SOURCE_DIR}")
 message(STATUS "LLVM include dirs: ${LLVM_INCLUDE_DIRS}")
+message(STATUS "LLVM link paths: ${LLVM_LIBRARY_DIRS}")
+message(STATUS "LLVM libs: ${llvm_libs}")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${LLVM_INCLUDE_DIRS}
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<INSTALL_INTERFACE:include> ${BLAKE3_SOURCE_DIR} PRIVATE source)
-target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES} nlohmann_json::nlohmann_json fmt::fmt ${BLAKE3_BUILD_DIR}/libblake3.a)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} 
+                     ${targets} ${PROJECT_LIBRARIES} 
+                     nlohmann_json::nlohmann_json fmt::fmt ${BLAKE3_BUILD_DIR}/libblake3.a 
+                     ${LLD_LINKED_LIBS})
+target_link_libraries(snowballexe PUBLIC ${PROJECT_NAME})
+
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
 add_compile_definitions("_SN_DEBUG=$<CONFIG:Debug>")

@@ -113,30 +113,29 @@ class LLVMBuilder : public sil::Builder {
   } dbg;
 
   static void output_object_file(
-          llvm::Module& module, std::filesystem::path path,
-          std::shared_ptr<llvm::LLVMContext> ctx, llvm::TargetMachine* target_machine,
-          EmitType emit_type
+    llvm::Module& module, std::filesystem::path path,
+    std::shared_ptr<llvm::LLVMContext> ctx, llvm::TargetMachine* target_machine,
+    EmitType emit_type
   );
   static void check_and_optimize(
-          llvm::Module* module, llvm::TargetMachine* target_machine, OptLevel opt_level
+    llvm::Module* module, llvm::TargetMachine* target_machine, OptLevel opt_level
   );
-
+  static bool run_linker(
+    const Ctx& ctx, std::filesystem::path obj, std::filesystem::path output,
+    llvm::TargetMachine* target_machine
+  );
 public:
-  LLVMBuilder(
-          const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map,
-          frontend::NamespacePath parent_crate
-  );
+  LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map,
+    frontend::NamespacePath parent_crate);
 
   void build(std::vector<std::shared_ptr<sil::Module>>& modules) override;
   void dump(llvm::raw_ostream& os = llvm::errs()) override;
   int emit(std::filesystem::path path) override;
 
   static int error(const std::string& msg);
-  static int
+  static bool
   link(const Ctx& ctx, std::vector<std::filesystem::path>& paths,
        std::filesystem::path output);
-  static std::optional<std::string>
-  get_linker(const Ctx& ctx, const std::string& triple);
 };
 
 } // namespace backend

@@ -54,15 +54,6 @@ enum class Target
   Unknown
 };
 /**
- * @brief Linker type.
- */
-enum class LinkerType
-{
-  Lld,
-  Mold,
-  Detect
-};
-/**
  * @brief Architecture used by the compiler.
  */
 enum class Arch
@@ -80,21 +71,8 @@ enum class Arch
  *  it does not contain any sort of environment information.
  */
 struct Ctx {
-  BuildMode build_mode;
-  EmitType emit_type;
-  OptLevel opt_level = OptLevel::Release;
-  Target target = Target::Unknown;
-  Arch arch = Arch::Unknown;
-
   std::string config_path = "";
-  std::string custom_cc = "";
-  std::string custom_linker = "";
-  bool static_lib = false;
-  LinkerType linker_type = LinkerType::Detect;
-  utils::TimerType timer = utils::TimerType::None;
-
-  bool verbose = false;
-  bool debug_verbose = false;
+  BuildMode build_mode = BuildMode::Build;
 
   PackageConfig root_package_config = std::nullopt;
   PackageConfig package_config = std::nullopt;

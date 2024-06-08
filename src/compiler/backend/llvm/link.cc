@@ -5,15 +5,14 @@
 #include "compiler/backend/llvm/builder.h"
 
 #include "app/cli.h"
+#include "compiler/globals.h"
 
 #include <llvm/Bitcode/BitcodeWriter.h>
-
-#include <lld/Common/Driver.h>
 
 namespace snowball {
 namespace backend {
 
-int LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths, std::filesystem::path output) {  
+bool LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths, std::filesystem::path output) {  
   auto obj_path = driver::get_workspace_path(ctx, driver::WorkSpaceType::Obj);
   // Get all the llvm bitcode files and link them
   auto builder_ctx = std::make_shared<llvm::LLVMContext>();
@@ -35,9 +34,9 @@ int LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths,
   auto engine = llvm::EngineBuilder();
   auto triple_str = libroot.get()->getTargetTriple();
   auto target_machine = engine.selectTarget(llvm::Triple(triple_str), "", "", llvm::SmallVector<std::string, 1>());
-  check_and_optimize(libroot.get().get(), target_machine, ctx.opt_level);
+  check_and_optimize(libroot.get().get(), target_machine, global.opt_level);
   SNOWBALL_VERBOSE(ctx, "Target triple: " + triple_str);
-  switch (ctx.emit_type) {
+  switch (global.emit_type) {
     case EmitType::LlvmBc: {
       std::error_code ec;
       llvm::raw_fd_ostream os(output.string(), ec, llvm::sys::fs::OF_Text);
@@ -58,52 +57,8 @@ int LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths,
   }
   // Generate object file
   auto obj_output = driver::get_output_path(ctx, ctx.root_package_config.value().project.name + ".tmp");
-  output_object_file(*libroot.get(), obj_output, builder_ctx, target_machine, ctx.emit_type);
-  auto cc = get_linker(ctx, triple_str);
-  if (!cc.has_value())
-    return EXIT_FAILURE;
-  std::vector<std::string> args;
-  args.push_back(cc.value());
-  switch (driver::get_linker_type(ctx)) {
-    case LinkerType::Lld:
-      args.push_back("-fuse-ld=lld");
-      break;
-    case LinkerType::Mold:
-      args.push_back("-fuse-ld=mold");
-      break;
-    default: break;
-  }
-  args.push_back("-o");
-  args.push_back(output.string());
-  args.push_back(obj_output.string());
-  if (driver::cc_is_clang(ctx, cc.value())) {
-    args.push_back("--target=" + triple_str);
-  #ifdef SN_LIN
-    auto path = fmt::format("/usr/{}", triple_str);
-    if (std::filesystem::exists(path)) {
-      args.push_back(fmt::format("--sysroot={}", path));
-    }
-  #endif
-  }
-  args.push_back("-L");
-  args.push_back(driver::get_workspace_path(ctx, driver::WorkSpaceType::Libs).string());
-  for (auto& lib : ctx.package_config.value().build.linkage_libs) {
-    args.push_back("-l" + lib);
-  }
-  if (ctx.static_lib) {
-    args.push_back("-static");
-  }
-  if (ctx.emit_type != EmitType::Executable) {
-    args.push_back("-flinker-output=dyn");
-  }
-  args.push_back("-no-pie");
-  args.push_back("-lm");
-  std::string cmd;
-  for (auto& arg : args) {
-    cmd += arg + " ";
-  }
-  SNOWBALL_VERBOSE(ctx, "Using the following command to link: " + cmd);
-  auto err = std::system(cmd.c_str());
+  output_object_file(*libroot.get(), obj_output, builder_ctx, target_machine, global.emit_type);
+  auto err = run_linker(ctx, obj_output, output, target_machine);
   std::filesystem::remove(obj_output);
   if (err) {
     return error(F("Linking failed with error code: {}", err));
@@ -128,22 +83,6 @@ void LLVMBuilder::output_object_file(llvm::Module& module, std::filesystem::path
   }
   pass.run(module);
   os.flush();
-}
-
-std::optional<std::string> LLVMBuilder::get_linker(const Ctx& ctx, const std::string& triple) {
-  auto cc = driver::get_cc(ctx);
-  auto gcc = fmt::format("{}-gcc", triple);
-  if (!ctx.custom_linker.empty()) {
-    cc = ctx.custom_linker;
-  } else if (cc == "cc" && driver::program_exists(gcc)) {
-    cc = gcc;
-  } else if (!driver::cc_is_clang(ctx, cc)) {
-    error(fmt::format("you are cross compiling to {}, but the linker used ({})"
-      " does not support cross compilation. You can use the `--ld=LINKER` flag to specify a linker that supports cross compilation.",
-      triple, cc));
-    return std::nullopt;
-  }
-  return cc;
 }
 
 }

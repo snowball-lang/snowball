@@ -2,6 +2,8 @@
 #include "compiler/backend/llvm/builder.h"
 #include "compiler/backend/llvm/llvm.h"
 
+#include "compiler/globals.h"
+
 namespace snowball {
 namespace backend {
 
@@ -52,8 +54,8 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*
   builder = std::make_unique<llvm::IRBuilder<>>(*llvm_ctx);
   builder_ctx.module = std::make_unique<llvm::Module>(parent_crate.get_path_string(), *llvm_ctx);
 
-  dbg.debug = ctx.opt_level == OptLevel::Debug 
-            || ctx.opt_level == OptLevel::ReleaseWithDebug;
+  dbg.debug = global.opt_level == OptLevel::Debug 
+            || global.opt_level == OptLevel::ReleaseWithDebug;
 
   dbg.builder = std::make_unique<llvm::DIBuilder>(*builder_ctx.module);
   auto input_file = ctx.package_config.value().project.path;
@@ -86,7 +88,7 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*
 
 std::string LLVMBuilder::get_target_triple() {
   std::string target;
-  switch (vctx.arch) {
+  switch (global.arch) {
     case Arch::X86_64:
       target = "x86_64";
       break;
@@ -95,7 +97,7 @@ std::string LLVMBuilder::get_target_triple() {
       break;
     default: sn_unreachable();
   }
-  switch (vctx.target) {
+  switch (global.target) {
     case Target::Linux:
       target += "-linux-gnu";
       break;

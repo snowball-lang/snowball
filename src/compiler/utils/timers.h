@@ -27,7 +27,7 @@ class Timer {
 public:
   void start(const std::string& name, bool important = false);
   void stop(const std::string& name);
-  void print_all(TimerType type = TimerType::Basic);
+  void print_all();
 };
 
 } // namespace utils

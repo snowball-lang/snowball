@@ -17,7 +17,7 @@ dpkg -l | grep llvm-16
 
 # Manually install if necessary
 sudo apt-get update
-sudo apt-get install liblld-16-dev cmake -y
+sudo apt-get install liblld-16-dev cmake llvm-16-tools libpolly-16-dev -y --reinstall
 
 # Verify directories and binaries
 ls /usr/lib | grep llvm-16

@@ -138,7 +138,7 @@ std::string highlight_quotes(const std::string& message);
 
 #ifndef SNOWBALL_VERBOSE
 #define SNOWBALL_VERBOSE(ctx, message)                                                 \
-  if (ctx.verbose) { utils::Logger::debug(message); }
+  if (global.verbose) { utils::Logger::debug(message); }
 #endif
 
 } // namespace utils

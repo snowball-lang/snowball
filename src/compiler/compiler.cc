@@ -13,6 +13,8 @@
 #include "app/cli.h"
 #include "app/vendor/reky/src/reky.hpp"
 
+#include "compiler/globals.h"
+
 #ifndef SNOWBALL_DUMP_OUTPUT
 #define SNOWBALL_DUMP_OUTPUT 0
 #endif
@@ -34,15 +36,15 @@ bool Compiler::compile() {
     auto sil = run_middleend();
     auto sil_modules = sil.sil_modules;
     auto sil_insts = sil.sil_insts;
-    bool is_object = ctx.emit_type == EmitType::Executable || ctx.emit_type == EmitType::Object
-                  || ctx.emit_type == EmitType::LlvmBc || ctx.emit_type == EmitType::Asm
-                  || ctx.emit_type == EmitType::Llvm;
+    bool is_object = global.emit_type == EmitType::Executable || global.emit_type == EmitType::Object
+                  || global.emit_type == EmitType::LlvmBc || global.emit_type == EmitType::Asm
+                  || global.emit_type == EmitType::Llvm;
     auto last_module_root_path = frontend::NamespacePath::dummy();
     timer.start("Building Output", true);
     for (unsigned i = 0; i < sil_modules.size(); i++) {
       auto module_root_path = module_paths.at(i);
       sil::Builder* builder;
-      switch (ctx.emit_type) {
+      switch (global.emit_type) {
         case EmitType::Llvm:
         case EmitType::Object:
         case EmitType::Executable:
@@ -54,11 +56,11 @@ bool Compiler::compile() {
       }
       auto output_file = driver::get_output_path(ctx, module_root_path[0], false, is_object); 
       if (is_object) {
-        auto emit_type = ctx.emit_type;
+        auto emit_type = global.emit_type;
         // Compile to LLVM bitcode if we are compiling to an executable.
-        ctx.emit_type = EmitType::LlvmBc;
+        global.emit_type = EmitType::LlvmBc;
         output_file = driver::get_output_path(ctx, module_root_path[0], false, is_object);
-        ctx.emit_type = emit_type;
+        global.emit_type = emit_type;
       }
       if (last_module_root_path != module_root_path) {
         object_files.push_back(output_file);
@@ -106,14 +108,14 @@ void Compiler::stop_compilation() {
 }
 
 void Compiler::post_compile() {
-  if (ctx.timer != TimerType::None) {
-    timer.print_all(ctx.timer);
+  if (global.timer_type != TimerType::None) {
+    timer.print_all();
   }
 }
 
 std::string Compiler::get_package_type_string() {
   std::string output = "[";
-  switch (ctx.emit_type) {
+  switch (global.emit_type) {
     case EmitType::Object: output += "object"; break;
     case EmitType::Executable: output += "executable"; break;
     case EmitType::Asm: output += "assembly"; break;
@@ -122,14 +124,14 @@ std::string Compiler::get_package_type_string() {
     case EmitType::Ast: output += "ast"; break;
     case EmitType::LlvmBc: output += "llvm-bc"; break;
   }
-  switch (ctx.opt_level) {
+  switch (global.opt_level) {
     case OptLevel::Debug: output += " + debug"; break;
     case OptLevel::Release: output += " + release"; break;
     case OptLevel::ReleaseFast: output += " + release-fast"; break;
     case OptLevel::ReleaseWithDebug: output += " + release-with-debug"; break;
   }
   output += "]";
-  switch (ctx.target) {
+  switch (global.target) {
     case Target::Linux: output += " (linux)"; break;
     case Target::MacOS: output += " (macos)"; break;
     case Target::Windows: output += " (windows)"; break;

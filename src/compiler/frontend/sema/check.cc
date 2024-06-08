@@ -8,6 +8,8 @@
 #include "compiler/frontend/sema/universe.h"
 #include "compiler/frontend/sema/check.h"
 
+#include "compiler/globals.h"
+
 namespace snowball {
 namespace frontend {
 namespace sema {
@@ -62,7 +64,7 @@ void TypeChecker::post_check() {
   if (get_error_count() > 0)
     return;
 
-  if (vctx.emit_type == EmitType::Executable && !has_entry_declared) {
+  if (global.emit_type == EmitType::Executable && !has_entry_declared) {
     err(SourceLocation(0, 0, 0, std::make_shared<SourceFile>()), "No entry point function found!", Error::Info {
       .highlight = "No main function found",
       .help = "You need to define a main function to compile an executable"

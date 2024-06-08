@@ -5,17 +5,19 @@
 #include "compiler/utils/utils.h"
 #include "compiler/utils/hash.h"
 
+#include "compiler/globals.h"
+
 namespace snowball {
 namespace driver {
 
 std::filesystem::path get_output_path(const Ctx& ctx, const std::string& name, bool for_linking, bool for_object_file) {
-  auto emit_type = ctx.emit_type;
+  auto emit_type = global.emit_type;
   auto output_name = name;
   if (for_object_file)
     output_name = utils::hash::hashString(name);
   auto workspace = for_linking ? WorkSpaceType::Bin : (for_object_file ? WorkSpaceType::Obj : WorkSpaceType::Build);
   auto default_output_path = get_workspace_path(ctx, workspace);
-  if (for_object_file && ctx.emit_type == EmitType::Executable) {
+  if (for_object_file && global.emit_type == EmitType::Executable) {
     emit_type = EmitType::LlvmBc;
   }
   switch (emit_type) {
@@ -24,7 +26,7 @@ std::filesystem::path get_output_path(const Ctx& ctx, const std::string& name, b
     case EmitType::LlvmBc:
       return default_output_path / (output_name + ".bc");
     case EmitType::Object:{
-      switch (ctx.target) {
+      switch (global.target) {
         case Target::Windows:
           return default_output_path / (output_name + ".obj");
         case Target::Linux:
@@ -35,7 +37,7 @@ std::filesystem::path get_output_path(const Ctx& ctx, const std::string& name, b
       }
     } break;
     case EmitType::Executable:{
-      switch (ctx.target) {
+      switch (global.target) {
         case Target::Windows:
           return default_output_path / (output_name + ".exe");
         case Target::Linux:
@@ -45,7 +47,7 @@ std::filesystem::path get_output_path(const Ctx& ctx, const std::string& name, b
       }
     } break;
     case EmitType::Asm:{
-      switch (ctx.target) {
+      switch (global.target) {
         case Target::Windows:
           return default_output_path / (output_name + ".asm");
         case Target::Linux:
@@ -93,23 +95,6 @@ std::filesystem::path get_workspace_path(const Ctx& ctx, WorkSpaceType type) {
   }
 }
 
-std::string get_cc(const Ctx& ctx) {
-  if (ctx.custom_cc != "") {
-    return ctx.custom_cc;
-  }
-  if (auto cc = std::getenv("SNOWBALL_CC"); cc != nullptr) {
-    return cc;
-  }
-  switch (ctx.target) {
-    case Target::Windows:
-      return "cl";
-    case Target::Linux:
-    case Target::MacOS:
-      return "cc";
-    default: sn_unreachable();
-  }
-}
-
 int run(const Ctx& ctx, const std::string& output) {
   std::vector<std::string> args;
   args.push_back(output);
@@ -138,31 +123,11 @@ std::filesystem::path get_snowball_home() {
   return std::filesystem::path(home) / ".snowball";
 }
 
-LinkerType get_linker_type(const Ctx& ctx) {
-  if (ctx.linker_type == LinkerType::Detect) {
-    if (program_exists("ld.mold") && ctx.target != Target::MacOS) {
-      return LinkerType::Mold;
-    } else if (program_exists("ld.lld")) {
-      return LinkerType::Lld;
-    }
-  }
-  return ctx.linker_type;
-}
-
 bool program_exists(const std::string& name) {
 #ifdef SN_WIN
   return std::system(("where " + name + " > nul 2>&1").c_str()) == 0;
 #else
   return std::system(("which " + name + " > /dev/null 2>&1").c_str()) == 0;
-#endif
-}
-
-bool cc_is_clang(const Ctx& ctx, const std::string& cc) {
-#ifdef SN_WIN
-  return run(ctx, cc + " --version 2>&1 | findstr /C:\"clang version\"") == 0;
-#else
-  // Check if we find "clang version" in the output of the compiler
-  return run(ctx, cc + " --version 2>&1 | grep -q 'clang version'") == 0;
 #endif
 }
 

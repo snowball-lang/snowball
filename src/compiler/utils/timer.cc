@@ -3,6 +3,8 @@
 #include "compiler/utils/logger.h"
 #include "compiler/utils/utils.h"
 
+#include "compiler/globals.h"
+
 namespace snowball {
 namespace utils {
 
@@ -14,7 +16,8 @@ void Timer::stop(const std::string& name) {
   times_end.push_back({name, std::chrono::high_resolution_clock::now()});
 }
 
-void Timer::print_all(TimerType type) {
+void Timer::print_all() {
+  auto type = global.timer_type;
   Logger::status("Timings", "Printing all times...");
   Logger::raw("\n");
   int longest_name = 0;

@@ -2,6 +2,8 @@
 #include "compiler/frontend/ast/nodes.h"
 #include "compiler/frontend/sema/check.h"
 
+#include "compiler/globals.h"
+
 namespace snowball {
 namespace frontend {
 namespace sema {
@@ -14,7 +16,7 @@ ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::s
   node->get_type() = nullptr;
   auto state = get_generic_context(node->get_generic_id());
   node->set_generic_instanced();
-  if (vctx.debug_verbose) {
+  if (global.debug_verbose) {
     std::string gen_str;
     for (auto& [name, type] : deduced)
       gen_str += "<" + name + ": " + type->get_printable_name() + ">, ";
@@ -58,7 +60,7 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const std::map<
   node->get_type() = nullptr;
   auto state = get_generic_context(node->get_id());
   node->set_generic_instanced();
-  if (vctx.debug_verbose) {
+  if (global.debug_verbose) {
     std::string gen_str;
     for (auto& [name, type] : generics)
       gen_str += "<" + name + ": " + type->get_printable_name() + ">, ";

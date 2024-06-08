@@ -5,6 +5,8 @@
 
 #include <llvm/Bitcode/BitcodeWriter.h>
 
+#include "compiler/globals.h"
+
 namespace snowball {
 namespace backend {
 
@@ -19,7 +21,7 @@ int LLVMBuilder::emit(std::filesystem::path path) {
   sn_assert(!ec, "Failed to open file: " + path.string() + ".hash");
   hos << file_name;
   hos.flush();
-  if (vctx.emit_type == EmitType::Llvm) {
+  if (global.emit_type == EmitType::Llvm) {
     // Replace .bc with .ll
     auto new_path = path;
     new_path.replace_extension(".ll");

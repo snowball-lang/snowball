@@ -10,6 +10,9 @@
 #include "compiler/reports/error.h"
 #include "compiler/frontend/location.h"
 
+#include "compiler/globals.h"
+#include "compiler/cl_args.h"
+
 #define CONFY_USE_UTILS
 #include "app/vendor/confy/src/confy.hpp"
 
@@ -26,24 +29,6 @@ CLI::CLI() {}
 Ctx CLI::parse(int argc, char** argv) {
   // TODO:
   Ctx ctx;
-  ctx.build_mode = BuildMode::Build;
-  ctx.emit_type = EmitType::Llvm;
-#ifdef SN_WIN
-  ctx.target = Target::Windows;
-#elif defined(SN_LIN)
-  ctx.target = Target::Linux;
-#elif defined(SN_MAC)
-  ctx.target = Target::MacOS;
-#elif defined(SN_UNK)
-  ctx.target = Target::Unknown;
-#else
-#error "Unknown target compiler"
-#endif
-#ifdef SN_X86_64
-  ctx.arch = Arch::X86_64;
-#elif defined(SN_ARM64)
-  ctx.arch = Arch::Arm64;
-#endif
   cl::SetVersionPrinter([](raw_ostream & OS) {
       OS SNOWBALL_PRINT_MESSAGE;
     });
@@ -53,13 +38,14 @@ Ctx CLI::parse(int argc, char** argv) {
   for (int i = 2; i < argc; i++)
     args.push_back(argv[i]);
   std::string mode = argv[1];
+
   cl::OptionCategory category("General Snowball Options");
   cl::opt<std::string> config("config", cl::desc("Path to the configuration file"), cl::cat(category));
   if (mode == "build") {
     make_build(ctx, args);
   } else if (mode == "run") {
     make_build(ctx, args, true);
-    ctx.emit_type = EmitType::Executable;
+    global.emit_type = EmitType::Executable;
   } else if (mode == "init" || mode == "new") {
     make_init(ctx, args, mode == "new");
   } else if (mode == "reky") {
@@ -90,84 +76,16 @@ void CLI::print_help(Args& args) {
 }
 
 void CLI::parse_args(Args& args) {
-  cl::ParseCommandLineOptions(args.size(), args.data(), "Snowball Compiler", nullptr, nullptr, true);
+  opts::register_globals();
+  cl::ParseCommandLineOptions(args.size(), args.data(), "Snowball Compiler", nullptr, nullptr, false);
 }
 
 void CLI::make_build(Ctx& ctx, Args& args, bool for_run) {
   ctx.build_mode = for_run ? BuildMode::Run : BuildMode::Build;
-  cl::OptionCategory category(for_run ? "Run Options" : "Build Options");
-  cl::opt<OptLevel> opt_level("O", cl::desc("Optimisation level"), cl::values(
-    clEnumValN(OptLevel::Release, "release", "Release build"),
-    clEnumValN(OptLevel::Debug, "debug", "Debug build"),
-    clEnumValN(OptLevel::ReleaseWithDebug, "release-with-debug", "Release build with debug info"),
-    clEnumValN(OptLevel::ReleaseFast, "release-fast", "Release build with fast optimisations")
-  ), cl::init(OptLevel::Debug), cl::cat(category));
-  cl::opt<std::string> cc("cc", cl::desc("Custom C compiler"), cl::cat(category));
-  cl::opt<std::string> ld("ld", cl::desc("Custom linker"), cl::cat(category));
-  cl::opt<LinkerType> linker_type("linker", cl::desc("Linker type"), cl::values(
-    clEnumValN(LinkerType::Lld, "lld", "LLD"),
-    clEnumValN(LinkerType::Mold, "mold", "Mold"),
-    clEnumValN(LinkerType::Detect, "detect", "Detect")
-  ), cl::init(LinkerType::Detect), cl::cat(category));
-  cl::opt<bool> verbose("verbose", cl::desc("Verbose output"), cl::cat(category));
-  cl::opt<bool> debug_verbose("debug-verbose", cl::desc("Debug verbose output"), cl::cat(category));
-  cl::opt<EmitType>* emit_type = nullptr;
-  cl::opt<Arch>* arch = nullptr;
-  cl::opt<Target>* target = nullptr;
-  cl::opt<bool>* static_link = nullptr;
-  cl::opt<utils::TimerType>* timer_type = nullptr;
-  if (!for_run) {
-    emit_type = new cl::opt<EmitType>("emit", cl::desc("Emit type"), cl::values(
-      clEnumValN(EmitType::Llvm, "llvm-ir", "LLVM IR"),
-      clEnumValN(EmitType::Asm, "asm", "Assembly"),
-      clEnumValN(EmitType::Object, "obj", "Object file"),
-      clEnumValN(EmitType::Executable, "exec", "Executable file"),
-      clEnumValN(EmitType::Ast, "ast", "Abstract Syntax Tree"),
-      clEnumValN(EmitType::Sil, "sil", "Snowball Intermediate Language"),
-      clEnumValN(EmitType::LlvmBc, "llvm-bc", "LLVM Bitcode")
-    ), cl::init(EmitType::Executable), cl::cat(category));
-    target = new cl::opt<Target>("target", cl::desc("Target OS"), cl::values(
-      clEnumValN(Target::Windows, "windows", "Windows"),
-      clEnumValN(Target::Linux, "linux", "Linux"),
-      clEnumValN(Target::MacOS, "macos", "macOS")
-    ), cl::init(Target::Unknown), cl::cat(category));
-    timer_type = new cl::opt<utils::TimerType>("timer", cl::desc("Show snowball's performance on different stages"), cl::values(
-      clEnumValN(utils::TimerType::None, "none", "None"),
-      clEnumValN(utils::TimerType::Full, "full", "Full"),
-      clEnumValN(utils::TimerType::Basic, "basic", "Show")
-    ), cl::init(utils::TimerType::None), cl::cat(category));
-    arch = new cl::opt<Arch>("arch", cl::desc("Architecture"), cl::values(
-      clEnumValN(Arch::X86_64, "x86_64", "x86_64"),
-      clEnumValN(Arch::Arm64, "arm64", "Arm64")
-    ), cl::init(Arch::Unknown), cl::cat(category));
-    static_link = new cl::opt<bool>("static", cl::desc("Static linkage"), cl::cat(category));
-  }
   parse_args(args);
-  ctx.opt_level = opt_level;
-  ctx.custom_cc = cc;
-  ctx.custom_linker = ld;
-  ctx.linker_type = linker_type;  
-  ctx.verbose = verbose;
-  ctx.debug_verbose = debug_verbose;
-  if (timer_type) {
-    ctx.timer = *timer_type;
-    delete timer_type;
-  }
-  if (emit_type) {
-    ctx.emit_type = *emit_type;
-    delete emit_type;
-  }
-  if (target && *target != Target::Unknown) {
-    ctx.target = *target;
-    delete target;
-  }
-  if (arch && *arch != Arch::Unknown) {
-    ctx.arch = *arch;
-    delete arch;
-  }
-  if (static_link) {
-    ctx.static_lib = *static_link;
-    delete static_link;
+  if (for_run && global.emit_type != EmitType::Executable) {
+    Logger::error("Run mode only supports executable output");
+    exit(EXIT_FAILURE);
   }
 }
 
