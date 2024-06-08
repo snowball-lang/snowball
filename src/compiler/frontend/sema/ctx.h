@@ -20,7 +20,7 @@ namespace snowball {
 namespace frontend {
 namespace sema {
 
-class TypeCheckItem final : public LifetimeHelper {
+class TypeCheckItem final : public Borrowed {
 public:
   enum Kind 
   {

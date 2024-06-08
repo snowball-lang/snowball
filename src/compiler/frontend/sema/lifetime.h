@@ -14,30 +14,33 @@ namespace snowball {
 namespace frontend {
 namespace sema {
 
-enum class LifetimeStatus 
+enum class BorrowStatus 
 {
   None = 0,
   Uninitialized,
   Initialized,
-  Dropped
+  Borrowed,
+  MutablyBorrowed,
 };
 
-class LifetimeHelper {
-  LifetimeStatus status = LifetimeStatus::None;
+class Borrowed {
+  BorrowStatus status = BorrowStatus::None;
 public:
-  LifetimeHelper() = default;
-  virtual ~LifetimeHelper() = default;
+  Borrowed() = default;
+  virtual ~Borrowed() = default;
 
-  void set_status(LifetimeStatus status) { this->status = status; }
-  LifetimeStatus get_status() const { return status; }
+  void set_status(BorrowStatus status) { this->status = status; }
+  BorrowStatus get_status() const { return status; }
 
-  void set_uninitialized() { set_status(LifetimeStatus::Uninitialized); }
-  void set_initialized() { set_status(LifetimeStatus::Initialized); }
-  void set_dropped() { set_status(LifetimeStatus::Dropped); }
+  void set_uninitialized() { set_status(BorrowStatus::Uninitialized); }
+  void set_initialized() { set_status(BorrowStatus::Initialized); }
+  void set_borrowed() { set_status(BorrowStatus::Borrowed); }
+  void set_mutably_borrowed() { set_status(BorrowStatus::MutablyBorrowed); }
 
-  bool is_uninitialized() const { return get_status() == LifetimeStatus::Uninitialized; }
-  bool is_initialized() const { return get_status() == LifetimeStatus::Initialized; }
-  bool is_dropped() const { return get_status() == LifetimeStatus::Dropped; }
+  bool is_uninitialized() const { return get_status() == BorrowStatus::Uninitialized; }
+  bool is_initialized() const { return get_status() == BorrowStatus::Initialized; }
+  bool is_borrowed() const { return get_status() == BorrowStatus::Borrowed; }
+  bool is_mutably_borrowed() const { return get_status() == BorrowStatus::MutablyBorrowed; }
 };
 
 } // namespace sema
