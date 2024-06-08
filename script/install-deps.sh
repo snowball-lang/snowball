@@ -1,11 +1,32 @@
-#/usr/bin/env bash
+set -ex
 
+# Download the llvm.sh script
 wget https://apt.llvm.org/llvm.sh
+
+# Make the script executable
 chmod +x llvm.sh
+
+# Run the script to install LLVM 16
 sudo ./llvm.sh 16
 
+# Clean up
 rm llvm.sh
 
-sudo apt update
+# Verify installation
+dpkg -l | grep llvm-16
 
-sudo apt install cmake libzstd-dev -y
+# Manually install if necessary
+sudo apt-get update
+sudo apt-get install liblld-16-dev cmake -y
+
+# Verify directories and binaries
+ls /usr/lib | grep llvm-16
+ls /usr/bin | grep llvm
+ls /usr/bin | grep lld
+
+ls /usr/lib/llvm-16/include
+
+# Verify versions
+llvm-config-16 --version
+
+

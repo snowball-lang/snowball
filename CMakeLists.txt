@@ -89,14 +89,14 @@ else()
 endif()
 
 find_package(LLVM 16 REQUIRED CONFIG)
+
+add_definitions(${LLVM_DEFINITIONS})
 set(LLVM_ENABLE_BACKTRACES OFF CACHE BOOL "" FORCE)
 set(LLVM_ENABLE_PER_TARGET_RUNTIME_DIR ON CACHE BOOL "" FORCE)
 set(LLVM_ENABLE_TERMINFO OFF CACHE BOOL "" FORCE)
 set(LLVM_ENABLE_ZLIB OFF CACHE BOOL "" FORCE)
 set(LLVM_INCLUDE_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(LLVM_INCLUDE_DOCS OFF CACHE BOOL "" FORCE)
-
-add_definitions(${LLVM_DEFINITIONS})
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -158,7 +158,6 @@ if(backtrace_ADDED)
 endif()
 
 message(STATUS ${LLVM_DEFINITIONS})
-message(STATUS ${LLVM_CONFIG})
 message(STATUS ${LLVM_ENABLE_ZLIB})
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
@@ -219,6 +218,7 @@ llvm_map_components_to_libnames(llvm_libs
   Vectorize
   nativecodegen
   ExecutionEngine
+  Linker
 )
 
 ##################################################    Targets     ##################################################
@@ -258,34 +258,9 @@ endforeach()
 execute_process(COMMAND gcc -dumpversion OUTPUT_VARIABLE _LIBC_VERSION)
 string(REGEX REPLACE "\n" "" _LIBC_VERSION "${_LIBC_VERSION}")
 
-
-set (STATICLIB_DIR ".snowball")
-set (_SNOWBALL_LIBRARY_OBJ "lib")
-set (_SNOWBALL_LIBRARY_DIR "stdlib")
-
 if (DEFINED ENV{BUILD_FOR_CE})
   add_compile_definitions(_SNOWBALL_BUILD_FOR_CE="1")
 endif()
-
-# if macos
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  add_compile_definitions(LD_PATH="gcc")
-else()
-  add_compile_definitions(LD_PATH="ld")
-endif()
-
-add_compile_definitions(STATICLIB_DIR="${STATICLIB_DIR}")
-
-add_compile_definitions(_SNOWBALL_LIBRARY_OBJ="${_SNOWBALL_LIBRARY_OBJ}")
-add_compile_definitions(_SNOWBALL_LIBRARY_DIR="${_SNOWBALL_LIBRARY_DIR}")
-add_compile_definitions(_SNOWBALL_LLVM_PACKAGE_VERSION="${LLVM_PACKAGE_VERSION}")
-
-set(CONFIG_NAME "llvm-config")
-if (NOT "${LLVM_CONFIG_EXECUTABLE}" STREQUAL "")
-  set(CONFIG_NAME "${LLVM_CONFIG_EXECUTABLE}")
-  unset(LLVM_CONFIG_EXECUTABLE CACHE)
-endif()
-find_program(LLVM_CONFIG_EXECUTABLE NAMES "${CONFIG_NAME}" "${CONFIG_NAME}-14")
 
 FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz)
 FetchContent_MakeAvailable(json)
@@ -304,14 +279,14 @@ add_compile_definitions(_SNOWBALL_VERSION="${version}")
 add_compile_definitions(_SNOWBALL_VERSION_NUMBER=${versionID})
 
 message(STATUS "Blake3 source dir: ${BLAKE3_SOURCE_DIR}")
+message(STATUS "LLVM include dirs: ${LLVM_INCLUDE_DIRS}")
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${LLVM_INCLUDE_DIRS}
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<INSTALL_INTERFACE:include> ${BLAKE3_SOURCE_DIR} PRIVATE source)
-    target_include_directories(${PROJECT_NAME} PUBLIC ${LLVM_INCLUDE_DIRS} ${PROJECT_INCLUDE_DIRS} ${backtrace_INCLUDE_DIRS})
-    target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES} nlohmann_json::nlohmann_json fmt::fmt ${BLAKE3_BUILD_DIR}/libblake3.a)
+target_link_libraries     (${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} ${llvm_libraries} ${targets} ${PROJECT_LIBRARIES} nlohmann_json::nlohmann_json fmt::fmt ${BLAKE3_BUILD_DIR}/libblake3.a)
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC ${PROJECT_COMPILE_DEFINITIONS})
 add_compile_definitions("_SN_DEBUG=$<CONFIG:Debug>")

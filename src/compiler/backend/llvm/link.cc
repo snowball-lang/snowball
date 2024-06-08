@@ -8,6 +8,8 @@
 
 #include <llvm/Bitcode/BitcodeWriter.h>
 
+#include <lld/Common/Driver.h>
+
 namespace snowball {
 namespace backend {
 
