@@ -24,6 +24,7 @@ bool TypeChecker::try_cast(ast::Expr*& node, ast::types::Type* to) {
       break;
     case CastType::AutoRef:
       node = ast::Reference::create(node->get_location(), node);
+      node->accept(this);
       node->get_type() = to;
       break;
     case CastType::AutoDeref:

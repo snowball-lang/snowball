@@ -106,8 +106,8 @@ void TypeChecker::define_variable(ast::VarDecl* node, const SourceLocation& loc,
   }
   auto item = TypeCheckItem::create_var(node);
   if (initialized) {
-    item.set_initialized();
-  } else item.set_uninitialized();
+    node->set_initialized();
+  } else node->set_uninitialized();
   universe.add_item(node->get_name(), item);
   universe.add_var_id(node->get_id(), node);
 }

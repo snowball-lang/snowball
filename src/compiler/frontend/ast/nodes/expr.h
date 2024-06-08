@@ -250,18 +250,19 @@ public:
 
 class Reference final : public Self<Reference>, public Expr {
   Expr* expr;
+  bool is_mut = false;
 
 public:
-  Reference(const SourceLocation& location, Expr* expr)
-    : Expr(location)
-    , expr(expr) {}
+  Reference(const SourceLocation& location, Expr* expr, bool is_mut)
+    : Expr(location), expr(expr), is_mut(is_mut) {}
   ~Reference() = default;
 
   auto get_expr() const { return expr; }
+  auto is_mutable() const { return is_mut; }
   Node* clone() const override;
 
-  static auto create(const SourceLocation& location, Expr* expr) {
-    return new Reference(location, expr);
+  static auto create(const SourceLocation& location, Expr* expr, bool is_mut = false) {
+    return new Reference(location, expr, is_mut);
   }
 
   SN_VISIT()

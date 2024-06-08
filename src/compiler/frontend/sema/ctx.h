@@ -14,13 +14,12 @@
 #include "compiler/utils/utils.h"
 
 #include "compiler/frontend/sema/uuids.h"
-#include "compiler/frontend/sema/lifetime.h"
 
 namespace snowball {
 namespace frontend {
 namespace sema {
 
-class TypeCheckItem final : public Borrowed {
+class TypeCheckItem final {
 public:
   enum Kind 
   {

@@ -12,7 +12,7 @@
 
 namespace snowball {
 namespace frontend {
-namespace sema {
+namespace ast {
 
 enum class BorrowStatus 
 {
@@ -23,11 +23,11 @@ enum class BorrowStatus
   MutablyBorrowed,
 };
 
-class Borrowed {
+class Borrowable {
   BorrowStatus status = BorrowStatus::None;
 public:
-  Borrowed() = default;
-  virtual ~Borrowed() = default;
+  Borrowable() = default;
+  virtual ~Borrowable() = default;
 
   void set_status(BorrowStatus status) { this->status = status; }
   BorrowStatus get_status() const { return status; }

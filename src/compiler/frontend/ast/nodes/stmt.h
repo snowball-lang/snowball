@@ -6,10 +6,12 @@
 #include <string>
 #include <vector>
 
+#include "compiler/utils/id.h"
+#include "compiler/utils/clone.h"
 #include "compiler/frontend/ast/nodes/expr.h"
 #include "compiler/frontend/ast/nodes/other.h"
-#include "compiler/utils/clone.h"
-#include "compiler/utils/id.h"
+
+#include "compiler/frontend/ast/borrows.h"
 
 namespace snowball {
 namespace frontend {
@@ -97,7 +99,8 @@ public:
   SN_VISIT()
 };
 
-class VarDecl final : public Stmt, public AttributedNode, public Identified, public ModuleHolder {
+class VarDecl final : public Stmt, public AttributedNode, public Identified, 
+    public ModuleHolder, public Borrowable {
   std::string name;
   std::optional<TypeRef> decl_type;
   std::optional<Expr*> value;
@@ -110,20 +113,12 @@ public:
   VarDecl(const SourceLocation& location, const std::string& name,
           std::optional<TypeRef> type, std::optional<Expr*> value,
           const AttributedNode& attributes = AttributedNode())
-    : Stmt(location)
-    , AttributedNode(attributes)
-    , name(name)
-    , decl_type(type)
-    , value(value) {}
+    : Stmt(location), AttributedNode(attributes), name(name), decl_type(type), value(value) {}
   VarDecl(const SourceLocation& location, const std::string& name,
           std::optional<TypeRef> type, std::optional<Expr*> value, FnDecl* arg_for,
           const AttributedNode& attributes = AttributedNode())
-    : Stmt(location)
-    , AttributedNode(attributes)
-    , name(name)
-    , decl_type(type)
-    , value(value)
-    , arg_for(arg_for) {}
+    : Stmt(location), AttributedNode(attributes), name(name), 
+      decl_type(type), value(value), arg_for(arg_for) {}
   ~VarDecl() = default;
 
   auto& get_name() const { return name; }

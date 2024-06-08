@@ -98,7 +98,8 @@ private:
   // This function should only be called in specific deduce-cases, like in assigments,
   // function calls, etc.
   // @note Return value may be nullptr
-  ast::Stmt* do_deduce(ast::Expr* expr);
+  // @param just_fetch If true, it will only fetch the variable and not deduce it's type
+  ast::Stmt* do_deduce(ast::Expr* expr, bool just_fetch = false);
 
   ast::types::UnknownType* get_unknown_type();
   ast::types::ErrorType* get_error_type();
