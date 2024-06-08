@@ -103,7 +103,7 @@ private:
   ast::types::UnknownType* get_unknown_type();
   ast::types::ErrorType* get_error_type();
 
-  void define_variable(ast::VarDecl* node, const SourceLocation& loc);
+  void define_variable(ast::VarDecl* node, const SourceLocation& loc, bool initialized = false);
   std::optional<std::string> get_did_you_mean(const std::string& name);
 
   ast::FnDecl* get_best_match(

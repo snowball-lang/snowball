@@ -14,14 +14,15 @@
 #include "compiler/utils/utils.h"
 
 #include "compiler/frontend/sema/uuids.h"
+#include "compiler/frontend/sema/lifetime.h"
 
 namespace snowball {
 namespace frontend {
 namespace sema {
 
-class TypeCheckItem final {
+class TypeCheckItem final : public LifetimeHelper {
 public:
-  enum Kind
+  enum Kind 
   {
     Func,
     Type,
@@ -31,66 +32,40 @@ public:
 
 private:
   Kind kind;
+  NamespacePath module = NamespacePath::dummy();
+  std::vector<ast::FnDecl*> funcs;
   union {
-    // TODO:
     ast::types::Type* type;
     ast::VarDecl* var;
   };
-  NamespacePath module = NamespacePath::dummy();
-  std::vector<ast::FnDecl*> funcs;
 
 public:
   ~TypeCheckItem() = default;
-  TypeCheckItem(ast::types::Type* type)
-    : kind(Kind::Type)
-    , type(type) {}
-  TypeCheckItem(ast::VarDecl* var)
-    : kind(Kind::Var)
-    , var(var) {}
-  TypeCheckItem(std::vector<ast::FnDecl*>& funcs)
-    : kind(Kind::Func)
-    , funcs(funcs) {}
-  TypeCheckItem(const NamespacePath& module)
-    : kind(Kind::Module)
-    , module(module) {}
 
-  auto get_kind() const { return kind; }
-  auto get_type() const {
-    assert(is_type());
-    return type;
-  }
-  auto get_var() const {
-    assert(is_var());
-    return var;
-  }
-  auto get_funcs() const {
-    assert(is_func());
-    return funcs;
-  }
-  auto get_module() const {
-    assert(is_module());
-    return module;
-  }
+  // Constructors
+  TypeCheckItem(ast::types::Type* type);
+  explicit TypeCheckItem(ast::VarDecl* var);
+  explicit TypeCheckItem(const std::vector<ast::FnDecl*>& funcs);
+  explicit TypeCheckItem(const NamespacePath& module);
 
-  bool is_type() const { return kind == Kind::Type; }
-  bool is_func() const { return kind == Kind::Func; }
-  bool is_var() const { return kind == Kind::Var; }
-  bool is_module() const { return kind == Kind::Module; }
+  // Accessors
+  Kind get_kind() const;
+  ast::types::Type* get_type() const;
+  ast::VarDecl* get_var() const;
+  const std::vector<ast::FnDecl*>& get_funcs() const;
+  const NamespacePath& get_module() const;
 
-  static auto create_type(ast::types::Type* type) { return TypeCheckItem(type); }
+  // Type checkers
+  bool is_type() const;
+  bool is_func() const;
+  bool is_var() const;
+  bool is_module() const;
 
-  static auto
-  create_var(ast::VarDecl* var) {
-    return TypeCheckItem(var);
-  }
-
-  static auto create_fn_decl(std::vector<ast::FnDecl*> funcs) {
-    return TypeCheckItem(funcs);
-  }
-
-  static auto create_module(const NamespacePath& module) {
-    return TypeCheckItem(module);
-  }
+  // Static factory methods
+  static TypeCheckItem create_type(ast::types::Type* type);
+  static TypeCheckItem create_var(ast::VarDecl* var);
+  static TypeCheckItem create_fn_decl(const std::vector<ast::FnDecl*>& funcs);
+  static TypeCheckItem create_module(const NamespacePath& module);
 };
 
 class NameAccumulator final {

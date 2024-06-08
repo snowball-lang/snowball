@@ -104,7 +104,6 @@ void Compiler::stop_compilation() {
 }
 
 void Compiler::post_compile() {
-  auto t = global;
   if (global.timer_type != TimerType::None) {
     timer.print_all();
   }

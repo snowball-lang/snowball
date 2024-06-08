@@ -95,7 +95,7 @@ NamespacePath TypeChecker::get_namespace_path(const std::string& name) {
   return path;
 }
 
-void TypeChecker::define_variable(ast::VarDecl* node, const SourceLocation& loc) {
+void TypeChecker::define_variable(ast::VarDecl* node, const SourceLocation& loc, bool initialized) {
   if (universe.current_scope().get_item(node->get_name()).has_value()) {
     err(node->get_location(), fmt::format("Variable '{}' already defined in this scope", node->get_name()),
     Error::Info {
@@ -104,7 +104,11 @@ void TypeChecker::define_variable(ast::VarDecl* node, const SourceLocation& loc)
       .note = "You can create a new lexical scope to define a new variable with the same name."
     }, Error::Type::Err, false);
   }
-  universe.add_item(node->get_name(), TypeCheckItem::create_var(node));
+  auto item = TypeCheckItem::create_var(node);
+  if (initialized) {
+    item.set_initialized();
+  } else item.set_uninitialized();
+  universe.add_item(node->get_name(), item);
   universe.add_var_id(node->get_id(), node);
 }
 

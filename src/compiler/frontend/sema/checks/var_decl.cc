@@ -21,7 +21,7 @@ void TypeChecker::visit(ast::VarDecl* node) {
     unify(node->get_type(), get_unknown_type());
   }
   assert(node->get_type() != nullptr);
-  define_variable(node, node->get_location());
+  define_variable(node, node->get_location(), node->get_value().has_value());
 }
 
 }

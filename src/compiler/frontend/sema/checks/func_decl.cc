@@ -30,7 +30,7 @@ void TypeChecker::visit(ast::FnDecl* node) {
     assert(node->get_params().at(i)->get_type() != nullptr);
     auto param = node->get_params().at(i);
     param->mutate_arg_for(node);
-    define_variable(param, param->get_location());
+    define_variable(param, param->get_location(), true);
   }
   if (auto block = node->get_body()) {
     block.value()->accept(this);
