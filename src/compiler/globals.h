@@ -56,6 +56,10 @@ struct GlobalContext {
 #error "Unknown architecture"
 #endif
   bool static_link = false;
+
+  bool debug_opt() const {
+    return opt_level == OptLevel::Debug || opt_level == OptLevel::ReleaseWithDebug;
+  }
 };
 
 extern GlobalContext global;

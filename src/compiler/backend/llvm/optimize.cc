@@ -1,4 +1,5 @@
 
+#include "compiler/globals.h"
 #include "compiler/backend/llvm/builder.h"
 
 namespace snowball {
@@ -22,9 +23,9 @@ void applyDebugTransformations(llvm::Module* module, bool debug) {
 }
 } // namespace
 
-void LLVMBuilder::check_and_optimize(llvm::Module* module, llvm::TargetMachine* target_machine, OptLevel opt_level) {
-  auto debug = opt_level == OptLevel::Debug 
-            || opt_level == OptLevel::ReleaseWithDebug;
+void LLVMBuilder::check_and_optimize(llvm::Module* module, llvm::TargetMachine* target_machine) {
+  auto debug = global.debug_opt();
+  auto opt_level = global.opt_level;
   
   llvm::legacy::PassManager pass_manager;
   pass_manager.add(llvm::createPromoteMemoryToRegisterPass());

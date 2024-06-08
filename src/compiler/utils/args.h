@@ -19,24 +19,26 @@ public:
   ArgsBuilder& operator=(ArgsBuilder&&) = default;
   ~ArgsBuilder() = default;
 
-  ArgsBuilder& add(const std::string& arg) {
+  void add(const std::string& arg) {
     args.push_back(arg);
-    return *this;
   }
 
-  ArgsBuilder& add(const std::vector<std::string>& arg) {
+  void add(const std::vector<std::string>& arg) {
     args.insert(args.end(), arg.begin(), arg.end());
-    return *this;
   }
 
-  ArgsBuilder& add(const ArgsBuilder& arg) {
+  void add(const ArgsBuilder& arg) {
     args.insert(args.end(), arg.args.begin(), arg.args.end());
-    return *this;
   }
 
-  ArgsBuilder& add(const ArgsBuilder&& arg) {
+  void add(const std::vector<const char*>& arg) {
+    for (const auto& a : arg) {
+      args.push_back(a);
+    }
+  }
+
+  void add(const ArgsBuilder&& arg) {
     args.insert(args.end(), arg.args.begin(), arg.args.end());
-    return *this;
   }
 
   virtual std::vector<std::string> build() {

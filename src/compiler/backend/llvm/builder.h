@@ -118,7 +118,7 @@ class LLVMBuilder : public sil::Builder {
     EmitType emit_type
   );
   static void check_and_optimize(
-    llvm::Module* module, llvm::TargetMachine* target_machine, OptLevel opt_level
+    llvm::Module* module, llvm::TargetMachine* target_machine
   );
   static bool run_linker(
     const Ctx& ctx, std::filesystem::path obj, std::filesystem::path output,

@@ -34,7 +34,7 @@ bool LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths
   auto engine = llvm::EngineBuilder();
   auto triple_str = libroot.get()->getTargetTriple();
   auto target_machine = engine.selectTarget(llvm::Triple(triple_str), "", "", llvm::SmallVector<std::string, 1>());
-  check_and_optimize(libroot.get().get(), target_machine, global.opt_level);
+  check_and_optimize(libroot.get().get(), target_machine);
   SNOWBALL_VERBOSE(ctx, "Target triple: " + triple_str);
   switch (global.emit_type) {
     case EmitType::LlvmBc: {

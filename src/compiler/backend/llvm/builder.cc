@@ -54,8 +54,7 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*
   builder = std::make_unique<llvm::IRBuilder<>>(*llvm_ctx);
   builder_ctx.module = std::make_unique<llvm::Module>(parent_crate.get_path_string(), *llvm_ctx);
 
-  dbg.debug = global.opt_level == OptLevel::Debug 
-            || global.opt_level == OptLevel::ReleaseWithDebug;
+  dbg.debug = global.debug_opt();
 
   dbg.builder = std::make_unique<llvm::DIBuilder>(*builder_ctx.module);
   auto input_file = ctx.package_config.value().project.path;
