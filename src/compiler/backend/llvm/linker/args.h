@@ -29,6 +29,9 @@ public:
   void add_user_switches();
   void add_object_files();
   void add_platform_args();
+
+  void add_dynamic_linker();
+  std::string get_multi_arch_triple();
 };
 
 } // namespace backend

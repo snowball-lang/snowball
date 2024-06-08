@@ -62,7 +62,7 @@ bool LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths
     return EXIT_SUCCESS;
   }
   auto succ = run_linker(ctx, obj_output, output, target_machine);
-  std::filesystem::remove(obj_output);
+  //std::filesystem::remove(obj_output);
   if (!succ) {
     return error(F("Linking failed with error code: {}", (int)!succ));
   }

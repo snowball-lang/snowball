@@ -24,7 +24,7 @@ bool LLVMBuilder::run_linker(
 
   const auto& triple = target_machine->getTargetTriple();
   LldArgsBuilder args_builder(target_machine, output, obj);
-  auto args = args_builder.build_c();
+  const auto args = args_builder.build_c();
 
   if (triple.isOSBinFormatELF()) {
     return lld::elf::link(args, llvm::outs(), llvm::errs(),

@@ -10,6 +10,7 @@ namespace snowball {
 namespace utils {
 
 class ArgsBuilder {
+protected:
   std::vector<std::string> args;
 public:
   ArgsBuilder() = default;

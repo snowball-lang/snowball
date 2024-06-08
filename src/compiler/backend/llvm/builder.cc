@@ -86,29 +86,35 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*
 }
 
 std::string LLVMBuilder::get_target_triple() {
-  std::string target;
-  switch (global.arch) {
-    case Arch::X86_64:
-      target = "x86_64";
-      break;
-    case Arch::Arm64:
-      target = "aarch64";
-      break;
-    default: sn_unreachable();
-  }
+  llvm::Triple triple;
+  // TODO: Make the user be more descriptive about the target
   switch (global.target) {
+    case Target::Windows:
+      triple.setOS(llvm::Triple::Win32);
+      triple.setEnvironment(llvm::Triple::MSVC);
+      triple.setObjectFormat(llvm::Triple::COFF);
+      triple.setVendor(llvm::Triple::PC);
+      break;
     case Target::Linux:
-      target += "-linux-gnu";
+      triple.setOS(llvm::Triple::Linux);
+      triple.setEnvironment(llvm::Triple::GNU);
       break;
     case Target::MacOS:
-      target += "-apple-darwin";
-      break;
-    case Target::Windows:
-      target += "-pc-windows-msvc";
+      triple.setOS(llvm::Triple::MacOSX);
+      triple.setVendor(llvm::Triple::Apple);
       break;
     default: sn_unreachable();
   }
-  return target;
+  switch (global.arch) {
+    case Arch::Arm64:
+      triple.setArch(llvm::Triple::aarch64);
+      break;
+    case Arch::X86_64:
+      triple.setArch(llvm::Triple::x86_64);
+      break;
+    default: sn_unreachable();
+  }
+  return triple.normalize();
 }
 
 void LLVMBuilder::build(std::vector<std::shared_ptr<sil::Module>>& modules) {
