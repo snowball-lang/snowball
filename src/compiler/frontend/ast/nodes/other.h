@@ -63,6 +63,7 @@ public:
     // It has to be in this order to avoid conflicts with set_privacy(int)
     Private = 0,
     Public = 1,
+    Crate = 2,
   };
 
 private:

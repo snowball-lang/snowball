@@ -15,8 +15,23 @@ ast::TopLevelAst Parser::parse_top_level(Token::Type terminator) {
     switch (current.type) {
       case Token::Type::KwordPublic:
       case Token::Type::KwordPrivate: {
-        global_attrs.set_privacy(current.type == Token::Type::KwordPublic);
-        next();
+        if (is(Token::Type::KwordPublic) && is(Token::Type::BracketLparent, peek())) {
+          // Parse `public(crate)`. We can't have this feature for `private`!
+          global_attrs.set_privacy(ast::AttributedNode::Privacy::Crate);
+          next(2);
+          if (current.to_string() != "crate") {
+            err("Expected 'crate' after 'public'", Error::Info {
+              .highlight = fmt::format("Token '{}' is not expected here", current),
+              .help = "Expected 'crate' after 'public'",
+              .see = "https://snowball-lang.gitbook.io/docs/language-reference/global-scope"
+            });
+          }
+          next();
+          consume(Token::Type::BracketRparent, "a closing parenthesis after 'public(crate)'");
+        } else {
+          global_attrs.set_privacy(current.type == Token::Type::KwordPublic);
+          next();
+        }
         switch (current.type) {
           case Token::Type::KwordFunc:
           case Token::Type::KwordStruct:

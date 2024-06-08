@@ -1,5 +1,6 @@
 
 #ifndef __SNOWBALL_FRONTEND_AST_NODES_H__
+
 #define __SNOWBALL_FRONTEND_AST_NODES_H__
 
 #include <memory>

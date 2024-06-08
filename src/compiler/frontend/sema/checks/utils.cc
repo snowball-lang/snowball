@@ -11,6 +11,7 @@ namespace frontend {
 namespace sema {
 
 TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator acc) {
+  auto loc = expr->get_location();
   if (const auto id = expr->as<ast::Ident>()) {
     auto path = acc.get_path(id->get_name());
     acc.add(id->get_name());
@@ -18,16 +19,16 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
       item.has_value() && acc.is_name()) {
       return {item, acc.get_name()};
     } else if (auto type = universe.get_type(path)) {
-      return {TypeCheckItem::create_type(type.value()), acc.get_name()};
+      return check_privacy({TypeCheckItem::create_type(type.value()), acc.get_name()}, loc);
     } else {
       for (auto& uuid : ctx.allowed_uuids) {
         auto new_path = uuid + path;
         if (auto fns = universe.get_fn_decl(new_path); fns.size() > 0) {
-          return {TypeCheckItem::create_fn_decl({fns}), acc.get_name()};
+          return check_privacy({TypeCheckItem::create_fn_decl({fns}), acc.get_name()}, loc);
         } else if (auto type = universe.get_type(new_path)) {
-          return {TypeCheckItem::create_type(type.value()), acc.get_name()};
+          return check_privacy({TypeCheckItem::create_type(type.value()), acc.get_name()}, loc);
         } else if (auto mod = search_module(new_path)) {
-          return {TypeCheckItem::create_module(mod.value()), acc.get_name()};
+          return check_privacy({TypeCheckItem::create_module(mod.value()), acc.get_name()}, loc);
         }
       }
       return {std::nullopt, acc.get_name()};
@@ -66,7 +67,7 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
         }, Error::Type::Err, false);
         return {std::nullopt, obj_name, false};
       }
-      return get_from_type(member, obj->get_var()->get_type());
+      return check_privacy(get_from_type(member, obj->get_var()->get_type()), loc);
     } else if (obj->is_func()) {
       if (member->get_access_type() == ast::MemberAccess::AccessType::Static) {
         err(member->get_location(), "use of function as type is not allowed", Error::Info {

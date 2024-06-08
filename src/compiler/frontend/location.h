@@ -45,7 +45,7 @@ class LocationHolder {
 public:
   LocationHolder(const SourceLocation& location)
     : location(location) {}
-  SourceLocation get_location() { return location; }
+  SourceLocation& get_location() { return location; }
   SourceLocation get_location() const { return location; }
 };
 

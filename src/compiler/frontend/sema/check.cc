@@ -88,7 +88,8 @@ void TypeChecker::register_builtins() {
 NamespacePath TypeChecker::get_namespace_path(const std::string& name) {
   auto path = ctx.current_module->get_path();
   path.push(name);
-  // TODO: Classes, etc.
+  if (ctx.current_class)
+    path.push(ctx.current_class->get_name());
   return path;
 }
 

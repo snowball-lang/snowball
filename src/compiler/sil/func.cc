@@ -48,9 +48,9 @@ void Binder::visit(ast::FnDecl* node) {
   }
   ctx.ast_current_func = backup;
   ctx.current_func = backup2;
-  if (ctx.ast_current_class) {
-    auto cls = ctx.ast_current_class.value();
-    func->set_parent_type(cls->get_type());
+  if (auto parent = node->get_parent_type()) {
+    auto parent_type = parent.value();
+    func->set_parent_type(parent_type);
   }
   value = func;
 }

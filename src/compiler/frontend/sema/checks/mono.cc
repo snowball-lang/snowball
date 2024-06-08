@@ -87,6 +87,7 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const std::map<
   ctx.current_class = node;
   unify(node->get_type(), ast::types::ClassType::create(node, class_ty_copy->get_path(), new_generics, class_ty_copy->get_location()), node->get_location());
   for (auto& var : node->get_vars()) {
+    var->set_parent_type(node->get_type());
     var->accept(this);
   }
   for (auto& method : node->get_funcs()) {

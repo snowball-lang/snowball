@@ -15,6 +15,18 @@ namespace snowball {
 namespace frontend {
 namespace ast {
 
+// --- Module Holder (declare here to avoid circular dependency) ---
+
+class ModuleHolder {
+  std::optional<NamespacePath> path;
+public:
+  ModuleHolder() : path(std::nullopt) {}
+  ~ModuleHolder() = default;
+
+  void set_module_path(const NamespacePath& path) { this->path = path; }
+  auto get_module_path() const { return path; }
+};
+
 // --- Forward declarations ---
 
 class TypeRef;
@@ -42,7 +54,8 @@ public:
 class FnDecl final : public Stmt,
                      public GenericNode<>,
                      public AttributedNode,
-                     public Identified {
+                     public Identified,
+                     public ModuleHolder {
 private:
   std::string name;
   std::vector<VarDecl*> params;
@@ -84,11 +97,12 @@ public:
   SN_VISIT()
 };
 
-class VarDecl final : public Stmt, public AttributedNode, public Identified {
+class VarDecl final : public Stmt, public AttributedNode, public Identified, public ModuleHolder {
   std::string name;
   std::optional<TypeRef> decl_type;
   std::optional<Expr*> value;
   std::optional<FnDecl*> arg_for = std::nullopt;
+  std::optional<types::Type*> parent_type = std::nullopt; // Direct parent type
   std::optional<uint64_t> index; // Member access index
   unsigned int used = 0;
 
@@ -118,6 +132,9 @@ public:
   Node* clone() const override;
   void set_used() { used++; }
   auto get_used() const { return used; }
+
+  void set_parent_type(types::Type* type) { parent_type = type; }
+  auto get_parent_type() const { return parent_type; }
 
   auto get_member_index() const { return index; }
   void set_member_index(uint64_t idx) { index = idx; }
@@ -150,7 +167,8 @@ class InterfaceDecl;
 class ClassDecl : public Stmt,
                   public GenericNode<>,
                   public AttributedNode,
-                  public Identified {
+                  public Identified,
+                  public ModuleHolder {
 public:
   enum class ClassType
   {

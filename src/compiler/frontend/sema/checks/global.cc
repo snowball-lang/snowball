@@ -29,9 +29,6 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast, bool first) {
           universe.add_item(generic.get_name(), create_generic_type(generic));
         do_global_func(method);
         ctx.current_class = backup;
-        if (!class_decl->has_generics()) {
-          method->set_parent_type(class_decl->get_type());
-        }
       }
     }
   }
@@ -40,6 +37,7 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast, bool first) {
 void TypeChecker::do_global_func(ast::FnDecl* fn_decl) {
   universe.add_scope();
   auto path = get_namespace_path(fn_decl->get_name());
+  fn_decl->set_module_path(ctx.current_module->get_path());
   check_fn(fn_decl);
   if (fn_decl->get_link_name().has_value()) {
     auto link_name = fn_decl->get_link_name().value();
@@ -68,6 +66,7 @@ void TypeChecker::do_global_class(ast::ClassDecl* class_decl) {
   // class methods are checked in the second pass
   universe.add_scope();
   auto path = get_namespace_path(class_decl->get_name());
+  class_decl->set_module_path(ctx.current_module->get_path());
   std::vector<ast::types::Type*> generics;
   for (auto& generic : class_decl->get_generics()) {
     // TODO: Should we use `create_generic_type` here?
