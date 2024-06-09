@@ -38,6 +38,23 @@ void TypeChecker::visit(ast::Ident* node) {
   if (item.value().is_var()) {
     auto var = item.value().get_var();
     var->set_used();
+    if (auto berr = borrow_checker.check_var_use(var->get_id(), node->is_used_as_assignee())) {
+      std::string highligh = "";
+      switch (berr.value().kind) {
+        case borrow::BorrowError::Kind::UseAfterMove:
+          highligh = "Variable used after move";
+          break;
+        case borrow::BorrowError::Kind::UseBeforeInit:
+          highligh = "Variable used before initialization";
+          break;
+        default: break;
+      }
+      err(node->get_location(), berr.value().message, Error::Info {
+        .highlight = highligh
+      }, Error::Type::Err, false);
+      unify(node->get_type(), get_error_type());
+      return;
+    }
     node->set_var_id(var->get_id());
     unify(node->get_type(), var->get_type(), node->get_location());
     return;

@@ -10,6 +10,9 @@ void TypeChecker::visit(ast::BinaryOp* node) {
   auto& lhs = node->get_lhs().value();
   auto rhs = node->get_rhs();
   auto op = node->get_op();
+  if (auto ident = lhs->as<ast::Ident>(); ident && op == Operator::Eq) {
+    ident->set_used_as_assignee();
+  }
   lhs->accept(this);
   if (rhs.has_value()) 
     rhs.value()->accept(this);
@@ -17,11 +20,19 @@ void TypeChecker::visit(ast::BinaryOp* node) {
     unify(lhs->get_type(), rhs.value()->get_type(), node->get_location());
     auto stmt = do_deduce(lhs);
     if (!is_mutable(lhs, stmt)) {
+      do_deduce(lhs);
       err(node->get_location(), "Cannot assign to immutable variable", Error::Info {
         .highlight = "Symbol not mutable",
         .help = "Make sure the variable is mutable",
         .see = "https://snowball-lang.gitbook.io/docs/language-reference/types/mutability"
       }, Error::Type::Err, false);
+    }
+    if (auto var = stmt->as<ast::VarDecl>()) {
+      borrow_checker.init_variable(var->get_id());
+    }
+    if (auto var = do_deduce(rhs.value(), true)->as<ast::VarDecl>(); 
+      var && !var->get_member_index().has_value()) {
+      borrow_checker.assign_variable(var->get_id());
     }
     unify(node->get_type(), lhs->get_type(), node->get_location());
     return;

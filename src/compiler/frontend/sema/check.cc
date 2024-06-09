@@ -105,7 +105,9 @@ void TypeChecker::define_variable(ast::VarDecl* node, const SourceLocation& loc,
     }, Error::Type::Err, false);
   }
   auto item = TypeCheckItem::create_var(node);
-  auto borrow_status = initialized ? borrow::VariableStatusType::Uninitialized : borrow::VariableStatusType::Initialized;
+  auto borrow_status = initialized 
+    ? borrow::VariableStatusType::Initialized 
+    : borrow::VariableStatusType::Uninitialized;
   borrow_checker.declare_variable(node->get_id(), node->get_name(), borrow_status);
   universe.add_item(node->get_name(), item);
   universe.add_var_id(node->get_id(), node);

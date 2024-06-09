@@ -26,11 +26,14 @@ class VariableStatus {
   VariableStatusType status = VariableStatusType::None;
   std::string name;
 public:
-  VariableStatus() = default;
+  VariableStatus(const std::string& name, VariableStatusType status)
+    : name(name), status(status) {}
   virtual ~VariableStatus() = default;
 
   void set_status(VariableStatusType status) { this->status = status; }
   VariableStatusType get_status() const { return status; }
+
+  std::string get_name() const { return name; }
 
   void set_uninitialized() { set_status(VariableStatusType::Uninitialized); }
   void set_initialized() { set_status(VariableStatusType::Initialized); }
@@ -43,9 +46,8 @@ public:
 
 struct BorrowError {
   enum class Kind {
-    OwnershipError,
-    BorrowError,
-    LifetimeError,
+    UseAfterMove,
+    UseBeforeInit,
   };
 
   Kind kind;
@@ -71,9 +73,10 @@ public:
 class BorrowChecker {
   std::vector<Scope> scopes = {{}};
 public:
-  using ResultVec = std::vector<BorrowError>;
+  using ResultOpt = std::optional<BorrowError>;
+
   template <typename T>
-  using Result = std::pair<ResultVec, T>;
+  using Result = std::pair<ResultOpt, T>;
   
   BorrowChecker() = default;
   virtual ~BorrowChecker() = default;
@@ -86,11 +89,13 @@ public:
   Result<CleanStatus> exit_scope(std::optional<Scope> unified_scope = std::nullopt);
 
   void declare_variable(uint64_t id, const std::string& name, VariableStatusType status);
-  ResultVec assign_variable(uint64_t id);
-  ResultVec borrow_variable(uint64_t id, bool mutable_borrow);
+  void assign_variable(uint64_t id);
+  void init_variable(uint64_t id);
+
+  ResultOpt check_var_use(uint64_t id, bool is_assignment = false);
 
 private:
-  std::optional<VariableStatus> get_variable(uint64_t id, bool current_scope_only = false);
+  std::optional<VariableStatus*> get_variable(uint64_t id, bool current_scope_only = false);
 };
 
 } // namespace ast::borrow

@@ -12,7 +12,7 @@ void TypeChecker::visit(ast::Block* node) {
     stmt->accept(this);
   }
   auto [errors, clean_status] = exit_scope();
-  sn_assert(errors.empty(), "got errors after exiting borrow scope");
+  sn_assert(!errors.has_value(), "got errors after exiting borrow scope");
   for (auto& dropped : clean_status.get_dropped()) {
     auto var = universe.get_var_id(dropped).value()->as<ast::VarDecl>();
     debug(F("  \t[borrow]\tDroping variable with name: {}", var->get_name()));

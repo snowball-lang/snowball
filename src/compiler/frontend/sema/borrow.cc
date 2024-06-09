@@ -18,8 +18,8 @@ BorrowChecker::Result<CleanStatus> BorrowChecker::exit_scope(std::optional<Scope
       auto var = get_variable(init, true);
       if (std::find(scope.initialized.begin(), scope.initialized.end(), init) != scope.initialized.end()
         && var.has_value()) {
-        if (var->get_status() == VariableStatusType::Uninitialized) {
-          scopes.back().variables[init].set_initialized();
+        if (var.value()->get_status() == VariableStatusType::Uninitialized) {
+          scopes.back().variables.at(init).set_initialized();
           scopes.back().initialized.push_back(init);
         }
       }   
@@ -33,12 +33,12 @@ BorrowChecker::Result<CleanStatus> BorrowChecker::exit_scope(std::optional<Scope
   return {{}, clean_status};
 }
 
-std::optional<VariableStatus> BorrowChecker::get_variable(uint64_t id, bool current_scope_only) {
+std::optional<VariableStatus*> BorrowChecker::get_variable(uint64_t id, bool current_scope_only) {
   for (auto it = scopes.rbegin(); it != scopes.rend(); ++it) {
     auto& scope = *it;
     auto var = scope.variables.find(id);
     if (var != scope.variables.end()) {
-      return var->second;
+      return &var->second;
     }
     if (current_scope_only) {
       break;
@@ -48,10 +48,45 @@ std::optional<VariableStatus> BorrowChecker::get_variable(uint64_t id, bool curr
 }
 
 void BorrowChecker::declare_variable(uint64_t id, const std::string& name, VariableStatusType status) {
-  scopes.back().variables[id].set_status(status);
+  scopes.back().variables.emplace(std::make_pair(id, VariableStatus(name, status)));
   // if (status == VariableStatusType::Initialized) {
   //   scopes.back().initialized.push_back(id);
   // }
+}
+
+void BorrowChecker::assign_variable(uint64_t id) {
+  auto var = get_variable(id);
+  assert(var.has_value());
+  // We don't need to check if the variable is initialized here!
+  var.value()->set_moved();
+}
+
+BorrowChecker::ResultOpt BorrowChecker::check_var_use(uint64_t id, bool is_assignment) {
+  auto var = get_variable(id);
+  if (!var.has_value()) return {}; // It's ok
+  auto var_value = var.value();
+  switch (var_value->get_status()) {
+    case VariableStatusType::Moved:
+      return {BorrowError {
+        .kind = BorrowError::Kind::UseAfterMove,
+        .message = F("Variable '{}' used after move!", var_value->get_name())
+      }};
+    case VariableStatusType::Uninitialized:
+      if (!is_assignment && std::find(scopes.back().initialized.begin(), scopes.back().initialized.end(), id) == scopes.back().initialized.end()) {
+        return {BorrowError {
+          .kind = BorrowError::Kind::UseBeforeInit,
+          .message = F("Variable '{}' used before initialization!", var_value->get_name())
+        }};
+      } [[fallthrough]];
+    default:
+      return {};
+  }
+}
+
+void BorrowChecker::init_variable(uint64_t id) {
+  auto var = get_variable(id);
+  assert(var.has_value());
+  scopes.back().initialized.push_back(id);
 }
 
 }

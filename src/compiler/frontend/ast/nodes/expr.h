@@ -13,6 +13,7 @@ namespace ast {
 class Ident final : public Self<Ident>, public Expr, public GenericNode<ast::TypeRef> {
   std::string name;
   uint64_t var_id = 0;
+  bool used_as_assignee = false;
 
 public:
   Ident(const SourceLocation& location, const std::string& name,
@@ -25,6 +26,9 @@ public:
   auto get_name() const { return name; }
   auto get_var_id() const { return var_id; }
   void set_var_id(uint64_t id) { var_id = id; }
+
+  auto is_used_as_assignee() const { return used_as_assignee; }
+  void set_used_as_assignee() { used_as_assignee = true; }
 
   static auto
   create(const SourceLocation& location, const std::string& name,
