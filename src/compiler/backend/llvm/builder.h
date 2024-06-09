@@ -54,13 +54,15 @@ public:
 };
 
 class CommentWriter : public llvm::AssemblyAnnotationWriter {
+  llvm::DataLayout& DL;
+
 public:
+  CommentWriter(llvm::DataLayout& DL) : DL(DL) {}
+
   virtual void
-  emitFunctionAnnot(const llvm::Function* F, llvm::formatted_raw_ostream& OS) {
-    OS << "; [#uses=" << F->getNumUses() << "]\n"; // Output # uses
-    if (auto sub = F->getSubprogram())
-      OS << "; [#name=" << sub->getName() << "]\n"; // Output # uses
-  }
+  emitFunctionAnnot(const llvm::Function* F, llvm::formatted_raw_ostream& OS) override;
+  virtual void 
+  printInfoComment(const llvm::Value& I, llvm::formatted_raw_ostream& OS) override;
 };
 
 class LLVMBuilder : public sil::Builder {
