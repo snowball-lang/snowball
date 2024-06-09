@@ -11,11 +11,11 @@ public func balls<B: std::string::ToString>(x: B) {
 }
 
 public func main() i32 {
-  let mut a;
-  let mut b: i32;
+  let mut a: i32;
+  let mut b;
   let mut v: i32 = 25;
   a = 24;
-  b = a;
+  b = &a;
   std::main::test(a);
   std::main::printf(b"Hello, world!\n");
 }

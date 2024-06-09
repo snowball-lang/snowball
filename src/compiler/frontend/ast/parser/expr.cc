@@ -33,6 +33,10 @@ ast::Expr* Parser::parse_expr(bool allow_assign) {
         expr = parse_ident();
         break;
       }
+      case Token::Type::OpBitAnd:
+        expr = node<ast::Reference>(parse_expr(allow_assign));
+        prev();
+        break;
       case Token::Type::ValueNumber:
         expr = node<ast::Number>(current.to_string());
         break;
