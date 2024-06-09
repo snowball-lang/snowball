@@ -28,10 +28,9 @@ ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::s
     .generics = deduced
   });
   node->increment_id();  
-  TypeCheckerContext backup = ctx;
-  backup.scopes = universe.get_scopes();
+  auto backup = create_generic_context(0, true);
   set_generic_context(state);
-  universe.add_scope();
+  enter_scope();
   for (auto& [name, type] : deduced) {
     universe.add_item(name, TypeCheckItem::create_type(type));
   }
@@ -49,7 +48,7 @@ ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::s
     node->get_body().value()->accept(this);
   }
   state.current_module->mutate_ast(node);
-  universe.remove_scope();
+  exit_scope();
   set_generic_context(backup);
   return node;
 }
@@ -72,10 +71,9 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const std::map<
     .generics = generics
   });
   node->increment_id();
-  TypeCheckerContext backup = ctx;
-  backup.scopes = universe.get_scopes();
+  auto backup = create_generic_context(0, true);
   set_generic_context(state);
-  universe.add_scope();
+  enter_scope();
   std::vector<ast::types::Type*> new_generics;
   new_generics.reserve(node->get_generics().size());
   for (auto& [name, type] : generics) {
@@ -93,14 +91,14 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const std::map<
     var->accept(this);
   }
   for (auto& method : node->get_funcs()) {
-    universe.add_scope();
+    enter_scope();
     check_fn(method, true);
     method->set_parent_type(node->get_type());
     method->accept(this);
-    universe.remove_scope();
+    exit_scope();
   }
   ctx.current_class = backup_class;
-  universe.remove_scope();
+  exit_scope();
   state.current_module->mutate_ast(node);
   set_generic_context(backup);
   return node;

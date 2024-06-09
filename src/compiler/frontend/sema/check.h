@@ -13,6 +13,7 @@
 #include "compiler/frontend/sema/universe.h"
 #include "compiler/reports/reporter.h"
 #include "compiler/utils/utils.h"
+#include "compiler/frontend/sema/borrow.h"
 
 namespace snowball {
 namespace frontend {
@@ -38,6 +39,7 @@ class TypeChecker : public ast::AstVisitor, public Reporter {
   std::map<uint64_t, std::vector<MonorphosizedFn>> generic_registry;
   std::map<uint64_t, std::vector<MonorphosizedClass>> generic_class_registry;
   TypeCheckerContext ctx;
+  borrow::BorrowChecker borrow_checker;
   std::unordered_map<uint64_t, TypeCheckerContext> generic_contexts;
   // A vector used to keep track of extenral "unmangled" names
   std::vector<std::string> external_declared;
@@ -85,6 +87,11 @@ private:
   ast::types::Type* get_type(ast::Expr* expr, bool no_unknown = false);
   ast::types::Type* get_type(const std::string& name);
   ast::types::Type* get_type(const ast::TypeRef& tr, bool no_unknown = false);
+
+  void enter_scope();
+
+  borrow::BorrowChecker::Result<borrow::CleanStatus> 
+  exit_scope(std::optional<borrow::Scope> unified_scope = std::nullopt);
 
   bool
   unify(ast::types::Type*& a, ast::types::Type* b,
@@ -140,7 +147,7 @@ private:
   );
 
   TypeCheckerContext& get_generic_context(uint64_t id);
-  TypeCheckerContext& create_generic_context(uint64_t id);
+  TypeCheckerContext create_generic_context(uint64_t id = 0, bool dont_save = false);
   void set_generic_context(const TypeCheckerContext& ctx);
 
   bool type_match(ast::types::Type* a, ast::types::Type* b, bool ignore_self = false);

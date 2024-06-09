@@ -19,7 +19,7 @@ void TypeChecker::visit(ast::FnDecl* node) {
   auto path = get_namespace_path(node->get_name());
   auto backup = ctx.current_function;
   ctx.current_function = node;
-  universe.add_scope();
+  enter_scope();
   assert(fn_type->get_param_types().size() == node->get_params().size());
   for (size_t i = 0; i < node->get_generics().size(); ++i) {
     auto generic = node->get_generics()[i];
@@ -36,7 +36,7 @@ void TypeChecker::visit(ast::FnDecl* node) {
     block.value()->accept(this);
   }
   ctx.current_function = backup;
-  universe.remove_scope();
+  (void)exit_scope();
 }
 
 }

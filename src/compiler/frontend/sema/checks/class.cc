@@ -18,7 +18,7 @@ void TypeChecker::visit(ast::ClassDecl* node) {
   sn_assert(class_type->get_path() == path, "class path mismatch");
   auto backup = ctx.current_class;
   ctx.current_class = node;
-  universe.add_scope();
+  enter_scope();
   assert(class_type->get_generics().size() == node->get_generics().size());
   size_t generic_index = 0;
   for (auto& generic : class_type->get_generics()) {
@@ -62,7 +62,7 @@ void TypeChecker::visit(ast::ClassDecl* node) {
     method->set_parent_type(node->get_type());
     method->accept(this);
   }
-  universe.remove_scope();
+  (void)exit_scope();
   ctx.current_class = backup;
 }
 

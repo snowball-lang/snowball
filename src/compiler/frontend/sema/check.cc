@@ -23,11 +23,11 @@ void TypeChecker::check() {
     for (bool first = true;; first = false) {
       for (auto& module : modules) {
         ctx.current_module = &module;
-        universe.add_scope();
+        enter_scope();
         ctx.allowed_uuids.push_back(module.get_path());
         generate_global_scope(module.get_ast(), first);
         ctx.allowed_uuids.pop_back();
-        universe.remove_scope();
+        exit_scope();
       }
       if (!first) break;
     }
@@ -35,14 +35,14 @@ void TypeChecker::check() {
       throw StopTypeChecking();
     for (auto& module : modules) {
       ctx.current_module = &module;
-      universe.add_scope();
+      enter_scope();
       ctx.allowed_uuids.push_back(module.get_path());
       auto& ast = module.get_ast();
       for (size_t i = 0; i < ast.size(); i++) {
         ast[i]->accept(this);
       }
       ctx.allowed_uuids.pop_back();
-      universe.remove_scope();
+      exit_scope();
     }
     post_check();
   } catch (const StopTypeChecking&) {
@@ -105,9 +105,8 @@ void TypeChecker::define_variable(ast::VarDecl* node, const SourceLocation& loc,
     }, Error::Type::Err, false);
   }
   auto item = TypeCheckItem::create_var(node);
-  if (initialized) {
-    node->set_initialized();
-  } else node->set_uninitialized();
+  auto borrow_status = initialized ? borrow::VariableStatusType::Uninitialized : borrow::VariableStatusType::Initialized;
+  borrow_checker.declare_variable(node->get_id(), node->get_name(), borrow_status);
   universe.add_item(node->get_name(), item);
   universe.add_var_id(node->get_id(), node);
 }
@@ -126,21 +125,34 @@ TypeCheckerContext& TypeChecker::get_generic_context(uint64_t id) {
   return it->second;
 }
 
-TypeCheckerContext& TypeChecker::create_generic_context(uint64_t id) {
+TypeCheckerContext TypeChecker::create_generic_context(uint64_t id, bool dont_save) {
   auto ctx = TypeCheckerContext {
     .allowed_uuids = this->ctx.allowed_uuids,
     .current_module = this->ctx.current_module,
     .current_function = this->ctx.current_function,
     .current_class = this->ctx.current_class,
-    .scopes = universe.get_scopes()
+    .scopes = universe.get_scopes(),
+    .borrow_checker = borrow_checker
   };
+  if (dont_save) return ctx;
   generic_contexts[id] = ctx;
   return generic_contexts[id];
 }
 
 void TypeChecker::set_generic_context(const TypeCheckerContext& ctx) { 
   universe.get_scopes() = ctx.scopes; 
+  borrow_checker = ctx.borrow_checker;
   this->ctx = ctx;
+}
+
+void TypeChecker::enter_scope() {
+  universe.add_scope();
+  borrow_checker.enter_scope();
+}
+
+borrow::BorrowChecker::Result<borrow::CleanStatus> TypeChecker::exit_scope(std::optional<borrow::Scope> unified_scope) {
+  universe.remove_scope();
+  return borrow_checker.exit_scope(unified_scope);
 }
 
 }

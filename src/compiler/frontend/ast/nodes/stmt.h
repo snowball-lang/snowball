@@ -11,8 +11,6 @@
 #include "compiler/frontend/ast/nodes/expr.h"
 #include "compiler/frontend/ast/nodes/other.h"
 
-#include "compiler/frontend/ast/borrows.h"
-
 namespace snowball {
 namespace frontend {
 namespace ast {
@@ -100,7 +98,7 @@ public:
 };
 
 class VarDecl final : public Stmt, public AttributedNode, public Identified, 
-    public ModuleHolder, public Borrowable {
+    public ModuleHolder {
   std::string name;
   std::optional<TypeRef> decl_type;
   std::optional<Expr*> value;
