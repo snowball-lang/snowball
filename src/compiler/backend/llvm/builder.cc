@@ -135,7 +135,8 @@ void LLVMBuilder::build(std::vector<std::shared_ptr<sil::Module>>& modules) {
 }
 
 void LLVMBuilder::dump(llvm::raw_ostream& os) {
-  builder_ctx.module->print(os, new CommentWriter(), false, true);
+  auto data_layout = builder_ctx.target_machine->createDataLayout();
+  builder_ctx.module->print(os, new CommentWriter(data_layout), false, true);
 }
 
 llvm::DIFile* LLVMBuilder::DebugUtils::get_file(const std::string& path) {

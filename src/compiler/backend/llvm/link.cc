@@ -49,7 +49,8 @@ bool LLVMBuilder::link(const Ctx& ctx, std::vector<std::filesystem::path>& paths
       std::error_code ec;
       llvm::raw_fd_ostream os(output.string(), ec, llvm::sys::fs::OF_Text);
       sn_assert(!ec, "Failed to open file: " + output.string());
-      libroot.get()->print(os, new CommentWriter(), false, true);
+      auto data_layout = target_machine->createDataLayout();
+      libroot.get()->print(os, new CommentWriter(data_layout), false, true);
       os.flush();
       return EXIT_SUCCESS;
     }
