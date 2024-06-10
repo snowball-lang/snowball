@@ -23,6 +23,11 @@ ast::Expr* Parser::parse_expr(bool allow_assign) {
     ast::Expr* expr = nullptr;
     next();
     switch (current.type) {
+      case Token::Type::BracketLparent: {
+        expr = parse_expr();
+        expect(Token::Type::BracketRparent, "a closing parenthesis after the expression");
+        break;
+      }
       case Token::Type::Identifier: {
         if (NEXT_TO(current, peek()) && is(Token::Type::ValueString, peek())) {
           auto prefix = current.to_string()[0];

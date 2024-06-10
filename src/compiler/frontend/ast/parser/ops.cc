@@ -31,6 +31,7 @@ bool Parser::parse_operator(std::vector<ast::Expr*>& exprs) {
   }
   if (valid) {
     auto bop = node<ast::BinaryOp>(type);
+    bop->is_operator = true;
     exprs.push_back(bop);
   } 
   return !valid;
@@ -49,7 +50,7 @@ ast::Expr* Parser::fix_precedence(std::vector<ast::Expr*>& exprs) {
     bool unary = false;
     for (size_t i = 0; i < exprs.size(); i++) {
       auto bop = exprs[i]->as<ast::BinaryOp>();
-      if (!bop) continue;
+      if (!bop || !bop->is_operator) continue;
       int prec = -1;
       switch (bop->get_op()) {
         // TODO: Unary operators
@@ -124,13 +125,15 @@ ast::Expr* Parser::fix_precedence(std::vector<ast::Expr*>& exprs) {
       sn_assert(false, "Unary operators not implemented");
       continue;
     }
-
     assert(next >= 1 && next < (int)exprs.size() - 1);
+    assert(!(exprs[next - 1]->as<ast::BinaryOp>() && exprs[next - 1]->as<ast::BinaryOp>()->is_operator) ||
+           !(exprs[next + 1]->as<ast::BinaryOp>() && exprs[next + 1]->as<ast::BinaryOp>()->is_operator));
     auto bop = exprs[next]->as<ast::BinaryOp>();
     auto lhs = exprs[next - 1];
     auto rhs = exprs[next + 1];
     bop->mutate_lhs(lhs);
     bop->mutate_rhs(rhs);
+    bop->is_operator = false;
     exprs.erase(exprs.begin() + next + 1);
     exprs.erase(exprs.begin() + next - 1);
   }

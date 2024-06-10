@@ -202,6 +202,9 @@ public:
     , rhs(rhs) {}
   ~BinaryOp() = default;
 
+  // A flag used for operator precedence building
+  bool is_operator = false;
+
   auto get_op() const { return op; }
   auto get_lhs() const { return lhs; }
   auto get_rhs() const { return rhs; }
