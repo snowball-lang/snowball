@@ -19,6 +19,7 @@ void TypeChecker::visit(ast::ClassDecl* node) {
   auto backup = ctx.current_class;
   ctx.current_class = node;
   enter_scope();
+  update_self_type();
   assert(class_type->get_generics().size() == node->get_generics().size());
   size_t generic_index = 0;
   for (auto& generic : class_type->get_generics()) {

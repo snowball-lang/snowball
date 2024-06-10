@@ -3,14 +3,14 @@ interface Lol<D> {
   operator func +(x: D);
 }
 
-public(crate) final class Hello<T> implements Lol<T>, ToString {
+public(crate) final class Hello<T> implements Lol<T>, ToString, Clone<Self> {
   public let mut a: T;
 
   init(x: T) {
     self.a = x;
   }
 
-  public func hello(x: T) {
+  public func hello(x: Self) {
   }
 
   public virtual func to_string() String {

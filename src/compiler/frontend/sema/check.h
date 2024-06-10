@@ -71,6 +71,7 @@ private:
     std::optional<TypeCheckItem> item;
     std::string name;
     bool ignore_self = false;
+    bool dont_deduce = false;
   };
 
   void generate_global_scope(ast::TopLevelAst& ast, bool first = false);
@@ -156,6 +157,7 @@ private:
   void do_global_class(ast::ClassDecl* class_decl);
   // note: Universe scope must be added before calling this function
   void check_fn(ast::FnDecl*& fn_decl, bool as_monorph = false);
+  void update_self_type();
 
   std::optional<NamespacePath> search_module(const NamespacePath& path);
   void check_for_entry(ast::FnDecl* fn_decl);

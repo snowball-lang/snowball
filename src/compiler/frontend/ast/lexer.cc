@@ -50,22 +50,26 @@ std::vector<Token> Lexer::lex() {
             }
             break;
           case '*':
-            while (GET_CHAR(0) != '*' && GET_CHAR(1) != '/') {
+            while (true) {
+              if (GET_CHAR(0) == '*' && GET_CHAR(1) == '/') {
+                EAT_CHAR(2);
+                break;
+              }
+              if (GET_CHAR(0) == '\0') {
+                shoot_error("Found an unexpected EOF while lexing a 'comment'!", Error::Info {
+                  .highlight = "Unterminated comment here.",
+                  .help = "Make sure to close the comment with '*/'.",
+                  .note = "Comments that start with '/*' must end with '*/'.",
+                });
+                break;
+              }
               if (GET_CHAR(0) == '\n') {
                 line++;
                 column = 1;
+                continue;
               }
-              tok_index++;
+              EAT_CHAR(1);
             }
-            tok_index++;
-            if (GET_CHAR(0) == '\0') {
-              shoot_error("Found an unexpected EOF while lexing a 'multiline comment'!", Error::Info {
-                .highlight = "Unterminated comment here.",
-                .help = "Make sure to close the comment with '*/'.",
-                .note = "Comments that start with '/*' must end with '*/'.",
-              });
-            }
-            tok_index++;
             break; 
           default:
             consume(Token::Type::OpDiv);

@@ -19,21 +19,21 @@ void TypeChecker::check_implementations(ast::ClassDecl* class_decl) {
           && type_match(method->get_type(), class_method->get_type(), true)) {
           // note: Repeated function declarations are checked in the global scope
           if (!class_method->get_virtual()) {
-            err(class_method->get_location(), fmt::format("Method '{}' is expected to be virtual", printable_op(class_method->get_name())), Error::Info {
-              .highlight = fmt::format("Method is not virtual", printable_op(class_method->get_name())),
-              .help = fmt::format("Methods that are implemented from interfaces must be virtual"),
-              .note = fmt::format("This method is implemented from interface '{}'", interface_ty->get_printable_name())
+            err(class_method->get_location(), F("Method '{}' is expected to be virtual", printable_op(class_method->get_name())), Error::Info {
+              .highlight = F("Method is not virtual", printable_op(class_method->get_name())),
+              .help = F("Methods that are implemented from interfaces must be virtual"),
+              .note = F("This method is implemented from interface '{}'", interface_ty->get_printable_name())
             }, Error::Type::Err, false);
           }
           found = true;
           break;
         }
       }
-      if (!found) {
-        err(impl.get_location(), fmt::format("Class '{}' does not implement method '{}'", class_decl->get_name(), method->get_name()), Error::Info {
-          .highlight = fmt::format("Method '{}' is not implemented", method->get_name()),
-          .help = fmt::format("Implement method '{}' in class '{}'", method->get_name(), class_decl->get_type()->get_printable_name()),
-          .note = fmt::format("Expected a method with signature: '{}'", method->get_type()->get_printable_name())
+      if (!found && !method->get_default()) {
+        err(impl.get_location(), F("Class '{}' does not implement method '{}'", class_decl->get_name(), method->get_name()), Error::Info {
+          .highlight = F("Method '{}' is not implemented", method->get_name()),
+          .help = F("Implement method '{}' in class '{}'", method->get_name(), class_decl->get_type()->get_printable_name()),
+          .note = F("Expected a method with signature: '{}'", method->get_type()->get_printable_name())
         });
       }
     }

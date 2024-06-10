@@ -53,7 +53,7 @@ void TypeChecker::visit(ast::Call* node) {
     }
   } else if (auto index = node->get_callee()->as<ast::MemberAccess>()) {
     auto& object = index->get_object();
-    auto [item, name, ignore_self] = get_item(index);
+    auto [item, name, ignore_self, dont_deduce] = get_item(index);
     if (!item.has_value()) {
       err(node->get_location(), fmt::format("use of undeclared identifier when calling '{}'", name), Error::Info {
         .highlight = 
@@ -62,7 +62,7 @@ void TypeChecker::visit(ast::Call* node) {
       unify(node->get_type(), get_error_type());
       return;
     }
-    if (item.value().is_type()) {
+    if (item->is_type()) {
       err(node->get_location(), fmt::format("Types cant be called as values and type '{}' has been used as callee!", item.value().get_type()->get_printable_name()), Error::Info {
         .highlight = fmt::format("Symbol '{}' is a type!", item.value().get_type()->get_printable_name()),
         .help = fmt::format("Types cannot be called as functions. Did you mean to use a 'new' expression?")

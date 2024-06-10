@@ -1,9 +1,8 @@
 
 public func test(x: crate::mod::Hello<i32>) {
   balls(x);
-  x.hello(24); 
-  x.hello(24); 
-  x.a = 24* 24 - 12;
+  x.hello(x);
+  let a = 24 * 24 - 12;
 }
 
 public func balls<B: std::string::ToString>(x: B) {

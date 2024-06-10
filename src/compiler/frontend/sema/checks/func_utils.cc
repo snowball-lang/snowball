@@ -148,16 +148,17 @@ ast::FnDecl* TypeChecker::propagate_generic(ast::FnDecl* node, const std::map<st
   return monorphosize(decl, deduced, loc);
 }
 
+#define HAS_SELF_PARAM (params.size() > 0 && params[0]->get_name() == "self")
 void TypeChecker::add_self_param(ast::FnDecl*& node, bool as_monorph) {
   auto current_class = ctx.current_class;
   if (node->get_static() || !current_class) return;
   auto& params = node->get_params();
-  if (params.size() > 0 && params[0]->get_name() == "self" && !as_monorph) return; // already has a self param
+  if (HAS_SELF_PARAM && !as_monorph) return; // already has a self param
   debug(F("\t\t[add_self_param] Adding self param to function '{}' ({})", node->get_name(), current_class->get_type()->get_printable_name()));
   auto self = ast::VarDecl::create(node->get_location(), "self", std::nullopt, std::nullopt, node);
   self->set_used(); // TODO: Remove this in the future?
   unify(self->get_type(), current_class->get_type()->get_reference_to(), node->get_location());
-  if (as_monorph) {
+  if (as_monorph && HAS_SELF_PARAM) {
     params[0] = self;
     return;
   }

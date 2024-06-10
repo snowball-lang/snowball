@@ -41,6 +41,9 @@ ast::ClassDecl* Parser::parse_interface_decl(const ast::AttributedNode& attrs) {
         case Token::Type::KwordOperator:
           SET_ATTR(operator);
           break;
+        case Token::Type::KwordDefault:
+          SET_ATTR(default);
+          break;
         case Token::Type::KwordPublic:
         case Token::Type::KwordPrivate:
           fn_attrs.set_privacy(current.type == Token::Type::KwordPublic 

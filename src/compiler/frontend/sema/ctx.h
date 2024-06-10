@@ -34,6 +34,7 @@ private:
   Kind kind;
   NamespacePath module = NamespacePath::dummy();
   std::vector<ast::FnDecl*> funcs;
+  bool dont_deduce = false; // < for self types only!
   union {
     ast::types::Type* type;
     ast::VarDecl* var;
@@ -43,7 +44,7 @@ public:
   ~TypeCheckItem() = default;
 
   // Constructors
-  TypeCheckItem(ast::types::Type* type);
+  TypeCheckItem(ast::types::Type* type, bool dont_deduce = false);
   explicit TypeCheckItem(ast::VarDecl* var);
   explicit TypeCheckItem(const std::vector<ast::FnDecl*>& funcs);
   explicit TypeCheckItem(const NamespacePath& module);
@@ -55,14 +56,16 @@ public:
   const std::vector<ast::FnDecl*>& get_funcs() const;
   const NamespacePath& get_module() const;
 
-  // Type checkers
+  bool dont_deduce_type() const {
+    return dont_deduce; 
+  }
+
   bool is_type() const;
   bool is_func() const;
   bool is_var() const;
   bool is_module() const;
 
-  // Static factory methods
-  static TypeCheckItem create_type(ast::types::Type* type);
+  static TypeCheckItem create_type(ast::types::Type* type, bool dont_deduce = false);
   static TypeCheckItem create_var(ast::VarDecl* var);
   static TypeCheckItem create_fn_decl(const std::vector<ast::FnDecl*>& funcs);
   static TypeCheckItem create_module(const NamespacePath& module);
