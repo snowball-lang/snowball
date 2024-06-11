@@ -34,7 +34,7 @@ inline bool assert_attr_has_value(Reporter& reporter, AttrInterpreter& interp,
     interp.error(reporter, F("Attribute '{}' requires a value", name), Error::Info {
       .highlight = "No value provided",
       .note = F("This attribute requires a value to be set.\n"
-              "For example, try doing the following: #[{} = \"value\"]", name)
+              "For example, try doing the following: '#[{} = \"value\"]'", name)
     }, loc);
     return true;
   }
@@ -47,7 +47,7 @@ inline bool assert_attr_is_single(Reporter& reporter, AttrInterpreter& interp,
     interp.error(reporter, F("Attribute '{}' does not require a value", name), Error::Info {
       .highlight = "Value provided",
       .note = F("This attribute does not require a value to be set.\n"
-              "For example, try doing the following: #[{}]", name)
+              "For example, try doing the following: '#[{}]'", name)
     }, loc);
     return true;
   }
@@ -60,7 +60,7 @@ inline bool assert_attr_is_nested(Reporter& reporter, AttrInterpreter& interp,
     interp.error(reporter, F("Attribute '{}' requires a nested value", name), Error::Info {
       .highlight = "No nested value provided",
       .note = F("This attribute requires a nested value to be set.\n"
-              "For example, try doing the following: #[{}( key = \"value\" )]", name)
+              "For example, try doing the following: '#[{}( key = \"value\" )]'", name)
     }, loc);
     return true;
   }

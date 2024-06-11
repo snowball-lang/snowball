@@ -45,6 +45,7 @@ ast::attrs::Attr Parser::parse_attr_value() {
         if (is(Token::Type::BracketRparent)) break;
         consume(Token::Type::SymComma, "a comma after the attribute", Token::Type::BracketRparent);
       }
+      next();
       attr = utils::get_temporary_address(Attr(key, attrs, loc));
       break;
     }
