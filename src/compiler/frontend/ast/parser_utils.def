@@ -11,3 +11,4 @@ bool parse_operator(std::vector<ast::Expr*>& exprs);
 void parse_extern_decl(ast::AttributedNode& node);
 
 ast::Expr* fix_precedence(std::vector<ast::Expr*>& exprs);
+ast::attrs::Attr parse_attr_value();

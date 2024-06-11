@@ -62,6 +62,13 @@ ast::TopLevelAst Parser::parse_top_level(Token::Type terminator) {
         }
         break;
       }
+      case Token::Type::SymHash: {
+        auto attr = parse_attr();
+        if (attr.is_global_attr()) {
+          run_attr_interpreter({ attr }, std::nullopt);
+        } else macro_attrs.push_back(attr);
+        break;
+      }
       case Token::Type::KwordInline:
         global_attrs.set_inline(true);
         next();

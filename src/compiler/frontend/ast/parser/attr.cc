@@ -15,15 +15,23 @@ using namespace ast::attrs;
 Attr Parser::parse_attr() {
   assert(is(Token::Type::SymHash));
   next();
+  consume(Token::Type::BracketLsquared, "an opening square bracket after the hash symbol");
   bool is_global = is(Token::Type::OpNot);
   if (is_global) next();
+  auto attr = parse_attr_value();
+  consume(Token::Type::BracketRsquared, "a closing square bracket after the attribute");
+  if (is_global) attr.set_global();
+  return attr;
+}
+
+ast::attrs::Attr Parser::parse_attr_value() {
+  auto loc = this->loc();
   auto key = expect(Token::Type::Identifier, "an identifier for the attribute key").to_string();
   next();
   Attr* attr;
   switch (current.type) {
     case Token::Type::OpEq: {
       next();
-      auto loc = this->loc();
       auto value = expect(Token::Type::ValueString, "a string value for the attribute").to_string();
       next();
       attr = utils::get_temporary_address(Attr(key, value, loc));
@@ -32,7 +40,6 @@ Attr Parser::parse_attr() {
     case Token::Type::BracketLparent: {
       next();
       std::vector<Attr> attrs;
-      auto loc = this->loc();
       while (!is(Token::Type::BracketRparent)) {
         attrs.push_back(parse_attr());
         if (is(Token::Type::BracketRparent)) break;
@@ -42,11 +49,10 @@ Attr Parser::parse_attr() {
       break;
     }
     default: {
-      attr = utils::get_temporary_address(Attr(key, loc()));
+      attr = utils::get_temporary_address(Attr(key, loc));
       break;
     }
   }
-  if (is_global) attr->set_global();
   return *attr;
 }
 

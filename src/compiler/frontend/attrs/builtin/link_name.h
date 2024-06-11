@@ -11,22 +11,22 @@ namespace snowball {
 namespace frontend {
 namespace ast::attrs {
 
-class LinkageType final : public AttrInstance {
+class LinkageName final : public AttrInstance {
 public:
-  LinkageType(const std::string& name) : AttrInstance(name) {}
-  virtual ~LinkageType() = default;
+  LinkageName(const std::string& name) : AttrInstance(name) {}
+  virtual ~LinkageName() = default;
 
   virtual bool interpret(const Attr& attr, AttrInterpreter::Target target,
                         Reporter& reporter, AttrInterpreter& interpreter) override;
 };
 
-bool LinkageType::interpret(const Attr& attr, AttrInterpreter::Target target,
+bool LinkageName::interpret(const Attr& attr, AttrInterpreter::Target target,
                           Reporter& reporter, AttrInterpreter& interpreter) {
-  sn_assert(false, "TODO: implement LinkageType::interpret");
+  sn_assert(false, "TODO: implement LinkageName::interpret");
 }
 
-static auto get_linkage_type() {
-  return new LinkageType("linkage_type");
+static auto get_link_name() {
+  return new LinkageName("link_name");
 }
 
 }

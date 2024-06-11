@@ -18,6 +18,12 @@ if [[ ! -f "create_new_attr.sh" ]]; then
 fi
 
 output_file="$file_name.h"
+if [[ -f "$output_file" ]]; then
+    echo "File $output_file already exists"
+    echo "Please delete it before running this script"
+    exit 1
+fi
+
 echo "Creating new attribute $attr_name in $output_file"
 
 # Add the attribute to the list of attributes

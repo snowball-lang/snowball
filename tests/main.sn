@@ -6,6 +6,7 @@ public func test(x: crate::mod::Hello<i32>) {
   a = 24 * 24 - 12;
 }
 
+#[link_name = "tonto"]
 public func balls<B: std::string::ToString>(x: B) {
   x.to_string();
 }
