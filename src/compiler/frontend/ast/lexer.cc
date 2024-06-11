@@ -202,6 +202,7 @@ std::vector<Token> Lexer::lex() {
       case '$': consume(Token::Type::SymDollar); break;
       case '?': consume(Token::Type::SymQuestion); break;
       case '@': consume(Token::Type::SymAt); break;
+      case '.': consume(Token::Type::SymDot); break;
       // brackets
       case '(': consume(Token::Type::BracketLparent); break;
       case ')': consume(Token::Type::BracketRparent); break;
@@ -432,122 +433,12 @@ std::vector<Token> Lexer::lex() {
         }
         // integer/float value
         if (IS_NUM(GET_CHAR(0))) {
-          std::string num(1, GET_CHAR(0));
-          enum _ReadMode {
-            INT,
-            FLOAT,
-            BIN,
-            HEX,
-            OCT
-          };
-          _ReadMode mode = INT;
-          if (GET_CHAR(0) == '0') {
-            if (GET_CHAR(1) == 'b' || GET_CHAR(1) == 'B') mode = BIN;
-            if (GET_CHAR(1) == 'x' || GET_CHAR(1) == 'X') mode = HEX;
-            if (GET_CHAR(1) == 'o' || GET_CHAR(1) == 'O') mode = OCT;
-          }
-          bool isRange = false;
-          EAT_CHAR(1);
-          switch (mode) {
-            case INT: {
-              while (IS_NUM(GET_CHAR(0)) || GET_CHAR(0) == '.') {
-                if (GET_CHAR(0) == '.' && mode == FLOAT) {
-                  mode = INT;
-                  num.erase(num.size() - 1);
-                  isRange = true;
-                  break; // It must be a range, right?
-                }
-                if (GET_CHAR(0) == '.') mode = FLOAT;
-                num += GET_CHAR(0);
-                EAT_CHAR(1);
-              }
-            } break;
-            case BIN: {
-              num += GET_CHAR(0);
-              EAT_CHAR(1); // eat 'b';
-              while (GET_CHAR(0) == '0' || GET_CHAR(0) == '1') {
-                num += GET_CHAR(0);
-                EAT_CHAR(1);
-              }
-            } break;
-            case HEX: {
-              num += GET_CHAR(0);
-              EAT_CHAR(1); // eat 'x';
-              while (IS_HEX_CHAR(GET_CHAR(0))) {
-                num += GET_CHAR(0);
-                EAT_CHAR(1);
-              }
-            } break;
-            case OCT: {
-              num += GET_CHAR(0);
-              EAT_CHAR(1); // eat 'o';
-              while (GET_CHAR(0) >= '0' && GET_CHAR(0) <= '7') {
-                num += GET_CHAR(0);
-                EAT_CHAR(1);
-              }
-            } break;
-            default: sn_assert(false, "Invalid mode");
-          }
-          bool appendDot = false;
-          if (num[num.size() - 1] == '.') {
-            num.erase(num.size() - 1);
-            mode = INT;
-            appendDot = true;
-          }
-          auto tk = Token {
-            .value = num,
-            .type = mode == FLOAT ? Token::Type::ValueFloat : Token::Type::ValueNumber,
-            .location = std::make_pair(line, column - num.size()),
-          };
-          std::string suffix;
-          if (GET_CHAR(0) == 'u' || GET_CHAR(0) == 'U') {
-            suffix += "U";
-            EAT_CHAR(1);
-          } else if (GET_CHAR(0) == 'i' || GET_CHAR(0) == 'I') {
-            suffix += "I";
-            EAT_CHAR(1);
-          }
-          if (GET_CHAR(0) == 'l' || GET_CHAR(0) == 'L') {
-            suffix += "L";
-            EAT_CHAR(1);
-          }
-          tk.value = tk.value + suffix;
-          add_token(tk);
-          if (isRange) { // we add '..' if it's a range expr (1..5)
-            consume(Token::Type::SymDot);
-            consume(Token::Type::SymDot);
-            tok_index -= 2;
-          }
-          if (appendDot) {
-            consume(Token::Type::SymDot);
-            tok_index--;
-          }
+          lex_number();
           break;
         }
         // identifier
         if (IS_TEXT(GET_CHAR(0))) {
-          std::string identifier(1, GET_CHAR(0));
-          EAT_CHAR(1);
-          while (IS_TEXT(GET_CHAR(0)) || IS_NUM(GET_CHAR(0))) {
-            identifier += GET_CHAR(0);
-            EAT_CHAR(1);
-          }
-          Token tk {
-            .value = identifier,
-            .type = get_keyword_type(identifier),
-            .location = std::make_pair(line, column - identifier.size()),
-          };
-          if (identifier == "_") {
-            shoot_error("Invalid identifier!", Error::Info {
-              .highlight = "Invalid identifier here.",
-              .note = "The identifier '_' is not a valid identifier. Its reserved for special use.\ne.g. an unknown type or a placeholder.",
-            });
-          }
-          add_token(tk);
-          break;
-        }
-        if (GET_CHAR(0) == '.') {
-          consume(Token::Type::SymDot);
+          lex_identifier();
           break;
         }
         shoot_error("Unknown character ('" + std::string(1, buffer[tok_index]) + "') found!", Error::Info {
@@ -566,6 +457,120 @@ std::vector<Token> Lexer::lex() {
     });
   }
   return tokens;
+}
+
+void Lexer::lex_number() {
+  std::string num(1, GET_CHAR(0));
+  enum _ReadMode {
+    INT,
+    FLOAT,
+    BIN,
+    HEX,
+    OCT
+  };
+  _ReadMode mode = INT;
+  if (GET_CHAR(0) == '0') {
+    if (GET_CHAR(1) == 'b' || GET_CHAR(1) == 'B') mode = BIN;
+    if (GET_CHAR(1) == 'x' || GET_CHAR(1) == 'X') mode = HEX;
+    if (GET_CHAR(1) == 'o' || GET_CHAR(1) == 'O') mode = OCT;
+  }
+  bool isRange = false;
+  EAT_CHAR(1);
+  switch (mode) {
+    case INT: {
+      while (IS_NUM(GET_CHAR(0)) || GET_CHAR(0) == '.') {
+        if (GET_CHAR(0) == '.' && mode == FLOAT) {
+          mode = INT;
+          num.erase(num.size() - 1);
+          isRange = true;
+          break; // It must be a range, right?
+        }
+        if (GET_CHAR(0) == '.') mode = FLOAT;
+        num += GET_CHAR(0);
+        EAT_CHAR(1);
+      }
+    } break;
+    case BIN: {
+      num += GET_CHAR(0);
+      EAT_CHAR(1); // eat 'b';
+      while (GET_CHAR(0) == '0' || GET_CHAR(0) == '1') {
+        num += GET_CHAR(0);
+        EAT_CHAR(1);
+      }
+    } break;
+    case HEX: {
+      num += GET_CHAR(0);
+      EAT_CHAR(1); // eat 'x';
+      while (IS_HEX_CHAR(GET_CHAR(0))) {
+        num += GET_CHAR(0);
+        EAT_CHAR(1);
+      }
+    } break;
+    case OCT: {
+      num += GET_CHAR(0);
+      EAT_CHAR(1); // eat 'o';
+      while (GET_CHAR(0) >= '0' && GET_CHAR(0) <= '7') {
+        num += GET_CHAR(0);
+        EAT_CHAR(1);
+      }
+    } break;
+    default: sn_assert(false, "Invalid mode");
+  }
+  bool appendDot = false;
+  if (num[num.size() - 1] == '.') {
+    num.erase(num.size() - 1);
+    mode = INT;
+    appendDot = true;
+  }
+  auto tk = Token {
+    .value = num,
+    .type = mode == FLOAT ? Token::Type::ValueFloat : Token::Type::ValueNumber,
+    .location = std::make_pair(line, column - num.size()),
+  };
+  std::string suffix;
+  if (GET_CHAR(0) == 'u' || GET_CHAR(0) == 'U') {
+    suffix += "U";
+    EAT_CHAR(1);
+  } else if (GET_CHAR(0) == 'i' || GET_CHAR(0) == 'I') {
+    suffix += "I";
+    EAT_CHAR(1);
+  }
+  if (GET_CHAR(0) == 'l' || GET_CHAR(0) == 'L') {
+    suffix += "L";
+    EAT_CHAR(1);
+  }
+  tk.value = tk.value + suffix;
+  add_token(tk);
+  if (isRange) { // we add '..' if it's a range expr (1..5)
+    consume(Token::Type::SymDot);
+    consume(Token::Type::SymDot);
+    tok_index -= 2;
+  }
+  if (appendDot) {
+    consume(Token::Type::SymDot);
+    tok_index--;
+  }
+}
+
+void Lexer::lex_identifier() {
+  std::string identifier(1, GET_CHAR(0));
+  EAT_CHAR(1);
+  while (IS_TEXT(GET_CHAR(0)) || IS_NUM(GET_CHAR(0))) {
+    identifier += GET_CHAR(0);
+    EAT_CHAR(1);
+  }
+  Token tk {
+    .value = identifier,
+    .type = get_keyword_type(identifier),
+    .location = std::make_pair(line, column - identifier.size()),
+  };
+  if (identifier == "_") {
+    shoot_error("Invalid identifier!", Error::Info {
+      .highlight = "Invalid identifier here.",
+      .note = "The identifier '_' is not a valid identifier. Its reserved for special use.\ne.g. an unknown type or a placeholder.",
+    });
+  }
+  add_token(tk);
 }
 
 void Lexer::add_token(const Token& token) {

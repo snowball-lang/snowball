@@ -28,7 +28,6 @@ ast::attrs::Attr Parser::parse_attr_value() {
   auto loc = this->loc();
   auto key = expect(Token::Type::Identifier, "an identifier for the attribute key").to_string();
   next();
-  Attr* attr;
   switch (current.type) {
     case Token::Type::OpEq: {
       next();
