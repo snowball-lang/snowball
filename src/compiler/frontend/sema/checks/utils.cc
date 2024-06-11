@@ -17,7 +17,7 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
     acc.add(id->get_name());
     if (auto item = universe.get_item(id->get_name()); 
       item.has_value() && acc.is_name()) {
-      return {item, acc.get_name(), false, item->dont_deduce_type()};
+      return {item, acc.get_name(), false};
     } else if (auto type = universe.get_type(path)) {
       return check_privacy({TypeCheckItem::create_type(type.value()), acc.get_name()}, loc);
     } else {
@@ -34,7 +34,7 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
       return {std::nullopt, acc.get_name()};
     }
   } else if (auto member = expr->as<ast::MemberAccess>()) {
-    auto [obj, obj_name, ignore_self, dont_deduce] = get_item(member->get_const_object(), acc);
+    auto [obj, obj_name, ignore_self] = get_item(member->get_const_object(), acc);
     assert(!ignore_self);
     if (!obj.has_value()) {
       return {std::nullopt, obj_name, false};
@@ -119,7 +119,7 @@ ast::types::Type* TypeChecker::get_type(const NamespacePath& path) {
 }
 
 ast::types::Type* TypeChecker::get_type(ast::Expr* expr, bool no_unknown) {
-  auto [item, name, ignore_self, dont_deduce] = get_item(expr);
+  auto [item, name, ignore_self] = get_item(expr);
   assert(!ignore_self);
   if (!item.has_value()) {
     auto dym = get_did_you_mean(name);
@@ -133,16 +133,7 @@ ast::types::Type* TypeChecker::get_type(ast::Expr* expr, bool no_unknown) {
   }
   if (item->is_type()) {
     std::vector<ast::types::Type*> generics = fetch_generics_from_node(expr);
-    auto ty = (dont_deduce) 
-      ? item->get_type() 
-      : deduce_type(item->get_type(), generics, expr->get_location());
-    if (dont_deduce && generics.size() > 0) {
-      err(expr->get_location(), "No generics should be provided for this specific type", Error::Info {
-        .highlight = "No generics needed",
-        .help = "You provided generics for a type that should not have any. Maybe you forgot to remove them?",
-        .note = F("This type points to '{}' in this context.\nIf you want to provide generics, you should use the full path to the type.\nFor example 'Foo<...>'", ty->get_printable_name())
-      }, Error::Type::Err, false);
-    }
+    auto ty = deduce_type(item->get_type(), generics, expr->get_location());
     if (no_unknown && ty->is_deep_unknown()) {
       err(expr->get_location(), "Type should be known in this context", Error::Info {
         .highlight = fmt::format("Type '{}' should be known in this context", ty->get_printable_name()),
@@ -226,6 +217,15 @@ ast::types::Type* TypeChecker::deduce_type(ast::types::Type* type, const std::ve
       auto clone = (ast::ClassDecl*)decl->clone();
       return monorphosize(clone, deduced, loc)->get_type();
     }
+  } else if (type->is_self_type()) {
+    if (generics.size() > 0) {
+      err(loc, "No generics should be provided for this specific type", Error::Info {
+        .highlight = "No generics needed",
+        .help = "You provided generics for a type that should not have any. Maybe you forgot to remove them?",
+        .note = F("This type points to '{}' in this context.\nIf you want to provide generics, you should use the full path to the type.\nFor example 'Foo<...>'", type->get_printable_name())
+      }, Error::Type::Err, false);
+    }
+    return type->as_self_type()->get_self();
   } else {
     if (generics.size() > 0) {
       err(loc, "Type has no generics to deduce", Error::Info {
@@ -377,7 +377,8 @@ ast::types::GenericType* TypeChecker::create_generic_type(ast::GenericDecl& decl
 void TypeChecker::update_self_type() {
   sn_assert(ctx.current_class, "No current class found");
   auto self = ctx.current_class->get_type();
-  universe.add_item("Self", TypeCheckItem::create_type(self, /* dont_deduce= */true));
+  auto self_ty = ast::types::SelfType::create(self);
+  universe.add_item("Self", self_ty);
 }
 
 }

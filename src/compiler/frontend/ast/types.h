@@ -28,6 +28,7 @@ class VoidType;
 class ClassType;
 class ReferenceType;
 class PointerType;
+class SelfType;
 
 class Type {
   bool is_mutable = false;
@@ -47,6 +48,7 @@ public:
   CHILD(class, ClassType)
   CHILD(reference, ReferenceType)
   CHILD(pointer, PointerType)
+  CHILD(self_type, SelfType)
 #undef CHILD
   virtual std::string get_printable_name() = 0;
   virtual std::string get_mangled_name() = 0;
@@ -153,6 +155,25 @@ public:
   // It does not have any relation with the argument types-cache
   void set_cached() { cached = true; }
   bool is_cached() const { return cached; }
+
+  std::string get_printable_name() override;
+  std::string get_mangled_name() override;
+};
+
+class SelfType final : public Type {
+  Type* self;
+
+public:
+  SelfType(Type* self)
+    : self(self) {}
+  ~SelfType() = default;
+
+  auto get_self() const { return self; }
+
+  static auto create(Type* self) { return new SelfType(self); }
+
+  SelfType* as_self_type() override { return this; }
+  bool is_self_type() const override { return true; }
 
   std::string get_printable_name() override;
   std::string get_mangled_name() override;

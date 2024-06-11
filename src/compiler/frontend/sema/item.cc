@@ -5,8 +5,8 @@ namespace snowball {
 namespace frontend {
 namespace sema {
 
-TypeCheckItem::TypeCheckItem(ast::types::Type* type, bool dont_deduce)
-    : kind(Kind::Type), type(type), dont_deduce(dont_deduce) {}
+TypeCheckItem::TypeCheckItem(ast::types::Type* type)
+    : kind(Kind::Type), type(type) {}
 
 TypeCheckItem::TypeCheckItem(ast::VarDecl* var)
     : kind(Kind::Var), var(var) {}
@@ -60,8 +60,8 @@ bool TypeCheckItem::is_module() const {
 }
 
 // Static factory methods
-TypeCheckItem TypeCheckItem::create_type(ast::types::Type* type, bool dont_deduce) {
-    return TypeCheckItem(type, dont_deduce);
+TypeCheckItem TypeCheckItem::create_type(ast::types::Type* type) {
+    return TypeCheckItem(type);
 }
 
 TypeCheckItem TypeCheckItem::create_var(ast::VarDecl* var) { 

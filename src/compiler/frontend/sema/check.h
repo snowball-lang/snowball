@@ -71,7 +71,6 @@ private:
     std::optional<TypeCheckItem> item;
     std::string name;
     bool ignore_self = false;
-    bool dont_deduce = false;
   };
 
   void generate_global_scope(ast::TopLevelAst& ast, bool first = false);

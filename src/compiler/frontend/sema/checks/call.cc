@@ -53,7 +53,7 @@ void TypeChecker::visit(ast::Call* node) {
     }
   } else if (auto index = node->get_callee()->as<ast::MemberAccess>()) {
     auto& object = index->get_object();
-    auto [item, name, ignore_self, dont_deduce] = get_item(index);
+    auto [item, name, ignore_self] = get_item(index);
     if (!item.has_value()) {
       err(node->get_location(), fmt::format("use of undeclared identifier when calling '{}'", name), Error::Info {
         .highlight = 

@@ -196,6 +196,14 @@ void FuncType::recalibrate_cache() {
   param_types_cache = types;
 }
 
+std::string SelfType::get_printable_name() {
+  return self->get_printable_name();
+}
+
+std::string SelfType::get_mangled_name() {
+  sn_assert(false, "self type should be replaced by the time mangling occurs");
+}
+
 }
 }
 }
