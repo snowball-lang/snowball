@@ -17,5 +17,5 @@ public func main() i32 {
   a = 24;
   b = &a;
   std::main::test(a);
-  std::main::printf(b"Hello, world!\n");
+  std::main::printf(c"Hello, world!\n");
 }
