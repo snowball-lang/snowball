@@ -3,7 +3,7 @@ public func test(x: crate::mod::Hello<i32>) {
   balls(x);
   x.hello(x);
   let mut a;
-  a = 24 * 24 - 12;
+  a = 24 * 24 - 2;
 }
 
 public func balls<B: std::string::ToString>(x: B) {

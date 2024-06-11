@@ -25,27 +25,40 @@
 namespace snowball {
 namespace frontend {
 
-Lexer::Lexer(const Ctx& ctx, std::shared_ptr<SourceFile> file) : ctx(ctx), file(file) {}
+Lexer::Lexer(const Ctx& ctx, std::shared_ptr<SourceFile> file) 
+  : ctx(ctx), file(file) {}
+
+static bool is_newline(int c) {
+  switch (c) {
+    case 0x0A: // LF
+    case 0x0B: // CR
+      return true;
+  }
+  return false;
+}
 
 std::vector<Token> Lexer::lex() {
   buffer = globals::read_file(file->get_path());
   while (tok_index < buffer.size()) {
+    if (is_newline(buffer[tok_index])) {
+      line++;
+      column = 1;
+      tok_index++;
+      continue;
+    }
     switch (buffer[tok_index]) {
       case ' ':
       case '\t':
+      case '\v':
+      case '\f':
         column++;
-        tok_index++;
-        break;
-      case '\n':
-        line++;
-        column = 1;
         tok_index++;
         break;
       case '\0': break;
       case '/':
         switch (GET_CHAR(1)) {
           case '/':
-            while (GET_CHAR(0) != '\n') {
+            while (!is_newline(GET_CHAR(0))) {
               tok_index++;
             }
             break;
@@ -63,7 +76,7 @@ std::vector<Token> Lexer::lex() {
                 });
                 break;
               }
-              if (GET_CHAR(0) == '\n') {
+              if (is_newline(GET_CHAR(0))) {
                 line++;
                 column = 1;
                 continue;
@@ -208,6 +221,12 @@ std::vector<Token> Lexer::lex() {
         EAT_CHAR(1);
         while (GET_CHAR(0) != '"') {
           if (GET_CHAR(0) == '\\') {
+            if (is_newline(GET_CHAR(1))) {
+              line++;
+              column = 1;
+              tok_index++;
+              continue;
+            }
             switch (GET_CHAR(1)) {
               case 'n': value += '\n'; break;
               case 't': value += '\t'; break;
@@ -215,12 +234,6 @@ std::vector<Token> Lexer::lex() {
               case '0': value += '\0'; break;
               case '\\': value += '\\'; break;
               case '"': value += '"'; break;
-              case '\n': {
-                line++;
-                column = 1;
-                tok_index++;
-                break;
-              }
               default: {
                 column++;
                 shoot_error("Invalid escape sequence!", Error::Info {
@@ -239,7 +252,7 @@ std::vector<Token> Lexer::lex() {
               .note = "Strings that start with '\"' must end with '\"'.",
             });
             break;
-          } else if (GET_CHAR(0) == '\n') {
+          } else if (is_newline(GET_CHAR(0))) {
             tok_index++;
             shoot_error("Found an unexpected newline while lexing a 'string'!", Error::Info {
               .highlight = "Unexpected newline here.",
