@@ -15,6 +15,9 @@
 #include "compiler/frontend/location.h"
 #include "compiler/reports/reporter.h"
 
+#include "compiler/frontend/attrs/attr.h"
+#include "compiler/frontend/attrs/interp.h"
+
 namespace snowball {
 namespace frontend {
 
@@ -36,10 +39,15 @@ class Parser : public Reporter {
   unsigned int tok_index = 0;
   std::shared_ptr<SourceFile> file;
 
+  ast::attrs::AttrInterpreter& attr_interpreter;
+
 public:
   Parser(const Ctx& ctx, const std::shared_ptr<SourceFile>& file,
-         const std::vector<Token>& tokens);
+         const std::vector<Token>& tokens, ast::attrs::AttrInterpreter& attr_interpreter);
   ~Parser() = default;
+
+  Parser(const Parser&) = delete;
+  Parser& operator=(const Parser&) = delete;
 
   Module parse();
 
@@ -51,16 +59,21 @@ private:
   bool is(Token::Type type);
   bool is(Token::Type type, const Token& tok);
   SourceLocation loc() const;
+
   void
   err(const std::string& message, const Error::Info& info = Error::Info(),
       Error::Type type = Error::Type::Err, bool fatal = true);
   void _recover(std::vector<Token::Type> tys);
+
   const Token& expect(Token::Type type, const std::string& expectation);
   const Token&
   expect(Token::Type type, const std::string& expectation, Token::Type recover);
   const Token&
   expect(Token::Type type, const std::string& expectation,
          std::vector<Token::Type> recover);
+
+  bool run_attr_interpreter(const std::vector<ast::attrs::Attr>& attrs,
+                            ast::attrs::AttrInterpreter::Target target = std::nullopt);
 
   template <typename T, typename... Args>
   void recover(T ty, Args&&... args) {
@@ -98,6 +111,7 @@ private:
   ast::Block* parse_block(Token::Type terminator = Token::Type::BracketRcurly);
   ast::ClassDecl* parse_class_decl(const ast::AttributedNode& attrs);
   ast::ClassDecl* parse_interface_decl(const ast::AttributedNode& attrs);
+  ast::attrs::Attr parse_attr();
 
 #include "compiler/frontend/ast/parser_utils.def"
 };

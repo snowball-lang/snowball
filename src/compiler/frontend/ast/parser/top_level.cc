@@ -11,6 +11,12 @@ namespace frontend {
 ast::TopLevelAst Parser::parse_top_level(Token::Type terminator) {
   ast::TopLevelAst top_level;
   ast::AttributedNode global_attrs;
+  std::vector<ast::attrs::Attr> macro_attrs;
+  auto try_add_node = [&](ast::Stmt* node) {
+    if (run_attr_interpreter(macro_attrs, node)) {
+      top_level.push_back(node);
+    }
+  };
   while (!is(terminator)) {
     switch (current.type) {
       case Token::Type::KwordPublic:
@@ -110,15 +116,15 @@ ast::TopLevelAst Parser::parse_top_level(Token::Type terminator) {
         parse_extern_decl(global_attrs);
         break;
       case Token::Type::KwordFunc:
-        top_level.push_back(parse_fn_decl(global_attrs));
+        try_add_node(parse_fn_decl(global_attrs));
         global_attrs = ast::AttributedNode();
         break;
       case Token::Type::KwordClass:
-        top_level.push_back(parse_class_decl(global_attrs));
+        try_add_node(parse_class_decl(global_attrs));
         global_attrs = ast::AttributedNode();
         break;
       case Token::Type::KwordInter:
-        top_level.push_back(parse_interface_decl(global_attrs));
+        try_add_node(parse_interface_decl(global_attrs));
         global_attrs = ast::AttributedNode();
         break;
       case Token::Type::KwordUnsafe:

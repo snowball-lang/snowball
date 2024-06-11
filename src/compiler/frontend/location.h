@@ -26,13 +26,9 @@ struct SourceLocation {
   std::shared_ptr<SourceFile> file;
 
   SourceLocation(
-          unsigned int line, unsigned int column, unsigned int length,
-          std::shared_ptr<SourceFile> file
-  )
-    : line(line)
-    , column(column)
-    , length(length)
-    , file(file) {}
+    unsigned int line, unsigned int column, unsigned int length,
+    std::shared_ptr<SourceFile> file
+  ) : line(line), column(column), length(length), file(file) {}
 
   static SourceLocation dummy() {
     return SourceLocation(0, 0, 0, std::make_shared<SourceFile>("<invalid>"));

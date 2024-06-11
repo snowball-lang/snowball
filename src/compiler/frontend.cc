@@ -3,11 +3,15 @@
 #include "compiler/ctx.h"
 #include "compiler/compiler.h"
 
+#include "compiler/frontend/attrs/interp.h"
+
 namespace snowball {
 using namespace cli;
 using namespace utils;
 
 void Compiler::run_frontend() {
+  auto attr_interp = frontend::ast::attrs::AttrInterpreter::create();
+  attr_interp.register_builtin_instances();
   for (auto ipath = allowed_paths.rbegin(); ipath != allowed_paths.rend(); ipath++) {
     auto path = *ipath;
     // Change the project context to the current project (e.g. when changing directories)
@@ -29,7 +33,7 @@ void Compiler::run_frontend() {
         if (lexer.handle_errors()) {
           stop_compilation();
         }
-        frontend::Parser parser(ctx, source_file, tokens);
+        frontend::Parser parser(ctx, source_file, tokens, attr_interp);
         modules.push_back(parser.parse());
         timer.stop(timer_name);
         modules.back().parent_crate = module_root_path;

@@ -10,8 +10,9 @@
 namespace snowball {
 namespace frontend {
 
-Parser::Parser(const Ctx& ctx, const std::shared_ptr<SourceFile>& file, const std::vector<Token>& tokens)
-    : ctx(ctx), file(file), tokens(tokens) {
+Parser::Parser(const Ctx& ctx, const std::shared_ptr<SourceFile>& file, const std::vector<Token>& tokens,
+                ast::attrs::AttrInterpreter& attr_interpreter)
+    : ctx(ctx), file(file), tokens(tokens), attr_interpreter(attr_interpreter) {
   assert(!tokens.empty());
   current = tokens[0]; // we know that there is at least one token
 }
@@ -171,6 +172,14 @@ void Parser::_recover(std::vector<Token::Type> tys) {
 
 SourceLocation Parser::loc() const {
   return SourceLocation(current.location.first, current.location.second, current.get_width(), file);
+}
+
+bool Parser::run_attr_interpreter(const std::vector<ast::attrs::Attr>& attrs,
+    ast::attrs::AttrInterpreter::Target target) {
+  if (attrs.empty()) {
+    return true;
+  }
+  return attr_interpreter.interpret(*this, attrs, target);
 }
 
 }

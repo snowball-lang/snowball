@@ -1,0 +1,34 @@
+
+#include <string>
+#include <vector>
+#include <optional>
+#include <unordered_map>
+
+#include "compiler/utils/utils.h"
+#include "compiler/frontend/attrs/interp.h"
+
+namespace snowball {
+namespace frontend {
+namespace ast::attrs {
+
+class $attr_name final : public AttrInstance {
+public:
+  $attr_name(const std::string& name) : AttrInstance(name) {}
+  virtual ~$attr_name() = default;
+
+  virtual bool interpret(const Attr& attr, AttrInterpreter::Target target,
+                        Reporter& reporter, AttrInterpreter& interpreter) override;
+};
+
+bool $attr_name::interpret(const Attr& attr, AttrInterpreter::Target target,
+                          Reporter& reporter, AttrInterpreter& interpreter) {
+  sn_assert(false, "TODO: implement $attr_name::interpret");
+}
+
+static auto get_$file_name() {
+  return new $attr_name("$file_name");
+}
+
+}
+}
+}
