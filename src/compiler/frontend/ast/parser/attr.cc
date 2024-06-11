@@ -15,9 +15,9 @@ using namespace ast::attrs;
 Attr Parser::parse_attr() {
   assert(is(Token::Type::SymHash));
   next();
-  consume(Token::Type::BracketLsquared, "an opening square bracket after the hash symbol");
   bool is_global = is(Token::Type::OpNot);
   if (is_global) next();
+  consume(Token::Type::BracketLsquared, "an opening square bracket after the hash symbol");
   auto attr = parse_attr_value();
   consume(Token::Type::BracketRsquared, "a closing square bracket after the attribute");
   if (is_global) attr.set_global();
