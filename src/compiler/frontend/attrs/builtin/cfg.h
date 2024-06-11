@@ -32,6 +32,8 @@ public:
 bool Config::interpret(const Attr& attr, AttrInterpreter::Target target,
                           Reporter& reporter, AttrInterpreter& interpreter,
                           const ParentArgs& args) {
+  // No need to return here, as we want to interpret the nested attributes.
+  assert_target_is_node(reporter, interpreter, target, cfg, attr.get_location()); 
   if (assert_attr_is_nested(reporter, interpreter, attr, cfg, attr.get_location()))
     return false;
   auto attr_list = attr.get_attrs();
