@@ -24,6 +24,15 @@ namespace ast::attrs {
 #endif
 
 class AttrInstance;
+class AttrInterpreter;
+
+struct ParentArgs {
+  // Callback used to run back from the parent.
+  // e.g. cfg(not(target_os = "windows")). `not` will
+  // call the parent (cfg) with the attribute (target_os, "windows").
+  std::optional<std::function<bool(const std::string&, std::optional<std::string>,
+    Reporter&, AttrInterpreter&, const Attr&)>> callback;
+};
 
 class AttrInterpreter final {
   std::unordered_map<std::string, AttrInstance*> instances;
@@ -37,9 +46,9 @@ public:
 
   /// @return true if the attribute is valid. E.g. target os is the same as the current os.
   bool interpret(Reporter& reporter, const Attr& attrs, 
-                Target target = std::nullopt);
+                Target target = std::nullopt, const ParentArgs& args = {});
   bool interpret(Reporter& reporter, const std::vector<Attr>& attrs, 
-                Target target = std::nullopt);
+                Target target = std::nullopt, const ParentArgs& args = {});
 
   void register_instance(const std::string& name, AttrInstance* instance);
   void unregister_instance(const std::string& name);
@@ -62,7 +71,9 @@ public:
   virtual ~AttrInstance() = default;
 
   virtual bool interpret(const Attr& attr, AttrInterpreter::Target target,
-                        Reporter& reporter, AttrInterpreter& interpreter) = 0;
+                        Reporter& reporter, AttrInterpreter& interpreter,
+                        const ParentArgs& args = {}) = 0;
+                        
 };
 
 } // namespace sema::attrs

@@ -6,7 +6,7 @@ namespace snowball {
 namespace frontend {
 namespace ast::attrs {
 
-bool AttrInterpreter::interpret(Reporter& reporter, const Attr& attrs, Target target) {
+bool AttrInterpreter::interpret(Reporter& reporter, const Attr& attrs, Target target, const ParentArgs& args) {
   if (call_stack.size() >= SNOWBALL_ATTRS_CALL_STACK_SIZE) {
     error(reporter, "Attribute call stack overflow", Error::Info {
       .highlight = "Stack overflow from this attribute",
@@ -24,16 +24,16 @@ bool AttrInterpreter::interpret(Reporter& reporter, const Attr& attrs, Target ta
     return false;
   }
   call_stack.push_back(it->second);
-  auto result = it->second->interpret(attrs, target, reporter, *this);
+  auto result = it->second->interpret(attrs, target, reporter, *this, args);
   call_stack.pop_back();
   return result;
 }
 
-bool AttrInterpreter::interpret(Reporter& reporter, const std::vector<Attr>& attrs, Target target) {
+bool AttrInterpreter::interpret(Reporter& reporter, const std::vector<Attr>& attrs, Target target, const ParentArgs& args) {
   bool result = true;
   for (auto& attr : attrs) {
     // We want to evaluate all attributes even if one fails.
-    result &= interpret(reporter, attr, target);
+    result &= interpret(reporter, attr, target, args);
   }
   return result;
 }

@@ -72,11 +72,6 @@ std::string gen_random_string() {
   return s;
 }
 
-template<typename T>
-T* get_temporary_address(T &&x) {
-  return &x;
-}
-
 } // namespace utils
 } // namespace snowball
 

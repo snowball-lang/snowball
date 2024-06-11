@@ -20,11 +20,13 @@ public:
   virtual ~LinkageName() = default;
 
   virtual bool interpret(const Attr& attr, AttrInterpreter::Target target,
-                        Reporter& reporter, AttrInterpreter& interpreter) override;
+                        Reporter& reporter, AttrInterpreter& interpreter,
+                        const ParentArgs& args) override;
 };
 
 bool LinkageName::interpret(const Attr& attr, AttrInterpreter::Target target,
-                          Reporter& reporter, AttrInterpreter& interpreter) {
+                          Reporter& reporter, AttrInterpreter& interpreter,
+                          const ParentArgs& args) {
   assert_attr_has_value(reporter, interpreter, attr, link_name, attr.get_location());
   auto func = target_get_function(reporter, interpreter, target, link_name, attr.get_location());
   if (!func) return false;

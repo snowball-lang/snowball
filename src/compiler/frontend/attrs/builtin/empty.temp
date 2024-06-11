@@ -20,11 +20,13 @@ public:
   virtual ~$attr_name() = default;
 
   virtual bool interpret(const Attr& attr, AttrInterpreter::Target target,
-                        Reporter& reporter, AttrInterpreter& interpreter) override;
+                        Reporter& reporter, AttrInterpreter& interpreter,
+                        const ParentArgs& args = {}) override;
 };
 
 bool $attr_name::interpret(const Attr& attr, AttrInterpreter::Target target,
-                          Reporter& reporter, AttrInterpreter& interpreter) {
+                          Reporter& reporter, AttrInterpreter& interpreter,
+                          const ParentArgs& args) {
   sn_assert(false, "TODO: implement $attr_name::interpret");
 }
 

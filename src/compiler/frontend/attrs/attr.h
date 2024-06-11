@@ -42,7 +42,7 @@ class Attr final : public Self<Attr>, public LocationHolder {
   bool is_global = false;
 
 public:
-  Attr(const std::string& key, const std::string& value, const SourceLocation& location)
+  Attr(const std::string& key, std::string value, const SourceLocation& location)
     : LocationHolder(location), key(key), value(value), type(AttrType::KeyValue) {}
 
   Attr(const std::string& key, const SourceLocation& location)

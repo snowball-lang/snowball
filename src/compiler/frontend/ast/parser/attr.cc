@@ -34,8 +34,7 @@ ast::attrs::Attr Parser::parse_attr_value() {
       next();
       auto value = expect(Token::Type::ValueString, "a string value for the attribute").to_string();
       next();
-      attr = utils::get_temporary_address(Attr(key, fix_string_value(value), loc));
-      break;
+      return Attr(key, fix_string_value(value), loc);
     }
     case Token::Type::BracketLparent: {
       next();
@@ -46,15 +45,12 @@ ast::attrs::Attr Parser::parse_attr_value() {
         consume(Token::Type::SymComma, "a comma after the attribute", Token::Type::BracketRparent);
       }
       next();
-      attr = utils::get_temporary_address(Attr(key, attrs, loc));
-      break;
+      return Attr(key, attrs, loc);
     }
     default: {
-      attr = utils::get_temporary_address(Attr(key, loc));
-      break;
+      return Attr(key, loc);
     }
   }
-  return *attr;
 }
 
 }

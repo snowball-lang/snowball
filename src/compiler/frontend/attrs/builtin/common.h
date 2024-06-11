@@ -81,6 +81,18 @@ inline bool assert_attr_is_nested(Reporter& reporter, AttrInterpreter& interp,
   return (ast::FnDecl*)nullptr;
 }
 
+[[nodiscard]] inline auto get_callback(Reporter& reporter, AttrInterpreter& interp, 
+    const ParentArgs& args, const std::string& name, const SourceLocation& loc) {
+  if (!args.callback.has_value()) {
+    interp.error(reporter, F("Attribute '{}' cant be called at a top-level state", name), Error::Info {
+      .highlight = "No parent function provided"
+    }, loc);
+    return (std::function<bool(const std::string&, std::optional<std::string>, 
+      Reporter&, AttrInterpreter&, const Attr&)>)nullptr;
+  }
+  return args.callback.value();
+}
+
 }
 }
 }
