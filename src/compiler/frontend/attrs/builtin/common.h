@@ -17,55 +17,65 @@ namespace ast::attrs {
 
 // Utility functions for attributes' logic.
 
-inline void assert_target_is_node(Reporter& reporter, AttrInterpreter& interp, 
+inline bool assert_target_is_node(Reporter& reporter, AttrInterpreter& interp, 
     AttrInterpreter::Target target, const std::string& name, const SourceLocation& loc) {
   if (!target.has_value()) {
-    interp.error(reporter, F("Attribute '{}' requires a target node"), Error::Info {
+    interp.error(reporter, F("Attribute '{}' requires a target node", name), Error::Info {
       .highlight = "Not attached to any node"
     }, loc);
+    return true;
   }
+  return false;
 }
 
-inline void assert_attr_has_value(Reporter& reporter, AttrInterpreter& interp, 
+inline bool assert_attr_has_value(Reporter& reporter, AttrInterpreter& interp, 
     const Attr& attr, const std::string& name, const SourceLocation& loc) {
   if (!attr.is_key_value()) {
-    interp.error(reporter, F("Attribute '{}' requires a value"), Error::Info {
+    interp.error(reporter, F("Attribute '{}' requires a value", name), Error::Info {
       .highlight = "No value provided",
       .note = F("This attribute requires a value to be set.\n"
               "For example, try doing the following: #[{} = \"value\"]", name)
     }, loc);
+    return true;
   }
+  return false;
 }
 
-inline void assert_attr_is_single(Reporter& reporter, AttrInterpreter& interp, 
+inline bool assert_attr_is_single(Reporter& reporter, AttrInterpreter& interp, 
     const Attr& attr, const std::string& name, const SourceLocation& loc) {
   if (!attr.is_single()) {
-    interp.error(reporter, F("Attribute '{}' does not require a value"), Error::Info {
+    interp.error(reporter, F("Attribute '{}' does not require a value", name), Error::Info {
       .highlight = "Value provided",
       .note = F("This attribute does not require a value to be set.\n"
               "For example, try doing the following: #[{}]", name)
     }, loc);
+    return true;
   }
+  return false;
 }
 
-inline void assert_attr_is_nested(Reporter& reporter, AttrInterpreter& interp, 
+inline bool assert_attr_is_nested(Reporter& reporter, AttrInterpreter& interp, 
     const Attr& attr, const std::string& name, const SourceLocation& loc) {
   if (!attr.is_nested()) {
-    interp.error(reporter, F("Attribute '{}' requires a nested value"), Error::Info {
+    interp.error(reporter, F("Attribute '{}' requires a nested value", name), Error::Info {
       .highlight = "No nested value provided",
       .note = F("This attribute requires a nested value to be set.\n"
               "For example, try doing the following: #[{}( key = \"value\" )]", name)
     }, loc);
+    return true;
   }
+  return false;
 }
 
 [[nodiscard]] inline auto target_get_function(Reporter& reporter, AttrInterpreter& interp, 
     AttrInterpreter::Target target, const std::string& name, const SourceLocation& loc) {
-  assert_target_is_node(reporter, interp, target, name, loc);
+  if (assert_target_is_node(reporter, interp, target, name, loc)) {
+    return (ast::FnDecl*)nullptr;
+  }
   if (auto as_func = target.value()->as<ast::FnDecl>()) {
     return as_func;
   }
-  interp.error(reporter, F("Attribute '{}' requires a function node"), Error::Info {
+  interp.error(reporter, F("Attribute '{}' requires a function node", name), Error::Info {
     .highlight = "Not attached to a function node"
   }, loc);
   return (ast::FnDecl*)nullptr;
