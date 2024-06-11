@@ -192,14 +192,10 @@ class BinaryOp final : public Self<BinaryOp>, public Expr {
 
 public:
   BinaryOp(
-          const SourceLocation& location, Operator op,
-          std::optional<Expr*> lhs = std::nullopt,
-          std::optional<Expr*> rhs = std::nullopt
-  )
-    : Expr(location)
-    , op(op)
-    , lhs(lhs)
-    , rhs(rhs) {}
+    const SourceLocation& location, Operator op,
+    std::optional<Expr*> lhs = std::nullopt,
+    std::optional<Expr*> rhs = std::nullopt
+  ) : Expr(location), op(op), lhs(lhs), rhs(rhs) {}
   ~BinaryOp() = default;
 
   // A flag used for operator precedence building

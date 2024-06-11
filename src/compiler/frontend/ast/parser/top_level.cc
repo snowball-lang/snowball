@@ -16,6 +16,7 @@ ast::TopLevelAst Parser::parse_top_level(Token::Type terminator) {
     if (run_attr_interpreter(macro_attrs, node)) {
       top_level.push_back(node);
     }
+    macro_attrs.clear();
   };
   while (!is(terminator)) {
     switch (current.type) {

@@ -6,10 +6,13 @@
 
 #include "compiler/utils/utils.h"
 #include "compiler/frontend/attrs/interp.h"
+#include "compiler/frontend/attrs/builtin/common.h"
 
 namespace snowball {
 namespace frontend {
 namespace ast::attrs {
+
+#define $file_name "$file_name"
 
 class $attr_name final : public AttrInstance {
 public:
@@ -26,8 +29,10 @@ bool $attr_name::interpret(const Attr& attr, AttrInterpreter::Target target,
 }
 
 static auto get_$file_name() {
-  return new $attr_name("$file_name");
+  return new $attr_name($file_name);
 }
+
+#undef $file_name
 
 }
 }

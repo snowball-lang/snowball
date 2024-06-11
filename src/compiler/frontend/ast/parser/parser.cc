@@ -182,5 +182,11 @@ bool Parser::run_attr_interpreter(const std::vector<ast::attrs::Attr>& attrs,
   return attr_interpreter.interpret(*this, attrs, target);
 }
 
+std::string Parser::fix_string_value(const std::string& str) {
+  // Remove the first and last character
+  auto value = str.substr(1, str.size() - 2);
+  return value;
+}
+
 }
 }

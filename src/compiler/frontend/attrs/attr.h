@@ -36,13 +36,13 @@ enum class AttrType
 
 class Attr final : public Self<Attr>, public LocationHolder {
   std::string key;
-  std::optional<std::string> value; // Optional because it can be a key-value pair or just a key.
-  std::vector<Attr> attrs; // Attributes inside this attribute.
+  std::string value; // It may be empty if the type is not KeyValue.
+  std::vector<Attr> attrs; // Attributes inside this attribute. (Nested)
   AttrType type;
   bool is_global = false;
 
 public:
-  Attr(const std::string& key, std::string value, const SourceLocation& location)
+  Attr(const std::string& key, const std::string& value, const SourceLocation& location)
     : LocationHolder(location), key(key), value(value), type(AttrType::KeyValue) {}
 
   Attr(const std::string& key, const SourceLocation& location)
@@ -54,8 +54,8 @@ public:
   ~Attr() = default;
 
   std::string get_key() const { return key; }
-  std::string get_value() const;
-  std::vector<Attr*> get_attrs() const;
+  std::string get_value() const { return value; }
+  std::vector<Attr> get_attrs() const { return attrs; }
 
   bool is_single() const { return type == AttrType::Single; }
   bool is_key_value() const { return type == AttrType::KeyValue; }

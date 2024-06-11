@@ -34,14 +34,14 @@ ast::attrs::Attr Parser::parse_attr_value() {
       next();
       auto value = expect(Token::Type::ValueString, "a string value for the attribute").to_string();
       next();
-      attr = utils::get_temporary_address(Attr(key, value, loc));
+      attr = utils::get_temporary_address(Attr(key, fix_string_value(value), loc));
       break;
     }
     case Token::Type::BracketLparent: {
       next();
       std::vector<Attr> attrs;
       while (!is(Token::Type::BracketRparent)) {
-        attrs.push_back(parse_attr());
+        attrs.push_back(parse_attr_value());
         if (is(Token::Type::BracketRparent)) break;
         consume(Token::Type::SymComma, "a comma after the attribute", Token::Type::BracketRparent);
       }
