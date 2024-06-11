@@ -38,7 +38,7 @@
 #define SN_KEYWORD_FUNCTION  "func"
 #define SN_KEYWORD_MACRO     "macro"
 #define SN_KEYWORD_OPERATOR  "operator"
-#define SN_KEYWORD_VARIABLE  "let"
+#define SN_KEYWORD_LET       "let"
 #define SN_KEYWORD_NEW       "new"
 #define SN_KEYWORD_DELETE    "delete"
 #define SN_KEYWORD_THROW     "throw"

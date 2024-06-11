@@ -90,7 +90,7 @@ std::string Token::to_string() const {
     case Type::KwordFunc: return SN_KEYWORD_FUNCTION;
     case Type::KwordMacro: return SN_KEYWORD_MACRO;
     case Type::KwordOperator: return SN_KEYWORD_OPERATOR;
-    case Type::KwordVar: return SN_KEYWORD_VARIABLE;
+    case Type::KwordVar: return SN_KEYWORD_LET;
     case Type::KwordConst: return SN_KEYWORD_CONSTANT;
     case Type::KwordIf: return SN_KEYWORD_IF;
     case Type::KwordElse: return SN_KEYWORD_ELSE;

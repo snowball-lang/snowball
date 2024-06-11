@@ -37,6 +37,106 @@ static bool is_newline(int c) {
   return false;
 }
 
+static Token::Type get_keyword_type(const std::string& keyword) {
+  switch (keyword[0]) {
+    case 'a': {
+      if (keyword == SN_KEYWORD_AS) return Token::KwordAs;
+      if (keyword == SN_KEYWORD_ABSTRACT) return Token::KwordAbstract;
+      break;
+    }
+    case 'b': {
+      if (keyword == SN_KEYWORD_BREAK) return Token::KwordBreak;
+      break;
+    }
+    case 'c': {
+      if (keyword == SN_KEYWORD_CASE) return Token::KwordCase;
+      if (keyword == SN_KEYWORD_CLASS) return Token::KwordClass;
+      if (keyword == SN_KEYWORD_CONSTANT) return Token::KwordConst;
+      if (keyword == SN_KEYWORD_CONTINUE) return Token::KwordContinue;
+      break;
+    }
+    case 'd': {
+      if (keyword == SN_KEYWORD_DO) return Token::KwordDo;
+      if (keyword == SN_KEYWORD_DEFAULT) return Token::KwordDefault;
+      if (keyword == SN_KEYWORD_DELETE) return Token::KwordDelete;
+      break;
+    }
+    case 'e': {
+      if (keyword == SN_KEYWORD_ELSE) return Token::KwordElse;
+      if (keyword == SN_KEYWORD_ENUM) return Token::KwordEnum;
+      if (keyword == SN_KEYWORD_EXTERN) return Token::KwordExtern;
+      if (keyword == SN_KEYWORD_EXTENDS) return Token::KwordExtends;
+      break;
+    }
+    case 'f': {
+      if (keyword == SN_KEYWORD_FOR) return Token::KwordFor;
+      if (keyword == SN_KEYWORD_FUNCTION) return Token::KwordFunc;
+      if (keyword == SN_KEYWORD_FALSE) return Token::ValueBool;
+      if (keyword == SN_KEYWORD_FINAL) return Token::KwordFinal;
+      break;
+    }
+    case 'i': {
+      if (keyword == SN_KEYWORD_IF) return Token::KwordIf;
+      if (keyword == SN_KEYWORD_IMPORT) return Token::KwordImport;
+      if (keyword == SN_KEYWORD_INTER) return Token::KwordInter;
+      if (keyword == SN_KEYWORD_IMPLS) return Token::KwordImplements;
+      if (keyword == SN_KEYWORD_INLINE) return Token::KwordInline;
+      break;
+    }
+    case 'l': {
+      if (keyword == SN_KEYWORD_LET) return Token::KwordVar;
+      break;
+    }
+    case 'm': {
+      if (keyword == SN_KEYWORD_MACRO) return Token::KwordMacro;
+      if (keyword == SN_KEYWORD_MUTABLE) return Token::KwordMutable;
+      break;
+    }
+    case 'n': {
+      if (keyword == SN_KEYWORD_NEW) return Token::KwordNew;
+      break;
+    }
+    case 'o': {
+      if (keyword == SN_KEYWORD_OPERATOR) return Token::KwordOperator;
+      break;
+    }
+    case 'p': {
+      if (keyword == SN_KEYWORD_PRIVATE) return Token::KwordPrivate;
+      if (keyword == SN_KEYWORD_PUBLIC) return Token::KwordPublic;
+      break;
+    }
+    case 'r': {
+      if (keyword == SN_KEYWORD_RETURN) return Token::KwordReturn;
+      break;
+    }
+    case 's': {
+      if (keyword == SN_KEYWORD_SUPER) return Token::KwordSuper;
+      if (keyword == SN_KEYWORD_STATIC) return Token::KwordStatic;
+      if (keyword == SN_KEYWORD_SWITCH) return Token::KwordSwitch;
+      break;
+    }
+    case 't': {
+      if (keyword == SN_KEYWORD_TRUE) return Token::ValueBool;
+      if (keyword == SN_KEYWORD_TRY) return Token::KwordTry;
+      break;
+    }
+    case 'u': {
+      if (keyword == SN_KEYWORD_UNSAFE) return Token::KwordUnsafe;
+      break;
+    }
+    case 'v': {
+      if (keyword == SN_KEYWORD_VIRTUAL) return Token::KwordVirtual;
+      break;
+    }
+    case 'w': {
+      if (keyword == SN_KEYWORD_WHILE) return Token::KwordWhile;
+      break;
+    }
+    default: break;
+  }
+  return Token::Identifier;
+}
+
 std::vector<Token> Lexer::lex() {
   buffer = globals::read_file(file->get_path());
   while (tok_index < buffer.size()) {
@@ -51,8 +151,7 @@ std::vector<Token> Lexer::lex() {
       case '\t':
       case '\v':
       case '\f':
-        column++;
-        tok_index++;
+        EAT_CHAR(1);
         break;
       case '\0': break;
       case '/':
@@ -435,101 +534,9 @@ std::vector<Token> Lexer::lex() {
           }
           Token tk {
             .value = identifier,
+            .type = get_keyword_type(identifier),
             .location = std::make_pair(line, column - identifier.size()),
           };
-          if (identifier == SN_KEYWORD_NEW) {
-            tk.type = Token::KwordNew;
-          } else if (identifier == SN_KEYWORD_DELETE) {
-            tk.type = Token::KwordDelete;
-          } else if (identifier == SN_KEYWORD_THROW) {
-            tk.type = Token::KwordThrow;
-          } else if (identifier == SN_KEYWORD_IF) {
-            tk.type = Token::KwordIf;
-          } else if (identifier == SN_KEYWORD_VARIABLE) {
-            tk.type = Token::KwordVar;
-          } else if (identifier == SN_KEYWORD_FOR) {
-            tk.type = Token::KwordFor;
-          } else if (identifier == SN_KEYWORD_ENUM) {
-            tk.type = Token::KwordEnum;
-          } else if (identifier == SN_KEYWORD_FUNCTION) {
-            tk.type = Token::KwordFunc;
-          } else if (identifier == SN_KEYWORD_MACRO) {
-            tk.type = Token::KwordMacro;
-          } else if (identifier == SN_KEYWORD_OPERATOR) {
-            tk.type = Token::KwordOperator;
-          } else if (identifier == SN_KEYWORD_ELSE) {
-            tk.type = Token::KwordElse;
-          } else if (identifier == SN_KEYWORD_CLASS) {
-            tk.type = Token::KwordClass;
-          } else if (identifier == SN_KEYWORD_AS) {
-            tk.type = Token::KwordAs;
-          } else if (identifier == SN_KEYWORD_CONSTANT) {
-            tk.type = Token::KwordConst;
-          } else if (identifier == SN_KEYWORD_WHILE) {
-            tk.type = Token::KwordWhile;
-          } else if (identifier == SN_KEYWORD_BREAK) {
-            tk.type = Token::KwordBreak;
-          } else if (identifier == SN_KEYWORD_EXTERN) {
-            tk.type = Token::KwordExtern;
-          } else if (identifier == SN_KEYWORD_SUPER) {
-            tk.type = Token::KwordSuper;
-          } else if (identifier == SN_KEYWORD_CASE) {
-            tk.type = Token::KwordCase;
-          } else if (identifier == SN_KEYWORD_SWITCH) {
-            tk.type = Token::KwordSwitch;
-          } else if (identifier == SN_KEYWORD_STATIC) {
-            tk.type = Token::KwordStatic;
-          } else if (identifier == SN_KEYWORD_IMPORT) {
-            tk.type = Token::KwordImport;
-          } else if (identifier == SN_KEYWORD_UNSAFE) {
-            tk.type = Token::KwordUnsafe;
-          } else if (identifier == SN_KEYWORD_CONSTEXPR) {
-            tk.type = Token::KwordConstexpr;
-          } else if (identifier == SN_KEYWORD_NAMESPACE) {
-            tk.type = Token::KwordNamespace;
-          } else if (identifier == SN_KEYWORD_STRUCT) {
-            tk.type = Token::KwordStruct;
-          } else if (identifier == SN_KEYWORD_TYPEDEF) {
-            tk.type = Token::KwordTypedef;
-          } else if (identifier == SN_KEYWORD_MUTABLE) {
-            tk.type = Token::KwordMutable;
-          } else if (identifier == SN_KEYWORD_DO) {
-            tk.type = Token::KwordDo;
-          } else if (identifier == SN_KEYWORD_PRIVATE) {
-            tk.type = Token::KwordPrivate;
-          } else if (identifier == SN_KEYWORD_PUBLIC) {
-            tk.type = Token::KwordPublic;
-          } else if (identifier == SN_KEYWORD_VIRTUAL) {
-            tk.type = Token::KwordVirtual;
-          } else if (identifier == SN_KEYWORD_OVERRIDE) {
-            tk.type = Token::KwordOverride;
-          } else if (identifier == SN_KEYWORD_RETURN) {
-            tk.type = Token::KwordReturn;
-          } else if (identifier == SN_KEYWORD_DEFAULT) {
-            tk.type = Token::KwordDefault;
-          } else if (identifier == SN_KEYWORD_CONTINUE) {
-            tk.type = Token::KwordContinue;
-          } else if (identifier == SN_KEYWORD_TRY) {
-            tk.type = Token::KwordTry;
-          } else if (identifier == SN_KEYWORD_CATCH) {
-            tk.type = Token::KwordCatch;
-          } else if (identifier == SN_KEYWORD_INTER) {
-            tk.type = Token::KwordInter;
-          } else if (identifier == SN_KEYWORD_EXTENDS) {
-            tk.type = Token::KwordExtends;
-          } else if (identifier == SN_KEYWORD_IMPLS) {
-            tk.type = Token::KwordImplements;
-          } else if (identifier == SN_KEYWORD_TRUE || identifier == SN_KEYWORD_FALSE) {
-            tk.type = Token::ValueBool; 
-          } else if (identifier == SN_KEYWORD_INLINE) {
-            tk.type = Token::KwordInline;
-          } else if (identifier == SN_KEYWORD_ABSTRACT) {
-            tk.type = Token::KwordAbstract;
-          } else if (identifier == SN_KEYWORD_FINAL) {
-            tk.type = Token::KwordFinal;
-          } else {
-            tk.type = Token::Identifier;
-          }
           if (identifier == "_") {
             shoot_error("Invalid identifier!", Error::Info {
               .highlight = "Invalid identifier here.",
