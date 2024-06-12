@@ -214,6 +214,18 @@ ast::types::Type* TypeChecker::deduce_type(ast::types::Type* type, const std::ve
           }
         }
       }
+      // We do a second loop here in order to add cache. We dont need to check
+      // the generics again, because we already did that in the cache checking above
+      // If it passed the first time, it will pass the second time (I hope)
+      for (size_t i = 0; i < decl->get_generics().size(); ++i) {
+        auto gen = decl->get_generics()[i];
+        std::vector<ast::types::Type*> constraints_args;
+        for (auto& c : gen.get_constraints()) {
+          assert(c.get_internal_type().has_value());
+          constraints_args.push_back(c.get_internal_type().value());
+        }
+        check_generic_impls(generics[i], constraints_args, loc);
+      }
       auto clone = (ast::ClassDecl*)decl->clone();
       return monorphosize(clone, deduced, loc)->get_type();
     }
