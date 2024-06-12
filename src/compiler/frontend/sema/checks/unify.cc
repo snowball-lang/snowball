@@ -81,7 +81,8 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b,
   } else if (a->is_func() && b->is_func()) {
     auto a_func = a->as_func();
     auto b_func = b->as_func();
-    if (a_func->get_param_types().size() == b_func->get_param_types().size()) {
+    if (a_func->get_param_types().size() == b_func->get_param_types().size() &&
+        a_func->is_unsafe() == b_func->is_unsafe()) {
       bool match = true;
       bool ignore_self = flags & static_cast<int>(UnifyFlags::IgnoreSelf);
       assert(!(ignore_self && a_func->get_param_types().size() < 1));

@@ -126,26 +126,26 @@ class FuncType final : public Type {
   Type* return_type;
   bool variadic = false;
   FnDecl* linked = nullptr;
+  bool unsafe = false;
 
   bool cached = false;
 
 public:
-  FuncType(FnDecl* linked, Type* return_type, bool variadic)
-    : return_type(return_type)
-    , variadic(variadic)
-    , linked(linked) {}
+  FuncType(FnDecl* linked, Type* return_type, bool variadic, bool unsafe)
+    : return_type(return_type), variadic(variadic), linked(linked), unsafe(unsafe) {}
   ~FuncType() = default;
 
   std::vector<Type*> get_param_types();
   auto& get_return_type() { return return_type; }
 
-  static auto create(FnDecl* linked, Type* return_type, bool variadic = false) {
-    return new FuncType(linked, return_type, variadic);
+  static auto create(FnDecl* linked, Type* return_type, bool variadic = false, bool unsafe = false) {
+    return new FuncType(linked, return_type, variadic, unsafe);
   }
 
   FuncType* as_func() override { return this; }
   bool is_func() const override { return true; }
   bool is_variadic() const { return variadic; }
+  bool is_unsafe() const { return unsafe; }
 
   void recalibrate_cache();
 

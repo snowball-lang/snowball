@@ -41,7 +41,7 @@ std::string FloatType::get_mangled_name() {
 }
 
 std::string FuncType::get_printable_name() {
-  std::string name = "fn(";
+  std::string name = std::string(unsafe ? "unsafe " : "") + "fn(";
   auto param_types = get_param_types();
   for (size_t i = 0; i < param_types.size(); i++) {
     name += param_types[i]->get_printable_name();
@@ -56,6 +56,9 @@ std::string FuncType::get_printable_name() {
 
 std::string FuncType::get_mangled_name() {
   std::string name = "fnTy";
+  if (unsafe) {
+    name += "U";
+  }
   for (auto param : get_param_types()) {
     name += param->get_mangled_name();
   }

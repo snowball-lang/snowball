@@ -178,7 +178,7 @@ void TypeChecker::check_fn(ast::FnDecl*& fn_decl, bool as_monorph) {
     define_variable(param, param->get_location(), true);
   }
   auto ret_type = get_type(fn_decl->get_return_type());
-  auto func_type = ast::types::FuncType::create(fn_decl, ret_type, false);
+  auto func_type = ast::types::FuncType::create(fn_decl, ret_type, false, fn_decl->get_unsafe());
   fn_decl->get_type() = nullptr;
   unify(fn_decl->get_type(), func_type, fn_decl->get_return_type().get_location());
   func_type->recalibrate_cache();

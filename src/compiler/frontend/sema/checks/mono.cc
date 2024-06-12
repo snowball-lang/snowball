@@ -41,7 +41,7 @@ ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::s
     unify(param->get_type(), ty, param->get_location());
   }
   auto ret = get_type(node->get_return_type());
-  unify(node->get_type(), ast::types::FuncType::create(node, ret, fn_ty_copy->is_variadic()), node->get_location());
+  unify(node->get_type(), ast::types::FuncType::create(node, ret, fn_ty_copy->is_variadic(), fn_ty_copy->is_unsafe()), node->get_location());
   node->accept(this);
   check_fn(node, true);
   if (node->get_body()) {
