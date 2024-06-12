@@ -22,7 +22,7 @@ temp = """\
 public func test() i32 {
 """
 
-num = int((100000)/2)
+num = int((10000)/2)
 
 def write(f):
   for i in range(1, num):

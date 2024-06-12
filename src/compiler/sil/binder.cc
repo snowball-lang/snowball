@@ -18,7 +18,9 @@ void Binder::bind() {
       current_module = std::make_shared<sil::Module>(module.get_path(), module.is_main);
       current_module->parent_crate = module.parent_crate;
       auto ast = module.get_ast();
-      for (auto& node : ast) {
+      size_t i = 0;
+      for (; i < ast.size(); i++) {
+        auto& node = ast[i];
         if (node->is<ast::FnDecl>() ||
             node->is<ast::ClassDecl>() ||
             node->is<ast::VarDecl>()) {
@@ -26,8 +28,8 @@ void Binder::bind() {
         }
       }
       just_declare = false;
-      for (auto& node : ast) {
-        node->accept(this);
+      for (; i < ast.size(); i++) {
+        ast[i]->accept(this);
       }
       sil_modules.push_back(current_module);
     }
