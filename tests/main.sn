@@ -1,21 +1,6 @@
 
-public func test(x: crate::mod::Hello<i32>) {
-  balls(x);
-  x.hello(x);
-  let mut a;
-  a = 24 * 24 - 2;
-}
-
-public func balls<B: ToString>(x: B) {
-  x.to_string();
-}
-
 public func main() i32 {
-  let mut a: i32;
-  let mut b;
-  let mut v: i32 = 25;
-  a = 24;
-  b = &a;
-  std::main::test(a);
-  std::main::printf(c"Hello, world!\n");
+  let mut a;
+  a = 25;
+  std::io::println(a);
 }
