@@ -4,7 +4,7 @@
 execute:
 
 ```sh
-valgrind --tool=callgrind ./snowball build -O0 --emit=llvm-ir
+valgrind --tool=callgrind ./snowball build -opt=debug --emit=llvm-ir
 callgrind_annotate callgrind.out.[pid] > analysis.txt
 ```
 

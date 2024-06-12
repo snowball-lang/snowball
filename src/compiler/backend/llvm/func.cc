@@ -12,9 +12,16 @@ void LLVMBuilder::emit(const sil::FuncDecl* node) {
   auto fn_type = get_func_type(node->get_type()->as_func());  
   if (just_declare) {
     auto linkage = llvm::Function::InternalLinkage;
+    bool is_external = IS_EXTERNAL_FN;
+    if (is_external && node->get_privacy() == frontend::ast::AttributedNode::Private) {
+      // We dont want to declare the function multiple times
+      // If it's not on the same module and it's private
+      // we are 99.99% sure it's not going to be used outside
+      return;
+    }
     if (node->get_external() != frontend::ast::AttributedNode::None
       || node->get_privacy() == frontend::ast::AttributedNode::Public
-      || (IS_EXTERNAL_FN)
+      || is_external
       || !node->get_body().has_value()) {
       linkage = llvm::Function::ExternalLinkage;
     }

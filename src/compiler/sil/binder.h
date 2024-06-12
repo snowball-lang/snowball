@@ -10,6 +10,8 @@
 #include "compiler/sil/insts.h"
 #include "compiler/sil/module.h"
 
+#include "compiler/globals.h"
+
 #include <unordered_map>
 
 namespace snowball {
@@ -42,7 +44,6 @@ class Binder : public ast::AstVisitor, public Reporter {
 
   std::map<NamespacePath, ast::types::Type*> types;
   std::vector<ast::types::Type*> constraints;
-  std::vector<std::pair<NamespacePath, ast::FnDecl*>> fn_decls;
   std::unordered_map<uint64_t, sil::Inst*> var_ids;
 
   bool just_declare = true;

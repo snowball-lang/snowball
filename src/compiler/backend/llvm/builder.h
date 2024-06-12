@@ -37,9 +37,8 @@ public:
           std::unordered_map<uint64_t, sil::Inst*>& inst_map,
           frontend::NamespacePath parent_crate
   )
-    : module(std::make_unique<llvm::Module>("main", *ctx))
-    , inst_map(inst_map)
-    , parent_crate(parent_crate) {}
+    : module(std::make_unique<llvm::Module>("main", *ctx)), 
+      inst_map(inst_map), parent_crate(parent_crate) {}
 
   llvm::Value* get_value(uint64_t id) { return value_map.at(id); }
   sil::Inst* get_inst(uint64_t id) { return inst_map.at(id); }

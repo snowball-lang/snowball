@@ -15,10 +15,6 @@
 
 #include "compiler/globals.h"
 
-#ifndef SNOWBALL_DUMP_OUTPUT
-#define SNOWBALL_DUMP_OUTPUT 0
-#endif
-
 namespace snowball {
 using namespace cli;
 using namespace utils;
@@ -34,54 +30,13 @@ bool Compiler::compile() {
     auto start = std::chrono::high_resolution_clock::now();
     run_frontend();
     auto sil = run_middleend();
-    auto sil_modules = sil.sil_modules;
-    auto sil_insts = sil.sil_insts;
-    bool is_object = global.emit_type == EmitType::Executable || global.emit_type == EmitType::Object
-                  || global.emit_type == EmitType::LlvmBc || global.emit_type == EmitType::Asm
-                  || global.emit_type == EmitType::Llvm;
-    auto last_module_root_path = frontend::NamespacePath::dummy();
-    timer.start("Building Output", true);
-    for (unsigned i = 0; i < sil_modules.size(); i++) {
-      auto module_root_path = module_paths.at(i);
-      sil::Builder* builder;
-      switch (global.emit_type) {
-        case EmitType::Llvm:
-        case EmitType::Object:
-        case EmitType::Executable:
-        case EmitType::LlvmBc:
-        case EmitType::Asm: {
-          builder = new backend::LLVMBuilder(ctx, sil_insts, module_root_path);
-        } break;
-        default: sn_assert(false, "Unknown emit type");
-      }
-      auto output_file = driver::get_output_path(ctx, module_root_path[0], false, is_object); 
-      if (is_object) {
-        auto emit_type = global.emit_type;
-        // Compile to LLVM bitcode if we are compiling to an executable.
-        global.emit_type = EmitType::LlvmBc;
-        output_file = driver::get_output_path(ctx, module_root_path[0], false, is_object);
-        global.emit_type = emit_type;
-      }
-      if (last_module_root_path != module_root_path) {
-        object_files.push_back(output_file);
-      }
-      last_module_root_path = module_root_path;
-      builder->build(sil_modules);
-    #if SNOWBALL_DUMP_OUTPUT == 1
-      builder->dump();
-    #endif
-      builder->emit(output_file);
-    }
-    timer.stop("Building Output");
+    if (run_backend(sil))
+      return EXIT_FAILURE;
     post_compile();
-    auto output = driver::get_output_path(ctx, ctx.root_package_config.value().project.name, true);
-    if (is_object) {
-      auto err = backend::LLVMBuilder::link(ctx, object_files, output);
-      if (err) return err;
-    }
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     if (ctx.build_mode == BuildMode::Run) {
+      auto output = driver::get_output_path(ctx, ctx.root_package_config.value().project.name, true);
       Logger::status("Running", ctx.root_package_config.value().project.name + " (" + output.string() + ")");
       return driver::run(ctx, output);
     }

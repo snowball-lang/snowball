@@ -8,6 +8,8 @@
 #include "compiler/utils/utils.h"
 #include "compiler/utils/logger.h"
 
+#include "compiler/utils/thread.h"
+
 namespace snowball {
 namespace backend {
 
@@ -25,6 +27,7 @@ std::vector<std::string> LldArgsBuilder::build() {
 void LldArgsBuilder::add_default_args() {
   add("lld");
   add({ "-o", output_file });
+  add("--threads=" + std::to_string(utils::get_num_threads()));
 }
 
 void LldArgsBuilder::add_user_switches() {

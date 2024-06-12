@@ -1,12 +1,13 @@
 
 #include "compiler/sil/binder.h"
+#include "compiler/utils/logger.h"
 
 namespace snowball {
 namespace sil {
 
 Binder::Binder(const Ctx& ctx, std::vector<frontend::Module>& modules, sema::Universe<sema::TypeCheckItem>& universe)
   : AstVisitor(ctx), Reporter(), ast_modules(modules), types(universe.get_types()), constraints(universe.get_constraints()),
-    fn_decls(universe.get_fn_decls()), current_module(std::make_shared<sil::Module>(NamespacePath::dummy())) {
+    current_module(std::make_shared<sil::Module>(NamespacePath::dummy())) {
     }
 
 void Binder::bind() {

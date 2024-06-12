@@ -65,6 +65,8 @@
 #include <llvm/Transforms/IPO/WholeProgramDevirt.h>
 #include <llvm/Transforms/Utils/Cloning.h>
 #include <llvm/Transforms/Utils/Debugify.h>
+#include <llvm/Support/Threading.h>
+#include <llvm/Support/ThreadPool.h>
 
 #define SNOWBALL_UTILS_REDEFINE_F__
 #include "compiler/utils/utils.h"

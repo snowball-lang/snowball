@@ -38,6 +38,8 @@ struct GlobalContext {
   EmitType emit_type = EmitType::Executable;
   OptLevel opt_level = OptLevel::Debug;
 
+  unsigned num_threads = 0;
+
   // Output options
 #ifdef SN_WIN
   Target target = Target::Windows;
@@ -59,6 +61,12 @@ struct GlobalContext {
 
   bool debug_opt() const {
     return opt_level == OptLevel::Debug || opt_level == OptLevel::ReleaseWithDebug;
+  }
+
+  bool emit_is_object() const {
+    return emit_type == EmitType::Executable || emit_type == EmitType::Object
+          || emit_type == EmitType::LlvmBc || emit_type == EmitType::Asm
+          || emit_type == EmitType::Llvm;
   }
 };
 

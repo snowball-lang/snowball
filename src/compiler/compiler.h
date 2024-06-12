@@ -81,6 +81,7 @@ private:
   void print_compiling_bar();
   void run_frontend();
   MiddleEndResult run_middleend();
+  int run_backend(const MiddleEndResult& middleend_result);
   void stop_compilation();
   void post_compile();
 };

@@ -132,4 +132,15 @@ static auto format_as(const NamespacePath& path) -> std::string {
 } // namespace frontend
 } // namespace snowball
 
+namespace std {
+template<>
+struct hash<snowball::frontend::NamespacePath> {
+  std::size_t operator()(const snowball::frontend::NamespacePath& path) const {
+    // Provide a suitable hash function for NamespacePath
+    // This is a placeholder; replace with the actual hash computation.
+    return std::hash<std::string>()(path.get_path_string());
+  }
+};
+}
+
 #endif // __SNOWBALL_FRONTEND_LOCATION_H__

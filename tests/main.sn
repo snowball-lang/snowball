@@ -6,7 +6,7 @@ public func test(x: crate::mod::Hello<i32>) {
   a = 24 * 24 - 2;
 }
 
-public func balls<B: std::string::ToString>(x: B) {
+public func balls<B: ToString>(x: B) {
   x.to_string();
 }
 

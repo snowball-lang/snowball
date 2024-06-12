@@ -55,7 +55,10 @@ static cl::opt<OptLevel, true> opt_level("opt", cl::desc("Optimisation level"), 
     clEnumValN(OptLevel::ReleaseWithDebug, "release-with-debug", "Release with debug")
   ), cl::cat(build_category), cl::location(global.opt_level));
 
-  // Output options
+static cl::opt<unsigned, true> num_threads("threads", cl::desc("Number of threads"), 
+    cl::cat(build_category), cl::location(global.num_threads));
+
+// Output options
 static cl::OptionCategory output_category("Output Options");
 
 static cl::opt<Target, true> target("target", cl::desc("Target OS"), cl::values(

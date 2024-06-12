@@ -22,7 +22,7 @@ public:
   ~Module() = default;
 
   auto& get_ast() { return ast; }
-  auto get_path() const { return path; }
+  auto& get_path() { return path; }
   void mutate_ast(ast::Stmt* x) { ast.push_back(x); }
 };
 

@@ -41,7 +41,7 @@ class Universe {
   std::vector<Scope<ScopeItem>> scopes;
   std::map<NamespacePath, ast::types::Type*> types;
   std::vector<ast::types::Type*> constraints;
-  std::vector<std::pair<NamespacePath, ast::FnDecl*>> fn_decls;
+  std::unordered_multimap<NamespacePath, ast::FnDecl*> fn_decls;
   std::map<uint64_t, ast::Stmt*> var_ids;
 
 public:
@@ -80,15 +80,16 @@ public:
   }
 
   void add_fn_decl(const NamespacePath& path, ast::FnDecl* fn_decl) {
-    fn_decls.push_back({path, fn_decl});
+    fn_decls.insert({path, fn_decl});
   }
 
-  auto get_fn_decl(const NamespacePath& path) {
-    std::vector<ast::FnDecl*> result;
-    for (auto& [p, fn_decl] : fn_decls) {
-      if (p == path) { result.push_back(fn_decl); }
+  [[nodiscard]] inline auto get_fn_decl(const NamespacePath& path) {
+    auto range = fn_decls.equal_range(path);
+    std::vector<ast::FnDecl*> decls;
+    for (auto it = range.first; it != range.second; ++it) {
+      decls.push_back(it->second);
     }
-    return result;
+    return decls;
   }
 
   void add_var_id(uint64_t id, ast::Stmt* stmt) { var_ids[id] = stmt; }
