@@ -74,17 +74,23 @@ public:
          std::optional<Block*> body, std::optional<GenericNode> generics = std::nullopt,
          const AttributedNode& attributes = AttributedNode());
   ~FnDecl() = default;
+
   auto& get_name() const { return name; }
   auto& get_params() { return params; }
   auto& get_return_type() { return return_type; }
   auto get_body() const { return body; }
+
   void create_body_clone();
   Node* clone() const override;
+
   bool is_generic_instanced() const;
   void set_generic_instanced();
+
   bool should_generate() const;
+
   void set_parent_type(types::Type* type) { parent_type = type; }
   auto get_parent_type() const { return parent_type; }
+
   uint64_t get_generic_id() const;
   static auto
   create(const SourceLocation& location, const std::string& name,
@@ -178,6 +184,9 @@ private:
   ClassType class_type = ClassType::Class;
   std::vector<TypeRef> implemented_interfaces;
 
+  // Interface specific
+  std::string builtin_name; // Identifier for builtin types (e.g. Sized has "sized")
+
 public:
 // clang-format off
   ClassDecl(
@@ -214,6 +223,9 @@ public:
   bool is_class() const { return class_type == ClassType::Class; }
 
   bool has_vtable() const;
+
+  auto get_builtin_name() const { return builtin_name; }
+  void set_builtin_name(const std::string& name) { builtin_name = name; }
 
   static auto
   create(const SourceLocation& location, const std::string& name,

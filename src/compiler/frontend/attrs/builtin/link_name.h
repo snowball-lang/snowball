@@ -27,7 +27,8 @@ public:
 bool LinkageName::interpret(const Attr& attr, AttrInterpreter::Target target,
                           Reporter& reporter, AttrInterpreter& interpreter,
                           const ParentArgs& args) {
-  assert_attr_has_value(reporter, interpreter, attr, link_name, attr.get_location());
+  if (assert_attr_has_value(reporter, interpreter, attr, link_name, attr.get_location())) 
+    return false;
   auto func = target_get_function(reporter, interpreter, target, link_name, attr.get_location());
   if (!func) return false;
   if (attr.get_value().empty()) {

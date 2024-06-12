@@ -81,6 +81,20 @@ inline bool assert_attr_is_nested(Reporter& reporter, AttrInterpreter& interp,
   return (ast::FnDecl*)nullptr;
 }
 
+[[nodiscard]] inline auto target_get_class(Reporter& reporter, AttrInterpreter& interp, 
+    AttrInterpreter::Target target, const std::string& name, const SourceLocation& loc) {
+  if (assert_target_is_node(reporter, interp, target, name, loc)) {
+    return (ast::ClassDecl*)nullptr;
+  }
+  if (auto as_class = target.value()->as<ast::ClassDecl>()) {
+    return as_class;
+  }
+  interp.error(reporter, F("Attribute '{}' requires a class node", name), Error::Info {
+    .highlight = "Not attached to a class node"
+  }, loc);
+  return (ast::ClassDecl*)nullptr;
+}
+
 [[nodiscard]] inline auto get_callback(Reporter& reporter, AttrInterpreter& interp, 
     const ParentArgs& args, const std::string& name, const SourceLocation& loc) {
   if (!args.callback.has_value()) {
