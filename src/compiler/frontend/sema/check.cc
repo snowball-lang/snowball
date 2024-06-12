@@ -157,6 +157,11 @@ borrow::BorrowChecker::Result<borrow::CleanStatus> TypeChecker::exit_scope(std::
   return borrow_checker.exit_scope(unified_scope);
 }
 
+void TypeChecker::set_moved_var(ast::VarDecl* var) {
+  if (check_builtin_type(var->get_type(), "copy")) return;
+  borrow_checker.assign_variable(var->get_id());
+}
+
 }
 }
 }

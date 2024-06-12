@@ -43,7 +43,9 @@ void TypeChecker::check_implementations(ast::ClassDecl* class_decl) {
 void TypeChecker::check_generic_impls(ast::types::Type* x, const std::vector<ast::types::Type*> impls, const SourceLocation& loc) {
   for (auto& impl : impls) {
     bool satisfies_interface = false;
-    if (auto as_class = x->as_class()) {
+    if (check_builtin_type(impl, x)) {
+      satisfies_interface = true;
+    } else if (auto as_class = x->as_class()) {
       auto class_decl = as_class->get_decl();
       for (auto class_impl : class_decl->get_implemented_interfaces()) {
         if (auto class_impl_ty = class_impl.get_internal_type()) {
@@ -53,8 +55,16 @@ void TypeChecker::check_generic_impls(ast::types::Type* x, const std::vector<ast
           }
         }
       }
+    } else if (auto as_generic = x->as_generic()) {
+      for (auto generic_impl : as_generic->get_constraints()) {
+        if (type_match(impl, generic_impl)) {
+          satisfies_interface = true;
+          break;
+        }
+      }
     }
     if (!satisfies_interface) {
+      check_builtin_type(x, impl);
       err(loc, fmt::format("Type '{}' does not implement interface '{}'", x->get_printable_name(), impl->get_printable_name()), Error::Info {
         .highlight = "Invalid generic instantiation",
         .help = fmt::format("Implement interface '{}' in type '{}'", impl->get_printable_name(), x->get_printable_name()),
@@ -62,6 +72,40 @@ void TypeChecker::check_generic_impls(ast::types::Type* x, const std::vector<ast
       });
     }
   }
+}
+
+bool TypeChecker::check_builtin_type(ast::types::Type* impl, ast::types::Type* x) {
+  if (auto impl_class = impl->as_class()) {
+    auto builtin_name = impl_class->get_decl()->get_builtin_name();
+    if (builtin_name.empty()) return false;
+    return check_builtin_type(x, builtin_name);
+  } else if (auto impl_generic = impl->as_generic()) {
+    for (auto& impl_interface : impl_generic->get_constraints()) {
+      if (type_match(x, impl_interface)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool TypeChecker::check_builtin_type(ast::types::Type* x, const std::string& builtin_name) {
+  if (builtin_name == "sized") {
+    if (auto as_generic = x->as_generic()) {
+      for (auto& constraint : as_generic->get_constraints()) {
+        if (auto as_class = constraint->as_class()) {
+          if (as_class->get_decl()->get_builtin_name() == "sized") {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    return !x->is_void(); // TODO: maybe check here if generics also implement Sized?
+  } else if (builtin_name == "copy") {
+    return x->is_copyable();
+  }
+  sn_unreachable();
 }
 
 }

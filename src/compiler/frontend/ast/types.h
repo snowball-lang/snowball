@@ -61,6 +61,8 @@ public:
   bool is_mutable_type() const { return is_mutable; }
   unsigned int reference_depth();
 
+  virtual bool is_copyable() const { return false; }
+
   Type() = default;
   Type(bool is_mutable)
     : is_mutable(is_mutable) {}
@@ -97,6 +99,8 @@ public:
 
   std::string get_printable_name() override;
   std::string get_mangled_name() override;
+
+  bool is_copyable() const override { return true; }
 };
 
 class FloatType final : public Type {
@@ -119,6 +123,8 @@ public:
 
   std::string get_printable_name() override;
   std::string get_mangled_name() override;
+
+  bool is_copyable() const override { return true; }
 };
 
 class FuncType final : public Type {
@@ -158,6 +164,8 @@ public:
 
   std::string get_printable_name() override;
   std::string get_mangled_name() override;
+
+  bool is_copyable() const override { return true; }
 };
 
 class SelfType final : public Type {
@@ -254,24 +262,20 @@ public:
 
   std::string get_printable_name() override;
   std::string get_mangled_name() override;
+
+  bool is_copyable() const override { return true; }
 };
 
-class ClassType final : public Type,
-                        public GenericNode<Type*>,
-                        public Identified,
-                        public LocationHolder {
+class ClassType final : public Type, public GenericNode<Type*>, 
+    public Identified, public LocationHolder {
   NamespacePath path;
   ast::ClassDecl* decl;
 
 public:
   ClassType(
-          ast::ClassDecl* decl, const NamespacePath& path,
-          const std::vector<Type*>& generics, const SourceLocation& loc
-  )
-    : GenericNode<Type*>(generics)
-    , LocationHolder(loc)
-    , decl(decl)
-    , path(path) {}
+    ast::ClassDecl* decl, const NamespacePath& path,
+    const std::vector<Type*>& generics, const SourceLocation& loc
+  ) : GenericNode<Type*>(generics), LocationHolder(loc), decl(decl), path(path) {}
 
   ~ClassType() = default;
 
@@ -320,6 +324,8 @@ public:
 
   bool is_deep_unknown() const override { return ref->is_deep_unknown(); }
   bool is_deep_generic() const override { return ref->is_deep_generic(); }
+
+  bool is_copyable() const override { return true; }
 };
 
 class PointerType final : public Type {

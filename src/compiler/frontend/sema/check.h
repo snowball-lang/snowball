@@ -111,6 +111,7 @@ private:
   ast::types::UnknownType* get_unknown_type();
   ast::types::ErrorType* get_error_type();
 
+  void set_moved_var(ast::VarDecl* var);
   void define_variable(ast::VarDecl* node, const SourceLocation& loc, bool initialized = false);
   std::optional<std::string> get_did_you_mean(const std::string& name);
 
@@ -165,6 +166,8 @@ private:
   void check_implementations(ast::ClassDecl* class_decl);
   void check_generic_impls(ast::types::Type* x, const std::vector<ast::types::Type*> impls,
                             const SourceLocation& loc);
+  bool check_builtin_type(ast::types::Type* impl, ast::types::Type* x);
+  bool check_builtin_type(ast::types::Type* x, const std::string& builtin_name);
 
   enum CastType
   {

@@ -32,7 +32,7 @@ void TypeChecker::visit(ast::BinaryOp* node) {
     }
     if (auto var = do_deduce(rhs.value(), true)->as<ast::VarDecl>(); 
       var && !var->get_member_index().has_value()) {
-      borrow_checker.assign_variable(var->get_id());
+      set_moved_var(var); // This will handle if the type contains a move-only type
     }
     unify(node->get_type(), lhs->get_type(), node->get_location());
     return;

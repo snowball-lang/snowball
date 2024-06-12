@@ -28,7 +28,7 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast, bool first) {
         enter_scope();
         update_self_type();
         for (auto& generic : class_decl->get_generics())
-          universe.add_item(generic.get_name(), create_generic_type(generic));
+          universe.add_item(generic.get_name(), ast::types::GenericType::create(generic.get_name()));
         do_global_func(method);
         exit_scope();
         ctx.current_class = backup;

@@ -221,10 +221,20 @@ ast::types::Type* TypeChecker::deduce_type(ast::types::Type* type, const std::ve
         auto gen = decl->get_generics()[i];
         std::vector<ast::types::Type*> constraints_args;
         for (auto& c : gen.get_constraints()) {
+          if (!c.get_internal_type().has_value()) {
+            // I really don't like this implementation, but it's the best think I could think of.
+            // Generic constraints should support using types that are declared *after* the generic
+            // declaration. This is a temporary solution until I find a better way to do this.
+            // Basically, if we didn't find an internal type, we try to find it again.
+            // In most cases, if we didn't find it the first time, it's probably because of a circular
+            // dependency issue. Im primarily concerned about the performance of this and if this will
+            // respect the current's context scope or not. (future me, please test this better!)
+            c.set_internal_type(get_type(c));
+          }
           assert(c.get_internal_type().has_value());
           constraints_args.push_back(c.get_internal_type().value());
         }
-        check_generic_impls(generics[i], constraints_args, loc);
+        check_generic_impls(deduced[gen.get_name()], constraints_args, loc);
       }
       auto clone = (ast::ClassDecl*)decl->clone();
       return monorphosize(clone, deduced, loc)->get_type();
