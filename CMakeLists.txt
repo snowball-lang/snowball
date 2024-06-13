@@ -191,6 +191,7 @@ FetchContent_Declare(fmt
   GIT_REPOSITORY https://github.com/fmtlib/fmt.git
   GIT_TAG master
 )
+set(FMT_INSTALL OFF)
 FetchContent_MakeAvailable(fmt)
 
 # Map llvm components
