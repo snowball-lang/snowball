@@ -31,6 +31,7 @@ int Compiler::run_backend(const MiddleEndResult& sil) {
     llvm::ThreadPool pool(llvm::hardware_concurrency(utils::get_num_threads()));
     for (unsigned i = 0; i < sil_modules.size(); i++) {
       auto module_root_path = module_paths.at(i);
+      auto path_str = module_root_path.get_path_string();
       sil::Builder* builder;
       switch (global.emit_type) {
         case EmitType::Llvm:
@@ -42,12 +43,12 @@ int Compiler::run_backend(const MiddleEndResult& sil) {
         } break;
         default: sn_assert(false, "Unknown emit type");
       }
-      auto output_file = driver::get_output_path(ctx, module_root_path[0], false, is_object); 
+      auto output_file = driver::get_output_path(ctx, path_str, false, is_object); 
       if (is_object) {
         auto emit_type = global.emit_type;
         // Compile to LLVM bitcode if we are compiling to an executable.
         global.emit_type = EmitType::LlvmBc;
-        output_file = driver::get_output_path(ctx, module_root_path[0], false, is_object);
+        output_file = driver::get_output_path(ctx, path_str, false, is_object);
         global.emit_type = emit_type;
       }
       if (last_module_root_path != module_root_path) {

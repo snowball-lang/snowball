@@ -3,6 +3,7 @@
 #include "compiler/backend/llvm/llvm.h"
 
 #include "compiler/globals.h"
+#include "compiler/utils/logger.h"
 
 namespace snowball {
 namespace backend {
@@ -218,6 +219,12 @@ int LLVMBuilder::error(const std::string& msg) {
   auto err = E(msg, frontend::SourceLocation(0, 0, 0, ef));
   err.print();
   return 1;
+}
+
+void LLVMBuilder::debug(const std::string& msg) {
+  if (global.debug_verbose) {
+    utils::Logger::debug("\t[llvm] " + msg);
+  }
 }
 
 }

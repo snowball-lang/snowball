@@ -54,7 +54,7 @@ void Timer::print_all() {
     } else if ((unsigned)duration.count() > average / times_start.size() / 2) {
       color = fmt::terminal_color::bright_yellow;
     }
-    Logger::raw(F("\t    {} {}= {}\n", name, spacing, fmt::styled(std::to_string(duration.count()) + "ms", fmt::fg(color) | fmt::emphasis::bold)));
+    Logger::raw(F("\t{} {}= {}\n", name, spacing, fmt::styled(std::to_string(duration.count()) + "ms", fmt::fg(color) | fmt::emphasis::bold)));
   }
 }
 

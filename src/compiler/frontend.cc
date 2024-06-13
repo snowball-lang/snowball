@@ -34,10 +34,11 @@ void Compiler::run_frontend() {
           stop_compilation();
         }
         frontend::Parser parser(ctx, source_file, tokens, attr_interp);
-        modules.push_back(parser.parse());
+        auto ast_module = parser.parse();
+        modules.push_back(ast_module);
         timer.stop(timer_name);
-        modules.back().parent_crate = module_root_path;
-        module_paths.push_back(module_root_path);
+        modules.back().parent_crate = ast_module.get_path();
+        module_paths.push_back(modules.back().get_path());
         if (parser.handle_errors()) {
           stop_compilation();
         }

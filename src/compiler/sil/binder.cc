@@ -28,7 +28,7 @@ void Binder::bind() {
         }
       }
       just_declare = false;
-      for (; i < ast.size(); i++) {
+      for (i = 0; i < ast.size(); i++) {
         ast[i]->accept(this);
       }
       sil_modules.push_back(current_module);

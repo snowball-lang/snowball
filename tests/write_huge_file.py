@@ -11,7 +11,7 @@ if len(sys.argv) > 1 and sys.argv[1] == "d":
   exit()
 
 content1 = """\
-public func test{}(_x: i32) {{}}
+func test{}(_x: i32) {{}}
 """
 
 content2 = """\
@@ -22,7 +22,7 @@ temp = """\
 public func test() i32 {
 """
 
-num = int((10000)/2)
+num = int((1000)/2)
 
 def write(f):
   for i in range(1, num):

@@ -97,6 +97,7 @@ class LLVMBuilder : public sil::Builder {
   llvm::Type* get_vtable_type(types::ClassType* type);
 
   llvm::DISubprogram* get_disubprogram(const sil::FuncDecl* node);
+  void debug(const std::string& msg);
 
   bool just_declare = true;
 
