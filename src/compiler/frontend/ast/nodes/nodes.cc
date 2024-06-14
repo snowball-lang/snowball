@@ -76,6 +76,13 @@ Node* MemberAccess::clone() const {
   return clone;
 }
 
+Node* Return::clone() const {
+  auto clone = Cloneable<Return>::default_clone(this);
+  if (value)
+    clone->value = (Expr*)value.value()->clone();
+  return clone;
+}
+
 Node* BinaryOp::clone() const {
   auto clone = Cloneable<BinaryOp>::default_clone(this);
   if (lhs)

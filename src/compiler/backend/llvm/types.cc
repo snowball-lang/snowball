@@ -45,13 +45,18 @@ llvm::Type* LLVMBuilder::get_type(types::Type* type) {
   }
 }
 
-llvm::FunctionType* LLVMBuilder::get_func_type(types::FuncType* func_type) {
+llvm::FunctionType* LLVMBuilder::get_func_type(types::FuncType* func_type, bool* has_sret) {
   std::vector<llvm::Type*> param_types;
   func_type->recalibrate_cache();
   for (auto& param : func_type->get_param_types()) {
     param_types.push_back(get_type(param));
   }
   auto ret_type = get_type(func_type->get_return_type());
+  if (func_type->get_return_type()->is_class()) {
+    if (has_sret != nullptr) *has_sret = true;
+    param_types.insert(param_types.begin(), ret_type->getPointerTo());
+    ret_type = llvm::Type::getVoidTy(*llvm_ctx);
+  }
   return llvm::FunctionType::get(ret_type, param_types, false);
 }
 

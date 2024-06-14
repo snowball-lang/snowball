@@ -9,7 +9,8 @@ namespace backend {
 
 void LLVMBuilder::emit(const sil::FuncDecl* node) {
   assert(node->get_type()->is_func());
-  auto fn_type = get_func_type(node->get_type()->as_func());  
+  bool has_sret = false;
+  auto fn_type = get_func_type(node->get_type()->as_func(), &has_sret);
   if (just_declare) {
     auto linkage = llvm::Function::InternalLinkage;
     bool is_external = IS_EXTERNAL_FN;
@@ -29,6 +30,16 @@ void LLVMBuilder::emit(const sil::FuncDecl* node) {
     fn->setCallingConv(llvm::CallingConv::C);
     if (node->get_inline())
       fn->addFnAttr(llvm::Attribute::AlwaysInline);
+    if (has_sret) {
+      auto& arg = *fn->arg_begin();
+      auto attr_builder = llvm::AttrBuilder(*llvm_ctx);
+      attr_builder.addStructRetAttr(get_type(node->get_type()->as_func()->get_return_type()));
+      attr_builder.addAttribute(llvm::Attribute::NoAlias);
+      attr_builder.addAttribute(llvm::Attribute::NoUndef);
+      attr_builder.addAttribute(llvm::Attribute::NonNull);
+      arg.setName("sret");
+      arg.addAttrs(attr_builder);
+    }
     builder_ctx.set_value(node->get_id(), fn);
   } else if (node->get_external() == frontend::ast::AttributedNode::None) {
     if (IS_EXTERNAL_FN || !node->get_body().has_value()) {
@@ -41,12 +52,12 @@ void LLVMBuilder::emit(const sil::FuncDecl* node) {
     builder->SetInsertPoint(entry);
     func->setSubprogram(get_disubprogram(node));
     dbg.scope = func->getSubprogram();
-    assert(node->get_params().size() == fn_type->getNumParams());
+    assert(node->get_params().size() == fn_type->getNumParams() - has_sret);
     builder_ctx.set_current_func(func, node);
     size_t arg_idx = 0;
     for (auto& [id, name] : node->get_params()) {
       auto arg = func->arg_begin();
-      std::advance(arg, arg_idx);
+      std::advance(arg, arg_idx + has_sret);
       arg->setName(name);
       arg_idx++;
       auto alloc = build(builder_ctx.get_inst(id));

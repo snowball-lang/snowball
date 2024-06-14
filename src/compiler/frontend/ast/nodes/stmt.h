@@ -239,6 +239,23 @@ public:
   SN_VISIT()
 };
 
+class Return final : public Stmt {
+  std::optional<Expr*> value;
+
+public:
+  Return(const SourceLocation& location, std::optional<Expr*> value)
+    : Stmt(location), value(value) {}
+  ~Return() = default;
+
+  auto& get_value() { return value; }
+  Node* clone() const override;
+  static auto create(const SourceLocation& location, std::optional<Expr*> value) {
+    return new Return(location, value);
+  }
+
+  SN_VISIT()
+};
+
 } // namespace ast
 } // namespace frontend
 } // namespace snowball

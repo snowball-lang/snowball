@@ -57,6 +57,7 @@ public:
 
   void bind();
   Inst* accept(ast::Node* node);
+  std::optional<Inst*> accept(std::optional<ast::Node*> node);
 
   auto& get_modules() { return sil_modules; }
   ast::types::Type* get_type(ast::Node* node);

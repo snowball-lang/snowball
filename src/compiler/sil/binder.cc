@@ -43,6 +43,13 @@ Inst* Binder::accept(ast::Node* node) {
   return value;
 }
 
+std::optional<Inst*> Binder::accept(std::optional<ast::Node*> node) {
+  if (node.has_value()) {
+    return accept(node.value());
+  }
+  return std::nullopt;
+}
+
 #define THROW_ERROR(t) \
   err(loc, "Type should be known at this point", Error::Info { \
     .highlight = fmt::format("Type '{}' should be known at this point", type->get_printable_name()), \

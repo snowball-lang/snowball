@@ -24,6 +24,9 @@ ast::Node* Parser::parse_stmt(const Token& peek) {
     case Token::Type::KwordVar:
       next();
       return parse_var_decl(ast::AttributedNode::empty());
+    case Token::Type::KwordReturn:
+      next();
+      return parse_return();
     default:
       return parse_expr();
   }

@@ -290,6 +290,22 @@ public:
   }
 };
 
+class Return final : public Inst {
+  std::optional<Inst*> value;
+
+public:
+  Return(LocationHolder& loc, ast::types::Type* type, std::optional<Inst*> value)
+    : Inst(loc, type), value(value) {}
+  ~Return() = default;
+
+  auto get_value() const { return value; }
+  EMITABLE()
+
+  static auto create(LocationHolder loc, ast::types::Type* type, std::optional<Inst*> value) {
+    return new Return(loc, type, value);
+  }
+};
+
 } // namespace sil
 } // namespace snowball
 

@@ -18,7 +18,17 @@ void LLVMBuilder::emit(const sil::Call* node) {
   }
   auto fn_type = node->get_callee()->get_type()->as_func();
   assert(fn_type != nullptr);
-  value = builder->CreateCall(get_func_type(fn_type), callee, args); 
+  bool has_sret = false;
+  auto callee_type = get_func_type(fn_type, &has_sret);
+  llvm::Value* sret = nullptr;
+  if (has_sret) {
+    sret = alloc(fn_type->get_return_type(), ".call-sret");
+    args.insert(args.begin(), sret);
+  }
+  value = builder->CreateCall(callee_type, callee, args); 
+  if (has_sret) {
+    value = sret;
+  }
 }
 
 }
