@@ -271,6 +271,24 @@ public:
   SN_VISIT()
 };
 
+class Dereference final : public Self<Dereference>, public Expr {
+  Expr* expr;
+
+public:
+  Dereference(const SourceLocation& location, Expr* expr)
+    : Expr(location), expr(expr) {}
+  ~Dereference() = default;
+
+  auto get_expr() const { return expr; }
+  Node* clone() const override;
+
+  static auto create(const SourceLocation& location, Expr* expr) {
+    return new Dereference(location, expr);
+  }
+
+  SN_VISIT()
+};
+
 } // namespace ast
 } // namespace frontend
 } // namespace snowball

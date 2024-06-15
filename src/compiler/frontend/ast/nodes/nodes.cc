@@ -98,6 +98,12 @@ Node* Reference::clone() const {
   return clone;
 }
 
+Node* Dereference::clone() const {
+  auto clone = Cloneable<Dereference>::default_clone(this);
+  clone->expr = (Expr*)expr->clone();
+  return clone;
+}
+
 Node* Call::clone() const {
   std::vector<Expr*> new_args;
   new_args.reserve(args.size());

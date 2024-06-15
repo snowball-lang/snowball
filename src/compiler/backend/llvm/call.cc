@@ -22,6 +22,7 @@ void LLVMBuilder::emit(const sil::Call* node) {
   auto callee_type = get_func_type(fn_type, &has_sret);
   llvm::Value* sret = nullptr;
   if (has_sret) {
+    // Maybe we can use a single alloca for all sret values?
     sret = alloc(fn_type->get_return_type(), ".call-sret");
     args.insert(args.begin(), sret);
   }

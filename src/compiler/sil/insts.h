@@ -278,8 +278,7 @@ class Reference final : public Inst {
 
 public:
   Reference(LocationHolder& loc, ast::types::Type* type, Inst* value)
-    : Inst(loc, type)
-    , value(value) {}
+    : Inst(loc, type), value(value) {}
   ~Reference() = default;
 
   auto get_value() const { return value; }
@@ -287,6 +286,22 @@ public:
 
   static auto create(LocationHolder loc, ast::types::Type* type, Inst* value) {
     return new Reference(loc, type, value);
+  }
+};
+
+class Dereference final : public Inst {
+  Inst* value;
+
+public:
+  Dereference(LocationHolder& loc, ast::types::Type* type, Inst* value)
+    : Inst(loc, type), value(value) {}
+  ~Dereference() = default;
+
+  auto get_value() const { return value; }
+  EMITABLE()
+
+  static auto create(LocationHolder loc, ast::types::Type* type, Inst* value) {
+    return new Dereference(loc, type, value);
   }
 };
 
