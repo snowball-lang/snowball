@@ -23,8 +23,53 @@ void applyDebugTransformations(llvm::Module* module, bool debug) {
 }
 } // namespace
 
-void LLVMBuilder::check_and_optimize(llvm::Module* module, llvm::TargetMachine* target_machine) {
-  auto debug = global.debug_opt();
+void LLVMBuilder::finalize_and_run_lto() {
+  dbg.builder->finalize();
+  auto err = llvm::verifyModule(*builder_ctx.module, &llvm::errs());
+  sn_assert(!err, "Module verification failed");
+
+  llvm::LoopAnalysisManager loop_analysis_manager;
+  llvm::FunctionAnalysisManager function_analysis_manager;
+  llvm::CGSCCAnalysisManager c_gscc_analysis_manager;
+  llvm::ModuleAnalysisManager module_analysis_manager;
+
+  llvm::PassBuilder pass_builder;
+  pass_builder.registerFunctionAnalyses(function_analysis_manager);
+  pass_builder.registerModuleAnalyses(module_analysis_manager);
+  pass_builder.registerCGSCCAnalyses(c_gscc_analysis_manager);
+  pass_builder.registerLoopAnalyses(loop_analysis_manager);
+  llvm::Triple module_triple(builder_ctx.module->getTargetTriple());
+  llvm::TargetLibraryInfoImpl tlii(module_triple);
+  // cross register them too?
+  pass_builder.crossRegisterProxies(
+    loop_analysis_manager, function_analysis_manager, c_gscc_analysis_manager, module_analysis_manager
+  );
+  function_analysis_manager.registerPass([&] { return llvm::TargetLibraryAnalysis(tlii); });
+  llvm::OptimizationLevel lopt_level;
+  switch (global.opt_level) {
+    case OptLevel::Debug:
+      lopt_level = llvm::OptimizationLevel::O0;
+      break;
+    case OptLevel::Release:
+    case OptLevel::ReleaseWithDebug:
+      lopt_level = llvm::OptimizationLevel::O2;
+      break;
+    case OptLevel::ReleaseFast:
+      lopt_level = llvm::OptimizationLevel::O3;
+      break;
+  }
+
+  llvm::ModulePassManager mpm;
+  if (global.opt_level == OptLevel::Debug) {
+    mpm = pass_builder.buildO0DefaultPipeline(lopt_level, true);
+  } else {
+    mpm = pass_builder.buildLTOPreLinkDefaultPipeline(lopt_level);
+  }
+  mpm.run(*builder_ctx.module, module_analysis_manager);
+  applyDebugTransformations(builder_ctx.module.get(), dbg.debug);
+}
+
+void LLVMBuilder::optimize(llvm::Module* module, llvm::TargetMachine* target_machine) {
   auto opt_level = global.opt_level;
   
   llvm::legacy::PassManager pass_manager;
@@ -48,7 +93,6 @@ void LLVMBuilder::check_and_optimize(llvm::Module* module, llvm::TargetMachine* 
   pass_manager.add(llvm::createInstructionCombiningPass());
   
   pass_manager.run(*module);
-  applyDebugTransformations(module, debug);
 
   if (opt_level == OptLevel::ReleaseWithDebug) {
     llvm::legacy::PassManager debug_pass_manager;
@@ -58,36 +102,6 @@ void LLVMBuilder::check_and_optimize(llvm::Module* module, llvm::TargetMachine* 
     debug_pass_manager.add(llvm::createGlobalDCEPass());
 
     debug_pass_manager.run(*module);
-  }
-
-  llvm::LoopAnalysisManager loop_analysis_manager;
-  llvm::FunctionAnalysisManager function_analysis_manager;
-  llvm::CGSCCAnalysisManager c_gscc_analysis_manager;
-  llvm::ModuleAnalysisManager module_analysis_manager;
-
-  llvm::PassBuilder pass_builder;
-  pass_builder.registerFunctionAnalyses(function_analysis_manager);
-  pass_builder.registerModuleAnalyses(module_analysis_manager);
-  pass_builder.registerCGSCCAnalyses(c_gscc_analysis_manager);
-  pass_builder.registerLoopAnalyses(loop_analysis_manager);
-
-  llvm::OptimizationLevel lopt_level;
-  switch (opt_level) {
-    case OptLevel::Debug:
-      lopt_level = llvm::OptimizationLevel::O0;
-      break;
-    case OptLevel::Release:
-    case OptLevel::ReleaseWithDebug:
-      lopt_level = llvm::OptimizationLevel::O2;
-      break;
-    case OptLevel::ReleaseFast:
-      lopt_level = llvm::OptimizationLevel::O3;
-      break;
-  }
-
-  if (!debug) {
-    llvm::ModulePassManager module_pass_manager = pass_builder.buildLTOPreLinkDefaultPipeline(lopt_level);
-    //module_pass_manager.run(*builder_ctx.module, module_analysis_manager);
   }
 }
 

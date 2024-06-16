@@ -33,9 +33,9 @@ public:
   bool dont_load = false;
 
   LLVMBuilderContext(
-          std::unique_ptr<llvm::LLVMContext>& ctx,
-          std::unordered_map<uint64_t, sil::Inst*>& inst_map,
-          frontend::NamespacePath parent_crate
+    std::unique_ptr<llvm::LLVMContext>& ctx,
+    std::unordered_map<uint64_t, sil::Inst*>& inst_map,
+    frontend::NamespacePath parent_crate
   )
     : module(std::make_unique<llvm::Module>("main", *ctx)), 
       inst_map(inst_map), parent_crate(parent_crate) {}
@@ -98,6 +98,7 @@ class LLVMBuilder : public sil::Builder {
 
   llvm::DISubprogram* get_disubprogram(const sil::FuncDecl* node);
   void debug(const std::string& msg);
+  void finalize_and_run_lto();
 
   bool just_declare = true;
 
@@ -119,7 +120,7 @@ class LLVMBuilder : public sil::Builder {
     std::shared_ptr<llvm::LLVMContext> ctx, llvm::TargetMachine* target_machine,
     EmitType emit_type
   );
-  static void check_and_optimize(
+  static void optimize(
     llvm::Module* module, llvm::TargetMachine* target_machine
   );
   static bool run_linker(

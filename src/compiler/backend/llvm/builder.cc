@@ -130,9 +130,7 @@ void LLVMBuilder::build(std::vector<std::shared_ptr<sil::Module>>& modules) {
       build(fn);
     }
   }
-  dbg.builder->finalize();
-  auto err = llvm::verifyModule(*builder_ctx.module, &llvm::errs());
-  sn_assert(!err, "Module verification failed");
+  finalize_and_run_lto();
 }
 
 void LLVMBuilder::dump(llvm::raw_ostream& os) {
