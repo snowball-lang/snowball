@@ -102,7 +102,7 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b,
   err(loc, fmt::format("Type mismatch between '{}' and '{}'", 
     a->get_printable_name(), b->get_printable_name()), Error::Info {
       .highlight = fmt::format("Expected '{}', found '{}'", 
-        a->get_printable_name(), b->get_printable_name()),
+        b->get_printable_name(), a->get_printable_name()),
       .help = "Try casting the type to the expected type by using a cast expression",
       .see = "https://snowball-lang.gitbook.io/docs/language-reference/casting"
     }, Error::Type::Err, true);

@@ -14,7 +14,7 @@ ast::Block* Parser::parse_block(Token::Type terminator) {
   std::vector<ast::Node*> stmts;
   while (true) {
     auto pk = peek();
-    if (pk.type == terminator) {
+    if (is(terminator, pk)) {
       next();
       return node<ast::Block>(stmts);
     }
@@ -28,7 +28,6 @@ ast::Block* Parser::parse_block(Token::Type terminator) {
       continue;
     }
     stmts.push_back(parse_stmt(pk));
-    expect(Token::Type::SymSemiColon, "a semicolon to end the statement", terminator);
     if (is(terminator)) {
       prev();
       continue;

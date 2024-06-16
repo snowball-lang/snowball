@@ -10,8 +10,8 @@ public func test2(x: Hello<i32>) crate::mod::Hello<i32> {
   return x;
 }
 
-public func balls<B: ToString>(x: B) {
-  x.to_string();
+public func balls<B: ToString>(x: B) i32 {
+  2
 }
 
 public func main() i32 {

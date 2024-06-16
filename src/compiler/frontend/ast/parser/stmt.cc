@@ -13,6 +13,10 @@ namespace snowball {
 namespace frontend {
 
 ast::Node* Parser::parse_stmt(const Token& peek) {
+  auto expect_semi_ending = [&](ast::Node* node) {
+    expect(Token::Type::SymSemiColon, "a semicolon to end the statement");
+    return node;
+  };
   switch (peek.type) {
     case Token::Type::Eof:
       err("Unexpected end of file while parsing statement!", Error::Info {
@@ -23,12 +27,17 @@ ast::Node* Parser::parse_stmt(const Token& peek) {
       assert(false);
     case Token::Type::KwordVar:
       next();
-      return parse_var_decl(ast::AttributedNode::empty());
+      return expect_semi_ending(parse_var_decl(ast::AttributedNode::empty()));
     case Token::Type::KwordReturn:
       next();
-      return parse_return();
-    default:
-      return parse_expr();
+      return expect_semi_ending(parse_return());
+    default: {
+      auto expr = parse_expr();
+      if (!is(Token::Type::SymSemiColon)) {
+        return ast::Return::create(expr->get_location(), expr, /* implicit = */true);
+      }
+      return expr;
+    }
   }
 }
 
