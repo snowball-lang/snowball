@@ -112,6 +112,7 @@ private:
   ast::ClassDecl* parse_class_decl(const ast::AttributedNode& attrs);
   ast::ClassDecl* parse_interface_decl(const ast::AttributedNode& attrs);
   ast::Return* parse_return();
+  ast::Use* parse_use(const ast::AttributedNode& attrs);
   ast::attrs::Attr parse_attr();
 
 #include "compiler/frontend/ast/parser_utils.def"

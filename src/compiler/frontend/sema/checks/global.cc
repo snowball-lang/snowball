@@ -33,6 +33,8 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast, bool first) {
         exit_scope();
         ctx.current_class = backup;
       }
+    } else if (auto use_decl = decl->as<ast::Use>()) {
+      do_global_use(use_decl);
     }
   }
 }

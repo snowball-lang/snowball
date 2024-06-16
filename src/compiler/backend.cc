@@ -66,7 +66,7 @@ int Compiler::run_backend(const MiddleEndResult& sil) {
     pool.wait();
   }
   timer.stop("Building Output");
-  auto output = driver::get_output_path(ctx, ctx.root_package_config.value().project.name);
+  auto output = driver::get_output_path(ctx, ctx.root_package_config.value().project.name, true);
   if (is_object) {
     timer.start("Linking", true);
     auto err = backend::LLVMBuilder::link(ctx, object_files, output);

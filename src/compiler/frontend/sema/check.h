@@ -36,8 +36,8 @@ enum class UnifyFlags
 class TypeChecker : public ast::AstVisitor, public Reporter {
   Universe<TypeCheckItem> universe;
   std::vector<Module>& modules;
-  std::map<uint64_t, std::vector<MonorphosizedFn>> generic_registry;
-  std::map<uint64_t, std::vector<MonorphosizedClass>> generic_class_registry;
+  std::unordered_map<uint64_t, std::vector<MonorphosizedFn>> generic_registry;
+  std::unordered_map<uint64_t, std::vector<MonorphosizedClass>> generic_class_registry;
   TypeCheckerContext ctx;
   borrow::BorrowChecker borrow_checker;
   std::unordered_map<uint64_t, TypeCheckerContext> generic_contexts;
@@ -77,7 +77,7 @@ private:
   NamespacePath get_namespace_path(const std::string& name);
 
   GetResult get_item(ast::Expr* expr, NameAccumulator acc = NameAccumulator());
-  GetResult get_item(const NamespacePath& path);
+  GetResult get_item(const NamespacePath& path, const SourceLocation& loc);
   GetResult get_item(const std::string& name);
 
   GetResult get_from_type(ast::MemberAccess* node, ast::types::Type* type);
@@ -116,27 +116,27 @@ private:
   std::optional<std::string> get_did_you_mean(const std::string& name);
 
   ast::FnDecl* get_best_match(
-          const std::vector<ast::FnDecl*>& decls,
-          const std::vector<ast::types::Type*>& args, const SourceLocation& loc,
-          const std::vector<ast::TypeRef>& generics, bool identified = false,
-          bool ignore_self = false
+    const std::vector<ast::FnDecl*>& decls,
+    const std::vector<ast::types::Type*>& args, const SourceLocation& loc,
+    const std::vector<ast::TypeRef>& generics, bool identified = false,
+    bool ignore_self = false
   );
   ast::FnDecl* deduce_func(
-          ast::FnDecl* node, const std::vector<ast::types::Type*>& args,
-          const SourceLocation& loc, const std::vector<ast::TypeRef>& generics
+    ast::FnDecl* node, const std::vector<ast::types::Type*>& args,
+    const SourceLocation& loc, const std::vector<ast::TypeRef>& generics
   );
   ast::FnDecl* propagate_generic(
-          ast::FnDecl* node, const std::map<std::string, ast::types::Type*>& generics,
-          const SourceLocation& loc
+    ast::FnDecl* node, const std::map<std::string, ast::types::Type*>& generics,
+    const SourceLocation& loc
   );
   ast::FnDecl* monorphosize(
-          ast::FnDecl*& node, const std::map<std::string, ast::types::Type*>& generics,
-          const SourceLocation& loc
+    ast::FnDecl*& node, const std::map<std::string, ast::types::Type*>& generics,
+    const SourceLocation& loc
   );
   ast::ClassDecl* monorphosize(
-          ast::ClassDecl*& node,
-          const std::map<std::string, ast::types::Type*>& generics,
-          const SourceLocation& loc
+    ast::ClassDecl*& node,
+    const std::map<std::string, ast::types::Type*>& generics,
+    const SourceLocation& loc
   );
   void add_self_param(ast::FnDecl*& node, bool as_monorph = false);
   ast::types::GenericType* create_generic_type(ast::GenericDecl& decl);
@@ -155,6 +155,7 @@ private:
 
   void do_global_func(ast::FnDecl* fn_decl);
   void do_global_class(ast::ClassDecl* class_decl);
+  void do_global_use(ast::Use* use_decl);
   // note: Universe scope must be added before calling this function
   void check_fn(ast::FnDecl*& fn_decl, bool as_monorph = false);
   void update_self_type();

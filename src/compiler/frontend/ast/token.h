@@ -89,7 +89,7 @@ struct Token {
     KwordOverride,
     KwordClass,
     KwordAs,
-    KwordImport,
+    KwordUse,
     KwordUnsafe,
     KwordConstexpr,
     KwordTypedef,
