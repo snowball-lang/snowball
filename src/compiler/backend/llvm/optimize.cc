@@ -42,7 +42,8 @@ void LLVMBuilder::finalize_and_run_lto() {
   llvm::TargetLibraryInfoImpl tlii(module_triple);
   // cross register them too?
   pass_builder.crossRegisterProxies(
-    loop_analysis_manager, function_analysis_manager, c_gscc_analysis_manager, module_analysis_manager
+    loop_analysis_manager, function_analysis_manager, 
+    c_gscc_analysis_manager, module_analysis_manager
   );
   function_analysis_manager.registerPass([&] { return llvm::TargetLibraryAnalysis(tlii); });
   llvm::OptimizationLevel lopt_level;
