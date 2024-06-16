@@ -15,7 +15,7 @@ ast::Use* Parser::parse_use(const ast::AttributedNode& attrs) {
   auto location = loc();
   next();
   std::vector<ast::Use::Section> sections;
-  while (is(Token::Type::Identifier)) {
+  while (is(Token::Type::Identifier) || is(Token::Type::BracketLparent)) {
     auto section = parse_use_section();
     sections.push_back(section);
     if (is(Token::Type::SymColcol)) {
@@ -33,6 +33,9 @@ ast::Use* Parser::parse_use(const ast::AttributedNode& attrs) {
           .help = "An alias can only be defined once in a use statement",
           .see = "https://snowball-lang.gitbook.io/docs/language-reference/use"
         });
+      } else if (i == sections.size() - 1 && !item.alias.has_value()) {
+        // Add a default alias based on the last namespace path
+        item.alias = item.path.get_last();
       }
     }
   }
@@ -41,7 +44,7 @@ ast::Use* Parser::parse_use(const ast::AttributedNode& attrs) {
 }
 
 ast::Use::Section Parser::parse_use_section() {
-  assert(is(Token::Type::Identifier));
+  assert(is(Token::Type::Identifier) || is(Token::Type::BracketLparent));
   std::vector<ast::Use::Item> items;
   if (is(Token::Type::BracketLparent)) {
     next();
@@ -72,6 +75,7 @@ ast::Use::Section Parser::parse_use_section() {
     consume(Token::Type::BracketRparent, "a closing parenthesis after a namespace path");
   } else {
     auto path = NamespacePath { current.to_string() };
+    next();
     std::optional<std::string> alias;
     if (is(Token::Type::KwordAs)) {
       next();

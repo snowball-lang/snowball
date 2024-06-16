@@ -267,9 +267,8 @@ public:
     std::vector<Item> items;
   };
 private:
-  // e.g. you can have "hello::(my, mod)::world" and "hello::world", etc.
+  // e.g. you can have "hello::(my, mod)::world" and "hello::my::world", etc.
   std::vector<Section> sections;
-  bool checked = false;
 
 public:
   Use(const SourceLocation& location, const std::vector<Section>& sections,
@@ -282,9 +281,6 @@ public:
                      const AttributedNode& attributes = AttributedNode()) {
     return new Use(location, sections, attributes);
   }
-
-  void set_checked() { checked = true; }
-  auto is_checked() const { return checked; }
 
   SN_VISIT()
   SN_DEFAULT_CLONE() // There is no need to clone this, as it doesn't need modification

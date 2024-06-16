@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+#include <variant>
 
 #include "compiler/ctx.h"
 #include "compiler/frontend/ast/module.h"
@@ -32,12 +33,7 @@ public:
 
 private:
   Kind kind;
-  NamespacePath module = NamespacePath::dummy();
-  std::vector<ast::FnDecl*> funcs;
-  union {
-    ast::types::Type* type;
-    ast::VarDecl* var;
-  };
+  std::variant<NamespacePath, ast::types::Type*, ast::VarDecl*, std::vector<ast::FnDecl*>> data;
 
 public:
   ~TypeCheckItem() = default;
