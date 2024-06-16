@@ -12,5 +12,6 @@ void parse_extern_decl(ast::AttributedNode& node);
 
 ast::Expr* fix_precedence(std::vector<ast::Expr*>& exprs);
 ast::attrs::Attr parse_attr_value();
+ast::Use::Section parse_use_section();
 
 static std::string fix_string_value(const std::string& str);

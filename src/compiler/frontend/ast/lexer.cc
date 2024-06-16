@@ -77,7 +77,6 @@ static Token::Type get_keyword_type(const std::string& keyword) {
     }
     case 'i': {
       if (keyword == SN_KEYWORD_IF) return Token::KwordIf;
-      if (keyword == SN_KEYWORD_IMPORT) return Token::KwordImport;
       if (keyword == SN_KEYWORD_INTER) return Token::KwordInter;
       if (keyword == SN_KEYWORD_IMPLS) return Token::KwordImplements;
       if (keyword == SN_KEYWORD_INLINE) return Token::KwordInline;
@@ -122,6 +121,7 @@ static Token::Type get_keyword_type(const std::string& keyword) {
     }
     case 'u': {
       if (keyword == SN_KEYWORD_UNSAFE) return Token::KwordUnsafe;
+      if (keyword == SN_KEYWORD_USE) return Token::KwordUse;
       break;
     }
     case 'v': {

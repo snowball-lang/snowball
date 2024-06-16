@@ -76,7 +76,7 @@ std::string Token::to_string() const {
     case Type::KwordVirtual: return SN_KEYWORD_VIRTUAL;
     case Type::KwordOverride: return SN_KEYWORD_OVERRIDE;
     case Type::KwordPrivate: return SN_KEYWORD_PRIVATE;
-    case Type::KwordImport: return SN_KEYWORD_IMPORT;
+    case Type::KwordUse: return SN_KEYWORD_USE;
     case Type::KwordUnsafe: return SN_KEYWORD_UNSAFE;
     case Type::KwordConstexpr: return SN_KEYWORD_CONSTEXPR;
     case Type::KwordNamespace: return SN_KEYWORD_NAMESPACE;

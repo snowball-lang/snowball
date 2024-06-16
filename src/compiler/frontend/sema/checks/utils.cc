@@ -84,23 +84,22 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
   }
 }
 
-TypeChecker::GetResult TypeChecker::get_item(const NamespacePath& path) {
+TypeChecker::GetResult TypeChecker::get_item(const NamespacePath& path, const SourceLocation& loc) {
   ast::Expr* expr = nullptr;
   for (size_t i = 0; i < path.size(); ++i) {
     if (i == 0) {
       assert(!expr);
-      expr = ast::Ident::create(SourceLocation::dummy(), path[i]);
+      expr = ast::Ident::create(loc, path[i]);
     } else {
-      sn_assert(false, "not implemented");
-      //assert(expr);
-      //expr = ast::MemberExpr::create(expr, path[i]);
+      assert(expr);
+      expr = ast::MemberAccess::create(loc, expr, ast::Ident::create(loc, path[i]), ast::MemberAccess::AccessType::Static);
     }
   }
   return get_item(expr);
 }
 
 TypeChecker::GetResult TypeChecker::get_item(const std::string& name) {
-  return get_item(NamespacePath({name}));
+  return get_item(NamespacePath({name}), SourceLocation::dummy());
 }   
 
 ast::types::Type* TypeChecker::get_type(const NamespacePath& path) {

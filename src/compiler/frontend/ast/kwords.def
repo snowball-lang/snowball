@@ -19,7 +19,7 @@
 #define SN_KEYWORD_EXTERN    "external"
 #define SN_KEYWORD_SUPER     "super"
 #define SN_KEYWORD_STATIC    "static"
-#define SN_KEYWORD_IMPORT    "import"
+#define SN_KEYWORD_USE       "using"
 #define SN_KEYWORD_UNSAFE    "unsafe"
 #define SN_KEYWORD_CONSTEXPR "constexpr"
 #define SN_KEYWORD_NAMESPACE "namespace"

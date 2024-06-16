@@ -1,5 +1,8 @@
 
-public func test(x: crate::mod::Hello<i32>) crate::mod::Hello<i32> {
+using std::main::(printf, test);
+using crate::mod::Hello;
+
+public func test2(x: Hello<i32>) crate::mod::Hello<i32> {
   balls(x);
   x.hello(x);
   let mut a;
@@ -17,6 +20,6 @@ public func main() i32 {
   let mut v: i32 = 25;
   a = 24;
   b = &a;
-  std::main::test(a);
-  std::main::printf(c"Hello, world!\n");
+  test(a);
+  printf(c"Hello, world!\n");
 }

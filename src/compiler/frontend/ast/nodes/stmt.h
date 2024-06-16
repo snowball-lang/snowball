@@ -256,6 +256,36 @@ public:
   SN_VISIT()
 };
 
+class Use final : public Stmt, public AttributedNode, public Self<Use>, public Identified {
+public:
+  struct Item {
+    NamespacePath path;
+    std::optional<std::string> alias;
+  };
+
+  struct Section {
+    std::vector<Item> items;
+  };
+private:
+  // e.g. you can have "hello::(my, mod)::world" and "hello::my::world", etc.
+  std::vector<Section> sections;
+
+public:
+  Use(const SourceLocation& location, const std::vector<Section>& sections,
+      const AttributedNode& attributes = AttributedNode())
+    : Stmt(location), AttributedNode(attributes), sections(sections) {}
+  ~Use() = default;
+
+  auto& get_sections() { return sections; }
+  static auto create(const SourceLocation& location, const std::vector<Section>& sections,
+                     const AttributedNode& attributes = AttributedNode()) {
+    return new Use(location, sections, attributes);
+  }
+
+  SN_VISIT()
+  SN_DEFAULT_CLONE() // There is no need to clone this, as it doesn't need modification
+};
+
 } // namespace ast
 } // namespace frontend
 } // namespace snowball
