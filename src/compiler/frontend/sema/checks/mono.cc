@@ -31,6 +31,8 @@ ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::s
   auto backup = create_generic_context(0, true);
   set_generic_context(state);
   enter_scope();
+  auto backup_func = ctx.current_function;
+  ctx.current_function = node;
   for (auto& [name, type] : deduced) {
     universe.add_item(name, TypeCheckItem::create_type(type));
   }
@@ -48,6 +50,7 @@ ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::s
     node->get_body().value()->accept(this);
   }
   state.current_module->mutate_ast(node);
+  ctx.current_function = backup_func;
   exit_scope();
   set_generic_context(backup);
   return node;

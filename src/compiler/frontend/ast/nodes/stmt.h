@@ -163,11 +163,8 @@ public:
 
 class InterfaceDecl;
 
-class ClassDecl : public Stmt,
-                  public GenericNode<>,
-                  public AttributedNode,
-                  public Identified,
-                  public ModuleHolder {
+class ClassDecl final : public Stmt, public GenericNode<>, 
+  public AttributedNode, public Identified, public ModuleHolder {
 public:
   enum class ClassType
   {
@@ -188,16 +185,14 @@ private:
   std::string builtin_name; // Identifier for builtin types (e.g. Sized has "sized")
 
 public:
-// clang-format off
   ClassDecl(
-          const SourceLocation& location, const std::string& name,
-          const std::vector<VarDecl*>& vars, const std::vector<FnDecl*>& funcs,
-          ClassType class_type = ClassType::Class,
-          std::optional<GenericNode> generics = std::nullopt,
-          const AttributedNode& attributes = AttributedNode())
+      const SourceLocation& location, const std::string& name,
+      const std::vector<VarDecl*>& vars, const std::vector<FnDecl*>& funcs,
+      ClassType class_type = ClassType::Class,
+      std::optional<GenericNode> generics = std::nullopt,
+      const AttributedNode& attributes = AttributedNode())
     : Stmt(location), GenericNode(generics), AttributedNode(attributes), 
       name(name), vars(vars), funcs(funcs), class_type(class_type) {}
-// clang-format on
 
   virtual ~ClassDecl() = default;
 
@@ -241,16 +236,18 @@ public:
 
 class Return final : public Stmt {
   std::optional<Expr*> value;
+  bool implicit = false;
 
 public:
-  Return(const SourceLocation& location, std::optional<Expr*> value)
-    : Stmt(location), value(value) {}
+  Return(const SourceLocation& location, std::optional<Expr*> value, bool implicit)
+    : Stmt(location), value(value), implicit(implicit) {}
   ~Return() = default;
 
   auto& get_value() { return value; }
   Node* clone() const override;
-  static auto create(const SourceLocation& location, std::optional<Expr*> value) {
-    return new Return(location, value);
+  static auto create(const SourceLocation& location, std::optional<Expr*> value,
+                     bool implicit = false) {
+    return new Return(location, value, implicit);
   }
 
   SN_VISIT()

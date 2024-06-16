@@ -16,7 +16,6 @@ ast::Return* Parser::parse_return() {
   if (!is(Token::Type::SymSemiColon)) {
     value = parse_expr();
   }
-  expect(Token::Type::SymSemiColon, "a semicolon to end the return statement");
   return pnode<ast::Return>(pos, value);
 }
 
