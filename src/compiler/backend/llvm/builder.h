@@ -28,7 +28,6 @@ class LLVMBuilderContext {
 public:
   std::unique_ptr<llvm::Module> module;
   frontend::NamespacePath parent_crate;
-  llvm::TargetMachine* target_machine = nullptr;
 
   bool dont_load = false;
 
@@ -87,7 +86,6 @@ class LLVMBuilder : public sil::Builder {
   llvm::AllocaInst* alloc(types::Type* type, const std::string& name = "");
 
   void set_debug_info(const sil::Inst* node);
-  std::string get_target_triple();
 
   llvm::Type* get_type(types::Type* type);
   llvm::DIType* get_ditype(types::Type* type);
@@ -117,15 +115,12 @@ class LLVMBuilder : public sil::Builder {
 
   static void output_object_file(
     llvm::Module& module, std::filesystem::path path,
-    std::shared_ptr<llvm::LLVMContext> ctx, llvm::TargetMachine* target_machine,
+    std::shared_ptr<llvm::LLVMContext> ctx,
     EmitType emit_type
   );
-  static void optimize(
-    llvm::Module* module, llvm::TargetMachine* target_machine
-  );
+  static void optimize(llvm::Module* module);
   static bool run_linker(
-    const Ctx& ctx, std::filesystem::path obj, std::filesystem::path output,
-    llvm::TargetMachine* target_machine
+    const Ctx& ctx, std::filesystem::path obj, std::filesystem::path output
   );
 public:
   LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map,
@@ -141,6 +136,8 @@ public:
        std::filesystem::path output);
 };
 
+llvm::TargetMachine* get_target_machine();
+ 
 } // namespace backend
 } // namespace snowball
 

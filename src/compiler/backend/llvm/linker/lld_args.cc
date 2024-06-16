@@ -26,7 +26,11 @@ std::vector<std::string> LldArgsBuilder::build() {
 
 void LldArgsBuilder::add_default_args() {
   add("lld");
-  add({ "-o", output_file });
+  if (std::find(global.link_flags.begin(), global.link_flags.end(), "-o") == global.link_flags.end()) {
+    add({ "-o", output_file });
+  } else {
+    utils::Logger::warn("Output file is already defined in linker flags, ignoring -o flag.");
+  }
   add("--threads=" + std::to_string(utils::get_num_threads()));
 }
 
@@ -35,17 +39,18 @@ void LldArgsBuilder::add_user_switches() {
   if (global.opt) { add(val); }
   auto target = target_machine->getTargetTriple();
   RELATIVE_OPT(static_link, "-static")
-  RELATIVE_OPT(verbose, "-v")
+  RELATIVE_OPT(verbose, "--verbose")
   if (target.isOSBinFormatMachO()) {
     add("-macosx_version_min");
     add("10.15");
   } else if (target.isOSBinFormatELF()) {
     add(std::vector{"--eh-frame-hdr", "--gc-sections"});
-  add("--hash-style=gnu");
+    add("--hash-style=gnu");
     if (global.debug_opt()) {
       add("--gdb-index");
     }
   }
+  add(global.link_flags);
 }
 
 void LldArgsBuilder::add_object_files() {

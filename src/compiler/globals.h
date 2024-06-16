@@ -27,6 +27,18 @@ static std::function<std::string(const std::filesystem::path&)> read_file =
 };
 }
 
+enum class ExplicitBitness {
+  None,
+  Bit32,
+  Bit64
+};
+
+enum class FloatABI {
+  Default,
+  Soft,
+  SoftFP,
+  Hard
+};
 
 struct GlobalContext {
   bool verbose = false;
@@ -58,6 +70,9 @@ struct GlobalContext {
 #error "Unknown architecture"
 #endif
   bool static_link = false;
+  std::vector<std::string> link_flags;
+  ExplicitBitness explicit_bitness = ExplicitBitness::None;
+  FloatABI float_abi = FloatABI::Default;
 
   bool debug_opt() const {
     return opt_level == OptLevel::Debug || opt_level == OptLevel::ReleaseWithDebug;

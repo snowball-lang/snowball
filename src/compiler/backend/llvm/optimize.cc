@@ -70,7 +70,8 @@ void LLVMBuilder::finalize_and_run_lto() {
   applyDebugTransformations(builder_ctx.module.get(), dbg.debug);
 }
 
-void LLVMBuilder::optimize(llvm::Module* module, llvm::TargetMachine* target_machine) {
+void LLVMBuilder::optimize(llvm::Module* module) {
+  auto target_machine = get_target_machine();
   auto opt_level = global.opt_level;
   
   llvm::legacy::PassManager pass_manager;

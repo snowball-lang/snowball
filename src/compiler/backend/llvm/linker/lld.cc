@@ -15,9 +15,9 @@ namespace snowball {
 namespace backend {
 
 bool LLVMBuilder::run_linker(
-  const Ctx& ctx, std::filesystem::path obj, std::filesystem::path output,
-  llvm::TargetMachine* target_machine
+  const Ctx& ctx, std::filesystem::path obj, std::filesystem::path output
 ) {
+  auto target_machine = get_target_machine();
   // can_exit == true means that LLD can and will call `exit()` when
   // errors occur. (always false for now)
   bool can_exit = false;

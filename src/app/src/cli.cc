@@ -27,9 +27,37 @@ using namespace utils;
 
 CLI::CLI() {}
 
+void rename_duplicate_options() {
+  using namespace llvm;
+  llvm::StringMap<cl::Option *> &map = cl::getRegisteredOptions();
+
+  auto rename = [&map](const char *from, const char *to) {
+    auto i = map.find(from);
+    if (i != map.end()) {
+      cl::Option *opt = i->getValue();
+      map.erase(i);
+      if (to) {
+        opt->setArgStr(to);
+        opt->setHiddenFlag(cl::Hidden);
+        map[to] = opt;
+      }
+    }
+  };
+
+  rename("float-abi", "llvm-float-abi");
+  rename("opaque-pointers", nullptr);
+
+  new cl::opt<FloatABI, true> ("float-abi", cl::desc("Floating point ABI"), cl::values(
+    clEnumValN(FloatABI::Hard, "hard", "Hardware floating point ABI"),
+    clEnumValN(FloatABI::SoftFP, "softfp", "Soft floating point ABI but with hardware floating point instructions"),
+    clEnumValN(FloatABI::Soft, "soft", "Soft floating point ABI")
+  ), cl::location(global.float_abi), cl::init(FloatABI::Default));
+}
+
 Ctx CLI::parse(int argc, char** argv) {
   // TODO:
   Ctx ctx;
+  rename_duplicate_options();
   cl::SetVersionPrinter([](raw_ostream & OS) {
       OS SNOWBALL_PRINT_MESSAGE;
     });

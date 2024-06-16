@@ -13,7 +13,7 @@ void TypeChecker::visit(ast::Number* node) {
   assert(val.length() > 0);
   if (val.length() > 1) {
     for (size_t i = 0; i < val.size(); i++) {
-      switch (val[val.length() - 1]) {
+      switch (val[i]) {
         case 'L': bytes = bytes * 2; break;
         case 'U': _unsigned = false; break;
         case 'I': {

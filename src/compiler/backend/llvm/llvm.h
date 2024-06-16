@@ -67,6 +67,7 @@
 #include <llvm/Transforms/Utils/Debugify.h>
 #include <llvm/Support/Threading.h>
 #include <llvm/Support/ThreadPool.h>
+#include <llvm/Target/TargetOptions.h>
 
 #define SNOWBALL_UTILS_REDEFINE_F__
 #include "compiler/utils/utils.h"

@@ -75,47 +75,15 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*
     "Snowball Compiler Version",
     llvm::ConstantDataArray::getString(*llvm_ctx, _SNOWBALL_VERSION, true)
   );
-  auto engine = llvm::EngineBuilder();
-  auto target = get_target_triple();
-  // Set the target triple
-  builder_ctx.target_machine = engine.selectTarget(llvm::Triple(target), "", "", llvm::SmallVector<std::string, 0>());
-  builder_ctx.module->setTargetTriple(target);
+  auto target = get_target_machine();
+  auto triple = target->getTargetTriple();
+  builder_ctx.module->setTargetTriple(triple.getTriple());
   // darwin only supports dwarf2
-  if (llvm::Triple(builder_ctx.module->getTargetTriple()).isOSDarwin()) { 
+  if (triple.isOSDarwin()) { 
     builder_ctx.module->addModuleFlag(llvm::Module::Warning, "Dwarf Version", 2); 
   }
-}
-
-std::string LLVMBuilder::get_target_triple() {
-  llvm::Triple triple;
-  // TODO: Make the user be more descriptive about the target
-  switch (global.target) {
-    case Target::Windows:
-      triple.setOS(llvm::Triple::Win32);
-      triple.setEnvironment(llvm::Triple::MSVC);
-      triple.setObjectFormat(llvm::Triple::COFF);
-      triple.setVendor(llvm::Triple::PC);
-      break;
-    case Target::Linux:
-      triple.setOS(llvm::Triple::Linux);
-      triple.setEnvironment(llvm::Triple::GNU);
-      break;
-    case Target::MacOS:
-      triple.setOS(llvm::Triple::MacOSX);
-      triple.setVendor(llvm::Triple::Apple);
-      break;
-    default: sn_unreachable();
-  }
-  switch (global.arch) {
-    case Arch::Arm64:
-      triple.setArch(llvm::Triple::aarch64);
-      break;
-    case Arch::X86_64:
-      triple.setArch(llvm::Triple::x86_64);
-      break;
-    default: sn_unreachable();
-  }
-  return triple.normalize();
+  auto data_layout = target->createDataLayout();
+  builder_ctx.module->setDataLayout(data_layout.getStringRepresentation());
 }
 
 void LLVMBuilder::build(std::vector<std::shared_ptr<sil::Module>>& modules) {
@@ -134,7 +102,7 @@ void LLVMBuilder::build(std::vector<std::shared_ptr<sil::Module>>& modules) {
 }
 
 void LLVMBuilder::dump(llvm::raw_ostream& os) {
-  auto data_layout = builder_ctx.target_machine->createDataLayout();
+  auto data_layout = get_target_machine()->createDataLayout();
   builder_ctx.module->print(os, new CommentWriter(data_layout), false, true);
 }
 

@@ -30,8 +30,12 @@ bool Compiler::compile() {
     auto start = std::chrono::high_resolution_clock::now();
     run_frontend();
     auto sil = run_middleend();
+    auto global_backup = global;
     if (run_backend(sil))
       return EXIT_FAILURE;
+    // run_backend resets the global variable
+    // more specifically the linking part (lld)
+    global = global_backup;
     post_compile();
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
