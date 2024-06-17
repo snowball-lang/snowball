@@ -82,7 +82,10 @@ jobs:
 
     - name: Export Tag
       run: |
-        echo release_tag=$(cat snowball.version.info) >> $env:GITHUB_OUTPUT
+        echo "release_tag=$(cat snowball.version.info)" >> "$GITHUB_OUTPUT"
+
+    - name: Test output variable
+      run: echo ${{ steps.pre_build.outputs.release_tag }}
 
   release_linux:
     name: 'Release Linux'
