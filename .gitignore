@@ -32,8 +32,6 @@ analysis.txt
 cpm-package-lock.cmake
 CPM_modules/
 cmake/*
-!cmake/backtrace-supported.h.in
-!cmake/backtrace-config.h.in
 
 # Compiled Static libraries
 *.lai

@@ -69,7 +69,6 @@ LLVMBuilder::LLVMBuilder(const Ctx& ctx, llvm::DenseMap<uint64_t, sil::Inst*>& i
     /*RV=*/0
   );
   builder_ctx.module->addModuleFlag(llvm::Module::Warning, "Debug Info Version", llvm::DEBUG_METADATA_VERSION);
-  builder_ctx.module->addModuleFlag(llvm::Module::Warning, "Snowball Compiler ID", _SNOWBALL_VERSION_NUMBER);
   builder_ctx.module->addModuleFlag(
     llvm::Module::Warning,
     "Snowball Compiler Version",

@@ -28,7 +28,6 @@
           glib
           pcre2
           libllvm
-          libbacktrace
           openssl
           nlohmann_json
         ];
@@ -107,7 +106,6 @@
           glib
           pcre2
           libllvm
-          libbacktrace
           libxml2
           clang-tools
           cmake-language-server
