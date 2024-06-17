@@ -105,13 +105,13 @@ jobs:
     - name: Package
       run: |
         cd build
-        tar -czf snowball-linux-$(cat ../snowball.version.info).tar.gz snowball libSnowball.so
+        tar -czf snowball-linux-x86_64 snowball libSnowball.so
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: snowball-linux-$(cat snowball.version.info)
-        path: build/snowball-linux-$(cat snowball.version.info).tar.gz
+        name: snowball-linux-x86_64
+        path: build/snowball-linux-x86_64.tar.gz
 
   release_source:
     name: 'Release Source'
@@ -128,13 +128,13 @@ jobs:
       run: |
         mkdir source
         rsync -av --progress --exclude='build' --exclude='.git' --exclude='.github' --exclude='*.tar.gz' --exclude='*.zip' --exclude='*.7z' --exclude='*.rar' --exclude='*.tar' . source
-        tar -czf snowball-source-$(cat snowball.version.info).tar.gz source
+        tar -czf snowball-source.tar.gz source
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: snowball-source-$(cat snowball.version.info)
-        path: snowball-source-$(cat snowball.version.info).tar.gz
+        name: snowball-source
+        path: snowball-source.tar.gz
 
   create_release:
     name: 'Create Release'
