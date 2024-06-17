@@ -44,7 +44,7 @@ void AttrInterpreter::error(Reporter& reporter, const std::string& message, Erro
 
 void AttrInterpreter::register_instance(const std::string& name, AttrInstance* instance) {
   assert(instances.find(name) == instances.end());
-  instances[name] = instance;
+  instances.insert({name, instance});
 }
 
 void AttrInterpreter::unregister_instance(const std::string& name) {

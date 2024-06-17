@@ -15,6 +15,8 @@
 #include "compiler/utils/utils.h"
 #include "compiler/frontend/sema/borrow.h"
 
+#include <llvm/ADT/DenseMap.h>
+
 namespace snowball {
 namespace frontend {
 namespace sema {
@@ -36,11 +38,11 @@ enum class UnifyFlags
 class TypeChecker : public ast::AstVisitor, public Reporter {
   Universe<TypeCheckItem> universe;
   std::vector<Module>& modules;
-  std::unordered_map<uint64_t, std::vector<MonorphosizedFn>> generic_registry;
-  std::unordered_map<uint64_t, std::vector<MonorphosizedClass>> generic_class_registry;
+  llvm::DenseMap<uint64_t, std::vector<MonorphosizedFn>> generic_registry;
+  llvm::DenseMap<uint64_t, std::vector<MonorphosizedClass>> generic_class_registry;
   TypeCheckerContext ctx;
   borrow::BorrowChecker borrow_checker;
-  std::unordered_map<uint64_t, TypeCheckerContext> generic_contexts;
+  llvm::DenseMap<uint64_t, TypeCheckerContext> generic_contexts;
   // A vector used to keep track of extenral "unmangled" names
   std::vector<std::string> external_declared;
   bool has_entry_declared = false;

@@ -6,7 +6,7 @@ namespace frontend {
 namespace sema::borrow {
 
 void BorrowChecker::enter_scope() {
-  scopes.push_back({});
+  scopes.push_back(Scope());
 }
 
 BorrowChecker::Result<CleanStatus> BorrowChecker::exit_scope(std::optional<Scope> unified_scope) {
@@ -19,7 +19,7 @@ BorrowChecker::Result<CleanStatus> BorrowChecker::exit_scope(std::optional<Scope
       if (std::find(scope.initialized.begin(), scope.initialized.end(), init) != scope.initialized.end()
         && var.has_value()) {
         if (var.value()->get_status() == VariableStatusType::Uninitialized) {
-          scopes.back().variables.at(init).set_initialized();
+          scopes.back().variables[init].set_initialized();
           scopes.back().initialized.push_back(init);
         }
       }   
@@ -48,7 +48,7 @@ std::optional<VariableStatus*> BorrowChecker::get_variable(uint64_t id, bool cur
 }
 
 void BorrowChecker::declare_variable(uint64_t id, const std::string& name, VariableStatusType status) {
-  scopes.back().variables.emplace(std::make_pair(id, VariableStatus(name, status)));
+  scopes.back().variables.try_emplace(id, VariableStatus(name, status));
   // if (status == VariableStatusType::Initialized) {
   //   scopes.back().initialized.push_back(id);
   // }

@@ -12,6 +12,8 @@
 
 #include "compiler/backend/llvm/llvm.h"
 
+#include <llvm/ADT/DenseMap.h>
+
 namespace snowball {
 namespace backend {
 namespace types {
@@ -19,9 +21,8 @@ using namespace frontend::ast::types;
 }
 
 class LLVMBuilderContext {
-  std::unordered_map<uint64_t, llvm::Value*> value_map;
-
-  std::unordered_map<uint64_t, sil::Inst*> inst_map;
+  llvm::DenseMap<uint64_t, llvm::Value*> value_map;
+  llvm::DenseMap<uint64_t, sil::Inst*> inst_map; // TODO: In the future, remove this?
   llvm::Function* current_func = nullptr;
   const sil::FuncDecl* current_sil_func = nullptr;
 
@@ -33,14 +34,23 @@ public:
 
   LLVMBuilderContext(
     std::unique_ptr<llvm::LLVMContext>& ctx,
-    std::unordered_map<uint64_t, sil::Inst*>& inst_map,
+    llvm::DenseMap<uint64_t, sil::Inst*>& inst_map,
     frontend::NamespacePath parent_crate
   )
     : module(std::make_unique<llvm::Module>("main", *ctx)), 
       inst_map(inst_map), parent_crate(parent_crate) {}
 
-  llvm::Value* get_value(uint64_t id) { return value_map.at(id); }
-  sil::Inst* get_inst(uint64_t id) { return inst_map.at(id); }
+  llvm::Value* get_value(uint64_t id) { 
+    auto val = value_map.find(id);
+    assert(val != value_map.end() && "Value not found");
+    return val->second;
+  }
+
+  sil::Inst* get_inst(uint64_t id) {
+    auto inst = inst_map.find(id);
+    assert(inst != inst_map.end() && "Inst not found");
+    return inst->second;
+  }
 
   void set_current_func(llvm::Function* func, const sil::FuncDecl* sil_func) {
     current_func = func;
@@ -123,7 +133,7 @@ class LLVMBuilder : public sil::Builder {
     const Ctx& ctx, std::filesystem::path obj, std::filesystem::path output
   );
 public:
-  LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map,
+  LLVMBuilder(const Ctx& ctx, llvm::DenseMap<uint64_t, sil::Inst*>& inst_map,
     frontend::NamespacePath parent_crate);
 
   void build(std::vector<std::shared_ptr<sil::Module>>& modules) override;

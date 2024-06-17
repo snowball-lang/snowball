@@ -71,7 +71,6 @@ void LLVMBuilder::finalize_and_run_lto() {
 }
 
 void LLVMBuilder::optimize(llvm::Module* module) {
-  auto target_machine = get_target_machine();
   auto opt_level = global.opt_level;
   
   llvm::legacy::PassManager pass_manager;

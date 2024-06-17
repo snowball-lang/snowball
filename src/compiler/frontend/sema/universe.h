@@ -10,6 +10,8 @@
 #include "compiler/frontend/location.h"
 #include "compiler/utils/utils.h"
 
+#include <llvm/ADT/DenseMap.h>
+
 namespace snowball {
 namespace frontend {
 namespace sema {

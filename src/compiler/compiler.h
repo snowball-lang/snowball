@@ -73,7 +73,7 @@ public:
 
   struct MiddleEndResult {
     std::vector<std::shared_ptr<sil::Module>> sil_modules;
-    std::unordered_map<uint64_t, sil::Inst*> sil_insts;
+    llvm::DenseMap<uint64_t, sil::Inst*> sil_insts;
   };
 
 private:

@@ -44,7 +44,7 @@ class Binder : public ast::AstVisitor, public Reporter {
 
   std::map<NamespacePath, ast::types::Type*> types;
   std::vector<ast::types::Type*> constraints;
-  std::unordered_map<uint64_t, sil::Inst*> var_ids;
+  llvm::DenseMap<uint64_t, sil::Inst*> var_ids;
 
   bool just_declare = true;
 

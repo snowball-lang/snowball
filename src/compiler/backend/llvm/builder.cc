@@ -8,7 +8,7 @@
 namespace snowball {
 namespace backend {
 
-LLVMBuilder::LLVMBuilder(const Ctx& ctx, std::unordered_map<uint64_t, sil::Inst*>& inst_map, frontend::NamespacePath parent_crate) : Builder(ctx),
+LLVMBuilder::LLVMBuilder(const Ctx& ctx, llvm::DenseMap<uint64_t, sil::Inst*>& inst_map, frontend::NamespacePath parent_crate) : Builder(ctx),
   llvm_ctx(std::make_unique<llvm::LLVMContext>()), builder_ctx(llvm_ctx, inst_map, parent_crate) {
   llvm::InitializeAllTargetInfos();
   llvm::InitializeAllTargets();

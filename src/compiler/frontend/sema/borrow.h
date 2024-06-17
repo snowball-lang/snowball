@@ -10,6 +10,8 @@
 #include "compiler/frontend/ast/module.h"
 #include "compiler/frontend/ast/nodes.h"
 
+#include <llvm/ADT/DenseMap.h>
+
 namespace snowball {
 namespace frontend {
 namespace sema::borrow {
@@ -22,13 +24,14 @@ enum class VariableStatusType
   Moved
 };
 
-class VariableStatus {
+class VariableStatus final {
   VariableStatusType status = VariableStatusType::None;
   std::string name;
 public:
   VariableStatus(const std::string& name, VariableStatusType status)
     : name(name), status(status) {}
-  virtual ~VariableStatus() = default;
+  VariableStatus() { sn_unreachable(); }
+  ~VariableStatus() = default;
 
   void set_status(VariableStatusType status) { this->status = status; }
   VariableStatusType get_status() const { return status; }
@@ -55,7 +58,7 @@ struct BorrowError {
 };  
 
 struct Scope {
-  std::unordered_map<uint64_t, VariableStatus> variables;
+  llvm::DenseMap<uint64_t, VariableStatus> variables;
   std::vector<uint64_t> initialized;
 };
 
@@ -71,7 +74,7 @@ public:
 };
 
 class BorrowChecker {
-  std::vector<Scope> scopes = {{}};
+  std::vector<Scope> scopes = {Scope()};
 public:
   using ResultOpt = std::optional<BorrowError>;
 

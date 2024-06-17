@@ -10,6 +10,8 @@
 
 #include "compiler/globals.h"
 
+#include <llvm/ADT/DenseMap.h>
+
 namespace snowball {
 namespace frontend {
 namespace sema {

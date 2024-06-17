@@ -15,6 +15,14 @@
 #include "compiler/reports/reporter.h"
 #include "compiler/frontend/attrs/attr.h"
 
+#include <llvm/ADT/DenseMap.h>
+
+#undef F
+#include <llvm/ADT/StringRef.h>
+#define SNOWBALL_UTILS_REDEFINE_F__
+#include "compiler/utils/utils.h"
+#undef SNOWBALL_UTILS_REDEFINE_F__
+
 namespace snowball {
 namespace frontend {
 namespace ast::attrs {
