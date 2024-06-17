@@ -51,7 +51,7 @@ jobs:
       run: |
         npx semver -i ${{ github.event.inputs.update-version-type }} $(cat snowball.version.info) ${{ (github.event.inputs.beta == true) && '--preid beta' }} > snowball.version.info
         # Remove the last line break
-        sed -i '$ d' snowball.version.info
+        truncate -s -1 snowball.version.info
         git add snowball.version.info
         git commit -m "Update version to $(cat snowball.version.info)"
         git push --follow-tags
