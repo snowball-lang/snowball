@@ -182,9 +182,6 @@ jobs:
           build/snowball-linux-x86_64.tar.gz
           snowball-source.tar.gz
 
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   post_release:
     name: 'Post Release'
     runs-on: ubuntu-latest
