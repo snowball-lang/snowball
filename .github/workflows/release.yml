@@ -49,7 +49,7 @@ jobs:
     - name: Update Version
       if: ${{ github.event.inputs.update-version-type != 'none' }}
       run: |
-        npx semver -i ${{ github.event.inputs.update-version-type }} $(cat snowball.version.info) ${{ (github.event.inputs.beta == true) && '--preid beta' }} > snowball.version.info
+        npx semver -i ${{ github.event.inputs.update-version-type }} $(cat snowball.version.info) ${{ (github.event.inputs.beta == 'true') && '--preid beta' }} > snowball.version.info
         # Remove the last line break
         truncate -s -1 snowball.version.info
         git add snowball.version.info
@@ -145,6 +145,7 @@ jobs:
   create_release:
     name: 'Create Release'
     runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.create-release == 'true' }}
     needs: [release_linux, release_source]
     
     steps:
@@ -165,6 +166,6 @@ jobs:
         body: |
           Snowball $(cat snowball.version.info)
         draft: false
-        prerelease: ${{ github.event.inputs.beta == true }}
+        prerelease: ${{ github.event.inputs.beta == 'true' }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
