@@ -111,7 +111,7 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: snowball-linux-x86_64
+        name: snowball-linux-x86_64.tar.gz
         path: build/snowball-linux-x86_64.tar.gz
 
   release_source:
@@ -135,7 +135,7 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: snowball-source
+        name: snowball-source.tar.gz
         path: snowball-source.tar.gz
 
   create_release:
