@@ -50,6 +50,8 @@ jobs:
       if: ${{ github.event.inputs.update-version-type != 'none' }}
       run: |
         npx semver -i ${{ github.event.inputs.update-version-type }} $(cat snowball.version.info) ${{ (github.event.inputs.beta == true) && '--preid beta' }} > snowball.version.info
+        # Remove the last line break
+        sed -i '$ d' snowball.version.info
         git add snowball.version.info
         git commit -m "Update version to $(cat snowball.version.info)"
         git push --follow-tags
@@ -73,7 +75,7 @@ jobs:
           
     - name: Create Tag
       run: |
-        git tag -a $(cat snowball.version.info) -m "release/$(cat snowball.version.info)"
+        git tag -a $(cat snowball.version.info) -m "$(cat snowball.version.info)"
         git push --follow-tags
 
   release_linux:
@@ -122,7 +124,10 @@ jobs:
 
     - name: Package
       run: |
-        tar -czf snowball-source-$(cat snowball.version.info).tar.gz .
+        mkdir source
+        cp -r ./* source
+        rm -rf source/.git
+        tar -czf snowball-source-$(cat snowball.version.info).tar.gz source
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
