@@ -60,6 +60,8 @@ jobs:
     name: 'Create Tag'
     needs: [update_version]
     runs-on: ubuntu-latest
+    outputs:
+      release_tag: ${{ steps.create_release.outputs.release_tag }}
     
     steps:
     - name: Checkout
@@ -150,6 +152,8 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.create-release == 'true' }}
     needs: [release_linux, release_source]
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
     
     steps:
     - name: Checkout
