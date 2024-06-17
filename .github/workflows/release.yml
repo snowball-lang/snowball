@@ -28,7 +28,6 @@ jobs:
   update_version:
     name: 'Update Version'
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.update-version-type != 'none' }}
     
     steps:
     - name: Checkout
@@ -48,6 +47,7 @@ jobs:
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
         
     - name: Update Version
+      if: ${{ github.event.inputs.update-version-type != 'none' }}
       run: |
         npx semver -i ${{ github.event.inputs.update-version-type }} $(cat snowball.version.info) ${{ (github.event.inputs.beta == true) && '--preid beta' }} > snowball.version.info
         git add snowball.version.info
