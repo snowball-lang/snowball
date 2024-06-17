@@ -61,7 +61,7 @@ jobs:
     needs: [update_version]
     runs-on: ubuntu-latest
     outputs:
-      release_tag: ${{ steps.create_release.outputs.release_tag }}
+      release_tag: ${{ steps.export_tag.outputs.release_tag }}
     
     steps:
     - name: Checkout
@@ -83,6 +83,7 @@ jobs:
         git push origin --tags
 
     - name: Export Tag
+      id: export_tag
       run: |
         echo "release_tag=$(cat snowball.version.info)" >> "$GITHUB_OUTPUT"
 
