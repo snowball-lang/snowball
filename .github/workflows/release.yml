@@ -127,8 +127,7 @@ jobs:
     - name: Package
       run: |
         mkdir source
-        cp -r ./* source
-        rm -rf source/.git
+        rsync -av --progress --exclude='build' --exclude='.git' --exclude='.github' --exclude='*.tar.gz' --exclude='*.zip' --exclude='*.7z' --exclude='*.rar' --exclude='*.tar' . source
         tar -czf snowball-source-$(cat snowball.version.info).tar.gz source
 
     - name: Upload Artifact
