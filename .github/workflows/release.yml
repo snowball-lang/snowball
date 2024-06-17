@@ -106,7 +106,7 @@ jobs:
     - name: Package
       run: |
         cd build
-        tar -czf snowball-linux-x86_64 snowball libSnowball.so
+        tar -czf snowball-linux-x86_64.tar.gz snowball libSnowball.so
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
@@ -142,7 +142,6 @@ jobs:
     name: 'Create Release'
     runs-on: ubuntu-latest
     needs: [release_linux, release_source]
-    if: ${{ github.event.inputs.create-release == true }}
     
     steps:
     - name: Checkout
