@@ -177,7 +177,7 @@ jobs:
         repo_token: '${{ secrets.GITHUB_TOKEN }}'
         automatic_release_tag: ${{ needs.build-data.outputs.version }}
         prerelease: ${{ github.event.inputs.beta == 'true' }}
-        title: 'Snowball ${{ needs.pre_build.outputs.release_tag }} ${{ github.event.inputs.beta == 'true' && ' - Beta' || '' }}'
+        title: 'Snowball ${{ needs.pre_build.outputs.release_tag }} Release'
         files: |
           build/snowball-linux-x86_64.tar.gz
           snowball-source.tar.gz
