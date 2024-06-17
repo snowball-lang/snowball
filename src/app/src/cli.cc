@@ -99,6 +99,8 @@ void CLI::print_help(Args& args) {
   cl::SubCommand run("run", "Run a Snowball program");
   cl::SubCommand build("build", "Build a Snowball program");
   cl::SubCommand reky("reky", "Run snowball's package manager");
+  cl::SubCommand init("init", "Initialize a new Snowball project");
+  cl::SubCommand new_("new", "Initialize a new Snowball project");
   parse_args(args);
   cl::PrintHelpMessage();
   exit(EXIT_SUCCESS);
