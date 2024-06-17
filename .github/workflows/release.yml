@@ -172,3 +172,23 @@ jobs:
         prerelease: ${{ github.event.inputs.beta == 'true' }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  post_release:
+    name: 'Post Release'
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.create-release == 'true' }}
+    needs: [create_release]
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Write job summary
+      run: |
+        echo "### Release completed! :rocket:" >> $GITHUB_STEP_SUMMARY
+        echo "Version: $(cat snowball.version.info)" >> $GITHUB_STEP_SUMMARY
+        echo "Release tag: ${{ steps.pre_build.outputs.release_tag }}" >> $GITHUB_STEP_SUMMARY
+        echo "Release URL: ${{ steps.create_release.outputs.upload_url }}" >> $GITHUB_STEP_SUMMARY
+        
