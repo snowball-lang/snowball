@@ -87,9 +87,6 @@ jobs:
       run: |
         echo "release_tag=$(cat snowball.version.info)" >> "$GITHUB_OUTPUT"
 
-    - name: Test output variable
-      run: echo ${{ needs.pre_build.outputs.release_tag }}
-
   release_linux:
     name: 'Release Linux'
     runs-on: ubuntu-latest
@@ -157,7 +154,7 @@ jobs:
     name: 'Create Release'
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.create-release == 'true' }}
-    needs: [release_linux, release_source]
+    needs: [release_linux, release_source, pre_build]
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     
@@ -187,7 +184,7 @@ jobs:
     name: 'Post Release'
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.create-release == 'true' }}
-    needs: [create_release]
+    needs: [create_release, pre_build]
     
     steps:
     - name: Checkout
