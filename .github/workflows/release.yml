@@ -46,8 +46,7 @@ jobs:
         git config --global user.name 'Git bot'
         git config --global user.email 'bot@noreply.github.com'
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-        git commit -am "Auto updated submodule references" && git push || echo "No changes to commit"
-
+        
     - name: Update Version
       run: |
         npx semver -i ${{ github.event.inputs.update-version-type }} $(cat snowball.version.info) ${{ (github.event.inputs.beta == true) && '--preid beta' }} > snowball.version.info
@@ -65,7 +64,13 @@ jobs:
       uses: actions/checkout@v2
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-
+        
+    - name: Initialize Git
+      run: |
+        git config --global user.name 'Git bot'
+        git config --global user.email 'bot@noreply.github.com'
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          
     - name: Create Tag
       run: |
         git tag -a $(cat snowball.version.info) -m "release/$(cat snowball.version.info)"
@@ -81,11 +86,6 @@ jobs:
       uses: actions/checkout@v2
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Install node
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
 
     - name: Install dependencies
       run: bash ./scripts/install-deps.sh
@@ -119,11 +119,6 @@ jobs:
       uses: actions/checkout@v2
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Install node
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
 
     - name: Package
       run: |
