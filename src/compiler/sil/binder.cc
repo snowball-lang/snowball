@@ -2,6 +2,8 @@
 #include "compiler/sil/binder.h"
 #include "compiler/utils/logger.h"
 
+#include "compiler/compiler.h"
+
 namespace snowball {
 namespace sil {
 
@@ -14,7 +16,7 @@ void Binder::bind() {
   try {
     for (size_t j = 0; j < ast_modules.size(); j++) {
       just_declare = true;
-      auto module = ast_modules[j];
+      auto& module = ast_modules[j];
       current_module = std::make_shared<sil::Module>(module.get_path(), module.is_main);
       current_module->parent_crate = module.parent_crate;
       auto ast = module.get_ast();
@@ -31,7 +33,9 @@ void Binder::bind() {
       for (i = 0; i < ast.size(); i++) {
         ast[i]->accept(this);
       }
+      module.set_generated(true);
       sil_modules.push_back(current_module);
+      Compiler::print_compiling_bar(ast_modules);
     }
   } catch (const StopBindingIR&) {
     // Do nothing

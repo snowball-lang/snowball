@@ -42,7 +42,7 @@ void Compiler::run_frontend() {
         if (parser.handle_errors()) {
           stop_compilation();
         }
-        print_compiling_bar();
+        print_compiling_bar(modules);
       }
     }
     // We add the top module so that it can be accessed from 

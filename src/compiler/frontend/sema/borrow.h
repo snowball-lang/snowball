@@ -58,7 +58,7 @@ struct BorrowError {
 };  
 
 struct Scope {
-  llvm::DenseMap<uint64_t, VariableStatus> variables;
+  std::unordered_map<uint64_t, VariableStatus> variables;
   std::vector<uint64_t> initialized;
 };
 

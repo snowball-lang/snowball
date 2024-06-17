@@ -5,7 +5,7 @@
 namespace snowball {
 
 Compiler::MiddleEndResult Compiler::run_middleend() {
-  print_compiling_bar();
+  print_compiling_bar(modules);
   frontend::sema::TypeChecker type_checker(ctx, modules);
   timer.start("Type Checking", true);
   type_checker.check();
@@ -13,7 +13,6 @@ Compiler::MiddleEndResult Compiler::run_middleend() {
   if (type_checker.handle_errors()) {
     stop_compilation();
   }
-  print_compiling_bar();
   sil::Binder binder(ctx, modules, type_checker.get_universe());
   timer.start("Binding", true);
   binder.bind();

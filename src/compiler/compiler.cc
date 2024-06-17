@@ -95,18 +95,29 @@ std::string Compiler::get_package_type_string() {
   return output;
 }
 
-void Compiler::print_compiling_bar() {
+void Compiler::print_compiling_bar(std::vector<frontend::Module>& module_paths) {
   std::vector<std::string> modules;
+  auto progress = progress_iteration;
   for (size_t i = 0; i < module_paths.size(); i++) {
-    if (i == 0) {
-      modules.push_back(module_paths.at(i).get_path_string());
-      continue;
-    } 
-    if (module_paths.at(i) != module_paths.at(i-1)) {
-      modules.push_back(module_paths.at(i).get_path_string());
+    auto& module = module_paths.at(i);
+    if (i == 0 || module.get_path()[0] != module_paths.at(i-1).get_path()[0]) {
+      bool all_generated = true;
+      for (auto& module : module_paths) {
+        if (!module.is_generated()) {
+          all_generated = false;
+          break;
+        }
+      }
+      if (all_generated) {
+        progress += 0.2f / module_paths.size();
+        continue;
+      }
+      if (module.is_generated())
+        progress += 0.45f / (module_paths.size()/2);
+      modules.push_back(module.get_path()[0]);
     }
   }
-  Logger::progress("Compiling", progress_iteration, utils::join(modules, ", "));
+  Logger::progress("Compiling", progress, utils::join(modules, ", "));
 }
 
 std::vector<std::filesystem::path> Compiler::prepare_context(Ctx& ctx, reky::RekyManager** reky) {
@@ -121,5 +132,7 @@ std::vector<std::filesystem::path> Compiler::prepare_context(Ctx& ctx, reky::Rek
   else delete manager;
   return allowed_paths;
 }
+
+float Compiler::progress_iteration = 0.0f;
 
 } // namespace snowball

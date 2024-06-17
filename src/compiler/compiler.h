@@ -8,6 +8,7 @@
 #include "compiler/utils/timers.h"
 #include "ctx.h"
 
+#include "compiler/sil/binder.h"
 #include "compiler/backend/drivers.h"
 #include "compiler/backend/llvm/builder.h"
 #include "compiler/frontend/ast/lexer.h"
@@ -44,7 +45,8 @@ class Compiler {
 
   std::vector<std::filesystem::path> allowed_paths;
 
-  float progress_iteration = 0.0;
+  static float progress_iteration;
+  friend class sil::Binder;
 
 public:
   Compiler(Ctx& ctx);
@@ -78,7 +80,7 @@ public:
 
 private:
   std::string get_package_type_string();
-  void print_compiling_bar();
+  static void print_compiling_bar(std::vector<frontend::Module>& modules);
   void run_frontend();
   MiddleEndResult run_middleend();
   int run_backend(const MiddleEndResult& middleend_result);
