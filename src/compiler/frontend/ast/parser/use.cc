@@ -28,11 +28,10 @@ ast::Use* Parser::parse_use(const ast::AttributedNode& attrs) {
     auto& section = sections[i];
     for (auto& item : section.items) {
       if (item.alias.has_value() && i != sections.size() - 1) {
-        err("Alias '{}' is already defined in this use statement", Error::Info {
-          .highlight = fmt::format("Alias '{}' is already defined in this use statement", *item.alias),
-          .help = "An alias can only be defined once in a use statement",
-          .see = "https://snowball-lang.gitbook.io/docs/language-reference/use"
-        });
+        err("Alias '{}' cant be defined in the middle of a use statement", Error::Info {
+          .highlight = "Invalid alias definition",
+          .help = "Move the alias definition to the end of the use statement"
+        }, Error::Type::Err, false);
       } else if (i == sections.size() - 1 && !item.alias.has_value()) {
         // Add a default alias based on the last namespace path
         item.alias = item.path.get_last();

@@ -40,6 +40,12 @@ void TypeChecker::visit(ast::Use* node) {
         .help = "The element you are trying to alias does not exist",
       });
     }
+    if (universe.current_scope().get_item(*alias).has_value()) {
+      err(node->get_location(), F("Alias '{}' already exists in the current scope", *alias), Error::Info {
+        .highlight = "Duplicate alias",
+        .help = "Rename the alias to something else",
+      });
+    }
     universe.add_item(*alias, *item.item);
   }
 }
