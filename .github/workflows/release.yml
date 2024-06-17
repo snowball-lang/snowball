@@ -167,16 +167,21 @@ jobs:
     - name: Check release tag
       run: echo ${{ needs.pre_build.outputs.release_tag }}
 
+    - name: Show the whole directory
+      run: ls -la
+
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: marvinpinto/action-automatic-releases@lates
       with:
-        tag_name: ${{ needs.pre_build.outputs.release_tag }}
-        release_name: 'Snowball ${{ needs.pre_build.outputs.release_tag }}'
-        body: |
-          Snowball $(cat snowball.version.info)
-        draft: false
+        repo_token: '${{ secrets.GITHUB_TOKEN }}'
+        automatic_release_tag: ${{ needs.build-data.outputs.version }}
         prerelease: ${{ github.event.inputs.beta == 'true' }}
+        title: 'Snowball ${{ needs.pre_build.outputs.release_tag }} ${{ github.event.inputs.beta == 'true' && ' - Beta' || '' }}'
+        files: |
+          build/snowball-linux-x86_64.tar.gz
+          snowball-source.tar.gz
+
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
