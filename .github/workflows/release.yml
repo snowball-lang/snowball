@@ -155,14 +155,14 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Check release tag
-      run: echo ${{ steps.export_tag.outputs.release_tag }}
+      run: echo ${{ steps.pre_build.outputs.release_tag }}
 
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: ${{ steps.export_tag.outputs.release_tag }}
-        release_name: 'Snowball ${{ steps.export_tag.outputs.release_tag }}'
+        tag_name: ${{ steps.pre_build.outputs.release_tag }}
+        release_name: 'Snowball ${{ steps.pre_build.outputs.release_tag }}'
         body: |
           Snowball $(cat snowball.version.info)
         draft: false
