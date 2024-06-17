@@ -102,6 +102,11 @@ jobs:
         submodules: 'true'
         token: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Display info
+      run: |
+        echo "Release tag: ${{ steps.pre_build.outputs.release_tag }}"
+        echo "Version: $(cat snowball.version.info)"
+
     - name: Install dependencies
       run: bash ./scripts/install-deps.sh
       
