@@ -176,7 +176,7 @@ jobs:
         prerelease: ${{ github.event.inputs.beta == 'true' }}
         title: 'Snowball ${{ needs.pre_build.outputs.release_tag }} Release'
         files: |
-          build/snowball-linux-x86_64.tar.gz
+          snowball-linux-x86_64.tar.gz
           snowball-source.tar.gz
 
   post_release:
