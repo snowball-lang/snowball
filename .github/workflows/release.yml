@@ -88,7 +88,7 @@ jobs:
         echo "release_tag=$(cat snowball.version.info)" >> "$GITHUB_OUTPUT"
 
     - name: Test output variable
-      run: echo ${{ jobs.pre_build.outputs.release_tag }}
+      run: echo ${{ needs.pre_build.outputs.release_tag }}
 
   release_linux:
     name: 'Release Linux'
@@ -104,7 +104,7 @@ jobs:
 
     - name: Display info
       run: |
-        echo "Release tag: ${{ jobs.pre_build.outputs.release_tag }}"
+        echo "Release tag: ${{ needs.pre_build.outputs.release_tag }}"
         echo "Version: $(cat snowball.version.info)"
 
     - name: Install dependencies
@@ -168,14 +168,14 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Check release tag
-      run: echo ${{ jobs.pre_build.outputs.release_tag }}
+      run: echo ${{ needs.pre_build.outputs.release_tag }}
 
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: ${{ jobs.pre_build.outputs.release_tag }}
-        release_name: 'Snowball ${{ jobs.pre_build.outputs.release_tag }}'
+        tag_name: ${{ needs.pre_build.outputs.release_tag }}
+        release_name: 'Snowball ${{ needs.pre_build.outputs.release_tag }}'
         body: |
           Snowball $(cat snowball.version.info)
         draft: false
@@ -199,6 +199,6 @@ jobs:
       run: |
         echo "### Release completed! :rocket:" >> $GITHUB_STEP_SUMMARY
         echo "Version: $(cat snowball.version.info)" >> $GITHUB_STEP_SUMMARY
-        echo "Release tag: ${{ jobs.pre_build.outputs.release_tag }}" >> $GITHUB_STEP_SUMMARY
-        echo "Release URL: ${{ jobs.create_release.outputs.upload_url }}" >> $GITHUB_STEP_SUMMARY
+        echo "Release tag: ${{ needs.pre_build.outputs.release_tag }}" >> $GITHUB_STEP_SUMMARY
+        echo "Release URL: ${{ needs.create_release.outputs.upload_url }}" >> $GITHUB_STEP_SUMMARY
         
