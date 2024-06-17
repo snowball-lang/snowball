@@ -89,6 +89,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
+        submodules: 'true'
         token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install dependencies
@@ -122,6 +123,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
+        submodules: 'true'
         token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Package
