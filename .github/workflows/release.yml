@@ -75,8 +75,10 @@ jobs:
           
     - name: Create Tag
       run: |
+        set -x
+        git pull
         git tag -a $(cat snowball.version.info) -m "$(cat snowball.version.info)"
-        git push --follow-tags
+        git push 
 
   release_linux:
     name: 'Release Linux'
