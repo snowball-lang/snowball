@@ -82,11 +82,6 @@ endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 find_package(PkgConfig REQUIRED)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-else()
-  pkg_check_modules(GLIB REQUIRED glib-2.0)
-endif()
-
 find_package(LLVM 16 REQUIRED CONFIG)
 
 add_definitions(${LLVM_DEFINITIONS})
@@ -191,6 +186,18 @@ else()
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,$ORIGIN/../lib")
 endif()
 
+if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
+  message(STATUS "Detected Debug build")
+  set(STATIC_LIBCPP "")
+else()
+  if (APPLE)
+  else()
+    message(STATUS "Detected Release build")
+    set(STATIC_LIBCPP "-static-libstdc++")
+  endif()
+endif()
+
+
 # Add "LLD" libraries for all targets to the linker flags
 set(LLD_LINKED_NAMES "lldCOFF" "lldELF" "lldMachO" "lldMinGW" "lldWasm" "LLVMLibDriver" "lldCommon")
 set(LLD_LINKED_LIBS "")
@@ -241,8 +248,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<INSTALL_INTERFACE:include> ${BLAKE3_SOURCE_DIR} PRIVATE source)
-target_link_libraries(${PROJECT_NAME} PUBLIC ${llvm_libs} ${GLIB_LIBRARIES} 
-                     ${targets} ${PROJECT_LIBRARIES} 
+target_link_libraries(${PROJECT_NAME} PUBLIC ${llvm_libs}
+                     ${targets} ${PROJECT_LIBRARIES} ${STATIC_LIBCPP}
                      nlohmann_json::nlohmann_json fmt::fmt ${BLAKE3_BUILD_DIR}/libblake3.a 
                      ${LLD_LINKED_LIBS})
 target_link_libraries(snowballexe PUBLIC ${PROJECT_NAME})

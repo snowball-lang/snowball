@@ -25,7 +25,6 @@
           zstd
           libxml2
           libsigsegv
-          glib
           pcre2
           libllvm
           openssl
@@ -103,7 +102,6 @@
           libsigsegv
           cmake
           pkg-config
-          glib
           pcre2
           libllvm
           libxml2
