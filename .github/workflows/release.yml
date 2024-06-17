@@ -6,7 +6,8 @@ on:
       beta:
         description: 'Is this a beta release?'
         required: false
-        default: 'false'
+        type: 'boolean'
+        default: false
       update-version-type:
         description: 'The type of version update to perform'
         required: false
@@ -20,7 +21,8 @@ on:
       create-release:
         description: 'Create a release on GitHub?'
         required: false
-        default: 'true'
+        type: 'boolean'
+        default: true
       
 jobs:
   update_version:
@@ -48,7 +50,7 @@ jobs:
 
     - name: Update Version
       run: |
-        npx semver -i ${{ github.event.inputs.update-version-type }} $(cat snowball.version.info) ${{ (github.event.inputs.beta == 'true') && '--preid beta' }} > snowball.version.info
+        npx semver -i ${{ github.event.inputs.update-version-type }} $(cat snowball.version.info) ${{ (github.event.inputs.beta == true) && '--preid beta' }} > snowball.version.info
         git add snowball.version.info
         git commit -m "Update version to $(cat snowball.version.info)"
         git push --follow-tags
@@ -137,7 +139,7 @@ jobs:
     name: 'Create Release'
     runs-on: ubuntu-latest
     needs: [release_linux, release_source]
-    if: ${{ github.event.inputs.create-release == 'true' }}
+    if: ${{ github.event.inputs.create-release == true }}
     
     steps:
     - name: Checkout
@@ -154,7 +156,6 @@ jobs:
         body: |
           Snowball $(cat snowball.version.info)
         draft: false
-        prerelease: ${{ github.event.inputs.beta == 'true' }}
+        prerelease: ${{ github.event.inputs.beta == true }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
