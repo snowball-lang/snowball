@@ -80,6 +80,10 @@ jobs:
         git tag $(cat snowball.version.info)
         git push origin --tags
 
+    - name: Export Tag
+      run: |
+        echo release_tag=$(cat snowball.version.info) >> $env:GITHUB_OUTPUT
+
   release_linux:
     name: 'Release Linux'
     runs-on: ubuntu-latest
@@ -149,12 +153,15 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Check release tag
+      run: echo ${{ steps.export_tag.outputs.release_tag }}
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       with:
-        tag_name: $(cat snowball.version.info)
-        release_name: $(cat snowball.version.info)
+        tag_name: ${{ steps.export_tag.outputs.release_tag }}
+        release_name: 'Snowball ${{ steps.export_tag.outputs.release_tag }}'
         body: |
           Snowball $(cat snowball.version.info)
         draft: false
