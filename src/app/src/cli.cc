@@ -38,7 +38,7 @@ void rename_duplicate_options() {
       map.erase(i);
       if (to) {
         opt->setArgStr(to);
-        opt->setHiddenFlag(cl::Hidden);
+        opt->setHiddenFlag(cl::ReallyHidden);
         map[to] = opt;
       }
     }
