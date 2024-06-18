@@ -103,6 +103,10 @@ class LLVMBuilder : public sil::Builder {
   llvm::Value* do_vcall(const sil::Call* node, llvm::Value* callee, std::vector<llvm::Value*>& args);
 
   llvm::Type* get_vtable_type(types::ClassType* type);
+  llvm::Value* create_vtable_global(types::ClassType* type);
+  void generate_constructor(const sil::FuncDecl* node);
+
+  void create_memcopy(llvm::Value* dst, llvm::Value* src, llvm::Value* size);
 
   llvm::DISubprogram* get_disubprogram(const sil::FuncDecl* node);
   void debug(const std::string& msg);

@@ -87,6 +87,10 @@ void LldArgsBuilder::add_platform_args() {
     case llvm::Triple::Darwin:
     case llvm::Triple::MacOSX: {
       add(std::vector{"-L/usr/lib", "-L/usr/local/lib", "-L/lib"});
+      if (triple.isArch64Bit()) {
+        add("-L/usr/lib64");
+        add("-L/lib64");
+      }
       add_soname = true;
     } break;
     default: break;

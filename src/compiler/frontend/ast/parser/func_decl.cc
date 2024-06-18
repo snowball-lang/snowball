@@ -66,10 +66,15 @@ ast::FnDecl* Parser::parse_fn_decl(const ast::AttributedNode& attrs, bool is_con
     consume(Token::Type::SymComma, "a comma after the parameter", Token::Type::BracketRparent);
   }
   consume(Token::Type::BracketRparent, "a closing parenthesis after the parameters"); // no recovery
-  ast::TypeRef return_type = node<ast::TypeRef>(node<ast::Ident>("void"));
-  if (!is(Token::Type::BracketLcurly) && !is(Token::Type::SymSemiColon)) {
-    return_type = parse_type_ref();
+  if (!is(Token::Type::BracketLcurly) && is_constructor) {
+    err("Constructors must have a body", Error::Info {
+      .highlight = fmt::format("Constructors must have a body"),
+      .help = fmt::format("Constructors must have a body"),
+    }, Error::Type::Err);
   }
+  ast::TypeRef return_type = !is(Token::Type::BracketLcurly) && !is(Token::Type::SymSemiColon)
+    ? parse_type_ref()
+    : node<ast::TypeRef>(node<ast::Ident>("void"));
   std::optional<ast::Block*> block = std::nullopt;
   if (is(Token::Type::SymSemiColon)) {
     next();
@@ -83,6 +88,9 @@ ast::FnDecl* Parser::parse_fn_decl(const ast::AttributedNode& attrs, bool is_con
       .highlight = fmt::format("This function is marked as extern"),
       .help = fmt::format("Mark this function as unsafe to allow extern functions"),
     }, Error::Type::Err);
+  }
+  if (is_constructor) {
+    return pnode<ast::ConstructorDecl>(pos, name, params, return_type, block, generics, attrs);
   }
   return pnode<ast::FnDecl>(pos, name, params, return_type, block, generics, attrs);
 }

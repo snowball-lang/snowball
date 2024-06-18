@@ -44,8 +44,18 @@ void rename_duplicate_options() {
     }
   };
 
+  auto hide_opt = [&map](const char* name) {
+    auto i = map.find(name);
+    if (i != map.end()) {
+      cl::Option *opt = i->getValue();
+      opt->setHiddenFlag(cl::Hidden);
+    }
+  };
+
   rename("float-abi", "llvm-float-abi");
   rename("opaque-pointers", nullptr);
+
+  hide_opt("basic-block-sections");
 
   new cl::opt<FloatABI, true> ("float-abi", cl::desc("Floating point ABI"), cl::values(
     clEnumValN(FloatABI::Hard, "hard", "Hardware floating point ABI"),

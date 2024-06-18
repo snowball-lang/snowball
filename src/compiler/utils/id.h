@@ -8,6 +8,7 @@
 namespace snowball {
 namespace frontend::ast {
 class FnDecl;
+class ConstructorDecl;
 class ClassDecl;
 } // namespace frontend::ast
 
@@ -25,6 +26,7 @@ public:
 
   friend class frontend::ast::FnDecl;
   friend class frontend::ast::ClassDecl;
+  friend class frontend::ast::ConstructorDecl;
 };
 
 } // namespace snowball

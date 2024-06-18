@@ -2,6 +2,8 @@
 #include "compiler/globals.h"
 #include "compiler/backend/llvm/builder.h"
 
+#define SNOWBALL_LLVM_DUMP_ON_FAIL 0
+
 namespace snowball {
 namespace backend {
 
@@ -26,6 +28,9 @@ void applyDebugTransformations(llvm::Module* module, bool debug) {
 void LLVMBuilder::finalize_and_run_lto() {
   dbg.builder->finalize();
   auto err = llvm::verifyModule(*builder_ctx.module, &llvm::errs());
+#if SNOWBALL_LLVM_DUMP_ON_FAIL
+  if (err) dump();
+#endif
   sn_assert(!err, "Module verification failed");
 
   llvm::LoopAnalysisManager loop_analysis_manager;

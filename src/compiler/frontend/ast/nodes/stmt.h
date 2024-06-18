@@ -31,6 +31,7 @@ public:
 
 class TypeRef;
 class VarDecl;
+class ConstructorDecl;
 
 // --- Stmt ---
 
@@ -51,11 +52,8 @@ public:
   SN_VISIT()
 };
 
-class FnDecl final : public Stmt,
-                     public GenericNode<>,
-                     public AttributedNode,
-                     public Identified,
-                     public ModuleHolder {
+class FnDecl : public Stmt, public GenericNode<>, 
+  public AttributedNode, public Identified, public ModuleHolder {
 private:
   std::string name;
   std::vector<VarDecl*> params;
@@ -67,6 +65,8 @@ private:
   bool generic_instanced = false;
   std::optional<types::Type*> parent_type = std::nullopt;
   std::optional<uint64_t> generic_id = std::nullopt;
+
+  friend class ConstructorDecl;
 
 public:
   FnDecl(const SourceLocation& location, const std::string& name,
@@ -100,7 +100,28 @@ public:
     return new FnDecl(location, name, params, return_type, body, generics, attributes);
   }
 
+  virtual bool is_constructor() const { return false; }
+  virtual ConstructorDecl* get_constructor() { return nullptr; }
+
   SN_VISIT()
+};
+
+class ConstructorDecl final : public FnDecl {
+public:
+  template <typename... Args>
+  ConstructorDecl(Args&&... args)
+    : FnDecl(std::forward<Args>(args)...) {}
+  ~ConstructorDecl() = default;
+
+  bool is_constructor() const override { return true; }
+  ConstructorDecl* get_constructor() override { return this; }
+
+  Node* clone() const override;
+
+  template <typename... Args>
+  static auto create(Args&&... args) {
+    return new ConstructorDecl(std::forward<Args>(args)...);
+  }
 };
 
 class VarDecl final : public Stmt, public AttributedNode, public Identified, 

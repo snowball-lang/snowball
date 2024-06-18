@@ -65,22 +65,18 @@ class FuncDecl final : public Inst, public ast::AttributedNode, public Identifie
   std::optional<Block*> body;
   const std::shared_ptr<Module> parent_module;
   std::optional<ast::types::Type*> parent_type;
+  bool constructor = false;
 
 public:
   FuncDecl(
           LocationHolder& loc, ast::types::Type* type, const std::string& name,
           const std::vector<ParamType>& params,
           const std::shared_ptr<Module>& parent_module,
-          const ast::AttributedNode& attrs, std::optional<Block*> body = std::nullopt,
-          int64_t id = 0
+          const ast::AttributedNode& attrs, std::optional<Block*> body,
+          int64_t id, bool constructor
   )
-    : Identified(id)
-    , Inst(loc, type)
-    , AttributedNode(attrs)
-    , name(name)
-    , params(params)
-    , body(body)
-    , parent_module(parent_module) {}
+    : Identified(id), Inst(loc, type), AttributedNode(attrs), name(name), 
+      params(params), body(body), parent_module(parent_module), constructor(constructor) {}
   ~FuncDecl() = default;
 
   auto get_name() const { return name; }
@@ -94,16 +90,18 @@ public:
   auto get_parent_type() const { return parent_type; }
 
   auto get_parent_module() const { return parent_module; }
+  auto is_constructor() const { return constructor; }
 
   EMITABLE()
 
   static auto
   create(LocationHolder loc, ast::types::Type* type, const std::string& name,
-         const std::vector<ParamType>& params,
-         const std::shared_ptr<Module>& parent_module, const ast::AttributedNode& attrs,
-         std::optional<Block*> body = std::nullopt, uint64_t id = 0) {
+      const std::vector<ParamType>& params,
+      const std::shared_ptr<Module>& parent_module, const ast::AttributedNode& attrs,
+      std::optional<Block*> body = std::nullopt, uint64_t id = 0, bool constructor = false) {
     assert(id > 0);
-    return new FuncDecl(loc, type, name, params, parent_module, attrs, body, id);
+    return new FuncDecl(loc, type, name, params, parent_module, 
+      attrs, body, id, constructor);
   }
 };
 

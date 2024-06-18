@@ -103,7 +103,7 @@ void Compiler::print_compiling_bar(std::vector<frontend::Module>& module_paths) 
     if (i == 0 || module.get_path()[0] != module_paths.at(i-1).get_path()[0]) {
       bool all_generated = true;
       for (auto& module : module_paths) {
-        if (!module.is_generated()) {
+        if (!module.is_generated() && module.get_path()[0] == module_paths.at(i).get_path()[0]) {
           all_generated = false;
           break;
         }
