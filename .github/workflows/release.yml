@@ -62,6 +62,7 @@ jobs:
 
   check_version:
     name: 'Check Version'
+    needs: [update_version]
     runs-on: ubuntu-latest
     
     steps:
