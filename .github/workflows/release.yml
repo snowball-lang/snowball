@@ -17,6 +17,10 @@ on:
           - 'patch'
           - 'minor'
           - 'major'
+          - 'prerelease'
+          - 'prepatch'
+          - 'preminor'
+          - 'premajor'
           - 'none'
       create-release:
         description: 'Create a release on GitHub?'
