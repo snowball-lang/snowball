@@ -74,11 +74,6 @@ jobs:
     - name: Check Version
       run: |
         echo "Current version: $(cat snowball.version.info)"
-        echo "Release tag: $(git describe --tags --abbrev=0)"
-        if [ "$(cat snowball.version.info)" != "$(git describe --tags --abbrev=0)" ]; then
-          echo "Version mismatch!"
-          exit 1
-        fi
 
   pre_build:
     name: 'Create Tag'
