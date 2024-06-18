@@ -155,6 +155,7 @@ jobs:
         path: snowball-source.tar.gz
 
   create_release:
+    permissions: write-all
     name: 'Create Release'
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.create-release == 'true' }}
