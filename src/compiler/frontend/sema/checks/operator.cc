@@ -27,7 +27,7 @@ void TypeChecker::visit(ast::BinaryOp* node) {
         .see = "https://snowball-lang.gitbook.io/docs/language-reference/types/mutability"
       }, Error::Type::Err, false);
     }
-    if (auto var = stmt->as<ast::VarDecl>()) {
+    if (auto var = (!stmt) ? nullptr : stmt->as<ast::VarDecl>()) {
       borrow_checker.init_variable(var->get_id());
     }
     if (auto var = do_deduce(rhs.value(), true)->as<ast::VarDecl>(); 
