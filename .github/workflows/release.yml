@@ -185,7 +185,7 @@ jobs:
     name: 'Create Release'
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.create-release == 'true' }}
-    needs: [release_linux, release_source, pre_build, check_version]
+    needs: [release_linux, release_source, pre_build, check_version, fetch_artifacts]
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
     
