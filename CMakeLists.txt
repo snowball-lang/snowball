@@ -193,7 +193,7 @@ else()
   if (APPLE)
   else()
     message(STATUS "Detected Release build")
-    set(STATIC_LIBCPP "-static-libstdc++")
+    set(STATIC_LIBCPP "")
   endif()
 endif()
 

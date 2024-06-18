@@ -89,7 +89,7 @@ jobs:
 
   release_linux:
     name: 'Release Linux'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [pre_build]
     
     steps:
