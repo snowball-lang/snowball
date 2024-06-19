@@ -5,7 +5,7 @@
 # This is your project interface. Confy is a statically typed language, so a certain 
 # tree structure is required.
 project {{
-  name        = "{}";
+  name        = "{}"
   description = "{}"
   version     = "{}"
   type        = "{}"
