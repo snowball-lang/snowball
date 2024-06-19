@@ -167,13 +167,13 @@ void CLI::get_package_config(Ctx& ctx, const std::string& path) {
     })}
   });
   std::string config_path = path.empty() ? "sn.confy" : path;
-  auto config = confy::parse_file(interface, config_path);
+  auto config = confy::parse_file(interface, std::filesystem::absolute(config_path).string());
   bool hasError = false;
   for (const auto& error : config.get_errors()) {
     hasError = true;
     auto err_loc = error.get_position();
     auto loc = frontend::SourceLocation(err_loc.line, err_loc.column, 1, std::make_shared<frontend::SourceFile>(config_path));
-    auto e = E(error.get_message(), loc);
+    auto e = E("(Confy) " + error.get_message(), loc);
     e.print();
   } 
   if (hasError) {
