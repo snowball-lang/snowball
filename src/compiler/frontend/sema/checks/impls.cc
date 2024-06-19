@@ -25,14 +25,18 @@ void TypeChecker::check_implementations(ast::ClassDecl* class_decl) {
               .note = F("This method is implemented from interface '{}'", interface_ty->get_printable_name())
             }, Error::Type::Err, false);
           }
+          class_method->set_virtual_overriden(interface_ty);
+          class_method->set_vtable_index(method->get_vtable_index().value());
+          // TODO: Check if the method is implemented twice
           found = true;
           break;
         }
       }
       if (!found && !method->get_default()) {
-        err(impl.get_location(), F("Class '{}' does not implement method '{}'", class_decl->get_name(), method->get_name()), Error::Info {
-          .highlight = F("Method '{}' is not implemented", method->get_name()),
-          .help = F("Implement method '{}' in class '{}'", method->get_name(), class_decl->get_type()->get_printable_name()),
+        auto method_name = printable_op(method->get_name());
+        err(impl.get_location(), F("Class '{}' does not implement method '{}'", class_decl->get_name(), method_name), Error::Info {
+          .highlight = F("Method '{}' is not implemented", method_name),
+          .help = F("Implement method '{}' in class '{}'", method_name, class_decl->get_type()->get_printable_name()),
           .note = F("Expected a method with signature: '{}'", method->get_type()->get_printable_name())
         });
       }

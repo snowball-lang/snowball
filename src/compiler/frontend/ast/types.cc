@@ -207,6 +207,106 @@ std::string SelfType::get_mangled_name() {
   sn_assert(false, "self type should be replaced by the time mangling occurs");
 }
 
+// Mark: Type equality
+
+bool Type::equals(Type* other, bool ignore_self) {
+  return equals_impl(other, ignore_self) && is_mutable == other->is_mutable;
+}
+
+bool UnknownType::equals_impl(Type* other, bool ignore_self) {
+  if (auto other_unknown = other->as_unknown()) {
+    return id == other_unknown->id;
+  }
+  return false;
+}
+
+bool IntType::equals_impl(Type* other, bool ignore_self) {
+  if (auto other_int = other->as_int()) {
+    return bits == other_int->bits && is_signed() == other_int->is_signed();
+  }
+  return false;
+}
+
+bool FloatType::equals_impl(Type* other, bool ignore_self) {
+  if (auto other_float = other->as_float()) {
+    return bits == other_float->bits;
+  }
+  return false;
+}
+
+bool FuncType::equals_impl(Type* other, bool ignore_self) {
+  if (auto other_func = other->as_func()) {
+    if (unsafe != other_func->unsafe) {
+      return false;
+    }
+    auto other_params = other_func->get_param_types();
+    auto params = get_param_types();
+    if (params.size() != other_params.size()) {
+      return false;
+    }
+    for (size_t i = ignore_self; i < params.size(); i++) {
+      if (!params[i]->equals(other_params[i])) {
+        return false;
+      }
+    }
+    return return_type->equals(other_func->get_return_type());
+  }
+  return false;
+}
+
+bool GenericType::equals_impl(Type* other, bool ignore_self) {
+  if (auto other_generic = other->as_generic()) {
+    return name == other_generic->name;
+  }
+  return false;
+}
+
+bool ClassType::equals_impl(Type* other, bool ignore_self) {
+  if (auto other_class = other->as_class()) {
+    if (path != other_class->path) {
+      return false;
+    }
+    if (has_generics() != other_class->has_generics()) {
+      return false;
+    }
+    if (has_generics()) {
+      auto generics = get_generics();
+      auto other_generics = other_class->get_generics();
+      if (generics.size() != other_generics.size()) {
+        return false;
+      }
+      for (size_t i = 0; i < generics.size(); i++) {
+        if (!generics[i]->equals(other_generics[i])) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
+bool ReferenceType::equals_impl(Type* other, bool ignore_self) {
+  if (auto other_ref = other->as_reference()) {
+    return ref->equals(other_ref->get_ref());
+  }
+  return false;
+}
+
+bool PointerType::equals_impl(Type* other, bool ignore_self) {
+  if (auto other_ptr = other->as_pointer()) {
+    return pointee->equals(other_ptr->get_pointee());
+  }
+  return false;
+}
+
+bool SelfType::equals_impl(Type* other, bool ignore_self) {
+  if (auto other_self = other->as_self_type()) {
+    return self->equals(other_self->get_self());
+  }
+  return false;
+}
+
 }
 }
 }

@@ -4,7 +4,7 @@ message(STATUS $ENV{ARCH})
 message(STATUS ${CMAKE_SYSTEM_NAME})
 
 file(READ "snowball.version.info" version)
-project(snowball VERSION ${version})
+project(snowball)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")

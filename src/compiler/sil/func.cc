@@ -27,11 +27,20 @@ void Binder::visit(ast::FnDecl* node) {
     auto func = FuncDecl::create(node->get_location(), type, name, 
       sil_params, current_module, *node, std::nullopt, 
       node->get_id(), node->is_constructor());
+    func->set_virtual_overriden(node->get_virtual_overriden());
+    func->set_vtable_index(node->get_vtable_index());
     var_ids.insert({node->get_id(), func});
+    if (node->should_generate()) {
+      current_module->add_fn_decl(func);
+    }
+    if (node->get_virtual()) {
+      assert(ctx.ast_current_class.has_value());
+      auto class_decl = ctx.ast_current_class.value();
+      class_decl->get_type()->as_class()->add_vtable_entry(func->get_id());
+    }
     value = func;
     return;
   }
-  
   auto func = (sil::FuncDecl*)var_ids.find(node->get_id())->second;  
   auto backup = ctx.ast_current_func;
   auto backup2 = ctx.current_func;
@@ -44,9 +53,6 @@ void Binder::visit(ast::FnDecl* node) {
     auto body = accept(block.value());
     assert(body->is<Block>());
     func->set_body(body->as<Block>());
-  }
-  if (node->should_generate()) {
-    current_module->add_fn_decl(func);
   }
   ctx.ast_current_func = backup;
   ctx.current_func = backup2;

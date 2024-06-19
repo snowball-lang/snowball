@@ -28,7 +28,7 @@ public:
   ~StopTypeChecking() = default;
 };
 
-enum class UnifyFlags
+enum class UnifyFlags : int
 {
   None = 1 << 0,
   JustCheck = 1 << 1,

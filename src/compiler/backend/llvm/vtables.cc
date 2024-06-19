@@ -15,7 +15,7 @@ llvm::Type* LLVMBuilder::get_vtable_type(types::ClassType* type) {
   // e.g. `class Child implements Mother, Father` will have a layout like this:
   // 
   //  { @vtable, ... }
-  //   @vtable = { @MotherVtable, @FatherVtable }
+  //   @vtable = { @ChildVtable, @MotherVtable, @FatherVtable }
   //   
   // This will allow us to extract the corresponding vtable for each interface when needed.
   //
@@ -23,7 +23,7 @@ llvm::Type* LLVMBuilder::get_vtable_type(types::ClassType* type) {
   //    x = { @MotherVtable, x }
   //
   // Here, we are just returning @vtable's type.
-  static std::map<uint64_t, llvm::StructType*> struct_map;
+  static llvm::DenseMap<uint64_t, llvm::StructType*> struct_map;
   auto node = type->get_decl();
   if (struct_map.find(node->get_id()) != struct_map.end()) {
     return struct_map[node->get_id()];
@@ -35,14 +35,90 @@ llvm::Type* LLVMBuilder::get_vtable_type(types::ClassType* type) {
     return nullptr;
   }
   // TODO: Do parent vtable if it exists
-  auto vtable = llvm::StructType::create(*llvm_ctx.get(), "vtable." + type->get_mangled_name());
-  struct_map[node->get_id()] = vtable;
-  vtable_types.push_back(builder->getPtrTy()); // Pointer to the vtable
-  for (size_t i = 0; i < node->get_implemented_interfaces().size(); i++) {
-    vtable_types.push_back(builder->getPtrTy()); // We don't really care about the type of the vtable
+  size_t vtable_size = 0;
+  for (auto& iface : node->get_implemented_interfaces()) {
+    auto iface_type = iface.get_internal_type().value()->as_class();
+    if (iface_type->get_decl()->has_vtable()) {
+      auto count = iface_type->get_decl()->get_virtual_fn_count();
+      vtable_size += count;
+      vtable_types.push_back(get_array_type(count, builder->getPtrTy()));
+    }
   }
-  vtable->setBody(vtable_types);
+  int base_vtable_size = (int)node->get_virtual_fn_count() - vtable_size;
+  if (vtable_size < node->get_virtual_fn_count())
+    vtable_types.insert(vtable_types.begin(), get_array_type(base_vtable_size, builder->getPtrTy()));
+  auto vtable = llvm::StructType::get(*llvm_ctx, vtable_types);
+  struct_map[node->get_id()] = vtable;
   return vtable;
+}
+
+llvm::Constant* LLVMBuilder::create_vtable_global(types::ClassType* type) {
+  if (!type->get_decl()->has_vtable()) {
+    return nullptr;
+  }
+  auto vtable = (llvm::StructType*)get_vtable_type(type);
+  sn_assert(vtable, "Vtable type is null");
+  auto vtable_name = "vtable." + type->get_mangled_name();
+  if (auto existing_vtable = builder_ctx.module->getNamedGlobal(vtable_name)) {
+    return existing_vtable;
+  }
+  auto vtable_global = new llvm::GlobalVariable(*builder_ctx.module.get(), 
+    vtable, false, llvm::GlobalValue::InternalLinkage, nullptr, 
+    vtable_name);
+  if (get_target_triple().isOSBinFormatELF()) {
+    vtable_global->setComdat(builder_ctx.module->getOrInsertComdat(vtable_name));
+  }
+  std::vector<std::vector<llvm::Constant*>> vtable_init;
+  std::vector<types::ClassType*> vtabled_types;
+  size_t vtable_size = 0;
+  for (auto& iface : type->get_decl()->get_implemented_interfaces()) {
+    auto decl_type = iface.get_internal_type().value()->as_class();
+    if (decl_type->get_decl()->has_vtable()) {
+      vtable_size += decl_type->get_decl()->get_virtual_fn_count();
+      vtabled_types.push_back(decl_type);
+    }
+  }
+  auto base_vtable_size = (int)type->get_decl()->get_virtual_fn_count() - vtable_size;
+  if (vtable_size < type->get_decl()->get_virtual_fn_count())
+    vtabled_types.insert(vtabled_types.begin(), type);
+  for (auto& decl_type : vtabled_types) {
+    std::vector<llvm::Constant*> vtable_entry;
+    for (size_t i = 0; i < decl_type->get_decl()->get_virtual_fn_count(); i++) {
+      // We are going to replace it anyways
+      vtable_entry.push_back(llvm::Constant::getNullValue(builder->getPtrTy()));
+    }
+    vtable_init.push_back(std::move(vtable_entry));
+  }
+  for (auto& func_id : type->get_decl()->get_virtual_fn_ids()) {
+    auto func_decl = builder_ctx.get_inst(func_id)->as<sil::FuncDecl>();
+    auto func_val = llvm::cast<llvm::Constant>(builder_ctx.get_value(func_id));
+    if (auto override_type = func_decl->get_virtual_overriden()) {
+      auto override_decl = override_type.value()->as_class();
+      for (size_t i = 0; i < vtabled_types.size(); i++) {
+        if (vtabled_types[i]->equals(override_decl)) {
+          // Insert the function in the corresponding vtable
+          vtable_init[i][func_decl->get_vtable_index().value()] = func_val;
+          break;
+        }
+      }
+      continue;
+    }
+    // Set the function pointer in the class's vtable
+    sn_assert(base_vtable_size > 0, "Base vtable size is 0");
+    vtable_init[0][func_decl->get_vtable_index().value()] = func_val;
+  }
+  std::vector<llvm::Constant*> vtable_entries;
+  for (auto& vtable_entry : vtable_init) {
+    vtable_entries.push_back(llvm::ConstantArray::get(
+      get_array_type(vtable_entry.size(), builder->getPtrTy()), vtable_entry));
+  }
+  auto vtable_const = llvm::ConstantStruct::get(vtable, vtable_entries);
+  vtable_global->setInitializer(vtable_const);
+  vtable_global->setAlignment(llvm::Align(8));
+  vtable_global->setConstant(true);
+  vtable_global->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
+  vtable_global->setDSOLocal(true);
+  return vtable_global;
 }
 
 }

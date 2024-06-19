@@ -66,14 +66,17 @@ class FuncDecl final : public Inst, public ast::AttributedNode, public Identifie
   const std::shared_ptr<Module> parent_module;
   std::optional<ast::types::Type*> parent_type;
   bool constructor = false;
+  // @see ast::FnDecl::virtual_overriden
+  std::optional<ast::types::Type*> virtual_overriden = std::nullopt;
+  std::optional<size_t> vtable_index = std::nullopt; // Relative to virtual_overriden's vtable
 
 public:
   FuncDecl(
-          LocationHolder& loc, ast::types::Type* type, const std::string& name,
-          const std::vector<ParamType>& params,
-          const std::shared_ptr<Module>& parent_module,
-          const ast::AttributedNode& attrs, std::optional<Block*> body,
-          int64_t id, bool constructor
+    LocationHolder& loc, ast::types::Type* type, const std::string& name,
+    const std::vector<ParamType>& params,
+    const std::shared_ptr<Module>& parent_module,
+    const ast::AttributedNode& attrs, std::optional<Block*> body,
+    int64_t id, bool constructor
   )
     : Identified(id), Inst(loc, type), AttributedNode(attrs), name(name), 
       params(params), body(body), parent_module(parent_module), constructor(constructor) {}
@@ -88,6 +91,12 @@ public:
 
   void set_parent_type(ast::types::Type* type) { parent_type = type; }
   auto get_parent_type() const { return parent_type; }
+
+  auto get_virtual_overriden() const { return virtual_overriden; }
+  void set_virtual_overriden(std::optional<ast::types::Type*> type) { virtual_overriden = type; }
+
+  auto get_vtable_index() const { return vtable_index; }
+  void set_vtable_index(std::optional<size_t> idx) { vtable_index = idx; }
 
   auto get_parent_module() const { return parent_module; }
   auto is_constructor() const { return constructor; }

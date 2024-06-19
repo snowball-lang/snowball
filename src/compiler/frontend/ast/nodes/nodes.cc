@@ -205,16 +205,15 @@ FnDecl::FnDecl(const SourceLocation& location, const std::string& name,
       }
 
 bool ClassDecl::has_vtable() const {
-  bool has_virtual = false;
-  if (implemented_interfaces.size() > 0) 
-    return true;
-  for (const auto& func : funcs) {
-    if (func->get_virtual()) {
-      has_virtual = true;
-      break;
-    }
-  }
-  return has_virtual;
+  return get_virtual_fn_count() > 0;
+}
+
+std::vector<uint64_t>& ClassDecl::get_virtual_fn_ids() const {
+  return get_type()->as_class()->get_vtable();
+}
+
+size_t ClassDecl::get_virtual_fn_count() const {
+  return get_type()->as_class()->get_vtable().size();
 }
 
 }

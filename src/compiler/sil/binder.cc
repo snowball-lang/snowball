@@ -14,6 +14,7 @@ Binder::Binder(const Ctx& ctx, std::vector<frontend::Module>& modules, sema::Uni
 
 void Binder::bind() {
   try {
+    // TODO: Do a second pass to fully forward declare each function!
     for (size_t j = 0; j < ast_modules.size(); j++) {
       just_declare = true;
       auto& module = ast_modules[j];
