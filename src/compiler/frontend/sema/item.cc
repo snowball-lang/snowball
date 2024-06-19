@@ -11,7 +11,7 @@ TypeCheckItem::TypeCheckItem(ast::types::Type* type)
 TypeCheckItem::TypeCheckItem(ast::VarDecl* var)
   : kind(Kind::Var), data(var) {}
 
-TypeCheckItem::TypeCheckItem(const std::vector<ast::FnDecl*>& funcs)
+TypeCheckItem::TypeCheckItem(const FunctionsVector& funcs)
   : kind(Kind::Func), data(funcs) {}
 
 TypeCheckItem::TypeCheckItem(const NamespacePath& module)
@@ -32,9 +32,9 @@ ast::VarDecl* TypeCheckItem::get_var() const {
   return std::get<ast::VarDecl*>(data);
 }
 
-const std::vector<ast::FnDecl*>& TypeCheckItem::get_funcs() const {
+const FunctionsVector& TypeCheckItem::get_funcs() const {
   assert(is_func());
-  return std::get<std::vector<ast::FnDecl*>>(data);
+  return std::get<FunctionsVector>(data);
 }
 
 const NamespacePath& TypeCheckItem::get_module() const {
@@ -68,7 +68,7 @@ TypeCheckItem TypeCheckItem::create_var(ast::VarDecl* var) {
   return TypeCheckItem(var); 
 }
 
-TypeCheckItem TypeCheckItem::create_fn_decl(const std::vector<ast::FnDecl*>& funcs) { 
+TypeCheckItem TypeCheckItem::create_fn_decl(const FunctionsVector& funcs) { 
   return TypeCheckItem(funcs); 
 }
 

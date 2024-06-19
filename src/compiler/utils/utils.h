@@ -50,7 +50,6 @@ protected:
 namespace utils {
 
 std::vector<std::string> split(std::string str, const std::string& delimiter);
-std::string join(const std::vector<std::string>& vec, const std::string& delimiter);
 bool sw(const std::string& str, const std::string& prefix);
 void strip(std::string& str);
 std::string replace_all(std::string str, const std::string& from, const std::string& to);
@@ -70,6 +69,18 @@ std::string gen_random_string() {
   std::string s;
   for (int i = 0; i < N; ++i) { s += alphanum[rand() % (sizeof(alphanum) - 1)]; }
   return s;
+}
+
+template <typename T>
+std::string join(const T& vec, const std::string& delimiter) {
+  std::string result;
+  for (size_t i = 0; i < vec.size(); ++i) {
+    result += vec[i];
+    if (i != vec.size() - 1) {
+      result += delimiter;
+    }
+  }
+  return result;
 }
 
 } // namespace utils

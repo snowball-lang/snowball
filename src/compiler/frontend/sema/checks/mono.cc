@@ -10,7 +10,7 @@ namespace sema {
 
 using namespace utils;
 
-ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::string, ast::types::Type*>& deduced, const SourceLocation& loc) {
+ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const llvm::StringMap<ast::types::Type*>& deduced, const SourceLocation& loc) {
   node->clear_generics();
   auto fn_ty_copy = node->get_type()->as_func();
   node->get_type() = nullptr;
@@ -19,7 +19,7 @@ ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::s
   if (global.debug_verbose) {
     std::string gen_str;
     for (auto& [name, type] : deduced)
-      gen_str += "<" + name + ": " + type->get_printable_name() + ">, ";
+      gen_str += "<" + name.str() + ": " + type->get_printable_name() + ">, ";
     gen_str = gen_str.substr(0, gen_str.size() - 2);
     debug(F("Monorphosizing function {} with [{}]", node->get_name(), gen_str));
   }
@@ -34,7 +34,7 @@ ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::s
   auto backup_func = ctx.current_function;
   ctx.current_function = node;
   for (auto& [name, type] : deduced) {
-    universe.add_item(name, TypeCheckItem::create_type(type));
+    universe.add_item(name.str(), TypeCheckItem::create_type(type));
   }
   for (auto& param : node->get_params()) {
     param->get_type() = nullptr;
@@ -56,7 +56,7 @@ ast::FnDecl* TypeChecker::monorphosize(ast::FnDecl*& node, const std::map<std::s
   return node;
 }
 
-ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const std::map<std::string, ast::types::Type*>& generics, const SourceLocation& loc) {
+ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const llvm::StringMap<ast::types::Type*>& generics, const SourceLocation& loc) {
   node->clear_generics();
   auto class_ty_copy = node->get_type()->as_class();
   node->get_type() = nullptr;
@@ -65,7 +65,7 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const std::map<
   if (global.debug_verbose) {
     std::string gen_str;
     for (auto& [name, type] : generics)
-      gen_str += "<" + name + ": " + type->get_printable_name() + ">, ";
+      gen_str += "<" + name.str() + ": " + type->get_printable_name() + ">, ";
     gen_str = gen_str.substr(0, gen_str.size() - 2);
     debug(F("Monorphosizing class {} with [{}]", node->get_name(), gen_str));
   }
@@ -82,7 +82,7 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const std::map<
   std::vector<ast::types::Type*> new_generics;
   new_generics.reserve(node->get_generics().size());
   for (auto& [name, type] : generics) {
-    universe.add_item(name, type);
+    universe.add_item(name.str(), type);
     new_generics.push_back(type);
   }
   unify(node->get_type(), ast::types::ClassType::create(node, class_ty_copy->get_path(), new_generics, class_ty_copy->get_location()), node->get_location());

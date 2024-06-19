@@ -10,7 +10,7 @@
 #include "compiler/frontend/location.h"
 #include "compiler/utils/utils.h"
 
-#include <llvm/ADT/DenseMap.h>
+#include "compiler/llvm_stl.h"
 
 namespace snowball {
 namespace frontend {
@@ -87,7 +87,7 @@ public:
 
   [[nodiscard]] inline auto get_fn_decl(const NamespacePath& path) {
     auto range = fn_decls.equal_range(path);
-    std::vector<ast::FnDecl*> decls;
+    FunctionsVector decls;
     for (auto it = range.first; it != range.second; ++it) {
       decls.push_back(it->second);
     }

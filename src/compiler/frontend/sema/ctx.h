@@ -15,6 +15,7 @@
 #include "compiler/utils/utils.h"
 #include "compiler/frontend/sema/borrow.h"
 
+#include "compiler/llvm_stl.h"
 #include "compiler/frontend/sema/uuids.h"
 
 namespace snowball {
@@ -33,7 +34,7 @@ public:
 
 private:
   Kind kind;
-  std::variant<NamespacePath, ast::types::Type*, ast::VarDecl*, std::vector<ast::FnDecl*>> data;
+  std::variant<NamespacePath, ast::types::Type*, ast::VarDecl*, FunctionsVector> data;
 
 public:
   ~TypeCheckItem() = default;
@@ -41,14 +42,14 @@ public:
   // Constructors
   TypeCheckItem(ast::types::Type* type);
   explicit TypeCheckItem(ast::VarDecl* var);
-  explicit TypeCheckItem(const std::vector<ast::FnDecl*>& funcs);
+  explicit TypeCheckItem(const FunctionsVector& funcs);
   explicit TypeCheckItem(const NamespacePath& module);
 
   // Accessors
   Kind get_kind() const;
   ast::types::Type* get_type() const;
   ast::VarDecl* get_var() const;
-  const std::vector<ast::FnDecl*>& get_funcs() const;
+  const FunctionsVector& get_funcs() const;
   const NamespacePath& get_module() const;
 
   bool is_type() const;
@@ -58,7 +59,7 @@ public:
 
   static TypeCheckItem create_type(ast::types::Type* type);
   static TypeCheckItem create_var(ast::VarDecl* var);
-  static TypeCheckItem create_fn_decl(const std::vector<ast::FnDecl*>& funcs);
+  static TypeCheckItem create_fn_decl(const FunctionsVector& funcs);
   static TypeCheckItem create_module(const NamespacePath& module);
 };
 
@@ -82,12 +83,12 @@ public:
 
 struct MonorphosizedFn final {
   ast::FnDecl* decl;
-  std::map<std::string, ast::types::Type*> generics;
+  llvm::StringMap<ast::types::Type*> generics;
 };
 
 struct MonorphosizedClass final {
   ast::ClassDecl* decl;
-  std::map<std::string, ast::types::Type*> generics;
+  llvm::StringMap<ast::types::Type*> generics;
 };
 
 struct TypeCheckerContext final {

@@ -96,7 +96,7 @@ std::string Compiler::get_package_type_string() {
 }
 
 void Compiler::print_compiling_bar(std::vector<frontend::Module>& module_paths) {
-  std::vector<std::string> modules;
+  llvm::SmallVector<std::string> modules;
   auto progress = progress_iteration;
   for (size_t i = 0; i < module_paths.size(); i++) {
     auto& module = module_paths.at(i);

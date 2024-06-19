@@ -29,7 +29,7 @@ llvm::Type* LLVMBuilder::get_vtable_type(types::ClassType* type) {
     return struct_map[node->get_id()];
   }
 
-  std::vector<llvm::Type*> vtable_types;
+  llvm::SmallVector<llvm::Type*> vtable_types;
   auto has_vtable = node->has_vtable();
   if (!has_vtable) {
     return nullptr;
@@ -68,8 +68,8 @@ llvm::Constant* LLVMBuilder::create_vtable_global(types::ClassType* type) {
   if (get_target_triple().isOSBinFormatELF()) {
     vtable_global->setComdat(builder_ctx.module->getOrInsertComdat(vtable_name));
   }
-  std::vector<std::vector<llvm::Constant*>> vtable_init;
-  std::vector<types::ClassType*> vtabled_types;
+  llvm::SmallVector<llvm::SmallVector<llvm::Constant*>> vtable_init;
+  llvm::SmallVector<types::ClassType*> vtabled_types;
   size_t vtable_size = 0;
   for (auto& iface : type->get_decl()->get_implemented_interfaces()) {
     auto decl_type = iface.get_internal_type().value()->as_class();
@@ -82,7 +82,7 @@ llvm::Constant* LLVMBuilder::create_vtable_global(types::ClassType* type) {
   if (vtable_size < type->get_decl()->get_virtual_fn_count())
     vtabled_types.insert(vtabled_types.begin(), type);
   for (auto& decl_type : vtabled_types) {
-    std::vector<llvm::Constant*> vtable_entry;
+    llvm::SmallVector<llvm::Constant*> vtable_entry;
     for (size_t i = 0; i < decl_type->get_decl()->get_virtual_fn_count(); i++) {
       // We are going to replace it anyways
       vtable_entry.push_back(llvm::Constant::getNullValue(builder->getPtrTy()));
