@@ -1,6 +1,6 @@
 
-interface Lol<D> {
-  operator func +(x: D);
+public interface Lol<D> {
+  public operator func +(x: D);
 }
 
 public(crate) final class Hello<T> implements Lol<T>, ToString, Clone<Self> {
