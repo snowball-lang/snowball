@@ -30,6 +30,7 @@ ast::ClassDecl* Parser::parse_interface_decl(const ast::AttributedNode& attrs) {
   expect(Token::Type::BracketLcurly, "an opening curly brace after the return type");
   next();
   ast::AttributedNode fn_attrs;
+  size_t virtual_index = 0;
   while (!is(Token::Type::BracketRcurly)) {
     while (true) {
       switch (current.type) {
@@ -62,6 +63,7 @@ ast::ClassDecl* Parser::parse_interface_decl(const ast::AttributedNode& attrs) {
   parse_fn_decl:
     funcs.push_back(parse_fn_decl(fn_attrs));
     funcs.back()->set_virtual(true);
+    funcs.back()->set_vtable_index(virtual_index++);
     fn_attrs = ast::AttributedNode::empty();
   }
   next(); // skip the closing curly brace

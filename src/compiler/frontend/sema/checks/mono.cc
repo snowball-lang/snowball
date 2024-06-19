@@ -101,8 +101,9 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const std::map<
     method->accept(this);
     exit_scope();
   }
+  check_implementations(node); // For updating the vtable indexes
   ctx.current_class = backup_class;
-  exit_scope();
+  (void)exit_scope();
   state.current_module->mutate_ast(node);
   set_generic_context(backup);
   return node;

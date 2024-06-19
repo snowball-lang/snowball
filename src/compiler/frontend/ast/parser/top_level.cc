@@ -16,6 +16,7 @@ ast::TopLevelAst Parser::parse_top_level(Token::Type terminator) {
     if (run_attr_interpreter(macro_attrs, node)) {
       top_level.push_back(node);
     }
+    global_attrs = ast::AttributedNode();
     macro_attrs.clear();
   };
   while (!is(terminator)) {
@@ -125,19 +126,15 @@ ast::TopLevelAst Parser::parse_top_level(Token::Type terminator) {
         break;
       case Token::Type::KwordFunc:
         try_add_node(parse_fn_decl(global_attrs));
-        global_attrs = ast::AttributedNode();
         break;
       case Token::Type::KwordClass:
         try_add_node(parse_class_decl(global_attrs));
-        global_attrs = ast::AttributedNode();
         break;
       case Token::Type::KwordInter:
         try_add_node(parse_interface_decl(global_attrs));
-        global_attrs = ast::AttributedNode();
         break;
       case Token::Type::KwordUse:
         top_level.push_back(parse_use(global_attrs));
-        global_attrs = ast::AttributedNode();
         break;
       case Token::Type::KwordUnsafe:
         global_attrs.set_unsafe(true);

@@ -45,6 +45,7 @@ Parser::ParsingClassResult Parser::parse_class_body() {
   ast::AttributedNode attrs;
   expect(Token::Type::BracketLcurly, "an opening curly brace after the return type");
   next();
+  size_t vtable_index = 0;
   uint64_t member_count = 0;
   while (!is(Token::Type::BracketRcurly)) {
     switch (current.type) {
@@ -102,6 +103,9 @@ Parser::ParsingClassResult Parser::parse_class_body() {
       }
       case Token::Type::KwordFunc: {
         auto fn = parse_fn_decl(attrs);
+        if (fn->get_virtual()) {
+          fn->set_vtable_index(vtable_index++);
+        }
         result.funcs.push_back(fn);
         attrs = ast::AttributedNode::empty();
         break;

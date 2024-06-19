@@ -109,6 +109,10 @@ llvm::DIType* LLVMBuilder::get_ditype(types::Type* type) {
   }
 }
 
+llvm::ArrayType* LLVMBuilder::get_array_type(size_t size, llvm::Type* type) {
+  return llvm::ArrayType::get(type, size);
+}
+
 } // namespace backend
 } // namespace snowball
 

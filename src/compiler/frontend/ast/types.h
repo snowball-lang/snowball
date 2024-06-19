@@ -55,6 +55,9 @@ public:
   virtual bool is_deep_unknown() const { return false; }
   virtual bool is_deep_generic() const { return false; }
 
+  virtual bool equals(Type* other, bool ignore_self = false);
+  virtual bool equals_impl(Type* other, bool ignore_self) = 0;
+
   Type* get_reference_to();
   Type* get_pointer_to(bool is_const = false);
 
@@ -101,6 +104,7 @@ public:
   std::string get_mangled_name() override;
 
   bool is_copyable() const override { return true; }
+  bool equals_impl(Type* other, bool ignore_self) override;
 };
 
 class FloatType final : public Type {
@@ -125,6 +129,7 @@ public:
   std::string get_mangled_name() override;
 
   bool is_copyable() const override { return true; }
+  bool equals_impl(Type* other, bool ignore_self) override;
 };
 
 class FuncType final : public Type {
@@ -166,6 +171,7 @@ public:
   std::string get_mangled_name() override;
 
   bool is_copyable() const override { return true; }
+  bool equals_impl(Type* other, bool ignore_self) override;
 };
 
 class SelfType final : public Type {
@@ -185,6 +191,8 @@ public:
 
   std::string get_printable_name() override;
   std::string get_mangled_name() override;
+
+  bool equals_impl(Type* other, bool ignore_self) override;
 };
 
 class GenericType final : public Type {
@@ -210,6 +218,8 @@ public:
 
   std::string get_printable_name() override;
   std::string get_mangled_name() override;
+
+  bool equals_impl(Type* other, bool ignore_self) override;
 };
 
 class ErrorType final : public Type {
@@ -224,6 +234,8 @@ public:
 
   std::string get_printable_name() override;
   std::string get_mangled_name() override;
+
+  bool equals_impl(Type* other, bool ignore_self) override { return other->is_error(); }
 };
 
 class UnknownType final : public Type {
@@ -248,6 +260,8 @@ public:
 
   std::string get_printable_name() override;
   std::string get_mangled_name() override;
+
+  bool equals_impl(Type* other, bool ignore_self) override;
 };
 
 class VoidType final : public Type {
@@ -264,12 +278,15 @@ public:
   std::string get_mangled_name() override;
 
   bool is_copyable() const override { return true; }
+  bool equals_impl(Type* other, bool ignore_self) override { return other->is_void(); }
 };
 
 class ClassType final : public Type, public GenericNode<Type*>, 
     public Identified, public LocationHolder {
   NamespacePath path;
   ast::ClassDecl* decl;
+
+  std::vector<uint64_t> vtable;
 
 public:
   ClassType(
@@ -286,6 +303,9 @@ public:
   bool is_interface_decl() const;
   bool is_class_decl() const;
 
+  auto& get_vtable() { return vtable; }
+  void add_vtable_entry(uint64_t id) { vtable.push_back(id); }
+
   static auto
   create(ast::ClassDecl* decl, const NamespacePath& path,
          const std::vector<Type*>& generics, const SourceLocation& loc) {
@@ -301,6 +321,8 @@ public:
 
   std::string get_printable_name() override;
   std::string get_mangled_name() override;
+
+  bool equals_impl(Type* other, bool ignore_self) override;
 };
 
 class ReferenceType final : public Type {
@@ -326,6 +348,7 @@ public:
   bool is_deep_generic() const override { return ref->is_deep_generic(); }
 
   bool is_copyable() const override { return true; }
+  bool equals_impl(Type* other, bool ignore_self) override;
 };
 
 class PointerType final : public Type {
@@ -352,6 +375,9 @@ public:
 
   bool is_deep_unknown() const override { return pointee->is_deep_unknown(); }
   bool is_deep_generic() const override { return pointee->is_deep_generic(); }
+
+  bool is_copyable() const override { return true; }
+  bool equals_impl(Type* other, bool ignore_self) override;
 };
 
 } // namespace types
