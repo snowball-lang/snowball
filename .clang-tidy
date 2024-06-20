@@ -20,5 +20,3 @@ CheckOptions:
 
 
 HeaderFilterRegex: './src/.*'
-HeaderFileExtensions:         ['', 'h','hh','hpp','hxx']
-ImplementationFileExtensions: ['c','cc','cpp','cxx']
