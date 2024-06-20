@@ -1,0 +1,6 @@
+Checks: '-*,readability-identifier-naming'
+CheckOptions:
+  - { key: readability-identifier-naming.PublicMethodCase, value: CamelCase}
+  - { key: readability-identifier-naming.PrivateMethodCase, value: camelBack}
+
+HeaderFilterRegex: '.*\.(cpp|cxx|cc|c\+\+|c|hpp|hxx|hh|h)$'
