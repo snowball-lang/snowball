@@ -1,7 +1,6 @@
 Checks: '-*,readability-identifier-naming'
 CheckOptions:
-  - { key: readability-identifier-naming.PublicMethodCase, value: CamelCase}
-  - { key: readability-identifier-naming.PrivateMethodCase, value: CamelBack}
+  - { key: readability-identifier-naming.*, value: CamelCase}
   - { key: readability-identifier-naming.PublicMemberCase, value: CamelCase}
   - { key: readability-identifier-naming.PrivateMemberCase, value: CamelBack}
   - { key: readability-identifier-naming.GlobalVariableCase, value: CamelCase}
@@ -17,6 +16,7 @@ CheckOptions:
   - { key: readability-identifier-naming.VariableCase, value: camelBack}
   - { key: readability-identifier-naming.ParameterCase, value: snake_case}
   - { key: readability-identifier-naming.MemberCase, value: CamelBack}
+  - { key: readability-identifier-naming.LocalConstantCase, value: UPPER_CASE}
 
 
 HeaderFilterRegex: './src/.*'
