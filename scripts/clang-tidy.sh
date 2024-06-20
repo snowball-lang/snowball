@@ -3,7 +3,7 @@ cc_files=$(find src/ -name "*.cc")
 header_files=$(find src/ -name "*.h")
 
 run_clang_tidy() {
-  clang-tidy $1 --fix --fix-errors -p $(pwd)/compile_commands.json
+  clang-tidy $1 --fix --fix-errors -p $(pwd)/compile_commands.json --quiet
 }
 
 run_clang_on_files() {
@@ -13,7 +13,7 @@ run_clang_on_files() {
 }
 
 # First the source files
-run_clang_on_files $cc_files
+run_clang_on_files "$cc_files"
 
 # Then the header files
-run_clang_on_files $header_files
+run_clang_on_files "$header_files"
