@@ -84,7 +84,7 @@ std::filesystem::path get_workspace_path(const Ctx& ctx, WorkSpaceType type) {
     case WorkSpaceType::Deps:
       return ".sn/deps";
     case WorkSpaceType::Libs:
-      return ".sn/libs";
+      return ".sn/lib";
     case WorkSpaceType::Obj:
       return ".sn/obj";
     case WorkSpaceType::Data:
