@@ -1,6 +1,7 @@
 
 #include "compiler/compiler.h"
 #include "compiler/sil/binder.h"
+#include "compiler/frontend/lint/linter.h"
 
 namespace snowball {
 
@@ -13,6 +14,7 @@ Compiler::MiddleEndResult Compiler::run_middleend() {
   if (type_checker.handle_errors()) {
     stop_compilation();
   }
+  run_visitors();
   sil::Binder binder(ctx, modules, type_checker.get_universe());
   timer.start("Binding", true);
   binder.bind();
@@ -29,6 +31,24 @@ Compiler::MiddleEndResult Compiler::run_middleend() {
     .sil_modules = sil_modules,
     .sil_insts = binder.get_insts()
   };
+}
+
+using Visitors = llvm::SmallVector<frontend::GenericVisitor*, SNOWBALL_DEFAULT_VISITOR_COUNT>;
+
+void Compiler::run_visitors() {
+  for (auto& visitor : get_visitors()) {
+    visitor->visit();
+    if (visitor->handle_errors()) {
+      stop_compilation();
+    }
+    delete visitor;
+  }
+}
+
+Visitors Compiler::get_visitors() {
+  Visitors visitors;
+  visitors.push_back(new frontend::lint::Linter(ctx, modules));
+  return visitors;
 }
 
 } // namespace snowball

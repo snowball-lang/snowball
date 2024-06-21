@@ -91,10 +91,14 @@ ast::types::Type* Binder::get_type(ast::types::Type* type, const SourceLocation&
   return check_type(type, loc);
 }
 
+bool Binder::in_generic_context() const {
+  return (ctx.ast_current_func && ctx.ast_current_func.value()->is_generic_instanced()) ||
+      (ctx.ast_current_class && ctx.ast_current_class.value()->is_generic_instanced());
+}
+
 void Binder::err(const LocationHolder& holder, const std::string& message, 
     const Error::Info& info, Error::Type type, bool fatal) {
-  if ((ctx.ast_current_func && ctx.ast_current_func.value()->is_generic_instanced()) ||
-      (ctx.ast_current_class && ctx.ast_current_class.value()->is_generic_instanced())) {
+  if (in_generic_context()) {
     return; // skip duplicated errors from generic insatnce intantiations
   }
   add_error(E(message, holder.get_location(), info, type));

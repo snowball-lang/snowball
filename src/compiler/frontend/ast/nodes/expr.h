@@ -56,13 +56,10 @@ private:
 
 public:
   MemberAccess(
-          const SourceLocation& location, Expr* object, Ident* member,
-          AccessType access_type = AccessType::Default
+    const SourceLocation& location, Expr* object, Ident* member,
+    AccessType access_type = AccessType::Default
   )
-    : Expr(location)
-    , object(object)
-    , member(member)
-    , access_type(access_type) {}
+    : Expr(location), object(object), member(member), access_type(access_type) {}
   ~MemberAccess() = default;
 
   auto& get_object() { return object; }

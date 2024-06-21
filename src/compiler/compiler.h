@@ -15,7 +15,13 @@
 #include "compiler/frontend/ast/module.h"
 #include "compiler/frontend/ast/parser.h"
 #include "compiler/frontend/location.h"
+
 #include "compiler/frontend/sema/check.h"
+#include "compiler/frontend/generic/visitor.h"
+
+#include "compiler/llvm_stl.h"
+
+#define SNOWBALL_DEFAULT_VISITOR_COUNT 4
 
 namespace snowball {
 namespace reky {
@@ -81,11 +87,16 @@ public:
 private:
   std::string get_package_type_string();
   static void print_compiling_bar(std::vector<frontend::Module>& modules);
+
   void run_frontend();
   MiddleEndResult run_middleend();
   int run_backend(const MiddleEndResult& middleend_result);
+
   void stop_compilation();
   void post_compile();
+
+  void run_visitors();
+  llvm::SmallVector<frontend::GenericVisitor*, SNOWBALL_DEFAULT_VISITOR_COUNT> get_visitors();
 };
 
 } // namespace snowball

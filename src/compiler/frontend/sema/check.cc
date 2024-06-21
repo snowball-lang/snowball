@@ -54,12 +54,17 @@ void TypeChecker::check() {
 
 void TypeChecker::err(const LocationHolder& holder, const std::string& message, 
     const Error::Info& info, Error::Type type, bool fatal) {
-  if (ctx.current_function && ctx.current_function->is_generic_instanced()) {
+  if (in_generic_context()) {
     return; // skip duplicated errors from generic insatnce intantiations
   }
   add_error(E(message, holder.get_location(), info, type));
   if (fatal && type != Error::Type::Warn)
     throw StopTypeChecking();
+}
+
+bool TypeChecker::in_generic_context() const {
+  return (ctx.current_function && ctx.current_function->is_generic_instanced()) || 
+    (ctx.current_class && ctx.current_class->is_generic_instanced());
 }
 
 void TypeChecker::post_check() {

@@ -35,7 +35,7 @@ enum class UnifyFlags : int
   IgnoreSelf = 1 << 2,
 };
 
-class TypeChecker : public ast::AstVisitor, public Reporter {
+class TypeChecker final : public ast::AstVisitor, public Reporter {
   Universe<TypeCheckItem> universe;
   std::vector<Module>& modules;
   llvm::DenseMap<uint64_t, std::vector<MonorphosizedFn>> generic_registry;
@@ -53,7 +53,7 @@ public:
 
   void check();
   void post_check();
-#define SN_REGISTER_ACCEPT(n) virtual void visit(ast::n* node) override;
+#define SN_REGISTER_ACCEPT(n) void visit(ast::n* node) override;
 #include "compiler/frontend/ast/nodes.def"
 #undef SN_REGISTER_ACCEPT
 
@@ -66,6 +66,8 @@ private:
   err(const LocationHolder& holder, const std::string& message,
       const Error::Info& info = Error::Info(), Error::Type type = Error::Type::Err,
       bool fatal = true);
+
+  bool in_generic_context() const;
 
   // --- internal helpers ---
 

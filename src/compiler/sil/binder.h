@@ -65,6 +65,8 @@ public:
   ast::types::Type* check_type(ast::types::Type* type, const SourceLocation& loc);
   auto& get_insts() { return var_ids; }
 
+  bool in_generic_context() const;
+
   void
   err(const LocationHolder& holder, const std::string& message,
       const Error::Info& info = Error::Info(), Error::Type type = Error::Type::Err,

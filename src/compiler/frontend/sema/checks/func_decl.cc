@@ -8,6 +8,8 @@ namespace snowball {
 namespace frontend {
 namespace sema {
 
+using Extern = frontend::ast::AttributedNode::Extern;
+
 void TypeChecker::visit(ast::FnDecl* node) {
   if (node->is_generic_instanced()) {
     // Skip generic instanced functions
@@ -32,6 +34,9 @@ void TypeChecker::visit(ast::FnDecl* node) {
     auto param = node->get_params().at(i);
     param->mutate_arg_for(node);
     define_variable(param, param->get_location(), true);
+    if (node->get_external() != Extern::None) {
+      param->set_used();
+    }
   }
   if (auto block = node->get_body()) {
     block.value()->accept(this);
