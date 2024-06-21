@@ -4,8 +4,9 @@ message(STATUS $ENV{ARCH})
 message(STATUS ${CMAKE_SYSTEM_NAME})
 
 file(READ "snowball.version.info" version)
-project(snowball VERSION ${version})
+project(snowball)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-limit-debug-info")

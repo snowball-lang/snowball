@@ -46,6 +46,10 @@ public:
     return val->second;
   }
 
+  bool has_value(uint64_t id) {
+    return value_map.find(id) != value_map.end();
+  }
+
   sil::Inst* get_inst(uint64_t id) {
     auto inst = inst_map.find(id);
     assert(inst != inst_map.end() && "Inst not found");
@@ -98,15 +102,17 @@ class LLVMBuilder : public sil::Builder {
   void set_debug_info(const sil::Inst* node);
 
   llvm::Type* get_type(types::Type* type);
+  llvm::ArrayType* get_array_type(size_t size, llvm::Type* type);
   llvm::DIType* get_ditype(types::Type* type);
   llvm::FunctionType* get_func_type(types::FuncType* type, bool* has_sret = nullptr);
-  llvm::Value* do_vcall(const sil::Call* node, llvm::Value* callee, std::vector<llvm::Value*>& args);
+  llvm::Value* do_vcall(const sil::Call* node, std::vector<llvm::Value*>& args);
 
   llvm::Type* get_vtable_type(types::ClassType* type);
-  llvm::Value* create_vtable_global(types::ClassType* type);
+  llvm::Constant* create_vtable_global(types::ClassType* type);
   void generate_constructor(const sil::FuncDecl* node);
 
-  void create_memcopy(llvm::Value* dst, llvm::Value* src, llvm::Value* size);
+  void create_memcopy(llvm::Value* dst, llvm::Value* src, uint64_t size);
+  void create_memset(llvm::Value* dst, llvm::Value* value, uint64_t size);
 
   llvm::DISubprogram* get_disubprogram(const sil::FuncDecl* node);
   void debug(const std::string& msg);
@@ -151,6 +157,7 @@ public:
 };
 
 llvm::TargetMachine* get_target_machine();
+llvm::Triple get_target_triple();
  
 } // namespace backend
 } // namespace snowball

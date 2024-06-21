@@ -8,9 +8,10 @@ namespace sema {
 
 using namespace utils;
 
-ast::FnDecl* TypeChecker::get_best_match(const std::vector<ast::FnDecl*>& decls, const std::vector<ast::types::Type*>& args, 
+ast::FnDecl* TypeChecker::get_best_match(const FunctionsVector& decls, const std::vector<ast::types::Type*>& args, 
     const SourceLocation& loc, const std::vector<ast::TypeRef>& generics, bool identified, bool ignore_self) {
   std::vector<ast::FnDecl*> matches;
+  assert(decls.size() > 0);
   if (decls.size() > 1 && identified) {
     err(loc, "Expected arguments provided to function call!", Error::Info {
       .highlight = "Multiple functions overload found for call.",
@@ -18,7 +19,7 @@ ast::FnDecl* TypeChecker::get_best_match(const std::vector<ast::FnDecl*>& decls,
       .note = "This is because the function call is ambiguous and the compiler cannot determine which function to call"
     });
   } else if (decls.size() == 1 && identified) {
-    matches.push_back(decls.at(0));
+    matches.push_back(decls[0]);
   }
   for (auto& decl : decls) {
     if (decl->get_params().size() != args.size() || identified) 
@@ -44,20 +45,20 @@ ast::FnDecl* TypeChecker::get_best_match(const std::vector<ast::FnDecl*>& decls,
           .highlight = fmt::format("No matching function found for call."),
           .help = "Try calling the function with the correct number of arguments and types",
           .note = fmt::format("Function '{}' DOES exist but the arguements provided does not match any signature.", 
-            printable_op(decls.at(0)->get_name())),
+            printable_op(decls[0]->get_name())),
           .see = "https://snowball-lang.gitbook.io/docs/language-reference/functions"
         });
       return nullptr;
     case 1: {
-      auto match = matches.at(0);
+      auto match = matches[0];
       return deduce_func(match, args, loc, generics);
     }
     default:
-      err(loc, fmt::format("Ambiguous call to function '{}'. Multiple functions match the call", decls.at(0)->get_name()), 
+      err(loc, fmt::format("Ambiguous call to function '{}'. Multiple functions match the call", decls[0]->get_name()), 
         Error::Info {
-          .highlight = fmt::format("Ambiguous call to function '{}'. Multiple functions match the call", decls.at(0)->get_name()),
+          .highlight = fmt::format("Ambiguous call to function '{}'. Multiple functions match the call", decls[0]->get_name()),
           .help = fmt::format("Try calling the function with the correct number of arguments and types"),
-          .note = fmt::format("Multiple functions match the call to '{}'", decls.at(0)->get_name())
+          .note = fmt::format("Multiple functions match the call to '{}'", decls[0]->get_name())
         });
       return nullptr;
   }
@@ -68,7 +69,7 @@ ast::FnDecl* TypeChecker::deduce_func(ast::FnDecl* node, const std::vector<ast::
   if (node->get_generics().size() == 0) {
     return node;
   }
-  std::map<std::string, ast::types::Type*> deduced;
+  llvm::StringMap<ast::types::Type*> deduced;
   for (size_t i = 0; i < generics.size(); ++i) {
     auto gen = node->get_generics().at(i);
     auto arg = get_type(generics.at(i));
@@ -129,7 +130,7 @@ ast::FnDecl* TypeChecker::deduce_func(ast::FnDecl* node, const std::vector<ast::
   return propagate_generic(node, deduced, loc);
 }
 
-ast::FnDecl* TypeChecker::propagate_generic(ast::FnDecl* node, const std::map<std::string, ast::types::Type*>& deduced, const SourceLocation& loc) {
+ast::FnDecl* TypeChecker::propagate_generic(ast::FnDecl* node, const llvm::StringMap<ast::types::Type*>& deduced, const SourceLocation& loc) {
   if (generic_registry.find(node->get_id()) != generic_registry.end()) {
     auto monorphs = generic_registry[node->get_id()];
     // used for caching generic functions and prevent rechecking every time
@@ -138,7 +139,7 @@ ast::FnDecl* TypeChecker::propagate_generic(ast::FnDecl* node, const std::map<st
       size_t i = 0;
       if (std::find_if(monorph.generics.begin(), monorph.generics.end(), [&](auto& gen) {
         i++;
-        return type_match(gen.second, deduced.at(gen.first));
+        return type_match(gen.second, deduced.find(gen.first())->second);
       }) != monorph.generics.end()) {
         return monorph.decl;
       }

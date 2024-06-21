@@ -15,7 +15,7 @@
 #include "compiler/utils/utils.h"
 #include "compiler/frontend/sema/borrow.h"
 
-#include <llvm/ADT/DenseMap.h>
+#include "compiler/llvm_stl.h"
 
 namespace snowball {
 namespace frontend {
@@ -28,7 +28,7 @@ public:
   ~StopTypeChecking() = default;
 };
 
-enum class UnifyFlags
+enum class UnifyFlags : int
 {
   None = 1 << 0,
   JustCheck = 1 << 1,
@@ -118,7 +118,7 @@ private:
   std::optional<std::string> get_did_you_mean(const std::string& name);
 
   ast::FnDecl* get_best_match(
-    const std::vector<ast::FnDecl*>& decls,
+    const FunctionsVector& decls,
     const std::vector<ast::types::Type*>& args, const SourceLocation& loc,
     const std::vector<ast::TypeRef>& generics, bool identified = false,
     bool ignore_self = false
@@ -128,16 +128,16 @@ private:
     const SourceLocation& loc, const std::vector<ast::TypeRef>& generics
   );
   ast::FnDecl* propagate_generic(
-    ast::FnDecl* node, const std::map<std::string, ast::types::Type*>& generics,
+    ast::FnDecl* node, const llvm::StringMap<ast::types::Type*>& generics,
     const SourceLocation& loc
   );
   ast::FnDecl* monorphosize(
-    ast::FnDecl*& node, const std::map<std::string, ast::types::Type*>& generics,
+    ast::FnDecl*& node, const llvm::StringMap<ast::types::Type*>& generics,
     const SourceLocation& loc
   );
   ast::ClassDecl* monorphosize(
     ast::ClassDecl*& node,
-    const std::map<std::string, ast::types::Type*>& generics,
+    const llvm::StringMap<ast::types::Type*>& generics,
     const SourceLocation& loc
   );
   void add_self_param(ast::FnDecl*& node, bool as_monorph = false);

@@ -8,7 +8,7 @@
 namespace snowball {
 namespace backend {
 
-static llvm::Triple get_target_triple() {
+static llvm::Triple _get_target_triple() {
   llvm::Triple triple;
   // TODO: Make the user be more descriptive about the target
   switch (global.target) {
@@ -184,7 +184,7 @@ llvm::TargetMachine* get_target_machine() {
   static llvm::TargetMachine* target_machine = nullptr;
   if (target_machine)
     return target_machine;
-  auto target_triple = get_target_triple();
+  auto target_triple = _get_target_triple();
   std::vector<std::string> features;
   auto target_options = llvm::codegen::InitTargetOptionsFromCodeGenFlags(target_triple);
   if (target_options.MCOptions.ABIName.empty())
@@ -204,6 +204,10 @@ llvm::TargetMachine* get_target_machine() {
     target_triple.normalize(), cpu, utils::join(features, ","), target_options, 
     reloc_model, code_model, opt_level);
   return target_machine;
+}
+
+llvm::Triple get_target_triple() {
+  return get_target_machine()->getTargetTriple();
 }
 
 }

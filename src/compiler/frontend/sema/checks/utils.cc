@@ -24,7 +24,7 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
       for (auto& uuid : ctx.allowed_uuids) {
         auto new_path = uuid + path;
         if (auto fns = universe.get_fn_decl(new_path); fns.size() > 0) {
-          return check_privacy({TypeCheckItem::create_fn_decl({fns}), acc.get_name()}, loc);
+          return check_privacy({TypeCheckItem::create_fn_decl(fns), acc.get_name()}, loc);
         } else if (auto type = universe.get_type(new_path)) {
           return check_privacy({TypeCheckItem::create_type(type.value()), acc.get_name()}, loc);
         } else if (auto mod = search_module(new_path)) {
@@ -174,7 +174,7 @@ ast::types::Type* TypeChecker::deduce_type(ast::types::Type* type, const std::ve
       }, Error::Type::Err, false);
       return get_error_type();
     }
-    std::map<std::string, ast::types::Type*> deduced;
+    llvm::StringMap<ast::types::Type*> deduced;
     if (generics.size() > 0) {
       for (size_t i = 0; i < decl->get_generics().size(); ++i) {
         auto gen = decl->get_generics().at(i);
@@ -205,7 +205,7 @@ ast::types::Type* TypeChecker::deduce_type(ast::types::Type* type, const std::ve
       if (generic_class_registry.find(decl->get_id()) != generic_class_registry.end()) {
         for (auto& monorph : generic_class_registry[decl->get_id()]) {
           bool match = true;
-          for (auto [key,_] : monorph.generics) {
+          for (auto& [key,_] : monorph.generics) {
             match = type_match(deduced[key], monorph.generics[key]);
           }
           if (match) {
@@ -299,7 +299,7 @@ TypeChecker::GetResult TypeChecker::get_from_type(ast::MemberAccess* node, ast::
       }
       index++;
     }
-    std::vector<ast::FnDecl*> methods;
+    FunctionsVector methods;
     for (auto& method : decl->get_funcs()) {
       if (method->get_name() == member_name) {
         methods.push_back(method);

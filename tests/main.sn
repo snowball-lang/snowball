@@ -1,13 +1,14 @@
 
 using std::main::(printf, test);
-using crate::mod::Hello;
+using crate::mod::(Hello, Lol);
 
-public func test2(x: Hello<i32>) crate::mod::Hello<i32> {
-  balls(x);
-  x.hello(x);
+public func test2(x: Lol<i32>) Lol<i32> {
+  //balls(x);
+  //x.hello(x);
   let mut a;
   a = 24 * 24 - 2;
-  return x;
+  x + 25;
+  x
 }
 
 #[no_mangle]

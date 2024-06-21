@@ -1,5 +1,10 @@
 set -ex
 
+if [ ! -f "EXECUTABLE_MAIN" ]; then
+    echo "Please run this script from the src/app/src/files directory"
+    exit 1
+fi
+
 # Clear file
 echo "" > assets.h
 

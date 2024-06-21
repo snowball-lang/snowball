@@ -65,6 +65,17 @@ private:
   bool generic_instanced = false;
   std::optional<types::Type*> parent_type = std::nullopt;
   std::optional<uint64_t> generic_id = std::nullopt;
+  // If this function is a virtual function that overrides its parent
+  // parent class, this will be set to the overriden function.
+  // note that this does not necessarily equal to parent_type, as the
+  // parent type can be a trait.
+  // e.g.: (B has foo)
+  // class A implements B {
+  //   virtual func foo() {} // foo has B as virtual_overriden
+  //                         // and A as parent_type
+  // }
+  std::optional<types::Type*> virtual_overriden = std::nullopt;
+  std::optional<size_t> vtable_index = std::nullopt; // Relative virtual_overriden index
 
   friend class ConstructorDecl;
 
@@ -90,6 +101,12 @@ public:
 
   void set_parent_type(types::Type* type) { parent_type = type; }
   auto get_parent_type() const { return parent_type; }
+
+  auto get_virtual_overriden() const { return virtual_overriden; }
+  void set_virtual_overriden(types::Type* type) { virtual_overriden = type; }
+
+  auto get_vtable_index() const { return vtable_index; }
+  void set_vtable_index(size_t idx) { vtable_index = idx; }
 
   uint64_t get_generic_id() const;
   static auto
@@ -239,6 +256,10 @@ public:
   bool is_class() const { return class_type == ClassType::Class; }
 
   bool has_vtable() const;
+
+  // Iterate over virtual functions by using iterators
+  std::vector<uint64_t>& get_virtual_fn_ids() const;
+  size_t get_virtual_fn_count() const;
 
   auto get_builtin_name() const { return builtin_name; }
   void set_builtin_name(const std::string& name) { builtin_name = name; }
