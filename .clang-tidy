@@ -2,7 +2,8 @@ Checks: '-*,readability-identifier-naming'
 CheckOptions:
   - { key: readability-identifier-naming.*, value: CamelCase}
   - { key: readability-identifier-naming.ClassMemberCase, value: camelBack}
-  - { key: readability-identifier-naming.PublicMemberCase, value: CamelCase}
+  - { key: readability-identifier-naming.MemberCase, value: camelBack}
+  - { key: readability-identifier-naming.PublicMemberCase, value: camelBack}
   - { key: readability-identifier-naming.GlobalVariableCase, value: CamelCase}
   - { key: readability-identifier-naming.ConstantCase, value: UPPER_CASE}
   - { key: readability-identifier-naming.NamespaceCase, value: snake_case}
