@@ -18,6 +18,8 @@
 #include "compiler/frontend/attrs/attr.h"
 #include "compiler/frontend/attrs/interp.h"
 
+#include "compiler/frontend/ast/operators.h"
+
 namespace snowball {
 namespace frontend {
 

@@ -46,74 +46,12 @@ ast::Expr* Parser::fix_precedence(std::vector<ast::Expr*>& exprs) {
   assert(exprs.size() > 0);
   while (exprs.size() > 1) {
     int next = -1;
-    int min_prec = 0xFFFFF;
+    unsigned min_prec = 0xFFFFF;
     bool unary = false;
     for (size_t i = 0; i < exprs.size(); i++) {
       auto bop = exprs[i]->as<ast::BinaryOp>();
       if (!bop || !bop->is_operator) continue;
-      int prec = -1;
-      switch (bop->get_op()) {
-        // TODO: Unary operators
-        case Operator::New:
-        case Operator::Delete:
-        case Operator::Not:
-        case Operator::BitNot:
-          prec = 0;
-          break;
-        case Operator::Mul:
-        case Operator::Div:
-        case Operator::Mod:
-          prec = 1;
-          break;
-        case Operator::Plus:
-        case Operator::Minus:
-          prec = 2;
-          break;
-        case Operator::BitRshift:
-        case Operator::BitLshift:
-          prec = 3;
-          break;
-        case Operator::Lt:
-        case Operator::Lteq:
-        case Operator::Gt:
-        case Operator::Gteq:
-          prec = 4;
-          break;
-        case Operator::Eqeq:
-        case Operator::Noteq:
-          prec = 5;
-          break;
-        case Operator::BitAnd:
-          prec = 6;
-          break;
-        case Operator::BitXor:
-          prec = 7;
-          break;
-        case Operator::BitOr:
-          prec = 8;
-          break;
-        case Operator::And:
-          prec = 9;
-          break;
-        case Operator::Or:
-          prec = 10;
-          break;
-        case Operator::Eq:
-        case Operator::Pluseq:
-        case Operator::Minuseq:
-        case Operator::Muleq:
-        case Operator::Diveq:
-        case Operator::ModEq:
-        case Operator::BitLshiftEq:
-        case Operator::BitRshiftEq:
-        case Operator::BitAndEq:
-        case Operator::BitXorEq:
-        case Operator::BitOrEq:
-          prec = 11;
-          break;
-        case Operator::Arrow: 
-          break;
-      }
+      auto prec = get_precedence(bop->get_op());
       if (prec < min_prec) {
         min_prec = prec;
         next = i;
@@ -139,6 +77,60 @@ ast::Expr* Parser::fix_precedence(std::vector<ast::Expr*>& exprs) {
   }
   assert(exprs.size() == 1);
   return exprs[0];
+}
+
+unsigned int get_precedence(Operator op) {
+  switch (op) {
+    // TODO: Unary operators
+    case Operator::New:
+    case Operator::Delete:
+    case Operator::Not:
+    case Operator::BitNot:
+      return 0;
+    case Operator::Mul:
+    case Operator::Div:
+    case Operator::Mod:
+      return 1;
+    case Operator::Plus:
+    case Operator::Minus:
+      return 2;
+    case Operator::BitRshift:
+    case Operator::BitLshift:
+      return 3;
+    case Operator::Lt:
+    case Operator::Lteq:
+    case Operator::Gt:
+    case Operator::Gteq:
+      return 4;
+    case Operator::Eqeq:
+    case Operator::Noteq:
+      return 5;
+    case Operator::BitAnd:
+      return 6;
+    case Operator::BitXor:
+      return 7;
+    case Operator::BitOr:
+      return 8;
+    case Operator::And:
+      return 9;
+    case Operator::Or:
+      return 10;
+    case Operator::Eq:
+    case Operator::Pluseq:
+    case Operator::Minuseq:
+    case Operator::Muleq:
+    case Operator::Diveq:
+    case Operator::ModEq:
+    case Operator::BitLshiftEq:
+    case Operator::BitRshiftEq:
+    case Operator::BitAndEq:
+    case Operator::BitXorEq:
+    case Operator::BitOrEq:
+      return 11;
+    case Operator::Arrow: 
+      // [[fallthrough]];
+  }
+  sn_unreachable();
 }
 
 }

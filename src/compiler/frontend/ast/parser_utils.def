@@ -5,6 +5,8 @@ struct ParsingClassResult
   std::vector<ast::FnDecl*> funcs;
 };
 
+static unsigned int get_precedence(Operator op);
+
 ParsingClassResult parse_class_body();
 ast::Ident* parse_ident(); // parse an identifier (used as expression identifier)
 bool parse_operator(std::vector<ast::Expr*>& exprs);
