@@ -79,7 +79,7 @@ ast::Expr* Parser::fix_precedence(std::vector<ast::Expr*>& exprs) {
   return exprs[0];
 }
 
-unsigned int get_precedence(Operator op) {
+unsigned int Parser::get_precedence(Operator op) {
   switch (op) {
     // TODO: Unary operators
     case Operator::New:
@@ -128,6 +128,7 @@ unsigned int get_precedence(Operator op) {
     case Operator::BitOrEq:
       return 11;
     case Operator::Arrow: 
+      break; 
       // [[fallthrough]];
   }
   sn_unreachable();
