@@ -52,6 +52,22 @@ ast::Expr* Parser::parse_expr(bool allow_assign) {
       case Token::Type::ValueString:
         expr = node<ast::String>(current.to_string());
         break;
+      case Token::Type::KwordNew: {
+        std::vector<ast::Expr*> args;
+        next();
+        auto type = parse_type_ref();
+        expect(Token::Type::BracketLparent, "an opening parenthesis after the type in a new expression");
+        while (!is(Token::Type::BracketRparent, peek())) {
+          args.push_back(parse_expr());
+          prev();
+          if (is(Token::Type::BracketRparent, peek())) break;
+          next();
+          expect(Token::Type::SymComma, "a comma after the argument", Token::Type::BracketRparent);
+        }
+        next();
+        expect(Token::Type::BracketRparent, "a closing parenthesis after the arguments");
+        expr = pnode<ast::NewExpr>(type.get_location(), type, args);
+      } break;
       default:
         err("Unexpected token found while parsing expression", Error::Info {
           .highlight = fmt::format("Token '{}' is not expected here", current),

@@ -122,7 +122,8 @@ Node* Call::clone() const {
   }
   auto clone = Cloneable<Call>::default_clone(this);
   clone->args = new_args;
-  clone->callee = (Expr*)callee->clone();
+  if (callee) // callee can be nullptr
+    clone->callee = (Expr*)callee->clone();
   return clone;
 }
 

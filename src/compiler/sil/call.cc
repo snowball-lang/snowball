@@ -6,6 +6,7 @@ namespace snowball {
 namespace sil {
 
 void Binder::visit(ast::Call* node) {
+  assert(node->get_callee() && "Call callee is null");
   auto callee = accept(node->get_callee());
   auto args = std::vector<sil::Inst*>();
   args.reserve(node->get_args().size());
@@ -15,6 +16,10 @@ void Binder::visit(ast::Call* node) {
   auto call = Call::create(node->get_location(), get_type(node), callee, args);
   optimize_virtual_call(call);
   value = call;
+}
+
+void Binder::visit(ast::NewExpr* node) {
+  visit(node->as<ast::Call>());
 }
 
 std::optional<FuncDecl*> Call::get_callee_as_func() const {
