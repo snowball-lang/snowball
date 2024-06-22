@@ -78,7 +78,6 @@ llvm::Constant* LLVMBuilder::create_vtable_global(types::ClassType* type) {
       vtabled_types.push_back(decl_type);
     }
   }
-  auto base_vtable_size = (int)type->get_decl()->get_virtual_fn_count() - vtable_size;
   if (vtable_size < type->get_decl()->get_virtual_fn_count())
     vtabled_types.insert(vtabled_types.begin(), type);
   for (auto& decl_type : vtabled_types) {
