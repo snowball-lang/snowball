@@ -92,20 +92,9 @@ llvm::Constant* LLVMBuilder::create_vtable_global(types::ClassType* type) {
   for (auto& func_id : type->get_decl()->get_virtual_fn_ids()) {
     auto func_decl = builder_ctx.get_inst(func_id)->as<sil::FuncDecl>();
     auto func_val = llvm::cast<llvm::Constant>(builder_ctx.get_value(func_id));
-    if (auto override_type = func_decl->get_virtual_overriden()) {
-      auto override_decl = override_type.value()->as_class();
-      for (size_t i = 0; i < vtabled_types.size(); i++) {
-        if (vtabled_types[i]->equals(override_decl)) {
-          // Insert the function in the corresponding vtable
-          vtable_init[i][func_decl->get_vtable_index().value()] = func_val;
-          break;
-        }
-      }
-      continue;
-    }
     // Set the function pointer in the class's vtable
-    sn_assert(base_vtable_size > 0, "Base vtable size is 0");
-    vtable_init[0][func_decl->get_vtable_index().value()] = func_val;
+    auto vtable_index = get_vtable_index(func_decl);
+    vtable_init[vtable_index.first][vtable_index.second] = func_val;
   }
   std::vector<llvm::Constant*> vtable_entries;
   for (auto& vtable_entry : vtable_init) {
@@ -119,6 +108,10 @@ llvm::Constant* LLVMBuilder::create_vtable_global(types::ClassType* type) {
   vtable_global->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
   vtable_global->setDSOLocal(true);
   return vtable_global;
+}
+
+std::pair<unsigned, unsigned> LLVMBuilder::get_vtable_index(const sil::FuncDecl* node) {
+  return node->get_vtable_index().value();
 }
 
 }

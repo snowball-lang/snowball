@@ -68,7 +68,7 @@ class FuncDecl final : public Inst, public ast::AttributedNode, public Identifie
   bool constructor = false;
   // @see ast::FnDecl::virtual_overriden
   std::optional<ast::types::Type*> virtual_overriden = std::nullopt;
-  std::optional<size_t> vtable_index = std::nullopt; // Relative to virtual_overriden's vtable
+  std::optional<std::pair<size_t, size_t>> vtable_index = std::nullopt; // Relative to virtual_overriden's vtable
 
 public:
   FuncDecl(
@@ -96,7 +96,8 @@ public:
   void set_virtual_overriden(std::optional<ast::types::Type*> type) { virtual_overriden = type; }
 
   auto get_vtable_index() const { return vtable_index; }
-  void set_vtable_index(std::optional<size_t> idx) { vtable_index = idx; }
+  // Do not use directly!
+  void set_vtable_index(std::optional<std::pair<size_t, size_t>> idx) { vtable_index = idx; }
 
   auto get_parent_module() const { return parent_module; }
   auto is_constructor() const { return constructor; }

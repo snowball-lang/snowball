@@ -104,7 +104,7 @@ Parser::ParsingClassResult Parser::parse_class_body() {
       case Token::Type::KwordFunc: {
         auto fn = parse_fn_decl(attrs);
         if (fn->get_virtual()) {
-          fn->set_vtable_index(vtable_index++);
+          fn->set_vtable_index({0, vtable_index++});
         }
         result.funcs.push_back(fn);
         attrs = ast::AttributedNode::empty();

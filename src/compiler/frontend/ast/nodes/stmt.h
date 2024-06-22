@@ -75,7 +75,7 @@ private:
   //                         // and A as parent_type
   // }
   std::optional<types::Type*> virtual_overriden = std::nullopt;
-  std::optional<size_t> vtable_index = std::nullopt; // Relative virtual_overriden index
+  std::optional<std::pair<size_t, size_t>> vtable_index = std::nullopt; // Relative virtual_overriden index
 
   friend class ConstructorDecl;
 
@@ -106,7 +106,7 @@ public:
   void set_virtual_overriden(types::Type* type) { virtual_overriden = type; }
 
   auto get_vtable_index() const { return vtable_index; }
-  void set_vtable_index(size_t idx) { vtable_index = idx; }
+  void set_vtable_index(std::pair<size_t, size_t> idx) { vtable_index = idx; }
 
   uint64_t get_generic_id() const;
   static auto

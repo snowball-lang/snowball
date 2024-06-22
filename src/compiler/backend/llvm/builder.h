@@ -60,6 +60,7 @@ public:
     current_func = func;
     current_sil_func = sil_func;
   }
+
   llvm::Function* get_current_func() { return current_func; }
   const sil::FuncDecl* get_current_sil_func() { return current_sil_func; }
   void set_value(uint64_t id, llvm::Value* value) { value_map[id] = value; }
@@ -113,6 +114,9 @@ class LLVMBuilder : public sil::Builder {
 
   void create_memcopy(llvm::Value* dst, llvm::Value* src, uint64_t size);
   void create_memset(llvm::Value* dst, llvm::Value* value, uint64_t size);
+
+  /// @return {vtable index, index of function in vtable}
+  std::pair<unsigned, unsigned> get_vtable_index(const sil::FuncDecl* node);
 
   llvm::DISubprogram* get_disubprogram(const sil::FuncDecl* node);
   void debug(const std::string& msg);

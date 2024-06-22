@@ -17,7 +17,7 @@ void Binder::optimize_virtual_call(Call*& call) {
   // TODO: Check if the class has any subclasses (once implemented)
   // If it's final, we can directly optimize the call
   if (class_decl->get_abstract() || !class_decl->get_final()) return;
-  call->set_ignore_virtual(true);
+  //call->set_ignore_virtual(true);
 }
 
 }

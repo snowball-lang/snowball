@@ -2,7 +2,7 @@
 using std::main::(printf, test);
 using crate::mod::(Hello, Lol);
 
-public func test2(x: Lol<i32>) Lol<i32> {
+public func test2(x: Hello<i32>) Hello<i32> {
   //balls(x);
   //x.hello(x);
   let mut a;

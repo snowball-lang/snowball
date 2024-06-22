@@ -63,7 +63,7 @@ ast::ClassDecl* Parser::parse_interface_decl(const ast::AttributedNode& attrs) {
   parse_fn_decl:
     funcs.push_back(parse_fn_decl(fn_attrs));
     funcs.back()->set_virtual(true);
-    funcs.back()->set_vtable_index(virtual_index++);
+    funcs.back()->set_vtable_index({0, virtual_index++});
     fn_attrs = ast::AttributedNode::empty();
   }
   next(); // skip the closing curly brace

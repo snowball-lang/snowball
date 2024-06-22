@@ -7,6 +7,7 @@ namespace frontend {
 namespace sema {
 
 void TypeChecker::check_implementations(ast::ClassDecl* class_decl) {
+  size_t vtable_index = 0;
   for (auto& impl : class_decl->get_implemented_interfaces()) {
     auto type = impl.get_internal_type();
     assert(type.has_value());
@@ -26,7 +27,7 @@ void TypeChecker::check_implementations(ast::ClassDecl* class_decl) {
             }, Error::Type::Err, false);
           }
           class_method->set_virtual_overriden(interface_ty);
-          class_method->set_vtable_index(method->get_vtable_index().value());
+          class_method->set_vtable_index({vtable_index, method->get_vtable_index().value().second});
           // TODO: Check if the method is implemented twice
           found = true;
           break;
@@ -41,6 +42,7 @@ void TypeChecker::check_implementations(ast::ClassDecl* class_decl) {
         });
       }
     }
+    vtable_index += 1;
   }
 }
 
