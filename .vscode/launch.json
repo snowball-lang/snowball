@@ -9,7 +9,7 @@
             "name": "(gdb) Iniciar (run)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/.sn/bin/tests",
+            "program": "${workspaceFolder}/snowball",
             "args": ["run", "--threads=1", "-opt=debug", "--verbose"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

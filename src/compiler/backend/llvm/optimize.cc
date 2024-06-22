@@ -67,7 +67,7 @@ void LLVMBuilder::finalize_and_run_lto() {
 
   llvm::ModulePassManager mpm;
   if (global.opt_level == OptLevel::Debug) {
-    mpm = pass_builder.buildO0DefaultPipeline(lopt_level, true);
+    mpm = pass_builder.buildO0DefaultPipeline(lopt_level);
   } else {
     mpm = pass_builder.buildLTOPreLinkDefaultPipeline(lopt_level);
   }
@@ -79,36 +79,34 @@ void LLVMBuilder::optimize(llvm::Module* module) {
   auto opt_level = global.opt_level;
   
   llvm::legacy::PassManager pass_manager;
-  pass_manager.add(llvm::createPromoteMemoryToRegisterPass());
-  pass_manager.add(llvm::createInstructionCombiningPass());
-  pass_manager.add(llvm::createReassociatePass());
-  pass_manager.add(llvm::createGVNPass());
-  pass_manager.add(llvm::createCFGSimplificationPass());
-  pass_manager.add(llvm::createDeadStoreEliminationPass());
-  pass_manager.add(llvm::createDeadCodeEliminationPass());
-  pass_manager.add(llvm::createAggressiveDCEPass());
-  pass_manager.add(llvm::createCFGSimplificationPass());
-  pass_manager.add(llvm::createInstructionCombiningPass());
-  pass_manager.add(llvm::createReassociatePass());
-  pass_manager.add(llvm::createGVNPass());
-  pass_manager.add(llvm::createCFGSimplificationPass());
-  pass_manager.add(llvm::createDeadStoreEliminationPass());
-  pass_manager.add(llvm::createDeadCodeEliminationPass());
-  pass_manager.add(llvm::createAggressiveDCEPass());
-  pass_manager.add(llvm::createCFGSimplificationPass());
-  pass_manager.add(llvm::createInstructionCombiningPass());
-  
-  pass_manager.run(*module);
 
-  if (opt_level == OptLevel::ReleaseWithDebug) {
-    llvm::legacy::PassManager debug_pass_manager;
-    debug_pass_manager.add(llvm::createStripDeadPrototypesPass());
-    debug_pass_manager.add(llvm::createGlobalDCEPass());
-    debug_pass_manager.add(llvm::createGlobalOptimizerPass());
-    debug_pass_manager.add(llvm::createGlobalDCEPass());
+  pass_manager.add(llvm::createStripDeadPrototypesPass());
+  pass_manager.add(llvm::createGlobalDCEPass());
+  pass_manager.add(llvm::createGlobalOptimizerPass());
+  pass_manager.add(llvm::createGlobalDCEPass());
 
-    debug_pass_manager.run(*module);
+  if (opt_level != OptLevel::Debug) {
+    pass_manager.add(llvm::createPromoteMemoryToRegisterPass());
+    pass_manager.add(llvm::createInstructionCombiningPass());
+    pass_manager.add(llvm::createReassociatePass());
+    pass_manager.add(llvm::createGVNPass());
+    pass_manager.add(llvm::createCFGSimplificationPass());
+    pass_manager.add(llvm::createDeadStoreEliminationPass());
+    pass_manager.add(llvm::createDeadCodeEliminationPass());
+    pass_manager.add(llvm::createAggressiveDCEPass());
+    pass_manager.add(llvm::createCFGSimplificationPass());
+    pass_manager.add(llvm::createInstructionCombiningPass());
+    pass_manager.add(llvm::createReassociatePass());
+    pass_manager.add(llvm::createGVNPass());
+    pass_manager.add(llvm::createCFGSimplificationPass());
+    pass_manager.add(llvm::createDeadStoreEliminationPass());
+    pass_manager.add(llvm::createDeadCodeEliminationPass());
+    pass_manager.add(llvm::createAggressiveDCEPass());
+    pass_manager.add(llvm::createCFGSimplificationPass());
+    pass_manager.add(llvm::createInstructionCombiningPass());
   }
+
+  pass_manager.run(*module);
 }
 
 }
