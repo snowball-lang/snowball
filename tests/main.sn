@@ -24,4 +24,5 @@ public func main() i32 {
   b = &a;
   test(a);
   printf(c"Hello, world!\n");
+  //test2(new Hello<i32>(25));
 }

@@ -18,9 +18,7 @@ class Ident final : public Self<Ident>, public Expr, public GenericNode<ast::Typ
 public:
   Ident(const SourceLocation& location, const std::string& name,
         std::optional<GenericNode> generics = std::nullopt)
-    : Expr(location)
-    , GenericNode(generics)
-    , name(name) {}
+    : Expr(location), GenericNode(generics), name(name) {}
   ~Ident() = default;
 
   auto get_name() const { return name; }
