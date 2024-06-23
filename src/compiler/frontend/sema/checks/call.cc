@@ -14,6 +14,7 @@ void TypeChecker::visit(ast::Call* node) {
     arg_types.push_back(arg->get_type());
   }
   ast::types::Type* callee_type = nullptr;
+  bool is_constructor = false;
   if (auto ident = node->get_callee()->as<ast::Ident>()) {
     auto item = get_item(ident).item;
     if (!item.has_value()) {
@@ -90,6 +91,7 @@ void TypeChecker::visit(ast::Call* node) {
         node->get_args().insert(node->get_args().begin(), object); 
       }
       auto fn = get_best_match(fn_decls, arg_types, node->get_location(), index->get_member()->get_generics(), false, ignore_self);
+      is_constructor = fn->is_constructor();
       index->set_var_id(fn->get_id());
       callee_type = fn->get_type();
     }
@@ -110,7 +112,7 @@ void TypeChecker::visit(ast::Call* node) {
     return;
   }
   auto as_func = callee_type->as_func();
-  for (size_t i = 0; i < arg_types.size(); i++) {
+  for (size_t i = is_constructor; i < arg_types.size(); i++) {
     auto invalid = try_cast(node->get_args()[i], as_func->get_param_types()[i]);
     if (invalid) {
       err(node->get_location(), fmt::format("Type mismatch in argument {} of call to function '{}'", i + 1, callee_type->get_printable_name()), Error::Info {

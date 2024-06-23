@@ -13,7 +13,7 @@ void CommentWriter::printInfoComment(const llvm::Value& I,
     OS << ", #type=" << *I.getType();
   } else if (llvm::isa<llvm::AllocaInst>(&I)) {
     auto alloca = llvm::cast<llvm::AllocaInst>(&I);
-    OS << ", size/bytes=" << DL.getTypeAllocSize(alloca->getAllocatedType());
+    OS << ", #size/bytes=" << DL.getTypeAllocSize(alloca->getAllocatedType());
   }
   const auto* instr = llvm::dyn_cast<llvm::Instruction>(&I);
   if (instr) {

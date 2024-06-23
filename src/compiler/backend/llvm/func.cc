@@ -82,6 +82,7 @@ void LLVMBuilder::generate_constructor(const sil::FuncDecl* node) {
   auto vtable_type = get_vtable_type(parent_type);
   if (vtable_type == nullptr) return;
   debug(F("[func] Generating constructor for class {}", node->get_parent_type().value()->get_printable_name()));
+  set_debug_info(node);
   auto ctor = llvm::BasicBlock::Create(*llvm_ctx, "ctor", builder_ctx.get_current_func());
   auto cont = llvm::BasicBlock::Create(*llvm_ctx, "ctor.cont", builder_ctx.get_current_func());
   builder->CreateBr(ctor);

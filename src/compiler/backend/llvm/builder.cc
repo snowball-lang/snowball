@@ -129,8 +129,8 @@ llvm::Value* LLVMBuilder::build(sil::Inst* inst) {
 void LLVMBuilder::set_debug_info(const sil::Inst* node) {
   if (node) {
     auto info = node->get_location();
-    if (auto f = builder_ctx.get_current_func()) {
-      auto loc = llvm::DILocation::get(*llvm_ctx, info.line, info.column, f->getSubprogram());
+    if (auto& f = dbg.scope) {
+      auto loc = llvm::DILocation::get(*llvm_ctx, info.line, info.column, f);
       builder->SetCurrentDebugLocation(loc);
       return;
     }
@@ -159,6 +159,7 @@ llvm::AllocaInst* LLVMBuilder::alloc(types::Type* type, const std::string& name)
   if (entry) {
     builder->SetInsertPoint(entry);
   }
+  set_debug_info(nullptr);
   auto alloca = builder->CreateAlloca(ll, nullptr, name);
   builder->SetInsertPoint(bb);
   return alloca;

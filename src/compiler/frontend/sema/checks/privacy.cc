@@ -99,7 +99,7 @@ TypeChecker::GetResult TypeChecker::check_privacy(GetResult result, const Source
   }
 
   if (!is_valid) {
-    err(loc, "Attempted to access private " + item_type + " '" + item_name + "'", Error::Info{
+    err(loc, "Attempted to access private " + item_type + " '" + printable_op(item_name) + "'", Error::Info{
       .highlight = "Not accessible from this context",
       .help = "Make the " + item_type + " public or move the usage to the same module",
       .note = std::string("The " + item_type + " is marked as ") + 

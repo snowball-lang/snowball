@@ -8,7 +8,7 @@ public interface Lol<D> {
 public final class Hello<T> implements Lol<T>, ToString, Clone<Self> {
   public let mut a: T;
 
-  init(x: T) {
+  public init(x: T) {
     self.a = x;
   }
 

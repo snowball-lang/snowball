@@ -98,6 +98,10 @@ static cl::opt<ExplicitBitness, true> explicit_bitness("explicit-bitness", cl::d
   cl::desc("This is a flag that determines the bitness of the output"),
   cl::value_desc("bitness"));
 
+static cl::opt<bool, true> disable_virtual_call_opt("disable-devirtualize", cl::desc("Disable virtual call optimisation"), 
+  cl::cat(output_category), cl::location(global.disable_virtual_call_opt),
+  cl::desc("This is a flag that determines whether the virtual call optimisation will be disabled"));
+
 } // namespace opts
 } // namespace snowball
 

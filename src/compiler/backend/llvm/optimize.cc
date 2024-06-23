@@ -2,7 +2,7 @@
 #include "compiler/globals.h"
 #include "compiler/backend/llvm/builder.h"
 
-#define SNOWBALL_LLVM_DUMP_ON_FAIL 0
+#define SNOWBALL_LLVM_DUMP_ON_FAIL 1
 
 namespace snowball {
 namespace backend {

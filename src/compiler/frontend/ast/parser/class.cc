@@ -60,6 +60,7 @@ Parser::ParsingClassResult Parser::parse_class_body() {
           case Token::Type::KwordVar:
           case Token::Type::KwordOperator:
           case Token::Type::KwordVirtual:
+          case Token::Type::Identifier:
             break;
           default:
             err("Expected a class member after privacy modifier", Error::Info {
