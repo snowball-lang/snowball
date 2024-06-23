@@ -39,7 +39,7 @@ ast::FnDecl* Parser::parse_fn_decl(const ast::AttributedNode& attrs, bool is_con
     }
   } else if (is_constructor) {
     name = sema::TypeChecker::op_to_string(Operator::New);
-    if (attrs.get_static() || attrs.get_virtual()) {
+    if (attrs.get_virtual()) {
       err("Constructors cannot have modifiers", Error::Info {
         .highlight = fmt::format("Constructors cannot have modifiers"),
         .help = fmt::format("Constructors are implicitly static, non-virtual, and non-operator functions"),

@@ -106,7 +106,7 @@ class LLVMBuilder : public sil::Builder {
   llvm::ArrayType* get_array_type(size_t size, llvm::Type* type);
   llvm::DIType* get_ditype(types::Type* type);
   llvm::FunctionType* get_func_type(types::FuncType* type, bool* has_sret = nullptr);
-  llvm::Value* do_vcall(const sil::Call* node, std::vector<llvm::Value*>& args);
+  llvm::Value* do_vcall(const sil::Call* node, std::vector<llvm::Value*>& args, bool is_sret = false);
 
   llvm::Type* get_vtable_type(types::ClassType* type);
   llvm::Constant* create_vtable_global(types::ClassType* type);

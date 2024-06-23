@@ -38,7 +38,7 @@ void TypeChecker::visit(ast::Ident* node) {
   if (item.value().is_var()) {
     auto var = item.value().get_var();
     var->set_used();
-    if (auto berr = borrow_checker.check_var_use(var->get_id(), node->is_used_as_assignee())) {
+    if (auto berr = borrow_checker.check_var_use(var->get_id(), node->is_used_as_assignee(), var->get_type()->is_copyable()); berr.has_value()) {
       std::string highligh = "";
       switch (berr.value().kind) {
         case borrow::BorrowError::Kind::UseAfterMove:

@@ -47,7 +47,9 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
         }, Error::Type::Err, false);
         return {std::nullopt, obj_name, false};
       }
-      sn_assert(false, "not implemented (static member access for types)");
+      // note: We use get_type again here in order to instantiate the type
+      // TODO: Is this the best way to do this?
+      return check_privacy(get_from_type(member, get_type(member->get_const_object())), loc);
     } else if (obj->is_module()) {
       auto mod = obj->get_module();
       if (member->get_access_type() != ast::MemberAccess::AccessType::Static) {

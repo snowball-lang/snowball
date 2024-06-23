@@ -60,6 +60,7 @@ Parser::ParsingClassResult Parser::parse_class_body() {
           case Token::Type::KwordVar:
           case Token::Type::KwordOperator:
           case Token::Type::KwordVirtual:
+          case Token::Type::Identifier:
             break;
           default:
             err("Expected a class member after privacy modifier", Error::Info {
@@ -140,6 +141,7 @@ Parser::ParsingClassResult Parser::parse_class_body() {
       case Token::Type::Identifier: // This must be the last case always!
         if (current.to_string() == "init") {
           attrs.set_operator(true);
+          attrs.set_static(true);
           auto fn = parse_fn_decl(attrs, true);
           result.funcs.push_back(fn);
           attrs = ast::AttributedNode::empty();

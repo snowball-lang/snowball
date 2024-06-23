@@ -1,13 +1,18 @@
 
 using std::main::(printf, test);
-using crate::mod::(Hello, Lol);
+using crate::mod::(Hello);
+
+public interface Lol<D> {
+  public operator func +(x: D);
+}
 
 public func test2(x: Hello<i32>) Hello<i32> {
   //balls(x);
   //x.hello(x);
   let mut a;
   a = 24 * 24 - 2;
-  x + 25;
+  //x + 25;
+  let p = x.to_string();
   x
 }
 
@@ -24,5 +29,5 @@ public func main() i32 {
   b = &a;
   test(a);
   printf(c"Hello, world!\n");
-  //test2(new Hello<i32>(25));
+  test2(new Hello<i32>(25));
 }

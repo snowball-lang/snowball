@@ -95,7 +95,7 @@ public:
   void assign_variable(uint64_t id);
   void init_variable(uint64_t id);
 
-  ResultOpt check_var_use(uint64_t id, bool is_assignment = false);
+  ResultOpt check_var_use(uint64_t id, bool is_assignment = false, bool is_copyable = false);
 
 private:
   std::optional<VariableStatus*> get_variable(uint64_t id, bool current_scope_only = false);

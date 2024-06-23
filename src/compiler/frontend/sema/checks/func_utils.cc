@@ -22,7 +22,9 @@ ast::FnDecl* TypeChecker::get_best_match(const FunctionsVector& decls, const std
     matches.push_back(decls[0]);
   }
   for (auto& decl : decls) {
-    if (decl->get_params().size() != args.size() || identified) 
+    if (decl->is_constructor() && (decl->get_params().size()-1 == args.size())) {
+      ignore_self = true;
+    } else if (decl->get_params().size() != args.size() || identified) 
       continue;
     bool match = true;
     sn_assert(!(ignore_self && args.size() < 1), "Invalid ignore_self parameter given!");
@@ -152,7 +154,7 @@ ast::FnDecl* TypeChecker::propagate_generic(ast::FnDecl* node, const llvm::Strin
 #define HAS_SELF_PARAM (params.size() > 0 && params[0]->get_name() == "self")
 void TypeChecker::add_self_param(ast::FnDecl*& node, bool as_monorph) {
   auto current_class = ctx.current_class;
-  if (node->get_static() || !current_class) return;
+  if ((node->get_static() && !node->is_constructor()) || !current_class) return;
   auto& params = node->get_params();
   if (HAS_SELF_PARAM && !as_monorph) return; // already has a self param
   debug(F("\t[add_self_param] Adding self param to function '{}' ({})", node->get_name(), current_class->get_type()->get_printable_name()));

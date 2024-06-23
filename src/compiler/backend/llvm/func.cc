@@ -48,15 +48,16 @@ void LLVMBuilder::emit(const sil::FuncDecl* node) {
       return;
     }
     auto func = llvm::cast<llvm::Function>(builder_ctx.get_value(node->get_id()));
-    auto entry = llvm::BasicBlock::Create(*llvm_ctx, "entry", func);
-    builder->SetInsertPoint(entry);
+    builder_ctx.set_current_func(func, node);
     func->setSubprogram(get_disubprogram(node));
     dbg.scope = func->getSubprogram();
-    assert(node->get_params().size() == fn_type->getNumParams() - has_sret);
-    builder_ctx.set_current_func(func, node);
     if (node->is_constructor()) {
       generate_constructor(node);
+    } else {
+      auto entry = llvm::BasicBlock::Create(*llvm_ctx, "entry", func);
+      builder->SetInsertPoint(entry);
     }
+    assert(node->get_params().size() == fn_type->getNumParams() - has_sret);
     size_t arg_idx = 0;
     for (auto& [id, name] : node->get_params()) {
       auto arg = func->arg_begin();
@@ -82,9 +83,9 @@ void LLVMBuilder::generate_constructor(const sil::FuncDecl* node) {
   auto vtable_type = get_vtable_type(parent_type);
   if (vtable_type == nullptr) return;
   debug(F("[func] Generating constructor for class {}", node->get_parent_type().value()->get_printable_name()));
+  set_debug_info(node);
   auto ctor = llvm::BasicBlock::Create(*llvm_ctx, "ctor", builder_ctx.get_current_func());
   auto cont = llvm::BasicBlock::Create(*llvm_ctx, "ctor.cont", builder_ctx.get_current_func());
-  builder->CreateBr(ctor);
   builder->SetInsertPoint(ctor);
   auto vtable_global = create_vtable_global(parent_type);
   auto vtable_storage = builder->CreateStructGEP(get_type(parent_type), builder_ctx.get_current_func()->arg_begin(), 0);

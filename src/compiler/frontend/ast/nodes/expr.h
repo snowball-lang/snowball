@@ -10,6 +10,8 @@ namespace snowball {
 namespace frontend {
 namespace ast {
 
+class NewExpr;
+
 class Ident final : public Self<Ident>, public Expr, public GenericNode<ast::TypeRef> {
   std::string name;
   uint64_t var_id = 0;
@@ -223,15 +225,14 @@ public:
   SN_VISIT()
 };
 
-class Call final : public Expr {
-  Expr* callee;
+class Call : public Expr {
   std::vector<Expr*> args;
-
+protected:
+  Expr* callee;
+  friend NewExpr;
 public:
   Call(const SourceLocation& location, Expr* callee, std::vector<Expr*> args)
-    : Expr(location)
-    , callee(callee)
-    , args(args) {}
+    : Expr(location), callee(callee), args(args) {}
   ~Call() = default;
 
   auto get_callee() const { return callee; }
@@ -279,6 +280,22 @@ public:
 
   static auto create(const SourceLocation& location, Expr* expr) {
     return new Dereference(location, expr);
+  }
+
+  SN_VISIT()
+};
+
+class NewExpr final : public Self<NewExpr>, public Call {
+  TypeRef target;   
+public:
+  NewExpr(const SourceLocation& location, TypeRef type, std::vector<Expr*> args)
+    : Call(location, nullptr, args), target(type) {}
+
+  auto get_target() const { return target; }
+  void set_caller(Expr* caller) { callee = caller; }
+
+  static auto create(const SourceLocation& location, TypeRef type, std::vector<Expr*> args) {
+    return new NewExpr(location, type, args);
   }
 
   SN_VISIT()

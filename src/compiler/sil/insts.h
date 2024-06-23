@@ -156,11 +156,7 @@ public:
   VarDecl(LocationHolder& loc, ast::types::Type* type, const std::string& name,
           const ast::AttributedNode& attrs, std::optional<Inst*> value = std::nullopt,
           uint64_t id = 0)
-    : Identified(id)
-    , Inst(loc, type)
-    , AttributedNode(attrs)
-    , name(name)
-    , value(value) {}
+    : Identified(id), Inst(loc, type), AttributedNode(attrs), name(name), value(value) {}
   ~VarDecl() = default;
 
   auto get_name() const { return name; }
@@ -225,9 +221,7 @@ class Call final : public Inst {
 public:
   Call(LocationHolder& loc, ast::types::Type* type, Inst* callee,
        const std::vector<Inst*>& args)
-    : Inst(loc, type)
-    , callee(callee)
-    , args(args) {}
+    : Inst(loc, type), callee(callee), args(args) {}
   ~Call() = default;
 
   auto get_callee() const { return callee; }

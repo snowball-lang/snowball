@@ -70,6 +70,7 @@ struct GlobalContext {
 #error "Unknown architecture"
 #endif
   bool static_link = false;
+  bool disable_virtual_call_opt = false;
   std::vector<std::string> link_flags;
   ExplicitBitness explicit_bitness = ExplicitBitness::None;
   FloatABI float_abi = FloatABI::Default;

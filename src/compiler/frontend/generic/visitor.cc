@@ -97,6 +97,10 @@ void GenericVisitor::visit(ast::Use* node) {
   // Do nothing
 }
 
+void GenericVisitor::visit(ast::NewExpr* node) {
+  visit(node->as<ast::Call>());
+}
+
 void GenericVisitor::visit(ast::Return* node) {
   if (node->get_value()) {
     node->get_value().value()->accept(this);
