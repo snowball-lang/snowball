@@ -182,9 +182,6 @@ void TypeChecker::check_fn(ast::FnDecl*& fn_decl, bool as_monorph) {
   }
   auto ret_type = get_type(fn_decl->get_return_type());
   auto func_type = ast::types::FuncType::create(fn_decl, ret_type, false, fn_decl->get_unsafe());
-  if (func_type->get_printable_name() == "fn(&tests::main::Lol<i32>, <error>) -> void") {
-    printf("Function type: %s\n", func_type->get_printable_name().c_str());
-  }
   fn_decl->get_type() = nullptr;
   unify(fn_decl->get_type(), func_type, fn_decl->get_return_type().get_location());
   func_type->recalibrate_cache();
