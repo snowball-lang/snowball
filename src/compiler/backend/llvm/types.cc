@@ -89,9 +89,15 @@ llvm::DIType* LLVMBuilder::get_ditype(types::Type* type) {
     auto file = dbg.get_file(class_ty->get_location().file->get_path());
     // TODO: Add members
     auto decl = class_ty->get_decl();
-    auto ty = dbg.builder->createStructType(dbg.scope, type->get_printable_name(), file, 0, layout->getSizeInBits(), 
-      0 /* TODO: Aligment! */, llvm::DINode::DIFlags::FlagZero, nullptr, {}, 0,
-      dbg.builder->createPointerType(dbg.builder->createUnspecifiedType("vtable-type"), 64));
+    auto ty = dbg.builder->createClassType(dbg.scope, type->get_printable_name(), file, 0, layout->getSizeInBits(), 
+      0, 0, llvm::DINode::DIFlags::FlagZero, nullptr, {});
+    if (class_ty->get_decl()->has_vtable()) {
+      members.push_back(dbg.builder->createMemberType(
+        dbg.scope, "_vptr", file, 0, 64, 0, 0, 
+        llvm::DINode::DIFlags::FlagArtificial, 
+        dbg.builder->createPointerType(dbg.builder->createUnspecifiedType("vtable"), 64)
+      ));
+    }
     builder_cache.ditype_map[class_ty->get_id()] = ty;
     for (size_t i = 0; i < decl->get_vars().size(); i++) {
       auto var = decl->get_vars()[i];
