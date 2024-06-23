@@ -61,12 +61,13 @@ void BorrowChecker::assign_variable(uint64_t id) {
   var.value()->set_moved();
 }
 
-BorrowChecker::ResultOpt BorrowChecker::check_var_use(uint64_t id, bool is_assignment) {
+BorrowChecker::ResultOpt BorrowChecker::check_var_use(uint64_t id, bool is_assignment, bool is_copy) {
   auto var = get_variable(id);
   if (!var.has_value()) return {}; // It's ok
   auto var_value = var.value();
   switch (var_value->get_status()) {
     case VariableStatusType::Moved:
+      if (is_copy) { return {}; } // It's ok 
       return {BorrowError {
         .kind = BorrowError::Kind::UseAfterMove,
         .message = F("Variable '{}' used after move!", var_value->get_name())

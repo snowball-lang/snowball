@@ -220,6 +220,7 @@ public:
   std::string get_mangled_name() override;
 
   bool equals_impl(Type* other, bool ignore_self) override;
+  bool is_copyable() const override;
 };
 
 class ErrorType final : public Type {

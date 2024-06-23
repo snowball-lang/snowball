@@ -307,6 +307,17 @@ bool SelfType::equals_impl(Type* other, bool ignore_self) {
   return false;
 }
 
+bool GenericType::is_copyable() const {
+  for (const auto& constraint : constraints) {
+    if (auto as_class = constraint->as_class()) {
+      if (as_class->get_decl()->get_builtin_name() == "copy") {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 }
 }
 }

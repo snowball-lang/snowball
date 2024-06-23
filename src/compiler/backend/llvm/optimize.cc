@@ -2,7 +2,12 @@
 #include "compiler/globals.h"
 #include "compiler/backend/llvm/builder.h"
 
+#ifndef NDEBUG
 #define SNOWBALL_LLVM_DUMP_ON_FAIL 1
+#else
+// Do not change this value
+#define SNOWBALL_LLVM_DUMP_ON_FAIL 0
+#endif
 
 namespace snowball {
 namespace backend {

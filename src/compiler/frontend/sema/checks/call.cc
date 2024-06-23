@@ -91,6 +91,10 @@ void TypeChecker::visit(ast::Call* node) {
         node->get_args().insert(node->get_args().begin(), object); 
       }
       auto fn = get_best_match(fn_decls, arg_types, node->get_location(), index->get_member()->get_generics(), false, ignore_self);
+      if (!fn) {
+        unify(node->get_type(), get_error_type());
+        return;
+      }
       is_constructor = fn->is_constructor();
       index->set_var_id(fn->get_id());
       callee_type = fn->get_type();
