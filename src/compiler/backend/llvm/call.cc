@@ -17,10 +17,6 @@ void LLVMBuilder::emit(const sil::Call* node) {
   for (auto& arg : node->get_args()) {
     args.push_back(expr(arg));
   }
-  if (auto val = do_vcall(node, args)) {
-    value = val;
-    return;
-  }
   auto callee = expr(node->get_callee());
   set_debug_info(node);
   auto fn_type = node->get_callee()->get_type()->as_func();
@@ -33,8 +29,13 @@ void LLVMBuilder::emit(const sil::Call* node) {
     sret = alloc(fn_type->get_return_type(), ".call-sret");
     args.insert(args.begin(), sret);
   }
-  set_debug_info(node);
-  value = builder->CreateCall(callee_type, callee, args); 
+  if (auto val = do_vcall(node, args, has_sret)) {
+    set_debug_info(node);
+    value = val;
+  } else {
+    set_debug_info(node);
+    value = builder->CreateCall(callee_type, callee, args); 
+  }
   if (has_sret) {
     value = sret;
   } else if (is_ctor) {

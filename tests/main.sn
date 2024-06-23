@@ -12,6 +12,7 @@ public func test2(x: Hello<i32>) Hello<i32> {
   let mut a;
   a = 24 * 24 - 2;
   //x + 25;
+  let p = x.to_string();
   x
 }
 

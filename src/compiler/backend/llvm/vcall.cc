@@ -4,12 +4,13 @@
 namespace snowball {
 namespace backend {
 
-llvm::Value* LLVMBuilder::do_vcall(const sil::Call* node, std::vector<llvm::Value*>& args) {
+llvm::Value* LLVMBuilder::do_vcall(const sil::Call* node, std::vector<llvm::Value*>& args, bool is_sret) {
   auto func = node->get_callee_as_func();
   if (!func) return nullptr;
   if (!(*func)->get_virtual() || node->should_ignore_virtual()) return nullptr;
   // Arg 1 should be the object we are using as the vtable
   auto func_val = func.value();
+  set_debug_info(node);
   if (func_val->get_parent_type().has_value()) {
     auto self_type = func_val->get_parent_type().value();
     auto class_type = self_type->as_class();
@@ -18,7 +19,7 @@ llvm::Value* LLVMBuilder::do_vcall(const sil::Call* node, std::vector<llvm::Valu
     } else {
       auto vtable_load = builder->CreateStructGEP(
         get_type(class_type),
-        args[0],
+        args[is_sret],
         0
       );
       auto [vtable, index] = get_vtable_index(func_val);
