@@ -18,7 +18,8 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast, bool first) {
     }
     return;
   }
-  for (auto& decl : ast) {
+  auto ast_copy = ast;
+  for (auto& decl : ast_copy) {
     if (auto fn_decl = decl->as<ast::FnDecl>()) {
       do_global_func(fn_decl);
     } else if (auto class_decl = decl->as<ast::ClassDecl>()) {

@@ -23,6 +23,9 @@ void TypeChecker::visit(ast::NewExpr* node) {
       )), ast::MemberAccess::AccessType::Static);
     node->set_caller(index);
     visit(node->as<ast::Call>());
+    node->get_type() = nullptr;
+    unify(node->get_type(), callee);
+    return;
   }
   err(node->get_location(), F("Cannot instantiate type '{}'", callee->get_printable_name()), Error::Info {
     .highlight = F("Type '{}' cannot be instantiated", callee->get_printable_name()),

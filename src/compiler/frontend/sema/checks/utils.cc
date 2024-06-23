@@ -47,7 +47,7 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
         }, Error::Type::Err, false);
         return {std::nullopt, obj_name, false};
       }
-      sn_assert(false, "not implemented (static member access for types)");
+      return get_from_type(member, obj->get_type());
     } else if (obj->is_module()) {
       auto mod = obj->get_module();
       if (member->get_access_type() != ast::MemberAccess::AccessType::Static) {
