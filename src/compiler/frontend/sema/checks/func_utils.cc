@@ -176,7 +176,7 @@ void TypeChecker::check_fn(ast::FnDecl*& fn_decl, bool as_monorph) {
     // Some inserted arguments like "self" are not declared
     if (param->get_decl_type().has_value()) {
       param->get_type() = nullptr;
-      unify(param->get_type(), get_type(param->get_decl_type().value()), param->get_location());
+      unify(param->get_type(), get_type(param->get_decl_type().value(), true), param->get_location());
     }
     define_variable(param, param->get_location(), true);
   }
