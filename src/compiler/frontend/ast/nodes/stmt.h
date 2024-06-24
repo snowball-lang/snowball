@@ -199,18 +199,20 @@ public:
   SN_VISIT()
 };
 
-class InterfaceDecl;
+class ExtensionDecl;
 
-class ClassDecl final : public Stmt, public GenericNode<>, 
+class ClassDecl : public Stmt, public GenericNode<>, 
   public AttributedNode, public Identified, public ModuleHolder {
 public:
   enum class ClassType
   {
     Class,
-    Interface
+    Interface,
+    Extension
   };
 private:
-  friend InterfaceDecl;
+  friend ExtensionDecl;
+
   std::string name;
   bool generic_instanced = false;
   std::vector<VarDecl*> vars;
@@ -274,6 +276,26 @@ public:
   }
 
   SN_VISIT()
+};
+
+class ExtensionDecl final : public ClassDecl {
+  TypeRef extended_type;
+
+public:
+  ExtensionDecl(
+      const SourceLocation& location, const TypeRef& extended_type,
+      const std::vector<FnDecl*>& funcs
+  ) : ClassDecl(location, "", {}, funcs, ClassType::Extension), extended_type(extended_type) {}
+  ~ExtensionDecl() = default;
+
+  auto& get_extended_type() { return extended_type; }
+  Node* clone() const override;
+
+  static auto
+  create(const SourceLocation& location, const TypeRef& extended_type,
+         const std::vector<FnDecl*>& funcs) {
+    return new ExtensionDecl(location, extended_type, funcs);
+  }
 };
 
 class Return final : public Stmt {
