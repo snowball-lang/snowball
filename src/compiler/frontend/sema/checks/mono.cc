@@ -78,7 +78,6 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const llvm::Str
   set_generic_context(state);
   enter_scope();
   auto backup_class = ctx.current_class;
-  ctx.current_class = node;
   std::vector<ast::types::Type*> new_generics;
   new_generics.reserve(node->get_generics().size());
   for (auto& [name, type] : generics) {
@@ -86,6 +85,7 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const llvm::Str
     new_generics.push_back(type);
   }
   unify(node->get_type(), ast::types::ClassType::create(node, class_ty_copy->get_path(), new_generics, class_ty_copy->get_location()), node->get_location());
+  ctx.current_class = node->get_type();
   update_self_type();
   for (auto& impl : node->get_implemented_interfaces()) {
     impl.set_internal_type(get_type(impl));

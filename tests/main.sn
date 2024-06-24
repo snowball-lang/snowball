@@ -7,13 +7,19 @@ public interface Lol<D> {
 }
 
 public func test2(x: Hello<i32>) Hello<i32> {
-  //balls(x);
-  //x.hello(x);
   let mut a;
   a = 24 * 24 - 2;
-  //x + 25;
+  x + 25;
   let p = x.to_string();
+//  x.hello();
+  a.hello();
   x
+}
+
+extension i32 {
+  public func hello() {
+    printf(c"Hello from i32::hello!\n");
+  }
 }
 
 #[no_mangle]

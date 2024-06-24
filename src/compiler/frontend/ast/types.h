@@ -15,6 +15,7 @@ namespace snowball {
 namespace frontend {
 namespace ast {
 class ClassDecl;
+class ExtensionDecl;
 
 namespace types {
 
@@ -32,6 +33,7 @@ class SelfType;
 
 class Type {
   bool is_mutable = false;
+  std::vector<ExtensionDecl*> extensions;
 
 public:
   virtual ~Type() = default;
@@ -57,6 +59,9 @@ public:
 
   virtual bool equals(Type* other, bool ignore_self = false);
   virtual bool equals_impl(Type* other, bool ignore_self) = 0;
+
+  void add_extension(ExtensionDecl* ext) { extensions.push_back(ext); }
+  auto& get_extensions() { return extensions; }
 
   Type* get_reference_to();
   Type* get_pointer_to(bool is_const = false);

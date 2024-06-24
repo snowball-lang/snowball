@@ -82,7 +82,11 @@ TypeChecker::GetResult TypeChecker::get_item(ast::Expr* expr, NameAccumulator ac
     }
     sn_assert(false, "Invalid member access object found!");
   } else {
-    sn_assert(false, "not implemented (invalid expr type for get_item)");
+    err(loc, "Expected identifier or member access but found something else", Error::Info {
+      .highlight = "Invalid expression",
+      .help = "We expected an identifier or member access here, but found something else."
+    });
+    return {std::nullopt, "", false};
   }
 }
 
@@ -291,18 +295,28 @@ TypeChecker::GetResult TypeChecker::get_from_type(ast::MemberAccess* node, ast::
     // We dont do a recursive call here, because we can only get the member
     // of the reference (in just one level deep)
     type = as_ref->get_ref();
+  } else if (auto as_unknown = type->as_unknown()) {
+    // Attempt to resolve the unknown type
+    // If we cant resolve it, thats the best we can do
+    type = get_universe().get_constraints().at(as_unknown->get_id());
   }
-  if (auto as_class = type->as_class()) {
-    auto decl = as_class->get_decl();
+  bool dont_error = false;
+  size_t tries = 0;
+  ast::ClassDecl* as_class_decl = nullptr;
+fetch_member:
+  if (auto as_class = type->as_class(); as_class || as_class_decl) {
+    if (!as_class_decl) {
+      as_class_decl = as_class->get_decl();
+    }
     size_t index = 0;
-    for (auto& field : decl->get_vars()) {
+    for (auto& field : as_class_decl->get_vars()) {
       if (field->get_name() == member_name) {
         return {TypeCheckItem::create_var(field), full_name};
       }
       index++;
     }
     FunctionsVector methods;
-    for (auto& method : decl->get_funcs()) {
+    for (auto& method : as_class_decl->get_funcs()) {
       if (method->get_name() == member_name) {
         methods.push_back(method);
       }
@@ -310,9 +324,6 @@ TypeChecker::GetResult TypeChecker::get_from_type(ast::MemberAccess* node, ast::
     if (methods.size() > 0) {
       return {TypeCheckItem::create_fn_decl(methods), full_name};
     }
-    err(node->get_location(), "Coudnt find member named '" + printable_op(member_name) + "' in class '" + type->get_printable_name() + "'!", Error::Info {
-      .highlight = fmt::format("Member '{}' not found in class '{}'", printable_op(member_name), type->get_printable_name())
-    });
   } else if (auto as_generic = type->as_generic()) {
     std::optional<GetResult> result;
     std::vector<std::string> names;
@@ -333,20 +344,27 @@ TypeChecker::GetResult TypeChecker::get_from_type(ast::MemberAccess* node, ast::
       }
     }
     if (!found) {
-      err(node->get_location(), "Coudnt find member named '" + printable_op(member_name) + "' in generic type '" + type->get_printable_name() + "'!", Error::Info {
-        .highlight = fmt::format("Member '{}' not found in generic type '{}'", printable_op(member_name), type->get_printable_name()),
-        .note = names.empty() ? "" : fmt::format("The generic type has the following constraints: {}", utils::join(names, ", "))
-      });
+      if (!dont_error)
+        err(node->get_location(), "Coudnt find member named '" + printable_op(member_name) + "' in generic type '" + type->get_printable_name() + "'!", Error::Info {
+          .highlight = fmt::format("Member '{}' not found in generic type '{}'", printable_op(member_name), type->get_printable_name()),
+          .note = names.empty() ? "" : fmt::format("The generic type has the following constraints: {}", utils::join(names, ", "))
+        });
       return {std::nullopt, full_name};
     }
     result->ignore_self = true;
     return *result;
-  } else {
-    err(node->get_location(), "Expected class type but found '" + type->get_printable_name() + "'", Error::Info {
-      .highlight = "Not a class type",
-      .help = "We expected a class type here, but found something else. Maybe you forgot to import a module?"
-    }, Error::Type::Err, false);
   }
+  if (!dont_error) {
+    dont_error = true;
+    for (; tries < type->get_extensions().size(); ++tries) {
+      as_class_decl = type->get_extensions()[tries];
+      goto fetch_member;
+    }
+  }
+  if (!dont_error)
+    err(node->get_location(), "Coudnt find member named '" + printable_op(member_name) + "' in class '" + type->get_printable_name() + "'!", Error::Info {
+      .highlight = fmt::format("Member '{}' not found in class '{}'", printable_op(member_name), type->get_printable_name())
+    });
   return {std::nullopt, full_name, false};
 }
 
@@ -399,7 +417,7 @@ ast::types::GenericType* TypeChecker::create_generic_type(ast::GenericDecl& decl
 
 void TypeChecker::update_self_type() {
   sn_assert(ctx.current_class, "No current class found");
-  auto self = ctx.current_class->get_type();
+  auto self = ctx.current_class;
   auto self_ty = ast::types::SelfType::create(self);
   universe.add_item("Self", self_ty);
 }

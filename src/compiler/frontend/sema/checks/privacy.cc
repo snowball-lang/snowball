@@ -60,8 +60,8 @@ TypeChecker::GetResult TypeChecker::check_privacy(GetResult result, const Source
     if (auto parent = decl->get_parent_type()) {
       auto as_class = parent.value()->as_class();
       if (as_class) {
-        if (ctx.current_class) {
-          current_path = ctx.current_class->get_type()->as_class()->get_path();
+        if (ctx.current_class && ctx.current_class->is_class()) {
+          current_path = ctx.current_class->as_class()->get_path();
         }
         is_valid = is_accessible(privacy, as_class->get_path(), current_path);
         cont = false;
@@ -79,7 +79,7 @@ TypeChecker::GetResult TypeChecker::check_privacy(GetResult result, const Source
       auto as_class = decl->get_parent_type().value()->as_class();
       if (as_class) {
         if (ctx.current_class) {
-          current_path = ctx.current_class->get_type()->as_class()->get_path();
+          current_path = ctx.current_class->as_class()->get_path();
         }
         is_valid = is_accessible(privacy, as_class->get_path(), current_path);
         cont = false;

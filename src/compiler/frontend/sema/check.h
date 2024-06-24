@@ -174,6 +174,8 @@ private:
   bool check_builtin_type(ast::types::Type* impl, ast::types::Type* x);
   bool check_builtin_type(ast::types::Type* x, const std::string& builtin_name);
 
+  void check_extends(ast::ClassDecl* class_decl);
+
   enum CastType
   {
     Invalid,

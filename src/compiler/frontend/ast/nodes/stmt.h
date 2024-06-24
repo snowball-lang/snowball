@@ -255,6 +255,7 @@ public:
   
   auto get_class_type() const { return class_type; }
   bool is_interface() const { return class_type == ClassType::Interface; }
+  bool is_extension() const { return class_type == ClassType::Extension; }
   bool is_class() const { return class_type == ClassType::Class; }
 
   bool has_vtable() const;

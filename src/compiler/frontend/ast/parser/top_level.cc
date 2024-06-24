@@ -136,6 +136,9 @@ ast::TopLevelAst Parser::parse_top_level(Token::Type terminator) {
       case Token::Type::KwordUse:
         top_level.push_back(parse_use(global_attrs));
         break;
+      case Token::Type::KwordExtends:
+        try_add_node(parse_extension_decl(global_attrs));
+        break;
       case Token::Type::KwordUnsafe:
         global_attrs.set_unsafe(true);
         next();

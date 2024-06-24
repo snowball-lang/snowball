@@ -156,6 +156,10 @@ Node* ClassDecl::clone() const {
   return clone;
 }
 
+Node* ExtensionDecl::clone() const {
+  sn_unreachable();
+}
+
 void FnDecl::create_body_clone() {
   if (get_generics().size() > 0 && body.has_value()) {
     body_clone = (Block*)body.value()->clone();
