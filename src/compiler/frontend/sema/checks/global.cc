@@ -23,16 +23,21 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast, bool first) {
     if (auto fn_decl = decl->as<ast::FnDecl>()) {
       do_global_func(fn_decl);
     } else if (auto class_decl = decl->as<ast::ClassDecl>()) {
+      if (class_decl->is_generic_instanced()) {
+        continue;
+      }
       auto backup = ctx.current_class;
       ctx.current_class = class_decl->get_type();
+      enter_scope();
+      for (auto& generic : class_decl->get_generics())
+        universe.add_item(generic.get_name(), ast::types::GenericType::create(generic.get_name()));
+      update_self_type();
       for (auto& method : class_decl->get_funcs()) {
         enter_scope();
-        update_self_type();
-        for (auto& generic : class_decl->get_generics())
-          universe.add_item(generic.get_name(), ast::types::GenericType::create(generic.get_name()));
         do_global_func(method);
         exit_scope();
       }
+      exit_scope();
       ctx.current_class = backup;
     } else if (auto use_decl = decl->as<ast::Use>()) {
       do_global_use(use_decl);

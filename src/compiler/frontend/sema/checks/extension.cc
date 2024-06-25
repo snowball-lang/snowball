@@ -23,6 +23,17 @@ void TypeChecker::check_extends(ast::ClassDecl* class_decl) {
       });
     }
   }
+  if (type_is_class) {
+    auto as_class = type->as_class();
+    if (as_class->is_interface_decl()) {
+      err(node->get_location(), "Interfaces cannot be extended", Error::Info {
+        .highlight = "Interfaces cannot be extended",
+        .help = "Interfaces are a special type of class that cannot be instantiated and can only contain abstract methods",
+        .see = "https://snowball-lang.gitbook.io/docs/language-reference/classes/interfaces"
+      }, Error::Type::Err, false);
+    }
+    
+  }
 }
 
 }

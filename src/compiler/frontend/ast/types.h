@@ -54,6 +54,7 @@ public:
 #undef CHILD
   virtual std::string get_printable_name() = 0;
   virtual std::string get_mangled_name() = 0;
+
   virtual bool is_deep_unknown() const { return false; }
   virtual bool is_deep_generic() const { return false; }
 

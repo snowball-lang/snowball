@@ -98,6 +98,10 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const llvm::Str
     enter_scope();
     check_fn(method, true);
     method->set_parent_type(node->get_type());
+    exit_scope();
+  }
+  for (auto& method : node->get_funcs()) {
+    enter_scope();
     method->accept(this);
     exit_scope();
   }

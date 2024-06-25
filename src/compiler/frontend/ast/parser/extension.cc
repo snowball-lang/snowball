@@ -59,6 +59,9 @@ ast::ExtensionDecl* Parser::parse_extension_decl(const ast::AttributedNode& attr
     }
   parse_fn_decl:
     funcs.push_back(parse_fn_decl(fn_attrs));
+    if (fn_attrs.get_virtual()) {
+      funcs.back()->set_vtable_index({0, virtual_index++});
+    }
     fn_attrs = ast::AttributedNode::empty();
   }
   next(); // skip the closing curly brace

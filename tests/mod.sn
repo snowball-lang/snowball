@@ -8,6 +8,10 @@ public final class Hello<T: Copy> implements crate::main::Lol<T>, ToString, Clon
     self.a = x;
   }
 
+  func x(x: Hello<f32>) {
+    x.to_string();
+  }
+
   public virtual func to_string() String {
     std::main::printf(c"Hello from to_string\n");
   }
