@@ -24,15 +24,15 @@ llvm::Value* LLVMBuilder::do_vcall(const sil::Call* node, std::vector<llvm::Valu
       );
       auto [vtable, index] = get_vtable_index(func_val);
       auto vtable_ptr = builder->CreateLoad(builder->getPtrTy(), vtable_load);
-      auto func_table_ptr = builder->CreateGEP(
+      auto func_table_ptr = builder->CreateStructGEP(
         get_vtable_type(class_type),
         vtable_ptr,
-        {builder->getInt64(vtable)}
+        {vtable}
       );
-      auto func_ptr = builder->CreateGEP(
+      auto func_ptr = builder->CreateStructGEP(
         ((llvm::StructType*)get_vtable_type(class_type))->getElementType(vtable),
         func_table_ptr,
-        {builder->getInt64(index)}
+        {index}
       );
       auto func_load = builder->CreateLoad(builder->getPtrTy(), func_ptr);
       return builder->CreateCall(get_func_type(func_val->get_type()->as_func()), func_load, args);
