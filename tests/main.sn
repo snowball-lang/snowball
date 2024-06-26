@@ -14,12 +14,19 @@ public func test2(x: Hello<i32>) Hello<i32> {
   let p = x.to_string();
 //  x.hello();
   a.hello();
+  x.hello();
   x
 }
 
 extension i32 {
   public func hello() {
     printf(c"Hello from i32::hello!\n");
+  }
+}
+
+extension crate::mod::Hello {
+  public func hello() {
+    printf(c"Hello from Hello::hello!\n");
   }
 }
 

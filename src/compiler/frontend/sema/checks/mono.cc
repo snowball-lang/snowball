@@ -60,7 +60,7 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const llvm::Str
   node->clear_generics();
   auto class_ty_copy = node->get_type()->as_class();
   node->get_type() = nullptr;
-  auto state = get_generic_context(node->get_id());
+  auto state = get_generic_context(node->get_generic_id());
   node->set_generic_instanced();
   if (global.debug_verbose) {
     std::string gen_str;
@@ -69,7 +69,7 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const llvm::Str
     gen_str = gen_str.substr(0, gen_str.size() - 2);
     debug(F("Monorphosizing class {} with [{}]", node->get_name(), gen_str));
   }
-  generic_class_registry[node->get_id()].push_back(MonorphosizedClass {
+  generic_class_registry[node->get_generic_id()].push_back(MonorphosizedClass {
     .decl = node,
     .generics = generics
   });
@@ -84,7 +84,9 @@ ast::ClassDecl* TypeChecker::monorphosize(ast::ClassDecl*& node, const llvm::Str
     universe.add_item(name.str(), type);
     new_generics.push_back(type);
   }
-  unify(node->get_type(), ast::types::ClassType::create(node, class_ty_copy->get_path(), new_generics, class_ty_copy->get_location()), node->get_location());
+  auto new_class_type = ast::types::ClassType::create(node, class_ty_copy->get_path(), new_generics, class_ty_copy->get_location());
+  new_class_type->override_extensible_id(class_ty_copy->get_id());
+  unify(node->get_type(), new_class_type, node->get_location());
   ctx.current_class = node->get_type();
   update_self_type();
   for (auto& impl : node->get_implemented_interfaces()) {

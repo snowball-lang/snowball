@@ -83,6 +83,9 @@ public:
 
   bool is_extensible() const override { return true; }
   ExtensibleType* as_extensible() override { return this; }
+
+  // Use carefully
+  void override_extensible_id(size_t id) { this->id = id; }
 };
 
 class IntType final : public ExtensibleType {

@@ -13,6 +13,9 @@ void TypeChecker::visit(ast::ClassDecl* node) {
   }
   assert(node->get_type());
   auto class_type = node->get_type()->as_class(); // It may be null
+  if (node->is_extension()) {
+    class_type = nullptr;
+  }
   auto path = get_namespace_path(node->get_name());
   sn_assert(!class_type || (class_type->get_path() == path), "class path mismatch");
   auto backup = ctx.current_class;

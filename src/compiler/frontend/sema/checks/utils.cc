@@ -123,7 +123,7 @@ ast::types::Type* TypeChecker::get_type(const NamespacePath& path) {
   return get_type(expr);
 }
 
-ast::types::Type* TypeChecker::get_type(ast::Expr* expr, bool no_unknown) {
+ast::types::Type* TypeChecker::get_type(ast::Expr* expr, bool no_unknown, bool no_generic_check) {
   auto [item, name, ignore_self] = get_item(expr);
   assert(!ignore_self);
   if (!item.has_value()) {
@@ -137,6 +137,9 @@ ast::types::Type* TypeChecker::get_type(ast::Expr* expr, bool no_unknown) {
     return get_error_type();
   }
   if (item->is_type()) {
+    if (no_generic_check) { // We dont care what type it is, we just want the type
+      return item->get_type();
+    }
     std::vector<ast::types::Type*> generics = fetch_generics_from_node(expr);
     auto ty = deduce_type(item->get_type(), generics, expr->get_location());
     if (no_unknown && ty->is_deep_unknown()) {
@@ -157,12 +160,12 @@ ast::types::Type* TypeChecker::get_type(ast::Expr* expr, bool no_unknown) {
   }
 }
 
-ast::types::Type* TypeChecker::get_type(const ast::TypeRef& tr, bool no_unknown) {
+ast::types::Type* TypeChecker::get_type(const ast::TypeRef& tr, bool no_unknown, bool no_generic_check) {
   if (auto as_ptr = tr.as_pointer()) {
-    auto pointee = get_type(as_ptr->get_type());
+    auto pointee = get_type(as_ptr->get_type(), no_unknown, no_generic_check);
     return ast::types::PointerType::create(pointee, as_ptr->is_const_pointer());
   }
-  return get_type(tr.get_name(), no_unknown);
+  return get_type(tr.get_name(), no_unknown, no_generic_check);
 }
 
 ast::types::Type* TypeChecker::get_type(const std::string& name) {

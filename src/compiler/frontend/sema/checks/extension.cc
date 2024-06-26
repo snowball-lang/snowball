@@ -10,7 +10,7 @@ void TypeChecker::check_extends(ast::ClassDecl* class_decl) {
   auto node = class_decl->as<ast::ExtensionDecl>();
   assert(node && "Expected ExtensionDecl node");
   auto base = node->get_extended_type();
-  auto type = get_type(base);
+  auto type = get_type(base, /*no_unknown=*/true, /*no_generic_check=*/true);
   if (!type->is_extensible()) {
     err(base.get_location(), "Cannot extend this type", Error::Info {
       .highlight = "Cannot extend this type",

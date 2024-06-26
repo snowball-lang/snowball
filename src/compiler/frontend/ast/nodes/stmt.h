@@ -221,6 +221,8 @@ private:
   ClassType class_type = ClassType::Class;
   std::vector<TypeRef> implemented_interfaces;
 
+  uint64_t generic_id = 0;
+
   // Interface specific
   std::string builtin_name; // Identifier for builtin types (e.g. Sized has "sized")
 
@@ -232,7 +234,8 @@ public:
       std::optional<GenericNode> generics = std::nullopt,
       const AttributedNode& attributes = AttributedNode())
     : Stmt(location), GenericNode(generics), AttributedNode(attributes), 
-      name(name), vars(vars), funcs(funcs), class_type(class_type) {}
+      name(name), vars(vars), funcs(funcs), class_type(class_type) {
+      }
 
   virtual ~ClassDecl() = default;
 
@@ -259,6 +262,7 @@ public:
   bool is_class() const { return class_type == ClassType::Class; }
 
   bool has_vtable() const;
+  auto get_generic_id() const { return generic_id; }
 
   // Iterate over virtual functions by using iterators
   std::vector<uint64_t>& get_virtual_fn_ids() const;

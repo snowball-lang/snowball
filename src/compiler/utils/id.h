@@ -10,6 +10,9 @@ namespace frontend::ast {
 class FnDecl;
 class ConstructorDecl;
 class ClassDecl;
+namespace types {
+class ExtensibleType;
+}
 } // namespace frontend::ast
 
 class Identified {
@@ -27,6 +30,7 @@ public:
   friend class frontend::ast::FnDecl;
   friend class frontend::ast::ClassDecl;
   friend class frontend::ast::ConstructorDecl;
+  friend class frontend::ast::types::ExtensibleType;
 };
 
 } // namespace snowball

@@ -88,10 +88,17 @@ private:
   GetResult get_from_type(ast::MemberAccess* node, ast::types::Type* type);
   GetResult check_privacy(GetResult result, const SourceLocation& loc);
 
+  /// @group get_type
+  /// @param no_unknown If true, it will error if the type is unknown
+  /// @param no_generic_check If true, it will not check if the type is generic
+  ///   if the type turned out to be generic, it will return the generic type
+  //    in other words, no generic instantiation will be done
   ast::types::Type* get_type(const NamespacePath& path);
-  ast::types::Type* get_type(ast::Expr* expr, bool no_unknown = false);
+  ast::types::Type* get_type(ast::Expr* expr, bool no_unknown = false,
+                              bool no_generic_check = false);
   ast::types::Type* get_type(const std::string& name);
-  ast::types::Type* get_type(const ast::TypeRef& tr, bool no_unknown = false);
+  ast::types::Type* get_type(const ast::TypeRef& tr, bool no_unknown = false, 
+                              bool no_generic_check = false);
 
   void enter_scope();
 
