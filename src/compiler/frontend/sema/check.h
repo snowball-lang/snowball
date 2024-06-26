@@ -40,6 +40,7 @@ class TypeChecker final : public ast::AstVisitor, public Reporter {
   std::vector<Module>& modules;
   llvm::DenseMap<uint64_t, std::vector<MonorphosizedFn>> generic_registry;
   llvm::DenseMap<uint64_t, std::vector<MonorphosizedClass>> generic_class_registry;
+  llvm::DenseMap<uint64_t, llvm::TinyPtrVector<ast::ExtensionDecl*>> extension_registry;
   TypeCheckerContext ctx;
   borrow::BorrowChecker borrow_checker;
   llvm::DenseMap<uint64_t, TypeCheckerContext> generic_contexts;

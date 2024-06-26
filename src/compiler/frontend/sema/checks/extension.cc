@@ -11,8 +11,17 @@ void TypeChecker::check_extends(ast::ClassDecl* class_decl) {
   assert(node && "Expected ExtensionDecl node");
   auto base = node->get_extended_type();
   auto type = get_type(base);
+  if (!type->is_extensible()) {
+    err(base.get_location(), "Cannot extend this type", Error::Info {
+      .highlight = "Cannot extend this type",
+      .help = "Only classes and interfaces can be extended",
+      .see = "https://snowball-lang.gitbook.io/docs/language-reference/classes/extensions"
+    });
+  }
+  auto as_extension = type->as_extensible();
+  assert(as_extension && "Expected ExtensionType");
+  extension_registry[as_extension->get_id()].push_back(node);
   bool type_is_class = type->is_class();
-  type->add_extension(node);
   unify(class_decl->get_type(), type);
   for (auto& func : node->get_funcs()) {
     if (func->get_virtual() && !type_is_class) {
@@ -32,7 +41,6 @@ void TypeChecker::check_extends(ast::ClassDecl* class_decl) {
         .see = "https://snowball-lang.gitbook.io/docs/language-reference/classes/interfaces"
       }, Error::Type::Err, false);
     }
-    
   }
 }
 

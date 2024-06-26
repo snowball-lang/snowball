@@ -356,9 +356,13 @@ fetch_member:
   }
   if (!dont_error) {
     dont_error = true;
-    for (; tries < type->get_extensions().size(); ++tries) {
-      as_class_decl = type->get_extensions()[tries];
-      goto fetch_member;
+    if (auto as_ext = type->as_extensible()) {
+      auto extensions = extension_registry[as_ext->get_id()];
+      for (; tries < extensions.size(); ++tries) {
+        auto ext = extensions[tries];
+        as_class_decl = ext;
+        goto fetch_member;
+      }
     }
   }
   if (!dont_error)

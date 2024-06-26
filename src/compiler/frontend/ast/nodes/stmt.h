@@ -281,6 +281,7 @@ public:
 
 class ExtensionDecl final : public ClassDecl {
   TypeRef extended_type;
+  uint64_t extended_type_id = 0;
 
 public:
   ExtensionDecl(
@@ -291,6 +292,9 @@ public:
 
   auto& get_extended_type() { return extended_type; }
   Node* clone() const override;
+
+  void set_extended_type_id(uint64_t id) { extended_type_id = id; }
+  auto get_extended_type_id() const { return extended_type_id; }
 
   static auto
   create(const SourceLocation& location, const TypeRef& extended_type,

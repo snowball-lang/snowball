@@ -15,7 +15,6 @@ namespace snowball {
 namespace frontend {
 namespace ast {
 class ClassDecl;
-class ExtensionDecl;
 
 namespace types {
 
@@ -30,10 +29,10 @@ class ClassType;
 class ReferenceType;
 class PointerType;
 class SelfType;
+class ExtensibleType;
 
 class Type {
   bool is_mutable = false;
-  std::vector<ExtensionDecl*> extensions;
 
 public:
   virtual ~Type() = default;
@@ -61,9 +60,6 @@ public:
   virtual bool equals(Type* other, bool ignore_self = false);
   virtual bool equals_impl(Type* other, bool ignore_self) = 0;
 
-  void add_extension(ExtensionDecl* ext) { extensions.push_back(ext); }
-  auto& get_extensions() { return extensions; }
-
   Type* get_reference_to();
   Type* get_pointer_to(bool is_const = false);
 
@@ -72,12 +68,24 @@ public:
 
   virtual bool is_copyable() const { return false; }
 
+  virtual bool is_extensible() const { return false; }
+  virtual ExtensibleType* as_extensible() { return nullptr; }
+
   Type() = default;
-  Type(bool is_mutable)
-    : is_mutable(is_mutable) {}
+  Type(bool is_mutable) : is_mutable(is_mutable) {}
 };
 
-class IntType final : public Type {
+class ExtensibleType : public Identified, public Type {
+public:
+  template <typename... Args>
+  ExtensibleType(Args&&... args) : Identified(std::forward<Args>(args)...) {}
+  virtual ~ExtensibleType() = default;
+
+  bool is_extensible() const override { return true; }
+  ExtensibleType* as_extensible() override { return this; }
+};
+
+class IntType final : public ExtensibleType {
   unsigned int bits;
   bool _signed;
 
@@ -113,7 +121,7 @@ public:
   bool equals_impl(Type* other, bool ignore_self) override;
 };
 
-class FloatType final : public Type {
+class FloatType final : public ExtensibleType {
   unsigned int bits;
 
 public:
@@ -288,8 +296,7 @@ public:
   bool equals_impl(Type* other, bool ignore_self) override { return other->is_void(); }
 };
 
-class ClassType final : public Type, public GenericNode<Type*>, 
-    public Identified, public LocationHolder {
+class ClassType final : public ExtensibleType, public GenericNode<Type*>, public LocationHolder {
   NamespacePath path;
   ast::ClassDecl* decl;
 
@@ -336,8 +343,7 @@ class ReferenceType final : public Type {
   Type* ref;
 
 public:
-  ReferenceType(Type* ref)
-    : ref(ref) {}
+  ReferenceType(Type* ref) : ref(ref) {}
   ~ReferenceType() = default;
 
   auto get_ref() const { return ref; }
@@ -358,13 +364,12 @@ public:
   bool equals_impl(Type* other, bool ignore_self) override;
 };
 
-class PointerType final : public Type {
+class PointerType final : public ExtensibleType {
   Type* pointee;
 
 public:
   PointerType(Type* pointee, bool is_const)
-    : Type(!is_const)
-    , pointee(pointee) {}
+    : ExtensibleType(!is_const), pointee(pointee) {}
   ~PointerType() = default;
 
   auto get_pointee() const { return pointee; }
