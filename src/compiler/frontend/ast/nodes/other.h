@@ -78,6 +78,7 @@ private:
   bool is_unsafe = false;
   bool is_operator = false;
   bool is_default = false;
+  bool is_test = false;
   std::optional<std::string> link_name;
   Extern external = None;
   Privacy privacy = Private;
@@ -100,6 +101,7 @@ public:
   auto get_unsafe() const { return is_unsafe; }
   auto get_operator() const { return is_operator; }
   auto get_default() const { return is_default; }
+  auto get_test() const { return is_test; }
 
   void set_privacy(Privacy privacy) { this->privacy = privacy; }
   void set_static(bool is_static) { this->is_static = is_static; }
@@ -115,6 +117,7 @@ public:
   void set_unsafe(bool is_unsafe) { this->is_unsafe = is_unsafe; }
   void set_operator(bool is_operator) { this->is_operator = is_operator; }
   void set_default(bool is_default) { this->is_default = is_default; }
+  void set_test(bool is_test) { this->is_test = is_test; }
 
   void set_privacy(int privacy) { this->privacy = static_cast<Privacy>(privacy); }
 

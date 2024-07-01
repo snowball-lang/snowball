@@ -268,21 +268,19 @@ if(NOT BUILD_SHARED_LIBS)
   set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS -D${PROJECT_NAME_UPPER}_STATIC)
 endif()
 
-##################################################    StdLib   ##################################################
+##################################################    Runtime   ##################################################
 
-macro( add_recursive retVal dir ext excl)
-#Store unfiltered list of files into temporary list
-    file( GLOB_RECURSE _tmp_list ${dir}/${ext})
-#Resulted list is initially empty.Copy all needed elements into it.
-    set(${retval} "")
-    foreach(f ${_tmp_list})
-        if(NOT f MATCHES ${excl})
-            list(APPEND ${retVal} ${f})
-        endif()
-    endforeach()
-endmacro( add_recursive )
+file(GLOB_RECURSE RUNTIME_FILES src/runtime/*.cc src/runtime/*.c)
+message(STATUS "Runtime files: ${RUNTIME_FILES}")
+add_library(runtime STATIC ${RUNTIME_FILES})
 
-add_recursive(std_sn_files "./stdlib" "*.sn" "/_tests/")
+target_include_directories(runtime PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/runtime>
+    $<INSTALL_INTERFACE:include>)
+
+set(SNOWBALL_RUNTIME_NAME "snrt")
+set_target_properties(runtime PROPERTIES OUTPUT_NAME ${SNOWBALL_RUNTIME_NAME})
+add_compile_definitions(SNOWBALL_RUNTIME_NAME="${SNOWBALL_RUNTIME_NAME}")
 
 ##################################################    Postbuild   ##################################################
 include               (GenerateExportHeader)

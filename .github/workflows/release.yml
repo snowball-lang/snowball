@@ -137,7 +137,7 @@ jobs:
     - name: Package
       run: |
         cd build
-        tar -czf snowball-linux-x86_64.tar.gz snowball libSnowball.so
+        tar -czf snowball-linux-x86_64.tar.gz snowball libSnowball.so libsnrt.a
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2

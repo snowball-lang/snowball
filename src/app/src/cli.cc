@@ -82,9 +82,10 @@ Ctx CLI::parse(int argc, char** argv) {
   static cl::opt<std::string> config("config", cl::desc("Path to the configuration file"), cl::cat(category));
   if (mode == "build") {
     make_build(ctx, args);
-  } else if (mode == "run") {
+  } else if (mode == "run" || mode == "test") {
     make_build(ctx, args, true);
     global.emit_type = EmitType::Executable;
+    if (mode == "test") global.test_mode = true;
   } else if (mode == "init" || mode == "new") {
     make_init(ctx, args, mode == "new");
   } else if (mode == "reky") {
@@ -107,6 +108,7 @@ void CLI::print_help(Args& args) {
   hide_args();
   cl::OptionCategory helpCategory("Help Options");
   cl::SubCommand run("run", "Run a Snowball program");
+  cl::SubCommand test("test", "Run a Snowball program in test mode");
   cl::SubCommand build("build", "Build a Snowball program");
   cl::SubCommand reky("reky", "Run snowball's package manager");
   cl::SubCommand init("init", "Initialize a new Snowball project");

@@ -75,6 +75,8 @@ struct GlobalContext {
   ExplicitBitness explicit_bitness = ExplicitBitness::None;
   FloatABI float_abi = FloatABI::Default;
 
+  bool test_mode = false;
+
   bool debug_opt() const {
     return opt_level == OptLevel::Debug || opt_level == OptLevel::ReleaseWithDebug;
   }

@@ -1,4 +1,5 @@
 
+#include "compiler/globals.h"
 #include "compiler/backend/llvm/builder.h"
 
 namespace snowball {
@@ -11,10 +12,15 @@ void LLVMBuilder::emit(const sil::FuncDecl* node) {
   assert(node->get_type()->is_func());
   bool has_sret = false;
   auto fn_type = get_func_type(node->get_type()->as_func(), &has_sret);
+  auto mangled_name = node->get_mangled_name();
+  bool is_test_val = node->get_test() && global.test_mode;
+  if (mangled_name == "main" && global.test_mode) {
+    return; // We dont want to declare main
+  }
   if (just_declare) {
     auto linkage = llvm::Function::InternalLinkage;
     bool is_external = IS_EXTERNAL_FN;
-    if (is_external && node->get_privacy() == frontend::ast::AttributedNode::Private) {
+    if (is_external && node->get_privacy() == frontend::ast::AttributedNode::Private && !is_test_val) {
       // We dont want to declare the function multiple times
       // If it's not on the same module and it's private
       // we are 99.99% sure it's not going to be used outside
@@ -23,10 +29,14 @@ void LLVMBuilder::emit(const sil::FuncDecl* node) {
     if (node->get_external() != frontend::ast::AttributedNode::None
       || node->get_privacy() == frontend::ast::AttributedNode::Public
       || is_external
-      || !node->get_body().has_value()) {
+      || !node->get_body().has_value()
+      || is_test_val) {
       linkage = llvm::Function::ExternalLinkage;
     }
-    auto fn = llvm::Function::Create(fn_type, linkage, node->get_mangled_name(), *builder_ctx.module);
+    auto fn = llvm::Function::Create(fn_type, linkage, mangled_name, *builder_ctx.module);
+    if (is_libroot() && is_test_val) {
+      tests_builder.register_test(node, fn);
+    }
     fn->setCallingConv(llvm::CallingConv::C);
     if (node->get_inline())
       fn->addFnAttr(llvm::Attribute::AlwaysInline);

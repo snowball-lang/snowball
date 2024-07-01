@@ -11,6 +11,7 @@
 #include "compiler/sil/visitor.h"
 
 #include "compiler/backend/llvm/llvm.h"
+#include "compiler/backend/llvm/tests.h"
 
 #include <llvm/ADT/DenseMap.h>
 
@@ -36,9 +37,7 @@ public:
     std::unique_ptr<llvm::LLVMContext>& ctx,
     llvm::DenseMap<uint64_t, sil::Inst*>& inst_map,
     frontend::NamespacePath parent_crate
-  )
-    : module(std::make_unique<llvm::Module>("main", *ctx)), 
-      inst_map(inst_map), parent_crate(parent_crate) {}
+  ) : module(nullptr), inst_map(inst_map), parent_crate(parent_crate) {}
 
   llvm::Value* get_value(uint64_t id) { 
     auto val = value_map.find(id);
@@ -88,6 +87,7 @@ class LLVMBuilder : public sil::Builder {
   std::unique_ptr<llvm::IRBuilder<>> builder;
   LLVMBuilderContext builder_ctx;
   BuilderCache builder_cache;
+  LLVMTestsBuilder tests_builder;
 
   llvm::Value* value = nullptr; // The current value being built
 
@@ -121,6 +121,8 @@ class LLVMBuilder : public sil::Builder {
   llvm::DISubprogram* get_disubprogram(const sil::FuncDecl* node);
   void debug(const std::string& msg);
   void finalize_and_run_lto();
+
+  bool is_libroot();
 
   bool just_declare = true;
 

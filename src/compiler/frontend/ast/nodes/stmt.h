@@ -88,6 +88,7 @@ public:
 
   auto& get_name() const { return name; }
   auto& get_params() { return params; }
+  auto get_params_count() const { return params.size(); }
   auto& get_return_type() { return return_type; }
   auto get_body() const { return body; }
 

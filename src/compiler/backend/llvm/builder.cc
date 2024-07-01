@@ -97,6 +97,9 @@ void LLVMBuilder::build(std::vector<std::shared_ptr<sil::Module>>& modules) {
       build(fn);
     }
   }
+  if (is_libroot() && global.test_mode) {
+    tests_builder.build_tests(builder.get(), builder_ctx.module.get());
+  }
   finalize_and_run_lto();
 }
 
@@ -185,6 +188,10 @@ int LLVMBuilder::error(const std::string& msg) {
   auto err = E(msg, frontend::SourceLocation(0, 0, 0, ef));
   err.print();
   return 1;
+}
+
+bool LLVMBuilder::is_libroot() {
+  return builder_ctx.parent_crate.get_last() == ".libroot";
 }
 
 void LLVMBuilder::debug(const std::string& msg) {

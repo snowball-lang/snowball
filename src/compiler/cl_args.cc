@@ -54,6 +54,10 @@ static cl::opt<EmitType, true> emit_type("emit", cl::desc("Emit type"), cl::valu
   cl::desc("This is the type of output that will be generated"),
   cl::value_desc("type"));
 
+static cl::opt<bool, true> test_mode("test", cl::desc("Test mode"), 
+  cl::cat(build_category), cl::location(global.test_mode),
+  cl::desc("This is a flag that determines whether the test mode will be enabled"));
+
 static cl::opt<OptLevel, true> opt_level("opt", cl::desc("Optimisation level"), cl::values(
   clEnumValN(OptLevel::Debug, "debug", "Debug"),
   clEnumValN(OptLevel::Release, "release", "Release"),

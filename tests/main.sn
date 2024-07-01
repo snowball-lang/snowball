@@ -14,7 +14,6 @@ public func test2(x: Hello<i32>) Hello<i32> {
   let p = x.to_string();
 //  x.hello();
   a.hello();
-  x.hello();
   x
 }
 
@@ -24,14 +23,13 @@ extension i32 {
   }
 }
 
-extension crate::mod::Hello {
-  public func hello() {
-    printf(c"Hello from Hello::hello!\n");
-  }
-}
-
 #[no_mangle]
 public func balls<B: ToString>(x: B) i32 {
+  1
+}
+
+#[test] 
+func test() i32 {
   2
 }
 
@@ -44,4 +42,4 @@ public func main() i32 {
   test(a);
   printf(c"Hello, world!\n");
   test2(new Hello<i32>(25));
-}
+} 

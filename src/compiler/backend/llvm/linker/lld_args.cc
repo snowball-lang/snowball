@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 
+#include "app/cli.h"
 #include "compiler/globals.h"
 #include "compiler/backend/llvm/linker/args.h"
 
@@ -9,6 +10,11 @@
 #include "compiler/utils/logger.h"
 
 #include "compiler/utils/thread.h"
+#include "compiler/backend/drivers.h"
+
+#ifndef SNOWBALL_RUNTIME_NAME
+#error "SNOWBALL_RUNTIME_NAME is not defined!"
+#endif
 
 namespace snowball {
 namespace backend {
@@ -32,6 +38,7 @@ void LldArgsBuilder::add_default_args() {
     utils::Logger::warn("Output file is already defined in linker flags, ignoring -o flag.");
   }
   add("--threads=" + std::to_string(utils::get_num_threads()));
+  add("-l" SNOWBALL_RUNTIME_NAME);
 }
 
 void LldArgsBuilder::add_user_switches() {
@@ -86,11 +93,23 @@ void LldArgsBuilder::add_platform_args() {
     } [[fallthrough]];
     case llvm::Triple::Darwin:
     case llvm::Triple::MacOSX: {
+      bool is_macos = triple.isMacOSX();
       add(std::vector{"-L/usr/lib", "-L/usr/local/lib", "-L/lib"});
       if (triple.isArch64Bit()) {
         add("-L/usr/lib64");
         add("-L/lib64");
       }
+      llvm::SmallVector<std::string, 3> rpaths = {
+        is_macos ? "@loader_path" : "$ORIGIN",
+        is_macos ? "@loader_path/../lib" : "$ORIGIN/../lib",  
+        "/usr/lib",
+        "/lib"
+      };
+      for (auto& rpath : rpaths) {
+        add(std::vector<std::string>{"--rpath", rpath});
+      }
+      if (strcmp(SNOWBALL_BUILD_TYPE, "debug") == 0)
+        add("-L" + std::filesystem::current_path().string());
       add_soname = true;
     } break;
     default: break;

@@ -153,6 +153,8 @@ private:
   void add_self_param(ast::FnDecl*& node, bool as_monorph = false);
   ast::types::GenericType* create_generic_type(ast::GenericDecl& decl);
 
+  void check_test_case(const ast::FnDecl* fn_decl);
+
   std::vector<ast::types::Type*> fetch_generics_from_node(const ast::Node* node);
   ast::types::Type* deduce_type(
           ast::types::Type* type, const std::vector<ast::types::Type*>& generics,

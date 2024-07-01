@@ -105,11 +105,11 @@ public:
     return new IntType(bits, is_signed);
   }
 
-  static auto create_i8() { return create(8, true); }
+  static auto create_i8()  { return create(8, true); }
   static auto create_i16() { return create(16, true); }
   static auto create_i32() { return create(32, true); }
   static auto create_i64() { return create(64, true); }
-  static auto create_u8() { return create(8, false); }
+  static auto create_u8()  { return create(8, false); }
   static auto create_u16() { return create(16, false); }
   static auto create_u32() { return create(32, false); }
   static auto create_u64() { return create(64, false); }

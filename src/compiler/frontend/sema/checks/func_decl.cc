@@ -19,6 +19,7 @@ void TypeChecker::visit(ast::FnDecl* node) {
   assert(node->get_type()->is_func());
   auto fn_type = node->get_type()->as_func();
   auto path = get_namespace_path(node->get_name());
+  check_test_case(node);
   debug(F("Checking function declaration '{}'", path));
   auto backup = ctx.current_function;
   ctx.current_function = node;
