@@ -157,10 +157,10 @@ void TypeChecker::add_self_param(ast::FnDecl*& node, bool as_monorph) {
   if ((node->get_static() && !node->is_constructor()) || !current_class) return;
   auto& params = node->get_params();
   if (HAS_SELF_PARAM && !as_monorph) return; // already has a self param
-  debug(F("\t[add_self_param] Adding self param to function '{}' ({})", node->get_name(), current_class->get_type()->get_printable_name()));
+  debug(F("\t[add_self_param] Adding self param to function '{}' ({})", node->get_name(), current_class->get_printable_name()));
   auto self = ast::VarDecl::create(node->get_location(), "self", std::nullopt, std::nullopt, node);
   self->set_used(); // TODO: Remove this in the future?
-  unify(self->get_type(), current_class->get_type()->get_reference_to(), node->get_location());
+  unify(self->get_type(), current_class->get_reference_to(), node->get_location());
   if (as_monorph && HAS_SELF_PARAM) {
     params[0] = self;
     return;
@@ -176,7 +176,7 @@ void TypeChecker::check_fn(ast::FnDecl*& fn_decl, bool as_monorph) {
     // Some inserted arguments like "self" are not declared
     if (param->get_decl_type().has_value()) {
       param->get_type() = nullptr;
-      unify(param->get_type(), get_type(param->get_decl_type().value()), param->get_location());
+      unify(param->get_type(), get_type(param->get_decl_type().value(), true), param->get_location());
     }
     define_variable(param, param->get_location(), true);
   }

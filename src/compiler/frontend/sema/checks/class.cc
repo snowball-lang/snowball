@@ -12,25 +12,29 @@ void TypeChecker::visit(ast::ClassDecl* node) {
     return;
   }
   assert(node->get_type());
-  assert(node->get_type()->is_class());
-  auto class_type = node->get_type()->as_class();
+  auto class_type = node->get_type()->as_class(); // It may be null
+  if (node->is_extension()) {
+    class_type = nullptr;
+  }
   auto path = get_namespace_path(node->get_name());
-  sn_assert(class_type->get_path() == path, "class path mismatch");
+  sn_assert(!class_type || (class_type->get_path() == path), "class path mismatch");
   auto backup = ctx.current_class;
-  ctx.current_class = node;
+  ctx.current_class = node->get_type();
   enter_scope();
   update_self_type();
-  assert(class_type->get_generics().size() == node->get_generics().size());
-  size_t generic_index = 0;
-  for (auto& generic : class_type->get_generics()) {
-    sn_assert(generic->is_generic(), "generic type is not generic");
-    auto as_generic = generic->as_generic();
-    universe.add_item(as_generic->get_name(), as_generic);
-    auto& constraints = node->get_generics()[generic_index].get_constraints();
-    for (auto& constraint : constraints) {
-      as_generic->add_constraints(get_type(constraint));
+  assert(!class_type || (class_type->get_generics().size() == node->get_generics().size()));
+  if (class_type) {
+    size_t generic_index = 0;
+    for (auto& generic : class_type->get_generics()) {
+      sn_assert(generic->is_generic(), "generic type is not generic");
+      auto as_generic = generic->as_generic();
+      universe.add_item(as_generic->get_name(), as_generic);
+      auto& constraints = node->get_generics()[generic_index].get_constraints();
+      for (auto& constraint : constraints) {
+        as_generic->add_constraints(get_type(constraint));
+      }
+      generic_index++;
     }
-    generic_index++;
   }
   for (auto& impl : node->get_implemented_interfaces()) {
     auto interface = get_type(impl);

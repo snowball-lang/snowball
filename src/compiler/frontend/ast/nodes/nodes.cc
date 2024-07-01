@@ -152,8 +152,12 @@ Node* ClassDecl::clone() const {
   clone->funcs = new_funcs;
   clone->vars = new_vars;
   clone->get_type() = get_type();
-  clone->id = id;
+  clone->generic_id = id;
   return clone;
+}
+
+Node* ExtensionDecl::clone() const {
+  sn_unreachable();
 }
 
 void FnDecl::create_body_clone() {

@@ -199,18 +199,20 @@ public:
   SN_VISIT()
 };
 
-class InterfaceDecl;
+class ExtensionDecl;
 
-class ClassDecl final : public Stmt, public GenericNode<>, 
+class ClassDecl : public Stmt, public GenericNode<>, 
   public AttributedNode, public Identified, public ModuleHolder {
 public:
   enum class ClassType
   {
     Class,
-    Interface
+    Interface,
+    Extension
   };
 private:
-  friend InterfaceDecl;
+  friend ExtensionDecl;
+
   std::string name;
   bool generic_instanced = false;
   std::vector<VarDecl*> vars;
@@ -218,6 +220,8 @@ private:
   bool complete = false; // If the class is complete, i.e. all methods are defined
   ClassType class_type = ClassType::Class;
   std::vector<TypeRef> implemented_interfaces;
+
+  uint64_t generic_id = 0;
 
   // Interface specific
   std::string builtin_name; // Identifier for builtin types (e.g. Sized has "sized")
@@ -230,7 +234,8 @@ public:
       std::optional<GenericNode> generics = std::nullopt,
       const AttributedNode& attributes = AttributedNode())
     : Stmt(location), GenericNode(generics), AttributedNode(attributes), 
-      name(name), vars(vars), funcs(funcs), class_type(class_type) {}
+      name(name), vars(vars), funcs(funcs), class_type(class_type) {
+      }
 
   virtual ~ClassDecl() = default;
 
@@ -253,9 +258,11 @@ public:
   
   auto get_class_type() const { return class_type; }
   bool is_interface() const { return class_type == ClassType::Interface; }
+  bool is_extension() const { return class_type == ClassType::Extension; }
   bool is_class() const { return class_type == ClassType::Class; }
 
   bool has_vtable() const;
+  auto get_generic_id() const { return generic_id; }
 
   // Iterate over virtual functions by using iterators
   std::vector<uint64_t>& get_virtual_fn_ids() const;
@@ -274,6 +281,30 @@ public:
   }
 
   SN_VISIT()
+};
+
+class ExtensionDecl final : public ClassDecl {
+  TypeRef extended_type;
+  uint64_t extended_type_id = 0;
+
+public:
+  ExtensionDecl(
+      const SourceLocation& location, const TypeRef& extended_type,
+      const std::vector<FnDecl*>& funcs
+  ) : ClassDecl(location, "", {}, funcs, ClassType::Extension), extended_type(extended_type) {}
+  ~ExtensionDecl() = default;
+
+  auto& get_extended_type() { return extended_type; }
+  Node* clone() const override;
+
+  void set_extended_type_id(uint64_t id) { extended_type_id = id; }
+  auto get_extended_type_id() const { return extended_type_id; }
+
+  static auto
+  create(const SourceLocation& location, const TypeRef& extended_type,
+         const std::vector<FnDecl*>& funcs) {
+    return new ExtensionDecl(location, extended_type, funcs);
+  }
 };
 
 class Return final : public Stmt {

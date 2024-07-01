@@ -40,6 +40,7 @@ class TypeChecker final : public ast::AstVisitor, public Reporter {
   std::vector<Module>& modules;
   llvm::DenseMap<uint64_t, std::vector<MonorphosizedFn>> generic_registry;
   llvm::DenseMap<uint64_t, std::vector<MonorphosizedClass>> generic_class_registry;
+  llvm::DenseMap<uint64_t, llvm::TinyPtrVector<ast::ExtensionDecl*>> extension_registry;
   TypeCheckerContext ctx;
   borrow::BorrowChecker borrow_checker;
   llvm::DenseMap<uint64_t, TypeCheckerContext> generic_contexts;
@@ -87,10 +88,17 @@ private:
   GetResult get_from_type(ast::MemberAccess* node, ast::types::Type* type);
   GetResult check_privacy(GetResult result, const SourceLocation& loc);
 
+  /// @group get_type
+  /// @param no_unknown If true, it will error if the type is unknown
+  /// @param no_generic_check If true, it will not check if the type is generic
+  ///   if the type turned out to be generic, it will return the generic type
+  //    in other words, no generic instantiation will be done
   ast::types::Type* get_type(const NamespacePath& path);
-  ast::types::Type* get_type(ast::Expr* expr, bool no_unknown = false);
+  ast::types::Type* get_type(ast::Expr* expr, bool no_unknown = false,
+                              bool no_generic_check = false);
   ast::types::Type* get_type(const std::string& name);
-  ast::types::Type* get_type(const ast::TypeRef& tr, bool no_unknown = false);
+  ast::types::Type* get_type(const ast::TypeRef& tr, bool no_unknown = false, 
+                              bool no_generic_check = false);
 
   void enter_scope();
 
@@ -173,6 +181,8 @@ private:
                             const SourceLocation& loc);
   bool check_builtin_type(ast::types::Type* impl, ast::types::Type* x);
   bool check_builtin_type(ast::types::Type* x, const std::string& builtin_name);
+
+  void check_extends(ast::ClassDecl* class_decl);
 
   enum CastType
   {

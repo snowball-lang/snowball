@@ -113,6 +113,7 @@ private:
   ast::Block* parse_block(Token::Type terminator = Token::Type::BracketRcurly);
   ast::ClassDecl* parse_class_decl(const ast::AttributedNode& attrs);
   ast::ClassDecl* parse_interface_decl(const ast::AttributedNode& attrs);
+  ast::ExtensionDecl* parse_extension_decl(const ast::AttributedNode& attrs);
   ast::Return* parse_return();
   ast::Use* parse_use(const ast::AttributedNode& attrs);
   ast::attrs::Attr parse_attr();

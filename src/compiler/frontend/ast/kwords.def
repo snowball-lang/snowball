@@ -7,7 +7,7 @@
 #define SN_KEYWORD_ELSE      "else"
 #define SN_KEYWORD_CLASS     "class"
 #define SN_KEYWORD_INTER     "interface"
-#define SN_KEYWORD_EXTENDS   "extends"
+#define SN_KEYWORD_EXTENDS   "extension"
 #define SN_KEYWORD_IMPLS     "implements"
 #define SN_KEYWORD_PRIVATE   "private"
 #define SN_KEYWORD_PUBLIC    "public"

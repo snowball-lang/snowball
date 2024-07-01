@@ -13,6 +13,9 @@ void LLVMBuilder::emit(const sil::ValueIndex* node) {
   sn_assert(as_class, "ValueIndex object is not a class");
   auto index = node->get_index() + as_class->get_decl()->has_vtable();
   auto val = expr(node->get_value());
+  if (val->getType()->isStructTy()) {
+    val = llvm::cast<llvm::LoadInst>(val)->getPointerOperand();
+  }
   value = builder->CreateStructGEP(get_type(as_class), val, index, "val_idx");
 }
 

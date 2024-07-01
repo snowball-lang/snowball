@@ -85,7 +85,7 @@ static cl::opt<bool, true> static_link("static", cl::desc("Static linkage"),
   cl::cat(output_category), cl::location(global.static_link),
   cl::desc("This is a flag that determines whether the output will be statically linked"));
 
-static cl::list<std::string, std::vector<std::string>> link_flags("link-flags", 
+static cl::list<std::string, std::vector<std::string>> link_flags("z", 
   cl::desc("Flags to pass to the linker.\nEvery instance of -L will be passed to the linker\nIt can be comma separated too"), cl::cat(output_category),
   cl::location(global.link_flags), cl::ZeroOrMore, cl::CommaSeparated,
   cl::Prefix);

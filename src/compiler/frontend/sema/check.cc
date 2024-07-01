@@ -64,7 +64,8 @@ void TypeChecker::err(const LocationHolder& holder, const std::string& message,
 
 bool TypeChecker::in_generic_context() const {
   return (ctx.current_function && ctx.current_function->is_generic_instanced()) || 
-    (ctx.current_class && ctx.current_class->is_generic_instanced());
+    (ctx.current_class && ctx.current_class->is_class() && 
+    ctx.current_class->as_class()->get_decl()->is_generic_instanced());
 }
 
 void TypeChecker::post_check() {
@@ -97,8 +98,13 @@ void TypeChecker::register_builtins() {
 NamespacePath TypeChecker::get_namespace_path(const std::string& name) {
   auto path = ctx.current_module->get_path();
   path.push(name);
-  if (ctx.current_class)
-    path.push(ctx.current_class->get_name());
+  if (ctx.current_class) {
+    if (auto as_class = ctx.current_class->as_class()) {
+      path.push(as_class->get_name());
+    } else {
+      path.push(ctx.current_class->get_printable_name());
+    } 
+  }
   return path;
 }
 

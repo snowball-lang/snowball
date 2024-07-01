@@ -23,17 +23,22 @@ void TypeChecker::generate_global_scope(ast::TopLevelAst& ast, bool first) {
     if (auto fn_decl = decl->as<ast::FnDecl>()) {
       do_global_func(fn_decl);
     } else if (auto class_decl = decl->as<ast::ClassDecl>()) {
+      if (class_decl->is_generic_instanced()) {
+        continue;
+      }
+      auto backup = ctx.current_class;
+      ctx.current_class = class_decl->get_type();
+      enter_scope();
+      for (auto& generic : class_decl->get_generics())
+        universe.add_item(generic.get_name(), ast::types::GenericType::create(generic.get_name()));
+      update_self_type();
       for (auto& method : class_decl->get_funcs()) {
-        auto backup = ctx.current_class;
-        ctx.current_class = class_decl;
         enter_scope();
-        update_self_type();
-        for (auto& generic : class_decl->get_generics())
-          universe.add_item(generic.get_name(), ast::types::GenericType::create(generic.get_name()));
         do_global_func(method);
         exit_scope();
-        ctx.current_class = backup;
       }
+      exit_scope();
+      ctx.current_class = backup;
     } else if (auto use_decl = decl->as<ast::Use>()) {
       do_global_use(use_decl);
     }
@@ -71,6 +76,10 @@ void TypeChecker::do_global_class(ast::ClassDecl* class_decl) {
   // We only define the class here, we don't check the methods
   // class methods are checked in the second pass
   enter_scope();
+  if (class_decl->is_extension()) {
+    check_extends(class_decl);
+    return;
+  }
   auto path = get_namespace_path(class_decl->get_name());
   class_decl->set_module_path(ctx.current_module->get_path());
   std::vector<ast::types::Type*> generics;
@@ -86,6 +95,7 @@ void TypeChecker::do_global_class(ast::ClassDecl* class_decl) {
   if (class_decl->get_generics().size() > 0) {
     create_generic_context(class_decl->get_id());
   }
+  unify(class_decl->get_type(), class_type, class_decl->get_location());
   exit_scope();
 }
 
