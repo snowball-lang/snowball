@@ -40,7 +40,26 @@ void TypeChecker::visit(ast::BinaryOp* node) {
 
   auto lhs_type = lhs->get_type();
   if (lhs_type->is_int() || lhs_type->is_float()) {
-    unify(node->get_type(), lhs_type, node->get_location());
+    switch (op) {
+      case Operator::Eqeq:
+      case Operator::Noteq:
+      case Operator::Lt:
+      case Operator::Lteq:
+      case Operator::Gt:
+      case Operator::Gteq:
+      case Operator::And:
+      case Operator::Or:
+      case Operator::Not:
+      case Operator::BitAnd:
+      case Operator::BitOr:
+      case Operator::BitXor:
+      case Operator::BitNot:
+        unify(node->get_type(), get_type("bool"), node->get_location());
+        break;
+      default:
+        unify(node->get_type(), lhs_type, node->get_location());
+        break;
+    }
     // TODO: Implement the rest of the binary operators
     return;
   } 

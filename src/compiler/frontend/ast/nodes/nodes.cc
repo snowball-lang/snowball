@@ -223,6 +223,12 @@ size_t ClassDecl::get_virtual_fn_count() const {
   return get_type()->as_class()->get_vtable().size();
 }
 
+Node* Cast::clone() const {
+  auto clone = Cloneable<Cast>::default_clone(this);
+  clone->expr = (Expr*)expr->clone();
+  return clone;
+}
+
 }
 }
 }

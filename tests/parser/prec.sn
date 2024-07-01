@@ -1,0 +1,5 @@
+
+#[test]
+func basic_precedence() i32 {
+  return (1 + 2 * 3 + 4) == 11;
+}

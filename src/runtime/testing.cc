@@ -39,7 +39,7 @@ bool test_success(int(*test)()) {
 void print_header(const char* name, unsigned int count, 
     unsigned int max_count) {
   printf("%s" PREFIX "%s%s[ %u/%u ] %s%s ... ", 
-    COLOR_GRAY, COLOR_RESET, COLOR_GRAY, count, max_count, name, COLOR_RESET);
+    COLOR_GRAY, COLOR_RESET, COLOR_GRAY, count + 1, max_count, name, COLOR_RESET);
 }
 
 void print_success() {

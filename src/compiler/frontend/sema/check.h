@@ -194,7 +194,7 @@ private:
     AutoRef,
     AutoDeref,
   };
-  CastType can_cast(ast::types::Type* from, ast::types::Type* to);
+  CastType can_cast(ast::types::Type* from, ast::types::Type* to, bool is_implicit = true);
   /// It will overwrite the node if it can cast.
   /// @returns true if the cast type is invalid
   /// @see can_cast

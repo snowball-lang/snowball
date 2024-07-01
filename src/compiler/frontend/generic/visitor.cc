@@ -42,6 +42,10 @@ void GenericVisitor::visit(ast::Number* node) {
   // Do nothing
 }
 
+void GenericVisitor::visit(ast::Cast* node) {
+  node->get_expr()->accept(this);
+}
+
 void GenericVisitor::visit(ast::VarDecl* node) {
   if (node->get_value()) {
     node->get_value().value()->accept(this);

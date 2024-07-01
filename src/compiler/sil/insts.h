@@ -323,6 +323,22 @@ public:
   }
 };
 
+class Cast final : public Inst {
+  Inst* value;
+
+public:
+  Cast(LocationHolder& loc, ast::types::Type* type, Inst* value)
+    : Inst(loc, type), value(value) {}
+  ~Cast() = default;
+
+  auto get_value() const { return value; }
+  EMITABLE()
+
+  static auto create(LocationHolder loc, ast::types::Type* type, Inst* value) {
+    return new Cast(loc, type, value);
+  }
+};
+
 } // namespace sil
 } // namespace snowball
 

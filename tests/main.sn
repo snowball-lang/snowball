@@ -28,11 +28,6 @@ public func balls<B: ToString>(x: B) i32 {
   1
 }
 
-#[test] 
-func test() i32 {
-  2
-}
-
 public func main() i32 {
   let mut a: i64;
   let mut b;

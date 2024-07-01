@@ -98,9 +98,7 @@ private:
 
 public:
   TypeRef(const SourceLocation& location, Expr* name, Type tt)
-    : LocationHolder(location)
-    , name(name)
-    , tt(tt) {}
+    : LocationHolder(location), name(name), tt(tt) {}
   ~TypeRef() = default;
 
   auto get_name() const { return name; }
@@ -296,6 +294,32 @@ public:
 
   static auto create(const SourceLocation& location, TypeRef type, std::vector<Expr*> args) {
     return new NewExpr(location, type, args);
+  }
+
+  SN_VISIT()
+};
+
+class Cast final : public Self<Cast>, public Expr {
+  std::optional<TypeRef> target; // Optional because it can be implicit
+  Expr* expr;
+
+public:
+  Cast(const SourceLocation& location, Expr* expr, TypeRef target)
+    : Expr(location), target(target), expr(expr) {}
+  Cast(const SourceLocation& location, Expr* expr)
+    : Expr(location), expr(expr) {}
+
+  auto get_target() const { return target; }
+  auto get_expr() const { return expr; }
+
+  Node* clone() const override;
+
+  static auto create(const SourceLocation& location, Expr* expr, TypeRef target) {
+    return new Cast(location, expr, target);
+  }
+
+  static auto create(const SourceLocation& location, Expr* expr) {
+    return new Cast(location, expr);
   }
 
   SN_VISIT()
