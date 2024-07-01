@@ -43,7 +43,8 @@ void LLVMBuilder::emit(const sil::BinaryOp* node) {
         if (llvm::isa<llvm::LoadInst>(left)) {
           left = llvm::cast<llvm::LoadInst>(left)->getPointerOperand();
         }
-        value = builder->CreateStore(right, left);
+        builder->CreateStore(right, left);
+        value = right;
         break;
       }
       default: sn_unreachable();
@@ -64,7 +65,8 @@ void LLVMBuilder::emit(const sil::BinaryOp* node) {
         if (llvm::isa<llvm::LoadInst>(left)) {
           left = llvm::cast<llvm::LoadInst>(left)->getPointerOperand();
         }
-        value = builder->CreateStore(right, left);
+        builder->CreateStore(right, left);
+        value = right;
         break;
       }
       default: sn_unreachable();
@@ -75,7 +77,8 @@ void LLVMBuilder::emit(const sil::BinaryOp* node) {
         if (llvm::isa<llvm::LoadInst>(left)) {
           left = llvm::cast<llvm::LoadInst>(left)->getPointerOperand();
         }
-        value = builder->CreateStore(right, left);
+        builder->CreateStore(right, left);
+        value = right;
         break;
       }
       default: sn_unreachable();

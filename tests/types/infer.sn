@@ -5,4 +5,10 @@ func basic_infer() i32 {
   a = 1 + 2 * 3 + 4;
   return a == 11;     
 }
-      
+
+#[test]
+func complex_infer() i32 {
+  let mut a;
+  let b = a = 2;
+  return a == 2;
+}
