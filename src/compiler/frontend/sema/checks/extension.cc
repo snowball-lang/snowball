@@ -34,6 +34,7 @@ void TypeChecker::check_extends(ast::ClassDecl* class_decl) {
   }
   if (type_is_class) {
     auto as_class = type->as_class();
+    sn_assert(as_class->get_generics().size() == 0, "TODO: Implement generic classes in extensions");
     if (as_class->is_interface_decl()) {
       err(node->get_location(), "Interfaces cannot be extended", Error::Info {
         .highlight = "Interfaces cannot be extended",
