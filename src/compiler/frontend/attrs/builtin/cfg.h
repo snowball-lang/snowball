@@ -80,6 +80,9 @@ bool Config::get_config(const std::string& key, std::optional<std::string> value
   } else if (key == "release_fast") {
     if (assert_no_value()) return false;
     return global.opt_level == OptLevel::ReleaseFast;
+  } else if (key == "test") {
+    if (assert_no_value()) return false;
+    return global.test_mode;
   }
   interpreter.error(reporter, F("Unknown configuration key '{}'", key), Error::Info {
     .highlight = "Unknown key",

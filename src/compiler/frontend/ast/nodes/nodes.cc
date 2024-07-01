@@ -183,8 +183,7 @@ bool FnDecl::should_generate() const {
   bool parent_is_ok = true;
   if (parent_type) {
     if (auto as_class = parent_type.value()->as_class()) {
-      parent_is_ok = !as_class->is_deep_generic()
-        && !as_class->is_interface_decl();
+      parent_is_ok = !as_class->is_deep_generic();
     }
   }
   return (get_generics().size() == 0) && (!has_generic_params) && (parent_is_ok);

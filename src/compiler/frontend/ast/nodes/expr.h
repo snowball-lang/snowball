@@ -225,6 +225,7 @@ public:
 
 class Call : public Expr {
   std::vector<Expr*> args;
+  bool has_inserted_self = false;
 protected:
   Expr* callee;
   friend NewExpr;
@@ -235,7 +236,11 @@ public:
 
   auto get_callee() const { return callee; }
   auto& get_args() { return args; }
+
   Node* clone() const override;
+
+  void set_inserted_self() { has_inserted_self = true; }
+  auto has_self_inserted() const { return has_inserted_self; }
 
   static auto
   create(const SourceLocation& location, Expr* callee, std::vector<Expr*> args) {

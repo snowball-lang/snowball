@@ -77,7 +77,13 @@ ast::types::Type* Binder::check_type(ast::types::Type* type, const SourceLocatio
   } else if (type->is_deep_unknown()) {
     THROW_ERROR(true) // deep unknown is a fatal error
   }
-  assert(!type->is_error());
+  if (type->is_error()) {
+    err(loc, "Type is an error type", Error::Info {
+      .highlight = fmt::format("Type '{}' is an error type", type->get_printable_name()),
+      .help = "This type is an error type and should not be used",
+      .note = "Error types are used to represent an error in the type system"
+    }, Error::Type::Err, true);
+  }
   return type;
 }
 

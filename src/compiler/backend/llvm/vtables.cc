@@ -28,7 +28,7 @@ llvm::Type* LLVMBuilder::get_vtable_type(types::ClassType* type) {
   if (struct_map.find(node->get_id()) != struct_map.end()) {
     return struct_map[node->get_id()];
   }
-
+  
   llvm::SmallVector<llvm::Type*> vtable_types;
   auto has_vtable = node->has_vtable();
   if (!has_vtable) {

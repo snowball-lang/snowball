@@ -47,6 +47,7 @@ void TypeChecker::check_implementations(ast::ClassDecl* class_decl) {
 }
 
 void TypeChecker::check_generic_impls(ast::types::Type* x, const std::vector<ast::types::Type*> impls, const SourceLocation& loc) {
+  x = try_get_unknown(x);
   for (auto& impl : impls) {
     bool satisfies_interface = false;
     if (check_builtin_type(impl, x)) {
@@ -70,7 +71,6 @@ void TypeChecker::check_generic_impls(ast::types::Type* x, const std::vector<ast
       }
     }
     if (!satisfies_interface) {
-      check_builtin_type(x, impl);
       err(loc, fmt::format("Type '{}' does not implement interface '{}'", x->get_printable_name(), impl->get_printable_name()), Error::Info {
         .highlight = "Invalid generic instantiation",
         .help = fmt::format("Implement interface '{}' in type '{}'", impl->get_printable_name(), x->get_printable_name()),

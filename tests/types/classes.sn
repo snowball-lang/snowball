@@ -1,3 +1,4 @@
+
 class Test {
   public let mut a: i32;
   public init() {
@@ -9,4 +10,47 @@ class Test {
 func new_class() bool {
   let test = new Test();
   return test.a == 42;
+}
+
+class Generic<T> {
+  public let mut a: T;
+  public init(x: T) {
+    self.a = x;
+  }
+}
+
+#[test]
+func new_generic() bool {
+  let test = new Generic<i32>(42);
+  return test.a == 42;
+}
+
+class Impl<T: MyInterface> {
+  public let mut a: T;
+  public init(x: T) {
+    self.a = x;
+  }
+
+  public func hello() bool {
+    self.a.my_func()
+  }
+}
+
+class TestImpl implements MyInterface {
+  public init() {
+  }
+
+  public virtual func my_func() bool {
+    1
+  }
+}
+
+interface MyInterface {
+  public func my_func() bool;
+}
+
+#[test]
+func new_impl() bool {
+  let test = new Impl<TestImpl>(new TestImpl());
+  test.hello()
 }

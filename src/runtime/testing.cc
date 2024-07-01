@@ -28,25 +28,25 @@ void snowball_test_post_run(unsigned int succ_count, unsigned int max_count)
 
 namespace snowball {
 
-bool test_success(bool(*test)()) {
+static bool test_success(bool(*test)()) {
   return TEST_CHECK(test());
 }
 
-void print_header(const char* name, unsigned int count, 
+static void print_header(const char* name, unsigned int count, 
     unsigned int max_count) {
   printf("%s" PREFIX "%s%s[ %u/%u ] %s%s ... ", 
     COLOR_GRAY, COLOR_RESET, COLOR_GRAY, count + 1, max_count, name, COLOR_RESET);
 }
 
-void print_success() {
+static void print_success() {
   printf("%sok!%s\n", COLOR_GREEN, COLOR_RESET);
 }
 
-void print_failure() {
+static void print_failure() {
   printf("%sfail%s\n", COLOR_RED, COLOR_RESET);
 }
 
-void post_test(bool success, const char* name, unsigned int count, 
+static void post_test(bool success, const char* name, unsigned int count, 
     unsigned int max_count) {
   if (success) {
     print_success();
@@ -55,7 +55,7 @@ void post_test(bool success, const char* name, unsigned int count,
   print_failure();
 }
 
-void run_test(bool(*test)(), const char* name = nullptr, 
+static void run_test(bool(*test)(), const char* name = nullptr, 
   unsigned int count = 0, unsigned int max_count = 0, 
   unsigned int* succ_count = nullptr) {
   assert(test && "Test function must not be null");
@@ -68,13 +68,13 @@ void run_test(bool(*test)(), const char* name = nullptr,
   }
 }
 
-void tests_pre_run(unsigned int max_count) {
+static void tests_pre_run(unsigned int max_count) {
   printf("\n%s" PREFIX "%sRunning %s%u%s tests. Good Luck!\n", 
     COLOR_GRAY, COLOR_RESET, COLOR_BLUE, max_count, COLOR_RESET);
   printf("%s" PREFIX "%s\n", COLOR_GRAY, COLOR_RESET);
 }
 
-void tests_post_run(unsigned int succ_count, unsigned int max_count) {
+static void tests_post_run(unsigned int succ_count, unsigned int max_count) {
   printf("%s" PREFIX "%s\n", COLOR_GRAY, COLOR_RESET);
   printf("%s" PREFIX "%s%s%u%s out of %u tests passed.\n", 
     COLOR_GRAY, COLOR_RESET, COLOR_GREEN, succ_count, COLOR_RESET, max_count);

@@ -88,7 +88,12 @@ void TypeChecker::visit(ast::Call* node) {
       if (index->get_access_type() == ast::MemberAccess::Default) {
         object->accept(this);
         arg_types.insert(arg_types.begin(), try_get_unknown(object->get_type()));
-        node->get_args().insert(node->get_args().begin(), object); 
+        if (!node->has_self_inserted()) {
+          node->get_args().insert(node->get_args().begin(), object); 
+          node->set_inserted_self();
+        } else {
+          node->get_args()[0] = object;
+        }
       }
       auto fn = get_best_match(fn_decls, arg_types, node->get_location(), index->get_member()->get_generics(), false, ignore_self);
       if (!fn) {
