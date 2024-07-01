@@ -11,10 +11,9 @@ namespace sema {
 void TypeChecker::check_test_case(const ast::FnDecl* fn_decl) {
   if (!fn_decl->get_test()) return;
   auto ret_type = fn_decl->get_type()->as_func()->get_return_type();
-  if (!ret_type->is_int() || (!ret_type->as_int()->is_signed() || !(ret_type->as_int()->get_bits() == 32))) {
-    err(fn_decl->get_location(), "Test functions must return a 32-bit signed integer", Error::Info {
-      .highlight = "Test functions must return a 32-bit signed integer",
-      .help = "Test functions must return a 32-bit signed integer",
+  if (!ret_type->is_int() || !(ret_type->as_int()->get_bits() == 1)) {
+    err(fn_decl->get_location(), "Test functions must return a bool", Error::Info {
+      .highlight = "Return type is not 'bool'",
       .see = "https://snowball-lang.gitbook.io/docs/language-reference/testing"
     });
   }

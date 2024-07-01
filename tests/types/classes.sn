@@ -1,0 +1,12 @@
+class Test {
+  public let mut a: i32;
+  public init() {
+    self.a = 42;
+  }
+}
+
+#[test]
+func new_class() bool {
+  let test = new Test();
+  return test.a == 42;
+}

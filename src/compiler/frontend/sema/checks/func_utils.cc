@@ -27,7 +27,7 @@ ast::FnDecl* TypeChecker::get_best_match(const FunctionsVector& decls, const std
     } else if (decl->get_params().size() != args.size() || identified) 
       continue;
     bool match = true;
-    sn_assert(!(ignore_self && args.size() < 1), "Invalid ignore_self parameter given!");
+    sn_assert(!(ignore_self && args.size() < !decl->is_constructor()), "Invalid ignore_self parameter given!");
     for (size_t i = ignore_self; i < args.size(); ++i) {
       if (decl->get_params().at(i)->get_type()->is_deep_generic()) continue;
       if (can_cast(args.at(i), decl->get_params().at(i)->get_type()) == CastType::Invalid) {

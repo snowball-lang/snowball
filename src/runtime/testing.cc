@@ -4,12 +4,8 @@
 
 #include "common.h"
 
-#ifndef SNOWBALL_FAILURE
-#define SNOWBALL_FAILURE 0
-#endif
-
 #ifndef TEST_CHECK
-#define TEST_CHECK(value) (value) != SNOWBALL_FAILURE
+#define TEST_CHECK(value) (value)
 #endif
 
 #define COLOR_GREEN "\033[1;32m"
@@ -21,7 +17,7 @@
 #define PREFIX ":: "
 
 extern "C" {
-void snowball_test(int(*test)(), const char* name, 
+void snowball_test(bool(*test)(), const char* name, 
   unsigned int count, unsigned int max_count, unsigned int* succ_count)
   __asm__(SNOWBALL_TEST_EXPORT) SNOWBALL_RT_VISIBILITY;   
 void snowball_test_pre_run(unsigned int max_count) 
@@ -32,7 +28,7 @@ void snowball_test_post_run(unsigned int succ_count, unsigned int max_count)
 
 namespace snowball {
 
-bool test_success(int(*test)()) {
+bool test_success(bool(*test)()) {
   return TEST_CHECK(test());
 }
 
@@ -43,11 +39,11 @@ void print_header(const char* name, unsigned int count,
 }
 
 void print_success() {
-  printf("%sOK%s\n", COLOR_GREEN, COLOR_RESET);
+  printf("%sok!%s\n", COLOR_GREEN, COLOR_RESET);
 }
 
 void print_failure() {
-  printf("%sFAIL%s\n", COLOR_RED, COLOR_RESET);
+  printf("%sfail%s\n", COLOR_RED, COLOR_RESET);
 }
 
 void post_test(bool success, const char* name, unsigned int count, 
@@ -59,7 +55,7 @@ void post_test(bool success, const char* name, unsigned int count,
   print_failure();
 }
 
-void run_test(int(*test)(), const char* name = nullptr, 
+void run_test(bool(*test)(), const char* name = nullptr, 
   unsigned int count = 0, unsigned int max_count = 0, 
   unsigned int* succ_count = nullptr) {
   assert(test && "Test function must not be null");
@@ -75,6 +71,7 @@ void run_test(int(*test)(), const char* name = nullptr,
 void tests_pre_run(unsigned int max_count) {
   printf("\n%s" PREFIX "%sRunning %s%u%s tests. Good Luck!\n", 
     COLOR_GRAY, COLOR_RESET, COLOR_BLUE, max_count, COLOR_RESET);
+  printf("%s" PREFIX "%s\n", COLOR_GRAY, COLOR_RESET);
 }
 
 void tests_post_run(unsigned int succ_count, unsigned int max_count) {
@@ -85,7 +82,7 @@ void tests_post_run(unsigned int succ_count, unsigned int max_count) {
 
 } // namespace snowball
 
-void snowball_test(int(*test)(), const char* name, 
+void snowball_test(bool(*test)(), const char* name, 
   unsigned int count, unsigned int max_count, unsigned int* succ_count) {
   snowball::run_test(test, name, count, max_count, succ_count);
 }

@@ -5,7 +5,7 @@ namespace snowball {
 namespace backend {
 
 void LLVMBuilder::emit(const sil::VarDecl* node) {
-  auto alloca = alloc(node->get_type(), "__var." + node->get_name());
+      auto alloca = alloc(node->get_type(), "__var." + node->get_name());
   auto loc = node->get_location();
   auto file = dbg.get_file(loc.file->get_path());
   auto dbg_var = dbg.builder->createAutoVariable(
