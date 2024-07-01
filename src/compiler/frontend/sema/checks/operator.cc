@@ -38,7 +38,7 @@ void TypeChecker::visit(ast::BinaryOp* node) {
     return;
   }
 
-  auto lhs_type = lhs->get_type();
+  auto lhs_type = try_get_unknown(lhs->get_type());
   if (lhs_type->is_int() || lhs_type->is_float()) {
     switch (op) {
       case Operator::Eqeq:

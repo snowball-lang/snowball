@@ -293,15 +293,12 @@ NamespacePath NameAccumulator::get_path(const std::string& name) const {
 TypeChecker::GetResult TypeChecker::get_from_type(ast::MemberAccess* node, ast::types::Type* type) {
   auto member = node->get_member();
   auto member_name = member->get_name();
+  type = try_get_unknown(type);
   auto full_name = type->get_printable_name() + "::" + printable_op(member_name);
   if (auto as_ref = type->as_reference()) {
     // We dont do a recursive call here, because we can only get the member
     // of the reference (in just one level deep)
     type = as_ref->get_ref();
-  } else if (auto as_unknown = type->as_unknown()) {
-    // Attempt to resolve the unknown type
-    // If we cant resolve it, thats the best we can do
-    type = get_universe().get_constraints().at(as_unknown->get_id());
   }
   bool dont_error = false;
   size_t tries = 0;

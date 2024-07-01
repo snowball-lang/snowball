@@ -123,6 +123,8 @@ private:
   ast::types::UnknownType* get_unknown_type();
   ast::types::ErrorType* get_error_type();
 
+  ast::types::Type* try_get_unknown(ast::types::Type* type);
+
   void set_moved_var(ast::VarDecl* var);
   void define_variable(ast::VarDecl* node, const SourceLocation& loc, bool initialized = false);
   std::optional<std::string> get_did_you_mean(const std::string& name);

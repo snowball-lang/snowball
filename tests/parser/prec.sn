@@ -1,5 +1,15 @@
 
 #[test]
-func basic_precedence() i32 {
+func basic() i32 {
   return (1 + 2 * 3 + 4) == 11;
+}
+
+#[test]
+func complex() i32 {
+  return (1 + 2 * 3 / 4 + 5) == 7;
+}
+
+#[test]
+func complex2() i32 {
+  return (1 + 2 * 3 / 6 + (5 - 6)) == 1;
 }

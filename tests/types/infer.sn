@@ -1,0 +1,8 @@
+
+#[test]
+func basic_infer() i32 {
+  let mut a;
+  a = 1 + 2 * 3 + 4;
+  return a == 11;     
+}
+      

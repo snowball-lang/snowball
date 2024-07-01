@@ -68,6 +68,15 @@ bool TypeChecker::type_match(ast::types::Type* a, ast::types::Type* b, bool igno
   return unify(a, b, SourceLocation::dummy(), flags);
 }
 
+ast::types::Type* TypeChecker::try_get_unknown(ast::types::Type* type) {
+  if (type->is_unknown()) {
+    auto unknown = type->as_unknown();
+    auto& constraint = universe.get_constraints().at(unknown->get_id());
+    return constraint;
+  }
+  return type;
+}
+
 }
 }
 }
