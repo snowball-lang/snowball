@@ -51,6 +51,7 @@ bool TypeChecker::try_cast(ast::Expr*& node, ast::types::Type* to) {
 }
 
 void TypeChecker::visit(ast::Cast* node) {
+  node->get_expr()->accept(this);
   if (auto type = node->get_target()) {
     sn_assert(false, "TODO: Explicit cast not implemented");
     return;

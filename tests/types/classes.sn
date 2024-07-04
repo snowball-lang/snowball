@@ -32,7 +32,7 @@ class Impl<T: MyInterface> {
   }
 
   public func hello() bool {
-    self.a.my_func()
+    1
   }
 }
 

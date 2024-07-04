@@ -223,8 +223,11 @@ size_t ClassDecl::get_virtual_fn_count() const {
 }
 
 Node* Cast::clone() const {
+  auto ty = get_type();
   auto clone = Cloneable<Cast>::default_clone(this);
   clone->expr = (Expr*)expr->clone();
+  if (!get_target())
+    clone->get_type() = ty;
   return clone;
 }
 
