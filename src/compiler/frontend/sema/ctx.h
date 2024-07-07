@@ -91,6 +91,15 @@ struct MonorphosizedClass final {
   llvm::StringMap<ast::types::Type*> generics;
 };
 
+struct GenericInferContext final {
+  std::optional<ast::types::Type*> type;
+
+  GenericInferContext() = default;
+  ~GenericInferContext() = default;
+
+  void clear() { type = std::nullopt; }
+};
+
 struct TypeCheckerContext final {
   std::vector<NamespacePath> allowed_uuids = ALLOWED_UUIDS;
   Module* current_module = nullptr;

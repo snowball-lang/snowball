@@ -77,7 +77,7 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b,
         b->get_printable_name(), a->get_printable_name()),
       .help = "Try casting the type to the expected type by using a cast expression",
       .see = "https://snowball-lang.gitbook.io/docs/language-reference/casting"
-    });
+    }, Error::Type::Err, false);
   a = get_error_type();
   return false;
 }

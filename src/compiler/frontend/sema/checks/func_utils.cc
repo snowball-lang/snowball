@@ -9,7 +9,8 @@ namespace sema {
 using namespace utils;
 
 ast::FnDecl* TypeChecker::get_best_match(const FunctionsVector& decls, const std::vector<ast::types::Type*>& args, 
-    const SourceLocation& loc, const std::vector<ast::TypeRef>& generics, bool identified, bool ignore_self) {
+    const SourceLocation& loc, const std::vector<ast::TypeRef>& generics, bool identified, bool ignore_self,
+    std::optional<ast::types::Type*> infer_type) {
   std::vector<ast::FnDecl*> matches;
   assert(decls.size() > 0);
   if (decls.size() > 1 && identified) {
@@ -53,7 +54,7 @@ ast::FnDecl* TypeChecker::get_best_match(const FunctionsVector& decls, const std
       return nullptr;
     case 1: {
       auto match = matches[0];
-      return deduce_func(match, args, loc, generics);
+      return deduce_func(match, args, loc, generics, infer_type);
     }
     default:
       err(loc, fmt::format("Ambiguous call to function '{}'. Multiple functions match the call", decls[0]->get_name()), 
@@ -67,7 +68,8 @@ ast::FnDecl* TypeChecker::get_best_match(const FunctionsVector& decls, const std
 }
 
 ast::FnDecl* TypeChecker::deduce_func(ast::FnDecl* node, const std::vector<ast::types::Type*>& args, 
-                                    const SourceLocation& loc, const std::vector<ast::TypeRef>& generics) {
+                                    const SourceLocation& loc, const std::vector<ast::TypeRef>& generics,
+                                    std::optional<ast::types::Type*> infer_type) {
   if (node->get_generics().size() == 0) {
     return node;
   }
@@ -77,15 +79,15 @@ ast::FnDecl* TypeChecker::deduce_func(ast::FnDecl* node, const std::vector<ast::
     auto arg = get_type(generics.at(i));
     deduced[gen.get_name()] = arg;
   }
-  std::function<void(const ast::VarDecl*, ast::types::Type*, ast::types::Type*, bool)> check_generic = [&](auto param, auto pgen, auto arg, auto already_checked) {
+  std::function<void(ast::types::Type*, ast::types::Type*, bool)> check_generic = [&](auto pgen, auto arg, auto already_checked) {
     if (auto cls = pgen->as_class(); cls && !already_checked) {
-      check_generic(param, cls, arg, true);
+      check_generic(cls, arg, true);
       if (auto cls_arg = arg->as_class()) {
         if (cls->get_generics().size() != cls_arg->get_generics().size()) {
           return;
         }
         for (size_t i = 0; i < cls->get_generics().size(); ++i) {
-          check_generic(param, cls->get_generics().at(i), cls_arg->get_generics().at(i), false);
+          check_generic(cls->get_generics().at(i), cls_arg->get_generics().at(i), false);
         }
       }
       return;
@@ -108,7 +110,11 @@ ast::FnDecl* TypeChecker::deduce_func(ast::FnDecl* node, const std::vector<ast::
   for (size_t i = 0; i < args.size(); ++i) {
     auto param = node->get_params().at(i);
     auto arg = args.at(i);
-    check_generic(param, param->get_type(), arg, false);
+    check_generic(param->get_type(), arg, false);
+  }
+  if (infer_type.has_value()) {
+    // Check the infer context with the return type of the called function
+    check_generic(node->get_type()->as_func()->get_return_type(), infer_type.value(), false);
   }
   for (auto& gen : node->get_generics()) {
     // TODO: Default generic types implementation here!

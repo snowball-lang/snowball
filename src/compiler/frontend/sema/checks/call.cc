@@ -7,6 +7,8 @@ namespace frontend {
 namespace sema {
 
 void TypeChecker::visit(ast::Call* node) {
+  auto infer_type = infer_ctx.type;
+  infer_ctx.clear();
   std::vector<ast::types::Type*> arg_types;
   arg_types.reserve(node->get_args().size());
   for (auto& arg : node->get_args()) {
@@ -48,7 +50,9 @@ void TypeChecker::visit(ast::Call* node) {
       return;
     } else {
       auto fn_decls = item.value().get_funcs();
-      auto fn = get_best_match(fn_decls, arg_types, node->get_location(), ident->get_generics());
+      auto fn = get_best_match(fn_decls, arg_types, 
+        node->get_location(), ident->get_generics(), 
+        false, false, infer_type);
       ident->set_var_id(fn->get_id());
       callee_type = fn->get_type();
     }
@@ -87,15 +91,18 @@ void TypeChecker::visit(ast::Call* node) {
       auto fn_decls = item.value().get_funcs();
       if (index->get_access_type() == ast::MemberAccess::Default) {
         object->accept(this);
-        arg_types.insert(arg_types.begin(), try_get_unknown(object->get_type()));
         if (!node->has_self_inserted()) {
+          arg_types.insert(arg_types.begin(), try_get_unknown(object->get_type()));
           node->get_args().insert(node->get_args().begin(), object); 
           node->set_inserted_self();
         } else {
           node->get_args()[0] = object;
+          arg_types[0] = object->get_type();
         }
       }
-      auto fn = get_best_match(fn_decls, arg_types, node->get_location(), index->get_member()->get_generics(), false, ignore_self);
+      auto fn = get_best_match(fn_decls, arg_types, 
+        node->get_location(), index->get_member()->get_generics(), 
+        false, ignore_self, infer_type);
       if (!fn) {
         unify(node->get_type(), get_error_type());
         return;
@@ -113,7 +120,8 @@ void TypeChecker::visit(ast::Call* node) {
     return;
   }
   if (!callee_type->is_func()) {
-    err(node->get_location(), fmt::format("cannot call non-function type '{}'", callee_type->get_printable_name()), Error::Info {
+    err(node->get_location(), fmt::format("cannot call non-function type '{}'", 
+      callee_type->get_printable_name()), Error::Info {
       .highlight = callee_type->get_printable_name(),
       .help = fmt::format("Expected a function but '{}' is not a function", callee_type->get_printable_name())
     }, Error::Type::Err, false);

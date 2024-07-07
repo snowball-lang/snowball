@@ -33,7 +33,9 @@ void TypeChecker::visit(ast::Return* node) {
     return;
   }
   if (node->get_value()) {
+    infer_ctx.type = function_type->get_return_type();
     node->get_value().value()->accept(this);
+    infer_ctx.clear();
     auto expr_type = node->get_value().value()->get_type();
     if (expr_type->is_error()) {
       unify(node->get_type(), expr_type, node->get_location());
@@ -41,6 +43,7 @@ void TypeChecker::visit(ast::Return* node) {
     }
     try_cast(node->get_value().value(), function_type->get_return_type());
     unify(node->get_type(), function_type->get_return_type(), node->get_location());
+    unify(node->get_type(), node->get_value().value()->get_type(), node->get_location());
   } else {
     unify(node->get_type(), function_type->get_return_type(), node->get_location());
   }

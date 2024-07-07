@@ -43,6 +43,7 @@ class TypeChecker final : public ast::AstVisitor, public Reporter {
   llvm::DenseMap<uint64_t, std::vector<MonorphosizedClass>> generic_class_registry;
   llvm::DenseMap<uint64_t, llvm::TinyPtrVector<ast::ExtensionDecl*>> extension_registry;
   TypeCheckerContext ctx;
+  GenericInferContext infer_ctx;
   borrow::BorrowChecker borrow_checker;
   llvm::DenseMap<uint64_t, TypeCheckerContext> generic_contexts;
   // A vector used to keep track of extenral "unmangled" names
@@ -134,11 +135,12 @@ private:
     const FunctionsVector& decls,
     const std::vector<ast::types::Type*>& args, const SourceLocation& loc,
     const std::vector<ast::TypeRef>& generics, bool identified = false,
-    bool ignore_self = false
+    bool ignore_self = false, std::optional<ast::types::Type*> infer_type = std::nullopt
   );
   ast::FnDecl* deduce_func(
     ast::FnDecl* node, const std::vector<ast::types::Type*>& args,
-    const SourceLocation& loc, const std::vector<ast::TypeRef>& generics
+    const SourceLocation& loc, const std::vector<ast::TypeRef>& generics,
+    std::optional<ast::types::Type*> infer_type = std::nullopt
   );
   ast::FnDecl* propagate_generic(
     ast::FnDecl* node, const llvm::StringMap<ast::types::Type*>& generics,
