@@ -33,6 +33,7 @@ enum class UnifyFlags : int
   None = 1 << 0,
   JustCheck = 1 << 1,
   IgnoreSelf = 1 << 2,
+  DontError = 1 << 3,
 };
 
 class TypeChecker final : public ast::AstVisitor, public Reporter {

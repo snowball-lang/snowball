@@ -12,3 +12,19 @@ func complex_infer() bool {
   let b = a = 2;
   return a == 2;
 }
+
+class TestClass<T> {
+  public init() {
+  }
+
+  public func example(_x: T) bool {
+    _x
+  }
+}
+
+#[test]
+func generics_infer() bool {
+  let mut t: TestClass;
+  t = new TestClass<i32>();
+  t.example(1)
+}

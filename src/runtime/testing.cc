@@ -14,7 +14,13 @@
 #define COLOR_BLUE  "\033[1;34m"
 #define COLOR_RESET "\033[0m"
 
-#define PREFIX ":: "
+#define COLOR_BOLD_BLK  "\033[1;30m"
+
+#define COLOR_GRN_BG "\e[0;102m"
+#define COLOR_RED_BG "\e[0;101m"
+
+#define CLEAR_LINE "\33[2K\r"
+#define GO_UP      "\033[A"
 
 extern "C" {
 void snowball_test(bool(*test)(), const char* name, 
@@ -32,27 +38,59 @@ static bool test_success(bool(*test)()) {
   return TEST_CHECK(test());
 }
 
-static void print_header(const char* name, unsigned int count, 
-    unsigned int max_count) {
-  printf("%s" PREFIX "%s%s[ %u/%u ] %s%s ... ", 
-    COLOR_GRAY, COLOR_RESET, COLOR_GRAY, count + 1, max_count, name, COLOR_RESET);
-}
-
-static void print_success() {
-  printf("%sok!%s\n", COLOR_GREEN, COLOR_RESET);
-}
-
-static void print_failure() {
-  printf("%sfail%s\n", COLOR_RED, COLOR_RESET);
-}
-
-static void post_test(bool success, const char* name, unsigned int count, 
-    unsigned int max_count) {
-  if (success) {
-    print_success();
-    return;
+static void print_test_results(unsigned int succ_count, unsigned int max_count, 
+    unsigned int curr_count) {
+  printf(CLEAR_LINE "Results: %s%u%s out of %s%u%s tests passed.", 
+    COLOR_GREEN, succ_count, COLOR_RESET, COLOR_BLUE, max_count, COLOR_RESET);
+  if (succ_count < curr_count) {
+    printf(" But %s%u%s tests failed.", COLOR_RED, curr_count - succ_count, COLOR_RESET);
   }
-  print_failure();
+  printf("\n");
+  if (curr_count < max_count) {
+    // Convert them into percentages
+    curr_count = (curr_count * 20) / max_count;
+    max_count = 20;
+    printf("       [" COLOR_GREEN);
+    for (unsigned int i = 0; i < curr_count; i++)
+      printf("█");
+    printf(COLOR_RESET);
+    for (unsigned int i = 0; i < max_count - curr_count; i++)
+      printf("▁");
+    printf("]\n");
+  }
+  fflush(stdout);
+}
+
+static void clear_test_results(unsigned int max_count, unsigned int curr_count, bool with_header = false) {
+  if (curr_count < max_count) {
+    printf(CLEAR_LINE);
+  }
+  if (with_header) {
+    printf(GO_UP CLEAR_LINE);
+    printf(GO_UP CLEAR_LINE);
+  }
+  printf(GO_UP CLEAR_LINE);
+  printf(GO_UP CLEAR_LINE);
+  fflush(stdout);
+}
+
+static void print_test_header(const char* name, unsigned int count, 
+    unsigned int max_count, int success) {
+  printf("[");
+  switch (success) {
+    case -1:
+      printf(COLOR_BOLD_BLK " RUN  ");
+      break;
+    case 0:
+      printf(COLOR_RED_BG " ERR  ");
+      break;
+    case 1:
+      printf(COLOR_GRN_BG " NICE ");
+      break;
+  }
+  printf(COLOR_RESET "] %s%s%s (%u/%u)\n", COLOR_GRAY, name, COLOR_RESET, 
+    count, max_count);
+  fflush(stdout);
 }
 
 static void run_test(bool(*test)(), const char* name = nullptr, 
@@ -60,24 +98,32 @@ static void run_test(bool(*test)(), const char* name = nullptr,
   unsigned int* succ_count = nullptr) {
   assert(test && "Test function must not be null");
   assert(name && "Test name must not be null");
-  print_header(name, count, max_count);
+  clear_test_results(max_count, count);
+  print_test_header(name, count, max_count, -1);
+  printf("\n");
+  print_test_results(*succ_count, max_count, count);
   bool success = test_success(test);
-  post_test(success, name, count, max_count);
+  clear_test_results(max_count, count, true);
+  print_test_header(name, count, max_count, success);
+  print_test_results(*succ_count, max_count, count);
   if (success && succ_count) {
     *succ_count += 1;
   }
 }
 
 static void tests_pre_run(unsigned int max_count) {
-  printf("\n%s" PREFIX "%sRunning %s%u%s tests. Good Luck!\n", 
-    COLOR_GRAY, COLOR_RESET, COLOR_BLUE, max_count, COLOR_RESET);
-  printf("%s" PREFIX "%s\n", COLOR_GRAY, COLOR_RESET);
-}
+  printf("\nRunning %s%u%s tests. Good Luck!\n", 
+    COLOR_BLUE, max_count, COLOR_RESET);
+  printf("\n");
+  print_test_results(0, max_count, 0);
+}     
 
 static void tests_post_run(unsigned int succ_count, unsigned int max_count) {
-  printf("%s" PREFIX "%s\n", COLOR_GRAY, COLOR_RESET);
-  printf("%s" PREFIX "%s%s%u%s out of %u tests passed.\n", 
-    COLOR_GRAY, COLOR_RESET, COLOR_GREEN, succ_count, COLOR_RESET, max_count);
+  clear_test_results(max_count, max_count);
+  printf("\n");
+  printf("All tests are done!\n");
+  print_test_results(succ_count, max_count, max_count);
+  printf("\n");
 }
 
 } // namespace snowball

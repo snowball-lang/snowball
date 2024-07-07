@@ -13,7 +13,7 @@ namespace sema {
 bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b, 
                       const SourceLocation& loc, int flags) {
   bool just_check = flags & static_cast<int>(UnifyFlags::JustCheck);
-  if (!a || a->equals(b, flags & (int)UnifyFlags::IgnoreSelf)) {
+  if (!a) {
     return SUCCESS;
   } else if (a->is_reference() && b->is_reference()) {
     return unify(a->as_reference()->get_mut_ref(), b->as_reference()->get_mut_ref(), loc, flags);
@@ -49,6 +49,26 @@ bool TypeChecker::unify(ast::types::Type*& a, ast::types::Type* b,
     } else if (!just_check) {
       return unify(a, b_constraint, loc, flags);
     }
+  } else if (a->is_class() && b->is_class()) {
+    auto a_class = a->as_class();
+    auto b_class = b->as_class();
+    if (a_class->get_path() == b_class->get_path()) {
+      auto a_generics = a_class->get_generics();
+      auto b_generics = b_class->get_generics();
+      if (a_generics.size() == b_generics.size()) {
+        bool success = true;
+        for (size_t i = 0; i < a_generics.size(); i++) {
+          if (!unify(a_generics[i], b_generics[i], loc, flags)) {
+            success = false;
+          }
+        }
+        if (success) {
+          return SUCCESS;
+        }
+      }
+    }
+  } else if (a->equals(b, flags & (int)UnifyFlags::IgnoreSelf)) {
+    return SUCCESS;
   }
   if (just_check) return false;
   err(loc, fmt::format("Type mismatch between '{}' and '{}'", 
