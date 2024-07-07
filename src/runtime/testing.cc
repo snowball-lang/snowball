@@ -89,7 +89,7 @@ static void print_test_header(const char* name, unsigned int count,
       break;
   }
   printf(COLOR_RESET "] %s%s%s (%u/%u)\n", COLOR_GRAY, name, COLOR_RESET, 
-    count, max_count);
+    count+1, max_count);
   fflush(stdout);
 }
 
