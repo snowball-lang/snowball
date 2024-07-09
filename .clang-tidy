@@ -12,7 +12,6 @@ CheckOptions:
   - { key: readability-identifier-naming.LocalConstantCase, value: UPPER_CASE}
   - { key: readability-identifier-naming.LocalVariableCase, value: camelBack}
   - { key: readability-identifier-naming.FunctionCase, value: CamelCase}
-  - { key: readability-identifier-naming.EnumConstantPrefix, value: k}
 
 
 HeaderFilterRegex: './src/.*'
