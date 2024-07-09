@@ -1,0 +1,39 @@
+
+#[test]
+func explicit_return() bool {
+  return 1;
+}
+
+#[test]
+func implicit_return() bool {
+  1
+}
+
+#[test]
+func empty_var() bool {
+  let mut a;
+  a = 1;
+  a
+}
+
+#[test]
+func empty_block() bool {
+  {}
+  1
+}
+
+#[test]
+func nested_blocks() bool {
+  {
+    {
+      {
+        {
+          {
+          }
+        }
+        let a = 1;        
+      }
+      1
+    }
+  }
+}

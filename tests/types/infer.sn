@@ -28,3 +28,15 @@ func generics_infer() bool {
   t = new TestClass<i32>();
   t.example(1)
 }
+
+func return_inf<T>(a: T) T {
+  a
+}
+
+#[test]
+func infer_return() bool {
+  return_inf(1)
+}
+
+#[test]
+

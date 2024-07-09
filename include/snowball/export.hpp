@@ -33,6 +33,7 @@
 #  define SNOWBALL_DEPRECATED_NO_EXPORT SNOWBALL_NO_EXPORT SNOWBALL_DEPRECATED
 #endif
 
+/* NOLINTNEXTLINE(readability-avoid-unconditional-preprocessor-if) */
 #if 0 /* DEFINE_NO_DEPRECATED */
 #  ifndef SNOWBALL_NO_DEPRECATED
 #    define SNOWBALL_NO_DEPRECATED

@@ -31,6 +31,10 @@ ast::Node* Parser::parse_stmt(const Token& peek) {
     case Token::Type::KwordReturn:
       next();
       return expect_semi_ending(parse_return());
+    case Token::Type::BracketLcurly: {
+      next();
+      return parse_block();
+    }
     default: {
       auto expr = parse_expr();
       if (!is(Token::Type::SymSemiColon)) {

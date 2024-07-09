@@ -28,7 +28,7 @@ ast::Block* Parser::parse_block(Token::Type terminator) {
       continue;
     }
     stmts.push_back(parse_stmt(pk));
-    if (is(terminator)) {
+    if (is(terminator) && !stmts.back()->is<ast::Block>()) {
       prev();
       continue;
     }

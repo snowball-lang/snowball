@@ -1,0 +1,5 @@
+
+#[test]
+func implicit_import() bool {
+  //crate::sema::mod1::test()
+}

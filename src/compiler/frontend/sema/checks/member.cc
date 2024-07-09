@@ -14,7 +14,7 @@ void TypeChecker::visit(ast::MemberAccess* node) {
       .highlight = 
         fmt::format("Variable '{}' not found.", name),
       .help = fmt::format("Did you mean to declare a variable with the name '{}'?", name)
-    }, Error::Type::Err, false);
+    });
     unify(node->get_type(), get_error_type());
     return;
   }

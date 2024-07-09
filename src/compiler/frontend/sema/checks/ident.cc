@@ -15,7 +15,7 @@ void TypeChecker::visit(ast::Ident* node) {
         fmt::format("Variable '{}' not found. {}", node->get_name(), 
         dym.has_value() ? fmt::format("Did you mean '{}'?", dym.value()) : ""),
       .help = fmt::format("Did you mean to declare a variable with the name '{}'?", node->get_name())
-    }, Error::Type::Err, false);
+    });
     unify(node->get_type(), get_error_type());
     return;
   }

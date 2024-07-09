@@ -27,7 +27,7 @@ TypeChecker::CastType TypeChecker::can_cast(ast::types::Type* from, ast::types::
 }
 
 bool TypeChecker::try_cast(ast::Expr*& node, ast::types::Type* to) {
-  auto from = node->get_type();
+  auto from = try_get_unknown(node->get_type());
   auto cast = can_cast(from, to);
   switch (cast) {
     case CastType::NoCast:

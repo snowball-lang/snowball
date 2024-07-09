@@ -79,15 +79,15 @@ ast::FnDecl* TypeChecker::deduce_func(ast::FnDecl* node, const std::vector<ast::
     auto arg = get_type(generics.at(i));
     deduced[gen.get_name()] = arg;
   }
-  std::function<void(ast::types::Type*, ast::types::Type*, bool)> check_generic = [&](auto pgen, auto arg, auto already_checked) {
+  std::function<void(ast::types::Type*, ast::types::Type*, bool, bool)> check_generic = [&](auto pgen, auto arg, auto already_checked, bool infer_type) {
     if (auto cls = pgen->as_class(); cls && !already_checked) {
-      check_generic(cls, arg, true);
+      check_generic(cls, arg, true, infer_type);
       if (auto cls_arg = arg->as_class()) {
         if (cls->get_generics().size() != cls_arg->get_generics().size()) {
           return;
         }
         for (size_t i = 0; i < cls->get_generics().size(); ++i) {
-          check_generic(cls->get_generics().at(i), cls_arg->get_generics().at(i), false);
+          check_generic(cls->get_generics().at(i), cls_arg->get_generics().at(i), false, infer_type);
         }
       }
       return;
@@ -95,6 +95,9 @@ ast::FnDecl* TypeChecker::deduce_func(ast::FnDecl* node, const std::vector<ast::
     if (!pgen->is_generic()) return;
     auto gen = pgen->as_generic();
     if (deduced.find(gen->get_name()) != deduced.end()) {
+      if (infer_type) {
+        return;
+      }
       if (!type_match(deduced[gen->get_name()], arg)) {
         err(loc, fmt::format("Type mismatch for generic parameter '{}'. Expected type '{}' but got type '{}'", 
           gen->get_name(), deduced[gen->get_name()]->get_printable_name(), arg->get_printable_name()), Error::Info {
@@ -110,11 +113,11 @@ ast::FnDecl* TypeChecker::deduce_func(ast::FnDecl* node, const std::vector<ast::
   for (size_t i = 0; i < args.size(); ++i) {
     auto param = node->get_params().at(i);
     auto arg = args.at(i);
-    check_generic(param->get_type(), arg, false);
+    check_generic(param->get_type(), arg, false, false);
   }
   if (infer_type.has_value()) {
     // Check the infer context with the return type of the called function
-    check_generic(node->get_type()->as_func()->get_return_type(), infer_type.value(), false);
+    check_generic(node->get_type()->as_func()->get_return_type(), infer_type.value(), false, true);
   }
   for (auto& gen : node->get_generics()) {
     // TODO: Default generic types implementation here!
