@@ -85,6 +85,13 @@ public:
   };
 
 private:
+  frontend::ast::attrs::AttrInterpreter initialize_attr_interpreter();
+  void setup_project_context(const std::filesystem::path& path);
+  void compile_project_sources(const std::filesystem::path& path, const std::string& src, 
+                                const std::string& project_name, frontend::ast::attrs::AttrInterpreter& attr_interp);
+  void compile_source_file(const std::filesystem::directory_entry& entry, const std::string& project_name,
+                            frontend::ast::attrs::AttrInterpreter& attr_interp);
+
   std::string get_package_type_string();
   static void print_compiling_bar(std::vector<frontend::Module>& modules);
 
@@ -94,6 +101,15 @@ private:
 
   void stop_compilation();
   void post_compile();
+
+  void build_output(std::vector<std::shared_ptr<snowball::sil::Module>>& sil_modules, 
+    llvm::DenseMap<std::uint64_t, sil::Inst*>& sil_insts, bool is_object);
+  sil::Builder* create_builder(llvm::DenseMap<std::uint64_t, sil::Inst*>& sil_insts, 
+    const frontend::NamespacePath& module_root_path);
+  std::string determine_output_file(const std::string& path_str, bool is_object);
+  void build_and_emit_module(sil::Builder* builder, 
+    std::vector<std::shared_ptr<snowball::sil::Module>>& sil_modules, 
+    const std::string& output_file);
 
   void run_visitors();
   llvm::SmallVector<frontend::GenericVisitor*, SNOWBALL_DEFAULT_VISITOR_COUNT> get_visitors();

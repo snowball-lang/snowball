@@ -54,6 +54,8 @@ bool sw(const std::string& str, const std::string& prefix);
 void strip(std::string& str);
 std::string replace_all(std::string str, const std::string& from, const std::string& to);
 
+std::string remove_sub_folders(const std::string& full, const std::string& sub);
+
 template <typename T, typename U>
 std::vector<T> map(const std::vector<U>& vec, std::function<T(U)> fn) {
   std::vector<T> result;

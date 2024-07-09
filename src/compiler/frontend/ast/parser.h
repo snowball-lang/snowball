@@ -51,7 +51,7 @@ public:
   Parser(const Parser&) = delete;
   Parser& operator=(const Parser&) = delete;
 
-  Module parse();
+  Module parse(const std::string& root_name);
 
 private:
   Token peek(int offset = 0, bool safe = false);
