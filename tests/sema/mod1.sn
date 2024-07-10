@@ -1,4 +1,4 @@
 
-func test() bool {
+public func test() bool {
   1
 }

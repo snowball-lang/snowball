@@ -375,13 +375,7 @@ fetch_member:
 std::optional<NamespacePath> TypeChecker::search_module(const NamespacePath& path) {
   if (path.size() == 1 && path[0] == "crate") {
     auto mod_path = ctx.current_module->get_path();
-    std::vector<std::string> parts;
-    // We remove the amount of parts from the current module path
-    // to get the crate path
-    for (size_t i = 0; i < mod_path.size() - 1; ++i) {
-      parts.push_back(mod_path[i]);
-    }
-    return NamespacePath(parts);
+    return NamespacePath(mod_path[0]);
   }
   for (auto& mod : modules) {
     if (mod.get_path() == path) {
