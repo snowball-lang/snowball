@@ -17,7 +17,7 @@ namespace frontend {
 namespace sema {
 
 TypeChecker::TypeChecker(const Ctx& ctx, std::vector<Module>& modules) 
-  : AstVisitor(ctx), Reporter(), modules(modules) {}
+  : TypeCheckerBase(modules), AstVisitor(ctx) { }
 
 void TypeChecker::check() {
   register_builtins();

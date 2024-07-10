@@ -8,38 +8,48 @@ namespace snowball {
 namespace sil {
 
 Binder::Binder(const Ctx& ctx, std::vector<frontend::Module>& modules, sema::Universe<sema::TypeCheckItem>& universe)
-  : AstVisitor(ctx), Reporter(), ast_modules(modules), types(universe.get_types()), constraints(universe.get_constraints()),
+  : AstVisitor(ctx), ast_modules(modules), types(universe.get_types()), constraints(universe.get_constraints()),
     current_module(std::make_shared<sil::Module>(NamespacePath::dummy())) {
     }
 
 void Binder::bind() {
   try {
-    // TODO: Do a second pass to fully forward declare each function!
-    for (size_t j = 0; j < ast_modules.size(); j++) {
-      just_declare = true;
-      auto& module = ast_modules[j];
-      current_module = std::make_shared<sil::Module>(module.get_path(), module.is_main);
-      current_module->parent_crate = module.parent_crate;
-      auto ast = module.get_ast();
-      size_t i = 0;
-      for (; i < ast.size(); i++) {
-        auto& node = ast[i];
-        if (node->is<ast::FnDecl>() ||
-            node->is<ast::ClassDecl>() ||
-            node->is<ast::VarDecl>()) {
-          node->accept(this);
-        }
-      }
-      just_declare = false;
-      for (i = 0; i < ast.size(); i++) {
-        ast[i]->accept(this);
-      }
-      module.set_generated(true);
-      sil_modules.push_back(current_module);
+    just_declare = true;
+    for (size_t i = 0; i < ast_modules.size(); ++i) {
+      auto& module = ast_modules[i];
+      process_module_declarations(module);
+    }
+
+    just_declare = false;
+    for (size_t j = 0; j < ast_modules.size(); ++j) {
+      current_module = sil_modules[j];
+      process_module_definitions(ast_modules[j]);
+      ast_modules[j].set_generated(true);
       Compiler::print_compiling_bar(ast_modules);
     }
   } catch (const StopBindingIR&) {
     // Do nothing
+  }
+}
+
+void Binder::process_module_declarations(frontend::Module& module) {
+  current_module = std::make_shared<sil::Module>(module.get_path(), module.is_main);
+  current_module->parent_crate = module.parent_crate;
+
+  auto& ast = module.get_ast();
+  for (auto& node : ast) {
+    if (node->is<ast::FnDecl>() || node->is<ast::ClassDecl>() || node->is<ast::VarDecl>()) {
+      node->accept(this);
+    }
+  }
+
+  sil_modules.push_back(current_module);
+}
+
+void Binder::process_module_definitions(frontend::Module& module) {
+  auto ast = module.get_ast();
+  for (auto& node : ast) {
+    node->accept(this);
   }
 }
 

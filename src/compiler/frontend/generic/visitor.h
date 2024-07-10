@@ -28,7 +28,7 @@ struct GenericVisitorContext {
 
 // Generic visitor that visits all the nodes in the AST
 // and it can be used for linting, documentation generation, etc.
-class GenericVisitor : public ast::AstVisitor, public Reporter {
+class GenericVisitor : public ast::AstVisitor {
   std::vector<Module>& modules;
   GenericVisitorContext ctx;
 

@@ -14,6 +14,7 @@
 #include "compiler/reports/reporter.h"
 #include "compiler/utils/utils.h"
 #include "compiler/frontend/sema/borrow.h"
+#include "compiler/frontend/sema/container.h"
 
 #include "compiler/llvm_stl.h"
 
@@ -36,19 +37,11 @@ enum class UnifyFlags : int
   DontError = 1 << 3,
 };
 
-class TypeChecker final : public ast::AstVisitor, public Reporter {
-  Universe<TypeCheckItem> universe;
-  std::vector<Module>& modules;
-  llvm::DenseMap<uint64_t, std::vector<MonorphosizedFn>> generic_registry;
-  llvm::DenseMap<uint64_t, std::vector<MonorphosizedClass>> generic_class_registry;
-  llvm::DenseMap<uint64_t, llvm::TinyPtrVector<ast::ExtensionDecl*>> extension_registry;
-  TypeCheckerContext ctx;
-  GenericInferContext infer_ctx;
+class TypeChecker final : public TypeCheckerBase, public ast::AstVisitor {
   borrow::BorrowChecker borrow_checker;
-  llvm::DenseMap<uint64_t, TypeCheckerContext> generic_contexts;
-  // A vector used to keep track of extenral "unmangled" names
-  std::vector<std::string> external_declared;
-  bool has_entry_declared = false;
+  llvm::DenseMap<uint64_t, llvm::TinyPtrVector<
+    ast::ExtensionDecl*
+  >> extension_registry;
 
 public:
   TypeChecker(const Ctx& ctx, std::vector<Module>& modules);
@@ -59,8 +52,6 @@ public:
 #define SN_REGISTER_ACCEPT(n) void visit(ast::n* node) override;
 #include "compiler/frontend/ast/nodes.def"
 #undef SN_REGISTER_ACCEPT
-
-  auto& get_universe() { return universe; }
 
 private:
   void register_builtins();

@@ -37,7 +37,7 @@ struct BinderCtx {
  * This class is used to bind SIL instructions together. It is used to bind
  * instructions together to form a function body.
  */
-class Binder : public ast::AstVisitor, public Reporter {
+class Binder : public ast::AstVisitor {
   std::vector<frontend::Module>& ast_modules;
   std::vector<std::shared_ptr<Module>> sil_modules;
   std::shared_ptr<sil::Module> current_module;
@@ -64,6 +64,9 @@ public:
   ast::types::Type* get_type(ast::types::Type* type, const SourceLocation& loc);
   ast::types::Type* check_type(ast::types::Type* type, const SourceLocation& loc);
   auto& get_insts() { return var_ids; }
+
+  void process_module_declarations(frontend::Module& module);
+  void process_module_definitions(frontend::Module& module);
 
   bool in_generic_context() const;
 

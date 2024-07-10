@@ -5,11 +5,13 @@
 #include "compiler/ctx.h"
 #include "compiler/frontend/ast/nodes.h"
 
+#include "compiler/reports/reporter.h"
+
 namespace snowball {
 namespace frontend {
 namespace ast {
 
-class AstVisitor {
+class AstVisitor : public Reporter {
 protected:
   const Ctx& vctx;
 
