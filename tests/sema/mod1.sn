@@ -1,9 +1,0 @@
-
-#[test]
-public func circular_import() bool {
-  crate::sema::use::test()
-}
-
-public func test() bool {
-  1
-}

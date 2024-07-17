@@ -1,6 +1,0 @@
-[submodule "src/app/vendor/confy"]
-	path = src/app/vendor/confy
-	url = https://github.com/mauro-balades/Confy
-[submodule "src/app/vendor/reky"]
-	path = src/app/vendor/reky
-	url = https://github.com/snowball-lang/reky

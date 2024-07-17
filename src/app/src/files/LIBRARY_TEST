@@ -1,9 +1,0 @@
-
-@cfg(tests)
-namespace tests {
-  
-  @test
-  func should_pass() i32 {
-    return crate::lib::my_export();
-  }
-}

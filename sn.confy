@@ -1,6 +1,0 @@
-
-project {
-  name = "tests"
-  type = "lib"
-  src  = "./tests"
-}

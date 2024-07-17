@@ -1,3 +1,0 @@
-
-// Optimization functions
-void optimize_virtual_call(Call*& call);

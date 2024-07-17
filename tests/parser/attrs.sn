@@ -1,8 +1,0 @@
-
-#[test]
-#[cfg(not(not(
-  test
-)), not(not(not(not(test)))))]
-func long_attributes() bool {
-  1
-}

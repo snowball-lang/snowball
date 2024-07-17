@@ -1,6 +1,0 @@
-
-public func main() i32 {
-  // The Classics
-  std::io::println("Hello, world!");
-  return 0;
-}
