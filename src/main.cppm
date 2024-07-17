@@ -1,3 +1,4 @@
+export module main;
 
 import app;
 
