@@ -3,6 +3,15 @@ set_version("1.0.0")
 
 set_languages("c++latest")
 
+-- Config and template files
+set_configdir("$(buildir)/config")
+set_configvar("SN_VERSION", "$(version)")
+add_configfiles("templates/config.h.in")
+
+set_toolchains("clang", "@muslcc")
+
+set_license("MIT")
+
 add_rules("mode.debug", "mode.release")
 
 -- Set all possible warnings
@@ -26,3 +35,10 @@ function add_platform_specific_flags()
         -- Add flags for e.g. linux here
     end
 end
+
+target("snowball")
+    set_kind("shared")
+    add_files("src/*.cppm")
+    add_platform_specific_flags()
+target_end()
+
