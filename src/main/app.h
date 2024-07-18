@@ -1,12 +1,10 @@
-module;
 
-export module app;
+#pragma once
 
-import <vector>;
+#include <vector>
 
 namespace snowball {
-
-export namespace app {
+namespace app {
 
 /// @brief The main application class.
 /// It takes control of the application process. It is responsible for
@@ -22,5 +20,4 @@ private:
 };
 
 };
-
 };

@@ -1,6 +1,5 @@
 
-module;
-import app;
+#include "main/app.h"
 
 namespace snowball::app {
 

@@ -1,4 +1,5 @@
-import app;
+
+#include "main/app.h"
 
 using namespace snowball;
 
