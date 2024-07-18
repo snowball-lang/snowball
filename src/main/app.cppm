@@ -1,7 +1,8 @@
+module;
 
 export module app;
 
-import stl;
+import <vector>;
 
 namespace snowball {
 
