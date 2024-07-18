@@ -1,7 +1,9 @@
 
 export module app;
 
-#include <vector>
+import stl;
+
+namespace snowball {
 
 export namespace app {
 
@@ -16,6 +18,8 @@ public:
   int Run();
 private:
   std::vector<const char*> mArgv;
+};
+
 };
 
 };

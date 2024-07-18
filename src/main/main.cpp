@@ -1,6 +1,6 @@
-export module main;
-
 import app;
+
+using namespace snowball;
 
 int main(int argc, char** argv) {
   // Initialize the application. This will run the whole command line parsing
