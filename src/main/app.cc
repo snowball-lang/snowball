@@ -1,5 +1,6 @@
 
 #include "main/app.h"
+#include "main/cli.h"
 
 namespace snowball::app {
 
@@ -11,6 +12,9 @@ App::App(int argc, char** argv) {
 }
 
 int App::Run() {
+  if (!ParseCommandLine(mArgv)) {
+    return EXIT_FAILURE;
+  }
   return 0;
 }
 

@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <vector>
+#include "common/stl.h"
 
 namespace snowball {
 namespace app {
@@ -14,9 +14,9 @@ class App {
 public:
   App(int argc, char** argv);
   /// @brief Run the application process as main entry point.
-  int Run();
+  [[nodiscard]] int Run();
 private:
-  std::vector<const char*> mArgv;
+  Vector<const char*> mArgv;
 };
 
 };
