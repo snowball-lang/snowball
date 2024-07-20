@@ -11,7 +11,7 @@ Application::Application(int argc, char* argv[]) {
 }
 
 bool Application::RunAsMain() {
-  return true;
+  return false;
 }
 
 bool Application::Run(int argc, char* argv[]) {

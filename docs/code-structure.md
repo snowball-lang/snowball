@@ -3,7 +3,7 @@
 
 ```
 src/ - Source code
-  sn-bin/ - Snowball binary source code (executable)
+  bin/ - Snowball binary source code (executable)
   main/ - Main compiler structure
     frontend/ - Frontend source code
       lexer/ - Lexer source code

@@ -1,23 +1,21 @@
 
-import app;
-
 #ifndef SNOWBALL_CRASH_HANDLER
 #define Main main
 #else
 #error "TODO: Implement crash handler."
 #endif
 
+#include "common/ffi.h"
+
+import app;
 using namespace snowball::app;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+SN_EXTERN_START
 
 /// @brief The entry point of the application.
-int Main(int argc, char* argv[]) {
+int SN_API Main(int argc, char* argv[]) {
   return Application::Run(argc, argv);
 }
 
-#ifdef __cplusplus
-}
-#endif
+SN_EXTERN_END
+
