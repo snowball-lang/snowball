@@ -10,7 +10,29 @@ set_configdir("$(buildir)/config")
 set_configvar("SN_VERSION", "$(version)")
 add_configfiles("templates/config.h.in")
 
-add_requires("llvm 18.x", {alias = "llvm-18", debug = true, system = true})
+add_requires("llvm 18.x", {
+    alias = "llvm-18", debug = true, 
+    system = false, kind = "library", 
+    configs = {
+        lld = true,
+        polly = true,
+
+        mlir = false,
+        flang = false,
+        clang = false,
+        lldb = false,
+        compiler_rt = false,
+        libcxx = false,
+        libcxxabi = false,
+        libunwind = false,
+        openmp = false,
+        libclc = false,
+        libomptarget = false,
+        clang_tools_extra = false,
+        bolt = false,
+        openmp = false,
+    }
+})
 
 set_toolchains("clang@llvm-18")
 
@@ -39,6 +61,8 @@ function add_platform_specific_flags()
 end
 
 target("snowball")
+    add_packages("llvm-18", {public = true})
+
     set_kind("binary")
     add_files("src/**.cpp")
     add_files("src/**.cppm", { install = true })
@@ -62,9 +86,4 @@ target("snowball")
     configvar_check_features("SN_HAS_CONSTEXPR", "cxx_constexpr")
 
     set_runtimes("c++_shared")
-
-    -- Include llvm headers
-    -- print include directories
-    add_packages("llvm")
-    add_includedirs("/usr/lib/llvm-18/include/") -- TODO: Look for a better way to do this
 target_end()

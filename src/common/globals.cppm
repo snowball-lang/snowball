@@ -6,7 +6,7 @@ namespace snowball {
 
 /// @brief This is a global context for the compiler.
 /// it is thread-safe and can be used around everywhere, it is a singleton.
-struct GlobalContext {
+export struct GlobalContext {
   GlobalContext() = default;
   ~GlobalContext() = default;
 
@@ -18,7 +18,7 @@ struct GlobalContext {
   bool mDebugVerbose{false};  // "--debug-verbose"
 };
 
-extern GlobalContext gContext;
+export extern GlobalContext gContext;
 export namespace opts {
 
 #define GLOBAL_CONTEXT_GETTER_SWITCH(name, member) \
