@@ -62,4 +62,9 @@ target("snowball")
     configvar_check_features("SN_HAS_CONSTEXPR", "cxx_constexpr")
 
     set_runtimes("c++_shared")
+
+    -- Include llvm headers
+    -- print include directories
+    add_packages("llvm")
+    add_includedirs("/usr/lib/llvm-18/include/") -- TODO: Look for a better way to do this
 target_end()
