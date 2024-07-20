@@ -1,7 +1,7 @@
 module;
-import stl;
-
 export module app;
+
+import stl;
 
 namespace snowball {
 export namespace app {

@@ -1,2 +1,10 @@
 
 ${define SN_VERSION}
+${define HAS_WCHAR}
+${define HAS_STRING_H}
+${define HAS_STRING_AND_STDIO_H}
+${define SN_HAS_LONG_8}
+${define SN_PTR_SIZE}
+${define SN_HAS_INT_4}
+${define SN_INT_SIZE}
+${define SN_HAS_CONSTEXPR}

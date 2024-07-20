@@ -1,3 +1,5 @@
+includes("@builtin/check")
+
 set_project("Snowball")
 set_version("1.0.0")
 
@@ -8,16 +10,13 @@ set_configdir("$(buildir)/config")
 set_configvar("SN_VERSION", "$(version)")
 add_configfiles("templates/config.h.in")
 
-add_requires("llvm 18.x", {alias = "llvm-18", debug = true})
+add_requires("llvm 18.x", {alias = "llvm-18", debug = true, system = true})
 
-set_toolchains("llvm@llvm-18")
+set_toolchains("clang@llvm-18")
 
 set_license("MIT")
 
 add_rules("mode.debug", "mode.release")
-
--- Set all possible warnings
-set_warnings("all", "error")
 
 -- Setup for debug symbols and optimization
 if is_mode("debug") then
@@ -47,4 +46,20 @@ target("snowball")
     add_includedirs("src")
     set_policy("build.c++.modules", true)
     set_policy("build.c++.clang.fallbackscanner", true)
+    set_policy("build.c++.modules.std", true)
+    add_rules("plugin.compile_commands.autoupdate")
+
+    configvar_check_ctypes("SN_HAS_WCHAR", "wchar_t")
+
+    configvar_check_cincludes("SN_HAS_STRING_H", "string.h")
+    configvar_check_cincludes("SN_HAS_STDIO_H", "stdio.h")
+
+    check_csnippets("SN_HAS_INT_4", "return (sizeof(int) == 4)? 0: -1;", {tryrun = true})
+    check_csnippets("SN_INT_SIZE",'printf("%d", sizeof(int)); return 0;', {output = true, number = true})
+    configvar_check_csnippets("SN_HAS_LONG_8", "return (sizeof(long) == 8)? 0: -1;", {tryrun = true})
+    configvar_check_csnippets("SN_PTR_SIZE",'printf("%d", sizeof(void*)); return 0;', {output = true, number = true})
+
+    configvar_check_features("SN_HAS_CONSTEXPR", "cxx_constexpr")
+
+    set_runtimes("c++_shared")
 target_end()
