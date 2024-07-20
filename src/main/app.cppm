@@ -15,11 +15,11 @@ public:
   /// @param argc The number of arguments.
   /// @param argv The arguments.
   /// @return The application exit code.
-  static bool Run(int argc, char* argv[]);
+  static bool Run(i32 argc, char* argv[]);
 
   /// @brief Application constructor.
   /// @see ::Run
-  Application(int argc, char* argv[]);
+  Application(i32 argc, char* argv[]);
 
   /// @brief Execute the application.
   bool RunAsMain();
@@ -28,6 +28,6 @@ private:
   Vector<String> mArguments;
 };
 
-} // namespace app
-} // namespace snowball
+}; // namespace app
+}; // namespace snowball
 

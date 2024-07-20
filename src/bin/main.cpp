@@ -8,13 +8,15 @@
 #include "common/ffi.h"
 
 import app;
-using namespace snowball::app;
+import stl;
+
+using namespace snowball;
 
 SN_EXTERN_START
 
 /// @brief The entry point of the application.
-int SN_API Main(int argc, char* argv[]) {
-  return Application::Run(argc, argv);
+int SN_API Main(i32 argc, char* argv[]) {
+  return app::Application::Run(argc, argv);
 }
 
 SN_EXTERN_END

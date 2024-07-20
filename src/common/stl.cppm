@@ -45,4 +45,7 @@ export namespace snowball {
 
   using f32 = float;
   using f64 = double;
+
+  constexpr i32 Success = false;
+  constexpr i32 Failure = true;
 }; // namespace snowball

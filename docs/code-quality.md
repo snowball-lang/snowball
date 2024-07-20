@@ -5,7 +5,7 @@
 
 We make use of PascalCase for types and functions, camelCase for variables and constants.
 
-Note that for constants and fields we need to use a prefix to indicate the type of the constant or field. For example, `kConstant` for constants and `mField` for fields. We also need to use a prefix for boolean variables and arguments, for example, `isFlag` or `hasValue` for booleans and `aArgument` for arguments.
+Note that for constants and fields we need to use a prefix to indicate the type of the constant or field. For example, `kConstant` for constants and `mField` for fields. We also need to use a prefix for boolean variables, for example, `isFlag` or `hasValue` for booleans for arguments.
 
 ## Code Formatting
 
