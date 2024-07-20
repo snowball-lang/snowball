@@ -48,12 +48,6 @@ _deps
 
 gcm.cache
 
-bin/
-debug/
-obj/
-
-Release/
-
 Makefile
 snowball
 !include/snowball/
