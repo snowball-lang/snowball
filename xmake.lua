@@ -8,7 +8,9 @@ set_configdir("$(buildir)/config")
 set_configvar("SN_VERSION", "$(version)")
 add_configfiles("templates/config.h.in")
 
-set_toolchains("@muslcc")
+add_requires("llvm 18.x", {alias = "llvm-18", debug = true})
+
+set_toolchains("llvm@llvm-18")
 
 set_license("MIT")
 
@@ -37,11 +39,12 @@ function add_platform_specific_flags()
     end
 end
 
-add_requires("llvm 18.1.1")
-
 target("snowball")
     set_kind("binary")
-    add_files("src/**.cc")
+    add_files("src/**.cpp")
+    add_files("src/**.cppm", { install = true })
     add_platform_specific_flags()
     add_includedirs("src")
+    set_policy("build.c++.modules", true)
+    set_policy("build.c++.clang.fallbackscanner", true)
 target_end()
