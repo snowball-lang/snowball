@@ -1,12 +1,16 @@
 
-module;
-export module globals;
+#pragma once
+#include "common/stl.h"
 
 namespace snowball {
 
+enum class Command {
+  Run, Build,
+};
+
 /// @brief This is a global context for the compiler.
 /// it is thread-safe and can be used around everywhere, it is a singleton.
-export struct GlobalContext {
+struct GlobalContext {
   GlobalContext() = default;
   ~GlobalContext() = default;
 
@@ -14,12 +18,13 @@ export struct GlobalContext {
   GlobalContext(GlobalContext&&) = delete;
   GlobalContext& operator=(const GlobalContext&) = delete;
 
+  Command mCommand{Command::Run};
   bool mVerbose{false};       // "--verbose"
   bool mDebugVerbose{false};  // "--debug-verbose"
 };
 
-export extern GlobalContext gContext;
-export namespace opts {
+extern GlobalContext gContext;
+namespace opts {
 
 #define GLOBAL_CONTEXT_GETTER_SWITCH(name, member) \
   bool Is##name() { return gContext.member; }
@@ -31,6 +36,8 @@ export namespace opts {
 
 GLOBAL_CONTEXT_GETTER_SWITCH(Verbose, mVerbose)
 GLOBAL_CONTEXT_GETTER_SWITCH(DebugVerbose, mDebugVerbose)
+
+GLOBAL_CONTEXT_SETTER_VALUE(Command, mCommand)
 
 #undef GLOBAL_CONTEXT_GETTER_SWITCH
 #undef GLOBAL_CONTEXT_SETTER_VALUE

@@ -47,6 +47,7 @@ _deps
 *.app
 
 gcm.cache
+.ninja_lock
 
 Makefile
 snowball
@@ -61,6 +62,8 @@ install_manifest.txt
 .sn/
 .sn/*
 .cache/
+
+.vscode/
 
 compile_commands.json
 callgrind.out.*

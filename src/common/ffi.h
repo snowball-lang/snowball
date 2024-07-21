@@ -14,3 +14,7 @@
 #else
 #define SN_API
 #endif
+
+#ifndef SnowballEntry
+#define SnowballEntry main
+#endif
