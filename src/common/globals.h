@@ -27,10 +27,10 @@ extern GlobalContext gContext;
 namespace opts {
 
 #define GLOBAL_CONTEXT_GETTER_SWITCH(name, member) \
-  bool Is##name() { return gContext.member; }
+  static bool Is##name() { return gContext.member; }
 
 #define GLOBAL_CONTEXT_SETTER_VALUE(name, member) \
-  auto Get##name() -> decltype(gContext.member) { \
+  static auto Get##name() -> decltype(gContext.member) { \
     return gContext.member;\
   }
 
