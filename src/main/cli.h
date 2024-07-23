@@ -2,6 +2,7 @@
 #pragma once
 
 #include "common/stl.h"
+#include "common/error.h"
 
 namespace snowball {
 namespace app {

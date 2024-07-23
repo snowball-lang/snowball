@@ -11,9 +11,9 @@ set(CMAKE_FIND_PACKAGE_SORT_ORDER NATURAL)
 set(CMAKE_FIND_PACKAGE_SORT_DIRECTION DEC)
 
 if (CLANG_VERSION_STRING VERSION_EQUAL 17)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-asm-operand-widths -Wno-unused-command-line-argument -Wno-deprecated-declarations -Wextra -Wno-unused-parameter -Wno-unused-private-field -fcolor-diagnostics")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-asm-operand-widths -Wno-unused-command-line-argument -Wno-deprecated-declarations -Wextra -Wno-unused-parameter -Wno-unused-private-field")
 else ()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-asm-operand-widths -Wno-unused-command-line-argument -Wno-deprecated-declarations -Wextra -Wno-unused-parameter -Wno-unused-private-field -fcolor-diagnostics")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-asm-operand-widths -Wno-unused-command-line-argument -Wno-deprecated-declarations -Wextra -Wno-unused-parameter -Wno-unused-private-field")
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function")
@@ -24,6 +24,7 @@ if (CMAKE_C_COMPILER_ID STREQUAL "Clang" AND CMAKE_C_COMPILER_VERSION VERSION_GR
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+include(FetchContent)
 
 # --- BUILD METADATA ---
 # Get current system time and print the build time
@@ -105,6 +106,15 @@ if(APPLE)
 endif()
 message(STATUS "LLD libraries: ${LLD_LINKED_LIBS}")
 target_link_libraries(${PROJECT_NAME} PUBLIC ${LLD_LINKED_LIBS})
+
+# --- FMT LIBRARIES ---
+FetchContent_Declare(fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+  GIT_TAG master
+)
+set(FMT_INSTALL OFF)
+FetchContent_MakeAvailable(fmt)
+target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)
 
 # --- OTHER ---
 message(STATUS "C++ Compilation flags: " ${CMAKE_CXX_FLAGS})

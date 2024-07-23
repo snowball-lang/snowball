@@ -9,6 +9,8 @@
 #include <functional>
 #include <string>
 #include <cstdint>
+#include <memory>
+#include <filesystem>
 
 namespace snowball {
 template <typename T, typename A = std::allocator<T>>
@@ -56,6 +58,19 @@ using const_ptr_t = const char *;
 using SizeT = u64;
 using uintptr_t = std::uintptr_t;
 
+template <typename T>
+using UniquePtr = std::unique_ptr<T>;
+
+template <typename T>
+using SharedPtr = std::shared_ptr<T>;
+
 constexpr i32 Success = false;
 constexpr i32 Failure = true;
+
+namespace fs {
+
+using Path = std::filesystem::path;
+
+} // namespace fs
 }; // namespace snowball
+
