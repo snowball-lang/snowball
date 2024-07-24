@@ -13,7 +13,7 @@ using namespace snowball::utils;
 namespace snowball::reky {
 
 Reky::Reky() {
-static bool mInstalled = false;
+  static bool mInstalled = false;
   SNOWBALL_RELEASE_ASSERT(!mInstalled, "Reky is already installed! "
     "Please use `GetRekyManager()` to get the reky manager.");
   mInstalled = true;
