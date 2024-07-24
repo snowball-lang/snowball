@@ -1,5 +1,5 @@
 
-#include "main/reky.h"
+#include "reky/reky.h"
 #include "main/compiler.h"
 
 #include "common/stl.h"
@@ -11,9 +11,8 @@ auto Compiler::Execute() -> bool {
 }
 
 auto Compiler::ExecuteReky() -> bool {
-  reky::Reky reky;
   // TODO: Return modules to compile.
-  return reky.Execute();
+  return reky::GetRekyManager().Execute();
 }
 
 }; // namespace snowball

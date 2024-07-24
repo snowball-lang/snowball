@@ -116,11 +116,18 @@ set(FMT_INSTALL OFF)
 FetchContent_MakeAvailable(fmt)
 target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)
 
+# --- Declare if we are building on debug mode ---
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  add_definitions(-DSNOWBALL_DEBUG)
+else()
+  add_definitions(-DSNOWBALL_RELEASE)
+endif()
+
 # --- Rust libraries ---
 find_package(Corrosion REQUIRED)
 include(cmake/corrosion_cxx.cmake)
 
-add_library_rust(PATH src/reky NAMESPACE reky)
+add_library_rust(PATH src/third_party/reky NAMESPACE reky)
 target_link_libraries(${PROJECT_NAME} PUBLIC reky::reky)
 
 # --- OTHER ---

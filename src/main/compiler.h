@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "main/reky.h"
+#include "reky/reky.h"
 #include "common/stl.h"
 
 namespace snowball {
