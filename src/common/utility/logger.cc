@@ -4,6 +4,7 @@
 
 #include "common/utility/format.h"
 #include "common/utility/logger.h"
+#include "common/utility/string.h"
 
 #include <fmt/color.h>
 
@@ -15,10 +16,12 @@ auto Logger::LogImpl(const String& message) -> void {
 }
 
 auto Logger::Log(Level level, const String& message) -> void {
-  LogImpl(Format("{}: {}", 
-    fmt::styled(GetLevelPrefix(level), 
-      fmt::fg(GetLevelColor(level)) | fmt::emphasis::bold),
-    message));
+  for (const auto& line : Split(message, '\n')) {
+    LogImpl(Format("{}: {}", 
+      fmt::styled(GetLevelPrefix(level), 
+        fmt::fg(GetLevelColor(level)) | fmt::emphasis::bold),
+      line));
+  }
 }
 
 #define SNOWBALL_LOGGER_LEVEL(level) \

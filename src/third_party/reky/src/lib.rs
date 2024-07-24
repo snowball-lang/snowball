@@ -103,6 +103,6 @@ impl PackageManager {
 /// @see https://cxx.rs/binding/result.html
 pub fn lib_reky_entry() -> anyhow::Result<Vec<Package>> {
   let mut package_manager = PackageManager::new();
-  package_manager.entry()
+  Err(anyhow::anyhow!("Not implemented\nhello"))
 }
 

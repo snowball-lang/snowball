@@ -11,10 +11,10 @@ namespace reky {
 ///  It fetches, and installs packages from the snowball repository.
 /// It also returns package dependency trees and what we should compile.
 /// @see GetRekyManager
-class Reky final {
+class RekyManager final {
 public:
-  Reky();
-  ~Reky() = default;
+  RekyManager();
+  ~RekyManager() = default;
 
   /// @brief It executes the reky command.
   auto Execute() -> bool;
@@ -22,7 +22,7 @@ private:
   static bool mInstalled;
 };
 
-auto GetRekyManager() -> Reky&;
+[[nodiscard]] auto GetRekyManager() -> RekyManager&;
 
 }; // namespace reky
 }; // namespace snowball

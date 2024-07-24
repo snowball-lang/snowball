@@ -12,14 +12,14 @@
 using namespace snowball::utils;
 namespace snowball::reky {
 
-Reky::Reky() {
+RekyManager::RekyManager() {
   static bool mInstalled = false;
   SNOWBALL_RELEASE_ASSERT(!mInstalled, "Reky is already installed! "
     "Please use `GetRekyManager()` to get the reky manager.");
   mInstalled = true;
 }
 
-auto Reky::Execute() -> bool {
+auto RekyManager::Execute() -> bool {
   try {
     auto modules = snowball::lib_reky_entry();
     return Success;
@@ -28,8 +28,8 @@ auto Reky::Execute() -> bool {
   }
 }
 
-auto GetRekyManager() -> Reky& {
-static Reky reky;
+auto GetRekyManager() -> RekyManager& {
+  static RekyManager reky;
   return reky;
 }
 

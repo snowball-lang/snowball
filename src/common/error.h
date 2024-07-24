@@ -10,7 +10,7 @@ namespace snowball {
 /// @brief A basic error class that can be used to represent errors in the
 /// compiler. This will be shown as a simple error message to the user.
 /// To display source information, @see snowball::SourceError.
-class Error {
+class [[nodiscard]] Error {
 public:
   /// @brief Construct an error with a message.
   /// @param message The error message.
@@ -25,7 +25,7 @@ private:
 /// @brief A source error class that can be used to represent errors in the
 /// compiler. This will be shown as an error message with source information.
 /// To display a simple error message, @see snowball::Error.
-class SourceError {
+class [[nodiscard]] SourceError {
 public:
   enum Kind : u8 {
     Error,
