@@ -3,6 +3,7 @@
 
 #include "common/stl.h"
 #include "common/location.h"
+#include "common/utility/format.h"
 
 namespace snowball {
 
@@ -61,10 +62,23 @@ private:
 
 /// @brief It displays an error message and immediately exits the program.
 /// @param error The error to display.
+/// @note This is just a helper function to display an error message and
+///  immediately exit the program. For actual fatal errors, use the
+///  @see CrashError function.
 [[noreturn]] auto FatalError(const Error& error) -> void;
+[[noreturn]] auto FatalError(const String& message) -> void;
+
+/// @brief It displays a fatal error message and immediately exits the program.
+/// @param error The error to display.
+[[noreturn]] auto CrashError(const String& message) -> void;
 
 // Group: fmt utils
-auto format_as(const Error& error) -> String; 
-auto format_as(const SourceError& error) -> String;
+auto SnowballFormat(const Error& error) -> String; 
+auto SnowballFormat(const SourceError& error) -> String;
+
+/// @brief An unreachable error that is used to indicate that a certain
+///  code path should never be reached.
+/// @see snowball::CrashError
+[[noreturn]] auto UnreachableError(const_ptr_t extra = nullptr) -> void;
 
 } // namespace snowball

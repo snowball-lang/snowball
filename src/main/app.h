@@ -29,7 +29,7 @@ public:
   /// @brief Execute the application.
   auto Run() -> bool;
 private:
-  String mCommand{};
+  String mCommand{"-h"};
   Vector<const_ptr_t> mArguments{};
 };
 

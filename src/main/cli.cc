@@ -2,9 +2,13 @@
 #include "main/cli.h"
 #include "common/stl.h"
 #include "common/globals.h"
+#include "common/error.h"
+#include "common/utility/format.h"
 
 #include <llvm/CodeGen/CommandFlags.h>
 #include <llvm/Support/CommandLine.h>
+
+using namespace snowball::utils;
 
 namespace snowball::app {
 
@@ -41,10 +45,23 @@ static auto AssignCommandName(const String& command) -> bool {
 }
 
 auto ParseCommandArgs(const CommandArgs& args, const String& command) -> bool {
+  auto argsCopy = args;
   InitializeVersion();
   PrepareCommandOptions(command);
-  auto success = ExecuteCommandParsing(args);
-  return success && AssignCommandName(command);
+  bool commandFailed = true;
+  if (!AssignCommandName(command)) {
+    // We dont want to parse the command again
+    argsCopy.erase(argsCopy.begin());
+    commandFailed = false;
+  }
+  auto success = ExecuteCommandParsing(argsCopy);
+  // If the command failed but we parsed the arguments successfully, then
+  // the command was not found. We do this because we want the first argument
+  // to be "--help" and ExecuteCommandParsing will exit if it finds that.
+  if (commandFailed) {
+    FatalError(Format("Command '{}' not found!", command));
+  }
+  return success;
 }
 
 }; // namespace snowball::app

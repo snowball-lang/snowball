@@ -6,14 +6,12 @@
 namespace snowball::app {
 
 Application::Application(i32 argc, const_ptr_t argv[]) {
-  auto extraArgs = (argc <= 2 ? 0 : 1);
   mArguments.reserve(argc);
-  if (argc > 1)
-    mCommand = argv[1];
-  else mCommand = "-h";
-  for (i32 i = extraArgs; i < argc; i++) {
+  for (i32 i = 0; i < argc; i++) {
     mArguments.push_back(argv[i]);
   }
+  if (argc > 1) mCommand = argv[1];
+  else mArguments.push_back("-h");
 }
 
 auto Application::Run() -> bool {
