@@ -116,5 +116,12 @@ set(FMT_INSTALL OFF)
 FetchContent_MakeAvailable(fmt)
 target_link_libraries(${PROJECT_NAME} PUBLIC fmt::fmt)
 
+# --- Rust libraries ---
+find_package(Corrosion REQUIRED)
+include(cmake/corrosion_cxx.cmake)
+
+add_library_rust(PATH src/reky NAMESPACE reky)
+target_link_libraries(${PROJECT_NAME} PUBLIC reky::reky)
+
 # --- OTHER ---
 message(STATUS "C++ Compilation flags: " ${CMAKE_CXX_FLAGS})

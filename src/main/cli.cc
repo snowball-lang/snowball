@@ -61,7 +61,7 @@ auto ParseCommandArgs(const CommandArgs& args, const String& command) -> bool {
   if (commandFailed) {
     FatalError(Format("Command '{}' not found!", command));
   }
-  return success;
+  return !success;
 }
 
 }; // namespace snowball::app

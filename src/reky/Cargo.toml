@@ -1,0 +1,23 @@
+
+[package]
+name = "reky"
+version = "0.1.0"
+authors = ["Snowball Team"]
+edition = "2021"
+
+[dependencies]
+cxx = "1.0"
+anyhow = "1.0"
+
+[build-dependencies]
+cxx-build = "1.0"
+
+[lib]
+crate-type = ["staticlib"]
+
+[profile.release]
+debug = true
+panic = "abort"
+
+[profile.dev]
+panic = "abort"

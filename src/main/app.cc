@@ -1,6 +1,7 @@
 
 #include "main/app.h"
 #include "main/cli.h"
+#include "main/compiler.h"
 #include "common/stl.h"
 
 namespace snowball::app {
@@ -18,7 +19,7 @@ auto Application::Run() -> bool {
   if (ParseCommandArgs(mArguments, mCommand)) {
     return Failure;
   }
-  return Success;
+  return Compiler().Execute();
 }
 
 auto Application::RunAsEntry(i32 argc, const_ptr_t argv[]) -> bool {

@@ -33,7 +33,6 @@ analysis.txt
 # cmake deps
 cpm-package-lock.cmake
 CPM_modules/
-cmake/*
 
 # Compiled Static libraries
 *.lai
@@ -64,6 +63,8 @@ install_manifest.txt
 .cache/
 
 .vscode/
+corrosion/
+cargo/
 
 compile_commands.json
 callgrind.out.*
