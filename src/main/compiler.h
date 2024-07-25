@@ -17,6 +17,8 @@ public:
 private:
   /// @brief Execute and collect the output of the reky command.
   auto ExecuteReky() -> bool;
+  /// @brief Start a pre-compilation step.
+  auto ExecutePreCompile() -> bool;
 };
 
 }; // namespace snowball

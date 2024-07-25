@@ -1,8 +1,9 @@
 
 #include "reky/reky.h"
 #include "common/stl.h"
-#include "common/utility/format.h"
+#include "common/disk.h"
 
+#include "common/utility/format.h"
 #include "common/utility/assert.h"
 
 // Rust generated code.
@@ -20,12 +21,21 @@ RekyManager::RekyManager() {
 }
 
 auto RekyManager::Execute() -> bool {
+  PrepareContext();
   try {
-    auto modules = snowball::lib_reky_entry();
+    auto modules = reky::lib_reky_entry(mContext.value());
     return Success;
   } catch (const rust::Error& e) {
     FatalError(Format("Failed to execute reky: {}", e.what()));
   }
+}
+
+auto RekyManager::PrepareContext() -> void {
+  mContext = Context {
+    .home = GetHomeDirectory().string(),
+    .workspace = GetWorkspaceDirectory(WorkspaceDirectory::Dependencies)
+      .string(),
+  };
 }
 
 auto GetRekyManager() -> RekyManager& {

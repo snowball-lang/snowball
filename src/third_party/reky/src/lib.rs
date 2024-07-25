@@ -1,4 +1,5 @@
 use anyhow::Result;
+use cxx::{type_id, ExternType};
 
 // Reky package manager
 // The reky package manager will download and install packages
@@ -29,7 +30,7 @@ use anyhow::Result;
 
 // Group: Export to the C++ API
 
-#[cxx::bridge(namespace = "snowball")]
+#[cxx::bridge(namespace = "snowball::reky")]
 mod ffi {
   #[derive(Clone, Debug)]
   struct Module {
@@ -44,6 +45,11 @@ mod ffi {
     pub name: String,   // Name of the package
     pub version: String // Version of the package
   }
+
+  struct Context {
+    home: String,
+    workspace: String
+  }
   
   #[derive(Clone, Debug)]
   struct Package {
@@ -52,7 +58,7 @@ mod ffi {
   }
 
   extern "Rust" {
-    fn lib_reky_entry() -> Result<Vec<Package>>;
+    fn lib_reky_entry(ctx: &Context) -> Result<Vec<Package>>;
   }
 }
 
@@ -75,14 +81,21 @@ impl Package {
   }
 }
 
-pub struct PackageManager {
-  pub packages: Vec<Package> // List of packages
+pub struct PackageManager<'a> {
+  pub packages: Vec<Package>,// List of packages
+      cache_file: String,    // Path to the cache file
+      cached: Vec<Package>,  // Cached packages
+
+      ctx: &'a ffi::Context      // C++ context
 }
 
-impl PackageManager {
-  pub fn new() -> Self {
+impl<'a> PackageManager<'a> {
+  pub fn new(ctx: &'a ffi::Context) -> Self {
     PackageManager {
-      packages: Vec::new()
+      packages: Vec::new(),
+      cache_file: String::new(),
+      cached: Vec::new(),
+      ctx: ctx
     }
   }
 
@@ -91,7 +104,7 @@ impl PackageManager {
   }
 
   pub fn entry(&self) -> anyhow::Result<Vec<Package>> {
-    println!("Hello from Reky!");
+    println!("Hello from Reky! {}", self.ctx.workspace);
     Ok(self.packages.clone())
   }
 }
@@ -101,8 +114,8 @@ impl PackageManager {
 /// @brief Entry point for the Reky library
 /// @note Any failures will be cached with c++ exception
 /// @see https://cxx.rs/binding/result.html
-pub fn lib_reky_entry() -> anyhow::Result<Vec<Package>> {
-  let mut package_manager = PackageManager::new();
-  Err(anyhow::anyhow!("Not implemented\nhello"))
+pub fn lib_reky_entry(ctx: &ffi::Context) -> anyhow::Result<Vec<Package>> {
+  let mut package_manager = PackageManager::new(ctx);
+  package_manager.entry()
 }
 

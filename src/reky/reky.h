@@ -4,6 +4,8 @@
 #include "common/stl.h"
 #include "common/error.h"
 
+#include "reky/src/lib.rs.h"
+
 namespace snowball {
 namespace reky {
 
@@ -18,8 +20,11 @@ public:
 
   /// @brief It executes the reky command.
   auto Execute() -> bool;
+  /// @brief Prepare reky's context object.
+  auto PrepareContext() -> void;
 private:
   static bool mInstalled;
+  Opt<Context> mContext = None;
 };
 
 [[nodiscard]] auto GetRekyManager() -> RekyManager&;

@@ -70,6 +70,7 @@ constexpr i32 Failure = true;
 namespace fs {
 
 using Path = std::filesystem::path;
+using namespace std::filesystem;
 
 } // namespace fs
 }; // namespace snowball

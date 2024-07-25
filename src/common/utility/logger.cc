@@ -6,6 +6,8 @@
 #include "common/utility/logger.h"
 #include "common/utility/string.h"
 
+#include "common/globals.h"
+
 #include <fmt/color.h>
 
 namespace snowball::utils {
@@ -29,11 +31,16 @@ auto Logger::Log(Level level, const String& message) -> void {
     Log(Level::level, message); \
   }
 
-SNOWBALL_LOGGER_LEVEL(Debug);
 SNOWBALL_LOGGER_LEVEL(Info);
 SNOWBALL_LOGGER_LEVEL(Warning);
 SNOWBALL_LOGGER_LEVEL(Error);
 SNOWBALL_LOGGER_LEVEL(Fatal);
+
+auto Logger::Debug(const String& message) -> void {
+  if (opts::IsDebugVerbose() || opts::IsVerbose()) {
+    Log(Level::Debug, message);
+  }
+}
 
 auto Logger::GetLevelPrefix(Level level) const -> String {
   String prefix;
@@ -55,7 +62,7 @@ auto Logger::GetLevelPrefix(Level level) const -> String {
 
 auto Logger::GetLevelColor(Level level) const -> fmt::terminal_color {
   switch (level) {
-    case Level::Debug  : return fmt::terminal_color::cyan;
+    case Level::Debug  : return fmt::terminal_color::magenta;
     case Level::Info   : return fmt::terminal_color::green;
     case Level::Warning: return fmt::terminal_color::yellow;
     case Level::Error  : return fmt::terminal_color::red;
