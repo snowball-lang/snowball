@@ -127,8 +127,8 @@ endif()
 find_package(Corrosion REQUIRED)
 include(cmake/corrosion_cxx.cmake)
 
-add_library_rust(PATH src/third_party/reky NAMESPACE reky)
-target_link_libraries(${PROJECT_NAME} PUBLIC reky::reky)
+add_library_rust(PATH src/third_party/clowder NAMESPACE clowder)
+target_link_libraries(${PROJECT_NAME} PUBLIC clowder::clowder)
 
 # --- OTHER ---
 message(STATUS "C++ Compilation flags: " ${CMAKE_CXX_FLAGS})

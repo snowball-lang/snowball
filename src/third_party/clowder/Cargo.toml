@@ -1,6 +1,6 @@
 
 [package]
-name = "reky"
+name = "clowder"
 version = "0.1.0"
 authors = ["Snowball Team"]
 edition = "2021"
@@ -8,6 +8,9 @@ edition = "2021"
 [dependencies]
 cxx = "1.0"
 anyhow = "1.0"
+yscl = "1.2.0"
+label-logger = "0.2.1"
+colored = "2"
 
 [build-dependencies]
 cxx-build = "1.0"

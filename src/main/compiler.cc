@@ -1,5 +1,5 @@
 
-#include "reky/reky.h"
+#include "clowder/clowder.h"
 #include "main/compiler.h"
 
 #include "common/stl.h"
@@ -17,12 +17,12 @@ auto Compiler::Execute() -> bool {
 
 auto Compiler::ExecutePreCompile() -> bool {
   CreateWorkspaceDirectories();
-  return ExecuteReky();
+  return ExecuteClowder();
 }
 
-auto Compiler::ExecuteReky() -> bool {
+auto Compiler::ExecuteClowder() -> bool {
   // TODO: Return modules to compile.
-  return reky::GetRekyManager().Execute();
+  return clowder::GetClowderManager().Execute();
 }
 
 }; // namespace snowball

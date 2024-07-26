@@ -4,30 +4,30 @@
 #include "common/stl.h"
 #include "common/error.h"
 
-#include "reky/src/lib.rs.h"
+#include "clowder/src/lib.rs.h"
 
 namespace snowball {
-namespace reky {
+namespace clowder {
 
-/// @brief Reky is snowball's package manager.
+/// @brief clowder is snowball's package manager.
 ///  It fetches, and installs packages from the snowball repository.
 /// It also returns package dependency trees and what we should compile.
-/// @see GetRekyManager
-class RekyManager final {
+/// @see GetClowderManager
+class ClowderManager final {
 public:
-  RekyManager();
-  ~RekyManager() = default;
+  ClowderManager();
+  ~ClowderManager() = default;
 
-  /// @brief It executes the reky command.
+  /// @brief It executes the clowder command.
   auto Execute() -> bool;
-  /// @brief Prepare reky's context object.
+  /// @brief Prepare clowder's context object.
   auto PrepareContext() -> void;
 private:
   static bool mInstalled;
   Opt<Context> mContext = None;
 };
 
-[[nodiscard]] auto GetRekyManager() -> RekyManager&;
+[[nodiscard]] auto GetClowderManager() -> ClowderManager&;
 
-}; // namespace reky
+}; // namespace clowder
 }; // namespace snowball
