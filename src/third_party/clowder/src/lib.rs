@@ -53,7 +53,8 @@ mod ffi {
   struct PackageConfig {
     pub name: String,                  // Name of the package
     pub version: String,               // Version of the package
-    pub dependencies: Vec<Dependency>  // Dependencies of the package
+    pub dependencies: Vec<Dependency>, // Dependencies of the package
+    pub source: String                 // Source of the package
   }
 
   struct Context {
@@ -161,20 +162,82 @@ impl<'a> PackageManager<'a> {
         needs.push(dep_data);
       }
     }
+    let mut source = parsed.get("src");
+    let mut sourecStr = "./src".to_string();
+    if source.is_none() {
+      source = parsed.get("source");
+    }
+    if source.is_some() {
+      sourecStr = source.unwrap().clone().atom().unwrap().value.to_string();
+    }
+    self.debug(&format!(" [{}] version {}", package_name, version.unwrap().clone().atom().unwrap().value));
     Ok(PackageConfig {
       name: package_name,
       version: version.unwrap().clone().atom().unwrap().value,
-      dependencies: needs
+      dependencies: needs,
+      source: sourecStr
     })
   }
 
-  fn collect_packages(&mut self) {
+  fn get_module_name(&self, path: &str, parent_path: &str) -> String {
+    // remove the parent path from the module name
+    let mut name = path.replace(&parent_path, "");
+    if name.starts_with("/") {
+      name = name[1..].to_string();
+    }
+    name = name.replace("/", "::");
+    name = name.replace(".sn", "");
+    name
+  }
 
+  fn collect_modules(&self, source: &str, current_dir: &std::path::Path) -> Result<Vec<Module>, std::io::Error> {
+    // Recursively iterate all files and add them to the package
+    let mut modules = Vec::new();
+    for entry in std::fs::read_dir(current_dir)? {
+      let entry = entry?;
+      let path = entry.path();
+      if path.is_dir() {
+        let sub_modules = self.collect_modules(source, &path)?;
+        modules.extend(sub_modules);
+      } else {
+        let path_str = path.to_str().unwrap();
+        if path_str.ends_with(".sn") {
+          let module = Module {
+            path: path_str.to_string(),
+            name: self.get_module_name(path_str, source),
+            cache: false
+          };
+          self.debug(&format!(" [{}] found module {}", path_str, module.name));
+          modules.push(module);
+        }
+      }
+    }
+    Ok(modules)
+  }
+
+  fn get_full_source_path(&self, current_dir: &std::path::Path, source: &str) -> String {
+    let mut source_path = current_dir.to_path_buf();
+    source_path.push(source);
+    // clean up the path
+    source_path = source_path.canonicalize().unwrap();
+    source_path.to_str().unwrap().to_string()
+  }
+
+  fn create_recursive_package(&mut self, current_dir: &std::path::Path) -> Result<(), std::io::Error> {
+    let mut package = Package::new(self.get_config_from(current_dir.to_str().unwrap())?);
+    let abs_source = self.get_full_source_path(current_dir, &package.config.source);
+    self.debug(&format!(" [{}] found package {}", current_dir.to_str().unwrap(), package.config.name));
+    let modules = self.collect_modules(&abs_source, current_dir)?;
+    for module in modules {
+      package.add_module(module.clone());
+    }
+    self.add_package(package.clone());
+    Ok(())
   }
 
   pub fn entry(&mut self) -> anyhow::Result<Vec<Package>> {
     let current_dir = std::env::current_dir().unwrap();
-    self.add_package(Package::new(self.get_config_from(current_dir.to_str().unwrap())?));
+    self.create_recursive_package(&current_dir)?;
     Ok(self.packages.clone())
   }
 }

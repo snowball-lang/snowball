@@ -39,7 +39,7 @@ auto ClowderManager::PrepareContext() -> void {
     .home = GetHomeDirectory().string(),
     .workspace = GetWorkspaceDirectory(WorkspaceDirectory::Dependencies)
       .string(),
-    .debug = opts::IsVerbose(),
+    .debug = opts::IsDebugVerbose(),
   };
 }
 
