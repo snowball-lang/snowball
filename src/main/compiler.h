@@ -19,6 +19,14 @@ private:
   auto ExecuteClowder() -> bool;
   /// @brief Start a pre-compilation step.
   auto ExecutePreCompile() -> bool;
+  /// @brief It compiles each module into a single binary or whatever
+  ///  the target is.
+  auto ExecuteCompile() -> bool;
+  /// @brief It creates post-compilation processes.
+  auto ExecutePostCompile() -> bool;
+
+  /// @brief packages found by clowder.
+  Vector<clowder::Package> mPackages;
 };
 
 }; // namespace snowball

@@ -24,8 +24,8 @@ public:
 /// @param message The message to print if the condition is false.
 auto Assert(bool condition, const std::string& message) -> void;
 
-#define SNOWBALL_ASSERT(condition, message) \
-  snowball::utils::Assert(condition, message)
+#define SNOWBALL_ASSERT(...) \
+  SNOWBALL_RELEASE_ASSERT(__VA_ARGS__)
 #else
 #define SNOWBALL_ASSERT(condition, message)
 #endif

@@ -22,9 +22,13 @@ public:
   auto Execute() -> bool;
   /// @brief Prepare clowder's context object.
   auto PrepareContext() -> void;
+  /// @brief Get the clowder's modules.
+  [[nodiscard]] auto GetPackages() -> Vector<clowder::Package>; 
 private:
   static bool mInstalled;
-  Opt<Context> mContext = None;
+  Opt<Context> mContext{None};
+
+  Vector<clowder::Package> mPackages;
 };
 
 [[nodiscard]] auto GetClowderManager() -> ClowderManager&;
