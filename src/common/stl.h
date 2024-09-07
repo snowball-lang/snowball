@@ -12,6 +12,12 @@
 #include <memory>
 #include <filesystem>
 
+#ifndef SNOWBALL_NO_DISCARD
+#define SNOWBALL_NO_DISCARD [[nodiscard]]
+#endif
+
+#include "common/llvm.h"
+
 namespace snowball {
 template <typename T, typename A = std::allocator<T>>
 using Vector = std::vector<T, A>;
@@ -53,6 +59,14 @@ using u64 = std::uint64_t;
 using f32 = float;
 using f64 = double;
 
+#ifdef SNOWBALL_SIZE_32
+using usize = u32;
+using isize = i32;
+#else
+using usize = u64;
+using isize = i64;
+#endif
+
 using ptr_t = char *;
 using const_ptr_t = const char *;
 using SizeT = u64;
@@ -67,6 +81,7 @@ using SharedPtr = std::shared_ptr<T>;
 constexpr i32 Success = false;
 constexpr i32 Failure = true;
 
+/// @brief A class that cannot be copied.
 class NonCopyable {
 protected:
   constexpr NonCopyable() = default;
@@ -76,6 +91,15 @@ private:
   NonCopyable(const NonCopyable &)    = delete;
   void operator=(const NonCopyable &) = delete;
 };
+
+/// @brief Create a pre-allocated vector.
+/// @param size The size of the vector.
+/// @return The pre-allocated vector.
+template <typename T>
+SNOWBALL_NO_DISCARD auto 
+ AllocatedVector(usize size) -> Vector<T> {
+  return Vector<T>(size);
+}
 
 namespace fs {
 

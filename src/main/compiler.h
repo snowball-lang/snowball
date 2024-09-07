@@ -4,6 +4,8 @@
 #include "clowder/clowder.h"
 #include "common/stl.h"
 
+#include "frontend/driver.h"
+
 namespace snowball {
 
 /// @brief The compiler is responsible for compiling the source code
@@ -24,6 +26,10 @@ private:
   auto ExecuteCompile() -> bool;
   /// @brief It creates post-compilation processes.
   auto ExecutePostCompile() -> bool;
+
+  // - Compiler stages.
+  /// @brief Execute the front-end compiler.
+  auto ExecuteFrontendCompiler() -> Vector<frontend::Module*>; 
 
   /// @brief packages found by clowder.
   Vector<clowder::Package> mPackages;
