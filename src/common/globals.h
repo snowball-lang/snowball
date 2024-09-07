@@ -21,6 +21,7 @@ struct GlobalContext {
   Command mCommand{Command::Run};
   bool mVerbose{false};       // "--verbose"
   bool mDebugVerbose{false};  // "--debug-verbose"
+  u8   mNumThreads{0};        // "--threads"
 };
 
 extern GlobalContext gContext;
@@ -38,6 +39,7 @@ GLOBAL_CONTEXT_GETTER_SWITCH(Verbose, mVerbose)
 GLOBAL_CONTEXT_GETTER_SWITCH(DebugVerbose, mDebugVerbose)
 
 GLOBAL_CONTEXT_SETTER_VALUE(Command, mCommand)
+GLOBAL_CONTEXT_SETTER_VALUE(NumThreads, mNumThreads)
 
 #undef GLOBAL_CONTEXT_GETTER_SWITCH
 #undef GLOBAL_CONTEXT_SETTER_VALUE

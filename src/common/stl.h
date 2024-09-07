@@ -67,6 +67,16 @@ using SharedPtr = std::shared_ptr<T>;
 constexpr i32 Success = false;
 constexpr i32 Failure = true;
 
+class NonCopyable {
+protected:
+  constexpr NonCopyable() = default;
+  ~NonCopyable()          = default;
+
+private:
+  NonCopyable(const NonCopyable &)    = delete;
+  void operator=(const NonCopyable &) = delete;
+};
+
 namespace fs {
 
 using Path = std::filesystem::path;

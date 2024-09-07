@@ -30,4 +30,8 @@ static CliOpt<bool> gDebugVerbose("debug-verbose", cl::desc("Enable debug verbos
   cl::location(gContext.mDebugVerbose), cl::cat(gGeneralCategory),
   cl::desc("This is a very verbose output that is useful for debugging"));
 
+static CliOpt<u8> gNumThreads("threads", cl::desc("Number of threads to use"), 
+  cl::location(gContext.mNumThreads), cl::cat(gGeneralCategory),
+  cl::desc("This is the number of threads to use for the compiler"));
+
 }; // namespace snowball
