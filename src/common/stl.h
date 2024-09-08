@@ -106,6 +106,8 @@ namespace fs {
 using Path = std::filesystem::path;
 using namespace std::filesystem;
 
+using FileStream = std::ifstream;
+
 } // namespace fs
 }; // namespace snowball
 
