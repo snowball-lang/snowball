@@ -18,12 +18,6 @@ class AsyncComponent final {
   using Result = Opt<ModulePtr>;
 
 public:
-  /// @brief Default constructor.
-  AsyncComponent(const clowder::Module& module) : mModule(module) {}
-
-  /// @brief Default destructor.
-  ~AsyncComponent() = default;
-
   /// @brief Start a new frontend process.
   auto operator()() -> Result;
 
@@ -33,8 +27,11 @@ public:
   /// @return Whether the process was successful.
   static auto StartAsyncProcess(const clowder::Module& module)
       -> std::future<Result>;
-
+      
+  ~AsyncComponent() = default;
 private:
+  AsyncComponent(const clowder::Module& module) : mModule(module) {}
+  
   clowder::Module mModule; ///< The module to compile..
 };
 
