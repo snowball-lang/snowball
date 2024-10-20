@@ -13,16 +13,22 @@
 
 using namespace snowball::utils;
 
-#define RUN_OR_RETURN(expr) \
-  if ((expr) == Failure) return Failure;
-
 namespace snowball {
 
-auto Compiler::Execute() -> bool {
+auto Compiler::SyncCompile() -> bool {
   GetLogger().Debug("Debug verbosity is enabled in the compiler.");
-  RUN_OR_RETURN(ExecutePreCompile())
-  RUN_OR_RETURN(ExecuteCompile());
+  RET_FAIL(ExecutePreCompile())
+  RET_FAIL(ExecuteCompile());
   return ExecutePostCompile();
+}
+
+auto Compiler::Execute() -> bool {
+  return Singleton().SyncCompile();
+}
+
+auto Compiler::Singleton() -> Compiler& {
+  static Compiler instance;
+  return instance;
 }
 
 auto Compiler::ExecutePreCompile() -> bool {
@@ -31,12 +37,13 @@ auto Compiler::ExecutePreCompile() -> bool {
 }
 
 auto Compiler::ExecuteClowder() -> bool {
-  RUN_OR_RETURN(clowder::GetClowderManager().Execute());
+  RET_FAIL(clowder::GetClowderManager().Execute());
   mPackages = clowder::GetClowderManager().GetPackages();
   return Success;
 }
 
 auto Compiler::ExecutePostCompile() -> bool {
+  Stop();
   return true;
 }
 
@@ -51,6 +58,7 @@ auto Compiler::ExecuteFrontendCompiler() -> Vector<frontend::Module*> {
 }
 
 auto Compiler::ExecuteCompile() -> bool {
+  Start();
   // cargo::DisplayStatus("Building", "Compiling source code...");
   auto modules = ExecuteFrontendCompiler();
   return true;

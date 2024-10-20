@@ -101,6 +101,14 @@ SNOWBALL_NO_DISCARD auto
   return Vector<T>(size);
 }
 
+namespace chrono {
+  
+using HighResClock = std::chrono::high_resolution_clock;
+using TimePoint = std::chrono::time_point<HighResClock>;
+using Duration = std::chrono::duration<f64>;
+
+} // namespace chrono
+
 namespace fs {
 
 using Path = std::filesystem::path;

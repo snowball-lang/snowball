@@ -38,5 +38,8 @@ auto ReleaseAssert(bool condition, const std::string& message) -> void;
 #define SNOWBALL_RELEASE_ASSERT(condition, message) \
   snowball::utils::ReleaseAssert(condition, message)
 
+#define RET_FAIL(expr) \
+  if ((expr) == Failure) return Failure;
+
 }; // namespace utils
 }; // namespace snowball
