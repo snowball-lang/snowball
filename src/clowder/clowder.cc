@@ -32,6 +32,7 @@ auto ClowderManager::Execute() -> bool {
   } catch (const rust::Error& e) {
     FatalError(Format("Failed to execute clowder: {}", e.what()));
   }
+  return Failure;
 }
 
 auto ClowderManager::PrepareContext() -> void {

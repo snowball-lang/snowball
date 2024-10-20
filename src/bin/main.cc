@@ -3,8 +3,8 @@
 #include "common/ffi.h"
 #include "common/stl.h"
 
-SN_EXTERN_START
 using namespace snowball;
+SN_EXTERN_START
 
 auto SnowballEntry(i32 argc, const_ptr_t argv[]) -> i32 {
   return app::Application::RunAsEntry(argc, argv);

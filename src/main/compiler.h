@@ -46,7 +46,7 @@ private:
 
   // - Compiler stages.
   /// @brief Execute the front-end compiler.
-  auto ExecuteFrontendCompiler() -> Vector<frontend::Module*>; 
+  auto ExecuteFrontendCompiler() -> Vector<frontend::ModulePtr>; 
 
   /// @brief packages found by clowder.
   Vector<clowder::Package> mPackages;

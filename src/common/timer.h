@@ -37,9 +37,9 @@ public:
   explicit TimedProcess(const String& name);
 
   /// @brief Start the timer.
-  auto Start() -> void { timers::StartTimer(mName); }
+  auto StartTimer() -> void { timers::StartTimer(mName); }
   /// @brief Stop the timer.
-  auto Stop() -> void { timers::StopTimer(mName); }
+  auto StopTimer() -> void { timers::StopTimer(mName); }
   /// @brief Get the time elapsed in seconds.
   /// @return The time elapsed in seconds.
   auto GetTimeElapsed() -> f64 { 

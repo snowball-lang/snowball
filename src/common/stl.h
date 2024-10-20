@@ -11,12 +11,14 @@
 #include <cstdint>
 #include <memory>
 #include <filesystem>
+#include <deque>
 
 #ifndef SNOWBALL_NO_DISCARD
 #define SNOWBALL_NO_DISCARD [[nodiscard]]
 #endif
 
 #include "common/llvm.h"
+#include "common/utility/safe-pointer.h"
 
 namespace snowball {
 template <typename T, typename A = std::allocator<T>>
@@ -33,6 +35,9 @@ using Set = std::set<T>;
 
 template <typename T>
 using Opt = std::optional<T>;
+
+template <typename T>
+using Deque = std::deque<T>;
 
 template <typename T>
 Opt<T> Some(T&& value) {
@@ -90,6 +95,51 @@ protected:
 private:
   NonCopyable(const NonCopyable &)    = delete;
   void operator=(const NonCopyable &) = delete;
+};
+
+/// @brief A class that cannot be moved.
+class NonMovable {
+protected:
+  constexpr NonMovable() = default;
+  ~NonMovable()          = default;
+
+private:
+  NonMovable(NonMovable &&)             = delete;
+  NonMovable &operator=(NonMovable &&)  = delete;
+};
+
+/// @brief A class that can be created by using a static method.
+template <typename T>
+class Createable {
+public:
+  /// @brief Create a new instance of the class.
+  /// @return The new instance.
+  template <typename... Args>
+  static auto Create(Args&&... args) -> UniquePtr<T> {
+    return std::make_unique<T>(std::forward<Args>(args)...);
+  }
+
+protected:
+  constexpr Createable() = default;
+  ~Createable()          = default;
+};
+
+/// @brief A class that can be created by using a static method.
+/// the difference between this and Createable is that this class
+/// creates a safe pointer to the object.
+template <typename T>
+class SafeCreateable {
+public:
+  /// @brief Create a new instance of the class.
+  /// @return The new instance.
+  template <typename... Args>
+  static auto Create(Args&&... args) -> SafePointer<T> {
+    return SafePointer<T>(new T(std::forward<Args>(args)...));
+  }
+
+protected:
+  constexpr SafeCreateable() = default;
+  ~SafeCreateable()          = default;
 };
 
 /// @brief Create a pre-allocated vector.

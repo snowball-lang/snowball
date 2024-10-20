@@ -43,25 +43,25 @@ auto Compiler::ExecuteClowder() -> bool {
 }
 
 auto Compiler::ExecutePostCompile() -> bool {
-  Stop();
-  return true;
+  StopTimer();
+  GetLogger().Info(Format("Compilation finished in {}ms", GetTimeElapsed()));
+  return Success;
 }
 
-auto Compiler::ExecuteFrontendCompiler() -> Vector<frontend::Module*> {
-  auto modules = AllocatedVector<frontend::Module*>(mPackages.size());
+auto Compiler::ExecuteFrontendCompiler() -> Vector<frontend::ModulePtr> {
+  auto modules = AllocatedVector<frontend::ModulePtr>(mPackages.size());
   ThreadPoolExecutor(mPackages.size(), [&](usize index) {
     auto& package = mPackages[index];
-    auto module = frontend::StartAsyncFrontendProcess(package);
-    modules.push_back(module);
+    SNOWBALL_ASSERT_SUCCESS(frontend::StartAsyncFrontendProcess(package, modules),
+        "Failed to execute frontend process.");
   });
   return modules;
 }
 
 auto Compiler::ExecuteCompile() -> bool {
-  Start();
-  // cargo::DisplayStatus("Building", "Compiling source code...");
+  StartTimer();
   auto modules = ExecuteFrontendCompiler();
-  return true;
+  return Success;
 }
 
 }; // namespace snowball

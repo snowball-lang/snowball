@@ -44,7 +44,7 @@ auto timers::GetTimeElapsed(const String& name) -> f64 {
   auto start = gTimers[name];
   auto end = chrono::HighResClock::now();
   auto duration = chrono::Duration(end - start);
-  return duration.count();
+  return duration.count() * 1000;
 }
 
 auto timers::ClearTimer(const String& name) -> void {

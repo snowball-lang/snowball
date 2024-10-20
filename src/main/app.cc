@@ -22,8 +22,7 @@ auto Application::Run() -> bool {
 }
 
 auto Application::RunAsEntry(i32 argc, const_ptr_t argv[]) -> bool {
-  Application app(argc, argv);
-  return app.Run();
+  return Application(argc, argv).Run();
 }
 
 }; // namespace snowball::app
