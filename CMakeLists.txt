@@ -127,7 +127,7 @@ endif()
 find_package(Corrosion REQUIRED)
 include(cmake/corrosion_cxx.cmake)
 
-add_library_rust(PATH src/third_party/clowder NAMESPACE clowder)
+add_library_rust(PATH src/packages/clowder NAMESPACE clowder)
 target_link_libraries(${PROJECT_NAME} PUBLIC clowder::clowder)
 
 # --- OTHER ---
