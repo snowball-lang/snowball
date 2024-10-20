@@ -17,7 +17,7 @@ enum class TT : u8 {
 /// A token is a single lexical unit in the source code. We use
 /// tokens to represent keywords, identifiers, literals, and other
 /// language elements and organize them into a stream.
-class Token final : public NonCopyable {
+class Token final {
 public:
   /// @brief Delete the default constructor.
   Token() = delete;
@@ -58,8 +58,6 @@ private:
 
 // Group: fmt utils
 auto SnowballFormat(const Token& token) -> String; 
-
-using TokenStream = Vector<Token>;
 
 }; // namespace frontend
 }; // namespace snowball

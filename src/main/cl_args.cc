@@ -34,4 +34,10 @@ static CliOpt<u8> gNumThreads("threads", cl::desc("Number of threads to use"),
   cl::location(gContext.mNumThreads), cl::cat(gGeneralCategory),
   cl::desc("This is the number of threads to use for the compiler"));
 
+static cl::OptionCategory gCodeGenCategory("Code Generation Options");
+
+static CliOpt<String> gTargetTriple("target", cl::desc("Target triple to compile for"), 
+  cl::location(gContext.mTargetTriple), cl::cat(gCodeGenCategory),
+  cl::desc("This is the target triple to compile for"));
+
 }; // namespace snowball

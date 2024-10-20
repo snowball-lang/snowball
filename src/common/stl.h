@@ -12,6 +12,7 @@
 #include <memory>
 #include <filesystem>
 #include <deque>
+#include <fstream>
 
 #ifndef SNOWBALL_NO_DISCARD
 #define SNOWBALL_NO_DISCARD [[nodiscard]]
@@ -115,8 +116,8 @@ public:
   /// @brief Create a new instance of the class.
   /// @return The new instance.
   template <typename... Args>
-  static auto Create(Args&&... args) -> UniquePtr<T> {
-    return std::make_unique<T>(std::forward<Args>(args)...);
+  static auto Create(Args&&... args) -> T {
+    return T(std::forward<Args>(args)...);
   }
 
 protected:

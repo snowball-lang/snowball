@@ -1,4 +1,7 @@
 
+#define TARGET_FOR_GLOBAL
+#include "common/target.h"
+
 #include "main/cli.h"
 #include "common/stl.h"
 #include "common/globals.h"
@@ -61,6 +64,7 @@ auto ParseCommandArgs(const CommandArgs& args, const String& command) -> bool {
   if (commandFailed) {
     FatalError(Format("Command '{}' not found!", command));
   }
+  SNOWBALL_ASSERT_SUCCESS(SetGlobalTarget(), "Failed to set the global target!");
   return !success;
 }
 
