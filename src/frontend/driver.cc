@@ -24,7 +24,7 @@ auto StartAsyncFrontendProcess(clowder::Package& package, Vector<ModulePtr>& mod
     )
   );
   Vector<std::future<Opt<ModulePtr>>> futures;
-  for (const auto& module : RustToCpp(package.modules))
+  for (const auto& module : package.modules)
     futures.push_back(AsyncComponent::StartAsyncProcess(module));
   for (auto& future : futures) {
     auto module = future.get();
