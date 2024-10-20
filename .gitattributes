@@ -3,3 +3,4 @@
 Dockerfile.* linguist-language=Dockerfile
 *.conf linguist-language=Shell
 *.confy linguist-language=CoffeeScript
+*.rs linguist-language=Rust
