@@ -34,6 +34,6 @@ auto GetSnowballDirectory() -> fs::Path;
 /// @param path The path to the file.
 /// @return The file contents.
 SNOWBALL_NO_DISCARD
-auto ReadFile(const fs::Path& path) -> fs::FileStream;
+auto ReadFile(const fs::Path& path) -> fs::FileStream*;
 
 }; // namespace snowball

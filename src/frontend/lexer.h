@@ -18,18 +18,25 @@ class Lexer final : public NonCopyable, public Createable<Lexer>, public NonMova
 public:
   /// @brief Create a new lexer instance and tokenize the input source code,
   /// by using a file stream.
-  static auto StartStreamLexer(fs::Path& path) -> Lexer;
+  static auto StartPathLexer(const fs::Path& path) -> Lexer;
+  /// @brief Create a new lexer instance and tokenize the input source code,
+  /// by using a string value.
+  static auto StartStringLexer(const String& source) -> Lexer;
+  /// @brief Create a new lexer instance and tokenize the input source code,
+  /// by using a file stream.
+  static auto StartStreamLexer(IStream* stream) -> Lexer;
 
   /// @brief Default destructor.
   ~Lexer() = default;
 private:
   /// @brief Construct a new lexer.
   /// @param source The source code.
-  explicit Lexer(fs::FileStream& source);
+  explicit Lexer(IStream* source);
 
+public:
   /// @brief It returns the list of tokens.
   /// @return The list of tokens.
-  inline auto GetNextToken(bool peek = false) -> Token;
+  auto GetNextToken(bool peek = false) -> Token;
 
   /// @brief Peek the next token.
   /// @return The next token.
@@ -49,17 +56,26 @@ private:
 
   /// @brief If it's the end of the file.
   /// @return Whether it's the end of the file.
-  auto IsEof() const -> bool;
+  inline auto IsEof() const -> bool { return mIsEof; }
 
   /// @brief Lex the next token.
   /// @return The next token.
   SNOWBALL_NO_DISCARD auto LexToken() -> Token;
 private:
-  fs::FileStream& mSource;
+  /// @brief Consume a new line.
+  auto ConsumeNewLine() -> void;
+  /// @brief Create a source location.
+  /// @return The source location.
+  auto CreateSourceLocation() -> SourceLocation;
+  /// @brief Consume a new character.
+  /// @return The new character.
+  /// @note This can be used when parsing double characters, like '==', '!=', etc.
+  auto ConsumeChar(TT type) -> Token;
+
+private:
+  IStream* mSource;
   u64 mLine{1};
   u64 mColumn{1};
-
-  usize mCharIndex{0};
   
   Token mToken{TT::Unknown, SourceLocation(nullptr, 0, 0)};
 

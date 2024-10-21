@@ -36,7 +36,7 @@ DEFINE_TOKEN(OpPlus)
 DEFINE_TOKEN(OpMinus)
 DEFINE_TOKEN(OpMuleq)
 DEFINE_TOKEN(OpDiveq)
-DEFINE_TOKEN(OpModEq)
+DEFINE_TOKEN(OpModeq)
 DEFINE_TOKEN(OpPluseq)
 DEFINE_TOKEN(OpMinuseq)
 DEFINE_TOKEN(OpGt)
@@ -108,6 +108,7 @@ DEFINE_TOKEN(KwordDelete)
 
 DEFINE_TOKEN(KwordEndingPoint) // This is a marker for the end of the keywords
 
+DEFINE_TOKEN(Comment)
 DEFINE_TOKEN(Eof)
 
 #undef DEFINE_TOKEN

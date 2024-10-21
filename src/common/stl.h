@@ -87,6 +87,8 @@ using SharedPtr = std::shared_ptr<T>;
 constexpr i32 Success = false;
 constexpr i32 Failure = true;
 
+using IStream = std::istream;
+
 /// @brief A class that cannot be copied.
 class NonCopyable {
 protected:

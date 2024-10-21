@@ -45,6 +45,12 @@ _deps
 *.out
 *.app
 
+tests-bin[1]_include.cmake
+tests-bin[1]_tests.cmake
+tests-bin
+CTestTestfile.cmake
+ctest
+
 gcm.cache
 .ninja_lock
 
@@ -76,3 +82,8 @@ result
 
 *.class
 .vscode/
+CMakeLists.txt
+tests-bin\[1]_tests.cmake
+tests-bin\[1]_include.cmake
+Testing/Temporary/CTestCostData.txt
+Testing/

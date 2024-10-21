@@ -48,7 +48,7 @@ auto SnowballFormat(const Token& token) -> String {
     case TT::OpMuleq: return "*=";
     case TT::OpDiveq: return "/=";
     case TT::OpPluseq: return "+=";
-    case TT::OpModEq: return "%=";
+    case TT::OpModeq: return "%=";
     case TT::OpMinuseq: return "-=";
     
     case TT::OpEq: return "=";

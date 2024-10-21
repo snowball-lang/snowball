@@ -1,0 +1,26 @@
+
+#define DEFINE_SINGLE_CHAR_TOKENS(name, value) \
+      case value: return Token(TT::name, CreateSourceLocation());
+
+#define DEFINE_SINGLE_OR_DOUBLE_CHAR_TOKENS(singleName, singleValue, doubleName, doubleValue) \
+      case singleValue: { \
+        auto next = mSource->peek(); \
+        if (next == doubleValue) { \
+          return ConsumeChar(TT::doubleName); \
+        } \
+        return Token(TT::singleName, CreateSourceLocation()); \
+      }
+
+#define DEFINE_SINGLE_OR_DOUBLE_CHAR_TOKENS_2(singleName, singleValue, doubleName, doubleValue, tripleName, tripleValue) \
+      case singleValue: { \
+        auto next = mSource->peek(); \
+        if (next == doubleValue) { \
+          return ConsumeChar(TT::doubleName); \
+        } else if (next == tripleValue) { \
+          return ConsumeChar(TT::tripleName); \
+        } \
+        return Token(TT::singleName, CreateSourceLocation()); \
+      }
+
+#define DEFINE_SINGLE_OR_EQUAL_CHAR_TOKENS(name, value) \
+      DEFINE_SINGLE_OR_DOUBLE_CHAR_TOKENS(name, value, name##eq, '=')

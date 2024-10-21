@@ -39,9 +39,9 @@ auto CreateWorkspaceDirectories() -> void {
   fs::create_directories(GetHomeDirectory());
 }
 
-auto ReadFile(const fs::Path& path) -> fs::FileStream {
-  fs::FileStream file(path);
-  if (!file.is_open()) {
+auto ReadFile(const fs::Path& path) -> fs::FileStream* {
+  auto file = new fs::FileStream(path);
+  if (!file->is_open()) {
     FatalError(utils::Format("Failed to open file: {}", path.string()));
   }
   return file;
