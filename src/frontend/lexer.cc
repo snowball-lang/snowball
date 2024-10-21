@@ -81,34 +81,34 @@ auto Lexer::LexToken() -> Token {
         ConsumeNewLine();
         continue;
       
-      DEFINE_SINGLE_CHAR_TOKENS(SymComma,       ',')
-      DEFINE_SINGLE_CHAR_TOKENS(SymSemiColon,   ';')
-      DEFINE_SINGLE_CHAR_TOKENS(SymHash,        '#')
-      DEFINE_SINGLE_CHAR_TOKENS(SymDollar,      '$')
-      DEFINE_SINGLE_CHAR_TOKENS(SymQuestion,    '?')
-      DEFINE_SINGLE_CHAR_TOKENS(SymAt,          '@')
-      DEFINE_SINGLE_CHAR_TOKENS(SymDot,         '.')
+      DEFINE_SINGLE_CHAR_TOKENS(SymComma,        ',')
+      DEFINE_SINGLE_CHAR_TOKENS(SymSemiColon,    ';')
+      DEFINE_SINGLE_CHAR_TOKENS(SymHash,         '#')
+      DEFINE_SINGLE_CHAR_TOKENS(SymDollar,       '$')
+      DEFINE_SINGLE_CHAR_TOKENS(SymQuestion,     '?')
+      DEFINE_SINGLE_CHAR_TOKENS(SymAt,           '@')
+      DEFINE_SINGLE_CHAR_TOKENS(SymDot,          '.')
 
-      DEFINE_SINGLE_CHAR_TOKENS(BracketLparent, '(')
-      DEFINE_SINGLE_CHAR_TOKENS(BracketRparent, ')')
-      DEFINE_SINGLE_CHAR_TOKENS(BracketLcurly,  '{')
-      DEFINE_SINGLE_CHAR_TOKENS(BracketRcurly,  '}')
-      DEFINE_SINGLE_CHAR_TOKENS(BracketLsquared,'[')
-      DEFINE_SINGLE_CHAR_TOKENS(BracketRsquared,']')
+      DEFINE_SINGLE_CHAR_TOKENS(BracketLparent,  '(')
+      DEFINE_SINGLE_CHAR_TOKENS(BracketRparent,  ')')
+      DEFINE_SINGLE_CHAR_TOKENS(BracketLcurly,   '{')
+      DEFINE_SINGLE_CHAR_TOKENS(BracketRcurly,   '}')
+      DEFINE_SINGLE_CHAR_TOKENS(BracketLsquared, '[')
+      DEFINE_SINGLE_CHAR_TOKENS(BracketRsquared, ']')
 
       DEFINE_SINGLE_OR_DOUBLE_CHAR_TOKENS(
         SymColon, ':',
         SymColcol, ':'
       )
 
-      DEFINE_SINGLE_OR_EQUAL_CHAR_TOKENS(OpPlus,         '+')
-      DEFINE_SINGLE_OR_EQUAL_CHAR_TOKENS(OpMinus,        '-')
-      DEFINE_SINGLE_OR_EQUAL_CHAR_TOKENS(OpMul,          '*')
-      DEFINE_SINGLE_OR_EQUAL_CHAR_TOKENS(OpDiv,          '/')
-      DEFINE_SINGLE_OR_EQUAL_CHAR_TOKENS(OpMod,          '%')
+      DEFINE_SINGLE_OR_EQUAL_CHAR_TOKENS(OpPlus, '+')
+      DEFINE_SINGLE_OR_EQUAL_CHAR_TOKENS(OpMinus,'-')
+      DEFINE_SINGLE_OR_EQUAL_CHAR_TOKENS(OpMul,  '*')
+      DEFINE_SINGLE_OR_EQUAL_CHAR_TOKENS(OpDiv,  '/')
+      DEFINE_SINGLE_OR_EQUAL_CHAR_TOKENS(OpMod,  '%')
 
-      DEFINE_SINGLE_OR_EQUAL_CHAR_TOKENS(OpGt, '>')
-      DEFINE_SINGLE_OR_EQUAL_CHAR_TOKENS(OpNot, '!')
+      DEFINE_SINGLE_OR_EQUAL_CHAR_TOKENS(OpGt,   '>')
+      DEFINE_SINGLE_OR_EQUAL_CHAR_TOKENS(OpNot,  '!')
 
       DEFINE_SINGLE_OR_DOUBLE_CHAR_TOKENS_2(
         OpEq, '=',
