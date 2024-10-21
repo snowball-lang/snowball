@@ -16,6 +16,11 @@ using namespace snowball::utils;
 
 namespace snowball::frontend {
 
+auto AsyncComponent::StartAsyncProcess(const clowder::Module& module)
+      -> std::future<AsyncComponent::Result> {
+  return RunAsync(AsyncComponent(module));
+}
+
 auto StartAsyncFrontendProcess(clowder::Package& package, Vector<ModulePtr>& modules) -> bool {
   cargo::DisplayStatus("Building", 
     Format("{} version {}", 
@@ -33,6 +38,11 @@ auto StartAsyncFrontendProcess(clowder::Package& package, Vector<ModulePtr>& mod
     modules.push_back(module.value());
   }
   return Success;
+}
+
+auto AsyncComponent::operator()() -> Result {
+  // TODO; Implement the frontend process here.
+  return Some(Module::Create());
 }
 
 }; // namespace snowball::frontend
