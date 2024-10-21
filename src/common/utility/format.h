@@ -8,7 +8,7 @@ namespace snowball {
 namespace utils {
 
 template <typename ...Args>
-static inline auto Format(const String& fmt, Args&&... args) -> String {
+inline auto Format(const String& fmt, Args&&... args) -> String {
   return fmt::format(fmt, std::forward<Args>(args)...);
 };
 
