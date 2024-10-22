@@ -96,6 +96,8 @@ auto Lexer::LexToken() -> Token {
       DEFINE_SINGLE_CHAR_TOKENS(BracketLsquared, '[')
       DEFINE_SINGLE_CHAR_TOKENS(BracketRsquared, ']')
 
+      DEFINE_SINGLE_CHAR_TOKENS(OpBitNot,        '~')
+      
       DEFINE_SINGLE_OR_DOUBLE_CHAR_TOKENS(
         SymColon, ':',
         SymColcol, ':'
