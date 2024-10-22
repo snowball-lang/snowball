@@ -15,7 +15,7 @@ sudo ln -s /usr/bin/llvm-symbolizer-18 /usr/bin/llvm-symbolizer
 sudo ln -s /usr/lib/llvm-18/include/x86_64-pc-linux-gnu/c++/v1/__config_site /usr/lib/llvm-18/include/c++/v1/__config_site
 rm -rf cmake-3.29.0-linux-x86_64.tar.gz ninja-linux.zip
 
-sudo apt install -y libzstd-dev pkg-config
+sudo apt install -y libzstd-dev pkg-config liblld-18-dev libpolly-18-dev libc++-18-dev clang-tools-18 liblz4-dev zlib1g-dev libevent-dev libjemalloc-dev python3-dev
 
 # Corrosion
 git clone https://github.com/corrosion-rs/corrosion.git
