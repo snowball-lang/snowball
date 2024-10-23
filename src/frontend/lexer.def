@@ -22,5 +22,18 @@
         return Token(TT::singleName, CreateSourceLocation()); \
       }
 
+#define DEFINE_SINGLE_OR_DOUBLE_CHAR_TOKENS_3(singleName, singleValue, doubleName, doubleValue, tripleName, tripleValue, quadraName, quadraValue) \
+      case singleValue: { \
+        auto next = mSource->peek(); \
+        if (next == doubleValue) { \
+          return ConsumeChar(TT::doubleName); \
+        } else if (next == tripleValue) { \
+          return ConsumeChar(TT::tripleName); \
+        } else if (next == quadraValue) { \
+          return ConsumeChar(TT::quadraName); \
+        } \
+        return Token(TT::singleName, CreateSourceLocation()); \
+      }
+
 #define DEFINE_SINGLE_OR_EQUAL_CHAR_TOKENS(name, value) \
       DEFINE_SINGLE_OR_DOUBLE_CHAR_TOKENS(name, value, name##eq, '=')
