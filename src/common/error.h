@@ -3,6 +3,7 @@
 
 #include "common/stl.h"
 #include "common/location.h"
+#include "common/utility/logger.h"
 #include "common/utility/format.h"
 
 namespace snowball {
@@ -36,10 +37,15 @@ public:
   /// @brief A representation of the source error data.
   ///  this is used to create 
   struct SourceErrorData {
-    SourceLocation mLocation;
+    Opt<SourceLocation> mLocation;
     String mMessage{};
     Kind mKind{Error};
   };
+
+  /// @brief Return an equivalent @class Logger type from
+  ///  a @class SourceErrorData::Kind.
+  static auto GetLoggerType(Kind kind) -> utils::Logger::Level;
+
   /// @brief Construct a new source error.
   /// @param data The source error data.
   explicit SourceError(const Vector<SourceErrorData>& data) : mData(data) {}
@@ -56,8 +62,35 @@ public:
   /// @brief Append a new Warning source error.
   auto WithWarning(const String& message, const std::optional<SourceLocation>&
     location = std::nullopt) -> SourceError&;
+
+  /// @brief Print the error message.
+  auto Print() const -> void;
+
+  /// @brief Get the underlying error type.
+  virtual auto GetType() const -> Kind { return Error; }
 private:
   Vector<SourceErrorData> mData;
+};
+
+/// @brief A representation of a warning error.
+class WarningError : public SourceError {
+public:
+  WarningError(const Vector<SourceErrorData>& data) : SourceError(data) {}
+  auto GetType() const -> Kind override { return Warning; }
+};
+
+/// @brief A representation of an info error.
+class InfoError : public SourceError {
+public:
+  InfoError(const Vector<SourceErrorData>& data) : SourceError(data) {}
+  auto GetType() const -> Kind override { return Info; }
+};
+
+/// @brief A representation of a note error.
+class NoteError : public SourceError {
+public:
+  NoteError(const Vector<SourceErrorData>& data) : SourceError(data) {}
+  auto GetType() const -> Kind override { return Note; }
 };
 
 /// @brief It displays an error message and immediately exits the program.
@@ -80,5 +113,50 @@ auto SnowballFormat(const SourceError& error) -> String;
 ///  code path should never be reached.
 /// @see snowball::CrashError
 [[noreturn]] auto UnreachableError(const_ptr_t extra = nullptr) -> void;
+
+/// @brief An error that can be thrown and caught by a class.
+class [[nodiscard]] StopCompileError : public std::exception {
+public:
+  /// @brief Construct a new stop compile error..
+  explicit StopCompileError() {}
+  /// @brief Get the error message.
+  /// @return The error message.
+  auto what() const noexcept -> const char* override {
+    return "Compilation failed with errors.";
+  }
+};
+
+/// @brief A representation of a class that can contain/throw errors.
+class Reportable {
+public:
+  /// @brief Get all the errors.
+  /// @return All the errors.
+  auto GetErrors() const -> const Vector<SourceError>&;
+  /// @return Whether there are any errors.
+  auto HasErrors() const -> bool;
+  /// @brief Append a new error.
+  /// @param error The error to append.
+  auto AppendError(const SourceError& error) -> void;
+  /// @return The error count.
+  auto GetErrorCount() const -> usize;
+  /// @brief Start spiting out errors if there are any.
+  auto EndReport() -> void;
+  /// @brief Create and append a new error.
+  /// @param message The error message.
+  template <typename... Args>
+  inline auto Report(const SourceLocation& location, const String& message, Args&&... args) -> void {
+    AppendError(SourceError({{location, utils::Format(message, std::forward<Args>(args)...)}}));
+  }
+  /// @brief Create and append a new error.
+  /// @param message The error message.
+  template <typename... Args>
+  inline auto Report(const String& message, Args&&... args) -> void {
+    Report(SourceLocation(nullptr, 0, 0), message, std::forward<Args>(args)...);
+  }
+
+  ~Reportable() = default;
+protected:
+  Vector<SourceError> mErrors;
+};
 
 } // namespace snowball

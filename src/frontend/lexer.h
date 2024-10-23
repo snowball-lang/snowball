@@ -3,6 +3,7 @@
 
 #include "common/stl.h"
 #include "common/location.h"
+#include "common/error.h"
 
 #include "frontend/token.h"
 
@@ -13,7 +14,8 @@ namespace frontend {
 
 /// @brief A lexer.
 /// The lexer is responsible for tokenizing the input source code.
-class Lexer final : public NonCopyable, public Createable<Lexer>, public NonMovable {
+class Lexer final : public NonCopyable, public Createable<Lexer>, public NonMovable,
+                    public Reportable {
   friend class Createable<Lexer>;
 public:
   /// @brief Create a new lexer instance and tokenize the input source code,
@@ -71,6 +73,12 @@ private:
   /// @return The new character.
   /// @note This can be used when parsing double characters, like '==', '!=', etc.
   auto ConsumeChar(TT type) -> Token;
+  /// @brief Start lexing a number.
+  /// @return The number token.
+  auto LexNumber() -> Token;
+  /// @brief Start lexing an identifier.
+  /// @return The identifier token.
+  auto LexIdentifier() -> Token;
 
 private:
   IStream* mSource;

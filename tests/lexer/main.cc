@@ -31,3 +31,30 @@ TEST(LexerTest, LexerWithSpaces) {
   token = lexer.GetNextToken();
   EXPECT_EQ(token.GetType(), frontend::TT::Eof);
 }
+
+TEST(LexerTest, LexerTripleChars) {
+  auto lexer = frontend::Lexer::StartStringLexer("& && &=");
+  auto token = lexer.GetNextToken();
+  EXPECT_EQ(token.GetType(), frontend::TT::OpBitAnd);
+  token = lexer.GetNextToken();
+  EXPECT_EQ(token.GetType(), frontend::TT::OpAnd);
+  token = lexer.GetNextToken();
+  EXPECT_EQ(token.GetType(), frontend::TT::OpBitAndEq);
+  token = lexer.GetNextToken();
+  EXPECT_EQ(token.GetType(), frontend::TT::Eof);
+}
+
+TEST(LexerTest, LexerNumbers) {
+  auto lexer = frontend::Lexer::StartStringLexer("123 456 789");
+  auto token = lexer.GetNextToken();
+  EXPECT_EQ(token.GetType(), frontend::TT::ValueNumber);
+  EXPECT_EQ(token.GetValue(), "123");
+  token = lexer.GetNextToken();
+  EXPECT_EQ(token.GetType(), frontend::TT::ValueNumber);
+  EXPECT_EQ(token.GetValue(), "456");
+  token = lexer.GetNextToken();
+  EXPECT_EQ(token.GetType(), frontend::TT::ValueNumber);
+  EXPECT_EQ(token.GetValue(), "789");
+  token = lexer.GetNextToken();
+  EXPECT_EQ(token.GetType(), frontend::TT::Eof);
+}

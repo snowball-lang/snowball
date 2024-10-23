@@ -28,6 +28,7 @@ struct GlobalContext {
 
   // The target triple, will be parsed from the target triple string.
   Target  mTarget{OperatingSystem::Unknown, Architecture::Unknown};
+  usize   mErrorCount{0};
 };
 
 extern GlobalContext gContext;
@@ -48,6 +49,7 @@ GLOBAL_CONTEXT_GETTER_VALUE(Command, mCommand)
 GLOBAL_CONTEXT_GETTER_VALUE(NumThreads, mNumThreads)
 GLOBAL_CONTEXT_GETTER_VALUE(TargetTriple, mTargetTriple)
 GLOBAL_CONTEXT_GETTER_VALUE(Target, mTarget)
+GLOBAL_CONTEXT_GETTER_VALUE(ErrorCount, mErrorCount)
 
 #undef GLOBAL_CONTEXT_GETTER_SWITCH
 #undef GLOBAL_CONTEXT_GETTER_VALUE

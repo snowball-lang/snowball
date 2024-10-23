@@ -59,6 +59,23 @@ inline auto Lexer::CreateSourceLocation() -> SourceLocation {
   return SourceLocation(nullptr, mLine, mColumn);
 }
 
+auto Lexer::LexNumber() -> Token {
+  auto start = CreateSourceLocation();
+  String number;
+  enum class NumberType {
+    Integer,
+    Float,
+    Hex,
+    Binary,
+    Octal,
+  };// type = NumberType::Integer;
+  UnreachableError("Implement this!");
+}
+
+auto Lexer::LexIdentifier() -> Token {
+  UnreachableError("Implement this!");
+}
+
 inline auto Lexer::ConsumeChar(TT type) -> Token {
   mColumn++;
   mSource->get();
@@ -87,7 +104,6 @@ auto Lexer::LexToken() -> Token {
       DEFINE_SINGLE_CHAR_TOKENS(SymDollar,       '$')
       DEFINE_SINGLE_CHAR_TOKENS(SymQuestion,     '?')
       DEFINE_SINGLE_CHAR_TOKENS(SymAt,           '@')
-      DEFINE_SINGLE_CHAR_TOKENS(SymDot,          '.')
 
       DEFINE_SINGLE_CHAR_TOKENS(BracketLparent,  '(')
       DEFINE_SINGLE_CHAR_TOKENS(BracketRparent,  ')')
@@ -115,6 +131,28 @@ auto Lexer::LexToken() -> Token {
         OpEqeq, '=', 
         OpArrow, '>'
       )
+
+      DEFINE_SINGLE_OR_DOUBLE_CHAR_TOKENS_2(
+        OpBitAnd,   '&',
+        OpAnd,      '&',
+        OpBitAndEq, '='
+      )
+
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+      case '.': // We can either have a normal dot or a float (e.g. .2421)
+        return LexNumber();
+
+      default: 
+        return LexIdentifier();
     }
   }
   UnreachableError("What do we do here?");

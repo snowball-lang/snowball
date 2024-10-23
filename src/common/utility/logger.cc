@@ -12,17 +12,17 @@
 
 namespace snowball::utils {
 
-auto Logger::LogImpl(const String& message) -> void {
+auto Logger::LogImpl(const String& message, OStream& stream) -> void {
   // TODO: Log to file.
-  fmt::print("{}\n", message);
+  stream << fmt::format("{}\n", message);
 }
 
-auto Logger::Log(Level level, const String& message) -> void {
+auto Logger::Log(Level level, const String& message, OStream& stream) -> void {
   for (const auto& line : Split(message, '\n')) {
     LogImpl(Format("{}: {}", 
       fmt::styled(GetLevelPrefix(level), 
         fmt::fg(GetLevelColor(level)) | fmt::emphasis::bold),
-      line));
+      line), stream);
   }
 }
 

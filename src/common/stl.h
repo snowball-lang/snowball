@@ -88,6 +88,7 @@ constexpr i32 Success = false;
 constexpr i32 Failure = true;
 
 using IStream = std::istream;
+using OStream = std::ostream;
 
 /// @brief A class that cannot be copied.
 class NonCopyable {
